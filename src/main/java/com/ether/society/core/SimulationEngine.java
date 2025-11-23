@@ -85,7 +85,7 @@ public class SimulationEngine {
     private void initialize() {
         logger.info("Initializing simulation...");
         // Generate terrain
-        TerrainGenerator generator = new TerrainGenerator(config.world().seed(), config);
+        TerrainGenerator generator = new TerrainGenerator(config.world().seed());
         generator.generate(world);
         logger.info(
                 "World generated: {}x{} with seed {}",
