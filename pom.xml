@@ -53,6 +53,15 @@
         <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
     </properties>
     
+    <repositories>
+        <!-- GeoTools repository for geospatial data processing -->
+        <repository>
+            <id>osgeo</id>
+            <name>OSGeo Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+        </repository>
+    </repositories>
+    
     <dependencies>
         <!-- JavaFX -->
         <dependency>
@@ -184,6 +193,9 @@
         </dependency>
         
         <!-- TornadoVM for GPU Acceleration -->
+        <!-- NOTE: Requires manual installation - https://github.com/beehive-lab/TornadoVM -->
+        <!-- Uncomment after installing TornadoVM locally -->
+        <!--
         <dependency>
             <groupId>tornado</groupId>
             <artifactId>tornado-api</artifactId>
@@ -195,6 +207,7 @@
             <version>1.0.6</version>
             <scope>runtime</scope>
         </dependency>
+        -->
     </dependencies>
     
     <build>
