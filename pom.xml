@@ -180,7 +180,9 @@
             <version>5.1.0</version>
         </dependency>
         
-        <!-- GeoTools for Raster Processing -->
+        <!-- GeoTools for Raster Processing (for future real data ingestion) -->
+        <!-- NOTE: Temporarily disabled for MVP - uncomment when processing SRTM/MODIS data -->
+        <!--
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-geotiff</artifactId>
@@ -191,6 +193,7 @@
             <artifactId>gt-coverage</artifactId>
             <version>${geotools.version}</version>
         </dependency>
+        -->
         
         <!-- TornadoVM for GPU Acceleration -->
         <!-- NOTE: Requires manual installation - https://github.com/beehive-lab/TornadoVM -->
