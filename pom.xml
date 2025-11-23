@@ -124,6 +124,19 @@
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
+        
+        <!-- TornadoVM for GPU Acceleration -->
+        <dependency>
+            <groupId>tornado</groupId>
+            <artifactId>tornado-api</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>tornado</groupId>
+            <artifactId>tornado-runtime</artifactId>
+            <version>1.0.6</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
     
     <build>
