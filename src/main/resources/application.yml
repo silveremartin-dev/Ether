@@ -1,0 +1,71 @@
+# Spring Boot Application Configuration
+
+spring:
+  application:
+    name: ether-society-simulation
+  
+  # Database Configuration (PostgreSQL + PostGIS)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ether_simulation
+    username: ether_user
+    password: ether_pass
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  
+  # JPA / Hibernate  Configuration
+  jpa:
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+  
+  # Redis Configuration (Cache)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+
+# Server Configuration
+server:
+  port: 8080
+  compression:
+    enabled: true
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.ether.society: DEBUG
+    org.springframework: WARN
+    org.hibernate: WARN
+  pattern:
+    console: "[%d{yyyy-MM-dd HH:mm:ss}] [%-5level] [%logger{36}] - %msg%n"
+
+# Custom Application Properties
+ether:
+  simulation:
+    h3-resolution: 8
+    earth-coverage: true
+    gpu-enabled: true
+  data:
+    elevation-source: "SRTM_90m"
+    biome-source: "MODIS"
+    climate-years: 20000
