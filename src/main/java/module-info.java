@@ -15,9 +15,6 @@ module com.ether.society {
     exports com.ether.society.model;
     exports com.ether.society.config;
     exports com.ether.society.core;
-    exports com.ether.society.h3;
     exports com.ether.society.gpu;
-    exports com.ether.society.data;
     exports com.ether.society.util;
-    exports com.ether.society.database;
 }

@@ -1,3 +1,4 @@
+
 /*
  * MIT License
  *
@@ -30,13 +31,10 @@ import com.ether.society.config.Configuration;
 import com.ether.society.config.ConfigurationLoader;
 import com.ether.society.core.SimulationEngine;
 import com.ether.society.ui.ControlPanel;
-import com.ether.society.ui.MapCanvas;
-import com.ether.society.ui.StatsPanel;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -77,32 +75,32 @@ public class App extends Application {
 
         BorderPane root = new BorderPane();
 
-        MapCanvas mapCanvas = new MapCanvas(engine.getWorld());
-        ScrollPane scrollPane = new ScrollPane(mapCanvas);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
-        scrollPane.setPannable(true);
+        // MapCanvas mapCanvas = new MapCanvas(engine.getWorld());
+        // ScrollPane scrollPane = new ScrollPane(mapCanvas);
+        // scrollPane.setFitToWidth(true);
+        // scrollPane.setFitToHeight(true);
+        // scrollPane.setPannable(true);
 
         ControlPanel controlPanel = new ControlPanel(engine);
-        StatsPanel statsPanel = new StatsPanel(engine);
+        // StatsPanel statsPanel = new StatsPanel(engine);
 
-        root.setCenter(scrollPane);
+        // root.setCenter(scrollPane);
         root.setBottom(controlPanel);
-        root.setRight(statsPanel);
+        // root.setRight(statsPanel);
 
         // Info label with tooltips
-        Label infoLabel = new Label("Hover over map for cell information");
+        Label infoLabel = new Label("Simulation Running");
         infoLabel.setPadding(new javafx.geometry.Insets(5));
         infoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: white;");
         root.setTop(infoLabel);
 
-        mapCanvas.setOnCellHover(cell -> {
-            String info = String.format(
-                    "Biome: %s | Elev: %.2f | Temp: %.1f°C | Rain: %.2f | Humans: %d",
-                    cell.getBiome(), cell.getElevation(), cell.getTemperature(),
-                    cell.getRainfall(), cell.getHumanCount());
-            infoLabel.setText(info);
-        });
+        // mapCanvas.setOnCellHover(cell -> {
+        // String info = String.format(
+        // "Biome: %s | Elev: %.2f | Temp: %.1f°C | Rain: %.2f | Humans: %d",
+        // cell.getBiome(), cell.getElevation(), cell.getTemperature(),
+        // cell.getRainfall(), cell.getHumanCount());
+        // infoLabel.setText(info);
+        // });
 
         Scene scene = new Scene(root, 1280, 800);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
@@ -114,9 +112,9 @@ public class App extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                mapCanvas.draw();
+                // mapCanvas.draw();
                 controlPanel.updateYear(engine.getTimeManager().getFormattedDate());
-                statsPanel.update();
+                // statsPanel.update();
             }
         };
         timer.start();

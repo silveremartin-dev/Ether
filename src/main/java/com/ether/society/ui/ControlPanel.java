@@ -13,7 +13,7 @@ public class ControlPanel extends HBox {
 
     public ControlPanel(SimulationEngine engine) {
         this.engine = engine;
-        this.yearLabel = new Label("Year: " + engine.getTimeManager().getFormattedYear());
+        this.yearLabel = new Label("Year: " + engine.getTimeManager().getFormattedDate());
 
         setSpacing(10);
         setPadding(new Insets(10));
