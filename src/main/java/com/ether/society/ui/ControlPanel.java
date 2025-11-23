@@ -1,6 +1,6 @@
 package com.ether.society.ui;
 
-import com.ether.society.core.H3SimulationEngine;
+import com.ether.society.core.SimulationEngine;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
