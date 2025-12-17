@@ -1,11 +1,3 @@
-# Human Society Simulation - Ether
-
-[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/)
-[![JavaFX](https://img.shields.io/badge/JavaFX-21-blue.svg)](https://openjfx.io/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Build](https://img.shields.io/badge/Build-Maven-red.svg)](https://maven.apache.org/)
-
-A comprehensive, agent-based simulation of human society evolution from 20,000 BC to present day, featuring dynamic climate systems, resource management, cultural evolution, and economic development.
 
 ## Features
 

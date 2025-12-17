@@ -1,27 +1,109 @@
+/* Dark Modern Theme - ETHER */
 .root {
     -fx-base: #263238;
     -fx-background: #263238;
     background-color: #263238;
     -fx-control-inner-background: #37474f;
+    -fx-font-family: "Segoe UI", "Inter", sans-serif;
 }
 
+/* Tabs */
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #1c2529;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #34495e;
+    -fx-background-insets: 0 0 0 0;
+    -fx-background-radius: 5 5 0 0;
+    -fx-padding: 0 20 0 20;
+    -fx-font-weight: bold;
+    -fx-text-fill: #95a5a6;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+.tab-pane .tab:hover {
+    -fx-background-color: #2980b9;
+}
+
+.tab-label {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+}
+
+/* Buttons */
 .button {
     -fx-background-color: #546e7a;
     background-color: #546e7a;
     -fx-text-fill: white;
-    -fx-background-radius: 5;
+    -fx-background-radius: 4;
+    -fx-padding: 8 15 8 15;
+    padding: 8 15 8 15;
+    -fx-cursor: hand;
+    cursor: pointer;
 }
 
 .button:hover {
     -fx-background-color: #78909c;
-    background-color: #78909c;
 }
 
 .button:pressed {
     -fx-background-color: #455a64;
-    background-color: #455a64;
+}
+
+/* Toggles (Radio, Checkbox) */
+.radio-button .text {
+    -fx-fill: #ecf0f1;
+}
+
+.radio-button .radio {
+    -fx-background-color: #34495e;
+    -fx-border-color: #7f8c8d;
+    -fx-border-radius: 10;
+}
+
+.radio-button:selected .radio .dot {
+    -fx-background-color: #3498db;
+}
+
+/* Inputs */
+.text-field {
+    -fx-background-color: #1c2529;
+    -fx-text-fill: white;
+    -fx-border-color: #546e7a;
+    -fx-border-radius: 3;
+}
+
+.slider .track {
+    -fx-background-color: #34495e;
+}
+
+.slider .thumb {
+    -fx-background-color: #3498db;
+}
+
+.separator *.line {
+    -fx-border-style: solid;
+    -fx-border-width: 1px;
+    -fx-border-color: #34495e;
 }
 
 .label {
-    -fx-text-fill: white;
+    -fx-text-fill: #ecf0f1;
+}
+
+/* Custom ScrollBar */
+.scroll-bar:vertical .track,
+.scroll-bar:horizontal .track {
+    -fx-background-color: #263238;
+}
+
+.scroll-bar:vertical .thumb,
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: #546e7a;
+    -fx-background-radius: 5;
 }

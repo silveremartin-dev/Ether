@@ -2,38 +2,23 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgis/postgis:16-3.4
+    image: postgis/postgis:15-3.3
     container_name: ether_postgres
     environment:
       POSTGRES_DB: ether_simulation
-      POSTGRES_USER: ether_user
-      POSTGRES_PASSWORD: ether_pass
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_USER: ether
+      POSTGRES_PASSWORD: dev_password
     ports:
-      - "5432:5432"
+      - "54320:5432"  # Host:Container (using non-standard port to avoid conflicts)
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./scripts:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ether_user -d ether_simulation"]
+      test: ["CMD-SHELL", "pg_isready -U ether"]
       interval: 10s
       timeout: 5s
-      retries: 5
-  
-  redis:
-    image: redis:7-alpine
-    container_name: ether_redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
       retries: 5
 
 volumes:
   postgres_data:
-  redis_data:
+    driver: local

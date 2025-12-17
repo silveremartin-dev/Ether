@@ -1,17 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
          http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
-    <groupId>com.ether</groupId>
+
+    <groupId>org.ether</groupId>
     <artifactId>society-simulation</artifactId>
     <version>2.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    
+
     <name>Human Society Simulation - Ether</name>
     <description>Agent-based simulation of human society evolution from 20,000 BC</description>
-    
+
     <licenses>
         <license>
             <name>MIT License</name>
@@ -19,20 +18,20 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
+
     <developers>
         <developer>
             <name>Silvere Martin-Michiellot</name>
             <email>silvere.martin@gmail.com</email>
         </developer>
     </developers>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
-        
+
         <!-- Dependency versions -->
         <javafx.version>21</javafx.version>
         <jackson.version>2.16.0</jackson.version>
@@ -44,15 +43,17 @@
         <spring-boot.version>3.2.1</spring-boot.version>
         <h3.version>4.1.1</h3.version>
         <geotools.version>30.1</geotools.version>
-        
+        <tornado.version>1.0.9-SNAPSHOT</tornado.version>
+
         <!-- Plugin versions -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
         <javafx-maven-plugin.version>0.0.8</javafx-maven-plugin.version>
         <spotless-maven-plugin.version>2.41.0</spotless-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
+        <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
     </properties>
-    
+
     <repositories>
         <!-- GeoTools repository for geospatial data processing -->
         <repository>
@@ -61,7 +62,8 @@
             <url>https://repo.osgeo.org/repository/release/</url>
         </repository>
     </repositories>
-    
+
+
     <dependencies>
         <!-- JavaFX -->
         <dependency>
@@ -74,7 +76,7 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-        
+
         <!-- JSON Processing -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -86,7 +88,7 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-        
+
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -98,7 +100,7 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
-        
+
         <!-- Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -136,83 +138,70 @@
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
-        
+
         <!-- H3 Geospatial Indexing -->
         <dependency>
             <groupId>com.uber</groupId>
             <artifactId>h3</artifactId>
             <version>${h3.version}</version>
         </dependency>
-        
-        <!-- Spring Boot (Database Integration) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>${spring-boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-            <version>${spring-boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring-boot.version}</version>
-        </dependency>
-        
-        <!-- PostgreSQL + PostGIS -->
+
+        <!-- PostgreSQL JDBC Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.1</version>
+        </dependency>
+
+        <!-- HikariCP Connection Pool -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+
+        <!-- Hibernate ORM -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.4.1.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-spatial</artifactId>
+            <version>6.4.1.Final</version>
+        </dependency>
+
+        <!-- Hibernate HikariCP Integration -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-hikaricp</artifactId>
+            <version>6.4.1.Final</version>
+        </dependency>
+
+        <!-- Jakarta Persistence API -->
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+        <!-- PostGIS JDBC -->
+        <dependency>
+            <groupId>net.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>2023.1.0</version>
         </dependency>
         <dependency>
             <groupId>net.postgis</groupId>
             <artifactId>postgis-jdbc</artifactId>
             <version>2023.1.0</version>
         </dependency>
-        
-        <!-- HikariCP Connection Pooling -->
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>5.1.0</version>
-        </dependency>
-        
-        <!-- GeoTools for Raster Processing (for future real data ingestion) -->
-        <!-- NOTE: Temporarily disabled for MVP - uncomment when processing SRTM/MODIS data -->
-        <!--
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-geotiff</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-coverage</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        -->
-        
-        <!-- TornadoVM for GPU Acceleration -->
-        <!-- NOTE: Requires manual installation - https://github.com/beehive-lab/TornadoVM -->
-        <!-- Uncomment after installing TornadoVM locally -->
-        <!--
-        <dependency>
-            <groupId>tornado</groupId>
-            <artifactId>tornado-api</artifactId>
-            <version>1.0.6</version>
-        </dependency>
-        <dependency>
-            <groupId>tornado</groupId>
-            <artifactId>tornado-runtime</artifactId>
-            <version>1.0.6</version>
-            <scope>runtime</scope>
-        </dependency>
-        -->
+
+
     </dependencies>
-    
+
     <build>
         <plugins>
             <!-- Compiler Plugin -->
@@ -228,24 +217,24 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
-            
+
             <!-- Surefire Plugin (Testing) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
             </plugin>
-            
+
             <!-- JavaFX Plugin -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>${javafx-maven-plugin.version}</version>
                 <configuration>
-                    <mainClass>com.ether.society.Main</mainClass>
+                    <mainClass>org.ether.society.Main</mainClass>
                 </configuration>
             </plugin>
-            
+
             <!-- Spotless (Code Formatting) -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
@@ -263,7 +252,7 @@
                     </java>
                 </configuration>
             </plugin>
-            
+
             <!-- JaCoCo (Code Coverage) -->
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -283,6 +272,30 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Exec Plugin (Run App) -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>org.ether.society.Main</mainClass>
+                </configuration>
+            </plugin>
+
+            <!-- Javadoc Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+                <configuration>
+                    <reportOutputDirectory>${project.basedir}/javadoc</reportOutputDirectory>
+                    <destDir>javadoc</destDir>
+                    <source>21</source>
+                    <show>private</show>
+                    <nohelp>true</nohelp>
+                </configuration>
             </plugin>
         </plugins>
     </build>

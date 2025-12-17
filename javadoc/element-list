@@ -1,0 +1,17 @@
+org.ether.society
+org.ether.society.agent
+org.ether.society.config
+org.ether.society.core
+org.ether.society.data
+org.ether.society.database
+org.ether.society.density
+org.ether.society.events
+org.ether.society.gpu
+org.ether.society.h3
+org.ether.society.i18n
+org.ether.society.model
+org.ether.society.model.events
+org.ether.society.persistence
+org.ether.society.procedural
+org.ether.society.ui
+org.ether.society.util
