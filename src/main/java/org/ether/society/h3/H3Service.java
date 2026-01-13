@@ -1,8 +1,9 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
+ * AUTHOR: Silvere Martin-Michiellot
+ * SINCE: 2.0
  */
 package org.ether.society.h3;
 
@@ -160,5 +161,17 @@ public class H3Service {
             path.add(end);
             return path;
         }
+    }
+
+    public List<LatLng> getCellBoundary(long h3Index) {
+        return h3.cellToBoundary(h3Index);
+    }
+
+    public long getDirectedEdge(long origin, long destination) {
+        return h3.cellsToDirectedEdge(origin, destination);
+    }
+
+    public List<LatLng> getEdgeBoundary(long edgeIndex) {
+        return h3.directedEdgeToBoundary(edgeIndex);
     }
 }

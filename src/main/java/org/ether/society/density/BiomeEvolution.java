@@ -28,7 +28,7 @@ public class BiomeEvolution {
     private static final Logger logger = LoggerFactory.getLogger(BiomeEvolution.class);
 
     // Thresholds
-    private static final double OVERGRAZING_THRESHOLD = 0.8; // food/capacity ratio below this = stress
+
     private static final double DEFORESTATION_POP_DENSITY = 200; // Pop per cell triggering deforestation
     private static final double DESERTIFICATION_THRESHOLD = 0.3; // Water below this = desertification risk
     private static final double REFORESTATION_POP_MIN = 10; // Max pop for natural regrowth

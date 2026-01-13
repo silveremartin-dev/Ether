@@ -90,8 +90,7 @@ public class EtherApp extends Application {
         // Control panel
         controlPanel = new ControlPanel(h3Engine);
         controlPanel.setMapCanvas(mapCanvas);
-        controlPanel.setOnSave(this::saveSimulation);
-        controlPanel.setOnLoad(this::loadSimulation);
+        // controlPanel callbacks are handled in MainView to delegate to MainView's save/load methods
 
         // Initialize Main View (Tabbed Interface)
         org.ether.society.ui.MainView mainView = new org.ether.society.ui.MainView(h3Engine, controlPanel, mapCanvas,
@@ -131,7 +130,7 @@ public class EtherApp extends Application {
         mainRoot.setCenter(contentStack);
 
         Scene scene = new Scene(mainRoot, 1280, 800);
-        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/css/index.css").toExternalForm());
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -198,23 +197,7 @@ public class EtherApp extends Application {
         infoLabel.setText(I18n.get("app.info", year));
     }
 
-    private void saveSimulation() {
-        logger.info("Saving simulation...");
-        logger.warn("Save disabled for offline verification due to DB connection issues");
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                javafx.scene.control.Alert.AlertType.WARNING);
-        alert.setContentText("Database unavailable. Feature disabled.");
-        alert.showAndWait();
-    }
-
-    private void loadSimulation() {
-        logger.info("Loading simulation...");
-        logger.warn("Load disabled for offline verification due to DB connection issues");
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                javafx.scene.control.Alert.AlertType.WARNING);
-        alert.setContentText("Database unavailable. Feature disabled.");
-        alert.showAndWait();
-    }
+    // Note: saveSimulation and loadSimulation moved to MainView to use GameSaveManager
 
     private void openPlanetGenerator() {
         org.ether.society.ui.PlanetGeneratorDialog dialog = new org.ether.society.ui.PlanetGeneratorDialog();

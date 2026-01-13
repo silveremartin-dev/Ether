@@ -3,12 +3,11 @@ package org.ether.society.diplomacy;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Nation;
 import org.ether.society.h3.H3Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 
 /**
  * Handles the dynamic evolution of political entities (Nations).
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
  * - Consolidation: Merging or conquering.
  */
 public class PoliticalSimulationEngine {
-    private static final Logger logger = LoggerFactory.getLogger(PoliticalSimulationEngine.class);
+
 
     private final DiplomacyManager diplomacyManager;
     private final H3Service h3Service;

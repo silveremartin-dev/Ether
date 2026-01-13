@@ -1,9 +1,9 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
- *
+ * AUTHOR: Silvere Martin-Michiellot
+ * SINCE: 2.0
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -450,5 +450,44 @@ public class H3Cell {
 
     public void setTechnologyLevel(Double val) {
         this.technologyLevel = val;
+    }
+    /**
+     * Create a snapshot copy of this cell.
+     */
+    public H3Cell snapshot() {
+        H3Cell copy = new H3Cell(this.h3Index, this.latitude, this.longitude);
+        copy.setId(this.id);
+        copy.setElevation(this.elevation);
+        copy.setTemperature(this.temperature);
+        copy.setRainfall(this.rainfall);
+        copy.setBiome(this.biome);
+        copy.setPopulation(this.population);
+        copy.setFoodResource(this.foodResource);
+        copy.setWaterResource(this.waterResource);
+        copy.setWoodResource(this.woodResource);
+        copy.setResourceMetal(this.resourceMetal);
+        copy.setResourceClay(this.resourceClay);
+        copy.setResourceWork(this.resourceWork);
+        copy.setResourceCapital(this.resourceCapital);
+        copy.setLifespan(this.lifespan);
+        copy.setFertility(this.fertility);
+        copy.setGiniIndex(this.giniIndex);
+        copy.setTechnologyLevel(this.technologyLevel);
+        copy.setOwner(this.owner); // Shared reference for now
+        copy.setFluxPressure(this.fluxPressure);
+        
+        // Biomass & Energy
+        copy.setBiomassHuman(this.biomassHuman);
+        copy.setBiomassLivestock(this.biomassLivestock);
+        copy.setBiomassFish(this.biomassFish);
+        copy.setBiomassAgriculture(this.biomassAgriculture);
+        copy.setBiomassNatural(this.biomassNatural);
+        copy.setEnergyWind(this.energyWind);
+        copy.setEnergySolar(this.energySolar);
+        copy.setEnergyFire(this.energyFire);
+        copy.setEnergySlaves(this.energySlaves);
+        copy.setEnergyFoodConsumed(this.energyFoodConsumed);
+        
+        return copy;
     }
 }

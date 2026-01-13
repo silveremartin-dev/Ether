@@ -15,10 +15,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ControlPanel extends HBox {
     private final ISimulationEngine engine;
@@ -50,6 +53,15 @@ public class ControlPanel extends HBox {
     // Callback for actions
     private Runnable onSave;
     private Runnable onLoad;
+    private Consumer<Boolean> onContourToggle;
+    private Runnable onTimelapseRecord;
+    private Consumer<Integer> onTimelapseSeek;
+    
+    // Timelapse controls
+    private ToggleButton contourToggle;
+    private ToggleButton recordToggle;
+    private Slider timelapseSlider;
+    private Label timelapseLabel;
 
     public ControlPanel(ISimulationEngine engine) {
         this.engine = engine;
@@ -63,7 +75,9 @@ public class ControlPanel extends HBox {
         setSpacing(10);
         setPadding(new Insets(10));
         setAlignment(Pos.CENTER);
-        setStyle("-fx-background-color: #263238; -fx-text-fill: white;");
+        // Remove hardcoded background, use CSS class
+        getStyleClass().add("glass-panel");
+        setStyle("-fx-text-fill: white;");
 
         // Save/Load Buttons
         Button saveBtn = new Button("Save");
@@ -193,13 +207,47 @@ public class ControlPanel extends HBox {
             }
         });
 
+        // Contour Toggle
+        contourToggle = new ToggleButton("Contours");
+        contourToggle.setTooltip(new Tooltip("Show elevation contour lines"));
+        contourToggle.setOnAction(e -> {
+            if (onContourToggle != null) {
+                onContourToggle.accept(contourToggle.isSelected());
+            }
+        });
+
+        // Timelapse Record Toggle
+        recordToggle = new ToggleButton("⏺ Rec");
+        recordToggle.setTooltip(new Tooltip("Record simulation history for replay"));
+        recordToggle.setStyle("-fx-text-fill: red;");
+        recordToggle.setOnAction(e -> {
+            if (onTimelapseRecord != null) {
+                onTimelapseRecord.run();
+            }
+        });
+
+        // Timelapse Slider
+        timelapseSlider = new Slider(0, 100, 0);
+        timelapseSlider.setPrefWidth(120);
+        timelapseSlider.setTooltip(new Tooltip("Scrub through recorded history"));
+        timelapseSlider.setDisable(true); // Enabled when recording exists
+        timelapseSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (onTimelapseSeek != null && !timelapseSlider.isValueChanging()) {
+                onTimelapseSeek.accept(newVal.intValue());
+            }
+        });
+        
+        timelapseLabel = new Label("Year: -");
+        timelapseLabel.setStyle("-fx-text-fill: #90caf9;");
+
         yearLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
 
         getChildren().addAll(yearLabel, seasonLabel, ageLabel, statsLabel, eventLabel, saveBtn, loadBtn, startBtn,
                 pauseBtn,
                 speed1x, speed5x,
                 speed20x,
-                viewToggle, displayToggle, miniMapToggle, analyticsBtn, langLabel, langCombo);
+                viewToggle, displayToggle, miniMapToggle, contourToggle, recordToggle, timelapseSlider, timelapseLabel,
+                analyticsBtn, langLabel, langCombo);
 
         // Initial text update
         updateTexts();
@@ -218,6 +266,26 @@ public class ControlPanel extends HBox {
 
     public void setOnAnalytics(Runnable onAnalytics) {
         this.onAnalytics = onAnalytics;
+    }
+
+    public void setOnContourToggle(Consumer<Boolean> onContourToggle) {
+        this.onContourToggle = onContourToggle;
+    }
+
+    public void setOnTimelapseRecord(Runnable onTimelapseRecord) {
+        this.onTimelapseRecord = onTimelapseRecord;
+    }
+
+    public void setOnTimelapseSeek(Consumer<Integer> onTimelapseSeek) {
+        this.onTimelapseSeek = onTimelapseSeek;
+    }
+    
+    public void updateTimelapseSlider(int minYear, int maxYear, int currentYear) {
+        timelapseSlider.setMin(minYear);
+        timelapseSlider.setMax(maxYear);
+        timelapseSlider.setValue(currentYear);
+        timelapseSlider.setDisable(minYear >= maxYear);
+        timelapseLabel.setText("Year: " + currentYear);
     }
 
     public void setMapCanvas(H3MapCanvas canvas) {

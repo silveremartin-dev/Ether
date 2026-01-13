@@ -37,11 +37,11 @@ class I18nTest {
     void testFormatting() {
         I18n.setLanguage(Language.ENGLISH);
         String formatted = I18n.get("app.info", 100);
-        assertTrue(formatted.contains("100 cells loaded"));
+        assertTrue(formatted.contains("Year: 100"));
 
         I18n.setLanguage(Language.FRENCH);
         formatted = I18n.get("app.info", 100);
-        assertTrue(formatted.contains("100 cellules chargées"));
+        assertTrue(formatted.contains("Année : 100"));
     }
 
     @Test

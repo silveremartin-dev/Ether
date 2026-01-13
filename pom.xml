@@ -50,7 +50,7 @@
         <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
         <javafx-maven-plugin.version>0.0.8</javafx-maven-plugin.version>
         <spotless-maven-plugin.version>2.41.0</spotless-maven-plugin.version>
-        <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
         <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
     </properties>
 
@@ -193,11 +193,7 @@
             <artifactId>postgis-jdbc</artifactId>
             <version>2023.1.0</version>
         </dependency>
-        <dependency>
-            <groupId>net.postgis</groupId>
-            <artifactId>postgis-jdbc</artifactId>
-            <version>2023.1.0</version>
-        </dependency>
+
 
 
     </dependencies>
@@ -253,7 +249,7 @@
                 </configuration>
             </plugin>
 
-            <!-- JaCoCo (Code Coverage) -->
+            <!-- JaCoCo (Code Coverage) - Note: 0.8.12+ needed for Java 22+, 0.8.14+ for Java 25 -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>

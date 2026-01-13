@@ -22,10 +22,9 @@ public class AgentManager {
     // Map of Agent ID to current Task
     private final Map<Long, AgentTask> activeTasks = new ConcurrentHashMap<>();
 
-    private final H3Service h3Service;
+
 
     public AgentManager(H3Service h3Service) {
-        this.h3Service = h3Service;
     }
 
     /**

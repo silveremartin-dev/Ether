@@ -1,11 +1,11 @@
 package org.ether.society.diplomacy;
 
-import org.ether.society.database.H3Cell;
+
 import org.ether.society.model.Nation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

@@ -40,13 +40,18 @@ public class DatabaseConfig {
     private static EntityManagerFactory createEntityManagerFactory() {
         logger.info("Creating EntityManagerFactory...");
 
+        // Load connection parameters from environment variables with defaults
+        String dbUrl = System.getenv().getOrDefault("DB_URL", "jdbc:postgresql://localhost:54320/ether_simulation");
+        String dbUser = System.getenv().getOrDefault("DB_USER", "ether");
+        String dbPass = System.getenv().getOrDefault("DB_PASSWORD", "dev_password");
+
         Configuration configuration = new Configuration();
 
         // Database connection settings
         Properties properties = new Properties();
-        properties.put(Environment.JAKARTA_JDBC_URL, "jdbc:postgresql://localhost:54320/ether_simulation");
-        properties.put(Environment.JAKARTA_JDBC_USER, "ether");
-        properties.put(Environment.JAKARTA_JDBC_PASSWORD, "dev_password");
+        properties.put(Environment.JAKARTA_JDBC_URL, dbUrl);
+        properties.put(Environment.JAKARTA_JDBC_USER, dbUser);
+        properties.put(Environment.JAKARTA_JDBC_PASSWORD, dbPass);
         properties.put(Environment.JAKARTA_JDBC_DRIVER, "org.postgresql.Driver");
         properties.put(Environment.DIALECT, "org.hibernate.spatial.dialect.postgis.PostgisDialect");
 

@@ -4,15 +4,15 @@ import org.ether.society.model.Biome;
 import org.ether.society.model.Cell;
 import org.ether.society.model.World;
 
-import java.util.Random;
+
 
 public class TerrainGenerator {
-    private final Random random;
+
     private final long seed;
 
     public TerrainGenerator(long seed) {
         this.seed = seed;
-        this.random = new Random(seed);
+        // this.random = new Random(seed);
     }
 
     public void generate(World world) {

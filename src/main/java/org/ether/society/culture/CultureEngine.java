@@ -41,12 +41,12 @@ public class CultureEngine {
             // Step B: Diffusion (Influence from Neighbors)
             List<Long> neighborIds = neighbors.get(id);
             if (neighborIds != null && !neighborIds.isEmpty()) {
-                double totalWeight = 0;
-                CultureVector accumulatedInfluence = current; // Start with self
+
+
 
                 // For now, uniform weight. Later, weight by Flux (Trade Volume).
-                double selfWeight = 1.0;
-                double neighborWeight = 0.1; // Weak influence relative to self inertia
+
+
 
                 for (Long nId : neighborIds) {
                     CultureVector nVec = cultureMap.get(nId);

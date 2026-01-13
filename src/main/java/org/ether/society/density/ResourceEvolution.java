@@ -8,9 +8,8 @@ package org.ether.society.density;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
-import org.ether.society.model.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 import java.util.List;
 
@@ -22,13 +21,13 @@ import java.util.List;
  * - Non-Renewable: Minerals (deplete permanently when extracted)
  */
 public class ResourceEvolution {
-    private static final Logger logger = LoggerFactory.getLogger(ResourceEvolution.class);
+
 
     // Regeneration rates (per tick)
     private static final double WOOD_REGEN_RATE = 0.01; // 1% per tick
     private static final double FOOD_REGEN_RATE = 0.05; // 5% per tick (seasonal)
     private static final double FISH_REGEN_RATE = 0.03; // 3% per tick
-    private static final double WATER_REGEN_RATE = 0.1; // 10% per tick (rainfall)
+
 
     // Depletion thresholds
     private static final double WOOD_DEPLETION_THRESHOLD = 50; // Below this, regrowth is slow

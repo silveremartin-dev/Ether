@@ -5,8 +5,7 @@ import org.ether.society.model.Biome;
 import org.ether.society.procedural.PlanetPreset;
 import org.ether.society.procedural.ProceduralGenerator;
 import org.ether.society.procedural.ProceduralGenerator.PlanetPoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -29,7 +28,7 @@ import java.util.Optional;
  * Dialog for generating procedural planets.
  */
 public class PlanetGeneratorDialog extends Stage {
-    private static final Logger logger = LoggerFactory.getLogger(PlanetGeneratorDialog.class);
+
 
     private final ProceduralGenerator generator;
 

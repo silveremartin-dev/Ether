@@ -1,6 +1,6 @@
 package org.ether.society.ui;
 
-import javafx.collections.FXCollections;
+
 import javafx.geometry.Insets;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -57,6 +57,7 @@ public class AnalyticsDashboard extends VBox {
         refresh();
     }
 
+    @SuppressWarnings("unchecked")
     private void createCharts() {
         // 1. Population Chart
         CategoryAxis xAxis1 = new CategoryAxis();

@@ -14,7 +14,7 @@ import java.util.Locale;
 public enum Language {
     ENGLISH("en", "English", Locale.ENGLISH),
     FRENCH("fr", "FranÃ§ais", Locale.FRENCH),
-    SPANISH("es", "EspaÃ±ol", new Locale("es")),
+    SPANISH("es", "EspaÃ±ol", Locale.of("es")),
     GERMAN("de", "Deutsch", Locale.GERMAN);
 
     private final String code;

@@ -8,11 +8,13 @@ package org.ether.society.core;
 import org.ether.society.config.Configuration;
 import org.ether.society.data.SampleDataGenerator;
 import org.ether.society.database.H3Cell;
-import org.ether.society.density.DensitySimulationEngine;
+import org.ether.society.density.ArtemisSimulationEngine;
 import org.ether.society.density.H3ClimateSystem;
 import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.ether.society.persistence.GameSaveManager;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -39,13 +41,14 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     // Density-based simulation systems
     private final H3ClimateSystem climateSystem;
-    private final DensitySimulationEngine densityEngine;
+    private final ArtemisSimulationEngine densityEngine;
     private final org.ether.society.agents.AgentManager agentManager;
     private final org.ether.society.gpu.GPUManager gpuManager;
 
     private final org.ether.society.analytics.HistoryManager historyManager;
     private final org.ether.society.diplomacy.DiplomacyManager diplomacyManager;
     private final org.ether.society.diplomacy.PoliticalSimulationEngine politicalEngine;
+    private final GameSaveManager gameSaveManager;
 
     private List<H3Cell> cells;
     private Scenario currentScenario;
@@ -59,7 +62,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.timeManager = new TimeManager(config.simulation().startYear());
         this.eventSystem = new org.ether.society.events.EventSystem();
         this.climateSystem = new H3ClimateSystem();
-        this.densityEngine = new DensitySimulationEngine();
+        this.densityEngine = new ArtemisSimulationEngine();
         this.densityEngine.setEventSystem(this.eventSystem); // Inject EventSystem
         // Initialize AgentManager - need H3Service which isn't here?
         // Actually H3SimulationEngine creates data or loads it.
@@ -78,6 +81,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         // Initialize Diplomacy & Politics
         this.diplomacyManager = new org.ether.society.diplomacy.DiplomacyManager();
         this.politicalEngine = new org.ether.society.diplomacy.PoliticalSimulationEngine(this.diplomacyManager);
+        this.gameSaveManager = new GameSaveManager();
 
         initialize();
     }
@@ -251,11 +255,42 @@ public class H3SimulationEngine implements ISimulationEngine {
         // Don't auto-restart, let user decide
     }
 
+    /**
+     * Save the game state.
+     * @param saveName The name of the save
+     */
+    public void saveGame(String saveName) {
+        boolean wasRunning = running.get();
+        if (wasRunning) {
+            pause();
+        }
+        
+        gameSaveManager.saveGame(this, saveName);
+        
+        if (wasRunning) {
+            start();
+        }
+    }
+
+    /**
+     * Load the game state.
+     * @param saveId The ID of the save (currently ignored for single-state DB)
+     */
+    public void loadGame(String saveId) {
+        boolean wasRunning = running.get();
+        if (wasRunning) {
+            pause();
+        }
+        
+        gameSaveManager.loadGame(saveId, this);
+        // TimeManager reset might be needed here based on loading logic, but currently simple content load.
+    }
+
     public H3ClimateSystem getClimateSystem() {
         return climateSystem;
     }
 
-    public DensitySimulationEngine getDensityEngine() {
+    public ArtemisSimulationEngine getDensityEngine() {
         return densityEngine;
     }
 

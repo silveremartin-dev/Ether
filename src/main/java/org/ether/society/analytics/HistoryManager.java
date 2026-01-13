@@ -2,18 +2,22 @@ package org.ether.society.analytics;
 
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+
 
 /**
  * Manages the collection of historical data from the simulation.
  */
 public class HistoryManager {
-    private static final Logger logger = LoggerFactory.getLogger(HistoryManager.class);
+
 
     private final SimulationHistory history = new SimulationHistory();
+    private final NavigableMap<Integer, List<H3Cell>> worldSnapshots = new TreeMap<>();
 
     // Config: How often to capture? Every month might be too much for long runs.
     // Let's capture every tick for now, or maybe filtering in UI.
@@ -68,9 +72,32 @@ public class HistoryManager {
 
         history.addSnapshot(snapshot);
         // logger.debug("Captured history snapshot: Year {}", year);
+        // logger.debug("Captured history snapshot: Year {}", year);
+    }
+
+    /**
+     * Capture a full world state snapshot for replay (expensive, call less frequently).
+     */
+    public void captureWorldSnapshot(H3SimulationEngine engine) {
+        int year = engine.getTimeManager().getCurrentYear();
+        
+        List<H3Cell> snapshot = engine.getCells().parallelStream()
+            .map(H3Cell::snapshot)
+            .collect(Collectors.toList());
+            
+        worldSnapshots.put(year, snapshot);
+    }
+
+    public List<H3Cell> getWorldSnapshot(int year) {
+        return worldSnapshots.get(year);
+    }
+    
+    public NavigableMap<Integer, List<H3Cell>> getWorldSnapshots() {
+        return worldSnapshots;
     }
 
     public void reset() {
         history.clear();
+        worldSnapshots.clear();
     }
 }

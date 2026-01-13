@@ -3,7 +3,13 @@ package org.ether.society.agents;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Represents an autonomous actor in the simulation.
+ * Represents a "Special Actor" or "Unit" in the simulation.
+ *
+ * <p>Unlike population densities (handled by {@link org.ether.society.density.ArtemisSimulationEngine} / Artemis),
+ * these Agents represent specific, tracked individuals or groups with unique identity and state.
+ * Examples: Diplomats, Armies, Traders, Heroes.</p>
+ *
+ * <p>They move across the H3 grid and interact with the density layer.</p>
  */
 public class Agent {
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);

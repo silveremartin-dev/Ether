@@ -20,11 +20,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
+import com.uber.h3core.util.LatLng;
 
 /**
  * Canvas for rendering H3 hexagonal cells.
@@ -39,8 +42,10 @@ public class H3MapCanvas extends Canvas {
     private static final Logger logger = LoggerFactory.getLogger(H3MapCanvas.class);
 
     private List<H3Cell> cells;
+    private Map<Long, H3Cell> cellMap; // Fast lookup for neighbors
     private ViewMode viewMode = ViewMode.VIEW_2D;
     private DisplayMode displayMode = DisplayMode.BIOME;
+    private boolean showContours = false; // Toggle for contour lines
     private double scale = 1.0;
     private double offsetX = 0;
     private double offsetY = 0;
@@ -55,13 +60,9 @@ public class H3MapCanvas extends Canvas {
     private double zoomFactor = 1.0;
     private double dragStartX;
     private double dragStartY;
-    private double dragOffsetX = 0;
-    private double dragOffsetY = 0;
-
+    
     // 3D camera rotation
-    private double rotationAngle = 0; // degrees
-    private boolean isRotating = false;
-    private boolean isPanning = false;
+
 
     // Tooltip
     private CellTooltip tooltip;
@@ -81,7 +82,7 @@ public class H3MapCanvas extends Canvas {
     private MiniMap miniMap;
 
     // Engines for visualization
-    private FluxEngine fluxEngine;
+
     private CultureEngine cultureEngine;
     private org.ether.society.agents.AgentManager agentManager;
 
@@ -102,7 +103,7 @@ public class H3MapCanvas extends Canvas {
 
     public void setEngines(FluxEngine fluxEngine, CultureEngine cultureEngine,
             org.ether.society.agents.AgentManager agentManager) {
-        this.fluxEngine = fluxEngine;
+
         this.cultureEngine = cultureEngine;
         this.agentManager = agentManager;
     }
@@ -113,7 +114,7 @@ public class H3MapCanvas extends Canvas {
             double delta = event.getDeltaY();
             double zoomChange = delta > 0 ? 1.1 : 0.9;
             zoomFactor *= zoomChange;
-            zoomFactor = Math.max(0.5, Math.min(5.0, zoomFactor)); // Clamp 0.5x to 5x
+            zoomFactor = Math.max(0.5, Math.min(20.0, zoomFactor)); // Increased max zoom for detail
             draw();
             notifyMiniMap();
             logger.debug("Zoom: {}x", String.format("%.2f", zoomFactor));
@@ -125,14 +126,11 @@ public class H3MapCanvas extends Canvas {
             dragStartY = event.getY();
 
             if (event.isSecondaryButtonDown()) {
-                // Right click = rotate (3D mode only)
-                isRotating = true;
-                isPanning = false;
+                // Right click = unused for now
                 setCursor(javafx.scene.Cursor.CROSSHAIR);
             } else if (event.isPrimaryButtonDown()) {
-                // Left click = pan
-                isPanning = true;
-                isRotating = false;
+                // Left click = pan/rotate
+
                 setCursor(javafx.scene.Cursor.MOVE);
             }
         });
@@ -142,20 +140,13 @@ public class H3MapCanvas extends Canvas {
             double dx = event.getX() - dragStartX;
             double dy = event.getY() - dragStartY;
 
-            if (isRotating && viewMode == ViewMode.VIEW_3D) {
-                // Rotate camera (right mouse button)
-                rotationAngle += dx * 0.5; // 0.5 degrees per pixel
-                // Normalize to 0-360
-                rotationAngle = rotationAngle % 360;
-                if (rotationAngle < 0)
-                    rotationAngle += 360;
-
-                logger.debug("Camera rotation: {}Â°", String.format("%.1f", rotationAngle));
-            } else if (isPanning) {
-                // Pan camera (left mouse button)
-                dragOffsetX += dx;
-                dragOffsetY += dy;
-            }
+            // Unified Panning/Rotation
+            centerLng -= dx / scale;
+            centerLat += dy / scale;
+            
+            // Clamp to world bounds
+            centerLat = Math.max(minLat, Math.min(maxLat, centerLat));
+            centerLng = Math.max(minLng, Math.min(maxLng, centerLng));
 
             dragStartX = event.getX();
             dragStartY = event.getY();
@@ -165,8 +156,7 @@ public class H3MapCanvas extends Canvas {
 
         // Mouse release
         setOnMouseReleased(event -> {
-            isRotating = false;
-            isPanning = false;
+
             setCursor(javafx.scene.Cursor.DEFAULT);
         });
 
@@ -207,10 +197,22 @@ public class H3MapCanvas extends Canvas {
         return displayMode;
     }
 
+    // Toggle for contours
+    public void toggleContours(boolean show) {
+        this.showContours = show;
+        draw();
+    }
+
     public void setCells(List<H3Cell> cells) {
         // Sort by latitude for faster culling
         this.cells = new ArrayList<>(cells); // Copy to allow sorting
         this.cells.sort(Comparator.comparingDouble(H3Cell::getLatitude));
+        
+        // Build map for fast lookup
+        this.cellMap = new HashMap<>(); // Standard mapping in O(N)
+        for (H3Cell c : cells) {
+            cellMap.put(c.getH3Index(), c);
+        }
 
         // Compute lat/lng bounds
         minLat = cells.stream().mapToDouble(H3Cell::getLatitude).min().orElse(0);
@@ -246,9 +248,14 @@ public class H3MapCanvas extends Canvas {
         double scaleY = getHeight() / latRange;
         scale = Math.min(scaleX, scaleY) * 0.9 * zoomFactor; // Apply zoom
 
-        // Center offset with pan
-        offsetX = (getWidth() - lngRange * scale) / 2 + dragOffsetX;
-        offsetY = (getHeight() - latRange * scale) / 2 + dragOffsetY;
+        // Calculate offsets to center the view on centerLat/centerLng
+        // Formula: ScreenPos = (WorldPos - WorldMin) * Scale + Offset
+        // We want ScreenPos(Center) = ScreenCenter
+        // Offset = ScreenCenter - (WorldCenter - WorldMin) * Scale
+        
+        offsetX = (getWidth() / 2.0) - (centerLng - minLng) * scale;
+        // height/2 = (maxLat - centerLat) * scale + offsetY
+        offsetY = (getHeight() / 2.0) - (maxLat - centerLat) * scale;
 
         if (viewMode == ViewMode.VIEW_3D) {
             draw3D(gc, minLat, maxLat, minLng, maxLng);
@@ -258,6 +265,10 @@ public class H3MapCanvas extends Canvas {
 
         if (agentManager != null) {
             drawAgents(gc);
+        }
+        
+        if (showContours) {
+            drawContours(gc);
         }
 
         logger.debug("Drew {} cells in {} mode", cells.size(), viewMode);
@@ -315,8 +326,7 @@ public class H3MapCanvas extends Canvas {
 
     private void draw2D(GraphicsContext gc, double minLat, double maxLat, double minLng, double maxLng) {
         // Culling: Calculate visible latitude range
-        double viewHeightLat = (getHeight() / scale);
-        double centerLatOffset = (offsetY - getHeight() / 2) / scale; // Screen center offset in Lat coords
+
         // Actually simpler: Reverse map bounds
         // screenY = (maxLat - lat) * scale + offsetY
         // lat = maxLat - (screenY - offsetY) / scale
@@ -379,16 +389,29 @@ public class H3MapCanvas extends Canvas {
     private void draw3D(GraphicsContext gc, double minLat, double maxLat, double minLng, double maxLng) {
         // Sphere rendering - ignore viewport bounds, render entire globe
         double radius = Math.min(getWidth(), getHeight()) * 0.45 * zoomFactor;
-        double cx = getWidth() / 2 + dragOffsetX;
-        double cy = getHeight() / 2 + dragOffsetY;
+        
+        // Center of screen
+        double cx = getWidth() / 2;
+        double cy = getHeight() / 2;
 
-        // Rotation angle in radians (user can rotate globe)
-        double radRotationY = Math.toRadians(rotationAngle); // Y-axis rotation (longitude)
-        double radTilt = Math.toRadians(15); // Slight tilt for better view
+        // Rotation from centerLng (Longitude)
+        // We want centerLng to be at rotation 0 (facing screen)
+        // Standard spherical: x is lng=0. Z is axis? No, Z is depth.
+        // Let's assume lng=0 is facing us at rot=0.
+        // If centerLng changes, we rotate the world.
+        // Rotation = -centerLng.
+        double radRotationY = Math.toRadians(-centerLng - 90); // -90 adjustment might be needed to align Prime Meridian
+        
+        // Tilt from centerLat (Latitude)
+        // Map centerLat to tilt. 
+        // centerLat = 0 (Equator) -> Tilt = 0? Or 15 deg default?
+        // Let's allow dragging to tilt lightly.
+        // centerLat varies roughly -90 to 90.
+        // Let's map it to tilt around X axis.
+        double radTilt = Math.toRadians(15 + centerLat * 0.5); // Base 15 deg + effect of latitude
 
         // RenderPoint for sorting
         class RenderPoint {
-            H3Cell cell;
             double z; // Depth for sorting
             double screenX, screenY;
             Color color;
@@ -402,58 +425,31 @@ public class H3MapCanvas extends Canvas {
         final double finalCx = cx;
         final double finalCy = cy;
 
+        // Optimization: Don't stream parallel if small count? 
+        // Parallel stream overhead for small N.
+        
         List<RenderPoint> points = cells.parallelStream().map(cell -> {
-            // Convert lat/lng to radians
-            double lat = cell.getLatitude();
-            double lng = cell.getLongitude();
-            double latRad = Math.toRadians(lat);
-            double lngRad = Math.toRadians(lng);
-
-            // Spherical to Cartesian
-            double x = Math.cos(latRad) * Math.sin(lngRad);
-            double y = Math.sin(latRad);
-            double z = Math.cos(latRad) * Math.cos(lngRad);
-
-            // Apply Y-axis rotation
-            double cosR = Math.cos(finalRadRotationY);
-            double sinR = Math.sin(finalRadRotationY);
-            double xr = x * cosR + z * sinR;
-            double zr = -x * sinR + z * cosR;
-            double yr = y;
-
-            // Apply X-axis tilt
-            double cosT = Math.cos(finalRadTilt);
-            double sinT = Math.sin(finalRadTilt);
-            double yrt = yr * cosT - zr * sinT;
-            double zrt = yr * sinT + zr * cosT;
-
-            // Backface culling
-            if (zrt <= -0.1)
-                return null;
-
-            // Screen projection
-            double elevation = cell.getElevation() != null ? cell.getElevation() : 0;
-            double r = finalRadius * (1.0 + elevation * ELEVATION_SCALE * 0.00001);
-
-            double screenX = finalCx + xr * r;
-            double screenY = finalCy - yrt * r;
+            ProjectedPoint pp = project3D(cell.getLatitude(), cell.getLongitude(), 
+                                         cell.getElevation() != null ? cell.getElevation() : 0,
+                                         finalRadRotationY, finalRadTilt, finalRadius, finalCx, finalCy);
+            
+            if (pp == null) return null;
 
             // Color shading
             Color baseColor = getCellColor(cell);
-            double lightFactor = 0.5 + 0.5 * Math.max(0, zrt);
+            double lightFactor = 0.5 + 0.5 * Math.max(0, pp.z);
             Color shadedColor = Color.color(
                     Math.min(1.0, baseColor.getRed() * lightFactor),
                     Math.min(1.0, baseColor.getGreen() * lightFactor),
                     Math.min(1.0, baseColor.getBlue() * lightFactor));
 
-            double dotSize = 1.5 + zrt * 1.5;
+            double dotSize = 1.5 + pp.z * 1.5;
             dotSize = Math.max(1.0, dotSize * zoomFactor * 0.5);
 
             RenderPoint p = new RenderPoint();
-            p.cell = cell;
-            p.z = zrt;
-            p.screenX = screenX;
-            p.screenY = screenY;
+            p.z = pp.z;
+            p.screenX = pp.screenX;
+            p.screenY = pp.screenY;
             p.color = shadedColor;
             p.dotSize = dotSize;
             return p;
@@ -838,11 +834,6 @@ public class H3MapCanvas extends Canvas {
         this.centerLat = lat;
         this.centerLng = lng;
 
-        // Adjust drag offset to center on new position
-        // This is an approximation - ideally would recalculate projection
-        dragOffsetX = 0;
-        dragOffsetY = 0;
-
         draw();
 
         // Update mini-map
@@ -860,5 +851,118 @@ public class H3MapCanvas extends Canvas {
         if (miniMap != null) {
             miniMap.updateViewport(zoomFactor, centerLat, centerLng);
         }
+    }
+    private void drawContours(GraphicsContext gc) {
+        if (cells == null || cellMap == null) return;
+        
+        gc.setStroke(Color.rgb(255, 255, 255, 0.4));
+        gc.setLineWidth(1.5 * zoomFactor);
+        
+        double step = 500.0; // Elevation step in meters
+        
+        // Optimize: Iterate only visible cells if possible, but O(N) is fast enough for N<100k
+        for (H3Cell cell : cells) {
+            // Culling for 2D
+             if (viewMode == ViewMode.VIEW_2D) {
+                 double lat = cell.getLatitude();
+                 double top = maxLat - (0 - offsetY) / scale;
+                 double bottom = maxLat - (getHeight() - offsetY) / scale;
+                 if (lat > top + 10 || lat < bottom - 10) continue;
+            }
+
+            double elev = cell.getElevation() != null ? cell.getElevation() : 0;
+            int level = (int) (elev / step);
+            
+            try {
+                // We need to check all neighbors to find boundaries
+                List<Long> neighbors = h3Service.getNeighbors(cell.getH3Index());
+                for (Long nIdx : neighbors) {
+                    H3Cell neighbor = cellMap.get(nIdx);
+                    // If neighbor is null (out of map) or has different level -> Draw edge
+                    // Logic: Draw edge if level > nLevel (to draw once) OR neighbor is null (map edge)
+                    
+                    int nLevel = -1000;
+                    if (neighbor != null) {
+                        double nElev = neighbor.getElevation() != null ? neighbor.getElevation() : 0;
+                        nLevel = (int) (nElev / step);
+                    }
+                    
+                    if (level > nLevel) {
+                        long edge = h3Service.getDirectedEdge(cell.getH3Index(), nIdx);
+                        List<LatLng> boundary = h3Service.getEdgeBoundary(edge);
+                        
+                        if (boundary != null && boundary.size() >= 2) {
+                            if (viewMode == ViewMode.VIEW_2D) {
+                                LatLng p1 = boundary.get(0);
+                                LatLng p2 = boundary.get(1);
+                                
+                                double x1 = (p1.lng - minLng) * scale + offsetX;
+                                double y1 = (maxLat - p1.lat) * scale + offsetY;
+                                double x2 = (p2.lng - minLng) * scale + offsetX;
+                                double y2 = (maxLat - p2.lat) * scale + offsetY;
+                                
+                                gc.strokeLine(x1, y1, x2, y2);
+                            } else if (viewMode == ViewMode.VIEW_3D) {
+                                double radius = Math.min(getWidth(), getHeight()) * 0.45 * zoomFactor;
+                                double cx = getWidth() / 2;
+                                double cy = getHeight() / 2;
+                                double radRotationY = Math.toRadians(-centerLng - 90);
+                                double radTilt = Math.toRadians(15 + centerLat * 0.5);
+
+                                LatLng p1 = boundary.get(0);
+                                LatLng p2 = boundary.get(1);
+
+                                ProjectedPoint pp1 = project3D(p1.lat, p1.lng, level * step, radRotationY, radTilt, radius, cx, cy);
+                                ProjectedPoint pp2 = project3D(p2.lat, p2.lng, level * step, radRotationY, radTilt, radius, cx, cy);
+
+                                if (pp1 != null && pp2 != null) {
+                                    gc.strokeLine(pp1.screenX, pp1.screenY, pp2.screenX, pp2.screenY);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // Ignore H3 errors
+            }
+        }
+    }
+
+    private static class ProjectedPoint {
+        double screenX, screenY, z;
+    }
+
+    private ProjectedPoint project3D(double lat, double lng, double elevation, double radRotationY, double radTilt, double radius, double cx, double cy) {
+        double latRad = Math.toRadians(lat);
+        double lngRad = Math.toRadians(lng);
+
+        // Spherical to Cartesian
+        double x = Math.cos(latRad) * Math.sin(lngRad);
+        double y = Math.sin(latRad);
+        double z = Math.cos(latRad) * Math.cos(lngRad);
+
+        // Apply Y-axis rotation (Longitude)
+        double cosR = Math.cos(radRotationY);
+        double sinR = Math.sin(radRotationY);
+        double xr = x * cosR + z * sinR;
+        double zr = -x * sinR + z * cosR;
+
+        // Apply X-axis tilt (Latitude)
+        double cosT = Math.cos(radTilt);
+        double sinT = Math.sin(radTilt);
+        double yrt = y * cosT - zr * sinT;
+        double zrt = y * sinT + zr * cosT;
+
+        // Backface culling
+        if (zrt <= -0.1) return null;
+
+        // Screen projection
+        double r = radius * (1.0 + elevation * ELEVATION_SCALE * 0.00001);
+
+        ProjectedPoint p = new ProjectedPoint();
+        p.screenX = cx + xr * r;
+        p.screenY = cy - yrt * r;
+        p.z = zrt;
+        return p;
     }
 }

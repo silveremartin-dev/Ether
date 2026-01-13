@@ -6,7 +6,7 @@
  */
 package org.ether.society.ui;
 
-import org.ether.society.i18n.I18n;
+
 import org.ether.society.model.Scenario;
 
 import org.ether.society.procedural.PlanetPreset;
@@ -17,7 +17,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 

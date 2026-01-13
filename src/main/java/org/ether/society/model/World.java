@@ -27,10 +27,9 @@
  */
 package org.ether.society.model;
 
-import org.ether.society.config.Configuration;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+
+
 
 /**
  * Represents the simulation world grid containing cells and agents.
@@ -44,7 +43,7 @@ public class World {
     private final int width;
     private final int height;
     private Cell[][] grid;
-    private final List<Agent> agents = new CopyOnWriteArrayList<>();
+
 
     private double globalTemperatureOffset = 0.0;
     private double globalHarvestModifier = 1.0;
@@ -84,32 +83,7 @@ public class World {
         return null;
     }
 
-    /**
-     * Adds an agent to the world.
-     *
-     * @param agent Agent to add
-     */
-    public void addAgent(Agent agent) {
-        agents.add(agent);
-    }
 
-    /**
-     * Removes an agent from the world.
-     *
-     * @param agent Agent to remove
-     */
-    public void removeAgent(Agent agent) {
-        agents.remove(agent);
-    }
-
-    /**
-     * Gets all agents in the world.
-     *
-     * @return Thread-safe list of agents
-     */
-    public List<Agent> getAgents() {
-        return agents;
-    }
 
     // Getters and setters
 

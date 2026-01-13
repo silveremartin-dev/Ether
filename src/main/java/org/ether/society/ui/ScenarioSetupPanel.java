@@ -15,7 +15,7 @@ import org.ether.society.procedural.ElevationPreset;
 
 import org.ether.society.procedural.PlanetPreset;
 import org.ether.society.procedural.ProceduralGenerator;
-import org.ether.society.procedural.RealDataService;
+import org.ether.society.procedural.ExternalDataService;
 import org.ether.society.database.DataService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -95,7 +95,10 @@ public class ScenarioSetupPanel extends BorderPane {
 
     private void initUI() {
         setPadding(new Insets(20));
-        setStyle("-fx-background-color: #2c3e50;");
+        setPadding(new Insets(20));
+        // Use global glass panel style instead of dark material flat color
+        getStyleClass().add("glass-panel");
+        setStyle("-fx-background-color: transparent;");
 
         // Left: Configuration
         VBox configPane = createConfigPane();
@@ -118,7 +121,7 @@ public class ScenarioSetupPanel extends BorderPane {
         // 1. Scenario Details
         VBox section1 = new VBox(10);
         Label title1 = new Label("1. SCENARIO CONFIGURATION");
-        title1.setStyle("-fx-font-weight: bold; -fx-text-fill: #ecf0f1;");
+        title1.getStyleClass().add("label-header");
 
         // Load Saved Scenario
         HBox loadBox = new HBox(10);
@@ -186,7 +189,7 @@ public class ScenarioSetupPanel extends BorderPane {
         // 2. World Source
         VBox section2 = new VBox(10);
         Label title2 = new Label("2. WORLD GENERATION");
-        title2.setStyle("-fx-font-weight: bold; -fx-text-fill: #ecf0f1;");
+        title2.getStyleClass().add("label-header");
 
         sourceGroup = new ToggleGroup();
         sourceProcedural = new RadioButton("Procedural Generation");
@@ -387,7 +390,7 @@ public class ScenarioSetupPanel extends BorderPane {
         header.setAlignment(Pos.CENTER_LEFT);
 
         Label title = new Label("MAP PREVIEW");
-        title.setStyle("-fx-font-weight: bold; -fx-text-fill: #ecf0f1;");
+        title.getStyleClass().add("label-header");
 
         ToggleGroup viewGroup = new ToggleGroup();
         viewBiomeBtn = new ToggleButton("Biomes");
@@ -559,7 +562,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     PlanetPreset cfg = getPlanetPresetFromUI();
                     cells = new ProceduralGenerator().generatePlanet(cfg);
                 } else if (sourceReal.isSelected()) {
-                    cells = RealDataService.loadEarthData();
+                    cells = ExternalDataService.loadEarthData();
                 } else if (sourceLoad.isSelected()) {
                     String map = existingMapsCombo.getValue();
                     if (map != null) {

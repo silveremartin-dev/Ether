@@ -2,9 +2,9 @@ package org.ether.society.flux;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
-import org.ether.society.model.CivilizationAge;
 
-import java.util.HashMap;
+
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,8 +21,8 @@ public class FluxEngine {
 
     /**
      * Calculate Pressure for all cells.
-     * Pressure > 0: Surplus (Supply)
-     * Pressure < 0: Deficit (Demand)
+     * Pressure &gt; 0: Surplus (Supply)
+     * Pressure &lt; 0: Deficit (Demand)
      */
     public void calculatePressures(List<H3Cell> cells) {
         cells.parallelStream().forEach(cell -> {
@@ -99,7 +99,7 @@ public class FluxEngine {
     }
 
     private double calculateFoodPressure(H3Cell cell) {
-        double production = cell.getFoodResource(); // Current stock is proxy for production capacity + stock
+
         // Better: Pressure = (Supply - Demand) / Capacity
 
         // Simple heuristic:

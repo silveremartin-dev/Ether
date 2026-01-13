@@ -8,7 +8,7 @@ package org.ether.society.ui;
 
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
-import org.ether.society.i18n.I18n;
+
 import org.ether.society.model.Scenario;
 import javafx.geometry.Pos;
 import javafx.scene.control.Tab;
@@ -57,7 +57,8 @@ public class MainView extends StackPane {
 
     private void initUI() {
         tabPane = new TabPane();
-        tabPane.setStyle("-fx-tab-min-height: 40px; -fx-tab-max-height: 40px;");
+        // Transparent tab pane for glass effect
+        tabPane.setStyle("-fx-tab-min-height: 40px; -fx-tab-max-height: 40px; -fx-background-color: transparent;");
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         // 1. Setup Tab
@@ -86,6 +87,7 @@ public class MainView extends StackPane {
 
     private BorderPane createSimulationView() {
         BorderPane root = new BorderPane();
+        root.getStyleClass().add("glass-panel"); // Apply glass effect base
 
         // Map Container (Layered)
         StackPane mapStack = new StackPane();
@@ -135,11 +137,47 @@ public class MainView extends StackPane {
 
         // Connect Control Panel callbacks
         controlPanel.setOnAnalytics(this::showAnalytics);
+        controlPanel.setOnSave(this::saveGame);
+        controlPanel.setOnLoad(this::loadGame);
+        controlPanel.setOnContourToggle(show -> mapCanvas.toggleContours(show));
+        controlPanel.setOnTimelapseRecord(this::toggleTimelapseRecording);
+        controlPanel.setOnTimelapseSeek(this::seekTimelapse);
 
         root.setCenter(mapStack);
         root.setBottom(controlPanel);
 
         return root;
+    }
+
+    // --- Timelapse Recording State ---
+    private boolean isRecording = false;
+
+    private void toggleTimelapseRecording() {
+        isRecording = !isRecording;
+        if (isRecording) {
+            logger.info("Timelapse recording STARTED");
+            // Initial snapshot
+            engine.getHistoryManager().captureWorldSnapshot(engine);
+        } else {
+            logger.info("Timelapse recording STOPPED");
+            // Update slider range
+            var snapshots = engine.getHistoryManager().getWorldSnapshots();
+            if (!snapshots.isEmpty()) {
+                int minYear = snapshots.firstKey();
+                int maxYear = snapshots.lastKey();
+                controlPanel.updateTimelapseSlider(minYear, maxYear, maxYear);
+            }
+        }
+    }
+
+    private void seekTimelapse(int year) {
+        var snapshot = engine.getHistoryManager().getWorldSnapshot(year);
+        if (snapshot != null) {
+            mapCanvas.setCells(snapshot);
+            miniMap.setCells(snapshot);
+            controlPanel.updateYear(String.valueOf(year));
+            logger.info("Timelapse seek to year: {}", year);
+        }
     }
 
     private void onStartSimulation(Scenario scenario) {
@@ -231,5 +269,29 @@ public class MainView extends StackPane {
         dialog.setOnHidden(e -> updater.stop());
 
         dialog.show();
+    }
+
+    public void saveGame() {
+        // Prompt for save name
+        javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog("My Save");
+        dialog.setTitle("Save Game");
+        dialog.setHeaderText("Enter name for this save:");
+        dialog.setContentText("Name:");
+
+        dialog.showAndWait().ifPresent(name -> {
+            engine.saveGame(name);
+            notificationOverlay.showEvent("Game Saved: " + name);
+        });
+    }
+
+    public void loadGame() {
+        // Simple Load (MVP: just load from DB)
+        // In future: Show list of saves
+        engine.loadGame(null);
+        notificationOverlay.showEvent("Game Loaded from Database");
+        
+        // Refresh UI
+        mapCanvas.setCells(engine.getCells());
+        miniMap.setCells(engine.getCells());
     }
 }

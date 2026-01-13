@@ -1,208 +1,109 @@
+# Ether - Human Society Simulation (v2.0)
 
-## Features
+![Java](https://img.shields.io/badge/Java-21-orange.svg)
+![Build](https://img.shields.io/badge/Build-Maven-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)
 
-### 🌍 Dynamic World Simulation
-- **Procedural Terrain Generation**: Realistic elevation, biomes, and climate zones
-- **Seasonal Climate System**: Temperature variations, rainfall patterns, and seasonal effects
-- **Resource Management**: Food, wood, metals, fossils with renewal and depletion mechanics
-- **Random Events**: Volcanic eruptions, earthquakes affecting global climate
+**Ether** is a high-performance, agent-based simulation modeling the evolution of human society from 20,000 BCE to the modern era. It utilizes grid-based density simulation (Artemis Layer) on a hexagonal Earth grid (Uber H3) to simulate population dynamics, climate change, resource management, and the rise of civilizations.
 
-### 👥 Agent-Based Population
-- **Humans**: Individual agents with genetics, culture, needs, and behaviors
-- **Animals**: Livestock (cows, chickens, sheep, horses) and wild game
-- **Behaviors**: Gathering, hunting, farming, reproduction, migration
-- **Genetics**: Unique identifiers reflecting genetic proximity
-- **Culture**: Cultural attachment and diffusion mechanics
+---
 
-### 📊 Statistics & Analysis
-- **Population Tracking**: Real-time population graphs
-- **Economic Indicators**: Gini coefficient, resource distribution
-- **Biomass Calculation**: Track total biomass across species
-- **Energy Metrics**: Energy per capita, technological efficiency
-- **Information Diffusion**: Track communication speed (roads, horses, telegraph, internet)
+## 🚀 Key Features
 
-### 🖥️ Modern User Interface
-- **Responsive Design**: Adaptive layout for different screen sizes
-- **Interactive Map**: Pan, zoom, and hover for detailed information
-- **Real-time Controls**: Start, pause, speed adjustment (1x, 5x, 20x)
-- **Statistics Dashboard**: Charts and graphs for key metrics
-- **Internationalization**: English, French, Spanish, German
+### 🌍 Simulation Engine (Artemis)
+-   **H3 Hexagonal Grid**: High-precision geospatial grid (Resolution 6-8).
+-   **Density Dynamics**: Simulates millions of humans via statistical density rather than individual agents.
+-   **Climate System**: Realistic seasonal cycles, temperature gradients, and rainfall simulation based on latitude and elevation.
+-   **Procedural Generation**: Generate Earth-like worlds with realistic biomes (Tundra, Jungle, Desert, etc.).
 
-### 🎯 Advanced Features
-- **Multithreading**: Efficient simulation using Java Virtual Threads
-- **Configuration**: JSON-based world generation and simulation parameters
-- **Save/Load**: Persistent simulation states
-- **Comprehensive Logging**: Timestamped logs for debugging and analysis
-- **Extensive Testing**: 70%+ code coverage with unit and integration tests
+### 🖥️ Premium Visualization
+-   **Glassmorphism UI**: Modern, translucent interface with neon accents and smooth transitions.
+-   **3D Isometric View**: Toggle between 2D map and 3D terrain Visualization.
+-   **Data Layers**: Switch views to see Biomes, Population Heatmaps, Temperature Gradients, or Food Density.
+-   **Interactive Controls**: Zoom, Pan, Rotate, and inspect cell details.
 
-## Requirements
+### 💾 Persistence & Data
+-   **Save/Load System**: Persist world states to database and JSON metadata.
+-   **Real Earth Data**: Capable of ingesting SRTM (Elevation) and WorldClim data for realistic Earth simulation.
 
-- **Java**: JDK 21 or higher ([Download](https://adoptium.net/))
-- **Maven**: 3.9+ ([Download](https://maven.apache.org/download.cgi))
+### 🌐 Internationalization
+-   Native support for **English**, **French**, **German**, and **Spanish**.
 
-## Quick Start
+---
+
+## 🛠️ Getting Started
+
+### Prerequisites
+-   **Java 21 JDK** or higher.
+-   **Maven 3.9+**.
+-   (Optional) **PostGreSQL** for advanced persistence (default uses H2/File).
 
 ### Installation
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/Start-Z/Ether.git
+    cd Ether
+    ```
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/ether-society-simulation.git
-cd ether-society-simulation
+2.  **Build the project**:
+    ```bash
+    mvn clean install
+    ```
 
-# Build the project
-mvn clean install
+3.  **Run the Simulation**:
+    ```bash
+    mvn javafx:run
+    ```
 
-# Run the application
-mvn javafx:run
-```
+---
 
-### Running Tests
+## 🗺️ Roadmap & Progress
 
-```bash
-# Run all tests
-mvn test
+| Phase | Feature | Status |
+| :--- | :--- | :--- |
+| **Phases 1-3** | Core Architecture & Infrastructure | ✅ Complete |
+| **Phases 4-6** | H3 Grid & Procedural Generation | ✅ Complete |
+| **Phase 7** | UI & Visualization (3D/2D) | ✅ Complete |
+| **Phase 8** | Internationalization (i18n) | ✅ Complete |
+| **Phase 9** | Testing & Benchmarking | ✅ Complete |
+| **Phase 10** | Persistence (Save/Load) | ✅ Complete |
+| **Phase 11** | Real Earth Data Ingestion | ✅ Complete |
+| **Phase 12** | UI Polish (Glassmorphism) | ✅ Complete |
+| **Phase 13** | GPU Acceleration (TornadoVM) | ⏳ Planned |
+| **Phase 14** | Advanced Diplomacy AI | ⏳ Planned |
 
-# Run with coverage
-mvn clean test jacoco:report
-# Coverage report at target/site/jacoco/index.html
-```
+---
 
-### Building Distribution
+## 🎮 Controls
 
-```bash
-# Create executable JAR
-mvn clean package
+| Action | Control |
+| :--- | :--- |
+| **Pan** | Left-Click + Drag |
+| **Rotate** | Right-Click + Drag (3D Mode) |
+| **Zoom** | Mouse Wheel |
+| **Select** | Left-Click on Cell |
+| **Toggle View** | Button in Control Panel (2D/3D) |
+| **Speed** | 1x, 5x, 20x Buttons |
 
-# Run standalone JAR
-java -jar target/society-simulation-2.0.0.jar
-```
+---
 
-## Usage
+## 🤝 Contributing
 
-### Basic Controls
-- **Start**: Begin the simulation from 20,000 BC
-- **Pause**: Pause the simulation
-- **Speed**: Adjust simulation speed (1x, 5x, 20x)
-- **Reset**: Restart from the beginning
+Contributions are welcome! Please read `CONTRIBUTING.md` (if available) or submit a Pull Request.
 
-### Map Interaction
-- **Hover**: Show detailed cell information (biome, temperature, resources, population)
-- **Pan**: Drag to navigate the map
-- **Zoom**: Use mouse wheel to zoom in/out
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
 
-### Menu Options
-- **File**: New simulation, Load, Save, Exit
-- **View**: Toggle layers (temperature, resources, population density)
-- **Simulation**: Settings, pause, reset
-- **Help**: User guide, about, credits
+---
 
-## Configuration
+## 📄 License
 
-Edit `src/main/resources/config/default-config.json` to customize:
-- World size and generation parameters
-- Starting population and resources
-- Climate settings
-- Event probabilities
+Distributed under the **MIT License**. See `LICENSE` for more information.
 
-Example:
-```json
-{
-  "world": {
-    "width": 100,
-    "height": 100,
-    "seed": 12345
-  },
-  "simulation": {
-    "startYear": -20000,
-    "tickRate": 1000
-  }
-}
-```
-
-## Architecture
-
-```
-src/
-├── main/
-│   ├── java/com/ether/society/
-│   │   ├── core/          # Simulation engine
-│   │   ├── model/         # Domain models
-│   │   ├── simulation/    # Simulation features
-│   │   ├── agent/         # Agent behaviors
-│   │   ├── ui/            # JavaFX interface
-│   │   ├── i18n/          # Internationalization
-│   │   ├── config/        # Configuration
-│   │   └── util/          # Utilities
-│   └── resources/
-│       ├── config/        # JSON configs
-│       ├── i18n/          # Translation files
-│       └── css/           # Stylesheets
-└── test/                  # Test suites
-```
-
-## Documentation
-
-- [User Guide](docs/USER_GUIDE.md) - How to use the application
-- [Developer Guide](docs/DEVELOPER_GUIDE.md) - Development setup and contribution
-- [Architecture](docs/ARCHITECTURE.md) - Design decisions and patterns
-- [API Documentation](docs/API.md) - Code API reference
-- [Specifications](SPECIFICATIONS.md) - Technical specifications
-
-## Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Testing
-
-The project maintains high code quality with extensive testing:
-- **Unit Tests**: Core logic and components
-- **Integration Tests**: Full simulation cycles
-- **Performance Tests**: Large-scale scenarios
-
-Run tests with: `mvn test`
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Authors
-
-- **Silvere Martin-Michiellot** - *Initial work and design* - [silvere.martin@gmail.com](mailto:silvere.martin@gmail.com)
-- **AI Assistant (Antigravity/Claude)** - *Development assistance*
-
-## Acknowledgments
-
-- SugarScape model by Joshua M. Epstein and Robert Axtell
-- JavaFX community for UI framework
-- Open source contributors
-
-## Roadmap
-
-### Version 2.0 (Current)
-- ✅ Modern Java 21 features
-- ✅ Comprehensive UI with internationalization
-- ✅ Multithreading with Virtual Threads
-- ✅ Extensive test coverage
-
-### Future Versions
-- 🔲 3D visualization option
-- 🔲 Multiplayer simulation
-- 🔲 Advanced AI for agent decision-making
-- 🔲 Historical event scenarios
-- 🔲 Climate change modeling
-
-## Support
-
-For questions and support:
-- Open an [issue](https://github.com/yourusername/ether-society-simulation/issues)
-- Email: [silvere.martin@gmail.com](mailto:silvere.martin@gmail.com)
-
-## Project Status
-
-🚧 **Active Development** - Version 2.0 in progress
+**Authors**:
+-   **Silvere Martin-Michiellot**
+-   **Gemini AI (Google DeepMind)**
