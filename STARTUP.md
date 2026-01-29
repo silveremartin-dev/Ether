@@ -4,12 +4,12 @@ This directory contains convenience scripts for starting the simulation with its
 
 ## Windows Scripts
 
-### `start.bat` - Full Startup (Recommended)
+### `start-docker.bat` - Full Startup (Recommended)
 Starts PostgreSQL database via Docker Compose and launches the application.
 
 **Usage:**
 ```batch
-start.bat
+start-docker.bat
 ```
 
 **What it does:**
@@ -34,12 +34,12 @@ Stops the PostgreSQL database container.
 stop.bat
 ```
 
-### `db-status.bat` - Status Check
+### `database-status.bat` - Status Check
 Shows database container status.
 
 **Usage:**
 ```batch
-db-status.bat
+database-status.bat
 ```
 
 ## Prerequisites
@@ -50,7 +50,7 @@ db-status.bat
 
 ## Database Connection
 
-When using `start.bat`, the application will have access to:
+When using `start-docker.bat`, the application will have access to:
 - **Host:** localhost
 - **Port:** 54320
 - **Database:** ether_simulation
@@ -62,15 +62,15 @@ When using `start.bat`, the application will have access to:
 ### "Docker is not running"
 - Open Docker Desktop
 - Wait for it to fully start
-- Run `start.bat` again
+- Run `start-docker.bat` again
 
 ### "Database is not ready" (timeout)
 - Check Docker Desktop for errors
 - Run `docker-compose logs postgres` to see database logs
-- Try `docker-compose down` then `start.bat` again
+- Try `docker-compose down` then `start-docker.bat` again
 
 ### Application fails to connect
-- Verify database is running: `db-status.bat`
+- Verify database is running: `database-status.bat`
 - Check port 54320 is not in use by another application
 - Review application logs for connection errors
 

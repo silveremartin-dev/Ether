@@ -30,6 +30,10 @@ public class H3CellRepository {
      * Save a single H3Cell.
      */
     public void save(H3Cell cell) {
+        if (emf == null) {
+            logger.warn("Database unavailable - skipping save for cell {}", cell.getH3Index());
+            return;
+        }
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -55,6 +59,10 @@ public class H3CellRepository {
      * Save multiple H3Cells in batch.
      */
     public void saveAll(List<H3Cell> cells) {
+        if (emf == null) {
+            logger.warn("Database unavailable - skipping batch save of {} cells", cells.size());
+            return;
+        }
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -87,6 +95,7 @@ public class H3CellRepository {
      * Find H3Cell by ID.
      */
     public Optional<H3Cell> findById(Long id) {
+        if (emf == null) return Optional.empty();
         EntityManager em = emf.createEntityManager();
         try {
             H3Cell cell = em.find(H3Cell.class, id);
@@ -100,6 +109,7 @@ public class H3CellRepository {
      * Find H3Cell by H3 index.
      */
     public Optional<H3Cell> findByH3Index(long h3Index) {
+        if (emf == null) return Optional.empty();
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<H3Cell> query = em.createQuery(
@@ -116,6 +126,7 @@ public class H3CellRepository {
      * Find all H3Cells within lat/lng bounds.
      */
     public List<H3Cell> findByBounds(double minLat, double maxLat, double minLng, double maxLng) {
+        if (emf == null) return java.util.Collections.emptyList();
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<H3Cell> query = em.createQuery(
@@ -136,6 +147,7 @@ public class H3CellRepository {
      * Find all H3Cells (use with caution - can be large!).
      */
     public List<H3Cell> findAll() {
+        if (emf == null) return java.util.Collections.emptyList();
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<H3Cell> query = em.createQuery("SELECT c FROM H3Cell c", H3Cell.class);
@@ -149,6 +161,7 @@ public class H3CellRepository {
      * Count total H3Cells.
      */
     public long count() {
+        if (emf == null) return 0;
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Long> query = em.createQuery("SELECT COUNT(c) FROM H3Cell c", Long.class);
@@ -162,6 +175,7 @@ public class H3CellRepository {
      * Delete all H3Cells (use with caution!).
      */
     public void deleteAll() {
+        if (emf == null) return;
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

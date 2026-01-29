@@ -30,6 +30,10 @@ public class WorldMapRepository {
      * Save a WorldMap.
      */
     public void save(WorldMap map) {
+        if (emf == null) {
+            logger.warn("Database unavailable - skipping save for map {}", map.getName());
+            return;
+        }
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -55,6 +59,7 @@ public class WorldMapRepository {
      * Find WorldMap by ID.
      */
     public Optional<WorldMap> findById(Long id) {
+        if (emf == null) return Optional.empty();
         EntityManager em = emf.createEntityManager();
         try {
             WorldMap map = em.find(WorldMap.class, id);
@@ -68,6 +73,7 @@ public class WorldMapRepository {
      * Find WorldMap by name.
      */
     public Optional<WorldMap> findByName(String name) {
+        if (emf == null) return Optional.empty();
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<WorldMap> query = em.createQuery(
@@ -84,6 +90,7 @@ public class WorldMapRepository {
      * Find all WorldMaps.
      */
     public List<WorldMap> findAll() {
+        if (emf == null) return java.util.Collections.emptyList();
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<WorldMap> query = em.createQuery("SELECT m FROM WorldMap m", WorldMap.class);
@@ -97,6 +104,7 @@ public class WorldMapRepository {
      * Delete a WorldMap.
      */
     public void delete(Long id) {
+        if (emf == null) return;
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

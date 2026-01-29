@@ -79,8 +79,9 @@ public class DatabaseConfig {
             logger.info("EntityManagerFactory created successfully");
             return emf;
         } catch (Exception e) {
-            logger.error("Failed to create EntityManagerFactory", e);
-            throw new RuntimeException("Could not create EntityManagerFactory", e);
+            logger.error("Failed to create EntityManagerFactory: {}", e.getMessage());
+            // Return null instead of throwing, to allow offline mode
+            return null;
         }
     }
 
@@ -103,8 +104,7 @@ public class DatabaseConfig {
      */
     public static boolean isDatabaseAvailable() {
         try {
-            getEntityManagerFactory();
-            return true;
+            return getEntityManagerFactory() != null;
         } catch (Exception e) {
             logger.warn("Database not available: {}", e.getMessage());
             return false;

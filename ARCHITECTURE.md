@@ -1,7 +1,7 @@
 # 🏗️ Ether Simulation - Technical Architecture
 
 **Version:** 2.0.0-SNAPSHOT  
-**Last Updated:** November 23, 2025
+**Last Updated:** January 29, 2026
 
 ---
 
@@ -11,48 +11,34 @@
 ┌─────────────────────────────────────────────────────────┐
 │                     UI Layer (JavaFX)                   │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
-│  │ ControlPanel │  │ H3MapCanvas  │  │ StatsPanel   │ │
-│  │              │  │  - 2D View   │  │  (planned)   │ │
+│  │ ControlPanel │  │ H3MapCanvas  │  │ Performance  │ │
+│  │              │  │  - 2D View   │  │    HUD       │ │
 │  │ - Start/Pause│  │  - 3D View   │  │              │ │
 │  │ - Speed      │  │  - Biomes    │  │              │ │
-│  │ - 2D/3D      │  │              │  │              │ │
+│  │ - 2D/3D      │  │  - Contours  │  │              │ │
 │  └──────────────┘  └──────────────┘  └──────────────┘ │
 └────────────────────────┬────────────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────────────┐
 │                  Simulation Layer                       │
 │  ┌──────────────────────────────────────────────────┐  │
-│  │ ISimulationEngine (interface)                    │  │
-│  │  ├─ SimulationEngine (grid-based, legacy)        │  │
-│  │  └─ H3SimulationEngine (hexagon-based) ✅        │  │
-│  │     ├─ TimeManager                               │  │
-│  │     ├─ EventBus                                  │  │
-│  │     └─ EventManager                              │  │
+│  │ H3SimulationEngine (orchestrator)                │  │
+│  │     ├─ ArtemisSimulationEngine (density flow)    │  │
+│  │     ├─ H3ClimateSystem (seasonal cycles)         │  │
+│  │     ├─ PoliticalSimulationEngine (nations)       │  │
+│  │     ├─ AgentManager (individual entities)        │  │
+│  │     └─ TimeManager (20k BCE to Present)          │  │
 │  └──────────────────────────────────────────────────┘  │
 └────────────────────────┬────────────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────────────┐
-│                    Data Layer                           │
+│             Data & Persistence Layer                    │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
+│  │ DataService  │  │   PostGIS    │  │    Redis     │ │
+│  │  (Orchestrer)│  │ (Spatial DB) │  │   (Cache)    │ │
+│  └──────────────┘  └──────────────┘  └──────────────┘ │
 │  ┌──────────────────────────────────────────────────┐  │
-│  │ SampleDataGenerator                              │  │
-│  │  └─ generateEuropeSample() → 175k H3Cell        │  │
-│  ├──────────────────────────────────────────────────┤  │
-│  │ H3GridInitializer (planned for DB)               │  │
-│  └──────────────────────────────────────────────────┘  │
-└────────────────────────┬────────────────────────────────┘
-                         │
-┌────────────────────────▼────────────────────────────────┐
-│                 Geospatial Layer                        │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │ H3Service (wrapper around H3Core)                │  │
-│  │  ├─ latLngToCell(lat, lng) → h3Index            │  │
-│  │  ├─ cellToLatLng(h3Index) → LatLng              │  │
-│  │  ├─ gridDisk(h3Index, k) → neighbors            │  │
-│  │  └─ h3ToString(h3Index) → "881f1a48c7fffff"     │  │
-│  └──────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │ Uber H3 4.1.1 (non-modular JAR)                  │  │
-│  │  - Accessed via --add-reads=ALL-UNNAMED          │  │
+│  │ ExternalDataService (SRTM/Map Loading)           │  │
 │  └──────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
 ```

@@ -31,6 +31,7 @@ public class ControlPanel extends HBox {
     private H3MapCanvas mapCanvas; // Reference to canvas for view toggle
     private MiniMap miniMap; // Reference to mini-map
     private ColorLegend colorLegend; // Reference to color legend
+    private final Label dbStatusLabel; // Database connection indicator
 
     // UI Controls that need text updates
     private final Button startBtn;
@@ -236,9 +237,13 @@ public class ControlPanel extends HBox {
                 onTimelapseSeek.accept(newVal.intValue());
             }
         });
-        
         timelapseLabel = new Label("Year: -");
         timelapseLabel.setStyle("-fx-text-fill: #90caf9;");
+
+        // Database Status Label
+        dbStatusLabel = new Label("DB: Checking...");
+        dbStatusLabel.getStyleClass().add("status-label");
+        // Style will be updated in updateDatabaseStatus
 
         yearLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
 
@@ -247,7 +252,7 @@ public class ControlPanel extends HBox {
                 speed1x, speed5x,
                 speed20x,
                 viewToggle, displayToggle, miniMapToggle, contourToggle, recordToggle, timelapseSlider, timelapseLabel,
-                analyticsBtn, langLabel, langCombo);
+                analyticsBtn, dbStatusLabel, langLabel, langCombo);
 
         // Initial text update
         updateTexts();
@@ -410,5 +415,20 @@ public class ControlPanel extends HBox {
 
     public void updateAge(String ageName) {
         ageLabel.setText(ageName);
+    }
+
+    /**
+     * Update the database status indicator.
+     */
+    public void updateDatabaseStatus(boolean online) {
+        if (online) {
+            dbStatusLabel.setText("DB: ONLINE");
+            dbStatusLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
+            dbStatusLabel.setTooltip(new Tooltip("PostgreSQL/PostGIS is connected"));
+        } else {
+            dbStatusLabel.setText("DB: OFFLINE");
+            dbStatusLabel.setStyle("-fx-text-fill: #f44336; -fx-font-weight: bold;");
+            dbStatusLabel.setTooltip(new Tooltip("Database disconnected - simulation running in offline mode"));
+        }
     }
 }

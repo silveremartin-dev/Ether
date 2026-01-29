@@ -141,6 +141,9 @@ public class EtherApp extends Application {
         // Listen for language changes
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
 
+        // Initial DB status check
+        controlPanel.updateDatabaseStatus(org.ether.society.database.DatabaseConfig.isDatabaseAvailable());
+
         // Render loop
         AnimationTimer timer = new AnimationTimer() {
             private String lastYear = "";
