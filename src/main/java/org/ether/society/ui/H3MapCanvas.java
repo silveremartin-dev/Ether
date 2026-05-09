@@ -42,6 +42,7 @@ public class H3MapCanvas extends Canvas {
     private static final Logger logger = LoggerFactory.getLogger(H3MapCanvas.class);
 
     private List<H3Cell> cells;
+    private org.ether.society.core.dod.WorldBuffer worldBuffer;
     private Map<Long, H3Cell> cellMap; // Fast lookup for neighbors
     private ViewMode viewMode = ViewMode.VIEW_2D;
     private DisplayMode displayMode = DisplayMode.BIOME;
@@ -229,6 +230,11 @@ public class H3MapCanvas extends Canvas {
         draw();
     }
 
+    public void setWorldBuffer(org.ether.society.core.dod.WorldBuffer buffer) {
+        this.worldBuffer = buffer;
+        draw();
+    }
+
     public void draw() {
         if (cells == null || cells.isEmpty()) {
             return;
@@ -282,7 +288,14 @@ public class H3MapCanvas extends Canvas {
 
         if (cell != null && cell != hoveredCell) {
             hoveredCell = cell;
-            tooltip.updateCell(cell);
+            if (worldBuffer != null) {
+                // Find index of this cell in the buffer
+                // Note: we assume the list 'cells' is the same one used to populate the buffer
+                int index = cells.indexOf(cell); 
+                tooltip.updateFromBuffer(worldBuffer, index);
+            } else {
+                tooltip.updateCell(cell);
+            }
             tooltip.position(sceneX, sceneY,
                     tooltipContainer.getWidth(),
                     tooltipContainer.getHeight());
@@ -349,10 +362,6 @@ public class H3MapCanvas extends Canvas {
             if (cell.getLatitude() > cullMaxLat)
                 break; // Sorted, so we can stop
 
-            // Longitude check (simple range check)
-            // Longitude wrapping makes this harder, so we just skip raw bounds check for
-            // now onLng
-
             double x = (cell.getLongitude() - minLng) * scale + offsetX;
             double y = (maxLat - cell.getLatitude()) * scale + offsetY;
 
@@ -361,7 +370,13 @@ public class H3MapCanvas extends Canvas {
                 continue;
             }
 
-            Color color = getCellColor(cell);
+            Color color;
+            if (worldBuffer != null) {
+                color = getBufferCellColor(i);
+            } else {
+                color = getCellColor(cell);
+            }
+            
             gc.setFill(color);
             gc.fillOval(x - 1, y - 1, 2, 2);
         }
@@ -529,6 +544,29 @@ public class H3MapCanvas extends Canvas {
             case CULTURE -> getCultureColor(cell);
             case POLITICAL -> getPoliticalColor(cell);
         };
+    }
+
+    private Color getBufferCellColor(int index) {
+        if (worldBuffer == null) return Color.BLACK;
+
+        return switch (displayMode) {
+            case BIOME -> getBiomeColor(org.ether.society.model.Biome.values()[worldBuffer.getBiomes()[index]]);
+            case POPULATION -> getPopulationColor((int)worldBuffer.getBiomassHuman()[index]);
+            case FOOD -> getFoodColor(worldBuffer.getFoodResource()[index]);
+            case TEMPERATURE -> getTemperatureColor(worldBuffer.getTemperature()[index]);
+            case TECHNOLOGY -> getTechColor((double)worldBuffer.getTechnologyLevel()[index]);
+            case WATER -> getWaterColor((double)worldBuffer.getWaterResource()[index]);
+            case WOOD -> getWoodColor((double)worldBuffer.getWoodResource()[index]);
+            case INEQUALITY -> getGiniColor((double)worldBuffer.getGiniIndex()[index]);
+            case FLUX -> getPriceColor(worldBuffer.getLocalPrice()[index]);
+            default -> Color.MAGENTA;
+        };
+    }
+
+    private Color getPriceColor(float price) {
+        // Higher price = more red
+        float normalized = Math.min(1.0f, price / 10.0f);
+        return Color.color(normalized, 1.0f - normalized, 0);
     }
 
     private Color getPoliticalColor(H3Cell cell) {

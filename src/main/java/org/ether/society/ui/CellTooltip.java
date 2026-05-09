@@ -82,28 +82,55 @@ public class CellTooltip extends VBox {
             return;
         }
 
-        // Format and display each field
         biomeLabel.setText(String.format("%-12s %s", I18n.get("ui.tooltip.biome"),
                 getBiomeName(cell.getBiome().name())));
 
         elevationLabel.setText(String.format("%-12s %,d m", I18n.get("ui.tooltip.elevation"),
                 cell.getElevation() != null ? cell.getElevation().intValue() : 0));
 
-        temperatureLabel.setText(String.format("%-12s %.1fÂ°C", I18n.get("ui.tooltip.temperature"),
+        temperatureLabel.setText(String.format("%-12s %.1f°C", I18n.get("ui.tooltip.temperature"),
                 cell.getTemperature() != null ? cell.getTemperature() : 0.0));
 
         rainfallLabel.setText(String.format("%-12s %,d mm/year", I18n.get("ui.tooltip.rainfall"),
                 cell.getRainfall() != null ? cell.getRainfall().intValue() : 0));
 
-        // Format coordinates with hemisphere indicators
         String latDir = cell.getLatitude() >= 0 ? "N" : "S";
         String lngDir = cell.getLongitude() >= 0 ? "E" : "W";
-        coordLabel.setText(String.format("%-12s %.4fÂ°%s, %.4fÂ°%s", I18n.get("ui.tooltip.coords"),
+        coordLabel.setText(String.format("%-12s %.4f°%s, %.4f°%s", I18n.get("ui.tooltip.coords"),
                 Math.abs(cell.getLatitude()), latDir,
                 Math.abs(cell.getLongitude()), lngDir));
 
         h3Label.setText(String.format("%-12s %s", I18n.get("ui.tooltip.h3"),
                 cell.getH3Index()));
+
+        setVisible(true);
+    }
+
+    /**
+     * Update tooltip from DOD buffers.
+     */
+    public void updateFromBuffer(org.ether.society.core.dod.WorldBuffer world, int index) {
+        if (world == null || index < 0) {
+            setVisible(false);
+            return;
+        }
+
+        biomeLabel.setText(String.format("%-12s %s", I18n.get("ui.tooltip.biome"),
+                getBiomeName(org.ether.society.model.Biome.values()[world.getBiomes()[index]].name())));
+
+        elevationLabel.setText(String.format("%-12s %,d m", I18n.get("ui.tooltip.elevation"),
+                (int)world.getElevation()[index]));
+
+        temperatureLabel.setText(String.format("%-12s %.1f°C", I18n.get("ui.tooltip.temperature"),
+                world.getTemperature()[index]));
+
+        rainfallLabel.setText(String.format("%-12s %,d mm/year", I18n.get("ui.tooltip.rainfall"),
+                (int)world.getRainfall()[index]));
+
+        coordLabel.setText(String.format("%-12s Pop: %.1f", "Density", world.getBiomassHuman()[index]));
+
+        h3Label.setText(String.format("%-12s %s", I18n.get("ui.tooltip.h3"),
+                world.getH3Indexes()[index]));
 
         setVisible(true);
     }
@@ -160,4 +187,3 @@ public class CellTooltip extends VBox {
         setVisible(false);
     }
 }
-

@@ -33,46 +33,43 @@ public class HistoryManager {
     public void captureSnapshot(H3SimulationEngine engine) {
         int year = engine.getTimeManager().getCurrentYear();
         int month = engine.getTimeManager().getCurrentMonth();
-        List<H3Cell> cells = engine.getCells();
+        org.ether.society.core.dod.WorldBuffer world = engine.getWorldBuffer();
+
+        if (world == null) return;
 
         long totalPop = 0;
         double totalFood = 0;
         double totalCapital = 0;
         double sumLifespan = 0;
         double sumTech = 0;
-
-        // Naive Gini Calc requires list of wealths, simplified global accumulation for
-        // now
-        // For MVP, just tracking basic aggregates.
-
         long populatedCount = 0;
 
-        for (H3Cell c : cells) {
-            totalPop += c.getPopulation();
-            totalFood += c.getFoodResource();
-            totalCapital += c.getResourceCapital();
+        float[] pop = world.getBiomassHuman();
+        float[] food = world.getFoodResource();
+        float[] capital = world.getResourceCapital();
+        float[] lifespan = world.getLifespan();
+        float[] tech = world.getTechnologyLevel();
 
-            if (c.getPopulation() > 0) {
-                sumLifespan += c.getLifespan();
-                sumTech += c.getTechnologyLevel();
+        for (int i = 0; i < world.getCapacity(); i++) {
+            totalPop += (long)pop[i];
+            totalFood += food[i];
+            totalCapital += capital[i];
+
+            if (pop[i] > 0.1f) {
+                sumLifespan += lifespan[i];
+                sumTech += tech[i];
                 populatedCount++;
             }
         }
 
         double avgLifespan = (populatedCount > 0) ? sumLifespan / populatedCount : 0;
         double avgTech = (populatedCount > 0) ? sumTech / populatedCount : 0;
-
-        // Placeholder Gini (actual calculation is expensive O(N log N) or needs
-        // histogram)
-        // We'll skip Gini for this MVP snapshot to keep tick fast.
         double dummyGini = 0.0;
 
         HistorySnapshot snapshot = new HistorySnapshot(
                 year, month, totalPop, totalFood, totalCapital, avgLifespan, dummyGini, avgTech);
 
         history.addSnapshot(snapshot);
-        // logger.debug("Captured history snapshot: Year {}", year);
-        // logger.debug("Captured history snapshot: Year {}", year);
     }
 
     /**

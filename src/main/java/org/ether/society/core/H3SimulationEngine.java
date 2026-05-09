@@ -8,7 +8,6 @@ package org.ether.society.core;
 import org.ether.society.config.Configuration;
 import org.ether.society.data.SampleDataGenerator;
 import org.ether.society.database.H3Cell;
-import org.ether.society.density.ArtemisSimulationEngine;
 import org.ether.society.density.H3ClimateSystem;
 import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
@@ -41,7 +40,6 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     // Density-based simulation systems
     private final H3ClimateSystem climateSystem;
-    private final ArtemisSimulationEngine densityEngine;
     private final org.ether.society.agents.AgentManager agentManager;
     private final org.ether.society.gpu.GPUManager gpuManager;
 
@@ -49,6 +47,24 @@ public class H3SimulationEngine implements ISimulationEngine {
     private final org.ether.society.diplomacy.DiplomacyManager diplomacyManager;
     private final org.ether.society.diplomacy.PoliticalSimulationEngine politicalEngine;
     private final GameSaveManager gameSaveManager;
+
+    // DOD Layer
+    private org.ether.society.core.dod.WorldBuffer worldBuffer;
+    private org.ether.society.core.dod.AgentBuffer agentBuffer;
+    private org.ether.society.flux.FluxEngine fluxEngine;
+    private org.ether.society.core.dod.DemographicKernel demographicKernel;
+    private org.ether.society.core.dod.UrbanKernel urbanKernel;
+    private org.ether.society.core.dod.CultureKernel cultureKernel;
+    private org.ether.society.core.dod.EnvironmentalKernel environmentalKernel;
+    private org.ether.society.core.dod.StatisticsKernel statisticsKernel;
+
+    private long lastTickTime = 0;
+    private double currentTPS = 0;
+    private float currentGini = 0;
+    private float currentGDP = 0;
+    private float currentLifeExpectancy = 0;
+    private float currentFertility = 0;
+    private int[] densityDistribution = new int[20]; // 20 bins
 
     private List<H3Cell> cells;
     private Scenario currentScenario;
@@ -62,13 +78,6 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.timeManager = new TimeManager(config.simulation().startYear());
         this.eventSystem = new org.ether.society.events.EventSystem();
         this.climateSystem = new H3ClimateSystem();
-        this.densityEngine = new ArtemisSimulationEngine();
-        this.densityEngine.setEventSystem(this.eventSystem); // Inject EventSystem
-        // Initialize AgentManager - need H3Service which isn't here?
-        // Actually H3SimulationEngine creates data or loads it.
-        // We'll create H3Service instance if not passed, or just instantiate logic.
-        // Assuming H3Service is singleton or accessible.
-        // Initialize AgentManager
         this.agentManager = new org.ether.society.agents.AgentManager(org.ether.society.h3.H3Service.getInstance());
 
         // Initialize GPU Manager
@@ -83,6 +92,13 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.politicalEngine = new org.ether.society.diplomacy.PoliticalSimulationEngine(this.diplomacyManager);
         this.gameSaveManager = new GameSaveManager();
 
+        this.fluxEngine = new org.ether.society.flux.FluxEngine();
+        this.demographicKernel = new org.ether.society.core.dod.DemographicKernel();
+        this.urbanKernel = new org.ether.society.core.dod.UrbanKernel();
+        this.cultureKernel = new org.ether.society.core.dod.CultureKernel();
+        this.environmentalKernel = new org.ether.society.core.dod.EnvironmentalKernel();
+        this.statisticsKernel = new org.ether.society.core.dod.StatisticsKernel();
+
         initialize();
     }
 
@@ -95,8 +111,14 @@ public class H3SimulationEngine implements ISimulationEngine {
         // Generate sample data for Europe
         this.cells = SampleDataGenerator.generateEuropeSample();
 
-        // Initialize some starting population
+        // Initialize population
         initializePopulation();
+
+        // Initialize DOD buffers
+        this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(cells.size());
+        this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(cells.size() / 10); // Assume 10% cells have agents initially
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
+        org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer);
 
         logger.info("H3 World generated: {} cells", cells.size());
     }
@@ -290,10 +312,6 @@ public class H3SimulationEngine implements ISimulationEngine {
         return climateSystem;
     }
 
-    public ArtemisSimulationEngine getDensityEngine() {
-        return densityEngine;
-    }
-
     private void startGameLoop() {
         executorService = Executors.newSingleThreadScheduledExecutor();
         long period = config.simulation().tickRateMs() / speedMultiplier;
@@ -305,6 +323,13 @@ public class H3SimulationEngine implements ISimulationEngine {
         if (!running.get())
             return;
 
+        long now = System.nanoTime();
+        if (lastTickTime != 0) {
+            double diff = (now - lastTickTime) / 1_000_000_000.0;
+            currentTPS = 1.0 / diff;
+        }
+        lastTickTime = now;
+
         try {
             // 1. Advance time
             timeManager.advanceMonth();
@@ -313,11 +338,25 @@ public class H3SimulationEngine implements ISimulationEngine {
 
             // 2. Update climate (seasonal temperatures)
             climateSystem.updateClimate(cells, month);
+            // Sync climate changes to WorldBuffer
+            syncClimateToBuffer();
 
-            // 3. Run density simulation (food production, population, migration)
-            densityEngine.tick(cells, month, year);
+            // 3. Run DOD kernels (Replaces Artemis)
+            float dt = 1.0f; // 1 month
+            environmentalKernel.tick(worldBuffer, month, dt);
+            fluxEngine.tick(worldBuffer, dt);
+            demographicKernel.tick(worldBuffer, agentBuffer, dt);
+            urbanKernel.tick(worldBuffer, dt);
+            cultureKernel.tick(worldBuffer, agentBuffer, dt);
 
-            // 4. Update agents
+            // 3b. Update Advanced Statistics
+            currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
+            densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
+            currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital());
+            currentLifeExpectancy = statisticsKernel.calculateLifeExpectancy(agentBuffer.getAge(), agentBuffer.getHexIds());
+            currentFertility = statisticsKernel.calculateFertilityRate(agentBuffer.getBirths(), agentBuffer.getMass());
+
+            // 4. Update agents (Legacy Units)
             agentManager.update();
 
             // 5. Check for events
@@ -338,21 +377,39 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get total population across all cells.
      */
     public long getTotalPopulation() {
-        return cells.stream().mapToLong(H3Cell::getPopulation).sum();
+        if (worldBuffer == null) return 0;
+        long total = 0;
+        float[] pop = worldBuffer.getBiomassHuman();
+        for (int i = 0; i < worldBuffer.getCapacity(); i++) {
+            total += (long)pop[i];
+        }
+        return total;
     }
 
     /**
      * Get total food across all cells.
      */
     public double getTotalFood() {
-        return cells.stream().mapToDouble(H3Cell::getFoodResource).sum();
+        if (worldBuffer == null) return 0;
+        double total = 0;
+        float[] food = worldBuffer.getFoodResource();
+        for (int i = 0; i < worldBuffer.getCapacity(); i++) {
+            total += food[i];
+        }
+        return total;
     }
 
     /**
      * Get number of populated cells.
      */
     public long getPopulatedCellCount() {
-        return cells.stream().filter(c -> c.getPopulation() > 0).count();
+        if (worldBuffer == null) return 0;
+        long count = 0;
+        float[] pop = worldBuffer.getBiomassHuman();
+        for (int i = 0; i < worldBuffer.getCapacity(); i++) {
+            if (pop[i] > 0.1f) count++;
+        }
+        return count;
     }
 
     private void initializePoliticalSeeding(int populatedCount) {
@@ -384,5 +441,53 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     public org.ether.society.analytics.HistoryManager getHistoryManager() {
         return historyManager;
+    }
+
+    public double getCurrentTPS() {
+        return currentTPS;
+    }
+
+    public float getTotalBiomassNatural() {
+        if (worldBuffer == null) return 0;
+        float total = 0;
+        float[] bio = worldBuffer.getBiomassNatural();
+        for (int i = 0; i < worldBuffer.getCapacity(); i++) total += bio[i];
+        return total;
+    }
+
+    public float getAverageTechnology() {
+        if (worldBuffer == null) return 0;
+        float total = 0;
+        float[] tech = worldBuffer.getTechnologyLevel();
+        for (int i = 0; i < worldBuffer.getCapacity(); i++) total += tech[i];
+        return total / worldBuffer.getCapacity();
+    }
+
+    public float getCurrentGini() {
+        return currentGini;
+    }
+
+    public int[] getDensityDistribution() {
+        return densityDistribution;
+    }
+
+    public float getCurrentGDP() { return currentGDP; }
+    public float getCurrentLifeExpectancy() { return currentLifeExpectancy; }
+    public float getCurrentFertility() { return currentFertility; }
+
+    private void syncClimateToBuffer() {
+        if (worldBuffer == null || cells == null) return;
+        float[] temps = worldBuffer.getTemperature();
+        for (int i = 0; i < cells.size() && i < worldBuffer.getCapacity(); i++) {
+            temps[i] = cells.get(i).getTemperature().floatValue();
+        }
+    }
+
+    public org.ether.society.core.dod.WorldBuffer getWorldBuffer() {
+        return worldBuffer;
+    }
+
+    public org.ether.society.core.dod.AgentBuffer getAgentBuffer() {
+        return agentBuffer;
     }
 }

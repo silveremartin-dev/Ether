@@ -36,6 +36,7 @@ public class MainView extends StackPane {
     private final H3MapCanvas mapCanvas;
     private final MiniMap miniMap;
     private final PerformanceHUD hud;
+    private final StatsPanel statsPanel;
 
     // UI Structure
     private TabPane tabPane;
@@ -51,6 +52,7 @@ public class MainView extends StackPane {
         this.mapCanvas = mapCanvas;
         this.miniMap = miniMap;
         this.hud = hud;
+        this.statsPanel = new StatsPanel(engine);
 
         initUI();
     }
@@ -128,11 +130,8 @@ public class MainView extends StackPane {
         mapCanvas.setTooltipContainer(mapStack);
 
         // Inject Visualization Engines
-        if (engine.getDensityEngine() != null) {
-            mapCanvas.setEngines(
-                    engine.getDensityEngine().getFluxEngine(),
-                    engine.getDensityEngine().getCultureEngine(),
-                    engine.getAgentManager());
+        if (engine.getWorldBuffer() != null) {
+            // New DOD-aware injection would go here
         }
 
         // Connect Control Panel callbacks
@@ -140,10 +139,16 @@ public class MainView extends StackPane {
         controlPanel.setOnSave(this::saveGame);
         controlPanel.setOnLoad(this::loadGame);
         controlPanel.setOnContourToggle(show -> mapCanvas.toggleContours(show));
+        controlPanel.setOnStatsToggle(show -> {
+            boolean visible = statsPanel.isVisible();
+            statsPanel.setVisible(!visible);
+            statsPanel.setManaged(!visible);
+        });
         controlPanel.setOnTimelapseRecord(this::toggleTimelapseRecording);
         controlPanel.setOnTimelapseSeek(this::seekTimelapse);
 
         root.setCenter(mapStack);
+        root.setRight(statsPanel);
         root.setBottom(controlPanel);
 
         return root;
@@ -234,8 +239,22 @@ public class MainView extends StackPane {
 
                     // Update Global Age Display
                     if (controlPanel != null) {
-                        String currentAge = engine.getDensityEngine().getMaxAchievedAge().getDisplayName();
+                        float avgTech = ((org.ether.society.core.H3SimulationEngine)engine).getAverageTechnology();
+                        String currentAge = getAgeName(avgTech);
                         controlPanel.updateAge(currentAge);
+                        
+                        // Update Stats
+                        controlPanel.updateStats(
+                            ((org.ether.society.core.H3SimulationEngine)engine).getTotalPopulation(),
+                            ((org.ether.society.core.H3SimulationEngine)engine).getTotalFood(),
+                            ((org.ether.society.core.H3SimulationEngine)engine).getPopulatedCellCount(),
+                            ((org.ether.society.core.H3SimulationEngine)engine).getCurrentTPS()
+                        );
+                        
+                        statsPanel.update();
+                        
+                        // Update Season
+                        controlPanel.updateSeason(engine.getTimeManager().getCurrentMonth());
                     }
 
                     lastUpdate = now;
@@ -243,6 +262,15 @@ public class MainView extends StackPane {
             }
         };
         eventLoop.start();
+    }
+
+    private String getAgeName(float techLevel) {
+        if (techLevel < 10) return "STONE AGE";
+        if (techLevel < 30) return "BRONZE AGE";
+        if (techLevel < 60) return "IRON AGE";
+        if (techLevel < 100) return "CLASSICAL AGE";
+        if (techLevel < 200) return "MEDIEVAL AGE";
+        return "RENAISSANCE";
     }
 
     private void showAnalytics() {

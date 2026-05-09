@@ -171,7 +171,8 @@ public class EtherApp extends Application {
                 controlPanel.updateStats(
                         h3Engine.getTotalPopulation(),
                         h3Engine.getTotalFood(),
-                        h3Engine.getPopulatedCellCount());
+                        h3Engine.getPopulatedCellCount(),
+                        h3Engine.getCurrentTPS());
 
                 // Update season display
                 controlPanel.updateSeason(h3Engine.getTimeManager().getCurrentMonth());

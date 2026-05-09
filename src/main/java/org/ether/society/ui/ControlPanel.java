@@ -28,6 +28,7 @@ public class ControlPanel extends HBox {
     private final Label yearLabel;
     private final Label seasonLabel; // Season indicator
     private final Label ageLabel; // Current Civilization Age
+    private final Label tpsLabel; // Ticks Per Second
     private H3MapCanvas mapCanvas; // Reference to canvas for view toggle
     private MiniMap miniMap; // Reference to mini-map
     private ColorLegend colorLegend; // Reference to color legend
@@ -42,6 +43,7 @@ public class ControlPanel extends HBox {
     private final Button viewToggle;
     private final Button displayToggle; // Biome/Population/Food/Temp
     private final Button miniMapToggle;
+    private final Button statsToggle;
     private final Label langLabel;
     private final ComboBox<Language> langCombo;
     private final Label statsLabel; // Population stats
@@ -57,6 +59,7 @@ public class ControlPanel extends HBox {
     private Consumer<Boolean> onContourToggle;
     private Runnable onTimelapseRecord;
     private Consumer<Integer> onTimelapseSeek;
+    private Consumer<Boolean> onStatsToggle;
     
     // Timelapse controls
     private ToggleButton contourToggle;
@@ -72,6 +75,9 @@ public class ControlPanel extends HBox {
 
         this.ageLabel = new Label("Stone Age");
         ageLabel.setStyle("-fx-text-fill: #ffd700; -fx-font-weight: bold;");
+
+        this.tpsLabel = new Label("TPS: 0");
+        tpsLabel.setStyle("-fx-text-fill: #00bcd4; -fx-font-family: monospace;");
 
         setSpacing(10);
         setPadding(new Insets(10));
@@ -152,6 +158,15 @@ public class ControlPanel extends HBox {
         miniMapToggle.setOnAction(e -> {
             if (miniMap != null) {
                 miniMap.setVisible(!miniMap.isVisible());
+            }
+        });
+
+        // Stats Toggle Button
+        statsToggle = new Button("Stats");
+        statsToggle.setTooltip(new Tooltip("Show/hide the statistics panel"));
+        statsToggle.setOnAction(e -> {
+            if (onStatsToggle != null) {
+                onStatsToggle.accept(true); // Logic handled in MainView
             }
         });
 
@@ -247,11 +262,11 @@ public class ControlPanel extends HBox {
 
         yearLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
 
-        getChildren().addAll(yearLabel, seasonLabel, ageLabel, statsLabel, eventLabel, saveBtn, loadBtn, startBtn,
+        getChildren().addAll(yearLabel, seasonLabel, ageLabel, tpsLabel, statsLabel, eventLabel, saveBtn, loadBtn, startBtn,
                 pauseBtn,
                 speed1x, speed5x,
                 speed20x,
-                viewToggle, displayToggle, miniMapToggle, contourToggle, recordToggle, timelapseSlider, timelapseLabel,
+                viewToggle, displayToggle, miniMapToggle, statsToggle, contourToggle, recordToggle, timelapseSlider, timelapseLabel,
                 analyticsBtn, dbStatusLabel, langLabel, langCombo);
 
         // Initial text update
@@ -283,6 +298,10 @@ public class ControlPanel extends HBox {
 
     public void setOnTimelapseSeek(Consumer<Integer> onTimelapseSeek) {
         this.onTimelapseSeek = onTimelapseSeek;
+    }
+
+    public void setOnStatsToggle(Consumer<Boolean> onStatsToggle) {
+        this.onStatsToggle = onStatsToggle;
     }
     
     public void updateTimelapseSlider(int minYear, int maxYear, int currentYear) {
@@ -349,10 +368,11 @@ public class ControlPanel extends HBox {
     /**
      * Update population statistics display.
      */
-    public void updateStats(long population, double food, long populatedCells) {
+    public void updateStats(long population, double food, long populatedCells, double tps) {
         String popStr = formatNumber(population);
         String foodStr = formatNumber((long) food);
         statsLabel.setText(String.format("Pop: %s | Food: %s | Cells: %d", popStr, foodStr, populatedCells));
+        tpsLabel.setText(String.format("TPS: %.1f", tps));
     }
 
     private String formatNumber(long num) {
