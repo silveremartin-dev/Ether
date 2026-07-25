@@ -28,7 +28,7 @@ public class H3Service {
     private final int resolution;
 
     public H3Service() {
-        this(8); // Default to Level 8 (~0.74 kmÂ²)
+        this(8); // Default to Level 8 (~0.74 km²)
     }
 
     public H3Service(int resolution) {

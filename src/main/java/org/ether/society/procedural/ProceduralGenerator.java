@@ -70,11 +70,11 @@ public class ProceduralGenerator {
         r = Math.max(0.0, Math.min(1.0, r));
 
         // --- Temperature ---
-        double temp = preset.temperatureGradient() * (1.0 - (Math.abs(lat) / 90.0));
-        if (preset.temperatureGradient() > 30)
-            temp -= 10;
+        double baseTemp = preset.averageTempC();
+        double latFactor = Math.cos(Math.toRadians(lat));
+        double temp = baseTemp + preset.temperatureGradient() * (latFactor - 0.5);
         if (e > 0)
-            temp -= e * 20.0;
+            temp -= e * 20.0; // Altitude lapse rate
 
         Biome biome = determineBiome(e, temp, r, preset.waterLevel());
 

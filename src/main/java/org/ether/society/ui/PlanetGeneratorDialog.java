@@ -87,13 +87,19 @@ public class PlanetGeneratorDialog extends Stage {
         seedField.textProperty().addListener((obs, old, val) -> updatePreview());
         VBox seedBox = new VBox(5, new Label("Seed"), seedField);
 
-        noiseFreqSlider = createSlider("Noise Frequency", 0.1, 2.0, 1.0);
-        noiseScaleSlider = createSlider("Vertical Scale", 0.5, 3.0, 1.0);
-        waterSlider = createSlider("Water Level", -0.5, 1.0, 0.0);
-        tempSlider = createSlider("Temp Gradient", 0, 80, 40);
+        noiseFreqSlider = new Slider();
+        VBox freqBox = createSliderBox("Noise Frequency", noiseFreqSlider, 0.1, 2.0, 1.0);
 
-        controls.getChildren().addAll(presetBox, new Separator(), seedBox, noiseFreqSlider, noiseScaleSlider,
-                waterSlider, tempSlider);
+        noiseScaleSlider = new Slider();
+        VBox scaleBox = createSliderBox("Vertical Scale", noiseScaleSlider, 0.5, 3.0, 1.0);
+
+        waterSlider = new Slider();
+        VBox waterBox = createSliderBox("Water Level", waterSlider, -0.5, 1.0, 0.0);
+
+        tempSlider = new Slider();
+        VBox tempBox = createSliderBox("Temp Gradient", tempSlider, 0, 80, 40);
+
+        controls.getChildren().addAll(presetBox, new Separator(), seedBox, freqBox, scaleBox, waterBox, tempBox);
 
         // Center: Preview
         VBox previewBox = new VBox(10);
@@ -128,8 +134,10 @@ public class PlanetGeneratorDialog extends Stage {
         applyPreset(PlanetPreset.EARTH_LIKE);
     }
 
-    private Slider createSlider(String label, double min, double max, double initial) {
-        Slider slider = new Slider(min, max, initial);
+    private VBox createSliderBox(String label, Slider slider, double min, double max, double initial) {
+        slider.setMin(min);
+        slider.setMax(max);
+        slider.setValue(initial);
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
         slider.valueProperty().addListener((obs, old, val) -> {
@@ -139,9 +147,7 @@ public class PlanetGeneratorDialog extends Stage {
         });
         slider.setOnMouseReleased(e -> updatePreview()); // Ensure update on release
 
-        VBox box = new VBox(5, new Label(label), slider);
-        ((VBox) ((BorderPane) getScene().getRoot()).getLeft()).getChildren().add(box); // Hacky add, but simplified
-        return slider;
+        return new VBox(5, new Label(label), slider);
     }
 
     private void applyPreset(PlanetPreset p) {

@@ -35,7 +35,8 @@ public abstract class JsonRepository<T> {
         this.types = type;
         // Store data in a user directory or relative to app
         String appData = System.getProperty("user.home") + File.separator + ".ether_society" + File.separator + "data";
-        this.filePath = Paths.get(appData, filename);
+        String safeFilename = Paths.get(filename).getFileName().toString();
+        this.filePath = Paths.get(appData, safeFilename);
 
         this.mapper = new ObjectMapper();
         this.mapper.registerModule(new JavaTimeModule());

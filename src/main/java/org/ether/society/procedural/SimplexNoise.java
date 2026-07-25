@@ -136,13 +136,22 @@ public class SimplexNoise {
         double y3 = y0 - 1.0 + 3.0 * G3;
         double z3 = z0 - 1.0 + 3.0 * G3;
 
+        // Work out the hashed gradient indices of the four simplex corners
+        int ii = i & 255;
+        int jj = j & 255;
+        int kk = k & 255;
+        int gi0 = permMod12[ii + perm[jj + perm[kk]]];
+        int gi1 = permMod12[ii + i1 + perm[jj + j1 + perm[kk + k1]]];
+        int gi2 = permMod12[ii + i2 + perm[jj + j2 + perm[kk + k2]]];
+        int gi3 = permMod12[ii + 1 + perm[jj + 1 + perm[kk + 1]]];
+
         // Calculate the contribution from the four corners
         double t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0;
         if (t0 < 0)
             n0 = 0.0;
         else {
             t0 *= t0;
-            n0 = t0 * t0 * dot(GRAD3[permMod12[i + perm[j + perm[k]] & 255] & 255], x0, y0, z0);
+            n0 = t0 * t0 * dot(GRAD3[gi0], x0, y0, z0);
         }
 
         double t1 = 0.6 - x1 * x1 - y1 * y1 - z1 * z1;
@@ -150,7 +159,7 @@ public class SimplexNoise {
             n1 = 0.0;
         else {
             t1 *= t1;
-            n1 = t1 * t1 * dot(GRAD3[permMod12[i + i1 + perm[j + j1 + perm[k + k1]] & 255] & 255], x1, y1, z1);
+            n1 = t1 * t1 * dot(GRAD3[gi1], x1, y1, z1);
         }
 
         double t2 = 0.6 - x2 * x2 - y2 * y2 - z2 * z2;
@@ -158,7 +167,7 @@ public class SimplexNoise {
             n2 = 0.0;
         else {
             t2 *= t2;
-            n2 = t2 * t2 * dot(GRAD3[permMod12[i + i2 + perm[j + j2 + perm[k + k2]] & 255] & 255], x2, y2, z2);
+            n2 = t2 * t2 * dot(GRAD3[gi2], x2, y2, z2);
         }
 
         double t3 = 0.6 - x3 * x3 - y3 * y3 - z3 * z3;
@@ -166,7 +175,7 @@ public class SimplexNoise {
             n3 = 0.0;
         else {
             t3 *= t3;
-            n3 = t3 * t3 * dot(GRAD3[permMod12[i + 1 + perm[j + 1 + perm[k + 1]] & 255] & 255], x3, y3, z3);
+            n3 = t3 * t3 * dot(GRAD3[gi3], x3, y3, z3);
         }
 
         // Add contributions from each corner to get the final noise value.

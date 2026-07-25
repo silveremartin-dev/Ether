@@ -31,6 +31,11 @@ class I18nTest {
         I18n.setLanguage(Language.GERMAN);
         assertEquals("Start", I18n.get("ui.control.start"));
         assertEquals("Biom:", I18n.get("ui.tooltip.biome"));
+
+        // Switch to Chinese
+        I18n.setLanguage(Language.CHINESE);
+        assertEquals("开始", I18n.get("ui.control.start"));
+        assertEquals("生态群落：", I18n.get("ui.tooltip.biome"));
     }
 
     @Test

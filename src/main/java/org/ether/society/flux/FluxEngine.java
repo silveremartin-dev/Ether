@@ -48,29 +48,54 @@ public class FluxEngine {
     private void diffuseResources(WorldBuffer world, float dt) {
         float[] food = world.getFoodResource();
         float[] prices = world.getLocalPrice();
-        float[] friction = world.getElevation();
+        float[] elevation = world.getElevation();
         int[][] neighbors = world.getNeighborIndexes();
         
-        float[] nextFood = new float[world.getCapacity()];
-        System.arraycopy(food, 0, nextFood, 0, food.length);
+        // Physical Constants
+        final float CELL_AREA = 1.0f; // Simplified for MVP (in km^2)
+        final float BASE_CONDUCTIVITY = 0.05f; // s/m^2
+        
+        float[] deltaFood = new float[world.getCapacity()];
         
         for (int i = 0; i < world.getCapacity(); i++) {
             float pA = prices[i];
+            float hA = elevation[i];
+            
             for (int j = 0; j < 6; j++) {
                 int nIdx = neighbors[i][j];
                 if (nIdx == -1) continue;
                 
                 float pB = prices[nIdx];
+                float hB = elevation[nIdx];
+                
+                // Gradient de potentiel (J/kg)
                 float gradient = pB - pA;
-                if (gradient > 0) {
-                    float conductivity = 0.1f / (1.0f + Math.abs(friction[i] - friction[nIdx]) * 0.01f);
-                    float flow = gradient * conductivity * dt;
-                    flow = Math.min(flow, food[i] * 0.1f);
-                    nextFood[i] -= flow;
-                    nextFood[nIdx] += flow;
+                
+                // Conductivité tenant compte du relief (Friction géographique)
+                // f = f0 * e^(k * |dh|)
+                float friction = 1.0f + (float) Math.abs(hB - hA) * 0.1f;
+                float conductivity = BASE_CONDUCTIVITY / friction;
+                
+                // Flux conservatif (Volumes Finis)
+                // J = -sigma * grad(P)
+                float flux = gradient * conductivity * dt;
+                
+                // Limitation thermodynamique (on ne peut pas vider plus que disponible)
+                if (flux > 0) {
+                    flux = Math.min(flux, food[i] * 0.05f);
+                } else {
+                    flux = Math.max(flux, -food[nIdx] * 0.05f);
                 }
+                
+                deltaFood[i] -= flux;
+                // Le voisin nIdx recevra sa part quand la boucle passera sur lui ou par symétrie
+                // Pour Volumes Finis strict, on applique la moitié ici et la moitié chez l'autre
+                // ou on gère les interfaces. Ici on fait une passe par lien.
             }
         }
-        System.arraycopy(nextFood, 0, food, 0, food.length);
+        
+        for (int i = 0; i < world.getCapacity(); i++) {
+            food[i] += deltaFood[i];
+        }
     }
 }

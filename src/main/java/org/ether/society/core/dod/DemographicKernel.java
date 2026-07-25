@@ -27,26 +27,31 @@ public class DemographicKernel {
         float[] births = agents.getBirths();
         float[] deaths = agents.getDeaths();
 
+        // Constants in SI units
+        final float SECONDS_PER_DAY = 86400f;
+        final float ENERGY_REQ_PER_KG_DAY = 150000f; // 150 kJ/kg/day (approx 10 MJ for 70kg)
+
         for (int i = 0; i < agents.getCapacity(); i++) {
             if (hexIds[i] == -1) continue;
             
             int hIdx = hexIds[i];
             float m = mass[i];
             
-            // Update Age
+            // Update Age (dt is in seconds)
             age[i] += dt;
             
-            // Coût de structure Sigma (loi de Tainter)
-            sigma[i] = (float) Math.pow(m, 1.1) * 0.001f;
+            // Structure cost (Sigma) in Joules
+            sigma[i] = (float) Math.pow(m, 1.1) * 1000f; 
             
-            // Consommation basale
-            float consumption = (m * 0.1f + sigma[i]) * dt;
+            // Basal consumption (Joules per tick)
+            float dailyReq = m * ENERGY_REQ_PER_KG_DAY;
+            float consumption = (dailyReq / SECONDS_PER_DAY + sigma[i]) * dt;
             
-            // Puiser dans le pixel local
+            // Take from local pixel (food is in Joules)
             float foodTaken = Math.min(food[hIdx], consumption);
             food[hIdx] -= foodTaken;
             
-            // Mise à jour de l'énergie interne
+            // Update internal energy
             energy[i] += foodTaken - consumption;
             
             // --- Cycle Naissances / Décès ---

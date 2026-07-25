@@ -8,6 +8,7 @@ package org.ether.society.ui;
 
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
+import org.ether.society.i18n.I18n;
 
 import org.ether.society.model.Scenario;
 import javafx.geometry.Pos;
@@ -40,9 +41,15 @@ public class MainView extends StackPane {
 
     // UI Structure
     private TabPane tabPane;
+    private Tab planetTab;
+    private Tab resourcesTab;
     private Tab setupTab;
     private Tab simulationTab;
+    private Tab preferencesTab;
+    private PlanetGeneratorPanel planetGeneratorPanel;
+    private ResourceDistributionPanel resourcePanel;
     private ScenarioSetupPanel setupPanel;
+    private PreferencesPanel preferencesPanel;
     private NotificationOverlay notificationOverlay;
 
     public MainView(H3SimulationEngine engine, ControlPanel controlPanel, H3MapCanvas mapCanvas, MiniMap miniMap,
@@ -55,6 +62,9 @@ public class MainView extends StackPane {
         this.statsPanel = new StatsPanel(engine);
 
         initUI();
+        updateTabTitles();
+
+        I18n.languageProperty().addListener((obs, old, val) -> updateTabTitles());
     }
 
     private void initUI() {
@@ -63,18 +73,36 @@ public class MainView extends StackPane {
         tabPane.setStyle("-fx-tab-min-height: 40px; -fx-tab-max-height: 40px; -fx-background-color: transparent;");
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
-        // 1. Setup Tab
+        // 1. Planet Generator Tab
+        planetGeneratorPanel = new PlanetGeneratorPanel(this::onPlanetGenerated);
+        planetTab = new Tab();
+        planetTab.setContent(planetGeneratorPanel);
+        planetTab.setClosable(false);
+
+        // 2. Resources & Ecology Tab
+        resourcePanel = new ResourceDistributionPanel(this::onResourcesApplied);
+        resourcesTab = new Tab();
+        resourcesTab.setContent(resourcePanel);
+        resourcesTab.setClosable(false);
+
+        // 3. Setup Tab
         setupPanel = new ScenarioSetupPanel(this::onStartSimulation);
-        setupTab = new Tab("SCENARIO & WORLD");
+        setupTab = new Tab();
         setupTab.setContent(setupPanel);
         setupTab.setClosable(false);
 
-        // 2. Simulation Tab
-        simulationTab = new Tab("SIMULATION");
+        // 4. Simulation Tab
+        simulationTab = new Tab();
         simulationTab.setContent(createSimulationView());
         simulationTab.setDisable(true); // Disabled until started
 
-        tabPane.getTabs().addAll(setupTab, simulationTab);
+        // 5. Preferences Tab
+        preferencesPanel = new PreferencesPanel();
+        preferencesTab = new Tab();
+        preferencesTab.setContent(preferencesPanel);
+        preferencesTab.setClosable(false);
+
+        tabPane.getTabs().addAll(planetTab, resourcesTab, setupTab, simulationTab, preferencesTab);
 
         // Auto-pause when leaving simulation tab
         tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
@@ -85,6 +113,40 @@ public class MainView extends StackPane {
         });
 
         getChildren().add(tabPane);
+    }
+
+    public void updateTabTitles() {
+        planetTab.setText(org.ether.society.i18n.I18n.get("tab.planet_generator"));
+        resourcesTab.setText(org.ether.society.i18n.I18n.get("tab.resources"));
+        setupTab.setText(org.ether.society.i18n.I18n.get("tab.scenario"));
+        simulationTab.setText(org.ether.society.i18n.I18n.get("tab.simulation"));
+        preferencesTab.setText(org.ether.society.i18n.I18n.get("tab.preferences"));
+    }
+
+    private void onPlanetGenerated(List<H3Cell> cells) {
+        if (cells == null || cells.isEmpty()) return;
+        logger.info("Planet generated with {} cells", cells.size());
+        engine.setCells(cells);
+        mapCanvas.setCells(cells);
+        miniMap.setCells(cells);
+        controlPanel.updateSeason(engine.getTimeManager().getCurrentMonth());
+        mapCanvas.draw();
+
+        resourcePanel.setActiveCells(cells);
+        setupPanel.setGeneratedCells(cells);
+        tabPane.getSelectionModel().select(resourcesTab);
+    }
+
+    private void onResourcesApplied(List<H3Cell> cells) {
+        if (cells == null || cells.isEmpty()) return;
+        logger.info("Resource distribution applied to {} cells", cells.size());
+        engine.setCells(cells);
+        mapCanvas.setCells(cells);
+        miniMap.setCells(cells);
+        mapCanvas.draw();
+
+        setupPanel.setGeneratedCells(cells);
+        tabPane.getSelectionModel().select(setupTab);
     }
 
     private BorderPane createSimulationView() {

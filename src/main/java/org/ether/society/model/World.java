@@ -69,6 +69,10 @@ public class World {
         this.grid = grid;
     }
 
+    public Cell[][] getGrid() {
+        return grid;
+    }
+
     /**
      * Gets a cell at the specified coordinates.
      *

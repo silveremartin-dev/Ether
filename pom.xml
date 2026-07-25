@@ -222,7 +222,7 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <argLine>
-                        --add-modules=jdk.incubator.vector
+                        @{argLine} --add-modules=jdk.incubator.vector
                     </argLine>
                 </configuration>
             </plugin>
@@ -234,6 +234,10 @@
                 <version>${javafx-maven-plugin.version}</version>
                 <configuration>
                     <mainClass>org.ether.society.Main</mainClass>
+                    <options>
+                        <option>--add-modules</option>
+                        <option>jdk.incubator.vector</option>
+                    </options>
                 </configuration>
             </plugin>
 
@@ -283,6 +287,7 @@
                 <version>3.1.0</version>
                 <configuration>
                     <mainClass>org.ether.society.Main</mainClass>
+                    <commandlineArgs>--add-modules=jdk.incubator.vector</commandlineArgs>
                 </configuration>
             </plugin>
 
@@ -295,7 +300,9 @@
                     <reportOutputDirectory>${project.basedir}/javadoc</reportOutputDirectory>
                     <destDir>javadoc</destDir>
                     <source>21</source>
-                    <show>private</show>
+                    <additionalJOption>--add-modules=jdk.incubator.vector</additionalJOption>
+                    <doclint>none</doclint>
+                    <show>public</show>
                     <nohelp>true</nohelp>
                 </configuration>
             </plugin>

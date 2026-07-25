@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Represents a "Special Actor" or "Unit" in the simulation.
  *
- * <p>Unlike population densities (handled by {@link org.ether.society.density.ArtemisSimulationEngine} / Artemis),
+ * <p>Unlike population densities (handled by {@link org.ether.society.core.H3SimulationEngine}),
  * these Agents represent specific, tracked individuals or groups with unique identity and state.
  * Examples: Diplomats, Armies, Traders, Heroes.</p>
  *

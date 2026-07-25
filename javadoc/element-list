@@ -3,6 +3,7 @@ org.ether.society.agents
 org.ether.society.analytics
 org.ether.society.config
 org.ether.society.core
+org.ether.society.core.dod
 org.ether.society.culture
 org.ether.society.data
 org.ether.society.database

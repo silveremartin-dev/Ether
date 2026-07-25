@@ -166,7 +166,7 @@ public class ColorLegend extends javafx.scene.layout.HBox {
         return switch (currentMode) {
             case POPULATION -> new String[] { "500+", "50", "0" };
             case FOOD -> new String[] { "800", "400", "0" };
-            case TEMPERATURE -> new String[] { "45Â°C", "10Â°C", "-30Â°C" };
+            case TEMPERATURE -> new String[] { "45°C", "10°C", "-30°C" };
             default -> new String[] { "High", "Mid", "Low" };
         };
     }

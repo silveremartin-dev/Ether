@@ -36,12 +36,12 @@ package org.ether.society.gpu;
  * </p>
  * <ul>
  * <li>Each GPU thread processes one H3 cell</li>
- * <li>7.2M cells Ã— GPU threads = massive parallelism</li>
+ * <li>7.2M cells × GPU threads = massive parallelism</li>
  * <li>~10-100x speedup vs CPU sequential</li>
  * </ul>
  *
  * <p>
- * <strong>Input Data (from database â†’ GPU memory):</strong>
+ * <strong>Input Data (from database → GPU memory):</strong>
  * </p>
  * <ul>
  * <li>h3Indices: H3 cell IDs (long[])</li>
@@ -70,7 +70,7 @@ public class ClimateKernel {
      * @param elevations   Array of cell elevations (meters)
      * @param temperatures Array of temperatures (updated in-place)
      * @param month        Current month (0-11)
-     * @param globalOffset Global temperature modifier (Â°C)
+     * @param globalOffset Global temperature modifier (°C)
      */
     // @Parallel // TornadoVM annotation (uncomment when TornadoVM installed)
     public static void updateClimate(
@@ -98,7 +98,7 @@ public class ClimateKernel {
             final double MAX_TEMP_DIFF = 40.0; // Equator vs poles difference
             double baseTemp = latitudeFactor * MAX_TEMP_DIFF - 10.0;
 
-            // Elevation lapse rate: -10Â°C per 1000m
+            // Elevation lapse rate: -10°C per 1000m
             final double LAPSE_RATE = 10.0 / 1000.0;
             double elevEffect = -elev * LAPSE_RATE;
 

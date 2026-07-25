@@ -48,6 +48,8 @@ public class WorldBuffer {
     // Logistics
     private final float[] fluxPressure;
     private final float[] localPrice;
+    private final float[] storage;                 // Neolithic storage (granaries)
+    private final float[] institutionalComplexity; // Tainter's complexity index
 
     public WorldBuffer(int capacity) {
         this.capacity = capacity;
@@ -84,6 +86,8 @@ public class WorldBuffer {
         
         this.fluxPressure = new float[capacity];
         this.localPrice = new float[capacity];
+        this.storage = new float[capacity];
+        this.institutionalComplexity = new float[capacity];
     }
 
     // Getters for arrays (to be used by kernels)
@@ -122,4 +126,6 @@ public class WorldBuffer {
     
     public float[] getFluxPressure() { return fluxPressure; }
     public float[] getLocalPrice() { return localPrice; }
+    public float[] getStorage() { return storage; }
+    public float[] getInstitutionalComplexity() { return institutionalComplexity; }
 }

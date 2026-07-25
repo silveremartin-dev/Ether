@@ -104,16 +104,6 @@ public class EtherApp extends Application {
         controlPanel.setMiniMap(miniMap);
         controlPanel.setColorLegend(colorLegend);
 
-        // Menu Bar
-        javafx.scene.control.MenuBar menuBar = new javafx.scene.control.MenuBar();
-        javafx.scene.control.Menu toolsMenu = new javafx.scene.control.Menu("Tools");
-
-        javafx.scene.control.MenuItem planetGenItem = new javafx.scene.control.MenuItem("Planet Generator...");
-        planetGenItem.setOnAction(e -> openPlanetGenerator());
-
-        toolsMenu.getItems().add(planetGenItem);
-        menuBar.getMenus().add(toolsMenu);
-
         StackPane contentStack = new StackPane(mainView);
 
         // Info label overlay
@@ -125,12 +115,8 @@ public class EtherApp extends Application {
         StackPane.setMargin(infoLabel, new javafx.geometry.Insets(5, 50, 0, 0));
         contentStack.getChildren().add(infoLabel);
 
-        BorderPane mainRoot = new BorderPane();
-        mainRoot.setTop(menuBar);
-        mainRoot.setCenter(contentStack);
-
-        Scene scene = new Scene(mainRoot, 1280, 800);
-        scene.getStylesheets().add(getClass().getResource("/css/index.css").toExternalForm());
+        Scene scene = new Scene(contentStack, 1280, 800);
+        org.ether.society.ui.Theme.setTheme(scene, org.ether.society.ui.Theme.DARK);
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -199,37 +185,5 @@ public class EtherApp extends Application {
         primaryStage.setTitle(I18n.get("app.title"));
         String year = h3Engine.getTimeManager().getFormattedDate();
         infoLabel.setText(I18n.get("app.info", year));
-    }
-
-    // Note: saveSimulation and loadSimulation moved to MainView to use GameSaveManager
-
-    private void openPlanetGenerator() {
-        org.ether.society.ui.PlanetGeneratorDialog dialog = new org.ether.society.ui.PlanetGeneratorDialog();
-        java.util.Optional<List<org.ether.society.database.H3Cell>> result = dialog.showAndWaitForCells();
-
-        result.ifPresent(cells -> {
-            logger.info("Generated {} cells procedurally", cells.size());
-
-            // Update Engine
-            h3Engine.setCells(cells);
-
-            // Update UI
-            mapCanvas.setCells(cells);
-            miniMap.setCells(cells);
-            controlPanel.updateSeason(h3Engine.getTimeManager().getCurrentMonth());
-
-            if (hud != null) {
-                hud.updateSimulationInfo(cells.size(), mapCanvas.getZoomFactor(), mapCanvas.getCenterLat(),
-                        mapCanvas.getCenterLng());
-            }
-
-            // Force redraw
-            mapCanvas.draw();
-
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                    javafx.scene.control.Alert.AlertType.INFORMATION);
-            alert.setContentText("Generated world with " + cells.size() + " cells");
-            alert.showAndWait();
-        });
     }
 }

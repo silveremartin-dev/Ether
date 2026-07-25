@@ -118,7 +118,7 @@ public class PerformanceHUD extends VBox {
     public void updateSimulationInfo(int cellCount, double zoom, double centerLat, double centerLng) {
         entitiesLabel.setText(String.format("%s %,d", I18n.get("ui.hud.cells"), cellCount));
         cameraLabel.setText(
-                String.format("%s %.1fx | %.2fÂ°N, %.2fÂ°E", I18n.get("ui.hud.zoom"), zoom, centerLat, centerLng));
+                String.format("%s %.1fx | %.2f°N, %.2f°E", I18n.get("ui.hud.zoom"), zoom, centerLat, centerLng));
     }
 }
 

@@ -18,10 +18,10 @@ import java.util.List;
 public class H3ClimateSystem {
 
     // Climate parameters
-    private double seasonalVariation = 15.0; // Max Â°C swing from summer to winter
+    private double seasonalVariation = 15.0; // Max °C swing from summer to winter
     private double equatorBaseTemp = 30.0; // Base temp at equator
     private double poleBaseTemp = -20.0; // Base temp at poles
-    private double elevationLapseRate = 0.006; // Â°C drop per meter
+    private double elevationLapseRate = 0.006; // °C drop per meter
 
     private org.ether.society.gpu.GPUManager gpuManager;
 
@@ -83,7 +83,7 @@ public class H3ClimateSystem {
         // Seasonal effect is stronger at higher latitudes
         seasonalOffset *= latFactor;
 
-        // 3. Elevation effect (lapse rate: ~6Â°C per 1000m)
+        // 3. Elevation effect (lapse rate: ~6°C per 1000m)
         double elevationOffset = -elevation * elevationLapseRate;
 
         return baseTemp + seasonalOffset + elevationOffset;

@@ -6,9 +6,9 @@ spring:
   
   # Database Configuration (PostgreSQL + PostGIS)
   datasource:
-    url: jdbc:postgresql://localhost:5432/ether_simulation
-    username: ether_user
-    password: ether_pass
+    url: jdbc:postgresql://localhost:54320/ether_simulation
+    username: ether
+    password: dev_password
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 20

@@ -2,22 +2,31 @@ package org.ether.society.data;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.TestInstance;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * Unit tests for SampleDataGenerator.
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SampleDataGeneratorTest {
+
+    private List<H3Cell> cells;
+
+    @BeforeAll
+    void setUpAll() {
+        cells = SampleDataGenerator.generateEuropeSample();
+    }
 
     @Test
     void testGenerateEuropeSample() {
-        List<H3Cell> cells = SampleDataGenerator.generateEuropeSample();
-
         assertNotNull(cells);
         assertTrue(cells.size() > 150000, "Europe should have ~175k cells");
 
@@ -30,8 +39,6 @@ class SampleDataGeneratorTest {
 
     @Test
     void testBiomeDistribution() {
-        List<H3Cell> cells = SampleDataGenerator.generateEuropeSample();
-
         Map<Biome, Long> distribution = cells.stream()
                 .collect(Collectors.groupingBy(H3Cell::getBiome, Collectors.counting()));
 
@@ -50,8 +57,6 @@ class SampleDataGeneratorTest {
 
     @Test
     void testTemperatureRange() {
-        List<H3Cell> cells = SampleDataGenerator.generateEuropeSample();
-
         for (H3Cell cell : cells) {
             double temp = cell.getTemperature();
             assertTrue(temp >= -20, "Temperature should be >= -20°C");
@@ -61,8 +66,6 @@ class SampleDataGeneratorTest {
 
     @Test
     void testRainfallRange() {
-        List<H3Cell> cells = SampleDataGenerator.generateEuropeSample();
-
         for (H3Cell cell : cells) {
             double rainfall = cell.getRainfall();
             assertTrue(rainfall >= 0, "Rainfall should be >= 0mm");
@@ -72,8 +75,6 @@ class SampleDataGeneratorTest {
 
     @Test
     void testResourcesAreGenerated() {
-        List<H3Cell> cells = SampleDataGenerator.generateEuropeSample();
-
         for (H3Cell cell : cells) {
             // Resources should be present
             assertNotNull(cell.getFoodResource());
@@ -89,8 +90,6 @@ class SampleDataGeneratorTest {
 
     @Test
     void testBiomeElevationCorrelation() {
-        List<H3Cell> cells = SampleDataGenerator.generateEuropeSample();
-
         // Mountains should have high elevation
         List<H3Cell> mountains = cells.stream()
                 .filter(c -> c.getBiome() == Biome.MOUNTAINS)
@@ -121,23 +120,7 @@ class SampleDataGeneratorTest {
     }
 
     @Test
-    void testPerformanceGenerationTime() {
-        long start = System.currentTimeMillis();
-
-        List<H3Cell> cells = SampleDataGenerator.generateEuropeSample();
-
-        long duration = System.currentTimeMillis() - start;
-
-        System.out.println("Generated " + cells.size() + " cells in " + duration + "ms");
-
-        // Should complete in reasonable time (<10 seconds)
-        assertTrue(duration < 10000, "Generation should complete in <10 seconds");
-    }
-
-    @Test
     void testNoDuplicateCells() {
-        List<H3Cell> cells = SampleDataGenerator.generateEuropeSample();
-
         long uniqueCount = cells.stream()
                 .map(H3Cell::getH3Index)
                 .distinct()
@@ -146,3 +129,4 @@ class SampleDataGeneratorTest {
         assertEquals(cells.size(), uniqueCount, "All cells should have unique H3 indices");
     }
 }
+

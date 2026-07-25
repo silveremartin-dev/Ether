@@ -1,1 +1,1 @@
-tagSearchIndex = [{"l":"Artemis Layer","h":"class org.ether.society.density.ArtemisSimulationEngine","k":"16","u":"org/ether/society/density/ArtemisSimulationEngine.html#artemis-layer-heading"},{"l":"Constant Field Values","h":"","k":"18","u":"constant-values.html"},{"l":"Serialized Form","h":"","k":"18","u":"serialized-form.html"}];updateSearchResults();
+tagSearchIndex = [{"l":"Serialized Form","h":"","k":"18","u":"serialized-form.html"}];updateSearchResults();

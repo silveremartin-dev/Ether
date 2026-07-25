@@ -163,6 +163,14 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Initialize starting population in habitable cells.
      */
     private void initializePopulation() {
+        boolean hasExistingPop = cells.stream().anyMatch(c -> c.getPopulation() > 0);
+        if (hasExistingPop) {
+            int count = (int) cells.stream().filter(c -> c.getPopulation() > 0).count();
+            logger.info("Preserving existing population in {} cells", count);
+            initializePoliticalSeeding(count);
+            return;
+        }
+
         int populatedCells = 0;
         for (H3Cell cell : cells) {
             // Skip ocean cells
@@ -319,6 +327,8 @@ public class H3SimulationEngine implements ISimulationEngine {
         executorService.scheduleAtFixedRate(this::tick, 0, period, TimeUnit.MILLISECONDS);
     }
 
+    private int tickCounter = 0;
+
     private void tick() {
         if (!running.get())
             return;
@@ -331,42 +341,50 @@ public class H3SimulationEngine implements ISimulationEngine {
         lastTickTime = now;
 
         try {
-            // 1. Advance time
-            timeManager.advanceMonth();
-            int month = timeManager.getCurrentMonth();
-            int year = timeManager.getCurrentYear();
+            // Unités SI : 1 tick = 1 jour (86400 s)
+            final float DT_FAST = 86400f; 
+            final int SLOW_FACTOR = 30; // Mise à jour lente tous les 30 jours (1 mois)
 
-            // 2. Update climate (seasonal temperatures)
-            climateSystem.updateClimate(cells, month);
-            // Sync climate changes to WorldBuffer
-            syncClimateToBuffer();
-
-            // 3. Run DOD kernels (Replaces Artemis)
-            float dt = 1.0f; // 1 month
-            environmentalKernel.tick(worldBuffer, month, dt);
-            fluxEngine.tick(worldBuffer, dt);
-            demographicKernel.tick(worldBuffer, agentBuffer, dt);
-            urbanKernel.tick(worldBuffer, dt);
-            cultureKernel.tick(worldBuffer, agentBuffer, dt);
-
-            // 3b. Update Advanced Statistics
-            currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
-            densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
-            currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital());
-            currentLifeExpectancy = statisticsKernel.calculateLifeExpectancy(agentBuffer.getAge(), agentBuffer.getHexIds());
-            currentFertility = statisticsKernel.calculateFertilityRate(agentBuffer.getBirths(), agentBuffer.getMass());
-
-            // 4. Update agents (Legacy Units)
-            agentManager.update();
-
-            // 5. Check for events
-            eventSystem.checkEvents(year, getTotalPopulation(), getTotalFood());
-
-            // 6. Run Political Simulation
+            // 1. --- ÉCHELLE RAPIDE (Fast Dynamics) ---
+            // Flux de ressources, logistique et prix
+            fluxEngine.tick(worldBuffer, DT_FAST);
+            
+            // Simulation politique (réactions rapides aux tensions)
             politicalEngine.tick(cells);
 
-            // 7. Capture Analytics (e.g. at end of month)
-            historyManager.captureSnapshot(this);
+            // 2. --- ÉCHELLE LENTE (Slow Dynamics) ---
+            if (tickCounter % SLOW_FACTOR == 0) {
+                timeManager.advanceMonth();
+                int month = timeManager.getCurrentMonth();
+                float dtSlow = DT_FAST * SLOW_FACTOR;
+
+                // Climat et environnement
+                climateSystem.updateClimate(cells, month);
+                syncClimateToBuffer();
+                environmentalKernel.tick(worldBuffer, month, dtSlow);
+
+                // Démographie et Urbanisation (Processus lourds/stiff)
+                demographicKernel.tick(worldBuffer, agentBuffer, dtSlow);
+                urbanKernel.tick(worldBuffer, dtSlow);
+                cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
+
+                // Statistiques et Analytics
+                currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
+                densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
+                currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital());
+                currentLifeExpectancy = statisticsKernel.calculateLifeExpectancy(agentBuffer.getAge(), agentBuffer.getHexIds());
+                currentFertility = statisticsKernel.calculateFertilityRate(agentBuffer.getBirths(), agentBuffer.getMass());
+
+                historyManager.captureSnapshot(this);
+                
+                // Événements macro
+                eventSystem.checkEvents(timeManager.getCurrentYear(), getTotalPopulation(), getTotalFood());
+            }
+
+            // 3. Mise à jour des agents legacy
+            agentManager.update();
+
+            tickCounter++;
 
         } catch (Exception e) {
             logger.error("Error during simulation tick", e);

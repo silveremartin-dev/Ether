@@ -42,3 +42,7 @@ Thumbs.db
 # Logs
 logs/
 *.log.*
+
+# Generated Javadoc
+javadoc/
+docs/javadoc/

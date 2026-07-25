@@ -52,7 +52,12 @@ public class GameSaveManager {
      */
     public void saveGame(H3SimulationEngine engine, String saveName) {
         String saveId = UUID.randomUUID().toString();
-        Path savePath = Paths.get(SAVE_DIR, saveId);
+        Path baseSaveDir = Paths.get(SAVE_DIR).toAbsolutePath().normalize();
+        Path savePath = baseSaveDir.resolve(saveId).normalize();
+
+        if (!savePath.startsWith(baseSaveDir)) {
+            throw new IllegalArgumentException("Security Exception: Invalid save path");
+        }
 
         try {
             Files.createDirectories(savePath);

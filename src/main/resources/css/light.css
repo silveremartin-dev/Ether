@@ -1,0 +1,94 @@
+/* Light Theme - Clean Modern Glassmorphism */
+.root {
+    -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
+    -fx-base: #f1f5f9;
+    -fx-background: #f8fafc;
+    -fx-control-inner-background: #ffffff;
+}
+
+.glass-panel {
+    -fx-background-color: rgba(255, 255, 255, 0.92);
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
+    -fx-border-color: rgba(0, 0, 0, 0.08);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.button {
+    -fx-background-color: linear-gradient(to right, #0284c7, #0369a1);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-padding: 8 16;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to right, #38bdf8, #0284c7);
+    -fx-effect: dropshadow(gaussian, rgba(2, 132, 199, 0.3), 8, 0, 0, 0);
+}
+
+.button:pressed {
+    -fx-background-color: #075985;
+}
+
+.button-secondary {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(0, 0, 0, 0.2);
+    -fx-border-radius: 6;
+    -fx-text-fill: #334155;
+}
+
+.button-secondary:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+    -fx-border-color: #0284c7;
+    -fx-text-fill: #0284c7;
+}
+
+.label {
+    -fx-text-fill: #1e293b;
+}
+
+.label-header {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0f172a;
+}
+
+.label-stats {
+    -fx-font-family: 'Consolas', 'Monospaced';
+    -fx-text-fill: #0d9488;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.tab-pane .tab {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748b;
+    -fx-font-weight: bold;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: #0284c7;
+    -fx-text-fill: #0f172a;
+}
+
+.tooltip {
+    -fx-background-color: rgba(255, 255, 255, 0.98);
+    -fx-background-radius: 4;
+    -fx-text-fill: #0f172a;
+    -fx-font-size: 11px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 5, 0, 0, 2);
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}

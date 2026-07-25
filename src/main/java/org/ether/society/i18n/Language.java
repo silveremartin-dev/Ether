@@ -13,9 +13,10 @@ import java.util.Locale;
  */
 public enum Language {
     ENGLISH("en", "English", Locale.ENGLISH),
-    FRENCH("fr", "FranÃ§ais", Locale.FRENCH),
-    SPANISH("es", "EspaÃ±ol", Locale.of("es")),
-    GERMAN("de", "Deutsch", Locale.GERMAN);
+    FRENCH("fr", "Français", Locale.FRENCH),
+    SPANISH("es", "Español", Locale.of("es")),
+    GERMAN("de", "Deutsch", Locale.GERMAN),
+    CHINESE("zh", "中文", Locale.CHINESE);
 
     private final String code;
     private final String displayName;

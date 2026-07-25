@@ -87,16 +87,28 @@ public class ScenarioSetupPanel extends BorderPane {
     private org.ether.society.persistence.ScenarioRepository scenarioRepo;
     private ComboBox<Scenario> savedScenariosCombo;
 
+    // i18n Labels
+    private Label title1;
+    private Label title2;
+    private Label nameLabel;
+    private Label eraLabel;
+    private Label startYearLabel;
+    private Button loadBtn;
+    private Button saveBtn;
+    private Button generateBtn;
+    private Button startBtn;
+
     public ScenarioSetupPanel(Consumer<Scenario> onStartSimulation) {
         this.onStartSimulation = onStartSimulation;
         this.scenarioRepo = new org.ether.society.persistence.ScenarioRepository();
         initUI();
+        updateTexts();
+
+        org.ether.society.i18n.I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
     private void initUI() {
         setPadding(new Insets(20));
-        setPadding(new Insets(20));
-        // Use global glass panel style instead of dark material flat color
         getStyleClass().add("glass-panel");
         setStyle("-fx-background-color: transparent;");
 
@@ -120,7 +132,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
         // 1. Scenario Details
         VBox section1 = new VBox(10);
-        Label title1 = new Label("1. SCENARIO CONFIGURATION");
+        title1 = new Label();
         title1.getStyleClass().add("label-header");
 
         // Load Saved Scenario
@@ -128,12 +140,10 @@ public class ScenarioSetupPanel extends BorderPane {
         savedScenariosCombo = new ComboBox<>();
         savedScenariosCombo.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(savedScenariosCombo, Priority.ALWAYS);
-        savedScenariosCombo.setTooltip(new Tooltip("Select a previously saved scenario"));
         refreshScenarioList();
 
-        Button loadBtn = new Button("Load");
+        loadBtn = new Button();
         loadBtn.setOnAction(e -> loadSelectedScenario());
-        loadBtn.setTooltip(new Tooltip("Load the selected scenario configuration"));
 
         loadBox.getChildren().addAll(savedScenariosCombo, loadBtn);
 
@@ -142,14 +152,10 @@ public class ScenarioSetupPanel extends BorderPane {
         grid1.setVgap(10);
 
         scenarioNameField = new TextField("New Civilization");
-        scenarioNameField.setTooltip(new Tooltip("Name for this simulation scenario"));
-
-        // Era Preset Dropdown (use class field)
         eraCombo = new ComboBox<>();
         eraCombo.getItems().addAll(StartDatePreset.values());
         eraCombo.setValue(StartDatePreset.NEOLITHIZATION);
         eraCombo.setMaxWidth(Double.MAX_VALUE);
-        eraCombo.setTooltip(new Tooltip("Select a historical era to set starting conditions"));
         eraCombo.setConverter(new javafx.util.StringConverter<>() {
             @Override
             public String toString(StartDatePreset p) {
@@ -163,7 +169,6 @@ public class ScenarioSetupPanel extends BorderPane {
         });
 
         startYearSpinner = new Spinner<>(-100000, 2100, -10000, 100);
-        startYearSpinner.setTooltip(new Tooltip("Starting year of the simulation (negative = BCE)"));
 
         // When era selected, update year and name
         eraCombo.setOnAction(e -> {
@@ -174,27 +179,30 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         });
 
-        grid1.addRow(0, new Label("Name:"), scenarioNameField);
-        grid1.addRow(1, new Label("Era Preset:"), eraCombo);
-        grid1.addRow(2, new Label("Start Year:"), startYearSpinner);
+        nameLabel = new Label();
+        eraLabel = new Label();
+        startYearLabel = new Label();
+
+        grid1.addRow(0, nameLabel, scenarioNameField);
+        grid1.addRow(1, eraLabel, eraCombo);
+        grid1.addRow(2, startYearLabel, startYearSpinner);
 
         // Save Button
-        Button saveBtn = new Button("Save Scenario");
+        saveBtn = new Button();
         saveBtn.setMaxWidth(Double.MAX_VALUE);
         saveBtn.setOnAction(e -> saveCurrentScenario());
-        saveBtn.setTooltip(new Tooltip("Save current scenario to database"));
 
         section1.getChildren().addAll(title1, loadBox, grid1, saveBtn);
 
         // 2. World Source
         VBox section2 = new VBox(10);
-        Label title2 = new Label("2. WORLD GENERATION");
+        title2 = new Label();
         title2.getStyleClass().add("label-header");
 
         sourceGroup = new ToggleGroup();
-        sourceProcedural = new RadioButton("Procedural Generation");
-        sourceLoad = new RadioButton("Load Existing Map");
-        sourceReal = new RadioButton("Real Earth Data");
+        sourceProcedural = new RadioButton();
+        sourceLoad = new RadioButton();
+        sourceReal = new RadioButton();
 
         sourceProcedural.setToggleGroup(sourceGroup);
         sourceLoad.setToggleGroup(sourceGroup);
@@ -215,13 +223,13 @@ public class ScenarioSetupPanel extends BorderPane {
         section2.getChildren().addAll(title2, sourceBox, new Separator(), subPanels);
 
         // 3. Action
-        Button generateBtn = new Button("Generate Preview");
+        generateBtn = new Button("Generate Preview");
         generateBtn.setMaxWidth(Double.MAX_VALUE);
         generateBtn.setStyle("-fx-font-weight: bold; -fx-base: #3498db;");
         generateBtn.setOnAction(e -> generatePreview());
 
         // Start Button
-        Button startBtn = new Button("START SIMULATION");
+        startBtn = new Button();
         startBtn.setPrefHeight(50);
         startBtn.setMaxWidth(Double.MAX_VALUE);
         startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-base: #2ecc71;");
@@ -235,133 +243,32 @@ public class ScenarioSetupPanel extends BorderPane {
         return root;
     }
 
+    public void updateTexts() {
+        if (title1 != null) title1.setText(org.ether.society.i18n.I18n.get("scenario.title"));
+        if (title2 != null) title2.setText(org.ether.society.i18n.I18n.get("scenario.world_title"));
+        if (nameLabel != null) nameLabel.setText(org.ether.society.i18n.I18n.get("scenario.name"));
+        if (eraLabel != null) eraLabel.setText(org.ether.society.i18n.I18n.get("scenario.era"));
+        if (startYearLabel != null) startYearLabel.setText(org.ether.society.i18n.I18n.get("scenario.start_year"));
+        if (loadBtn != null) loadBtn.setText(org.ether.society.i18n.I18n.get("scenario.load_btn"));
+        if (saveBtn != null) saveBtn.setText(org.ether.society.i18n.I18n.get("scenario.save_btn"));
+        if (startBtn != null) startBtn.setText(org.ether.society.i18n.I18n.get("scenario.start_btn"));
+        if (sourceProcedural != null) sourceProcedural.setText(org.ether.society.i18n.I18n.get("scenario.world_planet_gen"));
+        if (sourceLoad != null) sourceLoad.setText(org.ether.society.i18n.I18n.get("scenario.world_load_map"));
+        if (sourceReal != null) sourceReal.setText(org.ether.society.i18n.I18n.get("scenario.world_real_earth"));
+    }
+
     private VBox createProceduralPanel() {
-        VBox p = new VBox(10);
+        VBox p = new VBox(12);
+        p.setPadding(new Insets(15));
+        p.setStyle("-fx-background-color: rgba(255,255,255,0.03); -fx-background-radius: 8;");
 
-        // Terrain Preset
-        presetCombo = new ComboBox<>();
-        presetCombo.getItems().addAll(PlanetPreset.getPresets());
-        presetCombo.setValue(PlanetPreset.EARTH_LIKE);
-        presetCombo.setTooltip(new Tooltip("Quick preset - combines terrain and climate"));
-        presetCombo.setOnAction(e -> {
-            applyPreset(presetCombo.getValue());
-            generatePreview(); // Real-time update
-        });
+        Label infoLabel = new Label("🪐 Planetary geography, topography, and physics are configured in Tab 1 (PLANET GENERATOR).\n\n" +
+                                    "🌿 Ecological and resource distributions (Fauna, Flora, Ores) are tuned in Tab 2 (RESOURCES & ECOLOGY).\n\n" +
+                                    "The generated world is automatically linked to this scenario.");
+        infoLabel.setWrapText(true);
+        infoLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #94a3b8;");
 
-        // Elevation Preset (terrain shape)
-        elevationPresetCombo = new ComboBox<>();
-        elevationPresetCombo.getItems().addAll(ElevationPreset.values());
-        elevationPresetCombo.setValue(ElevationPreset.CONTINENTAL);
-        elevationPresetCombo.setTooltip(new Tooltip("Terrain shape: landmass distribution and relief"));
-        elevationPresetCombo.setOnAction(e -> {
-            ElevationPreset ep = elevationPresetCombo.getValue();
-            if (ep != null) {
-                waterSlider.setValue(ep.getWaterCoverage());
-                elevationRangeSlider.setValue(ep.getMaxElevationMeters());
-            }
-            generatePreview();
-        });
-
-        // Climate Preset (temperature/precipitation)
-        climatePresetCombo = new ComboBox<>();
-        climatePresetCombo.getItems().addAll(ClimatePreset.values());
-        climatePresetCombo.setValue(ClimatePreset.TEMPERATE);
-        climatePresetCombo.setTooltip(new Tooltip("Climate: temperature and precipitation patterns"));
-        climatePresetCombo.setOnAction(e -> {
-            ClimatePreset cp = climatePresetCombo.getValue();
-            if (cp != null) {
-                // Convert temp range to 0-1 slider: -20C=0, +35C=1
-                double tempNorm = (cp.getAvgTemperatureCelsius() + 20) / 55.0;
-                tempSlider.setValue(Math.max(0, Math.min(1, tempNorm)));
-            }
-            generatePreview();
-        });
-
-        seedField = new TextField("42");
-        seedField.setTooltip(new Tooltip("Random seed for reproducible generation"));
-
-        // Elevation parameters
-        elevationRangeSlider = new Slider(5000, 30000, 20000);
-        elevationRangeSlider.setShowTickLabels(true);
-        elevationRangeSlider.setShowTickMarks(true);
-        elevationRangeSlider.setMajorTickUnit(5000);
-        elevationRangeSlider
-                .setTooltip(new Tooltip("Total elevation range from ocean floor to mountain peak (meters)"));
-
-        seaLevelSlider = new Slider(0, 1, 0.55);
-        seaLevelSlider.setShowTickLabels(true);
-        seaLevelSlider.setTooltip(new Tooltip("Sea level as percentage of elevation range (0.55 = ~55% underwater)"));
-        seaLevelSlider.valueProperty().addListener((o, old, val) -> {
-            if (currentPreviewCells != null)
-                drawPreview();
-        });
-
-        waterSlider = new Slider(0, 1, 0.6);
-        waterSlider.setTooltip(new Tooltip("Surface water coverage (affects terrain generation)"));
-        waterSlider.valueProperty().addListener((o, old, val) -> {
-            if (currentPreviewCells != null)
-                generatePreview();
-        });
-
-        tempSlider = new Slider(0, 1, 0.5);
-        tempSlider.setTooltip(new Tooltip("Average temperature gradient (0=cold, 1=hot)"));
-
-        // Planet Physics
-        planetRadiusSpinner = new Spinner<>(1000.0, 100000.0, 6371.0, 100.0);
-        planetRadiusSpinner.setEditable(true);
-        planetRadiusSpinner.setTooltip(new Tooltip("Planet radius in km (Earth = 6371 km)"));
-
-        cellRadiusSpinner = new Spinner<>(0.1, 100.0, 1.0, 0.1);
-        cellRadiusSpinner.setEditable(true);
-        cellRadiusSpinner.setTooltip(new Tooltip("Simulation cell radius in km"));
-
-        axialTiltSpinner = new Spinner<>(0.0, 90.0, 23.5, 0.5);
-        axialTiltSpinner.setEditable(true);
-        axialTiltSpinner.setTooltip(new Tooltip("Axial tilt in degrees (Earth = 23.5 deg)"));
-
-        rotationPeriodSpinner = new Spinner<>(1.0, 1000.0, 24.0, 1.0);
-        rotationPeriodSpinner.setEditable(true);
-        rotationPeriodSpinner.setTooltip(new Tooltip("Day length in hours (Earth = 24 hours)"));
-
-        revolutionPeriodSpinner = new Spinner<>(1.0, 10000.0, 365.0, 1.0);
-        revolutionPeriodSpinner.setEditable(true);
-        revolutionPeriodSpinner.setTooltip(new Tooltip("Year length in days (Earth = 365 days)"));
-
-        solarIrradianceSpinner = new Spinner<>(100.0, 5000.0, 1361.0, 10.0);
-        solarIrradianceSpinner.setEditable(true);
-        solarIrradianceSpinner.setTooltip(new Tooltip("Solar irradiance in W/m^2 (Earth = 1361)"));
-
-        // Layout
-        GridPane g = new GridPane();
-        g.setHgap(10);
-        g.setVgap(8);
-
-        int row = 0;
-        Label terrainLabel = new Label("-- TERRAIN --");
-        terrainLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #3498db;");
-        g.add(terrainLabel, 0, row++, 2, 1);
-
-        g.addRow(row++, new Label("Quick Preset:"), presetCombo);
-        g.addRow(row++, new Label("Elevation Style:"), elevationPresetCombo);
-        g.addRow(row++, new Label("Climate Style:"), climatePresetCombo);
-        g.addRow(row++, new Label("Seed:"), seedField);
-        g.addRow(row++, new Label("Elevation Range (m):"), elevationRangeSlider);
-        g.addRow(row++, new Label("Sea Level:"), seaLevelSlider);
-        g.addRow(row++, new Label("Water Coverage:"), waterSlider);
-        g.addRow(row++, new Label("Temperature:"), tempSlider);
-
-        Label physicsLabel = new Label("-- PLANET PHYSICS --");
-        physicsLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #3498db;");
-        g.add(physicsLabel, 0, row++, 2, 1);
-
-        g.addRow(row++, new Label("Planet Radius (km):"), planetRadiusSpinner);
-        g.addRow(row++, new Label("Cell Radius (km):"), cellRadiusSpinner);
-        g.addRow(row++, new Label("Axial Tilt (deg):"), axialTiltSpinner);
-        g.addRow(row++, new Label("Day Length (hrs):"), rotationPeriodSpinner);
-        g.addRow(row++, new Label("Year Length (days):"), revolutionPeriodSpinner);
-        g.addRow(row++, new Label("Solar W/m^2:"), solarIrradianceSpinner);
-
-        p.getChildren().add(g);
+        p.getChildren().add(infoLabel);
         return p;
     }
 
@@ -704,5 +611,10 @@ public class ScenarioSetupPanel extends BorderPane {
 
     public List<H3Cell> getCells() {
         return currentPreviewCells;
+    }
+
+    public void setGeneratedCells(List<H3Cell> cells) {
+        this.currentPreviewCells = cells;
+        drawPreview();
     }
 }

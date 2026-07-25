@@ -26,7 +26,9 @@ public class Nation {
         this.name = name;
         this.color = color;
         this.capital = capital;
-        addCell(capital);
+        if (capital != null) {
+            addCell(capital);
+        }
     }
 
     public String getId() {
@@ -55,11 +57,13 @@ public class Nation {
 
     public void setCapital(H3Cell capital) {
         this.capital = capital;
-        addCell(capital); // Ensure capital is owned
+        if (capital != null) {
+            addCell(capital); // Ensure capital is owned
+        }
     }
 
     public void addCell(H3Cell cell) {
-        if (territory.add(cell)) {
+        if (cell != null && territory.add(cell)) {
             cell.setOwner(this); // Assuming H3Cell has setOwner
         }
     }
