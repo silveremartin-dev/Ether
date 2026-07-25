@@ -118,6 +118,15 @@ public class EtherApp extends Application {
         Scene scene = new Scene(contentStack, 1280, 800);
         org.ether.society.ui.Theme.setTheme(scene, org.ether.society.ui.Theme.DARK);
 
+        try {
+            var iconStream = getClass().getResourceAsStream("/icons/icon.png");
+            if (iconStream != null) {
+                primaryStage.getIcons().add(new javafx.scene.image.Image(iconStream));
+            }
+        } catch (Exception e) {
+            logger.warn("Could not load application icon", e);
+        }
+
         primaryStage.setScene(scene);
         primaryStage.show();
 
