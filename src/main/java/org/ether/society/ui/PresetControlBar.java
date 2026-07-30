@@ -31,7 +31,7 @@ import java.util.List;
  * @param <T> Preset type
  * @author Silvere Martin-Michiellot
  */
-public class PresetControlBar<T> extends HBox {
+public class PresetControlBar<T> extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(PresetControlBar.class);
 
     private final Label presetLabel;
@@ -52,9 +52,9 @@ public class PresetControlBar<T> extends HBox {
     }
 
     public PresetControlBar(String labelText) {
-        super(10);
-        setAlignment(Pos.CENTER_LEFT);
-        setPadding(new Insets(8, 12, 8, 12));
+        super(8);
+        setAlignment(Pos.TOP_LEFT);
+        setPadding(new Insets(10, 12, 10, 12));
         getStyleClass().add("card-section");
 
         presetLabel = new Label(labelText + ":");
@@ -62,6 +62,7 @@ public class PresetControlBar<T> extends HBox {
 
         presetCombo = new ComboBox<>();
         presetCombo.setMaxWidth(Double.MAX_VALUE);
+        presetCombo.setPrefWidth(250);
         HBox.setHgrow(presetCombo, Priority.ALWAYS);
 
         presetCombo.setOnAction(e -> {
@@ -70,11 +71,16 @@ public class PresetControlBar<T> extends HBox {
             }
         });
 
-        saveBtn = new Button(I18n.get("preset.save") != null ? I18n.get("preset.save") : "💾 Enregistrer");
+        HBox topRow = new HBox(8, presetLabel, presetCombo);
+        topRow.setAlignment(Pos.CENTER_LEFT);
+
+        saveBtn = new Button();
         saveBtn.getStyleClass().add("button-secondary");
         saveBtn.setOnAction(e -> promptSave());
+        HBox.setHgrow(saveBtn, Priority.ALWAYS);
+        saveBtn.setMaxWidth(Double.MAX_VALUE);
 
-        deleteBtn = new Button(I18n.get("preset.delete") != null ? I18n.get("preset.delete") : "🗑️ Supprimer");
+        deleteBtn = new Button();
         deleteBtn.getStyleClass().add("button-secondary");
         deleteBtn.setOnAction(e -> {
             T selected = presetCombo.getValue();
@@ -82,16 +88,32 @@ public class PresetControlBar<T> extends HBox {
                 listener.onDeletePreset(selected);
             }
         });
+        HBox.setHgrow(deleteBtn, Priority.ALWAYS);
+        deleteBtn.setMaxWidth(Double.MAX_VALUE);
 
-        exportBtn = new Button(I18n.get("preset.export") != null ? I18n.get("preset.export") : "📤 Exporter");
+        exportBtn = new Button();
         exportBtn.getStyleClass().add("button-secondary");
         exportBtn.setOnAction(e -> promptExport());
+        HBox.setHgrow(exportBtn, Priority.ALWAYS);
+        exportBtn.setMaxWidth(Double.MAX_VALUE);
 
-        importBtn = new Button(I18n.get("preset.import") != null ? I18n.get("preset.import") : "📥 Importer");
+        importBtn = new Button();
         importBtn.getStyleClass().add("button-secondary");
         importBtn.setOnAction(e -> promptImport());
+        HBox.setHgrow(importBtn, Priority.ALWAYS);
+        importBtn.setMaxWidth(Double.MAX_VALUE);
 
-        getChildren().addAll(presetLabel, presetCombo, saveBtn, deleteBtn, exportBtn, importBtn);
+        HBox row1 = new HBox(6, saveBtn, deleteBtn);
+        row1.setAlignment(Pos.CENTER);
+        HBox row2 = new HBox(6, exportBtn, importBtn);
+        row2.setAlignment(Pos.CENTER);
+
+        VBox btnBox = new VBox(6, row1, row2);
+
+        getChildren().addAll(topRow, btnBox);
+
+        updateTexts();
+        updateTooltips();
 
         // Update texts on language change
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
@@ -149,8 +171,19 @@ public class PresetControlBar<T> extends HBox {
     }
 
     public void updateTexts() {
-        if (presetLabel != null) {
-            // Keep label
-        }
+        if (saveBtn != null) saveBtn.setText("💾 " + I18n.get("preset.save"));
+        if (deleteBtn != null) deleteBtn.setText("🗑️ " + I18n.get("preset.delete"));
+        if (exportBtn != null) exportBtn.setText("📤 " + I18n.get("preset.export"));
+        if (importBtn != null) importBtn.setText("📥 " + I18n.get("preset.import"));
+        updateTooltips();
+    }
+
+    private void updateTooltips() {
+        presetCombo.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.preset", "Préréglage complet des paramètres de simulation")));
+        presetLabel.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.preset", "Préréglage complet des paramètres de simulation")));
+        saveBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.preset_save", "Sauvegarder la configuration actuelle sous forme de préréglage")));
+        deleteBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.preset_delete", "Supprimer le préréglage sélectionné")));
+        exportBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.preset_export", "Exporter le préréglage dans un fichier JSON externe")));
+        importBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.preset_import", "Importer un fichier de préréglage JSON")));
     }
 }

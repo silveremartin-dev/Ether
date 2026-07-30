@@ -50,7 +50,19 @@ public class ImageMapLoader {
     }
 
     public void mapImagesToCells(List<H3Cell> cells, Image elevImg, Image biomeImg, Image resourceImg, double minAlt, double maxAlt) {
-        if (elevImg == null && biomeImg == null && resourceImg == null) {
+        mapImagesToCells(cells, elevImg, biomeImg, resourceImg, null, null, null, minAlt, maxAlt);
+    }
+
+    public void mapImagesToCells(List<H3Cell> cells, Image elevImg, Image biomeImg, Image resourceImg, Image climateImg, double minAlt, double maxAlt) {
+        mapImagesToCells(cells, elevImg, biomeImg, resourceImg, climateImg, null, null, minAlt, maxAlt);
+    }
+
+    public void mapImagesToCells(List<H3Cell> cells, Image elevImg, Image biomeImg, Image resourceImg, Image climateImg, Image rainfallImg, double minAlt, double maxAlt) {
+        mapImagesToCells(cells, elevImg, biomeImg, resourceImg, climateImg, rainfallImg, null, minAlt, maxAlt);
+    }
+
+    public void mapImagesToCells(List<H3Cell> cells, Image elevImg, Image biomeImg, Image resourceImg, Image climateImg, Image rainfallImg, Image seasonalityImg, double minAlt, double maxAlt) {
+        if (elevImg == null && biomeImg == null && resourceImg == null && climateImg == null && rainfallImg == null && seasonalityImg == null) {
             logger.warn("No map images provided for cell mapping");
             return;
         }
@@ -58,6 +70,9 @@ public class ImageMapLoader {
         PixelReader elevReader = elevImg != null ? elevImg.getPixelReader() : null;
         PixelReader biomeReader = biomeImg != null ? biomeImg.getPixelReader() : null;
         PixelReader resourceReader = resourceImg != null ? resourceImg.getPixelReader() : null;
+        PixelReader climateReader = climateImg != null ? climateImg.getPixelReader() : null;
+        PixelReader rainfallReader = rainfallImg != null ? rainfallImg.getPixelReader() : null;
+        PixelReader seasonalityReader = seasonalityImg != null ? seasonalityImg.getPixelReader() : null;
 
         double wElev = elevImg != null ? elevImg.getWidth() : 0;
         double hElev = elevImg != null ? elevImg.getHeight() : 0;
@@ -67,6 +82,15 @@ public class ImageMapLoader {
 
         double wRes = resourceImg != null ? resourceImg.getWidth() : 0;
         double hRes = resourceImg != null ? resourceImg.getHeight() : 0;
+
+        double wClimate = climateImg != null ? climateImg.getWidth() : 0;
+        double hClimate = climateImg != null ? climateImg.getHeight() : 0;
+
+        double wRain = rainfallImg != null ? rainfallImg.getWidth() : 0;
+        double hRain = rainfallImg != null ? rainfallImg.getHeight() : 0;
+
+        double wSeason = seasonalityImg != null ? seasonalityImg.getWidth() : 0;
+        double hSeason = seasonalityImg != null ? seasonalityImg.getHeight() : 0;
 
         for (H3Cell cell : cells) {
             double lat = cell.getLatitude();
@@ -116,10 +140,42 @@ public class ImageMapLoader {
                 cell.setWaterResource(c.getBlue() * 1000.0);
                 cell.setBiomassFish(c.getBlue() * 1000.0);
             }
+
+            // 4. Sample Climate / Temperature Map
+            if (climateReader != null) {
+                int x = (int) Math.min(u * wClimate, wClimate - 1);
+                int y = (int) Math.min(v * hClimate, hClimate - 1);
+                Color c = climateReader.getColor(x, y);
+                // Red channel or brightness represents temperature (-50°C to +50°C)
+                double tempC = -50.0 + c.getRed() * 100.0;
+                cell.setTemperature(tempC);
+                // Green channel represents rainfall (0 to 3000 mm/yr) if no separate rainfall map
+                if (rainfallReader == null) {
+                    cell.setRainfall(c.getGreen() * 3000.0);
+                }
+            }
+
+            // 5. Sample Separate Rainfall / Moisture Map
+            if (rainfallReader != null) {
+                int x = (int) Math.min(u * wRain, wRain - 1);
+                int y = (int) Math.min(v * hRain, hRain - 1);
+                Color c = rainfallReader.getColor(x, y);
+                cell.setRainfall(c.getBrightness() * 3000.0);
+            }
+
+            // 6. Sample Separate Seasonality / Temp Amplitude Map
+            if (seasonalityReader != null) {
+                int x = (int) Math.min(u * wSeason, wSeason - 1);
+                int y = (int) Math.min(v * hSeason, hSeason - 1);
+                Color c = seasonalityReader.getColor(x, y);
+                // Brightness represents seasonal temperature delta (0°C to 50°C)
+                double seasonalDelta = c.getBrightness() * 50.0;
+                cell.setTemperature(cell.getTemperature() + (Math.sin(Math.toRadians(lat)) * seasonalDelta * 0.5));
+            }
         }
 
-        logger.info("Mapped data from map images (Elevation: {}, Biome: {}, Resource: {}) to {} cells",
-                elevImg != null, biomeImg != null, resourceImg != null, cells.size());
+        logger.info("Mapped data from map images (Elevation: {}, Biome: {}, Resource: {}, Climate: {}, Rain: {}, Season: {}) to {} cells",
+                elevImg != null, biomeImg != null, resourceImg != null, climateImg != null, rainfallImg != null, seasonalityImg != null, cells.size());
     }
 
     /**

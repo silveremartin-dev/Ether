@@ -46,14 +46,23 @@ public enum Theme {
     }
 
     public static void setTheme(Scene scene, Theme theme) {
-        if (theme == null || scene == null) return;
+        if (theme == null) return;
         currentTheme.set(theme);
-        
+        applyCurrentTheme(scene);
+    }
+
+    public static void applyCurrentTheme(Scene scene) {
+        if (scene == null) return;
+        Theme theme = getCurrentTheme();
         try {
             scene.getStylesheets().clear();
-            String css = Theme.class.getResource(theme.getStylesheetPath()).toExternalForm();
-            scene.getStylesheets().add(css);
-            logger.info("UI Theme switched to: {}", theme);
+            var res = Theme.class.getResource(theme.getStylesheetPath());
+            if (res != null) {
+                scene.getStylesheets().add(res.toExternalForm());
+                logger.info("UI Theme applied to scene: {}", theme);
+            } else {
+                logger.error("Theme stylesheet resource not found: {}", theme.getStylesheetPath());
+            }
         } catch (Exception e) {
             logger.error("Failed to apply theme: {}", theme, e);
         }

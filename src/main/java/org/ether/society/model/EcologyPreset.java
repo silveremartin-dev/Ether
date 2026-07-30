@@ -14,23 +14,23 @@ import java.util.List;
  */
 public record EcologyPreset(
         String name,
-        double woodDensityMultiplier,
-        double cropYieldMultiplier,
-        double gameFaunaMultiplier,
-        double livestockCapacityMultiplier,
-        double metalOresMultiplier,
-        double preciousOresMultiplier,
-        double stoneQualityMultiplier,
-        double fishAbundanceMultiplier
+        double terrestrialBiomassGtC,    // Global plant & forest biomass (Gigatons of Carbon, GtC)
+        double soilOrganicCarbonGtC,     // Global soil organic carbon & agricultural stock (GtC)
+        double faunaBiomassGtC,          // Global terrestrial animal & game fauna biomass (GtC)
+        double aquaticBiomassGtC,        // Global marine & freshwater biomass (GtC)
+        double crustalMetalOresGt,       // Industrial base metal reserves in crust (Gigatons, Gt)
+        double preciousMetalOresMt,      // Precious & rare earth ores (Megatons, Mt)
+        double mantleHeatFlowMwM2,       // Mantle heat flow & tectonic/geothermal index (mW/m²)
+        double freshwaterReserveKm3      // Groundwater & aquifer reserves (in 10^3 km³)
 ) implements Serializable {
 
     public static List<EcologyPreset> getBuiltInPresets() {
         List<EcologyPreset> list = new ArrayList<>();
-        list.add(new EcologyPreset("Balanced Earth Standard", 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0));
-        list.add(new EcologyPreset("Rich Minerals & Mining World", 0.8, 0.7, 0.6, 0.5, 3.0, 2.5, 2.0, 0.8));
-        list.add(new EcologyPreset("Lush Primeval Forest", 3.0, 1.5, 2.5, 1.2, 0.5, 0.5, 0.8, 1.2));
-        list.add(new EcologyPreset("Oceanic & Marine Paradise", 0.5, 0.8, 0.5, 0.5, 0.7, 0.8, 0.8, 3.5));
-        list.add(new EcologyPreset("Arid Resource-Scarce Wasteland", 0.2, 0.3, 0.2, 0.2, 0.4, 0.3, 0.5, 0.3));
+        list.add(new EcologyPreset("Earth Standard Baseline", 450.0, 1500.0, 2.0, 6.0, 80.0, 1200.0, 87.0, 15000.0));
+        list.add(new EcologyPreset("Rich Mineral & Tectonic World", 200.0, 800.0, 1.0, 3.0, 350.0, 6500.0, 180.0, 8000.0));
+        list.add(new EcologyPreset("Primeval Carboniferous Jungle World", 1200.0, 3500.0, 8.0, 12.0, 60.0, 800.0, 95.0, 25000.0));
+        list.add(new EcologyPreset("Oceanic Aquifer Paradise", 150.0, 500.0, 0.8, 25.0, 40.0, 900.0, 70.0, 45000.0));
+        list.add(new EcologyPreset("Arid Glacial Wasteland", 25.0, 100.0, 0.1, 0.5, 120.0, 2200.0, 45.0, 1200.0));
         return list;
     }
 

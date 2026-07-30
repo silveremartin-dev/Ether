@@ -84,6 +84,18 @@ public class I18n {
     }
 
     /**
+     * Get a localized string for the key, or return fallback default value if missing.
+     */
+    public static String getOrDefault(String key, String defaultValue) {
+        try {
+            if (bundle != null && bundle.containsKey(key)) {
+                return bundle.getString(key);
+            }
+        } catch (Exception ignored) {}
+        return defaultValue;
+    }
+
+    /**
      * Get a localized and formatted string.
      * 
      * @param key  The resource key

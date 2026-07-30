@@ -154,11 +154,19 @@ public class H3Cell {
     @Column(nullable = false)
     private Double resourceMetal = 0.0;
     @Column(nullable = false)
+    private Double resourcePreciousMetal = 0.0; // Precious ores (kg/km²)
+    @Column(nullable = false)
     private Double resourceClay = 0.0;
     @Column(nullable = false)
     private Double resourceWork = 0.0; // Available labor
     @Column(nullable = false)
     private Double resourceCapital = 0.0; // Infrastructure/Tools
+    @Column(nullable = false)
+    private Double soilOrganicCarbon = 0.0; // Soil carbon fertility (tC/km²)
+    @Column(nullable = false)
+    private Double mantleHeatFlow = 87.0; // Geothermal heat flow & tectonic index (mW/m²)
+    @Column(nullable = false)
+    private Double freshwaterAquifer = 0.0; // Groundwater table volume (m³/km²)
 
     // --- Socio-Economic Indices ---
     @Column(nullable = false)
@@ -396,6 +404,38 @@ public class H3Cell {
         this.resourceMetal = val;
     }
 
+    public Double getResourcePreciousMetal() {
+        return resourcePreciousMetal;
+    }
+
+    public void setResourcePreciousMetal(Double val) {
+        this.resourcePreciousMetal = val;
+    }
+
+    public Double getSoilOrganicCarbon() {
+        return soilOrganicCarbon;
+    }
+
+    public void setSoilOrganicCarbon(Double val) {
+        this.soilOrganicCarbon = val;
+    }
+
+    public Double getMantleHeatFlow() {
+        return mantleHeatFlow;
+    }
+
+    public void setMantleHeatFlow(Double val) {
+        this.mantleHeatFlow = val;
+    }
+
+    public Double getFreshwaterAquifer() {
+        return freshwaterAquifer;
+    }
+
+    public void setFreshwaterAquifer(Double val) {
+        this.freshwaterAquifer = val;
+    }
+
     public Double getResourceClay() {
         return resourceClay;
     }
@@ -466,6 +506,10 @@ public class H3Cell {
         copy.setWaterResource(this.waterResource);
         copy.setWoodResource(this.woodResource);
         copy.setResourceMetal(this.resourceMetal);
+        copy.setResourcePreciousMetal(this.resourcePreciousMetal);
+        copy.setSoilOrganicCarbon(this.soilOrganicCarbon);
+        copy.setMantleHeatFlow(this.mantleHeatFlow);
+        copy.setFreshwaterAquifer(this.freshwaterAquifer);
         copy.setResourceClay(this.resourceClay);
         copy.setResourceWork(this.resourceWork);
         copy.setResourceCapital(this.resourceCapital);

@@ -84,7 +84,6 @@ public class ControlPanel extends HBox {
         setAlignment(Pos.CENTER);
         // Remove hardcoded background, use CSS class
         getStyleClass().add("glass-panel");
-        setStyle("-fx-text-fill: white;");
 
         // Save/Load Buttons
         Button saveBtn = new Button("Save");
@@ -191,7 +190,7 @@ public class ControlPanel extends HBox {
 
         // Language Selector
         langLabel = new Label();
-        langLabel.setStyle("-fx-text-fill: white;");
+        langLabel.getStyleClass().add("control-label");
 
         langCombo = new ComboBox<>();
         langCombo.getItems().addAll(Language.values());
@@ -253,14 +252,14 @@ public class ControlPanel extends HBox {
             }
         });
         timelapseLabel = new Label("Year: -");
-        timelapseLabel.setStyle("-fx-text-fill: #90caf9;");
+        timelapseLabel.getStyleClass().add("control-label");
 
         // Database Status Label
         dbStatusLabel = new Label("DB: Checking...");
         dbStatusLabel.getStyleClass().add("status-label");
         // Style will be updated in updateDatabaseStatus
 
-        yearLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
+        yearLabel.getStyleClass().add("label-title");
 
         getChildren().addAll(yearLabel, seasonLabel, ageLabel, tpsLabel, statsLabel, eventLabel, saveBtn, loadBtn, startBtn,
                 pauseBtn,

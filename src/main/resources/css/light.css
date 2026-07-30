@@ -145,14 +145,26 @@
 
 .tab-pane .tab {
     -fx-background-color: transparent;
+    -fx-padding: 6 16;
+}
+
+.tab-pane .tab .tab-label {
     -fx-text-fill: #475569;
     -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.tab-pane .tab:hover .tab-label {
+    -fx-text-fill: #0f172a;
 }
 
 .tab-pane .tab:selected {
-    -fx-background-color: transparent;
+    -fx-background-color: rgba(2, 132, 199, 0.08);
     -fx-border-width: 0 0 2 0;
     -fx-border-color: #0284c7;
+}
+
+.tab-pane .tab:selected .tab-label {
     -fx-text-fill: #0369a1;
 }
 

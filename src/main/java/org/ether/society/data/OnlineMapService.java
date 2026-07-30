@@ -48,30 +48,44 @@ public class OnlineMapService {
     public enum CelestialBody {
         EARTH("Earth",
               "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=GEBCO_BATHYMETRY_TOPOGRAPHY&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180",
-              "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=MODIS_Water_Mask_EASE_Res_250m&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180"),
+              "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=MODIS_Water_Mask_EASE_Res_250m&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180",
+              "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=MODIS_Terra_Land_Surface_Temp_Day&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180",
+              "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=IMERG_Precipitation_Rate&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180"),
         MARS("Mars",
              "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map&service=WMS&version=1.1.1&request=GetMap&layers=MOLA_dem&styles=&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&width=1024&height=512",
-             "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map&service=WMS&version=1.1.1&request=GetMap&layers=MOLA_color&styles=&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&width=1024&height=512"),
+             "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map&service=WMS&version=1.1.1&request=GetMap&layers=MOLA_color&styles=&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&width=1024&height=512",
+             "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map&service=WMS&version=1.1.1&request=GetMap&layers=THEMIS_day_IR&styles=&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&width=1024&height=512",
+             null),
         MOON("Moon",
              "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/earth/moon_simp_cyl.map&service=WMS&version=1.1.1&request=GetMap&layers=LOLA_dem&styles=&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&width=1024&height=512",
+             null,
+             null,
              null),
         VENUS("Venus",
               "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/venus/venus_simp_cyl.map&service=WMS&version=1.1.1&request=GetMap&layers=venus_topo&styles=&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&width=1024&height=512",
+              null,
+              null,
               null);
 
         private final String name;
         private final String elevationWmsUrl;
         private final String biomeWmsUrl;
+        private final String climateWmsUrl;
+        private final String rainfallWmsUrl;
 
-        CelestialBody(String name, String elevationWmsUrl, String biomeWmsUrl) {
+        CelestialBody(String name, String elevationWmsUrl, String biomeWmsUrl, String climateWmsUrl, String rainfallWmsUrl) {
             this.name = name;
             this.elevationWmsUrl = elevationWmsUrl;
             this.biomeWmsUrl = biomeWmsUrl;
+            this.climateWmsUrl = climateWmsUrl;
+            this.rainfallWmsUrl = rainfallWmsUrl;
         }
 
         public String getName() { return name; }
         public String getElevationWmsUrl() { return elevationWmsUrl; }
         public String getBiomeWmsUrl() { return biomeWmsUrl; }
+        public String getClimateWmsUrl() { return climateWmsUrl; }
+        public String getRainfallWmsUrl() { return rainfallWmsUrl; }
     }
 
     /**
@@ -89,6 +103,26 @@ public class OnlineMapService {
             return CompletableFuture.completedFuture(null);
         }
         return fetchMapFromUrlAsync(body.getName().toLowerCase() + "_biome.png", body.getBiomeWmsUrl());
+    }
+
+    /**
+     * Fetch climate/thermal map image asynchronously from NASA GIBS / USGS WMS endpoints.
+     */
+    public CompletableFuture<Image> fetchClimateMapAsync(CelestialBody body) {
+        if (body.getClimateWmsUrl() == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return fetchMapFromUrlAsync(body.getName().toLowerCase() + "_climate.png", body.getClimateWmsUrl());
+    }
+
+    /**
+     * Fetch rainfall/precipitation map image asynchronously from NASA GIBS WMS endpoints.
+     */
+    public CompletableFuture<Image> fetchRainfallMapAsync(CelestialBody body) {
+        if (body.getRainfallWmsUrl() == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return fetchMapFromUrlAsync(body.getName().toLowerCase() + "_rainfall.png", body.getRainfallWmsUrl());
     }
 
     /**

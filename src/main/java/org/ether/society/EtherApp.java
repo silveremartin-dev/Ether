@@ -43,7 +43,6 @@ public class EtherApp extends Application {
     private static final Logger logger = LoggerFactory.getLogger(EtherApp.class);
 
     private Stage primaryStage;
-    private Label infoLabel;
     private H3SimulationEngine h3Engine;
     private MiniMap miniMap;
     private H3MapCanvas mapCanvas;
@@ -105,15 +104,6 @@ public class EtherApp extends Application {
         controlPanel.setColorLegend(colorLegend);
 
         StackPane contentStack = new StackPane(mainView);
-
-        // Info label overlay
-        infoLabel = new Label();
-        infoLabel.setPadding(new javafx.geometry.Insets(5));
-        infoLabel.setStyle(
-                "-fx-font-size: 12px; -fx-text-fill: white; -fx-background-color: rgba(0,0,0,0.5); -fx-background-radius: 3;");
-        StackPane.setAlignment(infoLabel, Pos.TOP_RIGHT);
-        StackPane.setMargin(infoLabel, new javafx.geometry.Insets(5, 50, 0, 0));
-        contentStack.getChildren().add(infoLabel);
 
         Scene scene = new Scene(contentStack, 1280, 800);
         org.ether.society.ui.Theme.setTheme(scene, org.ether.society.ui.Theme.DARK);
@@ -185,7 +175,5 @@ public class EtherApp extends Application {
 
     private void updateTexts() {
         primaryStage.setTitle(I18n.get("app.title"));
-        String year = h3Engine.getTimeManager().getFormattedDate();
-        infoLabel.setText(I18n.get("app.info", year));
     }
 }

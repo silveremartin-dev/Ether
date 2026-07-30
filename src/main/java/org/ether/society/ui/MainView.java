@@ -133,6 +133,9 @@ public class MainView extends StackPane {
         mapCanvas.draw();
 
         resourcePanel.setActiveCells(cells);
+        if (planetGeneratorPanel != null) {
+            resourcePanel.setActivePlanetPreset(planetGeneratorPanel.buildPresetFromUI());
+        }
         setupPanel.setGeneratedCells(cells);
         tabPane.getSelectionModel().select(resourcesTab);
     }

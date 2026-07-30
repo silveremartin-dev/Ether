@@ -141,7 +141,7 @@ public class ScenarioSetupPanel extends BorderPane {
         ecologyContextLabel = new Label("🌿 Écologie : Standard Équilibrée");
         ecologyContextLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #34d399;");
         HBox contextBox = new HBox(12, planetContextLabel, ecologyContextLabel);
-        contextBox.setStyle("-fx-padding: 6 10; -fx-background-color: rgba(255,255,255,0.03); -fx-background-radius: 6;");
+        contextBox.getStyleClass().add("card-section");
 
         // 1. Standardized Scenario Preset Control Bar
         scenarioPresetBar = new PresetControlBar<>("Scénario Preset");
@@ -390,7 +390,7 @@ public class ScenarioSetupPanel extends BorderPane {
         p.setStyle("-fx-background-color: rgba(255,255,255,0.03); -fx-background-radius: 8;");
         Label infoLabel = new Label("🪐 Territoire, relief et géologie issus de l'Onglet 1 (Planète).\n🌿 Écologie et minerais issus de l'Onglet 2 (Ressources).");
         infoLabel.setWrapText(true);
-        infoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #94a3b8;");
+        infoLabel.getStyleClass().add("control-label");
         p.getChildren().add(infoLabel);
         return p;
     }
@@ -444,7 +444,7 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox.setVgrow(canvasContainer, Priority.ALWAYS);
 
         previewStatusLabel = new Label("Aucune prévisualisation générée");
-        previewStatusLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px;");
+        previewStatusLabel.getStyleClass().add("control-label");
 
         HBox legendBox = createLegend();
         root.getChildren().addAll(header, canvasContainer, legendBox, previewStatusLabel);
