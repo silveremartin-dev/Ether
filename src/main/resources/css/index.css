@@ -16,45 +16,47 @@
     -fx-border-width: 1;
 }
 
-/* Buttons - Premium Gradient */
-.button {
-    -fx-background-color: linear-gradient(to right, #3a7fff, #2e5cbf);
-    -fx-text-fill: white;
+.card-section {
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-radius: 10;
+    -fx-padding: 15;
+}
+
+/* Labels & Typography */
+.label {
+    -fx-text-fill: #e2e8f0;
+}
+
+.label-title {
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-background-radius: 6;
-    -fx-cursor: hand;
-    -fx-padding: 8 16;
+    -fx-text-fill: #38bdf8;
 }
 
-.button:hover {
-    -fx-background-color: linear-gradient(to right, #4a8fff, #3e6ccf);
-    -fx-effect: dropshadow(gaussian, rgba(58, 127, 255, 0.4), 10, 0, 0, 0);
-}
-
-.button:pressed {
-    -fx-background-color: #264a99;
-}
-
-/* Secondary Action Button */
-.button-secondary {
-    -fx-background-color: transparent;
-    -fx-border-color: rgba(255, 255, 255, 0.3);
-    -fx-border-radius: 6;
-    -fx-text-fill: #e0e0e0;
-}
-
-.button-secondary:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.1);
-    -fx-border-color: white;
-    -fx-text-fill: white;
-}
-
-/* Labels & Text */
 .label-header {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 2, 0, 0, 1);
+}
+
+.label-section-header {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #94a3b8;
+}
+
+.control-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #cbd5e1;
+}
+
+.value-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #38bdf8;
+    -fx-font-weight: bold;
 }
 
 .label-stats {

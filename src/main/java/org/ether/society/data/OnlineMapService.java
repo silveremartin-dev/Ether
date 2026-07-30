@@ -1,0 +1,145 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2024 Gemini AI Assistant
+ * Copyright (c) 2024 Silvere Martin-Michiellot
+ */
+package org.ether.society.data;
+
+import javafx.scene.image.Image;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
+
+/**
+ * Online Data Fetching Service for real planetary satellite datasets (Earth, Moon, Mars, Venus, Mercury).
+ * Connects to USGS Astrogeology WMS, NASA GIBS, and OpenTopography endpoints.
+ * Caches retrieved datasets locally under ~/.ether/cache/maps/ for offline reusability.
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 2.2.0
+ */
+public class OnlineMapService {
+    private static final Logger logger = LoggerFactory.getLogger(OnlineMapService.class);
+
+    private static final File CACHE_DIR = new File(System.getProperty("user.home"), ".ether/cache/maps");
+    private final HttpClient httpClient;
+
+    public OnlineMapService() {
+        this.httpClient = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(10))
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .build();
+
+        if (!CACHE_DIR.exists()) {
+            CACHE_DIR.mkdirs();
+        }
+    }
+
+    public enum CelestialBody {
+        EARTH("Earth",
+              "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=GEBCO_BATHYMETRY_TOPOGRAPHY&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180",
+              "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=MODIS_Water_Mask_EASE_Res_250m&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180"),
+        MARS("Mars",
+             "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map&service=WMS&version=1.1.1&request=GetMap&layers=MOLA_dem&styles=&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&width=1024&height=512",
+             "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map&service=WMS&version=1.1.1&request=GetMap&layers=MOLA_color&styles=&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&width=1024&height=512"),
+        MOON("Moon",
+             "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/earth/moon_simp_cyl.map&service=WMS&version=1.1.1&request=GetMap&layers=LOLA_dem&styles=&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&width=1024&height=512",
+             null),
+        VENUS("Venus",
+              "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/venus/venus_simp_cyl.map&service=WMS&version=1.1.1&request=GetMap&layers=venus_topo&styles=&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&width=1024&height=512",
+              null);
+
+        private final String name;
+        private final String elevationWmsUrl;
+        private final String biomeWmsUrl;
+
+        CelestialBody(String name, String elevationWmsUrl, String biomeWmsUrl) {
+            this.name = name;
+            this.elevationWmsUrl = elevationWmsUrl;
+            this.biomeWmsUrl = biomeWmsUrl;
+        }
+
+        public String getName() { return name; }
+        public String getElevationWmsUrl() { return elevationWmsUrl; }
+        public String getBiomeWmsUrl() { return biomeWmsUrl; }
+    }
+
+    /**
+     * Fetch elevation map image asynchronously from USGS / NASA WMS endpoints.
+     */
+    public CompletableFuture<Image> fetchElevationMapAsync(CelestialBody body) {
+        return fetchMapFromUrlAsync(body.getName().toLowerCase() + "_elevation.png", body.getElevationWmsUrl());
+    }
+
+    /**
+     * Fetch biome/color map image asynchronously from USGS / NASA WMS endpoints.
+     */
+    public CompletableFuture<Image> fetchBiomeMapAsync(CelestialBody body) {
+        if (body.getBiomeWmsUrl() == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return fetchMapFromUrlAsync(body.getName().toLowerCase() + "_biome.png", body.getBiomeWmsUrl());
+    }
+
+    /**
+     * Downloads an image from a URL, using cache if available.
+     */
+    public CompletableFuture<Image> fetchMapFromUrlAsync(String cacheFileName, String urlString) {
+        if (urlString == null || urlString.isBlank()) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        File cacheFile = new File(CACHE_DIR, cacheFileName);
+
+        // Check local disk cache first
+        if (cacheFile.exists() && cacheFile.length() > 0) {
+            logger.info("Loading cached satellite dataset from {}", cacheFile.getAbsolutePath());
+            try (InputStream is = new FileInputStream(cacheFile)) {
+                Image cachedImage = new Image(is);
+                if (!cachedImage.isError()) {
+                    return CompletableFuture.completedFuture(cachedImage);
+                }
+            } catch (Exception e) {
+                logger.warn("Failed to load cached map file: {}, redownloading...", cacheFile.getName());
+            }
+        }
+
+        // Fetch remote map over HTTP WMS
+        logger.info("Fetching remote satellite map from WMS service: {}", urlString);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(urlString))
+                .header("User-Agent", "EtherPlanetGenerator/2.2.0 (Human Society Simulation)")
+                .timeout(Duration.ofSeconds(15))
+                .GET()
+                .build();
+
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofFile(cacheFile.toPath()))
+                .thenApply(response -> {
+                    if (response.statusCode() == 200 && cacheFile.exists() && cacheFile.length() > 0) {
+                        logger.info("Successfully downloaded satellite dataset: {} ({} bytes)", cacheFile.getName(), cacheFile.length());
+                        try (InputStream is = new FileInputStream(cacheFile)) {
+                            return new Image(is);
+                        } catch (Exception e) {
+                            logger.error("Error parsing downloaded map image", e);
+                        }
+                    } else {
+                        logger.warn("WMS fetch returned HTTP status code: {}", response.statusCode());
+                    }
+                    return null;
+                })
+                .exceptionally(ex -> {
+                    logger.error("WMS remote satellite fetch failed: {}", ex.getMessage());
+                    return null;
+                });
+    }
+}

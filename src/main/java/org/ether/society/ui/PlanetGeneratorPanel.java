@@ -6,6 +6,8 @@
 package org.ether.society.ui;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.data.ImageMapLoader;
+import org.ether.society.data.OnlineMapService;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Biome;
 import org.ether.society.procedural.PlanetPreset;
@@ -19,7 +21,10 @@ import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -29,27 +34,42 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 
 /**
- * Integrated UI Panel for procedural planet generation, astronomical physics, and climate customization.
+ * Integrated UI Panel for procedural planet generation, astronomical physics, 
+ * climate customization, and custom map image import (Elevation, Biomes, Geology/Resources).
  * 
  * @author Silvere Martin-Michiellot
- * @version 2.0.0
+ * @version 2.1.0
  */
 public class PlanetGeneratorPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(PlanetGeneratorPanel.class);
 
     private final ProceduralGenerator generator;
+    private final ImageMapLoader mapLoader;
+    private final OnlineMapService onlineMapService;
     private final Consumer<List<H3Cell>> onPlanetGeneratedCallback;
+
+    // Custom Map Images
+    private Image customElevImage;
+    private Image customBiomeImage;
+    private Image customResourceImage;
+
+    // Online & Export Buttons & Labels
+    private Button fetchOnlineBtn;
+    private Button exportMapsBtn;
+    private Label mapStatusLabel;
 
     // Controls
     private ComboBox<PlanetPreset> presetCombo;
     private ComboBox<ElevationPreset> elevationPresetCombo;
     private ComboBox<ClimatePreset> climatePresetCombo;
+    private ComboBox<String> mapSourceCombo;
     private TextField seedField;
     private Slider radiusSlider;
     private Slider dayLengthSlider;
@@ -66,9 +86,21 @@ public class PlanetGeneratorPanel extends BorderPane {
     private Slider tempGradSlider;
     private ComboBox<Integer> resolutionCombo;
 
+    // Map Load Buttons & Labels
+    private Label elevFileLabel;
+    private Label biomeFileLabel;
+    private Label resourceFileLabel;
+    private Button loadElevBtn;
+    private Button clearElevBtn;
+    private Button loadBiomeBtn;
+    private Button clearBiomeBtn;
+    private Button loadResourceBtn;
+    private Button clearResourceBtn;
+
     // UI Labels for i18n
     private Label headerLabel;
     private Label presetsSecHeader;
+    private Label customMapsSecHeader;
     private Label astroSecHeader;
     private Label topoSecHeader;
     private Label previewTitle;
@@ -85,6 +117,10 @@ public class PlanetGeneratorPanel extends BorderPane {
     private Label presetRowLabel;
     private Label elevationRowLabel;
     private Label climateRowLabel;
+    private Label mapSourceRowLabel;
+    private Label elevMapRowLabel;
+    private Label biomeMapRowLabel;
+    private Label resourceMapRowLabel;
     private Label radiusRowLabel;
     private Label resRowLabel;
     private Label dayRowLabel;
@@ -106,6 +142,8 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     public PlanetGeneratorPanel(Consumer<List<H3Cell>> onPlanetGeneratedCallback) {
         this.generator = new ProceduralGenerator();
+        this.mapLoader = new ImageMapLoader();
+        this.onlineMapService = new OnlineMapService();
         this.onPlanetGeneratedCallback = onPlanetGeneratedCallback;
 
         getStyleClass().add("glass-panel");
@@ -120,29 +158,68 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     private void initUI() {
         VBox controlsBox = new VBox(15);
-        controlsBox.setPrefWidth(340);
+        controlsBox.setPrefWidth(350);
         controlsBox.setPadding(new Insets(10));
 
         headerLabel = new Label();
-        headerLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        headerLabel.getStyleClass().add("label-title");
 
-        // 1. Preset Selector
-        presetCombo = new ComboBox<>();
-        presetCombo.getItems().addAll(PlanetPreset.getPresets());
-        presetCombo.setCellFactory(p -> new ListCell<>() {
+        // 1. Standardized Preset Control Bar
+        PresetControlBar<PlanetPreset> topPresetBar = new PresetControlBar<>("Preset");
+        topPresetBar.setPresets(PlanetPreset.getPresets(), PlanetPreset.EARTH_LIKE);
+        topPresetBar.setListener(new PresetControlBar.PresetActionsListener<PlanetPreset>() {
             @Override
-            protected void updateItem(PlanetPreset item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? "" : item.name());
+            public void onPresetSelected(PlanetPreset preset) {
+                if (!isUpdatingFromPreset) {
+                    applyPreset(preset);
+                }
+            }
+
+            @Override
+            public void onSavePreset(String name) {
+                PlanetPreset current = buildPresetFromUI();
+                PlanetPreset custom = new PlanetPreset(
+                        name, current.resolution(), current.radiusKm(), current.dayLengthHours(),
+                        current.axialTiltDegrees(), current.yearLengthDays(), current.distanceToSunAU(),
+                        current.solarLuminosity(), current.minAltitudeMeters(), current.maxAltitudeMeters(),
+                        current.averageTempC(), current.seed(), current.noiseFrequency(),
+                        current.noiseScale(), current.waterLevel(), current.temperatureGradient()
+                );
+                topPresetBar.getPresetCombo().getItems().add(custom);
+                topPresetBar.getPresetCombo().setValue(custom);
+            }
+
+            @Override
+            public void onDeletePreset(PlanetPreset preset) {
+                topPresetBar.getPresetCombo().getItems().remove(preset);
+            }
+
+            @Override
+            public void onExportPreset(File targetFile, PlanetPreset preset) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                    mapper.writeValue(targetFile, preset);
+                    logger.info("Exported planet preset to {}", targetFile.getAbsolutePath());
+                } catch (IOException ex) {
+                    logger.error("Failed to export planet preset", ex);
+                }
+            }
+
+            @Override
+            public void onImportPreset(File sourceFile) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    PlanetPreset preset = mapper.readValue(sourceFile, PlanetPreset.class);
+                    topPresetBar.getPresetCombo().getItems().add(preset);
+                    topPresetBar.getPresetCombo().setValue(preset);
+                    applyPreset(preset);
+                    logger.info("Imported planet preset from {}", sourceFile.getAbsolutePath());
+                } catch (IOException ex) {
+                    logger.error("Failed to import planet preset", ex);
+                }
             }
         });
-        presetCombo.setButtonCell(presetCombo.getCellFactory().call(null));
-        presetCombo.setOnAction(e -> {
-            if (!isUpdatingFromPreset) {
-                applyPreset(presetCombo.getValue());
-            }
-        });
-        presetCombo.setMaxWidth(Double.MAX_VALUE);
 
         elevationPresetCombo = new ComboBox<>();
         elevationPresetCombo.getItems().addAll(ElevationPreset.values());
@@ -168,33 +245,114 @@ public class PlanetGeneratorPanel extends BorderPane {
             }
         });
 
-        presetRowLabel = new Label();
         elevationRowLabel = new Label();
         climateRowLabel = new Label();
 
-        saveJsonBtn = new Button();
-        saveJsonBtn.setMaxWidth(Double.MAX_VALUE);
-        saveJsonBtn.setStyle("-fx-font-size: 11px; -fx-base: #475569;");
-        saveJsonBtn.setOnAction(e -> savePresetJson());
-
-        loadJsonBtn = new Button();
-        loadJsonBtn.setMaxWidth(Double.MAX_VALUE);
-        loadJsonBtn.setStyle("-fx-font-size: 11px; -fx-base: #475569;");
-        loadJsonBtn.setOnAction(e -> loadPresetJson());
-
-        HBox jsonBox = new HBox(8, saveJsonBtn, loadJsonBtn);
-        HBox.setHgrow(saveJsonBtn, Priority.ALWAYS);
-        HBox.setHgrow(loadJsonBtn, Priority.ALWAYS);
-
         presetsSecHeader = new Label();
         VBox presetSection = createSection(presetsSecHeader, new VBox(6,
-                createControlRow(presetRowLabel, presetCombo),
+                topPresetBar,
                 createControlRow(elevationRowLabel, elevationPresetCombo),
-                createControlRow(climateRowLabel, climatePresetCombo),
-                jsonBox
+                createControlRow(climateRowLabel, climatePresetCombo)
         ));
 
-        // 2. Astronomical & Physical Controls
+        // 2. Custom Maps Import Section (Elevation, Biomes, Geology & Resources)
+        VBox customMapsControls = new VBox(8);
+        customMapsSecHeader = new Label();
+
+        mapSourceRowLabel = new Label();
+        mapSourceCombo = new ComboBox<>();
+        mapSourceCombo.getItems().addAll(
+                "none",
+                "earth",
+                "mars",
+                "venus",
+                "moon"
+        );
+        mapSourceCombo.setValue("none");
+        mapSourceCombo.setCellFactory(p -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText("");
+                } else {
+                    setText(I18n.get("planet.map." + item));
+                }
+            }
+        });
+        mapSourceCombo.setButtonCell(mapSourceCombo.getCellFactory().call(null));
+        mapSourceCombo.setMaxWidth(Double.MAX_VALUE);
+        mapSourceCombo.setOnAction(e -> applyMapSourcePreset(mapSourceCombo.getValue()));
+
+        elevMapRowLabel = new Label();
+        elevFileLabel = new Label(I18n.get("planet.map.none"));
+        elevFileLabel.getStyleClass().add("value-label");
+        loadElevBtn = new Button(I18n.get("planet.map.btn_load"));
+        loadElevBtn.getStyleClass().add("button-secondary");
+        loadElevBtn.setOnAction(e -> chooseElevMapFile());
+        clearElevBtn = new Button("❌");
+        clearElevBtn.setOnAction(e -> {
+            customElevImage = null;
+            elevFileLabel.setText(I18n.get("planet.map.none"));
+            updatePreview();
+        });
+        HBox elevBox = new HBox(5, loadElevBtn, clearElevBtn);
+
+        biomeMapRowLabel = new Label();
+        biomeFileLabel = new Label(I18n.get("planet.map.none"));
+        biomeFileLabel.getStyleClass().add("value-label");
+        loadBiomeBtn = new Button(I18n.get("planet.map.btn_load"));
+        loadBiomeBtn.getStyleClass().add("button-secondary");
+        loadBiomeBtn.setOnAction(e -> chooseBiomeMapFile());
+        clearBiomeBtn = new Button("❌");
+        clearBiomeBtn.setOnAction(e -> {
+            customBiomeImage = null;
+            biomeFileLabel.setText(I18n.get("planet.map.none"));
+            updatePreview();
+        });
+        HBox biomeBox = new HBox(5, loadBiomeBtn, clearBiomeBtn);
+
+        resourceMapRowLabel = new Label();
+        resourceFileLabel = new Label(I18n.get("planet.map.none"));
+        resourceFileLabel.getStyleClass().add("value-label");
+        loadResourceBtn = new Button(I18n.get("planet.map.btn_load"));
+        loadResourceBtn.getStyleClass().add("button-secondary");
+        loadResourceBtn.setOnAction(e -> chooseResourceMapFile());
+        clearResourceBtn = new Button("❌");
+        clearResourceBtn.setOnAction(e -> {
+            customResourceImage = null;
+            resourceFileLabel.setText(I18n.get("planet.map.none"));
+            updatePreview();
+        });
+        HBox resourceBox = new HBox(5, loadResourceBtn, clearResourceBtn);
+
+        fetchOnlineBtn = new Button(I18n.get("planet.map.btn_fetch_online"));
+        fetchOnlineBtn.setMaxWidth(Double.MAX_VALUE);
+        fetchOnlineBtn.getStyleClass().add("button-secondary");
+        fetchOnlineBtn.setOnAction(e -> fetchOnlineSatelliteData());
+
+        exportMapsBtn = new Button(I18n.get("planet.map.btn_export"));
+        exportMapsBtn.setMaxWidth(Double.MAX_VALUE);
+        exportMapsBtn.getStyleClass().add("button-secondary");
+        exportMapsBtn.setOnAction(e -> exportMapsWithWorldFiles());
+
+        mapStatusLabel = new Label();
+        mapStatusLabel.getStyleClass().add("value-label");
+        mapStatusLabel.setWrapText(true);
+
+        customMapsControls.getChildren().addAll(
+                createControlRow(mapSourceRowLabel, mapSourceCombo),
+                createControlRow(elevMapRowLabel, new VBox(3, elevBox, elevFileLabel)),
+                createControlRow(biomeMapRowLabel, new VBox(3, biomeBox, biomeFileLabel)),
+                createControlRow(resourceMapRowLabel, new VBox(3, resourceBox, resourceFileLabel)),
+                fetchOnlineBtn,
+                exportMapsBtn,
+                mapStatusLabel
+        );
+
+        VBox customMapsSection = createSection(customMapsSecHeader, customMapsControls);
+
+        // 3. Astronomical & Physical Controls
         VBox astroControls = new VBox(8);
 
         radiusSlider = createSlider(1000, 25000, 6371);
@@ -212,6 +370,18 @@ public class PlanetGeneratorPanel extends BorderPane {
         resolutionCombo = new ComboBox<>();
         resolutionCombo.getItems().addAll(5, 6, 7, 8);
         resolutionCombo.setValue(6);
+        resolutionCombo.setCellFactory(p -> new ListCell<>() {
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText("");
+                } else {
+                    setText(I18n.get("planet.param.resolution.res" + item));
+                }
+            }
+        });
+        resolutionCombo.setButtonCell(resolutionCombo.getCellFactory().call(null));
         resolutionCombo.setOnAction(e -> updatePreview());
         resolutionCombo.setMaxWidth(Double.MAX_VALUE);
 
@@ -225,7 +395,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         tempRowLabel = new Label();
 
         irradianceLabel = new Label();
-        irradianceLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;");
+        irradianceLabel.getStyleClass().add("value-label");
 
         astroControls.getChildren().addAll(
                 createControlRow(radiusRowLabel, radiusSlider, "%.0f km"),
@@ -242,7 +412,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         astroSecHeader = new Label();
         VBox astroSection = createSection(astroSecHeader, astroControls);
 
-        // 3. Topography & Altitudes Section
+        // 4. Topography & Altitudes Section
         VBox topoControls = new VBox(8);
 
         seedField = new TextField("12345");
@@ -274,7 +444,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         gradRowLabel = new Label();
 
         altRangeLabel = new Label();
-        altRangeLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981; -fx-font-weight: bold;");
+        altRangeLabel.getStyleClass().add("value-label");
         updateAltRangeDisplay();
 
         topoControls.getChildren().addAll(
@@ -291,7 +461,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         topoSecHeader = new Label();
         VBox topoSection = createSection(topoSecHeader, topoControls);
 
-        controlsBox.getChildren().addAll(headerLabel, presetSection, astroSection, topoSection);
+        controlsBox.getChildren().addAll(headerLabel, presetSection, customMapsSection, astroSection, topoSection);
 
         ScrollPane scrollControls = new ScrollPane(controlsBox);
         scrollControls.setFitToWidth(true);
@@ -303,16 +473,16 @@ public class PlanetGeneratorPanel extends BorderPane {
         centerBox.setPadding(new Insets(10));
 
         previewTitle = new Label();
-        previewTitle.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;");
+        previewTitle.getStyleClass().add("label-header");
 
         previewCanvas = new Canvas(640, 320);
         previewCanvas.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 10, 0, 0, 0);");
 
         statsLabel = new Label();
-        statsLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #e2e8f0;");
+        statsLabel.getStyleClass().add("label-stats");
 
         astroLabel = new Label();
-        astroLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #94a3b8;");
+        astroLabel.getStyleClass().add("control-label");
 
         progressBar = new ProgressBar(0);
         progressBar.setMaxWidth(Double.MAX_VALUE);
@@ -333,9 +503,9 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private VBox createSection(Label header, VBox content) {
-        header.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #64748b;");
+        header.getStyleClass().add("label-section-header");
         VBox box = new VBox(8, header, content);
-        box.setStyle("-fx-background-color: rgba(255,255,255,0.03); -fx-background-radius: 8; -fx-padding: 10;");
+        box.getStyleClass().add("card-section");
         return box;
     }
 
@@ -353,14 +523,14 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private VBox createControlRow(Label label, javafx.scene.Node control) {
-        label.setStyle("-fx-font-size: 12px; -fx-text-fill: #cbd5e1;");
+        label.getStyleClass().add("control-label");
         return new VBox(4, label, control);
     }
 
     private VBox createControlRow(Label label, Slider slider, String formatPattern) {
-        label.setStyle("-fx-font-size: 12px; -fx-text-fill: #cbd5e1;");
+        label.getStyleClass().add("control-label");
         Label valLabel = new Label(String.format(formatPattern, slider.getValue()));
-        valLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8;");
+        valLabel.getStyleClass().add("value-label");
         
         slider.valueProperty().addListener((obs, old, val) -> 
             valLabel.setText(String.format(formatPattern, val.doubleValue()))
@@ -369,6 +539,197 @@ public class PlanetGeneratorPanel extends BorderPane {
         HBox header = new HBox(label, new Pane(), valLabel);
         HBox.setHgrow(header.getChildren().get(1), Priority.ALWAYS);
         return new VBox(3, header, slider);
+    }
+
+    private void chooseElevMapFile() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Load Elevation Map Image");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
+        File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
+        if (file != null) {
+            try {
+                customElevImage = new Image(new FileInputStream(file));
+                elevFileLabel.setText("📷 " + file.getName());
+                updatePreview();
+            } catch (Exception ex) {
+                logger.error("Failed to load elevation map image", ex);
+            }
+        }
+    }
+
+    private void chooseBiomeMapFile() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Load Biome / Ecology Map Image");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
+        File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
+        if (file != null) {
+            try {
+                customBiomeImage = new Image(new FileInputStream(file));
+                biomeFileLabel.setText("🌿 " + file.getName());
+                updatePreview();
+            } catch (Exception ex) {
+                logger.error("Failed to load biome map image", ex);
+            }
+        }
+    }
+
+    private void chooseResourceMapFile() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Load Geology / Resource Map Image");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
+        File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
+        if (file != null) {
+            try {
+                customResourceImage = new Image(new FileInputStream(file));
+                resourceFileLabel.setText("🪨 " + file.getName());
+                updatePreview();
+            } catch (Exception ex) {
+                logger.error("Failed to load resource map image", ex);
+            }
+        }
+    }
+
+    private void applyMapSourcePreset(String sourceKey) {
+        if ("none".equals(sourceKey)) {
+            customElevImage = null;
+            customBiomeImage = null;
+            customResourceImage = null;
+            elevFileLabel.setText(I18n.get("planet.map.none"));
+            biomeFileLabel.setText(I18n.get("planet.map.none"));
+            resourceFileLabel.setText(I18n.get("planet.map.none"));
+            updatePreview();
+            return;
+        }
+
+        if ("earth".equals(sourceKey)) {
+            try (var elevStream = getClass().getResourceAsStream("/maps/earth_elevation.png");
+                 var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png")) {
+                if (elevStream != null) customElevImage = new Image(elevStream);
+                if (biomeStream != null) customBiomeImage = new Image(biomeStream);
+                elevFileLabel.setText("📷 Earth Elevation Map");
+                biomeFileLabel.setText("🌿 Earth Biome Map");
+                resourceFileLabel.setText(I18n.get("planet.map.none"));
+            } catch (Exception e) {
+                logger.warn("Could not load internal Earth maps", e);
+            }
+            applyPreset(PlanetPreset.EARTH_LIKE);
+            return;
+        }
+
+        if ("mars".equals(sourceKey)) {
+            customElevImage = null;
+            customBiomeImage = null;
+            customResourceImage = null;
+            radiusSlider.setValue(3389);
+            dayLengthSlider.setValue(24.6);
+            axialTiltSlider.setValue(25.2);
+            yearLengthSlider.setValue(687);
+            distanceSunSlider.setValue(1.52);
+            solarLumSlider.setValue(1.0);
+            avgTempSlider.setValue(-63);
+            minAltSlider.setValue(-8000);
+            maxAltSlider.setValue(21229); // Olympus Mons
+            waterSlider.setValue(-0.5); // No ocean
+            elevFileLabel.setText("📷 Mars MOLA Heightmap");
+            biomeFileLabel.setText(I18n.get("planet.map.none"));
+            resourceFileLabel.setText(I18n.get("planet.map.none"));
+            updatePreview();
+            return;
+        }
+
+        if ("venus".equals(sourceKey)) {
+            customElevImage = null;
+            customBiomeImage = null;
+            customResourceImage = null;
+            radiusSlider.setValue(6051);
+            dayLengthSlider.setValue(2802);
+            axialTiltSlider.setValue(177.3);
+            yearLengthSlider.setValue(225);
+            distanceSunSlider.setValue(0.72);
+            solarLumSlider.setValue(1.0);
+            avgTempSlider.setValue(464);
+            minAltSlider.setValue(-3000);
+            maxAltSlider.setValue(11000); // Maxwell Montes
+            waterSlider.setValue(-0.5);
+            elevFileLabel.setText("📷 Venus Magellan Topography");
+            biomeFileLabel.setText(I18n.get("planet.map.none"));
+            resourceFileLabel.setText(I18n.get("planet.map.none"));
+            updatePreview();
+            return;
+        }
+
+        if ("moon".equals(sourceKey)) {
+            customElevImage = null;
+            customBiomeImage = null;
+            customResourceImage = null;
+            radiusSlider.setValue(1737);
+            dayLengthSlider.setValue(708);
+            axialTiltSlider.setValue(1.5);
+            yearLengthSlider.setValue(365);
+            distanceSunSlider.setValue(1.0);
+            solarLumSlider.setValue(1.0);
+            avgTempSlider.setValue(-20);
+            minAltSlider.setValue(-9000);
+            maxAltSlider.setValue(10700);
+            waterSlider.setValue(-0.5);
+            elevFileLabel.setText("📷 Moon LRO Topography");
+            biomeFileLabel.setText(I18n.get("planet.map.none"));
+            resourceFileLabel.setText(I18n.get("planet.map.none"));
+            updatePreview();
+        }
+    }
+
+    private void fetchOnlineSatelliteData() {
+        String sourceKey = mapSourceCombo.getValue();
+        OnlineMapService.CelestialBody body = switch (sourceKey) {
+            case "mars" -> OnlineMapService.CelestialBody.MARS;
+            case "moon" -> OnlineMapService.CelestialBody.MOON;
+            case "venus" -> OnlineMapService.CelestialBody.VENUS;
+            default -> OnlineMapService.CelestialBody.EARTH;
+        };
+
+        mapStatusLabel.setText(I18n.get("planet.map.status_fetching"));
+
+        onlineMapService.fetchElevationMapAsync(body).thenAccept(img -> {
+            javafx.application.Platform.runLater(() -> {
+                if (img != null) {
+                    customElevImage = img;
+                    elevFileLabel.setText("🌐 " + body.getName() + " WMS Elevation");
+                    mapStatusLabel.setText(I18n.get("planet.map.status_success"));
+                    updatePreview();
+                } else {
+                    mapStatusLabel.setText(I18n.get("planet.map.status_error"));
+                }
+            });
+        });
+
+        if (body.getBiomeWmsUrl() != null) {
+            onlineMapService.fetchBiomeMapAsync(body).thenAccept(img -> {
+                javafx.application.Platform.runLater(() -> {
+                    if (img != null) {
+                        customBiomeImage = img;
+                        biomeFileLabel.setText("🌐 " + body.getName() + " WMS Biomes");
+                        updatePreview();
+                    }
+                });
+            });
+        }
+    }
+
+    private void exportMapsWithWorldFiles() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Export Map Image with ESRI World File (.tfw)");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Map Image", "*.png"));
+        File file = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
+        if (file != null) {
+            Image imgToExport = customElevImage;
+            if (imgToExport == null) {
+                WritableImage wimg = new WritableImage((int) previewCanvas.getWidth(), (int) previewCanvas.getHeight());
+                previewCanvas.snapshot(null, wimg);
+                imgToExport = wimg;
+            }
+            mapLoader.exportMapToPngAndWorldFile(imgToExport, file);
+        }
     }
 
     private void calculateStellarIrradiance() {
@@ -456,6 +817,14 @@ public class PlanetGeneratorPanel extends BorderPane {
         int w = (int) previewCanvas.getWidth();
         int h = (int) previewCanvas.getHeight();
 
+        PixelReader elevReader = customElevImage != null ? customElevImage.getPixelReader() : null;
+        PixelReader biomeReader = customBiomeImage != null ? customBiomeImage.getPixelReader() : null;
+
+        double wElev = customElevImage != null ? customElevImage.getWidth() : 0;
+        double hElev = customElevImage != null ? customElevImage.getHeight() : 0;
+        double wBiome = customBiomeImage != null ? customBiomeImage.getWidth() : 0;
+        double hBiome = customBiomeImage != null ? customBiomeImage.getHeight() : 0;
+
         int oceanCount = 0;
 
         for (int y = 0; y < h; y++) {
@@ -464,12 +833,32 @@ public class PlanetGeneratorPanel extends BorderPane {
                 double lng = (x / (double) w) * 360.0 - 180.0;
 
                 PlanetPoint p = generator.getPlanetPoint(lat, lng, preset);
+                Biome cellBiome = p.biome();
 
-                if (p.biome() == Biome.OCEAN || p.biome() == Biome.DEEP_OCEAN) {
+                // Override with custom biome image if available
+                if (biomeReader != null) {
+                    double u = (lng + 180.0) / 360.0;
+                    double v = (90.0 - lat) / 180.0;
+                    int bx = (int) Math.min(u * wBiome, wBiome - 1);
+                    int by = (int) Math.min(v * hBiome, hBiome - 1);
+                    cellBiome = mapLoader.matchBiomeColor(biomeReader.getColor(bx, by));
+                } else if (elevReader != null) {
+                    // Sample heightmap
+                    double u = (lng + 180.0) / 360.0;
+                    double v = (90.0 - lat) / 180.0;
+                    int ex = (int) Math.min(u * wElev, wElev - 1);
+                    int ey = (int) Math.min(v * hElev, hElev - 1);
+                    double brightness = elevReader.getColor(ex, ey).getBrightness();
+                    double altMeters = preset.minAltitudeMeters() + brightness * (preset.maxAltitudeMeters() - preset.minAltitudeMeters());
+                    double normAlt = (altMeters - preset.minAltitudeMeters()) / (preset.maxAltitudeMeters() - preset.minAltitudeMeters()) * 2.0 - 1.0;
+                    cellBiome = (altMeters < 0) ? Biome.OCEAN : (normAlt > 0.6 ? Biome.MOUNTAINS : Biome.PLAINS);
+                }
+
+                if (cellBiome == Biome.OCEAN || cellBiome == Biome.DEEP_OCEAN) {
                     oceanCount++;
                 }
 
-                pw.setColor(x, y, getBiomeColor(p.biome()));
+                pw.setColor(x, y, getBiomeColor(cellBiome));
             }
         }
 
@@ -500,6 +889,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     public void updateTexts() {
         headerLabel.setText(I18n.get("planet.section.header"));
         presetsSecHeader.setText(I18n.get("planet.section.presets"));
+        customMapsSecHeader.setText(I18n.get("planet.section.custom_maps"));
         astroSecHeader.setText(I18n.get("planet.section.astro"));
         topoSecHeader.setText(I18n.get("planet.section.topo"));
         previewTitle.setText(I18n.get("planet.preview.title"));
@@ -510,6 +900,14 @@ public class PlanetGeneratorPanel extends BorderPane {
         if (climateRowLabel != null) climateRowLabel.setText(I18n.get("planet.preset.climate"));
         if (saveJsonBtn != null) saveJsonBtn.setText(I18n.get("planet.btn.save_json"));
         if (loadJsonBtn != null) loadJsonBtn.setText(I18n.get("planet.btn.load_json"));
+
+        if (mapSourceRowLabel != null) mapSourceRowLabel.setText(I18n.get("planet.map.preset_body"));
+        if (elevMapRowLabel != null) elevMapRowLabel.setText(I18n.get("planet.map.elevation"));
+        if (biomeMapRowLabel != null) biomeMapRowLabel.setText(I18n.get("planet.map.biomes"));
+        if (resourceMapRowLabel != null) resourceMapRowLabel.setText(I18n.get("planet.map.resources"));
+        if (loadElevBtn != null) loadElevBtn.setText(I18n.get("planet.map.btn_load"));
+        if (loadBiomeBtn != null) loadBiomeBtn.setText(I18n.get("planet.map.btn_load"));
+        if (loadResourceBtn != null) loadResourceBtn.setText(I18n.get("planet.map.btn_load"));
 
         radiusRowLabel.setText(I18n.get("planet.param.radius"));
         resRowLabel.setText(I18n.get("planet.param.resolution"));
@@ -577,6 +975,11 @@ public class PlanetGeneratorPanel extends BorderPane {
                 PlanetPreset preset = buildPresetFromUI();
                 logger.info("Generating full planetary grid for preset: {}", preset.name());
                 List<H3Cell> cells = generator.generatePlanet(preset);
+
+                // Apply custom imported maps if provided
+                if (customElevImage != null || customBiomeImage != null || customResourceImage != null) {
+                    mapLoader.mapImagesToCells(cells, customElevImage, customBiomeImage, customResourceImage, preset.minAltitudeMeters(), preset.maxAltitudeMeters());
+                }
 
                 javafx.application.Platform.runLater(() -> {
                     progressBar.setVisible(false);

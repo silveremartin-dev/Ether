@@ -111,32 +111,39 @@ MOUNTAINS → rgb(139, 137, 137) // Gray
 
 ---
 
-### 3. Data Generation
+### 3. Data Generation & Climate Simulation
 
-**SampleDataGenerator Algorithm:**
+**Procedural Generator Algorithm (`ProceduralGenerator.java`):**
 ```
-For each sample point (lat, lng) in region:
-  1. h3Index = H3.latLngToCell(lat, lng, resolution=8)
-  2. If not seen before:
-     a. elevation = distanceFromMountainCenter() + noise
-     b. temperature = f(latitude, elevation)
-     c. rainfall = random + latitudeBonus
-     d. biome = determineBiome(elevation, temp, rainfall)
-     e. resources = assignResources(biome)
-  3. Add H3Cell to list
+For each H3 Cell (lat, lng):
+  1. Map (lat, lng) to 3D Cartesian Unit Sphere:
+     x = cos(lat) * cos(lng)
+     y = cos(lat) * sin(lng)
+     z = sin(lat)
+  2. Elevation (e): Multi-octave Simplex 3D Noise scaled by user noiseScale
+  3. Rainfall (r): 3D Noise combined with Atmospheric Latitude Circulation Belt (latMod):
+     - ITCZ Equatorial Rain Belt (|lat| < 10°): latMod = 1.2
+     - Subtropical High Deserts (20° < |lat| < 40°): latMod = 0.4
+     - Mid-Latitude Westerly Rain (50° < |lat| < 70°): latMod = 0.8
+     - Polar Aridity (|lat| > 80°): latMod = 0.2
+  4. Temperature (T):
+     T = T_avg + T_grad * (cos(lat) - 0.5) - (e * 20.0) [Altitude Lapse Rate]
+  5. Biome Classification:
+     IF e < waterLevel       -> OCEAN / DEEP_OCEAN
+     IF e > 0.8              -> MOUNTAINS
+     IF e > 0.5              -> HILLS
+     IF T < -5°C             -> SNOW
+     IF T < 5°C              -> TUNDRA
+     IF r < 0.2              -> DESERT
+     IF r < 0.5              -> PLAINS
+     IF r < 0.8              -> FOREST
+     ELSE                    -> JUNGLE
 ```
 
-**Biome Determination:**
-```
-IF elevation < 0        → OCEAN
-IF elevation < 10       → BEACH
-IF elevation > 2500     → MOUNTAINS | SNOW
-IF temp < 0             → TUNDRA
-IF temp > 25 && rain > 1500 → JUNGLE
-IF temp > 20 && rain < 250  → DESERT
-IF rain > 800           → FOREST
-ELSE                    → PLAINS
-```
+**Satellite Data Pipeline (`OnlineMapService.java` & `ImageMapLoader.java`):**
+- Asynchronous fetching of real WMS satellite tiles (USGS, NASA MOLA/Magellan/LRO).
+- Local caching & ESRI World File (`.tfw`) geospatial exports.
+
 
 ---
 

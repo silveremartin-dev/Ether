@@ -51,17 +51,16 @@ public class PreferencesPanel extends BorderPane {
         root.setAlignment(Pos.TOP_LEFT);
 
         titleHeader = new Label();
-        titleHeader.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        titleHeader.getStyleClass().add("label-title");
 
         // 1. Language Section
         langLabel = new Label();
-        langLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+        langLabel.getStyleClass().add("control-label");
 
         languageCombo = new ComboBox<>();
         languageCombo.getItems().addAll(Language.values());
         languageCombo.setValue(I18n.getCurrentLanguage());
         languageCombo.setMaxWidth(Double.MAX_VALUE);
-        languageCombo.setStyle("-fx-font-size: 13px;");
         languageCombo.setOnAction(e -> {
             Language selected = languageCombo.getValue();
             if (selected != null && selected != I18n.getCurrentLanguage()) {
@@ -73,7 +72,7 @@ public class PreferencesPanel extends BorderPane {
 
         // 2. Theme Section
         themeLabel = new Label();
-        themeLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+        themeLabel.getStyleClass().add("control-label");
 
         themeToggleGroup = new ToggleGroup();
         darkThemeRadio = new RadioButton();
@@ -108,9 +107,9 @@ public class PreferencesPanel extends BorderPane {
 
     private VBox createCardSection(String title, VBox content) {
         Label header = new Label(title);
-        header.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;");
+        header.getStyleClass().add("label-section-header");
         VBox card = new VBox(12, header, content);
-        card.setStyle("-fx-background-color: rgba(255,255,255,0.04); -fx-background-radius: 10; -fx-padding: 15;");
+        card.getStyleClass().add("card-section");
         return card;
     }
 

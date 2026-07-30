@@ -1,7 +1,6 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
 package org.ether.society.ui;
@@ -10,13 +9,11 @@ import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.ether.society.model.Scenario;
 import org.ether.society.model.StartDatePreset;
-import org.ether.society.procedural.ClimatePreset;
-import org.ether.society.procedural.ElevationPreset;
-
 import org.ether.society.procedural.PlanetPreset;
 import org.ether.society.procedural.ProceduralGenerator;
 import org.ether.society.procedural.ExternalDataService;
 import org.ether.society.database.DataService;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
@@ -24,77 +21,79 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Unified Panel for setting up a simulation.
- * Combines Scenario parameters, World Generation (Procedural/Real/Load), and
- * Preview.
+ * Panel for setting up civilization, initial population distribution, historical scenarios,
+ * and civilizational start parameters.
+ *
+ * @author Silvere Martin-Michiellot
+ * @version 2.2.0
  */
 public class ScenarioSetupPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioSetupPanel.class);
 
-    // Components
+    // Context Headers
+    private Label planetContextLabel;
+    private Label ecologyContextLabel;
+    private PlanetPreset activePlanetPreset;
+
+    // Standardized Preset Bar
+    private PresetControlBar<Scenario> scenarioPresetBar;
+
+    // Form Controls
     private TextField scenarioNameField;
     private Spinner<Integer> startYearSpinner;
     private ComboBox<StartDatePreset> eraCombo;
+
+    // Population & Civilization Controls
+    private Spinner<Long> initialHumanCountSpinner;
+    private Slider initialTechLevelSlider;
+    private ComboBox<String> densityPatternCombo;
+    private Spinner<Integer> urbanCentersSpinner;
+    private Slider urbanRatioSlider;
 
     private ToggleGroup sourceGroup;
     private RadioButton sourceProcedural;
     private RadioButton sourceLoad;
     private RadioButton sourceReal;
 
-    // Sub-panels for sources
     private VBox proceduralPanel;
     private VBox loadPanel;
     private VBox realDataPanel;
 
-    // Procedural Controls
-    private ComboBox<PlanetPreset> presetCombo;
-    private ComboBox<ElevationPreset> elevationPresetCombo;
-    private ComboBox<ClimatePreset> climatePresetCombo;
-    private TextField seedField;
-    private Slider waterSlider;
-    private Slider tempSlider;
-
-    // Planet Parameters
-    private Slider elevationRangeSlider;
-    private Slider seaLevelSlider;
-    private Spinner<Double> planetRadiusSpinner;
-    private Spinner<Double> cellRadiusSpinner;
-    private Spinner<Double> axialTiltSpinner;
-    private Spinner<Double> rotationPeriodSpinner;
-    private Spinner<Double> revolutionPeriodSpinner;
-    private Spinner<Double> solarIrradianceSpinner;
-
-    // Load Controls
     private ComboBox<String> existingMapsCombo;
 
-    // Preview
+    // Map Preview Controls
     private Canvas previewCanvas;
     private ToggleButton viewBiomeBtn;
     private ToggleButton viewElevationBtn;
+    private ToggleButton viewPopHeatmapBtn;
     private Label previewStatusLabel;
 
-    // Data State
+    // State
     private List<H3Cell> currentPreviewCells;
-    private Consumer<Scenario> onStartSimulation; // Callback
+    private final Consumer<Scenario> onStartSimulation;
+    private final org.ether.society.persistence.ScenarioRepository scenarioRepo;
 
-    private org.ether.society.persistence.ScenarioRepository scenarioRepo;
-    private ComboBox<Scenario> savedScenariosCombo;
-
-    // i18n Labels
+    // Labels for i18n
     private Label title1;
     private Label title2;
     private Label nameLabel;
     private Label eraLabel;
     private Label startYearLabel;
-    private Button loadBtn;
-    private Button saveBtn;
+    private Label popCountLabel;
+    private Label techLevelLabel;
+    private Label densityPatternLabel;
     private Button generateBtn;
     private Button startBtn;
 
@@ -107,6 +106,13 @@ public class ScenarioSetupPanel extends BorderPane {
         org.ether.society.i18n.I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
+    public void setInheritedContext(PlanetPreset planetPreset, String ecologyName) {
+        this.activePlanetPreset = planetPreset;
+        String pName = planetPreset != null ? planetPreset.name() : "Earth-Like Standard";
+        if (planetContextLabel != null) planetContextLabel.setText("🪐 Planète : " + pName);
+        if (ecologyContextLabel != null) ecologyContextLabel.setText("🌿 Écologie : " + (ecologyName != null ? ecologyName : "Equilibrée"));
+    }
+
     private void initUI() {
         setPadding(new Insets(20));
         getStyleClass().add("glass-panel");
@@ -114,7 +120,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
         // Left: Configuration
         VBox configPane = createConfigPane();
-        configPane.setPrefWidth(400);
+        configPane.setPrefWidth(440);
 
         // Right: Preview
         VBox previewPane = createPreviewPane();
@@ -122,36 +128,82 @@ public class ScenarioSetupPanel extends BorderPane {
         setLeft(configPane);
         setCenter(previewPane);
 
-        // Initial State
         updateSourceVisibility();
     }
 
     private VBox createConfigPane() {
-        VBox root = new VBox(20);
+        VBox root = new VBox(15);
         root.setPadding(new Insets(0, 20, 0, 0));
 
-        // 1. Scenario Details
+        // Inherited Context Banner
+        planetContextLabel = new Label("🪐 Planète : Terrestre Standard");
+        planetContextLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        ecologyContextLabel = new Label("🌿 Écologie : Standard Équilibrée");
+        ecologyContextLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #34d399;");
+        HBox contextBox = new HBox(12, planetContextLabel, ecologyContextLabel);
+        contextBox.setStyle("-fx-padding: 6 10; -fx-background-color: rgba(255,255,255,0.03); -fx-background-radius: 6;");
+
+        // 1. Standardized Scenario Preset Control Bar
+        scenarioPresetBar = new PresetControlBar<>("Scénario Preset");
+        List<Scenario> builtInScenarios = getBuiltInScenarios();
+        scenarioPresetBar.setPresets(builtInScenarios, builtInScenarios.get(0));
+        scenarioPresetBar.setListener(new PresetControlBar.PresetActionsListener<Scenario>() {
+            @Override
+            public void onPresetSelected(Scenario scenario) {
+                applyScenarioToUI(scenario);
+            }
+
+            @Override
+            public void onSavePreset(String name) {
+                Scenario custom = getScenario();
+                custom.setName(name);
+                scenarioRepo.saveOrUpdate(custom);
+                scenarioPresetBar.getPresetCombo().getItems().add(custom);
+                scenarioPresetBar.getPresetCombo().setValue(custom);
+            }
+
+            @Override
+            public void onDeletePreset(Scenario scenario) {
+                scenarioPresetBar.getPresetCombo().getItems().remove(scenario);
+            }
+
+            @Override
+            public void onExportPreset(File targetFile, Scenario scenario) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                    mapper.writeValue(targetFile, scenario);
+                    logger.info("Exported scenario preset to {}", targetFile.getAbsolutePath());
+                } catch (IOException ex) {
+                    logger.error("Failed to export scenario preset", ex);
+                }
+            }
+
+            @Override
+            public void onImportPreset(File sourceFile) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    Scenario scenario = mapper.readValue(sourceFile, Scenario.class);
+                    scenarioPresetBar.getPresetCombo().getItems().add(scenario);
+                    scenarioPresetBar.getPresetCombo().setValue(scenario);
+                    applyScenarioToUI(scenario);
+                    logger.info("Imported scenario preset from {}", sourceFile.getAbsolutePath());
+                } catch (IOException ex) {
+                    logger.error("Failed to import scenario preset", ex);
+                }
+            }
+        });
+
+        // 2. Scenario General Info Section
         VBox section1 = new VBox(10);
-        title1 = new Label();
+        title1 = new Label("1. CIVILISATION & ÉPOQUE HISTORIQUE");
         title1.getStyleClass().add("label-header");
-
-        // Load Saved Scenario
-        HBox loadBox = new HBox(10);
-        savedScenariosCombo = new ComboBox<>();
-        savedScenariosCombo.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(savedScenariosCombo, Priority.ALWAYS);
-        refreshScenarioList();
-
-        loadBtn = new Button();
-        loadBtn.setOnAction(e -> loadSelectedScenario());
-
-        loadBox.getChildren().addAll(savedScenariosCombo, loadBtn);
 
         GridPane grid1 = new GridPane();
         grid1.setHgap(10);
         grid1.setVgap(10);
 
-        scenarioNameField = new TextField("New Civilization");
+        scenarioNameField = new TextField("Berceau de la Civilisation");
         eraCombo = new ComboBox<>();
         eraCombo.getItems().addAll(StartDatePreset.values());
         eraCombo.setValue(StartDatePreset.NEOLITHIZATION);
@@ -170,7 +222,6 @@ public class ScenarioSetupPanel extends BorderPane {
 
         startYearSpinner = new Spinner<>(-100000, 2100, -10000, 100);
 
-        // When era selected, update year and name
         eraCombo.setOnAction(e -> {
             StartDatePreset p = eraCombo.getValue();
             if (p != null) {
@@ -179,30 +230,64 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         });
 
-        nameLabel = new Label();
-        eraLabel = new Label();
-        startYearLabel = new Label();
+        nameLabel = new Label("Nom du Scénario :");
+        eraLabel = new Label("Époque :");
+        startYearLabel = new Label("Année de Départ :");
 
         grid1.addRow(0, nameLabel, scenarioNameField);
         grid1.addRow(1, eraLabel, eraCombo);
         grid1.addRow(2, startYearLabel, startYearSpinner);
 
-        // Save Button
-        saveBtn = new Button();
-        saveBtn.setMaxWidth(Double.MAX_VALUE);
-        saveBtn.setOnAction(e -> saveCurrentScenario());
+        section1.getChildren().addAll(title1, grid1);
 
-        section1.getChildren().addAll(title1, loadBox, grid1, saveBtn);
+        // 3. Population & Density Setup Section
+        VBox popSection = new VBox(10);
+        Label popHeader = new Label("2. DÉMOGRAPHIE & RÉPARTITION DE POPULATION");
+        popHeader.getStyleClass().add("label-header");
 
-        // 2. World Source
+        GridPane popGrid = new GridPane();
+        popGrid.setHgap(10);
+        popGrid.setVgap(10);
+
+        initialHumanCountSpinner = new Spinner<>(100L, 50000000L, 50000L, 5000L);
+        initialTechLevelSlider = new Slider(0.0, 10.0, 1.0);
+        initialTechLevelSlider.setShowTickLabels(true);
+
+        densityPatternCombo = new ComboBox<>();
+        densityPatternCombo.getItems().addAll(
+                "FERTILE_CRESCENT",      // Croissant Fertile (Nile, Tigre, Euphrate)
+                "MESOAMERICA",            // Mésoamérique (Vallée de Mexico, Mayas)
+                "MESOPOTAMIA_ASSYRIA",    // Mésopotamie & Empire Assyrien
+                "RIVER_VALLEYS",          // Vallées fluviales majeures (Indus, Fleuve Jaune)
+                "URBAN_CLUSTERS",         // Cités-états & nœuds urbains
+                "SPARSE_NOMADIC"          // Population nomade/pastorale dispersée
+        );
+        densityPatternCombo.setValue("FERTILE_CRESCENT");
+        densityPatternCombo.setMaxWidth(Double.MAX_VALUE);
+
+        urbanCentersSpinner = new Spinner<>(1, 30, 5, 1);
+        urbanRatioSlider = new Slider(0.1, 0.9, 0.4);
+
+        popCountLabel = new Label("Population Initiale :");
+        techLevelLabel = new Label("Niveau Technologique :");
+        densityPatternLabel = new Label("Motif de Répartition :");
+
+        popGrid.addRow(0, popCountLabel, initialHumanCountSpinner);
+        popGrid.addRow(1, techLevelLabel, initialTechLevelSlider);
+        popGrid.addRow(2, densityPatternLabel, densityPatternCombo);
+        popGrid.addRow(3, new Label("Nœuds Urbains / Cités :"), urbanCentersSpinner);
+
+        popSection.getChildren().addAll(popHeader, popGrid);
+
+        // 4. World Source Section
         VBox section2 = new VBox(10);
-        title2 = new Label();
+        title2 = new Label("3. SOURCE DU TERRITOIRE");
         title2.getStyleClass().add("label-header");
 
         sourceGroup = new ToggleGroup();
-        sourceProcedural = new RadioButton();
-        sourceLoad = new RadioButton();
-        sourceReal = new RadioButton();
+        sourceProcedural = new RadioButton("Planète Procédurale (Onglet 1)");
+        sourceLoad = new RadioButton("Carte depuis la BDD");
+        sourceReal = new RadioButton("Vraie Terre (NASA/USGS)");
 
         sourceProcedural.setToggleGroup(sourceGroup);
         sourceLoad.setToggleGroup(sourceGroup);
@@ -211,36 +296,83 @@ public class ScenarioSetupPanel extends BorderPane {
 
         sourceGroup.selectedToggleProperty().addListener((o) -> updateSourceVisibility());
 
-        HBox sourceBox = new HBox(15, sourceProcedural, sourceLoad, sourceReal);
+        HBox sourceBox = new HBox(12, sourceProcedural, sourceLoad, sourceReal);
 
-        // Sub-panels
         proceduralPanel = createProceduralPanel();
         loadPanel = createLoadPanel();
-        realDataPanel = createRealDataPanel(); // Placeholder
+        realDataPanel = createRealDataPanel();
 
         StackPane subPanels = new StackPane(proceduralPanel, loadPanel, realDataPanel);
-
         section2.getChildren().addAll(title2, sourceBox, new Separator(), subPanels);
 
-        // 3. Action
-        generateBtn = new Button("Generate Preview");
+        // 5. Actions
+        generateBtn = new Button("🔄 Prévisualiser la Répartition");
         generateBtn.setMaxWidth(Double.MAX_VALUE);
         generateBtn.setStyle("-fx-font-weight: bold; -fx-base: #3498db;");
         generateBtn.setOnAction(e -> generatePreview());
 
-        // Start Button
-        startBtn = new Button();
+        startBtn = new Button("🚀 LANCER LA SIMULATION");
         startBtn.setPrefHeight(50);
         startBtn.setMaxWidth(Double.MAX_VALUE);
         startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-base: #2ecc71;");
         startBtn.setOnAction(e -> startSimulation());
 
-        VBox bottom = new VBox(15, generateBtn, new Separator(), startBtn);
+        VBox bottom = new VBox(12, generateBtn, new Separator(), startBtn);
         VBox.setVgrow(bottom, Priority.ALWAYS);
         bottom.setAlignment(Pos.BOTTOM_CENTER);
 
-        root.getChildren().addAll(section1, new Separator(), section2, bottom);
+        root.getChildren().addAll(contextBox, scenarioPresetBar, section1, new Separator(), popSection, new Separator(), section2, bottom);
         return root;
+    }
+
+    private List<Scenario> getBuiltInScenarios() {
+        List<Scenario> list = new ArrayList<>();
+
+        Scenario s1 = new Scenario();
+        s1.setName("Croissant Fertile & Néolithique (-8000)");
+        s1.setStartDateYear(-8000);
+        s1.setInitialHumanCount(25000);
+        s1.setInitialTechLevel(1.2);
+        s1.setPopulationDensityType("FERTILE_CRESCENT");
+        list.add(s1);
+
+        Scenario s2 = new Scenario();
+        s2.setName("Empire Assyrien & Mésopotamie (-2000)");
+        s2.setStartDateYear(-2000);
+        s2.setInitialHumanCount(500000);
+        s2.setInitialTechLevel(3.5);
+        s2.setPopulationDensityType("MESOPOTAMIA_ASSYRIA");
+        list.add(s2);
+
+        Scenario s3 = new Scenario();
+        s3.setName("Mésoamérique : Cités Mayas & Vallée (1000)");
+        s3.setStartDateYear(1000);
+        s3.setInitialHumanCount(1200000);
+        s3.setInitialTechLevel(4.0);
+        s3.setPopulationDensityType("MESOAMERICA");
+        list.add(s3);
+
+        Scenario s4 = new Scenario();
+        s4.setName("Antiquité Classique Méditerranéenne (-500)");
+        s4.setStartDateYear(-500);
+        s4.setInitialHumanCount(2500000);
+        s4.setInitialTechLevel(4.8);
+        s4.setPopulationDensityType("URBAN_CLUSTERS");
+        list.add(s4);
+
+        return list;
+    }
+
+    private void applyScenarioToUI(Scenario s) {
+        if (s == null) return;
+        scenarioNameField.setText(s.getName());
+        startYearSpinner.getValueFactory().setValue((int) s.getStartDateYear());
+        initialHumanCountSpinner.getValueFactory().setValue(s.getInitialHumanCount());
+        initialTechLevelSlider.setValue(s.getInitialTechLevel());
+
+        if (s.getPopulationDensityType() != null && densityPatternCombo.getItems().contains(s.getPopulationDensityType())) {
+            densityPatternCombo.setValue(s.getPopulationDensityType());
+        }
     }
 
     public void updateTexts() {
@@ -249,45 +381,33 @@ public class ScenarioSetupPanel extends BorderPane {
         if (nameLabel != null) nameLabel.setText(org.ether.society.i18n.I18n.get("scenario.name"));
         if (eraLabel != null) eraLabel.setText(org.ether.society.i18n.I18n.get("scenario.era"));
         if (startYearLabel != null) startYearLabel.setText(org.ether.society.i18n.I18n.get("scenario.start_year"));
-        if (loadBtn != null) loadBtn.setText(org.ether.society.i18n.I18n.get("scenario.load_btn"));
-        if (saveBtn != null) saveBtn.setText(org.ether.society.i18n.I18n.get("scenario.save_btn"));
         if (startBtn != null) startBtn.setText(org.ether.society.i18n.I18n.get("scenario.start_btn"));
-        if (sourceProcedural != null) sourceProcedural.setText(org.ether.society.i18n.I18n.get("scenario.world_planet_gen"));
-        if (sourceLoad != null) sourceLoad.setText(org.ether.society.i18n.I18n.get("scenario.world_load_map"));
-        if (sourceReal != null) sourceReal.setText(org.ether.society.i18n.I18n.get("scenario.world_real_earth"));
     }
 
     private VBox createProceduralPanel() {
-        VBox p = new VBox(12);
-        p.setPadding(new Insets(15));
+        VBox p = new VBox(8);
+        p.setPadding(new Insets(10));
         p.setStyle("-fx-background-color: rgba(255,255,255,0.03); -fx-background-radius: 8;");
-
-        Label infoLabel = new Label("🪐 Planetary geography, topography, and physics are configured in Tab 1 (PLANET GENERATOR).\n\n" +
-                                    "🌿 Ecological and resource distributions (Fauna, Flora, Ores) are tuned in Tab 2 (RESOURCES & ECOLOGY).\n\n" +
-                                    "The generated world is automatically linked to this scenario.");
+        Label infoLabel = new Label("🪐 Territoire, relief et géologie issus de l'Onglet 1 (Planète).\n🌿 Écologie et minerais issus de l'Onglet 2 (Ressources).");
         infoLabel.setWrapText(true);
-        infoLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #94a3b8;");
-
+        infoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #94a3b8;");
         p.getChildren().add(infoLabel);
         return p;
     }
 
     private VBox createLoadPanel() {
-        VBox p = new VBox(10);
+        VBox p = new VBox(8);
         existingMapsCombo = new ComboBox<>();
-        // Populate (handled on show/init normally, here simple refresh)
         refreshMapList();
-
-        Button refreshBtn = new Button("Refresh List");
+        Button refreshBtn = new Button("Rafraîchir");
         refreshBtn.setOnAction(e -> refreshMapList());
-
-        p.getChildren().addAll(new Label("Select Map:"), new HBox(5, existingMapsCombo, refreshBtn));
+        p.getChildren().addAll(new Label("Choisir une carte sauvegardée :"), new HBox(5, existingMapsCombo, refreshBtn));
         return p;
     }
 
     private VBox createRealDataPanel() {
-        VBox p = new VBox(10);
-        p.getChildren().add(new Label("Loads approximate Earth data for now."));
+        VBox p = new VBox(8);
+        p.getChildren().add(new Label("Charge les données satellitaires réelles de la Terre (WMS/USGS)."));
         return p;
     }
 
@@ -296,65 +416,58 @@ public class ScenarioSetupPanel extends BorderPane {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        Label title = new Label("MAP PREVIEW");
+        Label title = new Label("PREVISUALISATION DE LA CARTE ET DENSITÉ");
         title.getStyleClass().add("label-header");
 
         ToggleGroup viewGroup = new ToggleGroup();
         viewBiomeBtn = new ToggleButton("Biomes");
-        viewElevationBtn = new ToggleButton("Elevation");
+        viewElevationBtn = new ToggleButton("Relief");
+        viewPopHeatmapBtn = new ToggleButton("🔥 Population");
+
         viewBiomeBtn.setToggleGroup(viewGroup);
         viewElevationBtn.setToggleGroup(viewGroup);
-        viewElevationBtn.setSelected(true); // Default to elevation view
-        viewBiomeBtn.setTooltip(new Tooltip("Show biome/vegetation colors"));
-        viewElevationBtn.setTooltip(new Tooltip("Show elevation gradient"));
+        viewPopHeatmapBtn.setToggleGroup(viewGroup);
+        viewPopHeatmapBtn.setSelected(true);
 
         viewGroup.selectedToggleProperty().addListener(o -> drawPreview());
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        header.getChildren().addAll(title, spacer, viewBiomeBtn, viewElevationBtn);
+        header.getChildren().addAll(title, spacer, viewBiomeBtn, viewElevationBtn, viewPopHeatmapBtn);
 
-        // Canvas Container
         Pane canvasContainer = new StackPane();
-        canvasContainer.setStyle("-fx-background-color: black; -fx-border-color: #7f8c8d;");
-        previewCanvas = new Canvas(600, 400); // Fixed size for now, loop constrained
+        canvasContainer.setStyle("-fx-background-color: black; -fx-border-color: #475569;");
+        previewCanvas = new Canvas(600, 400);
 
-        // Resize logic not strictly needed if in StackPane, but beneficial
         canvasContainer.getChildren().add(previewCanvas);
         VBox.setVgrow(canvasContainer, Priority.ALWAYS);
 
-        previewStatusLabel = new Label("No preview generated");
+        previewStatusLabel = new Label("Aucune prévisualisation générée");
+        previewStatusLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px;");
 
-        // Elevation Legend
         HBox legendBox = createLegend();
-
         root.getChildren().addAll(header, canvasContainer, legendBox, previewStatusLabel);
         return root;
     }
 
-    /**
-     * Create a color legend for the preview.
-     */
     private HBox createLegend() {
-        HBox legend = new HBox(5);
+        HBox legend = new HBox(8);
         legend.setAlignment(Pos.CENTER);
-        legend.setPadding(new Insets(5));
+        legend.setPadding(new Insets(6));
         legend.setStyle("-fx-background-color: rgba(0,0,0,0.7); -fx-background-radius: 5;");
 
-        // Elevation gradient: ocean floor (-11000) through sea level (0) to peaks
-        // (+9000)
-        String[] labels = { "-11km", "-5km", "0 (sea)", "+3km", "+9km" };
+        String[] labels = { "Désert/Eau", "Faible", "Moyenne", "Élevée (Ville)", "Métropole" };
         Color[] colors = {
-                Color.rgb(15, 30, 60), // Deep ocean
-                Color.rgb(30, 80, 150), // Shallow ocean
-                Color.rgb(60, 130, 60), // Coastal/lowland
-                Color.rgb(139, 119, 101), // Mountains
-                Color.rgb(255, 255, 255) // Snow peaks
+                Color.rgb(30, 41, 59),
+                Color.rgb(16, 185, 129),
+                Color.rgb(234, 179, 8),
+                Color.rgb(249, 115, 22),
+                Color.rgb(239, 68, 68)
         };
 
         for (int i = 0; i < labels.length; i++) {
-            javafx.scene.shape.Rectangle colorBox = new javafx.scene.shape.Rectangle(20, 12);
+            javafx.scene.shape.Rectangle colorBox = new javafx.scene.shape.Rectangle(18, 10);
             colorBox.setFill(colors[i]);
             colorBox.setStroke(Color.GRAY);
 
@@ -364,14 +477,7 @@ public class ScenarioSetupPanel extends BorderPane {
             HBox item = new HBox(3, colorBox, lbl);
             item.setAlignment(Pos.CENTER);
             legend.getChildren().add(item);
-
-            if (i < labels.length - 1) {
-                Label arrow = new Label("->");
-                arrow.setStyle("-fx-text-fill: #7f8c8d; -fx-font-size: 10px;");
-                legend.getChildren().add(arrow);
-            }
         }
-
         return legend;
     }
 
@@ -384,14 +490,6 @@ public class ScenarioSetupPanel extends BorderPane {
 
         realDataPanel.setVisible(sourceReal.isSelected());
         realDataPanel.setManaged(sourceReal.isSelected());
-    }
-
-    private void applyPreset(PlanetPreset p) {
-        if (p == null)
-            return;
-        waterSlider.setValue(p.waterLevel());
-        tempSlider.setValue(p.temperatureGradient());
-        seedField.setText(String.valueOf(p.seed()));
     }
 
     private void refreshMapList() {
@@ -408,65 +506,14 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    private void refreshScenarioList() {
-        savedScenariosCombo.getItems().setAll(scenarioRepo.findAll());
-        savedScenariosCombo.setConverter(new javafx.util.StringConverter<>() {
-            @Override
-            public String toString(Scenario s) {
-                return s != null ? s.getName() : "";
-            }
-
-            @Override
-            public Scenario fromString(String string) {
-                return null; // Not needed
-            }
-        });
-    }
-
-    private void saveCurrentScenario() {
-        Scenario s = getScenario();
-        scenarioRepo.saveOrUpdate(s);
-        refreshScenarioList();
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Scenario '" + s.getName() + "' saved!");
-        alert.show();
-    }
-
-    private void loadSelectedScenario() {
-        Scenario s = savedScenariosCombo.getValue();
-        if (s == null)
-            return;
-
-        scenarioNameField.setText(s.getName());
-        startYearSpinner.getValueFactory().setValue((int) s.getStartDateYear());
-        // Climate harshness loaded from scenario (no separate slider)
-
-        // Load Planet Config
-        if (s.getPlanetPreset() != null) {
-            PlanetPreset pc = s.getPlanetPreset();
-            sourceProcedural.setSelected(true);
-            seedField.setText(String.valueOf(pc.seed()));
-            waterSlider.setValue(pc.waterLevel());
-            tempSlider.setValue(pc.temperatureGradient());
-        }
-
-        if (s.isUseRealEarthData()) {
-            sourceReal.setSelected(true);
-        }
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Scenario Loaded!");
-        alert.show();
-    }
-
     private void generatePreview() {
-        previewStatusLabel.setText("Generating...");
+        previewStatusLabel.setText("Génération de la prévisualisation...");
 
-        // Run in thread
         new Thread(() -> {
             try {
                 List<H3Cell> cells = null;
                 if (sourceProcedural.isSelected()) {
-                    PlanetPreset cfg = getPlanetPresetFromUI();
+                    PlanetPreset cfg = activePlanetPreset != null ? activePlanetPreset : new PlanetPreset("Custom", 6, 42, 0.5, 2.0, 0.0, 40.0);
                     cells = new ProceduralGenerator().generatePlanet(cfg);
                 } else if (sourceReal.isSelected()) {
                     cells = ExternalDataService.loadEarthData();
@@ -479,40 +526,55 @@ public class ScenarioSetupPanel extends BorderPane {
                 }
 
                 if (cells != null) {
+                    // Inject initial population distribution onto cells according to selected pattern
+                    distributeInitialPopulation(cells);
+
                     List<H3Cell> finalCells = cells;
                     javafx.application.Platform.runLater(() -> {
                         currentPreviewCells = finalCells;
                         drawPreview();
-                        previewStatusLabel.setText("Generated " + finalCells.size() + " cells");
+                        previewStatusLabel.setText("Généré : " + finalCells.size() + " cellules avec répartition démographique");
                     });
                 }
             } catch (Exception e) {
                 logger.error("Error generating preview", e);
-                javafx.application.Platform.runLater(() -> previewStatusLabel.setText("Error: " + e.getMessage()));
+                javafx.application.Platform.runLater(() -> previewStatusLabel.setText("Erreur: " + e.getMessage()));
             }
         }).start();
     }
 
-    private PlanetPreset getPlanetPresetFromUI() {
-        long seed = 42;
-        try {
-            seed = Long.parseLong(seedField.getText());
-        } catch (Exception ignored) {
-        }
+    private void distributeInitialPopulation(List<H3Cell> cells) {
+        if (cells == null || cells.isEmpty()) return;
 
-        return new PlanetPreset(
-                "Custom",
-                6, // Resolution
-                seed,
-                0.5, // Freq
-                2.0, // Scale
-                waterSlider.getValue(),
-                tempSlider.getValue());
+        long totalPop = initialHumanCountSpinner.getValue();
+        String pattern = densityPatternCombo.getValue();
+
+        // Filter habitable land cells
+        List<H3Cell> landCells = cells.stream()
+                .filter(c -> c.getElevation() > 0 && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
+                .toList();
+
+        if (landCells.isEmpty()) return;
+
+        double popPerCell = (double) totalPop / landCells.size();
+
+        for (H3Cell c : landCells) {
+            double factor = 1.0;
+            if ("FERTILE_CRESCENT".equals(pattern) || "RIVER_VALLEYS".equals(pattern)) {
+                // Boost lowland plains & river basins
+                if (c.getBiome() == Biome.PLAINS || c.getBiome() == Biome.BEACH) factor = 4.0;
+                else if (c.getBiome() == Biome.DESERT || c.getBiome() == Biome.SNOW) factor = 0.05;
+            } else if ("MESOAMERICA".equals(pattern)) {
+                if (c.getBiome() == Biome.JUNGLE || c.getBiome() == Biome.PLAINS || c.getBiome() == Biome.HILLS) factor = 3.0;
+            } else if ("URBAN_CLUSTERS".equals(pattern) || "MESOPOTAMIA_ASSYRIA".equals(pattern)) {
+                if (c.getBiome() == Biome.PLAINS) factor = 5.0;
+            }
+            c.setPopulation((int) (popPerCell * factor));
+        }
     }
 
     private void drawPreview() {
-        if (currentPreviewCells == null)
-            return;
+        if (currentPreviewCells == null) return;
 
         GraphicsContext gc = previewCanvas.getGraphicsContext2D();
         double w = previewCanvas.getWidth();
@@ -521,13 +583,11 @@ public class ScenarioSetupPanel extends BorderPane {
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, w, h);
 
-        // Find bounds - FORCE FULL GLOBE for correct wrapping
-        double minLat = -90;
-        double maxLat = 90;
-        double minLng = -180;
-        double maxLng = 180;
+        double minLat = -90, maxLat = 90;
+        double minLng = -180, maxLng = 180;
 
         boolean showElev = viewElevationBtn.isSelected();
+        boolean showPop = viewPopHeatmapBtn.isSelected();
 
         double scaleX = w / (maxLng - minLng);
         double scaleY = h / (maxLat - minLat);
@@ -541,12 +601,21 @@ public class ScenarioSetupPanel extends BorderPane {
             double y = (maxLat - c.getLatitude()) * scale + offY;
 
             Color col;
-            if (showElev) {
+            if (showPop) {
+                if (c.getElevation() <= 0) {
+                    col = Color.rgb(15, 23, 42); // Sea
+                } else {
+                    long pop = c.getPopulation();
+                    if (pop <= 0) col = Color.rgb(30, 41, 59);
+                    else if (pop < 100) col = Color.rgb(16, 185, 129); // Low
+                    else if (pop < 1000) col = Color.rgb(234, 179, 8); // Medium
+                    else if (pop < 5000) col = Color.rgb(249, 115, 22); // City
+                    else col = Color.rgb(239, 68, 68); // Metropolis
+                }
+            } else if (showElev) {
                 double norm = Math.max(0, Math.min(1, c.getElevation() / 6000.0));
-                if (c.getElevation() <= 0)
-                    col = Color.DARKBLUE;
-                else
-                    col = Color.gray(0.2 + 0.8 * norm);
+                if (c.getElevation() <= 0) col = Color.DARKBLUE;
+                else col = Color.gray(0.2 + 0.8 * norm);
             } else {
                 col = getBiomeColor(c.getBiome());
             }
@@ -557,8 +626,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private Color getBiomeColor(Biome b) {
-        if (b == null)
-            return Color.BLACK;
+        if (b == null) return Color.BLACK;
         return switch (b) {
             case OCEAN -> Color.DARKBLUE;
             case DEEP_OCEAN -> Color.NAVY;
@@ -576,12 +644,12 @@ public class ScenarioSetupPanel extends BorderPane {
 
     private void startSimulation() {
         if (currentPreviewCells == null || currentPreviewCells.isEmpty()) {
-            Alert a = new Alert(Alert.AlertType.WARNING, "Please generate a preview first!");
+            Alert a = new Alert(Alert.AlertType.WARNING, "Veuillez générer une prévisualisation avant de démarrer !");
             a.showAndWait();
             return;
         }
 
-        Scenario s = getScenario(); // Use helper
+        Scenario s = getScenario();
         if (onStartSimulation != null) {
             onStartSimulation.accept(s);
         }
@@ -591,21 +659,17 @@ public class ScenarioSetupPanel extends BorderPane {
         Scenario s = new Scenario();
         s.setName(scenarioNameField.getText());
         s.setStartDateYear(startYearSpinner.getValue());
-        s.setClimateHarshness(tempSlider.getValue()); // Use temperature slider as proxy for harshness
+        s.setInitialHumanCount(initialHumanCountSpinner.getValue());
+        s.setInitialTechLevel(initialTechLevelSlider.getValue());
+        s.setPopulationDensityType(densityPatternCombo.getValue());
 
         if (sourceProcedural.isSelected()) {
-            s.setPlanetPreset(getPlanetPresetFromUI());
+            s.setPlanetPreset(activePlanetPreset);
             s.setUseRealEarthData(false);
         } else if (sourceReal.isSelected()) {
             s.setUseRealEarthData(true);
             s.setPlanetPreset(null);
-        } else {
-            // Load existing map - we don't save the map config back to scenario strictly in
-            // this model
-            // unless we loaded a scenario first.
-            // For now, leave empty.
         }
-
         return s;
     }
 

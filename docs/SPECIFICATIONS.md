@@ -1,87 +1,86 @@
 # Technical Specifications - Human Society Simulation (Ether)
 
 ## Version
-**2.0.0** - Premium Edition (Glassmorphism + Density Simulation)
+**2.0.0** - Academic & Multi-Scale Edition (Glassmorphism + DOD Artemis Engine)
 
 ## Overview
-Ether is an agent-based simulation modeling the evolution of human society from prehistory to modern times. It leverages a hexagonal geospatial grid (H3), density-based population dynamics (Artemis Layer), and high-performance Java technologies.
+Ether is an academically-grounded, multi-scale simulation modeling the socio-ecological evolution of human civilizations from pre-Neolithic hunter-gatherer bands to ancient empires and nation-states. It combines a discrete hexagonal geospatial grid (Uber H3), density-based population dynamics, Data-Oriented Design (DOD) performance kernels, and a modern JavaFX interface.
 
-## Design Goals
-1.  **Immersive UI**: "Glassmorphism" aesthetic, smooth animations, and premium visual feedback.
-2.  **Scalability**: Capable of simulating millions of H3 cells using the Artemis density engine.
-3.  **Realism**: Data-driven climate (WorldClim), terrain (SRTM), and population models.
-4.  **Extensibility**: Modular architecture separating Simulation, Rendering, and Persistence.
+## System Objectives & Academic Scope
+1. **Thermodynamic & Ecological Realism**: Biophysical modeling of primary productivity (NPP), carrying capacity ($K$), trophic energy conversion, and resource entropy.
+2. **Multi-Scale Spatial Discretization**: Uber H3 grid system (Resolutions 5 to 8) enabling seamless local-to-global simulation.
+3. **Data-Oriented High-Performance Engine**: Hybrid engine featuring array-backed DOD memory buffers (`WorldBuffer`, `AgentBuffer`) for SIMD/parallel updates (Demographic, Urban, Environmental, Cultural, and Statistical kernels).
+4. **Data-Driven & Satellite Integration**: Geospatial planet generation combining 3D Simplex noise procedural generation with real NASA MOLA, USGS Earth, Magellan Venus, and LRO Lunar elevation/biome datasets.
+5. **Civilization Identity & Analytics**: Comprehensive tracking of civilizational identity cards, Gini wealth distribution, demographic transitions, and macroeconomic indicators.
 
 ## Technology Stack
 
 ### Core
--   **Language**: Java 21 (LTS) - Virtual Threads, Records, Switch Expressions.
--   **Build Tool**: Maven 3.9+
--   **Geospatial**: Uber H3 (4.1.1)
+- **Language**: Java 21 (LTS) - Virtual Threads, Records, Pattern Matching, Sealed Interfaces.
+- **Build Tool**: Maven 3.9+
+- **Geospatial Engine**: Uber H3 (4.1.1)
 
-### Libraries
--   **UI**: JavaFX 21 (with CSS-driven styling)
--   **JSON**: Jackson 2.15+
--   **Logging**: SLF4J + Logback
--   **Testing**: JUnit 5, Mockito
--   **GPU**: TornadoVM (Planned for Phase 14)
+### Libraries & Frameworks
+- **UI Engine**: JavaFX 21 with Glassmorphism CSS design system & multi-language i18n framework (FR, EN, ES, DE, ZH).
+- **Data Serialization**: Jackson 2.15+ (JSON configuration presets and scenario saves).
+- **Logging & Diagnostics**: SLF4J + Logback.
+- **Persistence**: H3Cell Repository & SQL/JSON Save Engine.
+- **Parallel Computing**: Java Virtual Threads, Parallel Streams, and OpenCL/TornadoVM integration layer.
 
 ## Architecture
 
 ### System Layers
-1.  **UI Layer (JavaFX)**: `MainView`, `H3MapCanvas`, `GlassPanel`. Handles visualization and user interaction.
-2.  **Application Layer**: `EtherApp`, `Configuration`, `I18n`. Manages lifecycle and wiring.
-3.  **Simulation Layer (Artemis)**: `ArtemisSimulationEngine`, `H3ClimateSystem`. The core logic for density updates.
-4.  **Persistence Layer**: `GameSaveManager`, `H3CellRepository`. Manages state serialization (SQL/JSON).
-5.  **Model Layer**: `H3Cell`, `Nation` (Records/POJOs).
+1. **UI Layer (JavaFX)**: `MainView`, `PlanetGeneratorPanel`, `ResourceDistributionPanel`, `ScenarioSetupPanel`, `H3MapCanvas`, `StatsPanel`.
+2. **Application Layer**: `EtherApp`, `Configuration`, `I18n`, `EventSystem`.
+3. **Simulation Layer (Orchestrator)**: `H3SimulationEngine`, `FluxEngine`, `H3ClimateSystem`, `PoliticalSimulationEngine`.
+4. **DOD Execution Kernels**:
+   - `EnvironmentalKernel`: Resource regeneration, biomass updates, seasonal decay.
+   - `DemographicKernel`: Birth/death dynamics, starvation, population growth.
+   - `UrbanKernel`: Infrastructure development, cell carrying capacity.
+   - `CultureKernel`: Cultural trait diffusion, linguistic/technological drift.
+   - `StatisticsKernel`: Real-time Gini calculation, GDP estimation, life expectancy, fertility tracking.
+5. **Persistence Layer**: `GameSaveManager`, `Scenario`, `JSON/SQL`.
 
-### Artemis Layer (Density Engine)
-Instead of tracking millions of individual agents, Artemis tracks **densities** per cell:
--   **Population**: Number of humans.
--   **Resources**: Food, Water, Wood.
--   **Culture**: Vector of cultural traits.
-*Note: "Special Agents" (Armies, Diplomats) are tracked individually as overlay entities.*
+## Climate & Biome Modeling
 
-## Data Structures
+### Procedural Planet Generation (Simplex 3D Sphere)
+- **Elevation ($e$)**: Multi-octave 3D Simplex noise mapped onto spherical coordinates ($x, y, z = \cos \phi \cos \lambda, \cos \phi \sin \lambda, \sin \phi$).
+- **Temperature ($T$)**:
+  $$T(\phi, e) = T_{\text{avg}} + \Delta T_{\text{grad}} \cdot \left(\cos \phi - 0.5\right) - \gamma \cdot e$$
+  where $\phi$ is latitude, $\Delta T_{\text{grad}}$ is equator-to-pole gradient, and $\gamma \approx 6.5^\circ\text{C/km}$ is the atmospheric thermal lapse rate.
+- **Rainfall ($R$)**: Combines 3D noise with latitude circulation belts ($\text{latMod}$) modeling the Intertropical Convergence Zone (ITCZ at $0-10^\circ$), Subtropical High Deserts ($20-40^\circ$), Mid-Latitude Ferrel Cell Rain ($50-70^\circ$), and Polar Aridity ($>80^\circ$).
+- **Biome Classification Matrix**:
+  - $e < \text{waterLevel} \implies \text{OCEAN} / \text{DEEP\_OCEAN}$
+  - $e > 0.8 \implies \text{MOUNTAINS}$; $e > 0.5 \implies \text{HILLS}$
+  - $T < -5^\circ\text{C} \implies \text{SNOW}$; $T < 5^\circ\text{C} \implies \text{TUNDRA}$
+  - $R < 0.2 \implies \text{DESERT}$; $R < 0.5 \implies \text{PLAINS}$; $R < 0.8 \implies \text{FOREST}$; $R \ge 0.8 \implies \text{JUNGLE}$
 
-### H3 Grid
--   **Resolution**: 6 (~3km edges) to 8 (~0.5km edges).
--   **Storage**: `ArrayList<H3Cell>` ordered by index for cache locality.
--   **Neighbors**: Computed runtime via `H3Service`.
+### Satellite & Online Map Integration
+- Dynamic fetching from USGS & NASA WMS remote services.
+- Native import of heightmaps and biomes with spatial alignment and ESRI World File (`.tfw`) geospatial exports.
 
-### Persistence Format
--   **World State**: SQL Database (PostGreSQL/H2) for cell data.
--   **Metadata**: JSON for scenario info, time state, and player progress.
+## Simulation Loop & Multi-Scale Dynamics
 
-## Algorithms
+### Fast Scale ($\Delta t = 1 \text{ day}$)
+- Resource flux and logistical transport (`FluxEngine`).
+- Immediate political/diplomatic tension updates (`PoliticalSimulationEngine`).
 
-### Simulation Loop (Tick)
-1.  **Time Advance**: Increment Year/Month.
-2.  **Climate Update**: Calculate Temp/Rain based on Month + Latitude.
-3.  **Artemis Density**:
-    -   Produces Food (Logistic Growth).
-    -   Updates Population (Birth/Death based on Food/Health).
-    -   Migrates Population (Flux to higher-desirability neighbors).
-4.  **Diplomacy**: Update borders and Nation-states.
-5.  **Event Check**: Trigger historical/random events.
-
-### Rendering Painter
--   **2D Mode**: Mercator-like projection of hexagons.
--   **3D Mode**: Isometric projection with elevation extrusions.
--   **Layers**: Biome Colors, Population Heatmap, Temperature Gradient.
+### Slow Scale ($\Delta t = 30 \text{ days}$)
+- Seasonal climate & solar irradiance adjustments (`H3ClimateSystem`).
+- Ecological regeneration and biomass progression (`EnvironmentalKernel`).
+- Demographic births/deaths and migration (`DemographicKernel`).
+- Urban development (`UrbanKernel`) and cultural diffusion (`CultureKernel`).
+- Macroeconomic snapshot capturing Gini, GDP, and demographic metrics (`StatisticsKernel`).
 
 ## Performance Targets
 | Metric | Target | Status |
 | :--- | :--- | :--- |
 | Tick Rate (175k cells) | >10 TPS | ✅ Achieved |
-| FPS (2D) | >30 FPS | ✅ Achieved |
-| FPS (3D) | >20 FPS | ✅ Achieved |
-| Startup Time | <5s | ✅ Achieved |
-
-## Security & Constraints
--   **Input Validation**: Strict JSON schema loading.
--   **Resource Limits**: Max heap configurable (default 2GB).
+| FPS (2D Canvas) | >30 FPS | ✅ Achieved |
+| FPS (3D Isometric) | >20 FPS | ✅ Achieved |
+| Startup Time | <3 s | ✅ Achieved |
 
 ## License
-**MIT License**
-Copyright (c) 2024-2026 Silvere Martin-Michiellot & Gemini AI
+**MIT License**  
+Copyright (c) 2024-2026 Silvere Martin-Michiellot & Gemini AI Assistant
+
