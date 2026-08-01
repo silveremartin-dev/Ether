@@ -352,6 +352,9 @@ public class H3SimulationEngine implements ISimulationEngine {
                 org.ether.society.procedural.TrophicEcosystemEngine.processTrophicEcosystem(cells, 1.0);
                 org.ether.society.procedural.PhysicalSupplyChainEngine.processSupplyChains(cells, 1.0);
                 org.ether.society.procedural.UrbanThermodynamicsEngine.processUrbanThermodynamics(cells, 1.0);
+                org.ether.society.procedural.PhysicalLawEngine.applyPhysicalLaws(cells, 1.0);
+                org.ether.society.procedural.CulturalSociologyEngine.processCulturalSociology(cells, 1.0);
+                org.ether.society.procedural.CoGovernanceTradeEngine.processTradeAndGovernance(cells, 1.0);
 
                 // Statistics
                 currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
