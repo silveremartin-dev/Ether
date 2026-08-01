@@ -1551,29 +1551,46 @@ public class ScenarioSetupPanel extends BorderPane {
 
     private void loadEarthHistoricalEvents() {
         eventsList.clear();
-        eventsList.add(new ClimateEvent("volcano", "Éruption Tambora (Indonesia)", 1815, -8.25, 117.98, 0.0, 7.0));
-        eventsList.add(new ClimateEvent("volcano", "Éruption Krakatoa (Indonesia)", 1883, -6.10, 105.42, 0.0, 6.0));
-        eventsList.add(new ClimateEvent("volcano", "Éruption Pinatubo (Philippines)", 1991, 15.13, 120.35, 0.0, 6.0));
-        eventsList.add(new ClimateEvent("volcano", "Éruption Vésuve (Pompéi)", 79, 40.82, 14.43, 0.0, 5.0));
-        eventsList.add(new ClimateEvent("volcano", "Éruption Santorini / Thera (Grèce)", -1640, 36.40, 25.40, 0.0, 7.0));
+        // Éruptions Volcaniques & Stratosphère (tau)
+        eventsList.add(new ClimateEvent("volcano", "Éruption Tambora (VEI-7, τ=1.20)", 1815, -8.25, 117.98, 0.0, 7.0));
+        eventsList.add(new ClimateEvent("volcano", "Éruption Krakatoa (VEI-6, τ=0.80)", 1883, -6.10, 105.42, 0.0, 6.0));
+        eventsList.add(new ClimateEvent("volcano", "Éruption Pinatubo (VEI-6, τ=0.40)", 1991, 15.13, 120.35, 0.0, 6.0));
+        eventsList.add(new ClimateEvent("volcano", "Éruption Vésuve (Pompéi VEI-5)", 79, 40.82, 14.43, 0.0, 5.0));
+        eventsList.add(new ClimateEvent("volcano", "Éruption Santorini / Thera (VEI-7)", -1640, 36.40, 25.40, 0.0, 7.0));
+        eventsList.add(new ClimateEvent("volcano", "Super-Éruption Toba (VEI-8, τ=3.50, Gel Global)", -74000, 2.88, 98.88, 0.0, 8.0));
+
+        // Tempêtes Solaire & Éruptions EMP Carrington
+        eventsList.add(new ClimateEvent("impact", "Événement Solaire Carrington (EMP & Grille Électrique)", 1859, 50.0, 0.0, 0.0, 8.5));
+
+        // Impact Météorique
+        eventsList.add(new ClimateEvent("impact", "Impact Tunguska (Onde de Choc 15Mt)", 1908, 60.89, 101.89, 0.0, 5.0));
+        eventsList.add(new ClimateEvent("impact", "Impact Chicxulub (Extinction K-Pg VEI-10)", -66000000, 21.40, -89.50, 0.0, 10.0));
+
+        // Tectonique, Séismes & Tsunamis
         eventsList.add(new ClimateEvent("earthquake", "Séisme Valdivia (Chili, M9.5)", 1960, -38.14, -73.41, 25.0, 9.5));
         eventsList.add(new ClimateEvent("earthquake", "Séisme Alaska (M9.2)", 1964, 61.02, -147.65, 25.0, 9.2));
         eventsList.add(new ClimateEvent("earthquake", "Séisme Sumatra-Andaman (M9.1)", 2004, 3.30, 95.98, 30.0, 9.1));
         eventsList.add(new ClimateEvent("earthquake", "Séisme Tohoku Japon (M9.0)", 2011, 38.30, 142.37, 29.0, 9.0));
-        eventsList.add(new ClimateEvent("earthquake", "Séisme Lisbonne (Portugal)", 1755, 36.00, -10.50, 30.0, 8.7));
-        eventsList.add(new ClimateEvent("tsunami", "Tsunami Sumatra (270 000 victimes)", 2004, 3.30, 95.98, 30.0, 9.1));
-        eventsList.add(new ClimateEvent("tsunami", "Tsunami Tohoku Japon", 2011, 38.30, 142.37, 29.0, 9.0));
-        eventsList.add(new ClimateEvent("tsunami", "Tsunami Krakatoa (36 000 victimes)", 1883, -6.10, 105.42, 0.0, 6.0));
+        eventsList.add(new ClimateEvent("earthquake", "Séisme Lisbonne (Portugal, M8.7)", 1755, 36.00, -10.50, 30.0, 8.7));
+        eventsList.add(new ClimateEvent("tsunami", "Tsunami Sumatra (Submersion Littorale)", 2004, 3.30, 95.98, 30.0, 9.1));
+        eventsList.add(new ClimateEvent("tsunami", "Tsunami Fukushima & Accident Nucléaire", 2011, 38.30, 142.37, 29.0, 9.0));
+
+        // Radiations & Accidents Technologiques
+        eventsList.add(new ClimateEvent("impact", "Accident Nucléaire de Tchernobyl (Fallout Bq/m²)", 1986, 51.38, 30.10, 0.0, 7.5));
+
+        // Ozone CFC & Dérive Climatique
+        eventsList.add(new ClimateEvent("climate_drift", "Trou dans la Couche d'Ozone CFC (Flux UV)", 1985, -80.0, 0.0, 0.0, 4.0));
         eventsList.add(new ClimateEvent("climate_drift", "Holocène Vert (Sahara Humide & Fertile)", -6000, 20.0, 10.0, 0.0, 3.0));
         eventsList.add(new ClimateEvent("climate_drift", "Optimum Climatique Médiéval (+1.2°C)", 1000, 45.0, 15.0, 0.0, 1.2));
         eventsList.add(new ClimateEvent("climate_drift", "Petit Âge Glaciaire (-1.5°C Maunder)", 1650, 50.0, 10.0, 0.0, -1.5));
         eventsList.add(new ClimateEvent("sea_level", "Élévation Littorale Moderne (+2.5m Submersion)", 2050, 0.0, 0.0, 0.0, 2.5));
-        eventsList.add(new ClimateEvent("impact", "Impact Tunguska (Sibérie)", 1908, 60.89, 101.89, 0.0, 5.0));
-        eventsList.add(new ClimateEvent("impact", "Impact Chicxulub (Extinction K-Pg)", -66000000, 21.40, -89.50, 0.0, 10.0));
-        eventsList.add(new ClimateEvent("pandemic", "Peste Noire (Europe, 1/3 pop.)", 1347, 44.00, 10.00, 0.0, 9.0));
-        eventsList.add(new ClimateEvent("pandemic", "Grippe Espagnole (50M victimes)", 1918, 40.00, 0.00, 0.0, 8.0));
+
+        // Pandémies Bio-Moléculaires
+        eventsList.add(new ClimateEvent("pandemic", "Peste Noire (Europe, 1/3 Pop.)", 1347, 44.00, 10.00, 0.0, 9.0));
+        eventsList.add(new ClimateEvent("pandemic", "Grippe Espagnole (50M Victimes)", 1918, 40.00, 0.00, 0.0, 8.0));
         eventsList.add(new ClimateEvent("flood", "Grande Inondation Jaune (Chine)", 1931, 32.00, 118.00, 0.0, 8.0));
-        logger.info("Loaded {} Earth historical events into events table.", eventsList.size());
+
+        logger.info("Loaded {} physicalized Earth historical events into events table.", eventsList.size());
     }
 
     public void applyEarthPreset() {

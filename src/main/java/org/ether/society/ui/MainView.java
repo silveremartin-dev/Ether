@@ -38,6 +38,8 @@ public class MainView extends StackPane {
     private final MiniMap miniMap;
     private final PerformanceHUD hud;
     private final StatsPanel statsPanel;
+    private final org.ether.society.model.ScenarioTimeline timeline;
+    private GodModePanel godModePanel;
 
     // UI Structure
     private TabPane tabPane;
@@ -60,6 +62,8 @@ public class MainView extends StackPane {
         this.miniMap = miniMap;
         this.hud = hud;
         this.statsPanel = new StatsPanel(engine);
+        this.timeline = new org.ether.society.model.ScenarioTimeline();
+        this.godModePanel = new GodModePanel(engine, timeline);
 
         initUI();
         updateTabTitles();
@@ -213,7 +217,17 @@ public class MainView extends StackPane {
         controlPanel.setOnTimelapseSeek(this::seekTimelapse);
 
         root.setCenter(mapStack);
-        root.setRight(statsPanel);
+
+        TabPane rightSidebar = new TabPane();
+        rightSidebar.setPrefWidth(380);
+        rightSidebar.setStyle("-fx-background-color: transparent;");
+        rightSidebar.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+
+        Tab statsTab = new Tab("📊 Stats", statsPanel);
+        Tab godModeTab = new Tab("⚡ God Mode & Timeline", godModePanel);
+        rightSidebar.getTabs().addAll(statsTab, godModeTab);
+
+        root.setRight(rightSidebar);
         root.setBottom(controlPanel);
 
         return root;
@@ -263,6 +277,20 @@ public class MainView extends StackPane {
 
         // Initialize engine with scenario (runs PreComputePhase)
         engine.initializeFromScenario(scenario, newCells);
+
+        // Record T_0 setup and events in Timeline
+        timeline.clear();
+        timeline.addEntry(scenario.getStartDateYear(), "SETUP", "Scénario Initial : " + scenario.getName(),
+            String.format("Pop: %,d | Tech: %.1f | Motif: %s", scenario.getInitialHumanCount(), scenario.getInitialTechLevel(), scenario.getPopulationDensityType()), false);
+
+        for (var evt : setupPanel.getScheduledEvents()) {
+            timeline.addEntry(evt.getYear(), evt.getType().toUpperCase(), evt.getName(),
+                String.format("Lat: %.2f°, Lng: %.2f°, Mag: %.1f", evt.getLatitude(), evt.getLongitude(), evt.getMagnitude()), false);
+        }
+
+        if (godModePanel != null) {
+            godModePanel.refreshTimelineView();
+        }
 
         // Update UI components
         mapCanvas.setCells(newCells);
