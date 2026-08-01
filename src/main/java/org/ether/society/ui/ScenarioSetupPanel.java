@@ -139,6 +139,14 @@ public class ScenarioSetupPanel extends BorderPane {
     private RadioButton radioImportDemo;
     private Label demoCompatibilityLabel;
 
+    // Clipping & Boundary Label Fields for live i18n
+    private Label latMaxLabel;
+    private Label latMinLabel;
+    private Label lngMinLabel;
+    private Label lngMaxLabel;
+    private Label boundaryLabel;
+    private Label previewTitleLabel;
+
     // Events section
     private TableView<ClimateEvent> eventsTable;
     private ObservableList<ClimateEvent> eventsList;
@@ -734,10 +742,14 @@ public class ScenarioSetupPanel extends BorderPane {
             sp.valueProperty().addListener((obs, old, val) -> drawPreview());
         }
 
-        boundsGrid.addRow(0, new Label("Lat Max (Haut) :"), maxLatSpinner, new Label("Lat Min (Bas) :"), minLatSpinner);
-        boundsGrid.addRow(1, new Label("Lng Min (Gau.) :"), minLngSpinner, new Label("Lng Max (Dro.) :"), maxLngSpinner);
+        latMaxLabel = new Label(I18n.getOrDefault("scenario.clipping.lat_max", "Lat Max (Haut) :"));
+        latMinLabel = new Label(I18n.getOrDefault("scenario.clipping.lat_min", "Lat Min (Bas) :"));
+        lngMinLabel = new Label(I18n.getOrDefault("scenario.clipping.lng_min", "Lng Min (Gau.) :"));
+        lngMaxLabel = new Label(I18n.getOrDefault("scenario.clipping.lng_max", "Lng Max (Dro.) :"));
+        boundsGrid.addRow(0, latMaxLabel, maxLatSpinner, latMinLabel, minLatSpinner);
+        boundsGrid.addRow(1, lngMinLabel, minLngSpinner, lngMaxLabel, maxLngSpinner);
 
-        Label boundaryLabel = new Label("Modélisation Scientifique des Frontières :");
+        boundaryLabel = new Label(I18n.getOrDefault("scenario.clipping.boundary_label", "Modélisation Scientifique des Frontières :"));
         boundaryLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
 
         boundaryModeCombo = new ComboBox<>();
@@ -787,13 +799,13 @@ public class ScenarioSetupPanel extends BorderPane {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        Label title = new Label("CARTE DE DENSITÉ DE POPULATION INITIALE");
-        title.getStyleClass().add("label-header");
+        previewTitleLabel = new Label(I18n.getOrDefault("scenario.preview_title", "CARTE DE DENSITÉ DE POPULATION INITIALE"));
+        previewTitleLabel.getStyleClass().add("label-header");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        header.getChildren().addAll(title, spacer);
+        header.getChildren().addAll(previewTitleLabel, spacer);
 
         Pane canvasContainer = new StackPane();
         canvasContainer.setStyle("-fx-background-color: black; -fx-border-color: #475569;");
@@ -943,10 +955,10 @@ public class ScenarioSetupPanel extends BorderPane {
         PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
         String planetName = p != null ? p.name() : "Standard";
         if (customDensityImage != null) {
-            demoCompatibilityLabel.setText(String.format("✅ Carte chargée et compatible avec le monde choisi à l'onglet 1 (%s)", planetName));
+            demoCompatibilityLabel.setText(String.format(I18n.getOrDefault("scenario.demo.map_loaded", "✅ Carte chargée et compatible avec le monde choisi à l'onglet 1 (%s)"), planetName));
             demoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981; -fx-font-weight: bold;");
         } else {
-            demoCompatibilityLabel.setText("🪐 Aucune carte externe chargée — Mode procédural actif");
+            demoCompatibilityLabel.setText(I18n.getOrDefault("scenario.demo.no_map", "🪐 Aucune carte externe chargée — Mode procédural actif"));
             demoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
         }
     }
@@ -1409,6 +1421,19 @@ public class ScenarioSetupPanel extends BorderPane {
         if (clippingCheckBox != null) clippingCheckBox.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.enable", "Activer la simulation partielle (Zone Tronquée)"));
         if (graphicSelectBtn != null) graphicSelectBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.select_mode", "🖱️ Mode Sélection Graphique sur Carte"));
         if (resetClippingBtn != null) resetClippingBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.reset", "🔄 Réinitialiser la Zone (Pleine Planète)"));
+        if (latMaxLabel != null) latMaxLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lat_max", "Lat Max (Haut) :"));
+        if (latMinLabel != null) latMinLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lat_min", "Lat Min (Bas) :"));
+        if (lngMinLabel != null) lngMinLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lng_min", "Lng Min (Gau.) :"));
+        if (lngMaxLabel != null) lngMaxLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lng_max", "Lng Max (Dro.) :"));
+        if (boundaryLabel != null) boundaryLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.boundary_label", "Modélisation Scientifique des Frontières :"));
+        if (previewTitleLabel != null) previewTitleLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.preview_title", "CARTE DE DENSITÉ DE POPULATION INITIALE"));
+
+        if (radioProcDemo != null) radioProcDemo.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.demo.procedural", "▶ Génération Procédurale"));
+        if (radioImportDemo != null) radioImportDemo.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.demo.import", "📂 Import Carte Externe (PNG)"));
+        if (loadDensityMapBtn != null) loadDensityMapBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.demo.btn_load", "📥 Importer Carte de Densité Externe (PNG)"));
+        if (clearDensityMapBtn != null) clearDensityMapBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.demo.btn_clear", "❌ Annuler Import"));
+        if (exportDensityMapBtn != null) exportDensityMapBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.demo.btn_export", "📤 Exporter Carte de Densité Générée (PNG)"));
+
         if (boundaryModeCombo != null) {
             boundaryModeCombo.setButtonCell(boundaryModeCombo.getCellFactory().call(null));
         }
@@ -1425,6 +1450,7 @@ public class ScenarioSetupPanel extends BorderPane {
         if (getLeft() instanceof ScrollPane sp && sp.getContent() instanceof VBox root) {
             root.lookupAll("#__popHeader").forEach(n -> { if (n instanceof Label l) l.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "2. DÉMOGRAPHIE & RÉPARTITION DE POPULATION")); });
         }
+        updateDemoCompatibilityDisplay();
     }
 
     public Scenario getScenario() {
