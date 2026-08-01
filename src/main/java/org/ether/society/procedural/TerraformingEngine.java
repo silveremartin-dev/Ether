@@ -7,7 +7,6 @@
 package org.ether.society.procedural;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.model.PlanetPreset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
