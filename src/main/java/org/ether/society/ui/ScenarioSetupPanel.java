@@ -63,6 +63,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
     // Form Controls
     private TextField scenarioNameField;
+    private TextArea scenarioDescriptionArea;
     private Spinner<Integer> startYearSpinner;
     private ComboBox<StartDatePreset> eraCombo;
     private ComboBox<Integer> h3ResolutionCombo;
@@ -424,7 +425,15 @@ public class ScenarioSetupPanel extends BorderPane {
         Tooltip.install(h3ResolutionLabel, h3ResolutionCombo.getTooltip());
         grid1.addRow(3, h3ResolutionLabel, h3ResolutionCombo);
 
-        section1.getChildren().addAll(title1, grid1);
+        Label descLabel = new Label("📖 Description Détaillée & Termes de Forçage Physiques :");
+        descLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 6 0 2 0;");
+
+        scenarioDescriptionArea = new TextArea();
+        scenarioDescriptionArea.setPrefRowCount(8);
+        scenarioDescriptionArea.setWrapText(true);
+        scenarioDescriptionArea.setStyle("-fx-font-family: 'Consolas', 'Monaco', monospace; -fx-font-size: 11px; -fx-text-fill: #e2e8f0; -fx-control-inner-background: #0f172a; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 6;");
+
+        section1.getChildren().addAll(title1, grid1, descLabel, scenarioDescriptionArea);
 
         // --- 4. Demographics & Density Map Management (RadioButtons) ---
         VBox popSection = new VBox(10);
@@ -632,37 +641,211 @@ public class ScenarioSetupPanel extends BorderPane {
     private List<Scenario> getBuiltInScenarios() {
         List<Scenario> list = new ArrayList<>();
 
+        // --- SCÉNARIOS DU PASSÉ ---
         Scenario s1 = new Scenario();
         s1.setName("Croissant Fertile & Néolithique (-8000)");
         s1.setStartDateYear(-8000);
         s1.setInitialHumanCount(25000);
         s1.setInitialTechLevel(1.2);
         s1.setPopulationDensityType("FERTILE_CRESCENT");
+        s1.setDescription("""
+            🌾 SCÉNARIO HISTORIQUE : L'Aube de l'Agriculture au Croissant Fertile (-8000 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Ce scénario modélise la transition majeure du Néolithique entre l'économie de subsistance des chasseurs-cueilleurs et l'émergence des premières communautés agricoles sédentaires le long du Tigre, de l'Euphrate, du Nil et de la côte Levantine.
+            
+            [CONDITIONS INITIALES PHYSIQUES (T_0)]
+            • Température Moyenne du Globe : ~14.0°C (Fin de la glaciation du Würm, Climat Holocène doux).
+            • Stœchiométrie des Sols : Carbone Organique du Sol (SOC) intact (50 t/ha), réserves N-P-K naturelles maximales.
+            • Vecteur Énergétique : Puissance musculaire humaine pure P_capita = 120 W/habitant.
+            • Matériaux & Résistance : Outillage en silex taillé et faune domestiquée, Yield Strength σ_yield = 15 MPa.
+            • Biome & Topographie : Concentration démographique le long des deltas et des plaines alluviales limoneuses.
+            
+            [LOIS ET CAS D'ÉTUDE MODÉLISÉS]
+            Le moteur simule le passage continu de la transhumance pastorale à la sélection artificielle des premiers cultivars de blé engrain et d'orge (SelectiveBreedingEngine), l'érosion des sols sous déforestation localisée (DeforestationErosionEngine) et la première émergence des structures étatiques déterministes par l'accumulation d'enthalpie agricole.
+            """);
         list.add(s1);
 
         Scenario s2 = new Scenario();
-        s2.setName("Empire Assyrien & Mésopotamie (-2000)");
-        s2.setStartDateYear(-2000);
-        s2.setInitialHumanCount(500000);
-        s2.setInitialTechLevel(3.5);
-        s2.setPopulationDensityType("MESOPOTAMIA_ASSYRIA");
+        s2.setName("Le Petit Âge Glaciaire de l'Antiquité Tardive & Peste de Justinien (536)");
+        s2.setStartDateYear(536);
+        s2.setInitialHumanCount(180000000);
+        s2.setInitialTechLevel(4.2);
+        s2.setPopulationDensityType("URBAN_CLUSTERS");
+        s2.setDescription("""
+            🌋 SCÉNARIO HISTORIQUE : L'Anomalie Climatique Volcanique de 536 & Choc Sanitaire
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            L'année 536 est considérée par les historiens du climat comme "la pire année de l'histoire humaine". Deux éruptions volcaniques super-massives consécutives (Ilopango et Krakatoa) ont injecté un voile d'aérosols stratosphériques occultant le Soleil pendant 18 mois.
+            
+            [CONDITIONS INITIALES PHYSIQUES (T_0)]
+            • Anomalie de Transmittance Solaire : Épaisseur optique stratosphérique τ = 1.20 (Chute de 30% du flux S_0 au sol).
+            • Choc Thermique Mondial : Baisse globale de température ΔT = -3.5°C entraînant gelées estivales et récoltes détruites.
+            • Effondrement Immuno-Métabolique : Effondrement des apports caloriques sous le seuil métabolique de base.
+            • Vague Épidémique : Déclenchement de la Peste de Justinien (BioMolecularEpidemiologyEngine) favorisé par la dénutrition.
+            
+            [LOIS ET CAS D'ÉTUDE MODÉLISÉS]
+            Modélise le couplage direct entre forçage radiatif stratosphérique, effondrement de l'immunoglobuline par sous-nutrition, dépopulation urbaine en Méditerranée/Asie, et baisse de l'Asabiyyah des grandes entités politiques impériales (Empire Byzantin et Dynasties Chinoises du Sud et du Nord).
+            """);
         list.add(s2);
 
         Scenario s3 = new Scenario();
-        s3.setName("Mésoamérique : Cités Mayas & Vallée (1000)");
-        s3.setStartDateYear(1000);
-        s3.setInitialHumanCount(1200000);
-        s3.setInitialTechLevel(4.0);
-        s3.setPopulationDensityType("MESOAMERICA");
+        s3.setName("Empire Assyrien & Irrigation Mésopotamienne (-2000)");
+        s3.setStartDateYear(-2000);
+        s3.setInitialHumanCount(500000);
+        s3.setInitialTechLevel(3.5);
+        s3.setPopulationDensityType("MESOPOTAMIA_ASSYRIA");
+        s3.setDescription("""
+            🏛️ SCÉNARIO HISTORIQUE : Hydraulique, Salinisation & Guerre Cinétique Assyrienne (-2000 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise l'apogée et les vulnérabilités de la civilisation mésopotamienne et de l'Empire Assyrien basés sur l'irrigation intensive à partir du Tigre et de l'Euphrate.
+            
+            [CONDITIONS INITIALES PHYSIQUES (T_0)]
+            • Grille Énergétique : Énergie animale de trait et travail hydraulique, P_capita = 450 W/habitant.
+            • Matériaux & Métallurgie : Alliages de Bronze, résistance mécanique σ_yield = 180 MPa.
+            • Hydrologie : Canaux d'irrigation majeurs et pompage dans les nappes phréatiques superficielles.
+            
+            [LOIS ET CAS D'ÉTUDE MODÉLISÉS]
+            Simule la salinisation progressive des sols par évaporation intense en climat aride (AquiferDepletionEngine), la baisse du rendement du blé au profit de l'orge plus tolérante au sel, et les sièges militaires évalués selon la pénétration cinétique des béliers vs la résistance des remparts en briques crues (ThermodynamicWarfareEngine).
+            """);
         list.add(s3);
 
         Scenario s4 = new Scenario();
-        s4.setName("Antiquité Classique Méditerranéenne (-500)");
-        s4.setStartDateYear(-500);
-        s4.setInitialHumanCount(2500000);
-        s4.setInitialTechLevel(4.8);
-        s4.setPopulationDensityType("URBAN_CLUSTERS");
+        s4.setName("Dynastie Song & Pré-Industrialisation Hydraulique (1000)");
+        s4.setStartDateYear(1000);
+        s4.setInitialHumanCount(100000000);
+        s4.setInitialTechLevel(5.2);
+        s4.setPopulationDensityType("RIVER_VALLEYS");
+        s4.setDescription("""
+            🏮 SCÉNARIO HISTORIQUE : Le Siècle d'Or de la Dynastie Song (1000 ap. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            La Chine des Song a connu la première pré-industrialisation de l'histoire, avec une utilisation massive du charbon de terre pour la fonte du fer et des réseaux de transport fluviaux ultra-efficaces.
+            
+            [CONDITIONS INITIALES PHYSIQUES (T_0)]
+            • Transport & Frottement : Réseau fluvial dense, coefficient de frottement hydrodynamique μ_eau = 0.001.
+            • Enthalpie Métallurgique : Hauts fourneaux au charbon, production de fer et acier brut.
+            • Révolution Agricole : Riziculture précoce Champa (rendement photosynthétique amplified × 2.5).
+            
+            [LOIS ET CAS D'ÉTUDE MODÉLISÉS]
+            Examine l'accumulation de capital et d'entropie d'information de Shannon (InformationEntropyEngine), le rôle du transport à faible frottement dans le maintien du EROEI agricole net, et les dynamiques de pression démographique.
+            """);
         list.add(s4);
+
+        // --- SCÉNARIOS DU FUTUR ---
+        Scenario s5 = new Scenario();
+        s5.setName("Business As Usual : Fossil Fuel Reliance & Warming (SSP5-8.5)");
+        s5.setStartDateYear(2026);
+        s5.setInitialHumanCount(8200000000L);
+        s5.setInitialTechLevel(7.8);
+        s5.setPopulationDensityType("URBAN_CLUSTERS");
+        s5.setDescription("""
+            📉 SCÉNARIO FUTUR : Business As Usual (Trajectoire GIEC SSP5-8.5)
+            
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
+            Poursuite de l'extraction des combustibles fossiles traditionnels sans déploiement massif de la fusion ni captage du carbone.
+            
+            [PARAMÈTRES ET VALEURS DE FORÇAGE EN JEU]
+            • Concentration en CO2 Atmosphérique : P_CO2 = 430 ppm -> 900 ppm à l'horizon 2100.
+            • Anomalie Thermique Globale : Forçage radiatif ΔF entraînant une hausse de température ΔT = +4.5°C.
+            • Bulbe Humide Léthal : Multiplications des zones où la température du bulbe humide T_wb >= 35°C (Stull Engine).
+            • Érosion des Sols & Aquifère : Épuisement continu des nappes phréatiques (AquiferDepletionEngine) et perte de SOC.
+            
+            [TRAJECTOIRE CIVILISATIONNELLE]
+            Mène à des vagues de réfugiés climatiques par dépassement du seuil de thermorégulation humaine, la baisse des rendements N-P-K mondiaux, et une contraction déterministe de la population mondiale après 2060.
+            """);
+        list.add(s5);
+
+        Scenario s6 = new Scenario();
+        s6.setName("Singularité Technologique, ASI & Fusion D-T (2045)");
+        s6.setStartDateYear(2045);
+        s6.setInitialHumanCount(9000000000L);
+        s6.setInitialTechLevel(9.5);
+        s6.setPopulationDensityType("URBAN_CLUSTERS");
+        s6.setDescription("""
+            🤖 SCÉNARIO FUTUR : Singularité Technologique & Énergie de Fusion D-T
+            
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
+            Franchissement du seuil d'émergence d'une Super-Intelligence Artificielle (ASI) et maîtrise industrielle de la fusion nucléaire deutérium-tritium.
+            
+            [PARAMÈTRES ET VALEURS DE FORÇAGE EN JEU]
+            • Débit Algorithmique ASI : Capacité d'information de Shannon >= 10^16 bits/sec.
+            • Grille Énergétique de Fusion : Puissance par habitant P_capita >= 50 000 W/habitant.
+            • Rendement Énergétique Net : Taux de retour EROEI >= 40:1 (Zéro déchet radiotoxique durable).
+            • Efficacité Carnot & Remédiation : Rendement des convertisseurs η -> 0.98 et dépollution moléculaire des sols/océans.
+            
+            [TRAJECTOIRE CIVILISATIONNELLE]
+            Entrée dans une économie post-rareté énergétique, élimination déterministe de la pollution chimique, extension trans-humaine de la longévité et expansion de la capacité de charge de la planète.
+            """);
+        list.add(s6);
+
+        Scenario s7 = new Scenario();
+        s7.setName("Hiver Nucléaire & Ombre Stratosphérique (2035)");
+        s7.setStartDateYear(2035);
+        s7.setInitialHumanCount(8500000000L);
+        s7.setInitialTechLevel(8.0);
+        s7.setPopulationDensityType("URBAN_CLUSTERS");
+        s7.setDescription("""
+            ☢️ SCÉNARIO FUTUR : Catastrophe de la Guerre Nucléaire & Hiver Stratosphérique
+            
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
+            Conflit nucléaire à haute intensité déclenchant d'immenses tempêtes de feu urbaines et l'injection massive de carbone suie dans la stratosphère.
+            
+            [PARAMÈTRES ET VALEURS DE FORÇAGE EN JEU]
+            • Épaisseur Optique des Suies Stratosphériques : τ_suie = 1.50.
+            • Transmittance du Rayonnement Solaire : Atténuation au sol S = S_0 * exp(-1.5) (Effondrement de 78% de l'insolation).
+            • Anomalie Thermique d'Hiver Nucléaire : Gel mondial avec chute brutale des températures ΔT = -15.0°C.
+            • Contamination Radiotoxique : Zones d'exclusion à forte activité Bq/m^2 et hausse des cancers Gompertz.
+            
+            [TRAJECTOIRE CIVILISATIONNELLE]
+            Arrêt total de la photosynthèse agricole mondiale pendant 3 à 5 ans, famine globale généralisée et effondrement de la grille énergétique et des réseaux de transport.
+            """);
+        list.add(s7);
+
+        Scenario s8 = new Scenario();
+        s8.setName("Falaise du Phosphate Minéral & Crise N-P-K (2050)");
+        s8.setStartDateYear(2050);
+        s8.setInitialHumanCount(9500000000L);
+        s8.setInitialTechLevel(8.2);
+        s8.setPopulationDensityType("URBAN_CLUSTERS");
+        s8.setDescription("""
+            ⛏️ SCÉNARIO FUTUR : Épuisement du Phosphate de Roche (Peak P 2050)
+            
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
+            Épuisement géologique complet des gisements de phosphate de roche bon marché sans transition vers un recyclage circulaire intégral.
+            
+            [PARAMÈTRES ET VALEURS DE FORÇAGE EN JEU]
+            • Réductions des Ressources Minérales : Stock de minerai de phosphate M_density -> 0.05.
+            • Blocage de la Loi de Liebig : Effondrement du facteur P de la stœchiométrie des sols (SoilNutrientNPKEngine).
+            • Choc Agricole : Chute de 60% du rendement mondial du blé, du maïs et du riz par sous-fertilisation.
+            
+            [TRAJECTOIRE CIVILISATIONNELLE]
+            Oblige l'humanité à réorienter massivement son enthalpie industrielle vers l'extraction à très faible EROEI des phosphates marins et le recyclage organique strict sous peine de crise démographique Malthusienne.
+            """);
+        list.add(s8);
+
+        Scenario s9 = new Scenario();
+        s9.setName("Super-Éruption Volcanique Toba/Yellowstone (2060)");
+        s9.setStartDateYear(2060);
+        s9.setInitialHumanCount(9800000000L);
+        s9.setInitialTechLevel(8.5);
+        s9.setPopulationDensityType("URBAN_CLUSTERS");
+        s9.setDescription("""
+            🌋 SCÉNARIO FUTUR : Super-Volcan VEI-8 & Refroidissement Vulcanologique
+            
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
+            Éruption super-volcanique de degré VEI-8 éjectant plus de 1000 km³ de cendres et de dioxyde de soufre (SO2) dans la haute atmosphère.
+            
+            [PARAMÈTRES ET VALEURS DE FORÇAGE EN JEU]
+            • Aérosols Stratosphériques SO2 : Refroidissement volcanique mondial ΔT = -9.0°C pendant 6 ans.
+            • Dépôt de Cendres Volcaniques : Destruction temporaire du couvert végétal et de la stœchiométrie NPK.
+            • Diminution du Flux Solaire : Atténuation du rayonnement utile pour les panneaux photovoltaïques et l'agriculture.
+            
+            [TRAJECTOIRE CIVILISATIONNELLE]
+            Test de la résilience des grilles énergétiques modernes et des serres fermées à haute technologie face à un hiver volcanique prolongé.
+            """);
+        list.add(s9);
 
         return list;
     }
@@ -681,6 +864,9 @@ public class ScenarioSetupPanel extends BorderPane {
     private void applyScenarioToUI(Scenario s) {
         if (s == null) return;
         scenarioNameField.setText(s.getName());
+        if (scenarioDescriptionArea != null) {
+            scenarioDescriptionArea.setText(s.getDescription() != null ? s.getDescription() : "");
+        }
         startYearSpinner.getValueFactory().setValue((int) s.getStartDateYear());
         initialHumanCountSpinner.getValueFactory().setValue(s.getInitialHumanCount());
         initialTechLevelSlider.setValue(s.getInitialTechLevel());
@@ -1456,6 +1642,9 @@ public class ScenarioSetupPanel extends BorderPane {
     public Scenario getScenario() {
         Scenario s = new Scenario();
         s.setName(scenarioNameField.getText());
+        if (scenarioDescriptionArea != null) {
+            s.setDescription(scenarioDescriptionArea.getText());
+        }
         s.setStartDateYear(startYearSpinner.getValue());
         s.setInitialHumanCount(initialHumanCountSpinner.getValue());
         s.setInitialTechLevel(initialTechLevelSlider.getValue());
