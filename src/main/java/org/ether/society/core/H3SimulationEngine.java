@@ -359,6 +359,8 @@ public class H3SimulationEngine implements ISimulationEngine {
                 org.ether.society.procedural.InfrastructureInertiaEngine.processInfrastructureInertia(cells, 1.0);
                 org.ether.society.procedural.EntropicMetalDissipationEngine.processEntropicDissipation(cells, 1.0);
                 org.ether.society.procedural.JevonsParadoxEngine.processJevonsRebound(cells, 1.0);
+                org.ether.society.procedural.World3CouplingEngine.processWorld3System(cells, 1.0);
+                org.ether.society.procedural.KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(cells, 1.0);
                 org.ether.society.procedural.ProceduralEngineRegistry.processPlugins(cells, 1.0);
 
                 // Statistics
