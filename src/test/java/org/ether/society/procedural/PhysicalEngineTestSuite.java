@@ -69,4 +69,19 @@ public class PhysicalEngineTestSuite {
         OzoneLayerDepletionEngine.processOzoneLayerDepletion(testCells);
         assertTrue(testCells.get(0).getBiomassAgriculture() >= 0.0);
     }
+
+    @Test
+    @DisplayName("Nuclear Warfare & Climate Soot Engine Test")
+    public void testNuclearWarfareClimateEngine() {
+        NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(1.2);
+        NuclearWarfareClimateEngine.processNuclearWarfareClimate(testCells);
+        assertTrue(NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() > 0.0);
+    }
+
+    @Test
+    @DisplayName("Technological Singularity & Trans-Human Engine Test")
+    public void testTechnologicalSingularityEngine() {
+        TechnologicalSingularityEngine.processTechnologicalSingularity(testCells);
+        assertNotNull(testCells.get(0).getResourceCapital());
+    }
 }

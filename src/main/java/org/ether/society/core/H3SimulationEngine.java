@@ -336,6 +336,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                 // Step 5: Mechanical Transport Work & Kinetic Warfare
                 org.ether.society.procedural.PhysicsTransportEngine.processPhysicsTransport(cells);
                 org.ether.society.procedural.ThermodynamicWarfareEngine.processKineticWarfare(cells);
+                org.ether.society.procedural.NuclearWarfareClimateEngine.processNuclearWarfareClimate(cells);
                 org.ether.society.procedural.InfrastructureEnergyEngine.processInfrastructureEnergy(cells);
                 org.ether.society.procedural.ThermodynamicMigrationEngine.processThermodynamicMigration(cells);
 
@@ -343,6 +344,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                 org.ether.society.procedural.InformationEntropyEngine.processInformationEntropy(cells);
                 org.ether.society.procedural.MegafaunaEcosystemEngine.processMegafaunaEcosystem(cells);
                 org.ether.society.procedural.SelectiveBreedingEngine.processSelectiveBreeding(cells);
+                org.ether.society.procedural.TechnologicalSingularityEngine.processTechnologicalSingularity(cells);
                 org.ether.society.procedural.TechTreeEngine.processTechnologyDiffusion(cells, null);
 
                 // Statistics
