@@ -23,13 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * H3-based simulation engine.
- * Manages the simulation loop for the hexagonal grid system.
- * 
- * Implements density-based simulation:
- * - Climate updates (seasonal temperature changes)
- * - Food resource production (seasonal, biome-based)
- * - Population dynamics (growth/starvation)
- * - Migration as density flow between cells
+ * Manages the deterministic simulation loop grounded strictly in physical laws.
  */
 public class H3SimulationEngine implements ISimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(H3SimulationEngine.class);
@@ -116,13 +110,6 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(0);
     }
 
-    /**
-     * Initialize simulation from a Scenario configuration.
-     * Uses PreComputePhase for climate, resources, and population.
-     * 
-     * @param scenario The scenario configuration
-     * @param cells    Pre-generated cells (from PlanetGenerator or loaded)
-     */
     public void initializeFromScenario(Scenario scenario, List<H3Cell> cells) {
         logger.info("Initializing from scenario: {}", scenario.getName());
 
@@ -134,23 +121,18 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.currentScenario = scenario;
         this.cells = cells;
 
-        // Reset time to scenario start year
         timeManager.reset((int) scenario.getStartDateYear());
 
-        // Clear existing nations before creating scenario-based nations
         if (diplomacyManager != null) {
             diplomacyManager.clear();
         }
 
-        // Run pre-computation phase
         PreComputePhase preCompute = new PreComputePhase(scenario);
         preCompute.execute(cells);
 
-        // Initialize political nations based on populated cells from scenario
         int populatedCount = (int) cells.stream().filter(c -> c.getPopulation() != null && c.getPopulation() > 0).count();
         initializePoliticalSeeding(populatedCount);
 
-        // Allocate and populate DOD buffers for scenario cells
         this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(cells.size());
         this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(Math.max(1, cells.size() / 10));
         org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
@@ -159,40 +141,27 @@ public class H3SimulationEngine implements ISimulationEngine {
         if (historyManager != null) {
             historyManager.reset();
         }
-
-        logger.info("Scenario '{}' initialized: {} cells, start year {}",
-                scenario.getName(), cells.size(), scenario.getStartDateYear());
     }
 
-    /**
-     * Get the current scenario (if initialized via scenario).
-     */
     public Scenario getCurrentScenario() {
         return currentScenario;
     }
 
-    /**
-     * Initialize starting population in habitable cells.
-     */
     private void initializePopulation() {
         boolean hasExistingPop = cells.stream().anyMatch(c -> c.getPopulation() > 0);
         if (hasExistingPop) {
             int count = (int) cells.stream().filter(c -> c.getPopulation() > 0).count();
-            logger.info("Preserving existing population in {} cells", count);
             initializePoliticalSeeding(count);
             return;
         }
 
         int populatedCells = 0;
         for (H3Cell cell : cells) {
-            // Skip ocean cells
             org.ether.society.model.Biome biome = cell.getBiome();
-            if (biome == org.ether.society.model.Biome.OCEAN ||
-                    biome == org.ether.society.model.Biome.DEEP_OCEAN) {
+            if (biome == org.ether.society.model.Biome.OCEAN || biome == org.ether.society.model.Biome.DEEP_OCEAN) {
                 continue;
             }
 
-            // Add initial population based on biome productivity
             int basePop = switch (biome) {
                 case PLAINS -> 50;
                 case FOREST -> 30;
@@ -206,41 +175,27 @@ public class H3SimulationEngine implements ISimulationEngine {
                 default -> 0;
             };
 
-            // Only populate ~10% of cells initially
             if (Math.random() < 0.1 && basePop > 0) {
                 cell.setPopulation(basePop);
                 populatedCells++;
             }
         }
 
-        logger.info("Initialized population in {} cells", populatedCells);
-
-        // Initialize Seeds for Nations
         initializePoliticalSeeding(populatedCells);
     }
 
     @Override
     public void start() {
-        if (running.getAndSet(true)) {
-            logger.warn("Simulation is already running");
-            return;
-        }
-
-        logger.info("Starting H3 simulation at year {}", timeManager.getFormattedDate());
+        if (running.getAndSet(true)) return;
         startGameLoop();
     }
 
     @Override
     public void pause() {
-        if (!running.getAndSet(false)) {
-            logger.warn("Simulation is not running");
-            return;
-        }
-
+        if (!running.getAndSet(false)) return;
         if (executorService != null) {
             executorService.shutdownNow();
         }
-        logger.info("Simulation paused");
     }
 
     @Override
@@ -249,7 +204,6 @@ public class H3SimulationEngine implements ISimulationEngine {
         timeManager.reset(config.simulation().startYear());
         historyManager.reset();
         initialize();
-        logger.info("Simulation reset");
     }
 
     @Override
@@ -259,7 +213,6 @@ public class H3SimulationEngine implements ISimulationEngine {
             pause();
             start();
         }
-        logger.info("Simulation speed set to {}x", multiplier);
     }
 
     @Override
@@ -276,20 +229,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return cells;
     }
 
-    /**
-     * Replace current world with new cells.
-     * Starts simulation fresh with these cells.
-     */
     public void setCells(List<H3Cell> newCells) {
         boolean wasRunning = running.get();
-        if (wasRunning) {
-            pause();
-        }
+        if (wasRunning) pause();
 
         this.cells = newCells;
-        if (diplomacyManager != null) {
-            diplomacyManager.clear();
-        }
+        if (diplomacyManager != null) diplomacyManager.clear();
 
         if (newCells != null && !newCells.isEmpty()) {
             initializePopulation();
@@ -301,41 +246,19 @@ public class H3SimulationEngine implements ISimulationEngine {
             this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(0);
             this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(0);
         }
-
-        logger.info("World replaced with {} new cells", cells.size());
-
-        // Don't auto-restart, let user decide
     }
 
-    /**
-     * Save the game state.
-     * @param saveName The name of the save
-     */
     public void saveGame(String saveName) {
         boolean wasRunning = running.get();
-        if (wasRunning) {
-            pause();
-        }
-        
+        if (wasRunning) pause();
         gameSaveManager.saveGame(this, saveName);
-        
-        if (wasRunning) {
-            start();
-        }
+        if (wasRunning) start();
     }
 
-    /**
-     * Load the game state.
-     * @param saveId The ID of the save (currently ignored for single-state DB)
-     */
     public void loadGame(String saveId) {
         boolean wasRunning = running.get();
-        if (wasRunning) {
-            pause();
-        }
-        
+        if (wasRunning) pause();
         gameSaveManager.loadGame(saveId, this);
-        // TimeManager reset might be needed here based on loading logic, but currently simple content load.
     }
 
     public H3ClimateSystem getClimateSystem() {
@@ -345,15 +268,13 @@ public class H3SimulationEngine implements ISimulationEngine {
     private void startGameLoop() {
         executorService = Executors.newSingleThreadScheduledExecutor();
         long period = config.simulation().tickRateMs() / speedMultiplier;
-
         executorService.scheduleAtFixedRate(this::tick, 0, period, TimeUnit.MILLISECONDS);
     }
 
     private int tickCounter = 0;
 
     private void tick() {
-        if (!running.get())
-            return;
+        if (!running.get()) return;
 
         long now = System.nanoTime();
         if (lastTickTime != 0) {
@@ -363,50 +284,66 @@ public class H3SimulationEngine implements ISimulationEngine {
         lastTickTime = now;
 
         try {
-            // Unités SI : 1 tick = 1 jour (86400 s)
             final float DT_FAST = 86400f; 
-            final int SLOW_FACTOR = 30; // Mise à jour lente tous les 30 jours (1 mois)
+            final int SLOW_FACTOR = 30;
 
-            // 1. --- ÉCHELLE RAPIDE (Fast Dynamics) ---
-            // Flux de ressources, logistique et prix
+            // 1. FAST SCALE DYNAMICS
             fluxEngine.tick(worldBuffer, DT_FAST);
-            
-            // Simulation politique (réactions rapides aux tensions)
             politicalEngine.tick(cells);
 
-            // 2. --- ÉCHELLE LENTE (Slow Dynamics) ---
+            // 2. SLOW SCALE PHYSICALIST DYNAMICS
             if (tickCounter % SLOW_FACTOR == 0) {
                 timeManager.advanceMonth();
                 int month = timeManager.getCurrentMonth();
                 float dtSlow = DT_FAST * SLOW_FACTOR;
 
-                // Climat et environnement
                 climateSystem.updateClimate(cells, month);
                 syncClimateToBuffer();
                 environmentalKernel.tick(worldBuffer, month, dtSlow);
 
-                // Démographie et Urbanisation (Processus lourds/stiff)
                 demographicKernel.tick(worldBuffer, agentBuffer, dtSlow);
                 urbanKernel.tick(worldBuffer, dtSlow);
                 cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
 
-                // --- ÉCHELLE MACRO-HISTORIQUE & ÉCOLOGIQUE ---
+                // --- GROUNDED PHYSICAL & CLIODYNAMIC ENGINES ---
                 double avgTech = getAverageTechnology();
-                org.ether.society.procedural.EcologicalDegradationEngine.processEcologicalDegradation(cells, avgTech);
+
+                // Step 1: Solar/Wind Radiance & Atmosphere
+                org.ether.society.procedural.RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(cells);
+                org.ether.society.procedural.AtmosphericOxygenEngine.processAtmosphericOxygen(cells, 0.21, 1.0);
+                org.ether.society.procedural.WetBulbTemperatureEngine.processWetBulbHyperthermia(cells);
                 org.ether.society.procedural.AlbedoClimateEngine.processAlbedoFeedback(cells);
-                org.ether.society.procedural.CliodynamicsEngine.updateCliodynamics(diplomacyManager.getNations(), cells);
 
-                List<org.ether.society.procedural.TradeNetworkEngine.TradeRoute> currentRoutes = null;
-                if (tickCounter % (SLOW_FACTOR * 3) == 0) { // Every 3 months: update trade corridors
-                    currentRoutes = org.ether.society.procedural.TradeNetworkEngine.generateTradeNetworks(cells, avgTech);
-                }
+                // Step 2: Soil Nutrients, Aquifer & Erosion
+                org.ether.society.procedural.SoilNutrientNPKEngine.processSoilNutrients(cells);
+                org.ether.society.procedural.DeforestationErosionEngine.processDeforestationErosion(cells);
+                org.ether.society.procedural.AquiferDepletionEngine.processAquiferDepletion(cells);
+                org.ether.society.procedural.EcologicalDegradationEngine.processEcologicalDegradation(cells, avgTech);
 
-                org.ether.society.procedural.EpidemiologicalEngine.processEpidemicOutbreaks(cells, currentRoutes);
-                org.ether.society.procedural.WarDiplomacyEngine.processGeopoliticalConflicts(diplomacyManager.getNations(), cells);
-                org.ether.society.procedural.LanguageLinguisticEngine.processLinguisticDrift(cells, currentRoutes);
-                org.ether.society.procedural.TechTreeEngine.processTechnologyDiffusion(cells, currentRoutes);
+                // Step 3: Demographics & Bio-molecular Epidemiology
+                org.ether.society.procedural.BiologicalDemographicsEngine.processBiologicalDemographics(cells);
+                org.ether.society.procedural.BioMolecularEpidemiologyEngine.processBioMolecularEpidemiology(cells);
+                org.ether.society.procedural.EcotoxicologyFertilityEngine.processEcotoxicologyFertility(cells);
 
-                // Statistiques et Analytics
+                // Step 4: EROEI, Energy Conversion & Metallurgy Enthalpy
+                org.ether.society.procedural.PhysicalEnergyGridEngine.processPhysicalEnergyGrid(cells);
+                org.ether.society.procedural.NetEnergyEROEIEngine.processNetEnergyEROEI(cells);
+                org.ether.society.procedural.MetallurgyEnthalpyEngine.processOreSmelting(cells);
+                org.ether.society.procedural.ResourceRecyclingEngine.processResourceRecycling(cells);
+
+                // Step 5: Mechanical Transport Work & Kinetic Warfare
+                org.ether.society.procedural.PhysicsTransportEngine.processPhysicsTransportWork(cells);
+                org.ether.society.procedural.ThermodynamicWarfareEngine.processThermodynamicWarfare(cells);
+                org.ether.society.procedural.InfrastructureEnergyEngine.processInfrastructureEnergy(cells);
+                org.ether.society.procedural.ThermodynamicMigrationEngine.processThermodynamicMigration(cells);
+
+                // Step 6: Shannon Information Capacity & Evolution
+                org.ether.society.procedural.InformationEntropyEngine.processInformationEntropy(cells);
+                org.ether.society.procedural.MegafaunaEcosystemEngine.processMegafaunaEcosystem(cells);
+                org.ether.society.procedural.SelectiveBreedingEngine.processSelectiveBreeding(cells);
+                org.ether.society.procedural.TechTreeEngine.processTechnologyDiffusion(cells, null);
+
+                // Statistics
                 currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
                 densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
                 currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital());
@@ -414,14 +351,10 @@ public class H3SimulationEngine implements ISimulationEngine {
                 currentFertility = statisticsKernel.calculateFertilityRate(agentBuffer.getBirths(), agentBuffer.getMass());
 
                 historyManager.captureSnapshot(this);
-                
-                // Événements macro
                 eventSystem.checkEvents(timeManager.getCurrentYear(), getTotalPopulation(), getTotalFood());
             }
 
-            // 3. Mise à jour des agents legacy
             agentManager.update();
-
             tickCounter++;
 
         } catch (Exception e) {
@@ -429,9 +362,6 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
-    /**
-     * Get total population across all cells.
-     */
     public long getTotalPopulation() {
         if (worldBuffer == null) return 0;
         long total = 0;
@@ -442,9 +372,6 @@ public class H3SimulationEngine implements ISimulationEngine {
         return total;
     }
 
-    /**
-     * Get total food across all cells.
-     */
     public double getTotalFood() {
         if (worldBuffer == null) return 0;
         double total = 0;
@@ -455,9 +382,6 @@ public class H3SimulationEngine implements ISimulationEngine {
         return total;
     }
 
-    /**
-     * Get number of populated cells.
-     */
     public long getPopulatedCellCount() {
         if (worldBuffer == null) return 0;
         long count = 0;
@@ -469,14 +393,12 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     private void initializePoliticalSeeding(int populatedCount) {
-        if (populatedCount < 3 || cells == null || cells.isEmpty())
-            return;
+        if (populatedCount < 3 || cells == null || cells.isEmpty()) return;
 
         if (diplomacyManager != null) {
             diplomacyManager.clear();
         }
 
-        // Pick top 3 populated cells to start nations
         cells.stream()
                 .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
                 .sorted(java.util.Comparator.comparingInt(H3Cell::getPopulation).reversed())
@@ -484,15 +406,11 @@ public class H3SimulationEngine implements ISimulationEngine {
                 .forEach(c -> {
                     if (c.getOwner() == null) {
                         String name = "Realm of Hex " + Long.toHexString(c.getH3Index()).toUpperCase();
-                        // Random vivid color
                         javafx.scene.paint.Color color = javafx.scene.paint.Color.hsb(Math.random() * 360, 0.8, 0.9);
-
                         org.ether.society.model.Nation nation = new org.ether.society.model.Nation(name, color, c);
                         diplomacyManager.registerNation(nation);
                     }
                 });
-
-        logger.info("Initialized {} starter nations", diplomacyManager.getNations().size());
     }
 
     public org.ether.society.agents.AgentManager getAgentManager() {
