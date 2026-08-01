@@ -1451,15 +1451,26 @@ public class PlanetGeneratorPanel extends BorderPane {
         double irradiance = 1361.0 * (l / (d * d));
         irradianceLabel.setText(String.format("%s: %.1f W/m²", I18n.get("planet.param.irradiance"), irradiance));
 
-        // Adjust average temperature dynamically if not manually locking
+        // Adjust average surface temperature dynamically based on stellar flux & atmospheric parameters
         if (!isUpdatingFromPreset) {
             double alb = albedoSlider != null ? albedoSlider.getValue() : 0.30;
             double atmoP = atmoPressureSlider != null ? atmoPressureSlider.getValue() : 1.0;
-            double co2 = co2Slider != null ? co2Slider.getValue() : 420.0;
-            // Real Earth baseline: T_blackbody ~ -18.4°C (254.7 K). Natural greenhouse effect adds ~ +33.4°C -> T_surface = +15.0°C
-            double greenhouseBoost = 33.0 * Math.sqrt(Math.max(0.0, atmoP)) + ((co2 - 420.0) / 1000.0) + 0.4;
-            double calcTempC = 278.5 * Math.pow((l * (1.0 - alb)) / (d * d), 0.25) - 273.15 + greenhouseBoost;
-            calcTempC = Math.max(-200.0, Math.min(500.0, calcTempC));
+            double co2Ppm = co2Slider != null ? co2Slider.getValue() : 420.0;
+
+            // Blackbody equilibrium temperature (K -> °C): T_eq = 278.5 * [(L * (1 - albedo)) / d^2]^(1/4) - 273.15
+            double tEquilibriumC = 278.5 * Math.pow((l * (1.0 - alb)) / (d * d), 0.25) - 273.15;
+
+            // Greenhouse boost: airless bodies (p < 0.01 atm) have zero greenhouse warming
+            double greenhouseBoost = 0.0;
+            if (atmoP >= 0.01) {
+                double co2PartialPressureAtm = atmoP * (co2Ppm / 1_000_000.0);
+                double co2Forcing = 3.0 * (Math.log(Math.max(0.0001, co2PartialPressureAtm / 0.00028)) / Math.log(2.0));
+                double pressureTerm = (atmoP > 1.0) ? 8.0 * Math.log10(atmoP) : (atmoP - 1.0) * 8.0;
+                greenhouseBoost = 33.0 * Math.sqrt(Math.min(2.0, atmoP)) + co2Forcing + pressureTerm;
+            }
+
+            double calcTempC = tEquilibriumC + greenhouseBoost;
+            calcTempC = Math.max(-250.0, Math.min(600.0, calcTempC));
             avgTempSlider.setValue(calcTempC);
         }
     }
@@ -1743,6 +1754,15 @@ public class PlanetGeneratorPanel extends BorderPane {
         boolean isImportMode = radioImport != null && radioImport.isSelected();
         PixelReader elevReader = (isImportMode && customElevImage != null) ? customElevImage.getPixelReader() : null;
 
+        // Parse independent climate seeds from UI fields
+        long tempSeed = preset.seed() + 100L;
+        long precipSeed = preset.seed() + 1000L;
+        long seasonSeed = preset.seed() + 2000L;
+        try { if (tempSeedField   != null) tempSeed   = Long.parseLong(tempSeedField.getText());   } catch (NumberFormatException ignored) {}
+        try { if (precipSeedField != null) precipSeed = Long.parseLong(precipSeedField.getText()); } catch (NumberFormatException ignored) {}
+        try { if (seasonSeedField != null) seasonSeed = Long.parseLong(seasonSeedField.getText()); } catch (NumberFormatException ignored) {}
+        final long tSeed = tempSeed, pSeed = precipSeed, sSeed = seasonSeed;
+
         // Use fast 320x160 buffer for procedural mode (4x faster rendering), full size for import mode
         int w = isImportMode ? canvasW : 320;
         int h = isImportMode ? canvasH : 160;
@@ -1753,8 +1773,11 @@ public class PlanetGeneratorPanel extends BorderPane {
         double wElev = customElevImage != null ? customElevImage.getWidth() : 0;
         double hElev = customElevImage != null ? customElevImage.getHeight() : 0;
 
-        double minTemp = preset.averageTempC() - preset.temperatureGradient() - 20.0;
-        double maxTemp = preset.averageTempC() + preset.temperatureGradient();
+        // Legend temperature range accounts for CO2 and pressure greenhouse forcing
+        double co2Forcing = 3.0 * (Math.log(Math.max(1.0, preset.co2Ppm()) / 280.0) / Math.log(2.0));
+        double pressureBoost = (preset.atmospherePressureAtm() - 1.0) * 8.0;
+        double minTemp = preset.averageTempC() + co2Forcing + pressureBoost - preset.temperatureGradient() - 20.0;
+        double maxTemp = preset.averageTempC() + co2Forcing + pressureBoost + preset.temperatureGradient();
 
         int oceanCount = 0;
 
@@ -1819,8 +1842,8 @@ public class PlanetGeneratorPanel extends BorderPane {
                         double b = pr.getColor(cx, cy).getBrightness();
                         tempC = -50.0 + b * 100.0;
                     } else {
-                        PlanetPoint p = generator.getPlanetPoint(lat, lng, preset);
-                        tempC = p.temperature();
+                        // Use independent temperature seed
+                        tempC = generator.getPlanetPoint(lat, lng, preset, tSeed, pSeed, sSeed).temperature();
                     }
                     pxColor = getTemperatureColor(tempC, minTemp, maxTemp);
 
@@ -1834,8 +1857,8 @@ public class PlanetGeneratorPanel extends BorderPane {
                         int ry = (int) Math.min(v * customRainfallImage.getHeight(), customRainfallImage.getHeight() - 1);
                         precipNorm = pr.getColor(rx, ry).getBrightness();
                     } else {
-                        PlanetPoint p = generator.getPlanetPoint(lat, lng, preset);
-                        precipNorm = p.rainfall();
+                        // Use independent precipitation seed
+                        precipNorm = generator.getPlanetPoint(lat, lng, preset, tSeed, pSeed, sSeed).rainfall();
                     }
                     pxColor = getPrecipitationColor(precipNorm);
 
@@ -1849,7 +1872,8 @@ public class PlanetGeneratorPanel extends BorderPane {
                         int sy = (int) Math.min(v * customSeasonalityImage.getHeight(), customSeasonalityImage.getHeight() - 1);
                         seasonNorm = pr.getColor(sx, sy).getBrightness();
                     } else {
-                        seasonNorm = Math.min(1.0, (Math.abs(lat) / 90.0) * (preset.axialTiltDegrees() / 45.0));
+                        // Use independent seasonality seed — driven by axial tilt + noise
+                        seasonNorm = generator.getPlanetPoint(lat, lng, preset, tSeed, pSeed, sSeed).seasonality();
                     }
                     pxColor = getSeasonalityColor(seasonNorm);
                 }

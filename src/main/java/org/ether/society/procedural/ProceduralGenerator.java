@@ -9,194 +9,400 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Service for generating procedural planets using Simplex Noise on a sphere.
+ * Physically-based procedural planet generator using Simplex Noise on a sphere.
+ *
+ * <p>Fully parameterised for non-Earth worlds (Mars, Venus, Moon, Titan, Super-Earths, Eyeball worlds):</p>
+ * <ul>
+ *   <li><b>Gravity & Altitude Lapse Rate</b>: Surface gravity $g_{rel}$ scales dynamically with planetary radius
+ *       and body type. The environmental lapse rate $\Gamma = 6.5 \times g_{rel}$ (°C/km) scales with gravity.</li>
+ *   <li><b>Atmospheric Pressure & CO₂ Partial Pressure</b>: Greenhouse forcing is computed from absolute
+ *       CO₂ partial pressure $P_{CO₂} = P_{atmo} \times [CO₂]/10⁶$ rather than Earth-bound ppm. Airless worlds ($P_{atmo} < 0.01$ atm)
+ *       have zero greenhouse forcing and zero precipitation.</li>
+ *   <li><b>Rotation & Heat Transport</b>: Day length modulates the equator-to-pole thermal gradient. Slow-rotating
+ *       or tidally-locked worlds exhibit global heat redistribution (flattened latitudinal gradient).</li>
+ *   <li><b>Astronomical Tidal Forces & Dissipation</b>: Satellites orbiting massive parent planets experience
+ *       gravitational tidal flexing ($F_{tidal} \propto M_{parent} R / d^3$). Tidal energy dissipation generates
+ *       internal geothermal heating, amplifies volcanism/seismicity, and expands intertidal coastal zones.</li>
+ * </ul>
  */
 public class ProceduralGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ProceduralGenerator.class);
 
-    /**
-     * Data record for a single point on the planet.
-     */
-    public record PlanetPoint(double elevation, double temperature, double rainfall, Biome biome, double declivity, double riverFlow, double accessibleAquifer) {
-        public PlanetPoint(double elevation, double temperature, double rainfall, Biome biome, double declivity, double riverFlow) {
-            this(elevation, temperature, rainfall, biome, declivity, riverFlow, 0.0);
+    /** Pre-industrial Earth reference CO₂ partial pressure (1.0 atm × 280 ppm = 0.00028 atm). */
+    private static final double CO2_REF_PARTIAL_PRESSURE_ATM = 0.00028;
+    /** Radiative sensitivity: +3.0 °C per doubling of CO₂ partial pressure. */
+    private static final double CLIMATE_SENSITIVITY_K = 3.0;
+
+    // -------------------------------------------------------------------------
+    // Data Records
+    // -------------------------------------------------------------------------
+
+    public record PlanetPoint(
+            double elevation,
+            double elevationMeters,
+            double temperature,
+            double rainfall,
+            double seasonality,
+            Biome biome,
+            double declivity,
+            double riverFlow,
+            double accessibleAquifer,
+            double metalDensity) {
+
+        public PlanetPoint(double elevation, double temperature, double rainfall,
+                           Biome biome, double declivity, double riverFlow, double accessibleAquifer) {
+            this(elevation, 0.0, temperature, rainfall, 0.0, biome, declivity, riverFlow, accessibleAquifer, 0.0);
         }
+
         public PlanetPoint(double elevation, double temperature, double rainfall, Biome biome) {
-            this(elevation, temperature, rainfall, biome, 0.0, 0.0, 0.0);
+            this(elevation, 0.0, temperature, rainfall, 0.0, biome, 0.0, 0.0, 0.0, 0.0);
         }
     }
 
-    /**
-     * Calculate terrain data for a specific latitude/longitude.
-     * Useful for UI previews without generating full H3 grid.
-     */
-    public PlanetPoint getPlanetPoint(double lat, double lng, PlanetPreset preset) {
-        SimplexNoise elevationNoise = new SimplexNoise(preset.seed());
-        SimplexNoise rainfallNoise = new SimplexNoise(preset.seed() + 1000); // Offset
+    // -------------------------------------------------------------------------
+    // Public API
+    // -------------------------------------------------------------------------
 
-        double freq = preset.noiseFrequency();
+    /**
+     * Compute normalized gravitational tidal force intensity ($F_{tidal}$) exerted on the body.
+     *
+     * <p>Formula:</p>
+     * $$F_{tidal} = \frac{(M_{parent} / M_\oplus) \times (R_{sat} / 1737\text{ km})}{(d_{orbit} / 384,400\text{ km})^3}$$
+     */
+    public static double computeTidalForceIntensity(PlanetPreset preset) {
+        if (preset.isSatellite()) {
+            double mParentEarthMasses = Math.max(0.01, preset.parentPlanetMassEarthMasses());
+            double dKm = Math.max(10_000.0, preset.orbitalDistanceToParentKm());
+            double rSatKm = Math.max(10.0, preset.radiusKm());
+
+            double refM = 1.0;
+            double refR = 1737.0;
+            double refD = 384400.0;
+
+            double fTidal = (mParentEarthMasses / refM) * (rSatKm / refR) / Math.pow(dKm / refD, 3);
+            return Math.max(0.0, Math.min(20.0, fTidal));
+        } else {
+            double dAU = Math.max(0.01, preset.distanceToSunAU());
+            double lum = Math.max(0.01, preset.solarLuminosity());
+            double fSolarTidal = lum / Math.pow(dAU, 3);
+            return Math.max(0.0, Math.min(5.0, fSolarTidal * 0.1));
+        }
+    }
+
+    public PlanetPoint getPlanetPoint(double lat, double lng, PlanetPreset preset) {
+        return getPlanetPoint(lat, lng, preset, preset.seed(), preset.seed() + 1000L, preset.seed() + 2000L);
+    }
+
+    public PlanetPoint getPlanetPoint(double lat, double lng, PlanetPreset preset,
+                                       long tempSeed, long precipSeed, long seasonSeed) {
+
+        SimplexNoise elevNoise     = new SimplexNoise(preset.seed());
+        SimplexNoise rainfallNoise = new SimplexNoise(precipSeed);
+        SimplexNoise seasonNoise   = new SimplexNoise(seasonSeed);
+
+        double freq  = preset.noiseFrequency();
         double scale = preset.noiseScale();
 
-        // --- Elevation ---
-        double e = computeElevationAt(lat, lng, elevationNoise, freq, scale);
+        // ── 1. Elevation ───────────────────────────────────────────────────────
+        double e = computeElevationAt(lat, lng, elevNoise, freq, scale);
 
-        // --- Declivity (Slope Gradient Magnitude) ---
-        double delta = 0.3; // Degree step for finite differences
-        double eNorth = computeElevationAt(lat + delta, lng, elevationNoise, freq, scale);
-        double eSouth = computeElevationAt(lat - delta, lng, elevationNoise, freq, scale);
-        double eEast  = computeElevationAt(lat, lng + delta, elevationNoise, freq, scale);
-        double eWest  = computeElevationAt(lat, lng - delta, elevationNoise, freq, scale);
+        double elevMeters;
+        if (e >= 0) {
+            elevMeters = e * preset.maxAltitudeMeters();
+        } else {
+            elevMeters = e * Math.abs(preset.minAltitudeMeters());
+        }
 
-        double dLat = (eNorth - eSouth) / (2.0 * delta);
-        double dLng = (eEast - eWest) / (2.0 * delta);
+        // ── 2. Slope / Declivity ───────────────────────────────────────────────
+        double dDeg = 0.3;
+        double eN = computeElevationAt(lat + dDeg, lng,       elevNoise, freq, scale);
+        double eS = computeElevationAt(lat - dDeg, lng,       elevNoise, freq, scale);
+        double eE = computeElevationAt(lat,         lng + dDeg, elevNoise, freq, scale);
+        double eW = computeElevationAt(lat,         lng - dDeg, elevNoise, freq, scale);
+
+        double dLat      = (eN - eS) / (2.0 * dDeg);
+        double dLng      = (eE - eW) / (2.0 * dDeg);
         double declivity = Math.sqrt(dLat * dLat + dLng * dLng);
 
-        // --- Rainfall ---
-        double r = computeRainfallAt(lat, lng, rainfallNoise, freq);
+        // ── 3. Tidal Acceleration & Internal Dissipation ───────────────────────
+        double tidalForce = computeTidalForceIntensity(preset);
 
-        // --- Temperature ---
-        double baseTemp = preset.averageTempC();
-        double latFactor = Math.cos(Math.toRadians(lat));
-        double temp = baseTemp + preset.temperatureGradient() * (latFactor - 0.5);
-        if (e > 0)
-            temp -= e * 20.0; // Altitude lapse rate
+        // ── 4. Rainfall ────────────────────────────────────────────────────────
+        double r = computeRainfallAt(lat, lng, rainfallNoise, freq, preset);
 
-        Biome biome = determineBiome(e, temp, r, preset.waterLevel());
+        // ── 5. Temperature (with Tidal Geothermal Heating) ──────────────────────
+        double tempC = computeTemperatureAt(lat, e, elevMeters, r, preset, tidalForce);
 
-        // --- River Flow / Watercourses (Fleuves et Cours d'Eau) ---
-        // Water collects in valleys (where e < average of surrounding points) and drains down declivity slopes
-        double avgSurrounding = (eNorth + eSouth + eEast + eWest) / 4.0;
-        double valleyDepth = Math.max(0.0, avgSurrounding - e);
+        // ── 6. Seasonality ─────────────────────────────────────────────────────
+        double seasonality = computeSeasonalityAt(lat, lng, seasonNoise, preset);
 
-        double riverFlow = 0.0;
-        double accessibleAquifer = 0.0;
-        if (e > preset.waterLevel()) {
+        // ── 7. Biome ───────────────────────────────────────────────────────────
+        Biome biome = determineBiome(e, elevMeters, tempC, r, preset, tidalForce);
+
+        // ── 8. Hydrography ─────────────────────────────────────────────────────
+        double avgSurround  = (eN + eS + eE + eW) / 4.0;
+        double valleyDepth  = Math.max(0.0, avgSurround - e);
+        double riverFlow    = 0.0;
+        double aquifer      = 0.0;
+
+        if (e > preset.waterLevel() && preset.atmospherePressureAtm() >= 0.01) {
             riverFlow = r * (0.3 + 2.5 * declivity + 18.0 * valleyDepth);
             riverFlow = Math.min(1.0, Math.max(0.0, riverFlow));
 
-            // --- Accessible Aquifer / Nappe Phréatique Accessible ---
-            // High in flat basins/plains (low declivity), river valleys & rainfall recharge zones
             double flatBonus = Math.max(0.1, 1.0 - 2.5 * declivity);
-            accessibleAquifer = r * flatBonus * (0.3 + 1.5 * valleyDepth) + 0.35 * riverFlow;
-            accessibleAquifer = Math.min(1.0, Math.max(0.0, accessibleAquifer));
+            aquifer = r * flatBonus * (0.3 + 1.5 * valleyDepth) + 0.35 * riverFlow;
+            aquifer = Math.min(1.0, Math.max(0.0, aquifer));
         }
 
-        return new PlanetPoint(e, temp, r, biome, declivity, riverFlow, accessibleAquifer);
-    }
+        // ── 9. Crustal Metal Density (Modulated by Seismic/Volcanic/Tidal Flexure)
+        double effectiveSeismic  = preset.seismicActivityLevel() + Math.min(5.0, 1.5 * tidalForce);
+        double effectiveVolcanic = preset.volcanicActivityLevel() + Math.min(5.0, 2.0 * tidalForce);
+        double seismicBoost  = Math.min(1.0, effectiveSeismic  / 5.0);
+        double volcanicBoost = Math.min(1.0, effectiveVolcanic / 4.0);
 
-    private double computeElevationAt(double lat, double lng, SimplexNoise elevationNoise, double freq, double scale) {
-        double latRad = Math.toRadians(lat);
-        double lngRad = Math.toRadians(lng);
-
-        double x = Math.cos(latRad) * Math.cos(lngRad);
-        double y = Math.cos(latRad) * Math.sin(lngRad);
-        double z = Math.sin(latRad);
-
-        double e = 0;
-        e += (1.0 / 1.0) * elevationNoise.noise(1.0 * freq * x, 1.0 * freq * y, 1.0 * freq * z);
-        e += (1.0 / 2.0) * elevationNoise.noise(2.0 * freq * x, 2.0 * freq * y, 2.0 * freq * z);
-        e += (1.0 / 4.0) * elevationNoise.noise(4.0 * freq * x, 4.0 * freq * y, 4.0 * freq * z);
-
-        e = e / 1.75;
-        e = e * scale;
-        return Math.max(-1.0, Math.min(1.0, e));
-    }
-
-    private double computeRainfallAt(double lat, double lng, SimplexNoise rainfallNoise, double freq) {
-        double latRad = Math.toRadians(lat);
-        double lngRad = Math.toRadians(lng);
-
-        double x = Math.cos(latRad) * Math.cos(lngRad);
-        double y = Math.cos(latRad) * Math.sin(lngRad);
-        double z = Math.sin(latRad);
-
-        double r = 0;
-        r += rainfallNoise.noise(1.5 * freq * x, 1.5 * freq * y, 1.5 * freq * z);
-        r = (r + 1.0) / 2.0;
-
-        double absLat = Math.abs(lat);
-        double latMod;
-        if (absLat <= 30.0) {
-            double t = (1.0 + Math.cos(Math.PI * (absLat / 30.0))) / 2.0;
-            latMod = 0.35 + t * (1.2 - 0.35);
-        } else if (absLat <= 60.0) {
-            double t = (1.0 - Math.cos(Math.PI * ((absLat - 30.0) / 30.0))) / 2.0;
-            latMod = 0.35 + t * (0.85 - 0.35);
-        } else {
-            double t = (1.0 - Math.cos(Math.PI * ((absLat - 60.0) / 30.0))) / 2.0;
-            latMod = 0.85 + t * (0.2 - 0.85);
+        double metalDensity  = 0.0;
+        if (e > preset.waterLevel()) {
+            double altitudeFactor = Math.min(1.0, Math.max(0.0, e + 0.3));
+            metalDensity = altitudeFactor * (0.4 + 0.4 * seismicBoost + 0.2 * volcanicBoost);
+            metalDensity = Math.min(1.0, Math.max(0.0, metalDensity));
         }
 
-        r = r * 0.7 + latMod * 0.3;
-        return Math.max(0.0, Math.min(1.0, r));
+        return new PlanetPoint(e, elevMeters, tempC, r, seasonality,
+                biome, declivity, riverFlow, aquifer, metalDensity);
     }
 
     public List<H3Cell> generatePlanet(PlanetPreset preset) {
-        logger.info("Generating planet: {} (Res: {}, Seed: {})", preset.name(), preset.resolution(), preset.seed());
+        logger.info("Generating planet: {} (Res: {}, Seed: {}, Radius: {} km, Atmo: {} atm, Satellite: {}, TidalForce: {})",
+                preset.name(), preset.resolution(), preset.seed(), preset.radiusKm(), preset.atmospherePressureAtm(),
+                preset.isSatellite(), computeTidalForceIntensity(preset));
 
-        // 1. Generate Base Grid
         List<H3Cell> cells = H3Service.getInstance().generateGlobalMetadata(preset.resolution());
-        logger.info("Base grid generated with {} cells", cells.size());
+        logger.info("Base grid: {} H3 cells", cells.size());
 
-        // 2. Process each cell using shared logic
         cells.parallelStream().forEach(cell -> {
             PlanetPoint p = getPlanetPoint(cell.getLatitude(), cell.getLongitude(), preset);
-
             cell.setElevation(p.elevation());
             cell.setTemperature(p.temperature());
             cell.setRainfall(p.rainfall());
             cell.setBiome(p.biome());
-
-            populateResources(cell);
+            populateResources(cell, p, preset);
         });
 
         return cells;
     }
 
-    private Biome determineBiome(double elevation, double temp, double rain, double waterLevel) {
-        if (elevation < waterLevel) {
-            return (elevation < waterLevel - 0.5) ? Biome.DEEP_OCEAN : Biome.OCEAN;
-        }
+    // -------------------------------------------------------------------------
+    // Private: Physical Algorithms
+    // -------------------------------------------------------------------------
 
-        // Land
-        if (elevation > 0.8)
-            return Biome.MOUNTAINS; // High peaks
-        if (elevation > 0.5)
-            return Biome.HILLS;
+    private double computeElevationAt(double lat, double lng,
+                                       SimplexNoise noise, double freq, double scale) {
+        double latR = Math.toRadians(lat);
+        double lngR = Math.toRadians(lng);
+        double x = Math.cos(latR) * Math.cos(lngR);
+        double y = Math.cos(latR) * Math.sin(lngR);
+        double z = Math.sin(latR);
 
-        if (temp < -5)
-            return Biome.SNOW;
-        if (temp < 5)
-            return Biome.TUNDRA;
-
-        if (rain < 0.2)
-            return Biome.DESERT;
-        if (rain < 0.5)
-            return Biome.PLAINS;
-        if (rain < 0.8)
-            return Biome.FOREST;
-
-        return Biome.JUNGLE;
+        double e  = 1.00 * noise.noise(freq       * x, freq       * y, freq       * z);
+        e        += 0.50 * noise.noise(freq * 2.0 * x, freq * 2.0 * y, freq * 2.0 * z);
+        e        += 0.25 * noise.noise(freq * 4.0 * x, freq * 4.0 * y, freq * 4.0 * z);
+        e /= 1.75;
+        e *= scale;
+        return Math.max(-1.0, Math.min(1.0, e));
     }
 
-    private void populateResources(H3Cell cell) {
+    private double computeTemperatureAt(double lat, double normElev, double elevMeters,
+                                         double rainfall, PlanetPreset preset, double tidalForce) {
+        // ── 1. Relative Surface Gravity & Dynamic Lapse Rate ───────────────────
+        double rRel = Math.max(0.1, preset.radiusKm() / 6371.0);
+        double gRel = preset.isSatellite() ? Math.max(0.05, rRel * 0.4) : Math.max(0.1, rRel);
+        double lapseRateCPerKm = 6.5 * gRel;
+
+        // ── 2. Rotation & Latitudinal Gradient Damping ────────────────────────
+        double dayHours = Math.max(1.0, preset.dayLengthHours());
+        double rotationDamping = Math.min(1.2, Math.max(0.15, Math.pow(24.0 / dayHours, 0.35)));
+
+        double cosLat  = Math.cos(Math.toRadians(lat));
+        double latTemp = preset.averageTempC() + (preset.temperatureGradient() * rotationDamping) * (cosLat - 0.5);
+
+        // ── 3. CO₂ Partial Pressure Greenhouse Forcing ────────────────────────
+        double pAtmo = Math.max(0.0, preset.atmospherePressureAtm());
+        double co2Forcing = 0.0;
+        double pressureBoost = 0.0;
+
+        if (pAtmo >= 0.01) {
+            double co2Ppm = Math.max(0.0, preset.co2Ppm());
+            double co2PartialPressureAtm = pAtmo * (co2Ppm / 1_000_000.0);
+
+            if (co2PartialPressureAtm > 0) {
+                double ratio = co2PartialPressureAtm / CO2_REF_PARTIAL_PRESSURE_ATM;
+                co2Forcing = CLIMATE_SENSITIVITY_K * (Math.log(Math.max(0.0001, ratio)) / Math.log(2.0));
+            }
+
+            if (pAtmo > 1.0) {
+                pressureBoost = 8.0 * Math.log10(pAtmo);
+            } else {
+                pressureBoost = (pAtmo - 1.0) * 8.0;
+            }
+        }
+
+        // ── 4. Geothermal Heating from Internal Tidal Dissipation ─────────────
+        double tidalGeothermalWarming = preset.isSatellite() ? Math.min(45.0, 10.0 * Math.sqrt(tidalForce)) : 0.0;
+
+        // ── 5. Altitude Lapse Rate ─────────────────────────────────────────────
+        double lapseCorrection = 0.0;
+        if (elevMeters > 0) {
+            lapseCorrection = (elevMeters / 1000.0) * lapseRateCPerKm;
+        }
+
+        // ── 6. Evaporative Cooling ─────────────────────────────────────────────
+        double evapCooling = 0.0;
+        if (latTemp > 20.0 && rainfall > 0.5 && pAtmo >= 0.1) {
+            evapCooling = (latTemp - 20.0) * (rainfall - 0.5) * 0.4;
+        }
+
+        double tempC = latTemp + co2Forcing + pressureBoost + tidalGeothermalWarming - lapseCorrection - evapCooling;
+        return Math.max(-250.0, Math.min(600.0, tempC));
+    }
+
+    private double computeRainfallAt(double lat, double lng,
+                                      SimplexNoise noise, double freq,
+                                      PlanetPreset preset) {
+        double pAtmo = Math.max(0.0, preset.atmospherePressureAtm());
+        if (pAtmo < 0.01) return 0.0;
+
+        double latR = Math.toRadians(lat);
+        double lngR = Math.toRadians(lng);
+        double x = Math.cos(latR) * Math.cos(lngR);
+        double y = Math.cos(latR) * Math.sin(lngR);
+        double z = Math.sin(latR);
+
+        double r  = 1.00 * noise.noise(freq * 1.5 * x, freq * 1.5 * y, freq * 1.5 * z);
+        r        += 0.50 * noise.noise(freq * 3.0 * x, freq * 3.0 * y, freq * 3.0 * z);
+        r /= 1.50;
+        r = (r + 1.0) / 2.0;
+
+        double absLat = Math.abs(lat);
+        double latMod;
+        if (absLat <= 10.0) {
+            latMod = 1.0;
+        } else if (absLat <= 30.0) {
+            double t = (absLat - 10.0) / 20.0;
+            latMod = 1.0 - t * 0.75;
+        } else if (absLat <= 45.0) {
+            double t = (absLat - 30.0) / 15.0;
+            latMod = 0.25 + t * 0.50;
+        } else if (absLat <= 65.0) {
+            double t = (absLat - 45.0) / 20.0;
+            latMod = 0.75 - t * 0.30;
+        } else {
+            double t = (absLat - 65.0) / 25.0;
+            latMod = 0.45 - t * 0.38;
+        }
+
+        r = r * 0.70 + latMod * 0.30;
+        double pressureFactor = Math.min(2.0, Math.sqrt(pAtmo));
+        r = r * (0.5 + 0.5 * pressureFactor);
+
+        return Math.max(0.0, Math.min(1.0, r));
+    }
+
+    private double computeSeasonalityAt(double lat, double lng,
+                                         SimplexNoise seasonNoise, PlanetPreset preset) {
+        if (preset.axialTiltDegrees() < 0.5 || preset.atmospherePressureAtm() < 0.01) return 0.0;
+
+        double tiltFactor = Math.min(1.0, preset.axialTiltDegrees() / 45.0);
+        double latFraction = Math.abs(lat) / 90.0;
+        double latAmplitude = Math.pow(latFraction, 0.7);
+
+        double latR = Math.toRadians(lat);
+        double lngR = Math.toRadians(lng);
+        double x = Math.cos(latR) * Math.cos(lngR);
+        double y = Math.cos(latR) * Math.sin(lngR);
+        double z = Math.sin(latR);
+        double noise = (seasonNoise.noise(x, y, z) + 1.0) / 2.0;
+
+        double seasonNorm = tiltFactor * (latAmplitude * 0.70 + noise * 0.30);
+        return Math.max(0.0, Math.min(1.0, seasonNorm));
+    }
+
+    private Biome determineBiome(double elevation, double elevMeters,
+                                  double tempC, double rainfall, PlanetPreset preset, double tidalForce) {
+        double waterLevel = preset.waterLevel();
+        double pAtmo = preset.atmospherePressureAtm();
+
+        // Airless Worlds
+        if (pAtmo < 0.01) {
+            if (tempC < -50.0) return Biome.SNOW;
+            if (elevation > 0.6) return Biome.MOUNTAINS;
+            if (elevation > 0.3) return Biome.HILLS;
+            return Biome.DESERT;
+        }
+
+        // Ocean biomes
+        if (elevation < waterLevel) {
+            return (elevation < waterLevel - 0.40) ? Biome.DEEP_OCEAN : Biome.OCEAN;
+        }
+
+        // Coastal intertidal beach strip (width expands with gravitational tidal forces)
+        double intertidalWidth = 0.03 + 0.02 * Math.min(3.0, tidalForce);
+        if (elevation < waterLevel + intertidalWidth) {
+            return Biome.BEACH;
+        }
+
+        if (tempC < -15.0 || elevation > 0.80) {
+            return Biome.SNOW;
+        }
+
+        if (elevation > 0.55) return Biome.MOUNTAINS;
+        if (elevation > 0.35) return Biome.HILLS;
+
+        if (tempC < 0.0) return Biome.TUNDRA;
+        if (rainfall < 0.20) return Biome.DESERT;
+
+        if (tempC > 18.0 && rainfall > 0.70) return Biome.JUNGLE;
+        if (rainfall > 0.50) return Biome.FOREST;
+
+        return Biome.PLAINS;
+    }
+
+    private void populateResources(H3Cell cell, PlanetPoint p, PlanetPreset preset) {
         Biome b = cell.getBiome();
-        if (b == null)
+        if (b == null) return;
+
+        double tidalForce = computeTidalForceIntensity(preset);
+
+        if (preset.atmospherePressureAtm() < 0.01) {
+            if (b == Biome.MOUNTAINS || b == Biome.HILLS) {
+                cell.setResourceMetal(600.0 + p.metalDensity() * 800.0);
+            } else {
+                cell.setResourceMetal(250.0);
+            }
             return;
+        }
+
+        // Ocean nutrient upwelling driven by tidal mixing increases fish biomass
+        double tidalBiomassUpwelling = 1.0 + 0.3 * Math.min(3.0, tidalForce);
 
         switch (b) {
-            case FOREST, JUNGLE -> cell.setWoodResource(1000.0);
-            case PLAINS -> cell.setFoodResource(500.0);
+            case FOREST  -> cell.setWoodResource(1000.0);
+            case JUNGLE  -> { cell.setWoodResource(2000.0); cell.setFoodResource(400.0); }
+            case PLAINS  -> cell.setFoodResource(600.0);
+            case HILLS   -> { cell.setFoodResource(200.0); cell.setWoodResource(400.0); }
             case MOUNTAINS -> {
-                cell.setResourceMetal(500.0);
-                // No stone field, assuming implicit or part of capital/construction potential
+                double metalBase = 400.0 + p.metalDensity() * 600.0;
+                cell.setResourceMetal(metalBase);
             }
             case OCEAN, DEEP_OCEAN -> {
-                cell.setBiomassFish(800.0);
-                cell.setFoodResource(200.0); // Accessible food
+                cell.setBiomassFish(800.0 * tidalBiomassUpwelling);
+                cell.setFoodResource(200.0 * tidalBiomassUpwelling);
             }
-            default -> {
+            case BEACH -> {
+                cell.setFoodResource(150.0 * tidalBiomassUpwelling);
+                cell.setBiomassFish(300.0 * tidalBiomassUpwelling);
             }
+            case DESERT -> cell.setResourceMetal(200.0);
+            default -> { }
         }
     }
 }

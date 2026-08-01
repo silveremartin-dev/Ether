@@ -882,7 +882,7 @@ public class ResourceDistributionPanel extends BorderPane {
             updatePreviewCanvas();
         });
 
-        geologyDomainSecHeader = new Label(I18n.getOrDefault("resource.domain.geology", "4. DOMAINE GÉOLOGIE, TECTONIQUE & MINERAIS"));
+        geologyDomainSecHeader = new Label(I18n.getOrDefault("resource.domain.geology", "3. DOMAINE GÉOLOGIE, TECTONIQUE & MINERAIS"));
         VBox geologyDomainSection = createSection(geologyDomainSecHeader, new VBox(8,
                 radioProcGeology, geologyProcBox, radioImportGeology, geologyImportBox
         ));
@@ -897,7 +897,6 @@ public class ResourceDistributionPanel extends BorderPane {
                 planetSection,
                 biomeDomainSection,
                 hydroDomainSection,
-                climateDomainSection,
                 geologyDomainSection
         );
 
@@ -1615,9 +1614,11 @@ public class ResourceDistributionPanel extends BorderPane {
                     } else {
                         var point = generator.getPlanetPoint(lat, lon, planet);
                         if (point.elevation() < 0) {
-                            pxColor = Color.rgb(15, 23, 42); // Slate ocean floor
+                            pxColor = Color.rgb(15, 23, 42); // Ocean floor (no accessible surface ore)
                         } else {
-                            double metalDensity = Math.min(1.0, (Math.abs(point.elevation()) / 8848.0 + 0.2) * (mMetal / 80.0));
+                            // metalDensity is [0,1] from the seismic/volcanic-aware generator.
+                            // Scale by the UI mMetal slider (default 80 → factor 1.0).
+                            double metalDensity = Math.min(1.0, point.metalDensity() * (mMetal / 80.0));
                             int r = (int) Math.min(255, 40 + metalDensity * 215);
                             int g = (int) Math.min(255, 30 + metalDensity * 120);
                             int b = (int) Math.min(255, 20 + metalDensity * 40);
@@ -1626,7 +1627,9 @@ public class ResourceDistributionPanel extends BorderPane {
                     }
                 } else if (mode == 2) { // Mantle Heat & Tectonic Map
                     var point = generator.getPlanetPoint(lat, lon, planet);
-                    double heatDensity = Math.min(1.0, (mHeat / 150.0) * (0.4 + Math.abs(point.elevation()) / 5000.0));
+                    // elevation is normalised [-1, 1]; mountains and tidal flexing contribute to internal mantle heat
+                    double tidalHeat = ProceduralGenerator.computeTidalForceIntensity(planet) * 0.15;
+                    double heatDensity = Math.min(1.0, (mHeat / 150.0) * (0.4 + Math.abs(point.elevation()) * 0.6 + tidalHeat));
                     int r = (int) Math.min(255, 30 + heatDensity * 220);
                     int g = (int) Math.min(255, 20 + heatDensity * 90);
                     int b = (int) Math.min(255, 40 + (1.0 - heatDensity) * 100);
@@ -1634,13 +1637,15 @@ public class ResourceDistributionPanel extends BorderPane {
                 } else if (mode == 3) { // Aquatic & Aquifer Map
                     var point = generator.getPlanetPoint(lat, lon, planet);
                     if (point.elevation() < 0) {
-                        double aquaDensity = Math.min(1.0, (Math.abs(point.elevation()) / 5000.0));
-                        int r = (int) Math.min(255, 0 + aquaDensity * 40);
+                        // Ocean depth: elevation is normalised, -1 = deepest trench
+                        double aquaDensity = Math.min(1.0, Math.abs(point.elevation()));
+                        int r = (int) Math.min(255, aquaDensity * 40);
                         int g = (int) Math.min(255, 80 + aquaDensity * 160);
                         int b = (int) Math.min(255, 180 + aquaDensity * 75);
                         pxColor = Color.rgb(r, g, b);
                     } else {
-                        double waterTable = Math.min(1.0, (point.rainfall() / 2500.0) * (fAquifer / 15000.0));
+                        // Phreatic table: rainfall is [0,1] and accessibleAquifer from generator is [0,1]
+                        double waterTable = Math.min(1.0, point.accessibleAquifer() * (fAquifer / 15000.0));
                         pxColor = Color.rgb((int)(30 + waterTable * 40), (int)(60 + waterTable * 100), (int)(90 + waterTable * 140));
                     }
                 } else { // Mode 4: Hydrography & River Networks

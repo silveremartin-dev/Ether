@@ -169,6 +169,8 @@ public class H3Cell {
     private Double freshwaterAquifer = 0.0; // Total groundwater table volume (m³/km²)
     @Column(nullable = false)
     private Double accessibleAquifer = 0.0; // Accessible groundwater table volume (m³/km²) for shallow wells, springs & oasis
+    @Column(nullable = false)
+    private Double pollutionLevel = 0.0; // Environmental pollution index (0.0 clean to 1000.0 toxic contamination)
 
     // --- Socio-Economic Indices ---
     @Column(nullable = false)
@@ -550,6 +552,14 @@ public class H3Cell {
         this.accessibleAquifer = accessibleAquifer;
     }
 
+    public Double getPollutionLevel() {
+        return pollutionLevel;
+    }
+
+    public void setPollutionLevel(Double pollutionLevel) {
+        this.pollutionLevel = pollutionLevel;
+    }
+
     public boolean isBoundaryCell() {
         return boundaryCell;
     }
@@ -757,6 +767,7 @@ public class H3Cell {
         copy.setMantleHeatFlow(this.mantleHeatFlow);
         copy.setFreshwaterAquifer(this.freshwaterAquifer);
         copy.setAccessibleAquifer(this.accessibleAquifer);
+        copy.setPollutionLevel(this.pollutionLevel);
         copy.setResourceClay(this.resourceClay);
         copy.setResourceWork(this.resourceWork);
         copy.setResourceCapital(this.resourceCapital);
