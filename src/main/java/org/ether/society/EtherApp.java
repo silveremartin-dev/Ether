@@ -106,7 +106,7 @@ public class EtherApp extends Application {
         StackPane contentStack = new StackPane(mainView);
 
         Scene scene = new Scene(contentStack, 1280, 800);
-        org.ether.society.ui.Theme.setTheme(scene, org.ether.society.ui.Theme.DARK);
+        org.ether.society.ui.Theme.applyCurrentTheme(scene);
 
         org.ether.society.ui.WindowUtils.applyWindowIcon(primaryStage);
 

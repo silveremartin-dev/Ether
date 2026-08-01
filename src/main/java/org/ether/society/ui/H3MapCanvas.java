@@ -555,7 +555,43 @@ public class H3MapCanvas extends Canvas {
             case FLUX -> getFluxPressureColor(cell);
             case CULTURE -> getCultureColor(cell);
             case POLITICAL -> getPoliticalColor(cell);
+            case ASABIYYAH -> getAsabiyyahColor(cell);
+            case AGE_PYRAMID -> getAgePyramidColor(cell);
+            case ALBEDO -> getAlbedoColor(cell);
+            case EPIDEMIC -> getEpidemicColor(cell);
+            case FRICTION -> getFrictionColor(cell);
         };
+    }
+
+    private Color getAsabiyyahColor(H3Cell cell) {
+        if (cell.getOwner() == null) return Color.rgb(40, 40, 50);
+        double asabiyyah = cell.getOwner().getAsabiyyah();
+        return Color.color(1.0 - asabiyyah, asabiyyah, 0.2); // Green (high cohesion) to Red (instability)
+    }
+
+    private Color getAgePyramidColor(H3Cell cell) {
+        int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+        if (pop == 0) return Color.rgb(30, 30, 40);
+        double seniorRatio = (double) (cell.getPop65to79() + cell.getPop80Plus()) / pop;
+        return Color.color(seniorRatio, 0.4, 1.0 - seniorRatio); // Blue (young) to Magenta/Purple (aging)
+    }
+
+    private Color getAlbedoColor(H3Cell cell) {
+        double albedo = cell.getDynamicAlbedo() != null ? cell.getDynamicAlbedo() : 0.30;
+        return Color.gray(Math.clamp(albedo, 0.05, 0.95)); // Grayscale reflectance
+    }
+
+    private Color getEpidemicColor(H3Cell cell) {
+        int infected = cell.getEpidemicInfected() != null ? cell.getEpidemicInfected() : 0;
+        if (infected == 0) return getBiomeColor(cell.getBiome()).desaturate();
+        double norm = Math.min(1.0, infected / 200.0);
+        return Color.rgb(255, (int) ((1 - norm) * 100), (int) ((1 - norm) * 100)); // Vivid red outbreak
+    }
+
+    private Color getFrictionColor(H3Cell cell) {
+        double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+        double norm = Math.min(1.0, (friction - 0.5) / 8.0);
+        return Color.color(norm, 1.0 - norm, 0.1); // Green (easy plain) to Red (impassable mountain)
     }
 
     private Color getBufferCellColor(int index) {

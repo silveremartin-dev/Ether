@@ -39,6 +39,10 @@ public record EcologyPreset(
                 preciousMetalOresMt, mantleHeatFlowMwM2, freshwaterReserveKm3, 12345L, null, null, null, null, null, null);
     }
 
+    /** Default Earth Standard Baseline preset (used as initial selection in the UI). */
+    public static final EcologyPreset EARTH_STANDARD = new EcologyPreset(
+            "Earth Standard Baseline", 450.0, 1500.0, 2.0, 6.0, 80.0, 1200.0, 87.0, 15000.0);
+
     public static List<EcologyPreset> getBuiltInPresets() {
         List<EcologyPreset> list = new ArrayList<>();
         list.add(new EcologyPreset("Earth Standard Baseline", 450.0, 1500.0, 2.0, 6.0, 80.0, 1200.0, 87.0, 15000.0));

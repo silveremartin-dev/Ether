@@ -39,7 +39,7 @@ class ArtemisSimulationEngineTest {
     @DisplayName("Engine initializes with cells and default state")
     void testEngineInitialization() {
         assertNotNull(engine.getCells());
-        assertFalse(engine.getCells().isEmpty(), "Engine should initialize with default world cells");
+        assertTrue(engine.getCells().isEmpty(), "Engine should start with empty cells until scenario or planet is initialized");
         assertFalse(engine.isRunning(), "Engine should start in paused state");
         assertNotNull(engine.getTimeManager());
     }

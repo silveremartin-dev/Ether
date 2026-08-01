@@ -22,25 +22,39 @@ public class I18n {
     private static final Logger logger = LoggerFactory.getLogger(I18n.class);
     private static final String BUNDLE_NAME = "i18n/messages";
 
+    private static final java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(I18n.class);
+    private static final String PREF_LANG_KEY = "ether_language";
+
     private static final ObjectProperty<Language> currentLanguage = new SimpleObjectProperty<>();
     private static ResourceBundle bundle;
 
     static {
-        // Initialize with default language (English)
-        setLanguage(Language.ENGLISH);
+        // Load saved language preference or fallback to ENGLISH
+        setLanguage(loadSavedLanguage());
+    }
+
+    private static Language loadSavedLanguage() {
+        String code = prefs.get(PREF_LANG_KEY, Language.ENGLISH.getCode());
+        for (Language lang : Language.values()) {
+            if (lang.getCode().equalsIgnoreCase(code)) {
+                return lang;
+            }
+        }
+        return Language.ENGLISH;
     }
 
     /**
      * Set the current application language.
-     * Loads the appropriate resource bundle.
+     * Loads the appropriate resource bundle and persists preference.
      * 
      * @param language The language to switch to
      */
     public static void setLanguage(Language language) {
-        if (currentLanguage.get() != language) {
+        if (language != null && currentLanguage.get() != language) {
             try {
                 bundle = ResourceBundle.getBundle(BUNDLE_NAME, language.getLocale());
                 currentLanguage.set(language);
+                prefs.put(PREF_LANG_KEY, language.getCode());
                 logger.info("Language switched to: {}", language);
             } catch (Exception e) {
                 logger.error("Failed to load resource bundle for language: {}", language, e);

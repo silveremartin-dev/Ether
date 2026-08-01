@@ -196,7 +196,12 @@ public class ControlPanel extends HBox {
         langCombo.getItems().addAll(Language.values());
         langCombo.setValue(I18n.getCurrentLanguage());
         langCombo.setTooltip(new Tooltip("Select display language"));
-        langCombo.setOnAction(e -> I18n.setLanguage(langCombo.getValue()));
+        langCombo.setOnAction(e -> {
+            Language sel = langCombo.getValue();
+            if (sel != null && sel != I18n.getCurrentLanguage()) {
+                I18n.setLanguage(sel);
+            }
+        });
 
         // Custom cell factory to show display name
         langCombo.setButtonCell(new ListCell<>() {
@@ -336,6 +341,9 @@ public class ControlPanel extends HBox {
         speed20x.setText(I18n.get("ui.control.speed") + " 20x");
         miniMapToggle.setText(I18n.get("ui.control.minimap"));
         langLabel.setText(I18n.get("ui.control.language"));
+        if (langCombo.getValue() != I18n.getCurrentLanguage()) {
+            langCombo.setValue(I18n.getCurrentLanguage());
+        }
 
         updateViewToggleButton();
         updateDisplayToggleButton();

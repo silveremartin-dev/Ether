@@ -21,6 +21,7 @@ import javafx.util.StringConverter;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Standardized Preset Toolbar with inline editable name field.
@@ -282,6 +283,21 @@ public class PresetControlBar<T> extends VBox {
     }
 
     private void performSave(String name) {
+        boolean exists = presetCombo.getItems().stream()
+                .anyMatch(item -> item != null && formatPresetItem(item).equalsIgnoreCase(name));
+
+        if (exists) {
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle(I18n.getOrDefault("preset.dialog.overwrite_title", "Préréglage Existant"));
+            confirm.setHeaderText(I18n.getOrDefault("preset.dialog.overwrite_header", "Remplacement de préréglage"));
+            confirm.setContentText(I18n.getOrDefault("preset.dialog.overwrite_content",
+                    "Un préréglage nommé '" + name + "' existe déjà. Voulez-vous l'écraser ?"));
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.isEmpty() || result.get() != ButtonType.OK) {
+                return;
+            }
+        }
+
         trackingChanges = true;
         if (listener != null) {
             listener.onSavePreset(name);

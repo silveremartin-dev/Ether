@@ -55,11 +55,12 @@ public class DatabaseConfig {
         properties.put(Environment.JAKARTA_JDBC_DRIVER, "org.postgresql.Driver");
         properties.put(Environment.DIALECT, "org.hibernate.spatial.dialect.postgis.PostgisDialect");
 
-        // HikariCP settings
-        properties.put("hibernate.hikari.minimumIdle", "2");
-        properties.put("hibernate.hikari.maximumPoolSize", "10");
-        properties.put("hibernate.hikari.idleTimeout", "300000");
-        properties.put("hibernate.hikari.connectionTimeout", "20000");
+        // HikariCP settings (fast connection check)
+        properties.put("hibernate.hikari.minimumIdle", "1");
+        properties.put("hibernate.hikari.maximumPoolSize", "5");
+        properties.put("hibernate.hikari.idleTimeout", "30000");
+        properties.put("hibernate.hikari.connectionTimeout", "2000");
+        properties.put("hibernate.hikari.initializationFailTimeout", "1000");
 
         // Hibernate settings
         properties.put(Environment.SHOW_SQL, "false");
@@ -67,6 +68,8 @@ public class DatabaseConfig {
         properties.put(Environment.HBM2DDL_AUTO, "update"); // or "validate" in production
         properties.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
         properties.put(Environment.CONNECTION_PROVIDER, "org.hibernate.hikaricp.internal.HikariCPConnectionProvider");
+        properties.put("hibernate.cache.use_second_level_cache", "false");
+        properties.put("hibernate.cache.use_query_cache", "false");
 
         configuration.setProperties(properties);
 
@@ -79,7 +82,7 @@ public class DatabaseConfig {
             logger.info("EntityManagerFactory created successfully");
             return emf;
         } catch (Exception e) {
-            logger.error("Failed to create EntityManagerFactory: {}", e.getMessage());
+            logger.info("Database offline mode active: PostgreSQL server not available at {} ({})", dbUrl, e.getMessage());
             // Return null instead of throwing, to allow offline mode
             return null;
         }

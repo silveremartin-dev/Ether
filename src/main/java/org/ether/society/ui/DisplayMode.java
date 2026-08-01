@@ -47,7 +47,22 @@ public enum DisplayMode {
     CULTURE("Culture"),
 
     /** Show political borders */
-    POLITICAL("Political");
+    POLITICAL("Political"),
+
+    /** Show Asabiyyah social cohesion & political instability index */
+    ASABIYYAH("Asabiyyah & Instability"),
+
+    /** Show age pyramid demographic distribution (Elderly ratio) */
+    AGE_PYRAMID("Age Pyramid (Seniors)"),
+
+    /** Show dynamic surface albedo */
+    ALBEDO("Surface Albedo"),
+
+    /** Show active epidemiological outbreaks */
+    EPIDEMIC("Epidemic Outbreaks"),
+
+    /** Show terrain movement friction matrix */
+    FRICTION("Movement Friction");
 
     private final String displayName;
 

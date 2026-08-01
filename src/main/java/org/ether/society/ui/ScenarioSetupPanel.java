@@ -10,6 +10,7 @@ import org.ether.society.model.Biome;
 import org.ether.society.model.EcologyPreset;
 import org.ether.society.model.Scenario;
 import org.ether.society.model.StartDatePreset;
+import org.ether.society.i18n.I18n;
 import org.ether.society.procedural.PlanetPreset;
 import org.ether.society.procedural.ProceduralGenerator;
 
@@ -34,8 +35,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javafx.embed.swing.SwingFXUtils;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileInputStream;
@@ -116,6 +115,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private CheckBox randomEventsCheckBox;
 
     // Spatial Clipping & Boundary Condition Controls
+    private Label clippingHeader;
     private CheckBox clippingCheckBox;
     private ToggleButton graphicSelectBtn;
     private Spinner<Double> minLatSpinner;
@@ -137,10 +137,6 @@ public class ScenarioSetupPanel extends BorderPane {
     // Density Map Import UI Fields
     private RadioButton radioProcDemo;
     private RadioButton radioImportDemo;
-    private Button loadDensityMapBtn;
-    private Button clearDensityMapBtn;
-    private Button exportDensityMapBtn;
-    private Label densityMapFileLabel;
     private Label demoCompatibilityLabel;
 
     // Events section
@@ -294,7 +290,8 @@ public class ScenarioSetupPanel extends BorderPane {
         scenarioPresetBar = new PresetControlBar<>(org.ether.society.i18n.I18n.getOrDefault("scenario.preset_bar", "Préréglage de Scénario"));
         scenarioPresetBar.setExportCategory("scenario");
         List<Scenario> builtInScenarios = getBuiltInScenarios();
-        scenarioPresetBar.setPresets(builtInScenarios, null);
+        Scenario defaultScenario = builtInScenarios.isEmpty() ? null : builtInScenarios.get(0);
+        scenarioPresetBar.setPresets(builtInScenarios, defaultScenario);
 
         scenarioPresetBar.setListener(new PresetControlBar.PresetActionsListener<Scenario>() {
             @Override
@@ -709,15 +706,15 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
 
-        Label clippingHeader = new Label("✂️ SIMULATION LOCALE & FRONTIÈRES (CLIPPING)");
+        clippingHeader = new Label(I18n.getOrDefault("scenario.clipping.header", "✂️ SIMULATION LOCALE & FRONTIÈRES (CLIPPING)"));
         clippingHeader.getStyleClass().add("label-header");
         clippingHeader.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
 
-        clippingCheckBox = new CheckBox("Activer la simulation partielle (Zone Tronquée)");
+        clippingCheckBox = new CheckBox(I18n.getOrDefault("scenario.clipping.enable", "Activer la simulation partielle (Zone Tronquée)"));
         clippingCheckBox.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
         clippingCheckBox.setOnAction(e -> drawPreview());
 
-        graphicSelectBtn = new ToggleButton("🖱️ Mode Sélection Graphique sur Carte");
+        graphicSelectBtn = new ToggleButton(I18n.getOrDefault("scenario.clipping.select_mode", "🖱️ Mode Sélection Graphique sur Carte"));
         graphicSelectBtn.setMaxWidth(Double.MAX_VALUE);
         graphicSelectBtn.setStyle("-fx-font-size: 11px;");
         graphicSelectBtn.setTooltip(new Tooltip("Activez ce bouton ou maintenez SHIFT enfoncé pour dessiner un rectangle de sélection sur la carte preview."));
@@ -759,9 +756,9 @@ public class ScenarioSetupPanel extends BorderPane {
                     setText(null);
                 } else {
                     switch (item) {
-                        case "DYNAMIC_RESERVOIR" -> setText("🌊 Réservoir Virtuel Extérieur (Flux Libres)");
-                        case "CLOSED_BARRIER" -> setText("🧱 Frontière Étanche / Isolée (Bords Fermés)");
-                        case "PERIODIC_WRAP" -> setText("🌐 Raccordement Périodique (Torique)");
+                        case "DYNAMIC_RESERVOIR" -> setText(I18n.getOrDefault("scenario.boundary.reservoir", "🌊 Réservoir Virtuel Extérieur (Flux Libres)"));
+                        case "CLOSED_BARRIER" -> setText(I18n.getOrDefault("scenario.boundary.barrier", "🧱 Frontière Étanche / Isolée (Bords Fermés)"));
+                        case "PERIODIC_WRAP" -> setText(I18n.getOrDefault("scenario.boundary.wrap", "🌐 Raccordement Périodique (Torique)"));
                         default -> setText(item);
                     }
                 }
@@ -769,7 +766,7 @@ public class ScenarioSetupPanel extends BorderPane {
         });
         boundaryModeCombo.setButtonCell(boundaryModeCombo.getCellFactory().call(null));
 
-        resetClippingBtn = new Button("🔄 Réinitialiser la Zone (Pleine Planète)");
+        resetClippingBtn = new Button(I18n.getOrDefault("scenario.clipping.reset", "🔄 Réinitialiser la Zone (Pleine Planète)"));
         resetClippingBtn.getStyleClass().add("button-secondary");
         resetClippingBtn.setMaxWidth(Double.MAX_VALUE);
         resetClippingBtn.setOnAction(e -> {
@@ -998,7 +995,16 @@ public class ScenarioSetupPanel extends BorderPane {
                         }
                     }
                 }
-                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+                int iw = (int) image.getWidth();
+                int ih = (int) image.getHeight();
+                java.awt.image.BufferedImage bImg = new java.awt.image.BufferedImage(iw, ih, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+                PixelReader pr = image.getPixelReader();
+                for (int y = 0; y < ih; y++) {
+                    for (int x = 0; x < iw; x++) {
+                        bImg.setRGB(x, y, pr.getArgb(x, y));
+                    }
+                }
+                ImageIO.write(bImg, "png", file);
                 logger.info("Exported density map to {}", file.getAbsolutePath());
             } catch (Exception ex) {
                 logger.error("Failed to export density map", ex);
@@ -1227,11 +1233,12 @@ public class ScenarioSetupPanel extends BorderPane {
                 distributeInitialPopulation(cells);
                 currentPreviewCells = cells;
 
+                final List<H3Cell> finalCells = cells;
                 javafx.application.Platform.runLater(() -> {
                     progressBar.setProgress(1.0);
-                    progressStatusLabel.setText("✅ " + cells.size() + " H3 cells calculated!");
+                    progressStatusLabel.setText("✅ " + finalCells.size() + " H3 cells calculated!");
                     drawPreview();
-                    previewStatusLabel.setText("Généré : " + cells.size() + " cellules H3.");
+                    previewStatusLabel.setText("Généré : " + finalCells.size() + " cellules H3.");
 
                     Scenario s = getScenario();
                     if (onStartSimulation != null) {
@@ -1397,6 +1404,14 @@ public class ScenarioSetupPanel extends BorderPane {
         if (addEventBtn != null) addEventBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.add", "➕ Ajouter Événement"));
         if (removeEventBtn != null) removeEventBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.remove", "🗑️ Supprimer"));
         if (loadEarthEventsBtn != null) loadEarthEventsBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.load_earth", "🌍 Charger Événements Historiques Terre"));
+
+        if (clippingHeader != null) clippingHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.header", "✂️ SIMULATION LOCALE & FRONTIÈRES (CLIPPING)"));
+        if (clippingCheckBox != null) clippingCheckBox.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.enable", "Activer la simulation partielle (Zone Tronquée)"));
+        if (graphicSelectBtn != null) graphicSelectBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.select_mode", "🖱️ Mode Sélection Graphique sur Carte"));
+        if (resetClippingBtn != null) resetClippingBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.reset", "🔄 Réinitialiser la Zone (Pleine Planète)"));
+        if (boundaryModeCombo != null) {
+            boundaryModeCombo.setButtonCell(boundaryModeCombo.getCellFactory().call(null));
+        }
 
         if (eventsTable != null && eventsTable.getUserData() instanceof TableColumn[] cols && cols.length == 7) {
             cols[0].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.type", "Type"));

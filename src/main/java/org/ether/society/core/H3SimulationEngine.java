@@ -107,20 +107,13 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     private void initialize() {
-        logger.info("Initializing H3 simulation...");
-        // Generate sample data for Europe
-        this.cells = SampleDataGenerator.generateEuropeSample();
-
-        // Initialize population
-        initializePopulation();
-
-        // Initialize DOD buffers
-        this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(cells.size());
-        this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(cells.size() / 10); // Assume 10% cells have agents initially
-        org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
-        org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer);
-
-        logger.info("H3 World generated: {} cells", cells.size());
+        logger.info("Initializing H3 simulation engine (idle state)...");
+        this.cells = new java.util.ArrayList<>();
+        if (this.diplomacyManager != null) {
+            this.diplomacyManager.clear();
+        }
+        this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(0);
+        this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(0);
     }
 
     /**
@@ -144,9 +137,28 @@ public class H3SimulationEngine implements ISimulationEngine {
         // Reset time to scenario start year
         timeManager.reset((int) scenario.getStartDateYear());
 
+        // Clear existing nations before creating scenario-based nations
+        if (diplomacyManager != null) {
+            diplomacyManager.clear();
+        }
+
         // Run pre-computation phase
         PreComputePhase preCompute = new PreComputePhase(scenario);
         preCompute.execute(cells);
+
+        // Initialize political nations based on populated cells from scenario
+        int populatedCount = (int) cells.stream().filter(c -> c.getPopulation() != null && c.getPopulation() > 0).count();
+        initializePoliticalSeeding(populatedCount);
+
+        // Allocate and populate DOD buffers for scenario cells
+        this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(cells.size());
+        this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(Math.max(1, cells.size() / 10));
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
+        org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer);
+
+        if (historyManager != null) {
+            historyManager.reset();
+        }
 
         logger.info("Scenario '{}' initialized: {} cells, start year {}",
                 scenario.getName(), cells.size(), scenario.getStartDateYear());
@@ -275,10 +287,20 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
 
         this.cells = newCells;
+        if (diplomacyManager != null) {
+            diplomacyManager.clear();
+        }
 
-        // Initialize population if fresh generation didn't do it
-        // (PlanetGenerator might not populate people, only biomes)
-        initializePopulation();
+        if (newCells != null && !newCells.isEmpty()) {
+            initializePopulation();
+            this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(cells.size());
+            this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(Math.max(1, cells.size() / 10));
+            org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
+            org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer);
+        } else {
+            this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(0);
+            this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(0);
+        }
 
         logger.info("World replaced with {} new cells", cells.size());
 
@@ -368,6 +390,22 @@ public class H3SimulationEngine implements ISimulationEngine {
                 urbanKernel.tick(worldBuffer, dtSlow);
                 cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
 
+                // --- ÉCHELLE MACRO-HISTORIQUE & ÉCOLOGIQUE ---
+                double avgTech = getAverageTechnology();
+                org.ether.society.procedural.EcologicalDegradationEngine.processEcologicalDegradation(cells, avgTech);
+                org.ether.society.procedural.AlbedoClimateEngine.processAlbedoFeedback(cells);
+                org.ether.society.procedural.CliodynamicsEngine.updateCliodynamics(diplomacyManager.getNations(), cells);
+
+                List<org.ether.society.procedural.TradeNetworkEngine.TradeRoute> currentRoutes = null;
+                if (tickCounter % (SLOW_FACTOR * 3) == 0) { // Every 3 months: update trade corridors
+                    currentRoutes = org.ether.society.procedural.TradeNetworkEngine.generateTradeNetworks(cells, avgTech);
+                }
+
+                org.ether.society.procedural.EpidemiologicalEngine.processEpidemicOutbreaks(cells, currentRoutes);
+                org.ether.society.procedural.WarDiplomacyEngine.processGeopoliticalConflicts(diplomacyManager.getNations(), cells);
+                org.ether.society.procedural.LanguageLinguisticEngine.processLinguisticDrift(cells, currentRoutes);
+                org.ether.society.procedural.TechTreeEngine.processTechnologyDiffusion(cells, currentRoutes);
+
                 // Statistiques et Analytics
                 currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
                 densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
@@ -431,17 +469,21 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     private void initializePoliticalSeeding(int populatedCount) {
-        if (populatedCount < 10)
+        if (populatedCount < 3 || cells == null || cells.isEmpty())
             return;
+
+        if (diplomacyManager != null) {
+            diplomacyManager.clear();
+        }
 
         // Pick top 3 populated cells to start nations
         cells.stream()
-                .filter(c -> c.getPopulation() > 0)
+                .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
                 .sorted(java.util.Comparator.comparingInt(H3Cell::getPopulation).reversed())
                 .limit(3)
                 .forEach(c -> {
                     if (c.getOwner() == null) {
-                        String name = "Nation of " + c.getH3Index(); // Placeholder name
+                        String name = "Realm of Hex " + Long.toHexString(c.getH3Index()).toUpperCase();
                         // Random vivid color
                         javafx.scene.paint.Color color = javafx.scene.paint.Color.hsb(Math.random() * 360, 0.8, 0.9);
 

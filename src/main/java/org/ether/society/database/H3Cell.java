@@ -177,17 +177,54 @@ public class H3Cell {
     private Double fertility = 6.0;
     @Column(nullable = false)
     private Double giniIndex = 0.0;
+    @Column(nullable = false)
+    private Double technologyLevel = 0.0;
+
     // --- Movement & Terrain Friction Matrix ---
     @Column(nullable = false)
     private Double movementFriction = 1.0; // 1.0 = ideal flat plain, 10.0+ = high resistance mountain/swamp/desert
 
-    // --- Demographics: Age Pyramid / Cohort-Component Model ---
+    // --- Dynamic Climate & Surface Physics ---
     @Column(nullable = false)
-    private Integer popYouth = 0;   // 0-14 years old (Youth dependency cohort)
+    private Double dynamicAlbedo = 0.30; // Dynamic albedo (0.10 dark forest to 0.85 fresh snow/ice)
+
+    // --- Detailed Demographic Age Pyramid (7 Fine-Grained Cohorts) ---
     @Column(nullable = false)
-    private Integer popAdult = 0;   // 15-64 years old (Active labor & reproductive cohort)
+    private Integer pop0to4 = 0;   // 0-4 years (Infant cohort)
     @Column(nullable = false)
-    private Integer popElderly = 0; // 65+ years old (Elderly dependency cohort)
+    private Integer pop5to14 = 0;  // 5-14 years (Child cohort)
+    @Column(nullable = false)
+    private Integer pop15to24 = 0; // 15-24 years (Youth adult / military cohort)
+    @Column(nullable = false)
+    private Integer pop25to49 = 0; // 25-49 years (Prime labor & fertility cohort)
+    @Column(nullable = false)
+    private Integer pop50to64 = 0; // 50-64 years (Mature adult / leadership cohort)
+    @Column(nullable = false)
+    private Integer pop65to79 = 0; // 65-79 years (Senior cohort)
+    @Column(nullable = false)
+    private Integer pop80Plus = 0; // 80+ years (Vulnerable elderly cohort)
+
+    // Legacy cohort aggregations
+    @Column(nullable = false)
+    private Integer popYouth = 0;   // 0-14 aggregate
+    @Column(nullable = false)
+    private Integer popAdult = 0;   // 15-64 aggregate
+    @Column(nullable = false)
+    private Integer popElderly = 0; // 65+ aggregate
+
+    // --- Epidemiological SEIR Model State ---
+    @Column(nullable = false)
+    private Integer epidemicInfected = 0;
+    @Column(nullable = false)
+    private Integer epidemicRecovered = 0;
+    @Column(length = 50)
+    private String activePathogenName = null;
+
+    // --- Linguistic & Cultural Diffusion ---
+    @Column(length = 50)
+    private String languageGroup = "Proto-Human";
+    @Column(nullable = false)
+    private Double linguisticDrift = 0.0;
 
     // Analytics / Simulation State
     @Transient
@@ -575,13 +612,12 @@ public class H3Cell {
         if (biome != null) {
             switch (biome) {
                 case TUNDRA, SNOW -> baseFriction += 3.5;
-                case TAIGA -> baseFriction += 2.0;
-                case DESERT -> baseFriction += 4.5;
-                case TROPICAL_RAINFOREST -> baseFriction += 5.0;
-                case SWAMP -> baseFriction += 4.0;
-                case MOUNTAIN -> baseFriction += 6.0;
+                case FOREST -> baseFriction += 1.5;
+                case JUNGLE -> baseFriction += 4.5;
+                case DESERT -> baseFriction += 4.0;
+                case MOUNTAINS -> baseFriction += 6.0;
                 case HILLS -> baseFriction += 2.0;
-                case RIVERS -> baseFriction = 0.6; // River highways reduce movement friction
+                case BEACH -> baseFriction += 1.2;
                 default -> {}
             }
         }
@@ -592,29 +628,113 @@ public class H3Cell {
         return this.movementFriction;
     }
 
+    public Double getDynamicAlbedo() {
+        return dynamicAlbedo;
+    }
+
+    public void setDynamicAlbedo(Double dynamicAlbedo) {
+        this.dynamicAlbedo = dynamicAlbedo;
+    }
+
+    public Integer getPop0to4() { return pop0to4; }
+    public void setPop0to4(Integer val) { this.pop0to4 = val; }
+
+    public Integer getPop5to14() { return pop5to14; }
+    public void setPop5to14(Integer val) { this.pop5to14 = val; }
+
+    public Integer getPop15to24() { return pop15to24; }
+    public void setPop15to24(Integer val) { this.pop15to24 = val; }
+
+    public Integer getPop25to49() { return pop25to49; }
+    public void setPop25to49(Integer val) { this.pop25to49 = val; }
+
+    public Integer getPop50to64() { return pop50to64; }
+    public void setPop50to64(Integer val) { this.pop50to64 = val; }
+
+    public Integer getPop65to79() { return pop65to79; }
+    public void setPop65to79(Integer val) { this.pop65to79 = val; }
+
+    public Integer getPop80Plus() { return pop80Plus; }
+    public void setPop80Plus(Integer val) { this.pop80Plus = val; }
+
+    public Integer getEpidemicInfected() { return epidemicInfected; }
+    public void setEpidemicInfected(Integer val) { this.epidemicInfected = val; }
+
+    public Integer getEpidemicRecovered() { return epidemicRecovered; }
+    public void setEpidemicRecovered(Integer val) { this.epidemicRecovered = val; }
+
+    public String getActivePathogenName() { return activePathogenName; }
+    public void setActivePathogenName(String name) { this.activePathogenName = name; }
+
+    public String getLanguageGroup() { return languageGroup; }
+    public void setLanguageGroup(String lang) { this.languageGroup = lang; }
+
+    public Double getLinguisticDrift() { return linguisticDrift; }
+    public void setLinguisticDrift(Double drift) { this.linguisticDrift = drift; }
+
     /**
-     * Updates the age pyramid (Youth 0-14, Adult 15-64, Elderly 65+) based on total population
+     * Calculates dynamic surface albedo based on snow cover, biome, and natural vegetation density.
+     */
+    public double calculateDynamicAlbedo() {
+        if (elevation != null && elevation < 0) {
+            this.dynamicAlbedo = 0.06; // Water body baseline
+            return this.dynamicAlbedo;
+        }
+
+        double baseAlbedo = 0.22; // Default grassland/plains
+        if (biome != null) {
+            switch (biome) {
+                case SNOW, TUNDRA -> baseAlbedo = 0.78;
+                case DESERT -> baseAlbedo = 0.40;
+                case FOREST, JUNGLE -> baseAlbedo = 0.12;
+                case MOUNTAINS -> baseAlbedo = 0.35;
+                default -> baseAlbedo = 0.22;
+            }
+        }
+
+        // Deforestation / Soil exposure effect: Depleting biomassNatural increases bare soil exposure (~0.30)
+        double vegDensity = Math.clamp(biomassNatural / 1000.0, 0.0, 1.0);
+        this.dynamicAlbedo = (baseAlbedo * vegDensity) + (0.30 * (1.0 - vegDensity));
+        return this.dynamicAlbedo;
+    }
+
+    /**
+     * Updates the detailed 7-segment age pyramid based on total population
      * and technological demographic transition stage.
      */
     public void updateAgePyramidFromTotal(double techLevel) {
         if (population == null || population <= 0) {
-            popYouth = 0;
-            popAdult = 0;
-            popElderly = 0;
+            pop0to4 = pop5to14 = pop15to24 = pop25to49 = pop50to64 = pop65to79 = pop80Plus = 0;
+            popYouth = popAdult = popElderly = 0;
             return;
         }
 
-        // Demographic transition model:
-        // Ancient/Pre-Industrial (Tech <= 3.0): High birth rate, high infant mortality -> 42% youth, 52% adult, 6% elderly
-        // Modern (Tech >= 8.0): Low birth rate, high lifespan -> 18% youth, 64% adult, 18% elderly
-        double techFactor = Math.clamp((techLevel - 1.0) / 7.0, 0.0, 1.0);
+        double tf = Math.clamp((techLevel - 1.0) / 7.0, 0.0, 1.0);
 
-        double youthShare = 0.42 - (techFactor * 0.24);  // 42% -> 18%
-        double elderlyShare = 0.06 + (techFactor * 0.12); // 6% -> 18%
+        // Interpolate 7 cohort shares (Pre-industrial -> Modern)
+        double share0to4   = 0.15 - (tf * 0.10); // 15% -> 5%
+        double share5to14  = 0.27 - (tf * 0.14); // 27% -> 13%
+        double share15to24 = 0.18 - (tf * 0.04); // 18% -> 14%
+        double share25to49 = 0.25 + (tf * 0.09); // 25% -> 34%
+        double share50to64 = 0.09 + (tf * 0.07); // 9%  -> 16%
+        double share65to79 = 0.05 + (tf * 0.09); // 5%  -> 14%
+        double share80Plus = 0.01 + (tf * 0.03); // 1%  -> 4%
 
-        this.popYouth = (int) Math.round(population * youthShare);
-        this.popElderly = (int) Math.round(population * elderlyShare);
-        this.popAdult = population - (popYouth + popElderly);
+        this.pop0to4   = (int) Math.round(population * share0to4);
+        this.pop5to14  = (int) Math.round(population * share5to14);
+        this.pop15to24 = (int) Math.round(population * share15to24);
+        this.pop25to49 = (int) Math.round(population * share25to49);
+        this.pop50to64 = (int) Math.round(population * share50to64);
+        this.pop65to79 = (int) Math.round(population * share65to79);
+
+        // Adjust remaining rounding difference in 80+ cohort
+        int sum6 = pop0to4 + pop5to14 + pop15to24 + pop25to49 + pop50to64 + pop65to79;
+        this.pop80Plus = Math.max(0, population - sum6);
+
+        // Aggregates for backward compatibility
+        this.popYouth = pop0to4 + pop5to14;
+        this.popAdult = pop15to24 + pop25to49 + pop50to64;
+        this.popElderly = pop65to79 + pop80Plus;
     }
 
     /**

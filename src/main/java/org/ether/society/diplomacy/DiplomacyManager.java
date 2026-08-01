@@ -29,6 +29,11 @@ public class DiplomacyManager {
         // Clean up references in other components if necessary
     }
 
+    public void clear() {
+        nations.clear();
+        logger.info("DiplomacyManager cleared all nations");
+    }
+
     public List<Nation> getNations() {
         return Collections.unmodifiableList(nations);
     }

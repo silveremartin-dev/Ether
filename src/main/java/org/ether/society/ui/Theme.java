@@ -19,7 +19,18 @@ public enum Theme {
     LIGHT("Light", "/css/light.css");
 
     private static final Logger logger = LoggerFactory.getLogger(Theme.class);
-    private static final ObjectProperty<Theme> currentTheme = new SimpleObjectProperty<>(DARK);
+    private static final java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(Theme.class);
+    private static final String PREF_THEME_KEY = "ether_theme";
+    private static final ObjectProperty<Theme> currentTheme = new SimpleObjectProperty<>();
+
+    static {
+        String savedTheme = prefs.get(PREF_THEME_KEY, DARK.name());
+        try {
+            currentTheme.set(Theme.valueOf(savedTheme));
+        } catch (Exception e) {
+            currentTheme.set(DARK);
+        }
+    }
 
     private final String displayName;
     private final String stylesheetPath;
@@ -48,6 +59,7 @@ public enum Theme {
     public static void setTheme(Scene scene, Theme theme) {
         if (theme == null) return;
         currentTheme.set(theme);
+        prefs.put(PREF_THEME_KEY, theme.name());
         applyCurrentTheme(scene);
     }
 
