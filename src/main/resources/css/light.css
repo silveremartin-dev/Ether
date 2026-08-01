@@ -185,3 +185,118 @@
     -fx-background-color: transparent;
 }
 
+/* Radio & CheckBox */
+.radio-button, .check-box {
+    -fx-text-fill: #0f172a;
+    -fx-cursor: hand;
+}
+
+.radio-button:hover, .check-box:hover {
+    -fx-text-fill: #0284c7;
+}
+
+.radio-button .text, .check-box .text {
+    -fx-fill: #0f172a;
+}
+
+/* Toggle Button */
+.toggle-button {
+    -fx-background-color: #f1f5f9;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-text-fill: #334155;
+    -fx-cursor: hand;
+}
+
+.toggle-button:hover {
+    -fx-background-color: #e2e8f0;
+    -fx-border-color: #0284c7;
+    -fx-text-fill: #0284c7;
+}
+
+.toggle-button:selected {
+    -fx-background-color: rgba(2, 132, 199, 0.1);
+    -fx-border-color: #0284c7;
+    -fx-text-fill: #0369a1;
+    -fx-font-weight: bold;
+}
+
+/* Slider */
+.slider .track {
+    -fx-background-color: #cbd5e1;
+}
+
+.slider .thumb {
+    -fx-background-color: #0284c7;
+    -fx-effect: dropshadow(gaussian, rgba(2, 132, 199, 0.3), 4, 0, 0, 0);
+}
+
+.slider .thumb:hover {
+    -fx-background-color: #0369a1;
+}
+
+/* Spinner */
+.spinner {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.spinner .text-field {
+    -fx-text-fill: #0f172a;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* Separator */
+.separator .line {
+    -fx-border-color: #e2e8f0;
+}
+
+/* Progress Bar */
+.progress-bar .track {
+    -fx-background-color: #e2e8f0;
+    -fx-background-radius: 4;
+}
+
+.progress-bar .bar {
+    -fx-background-color: linear-gradient(to right, #0284c7, #0369a1);
+    -fx-background-radius: 4;
+}
+
+/* TableView */
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 6;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: rgba(2, 132, 199, 0.06);
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #0284c7;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #0f172a;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: rgba(2, 132, 199, 0.1);
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #f8fafc;
+}
+
+.table-cell {
+    -fx-text-fill: #0f172a;
+    -fx-border-color: #f1f5f9;
+}
+

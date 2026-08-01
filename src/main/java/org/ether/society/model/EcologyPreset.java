@@ -21,8 +21,23 @@ public record EcologyPreset(
         double crustalMetalOresGt,       // Industrial base metal reserves in crust (Gigatons, Gt)
         double preciousMetalOresMt,      // Precious & rare earth ores (Megatons, Mt)
         double mantleHeatFlowMwM2,       // Mantle heat flow & tectonic/geothermal index (mW/m²)
-        double freshwaterReserveKm3      // Groundwater & aquifer reserves (in 10^3 km³)
+        double freshwaterReserveKm3,     // Groundwater & aquifer reserves (in 10^3 km³)
+        long seed,
+        String customBiomeBase64,
+        String customResourceBase64,
+        String customHydroBase64,
+        String customClimateBase64,
+        String customRainfallBase64,
+        String customSeasonalityBase64
 ) implements Serializable {
+
+    /** Overloaded constructor for 9-parameter backwards compatibility */
+    public EcologyPreset(String name, double terrestrialBiomassGtC, double soilOrganicCarbonGtC, double faunaBiomassGtC,
+            double aquaticBiomassGtC, double crustalMetalOresGt, double preciousMetalOresMt, double mantleHeatFlowMwM2,
+            double freshwaterReserveKm3) {
+        this(name, terrestrialBiomassGtC, soilOrganicCarbonGtC, faunaBiomassGtC, aquaticBiomassGtC, crustalMetalOresGt,
+                preciousMetalOresMt, mantleHeatFlowMwM2, freshwaterReserveKm3, 12345L, null, null, null, null, null, null);
+    }
 
     public static List<EcologyPreset> getBuiltInPresets() {
         List<EcologyPreset> list = new ArrayList<>();

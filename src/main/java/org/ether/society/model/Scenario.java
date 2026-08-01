@@ -35,6 +35,17 @@ public class Scenario implements Serializable {
     private double cellSizeKm2;
     private double climateHarshness; // 0.0 to 1.0 (storms, droughts)
     private long startDateYear; // e.g. -100000
+    private long seed = 12345L;
+    private boolean randomEventsEnabled = true;
+    private String customDensityBase64;
+
+    // Spatial Clipping & Boundary Conditions
+    private boolean clippingEnabled = false;
+    private double minLat = -90.0;
+    private double maxLat = 90.0;
+    private double minLng = -180.0;
+    private double maxLng = 180.0;
+    private String boundaryMode = "DYNAMIC_RESERVOIR"; // "DYNAMIC_RESERVOIR", "CLOSED_BARRIER", "PERIODIC_WRAP"
 
     public Scenario() {
         // Defaults
@@ -52,6 +63,8 @@ public class Scenario implements Serializable {
         this.climateHarshness = 0.5;
         this.startDateYear = -100000;
         this.useRealEarthData = false;
+        this.seed = 12345L;
+        this.randomEventsEnabled = true;
     }
 
     // Getters and Setters
@@ -166,5 +179,77 @@ public class Scenario implements Serializable {
 
     public void setStartDateYear(long startDateYear) {
         this.startDateYear = startDateYear;
+    }
+
+    public long getSeed() {
+        return seed;
+    }
+
+    public void setSeed(long seed) {
+        this.seed = seed;
+    }
+
+    public boolean isRandomEventsEnabled() {
+        return randomEventsEnabled;
+    }
+
+    public void setRandomEventsEnabled(boolean randomEventsEnabled) {
+        this.randomEventsEnabled = randomEventsEnabled;
+    }
+
+    public String getCustomDensityBase64() {
+        return customDensityBase64;
+    }
+
+    public void setCustomDensityBase64(String customDensityBase64) {
+        this.customDensityBase64 = customDensityBase64;
+    }
+
+    public boolean isClippingEnabled() {
+        return clippingEnabled;
+    }
+
+    public void setClippingEnabled(boolean clippingEnabled) {
+        this.clippingEnabled = clippingEnabled;
+    }
+
+    public double getMinLat() {
+        return minLat;
+    }
+
+    public void setMinLat(double minLat) {
+        this.minLat = minLat;
+    }
+
+    public double getMaxLat() {
+        return maxLat;
+    }
+
+    public void setMaxLat(double maxLat) {
+        this.maxLat = maxLat;
+    }
+
+    public double getMinLng() {
+        return minLng;
+    }
+
+    public void setMinLng(double minLng) {
+        this.minLng = minLng;
+    }
+
+    public double getMaxLng() {
+        return maxLng;
+    }
+
+    public void setMaxLng(double maxLng) {
+        this.maxLng = maxLng;
+    }
+
+    public String getBoundaryMode() {
+        return boundaryMode;
+    }
+
+    public void setBoundaryMode(String boundaryMode) {
+        this.boundaryMode = boundaryMode;
     }
 }

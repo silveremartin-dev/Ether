@@ -48,7 +48,27 @@ public record PlanetPreset(
         boolean isSatellite,
         double parentPlanetMassEarthMasses,
         double orbitalDistanceToParentKm,
-        double co2Ppm) {
+        double co2Ppm,
+        double seismicActivityLevel,
+        double volcanicActivityLevel,
+        String customElevBase64,
+        String customBiomeBase64,
+        String customResourceBase64,
+        String customClimateBase64,
+        String customRainfallBase64,
+        String customSeasonalityBase64) {
+
+    /** Overloaded constructor for 23-param compatibility */
+    public PlanetPreset(String name, int resolution, double radiusKm, double dayLengthHours, double axialTiltDegrees,
+            double yearLengthDays, double distanceToSunAU, double solarLuminosity, double minAltitudeMeters,
+            double maxAltitudeMeters, double averageTempC, long seed, double noiseFrequency, double noiseScale,
+            double waterLevel, double temperatureGradient, double oxygenPercentage, double albedo, double atmospherePressureAtm,
+            boolean isSatellite, double parentPlanetMassEarthMasses, double orbitalDistanceToParentKm, double co2Ppm) {
+        this(name, resolution, radiusKm, dayLengthHours, axialTiltDegrees, yearLengthDays, distanceToSunAU, solarLuminosity,
+                minAltitudeMeters, maxAltitudeMeters, averageTempC, seed, noiseFrequency, noiseScale, waterLevel,
+                temperatureGradient, oxygenPercentage, albedo, atmospherePressureAtm, isSatellite, parentPlanetMassEarthMasses,
+                orbitalDistanceToParentKm, co2Ppm, 2.5, 1.5, null, null, null, null, null, null);
+    }
 
     /** Overloaded constructor for 19-param compatibility */
     public PlanetPreset(String name, int resolution, double radiusKm, double dayLengthHours, double axialTiltDegrees,
@@ -57,7 +77,8 @@ public record PlanetPreset(
             double waterLevel, double temperatureGradient, double oxygenPercentage, double albedo, double atmospherePressureAtm) {
         this(name, resolution, radiusKm, dayLengthHours, axialTiltDegrees, yearLengthDays, distanceToSunAU, solarLuminosity,
                 minAltitudeMeters, maxAltitudeMeters, averageTempC, seed, noiseFrequency, noiseScale, waterLevel,
-                temperatureGradient, oxygenPercentage, albedo, atmospherePressureAtm, false, 1.0, 384400.0, 420.0);
+                temperatureGradient, oxygenPercentage, albedo, atmospherePressureAtm, false, 1.0, 384400.0, 420.0,
+                2.5, 1.5, null, null, null, null, null, null);
     }
 
     /** Overloaded constructor for 16-param compatibility */
@@ -67,7 +88,8 @@ public record PlanetPreset(
             double waterLevel, double temperatureGradient) {
         this(name, resolution, radiusKm, dayLengthHours, axialTiltDegrees, yearLengthDays, distanceToSunAU, solarLuminosity,
                 minAltitudeMeters, maxAltitudeMeters, averageTempC, seed, noiseFrequency, noiseScale, waterLevel,
-                temperatureGradient, 21.0, 0.30, 1.0, false, 1.0, 384400.0, 420.0);
+                temperatureGradient, 21.0, 0.30, 1.0, false, 1.0, 384400.0, 420.0,
+                2.5, 1.5, null, null, null, null, null, null);
     }
 
     /** Overloaded constructor for 12-param compatibility */
@@ -75,19 +97,21 @@ public record PlanetPreset(
             double yearLengthDays, double averageTempC, long seed, double noiseFrequency, double noiseScale,
             double waterLevel, double temperatureGradient) {
         this(name, resolution, radiusKm, dayLengthHours, axialTiltDegrees, yearLengthDays, 1.0, 1.0, -11000.0, 8848.0,
-                averageTempC, seed, noiseFrequency, noiseScale, waterLevel, temperatureGradient, 21.0, 0.30, 1.0, false, 1.0, 384400.0, 420.0);
+                averageTempC, seed, noiseFrequency, noiseScale, waterLevel, temperatureGradient, 21.0, 0.30, 1.0, false, 1.0, 384400.0, 420.0,
+                2.5, 1.5, null, null, null, null, null, null);
     }
 
     /** Overloaded constructor for 7-param compatibility */
     public PlanetPreset(String name, int resolution, long seed, double noiseFrequency, double noiseScale,
             double waterLevel, double temperatureGradient) {
         this(name, resolution, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, seed, noiseFrequency,
-                noiseScale, waterLevel, temperatureGradient, 21.0, 0.30, 1.0, false, 1.0, 384400.0, 420.0);
+                noiseScale, waterLevel, temperatureGradient, 21.0, 0.30, 1.0, false, 1.0, 384400.0, 420.0,
+                2.5, 1.5, null, null, null, null, null, null);
     }
 
     /** Default Terran / Earth-like settings */
     public static final PlanetPreset EARTH_LIKE = new PlanetPreset(
-            "Terre (Terran)", 6, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.0, 40.0, 21.0, 0.30, 1.0, false, 1.0, 0.0, 420.0);
+            "Terre (Terran)", 6, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.35, 40.0, 21.0, 0.30, 1.0, false, 1.0, 0.0, 420.0);
 
     /** Mars-like settings */
     public static final PlanetPreset MARS_LIKE = new PlanetPreset(

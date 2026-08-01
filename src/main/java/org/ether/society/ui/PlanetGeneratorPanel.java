@@ -55,6 +55,8 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     // Custom Map Images
     private Image customElevImage;
+    /** Reference to preset bar to notify when parameters change */
+    private PresetControlBar<PlanetPreset> presetBar;
     private Image customBiomeImage;
     private Image customResourceImage;
     private Image customClimateImage;     // Temperature Map / Combined RGB Map
@@ -73,6 +75,8 @@ public class PlanetGeneratorPanel extends BorderPane {
     private TextField seedField;
     private Button randSeedBtn;
     private ComboBox<Integer> resolutionCombo;
+    private RadioButton radioProc;
+    private RadioButton radioImport;
 
     // Celestial Body Type & Satellite Orbit Controls
     private ComboBox<String> bodyTypeCombo;
@@ -95,6 +99,10 @@ public class PlanetGeneratorPanel extends BorderPane {
     private Slider noiseFreqSlider;
     private Slider noiseScaleSlider;
     private Slider waterSlider;
+    private Slider seismicActivitySlider;
+    private Slider volcanicActivitySlider;
+    private Label seismicRowLabel;
+    private Label volcanicRowLabel;
 
     // Climate & Ecosystem Controls
     private Slider tempGradSlider;
@@ -137,8 +145,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     private Label astroLabel;
     private Label irradianceLabel;
     private Label altRangeLabel;
-    private Button generateBtn;
-    private ProgressBar progressBar;
+    private Label generateHintLabel;
 
     // Labels for control rows
     private Label presetRowLabel;
@@ -175,6 +182,12 @@ public class PlanetGeneratorPanel extends BorderPane {
     private Canvas previewCanvas;
     private boolean isUpdatingFromPreset = false;
 
+    // Interactive Zoom/Pan State
+    private double zoomFactor = 1.0;
+    private double panX = 0.0;
+    private double panY = 0.0;
+    private double dragStartX, dragStartY;
+
     public PlanetGeneratorPanel(Consumer<List<H3Cell>> onPlanetGeneratedCallback) {
         this.generator = new ProceduralGenerator();
         this.mapLoader = new ImageMapLoader();
@@ -201,21 +214,10 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         // --- 1. Global Presets Control Bar ---
         PresetControlBar<PlanetPreset> topPresetBar = new PresetControlBar<>(I18n.getOrDefault("planet.preset", "Préréglage Global"));
+        this.presetBar = topPresetBar;
+        topPresetBar.setExportCategory("planetgenerator");
         presetCombo = topPresetBar.getPresetCombo();
-        presetCombo.setCellFactory(p -> new ListCell<>() {
-            @Override
-            protected void updateItem(PlanetPreset item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText("");
-                } else {
-                    setText(item.name());
-                }
-            }
-        });
-        presetCombo.setButtonCell(presetCombo.getCellFactory().call(null));
-
-        topPresetBar.setPresets(PlanetPreset.getPresets(), PlanetPreset.EARTH_LIKE);
+        topPresetBar.setPresets(PlanetPreset.getPresets(), null);
         topPresetBar.setListener(new PresetControlBar.PresetActionsListener<PlanetPreset>() {
             @Override
             public void onPresetSelected(PlanetPreset preset) {
@@ -276,10 +278,12 @@ public class PlanetGeneratorPanel extends BorderPane {
         presetsSecHeader = new Label();
         VBox presetSection = createSection(presetsSecHeader, topPresetBar);
 
-        // --- 2. General Parameters (Resolution & Shared Seed) ---
+        // --- 2. General Parameters (seed moved to topo/procedural panel; kept for astro labels) ---
         VBox generalControls = new VBox(8);
-        generalSecHeader = new Label(I18n.getOrDefault("planet.section.general", "PARAMÈTRES GÉNÉRAUX & RÉSOLUTION"));
+        generalSecHeader = new Label(I18n.getOrDefault("planet.section.general", "PARAMÈTRES GÉNÉRAUX"));
+        resRowLabel = new Label();
 
+        // Resolution combo (internal use only — displayed in Tab 3)
         resolutionCombo = new ComboBox<>();
         resolutionCombo.getItems().addAll(5, 6, 7, 8);
         resolutionCombo.setValue(6);
@@ -288,34 +292,13 @@ public class PlanetGeneratorPanel extends BorderPane {
             @Override
             protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText("");
-                } else {
-                    setText(I18n.get("planet.param.resolution.res" + item));
-                }
+                setText(empty || item == null ? "" : I18n.get("planet.param.resolution.res" + item));
             }
         });
         resolutionCombo.setButtonCell(resolutionCombo.getCellFactory().call(null));
         resolutionCombo.setOnAction(e -> updatePreview());
 
-        seedField = new TextField("12345");
-        seedField.textProperty().addListener((obs, old, val) -> updatePreview());
-        randSeedBtn = new Button("🎲");
-        randSeedBtn.getStyleClass().add("button-secondary");
-        randSeedBtn.setOnAction(e -> {
-            seedField.setText(String.valueOf(new Random().nextLong(1000000)));
-            updatePreview();
-        });
-        HBox seedBox = new HBox(5, seedField, randSeedBtn);
-        HBox.setHgrow(seedField, Priority.ALWAYS);
-
-        resRowLabel = new Label();
-        seedRowLabel = new Label();
-
-        generalControls.getChildren().addAll(
-                createControlRow(resRowLabel, resolutionCombo, I18n.getOrDefault("planet.tooltip.resolution", "Résolution de la grille hexagonale H3")),
-                createControlRow(seedRowLabel, seedBox, I18n.getOrDefault("planet.tooltip.seed", "Graine aléatoire partagée pour la génération déterministe"))
-        );
+        // generalControls is empty — seed is now inside the procedural panel
         VBox generalSection = createSection(generalSecHeader, generalControls);
 
         // --- 3. Astronomical & Physical Section (Planets & Natural Satellites / Moons) ---
@@ -394,14 +377,13 @@ public class PlanetGeneratorPanel extends BorderPane {
         astroSecHeader = new Label();
         VBox astroSection = createSection(astroSecHeader, astroControls);
 
-        // --- 4. Topography & Relief Section (Elevation Noise & Heightmap Imports) ---
-        VBox topoControls = new VBox(8);
+        // --- 4. Topography & Relief Section — RadioButton: Procedural OR Import Heightmap ---
+        VBox topoControls = new VBox(10);
 
         minAltSlider = createSlider(-15000, -500, -11000);
         maxAltSlider = createSlider(500, 25000, 8848);
         minAltSlider.valueProperty().addListener((obs, old, val) -> updateAltRangeDisplay());
         maxAltSlider.valueProperty().addListener((obs, old, val) -> updateAltRangeDisplay());
-
         waterSlider = createSlider(-0.5, 1.0, 0.0);
         noiseFreqSlider = createSlider(0.1, 2.0, 1.0);
         noiseScaleSlider = createSlider(0.5, 3.0, 1.0);
@@ -411,30 +393,115 @@ public class PlanetGeneratorPanel extends BorderPane {
         waterRowLabel = new Label();
         freqRowLabel = new Label();
         scaleRowLabel = new Label();
+        seedRowLabel = new Label();
 
         altRangeLabel = new Label();
         altRangeLabel.getStyleClass().add("value-label");
         updateAltRangeDisplay();
 
-        // Custom Heightmap & Preset Body Selector
+        // Seed + random button (now inside procedural panel)
+        seedField = new TextField("12345");
+        seedField.textProperty().addListener((obs, old, val) -> updatePreview());
+        randSeedBtn = new Button("🎲");
+        randSeedBtn.getStyleClass().add("button-secondary");
+        randSeedBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.seed_rand", "Nouvelle graine aléatoire")));
+        randSeedBtn.setOnAction(e -> {
+            seedField.setText(String.valueOf(new Random().nextLong(1000000)));
+            updatePreview();
+        });
+        HBox seedBox = new HBox(5, seedField, randSeedBtn);
+        HBox.setHgrow(seedField, Priority.ALWAYS);
+
+        // Regenerate button (new random seed + immediate preview refresh)
+        Button regenBtn = new Button(I18n.getOrDefault("planet.btn.regenerate", "🔄 Regénérer la carte (nouvelle graine)"));
+        regenBtn.setMaxWidth(Double.MAX_VALUE);
+        regenBtn.getStyleClass().add("button-secondary");
+        regenBtn.setStyle("-fx-text-fill: #38bdf8;");
+        regenBtn.setOnAction(e -> {
+            seedField.setText(String.valueOf(new Random().nextLong(1000000)));
+            updatePreview();
+        });
+
+        // Resolution info label relative to planet radius
+        Label resolutionInfoLabel = new Label();
+        resolutionInfoLabel.getStyleClass().add("value-label");
+        resolutionInfoLabel.setWrapText(true);
+        resolutionInfoLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        // Update resolution info when radius changes
+        radiusSlider.valueProperty().addListener((obs, old, val) -> {
+            double r = val.doubleValue();
+            double circumference = 2 * Math.PI * r;
+            int rec = circumference > 60000 ? 2048 : (circumference > 20000 ? 1024 : 512);
+            resolutionInfoLabel.setText(String.format(
+                I18n.getOrDefault("planet.hint.map_resolution",
+                    "📎 Rayon %.0f km → circonférence %.0f km. Résolution recommandée : %d×%d px min."),
+                r, circumference, rec, rec / 2));
+        });
+        // Trigger once at init
+        double initR = radiusSlider.getValue();
+        double initC = 2 * Math.PI * initR;
+        int initRec = initC > 60000 ? 2048 : (initC > 20000 ? 1024 : 512);
+        resolutionInfoLabel.setText(String.format(
+            I18n.getOrDefault("planet.hint.map_resolution",
+                "📎 Rayon %.0f km → circonférence %.0f km. Résolution recommandée : %d×%d px min."),
+            initR, initC, initRec, initRec / 2));
+
+        // Export procedural heightmap button
+        Button exportProceduralBtn = new Button(I18n.getOrDefault("planet.btn.export_procedural", "📤 Exporter la Heightmap Procédurale (PNG)"));
+        exportProceduralBtn.setMaxWidth(Double.MAX_VALUE);
+        exportProceduralBtn.getStyleClass().add("button-secondary");
+        exportProceduralBtn.setOnAction(e -> exportProceduralHeightmap());
+
+        // --- RadioButton toggle: Procedural vs Import ---
+        ToggleGroup elevSourceGroup = new ToggleGroup();
+        radioProc = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "▶ Génération Procédurale (Bruit de Perlin)"));
+        radioImport = new RadioButton(I18n.getOrDefault("planet.radio.import", "📂 Import Heightmap Externe (PNG/GeoTIFF)"));
+        radioProc.setToggleGroup(elevSourceGroup);
+        radioImport.setToggleGroup(elevSourceGroup);
+        radioProc.setSelected(true);
+        radioProc.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
+        radioImport.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold;");
+
+        seismicActivitySlider = createSlider(0.0, 10.0, 2.5);
+        volcanicActivitySlider = createSlider(0.0, 8.0, 1.5);
+        seismicRowLabel = new Label(I18n.getOrDefault("planet.param.seismic", "Activité Sismique & Tectonique (Échelle de Richter) :"));
+        volcanicRowLabel = new Label(I18n.getOrDefault("planet.param.volcanic", "Activité Volcanique Globale (Indice VEI) :"));
+
+        // Procedural panel
+        VBox proceduralPanel = new VBox(8,
+                createControlRow(seedRowLabel, seedBox, I18n.getOrDefault("planet.tooltip.seed", "Graine aléatoire pour la génération déterministe")),
+                createControlRow(minAltRowLabel, minAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.min_alt", "Altitude minimale absolue (fond océanique)")),
+                createControlRow(maxAltRowLabel, maxAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.max_alt", "Altitude maximale absolue (sommet montagneux)")),
+                altRangeLabel,
+                createControlRow(waterRowLabel, waterSlider, "%.2f", I18n.getOrDefault("planet.tooltip.water_level", "Seuil d’eau — détermine la proportion de surface immergée")),
+                createControlRow(freqRowLabel, noiseFreqSlider, "%.2f", I18n.getOrDefault("planet.tooltip.noise_freq", "Fréquence spatiale du bruit altimétrique")),
+                createControlRow(scaleRowLabel, noiseScaleSlider, "%.2f", I18n.getOrDefault("planet.tooltip.noise_scale", "Échelle d’amplitude des reliefs (montagnes / plaines)")),
+                createControlRow(seismicRowLabel, seismicActivitySlider, "%.1f Mag", I18n.getOrDefault("planet.tooltip.seismic", "Niveau de sismicité planétaire générant des séismes")),
+                createControlRow(volcanicRowLabel, volcanicActivitySlider, "%.1f VEI", I18n.getOrDefault("planet.tooltip.volcanic", "Niveau d'activité volcanique générant des éruptions")),
+                regenBtn,
+                exportProceduralBtn,
+                resolutionInfoLabel
+        );
+        proceduralPanel.setStyle("-fx-padding: 8 0 0 12; -fx-border-color: rgba(56,189,248,0.25); -fx-border-radius: 6; -fx-border-width: 0 0 0 3;");
+
+        // Import panel
         mapSourceRowLabel = new Label();
         mapSourceCombo = new ComboBox<>();
-        mapSourceCombo.getItems().addAll("none", "earth", "mars", "venus", "moon");
-        mapSourceCombo.setValue("none");
+        mapSourceCombo.getItems().addAll("earth", "mars", "venus", "moon");
+        mapSourceCombo.setValue("earth");
         mapSourceCombo.setCellFactory(p -> new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText("");
-                } else {
-                    setText(I18n.get("planet.map." + item));
-                }
+                setText(empty || item == null ? "" : I18n.get("planet.map." + item));
             }
         });
         mapSourceCombo.setButtonCell(mapSourceCombo.getCellFactory().call(null));
         mapSourceCombo.setMaxWidth(Double.MAX_VALUE);
-        mapSourceCombo.setOnAction(e -> applyMapSourcePreset(mapSourceCombo.getValue()));
+        mapSourceCombo.setOnAction(e -> {
+            applyMapSourcePreset(mapSourceCombo.getValue());
+            updatePreview();
+        });
 
         elevMapRowLabel = new Label();
         elevFileLabel = new Label(I18n.get("planet.map.none"));
@@ -451,36 +518,6 @@ public class PlanetGeneratorPanel extends BorderPane {
         });
         HBox elevBox = new HBox(5, loadElevBtn, clearElevBtn);
 
-        biomeMapRowLabel = new Label();
-        biomeFileLabel = new Label(I18n.get("planet.map.none"));
-        biomeFileLabel.getStyleClass().add("value-label");
-        loadBiomeBtn = new Button(I18n.get("planet.map.btn_load"));
-        loadBiomeBtn.getStyleClass().add("button-secondary");
-        loadBiomeBtn.setOnAction(e -> chooseBiomeMapFile());
-        clearBiomeBtn = new Button("❌");
-        clearBiomeBtn.getStyleClass().add("button-secondary");
-        clearBiomeBtn.setOnAction(e -> {
-            customBiomeImage = null;
-            biomeFileLabel.setText(I18n.get("planet.map.none"));
-            updatePreview();
-        });
-        HBox biomeBox = new HBox(5, loadBiomeBtn, clearBiomeBtn);
-
-        resourceMapRowLabel = new Label();
-        resourceFileLabel = new Label(I18n.get("planet.map.none"));
-        resourceFileLabel.getStyleClass().add("value-label");
-        loadResourceBtn = new Button(I18n.get("planet.map.btn_load"));
-        loadResourceBtn.getStyleClass().add("button-secondary");
-        loadResourceBtn.setOnAction(e -> chooseResourceMapFile());
-        clearResourceBtn = new Button("❌");
-        clearResourceBtn.getStyleClass().add("button-secondary");
-        clearResourceBtn.setOnAction(e -> {
-            customResourceImage = null;
-            resourceFileLabel.setText(I18n.get("planet.map.none"));
-            updatePreview();
-        });
-        HBox resourceBox = new HBox(5, loadResourceBtn, clearResourceBtn);
-
         fetchOnlineBtn = new Button(I18n.get("planet.map.btn_fetch_online"));
         fetchOnlineBtn.setMaxWidth(Double.MAX_VALUE);
         fetchOnlineBtn.getStyleClass().add("button-secondary");
@@ -495,20 +532,65 @@ public class PlanetGeneratorPanel extends BorderPane {
         mapStatusLabel.getStyleClass().add("value-label");
         mapStatusLabel.setWrapText(true);
 
-        topoControls.getChildren().addAll(
-                createControlRow(minAltRowLabel, minAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.min_alt", "Altitude minimale absolue")),
-                createControlRow(maxAltRowLabel, maxAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.max_alt", "Altitude maximale absolue")),
-                altRangeLabel,
-                createControlRow(waterRowLabel, waterSlider, "%.2f", I18n.getOrDefault("planet.tooltip.water_level", "Seuil d'eau des océans")),
-                createControlRow(freqRowLabel, noiseFreqSlider, "%.2f", I18n.getOrDefault("planet.tooltip.noise_freq", "Fréquence du bruit altimétrique")),
-                createControlRow(scaleRowLabel, noiseScaleSlider, "%.2f", I18n.getOrDefault("planet.tooltip.noise_scale", "Échelle d'amplitude des reliefs")),
-                createControlRow(mapSourceRowLabel, mapSourceCombo, I18n.getOrDefault("planet.tooltip.map_source", "Choix du modèle de corps céleste (USGS / NASA WMS)")),
-                createControlRow(elevMapRowLabel, new VBox(3, elevBox, elevFileLabel), I18n.getOrDefault("planet.tooltip.elev_map", "Import d'une carte d'élévation heightmap")),
-                createControlRow(biomeMapRowLabel, new VBox(3, biomeBox, biomeFileLabel), "Import d'une carte de biomes"),
-                createControlRow(resourceMapRowLabel, new VBox(3, resourceBox, resourceFileLabel), "Import d'une carte géologique"),
+        biomeMapRowLabel = new Label();
+        biomeFileLabel = new Label(I18n.get("planet.map.none"));
+        biomeFileLabel.getStyleClass().add("value-label");
+        loadBiomeBtn = new Button(I18n.get("planet.map.btn_load"));
+        loadBiomeBtn.getStyleClass().add("button-secondary");
+        loadBiomeBtn.setOnAction(e -> chooseBiomeMapFile());
+        clearBiomeBtn = new Button("❌");
+        clearBiomeBtn.getStyleClass().add("button-secondary");
+        clearBiomeBtn.setOnAction(e -> { customBiomeImage = null; biomeFileLabel.setText(I18n.get("planet.map.none")); updatePreview(); });
+        HBox biomeBox = new HBox(5, loadBiomeBtn, clearBiomeBtn);
+
+        resourceMapRowLabel = new Label();
+        resourceFileLabel = new Label(I18n.get("planet.map.none"));
+        resourceFileLabel.getStyleClass().add("value-label");
+        loadResourceBtn = new Button(I18n.get("planet.map.btn_load"));
+        loadResourceBtn.getStyleClass().add("button-secondary");
+        loadResourceBtn.setOnAction(e -> chooseResourceMapFile());
+        clearResourceBtn = new Button("❌");
+        clearResourceBtn.getStyleClass().add("button-secondary");
+        clearResourceBtn.setOnAction(e -> { customResourceImage = null; resourceFileLabel.setText(I18n.get("planet.map.none")); updatePreview(); });
+        HBox resourceBox = new HBox(5, loadResourceBtn, clearResourceBtn);
+
+        VBox importPanel = new VBox(8,
+                createControlRow(mapSourceRowLabel, mapSourceCombo,
+                    I18n.getOrDefault("planet.tooltip.map_source", "Preset corps céleste (Terre, Mars, Vénus, Lune) — télécharge la carte WMS correspondante")),
+                createControlRow(elevMapRowLabel, new VBox(3, elevBox, elevFileLabel),
+                    I18n.getOrDefault("planet.tooltip.elev_map", "Import d'une heightmap PNG en niveaux de gris (noir=min alt, blanc=max alt)")),
                 fetchOnlineBtn,
                 exportMapsBtn,
-                mapStatusLabel
+                mapStatusLabel,
+                resolutionInfoLabel,
+                createControlRow(biomeMapRowLabel, new VBox(3, biomeBox, biomeFileLabel),
+                    I18n.getOrDefault("planet.tooltip.biome_map", "Import d'une carte de biomes colorée optionnelle")),
+                createControlRow(resourceMapRowLabel, new VBox(3, resourceBox, resourceFileLabel),
+                    I18n.getOrDefault("planet.tooltip.resource_map", "Import d'une carte géologique multi-canaux optionnelle"))
+        );
+        importPanel.setStyle("-fx-padding: 8 0 0 12; -fx-border-color: rgba(167,139,250,0.25); -fx-border-radius: 6; -fx-border-width: 0 0 0 3;");
+        importPanel.setVisible(false);
+        importPanel.setManaged(false);
+
+        // Wire RadioButton visibility toggle
+        elevSourceGroup.selectedToggleProperty().addListener((obs, old, sel) -> {
+            boolean isProc = sel == radioProc;
+            proceduralPanel.setVisible(isProc);
+            proceduralPanel.setManaged(isProc);
+            importPanel.setVisible(!isProc);
+            importPanel.setManaged(!isProc);
+            if (!isProc && customElevImage == null) {
+                // Auto-load the selected preset when switching to import mode
+                applyMapSourcePreset(mapSourceCombo.getValue());
+            }
+            updatePreview();
+        });
+
+        topoControls.getChildren().addAll(
+                radioProc,
+                proceduralPanel,
+                radioImport,
+                importPanel
         );
 
         topoSecHeader = new Label();
@@ -597,7 +679,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                 climateHelpBtn
         );
 
-        climateSecHeader = new Label();
+        climateSecHeader = new Label(I18n.getOrDefault("planet.section.atmosphere", "ATMOSPHÈRE & CLIMAT PLANÉTAIRE"));
         VBox climateSection = createSection(climateSecHeader, climateControls);
 
         controlsBox.getChildren().addAll(
@@ -605,8 +687,8 @@ public class PlanetGeneratorPanel extends BorderPane {
                 presetSection,
                 generalSection,
                 astroSection,
-                topoSection,
-                climateSection
+                climateSection,
+                topoSection
         );
 
         ScrollPane scrollControls = new ScrollPane(controlsBox);
@@ -625,22 +707,50 @@ public class PlanetGeneratorPanel extends BorderPane {
         previewCanvas.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 10, 0, 0, 0);");
         Tooltip.install(previewCanvas, new Tooltip(I18n.getOrDefault("planet.tooltip.preview", "Aperçu 2D équirectangulaire dynamique")));
 
+        // Interactive Zoom & Pan Handlers
+        previewCanvas.setOnScroll(e -> {
+            double delta = e.getDeltaY();
+            double factor = delta > 0 ? 1.15 : 0.85;
+            zoomFactor = Math.max(0.5, Math.min(20.0, zoomFactor * factor));
+            updatePreview();
+        });
+        previewCanvas.setOnMousePressed(e -> {
+            dragStartX = e.getX();
+            dragStartY = e.getY();
+        });
+        previewCanvas.setOnMouseDragged(e -> {
+            double dx = e.getX() - dragStartX;
+            double dy = e.getY() - dragStartY;
+            panX += dx;
+            panY += dy;
+            dragStartX = e.getX();
+            dragStartY = e.getY();
+            updatePreview();
+        });
+        previewCanvas.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                zoomFactor = 1.0;
+                panX = 0.0;
+                panY = 0.0;
+                updatePreview();
+            }
+        });
+
         statsLabel = new Label();
         statsLabel.getStyleClass().add("label-stats");
 
         astroLabel = new Label();
         astroLabel.getStyleClass().add("control-label");
 
-        progressBar = new ProgressBar(0);
-        progressBar.setMaxWidth(Double.MAX_VALUE);
-        progressBar.setVisible(false);
+        Label saveHintLabel = new Label(I18n.getOrDefault(
+                "planet.hint.save_preset",
+                "💾  Utilisez le bouton « Enregistrer » (barre de préréglage) pour nommer et sauvegarder la configuration actuelle dans la liste des préréglages disponibles."));
+        saveHintLabel.setWrapText(true);
+        saveHintLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-font-style: italic; -fx-padding: 8 12; " +
+                "-fx-background-color: rgba(56,189,248,0.07); -fx-background-radius: 6; " +
+                "-fx-border-color: rgba(56,189,248,0.2); -fx-border-radius: 6;");
 
-        generateBtn = new Button();
-        generateBtn.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-color: #0284c7; -fx-text-fill: white; -fx-background-radius: 6;");
-        generateBtn.setOnAction(e -> generatePlanet());
-        generateBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.generate", "Générer la planète et la charger dans la simulation")));
-
-        centerBox.getChildren().addAll(previewTitle, previewCanvas, statsLabel, astroLabel, progressBar, generateBtn);
+        centerBox.getChildren().addAll(previewTitle, previewCanvas, statsLabel, astroLabel, saveHintLabel);
 
         setLeft(scrollControls);
         setCenter(centerBox);
@@ -670,10 +780,14 @@ public class PlanetGeneratorPanel extends BorderPane {
         slider.setShowTickLabels(false);
         slider.valueProperty().addListener((obs, old, val) -> {
             if (!slider.isValueChanging()) {
+                if (presetBar != null) presetBar.notifyParametersChanged();
                 updatePreview();
             }
         });
-        slider.setOnMouseReleased(e -> updatePreview());
+        slider.setOnMouseReleased(e -> {
+            if (presetBar != null) presetBar.notifyParametersChanged();
+            updatePreview();
+        });
         return slider;
     }
 
@@ -724,6 +838,65 @@ public class PlanetGeneratorPanel extends BorderPane {
                 logger.error("Failed to load elevation map image", ex);
             }
         }
+    }
+
+    /**
+     * Exports the current procedural heightmap to a PNG file.
+     * Resolution is automatically recommended based on planet radius.
+     */
+    private void exportProceduralHeightmap() {
+        PlanetPreset preset = buildPresetFromUI();
+        double circumference = 2 * Math.PI * preset.radiusKm();
+        int recW = circumference > 60000 ? 2048 : (circumference > 20000 ? 1024 : 512);
+        int recH = recW / 2;
+
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(I18n.getOrDefault("planet.dialog.export_heightmap", "Exporter la Heightmap Procédurale (PNG)"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Image", "*.png"));
+        chooser.setInitialFileName(String.format("ether-heightmap-%s-%dx%d.png",
+                preset.name().toLowerCase().replaceAll("[^a-z0-9]", "-"), recW, recH));
+        File file = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
+        if (file == null) return;
+
+        new Thread(() -> {
+            try {
+                WritableImage img = new WritableImage(recW, recH);
+                PixelWriter pw = img.getPixelWriter();
+                for (int y = 0; y < recH; y++) {
+                    for (int x = 0; x < recW; x++) {
+                        double lon = ((double) x / recW) * 360.0 - 180.0;
+                        double lat = 90.0 - ((double) y / recH) * 180.0;
+                        ProceduralGenerator.PlanetPoint pt = generator.getPlanetPoint(lat, lon, preset);
+                        double norm = Math.max(0, Math.min(1,
+                                (pt.elevation() - preset.minAltitudeMeters()) /
+                                (preset.maxAltitudeMeters() - preset.minAltitudeMeters())));
+                        int v = (int) (norm * 255);
+                        pw.setColor(x, y, Color.rgb(v, v, v));
+                    }
+                }
+                // Write PNG via ImageIO
+                int w = recW, h = recH;
+                java.awt.image.BufferedImage bImg = new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_BYTE_GRAY);
+                PixelReader pr = img.getPixelReader();
+                for (int y = 0; y < h; y++) {
+                    for (int x = 0; x < w; x++) {
+                        bImg.setRGB(x, y, pr.getArgb(x, y));
+                    }
+                }
+                javax.imageio.ImageIO.write(bImg, "png", file);
+                javafx.application.Platform.runLater(() -> {
+                    if (mapStatusLabel != null)
+                        mapStatusLabel.setText("✅ Heightmap exportée : " + file.getName() + " (" + recW + "×" + recH + " px)");
+                });
+                logger.info("Exported procedural heightmap to {} ({}x{})", file.getAbsolutePath(), recW, recH);
+            } catch (Exception ex) {
+                logger.error("Failed to export procedural heightmap", ex);
+                javafx.application.Platform.runLater(() -> {
+                    if (mapStatusLabel != null)
+                        mapStatusLabel.setText("❌ Erreur export heightmap : " + ex.getMessage());
+                });
+            }
+        }).start();
     }
 
     private void chooseBiomeMapFile() {
@@ -826,39 +999,49 @@ public class PlanetGeneratorPanel extends BorderPane {
         dialog.showAndWait();
     }
 
-    private void applyMapSourcePreset(String sourceKey) {
-        if ("none".equals(sourceKey)) {
-            customElevImage = null;
-            customBiomeImage = null;
-            customResourceImage = null;
-            customClimateImage = null;
-            customRainfallImage = null;
-            customSeasonalityImage = null;
-            elevFileLabel.setText(I18n.get("planet.map.none"));
-            biomeFileLabel.setText(I18n.get("planet.map.none"));
+    private void loadEarthPresetMaps() {
+        try (var elevStream = getClass().getResourceAsStream("/maps/earth_elevation.png");
+             var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png")) {
+            if (elevStream != null) customElevImage = new Image(elevStream);
+            if (biomeStream != null) customBiomeImage = new Image(biomeStream);
+            elevFileLabel.setText("📷 Earth Elevation Map");
+            biomeFileLabel.setText("🌿 Earth Biome Map");
             resourceFileLabel.setText(I18n.get("planet.map.none"));
             climateFileLabel.setText(I18n.get("planet.map.none"));
             rainfallFileLabel.setText(I18n.get("planet.map.none"));
             seasonalityFileLabel.setText(I18n.get("planet.map.none"));
+        } catch (Exception e) {
+            logger.warn("Could not load internal Earth maps", e);
+        }
+    }
+
+    private void clearCustomMaps() {
+        customElevImage = null;
+        customBiomeImage = null;
+        customResourceImage = null;
+        customClimateImage = null;
+        customRainfallImage = null;
+        customSeasonalityImage = null;
+        elevFileLabel.setText(I18n.get("planet.map.none"));
+        biomeFileLabel.setText(I18n.get("planet.map.none"));
+        resourceFileLabel.setText(I18n.get("planet.map.none"));
+        climateFileLabel.setText(I18n.get("planet.map.none"));
+        rainfallFileLabel.setText(I18n.get("planet.map.none"));
+        seasonalityFileLabel.setText(I18n.get("planet.map.none"));
+    }
+
+    private void applyMapSourcePreset(String sourceKey) {
+        if ("none".equals(sourceKey)) {
+            clearCustomMaps();
             updatePreview();
             return;
         }
 
         if ("earth".equals(sourceKey)) {
-            try (var elevStream = getClass().getResourceAsStream("/maps/earth_elevation.png");
-                 var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png")) {
-                if (elevStream != null) customElevImage = new Image(elevStream);
-                if (biomeStream != null) customBiomeImage = new Image(biomeStream);
-                elevFileLabel.setText("📷 Earth Elevation Map");
-                biomeFileLabel.setText("🌿 Earth Biome Map");
-                resourceFileLabel.setText(I18n.get("planet.map.none"));
-                climateFileLabel.setText(I18n.get("planet.map.none"));
-                rainfallFileLabel.setText(I18n.get("planet.map.none"));
-                seasonalityFileLabel.setText(I18n.get("planet.map.none"));
-            } catch (Exception e) {
-                logger.warn("Could not load internal Earth maps", e);
+            loadEarthPresetMaps();
+            if (!isUpdatingFromPreset) {
+                applyPreset(PlanetPreset.EARTH_LIKE);
             }
-            applyPreset(PlanetPreset.EARTH_LIKE);
             return;
         }
 
@@ -1043,7 +1226,8 @@ public class PlanetGeneratorPanel extends BorderPane {
             double alb = albedoSlider != null ? albedoSlider.getValue() : 0.30;
             double atmoP = atmoPressureSlider != null ? atmoPressureSlider.getValue() : 1.0;
             double co2 = co2Slider != null ? co2Slider.getValue() : 420.0;
-            double greenhouseBoost = 15.0 * Math.sqrt(Math.max(0.1, atmoP)) + (co2 / 1000.0);
+            // Real Earth baseline: T_blackbody ~ -18.4°C (254.7 K). Natural greenhouse effect adds ~ +33.4°C -> T_surface = +15.0°C
+            double greenhouseBoost = 33.0 * Math.sqrt(Math.max(0.0, atmoP)) + ((co2 - 420.0) / 1000.0) + 0.4;
             double calcTempC = 278.5 * Math.pow((l * (1.0 - alb)) / (d * d), 0.25) - 273.15 + greenhouseBoost;
             calcTempC = Math.max(-200.0, Math.min(500.0, calcTempC));
             avgTempSlider.setValue(calcTempC);
@@ -1085,8 +1269,55 @@ public class PlanetGeneratorPanel extends BorderPane {
         albedoSlider.setValue(p.albedo());
         atmoPressureSlider.setValue(p.atmospherePressureAtm());
 
+        if (seismicActivitySlider != null) seismicActivitySlider.setValue(p.seismicActivityLevel());
+        if (volcanicActivitySlider != null) volcanicActivitySlider.setValue(p.volcanicActivityLevel());
+
         calculateStellarIrradiance();
         updateAltRangeDisplay();
+
+        // Restore custom map images if saved in JSON preset Base64 strings
+        if (p.customElevBase64() != null) {
+            customElevImage = org.ether.society.data.ImageMapLoader.base64PngToImage(p.customElevBase64());
+            if (elevFileLabel != null) elevFileLabel.setText("📷 Preset Heightmap");
+        }
+        if (p.customBiomeBase64() != null) {
+            customBiomeImage = org.ether.society.data.ImageMapLoader.base64PngToImage(p.customBiomeBase64());
+            if (biomeFileLabel != null) biomeFileLabel.setText("🌿 Preset Biomes");
+        }
+        if (p.customResourceBase64() != null) {
+            customResourceImage = org.ether.society.data.ImageMapLoader.base64PngToImage(p.customResourceBase64());
+            if (resourceFileLabel != null) resourceFileLabel.setText("🪨 Preset Resources");
+        }
+        if (p.customClimateBase64() != null) {
+            customClimateImage = org.ether.society.data.ImageMapLoader.base64PngToImage(p.customClimateBase64());
+            if (climateFileLabel != null) climateFileLabel.setText("🌡️ Preset Climate");
+        }
+        if (p.customRainfallBase64() != null) {
+            customRainfallImage = org.ether.society.data.ImageMapLoader.base64PngToImage(p.customRainfallBase64());
+            if (rainfallFileLabel != null) rainfallFileLabel.setText("🌧️ Preset Rainfall");
+        }
+        if (p.customSeasonalityBase64() != null) {
+            customSeasonalityImage = org.ether.society.data.ImageMapLoader.base64PngToImage(p.customSeasonalityBase64());
+            if (seasonalityFileLabel != null) seasonalityFileLabel.setText("☀️ Preset Seasonality");
+        }
+
+        String lowerName = p.name() != null ? p.name().toLowerCase() : "";
+        if (p == PlanetPreset.EARTH_LIKE || lowerName.contains("terre") || lowerName.contains("terran") || lowerName.contains("earth")) {
+            mapSourceCombo.setValue("earth");
+            if (p.customElevBase64() == null) loadEarthPresetMaps();
+        } else if (lowerName.contains("mars") || lowerName.contains("ares")) {
+            mapSourceCombo.setValue("mars");
+            if (p.customElevBase64() == null) clearCustomMaps();
+        } else if (lowerName.contains("vénus") || lowerName.contains("venus") || lowerName.contains("hesperos")) {
+            mapSourceCombo.setValue("venus");
+            if (p.customElevBase64() == null) clearCustomMaps();
+        } else if (lowerName.contains("lune") || lowerName.contains("moon") || lowerName.contains("selene")) {
+            mapSourceCombo.setValue("moon");
+            if (p.customElevBase64() == null) clearCustomMaps();
+        } else {
+            mapSourceCombo.setValue("none");
+            if (p.customElevBase64() == null) clearCustomMaps();
+        }
 
         isUpdatingFromPreset = false;
         updatePreview();
@@ -1100,6 +1331,13 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         String presetName = presetCombo.getValue() != null ? presetCombo.getValue().name() : "Custom Planet";
         boolean isSat = "satellite".equals(bodyTypeCombo.getValue());
+
+        String customElevB64 = customElevImage != null ? org.ether.society.data.ImageMapLoader.imageToBase64Png(customElevImage) : null;
+        String customBiomeB64 = customBiomeImage != null ? org.ether.society.data.ImageMapLoader.imageToBase64Png(customBiomeImage) : null;
+        String customResourceB64 = customResourceImage != null ? org.ether.society.data.ImageMapLoader.imageToBase64Png(customResourceImage) : null;
+        String customClimateB64 = customClimateImage != null ? org.ether.society.data.ImageMapLoader.imageToBase64Png(customClimateImage) : null;
+        String customRainfallB64 = customRainfallImage != null ? org.ether.society.data.ImageMapLoader.imageToBase64Png(customRainfallImage) : null;
+        String customSeasonalityB64 = customSeasonalityImage != null ? org.ether.society.data.ImageMapLoader.imageToBase64Png(customSeasonalityImage) : null;
 
         return new PlanetPreset(
                 presetName,
@@ -1124,7 +1362,15 @@ public class PlanetGeneratorPanel extends BorderPane {
                 isSat,
                 parentMassSlider.getValue(),
                 orbitDistanceParentSlider.getValue(),
-                co2Slider.getValue()
+                co2Slider.getValue(),
+                seismicActivitySlider != null ? seismicActivitySlider.getValue() : 2.5,
+                volcanicActivitySlider != null ? volcanicActivitySlider.getValue() : 1.5,
+                customElevB64,
+                customBiomeB64,
+                customResourceB64,
+                customClimateB64,
+                customRainfallB64,
+                customSeasonalityB64
         );
     }
 
@@ -1138,11 +1384,12 @@ public class PlanetGeneratorPanel extends BorderPane {
         int w = (int) previewCanvas.getWidth();
         int h = (int) previewCanvas.getHeight();
 
-        PixelReader elevReader = customElevImage != null ? customElevImage.getPixelReader() : null;
-        PixelReader biomeReader = customBiomeImage != null ? customBiomeImage.getPixelReader() : null;
-        PixelReader climateReader = customClimateImage != null ? customClimateImage.getPixelReader() : null;
-        PixelReader rainfallReader = customRainfallImage != null ? customRainfallImage.getPixelReader() : null;
-        PixelReader seasonalityReader = customSeasonalityImage != null ? customSeasonalityImage.getPixelReader() : null;
+        boolean isImportMode = radioImport != null && radioImport.isSelected();
+        PixelReader elevReader = (isImportMode && customElevImage != null) ? customElevImage.getPixelReader() : null;
+        PixelReader biomeReader = (isImportMode && customBiomeImage != null) ? customBiomeImage.getPixelReader() : null;
+        PixelReader climateReader = (isImportMode && customClimateImage != null) ? customClimateImage.getPixelReader() : null;
+        PixelReader rainfallReader = (isImportMode && customRainfallImage != null) ? customRainfallImage.getPixelReader() : null;
+        PixelReader seasonalityReader = (isImportMode && customSeasonalityImage != null) ? customSeasonalityImage.getPixelReader() : null;
 
         double wElev = customElevImage != null ? customElevImage.getWidth() : 0;
         double hElev = customElevImage != null ? customElevImage.getHeight() : 0;
@@ -1157,45 +1404,53 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         int oceanCount = 0;
 
-        for (int y = 0; y < h; y++) {
-            double lat = 90.0 - (y / (double) h) * 180.0;
-            for (int x = 0; x < w; x++) {
-                double lng = (x / (double) w) * 360.0 - 180.0;
+        for (int py = 0; py < h; py++) {
+            double y_base = (py - h / 2.0 - panY) / zoomFactor + h / 2.0;
+            if (y_base < 0 || y_base >= h) {
+                for (int px = 0; px < w; px++) pw.setColor(px, py, Color.rgb(15, 23, 42));
+                continue;
+            }
+            double lat = 90.0 - (y_base / (double) h) * 180.0;
+
+            for (int px = 0; px < w; px++) {
+                double x_base = (px - w / 2.0 - panX) / zoomFactor + w / 2.0;
+                if (x_base < 0 || x_base >= w) {
+                    pw.setColor(px, py, Color.rgb(15, 23, 42));
+                    continue;
+                }
+                double lng = (x_base / (double) w) * 360.0 - 180.0;
 
                 PlanetPoint p = generator.getPlanetPoint(lat, lng, preset);
                 Biome cellBiome = p.biome();
 
-                // Override with custom climate/biome if available
-                if (biomeReader != null) {
-                    double u = (lng + 180.0) / 360.0;
-                    double v = (90.0 - lat) / 180.0;
-                    int bx = (int) Math.min(u * wBiome, wBiome - 1);
-                    int by = (int) Math.min(v * hBiome, hBiome - 1);
-                    cellBiome = mapLoader.matchBiomeColor(biomeReader.getColor(bx, by));
-                } else if (climateReader != null) {
-                    double u = (lng + 180.0) / 360.0;
-                    double v = (90.0 - lat) / 180.0;
-                    int cx = (int) Math.min(u * wClimate, wClimate - 1);
-                    int cy = (int) Math.min(v * hClimate, hClimate - 1);
-                    Color c = climateReader.getColor(cx, cy);
-                    double customTemp = -50.0 + c.getRed() * 100.0;
-                    cellBiome = (p.elevation() < preset.waterLevel()) ? Biome.OCEAN : (customTemp < 0 ? Biome.SNOW : (customTemp > 30 ? Biome.DESERT : Biome.PLAINS));
-                } else if (elevReader != null) {
+                // If an elevation heightmap is loaded, use it directly to determine elevation coloring
+                if (elevReader != null) {
                     double u = (lng + 180.0) / 360.0;
                     double v = (90.0 - lat) / 180.0;
                     int ex = (int) Math.min(u * wElev, wElev - 1);
                     int ey = (int) Math.min(v * hElev, hElev - 1);
                     double brightness = elevReader.getColor(ex, ey).getBrightness();
                     double altMeters = preset.minAltitudeMeters() + brightness * (preset.maxAltitudeMeters() - preset.minAltitudeMeters());
-                    double normAlt = (altMeters - preset.minAltitudeMeters()) / (preset.maxAltitudeMeters() - preset.minAltitudeMeters()) * 2.0 - 1.0;
-                    cellBiome = (altMeters < 0) ? Biome.OCEAN : (normAlt > 0.6 ? Biome.MOUNTAINS : Biome.PLAINS);
+                    if (altMeters < 0) {
+                        cellBiome = Biome.OCEAN;
+                    } else if (brightness > 0.85) {
+                        cellBiome = Biome.SNOW;
+                    } else if (brightness > 0.65) {
+                        cellBiome = Biome.MOUNTAINS;
+                    } else if (brightness > 0.45) {
+                        cellBiome = Biome.HILLS;
+                    } else if (brightness > 0.3) {
+                        cellBiome = Biome.PLAINS;
+                    } else {
+                        cellBiome = Biome.BEACH;
+                    }
                 }
 
                 if (cellBiome == Biome.OCEAN || cellBiome == Biome.DEEP_OCEAN) {
                     oceanCount++;
                 }
 
-                pw.setColor(x, y, getBiomeColor(cellBiome));
+                pw.setColor(px, py, getBiomeColor(cellBiome));
             }
         }
 
@@ -1242,7 +1497,6 @@ public class PlanetGeneratorPanel extends BorderPane {
         topoSecHeader.setText(I18n.get("planet.section.topo"));
         climateSecHeader.setText(I18n.get("planet.section.climate"));
         previewTitle.setText(I18n.get("planet.preview.title"));
-        generateBtn.setText(I18n.get("planet.btn.generate"));
 
         if (presetRowLabel != null) presetRowLabel.setText(I18n.get("planet.preset"));
         if (bodyTypeRowLabel != null) bodyTypeRowLabel.setText(I18n.getOrDefault("planet.param.body_type", "Type de corps céleste :"));
@@ -1307,31 +1561,4 @@ public class PlanetGeneratorPanel extends BorderPane {
         if (randSeedBtn != null) randSeedBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.seed_rand", "Générer une nouvelle graine aléatoire")));
     }
 
-    private void generatePlanet() {
-        progressBar.setVisible(true);
-        progressBar.setProgress(-1);
-
-        new Thread(() -> {
-            try {
-                PlanetPreset preset = buildPresetFromUI();
-                logger.info("Generating full planetary grid for preset: {}", preset.name());
-                List<H3Cell> cells = generator.generatePlanet(preset);
-
-                // Apply custom imported maps if provided
-                if (customElevImage != null || customBiomeImage != null || customResourceImage != null || customClimateImage != null || customRainfallImage != null || customSeasonalityImage != null) {
-                    mapLoader.mapImagesToCells(cells, customElevImage, customBiomeImage, customResourceImage, customClimateImage, customRainfallImage, customSeasonalityImage, preset.minAltitudeMeters(), preset.maxAltitudeMeters());
-                }
-
-                javafx.application.Platform.runLater(() -> {
-                    progressBar.setVisible(false);
-                    if (onPlanetGeneratedCallback != null) {
-                        onPlanetGeneratedCallback.accept(cells);
-                    }
-                });
-            } catch (Exception e) {
-                logger.error("Error generating planet", e);
-                javafx.application.Platform.runLater(() -> progressBar.setVisible(false));
-            }
-        }).start();
-    }
 }

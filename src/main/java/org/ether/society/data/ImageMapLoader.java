@@ -268,4 +268,45 @@ public class ImageMapLoader {
             logger.error("Failed to export map image and world file", e);
         }
     }
+
+    /**
+     * Convert a JavaFX Image to a compressed Base64 PNG string for JSON preset persistence.
+     */
+    public static String imageToBase64Png(Image image) {
+        if (image == null) return null;
+        try {
+            int width = (int) image.getWidth();
+            int height = (int) image.getHeight();
+            if (width <= 0 || height <= 0) return null;
+            java.awt.image.BufferedImage bImage = new java.awt.image.BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+            PixelReader reader = image.getPixelReader();
+            if (reader != null) {
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        bImage.setRGB(x, y, reader.getArgb(x, y));
+                    }
+                }
+            }
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            ImageIO.write(bImage, "png", baos);
+            return java.util.Base64.getEncoder().encodeToString(baos.toByteArray());
+        } catch (Exception e) {
+            logger.error("Failed to convert image to Base64 PNG", e);
+            return null;
+        }
+    }
+
+    /**
+     * Convert a Base64 PNG string back into a JavaFX Image.
+     */
+    public static Image base64PngToImage(String base64) {
+        if (base64 == null || base64.isBlank()) return null;
+        try {
+            byte[] bytes = java.util.Base64.getDecoder().decode(base64.trim());
+            return new Image(new java.io.ByteArrayInputStream(bytes));
+        } catch (Exception e) {
+            logger.error("Failed to convert Base64 PNG to image", e);
+            return null;
+        }
+    }
 }

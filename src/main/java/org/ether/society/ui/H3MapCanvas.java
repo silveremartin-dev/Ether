@@ -161,6 +161,18 @@ public class H3MapCanvas extends Canvas {
             setCursor(javafx.scene.Cursor.DEFAULT);
         });
 
+        // Double-click to reset view to full centered perspective
+        setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                zoomFactor = 1.0;
+                centerLat = (minLat + maxLat) / 2.0;
+                centerLng = (minLng + maxLng) / 2.0;
+                draw();
+                notifyMiniMap();
+                logger.info("Double-click: reset H3 map view to full centered perspective.");
+            }
+        });
+
         // Mouse move for tooltip
         setOnMouseMoved(event -> {
             if (tooltip != null && tooltipContainer != null) {

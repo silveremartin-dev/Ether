@@ -166,7 +166,9 @@ public class H3Cell {
     @Column(nullable = false)
     private Double mantleHeatFlow = 87.0; // Geothermal heat flow & tectonic index (mW/m²)
     @Column(nullable = false)
-    private Double freshwaterAquifer = 0.0; // Groundwater table volume (m³/km²)
+    private Double freshwaterAquifer = 0.0; // Total groundwater table volume (m³/km²)
+    @Column(nullable = false)
+    private Double accessibleAquifer = 0.0; // Accessible groundwater table volume (m³/km²) for shallow wells, springs & oasis
 
     // --- Socio-Economic Indices ---
     @Column(nullable = false)
@@ -175,8 +177,17 @@ public class H3Cell {
     private Double fertility = 6.0;
     @Column(nullable = false)
     private Double giniIndex = 0.0;
+    // --- Movement & Terrain Friction Matrix ---
     @Column(nullable = false)
-    private Double technologyLevel = 0.0;
+    private Double movementFriction = 1.0; // 1.0 = ideal flat plain, 10.0+ = high resistance mountain/swamp/desert
+
+    // --- Demographics: Age Pyramid / Cohort-Component Model ---
+    @Column(nullable = false)
+    private Integer popYouth = 0;   // 0-14 years old (Youth dependency cohort)
+    @Column(nullable = false)
+    private Integer popAdult = 0;   // 15-64 years old (Active labor & reproductive cohort)
+    @Column(nullable = false)
+    private Integer popElderly = 0; // 65+ years old (Elderly dependency cohort)
 
     // Analytics / Simulation State
     @Transient
@@ -184,6 +195,9 @@ public class H3Cell {
 
     @Transient // Not persisting political ownership yet
     private org.ether.society.model.Nation owner;
+
+    @Transient
+    private boolean boundaryCell = false;
 
     // Constructors
 
@@ -491,6 +505,118 @@ public class H3Cell {
     public void setTechnologyLevel(Double val) {
         this.technologyLevel = val;
     }
+    public Double getAccessibleAquifer() {
+        return accessibleAquifer;
+    }
+
+    public void setAccessibleAquifer(Double accessibleAquifer) {
+        this.accessibleAquifer = accessibleAquifer;
+    }
+
+    public boolean isBoundaryCell() {
+        return boundaryCell;
+    }
+
+    public void setBoundaryCell(boolean boundaryCell) {
+        this.boundaryCell = boundaryCell;
+    }
+
+    public Double getMovementFriction() {
+        return movementFriction;
+    }
+
+    public void setMovementFriction(Double movementFriction) {
+        this.movementFriction = movementFriction;
+    }
+
+    public Integer getPopYouth() {
+        return popYouth;
+    }
+
+    public void setPopYouth(Integer popYouth) {
+        this.popYouth = popYouth;
+    }
+
+    public Integer getPopAdult() {
+        return popAdult;
+    }
+
+    public void setPopAdult(Integer popAdult) {
+        this.popAdult = popAdult;
+    }
+
+    public Integer getPopElderly() {
+        return popElderly;
+    }
+
+    public void setPopElderly(Integer popElderly) {
+        this.popElderly = popElderly;
+    }
+
+    /**
+     * Calculates terrain movement friction (cost-distance factor) based on elevation,
+     * biome, water resources and current technology level.
+     * @param techLevel technology level (1.0 = ancient, 10.0 = modern)
+     * @return movement friction multiplier (1.0 = baseline flat plain, >10.0 = extreme mountain/desert/swamp)
+     */
+    public double calculateMovementFriction(double techLevel) {
+        double baseFriction = 1.0;
+
+        // Elevation / Ruggedness penalty
+        if (elevation > 3000) baseFriction += 8.0;
+        else if (elevation > 1500) baseFriction += 4.0;
+        else if (elevation > 500) baseFriction += 1.5;
+        else if (elevation < 0) {
+            // Marine navigation: requires maritime technology
+            return techLevel >= 3.0 ? Math.max(0.5, 3.0 - (techLevel * 0.25)) : 25.0; // High friction for ancient land dwellers
+        }
+
+        // Biome friction
+        if (biome != null) {
+            switch (biome) {
+                case TUNDRA, SNOW -> baseFriction += 3.5;
+                case TAIGA -> baseFriction += 2.0;
+                case DESERT -> baseFriction += 4.5;
+                case TROPICAL_RAINFOREST -> baseFriction += 5.0;
+                case SWAMP -> baseFriction += 4.0;
+                case MOUNTAIN -> baseFriction += 6.0;
+                case HILLS -> baseFriction += 2.0;
+                case RIVERS -> baseFriction = 0.6; // River highways reduce movement friction
+                default -> {}
+            }
+        }
+
+        // Technology infrastructure mitigation (roads, vehicles, navigation)
+        double techMitigation = Math.max(0.2, 1.0 - (techLevel * 0.08));
+        this.movementFriction = Math.max(0.3, baseFriction * techMitigation);
+        return this.movementFriction;
+    }
+
+    /**
+     * Updates the age pyramid (Youth 0-14, Adult 15-64, Elderly 65+) based on total population
+     * and technological demographic transition stage.
+     */
+    public void updateAgePyramidFromTotal(double techLevel) {
+        if (population == null || population <= 0) {
+            popYouth = 0;
+            popAdult = 0;
+            popElderly = 0;
+            return;
+        }
+
+        // Demographic transition model:
+        // Ancient/Pre-Industrial (Tech <= 3.0): High birth rate, high infant mortality -> 42% youth, 52% adult, 6% elderly
+        // Modern (Tech >= 8.0): Low birth rate, high lifespan -> 18% youth, 64% adult, 18% elderly
+        double techFactor = Math.clamp((techLevel - 1.0) / 7.0, 0.0, 1.0);
+
+        double youthShare = 0.42 - (techFactor * 0.24);  // 42% -> 18%
+        double elderlyShare = 0.06 + (techFactor * 0.12); // 6% -> 18%
+
+        this.popYouth = (int) Math.round(population * youthShare);
+        this.popElderly = (int) Math.round(population * elderlyShare);
+        this.popAdult = population - (popYouth + popElderly);
+    }
+
     /**
      * Create a snapshot copy of this cell.
      */
@@ -510,6 +636,7 @@ public class H3Cell {
         copy.setSoilOrganicCarbon(this.soilOrganicCarbon);
         copy.setMantleHeatFlow(this.mantleHeatFlow);
         copy.setFreshwaterAquifer(this.freshwaterAquifer);
+        copy.setAccessibleAquifer(this.accessibleAquifer);
         copy.setResourceClay(this.resourceClay);
         copy.setResourceWork(this.resourceWork);
         copy.setResourceCapital(this.resourceCapital);
@@ -519,6 +646,11 @@ public class H3Cell {
         copy.setTechnologyLevel(this.technologyLevel);
         copy.setOwner(this.owner); // Shared reference for now
         copy.setFluxPressure(this.fluxPressure);
+        copy.setBoundaryCell(this.boundaryCell);
+        copy.setMovementFriction(this.movementFriction);
+        copy.setPopYouth(this.popYouth);
+        copy.setPopAdult(this.popAdult);
+        copy.setPopElderly(this.popElderly);
         
         // Biomass & Energy
         copy.setBiomassHuman(this.biomassHuman);
