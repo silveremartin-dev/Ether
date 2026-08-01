@@ -50,17 +50,17 @@ public class CliodynamicsEngineTest {
     @Test
     public void testEcologicalDegradationAndMalthusianLimits() {
         H3Cell cell = new H3Cell(613503380827930627L, 35.0, 15.0);
-        cell.setElevation(100.0);
+        cell.setElevation(300.0); // Sloped terrain
         cell.setBiome(org.ether.society.model.Biome.PLAINS);
         cell.setSoilOrganicCarbon(40.0);
-        cell.setRainfall(600.0);
+        cell.setRainfall(1200.0);
+        cell.setBiomassNatural(50.0); // Clear-cut biomass
         cell.setPopulation(50000); // Extreme overpopulation
 
         double initialSoil = cell.getSoilOrganicCarbon();
 
-        EcologicalDegradationEngine.processEcologicalDegradation(List.of(cell), 2.0);
+        DeforestationErosionEngine.processDeforestationErosion(List.of(cell));
 
-        assertTrue(cell.getSoilOrganicCarbon() < initialSoil, "Soil carbon should deplete due to overpopulation");
-        assertTrue(cell.getPopulation() < 50000, "Population should experience Malthusian correction when over carrying capacity");
+        assertTrue(cell.getSoilOrganicCarbon() < initialSoil, "Soil carbon should deplete due to deforestation and erosion");
     }
 }

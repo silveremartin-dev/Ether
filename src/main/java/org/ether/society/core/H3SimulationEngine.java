@@ -322,7 +322,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
                 // Step 3: Demographics & Bio-molecular Epidemiology
                 org.ether.society.procedural.BiologicalDemographicsEngine.processBiologicalDemographics(cells);
-                org.ether.society.procedural.BioMolecularEpidemiologyEngine.processBioMolecularEpidemiology(cells);
+                org.ether.society.procedural.BioMolecularEpidemiologyEngine.processBioMolecularImmunity(cells);
                 org.ether.society.procedural.EcotoxicologyFertilityEngine.processEcotoxicologyFertility(cells);
 
                 // Step 4: EROEI, Energy Conversion & Metallurgy Enthalpy
@@ -330,10 +330,12 @@ public class H3SimulationEngine implements ISimulationEngine {
                 org.ether.society.procedural.NetEnergyEROEIEngine.processNetEnergyEROEI(cells);
                 org.ether.society.procedural.MetallurgyEnthalpyEngine.processOreSmelting(cells);
                 org.ether.society.procedural.ResourceRecyclingEngine.processResourceRecycling(cells);
+                org.ether.society.procedural.NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(cells);
+                org.ether.society.procedural.OzoneLayerDepletionEngine.processOzoneLayerDepletion(cells);
 
                 // Step 5: Mechanical Transport Work & Kinetic Warfare
-                org.ether.society.procedural.PhysicsTransportEngine.processPhysicsTransportWork(cells);
-                org.ether.society.procedural.ThermodynamicWarfareEngine.processThermodynamicWarfare(cells);
+                org.ether.society.procedural.PhysicsTransportEngine.processPhysicsTransport(cells);
+                org.ether.society.procedural.ThermodynamicWarfareEngine.processKineticWarfare(cells);
                 org.ether.society.procedural.InfrastructureEnergyEngine.processInfrastructureEnergy(cells);
                 org.ether.society.procedural.ThermodynamicMigrationEngine.processThermodynamicMigration(cells);
 

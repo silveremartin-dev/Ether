@@ -7,63 +7,64 @@
 package org.ether.society.procedural;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 /**
- * Soil Stoichiometry & Liebig's Law of the Minimum Engine.
+ * Soil N-P-K Stoichiometry & Geological Mineral Mining Engine.
  * Models:
- * 1. <b>N-P-K Soil Stoichiometry (Nitrogen, Phosphorus, Potassium in kg/ha)</b>.
- * 2. <b>Liebig's Law of the Minimum</b>: Agricultural yield is strictly bounded by the scarcest nutrient:
- *    Yield = min([N], [P], [K], SoilMoisture).
- * 3. <b>Crop Nutrient Depletion & Organic Soil Carbon Recycling</b>.
+ * 1. <b>Liebig's Law of the Minimum</b>: Agricultural yield = min(N, P, K).
+ * 2. <b>Rock Phosphate (P) & Potash (K) Geological Mining</b>: Mineral fertilizer extraction from crustal deposits.
+ * 3. <b>Haber-Bosch Nitrogen (N) Synthesis</b>: High-pressure ammonia synthesis from atmospheric N2 requiring thermal power (P_capita >= 5000W).
  *
  * @author Silvere Martin-Michiellot
- * @version 3.1.0
+ * @version 3.8.0
  */
 public class SoilNutrientNPKEngine {
     private static final Logger logger = LoggerFactory.getLogger(SoilNutrientNPKEngine.class);
 
-    /**
-     * Calculates crop yield multiplier based on Liebig's Law of the Minimum.
-     *
-     * @param cell H3 terrain cell
-     * @return Yield factor between 0.05 and 2.0
-     */
-    public static double calculateLiebigYieldFactor(H3Cell cell) {
-        if (cell == null) return 1.0;
-
-        double nitrogenRatio = Math.min(2.0, (cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 20.0) / 30.0);
-        double phosphorusRatio = Math.min(2.0, (cell.getRainfall() != null ? cell.getRainfall() : 500.0) / 400.0);
-        double potassiumRatio = 1.0; // Baseline mineral potassium
-
-        // Liebig's Law of the Minimum
-        return Math.max(0.05, Math.min(nitrogenRatio, Math.min(phosphorusRatio, potassiumRatio)));
-    }
+    /** Haber-Bosch power requirement in Watts per capita */
+    public static final double HABER_BOSCH_POWER_WATTS = 5000.0;
 
     /**
-     * Executes one N-P-K nutrient consumption and soil recycling tick across cells.
+     * Executes N-P-K stoichiometry, mineral mining extraction, and Haber-Bosch synthesis tick.
      */
     public static void processSoilNutrients(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return;
 
+        int haberBoschActive = 0;
+
         for (H3Cell cell : cells) {
-            if (cell.getBiome() == Biome.OCEAN || cell.getBiome() == Biome.DEEP_OCEAN) continue;
+            double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
+            double metalOre = cell.getResourceMetal() != null ? cell.getResourceMetal() : 100.0;
 
-            double yieldFactor = calculateLiebigYieldFactor(cell);
-            double currentAgri = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
+            // 1. Rock Phosphate (P) & Potash (K) Geological Mining Extraction
+            double extractedMiningP = Math.min(metalOre * 0.05, 10.0);
+            double extractedMiningK = Math.min(metalOre * 0.05, 10.0);
 
-            // Crop yield bounded by Liebig's Law of the Minimum
-            cell.setBiomassAgriculture(Math.min(3000.0, currentAgri * yieldFactor));
-
-            // Intensive farming depletes soil organic carbon unless fallow/manure recycling occurs
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
-            if (pop > 200) {
-                cell.setSoilOrganicCarbon(Math.max(5.0, cell.getSoilOrganicCarbon() - 0.1));
+            // 2. Haber-Bosch Industrial Nitrogen Fixation (P_capita >= 5000 W)
+            double synthesizedN = 5.0; // Baseline biological leguminous fixation
+            if (powerPerCapita >= HABER_BOSCH_POWER_WATTS) {
+                haberBoschActive++;
+                synthesizedN += 45.0; // Massive industrial ammonia yield
             }
+
+            // 3. Liebig's Law of the Minimum Yield Bound
+            double effectiveSoilN = 20.0 + synthesizedN;
+            double effectiveSoilP = 15.0 + extractedMiningP;
+            double effectiveSoilK = 15.0 + extractedMiningK;
+
+            double liebigFactor = Math.min(effectiveSoilN / 50.0, Math.min(effectiveSoilP / 25.0, effectiveSoilK / 25.0));
+
+            // Apply Liebig yield limit to agricultural biomass
+            double baseBiomass = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 100.0;
+            cell.setBiomassAgriculture(Math.max(20.0, baseBiomass * liebigFactor));
+        }
+
+        if (haberBoschActive > 0) {
+            logger.info("NPK Engine: Haber-Bosch industrial nitrogen synthesis active across {} power grid cells.", haberBoschActive);
         }
     }
 }
