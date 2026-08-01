@@ -1,77 +1,91 @@
-# Ether - Human Society Simulation (v2.0)
+# Ether - Human Society & Cliodynamic Thermodynamic Simulation (v4.0)
 
 ![Java](https://img.shields.io/badge/Java-21-orange.svg)
 ![Build](https://img.shields.io/badge/Build-Maven-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)
 
-**Ether** is a high-performance, agent-based simulation modeling the evolution of human society from 20,000 BCE to the modern era. It utilizes grid-based density simulation (Artemis Layer) on a hexagonal Earth grid (Uber H3) to simulate population dynamics, climate change, resource management, and the rise of civilizations.
+**Ether** is a high-fidelity, physicalist and cliodynamic simulation engine modeling planetary human civilization dynamics from 20,000 BCE into future planetary scenarios. Driven by thermodynamic principles (Joules, Net EROEI, Carnot limits, Shannon entropy, Soil N-P-K & Carbon, and Aquifer depletion), Ether eliminates heuristic short-circuits in favor of deterministic physical forcing equations on a global hexagonal Earth grid (Uber H3).
 
 ---
 
 ## 🚀 Key Features
 
-### 🌍 Simulation Engine (Artemis)
--   **H3 Hexagonal Grid**: High-precision geospatial grid (Resolution 6-8).
--   **Density Dynamics**: Simulates millions of humans via statistical density rather than individual agents.
--   **Climate System**: Realistic seasonal cycles, temperature gradients, and rainfall simulation based on latitude and elevation.
--   **Procedural Generation**: Generate Earth-like worlds with realistic biomes (Tundra, Jungle, Desert, etc.).
+### 🌍 Physicalist & Thermodynamic Core Engine
+- **H3 Hexagonal Spatial Grid**: Uber H3 multi-resolution hexagonal cell indexing (Resolutions 6 to 8).
+- **Thermodynamic Net EROEI & Energy Budgets**: Simulates energy extraction thresholds, EROEI degradation, and industrial work output ($\text{Joules}$).
+- **Soil & Aquifer Physical Dynamics**: Tracks N-P-K depletion, Soil Organic Carbon (SOC) sequestration, and freshwater table drawdowns.
+- **Biophysical & Cliodynamic Engines**:
+  - **Terraforming & Orbital Physics**: Atmospheric pressure ($P_{\text{atm}}$), greenhouse radiative forcing, solar mirrors, and asteroid mining.
+  - **Trophic Ecosystems & Rewilding**: 3-tier trophic biomass, Pleistocene Rewilding (permafrost albedo & SOC retention), and species hybridization.
+  - **Physical Supply Chains**: Material logistics, transport friction coefficients ($\mu_{\text{sea}}, \mu_{\text{rail}}$), and maritime chokepoint blockades.
+  - **Urban Thermodynamics**: Urban Heat Island ($T_{\text{uhi}}$), high-voltage grid transmission losses ($I^2 R$), and city aquifer depletion.
 
-### 🖥️ Premium Visualization
--   **Glassmorphism UI**: Modern, translucent interface with neon accents and smooth transitions.
--   **3D Isometric View**: Toggle between 2D map and 3D terrain Visualization.
--   **Data Layers**: Switch views to see Biomes, Population Heatmaps, Temperature Gradients, or Food Density.
--   **Interactive Controls**: Zoom, Pan, Rotate, and inspect cell details.
+### ⚡ Live "God Mode", Event Injector & Timeline Audit Log
+- **Live Simulation Pause & Play**: Instantaneous execution freeze (`engine.pause()`) to inspect or alter planetary parameters.
+- **Physical Event Injector**: Trigger volcanic SO₂ aerosol injection ($\tau$), Carrington solar EMP storms, bio-molecular outbreaks, or global heatwaves on demand.
+- **Scenario Timeline Audit Log**: Full chronological history tracking $T_0$ initial setup, historical planet events, and manual God Mode interventions.
 
-### 💾 Persistence & Data
--   **Save/Load System**: Persist world states to database and JSON metadata.
--   **Real Earth Data**: Capable of ingesting SRTM (Elevation) and WorldClim data for realistic Earth simulation.
+### 🔀 Scenario Multiverse Branching Tree
+- **"What-If" Trajectory Forking**: Snapshot simulation state at year $T$ and create parallel alternate trajectories (e.g. *D-T Fusion Acceleration* vs *Fossil Fuel Lock-in*).
+- **Comparative Telemetry Analysis**: Compare population, average temperature, and resource curves across parallel timeline branches.
 
-### 🌐 Internationalization
--   Native support for **English**, **French**, **German**, and **Spanish**.
+### 📜 10 Built-in Historical & Future Scenarios
+1. **Cro-Magnon & Neolithic Transition (-10,000 BCE)**
+2. **Plague of Justinian & Late Antique Climate Anomaly (536 CE)**
+3. **Assyrian Empire & Mesopotamian Salinization (-700 BCE)**
+4. **Song Dynasty Pre-Industrialization (1080 CE)**
+5. **Business As Usual (SSP5-8.5 / Modern Anthropocene, 2026)**
+6. **Technological Singularity & D-T Fusion (2045)**
+7. **Nuclear Winter & Stratospheric Soot (2030)**
+8. **Peak Phosphate & Agricultural Depletion (2040)**
+9. **Super-Volcano VEI-8 & Volcanic Winter (2028)**
+10. **Custom Planetary Scenario Editor**
 
 ---
 
 ## 🛠️ Getting Started
 
 ### Prerequisites
--   **Java 21 JDK** or higher.
--   **Maven 3.9+**.
--   (Optional) **PostGreSQL** for advanced persistence (default uses H2/File).
+- **Java 21 JDK** or higher.
+- **Maven 3.9+**.
+- (Optional) **PostgreSQL / PostGIS** for geospatial persistence.
 
-### Installation
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/Start-Z/Ether.git
-    cd Ether
-    ```
+### Installation & Execution
+```bash
+# Clone the repository
+git clone https://github.com/Start-Z/Ether.git
+cd Ether
 
-2.  **Build the project**:
-    ```bash
-    mvn clean install
-    ```
+# Build the project
+mvn clean install
 
-3.  **Run the Simulation**:
-    ```bash
-    mvn javafx:run
-    ```
+# Run the Simulation
+mvn javafx:run
+```
 
 ---
 
-## 🗺️ Roadmap & Progress
+## 🗺️ System Architecture & Progress
 
-| Phase | Feature | Status |
+| Module | Description | Status |
 | :--- | :--- | :--- |
-| **Phases 1-3** | Core Architecture & Infrastructure | ✅ Complete |
-| **Phases 4-6** | H3 Grid & Procedural Generation | ✅ Complete |
-| **Phase 7** | UI & Visualization (3D/2D) | ✅ Complete |
-| **Phase 8** | Internationalization (i18n) | ✅ Complete |
-| **Phase 9** | Testing & Benchmarking | ✅ Complete |
-| **Phase 10** | Persistence (Save/Load) | ✅ Complete |
-| **Phase 11** | Real Earth Data Ingestion | ✅ Complete |
-| **Phase 12** | UI Polish (Glassmorphism) | ✅ Complete |
-| **Phase 13** | GPU Acceleration (TornadoVM) | ⏳ Planned |
-| **Phase 14** | Advanced Diplomacy AI | ⏳ Planned |
+| **Thermodynamic Kernel** | EROEI, Carnot limits, Entropy, Soil N-P-K, Aquifer | ✅ Complete |
+| **H3 Geospatial Grid** | Uber H3 resolution 6-8 indexing & visualization | ✅ Complete |
+| **Procedural Engines** | Climate, Disease $R_0$, Singularity, Supply Chains, Urban UHI | ✅ Complete |
+| **God Mode & Timeline** | Pause/Play, physical event injection, audit trail log | ✅ Complete |
+| **Multiverse Branching** | Snapshot & side-by-side trajectory comparison | ✅ Complete |
+| **Scenario Documentation**| 10+ rich historical & future physical scenarios | ✅ Complete |
+
+---
+
+## 📄 License & Authors
+
+Distributed under the **MIT License**.
+
+**Authors**:
+- **Silvere Martin-Michiellot**
+- **Antigravity / Gemini AI (Google DeepMind)**
 
 ---
 

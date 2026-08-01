@@ -347,6 +347,12 @@ public class H3SimulationEngine implements ISimulationEngine {
                 org.ether.society.procedural.TechnologicalSingularityEngine.processTechnologicalSingularity(cells);
                 org.ether.society.procedural.TechTreeEngine.processTechnologyDiffusion(cells, null);
 
+                // Step 7: Advanced Physicalist & Cliodynamic Extensions
+                org.ether.society.procedural.TerraformingEngine.processTerraforming(cells, 1.0);
+                org.ether.society.procedural.TrophicEcosystemEngine.processTrophicEcosystem(cells, 1.0);
+                org.ether.society.procedural.PhysicalSupplyChainEngine.processSupplyChains(cells, 1.0);
+                org.ether.society.procedural.UrbanThermodynamicsEngine.processUrbanThermodynamics(cells, 1.0);
+
                 // Statistics
                 currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
                 densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
