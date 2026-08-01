@@ -39,8 +39,22 @@
 6. **Technological Singularity & D-T Fusion (2045)**
 7. **Nuclear Winter & Stratospheric Soot (2030)**
 8. **Peak Phosphate & Agricultural Depletion (2040)**
-9. **Super-Volcano VEI-8 & Volcanic Winter (2028)**
-10. **Custom Planetary Scenario Editor**
+### 🔌 Pluggable User Engine System (Plugin Architecture)
+Ether features an extensible procedural plugin architecture allowing developers to inject custom simulation logic at runtime:
+```java
+// Implement a custom procedural simulation plugin
+ProceduralEngineRegistry.registerPlugin("CustomGeothermalBooster", (cells, deltaYears) -> {
+    for (H3Cell cell : cells) {
+        cell.setTemperature(cell.getTemperature() + 0.5 * deltaYears);
+    }
+});
+```
+
+### ⛏️ Material & Energetic Physics (Jancovici & Bihouix Laws)
+- **Ore Grade Thermodynamics**: Energy cost scales non-linearly ($E \propto (C_{\text{ref}}/C_{\text{ore}})^{1.5}$) as metal concentration in ore matrix decreases.
+- **Capital Infrastructure Inertia**: 35-year physical capital turnover and transition lock-in constraint.
+- **Entropic Metal Dissipation**: 2nd law of thermodynamics dissipation loss rate ($1.5\%/\text{year}$) of recyclable metal stocks.
+- **Jevons Paradox & Rebound Effect**: Technological efficiency gains drive expanded aggregate energy consumption.
 
 ---
 
