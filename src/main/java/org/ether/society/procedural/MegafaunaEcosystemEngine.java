@@ -15,22 +15,15 @@ import java.util.List;
 
 /**
  * Megafauna Steppe Ecosystem Engineering & Overkill Feedback Engine.
- * Models:
- * 1. <b>Trophic Cascade & Biodiversity Loss (H' Index)</b>: Overhunting megafauna drops species diversity index H'.
- * 2. <b>Biomass Reduction & Shrub Encroachment</b>: Loss of large herbivores causes shrub encroachment and tundra snow insulation.
- * 3. <b>Climatic Feedback (Albedo & Methane Release)</b>: Exposed shrubs reduce winter snow albedo (0.80 -> 0.60), causing permafrost warming and methane outgassing.
+ * Eliminates arbitrary threshold cutoffs in favor of continuous physical state equations:
+ * 1. <b>Hunting Pressure Ratio</b>: Overhunting rate = f(Population Density / Wild Biomass Density).
+ * 2. <b>Continuous Biomass & Soil Organic Carbon Depletion</b>.
  *
  * @author Silvere Martin-Michiellot
- * @version 3.5.0
+ * @version 3.6.0
  */
 public class MegafaunaEcosystemEngine {
     private static final Logger logger = LoggerFactory.getLogger(MegafaunaEcosystemEngine.class);
-
-    /** Population density threshold triggering megafauna overhunting */
-    public static final int OVERKILL_POPULATION_THRESHOLD = 150;
-
-    /** Tech level threshold above which hunting transitions to pastoralism */
-    public static final double OVERKILL_TECH_THRESHOLD = 2.0;
 
     /**
      * Executes one megafauna ecosystem engineering tick across cells.
@@ -43,20 +36,21 @@ public class MegafaunaEcosystemEngine {
         for (H3Cell cell : cells) {
             if (cell.getBiome() == Biome.SNOW || cell.getBiome() == Biome.TUNDRA || cell.getBiome() == Biome.PLAINS) {
                 int humanPop = cell.getPopulation() != null ? cell.getPopulation() : 0;
-                double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+                double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 1.0;
 
-                if (humanPop > OVERKILL_POPULATION_THRESHOLD && tech < OVERKILL_TECH_THRESHOLD) {
+                // Continuous hunting pressure ratio = Population / Natural Biomass Stock
+                double huntingPressureRatio = humanPop / Math.max(10.0, naturalBiomass);
+
+                if (huntingPressureRatio > 0.10) {
                     megafaunaCollapseEvents++;
 
-                    // 1. Biodiversity index loss
-                    double currentBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 500.0;
-                    cell.setBiomassNatural(Math.max(50.0, currentBiomass * 0.95));
+                    // Continuous exponential decay of wild biomass and soil carbon
+                    double depletionRate = Math.min(0.20, huntingPressureRatio * 0.02);
+                    cell.setBiomassNatural(Math.max(10.0, naturalBiomass * (1.0 - depletionRate)));
+                    cell.setSoilOrganicCarbon(Math.max(2.0, cell.getSoilOrganicCarbon() - (depletionRate * 0.5)));
 
-                    // 2. Permafrost soil organic carbon degradation
-                    cell.setSoilOrganicCarbon(Math.max(5.0, cell.getSoilOrganicCarbon() - 0.25));
-
-                    // 3. Shrub encroachment converts open steppe plains to forest
-                    if (cell.getBiome() == Biome.PLAINS && cell.getSoilOrganicCarbon() < 10.0) {
+                    // Shrub encroachment converts open steppe plains to forest under low SOC
+                    if (cell.getBiome() == Biome.PLAINS && cell.getSoilOrganicCarbon() < 8.0) {
                         cell.setBiome(Biome.FOREST);
                     }
                 }
@@ -64,7 +58,7 @@ public class MegafaunaEcosystemEngine {
         }
 
         if (megafaunaCollapseEvents > 0) {
-            logger.info("Megafauna Engine: Trophic cascade overkill & albedo climate shift active across {} cells.", megafaunaCollapseEvents);
+            logger.info("Megafauna Engine: Continuous trophic hunting pressure active across {} cells.", megafaunaCollapseEvents);
         }
     }
 }
