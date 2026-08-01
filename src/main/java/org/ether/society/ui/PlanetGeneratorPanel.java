@@ -524,55 +524,11 @@ public class PlanetGeneratorPanel extends BorderPane {
         });
         HBox elevBox = new HBox(5, loadElevBtn, clearElevBtn);
 
-        fetchOnlineBtn = new Button(I18n.get("planet.map.btn_fetch_online"));
-        fetchOnlineBtn.setMaxWidth(Double.MAX_VALUE);
-        fetchOnlineBtn.getStyleClass().add("button-secondary");
-        fetchOnlineBtn.setOnAction(e -> fetchOnlineSatelliteData());
-
-        exportMapsBtn = new Button(I18n.get("planet.map.btn_export"));
-        exportMapsBtn.setMaxWidth(Double.MAX_VALUE);
-        exportMapsBtn.getStyleClass().add("button-secondary");
-        exportMapsBtn.setOnAction(e -> exportMapsWithWorldFiles());
-
-        mapStatusLabel = new Label();
-        mapStatusLabel.getStyleClass().add("value-label");
-        mapStatusLabel.setWrapText(true);
-
-        biomeMapRowLabel = new Label();
-        biomeFileLabel = new Label(I18n.get("planet.map.none"));
-        biomeFileLabel.getStyleClass().add("value-label");
-        loadBiomeBtn = new Button(I18n.get("planet.map.btn_load"));
-        loadBiomeBtn.getStyleClass().add("button-secondary");
-        loadBiomeBtn.setOnAction(e -> chooseBiomeMapFile());
-        clearBiomeBtn = new Button("❌");
-        clearBiomeBtn.getStyleClass().add("button-secondary");
-        clearBiomeBtn.setOnAction(e -> { customBiomeImage = null; biomeFileLabel.setText(I18n.get("planet.map.none")); updatePreview(); });
-        HBox biomeBox = new HBox(5, loadBiomeBtn, clearBiomeBtn);
-
-        resourceMapRowLabel = new Label();
-        resourceFileLabel = new Label(I18n.get("planet.map.none"));
-        resourceFileLabel.getStyleClass().add("value-label");
-        loadResourceBtn = new Button(I18n.get("planet.map.btn_load"));
-        loadResourceBtn.getStyleClass().add("button-secondary");
-        loadResourceBtn.setOnAction(e -> chooseResourceMapFile());
-        clearResourceBtn = new Button("❌");
-        clearResourceBtn.getStyleClass().add("button-secondary");
-        clearResourceBtn.setOnAction(e -> { customResourceImage = null; resourceFileLabel.setText(I18n.get("planet.map.none")); updatePreview(); });
-        HBox resourceBox = new HBox(5, loadResourceBtn, clearResourceBtn);
-
         VBox importPanel = new VBox(8,
                 createControlRow(mapSourceRowLabel, mapSourceCombo,
-                    I18n.getOrDefault("planet.tooltip.map_source", "Preset corps céleste (Terre, Mars, Vénus, Lune) — télécharge la carte WMS correspondante")),
+                    I18n.getOrDefault("planet.tooltip.map_source", "Preset corps céleste (Terre, Mars, Vénus, Lune) — sélectionne la carte d'élévation prédéfinie")),
                 createControlRow(elevMapRowLabel, new VBox(3, elevBox, elevFileLabel),
-                    I18n.getOrDefault("planet.tooltip.elev_map", "Import d'une heightmap PNG en niveaux de gris (noir=min alt, blanc=max alt)")),
-                fetchOnlineBtn,
-                exportMapsBtn,
-                mapStatusLabel,
-                resolutionInfoLabel,
-                createControlRow(biomeMapRowLabel, new VBox(3, biomeBox, biomeFileLabel),
-                    I18n.getOrDefault("planet.tooltip.biome_map", "Import d'une carte de biomes colorée optionnelle")),
-                createControlRow(resourceMapRowLabel, new VBox(3, resourceBox, resourceFileLabel),
-                    I18n.getOrDefault("planet.tooltip.resource_map", "Import d'une carte géologique multi-canaux optionnelle"))
+                    I18n.getOrDefault("planet.tooltip.elev_map", "Import d'une heightmap PNG en niveaux de gris (noir=min alt, blanc=max alt)"))
         );
         importPanel.setStyle("-fx-padding: 8 0 0 12; -fx-border-color: rgba(167,139,250,0.25); -fx-border-radius: 6; -fx-border-width: 0 0 0 3;");
         importPanel.setVisible(false);
@@ -915,6 +871,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     private ComboBox<String> buildClimateSourceCombo(String mapType) {
         ComboBox<String> combo = new ComboBox<>();
         combo.setMaxWidth(Double.MAX_VALUE);
+        combo.getItems().add(""); // Empty default option
         switch (mapType) {
             case "temp" -> combo.getItems().addAll(
                     "NASA MERRA-2 (WMS — températures, terrestres)",
@@ -934,8 +891,30 @@ public class PlanetGeneratorPanel extends BorderPane {
                     "CHELSA Climate v2.1 (terrestres)"
             );
         }
-        combo.setValue(combo.getItems().get(0));
-        combo.setTooltip(new Tooltip("Sélectionnez la source de données de référence (données terrestres uniquement).\n" +
+        combo.setCellFactory(p -> new ListCell<>() {
+            @Override protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null || item.isEmpty() ? I18n.getOrDefault("planet.combo.prompt_source", "— Sélectionner une source de données —") : item);
+            }
+        });
+        combo.setButtonCell(combo.getCellFactory().call(null));
+        combo.setValue("");
+        combo.setOnAction(e -> {
+            if (isUpdatingFromPreset) return;
+            String val = combo.getValue();
+            if (val != null && !val.isEmpty()) {
+                if ("temp".equals(mapType) && radioTempImport != null) radioTempImport.setSelected(true);
+                else if ("precip".equals(mapType) && radioPrecipImport != null) radioPrecipImport.setSelected(true);
+                else if ("season".equals(mapType) && radioSeasonImport != null) radioSeasonImport.setSelected(true);
+
+                if (val.contains("WMS") || val.contains("NASA") || val.contains("ERA5")) {
+                    fetchOnlineClimateData();
+                } else {
+                    updatePreview();
+                }
+            }
+        });
+        combo.setTooltip(new Tooltip("Sélectionnez la source de données de référence.\n" +
                 "Le bouton '📂 Charger…' ci-dessous permet d'importer votre fichier PNG local."));
         return combo;
     }
@@ -1568,6 +1547,37 @@ public class PlanetGeneratorPanel extends BorderPane {
         } else {
             mapSourceCombo.setValue("none");
             if (p.customElevBase64() == null) clearCustomMaps();
+        }
+
+        // Synchronize subsystem radio buttons according to preset custom maps
+        if (p.customElevBase64() != null || (!"none".equals(mapSourceCombo.getValue()) && customElevImage != null)) {
+            radioImport.setSelected(true);
+        } else {
+            radioProc.setSelected(true);
+        }
+
+        if (p.customClimateBase64() != null) {
+            radioTempImport.setSelected(true);
+            setLocalFileInCombo(tempSourceCombo, "Preset Climate Map");
+        } else {
+            radioTempProc.setSelected(true);
+            tempSourceCombo.setValue("");
+        }
+
+        if (p.customRainfallBase64() != null) {
+            radioPrecipImport.setSelected(true);
+            setLocalFileInCombo(precipSourceCombo, "Preset Rainfall Map");
+        } else {
+            radioPrecipProc.setSelected(true);
+            precipSourceCombo.setValue("");
+        }
+
+        if (p.customSeasonalityBase64() != null) {
+            radioSeasonImport.setSelected(true);
+            setLocalFileInCombo(seasonSourceCombo, "Preset Seasonality Map");
+        } else {
+            radioSeasonProc.setSelected(true);
+            seasonSourceCombo.setValue("");
         }
 
         isUpdatingFromPreset = false;

@@ -115,15 +115,17 @@ public class ProceduralGenerator {
         r = (r + 1.0) / 2.0;
 
         double absLat = Math.abs(lat);
-        double latMod = 1.0;
-        if (absLat < 10)
-            latMod = 1.2;
-        else if (absLat > 20 && absLat < 40)
-            latMod = 0.4;
-        else if (absLat > 50 && absLat < 70)
-            latMod = 0.8;
-        else if (absLat > 80)
-            latMod = 0.2;
+        double latMod;
+        if (absLat <= 30.0) {
+            double t = (1.0 + Math.cos(Math.PI * (absLat / 30.0))) / 2.0;
+            latMod = 0.35 + t * (1.2 - 0.35);
+        } else if (absLat <= 60.0) {
+            double t = (1.0 - Math.cos(Math.PI * ((absLat - 30.0) / 30.0))) / 2.0;
+            latMod = 0.35 + t * (0.85 - 0.35);
+        } else {
+            double t = (1.0 - Math.cos(Math.PI * ((absLat - 60.0) / 30.0))) / 2.0;
+            latMod = 0.85 + t * (0.2 - 0.85);
+        }
 
         r = r * 0.7 + latMod * 0.3;
         return Math.max(0.0, Math.min(1.0, r));

@@ -490,23 +490,10 @@ public class ResourceDistributionPanel extends BorderPane {
         mapStatusLabel = new Label();
         mapStatusLabel.getStyleClass().add("value-label");
         mapStatusLabel.setWrapText(true);
+        // Note: customMapsSection legacy wrapper removed — controls are assembled
+        // inside their respective domain import boxes (biomeDomainSection, hydroDomainSection, geologyDomainSection).
 
-        VBox customMapsSection = createSection(mapsSecHeader, new VBox(8,
-                createControlRow(mapSourceRowLabel, mapSourceCombo, I18n.getOrDefault("resource.tooltip.map_source", "Sélectionner une carte satellite prédéfinie")),
-                createControlRow(biomeMapRowLabel, new VBox(3, biomeBox, biomeFileLabel), "Import d'une carte de biomes au format PNG/JPEG"),
-                createControlRow(resourceMapRowLabel, new VBox(3, resourceBox, resourceFileLabel), "Import d'une carte de minerais & géologie multi-canaux"),
-                createControlRow(hydroMapRowLabel, new VBox(3, hydroBox, hydroFileLabel), "Import d'une carte hydrographique et réseau de fleuves"),
-                fetchOnlineHydroBtn,
-                proceduralHydroBtn,
-                fetchOnlineBtn,
-                exportMapsBtn,
-                specsHelpBtn,
-                mapStatusLabel
-        ));
-
-        // --- Climate maps section (moved from Tab 1) ---
-        Label climateMapsHeader = new Label(I18n.getOrDefault("resource.section.climate_maps", "CARTES CLIMATIQUES (TEMPÉRATURE / PRÉCIPITATIONS)"));
-
+        // --- Climate map controls (used inside climateDomainSection → climateImportBox) ---
         climateMapRowLabel = new Label();
         climateFileLabel = new Label(I18n.get("planet.map.none"));
         climateFileLabel.getStyleClass().add("value-label");
@@ -553,15 +540,6 @@ public class ResourceDistributionPanel extends BorderPane {
         climateStatusLabel = new Label();
         climateStatusLabel.getStyleClass().add("value-label");
         climateStatusLabel.setWrapText(true);
-
-        VBox climateMapsSection = createSection(climateMapsHeader, new VBox(8,
-                createControlRow(climateMapRowLabel, new VBox(3, climateBox, climateFileLabel), I18n.getOrDefault("planet.tooltip.climate_map", "Import d'une carte thermique ou combinée RGB")),
-                createControlRow(rainfallMapRowLabel, new VBox(3, rainfallBox, rainfallFileLabel), I18n.getOrDefault("planet.tooltip.rainfall_map", "Import d'une carte de précipitations / humidité")),
-                createControlRow(seasonalityMapRowLabel, new VBox(3, seasonalityBox, seasonalityFileLabel), I18n.getOrDefault("planet.tooltip.seasonality_map", "Import d'une carte de variance saisonnière")),
-                fetchOnlineClimateBtn,
-                climateHelpBtn,
-                climateStatusLabel
-        ));
 
 
         // --- 5. Flora & Terrestrial Plant Resources ---
@@ -642,11 +620,19 @@ public class ResourceDistributionPanel extends BorderPane {
         biomeSourceCombo.setCellFactory(p -> new ListCell<>() {
             @Override protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? "" : I18n.getOrDefault("planet.map." + item, item));
+                setText(empty || item == null || "none".equals(item) ? I18n.getOrDefault("planet.map.none", "— Aucun —") : I18n.getOrDefault("planet.map." + item, item));
             }
         });
         biomeSourceCombo.setButtonCell(biomeSourceCombo.getCellFactory().call(null));
         biomeSourceCombo.setMaxWidth(Double.MAX_VALUE);
+        biomeSourceCombo.setOnAction(e -> {
+            if (isUpdatingFromPreset) return;
+            String val = biomeSourceCombo.getValue();
+            if (val != null && !"none".equals(val)) {
+                radioImportBiome.setSelected(true);
+                applyPresetMapSource(val);
+            }
+        });
 
         VBox biomeImportBox = new VBox(8,
                 createControlRow(new Label(I18n.getOrDefault("resource.param.map_source", "Corps céleste / Source :")), biomeSourceCombo,
@@ -662,6 +648,9 @@ public class ResourceDistributionPanel extends BorderPane {
             boolean isProc = sel == radioProcBiome;
             biomeProcBox.setVisible(isProc); biomeProcBox.setManaged(isProc);
             biomeImportBox.setVisible(!isProc); biomeImportBox.setManaged(!isProc);
+            if (!isProc && customBiomeImage == null && biomeSourceCombo.getValue() != null && !"none".equals(biomeSourceCombo.getValue())) {
+                applyPresetMapSource(biomeSourceCombo.getValue());
+            }
             updatePreviewCanvas();
         });
 
@@ -701,11 +690,19 @@ public class ResourceDistributionPanel extends BorderPane {
         hydroSourceCombo.setCellFactory(p -> new ListCell<>() {
             @Override protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? "" : I18n.getOrDefault("planet.map." + item, item));
+                setText(empty || item == null || "none".equals(item) ? I18n.getOrDefault("planet.map.none", "— Aucun —") : I18n.getOrDefault("planet.map." + item, item));
             }
         });
         hydroSourceCombo.setButtonCell(hydroSourceCombo.getCellFactory().call(null));
         hydroSourceCombo.setMaxWidth(Double.MAX_VALUE);
+        hydroSourceCombo.setOnAction(e -> {
+            if (isUpdatingFromPreset) return;
+            String val = hydroSourceCombo.getValue();
+            if (val != null && !"none".equals(val)) {
+                radioImportHydro.setSelected(true);
+                fetchOnlineHydroData();
+            }
+        });
 
         VBox hydroImportBox = new VBox(8,
                 createControlRow(new Label(I18n.getOrDefault("resource.param.map_source", "Corps céleste / Source :")), hydroSourceCombo,
@@ -721,6 +718,9 @@ public class ResourceDistributionPanel extends BorderPane {
             boolean isProc = sel == radioProcHydro;
             hydroProcBox.setVisible(isProc); hydroProcBox.setManaged(isProc);
             hydroImportBox.setVisible(!isProc); hydroImportBox.setManaged(!isProc);
+            if (!isProc && customHydroImage == null && hydroSourceCombo.getValue() != null && !"none".equals(hydroSourceCombo.getValue())) {
+                fetchOnlineHydroData();
+            }
             updatePreviewCanvas();
         });
 
@@ -759,13 +759,29 @@ public class ResourceDistributionPanel extends BorderPane {
 
         climateSourceCombo = new ComboBox<>();
         climateSourceCombo.getItems().addAll(
+                "none",
                 "NASA MODIS LST (WMS — températures)",
                 "NASA GPM IMERG (WMS — précipitations)",
                 "ERA5 Reanalysis (Copernicus)",
                 "Koppen-Geiger Classification (PNG)"
         );
-        climateSourceCombo.setValue(climateSourceCombo.getItems().get(0));
+        climateSourceCombo.setValue("none");
+        climateSourceCombo.setCellFactory(p -> new ListCell<>() {
+            @Override protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null || "none".equals(item) ? I18n.getOrDefault("planet.map.none", "— Aucun —") : item);
+            }
+        });
+        climateSourceCombo.setButtonCell(climateSourceCombo.getCellFactory().call(null));
         climateSourceCombo.setMaxWidth(Double.MAX_VALUE);
+        climateSourceCombo.setOnAction(e -> {
+            if (isUpdatingFromPreset) return;
+            String val = climateSourceCombo.getValue();
+            if (val != null && !"none".equals(val)) {
+                radioImportClimate.setSelected(true);
+                fetchOnlineClimateData();
+            }
+        });
 
         VBox climateImportBox = new VBox(8,
                 createControlRow(new Label(I18n.getOrDefault("planet.climate.source_label", "Source de référence :")), climateSourceCombo,
@@ -784,6 +800,9 @@ public class ResourceDistributionPanel extends BorderPane {
             boolean isProc = sel == radioProcClimate;
             climateProcBox.setVisible(isProc); climateProcBox.setManaged(isProc);
             climateImportBox.setVisible(!isProc); climateImportBox.setManaged(!isProc);
+            if (!isProc && customClimateImage == null && climateSourceCombo.getValue() != null && !"none".equals(climateSourceCombo.getValue())) {
+                fetchOnlineClimateData();
+            }
             updatePreviewCanvas();
         });
 
@@ -832,11 +851,19 @@ public class ResourceDistributionPanel extends BorderPane {
         geologySourceCombo.setCellFactory(p -> new ListCell<>() {
             @Override protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? "" : I18n.getOrDefault("planet.map." + item, item));
+                setText(empty || item == null || "none".equals(item) ? I18n.getOrDefault("planet.map.none", "— Aucun —") : I18n.getOrDefault("planet.map." + item, item));
             }
         });
         geologySourceCombo.setButtonCell(geologySourceCombo.getCellFactory().call(null));
         geologySourceCombo.setMaxWidth(Double.MAX_VALUE);
+        geologySourceCombo.setOnAction(e -> {
+            if (isUpdatingFromPreset) return;
+            String val = geologySourceCombo.getValue();
+            if (val != null && !"none".equals(val)) {
+                radioImportGeology.setSelected(true);
+                updatePreviewCanvas();
+            }
+        });
 
         VBox geologyImportBox = new VBox(8,
                 createControlRow(new Label(I18n.getOrDefault("resource.param.map_source", "Corps céleste / Source :")), geologySourceCombo,
@@ -871,8 +898,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 biomeDomainSection,
                 hydroDomainSection,
                 climateDomainSection,
-                geologyDomainSection,
-                exportMapsBtn
+                geologyDomainSection
         );
 
 
@@ -1093,6 +1119,39 @@ public class ResourceDistributionPanel extends BorderPane {
         if (p.customSeasonalityBase64() != null) {
             customSeasonalityImage = ImageMapLoader.base64PngToImage(p.customSeasonalityBase64());
             if (seasonalityFileLabel != null) seasonalityFileLabel.setText("☀️ Preset Seasonality");
+        }
+
+        if (radioImportBiome != null) {
+            if (p.customBiomeBase64() != null) {
+                radioImportBiome.setSelected(true);
+            } else {
+                radioProcBiome.setSelected(true);
+                if (biomeSourceCombo != null) biomeSourceCombo.setValue("none");
+            }
+        }
+        if (radioImportHydro != null) {
+            if (p.customHydroBase64() != null) {
+                radioImportHydro.setSelected(true);
+            } else {
+                radioProcHydro.setSelected(true);
+                if (hydroSourceCombo != null) hydroSourceCombo.setValue("none");
+            }
+        }
+        if (radioImportClimate != null) {
+            if (p.customClimateBase64() != null || p.customRainfallBase64() != null || p.customSeasonalityBase64() != null) {
+                radioImportClimate.setSelected(true);
+            } else {
+                radioProcClimate.setSelected(true);
+                if (climateSourceCombo != null) climateSourceCombo.setValue("none");
+            }
+        }
+        if (radioImportGeology != null) {
+            if (p.customResourceBase64() != null) {
+                radioImportGeology.setSelected(true);
+            } else {
+                radioProcGeology.setSelected(true);
+                if (geologySourceCombo != null) geologySourceCombo.setValue("none");
+            }
         }
 
         isUpdatingFromPreset = false;
