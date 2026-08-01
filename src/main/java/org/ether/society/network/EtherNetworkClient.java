@@ -44,7 +44,7 @@ public class EtherNetworkClient {
         connected = true;
 
         String welcome = in.readUTF();
-        logger.info("Connected to Ether server: {}", welcome);
+        EtherSecurityAuditLogger.logAuditEvent("CLIENT_CONNECT", host + ":" + port, "Handshake: " + welcome);
     }
 
     public void sendPolicyInjection(String policyPayload) throws IOException {

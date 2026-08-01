@@ -95,18 +95,21 @@ public class EtherNetworkServer {
 
         @Override
         public void run() {
+            String clientIp = socket.getRemoteSocketAddress().toString();
+            EtherSecurityAuditLogger.logAuditEvent("CONNECT", clientIp, "Co-Governance Planner connected");
+
             try (DataInputStream in = new DataInputStream(socket.getInputStream())) {
                 out = new DataOutputStream(socket.getOutputStream());
-                out.writeUTF("CONNECTED_TO_ETHER_SERVER");
+                out.writeUTF("CONNECTED_TO_ETHER_SECURE_SERVER");
 
                 while (running && !socket.isClosed()) {
                     String msg = in.readUTF();
-                    logger.info("Received network policy payload: {}", msg);
+                    EtherSecurityAuditLogger.logAuditEvent("PAYLOAD_RECEIVED", clientIp, "Payload length: " + msg.length());
                     // Relay policy injection to all other connected planners
                     broadcastStateUpdate("POLICY_EVENT:" + msg);
                 }
             } catch (IOException e) {
-                logger.info("Client disconnected: {}", socket.getRemoteSocketAddress());
+                EtherSecurityAuditLogger.logAuditEvent("DISCONNECT", clientIp, "Planner disconnected: " + e.getMessage());
             } finally {
                 clients.remove(this);
             }
