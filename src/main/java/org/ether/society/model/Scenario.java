@@ -19,6 +19,8 @@ public class Scenario implements Serializable {
 
     // Planet Configuration
     private PlanetPreset planetPreset;
+    private EcologyPreset ecologyPreset;
+    private String ecologyPresetName;
     private boolean useRealEarthData;
 
     // Planet Physics
@@ -30,10 +32,15 @@ public class Scenario implements Serializable {
     // Human Start Conditions
     private long initialHumanCount;
     private double initialTechLevel;
+    private double initialCapitalPerCapita = 10.0; // Physical capital & tools in kg/capita
+    private double initialEnergyPerCapita = 50.0; // Fuel & stored energy in MJ/capita
+    private double initialFoodReserveMonths = 6.0; // Stored food reserves in months of consumption
+    private double initialInformationPerCapita = 100.0; // Stored knowledge/archive in bits/capita
     private String populationDensityType; // "ONE_CONTINENT", "DENSE", "SPARSE", "RIVER_VALLEYS"
 
     // Simulation Parameters
     private double cellSizeKm2;
+    private int targetCohortSize = 500; // Target population per demographic cohort node (1 to 10,000+)
     private double climateHarshness; // 0.0 to 1.0 (storms, droughts)
     private long startDateYear; // e.g. -100000
     private long seed = 12345L;
@@ -102,6 +109,22 @@ public class Scenario implements Serializable {
         this.planetPreset = planetPreset;
     }
 
+    public EcologyPreset getEcologyPreset() {
+        return ecologyPreset;
+    }
+
+    public void setEcologyPreset(EcologyPreset ecologyPreset) {
+        this.ecologyPreset = ecologyPreset;
+    }
+
+    public String getEcologyPresetName() {
+        return ecologyPresetName;
+    }
+
+    public void setEcologyPresetName(String ecologyPresetName) {
+        this.ecologyPresetName = ecologyPresetName;
+    }
+
     public boolean isUseRealEarthData() {
         return useRealEarthData;
     }
@@ -158,6 +181,38 @@ public class Scenario implements Serializable {
         this.initialTechLevel = initialTechLevel;
     }
 
+    public double getInitialCapitalPerCapita() {
+        return initialCapitalPerCapita;
+    }
+
+    public void setInitialCapitalPerCapita(double initialCapitalPerCapita) {
+        this.initialCapitalPerCapita = initialCapitalPerCapita;
+    }
+
+    public double getInitialEnergyPerCapita() {
+        return initialEnergyPerCapita;
+    }
+
+    public void setInitialEnergyPerCapita(double initialEnergyPerCapita) {
+        this.initialEnergyPerCapita = initialEnergyPerCapita;
+    }
+
+    public double getInitialFoodReserveMonths() {
+        return initialFoodReserveMonths;
+    }
+
+    public void setInitialFoodReserveMonths(double initialFoodReserveMonths) {
+        this.initialFoodReserveMonths = initialFoodReserveMonths;
+    }
+
+    public double getInitialInformationPerCapita() {
+        return initialInformationPerCapita;
+    }
+
+    public void setInitialInformationPerCapita(double initialInformationPerCapita) {
+        this.initialInformationPerCapita = initialInformationPerCapita;
+    }
+
     public String getPopulationDensityType() {
         return populationDensityType;
     }
@@ -172,6 +227,14 @@ public class Scenario implements Serializable {
 
     public void setCellSizeKm2(double cellSizeKm2) {
         this.cellSizeKm2 = cellSizeKm2;
+    }
+
+    public int getTargetCohortSize() {
+        return targetCohortSize;
+    }
+
+    public void setTargetCohortSize(int targetCohortSize) {
+        this.targetCohortSize = targetCohortSize;
     }
 
     public double getClimateHarshness() {

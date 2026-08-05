@@ -35,30 +35,20 @@ public class WindowUtils {
             setWindowsAppUserModelID("Ether.SocietySimulation.App");
 
             if (cachedIcons.isEmpty()) {
-                int[] iconSizes = {16, 24, 32, 48, 64, 128, 256};
-                for (int size : iconSizes) {
-                    try (InputStream iconStream = WindowUtils.class.getResourceAsStream("/icons/icon.png")) {
-                        if (iconStream != null) {
-                            Image img = new Image(iconStream, size, size, true, true);
-                            if (!img.isError()) {
-                                cachedIcons.add(img);
-                            }
+                try (InputStream iconStream = WindowUtils.class.getResourceAsStream("/icons/icon.png")) {
+                    if (iconStream != null) {
+                        Image mainImg = new Image(iconStream);
+                        if (!mainImg.isError()) {
+                            cachedIcons.add(mainImg);
                         }
                     }
-                }
-                // Fallback to original image if multi-size loading failed
-                if (cachedIcons.isEmpty()) {
-                    try (InputStream iconStream = WindowUtils.class.getResourceAsStream("/icons/icon.png")) {
-                        if (iconStream != null) {
-                            cachedIcons.add(new Image(iconStream));
-                        }
-                    }
+                } catch (Exception e) {
+                    logger.warn("Could not read main icon.png", e);
                 }
             }
 
             if (!cachedIcons.isEmpty()) {
-                stage.getIcons().clear();
-                stage.getIcons().addAll(cachedIcons);
+                stage.getIcons().setAll(cachedIcons);
             }
 
             // Set OS Taskbar icon once for the process (macOS Dock / AWT Taskbar)

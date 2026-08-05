@@ -12,10 +12,13 @@ import org.ether.society.i18n.I18n;
 
 import org.ether.society.model.Scenario;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +88,10 @@ public class MainView extends StackPane {
 
         // 2. Resources & Ecology Tab
         resourcePanel = new ResourceDistributionPanel(this::onResourcesApplied);
+        if (planetGeneratorPanel != null) {
+            resourcePanel.setPlanetPresetSupplier(planetGeneratorPanel::buildPresetFromUI);
+            resourcePanel.setPlanetPresetApplyCallback(planetGeneratorPanel::applyPreset);
+        }
         resourcesTab = new Tab();
         resourcesTab.setContent(resourcePanel);
         resourcesTab.setClosable(false);
@@ -108,11 +115,14 @@ public class MainView extends StackPane {
 
         tabPane.getTabs().addAll(planetTab, resourcesTab, setupTab, simulationTab, preferencesTab);
 
-        // Auto-pause when leaving simulation tab
+        // Tab selection change listener
         tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
             if (oldTab == simulationTab && newTab != simulationTab) {
                 logger.info("Auto-pausing simulation due to tab switch");
                 engine.pause();
+            }
+            if (newTab == resourcesTab && planetGeneratorPanel != null) {
+                resourcePanel.setActivePlanetPreset(planetGeneratorPanel.buildPresetFromUI());
             }
         });
 
@@ -184,6 +194,28 @@ public class MainView extends StackPane {
         // Make sure it doesn't block mouse
         notificationOverlay.setPickOnBounds(false);
         mapStack.getChildren().add(notificationOverlay);
+
+        // 4. Deferred Calculation Progress Overlay for Tab 4
+        ProgressBar simProgressBar = new ProgressBar(0);
+        simProgressBar.setMaxWidth(400);
+        simProgressBar.setPrefHeight(18);
+
+        Label simStatusLabel = new Label("⚡ Initialisation de la simulation...");
+        simStatusLabel.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 14px;");
+
+        VBox simProgressOverlay = new VBox(12, simStatusLabel, simProgressBar);
+        simProgressOverlay.setAlignment(Pos.CENTER);
+        simProgressOverlay.setStyle("-fx-background-color: rgba(15, 23, 42, 0.88); -fx-padding: 24; -fx-background-radius: 12; -fx-border-color: #38bdf8; -fx-border-radius: 12; -fx-border-width: 1.5;");
+        simProgressOverlay.setMaxSize(500, 130);
+        simProgressOverlay.setVisible(false);
+        simProgressOverlay.setManaged(false);
+
+        StackPane.setAlignment(simProgressOverlay, Pos.CENTER);
+        mapStack.getChildren().add(simProgressOverlay);
+
+        if (setupPanel != null) {
+            setupPanel.setProgressControls(simProgressBar, simStatusLabel, simProgressOverlay);
+        }
 
         startEventPolling();
 

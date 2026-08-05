@@ -67,6 +67,37 @@ This simulation uses real-world datasets from the following sources:
 
 ---
 
+## Macro-Historical & Cliodynamic Data Sources
+
+For detailed citations and metric mappings across the 20-variable benchmark suite, see [HISTORICAL_BENCHMARKS.md](HISTORICAL_BENCHMARKS.md).
+
+### **Seshat: Global History Databank**
+- **Source**: Global History Databank / Peter Turchin et al.
+- **URL**: <https://github.com/datasets/seshat> | <https://seshatdatabank.info>
+- **Citation**: Turchin, P., et al. (2015). *Seshat: The Global History Databank*. Cliodynamics, 6(1), 77-107.
+- **Usage**: Elite Overproduction Index (`eliteOverproductionIndex`), Sociopolitical Instability (`sociopoliticalInstability`), Asabiyyah decay parameters.
+
+### **Correlates of War (COW) Project**
+- **Source**: University of Michigan
+- **URL**: <https://correlatesofwar.org>
+- **Citation**: Singer, J. D., & Small, M. (1972 / 2020). *The Wages of War*. Correlates of War Project.
+- **Usage**: Interstate warfare, conflict casualty baselines, sociopolitical violence index.
+
+### **Maddison Project Database (2020)**
+- **Source**: Groningen Growth and Development Centre (GGDC)
+- **URL**: <https://www.rug.nl/ggdc/historicaldevelopment/maddison/>
+- **Citation**: Bolt, J., & van Zanden, J. L. (2020). *Maddison Project Database 2020*.
+- **Usage**: Gross World Product (GWP) historical series in 1990 International Dollars.
+
+### **ORBIS Stanford Geospatial Network Model**
+- **Source**: Stanford University (Walter Scheidel)
+- **URL**: <https://orbis.stanford.edu>
+- **Citation**: Scheidel, W. (2014). *ORBIS: The Stanford Geospatial Network Model of the Roman World*.
+- **Usage**: Historical information transmission velocity (`informationSpeed`).
+
+---
+
 ## Note on Data Processing
 
-All datasets are preprocessed and converted to H3 hexagonal grid format for simulation efficiency. Original data resolutions may be interpolated to match simulation cell sizes.
+All datasets are preprocessed and converted to H3 hexagonal grid format for simulation efficiency. Original data resolutions may be interpolated to match simulation cell sizes. Benchmark JSON files calibrate the `HistoricalValidationKernel`.
+

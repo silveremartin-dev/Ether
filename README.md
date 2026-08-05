@@ -66,7 +66,7 @@ Ether provides 30 pluggable Type B simulation plugins operating in dual **Pure**
 23. **David Buss Evolutionary Mating & Mobilization** (Elite polygyny surplus $\to$ young male military expansion)
 
 ### 📈 Historical Validation Kernel (`HistoricalValidationKernel`)
-Ether includes an empirical validation engine computing **Root Mean Square Error (RMSE)** and **Coefficient of Determination ($R^2$)** against empirical demographic datasets from -10,000 BCE to 2026 CE to calibrate model parameters.
+Ether includes an empirical validation engine computing **Root Mean Square Error (RMSE)** and **Coefficient of Determination ($R^2$)** against a 20-variable empirical dataset from -10,000 BCE to 2026 CE (sourced from **Seshat Databank**, **Maddison Project**, **Correlates of War**, **HYDE 3.2**, and **PAGES 2k**). See [docs/HISTORICAL_BENCHMARKS.md](docs/HISTORICAL_BENCHMARKS.md) for full citations and metrics.
 
 ---
 

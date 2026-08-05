@@ -73,16 +73,7 @@ public class ExternalDataService {
         }
 
         // 2. Fallback to Procedural "Earth-like"
-        // Use a known seed that produces earth-like continents
-        org.ether.society.procedural.PlanetPreset earthConfig = new org.ether.society.procedural.PlanetPreset(
-                "Earth-like",
-                5, // Resolution 5
-                112358L, // Seed
-                0.5, // Freq
-                1.5, // Scale
-                0.65, // Water
-                40.0 // Temp Gradient
-        );
+        org.ether.society.procedural.PlanetPreset earthConfig = PlanetPreset.EARTH_LIKE;
 
         return new org.ether.society.procedural.ProceduralGenerator().generatePlanet(earthConfig);
     }

@@ -31,7 +31,10 @@ class PlanetPresetRepositoryTest {
     @Test
     @DisplayName("Saving custom preset appends to repository")
     void testSaveCustomPreset() {
-        PlanetPreset custom = new PlanetPreset("TestPlanet", 5, 12345L, 0.5, 1.0, 0.4, 30.0);
+        PlanetPreset custom = new PlanetPreset(
+                "TestPlanet", 5, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 0.5, 1.0, 0.4, 30.0, 21.0, 0.30, 1.0,
+                false, 1.0, 0.0, 420.0, 2.5, 1.5, null, null, null, null, null, null,
+                false, "none", false, "", 12445L, false, "", 13345L, false, "", 14345L);
         int initialSize = repository.findAll().size();
 
         repository.save(custom);

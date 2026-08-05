@@ -35,7 +35,11 @@ public class EdoJapanIsolationEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() <= 0) continue;
 
-            if (sakokuIsolationActive) {
+            // Apply Sakoku isolation only to Japan geographic region
+            boolean isJapanRegion = (cell.getLatitude() >= 30.0 && cell.getLatitude() <= 45.0) &&
+                                    (cell.getLongitude() >= 128.0 && cell.getLongitude() <= 146.0);
+
+            if (sakokuIsolationActive && isJapanRegion) {
                 // Forest conservation prevents soil erosion & degradation
                 cell.setSoilOrganicCarbon(Math.max(15.0, cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 15.0));
 

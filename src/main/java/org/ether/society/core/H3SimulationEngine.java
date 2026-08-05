@@ -133,10 +133,18 @@ public class H3SimulationEngine implements ISimulationEngine {
         int populatedCount = (int) cells.stream().filter(c -> c.getPopulation() != null && c.getPopulation() > 0).count();
         initializePoliticalSeeding(populatedCount);
 
+        int cohortSize = scenario != null && scenario.getTargetCohortSize() > 0 ? scenario.getTargetCohortSize() : 500;
+        if (demographicKernel != null) {
+            demographicKernel.setTargetCohortSize(cohortSize);
+        }
+
+        long initialPop = scenario != null ? scenario.getInitialHumanCount() : 1_000_000L;
+        int estimatedAgents = (int) Math.max(cells.size(), Math.min(10_000_000L, initialPop / Math.max(1, cohortSize)));
+
         this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(cells.size());
-        this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(Math.max(1, cells.size() / 10));
+        this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(Math.max(1000, estimatedAgents * 2));
         org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
-        org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer);
+        org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer, cohortSize);
 
         if (historyManager != null) {
             historyManager.reset();
@@ -238,10 +246,17 @@ public class H3SimulationEngine implements ISimulationEngine {
 
         if (newCells != null && !newCells.isEmpty()) {
             initializePopulation();
+            int cohortSize = currentScenario != null && currentScenario.getTargetCohortSize() > 0 ? currentScenario.getTargetCohortSize() : 500;
+            if (demographicKernel != null) {
+                demographicKernel.setTargetCohortSize(cohortSize);
+            }
+            long initialPop = currentScenario != null ? currentScenario.getInitialHumanCount() : 1_000_000L;
+            int estimatedAgents = (int) Math.max(cells.size(), Math.min(10_000_000L, initialPop / Math.max(1, cohortSize)));
+
             this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(cells.size());
-            this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(Math.max(1, cells.size() / 10));
+            this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(Math.max(1000, estimatedAgents * 2));
             org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
-            org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer);
+            org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer, cohortSize);
         } else {
             this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(0);
             this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(0);
@@ -361,6 +376,10 @@ public class H3SimulationEngine implements ISimulationEngine {
                 org.ether.society.procedural.JevonsParadoxEngine.processJevonsRebound(cells, 1.0);
                 org.ether.society.procedural.World3CouplingEngine.processWorld3System(cells, 1.0);
                 org.ether.society.procedural.KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(cells, 1.0);
+                org.ether.society.procedural.BifurcationChaosEngine.processBifurcationAnalysis(cells, 1.0);
+                org.ether.society.procedural.DynamicHydrographicSiltationEngine.processHydrographicSiltation(cells, 1.0);
+                org.ether.society.procedural.PhysicalLeontiefInputOutputEngine.processLeontiefInputOutput(cells, 1.0);
+                org.ether.society.procedural.GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(cells, 1.0);
                 org.ether.society.procedural.ProceduralEngineRegistry.processPlugins(cells, 1.0);
 
                 // Statistics

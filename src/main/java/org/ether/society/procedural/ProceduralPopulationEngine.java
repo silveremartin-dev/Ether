@@ -66,18 +66,20 @@ public class ProceduralPopulationEngine {
 
         if (landCells.isEmpty()) return;
 
+        double capitalPerCapita = scenario != null ? scenario.getInitialCapitalPerCapita() : Math.pow(10, (techLevel - 0.2) / 2.2);
+
         long seedVal = scenario != null ? scenario.getSeed() : 12345L;
         if (isEarthPreset) {
-            distributeEarthHistorical(landCells, totalPopulation, techLevel);
+            distributeEarthHistorical(landCells, totalPopulation, techLevel, capitalPerCapita);
         } else {
-            distributeProcedural(landCells, totalPopulation, techLevel, pattern, seedVal);
+            distributeProcedural(landCells, totalPopulation, techLevel, pattern, seedVal, capitalPerCapita);
         }
     }
 
     /**
      * Earth pre-generated historical population density mapping based on tech suitability.
      */
-    private static void distributeEarthHistorical(List<H3Cell> landCells, long totalPopulation, double techLevel) {
+    private static void distributeEarthHistorical(List<H3Cell> landCells, long totalPopulation, double techLevel, double capitalPerCapita) {
         double[] weights = new double[landCells.size()];
         double totalWeight = 0.0;
 
@@ -95,8 +97,8 @@ public class ProceduralPopulationEngine {
             totalWeight += weights[i];
         }
 
-        applyNormalizedPopulation(landCells, weights, totalWeight, totalPopulation);
-        logger.info("Distributed {} humans on Earth map (Tech: {})", totalPopulation, techLevel);
+        applyNormalizedPopulation(landCells, weights, totalWeight, totalPopulation, capitalPerCapita);
+        logger.info("Distributed {} humans on Earth map (Tech: {}, Capital: {} kg/capita)", totalPopulation, techLevel, capitalPerCapita);
     }
 
     /**
@@ -179,7 +181,7 @@ public class ProceduralPopulationEngine {
      * Procedural human population simulation taking into account heightmap, temperature, biomes,
      * river/waterway proximity, and technological adaptation capacity across eras.
      */
-    private static void distributeProcedural(List<H3Cell> landCells, long totalPopulation, double techLevel, String pattern, long seed) {
+    private static void distributeProcedural(List<H3Cell> landCells, long totalPopulation, double techLevel, String pattern, long seed, double capitalPerCapita) {
         double[] weights = new double[landCells.size()];
         double totalWeight = 0.0;
 
@@ -221,8 +223,8 @@ public class ProceduralPopulationEngine {
             for (double w : weights) totalWeight += w;
         }
 
-        applyNormalizedPopulation(landCells, weights, totalWeight, totalPopulation);
-        logger.info("Procedurally distributed {} humans across {} cells (Tech: {}, Pattern: {})", totalPopulation, landCells.size(), techLevel, pattern);
+        applyNormalizedPopulation(landCells, weights, totalWeight, totalPopulation, capitalPerCapita);
+        logger.info("Procedurally distributed {} humans across {} cells (Capital: {} kg/capita, Pattern: {})", totalPopulation, landCells.size(), capitalPerCapita, pattern);
     }
 
     /**
@@ -331,6 +333,7 @@ public class ProceduralPopulationEngine {
         Biome b = cell.getBiome();
 
         return switch (pattern) {
+            case "UNBIASED_NATURAL", "UNBIASED", "NONE", "NATURAL_EQUILIBRIUM" -> 1.0;
             case "FERTILE_CRESCENT", "RIVER_VALLEYS" -> (b == Biome.PLAINS || b == Biome.BEACH) ? 4.5 : 0.3;
             case "MESOAMERICA" -> (b == Biome.JUNGLE || b == Biome.HILLS || b == Biome.PLAINS) ? 3.5 : 0.5;
             case "MESOPOTAMIA_ASSYRIA" -> (b == Biome.PLAINS) ? 5.0 : 0.2;
@@ -363,11 +366,10 @@ public class ProceduralPopulationEngine {
      * Normalizes weights so sum of cell populations exactly matches totalPopulation.
      * Computes cell terrain friction matrix and populates age pyramid cohorts based on tech level.
      */
-    private static void applyNormalizedPopulation(List<H3Cell> landCells, double[] weights, double totalWeight, long totalPopulation) {
+    private static void applyNormalizedPopulation(List<H3Cell> landCells, double[] weights, double totalWeight, long totalPopulation, double capitalPerCapita) {
         if (totalWeight <= 0) return;
 
-        // Default tech level if unassigned
-        double techLevel = 2.0;
+        double derivedTech = Math.clamp(Math.log10(Math.max(1.0, capitalPerCapita)) * 2.2 + 0.2, 0.2, 10.0);
 
         long assigned = 0;
         for (int i = 0; i < landCells.size(); i++) {
@@ -376,10 +378,15 @@ public class ProceduralPopulationEngine {
             long pop = Math.round(totalPopulation * proportion);
             cell.setPopulation((int) pop);
             
+            // Seed physical capital & tool stocks from initial capital K0
+            double cellCapital = pop * capitalPerCapita;
+            cell.setResourceCapital(cellCapital);
+            cell.setResourceMetal(cellCapital * 0.15);
+            cell.setTechnologyLevel(derivedTech);
+
             // Calculate movement friction & age pyramid cohort distribution
-            double cellTech = cell.getTechnologyLevel() > 0 ? cell.getTechnologyLevel() : techLevel;
-            cell.calculateMovementFriction(cellTech);
-            cell.updateAgePyramidFromTotal(cellTech);
+            cell.calculateMovementFriction(derivedTech);
+            cell.updateAgePyramidFromTotal(derivedTech);
 
             assigned += pop;
         }
@@ -389,7 +396,8 @@ public class ProceduralPopulationEngine {
         if (diff != 0 && !landCells.isEmpty()) {
             H3Cell topCell = landCells.get(0);
             topCell.setPopulation(Math.max(0, topCell.getPopulation() + (int) diff));
-            topCell.updateAgePyramidFromTotal(topCell.getTechnologyLevel() > 0 ? topCell.getTechnologyLevel() : techLevel);
+            topCell.setResourceCapital(topCell.getPopulation() * capitalPerCapita);
+            topCell.updateAgePyramidFromTotal(derivedTech);
         }
     }
 }

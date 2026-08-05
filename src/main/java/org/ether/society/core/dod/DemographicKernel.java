@@ -5,6 +5,16 @@ package org.ether.society.core.dod;
  */
 public class DemographicKernel {
 
+    private float targetCohortSize = 500.0f; // Target individual population threshold per cohort
+
+    public float getTargetCohortSize() {
+        return targetCohortSize;
+    }
+
+    public void setTargetCohortSize(float targetCohortSize) {
+        this.targetCohortSize = Math.max(1.0f, targetCohortSize);
+    }
+
     /**
      * Exécute un cycle de simulation démographique.
      */
@@ -92,8 +102,8 @@ public class DemographicKernel {
         for (int i = 0; i < agents.getCapacity(); i++) {
             if (hexIds[i] == -1) continue;
             
-            // Seuil de reproduction
-            if (mass[i] > 1000.0f && energy[i] > 500.0f) {
+            // Seuil de reproduction (mitose de cohorte basé sur la taille cible)
+            if (mass[i] > targetCohortSize * 2.0f && energy[i] > 100.0f) {
                 // Trouver un slot libre
                 int newSlot = findFreeSlot(agents);
                 if (newSlot != -1) {

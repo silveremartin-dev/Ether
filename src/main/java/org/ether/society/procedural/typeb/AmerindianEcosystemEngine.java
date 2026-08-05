@@ -34,6 +34,9 @@ public class AmerindianEcosystemEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() <= 0) continue;
 
+            boolean isAmericas = (cell.getLongitude() >= -170.0 && cell.getLongitude() <= -30.0);
+            if (!isAmericas) continue;
+
             double pop = cell.getPopulation();
 
             // Draft animal constraint: Mechanical work density capped without horses/cattle

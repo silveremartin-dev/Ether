@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Physically-based procedural planet generator using Simplex Noise on a sphere.
@@ -131,7 +132,7 @@ public class ProceduralGenerator {
         double r = computeRainfallAt(lat, lng, rainfallNoise, freq, preset);
 
         // ── 5. Temperature (with Tidal Geothermal Heating) ──────────────────────
-        double tempC = computeTemperatureAt(lat, e, elevMeters, r, preset, tidalForce);
+        double tempC = computeTemperatureAt(lat, lng, e, elevMeters, r, preset, tidalForce);
 
         // ── 6. Seasonality ─────────────────────────────────────────────────────
         double seasonality = computeSeasonalityAt(lat, lng, seasonNoise, preset);
@@ -172,12 +173,19 @@ public class ProceduralGenerator {
     }
 
     public List<H3Cell> generatePlanet(PlanetPreset preset) {
+        return generatePlanet(preset, null);
+    }
+
+    public List<H3Cell> generatePlanet(PlanetPreset preset, java.util.function.BiConsumer<Integer, Integer> progressCallback) {
         logger.info("Generating planet: {} (Res: {}, Seed: {}, Radius: {} km, Atmo: {} atm, Satellite: {}, TidalForce: {})",
                 preset.name(), preset.resolution(), preset.seed(), preset.radiusKm(), preset.atmospherePressureAtm(),
                 preset.isSatellite(), computeTidalForceIntensity(preset));
 
         List<H3Cell> cells = H3Service.getInstance().generateGlobalMetadata(preset.resolution());
         logger.info("Base grid: {} H3 cells", cells.size());
+
+        int total = cells.size();
+        java.util.concurrent.atomic.AtomicInteger counter = new java.util.concurrent.atomic.AtomicInteger(0);
 
         cells.parallelStream().forEach(cell -> {
             PlanetPoint p = getPlanetPoint(cell.getLatitude(), cell.getLongitude(), preset);
@@ -186,7 +194,14 @@ public class ProceduralGenerator {
             cell.setRainfall(p.rainfall());
             cell.setBiome(p.biome());
             populateResources(cell, p, preset);
+
+            int done = counter.incrementAndGet();
+            if (progressCallback != null && (done % 50 == 0 || done == total)) {
+                progressCallback.accept(done, total);
+            }
         });
+
+        accumulateHydrographyFlow(cells, preset);
 
         return cells;
     }
@@ -211,19 +226,26 @@ public class ProceduralGenerator {
         return Math.max(-1.0, Math.min(1.0, e));
     }
 
-    private double computeTemperatureAt(double lat, double normElev, double elevMeters,
+    private double computeTemperatureAt(double lat, double lng, double normElev, double elevMeters,
                                          double rainfall, PlanetPreset preset, double tidalForce) {
         // ── 1. Relative Surface Gravity & Dynamic Lapse Rate ───────────────────
         double rRel = Math.max(0.1, preset.radiusKm() / 6371.0);
         double gRel = preset.isSatellite() ? Math.max(0.05, rRel * 0.4) : Math.max(0.1, rRel);
         double lapseRateCPerKm = 6.5 * gRel;
 
-        // ── 2. Rotation & Latitudinal Gradient Damping ────────────────────────
+        // ── 2. Rotation & Latitudinal Gradient Damping / Tidal Locking ─────────
         double dayHours = Math.max(1.0, preset.dayLengthHours());
         double rotationDamping = Math.min(1.2, Math.max(0.15, Math.pow(24.0 / dayHours, 0.35)));
 
-        double cosLat  = Math.cos(Math.toRadians(lat));
-        double latTemp = preset.averageTempC() + (preset.temperatureGradient() * rotationDamping) * (cosLat - 0.5);
+        double latTemp;
+        if (preset.isTidalLocked()) {
+            // Tidally locked / Eyeball World: subsolar hot spot at (0,0), dark cold side at (0,180)
+            double cosTheta = Math.cos(Math.toRadians(lat)) * Math.cos(Math.toRadians(lng));
+            latTemp = preset.averageTempC() + preset.temperatureGradient() * (cosTheta - 0.2);
+        } else {
+            double cosLat  = Math.cos(Math.toRadians(lat));
+            latTemp = preset.averageTempC() + (preset.temperatureGradient() * rotationDamping) * (cosLat - 0.5);
+        }
 
         // ── 3. CO₂ Partial Pressure Greenhouse Forcing ────────────────────────
         double pAtmo = Math.max(0.0, preset.atmospherePressureAtm());
@@ -403,6 +425,54 @@ public class ProceduralGenerator {
             }
             case DESERT -> cell.setResourceMetal(200.0);
             default -> { }
+        }
+    }
+
+    private void accumulateHydrographyFlow(List<H3Cell> cells, PlanetPreset preset) {
+        if (cells == null || cells.isEmpty() || preset.atmospherePressureAtm() < 0.01) return;
+
+        double waterLvl = preset.waterLevel();
+        List<H3Cell> landCells = cells.stream()
+                .filter(c -> c.getElevation() != null && c.getElevation() > waterLvl)
+                .sorted((c1, c2) -> Double.compare(c2.getElevation(), c1.getElevation()))
+                .toList();
+
+        if (landCells.isEmpty()) return;
+
+        Map<Long, Double> flowAccum = new java.util.concurrent.ConcurrentHashMap<>();
+        for (H3Cell c : landCells) {
+            flowAccum.put(c.getH3Index(), c.getRainfall() != null ? c.getRainfall() : 0.2);
+        }
+
+        for (H3Cell c : landCells) {
+            double curElev = c.getElevation();
+            double curFlow = flowAccum.getOrDefault(c.getH3Index(), 0.2);
+
+            H3Cell lowestNeighbor = null;
+            double minElev = curElev;
+
+            for (H3Cell n : cells) {
+                if (n == c) continue;
+                double dist = Math.hypot(n.getLatitude() - c.getLatitude(), n.getLongitude() - c.getLongitude());
+                if (dist < 3.5 && n.getElevation() < minElev) {
+                    minElev = n.getElevation();
+                    lowestNeighbor = n;
+                }
+            }
+
+            if (lowestNeighbor != null && lowestNeighbor.getElevation() > waterLvl) {
+                long nIdx = lowestNeighbor.getH3Index();
+                flowAccum.put(nIdx, flowAccum.getOrDefault(nIdx, 0.2) + curFlow * 0.85);
+            }
+        }
+
+        for (H3Cell c : landCells) {
+            double rawFlow = flowAccum.getOrDefault(c.getH3Index(), 0.0);
+            double normalizedRiver = Math.min(1.0, Math.max(0.0, Math.log1p(rawFlow) / 3.5));
+            c.setWaterResource(normalizedRiver * 1000.0);
+
+            double baseAquifer = c.getFreshwaterAquifer() != null ? c.getFreshwaterAquifer() : 200.0;
+            c.setFreshwaterAquifer(Math.min(1000.0, Math.max(0.0, baseAquifer + normalizedRiver * 400.0)));
         }
     }
 }

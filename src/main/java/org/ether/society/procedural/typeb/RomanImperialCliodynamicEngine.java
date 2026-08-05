@@ -35,6 +35,10 @@ public class RomanImperialCliodynamicEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() <= 0) continue;
 
+            boolean isRomanRegion = (cell.getLatitude() >= 25.0 && cell.getLatitude() <= 55.0) &&
+                                    (cell.getLongitude() >= -10.0 && cell.getLongitude() <= 45.0);
+            if (!isRomanRegion) continue;
+
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 500.0;
             double pop = cell.getPopulation();
 

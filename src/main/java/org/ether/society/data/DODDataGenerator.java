@@ -79,15 +79,26 @@ public class DODDataGenerator {
      * This creates "Demographic Nodes" (cohorts) for cells with population.
      */
     public static void initializeAgentBuffer(WorldBuffer world, AgentBuffer agents) {
-        logger.info("Initializing AgentBuffer from population density...");
+        initializeAgentBuffer(world, agents, 500);
+    }
+
+    public static void initializeAgentBuffer(WorldBuffer world, AgentBuffer agents, int targetCohortSize) {
+        logger.info("Initializing AgentBuffer from population density (target cohort size: {})...", targetCohortSize);
         int agentIndex = 0;
+        int effectiveTarget = Math.max(1, targetCohortSize);
         
         for (int i = 0; i < world.getCapacity(); i++) {
-            float pop = world.getBiomassHuman()[i];
-            if (pop > 0 && agentIndex < agents.getCapacity()) {
+            float totalCellPop = world.getBiomassHuman()[i];
+            if (totalCellPop <= 0 || agentIndex >= agents.getCapacity()) continue;
+            
+            // Subdivide population into cohorts of targetCohortSize
+            int numCohorts = Math.max(1, (int) Math.ceil(totalCellPop / (float) effectiveTarget));
+            float cohortMass = totalCellPop / (float) numCohorts;
+
+            for (int c = 0; c < numCohorts && agentIndex < agents.getCapacity(); c++) {
                 agents.getHexIds()[agentIndex] = i;
                 agents.getH3Indexes()[agentIndex] = world.getH3Indexes()[i];
-                agents.getMass()[agentIndex] = pop;
+                agents.getMass()[agentIndex] = cohortMass;
                 agents.getEnergy()[agentIndex] = 100.0f; // Baseline energy
                 agents.getSigmaCost()[agentIndex] = 0.1f; // Initial structure cost
                 agents.getTechLevel()[agentIndex] = world.getTechnologyLevel()[i];
@@ -102,6 +113,6 @@ public class DODDataGenerator {
             }
         }
         
-        logger.info("Initialized {} demographic agents.", agentIndex);
+        logger.info("Initialized {} demographic agent cohort nodes.", agentIndex);
     }
 }

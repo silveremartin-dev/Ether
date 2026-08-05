@@ -33,6 +33,11 @@ public class FertileCrescentSalinizationEngine {
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 
+            boolean isFertileCrescent = (cell.getLatitude() >= 28.0 && cell.getLatitude() <= 38.0) &&
+                                        (cell.getLongitude() >= 34.0 && cell.getLongitude() <= 48.0);
+
+            if (!isFertileCrescent) continue;
+
             double food = cell.getFoodResource() != null ? cell.getFoodResource() : 1000.0;
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
 

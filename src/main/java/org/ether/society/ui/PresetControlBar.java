@@ -231,12 +231,23 @@ public class PresetControlBar<T> extends VBox {
      * the configuration is now in an unsaved custom state.
      */
     public void notifyParametersChanged() {
-        if (trackingChanges) {
+        if (trackingChanges || presetCombo.getValue() != null) {
             nameField.clear();
             nameField.setPromptText(I18n.getOrDefault("preset.name.unsaved", "Configuration non sauvegardée…"));
             nameField.setStyle("-fx-prompt-text-fill: #f59e0b; -fx-font-style: italic;");
             // Deselect combo without triggering its action
             presetCombo.getSelectionModel().clearSelection();
+            trackingChanges = false;
+        }
+    }
+
+    /**
+     * Sets the text of the inline name field.
+     */
+    public void setNameText(String name) {
+        if (nameField != null) {
+            nameField.setText(name != null ? name : "");
+            nameField.setStyle("");
         }
     }
 
