@@ -87,7 +87,6 @@ public class ScenarioSetupPanel extends BorderPane {
     private Spinner<Double> initialEnergySpinner;
     private Spinner<Double> initialFoodSpinner;
     private Spinner<Double> initialInfoSpinner;
-    private Slider initialTechLevelSlider;
     private ComboBox<String> densityPatternCombo;
     private Spinner<Integer> urbanCentersSpinner;
 
@@ -612,17 +611,6 @@ public class ScenarioSetupPanel extends BorderPane {
         Label demoSeedLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.seed.label", "Graine Aléatoire Démographique :"));
         popGrid.addRow(4, demoSeedLabel, demoSeedBox);
 
-        initialTechLevelSlider = new Slider(0.0, 10.0, 1.0);
-        initialTechLevelSlider.setBlockIncrement(0.5);
-        initialTechLevelSlider.setMajorTickUnit(2.0);
-        initialTechLevelSlider.setMinorTickCount(3);
-        initialTechLevelSlider.setShowTickLabels(true);
-        initialTechLevelSlider.setShowTickMarks(true);
-        initialTechLevelSlider.setTooltip(new Tooltip("🔬 Niveau Technologique Initial (0.0: Âge de Pierre, 1.0: Antiquité, 4.0: Industrialisation, 10.0: Singularité)"));
-        Label techLabel = new Label("🔬 Niveau Technologique (0 - 10) :");
-        Tooltip.install(techLabel, initialTechLevelSlider.getTooltip());
-        popGrid.addRow(5, techLabel, initialTechLevelSlider);
-
         // Secondary initial physical state spinners
         initialEnergySpinner = new Spinner<>(0.0, 1_000_000.0, 50.0, 50.0);
         initialEnergySpinner.setEditable(true);
@@ -721,7 +709,6 @@ public class ScenarioSetupPanel extends BorderPane {
 
         // Live preview listeners
         initialHumanCountSpinner.valueProperty().addListener((obs, oldV, newV) -> { notifyParamChange(); if (currentPreviewCells != null) { distributeInitialPopulation(currentPreviewCells); drawPreview(); } });
-        initialTechLevelSlider.valueProperty().addListener((obs, oldV, newV) -> { notifyParamChange(); if (currentPreviewCells != null) { distributeInitialPopulation(currentPreviewCells); drawPreview(); } });
         densityPatternCombo.valueProperty().addListener((obs, oldV, newV) -> { notifyParamChange(); if (currentPreviewCells != null) { distributeInitialPopulation(currentPreviewCells); drawPreview(); } });
         urbanCentersSpinner.valueProperty().addListener((obs, oldV, newV) -> notifyParamChange());
 
@@ -888,12 +875,12 @@ public class ScenarioSetupPanel extends BorderPane {
             passes.add("✅ Hydrologie équilibrée (Niveau d'eau = " + String.format("%.0f%%", (1.0 + p.waterLevel()) * 50) + ")");
         }
 
-        double tech = startYearSpinner != null ? (startYearSpinner.getValue() > 1800 ? 10.0 : 5.0) : 1.0;
+        double capitalK0 = initialCapitalSpinner != null ? initialCapitalSpinner.getValue() : 1000.0;
         double crustal = eco != null ? eco.crustalMetalOresGt() : 80.0;
-        if (tech >= 4.0 && crustal < 20.0) {
-            warnings.add("⚠️ Déficit en Métaux Industriels : Niveau techno " + String.format("%.1f", tech) + " configuré mais métaux crustaux faibles (" + String.format("%.1f Gt", crustal) + "). Risque de pénurie industrielle.");
+        if (capitalK0 >= 8000.0 && crustal < 20.0) {
+            warnings.add("⚠️ Déficit en Métaux Industriels : Capital physique " + String.format("%.0f", capitalK0) + " kg/hab configuré mais métaux crustaux faibles (" + String.format("%.1f Gt", crustal) + "). Risque de pénurie industrielle.");
         } else {
-            passes.add("✅ Compatibilité Matériaux / Technologie");
+            passes.add("✅ Compatibilité Matériaux / Capital Physique");
         }
 
         long pop = initialHumanCountSpinner != null ? initialHumanCountSpinner.getValue() : 1_000_000L;
@@ -1228,9 +1215,6 @@ public class ScenarioSetupPanel extends BorderPane {
             }
             if (initialInfoSpinner != null && initialInfoSpinner.getValueFactory() != null) {
                 initialInfoSpinner.getValueFactory().setValue(s.getInitialInformationPerCapita());
-            }
-            if (initialTechLevelSlider != null) {
-                initialTechLevelSlider.setValue(s.getInitialTechLevel());
             }
 
             if (s.getPopulationDensityType() != null && densityPatternCombo != null && densityPatternCombo.getItems().contains(s.getPopulationDensityType())) {
@@ -2355,7 +2339,6 @@ public class ScenarioSetupPanel extends BorderPane {
         s.setInitialEnergyPerCapita(initialEnergySpinner != null ? initialEnergySpinner.getValue() : 50.0);
         s.setInitialFoodReserveMonths(initialFoodSpinner != null ? initialFoodSpinner.getValue() : 6.0);
         s.setInitialInformationPerCapita(initialInfoSpinner != null ? initialInfoSpinner.getValue() : 100.0);
-        s.setInitialTechLevel(initialTechLevelSlider != null ? initialTechLevelSlider.getValue() : 1.0);
         s.setPopulationDensityType(densityPatternCombo.getValue());
         s.setEcologyPreset(ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null);
         if (ecologyPresetCombo != null && ecologyPresetCombo.getValue() != null) {
