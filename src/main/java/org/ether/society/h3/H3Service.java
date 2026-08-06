@@ -84,7 +84,7 @@ public class H3Service {
      */
     public List<Long> getNeighbors(long h3Index) {
         // gridDisk returns center + neighbors, so we filter out the center
-        List<Long> disk = h3.gridDisk(h3Index, 1);
+        List<Long> disk = new ArrayList<>(h3.gridDisk(h3Index, 1));
         disk.remove(Long.valueOf(h3Index));
         return disk;
     }

@@ -45,6 +45,11 @@ public class ResourceSystem {
                 waterRegen = rainfall * 2.0;
                 woodRegen = 0.5;
                 break;
+            case SAVANNAH:
+                foodRegen = 4.5; // Abundant game & wild cereals
+                waterRegen = rainfall * 2.5;
+                woodRegen = 1.0;
+                break;
             case FOREST:
                 foodRegen = 4.0; // Abundant wildlife and plants
                 waterRegen = rainfall * 3.0;
@@ -72,6 +77,10 @@ public class ResourceSystem {
             case SNOW:
                 foodRegen = 0.1;
                 waterRegen = 0.5; // Snow melt
+                break;
+            case GLACIER:
+                foodRegen = 0.05;
+                waterRegen = 0.2;
                 break;
             case TUNDRA:
                 foodRegen = 0.5;

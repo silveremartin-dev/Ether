@@ -195,12 +195,14 @@ public class MiniMap extends Canvas {
             case BEACH -> Color.rgb(241, 196, 15);
             case DESERT -> Color.rgb(230, 126, 34);
             case PLAINS -> Color.rgb(39, 174, 96);
+            case SAVANNAH -> Color.rgb(180, 200, 70);
             case FOREST -> Color.rgb(22, 160, 133);
             case JUNGLE -> Color.rgb(0, 128, 0);
             case MOUNTAINS -> Color.rgb(149, 165, 166);
             case HILLS -> Color.rgb(127, 140, 141);
             case TUNDRA -> Color.rgb(189, 195, 199);
             case SNOW -> Color.rgb(236, 240, 241);
+            case GLACIER -> Color.rgb(220, 240, 255);
         };
     }
 }

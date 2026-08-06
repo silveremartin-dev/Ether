@@ -281,9 +281,23 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     private void startGameLoop() {
-        executorService = Executors.newSingleThreadScheduledExecutor();
-        long period = config.simulation().tickRateMs() / speedMultiplier;
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdownNow();
+        }
+        executorService = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r, "H3SimulationEngine-Thread");
+            t.setDaemon(true);
+            return t;
+        });
+        long period = Math.max(1, config.simulation().tickRateMs() / speedMultiplier);
         executorService.scheduleAtFixedRate(this::tick, 0, period, TimeUnit.MILLISECONDS);
+    }
+
+    public void shutdown() {
+        running.set(false);
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdownNow();
+        }
     }
 
     private int tickCounter = 0;

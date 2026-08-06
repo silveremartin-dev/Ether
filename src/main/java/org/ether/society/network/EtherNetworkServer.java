@@ -35,7 +35,11 @@ public class EtherNetworkServer {
     private ServerSocket serverSocket;
     private boolean running = false;
     private final Set<ClientHandler> clients = Collections.synchronizedSet(new HashSet<>());
-    private final ExecutorService threadPool = Executors.newCachedThreadPool();
+    private final ExecutorService threadPool = Executors.newCachedThreadPool(r -> {
+        Thread t = new Thread(r, "EtherNetworkServer-Thread");
+        t.setDaemon(true);
+        return t;
+    });
 
     public EtherNetworkServer(int port) {
         this.port = port;

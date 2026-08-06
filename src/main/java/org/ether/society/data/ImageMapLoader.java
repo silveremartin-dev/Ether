@@ -109,7 +109,13 @@ public class ImageMapLoader {
                 int y = (int) Math.min(v * hElev, hElev - 1);
                 Color c = elevReader.getColor(x, y);
                 double brightness = c.getBrightness(); // 0..1
-                double elevation = minAlt + brightness * (maxAlt - minAlt);
+                double waterLvl = 0.35; // Standard sea level baseline threshold
+                double elevation;
+                if (brightness < waterLvl) {
+                    elevation = minAlt * (1.0 - brightness / waterLvl);
+                } else {
+                    elevation = maxAlt * ((brightness - waterLvl) / (1.0 - waterLvl));
+                }
                 cell.setElevation(elevation);
             }
 
@@ -119,6 +125,19 @@ public class ImageMapLoader {
                 int y = (int) Math.min(v * hBiome, hBiome - 1);
                 Color c = biomeReader.getColor(x, y);
                 cell.setBiome(matchBiomeColor(c));
+            } else if (elevReader != null) {
+                double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+                if (elev < 0) {
+                    cell.setBiome(Biome.OCEAN);
+                } else if (elev > 0.85 * maxAlt) {
+                    cell.setBiome(Biome.SNOW);
+                } else if (elev > 0.65 * maxAlt) {
+                    cell.setBiome(Biome.MOUNTAINS);
+                } else if (elev > 0.35 * maxAlt) {
+                    cell.setBiome(Biome.HILLS);
+                } else {
+                    cell.setBiome(Biome.PLAINS);
+                }
             }
 
             // 3. Sample Geology & Resources
@@ -216,6 +235,8 @@ public class ImageMapLoader {
             case DESERT -> Color.rgb(255, 200, 50);
             case HILLS -> Color.rgb(150, 150, 100);
             case MOUNTAINS -> Color.rgb(100, 100, 100);
+            case SAVANNAH -> Color.rgb(180, 200, 70);
+            case GLACIER -> Color.rgb(220, 240, 255);
             case TUNDRA -> Color.rgb(150, 200, 220);
             case SNOW -> Color.rgb(255, 255, 255);
         };

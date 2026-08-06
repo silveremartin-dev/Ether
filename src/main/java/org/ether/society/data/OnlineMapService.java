@@ -47,11 +47,11 @@ public class OnlineMapService {
 
     public enum CelestialBody {
         EARTH("Earth",
-              "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=GEBCO_BATHYMETRY_TOPOGRAPHY&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180",
-              "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=MODIS_Water_Mask_EASE_Res_250m&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180",
+              "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=BlueMarble_ShadedRelief_Bathymetry&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180",
+              "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=BlueMarble_NextGeneration&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180",
               "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=MODIS_Terra_Land_Surface_Temp_Day&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180",
               "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=IMERG_Precipitation_Rate&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180",
-              "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=MODIS_Water_Mask_EASE_Res_250m&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180"),
+              "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=BlueMarble_ShadedRelief_Bathymetry&STYLES=&FORMAT=image/png&TRANSPARENT=TRUE&HEIGHT=512&WIDTH=1024&CRS=EPSG:4326&BBOX=-90,-180,90,180"),
         MARS("Mars",
              "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map&service=WMS&version=1.1.1&request=GetMap&layers=MOLA_dem&styles=&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&width=1024&height=512",
              "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map&service=WMS&version=1.1.1&request=GetMap&layers=MOLA_color&styles=&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&width=1024&height=512",

@@ -13,7 +13,9 @@ public class EnvironmentalKernel {
         float[] rain = world.getRainfall();
         byte[] biomes = world.getBiomes();
         
-        for (int i = 0; i < world.getCapacity(); i++) {
+        int[] landIndices = world.getLandIndices();
+        for (int idx = 0; idx < landIndices.length; idx++) {
+            int i = landIndices[idx];
             Biome biome = Biome.values()[biomes[i]];
             
             // Production de nourriture basée sur le biome, la température et la pluie

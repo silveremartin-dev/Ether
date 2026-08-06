@@ -57,6 +57,14 @@ public class FutureScenarioRegistry {
             "SPACE_TERRAFORM", "Colonie Extraterrestre & Terraformation",
             "Colonisation de cellules H3 à gravité réduite (0.38g) et atmosphère artificielle sous dôme.", 2150.0);
 
+    public static final PhysicalScenarioPreset SCENARIO_SOVEREIGN_AI_SINGLE = new PhysicalScenarioPreset(
+            "SOVEREIGN_AI_LEVIATHAN", "Gouvernance Souveraine par Super-IA (Monopole Unifié)",
+            "Prise en main de l'allocation globale par une Super-IA (2040+) optimisant l'EROEI, le climat et la paix.", 2040.0);
+
+    public static final PhysicalScenarioPreset SCENARIO_SOVEREIGN_AI_MULTIPOLAR = new PhysicalScenarioPreset(
+            "SOVEREIGN_AI_MULTIPOLAR", "Guerre Froide des IA Souveraines (Multi-Agents)",
+            "Compétition géopolitique entre IA régionales autonomes pour la maîtrise des ressources mondiales.", 2042.0);
+
     /**
      * Applies physical initial forcing parameters to cells for a given future scenario preset.
      */
@@ -82,7 +90,47 @@ public class FutureScenarioRegistry {
             } else if (preset.id().equals("PEAK_PHOSPHORUS")) {
                 // Phosphate depletion
                 cell.setResourceMetal(5.0); // Depleted mineral ore
+            } else if (preset.id().equals("SOVEREIGN_AI_LEVIATHAN")) {
+                // Automatically register the Sovereign AI plugin
+                ProceduralEngineRegistry.registerPlugin("SovereignAIGovernance",
+                        new SovereignAIGovernanceEngine(SovereignAIGovernanceEngine.GovernanceMode.LEVIATHAN_UNIFIED, 0.9, 50.0, 0.20));
+            } else if (preset.id().equals("SOVEREIGN_AI_MULTIPOLAR")) {
+                // Automatically register Multi-Agent AI plugin
+                ProceduralEngineRegistry.registerPlugin("SovereignAIGovernance",
+                        new SovereignAIGovernanceEngine(SovereignAIGovernanceEngine.GovernanceMode.GEO_POLITICAL_COMPETITION, 0.8, 100.0, 0.25));
             }
         }
+    }
+
+    /**
+     * Finds matching PhysicalScenarioPreset for a given Scenario based on name or description.
+     */
+    public static PhysicalScenarioPreset findPresetForScenario(Scenario scenario) {
+        if (scenario == null || scenario.getName() == null) return null;
+        String name = scenario.getName().toLowerCase();
+        String desc = scenario.getDescription() != null ? scenario.getDescription().toLowerCase() : "";
+
+        if (name.contains("sovereign") || name.contains("maître du monde") || name.contains("leviathan") || desc.contains("gouvernance ia")) {
+            return name.contains("multipolar") || name.contains("guerre froide") ? SCENARIO_SOVEREIGN_AI_MULTIPOLAR : SCENARIO_SOVEREIGN_AI_SINGLE;
+        }
+        if (name.contains("nucléaire") || name.contains("nuclear") || desc.contains("nucléaire") || desc.contains("soot")) {
+            return SCENARIO_NUCLEAR_WINTER;
+        }
+        if (name.contains("business as usual") || name.contains("ssp5") || name.contains("bau")) {
+            return SCENARIO_BAU;
+        }
+        if (name.contains("singularité") || name.contains("singularity") || name.contains("asi")) {
+            return SCENARIO_SINGULARITY;
+        }
+        if (name.contains("amoc") || name.contains("thermohalin")) {
+            return SCENARIO_AMOC_COLLAPSE;
+        }
+        if (name.contains("phosphate") || name.contains("peak p")) {
+            return SCENARIO_PEAK_PHOSPHORUS;
+        }
+        if (name.contains("terraforma") || name.contains("space")) {
+            return SCENARIO_SPACE_COLONY;
+        }
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 package org.ether.society.core.dod;
 
+import org.ether.society.model.Biome;
+
 /**
  * High-performance Data-Oriented Storage for world hexagonal grid.
  * Uses flat primitive arrays (AOSOA pattern) for GPU compatibility.
@@ -128,4 +130,44 @@ public class WorldBuffer {
     public float[] getLocalPrice() { return localPrice; }
     public float[] getStorage() { return storage; }
     public float[] getInstitutionalComplexity() { return institutionalComplexity; }
+
+    // Index Partitioning for DOD Performance (Land vs. Ocean)
+    private int[] landIndices;
+    private int[] oceanIndices;
+
+    public synchronized int[] getLandIndices() {
+        if (landIndices == null) {
+            int landCount = 0;
+            for (int i = 0; i < capacity; i++) {
+                Biome b = Biome.values()[biomes[i]];
+                if (b != Biome.OCEAN && b != Biome.DEEP_OCEAN) {
+                    landCount++;
+                }
+            }
+            landIndices = new int[landCount];
+            oceanIndices = new int[capacity - landCount];
+            int lIdx = 0, oIdx = 0;
+            for (int i = 0; i < capacity; i++) {
+                Biome b = Biome.values()[biomes[i]];
+                if (b != Biome.OCEAN && b != Biome.DEEP_OCEAN) {
+                    landIndices[lIdx++] = i;
+                } else {
+                    oceanIndices[oIdx++] = i;
+                }
+            }
+        }
+        return landIndices;
+    }
+
+    public synchronized int[] getOceanIndices() {
+        if (oceanIndices == null) {
+            getLandIndices();
+        }
+        return oceanIndices;
+    }
+
+    public void invalidatePartitionIndices() {
+        this.landIndices = null;
+        this.oceanIndices = null;
+    }
 }

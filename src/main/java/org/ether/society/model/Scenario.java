@@ -46,6 +46,10 @@ public class Scenario implements Serializable {
     private long seed = 12345L;
     private boolean randomEventsEnabled = true;
     private String customDensityBase64;
+    // Ocean Optimization Options (Persisted at Scenario Level for Physical Determinism)
+    private boolean oceanMacroAggregationEnabled = true;
+    private boolean coastalNavigationOnlyEnabled = true;
+    private boolean oceanMultiRateTickingEnabled = true;
 
     // Spatial Clipping & Boundary Conditions
     private boolean clippingEnabled = false;
@@ -86,6 +90,34 @@ public class Scenario implements Serializable {
     }
 
     public String getDescription() {
+        if (description == null || description.isBlank()) {
+            return String.format("""
+                🔬 SCÉNARIO EXPÉRIMENTAL ÉTHER : Configuration de Simulation Planétaire (%s)
+                
+                [CONTEXTE HISTORIQUE & PHYSIQUE]
+                Ce scénario définit les conditions aux limites et les termes de forçage physique initiaux pour la modélisation multi-échelle des systèmes humains, écologiques et atmosphériques.
+                
+                [CONDITIONS INITIALES PHYSIQUES (T_0)]
+                • Population Initiale : %,d individus.
+                • Capital Physique (K₀) : %.1f kg/habitant (Outillages & machines).
+                • Énergie Stockée (E₀) : %.1f MJ/habitant (Stocks énergétiques).
+                • Réserves Alimentaires (F₀) : %.1f mois (Autonomie alimentaire).
+                • Savoir Archivé (I₀) : %.1f bits/habitant (Mémoire technique).
+                • Rayon Planétaire : %.0f km (g_rel = %.2f g).
+                • Rotation Planétaire : %.1f heures | Inclinaison Axiale : %.1f°.
+                """,
+                name != null ? name : "Scénario Standard",
+                initialHumanCount,
+                initialCapitalPerCapita,
+                initialEnergyPerCapita,
+                initialFoodReserveMonths,
+                initialInformationPerCapita,
+                planetRadiusKm,
+                planetRadiusKm / 6371.0,
+                rotationPeriodHours,
+                axialTiltDegrees
+            );
+        }
         return description;
     }
 
@@ -323,5 +355,29 @@ public class Scenario implements Serializable {
 
     public void setBoundaryMode(String boundaryMode) {
         this.boundaryMode = boundaryMode;
+    }
+
+    public boolean isOceanMacroAggregationEnabled() {
+        return oceanMacroAggregationEnabled;
+    }
+
+    public void setOceanMacroAggregationEnabled(boolean oceanMacroAggregationEnabled) {
+        this.oceanMacroAggregationEnabled = oceanMacroAggregationEnabled;
+    }
+
+    public boolean isCoastalNavigationOnlyEnabled() {
+        return coastalNavigationOnlyEnabled;
+    }
+
+    public void setCoastalNavigationOnlyEnabled(boolean coastalNavigationOnlyEnabled) {
+        this.coastalNavigationOnlyEnabled = coastalNavigationOnlyEnabled;
+    }
+
+    public boolean isOceanMultiRateTickingEnabled() {
+        return oceanMultiRateTickingEnabled;
+    }
+
+    public void setOceanMultiRateTickingEnabled(boolean oceanMultiRateTickingEnabled) {
+        this.oceanMultiRateTickingEnabled = oceanMultiRateTickingEnabled;
     }
 }

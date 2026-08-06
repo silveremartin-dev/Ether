@@ -110,15 +110,38 @@ public class H3MapCanvas extends Canvas {
     }
 
     private void setupMouseHandlers() {
-        // Mouse wheel zoom
+        // Mouse wheel zoom (Google Maps style towards mouse position)
         setOnScroll(event -> {
             double delta = event.getDeltaY();
-            double zoomChange = delta > 0 ? 1.1 : 0.9;
-            zoomFactor *= zoomChange;
-            zoomFactor = Math.max(0.5, Math.min(20.0, zoomFactor)); // Increased max zoom for detail
-            draw();
-            notifyMiniMap();
-            logger.debug("Zoom: {}x", String.format("%.2f", zoomFactor));
+            double zoomChange = delta > 0 ? 1.15 : 0.85;
+            double oldZoom = zoomFactor;
+            double newZoom = Math.max(0.5, Math.min(20.0, oldZoom * zoomChange));
+
+            if (newZoom != oldZoom) {
+                double mouseX = event.getX();
+                double mouseY = event.getY();
+                double w = getWidth();
+                double h = getHeight();
+
+                double latRange = maxLat - minLat;
+                double lngRange = maxLng - minLng;
+                if (latRange > 0 && lngRange > 0 && w > 0 && h > 0) {
+                    double baseScale = Math.min(w / lngRange, h / latRange) * 0.9;
+                    double oldScale = baseScale * oldZoom;
+                    double newScale = baseScale * newZoom;
+
+                    double mouseLng = centerLng + (mouseX - w / 2.0) / oldScale;
+                    double mouseLat = centerLat - (mouseY - h / 2.0) / oldScale;
+
+                    centerLng = mouseLng - (mouseX - w / 2.0) / newScale;
+                    centerLat = mouseLat + (mouseY - h / 2.0) / newScale;
+                }
+
+                zoomFactor = newZoom;
+                draw();
+                notifyMiniMap();
+                logger.debug("Zoom: {}x (Center: {}, {})", String.format("%.2f", zoomFactor), centerLat, centerLng);
+            }
         });
 
         // Mouse press - determine mode
@@ -636,12 +659,14 @@ public class H3MapCanvas extends Canvas {
             case BEACH -> Color.rgb(238, 214, 175);
             case DESERT -> Color.rgb(237, 201, 175);
             case PLAINS -> Color.rgb(124, 252, 0);
+            case SAVANNAH -> Color.rgb(180, 200, 70);
             case FOREST -> Color.rgb(34, 139, 34);
             case JUNGLE -> Color.rgb(0, 100, 0);
             case MOUNTAINS -> Color.rgb(139, 137, 137);
             case HILLS -> Color.rgb(160, 160, 120);
             case TUNDRA -> Color.rgb(221, 221, 187);
             case SNOW -> Color.rgb(255, 250, 250);
+            case GLACIER -> Color.rgb(220, 240, 255);
         };
     }
 

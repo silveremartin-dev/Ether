@@ -53,7 +53,18 @@
 - **Simulation Speed (TPS)**: **0.56 Ticks / second** *(Pas par seconde)*.
 - **Average Tick Duration**: **1,350 ms – 1,770 ms / simulated year**.
 - **Cell Update Throughput**: **1,185,994 cell-updates / second** (~1.19 Million cell-updates/sec).
-- **RAM Footprint**: **194 MB → 742 MB (+548 MB heap delta)**.
+---
+
+## 🌊 Ocean Cell Optimizations & Determinism Tradeoffs
+
+Ether implements three scenario-persisted ocean optimizations to handle planetary grids where oceans account for >70% of spatial cells:
+1. **Ocean Macro-Aggregation (`oceanMacroAggregationEnabled`)**: Aggregates deep abyssal ocean cells into macro-blocks (+300% to +600% TPS gain; slight spatial smoothing of deep thermohaline gradients).
+2. **Coastal Navigation Only (`coastalNavigationOnlyEnabled`)**: Restricts open-ocean pathfinding prior to maritime technology milestones (+200% to +400% TPS gain; eliminates pre-industrial open-sea agent drift).
+3. **Ocean Multi-Rate Ticking (`oceanMultiRateTickingEnabled`)**: Evaluates slow marine processes at sub-sampled tick intervals (+150% to +300% TPS gain; temporal aliasing under sudden atmospheric shocks).
+
+> [!NOTE]  
+> For strict bit-identical determinism validation (`strictDeterminism = true`), all ocean approximations can be disabled.  
+> 📖 See [Ocean Optimizations & Determinism Specification](OCEAN_OPTIMIZATIONS_AND_DETERMINISM.md) for detailed mathematical and architectural breakdown.
 
 ---
 

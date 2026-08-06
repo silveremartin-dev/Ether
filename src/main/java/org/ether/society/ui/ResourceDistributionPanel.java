@@ -1050,8 +1050,30 @@ public class ResourceDistributionPanel extends BorderPane {
         mapPreviewCanvas.setOnScroll(e -> {
             double delta = e.getDeltaY();
             double factor = delta > 0 ? 1.15 : 0.85;
-            zoomFactor = Math.max(0.5, Math.min(20.0, zoomFactor * factor));
-            updatePreviewCanvas();
+            double oldZoom = zoomFactor;
+            double newZoom = Math.max(0.5, Math.min(20.0, oldZoom * factor));
+
+            if (newZoom != oldZoom) {
+                double mouseX = e.getX();
+                double mouseY = e.getY();
+                double w = mapPreviewCanvas.getWidth();
+                double h = mapPreviewCanvas.getHeight();
+                double baseScale = Math.min(w / 360.0, h / 180.0) * 0.9;
+                double oldScale = baseScale * oldZoom;
+                double newScale = baseScale * newZoom;
+
+                if (oldScale > 0 && newScale > 0) {
+                    double mouseLng = (mouseX - w / 2.0 - panX) / oldScale;
+                    double mouseLat = (h / 2.0 + panY - mouseY) / oldScale;
+
+                    zoomFactor = newZoom;
+                    panX = mouseX - w / 2.0 - mouseLng * newScale;
+                    panY = mouseY - h / 2.0 + mouseLat * newScale;
+                } else {
+                    zoomFactor = newZoom;
+                }
+                updatePreviewCanvas();
+            }
         });
         mapPreviewCanvas.setOnMousePressed(e -> {
             dragStartX = e.getX();

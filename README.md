@@ -105,6 +105,13 @@ mvn javafx:run
 | **Multiverse Branching** | Snapshot & side-by-side trajectory comparison | ✅ Complete |
 | **175k Cell Benchmark** | **1.19M cell-updates/sec** throughput verified | ✅ Verified |
 
+## 📄 Documentation & Architecture
+- 🎮 [Guide d'Intégration & Activation GPU](docs/GPU_INTEGRATION_GUIDE.md) (NVIDIA, AMD, Intel, OpenCL, Fallback CPU JIT)
+- 📊 [Audit d'Architecture & Rapport de Gains de Performance](docs/GPU_AND_CPU_JIT_AUDIT_REPORT.md)
+- 🌊 [Optimisations Océaniques, Distorsion Physique & Déterminisme](docs/OCEAN_OPTIMIZATIONS_AND_DETERMINISM.md)
+- ⚙️ [Spécification JIT, AST & Ordre des Moteurs](docs/ENGINE_EXECUTION_AND_JIT_SPECIFICATION.md)
+- 📈 [Empirical Historical Calibration & Benchmarks](docs/HISTORICAL_BENCHMARKS.md)
+
 ---
 
 ## 📄 License & Authors

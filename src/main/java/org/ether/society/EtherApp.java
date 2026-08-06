@@ -50,6 +50,8 @@ public class EtherApp extends Application {
     private PerformanceHUD hud;
     private ColorLegend colorLegend;
 
+    private AnimationTimer timer;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -58,6 +60,11 @@ public class EtherApp extends Application {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         logger.info("Starting Human Society Simulation...");
+
+        primaryStage.setOnCloseRequest(event -> {
+            logger.info("Window close requested. Stopping simulation engine...");
+            stop();
+        });
 
         // Load configuration
         Configuration config;
@@ -123,7 +130,7 @@ public class EtherApp extends Application {
         controlPanel.updateDatabaseStatus(org.ether.society.database.DatabaseConfig.isDatabaseAvailable());
 
         // Render loop
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             private String lastYear = "";
             private long lastMapRedraw = 0;
             private static final long REDRAW_INTERVAL_NS = 500_000_000L; // 500ms
@@ -171,6 +178,19 @@ public class EtherApp extends Application {
         timer.start();
 
         logger.info("Application started successfully");
+    }
+
+    @Override
+    public void stop() {
+        logger.info("Stopping Ether Application...");
+        if (timer != null) {
+            timer.stop();
+        }
+        if (h3Engine != null) {
+            h3Engine.shutdown();
+        }
+        javafx.application.Platform.exit();
+        System.exit(0);
     }
 
     private void updateTexts() {

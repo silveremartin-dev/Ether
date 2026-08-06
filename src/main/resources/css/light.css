@@ -55,6 +55,15 @@
     -fx-text-fill: #0284c7;
 }
 
+.scenario-description-area {
+    -fx-font-family: 'Consolas', 'Monaco', monospace;
+    -fx-font-size: 11px;
+    -fx-text-fill: #0f172a;
+    -fx-control-inner-background: #ffffff;
+    -fx-border-color: rgba(2, 132, 199, 0.4);
+    -fx-border-radius: 6;
+}
+
 .label {
     -fx-text-fill: #0f172a;
 }

@@ -173,10 +173,16 @@ public class ProceduralGenerator {
     }
 
     public List<H3Cell> generatePlanet(PlanetPreset preset) {
-        return generatePlanet(preset, null);
+        return generatePlanet(preset, null, null);
     }
 
     public List<H3Cell> generatePlanet(PlanetPreset preset, java.util.function.BiConsumer<Integer, Integer> progressCallback) {
+        return generatePlanet(preset, progressCallback, null);
+    }
+
+    public List<H3Cell> generatePlanet(PlanetPreset preset,
+                                       java.util.function.BiConsumer<Integer, Integer> progressCallback,
+                                       java.util.function.BooleanSupplier cancelSupplier) {
         logger.info("Generating planet: {} (Res: {}, Seed: {}, Radius: {} km, Atmo: {} atm, Satellite: {}, TidalForce: {})",
                 preset.name(), preset.resolution(), preset.seed(), preset.radiusKm(), preset.atmospherePressureAtm(),
                 preset.isSatellite(), computeTidalForceIntensity(preset));
@@ -188,6 +194,9 @@ public class ProceduralGenerator {
         java.util.concurrent.atomic.AtomicInteger counter = new java.util.concurrent.atomic.AtomicInteger(0);
 
         cells.parallelStream().forEach(cell -> {
+            if (cancelSupplier != null && cancelSupplier.getAsBoolean()) {
+                throw new java.util.concurrent.CancellationException("Planet generation cancelled by user");
+            }
             PlanetPoint p = getPlanetPoint(cell.getLatitude(), cell.getLongitude(), preset);
             cell.setElevation(p.elevation());
             cell.setTemperature(p.temperature());
@@ -201,7 +210,11 @@ public class ProceduralGenerator {
             }
         });
 
-        accumulateHydrographyFlow(cells, preset);
+        if (cancelSupplier != null && cancelSupplier.getAsBoolean()) {
+            throw new java.util.concurrent.CancellationException("Planet generation cancelled by user");
+        }
+
+        accumulateHydrographyFlow(cells, preset, cancelSupplier);
 
         return cells;
     }
@@ -428,7 +441,7 @@ public class ProceduralGenerator {
         }
     }
 
-    private void accumulateHydrographyFlow(List<H3Cell> cells, PlanetPreset preset) {
+    private void accumulateHydrographyFlow(List<H3Cell> cells, PlanetPreset preset, java.util.function.BooleanSupplier cancelSupplier) {
         if (cells == null || cells.isEmpty() || preset.atmospherePressureAtm() < 0.01) return;
 
         double waterLvl = preset.waterLevel();
@@ -439,22 +452,33 @@ public class ProceduralGenerator {
 
         if (landCells.isEmpty()) return;
 
+        Map<Long, H3Cell> cellMap = new java.util.HashMap<>(cells.size());
+        for (H3Cell c : cells) {
+            cellMap.put(c.getH3Index(), c);
+        }
+
         Map<Long, Double> flowAccum = new java.util.concurrent.ConcurrentHashMap<>();
         for (H3Cell c : landCells) {
             flowAccum.put(c.getH3Index(), c.getRainfall() != null ? c.getRainfall() : 0.2);
         }
 
+        H3Service h3Service = H3Service.getInstance();
+
+        int step = 0;
         for (H3Cell c : landCells) {
+            if (cancelSupplier != null && step++ % 100 == 0 && cancelSupplier.getAsBoolean()) {
+                throw new java.util.concurrent.CancellationException("Hydrography flow calculation cancelled by user");
+            }
             double curElev = c.getElevation();
             double curFlow = flowAccum.getOrDefault(c.getH3Index(), 0.2);
 
             H3Cell lowestNeighbor = null;
             double minElev = curElev;
 
-            for (H3Cell n : cells) {
-                if (n == c) continue;
-                double dist = Math.hypot(n.getLatitude() - c.getLatitude(), n.getLongitude() - c.getLongitude());
-                if (dist < 3.5 && n.getElevation() < minElev) {
+            List<Long> neighborIndices = h3Service.getNeighbors(c.getH3Index());
+            for (Long nIdx : neighborIndices) {
+                H3Cell n = cellMap.get(nIdx);
+                if (n != null && n.getElevation() != null && n.getElevation() < minElev) {
                     minElev = n.getElevation();
                     lowestNeighbor = n;
                 }

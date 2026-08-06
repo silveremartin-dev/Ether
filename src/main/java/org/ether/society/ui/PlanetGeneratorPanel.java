@@ -288,8 +288,8 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         // Resolution combo (internal use only — displayed in Tab 3)
         resolutionCombo = new ComboBox<>();
-        resolutionCombo.getItems().addAll(5, 6, 7, 8);
-        resolutionCombo.setValue(6);
+        resolutionCombo.getItems().addAll(3, 4, 5, 6, 7, 8);
+        resolutionCombo.setValue(5);
         resolutionCombo.setMaxWidth(Double.MAX_VALUE);
         resolutionCombo.setCellFactory(p -> new ListCell<>() {
             @Override
@@ -810,8 +810,30 @@ public class PlanetGeneratorPanel extends BorderPane {
         previewCanvas.setOnScroll(e -> {
             double delta = e.getDeltaY();
             double factor = delta > 0 ? 1.15 : 0.85;
-            zoomFactor = Math.max(0.5, Math.min(20.0, zoomFactor * factor));
-            updatePreview();
+            double oldZoom = zoomFactor;
+            double newZoom = Math.max(0.5, Math.min(20.0, oldZoom * factor));
+
+            if (newZoom != oldZoom) {
+                double mouseX = e.getX();
+                double mouseY = e.getY();
+                double w = previewCanvas.getWidth();
+                double h = previewCanvas.getHeight();
+                double baseScale = Math.min(w / 360.0, h / 180.0) * 0.9;
+                double oldScale = baseScale * oldZoom;
+                double newScale = baseScale * newZoom;
+
+                if (oldScale > 0 && newScale > 0) {
+                    double mouseLng = (mouseX - w / 2.0 - panX) / oldScale;
+                    double mouseLat = (h / 2.0 + panY - mouseY) / oldScale;
+
+                    zoomFactor = newZoom;
+                    panX = mouseX - w / 2.0 - mouseLng * newScale;
+                    panY = mouseY - h / 2.0 + mouseLat * newScale;
+                } else {
+                    zoomFactor = newZoom;
+                }
+                updatePreview();
+            }
         });
         previewCanvas.setOnMousePressed(e -> {
             dragStartX = e.getX();
@@ -1928,19 +1950,30 @@ public class PlanetGeneratorPanel extends BorderPane {
                         int ey = (int) Math.min(v * hElev, hElev - 1);
                         int argb = elevReader.getArgb(ex, ey);
                         double brightness = (((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / (3.0 * 255.0);
-                        double altMeters = preset.minAltitudeMeters() + brightness * (preset.maxAltitudeMeters() - preset.minAltitudeMeters());
-                        if (altMeters < 0) {
-                            cellBiome = Biome.OCEAN;
-                        } else if (brightness > 0.85) {
-                            cellBiome = Biome.SNOW;
-                        } else if (brightness > 0.65) {
-                            cellBiome = Biome.MOUNTAINS;
-                        } else if (brightness > 0.45) {
-                            cellBiome = Biome.HILLS;
-                        } else if (brightness > 0.3) {
-                            cellBiome = Biome.PLAINS;
+
+                        if (customBiomeImage != null) {
+                            PixelReader bReader = customBiomeImage.getPixelReader();
+                            double wB = customBiomeImage.getWidth();
+                            double hB = customBiomeImage.getHeight();
+                            int bx = (int) Math.min(u * wB, wB - 1);
+                            int by = (int) Math.min(v * hB, hB - 1);
+                            Color bCol = bReader.getColor(bx, by);
+                            cellBiome = mapLoader.matchBiomeColor(bCol);
                         } else {
-                            cellBiome = Biome.BEACH;
+                            double waterLvl = preset.waterLevel();
+                            if (brightness < waterLvl) {
+                                cellBiome = Biome.OCEAN;
+                            } else if (brightness > 0.85) {
+                                cellBiome = Biome.SNOW;
+                            } else if (brightness > 0.65) {
+                                cellBiome = Biome.MOUNTAINS;
+                            } else if (brightness > 0.48) {
+                                cellBiome = Biome.HILLS;
+                            } else if (brightness > 0.38) {
+                                cellBiome = Biome.PLAINS;
+                            } else {
+                                cellBiome = Biome.BEACH;
+                            }
                         }
                     } else {
                         PlanetPoint p = generator.getPlanetPoint(lat, lng, preset);
@@ -2082,12 +2115,14 @@ public class PlanetGeneratorPanel extends BorderPane {
             case BEACH -> Color.rgb(238, 214, 175);
             case DESERT -> Color.rgb(220, 170, 120);
             case PLAINS -> Color.rgb(110, 210, 80);
+            case SAVANNAH -> Color.rgb(180, 200, 70);
             case FOREST -> Color.rgb(34, 139, 34);
             case JUNGLE -> Color.rgb(0, 100, 40);
             case MOUNTAINS -> Color.rgb(140, 130, 130);
             case HILLS -> Color.rgb(160, 160, 110);
             case TUNDRA -> Color.rgb(200, 200, 170);
             case SNOW -> Color.rgb(245, 245, 250);
+            case GLACIER -> Color.rgb(220, 240, 255);
             default -> Color.BLACK;
         };
     }

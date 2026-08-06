@@ -376,7 +376,7 @@ public class ProceduralPopulationEngine {
             H3Cell cell = landCells.get(i);
             double proportion = weights[i] / totalWeight;
             long pop = Math.round(totalPopulation * proportion);
-            cell.setPopulation((int) pop);
+            cell.setPopulation((int) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
             
             // Seed physical capital & tool stocks from initial capital K0
             double cellCapital = pop * capitalPerCapita;
@@ -395,7 +395,8 @@ public class ProceduralPopulationEngine {
         long diff = totalPopulation - assigned;
         if (diff != 0 && !landCells.isEmpty()) {
             H3Cell topCell = landCells.get(0);
-            topCell.setPopulation(Math.max(0, topCell.getPopulation() + (int) diff));
+            long newTopPop = Math.clamp((long) topCell.getPopulation() + diff, 0L, (long) Integer.MAX_VALUE);
+            topCell.setPopulation((int) newTopPop);
             topCell.setResourceCapital(topCell.getPopulation() * capitalPerCapita);
             topCell.updateAgePyramidFromTotal(derivedTech);
         }

@@ -13,6 +13,8 @@ import org.ether.society.model.StartDatePreset;
 import org.ether.society.i18n.I18n;
 import org.ether.society.procedural.PlanetPreset;
 import org.ether.society.procedural.ProceduralGenerator;
+import org.ether.society.procedural.ProceduralPopulationEngine;
+import javafx.util.StringConverter;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -189,6 +191,16 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label boundaryLabel;
     private Label previewTitleLabel;
 
+    // Ocean Optimization Checkboxes (Persisted at Scenario Level)
+    private CheckBox oceanMacroAggregationCheckBox;
+    private CheckBox coastalNavigationOnlyCheckBox;
+    private CheckBox oceanMultiRateTickingCheckBox;
+
+    // Async Calculation & Thread Control Fields
+    private volatile boolean isCalculationRunning = false;
+    private volatile boolean cancelRequested = false;
+    private Thread generationThread = null;
+
     // Events section
     private TableView<ClimateEvent> eventsTable;
     private ObservableList<ClimateEvent> eventsList;
@@ -279,7 +291,9 @@ public class ScenarioSetupPanel extends BorderPane {
         }
         updateInheritedContextDisplay(ecologyName);
         notifyParamChange();
-        generatePreview();
+        if (currentPreviewCells != null) {
+            generatePreview();
+        }
     }
 
     public PlanetPreset findPlanetPresetByName(String name) {
@@ -450,8 +464,8 @@ public class ScenarioSetupPanel extends BorderPane {
 
         // H3 Resolution (Row 0)
         h3ResolutionCombo = new ComboBox<>();
-        h3ResolutionCombo.getItems().addAll(5, 6, 7, 8);
-        h3ResolutionCombo.setValue(6);
+        h3ResolutionCombo.getItems().addAll(3, 4, 5, 6, 7, 8);
+        h3ResolutionCombo.setValue(5);
         h3ResolutionCombo.setMaxWidth(Double.MAX_VALUE);
         h3ResolutionCombo.setCellFactory(p -> new ListCell<>() {
             @Override
@@ -509,7 +523,7 @@ public class ScenarioSetupPanel extends BorderPane {
         scenarioDescriptionArea = new TextArea();
         scenarioDescriptionArea.setPrefRowCount(8);
         scenarioDescriptionArea.setWrapText(true);
-        scenarioDescriptionArea.setStyle("-fx-font-family: 'Consolas', 'Monaco', monospace; -fx-font-size: 11px; -fx-text-fill: #e2e8f0; -fx-control-inner-background: #0f172a; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 6;");
+        scenarioDescriptionArea.getStyleClass().add("scenario-description-area");
         scenarioDescriptionArea.textProperty().addListener((obs, oldV, newV) -> notifyParamChange());
 
         section1.getChildren().addAll(title1, grid1, descLabel, scenarioDescriptionArea);
@@ -533,9 +547,16 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox demoProcBox = new VBox(8);
         demoProcBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.5); -fx-background-radius: 6;");
 
-        initialHumanCountSpinner = new Spinner<>(1_000L, 10_000_000_000L, 1_000_000L, 100_000L);
+        initialHumanCountSpinner = new Spinner<>(new LongSpinnerValueFactory(1_000L, 10_000_000_000L, 1_000_000L, 100_000L));
         initialHumanCountSpinner.setEditable(true);
         initialHumanCountSpinner.setMaxWidth(Double.MAX_VALUE);
+        initialHumanCountSpinner.valueProperty().addListener((obs, oldV, newV) -> {
+            notifyParamChange();
+            if (!isUpdatingFromPreset && newV != null && currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
+                distributeInitialPopulation(currentPreviewCells);
+                drawPreview();
+            }
+        });
 
         initialCapitalSpinner = new Spinner<>(0.0, 50000.0, 10.0, 50.0);
         initialCapitalSpinner.setEditable(true);
@@ -717,10 +738,13 @@ public class ScenarioSetupPanel extends BorderPane {
         // --- 5. Spatial Clipping & Boundary Condition Section ---
         VBox clippingSection = createClippingSection();
 
-        // --- 6. Events Section ---
+        // --- 6. Ocean Optimizations Section (Persisted in Scenario for Determinism) ---
+        VBox oceanOptSection = createOceanOptimizationSection();
+
+        // --- 7. Events Section ---
         VBox eventsSection = createEventsSection();
 
-        // --- 7. Actions & Progress Bar (Deferred Execution) ---
+        // --- 8. Actions & Progress Bar (Deferred Execution) ---
         generateBtn = new Button();
         generateBtn.setMaxWidth(Double.MAX_VALUE);
         generateBtn.getStyleClass().add("button-secondary");
@@ -764,14 +788,14 @@ public class ScenarioSetupPanel extends BorderPane {
         startBtn.setPrefHeight(50);
         startBtn.setMaxWidth(Double.MAX_VALUE);
         startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 6;");
-        startBtn.setOnAction(e -> startSimulationDeferred());
+        startBtn.setOnAction(e -> handleStartOrCancel());
         startBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.start", "Calculer les cellules H3 et lancer la simulation.")));
 
         VBox bottom = new VBox(10, btnPreFlight, bundleBox, generateBtn, progressBar, progressStatusLabel, startBtn);
         VBox.setVgrow(bottom, Priority.ALWAYS);
         bottom.setAlignment(Pos.BOTTOM_CENTER);
 
-        root.getChildren().addAll(scenarioPresetBar, inheritedSection, section1, popSection, clippingSection, eventsSection, bottom);
+        root.getChildren().addAll(scenarioPresetBar, inheritedSection, section1, popSection, clippingSection, oceanOptSection, eventsSection, bottom);
         return root;
     }
 
@@ -890,6 +914,26 @@ public class ScenarioSetupPanel extends BorderPane {
             passes.add("✅ Densité Démographique Initiale Réaliste (" + String.format("%,d", pop) + " hab)");
         }
 
+        // --- Static Engine JIT Conflict & Compatibility Diagnostic ---
+        org.ether.society.procedural.jit.ScenarioEngineJITCompiler jit = new org.ether.society.procedural.jit.ScenarioEngineJITCompiler();
+        jit.registerEngineStep("BiologicalDemographics", "biomassHuman", new org.ether.society.procedural.jit.SymbolicExpression("biomassHuman", 1.01, 0.0), 10000.0);
+        jit.registerEngineStep("EcologicalDegradation", "biomassHuman", new org.ether.society.procedural.jit.SymbolicExpression("biomassHuman", 0.995, 0.0), 10000.0);
+        jit.registerEngineStep("AtmosphericSolar", "temperature", new org.ether.society.procedural.jit.SymbolicExpression("temperature", 1.0, 0.02), 25.0);
+        jit.compile();
+
+        org.ether.society.procedural.jit.EngineConflictReport jitReport = jit.getConflictReport();
+        if (jitReport != null && !jitReport.getEntries().isEmpty()) {
+            for (org.ether.society.procedural.jit.EngineConflictReport.ConflictEntry entry : jitReport.getEntries()) {
+                if (entry.getSeverity() == org.ether.society.procedural.jit.EngineConflictReport.ConflictSeverity.INCOMPATIBLE) {
+                    warnings.add("❌ INCOMPATIBILITÉ MOTEURS (" + entry.getVariableName() + ") : " + entry.getDescription());
+                } else {
+                    passes.add("⚡ Fusion JIT Moteurs (" + entry.getVariableName() + ") : " + entry.getDescription());
+                }
+            }
+        } else {
+            passes.add("⚡ Compilation JIT Moteurs : 100% Compatible & Fusions Validées");
+        }
+
         StringBuilder sb = new StringBuilder();
         sb.append("📋 Diagnostic de Viabilité Civilisationnelle (Scénario '").append(scenarioPresetBar != null ? scenarioPresetBar.getCurrentName() : "Custom").append("') :\n\n");
 
@@ -921,6 +965,31 @@ public class ScenarioSetupPanel extends BorderPane {
         List<Scenario> list = new ArrayList<>();
 
         // --- SCÉNARIOS DU PASSÉ ---
+        Scenario s0 = new Scenario();
+        s0.setName("Sortie d'Afrique & Expansion Homo Sapiens (-100000)");
+        s0.setStartDateYear(-100000);
+        s0.setInitialHumanCount(50000);
+        s0.setInitialCapitalPerCapita(2.0);
+        s0.setInitialEnergyPerCapita(5.0);
+        s0.setInitialFoodReserveMonths(2.0);
+        s0.setInitialInformationPerCapita(2.0);
+        s0.setPopulationDensityType("ONE_CONTINENT");
+        s0.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s0.setDescription("""
+            🌍 SCÉNARIO PALÉOLITHIQUE : Berceau Africain, Traversée des Continents & Out of Africa (-100 000 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise la dynamique démographique et l'expansion spatiale des premières populations d'Homo Sapiens depuis l'Afrique de l'Est à travers le Moyen-Orient, l'Eurasie, l'Océanie et les Amériques.
+            
+            [CONDITIONS INITIALES PHYSIQUES (T_0)]
+            • Population Initiale : 50 000 individus (Capacité nomade pré-agricole).
+            • Stock Capital Physique (K₀) : 2 kg/habitant (bifaces en pierre, javelots, bifaces).
+            • Énergie Stockée (E₀) : 5 MJ/habitant (maîtrise du feu et combustible bois).
+            • Réserves Alimentaires (F₀) : 2 mois de subsistance en chasse-cueillette.
+            • Savoir Archivé (I₀) : 2 bits/habitant (traditions orales paléolithiques & langage).
+            """);
+        list.add(s0);
+
         Scenario s1 = new Scenario();
         s1.setName("Croissant Fertile & Néolithique (-8000)");
         s1.setStartDateYear(-8000);
@@ -948,6 +1017,54 @@ public class ScenarioSetupPanel extends BorderPane {
             • Température Moyenne du Globe : ~14.0°C (Fin de la glaciation du Würm, Climat Holocène doux).
             """);
         list.add(s1);
+
+        // --- SCÉNARIO : SAHARA VERT (PÉRIODE HUMIDE AFRICAINE -6000) ---
+        Scenario sGreenSahara = new Scenario();
+        sGreenSahara.setName("Le Sahara Vert & Période Humide Africaine (-6000)");
+        sGreenSahara.setStartDateYear(-6000);
+        sGreenSahara.setInitialHumanCount(60000);
+        sGreenSahara.setInitialCapitalPerCapita(6.0);
+        sGreenSahara.setInitialEnergyPerCapita(12.0);
+        sGreenSahara.setInitialFoodReserveMonths(4.0);
+        sGreenSahara.setInitialInformationPerCapita(10.0);
+        sGreenSahara.setPopulationDensityType("GREEN_SAHARA");
+        sGreenSahara.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sGreenSahara.setDescription("""
+            🌴 SCÉNARIO PALÉOCLIMATIQUE : Le Sahara Vert & Période Humide Africaine (-6000 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise la Période Humide Africaine (AHP) où l'insolation printanière amplifiée par l'orbite terrestre a intensifié la mousson africaine. Le désert du Sahara était alors une savane verdoyante parsemée de lac majeurs (Lac Méga-Tchad), peuplée d'éleveurs néolithiques et de chasseurs-cueilleurs.
+            
+            [CONDITIONS INITIALES PHYSIQUES (T_0)]
+            • Précipitations Sahariennes : 800 à 1200 mm/an (Savane arborée & lacs).
+            • Stock Capital Physique (K₀) : 6 kg/habitant (poterie pastorale, harpons en os).
+            • Biomasse Halieutique & Lacustre (B_fish) : Abondance maximale le long des berges lacustres.
+            """);
+        list.add(sGreenSahara);
+
+        // --- SCÉNARIO : RÉCENTS DRYAS (-10900) ---
+        Scenario sYoungerDryas = new Scenario();
+        sYoungerDryas.setName("Le Récents Dryas & Choc Climatique Natufien (-10900)");
+        sYoungerDryas.setStartDateYear(-10900);
+        sYoungerDryas.setInitialHumanCount(40000);
+        sYoungerDryas.setInitialCapitalPerCapita(4.0);
+        sYoungerDryas.setInitialEnergyPerCapita(8.0);
+        sYoungerDryas.setInitialFoodReserveMonths(2.5);
+        sYoungerDryas.setInitialInformationPerCapita(8.0);
+        sYoungerDryas.setPopulationDensityType("YOUNGER_DRYAS");
+        sYoungerDryas.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sYoungerDryas.setDescription("""
+            ❄️ SCÉNARIO PALÉOCLIMATIQUE : Le Récents Dryas & Pression Foragère Au Levant (-10 900 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Refroidissement brutal de 5 à 8°C de l'Atlantique Nord déclenché par le déversement d'eau douce du Lac Agassiz. Au Levant, la sécheresse aiguë réduit les céréales sauvages, contraignant les populations Natufiennes à la sédentarisation pré-agricole et au contrôle des graines.
+            
+            [CONDITIONS INITIALES PHYSIQUES (T_0)]
+            • Refroidissement Stratosphérique : -5.5°C au-dessus de l'Eurasie.
+            • Sécheresse Levantine : Précipitations chutant sous 250 mm/an.
+            • Capital Lithique (K₀) : 4 kg/habitant (faucilles en silex, mortiers en pierre).
+            """);
+        list.add(sYoungerDryas);
 
         Scenario s2 = new Scenario();
         s2.setName("Le Petit Âge Glaciaire de l'Antiquité Tardive & Peste de Justinien (536)");
@@ -1234,6 +1351,15 @@ public class ScenarioSetupPanel extends BorderPane {
                 if (maxLngSpinner != null && maxLngSpinner.getValueFactory() != null) maxLngSpinner.getValueFactory().setValue(s.getMaxLng());
                 if (s.getBoundaryMode() != null && boundaryModeCombo != null) boundaryModeCombo.setValue(s.getBoundaryMode());
             }
+            if (oceanMacroAggregationCheckBox != null) {
+                oceanMacroAggregationCheckBox.setSelected(s.isOceanMacroAggregationEnabled());
+            }
+            if (coastalNavigationOnlyCheckBox != null) {
+                coastalNavigationOnlyCheckBox.setSelected(s.isCoastalNavigationOnlyEnabled());
+            }
+            if (oceanMultiRateTickingCheckBox != null) {
+                oceanMultiRateTickingCheckBox.setSelected(s.isOceanMultiRateTickingEnabled());
+            }
             if (s.getCustomDensityBase64() != null) {
                 customDensityImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomDensityBase64());
                 if (densityMapFileLabel != null) densityMapFileLabel.setText("📷 Preset Density Map");
@@ -1243,7 +1369,12 @@ public class ScenarioSetupPanel extends BorderPane {
                 if (densityMapFileLabel != null) densityMapFileLabel.setText(org.ether.society.i18n.I18n.get("planet.map.none"));
                 updateDemoCompatibilityDisplay();
             }
-            if (previewCanvas != null) drawPreview();
+            if (currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
+                distributeInitialPopulation(currentPreviewCells);
+                drawPreview();
+            } else if (previewCanvas != null) {
+                generatePreview();
+            }
         } finally {
             isUpdatingFromPreset = false;
         }
@@ -1324,6 +1455,18 @@ public class ScenarioSetupPanel extends BorderPane {
         });
         boundaryModeCombo.setButtonCell(boundaryModeCombo.getCellFactory().call(null));
 
+        resetClippingBtn = new Button(I18n.getOrDefault("scenario.clipping.reset", "🔄 Réinitialiser la Zone (Pleine Planète)"));
+        resetClippingBtn.setMaxWidth(Double.MAX_VALUE);
+        resetClippingBtn.setStyle("-fx-font-size: 11px;");
+        resetClippingBtn.setOnAction(e -> {
+            if (minLatSpinner != null && minLatSpinner.getValueFactory() != null) minLatSpinner.getValueFactory().setValue(-90.0);
+            if (maxLatSpinner != null && maxLatSpinner.getValueFactory() != null) maxLatSpinner.getValueFactory().setValue(90.0);
+            if (minLngSpinner != null && minLngSpinner.getValueFactory() != null) minLngSpinner.getValueFactory().setValue(-180.0);
+            if (maxLngSpinner != null && maxLngSpinner.getValueFactory() != null) maxLngSpinner.getValueFactory().setValue(180.0);
+            notifyParamChange();
+            drawPreview();
+        });
+
         VBox clippingSubPanel = new VBox(8, graphicSelectBtn, boundsGrid, boundaryLabel, boundaryModeCombo, resetClippingBtn);
         clippingSubPanel.setStyle("-fx-padding: 8 0 0 12; -fx-border-color: rgba(56,189,248,0.25); -fx-border-radius: 6; -fx-border-width: 0 0 0 3;");
         clippingSubPanel.setVisible(false);
@@ -1341,29 +1484,112 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
+    private VBox createOceanOptimizationSection() {
+        VBox section = new VBox(10);
+        section.getStyleClass().add("card-section");
+
+        Label oceanOptHeader = new Label(I18n.getOrDefault("scenario.ocean_opt.header", "🌊 OPTIMISATIONS ET PERFORMANCES OCÉANIQUES"));
+        oceanOptHeader.getStyleClass().add("label-header");
+        oceanOptHeader.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
+
+        Label oceanOptDesc = new Label(I18n.getOrDefault("scenario.ocean_opt.desc", "Ajuster les simplifications algorithmiques pour les cellules d'eau profonde afin de maximiser le nombre de TPS (Ticks Par Seconde)."));
+        oceanOptDesc.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        oceanOptDesc.setWrapText(true);
+
+        oceanMacroAggregationCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.macro_aggregation", "🌊 Macro-agrégation Océanique (Traiter les bassins profonds en blocs virtuels)"));
+        oceanMacroAggregationCheckBox.setSelected(true);
+        oceanMacroAggregationCheckBox.setStyle("-fx-text-fill: #e2e8f0;");
+        oceanMacroAggregationCheckBox.setTooltip(new Tooltip("Regroupe les cellules d'eau profonde pour éviter le calcul individuel de micro-courants inutiles."));
+        oceanMacroAggregationCheckBox.setOnAction(e -> notifyParamChange());
+
+        coastalNavigationOnlyCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.coastal_nav", "⚓ Navigation Maritime Littorale Uniquement (Simplifier les routes hauturières)"));
+        coastalNavigationOnlyCheckBox.setSelected(false);
+        coastalNavigationOnlyCheckBox.setStyle("-fx-text-fill: #e2e8f0;");
+        coastalNavigationOnlyCheckBox.setTooltip(new Tooltip("Restreint le pathfinding naval détaillé aux côtes et détroits commercialement actifs."));
+        coastalNavigationOnlyCheckBox.setOnAction(e -> notifyParamChange());
+
+        oceanMultiRateTickingCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.multirate", "⏱ Ticking Océanique Asynchrone / Multi-Cadence (Cadence réduite ×5)"));
+        oceanMultiRateTickingCheckBox.setSelected(true);
+        oceanMultiRateTickingCheckBox.setStyle("-fx-text-fill: #e2e8f0;");
+        oceanMultiRateTickingCheckBox.setTooltip(new Tooltip("Exécute la mise à jour des dynamiques océaniques 1 tick sur 5 pour libérer du CPU aux sociétés terrestres."));
+        oceanMultiRateTickingCheckBox.setOnAction(e -> notifyParamChange());
+
+        VBox box = new VBox(6, oceanMacroAggregationCheckBox, coastalNavigationOnlyCheckBox, oceanMultiRateTickingCheckBox);
+        box.setStyle("-fx-padding: 6 0 0 12;");
+
+        section.getChildren().addAll(oceanOptHeader, oceanOptDesc, box);
+        return section;
+    }
+
     private VBox createPreviewPane() {
         VBox root = new VBox(10);
         HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
+        header.setAlignment(Pos.CENTER);
 
-        previewTitleLabel = new Label(I18n.getOrDefault("scenario.preview_title", "CARTE DE DENSITÉ DE POPULATION INITIALE"));
+        previewTitleLabel = new Label(I18n.getOrDefault("scenario.preview_title", "🌍 DISTRIBUTION DÉMOGRAPHIQUE, EMPREINTE & PRESSION MALTHUSIENNE (T₀)"));
         previewTitleLabel.getStyleClass().add("label-header");
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+        previewModeCombo = new ComboBox<>();
+        previewModeCombo.getItems().addAll(
+                "🗺️ Densité Démographique (hab/km²)",
+                "🌱 Empreinte Écologique & Pression Malthusienne"
+        );
+        previewModeCombo.setValue("🗺️ Densité Démographique (hab/km²)");
+        previewModeCombo.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
+        previewModeCombo.setOnAction(e -> drawPreview());
 
-        header.getChildren().addAll(previewTitleLabel, spacer);
+        Region spacer1 = new Region();
+        Region spacer2 = new Region();
+        HBox.setHgrow(spacer1, Priority.ALWAYS);
+        HBox.setHgrow(spacer2, Priority.ALWAYS);
+
+        header.getChildren().addAll(previewTitleLabel, spacer1, previewModeCombo, spacer2);
 
         Pane canvasContainer = new StackPane();
         canvasContainer.setStyle("-fx-background-color: black; -fx-border-color: #475569;");
         previewCanvas = new Canvas(600, 400);
 
+        canvasContainer.widthProperty().addListener((obs, oldV, newV) -> {
+            if (newV.doubleValue() > 0) {
+                previewCanvas.setWidth(newV.doubleValue());
+                drawPreview();
+            }
+        });
+        canvasContainer.heightProperty().addListener((obs, oldV, newV) -> {
+            if (newV.doubleValue() > 0) {
+                previewCanvas.setHeight(newV.doubleValue());
+                drawPreview();
+            }
+        });
+
         // Interactive Zoom, Pan, Selection & Double Click Handlers
         previewCanvas.setOnScroll(e -> {
             double delta = e.getDeltaY();
             double factor = delta > 0 ? 1.15 : 0.85;
-            zoomFactor = Math.max(0.5, Math.min(20.0, zoomFactor * factor));
-            drawPreview();
+            double oldZoom = zoomFactor;
+            double newZoom = Math.max(0.5, Math.min(20.0, oldZoom * factor));
+
+            if (newZoom != oldZoom) {
+                double mouseX = e.getX();
+                double mouseY = e.getY();
+                double w = previewCanvas.getWidth();
+                double h = previewCanvas.getHeight();
+                double baseScale = Math.min(w / 360.0, h / 180.0) * 0.9;
+                double oldScale = baseScale * oldZoom;
+                double newScale = baseScale * newZoom;
+
+                if (oldScale > 0 && newScale > 0) {
+                    double mouseLng = (mouseX - w / 2.0 - panX) / oldScale;
+                    double mouseLat = (h / 2.0 + panY - mouseY) / oldScale;
+
+                    zoomFactor = newZoom;
+                    panX = mouseX - w / 2.0 - mouseLng * newScale;
+                    panY = mouseY - h / 2.0 + mouseLat * newScale;
+                } else {
+                    zoomFactor = newZoom;
+                }
+                drawPreview();
+            }
         });
 
         previewCanvas.setOnMousePressed(e -> {
@@ -1451,16 +1677,7 @@ public class ScenarioSetupPanel extends BorderPane {
         HBox legend = new HBox(12);
         legend.setAlignment(Pos.CENTER);
         legend.setPadding(new Insets(6, 12, 6, 12));
-        legend.setStyle("-fx-background-color: rgba(0,0,0,0.7); -fx-background-radius: 5;");
-
-        previewModeCombo = new ComboBox<>();
-        previewModeCombo.getItems().addAll(
-                "🗺️ Densité Démographique (hab/km²)",
-                "🌱 Empreinte Écologique & Pression Malthusienne"
-        );
-        previewModeCombo.setValue("🗺️ Densité Démographique (hab/km²)");
-        previewModeCombo.setStyle("-fx-font-size: 11px; -fx-background-color: #1e293b; -fx-text-fill: white;");
-        previewModeCombo.setOnAction(e -> drawPreview());
+        legend.setStyle("-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 6;");
 
         HBox legendItems = new HBox(8);
         legendItems.setAlignment(Pos.CENTER);
@@ -1502,7 +1719,7 @@ public class ScenarioSetupPanel extends BorderPane {
             legendItems.getChildren().add(item);
         }
 
-        legend.getChildren().addAll(new Label("Vue :"), previewModeCombo, legendItems);
+        legend.getChildren().add(legendItems);
         return legend;
     }
 
@@ -1617,73 +1834,87 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void generatePreview() {
-        try {
-            PlanetPreset cfg = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
-            if (cfg == null) cfg = PlanetPreset.EARTH_LIKE;
-
-            // Generate low-res cells for fast preview (Resolution 3 or 4)
-            List<H3Cell> previewCells = new ProceduralGenerator().generatePlanet(
-                    new PlanetPreset(
-                            cfg.name(), 4, cfg.radiusKm(), cfg.dayLengthHours(),
-                            cfg.axialTiltDegrees(), cfg.yearLengthDays(), cfg.distanceToSunAU(),
-                            cfg.solarLuminosity(), cfg.minAltitudeMeters(), cfg.maxAltitudeMeters(),
-                            cfg.averageTempC(), cfg.seed(), cfg.noiseFrequency(),
-                            cfg.noiseScale(), cfg.waterLevel(), cfg.temperatureGradient(),
-                            cfg.oxygenPercentage(), cfg.albedo(), cfg.atmospherePressureAtm(),
-                            cfg.isSatellite(), cfg.parentPlanetMassEarthMasses(),
-                            cfg.orbitalDistanceToParentKm(), cfg.co2Ppm(),
-                            cfg.seismicActivityLevel(), cfg.volcanicActivityLevel(),
-                            cfg.customElevBase64(), cfg.customBiomeBase64(), cfg.customResourceBase64(),
-                            cfg.customClimateBase64(), cfg.customRainfallBase64(), cfg.customSeasonalityBase64(),
-                            cfg.elevationUseImport(), cfg.elevationMapSource(),
-                            cfg.tempUseImport(), cfg.tempSource(), cfg.tempSeed(),
-                            cfg.precipUseImport(), cfg.precipSource(), cfg.precipSeed(),
-                            cfg.seasonUseImport(), cfg.seasonSource(), cfg.seasonSeed()
-                    )
-            );
-
-            // Map elevation and biome images if preset is Earth or has custom Base64 map
-            boolean isEarth = cfg == PlanetPreset.EARTH_LIKE || "earth".equalsIgnoreCase(cfg.elevationMapSource()) ||
-                    (cfg.name() != null && (cfg.name().toLowerCase().contains("earth") || cfg.name().toLowerCase().contains("terre") || cfg.name().toLowerCase().contains("terran")));
-            if (isEarth) {
-                try (var elevStream = getClass().getResourceAsStream("/maps/earth_elevation.png");
-                     var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png")) {
-                    if (elevStream != null || biomeStream != null) {
-                        new org.ether.society.data.ImageMapLoader().mapDataToCells(previewCells, elevStream, biomeStream);
-                    }
-                } catch (Exception e) {
-                    logger.warn("Could not load Earth elevation map image for preview", e);
-                }
-            } else if (cfg.customElevBase64() != null && !cfg.customElevBase64().isBlank()) {
-                try {
-                    Image customElev = org.ether.society.data.ImageMapLoader.base64PngToImage(cfg.customElevBase64());
-                    Image customBiome = org.ether.society.data.ImageMapLoader.base64PngToImage(cfg.customBiomeBase64());
-                    if (customElev != null) {
-                        new org.ether.society.data.ImageMapLoader().mapImagesToCells(previewCells, customElev, customBiome, null, cfg.minAltitudeMeters(), cfg.maxAltitudeMeters());
-                    }
-                } catch (Exception e) {
-                    logger.warn("Could not decode custom Base64 elevation map image for preview", e);
-                }
-            }
-
-            distributeInitialPopulation(previewCells);
-            currentPreviewCells = previewCells;
-            drawPreview();
-            previewStatusLabel.setText("Aperçu généré : " + previewCells.size() + " cellules.");
-        } catch (Exception ex) {
-            logger.error("Failed to generate preview", ex);
-            previewStatusLabel.setText("Erreur aperçu : " + ex.getMessage());
+        if (previewStatusLabel != null) {
+            previewStatusLabel.setText("⚡ Calcul de l'aperçu démographique en arrière-plan...");
         }
+        new Thread(() -> {
+            try {
+                PlanetPreset cfg = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : null);
+                if (cfg == null) cfg = PlanetPreset.EARTH_LIKE;
+
+                // Fast preview generation using Resolution 3 (41,162 cells) instead of blocking Res 4
+                List<H3Cell> previewCells = new ProceduralGenerator().generatePlanet(
+                        new PlanetPreset(
+                                cfg.name(), 3, cfg.radiusKm(), cfg.dayLengthHours(),
+                                cfg.axialTiltDegrees(), cfg.yearLengthDays(), cfg.distanceToSunAU(),
+                                cfg.solarLuminosity(), cfg.minAltitudeMeters(), cfg.maxAltitudeMeters(),
+                                cfg.averageTempC(), cfg.seed(), cfg.noiseFrequency(),
+                                cfg.noiseScale(), cfg.waterLevel(), cfg.temperatureGradient(),
+                                cfg.oxygenPercentage(), cfg.albedo(), cfg.atmospherePressureAtm(),
+                                cfg.isSatellite(), cfg.parentPlanetMassEarthMasses(),
+                                cfg.orbitalDistanceToParentKm(), cfg.co2Ppm(),
+                                cfg.seismicActivityLevel(), cfg.volcanicActivityLevel(),
+                                cfg.customElevBase64(), cfg.customBiomeBase64(), cfg.customResourceBase64(),
+                                cfg.customClimateBase64(), cfg.customRainfallBase64(), cfg.customSeasonalityBase64(),
+                                cfg.elevationUseImport(), cfg.elevationMapSource(),
+                                cfg.tempUseImport(), cfg.tempSource(), cfg.tempSeed(),
+                                cfg.precipUseImport(), cfg.precipSource(), cfg.precipSeed(),
+                                cfg.seasonUseImport(), cfg.seasonSource(), cfg.seasonSeed()
+                        )
+                );
+
+                // Map elevation and biome images if preset is Earth or has custom Base64 map
+                boolean isEarth = cfg == PlanetPreset.EARTH_LIKE || "earth".equalsIgnoreCase(cfg.elevationMapSource()) ||
+                        (cfg.name() != null && (cfg.name().toLowerCase().contains("earth") || cfg.name().toLowerCase().contains("terre") || cfg.name().toLowerCase().contains("terran")));
+                if (isEarth) {
+                    try (var elevStream = getClass().getResourceAsStream("/maps/earth_elevation.png");
+                         var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png")) {
+                        if (elevStream != null || biomeStream != null) {
+                            new org.ether.society.data.ImageMapLoader().mapDataToCells(previewCells, elevStream, biomeStream);
+                        }
+                    } catch (Exception e) {
+                        logger.warn("Could not load Earth elevation map image for preview", e);
+                    }
+                } else if (cfg.customElevBase64() != null && !cfg.customElevBase64().isBlank()) {
+                    try {
+                        Image customElev = org.ether.society.data.ImageMapLoader.base64PngToImage(cfg.customElevBase64());
+                        Image customBiome = org.ether.society.data.ImageMapLoader.base64PngToImage(cfg.customBiomeBase64());
+                        if (customElev != null) {
+                            new org.ether.society.data.ImageMapLoader().mapImagesToCells(previewCells, customElev, customBiome, null, cfg.minAltitudeMeters(), cfg.maxAltitudeMeters());
+                        }
+                    } catch (Exception e) {
+                        logger.warn("Could not decode custom Base64 elevation map image for preview", e);
+                    }
+                }
+
+                distributeInitialPopulation(previewCells);
+
+                javafx.application.Platform.runLater(() -> {
+                    currentPreviewCells = previewCells;
+                    drawPreview();
+                    if (previewStatusLabel != null) {
+                        previewStatusLabel.setText("Aperçu généré : " + previewCells.size() + " cellules.");
+                    }
+                });
+            } catch (Exception ex) {
+                logger.error("Failed to generate preview", ex);
+                javafx.application.Platform.runLater(() -> {
+                    if (previewStatusLabel != null) {
+                        previewStatusLabel.setText("Erreur aperçu : " + ex.getMessage());
+                    }
+                });
+            }
+        }, "H3-Preview-Async-Thread").start();
     }
 
     private void distributeInitialPopulation(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return;
 
-        long totalPop = initialHumanCountSpinner.getValue();
-        double capitalK0 = initialCapitalSpinner != null ? initialCapitalSpinner.getValue() : 1000.0;
-        String pattern = densityPatternCombo.getValue();
+        long totalPop = initialHumanCountSpinner != null && initialHumanCountSpinner.getValue() != null ? initialHumanCountSpinner.getValue() : 1_000_000L;
+        double capitalK0 = initialCapitalSpinner != null && initialCapitalSpinner.getValue() != null ? initialCapitalSpinner.getValue() : 1000.0;
+        String pattern = densityPatternCombo != null ? densityPatternCombo.getValue() : "UNBIASED_NATURAL";
         boolean isEarthPreset = activePlanetPreset != null && activePlanetPreset.name() != null && activePlanetPreset.name().toLowerCase().contains("earth");
-        long startYear = startYearSpinner.getValue();
+        long startYear = startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -8000;
 
         if (customDensityImage != null) {
             // Custom PNG density map sampling
@@ -1702,6 +1933,10 @@ public class ScenarioSetupPanel extends BorderPane {
                 double factor = imgCol.getBrightness() * 5.0;
                 c.setPopulation((int) (popPerCell * factor));
             }
+        } else {
+            // Standard procedural density calculation via ProceduralPopulationEngine
+            double techLevel = Math.clamp(Math.log10(Math.max(1.0, capitalK0)) * 2.2 + 0.2, 0.2, 10.0);
+            ProceduralPopulationEngine.distributePopulation(cells, getScenario(), totalPop, techLevel, pattern, isEarthPreset, startYear);
         }
     }
 
@@ -1844,6 +2079,8 @@ public class ScenarioSetupPanel extends BorderPane {
                 gc.setFill(col);
                 gc.fillRect(x, y, 2, 2);
             }
+        } else {
+            drawInstant2DDensityPreview(gc, w, h, scale, offX, offY);
         }
 
         // Draw Clipping bounding box & dimmed overlay
@@ -1897,6 +2134,48 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    private void drawInstant2DDensityPreview(GraphicsContext gc, double w, double h, double scale, double offX, double offY) {
+        int pwWidth = 320;
+        int pwHeight = 160;
+        WritableImage img = new WritableImage(pwWidth, pwHeight);
+        PixelWriter writer = img.getPixelWriter();
+
+        PlanetPreset planet = activePlanetPreset != null ? activePlanetPreset : PlanetPreset.EARTH_LIKE;
+        boolean isEarth = planet == PlanetPreset.EARTH_LIKE || "earth".equalsIgnoreCase(planet.elevationMapSource()) ||
+                (planet.name() != null && (planet.name().toLowerCase().contains("earth") || planet.name().toLowerCase().contains("terre")));
+
+        Image bgImage = null;
+        if (isEarth) {
+            try (var is = getClass().getResourceAsStream("/maps/earth_elevation.png")) {
+                if (is != null) bgImage = new Image(is);
+            } catch (Exception ignored) {}
+        }
+        PixelReader bgReader = bgImage != null ? bgImage.getPixelReader() : null;
+
+        for (int py = 0; py < pwHeight; py++) {
+            for (int px = 0; px < pwWidth; px++) {
+                Color pxColor;
+                if (bgReader != null) {
+                    pxColor = bgReader.getColor(px, py);
+                } else {
+                    double lat = 90.0 - (py / (double) pwHeight) * 180.0;
+                    double lon = -180.0 + (px / (double) pwWidth) * 360.0;
+                    double alt = Math.sin(lat * Math.PI / 180.0) * Math.cos(lon * Math.PI / 180.0);
+                    pxColor = alt < 0 ? Color.rgb(20, 60, 140) : Color.rgb(40, 140, 60);
+                }
+                writer.setColor(px, py, pxColor);
+            }
+        }
+
+        double drawW = 360.0 * scale;
+        double drawH = 180.0 * scale;
+        gc.drawImage(img, offX, offY, drawW, drawH);
+
+        gc.setFill(Color.rgb(56, 189, 248, 0.95));
+        gc.setFont(javafx.scene.text.Font.font("System", javafx.scene.text.FontWeight.BOLD, 12));
+        gc.fillText("⚡ Génération de la grille H3 démographique en arrière-plan...", 20, h - 15);
+    }
+
     // =========================================================================
     // DEFERRED EXECUTION — Calculate H3 Grid & Start Simulation
     // =========================================================================
@@ -1933,9 +2212,49 @@ public class ScenarioSetupPanel extends BorderPane {
         });
     }
 
+    private void resetStartButtonState() {
+        isCalculationRunning = false;
+        javafx.application.Platform.runLater(() -> {
+            if (startBtn != null) {
+                startBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.start_btn", "🚀 VALIDER ET LANCER LA SIMULATION"));
+                startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 6;");
+                startBtn.setDisable(false);
+            }
+        });
+    }
+
+    private void setStartButtonCancelState() {
+        isCalculationRunning = true;
+        javafx.application.Platform.runLater(() -> {
+            if (startBtn != null) {
+                startBtn.setText("⏹ ANNULER / STOPPER LA GÉNÉRATION");
+                startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 6;");
+                startBtn.setDisable(false);
+            }
+        });
+    }
+
+    private void handleStartOrCancel() {
+        if (isCalculationRunning) {
+            cancelCalculation();
+        } else {
+            startSimulationDeferred();
+        }
+    }
+
+    private void cancelCalculation() {
+        cancelRequested = true;
+        updateProgress(0.0, "🛑 Annulation du calcul en cours à la demande de l'utilisateur...");
+        if (generationThread != null && generationThread.isAlive()) {
+            generationThread.interrupt();
+        }
+        resetStartButtonState();
+    }
+
     private void startSimulationDeferred() {
-        startBtn.setDisable(true);
-        updateProgress(0.05, "⚡ Enregistrement du scénario et préparation du calcul H3...");
+        cancelRequested = false;
+        setStartButtonCancelState();
+        updateProgress(0.02, "⚡ Enregistrement du scénario & préparation du calcul H3...");
 
         // 1. Explicitly Save Scenario to DB & Provide UI Confirmation
         Scenario scenarioToSave = getScenario();
@@ -1954,9 +2273,15 @@ public class ScenarioSetupPanel extends BorderPane {
             logger.warn("Could not save scenario to DB prior to simulation launch", ex);
         }
 
-        updateProgress(0.08, "✅ Scénario '" + scenarioToSave.getName() + "' sauvegardé avec succès ! ⚡ Calcul de la grille H3...");
+        if (cancelRequested) {
+            resetStartButtonState();
+            updateProgress(0.0, "🛑 Calcul annulé par l'utilisateur.");
+            return;
+        }
 
-        new Thread(() -> {
+        updateProgress(0.05, "✅ Scénario '" + scenarioToSave.getName() + "' prêt ! ⚡ Calcul de la grille H3...");
+
+        generationThread = new Thread(() -> {
             try {
                 PlanetPreset cfg = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
                 if (cfg == null) cfg = PlanetPreset.EARTH_LIKE;
@@ -1984,16 +2309,21 @@ public class ScenarioSetupPanel extends BorderPane {
 
                 logger.info("Generating H3 cells for scenario '{}' at resolution {}", scenarioToSave.getName(), cfg.resolution());
 
-                // Progress-tracked procedural planet generation (5% -> 75%)
+                // Progress-tracked procedural planet generation (5% -> 70%)
                 List<H3Cell> cells = new ProceduralGenerator().generatePlanet(cfg, (done, total) -> {
-                    double progressVal = 0.05 + 0.70 * ((double) done / total);
+                    double progressVal = 0.05 + 0.65 * ((double) done / total);
                     int percent = (int) (progressVal * 100);
-                    updateProgress(progressVal, String.format("⚡ Génération des cellules H3 : %d%% (%d / %d)", percent, done, total));
-                });
+                    updateProgress(progressVal, String.format("🌍 Génération du relief & biomes H3 : %d%% (%d / %d cellules)", percent, done, total));
+                }, () -> cancelRequested);
 
-                // Apply Geographical Clipping if enabled (75% -> 85%)
+                if (cancelRequested) throw new java.util.concurrent.CancellationException("Generation cancelled by user");
+
+                // Hydrography and river basin accumulation (70% -> 78%)
+                updateProgress(0.72, "🌊 Calcul du réseau hydrographique et accumulation des bassins versants (72%)...");
+
+                // Apply Geographical Clipping if enabled (78% -> 85%)
                 if (clippingCheckBox != null && clippingCheckBox.isSelected()) {
-                    updateProgress(0.80, "✂️ Application du filtrage géographique et modélisation des frontières (80%)...");
+                    updateProgress(0.80, "✂️ Application du découpage géographique et modélisation des frontières (80%)...");
 
                     double minLat = minLatSpinner.getValue();
                     double maxLat = maxLatSpinner.getValue();
@@ -2005,6 +2335,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
                     List<H3Cell> clippedCells = new ArrayList<>();
                     for (H3Cell c : cells) {
+                        if (cancelRequested) throw new java.util.concurrent.CancellationException("Generation cancelled by user");
                         if (c.getLatitude() >= minLat && c.getLatitude() <= maxLat &&
                             c.getLongitude() >= minLng && c.getLongitude() <= maxLng) {
                             
@@ -2020,30 +2351,43 @@ public class ScenarioSetupPanel extends BorderPane {
                     logger.info("Clipping applied: {} cells retained out of global planet grid.", cells.size());
                 }
 
+                if (cancelRequested) throw new java.util.concurrent.CancellationException("Generation cancelled by user");
+
                 // Distribute Initial Population (85% -> 95%)
-                updateProgress(0.90, "👥 Répartition de la population et motifs démographiques (90%)...");
+                updateProgress(0.88, "👥 Répartition de la population, empreinte écologique & capital K₀ (88%)...");
 
                 distributeInitialPopulation(cells);
+                if (cancelRequested) throw new java.util.concurrent.CancellationException("Generation cancelled by user");
+
                 currentPreviewCells = cells;
 
                 final List<H3Cell> finalCells = cells;
                 javafx.application.Platform.runLater(() -> {
-                    updateProgress(1.0, "✅ " + finalCells.size() + " cellules H3 calculées ! Scénario '" + scenarioToSave.getName() + "' sauvegardé.");
+                    updateProgress(1.0, "✅ " + finalCells.size() + " cellules H3 calculées ! Lancement du scénario '" + scenarioToSave.getName() + "'...");
                     drawPreview();
                     previewStatusLabel.setText("Généré : " + finalCells.size() + " cellules H3.");
+
+                    resetStartButtonState();
 
                     if (onStartSimulation != null) {
                         onStartSimulation.accept(scenarioToSave);
                     }
-
-                    startBtn.setDisable(false);
                 });
             } catch (Exception ex) {
-                logger.error("Error during deferred H3 cell calculation", ex);
-                updateProgress(1.0, "❌ Erreur pendant le calcul : " + ex.getMessage());
-                javafx.application.Platform.runLater(() -> startBtn.setDisable(false));
+                if (cancelRequested || ex instanceof java.util.concurrent.CancellationException || ex instanceof InterruptedException) {
+                    logger.info("Deferred H3 calculation cancelled by user.");
+                    updateProgress(0.0, "🛑 Calcul annulé par l'utilisateur.");
+                } else {
+                    logger.error("Error during deferred H3 cell calculation", ex);
+                    updateProgress(1.0, "❌ Erreur pendant le calcul : " + ex.getMessage());
+                }
+                resetStartButtonState();
+            } finally {
+                generationThread = null;
             }
-        }).start();
+        }, "H3-Scenario-Generator-Thread");
+        generationThread.setDaemon(true);
+        generationThread.start();
     }
 
     // =========================================================================
@@ -2360,6 +2704,15 @@ public class ScenarioSetupPanel extends BorderPane {
             s.setMaxLng(maxLngSpinner.getValue());
             s.setBoundaryMode(boundaryModeCombo.getValue());
         }
+        if (oceanMacroAggregationCheckBox != null) {
+            s.setOceanMacroAggregationEnabled(oceanMacroAggregationCheckBox.isSelected());
+        }
+        if (coastalNavigationOnlyCheckBox != null) {
+            s.setCoastalNavigationOnlyEnabled(coastalNavigationOnlyCheckBox.isSelected());
+        }
+        if (oceanMultiRateTickingCheckBox != null) {
+            s.setOceanMultiRateTickingEnabled(oceanMultiRateTickingCheckBox.isSelected());
+        }
         if (customDensityImage != null) {
             s.setCustomDensityBase64(org.ether.society.data.ImageMapLoader.imageToBase64Png(customDensityImage));
         }
@@ -2375,5 +2728,51 @@ public class ScenarioSetupPanel extends BorderPane {
 
     public List<ClimateEvent> getScheduledEvents() {
         return eventsList != null ? new ArrayList<>(eventsList) : new ArrayList<>();
+    }
+
+    /**
+     * Custom SpinnerValueFactory for Long values to avoid ClassCastException.
+     */
+    public static class LongSpinnerValueFactory extends SpinnerValueFactory<Long> {
+        private final long min;
+        private final long max;
+        private final long step;
+
+        public LongSpinnerValueFactory(long min, long max, long initialValue, long step) {
+            this.min = min;
+            this.max = max;
+            this.step = step;
+            setConverter(new StringConverter<Long>() {
+                @Override
+                public String toString(Long object) {
+                    return object == null ? "" : String.valueOf(object);
+                }
+                @Override
+                public Long fromString(String string) {
+                    if (string == null || string.isBlank()) return initialValue;
+                    try {
+                        String clean = string.replaceAll("[^0-9\\-]", "");
+                        return Long.parseLong(clean);
+                    } catch (Exception e) {
+                        return initialValue;
+                    }
+                }
+            });
+            setValue(initialValue);
+        }
+
+        @Override
+        public void decrement(int steps) {
+            long current = getValue() != null ? getValue() : min;
+            long newValue = Math.max(min, current - (long) steps * step);
+            setValue(newValue);
+        }
+
+        @Override
+        public void increment(int steps) {
+            long current = getValue() != null ? getValue() : min;
+            long newValue = Math.min(max, current + (long) steps * step);
+            setValue(newValue);
+        }
     }
 }

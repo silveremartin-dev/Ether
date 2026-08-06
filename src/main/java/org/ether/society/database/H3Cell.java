@@ -189,6 +189,14 @@ public class H3Cell {
     // --- Dynamic Climate & Surface Physics ---
     @Column(nullable = false)
     private Double dynamicAlbedo = 0.30; // Dynamic albedo (0.10 dark forest to 0.85 fresh snow/ice)
+    @Column(nullable = false)
+    private Double iceSheetThicknessMeters = 0.0; // Ice sheet thickness in meters (up to 2000.0 m during LGM)
+    @Column(nullable = false)
+    private Double seaLevelOffsetMeters = 0.0; // Global sea level offset in meters (-120.0 m during LGM)
+    @Column(nullable = false)
+    private Boolean isCoastal = false; // True if cell borders ocean/sea coast
+    @Column(nullable = false)
+    private Double coastalMarineResource = 0.0; // Marine/coastal fish & shellfish biomass (boosts carrying capacity)
 
     // --- Detailed Demographic Age Pyramid (7 Fine-Grained Cohorts) ---
     @Column(nullable = false)
@@ -622,7 +630,9 @@ public class H3Cell {
         if (biome != null) {
             switch (biome) {
                 case TUNDRA, SNOW -> baseFriction += 3.5;
+                case GLACIER -> baseFriction += 8.0;
                 case FOREST -> baseFriction += 1.5;
+                case SAVANNAH -> baseFriction += 0.8;
                 case JUNGLE -> baseFriction += 4.5;
                 case DESERT -> baseFriction += 4.0;
                 case MOUNTAINS -> baseFriction += 6.0;
@@ -695,6 +705,8 @@ public class H3Cell {
         if (biome != null) {
             switch (biome) {
                 case SNOW, TUNDRA -> baseAlbedo = 0.78;
+                case GLACIER -> baseAlbedo = 0.85;
+                case SAVANNAH -> baseAlbedo = 0.25;
                 case DESERT -> baseAlbedo = 0.40;
                 case FOREST, JUNGLE -> baseAlbedo = 0.12;
                 case MOUNTAINS -> baseAlbedo = 0.35;
@@ -746,6 +758,18 @@ public class H3Cell {
         this.popAdult = pop15to24 + pop25to49 + pop50to64;
         this.popElderly = pop65to79 + pop80Plus;
     }
+
+    public Double getIceSheetThicknessMeters() { return iceSheetThicknessMeters != null ? iceSheetThicknessMeters : 0.0; }
+    public void setIceSheetThicknessMeters(Double iceSheetThicknessMeters) { this.iceSheetThicknessMeters = iceSheetThicknessMeters; }
+
+    public Double getSeaLevelOffsetMeters() { return seaLevelOffsetMeters != null ? seaLevelOffsetMeters : 0.0; }
+    public void setSeaLevelOffsetMeters(Double seaLevelOffsetMeters) { this.seaLevelOffsetMeters = seaLevelOffsetMeters; }
+
+    public Boolean getIsCoastal() { return isCoastal != null ? isCoastal : false; }
+    public void setIsCoastal(Boolean isCoastal) { this.isCoastal = isCoastal; }
+
+    public Double getCoastalMarineResource() { return coastalMarineResource != null ? coastalMarineResource : 0.0; }
+    public void setCoastalMarineResource(Double coastalMarineResource) { this.coastalMarineResource = coastalMarineResource; }
 
     /**
      * Create a snapshot copy of this cell.

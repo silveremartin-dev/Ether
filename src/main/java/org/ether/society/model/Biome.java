@@ -67,6 +67,12 @@ public enum Biome {
     SNOW,
 
     /** Arctic/Antarctic tundra */
-    TUNDRA
+    TUNDRA,
+
+    /** Permanent glacial ice sheet */
+    GLACIER,
+
+    /** Tropical savannah grassland */
+    SAVANNAH
 }
 
