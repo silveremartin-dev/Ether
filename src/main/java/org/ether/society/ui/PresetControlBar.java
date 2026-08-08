@@ -124,7 +124,11 @@ public class PresetControlBar<T> extends VBox {
             @Override
             protected void updateItem(T item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? "" : formatPresetItem(item));
+                if (empty || item == null) {
+                    setText(presetCombo.getPromptText() != null ? presetCombo.getPromptText() : "");
+                } else {
+                    setText(formatPresetItem(item));
+                }
             }
         });
 
@@ -135,7 +139,7 @@ public class PresetControlBar<T> extends VBox {
                 String name = formatPresetItem(selected);
                 nameField.setText(name);
                 nameField.setStyle(""); // reset unsaved style
-                trackingChanges = true;
+                trackingChanges = false; // clean state right after selection
                 if (listener != null) {
                     listener.onPresetSelected(selected);
                 }
@@ -208,21 +212,53 @@ public class PresetControlBar<T> extends VBox {
     }
 
     /**
-     * Sets the preset list. No item is selected by default (blank state).
-     * Pass a non-null defaultItem to pre-select one.
+     * Sets the preset list. Pre-selects defaultItem if non-null.
      */
     public void setPresets(List<T> items, T defaultItem) {
         presetCombo.getItems().setAll(items);
-        if (defaultItem != null && items.contains(defaultItem)) {
-            presetCombo.setValue(defaultItem);
-            nameField.setText(formatPresetItem(defaultItem));
-            trackingChanges = true;
-        } else {
-            // Start blank: no selection, empty name
-            presetCombo.setValue(null);
-            nameField.setText("");
-            trackingChanges = false;
+        if (defaultItem != null) {
+            T found = null;
+            for (T it : items) {
+                if (it.equals(defaultItem) || formatPresetItem(it).equalsIgnoreCase(formatPresetItem(defaultItem))) {
+                    found = it;
+                    break;
+                }
+            }
+            if (found != null) {
+                presetCombo.setValue(found);
+                nameField.setText(formatPresetItem(found));
+                nameField.setStyle("");
+                trackingChanges = false;
+                return;
+            }
         }
+        // Start blank: no selection, empty name
+        presetCombo.setValue(null);
+        nameField.setText("");
+        trackingChanges = false;
+    }
+
+    /**
+     * Resets preset bar to a clean state matching the given preset item.
+     */
+    public void markClean(T item) {
+        if (item != null) {
+            T found = null;
+            for (T it : presetCombo.getItems()) {
+                if (it.equals(item) || formatPresetItem(it).equalsIgnoreCase(formatPresetItem(item))) {
+                    found = it;
+                    break;
+                }
+            }
+            if (found != null) {
+                presetCombo.setValue(found);
+                nameField.setText(formatPresetItem(found));
+            } else {
+                nameField.setText(formatPresetItem(item));
+            }
+        }
+        nameField.setStyle("");
+        trackingChanges = false;
     }
 
     /**
@@ -232,9 +268,14 @@ public class PresetControlBar<T> extends VBox {
      */
     public void notifyParametersChanged() {
         if (trackingChanges || presetCombo.getValue() != null) {
-            nameField.clear();
-            nameField.setPromptText(I18n.getOrDefault("preset.name.unsaved", "Configuration non sauvegardée…"));
-            nameField.setStyle("-fx-prompt-text-fill: #f59e0b; -fx-font-style: italic;");
+            String current = nameField.getText() != null ? nameField.getText().trim() : "";
+            if (current.isBlank() || presetCombo.getValue() != null) {
+                String presetName = presetCombo.getValue() != null ? formatPresetItem(presetCombo.getValue()) : current;
+                nameField.setText(presetName.isBlank() ? "Custom" : presetName + " (Personnalisé)");
+            } else if (!current.contains("Personnalisé") && !current.equalsIgnoreCase("Custom")) {
+                nameField.setText(current + " (Personnalisé)");
+            }
+            nameField.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
             // Deselect combo without triggering its action
             presetCombo.getSelectionModel().clearSelection();
             trackingChanges = false;

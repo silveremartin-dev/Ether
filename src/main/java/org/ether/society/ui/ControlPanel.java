@@ -11,118 +11,195 @@ import org.ether.society.i18n.I18n;
 import org.ether.society.i18n.Language;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.Slider;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.*;
+import javafx.scene.image.WritableImage;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.SnapshotParameters;
+import javafx.embed.swing.SwingFXUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ControlPanel extends HBox {
-    private final ISimulationEngine engine;
-    private final Label yearLabel;
-    private final Label seasonLabel; // Season indicator
-    private final Label ageLabel; // Current Civilization Age
-    private final Label tpsLabel; // Ticks Per Second
-    private H3MapCanvas mapCanvas; // Reference to canvas for view toggle
-    private MiniMap miniMap; // Reference to mini-map
-    private ColorLegend colorLegend; // Reference to color legend
-    private final Label dbStatusLabel; // Database connection indicator
+/**
+ * Modern simulation control and rendering panel for Tab 4 (Simulation View).
+ * Provides video recording, HD screenshots, temporal controls, display modes, and live metrics.
+ */
+public class ControlPanel extends VBox {
+    private static final Logger logger = LoggerFactory.getLogger(ControlPanel.class);
 
-    // UI Controls that need text updates
-    private final Button startBtn;
-    private final Button pauseBtn;
-    private final Button speed1x;
-    private final Button speed5x;
-    private final Button speed20x;
-    private final Button viewToggle;
-    private final Button displayToggle; // Biome/Population/Food/Temp
-    private final Button miniMapToggle;
-    private final Button statsToggle;
-    private final Label langLabel;
-    private final ComboBox<Language> langCombo;
-    private final Label statsLabel; // Population stats
-    private final Label eventLabel; // Last event display
+    private final ISimulationEngine engine;
+    private NotificationOverlay notificationOverlay;
+
+    // Temporal Labels
+    private final Label scenarioHeaderLabel;
+    private final Label dateHeaderLabel;
+    private final Label tpsLabel;
+    private final Label ageLabel;
+    private final Label seasonLabel;
+
+    // Statistics Labels
+    private final Label popStatValue;
+    private final Label foodStatValue;
+    private final Label cellStatValue;
+
+    // References to UI components
+    private H3MapCanvas mapCanvas;
+    private MiniMap miniMap;
+    private ColorLegend colorLegend;
+    private final Label dbStatusLabel;
+    private final Label eventLabel;
     private final List<String> eventHistory = new ArrayList<>();
 
-    // Analytics
-    private Runnable onAnalytics;
+    // Controls
+    private final Button startBtn;
+    private final Button pauseBtn;
+    private final Button stopBtn;
+    private final Button rewindBtn;
+    private final Button stepBackBtn;
+    private final Button stepForwardBtn;
 
-    // Callback for actions
+    private final Button speed1x;
+    private final Button speed2x;
+    private final Button speed5x;
+    private final Button speed20x;
+    private final Slider speedSlider;
+
+    private final Button hdScreenshotBtn;
+    private final Button recordVideoBtn;
+    private boolean isRecordingVideo = false;
+
+    private final Button viewToggle;
+    private final Button displayToggle;
+    private final ToggleButton contourToggle;
+    private final Button statsToggle;
+
+    // Callbacks
     private Runnable onSave;
     private Runnable onLoad;
     private Consumer<Boolean> onContourToggle;
     private Runnable onTimelapseRecord;
     private Consumer<Integer> onTimelapseSeek;
     private Consumer<Boolean> onStatsToggle;
-    
-    // Timelapse controls
-    private ToggleButton contourToggle;
-    private ToggleButton recordToggle;
-    private Slider timelapseSlider;
-    private Label timelapseLabel;
 
     public ControlPanel(ISimulationEngine engine) {
         this.engine = engine;
-        this.yearLabel = new Label(); // Text set in updateTexts
-        this.seasonLabel = new Label("Spring");
-        seasonLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-size: 12px; -fx-font-weight: bold;");
 
-        this.ageLabel = new Label("Stone Age");
-        ageLabel.setStyle("-fx-text-fill: #ffd700; -fx-font-weight: bold;");
-
-        this.tpsLabel = new Label("TPS: 0");
-        tpsLabel.setStyle("-fx-text-fill: #00bcd4; -fx-font-family: monospace;");
-
-        setSpacing(10);
-        setPadding(new Insets(10));
-        setAlignment(Pos.CENTER);
-        // Remove hardcoded background, use CSS class
+        setSpacing(12);
+        setPadding(new Insets(14));
         getStyleClass().add("glass-panel");
+        setStyle("-fx-background-color: rgba(15, 23, 42, 0.85); -fx-background-radius: 10; -fx-border-color: rgba(56, 189, 248, 0.25); -fx-border-radius: 10; -fx-border-width: 1;");
 
-        // Save/Load Buttons
-        Button saveBtn = new Button("Save");
-        saveBtn.setTooltip(new Tooltip("Save current simulation state"));
-        saveBtn.setOnAction(e -> {
-            if (onSave != null)
-                onSave.run();
+        // --- 1. DATE & TIME HEADER CARD ---
+        scenarioHeaderLabel = new Label("🎬 Scénario : Out of Africa");
+        scenarioHeaderLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #a78bfa;");
+
+        dateHeaderLabel = new Label("📅 Date & Heure : T=0 (An -100 000)");
+        dateHeaderLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+
+        tpsLabel = new Label("⏱️ Cadence : 0.0 ticks/s (1 mois / tick)");
+        tpsLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8; -fx-font-family: monospace;");
+
+        VBox dateHeaderBox = new VBox(4, scenarioHeaderLabel, dateHeaderLabel, tpsLabel);
+        dateHeaderBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.7); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 8;");
+
+        // --- 2. TEMPORAL & PLAYBACK CONTROLS CARD ---
+        Label timeTitle = createCardTitle("⏱️ CONTRÔLES TEMPS, VITESSE & LECTURE");
+
+        rewindBtn = new Button("|<<");
+        rewindBtn.setTooltip(new Tooltip("Réinitialiser T=0 : Remet l'horloge temporelle à l'an T=0 et réinjecte la configuration d'origine du scénario."));
+        rewindBtn.setOnAction(e -> {
+            engine.pause();
+            if (onTimelapseSeek != null) onTimelapseSeek.accept(0);
         });
 
-        Button loadBtn = new Button("Load");
-        loadBtn.setTooltip(new Tooltip("Load a saved simulation"));
-        loadBtn.setOnAction(e -> {
-            if (onLoad != null)
-                onLoad.run();
-        });
+        stepBackBtn = new Button("<<");
+        stepBackBtn.setTooltip(new Tooltip("Ralentir / Reculer : Divise par 2 la vitesse de la simulation pas-à-pas."));
+        stepBackBtn.setOnAction(e -> engine.setSpeed(Math.max(1, (int)(engine.getSpeed() / 2))));
 
-        startBtn = new Button();
-        startBtn.setTooltip(new Tooltip("Start the simulation"));
+        startBtn = new Button("▶");
+        startBtn.setTooltip(new Tooltip("Lancer / Reprendre : Démarre la boucle de calcul des équations physiques, climatiques et démographiques."));
+        startBtn.setStyle("-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold;");
         startBtn.setOnAction(e -> engine.start());
 
-        pauseBtn = new Button();
-        pauseBtn.setTooltip(new Tooltip("Pause the simulation"));
+        pauseBtn = new Button("⏸");
+        pauseBtn.setTooltip(new Tooltip("Mettre en pause : Interrompt temporairement l'avancement du temps sans modifier l'état actif."));
+        pauseBtn.setStyle("-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-font-weight: bold;");
         pauseBtn.setOnAction(e -> engine.pause());
 
+        stopBtn = new Button("⏹");
+        stopBtn.setTooltip(new Tooltip("Arrêter : Fige l'exécution du moteur de simulation et stoppe le thread actif."));
+        stopBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;");
+        stopBtn.setOnAction(e -> {
+            engine.pause();
+        });
+
+        stepForwardBtn = new Button(">>");
+        stepForwardBtn.setTooltip(new Tooltip("Avancer rapide : Multiplie par 2 la cadence de calcul temporel (jusqu'à 20x)."));
+        stepForwardBtn.setOnAction(e -> engine.setSpeed(Math.min(20, (int)(engine.getSpeed() * 2))));
+
+        HBox playBar = new HBox(6, rewindBtn, stepBackBtn, startBtn, pauseBtn, stopBtn, stepForwardBtn);
+        playBar.setAlignment(Pos.CENTER);
+
+        speedSlider = new Slider(1, 20, 1);
+        speedSlider.setBlockIncrement(1);
+        speedSlider.setMajorTickUnit(5);
+        speedSlider.setShowTickMarks(true);
+        speedSlider.setTooltip(new Tooltip("Ajustement continu de la vitesse d'exécution de la simulation (1x à 20x ticks/s)."));
+        speedSlider.valueProperty().addListener((obs, oldV, newV) -> engine.setSpeed(newV.intValue()));
+
+        // Speed preset buttons
         speed1x = new Button("1x");
-        speed1x.setTooltip(new Tooltip("Normal speed"));
-        speed1x.setOnAction(e -> engine.setSpeed(1));
-
+        speed1x.setTooltip(new Tooltip("Cadence standard (1x) : 1 tick temporel (1 mois) par seconde."));
+        speed1x.setOnAction(e -> { engine.setSpeed(1); speedSlider.setValue(1); });
+        
+        speed2x = new Button("2x");
+        speed2x.setTooltip(new Tooltip("Cadence accélérée (2x) : 2 ticks temporels par seconde."));
+        speed2x.setOnAction(e -> { engine.setSpeed(2); speedSlider.setValue(2); });
+        
         speed5x = new Button("5x");
-        speed5x.setTooltip(new Tooltip("5x speed"));
-        speed5x.setOnAction(e -> engine.setSpeed(5));
-
+        speed5x.setTooltip(new Tooltip("Cadence rapide (5x) : 5 ticks temporels par seconde."));
+        speed5x.setOnAction(e -> { engine.setSpeed(5); speedSlider.setValue(5); });
+        
         speed20x = new Button("20x");
-        speed20x.setTooltip(new Tooltip("20x speed (fast forward)"));
-        speed20x.setOnAction(e -> engine.setSpeed(20));
+        speed20x.setTooltip(new Tooltip("Cadence maximale (20x) : 20 ticks temporels par seconde."));
+        speed20x.setOnAction(e -> { engine.setSpeed(20); speedSlider.setValue(20); });
 
-        // 2D/3D Toggle Button
-        viewToggle = new Button();
-        viewToggle.setTooltip(new Tooltip("Toggle between 2D and 3D view"));
+        HBox speedBtnBox = new HBox(5, speed1x, speed2x, speed5x, speed20x);
+        speedBtnBox.setAlignment(Pos.CENTER);
+
+        VBox timeCard = new VBox(8, timeTitle, playBar, speedBtnBox, speedSlider);
+        styleCard(timeCard);
+
+        // --- 3. MEDIA & EXPORT MP4 CARD ---
+        Label mediaTitle = createCardTitle("📸 CAPTURES & VIDÉO MP4");
+
+        hdScreenshotBtn = new Button("📸 Capture Photo HD");
+        hdScreenshotBtn.setTooltip(new Tooltip("Exporte un instantané PNG haute définition du canevas géographique dans saves/screenshots/."));
+        hdScreenshotBtn.setMaxWidth(Double.MAX_VALUE);
+        hdScreenshotBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8;");
+        hdScreenshotBtn.setOnAction(e -> takeHDScreenshot());
+
+        recordVideoBtn = new Button("🎥 Enregistrer Vidéo MP4");
+        recordVideoBtn.setTooltip(new Tooltip("Démarre ou arrête la capture vidéo MP4 trame par trame de la simulation dans saves/timelapse/."));
+        recordVideoBtn.setMaxWidth(Double.MAX_VALUE);
+        recordVideoBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8;");
+        recordVideoBtn.setOnAction(e -> toggleVideoRecording());
+
+        VBox mediaCard = new VBox(8, mediaTitle, hdScreenshotBtn, recordVideoBtn);
+        styleCard(mediaCard);
+
+        // --- 4. DISPLAY & VISUAL OVERLAYS CARD ---
+        Label viewTitle = createCardTitle("🎨 STYLE, OVERLAYS & AFFICHAGE");
+
+        viewToggle = new Button("Mode 3D");
+        viewToggle.setTooltip(new Tooltip("Bascule le rendu cartographique entre la projection équirectangulaire 2D et le globe sphérique 3D H3."));
         viewToggle.setOnAction(e -> {
             if (mapCanvas != null) {
                 ViewMode current = mapCanvas.getViewMode();
@@ -132,10 +209,8 @@ public class ControlPanel extends HBox {
             }
         });
 
-        // Display Mode Toggle Button (Biome -> Population -> Food -> Temperature)
-        displayToggle = new Button();
-        displayToggle
-                .setTooltip(new Tooltip("Cycle through display modes: Biome, Population, Food, Temperature, etc."));
+        displayToggle = new Button("Biomes");
+        displayToggle.setTooltip(new Tooltip("Filtres & Couches visuelles : Alterne l'affichage entre Biomes, Population, Alimentation, Température, Gini et PIB."));
         displayToggle.setOnAction(e -> {
             if (mapCanvas != null) {
                 DisplayMode current = mapCanvas.getDisplayMode();
@@ -143,319 +218,224 @@ public class ControlPanel extends HBox {
                 int nextIndex = (current.ordinal() + 1) % modes.length;
                 mapCanvas.setDisplayMode(modes[nextIndex]);
                 updateDisplayToggleButton();
-
-                // Update color legend
-                if (colorLegend != null) {
-                    colorLegend.setDisplayMode(modes[nextIndex]);
-                }
+                if (colorLegend != null) colorLegend.setDisplayMode(modes[nextIndex]);
             }
         });
 
-        // Mini-map Toggle Button
-        miniMapToggle = new Button();
-        miniMapToggle.setTooltip(new Tooltip("Show/hide the mini-map"));
-        miniMapToggle.setOnAction(e -> {
-            if (miniMap != null) {
-                miniMap.setVisible(!miniMap.isVisible());
-            }
-        });
-
-        // Stats Toggle Button
-        statsToggle = new Button("Stats");
-        statsToggle.setTooltip(new Tooltip("Show/hide the statistics panel"));
-        statsToggle.setOnAction(e -> {
-            if (onStatsToggle != null) {
-                onStatsToggle.accept(true); // Logic handled in MainView
-            }
-        });
-
-        // Analytics Button
-        Button analyticsBtn = new Button("Analytics");
-        analyticsBtn.setTooltip(new Tooltip("Show historical data dashboard"));
-        analyticsBtn.setStyle("-fx-base: #673ab7;"); // Distinct color
-        analyticsBtn.setOnAction(e -> {
-            if (onAnalytics != null)
-                onAnalytics.run();
-        });
-
-        // Statistics Label
-        statsLabel = new Label("Pop: 0");
-        statsLabel.setStyle("-fx-text-fill: #ff9800; -fx-font-size: 12px; -fx-font-weight: bold;");
-        statsLabel.setTooltip(new Tooltip("Total population | Food resources | Populated cells"));
-
-        // Event Label
-        eventLabel = new Label("");
-        eventLabel.setStyle("-fx-text-fill: #e91e63; -fx-font-weight: bold;");
-        eventLabel.setTooltip(new Tooltip("No events yet"));
-
-        // Language Selector
-        langLabel = new Label();
-        langLabel.getStyleClass().add("control-label");
-
-        langCombo = new ComboBox<>();
-        langCombo.getItems().addAll(Language.values());
-        langCombo.setValue(I18n.getCurrentLanguage());
-        langCombo.setTooltip(new Tooltip("Select display language"));
-        langCombo.setOnAction(e -> {
-            Language sel = langCombo.getValue();
-            if (sel != null && sel != I18n.getCurrentLanguage()) {
-                I18n.setLanguage(sel);
-            }
-        });
-
-        // Custom cell factory to show display name
-        langCombo.setButtonCell(new ListCell<>() {
-            @Override
-            protected void updateItem(Language item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item.getDisplayName());
-                }
-            }
-        });
-        langCombo.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Language item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item.getDisplayName());
-                }
-            }
-        });
-
-        // Contour Toggle
         contourToggle = new ToggleButton("Contours");
-        contourToggle.setTooltip(new Tooltip("Show elevation contour lines"));
+        contourToggle.setTooltip(new Tooltip("Courbes de niveau topographiques : Affiche ou masque le tracé vectoriel du dénivelé d'altitude sur les cellules H3."));
         contourToggle.setOnAction(e -> {
-            if (onContourToggle != null) {
-                onContourToggle.accept(contourToggle.isSelected());
-            }
+            if (onContourToggle != null) onContourToggle.accept(contourToggle.isSelected());
         });
 
-        // Timelapse Record Toggle
-        recordToggle = new ToggleButton("⏺ Rec");
-        recordToggle.setTooltip(new Tooltip("Record simulation history for replay"));
-        recordToggle.setStyle("-fx-text-fill: red;");
-        recordToggle.setOnAction(e -> {
-            if (onTimelapseRecord != null) {
-                onTimelapseRecord.run();
-            }
+        statsToggle = new Button("Stats");
+        statsToggle.setTooltip(new Tooltip("Panneau Analytique : Ouvre ou ferme le volet latéral des statistiques sociétales et métriques techniques."));
+        statsToggle.setOnAction(e -> {
+            if (onStatsToggle != null) onStatsToggle.accept(true);
         });
 
-        // Timelapse Slider
-        timelapseSlider = new Slider(0, 100, 0);
-        timelapseSlider.setPrefWidth(120);
-        timelapseSlider.setTooltip(new Tooltip("Scrub through recorded history"));
-        timelapseSlider.setDisable(true); // Enabled when recording exists
-        timelapseSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (onTimelapseSeek != null && !timelapseSlider.isValueChanging()) {
-                onTimelapseSeek.accept(newVal.intValue());
-            }
-        });
-        timelapseLabel = new Label("Year: -");
-        timelapseLabel.getStyleClass().add("control-label");
+        GridPane viewGrid = new GridPane();
+        viewGrid.setHgap(6);
+        viewGrid.setVgap(6);
+        viewGrid.addRow(0, viewToggle, displayToggle);
+        viewGrid.addRow(1, contourToggle, statsToggle);
 
-        // Database Status Label
-        dbStatusLabel = new Label("DB: Checking...");
-        dbStatusLabel.getStyleClass().add("status-label");
-        // Style will be updated in updateDatabaseStatus
+        VBox viewCard = new VBox(8, viewTitle, viewGrid);
+        styleCard(viewCard);
 
-        yearLabel.getStyleClass().add("label-title");
+        // --- 5. SYSTEM STATUS CARD ---
+        dbStatusLabel = new Label("DB: Vérification...");
+        dbStatusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
 
-        getChildren().addAll(yearLabel, seasonLabel, ageLabel, tpsLabel, statsLabel, eventLabel, saveBtn, loadBtn, startBtn,
-                pauseBtn,
-                speed1x, speed5x,
-                speed20x,
-                viewToggle, displayToggle, miniMapToggle, statsToggle, contourToggle, recordToggle, timelapseSlider, timelapseLabel,
-                analyticsBtn, dbStatusLabel, langLabel, langCombo);
+        eventLabel = new Label("");
+        eventLabel.setStyle("-fx-text-fill: #f43f5e; -fx-font-size: 11px;");
 
-        // Initial text update
+        VBox systemCard = new VBox(6, dbStatusLabel, eventLabel);
+        styleCard(systemCard);
+
+        // Keep age and season labels initialized for dateHeaderBox updates
+        popStatValue = new Label();
+        foodStatValue = new Label();
+        cellStatValue = new Label();
+        ageLabel = new Label("Âge : Âge de la Pierre");
+        ageLabel.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        seasonLabel = new Label("Saison : Printemps");
+        seasonLabel.setStyle("-fx-text-fill: #4ade80; -fx-font-weight: bold;");
+
+        // Combine cards cleanly
+        getChildren().addAll(dateHeaderBox, timeCard, mediaCard, viewCard, systemCard);
+
         updateTexts();
-
-        // Listen for language changes
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
-    public void setOnSave(Runnable onSave) {
-        this.onSave = onSave;
+    private Label createCardTitle(String title) {
+        Label label = new Label(title);
+        label.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;");
+        return label;
     }
 
-    public void setOnLoad(Runnable onLoad) {
-        this.onLoad = onLoad;
+    private void styleCard(VBox card) {
+        card.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.5); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
     }
 
-    public void setOnAnalytics(Runnable onAnalytics) {
-        this.onAnalytics = onAnalytics;
+    public void setNotificationOverlay(NotificationOverlay overlay) {
+        this.notificationOverlay = overlay;
     }
 
-    public void setOnContourToggle(Consumer<Boolean> onContourToggle) {
-        this.onContourToggle = onContourToggle;
+    public void takeHDScreenshot() {
+        if (mapCanvas == null) {
+            logger.warn("Cannot capture screenshot: mapCanvas is null");
+            return;
+        }
+        try {
+            WritableImage writableImage = mapCanvas.snapshot(new SnapshotParameters(), null);
+            BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
+
+            File dir = new File("saves/screenshots");
+            if (!dir.exists()) dir.mkdirs();
+
+            String filename = "Ether_Capture_HD_" + System.currentTimeMillis() + ".png";
+            File outputFile = new File(dir, filename);
+            ImageIO.write(bufferedImage, "png", outputFile);
+
+            logger.info("Saved HD screenshot to {}", outputFile.getAbsolutePath());
+            if (notificationOverlay != null) {
+                notificationOverlay.showNotification("📸 Capture Photo HD Sauvegardée !\n" + outputFile.getName(), "#38bdf8");
+            }
+        } catch (Exception ex) {
+            logger.error("Failed to take HD screenshot", ex);
+            if (notificationOverlay != null) {
+                notificationOverlay.showNotification("❌ Erreur de Capture Photo HD", "#ef4444");
+            }
+        }
     }
 
-    public void setOnTimelapseRecord(Runnable onTimelapseRecord) {
-        this.onTimelapseRecord = onTimelapseRecord;
+    public void toggleVideoRecording() {
+        if (onTimelapseRecord != null) {
+            onTimelapseRecord.run();
+        }
+        this.isRecordingVideo = !this.isRecordingVideo;
+        if (isRecordingVideo) {
+            recordVideoBtn.setText("⏹️ Arrêter Vidéo MP4");
+            recordVideoBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8;");
+            if (notificationOverlay != null) {
+                notificationOverlay.showNotification("🎥 Enregistrement Vidéo MP4 Démarré !", "#ef4444");
+            }
+        } else {
+            recordVideoBtn.setText("🎥 Enregistrer Vidéo MP4");
+            recordVideoBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8;");
+            if (notificationOverlay != null) {
+                notificationOverlay.showNotification("🎬 Enregistrement Vidéo MP4 Finalisé !\nStocké dans saves/timelapse/", "#10b981");
+            }
+        }
     }
 
-    public void setOnTimelapseSeek(Consumer<Integer> onTimelapseSeek) {
-        this.onTimelapseSeek = onTimelapseSeek;
-    }
+    public void setOnSave(Runnable onSave) { this.onSave = onSave; }
+    public void setOnLoad(Runnable onLoad) { this.onLoad = onLoad; }
+    public void setOnContourToggle(Consumer<Boolean> onContourToggle) { this.onContourToggle = onContourToggle; }
+    public void setOnTimelapseRecord(Runnable onTimelapseRecord) { this.onTimelapseRecord = onTimelapseRecord; }
+    public void setOnTimelapseSeek(Consumer<Integer> onTimelapseSeek) { this.onTimelapseSeek = onTimelapseSeek; }
+    public void setOnStatsToggle(Consumer<Boolean> onStatsToggle) { this.onStatsToggle = onStatsToggle; }
 
-    public void setOnStatsToggle(Consumer<Boolean> onStatsToggle) {
-        this.onStatsToggle = onStatsToggle;
-    }
-    
     public void updateTimelapseSlider(int minYear, int maxYear, int currentYear) {
-        timelapseSlider.setMin(minYear);
-        timelapseSlider.setMax(maxYear);
-        timelapseSlider.setValue(currentYear);
-        timelapseSlider.setDisable(minYear >= maxYear);
-        timelapseLabel.setText("Year: " + currentYear);
+        dateHeaderLabel.setText(String.format("📅 Date & Heure : An %d", currentYear));
     }
 
     public void setMapCanvas(H3MapCanvas canvas) {
         this.mapCanvas = canvas;
         updateViewToggleButton();
+        updateDisplayToggleButton();
     }
 
-    public void setMiniMap(MiniMap miniMap) {
-        this.miniMap = miniMap;
-    }
+    public void setMiniMap(MiniMap miniMap) { this.miniMap = miniMap; }
+    public void setColorLegend(ColorLegend legend) { this.colorLegend = legend; }
 
-    public void setColorLegend(ColorLegend legend) {
-        this.colorLegend = legend;
+    public void updateScenarioName(String scenarioName) {
+        if (scenarioName != null && !scenarioName.isBlank()) {
+            scenarioHeaderLabel.setText("🎬 Scénario : " + scenarioName);
+        }
     }
 
     public void updateYear(String year) {
-        yearLabel.setText(year);
+        dateHeaderLabel.setText("📅 Date & Heure : " + year);
+    }
+
+    public void updateStats(long population, double food, long populatedCells, double tps) {
+        popStatValue.setText(String.format("Pop. Totale : %s", formatNumber(population)));
+        foodStatValue.setText(String.format("Stocks Alim. : %s", formatNumber((long) food)));
+        cellStatValue.setText(String.format("Cellules Habitées : %,d", populatedCells));
+        tpsLabel.setText(String.format("⏱️ Cadence : %.1f ticks/s (1 mois / tick)", tps));
+    }
+
+    private String formatNumber(long num) {
+        if (num >= 1_000_000_000L) {
+            return String.format("%.2f Md", num / 1_000_000_000.0);
+        } else if (num >= 1_000_000L) {
+            return String.format("%.2f M", num / 1_000_000.0);
+        } else if (num >= 1_000L) {
+            return String.format("%.1f k", num / 1_000.0);
+        }
+        return String.valueOf(num);
+    }
+
+    public void updateSeason(int month) {
+        String[] seasonNames = { "Hiver ❄️", "Printemps 🌿", "Été ☀️", "Automne 🍂" };
+        String[] seasonColors = { "#64b5f6", "#4ade80", "#facc15", "#fb923c" };
+
+        int seasonIndex;
+        if (month == 11 || month == 0 || month == 1) seasonIndex = 0;
+        else if (month >= 2 && month <= 4) seasonIndex = 1;
+        else if (month >= 5 && month <= 7) seasonIndex = 2;
+        else seasonIndex = 3;
+
+        seasonLabel.setText("Saison : " + seasonNames[seasonIndex]);
+        seasonLabel.setStyle("-fx-text-fill: " + seasonColors[seasonIndex] + "; -fx-font-weight: bold;");
+    }
+
+    public void logEvents(List<String> events) {
+        if (events == null || events.isEmpty()) return;
+        eventHistory.addAll(events);
+        String lastEvent = events.get(events.size() - 1);
+        eventLabel.setText(lastEvent);
+    }
+
+    public void updateAge(String ageName) {
+        ageLabel.setText("Âge : " + ageName);
+    }
+
+    public void updateDatabaseStatus(boolean online) {
+        if (online) {
+            dbStatusLabel.setText("🟢 BDD Supabase/PostGIS : En Ligne");
+            dbStatusLabel.setStyle("-fx-text-fill: #4ade80; -fx-font-weight: bold;");
+        } else {
+            dbStatusLabel.setText("⚪ BDD : Mode Hors Ligne (Fichiers Locaux)");
+            dbStatusLabel.setStyle("-fx-text-fill: #94a3b8;");
+        }
     }
 
     private void updateTexts() {
-        startBtn.setText(I18n.get("ui.control.start"));
-        pauseBtn.setText(I18n.get("ui.control.pause"));
-        speed1x.setText(I18n.get("ui.control.speed") + " 1x");
-        speed5x.setText(I18n.get("ui.control.speed") + " 5x");
-        speed20x.setText(I18n.get("ui.control.speed") + " 20x");
-        miniMapToggle.setText(I18n.get("ui.control.minimap"));
-        langLabel.setText(I18n.get("ui.control.language"));
-        if (langCombo.getValue() != I18n.getCurrentLanguage()) {
-            langCombo.setValue(I18n.getCurrentLanguage());
-        }
-
+        startBtn.setText("▶");
+        pauseBtn.setText("⏸");
+        stopBtn.setText("⏹");
         updateViewToggleButton();
         updateDisplayToggleButton();
-        updateYear(engine.getTimeManager().getFormattedDate());
     }
 
     private void updateViewToggleButton() {
         if (mapCanvas != null) {
             ViewMode current = mapCanvas.getViewMode();
-            if (current == ViewMode.VIEW_2D) {
-                viewToggle.setText(I18n.get("ui.control.view.3d"));
-            } else {
-                viewToggle.setText(I18n.get("ui.control.view.2d"));
-            }
+            viewToggle.setText(current == ViewMode.VIEW_2D ? "Mode 3D Globe" : "Mode 2D Carte");
         } else {
-            viewToggle.setText(I18n.get("ui.control.view.3d"));
+            viewToggle.setText("Mode 3D Globe");
         }
     }
 
     private void updateDisplayToggleButton() {
         if (mapCanvas != null) {
-            DisplayMode current = mapCanvas.getDisplayMode();
-            displayToggle.setText(current.getDisplayName());
+            displayToggle.setText(mapCanvas.getDisplayMode().getDisplayName());
         } else {
-            displayToggle.setText("Biome");
-        }
-    }
-
-    /**
-     * Update population statistics display.
-     */
-    public void updateStats(long population, double food, long populatedCells, double tps) {
-        String popStr = formatNumber(population);
-        String foodStr = formatNumber((long) food);
-        statsLabel.setText(String.format("Pop: %s | Food: %s | Cells: %d", popStr, foodStr, populatedCells));
-        tpsLabel.setText(String.format("TPS: %.1f", tps));
-    }
-
-    private String formatNumber(long num) {
-        if (num >= 1_000_000) {
-            return String.format("%.1fM", num / 1_000_000.0);
-        } else if (num >= 1_000) {
-            return String.format("%.1fK", num / 1_000.0);
-        }
-        return String.valueOf(num);
-    }
-
-    /**
-     * Update season display based on current month.
-     * 
-     * @param month Current month (0-11, 0=January)
-     */
-    public void updateSeason(int month) {
-        // Seasons for Northern Hemisphere
-        String[] seasonNames = { "Winter", "Spring", "Summer", "Autumn" };
-        String[] seasonColors = { "#64b5f6", "#4caf50", "#ff9800", "#ff5722" };
-
-        // Map month to season (Dec-Feb=0, Mar-May=1, Jun-Aug=2, Sep-Nov=3)
-        int seasonIndex;
-        if (month == 11 || month == 0 || month == 1) {
-            seasonIndex = 0; // Winter
-        } else if (month >= 2 && month <= 4) {
-            seasonIndex = 1; // Spring
-        } else if (month >= 5 && month <= 7) {
-            seasonIndex = 2; // Summer
-        } else {
-            seasonIndex = 3; // Autumn
-        }
-
-        seasonLabel.setText(seasonNames[seasonIndex]);
-        seasonLabel.setStyle(
-                "-fx-text-fill: " + seasonColors[seasonIndex] + "; -fx-font-size: 12px; -fx-font-weight: bold;");
-    }
-
-    /**
-     * Log new events to the UI.
-     */
-    public void logEvents(List<String> events) {
-        if (events.isEmpty())
-            return;
-
-        // Update history
-        eventHistory.addAll(events);
-
-        // Show last event
-        String lastEvent = events.get(events.size() - 1);
-        eventLabel.setText(lastEvent);
-
-        // Update tooltip
-        StringBuilder sb = new StringBuilder();
-        for (int i = Math.max(0, eventHistory.size() - 10); i < eventHistory.size(); i++) {
-            sb.append(eventHistory.get(i)).append("\n");
-        }
-        eventLabel.getTooltip().setText(sb.toString());
-    }
-
-    public void updateAge(String ageName) {
-        ageLabel.setText(ageName);
-    }
-
-    /**
-     * Update the database status indicator.
-     */
-    public void updateDatabaseStatus(boolean online) {
-        if (online) {
-            dbStatusLabel.setText("DB: ONLINE");
-            dbStatusLabel.setStyle("-fx-text-fill: #4caf50; -fx-font-weight: bold;");
-            dbStatusLabel.setTooltip(new Tooltip("PostgreSQL/PostGIS is connected"));
-        } else {
-            dbStatusLabel.setText("DB: OFFLINE");
-            dbStatusLabel.setStyle("-fx-text-fill: #f44336; -fx-font-weight: bold;");
-            dbStatusLabel.setTooltip(new Tooltip("Database disconnected - simulation running in offline mode"));
+            displayToggle.setText("Biomes");
         }
     }
 }

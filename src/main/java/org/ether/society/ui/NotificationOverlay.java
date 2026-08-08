@@ -21,10 +21,10 @@ import javafx.util.Duration;
 public class NotificationOverlay extends VBox {
 
     public NotificationOverlay() {
-        setAlignment(Pos.CENTER);
-        setSpacing(10);
+        setAlignment(Pos.BOTTOM_CENTER);
+        setSpacing(8);
         setMouseTransparent(true); // Let clicks pass through
-        setStyle("-fx-padding: 20px;");
+        setStyle("-fx-padding: 0 0 50px 0;");
     }
 
     /**
@@ -32,13 +32,17 @@ public class NotificationOverlay extends VBox {
      */
     public void showNotification(String message, String color) {
         Label label = new Label(message);
-        label.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);" +
+        label.setStyle("-fx-background-color: rgba(15, 23, 42, 0.85);" +
+                "-fx-border-color: " + color + ";" +
+                "-fx-border-width: 1px;" +
                 "-fx-text-fill: " + color + ";" +
-                "-fx-padding: 15px 25px;" +
-                "-fx-background-radius: 20px;" +
-                "-fx-font-size: 24px;" +
+                "-fx-padding: 8px 16px;" +
+                "-fx-background-radius: 12px;" +
+                "-fx-border-radius: 12px;" +
+                "-fx-font-size: 13px;" +
                 "-fx-font-weight: bold;" +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
+                "-fx-font-family: 'Consolas', monospace;" +
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 8, 0, 0, 0);");
 
         // Animation: Fade In -> Wait -> Fade Out -> Remove
         label.setOpacity(0);

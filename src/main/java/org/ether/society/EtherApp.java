@@ -7,177 +7,154 @@
 package org.ether.society;
 
 import org.ether.society.config.Configuration;
-import org.ether.society.config.ConfigurationLoader;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.i18n.I18n;
 import org.ether.society.ui.ControlPanel;
 import org.ether.society.ui.DisplayMode;
-import org.ether.society.ui.ColorLegend;
 import org.ether.society.ui.H3MapCanvas;
+import org.ether.society.ui.MainView;
 import org.ether.society.ui.MiniMap;
 import org.ether.society.ui.PerformanceHUD;
-
-import java.io.IOException;
-import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * JavaFX Application entry point.
- * Initializes and displays the simulation UI.
- *
- * @author Silvere Martin-Michiellot
- * @version 2.0.0
- * @since 1.0.0
+ * Main application entry point for Ether simulation.
  */
 public class EtherApp extends Application {
     private static final Logger logger = LoggerFactory.getLogger(EtherApp.class);
 
     private Stage primaryStage;
+    private Configuration config;
     private H3SimulationEngine h3Engine;
-    private MiniMap miniMap;
+
+    // UI Components
     private H3MapCanvas mapCanvas;
-    private ControlPanel controlPanel;
+    private MiniMap miniMap;
     private PerformanceHUD hud;
-    private ColorLegend colorLegend;
+    private ControlPanel controlPanel;
+    private MainView mainView;
 
     private AnimationTimer timer;
+    private long lastFpsUpdate = 0;
+    private int frameCount = 0;
+    private double currentFps = 0.0;
+    private long lastMapRedraw = 0;
 
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
-    public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        logger.info("Starting Human Society Simulation...");
-
-        primaryStage.setOnCloseRequest(event -> {
-            logger.info("Window close requested. Stopping simulation engine...");
-            stop();
-        });
-
-        // Load configuration
-        Configuration config;
+    public void start(Stage primaryStage) throws Exception {
         try {
-            config = ConfigurationLoader.loadDefault();
-        } catch (IOException e) {
-            logger.error("Failed to load configuration", e);
-            return;
-        }
+            this.primaryStage = primaryStage;
+            logger.info("Starting Ether Application...");
 
-        // Use H3 Engine
-        h3Engine = new H3SimulationEngine(config);
+            // Load configuration
+            config = org.ether.society.config.ConfigurationLoader.loadDefault();
 
-        // Components
-        hud = new PerformanceHUD();
-        colorLegend = new ColorLegend();
-        miniMap = new MiniMap();
+            // Initialize simulation engine
+            h3Engine = new H3SimulationEngine(config);
 
-        // Create H3 map canvas
-        mapCanvas = new H3MapCanvas(1200, 700);
-        mapCanvas.setCells(h3Engine.getCells());
+            // Initialize UI components
+            mapCanvas = new H3MapCanvas(1280, 800);
+            miniMap = new MiniMap();
+            hud = new PerformanceHUD();
+            controlPanel = new ControlPanel(h3Engine);
 
-        // Create scroll pane for canvas
-        ScrollPane scrollPane = new ScrollPane(mapCanvas);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
-        scrollPane.setPannable(true);
+            // Initialize main layout
+            mainView = new MainView(h3Engine, controlPanel, mapCanvas, miniMap, hud);
 
-        // Control panel
-        controlPanel = new ControlPanel(h3Engine);
-        controlPanel.setMapCanvas(mapCanvas);
-        // controlPanel callbacks are handled in MainView to delegate to MainView's save/load methods
+            // Wire canvas references to control panel
+            controlPanel.setMapCanvas(mapCanvas);
+            controlPanel.setMiniMap(miniMap);
 
-        // Initialize Main View (Tabbed Interface)
-        org.ether.society.ui.MainView mainView = new org.ether.society.ui.MainView(h3Engine, controlPanel, mapCanvas,
-                miniMap, hud);
-        mainView.addLegend(colorLegend);
+            // Connect database status monitoring
+            controlPanel.updateDatabaseStatus(org.ether.society.database.DatabaseConfig.isDatabaseAvailable());
 
-        // Wire mini-map and legend
-        miniMap.setCells(h3Engine.getCells());
-        miniMap.setMainCanvas(mapCanvas);
-        mapCanvas.setMiniMap(miniMap);
-        controlPanel.setMiniMap(miniMap);
-        controlPanel.setColorLegend(colorLegend);
+            // Create scene
+            Scene scene = new Scene(mainView, 1280, 800);
 
-        StackPane contentStack = new StackPane(mainView);
+            // Load CSS stylesheet if available
+            try {
+                String css = getClass().getResource("/styles.css").toExternalForm();
+                scene.getStylesheets().add(css);
+            } catch (Exception e) {
+                logger.warn("Could not load styles.css stylesheet: {}", e.getMessage());
+            }
 
-        Scene scene = new Scene(contentStack, 1280, 800);
-        org.ether.society.ui.Theme.applyCurrentTheme(scene);
+            // Configure stage
+            primaryStage.setScene(scene);
+            updateTexts();
 
-        org.ether.society.ui.WindowUtils.applyWindowIcon(primaryStage);
+            // Register i18n listener
+            I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
 
-        primaryStage.setScene(scene);
-        primaryStage.show();
+            primaryStage.setMinWidth(1024);
+            primaryStage.setMinHeight(700);
 
-        // Initial text update
-        updateTexts();
+            // Stop engine on window close
+            primaryStage.setOnCloseRequest(e -> stop());
 
-        // Listen for language changes
-        I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
+            primaryStage.show();
 
-        // Initial DB status check
-        controlPanel.updateDatabaseStatus(org.ether.society.database.DatabaseConfig.isDatabaseAvailable());
+            // Start animation timer for UI updates
+            timer = new AnimationTimer() {
+                @Override
+                public void handle(long now) {
+                    frameCount++;
+                    if (now - lastFpsUpdate >= 1_000_000_000L) {
+                        currentFps = frameCount / ((now - lastFpsUpdate) / 1_000_000_000.0);
+                        frameCount = 0;
+                        lastFpsUpdate = now;
+                    }
 
-        // Render loop
-        timer = new AnimationTimer() {
-            private String lastYear = "";
-            private long lastMapRedraw = 0;
-            private static final long REDRAW_INTERVAL_NS = 500_000_000L; // 500ms
+                    // Update performance HUD
+                    if (h3Engine.getWorldBuffer() != null) {
+                        hud.registerFrame(now);
+                        hud.updateSimulationInfo((int) h3Engine.getPopulatedCellCount(), 1.0, 0, 0);
+                    }
 
-            @Override
-            public void handle(long now) {
-                // Update Simulation Time
-                String currentYear = h3Engine.getTimeManager().getFormattedDate();
-                if (!currentYear.equals(lastYear)) {
-                    lastYear = currentYear;
-                    controlPanel.updateYear(currentYear);
-                }
-
-                // Update HUD
-                hud.registerFrame(now);
-                hud.updateSimulationInfo(
-                        h3Engine.getCells().size(),
-                        mapCanvas.getZoomFactor(),
-                        mapCanvas.getCenterLat(),
-                        mapCanvas.getCenterLng());
-
-                // Update population stats periodically
-                controlPanel.updateStats(
+                    // Update control panel stats
+                    controlPanel.updateStats(
                         h3Engine.getTotalPopulation(),
                         h3Engine.getTotalFood(),
                         h3Engine.getPopulatedCellCount(),
-                        h3Engine.getCurrentTPS());
+                        h3Engine.getCurrentTPS()
+                    );
 
-                // Update season display
-                controlPanel.updateSeason(h3Engine.getTimeManager().getCurrentMonth());
+                    controlPanel.updateYear(
+                        String.format("An %d, Mois %d",
+                            h3Engine.getTimeManager().getCurrentYear(),
+                            h3Engine.getTimeManager().getCurrentMonth() + 1)
+                    );
 
-                // Poll events
-                controlPanel.logEvents(h3Engine.getEventSystem().flushEvents());
-
-                // Redraw map periodically when in data visualization mode
-                if (now - lastMapRedraw > REDRAW_INTERVAL_NS) {
-                    DisplayMode mode = mapCanvas.getDisplayMode();
-                    if (mode != DisplayMode.BIOME) {
-                        mapCanvas.draw();
+                    // Periodic map redraw when needed
+                    if (now - lastMapRedraw >= 500_000_000L) { // every 0.5s
+                        DisplayMode mode = mapCanvas.getDisplayMode();
+                        if (mode != DisplayMode.BIOME) {
+                            mapCanvas.draw();
+                        }
+                        lastMapRedraw = now;
                     }
-                    lastMapRedraw = now;
                 }
-            }
-        };
-        timer.start();
+            };
+            timer.start();
 
-        logger.info("Application started successfully");
+            logger.info("Application started successfully");
+        } catch (Throwable t) {
+            System.err.println("!!! FATAL EXCEPTION IN ETHERAPP START !!!");
+            t.printStackTrace(System.err);
+            logger.error("FATAL ERROR in Application start method", t);
+            if (t instanceof RuntimeException re) throw re;
+            if (t instanceof Exception e) throw e;
+            throw new RuntimeException(t);
+        }
     }
 
     @Override
@@ -187,6 +164,12 @@ public class EtherApp extends Application {
             timer.stop();
         }
         if (h3Engine != null) {
+            try {
+                logger.info("Auto-saving active simulation state on exit...");
+                h3Engine.saveGame("Autosave_Exit");
+            } catch (Exception ex) {
+                logger.warn("Could not auto-save on exit: {}", ex.getMessage());
+            }
             h3Engine.shutdown();
         }
         javafx.application.Platform.exit();

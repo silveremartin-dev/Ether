@@ -76,6 +76,11 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
 
         <!-- JSON Processing -->
         <dependency>
@@ -237,6 +242,7 @@
                     <options>
                         <option>--add-modules</option>
                         <option>jdk.incubator.vector</option>
+                        <option>--enable-native-access=ALL-UNNAMED</option>
                     </options>
                 </configuration>
             </plugin>
@@ -287,7 +293,7 @@
                 <version>3.1.0</version>
                 <configuration>
                     <mainClass>org.ether.society.Main</mainClass>
-                    <commandlineArgs>--add-modules=jdk.incubator.vector</commandlineArgs>
+                    <commandlineArgs>--add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED</commandlineArgs>
                 </configuration>
             </plugin>
 

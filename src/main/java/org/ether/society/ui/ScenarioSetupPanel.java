@@ -65,6 +65,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
     // Standardized Preset Bar for Scenarios
     private PresetControlBar<Scenario> scenarioPresetBar;
+    private VBox bottomActionBox;
 
     // Form Controls
     private TextArea scenarioDescriptionArea;
@@ -261,7 +262,6 @@ public class ScenarioSetupPanel extends BorderPane {
         
         javafx.application.Platform.runLater(() -> {
             loadEarthHistoricalEvents();
-            generatePreview();
         });
     }
 
@@ -315,7 +315,7 @@ public class ScenarioSetupPanel extends BorderPane {
         getStyleClass().add("glass-panel");
         setStyle("-fx-background-color: transparent;");
 
-        // Left: Configuration Controls
+        // Left: Configuration Controls with pinned bottom action bar
         VBox configPane = createConfigPane();
         configPane.setPrefWidth(460);
 
@@ -325,10 +325,21 @@ public class ScenarioSetupPanel extends BorderPane {
         configScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         configScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
-        // Right: Preview Area (Density map only)
+        BorderPane leftSidebar = new BorderPane();
+        leftSidebar.setPrefWidth(480);
+        leftSidebar.setMinWidth(420);
+        leftSidebar.setCenter(configScroll);
+
+        if (bottomActionBox != null) {
+            bottomActionBox.setPadding(new Insets(10, 15, 5, 0));
+            bottomActionBox.setStyle("-fx-background-color: transparent; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-width: 1 0 0 0;");
+            leftSidebar.setBottom(bottomActionBox);
+        }
+
+        // Right: Preview Area
         VBox previewPane = createPreviewPane();
 
-        setLeft(configScroll);
+        setLeft(leftSidebar);
         setCenter(previewPane);
     }
 
@@ -341,7 +352,6 @@ public class ScenarioSetupPanel extends BorderPane {
         scenarioPresetBar.setExportCategory("scenario");
         List<Scenario> builtInScenarios = getBuiltInScenarios();
         Scenario defaultScenario = builtInScenarios.isEmpty() ? null : builtInScenarios.get(0);
-        scenarioPresetBar.setPresets(builtInScenarios, defaultScenario);
 
         scenarioPresetBar.setListener(new PresetControlBar.PresetActionsListener<Scenario>() {
             @Override
@@ -542,10 +552,10 @@ public class ScenarioSetupPanel extends BorderPane {
         radioProcDemo.setSelected(true);
 
         Label demoTypeLabel = new Label("⚙ Mode de Génération Démographique :");
-        demoTypeLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
+        demoTypeLabel.setStyle("-fx-font-weight: bold;");
 
         VBox demoProcBox = new VBox(8);
-        demoProcBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.5); -fx-background-radius: 6;");
+        demoProcBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(56, 189, 248, 0.04); -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.15); -fx-border-radius: 6;");
 
         initialHumanCountSpinner = new Spinner<>(new LongSpinnerValueFactory(1_000L, 10_000_000_000L, 1_000_000L, 100_000L));
         initialHumanCountSpinner.setEditable(true);
@@ -791,11 +801,17 @@ public class ScenarioSetupPanel extends BorderPane {
         startBtn.setOnAction(e -> handleStartOrCancel());
         startBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.start", "Calculer les cellules H3 et lancer la simulation.")));
 
-        VBox bottom = new VBox(10, btnPreFlight, bundleBox, generateBtn, progressBar, progressStatusLabel, startBtn);
-        VBox.setVgrow(bottom, Priority.ALWAYS);
-        bottom.setAlignment(Pos.BOTTOM_CENTER);
+        bottomActionBox = new VBox(8, btnPreFlight, bundleBox, generateBtn, progressBar, progressStatusLabel, startBtn);
+        bottomActionBox.setAlignment(Pos.CENTER);
 
-        root.getChildren().addAll(scenarioPresetBar, inheritedSection, section1, popSection, clippingSection, oceanOptSection, eventsSection, bottom);
+        root.getChildren().addAll(scenarioPresetBar, inheritedSection, section1, popSection, clippingSection, oceanOptSection, eventsSection);
+
+        // Populate preset bar and load default scenario description after all controls exist
+        scenarioPresetBar.setPresets(builtInScenarios, defaultScenario);
+        if (defaultScenario != null) {
+            applyScenarioToUI(defaultScenario);
+        }
+
         return root;
     }
 
@@ -1372,8 +1388,12 @@ public class ScenarioSetupPanel extends BorderPane {
             if (currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
                 distributeInitialPopulation(currentPreviewCells);
                 drawPreview();
-            } else if (previewCanvas != null) {
-                generatePreview();
+            }
+            if (onScenarioLoadedCallback != null) {
+                onScenarioLoadedCallback.accept(this.activePlanetPreset, activeEco != null ? activeEco : s.getEcologyPreset());
+            }
+            if (scenarioPresetBar != null) {
+                scenarioPresetBar.markClean(s);
             }
         } finally {
             isUpdatingFromPreset = false;
@@ -1386,10 +1406,9 @@ public class ScenarioSetupPanel extends BorderPane {
 
         clippingHeader = new Label(I18n.getOrDefault("scenario.clipping.header", "✂️ SIMULATION LOCALE & FRONTIÈRES (CLIPPING)"));
         clippingHeader.getStyleClass().add("label-header");
-        clippingHeader.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
 
         clippingCheckBox = new CheckBox(I18n.getOrDefault("scenario.clipping.enable", "Activer la simulation partielle (Zone Tronquée)"));
-        clippingCheckBox.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        clippingCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
         clippingCheckBox.setOnAction(e -> {
             notifyParamChange();
             drawPreview();
@@ -1397,7 +1416,8 @@ public class ScenarioSetupPanel extends BorderPane {
 
         graphicSelectBtn = new ToggleButton(I18n.getOrDefault("scenario.clipping.select_mode", "🖱️ Mode Sélection Graphique sur Carte"));
         graphicSelectBtn.setMaxWidth(Double.MAX_VALUE);
-        graphicSelectBtn.setStyle("-fx-font-size: 11px;");
+        graphicSelectBtn.getStyleClass().add("button-secondary");
+        graphicSelectBtn.setStyle("-fx-font-size: 12px;");
         graphicSelectBtn.setTooltip(new Tooltip("Activez ce bouton ou maintenez SHIFT enfoncé pour dessiner un rectangle de sélection sur la carte preview."));
 
         GridPane boundsGrid = new GridPane();
@@ -1411,7 +1431,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
         for (Spinner<Double> sp : List.of(maxLatSpinner, minLatSpinner, minLngSpinner, maxLngSpinner)) {
             sp.setEditable(true);
-            sp.setPrefWidth(90);
+            sp.setPrefWidth(75);
             sp.valueProperty().addListener((obs, old, val) -> {
                 notifyParamChange();
                 drawPreview();
@@ -1422,11 +1442,14 @@ public class ScenarioSetupPanel extends BorderPane {
         latMinLabel = new Label(I18n.getOrDefault("scenario.clipping.lat_min", "Lat Min (Bas) :"));
         lngMinLabel = new Label(I18n.getOrDefault("scenario.clipping.lng_min", "Lng Min (Gau.) :"));
         lngMaxLabel = new Label(I18n.getOrDefault("scenario.clipping.lng_max", "Lng Max (Dro.) :"));
+        for (Label lbl : List.of(latMaxLabel, latMinLabel, lngMinLabel, lngMaxLabel)) {
+            lbl.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
+        }
         boundsGrid.addRow(0, latMaxLabel, maxLatSpinner, latMinLabel, minLatSpinner);
         boundsGrid.addRow(1, lngMinLabel, minLngSpinner, lngMaxLabel, maxLngSpinner);
 
         boundaryLabel = new Label(I18n.getOrDefault("scenario.clipping.boundary_label", "Modélisation Scientifique des Frontières :"));
-        boundaryLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        boundaryLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
 
         boundaryModeCombo = new ComboBox<>();
         boundaryModeCombo.getItems().addAll(
@@ -1457,7 +1480,8 @@ public class ScenarioSetupPanel extends BorderPane {
 
         resetClippingBtn = new Button(I18n.getOrDefault("scenario.clipping.reset", "🔄 Réinitialiser la Zone (Pleine Planète)"));
         resetClippingBtn.setMaxWidth(Double.MAX_VALUE);
-        resetClippingBtn.setStyle("-fx-font-size: 11px;");
+        resetClippingBtn.getStyleClass().add("button-secondary");
+        resetClippingBtn.setStyle("-fx-font-size: 12px;");
         resetClippingBtn.setOnAction(e -> {
             if (minLatSpinner != null && minLatSpinner.getValueFactory() != null) minLatSpinner.getValueFactory().setValue(-90.0);
             if (maxLatSpinner != null && maxLatSpinner.getValueFactory() != null) maxLatSpinner.getValueFactory().setValue(90.0);
@@ -1467,8 +1491,8 @@ public class ScenarioSetupPanel extends BorderPane {
             drawPreview();
         });
 
-        VBox clippingSubPanel = new VBox(8, graphicSelectBtn, boundsGrid, boundaryLabel, boundaryModeCombo, resetClippingBtn);
-        clippingSubPanel.setStyle("-fx-padding: 8 0 0 12; -fx-border-color: rgba(56,189,248,0.25); -fx-border-radius: 6; -fx-border-width: 0 0 0 3;");
+        VBox clippingSubPanel = new VBox(10, graphicSelectBtn, boundsGrid, boundaryLabel, boundaryModeCombo, resetClippingBtn);
+        clippingSubPanel.setStyle("-fx-padding: 10px; -fx-background-color: rgba(56, 189, 248, 0.04); -fx-background-radius: 6px; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 6px; -fx-border-width: 1px;");
         clippingSubPanel.setVisible(false);
         clippingSubPanel.setManaged(false);
 
@@ -1490,32 +1514,31 @@ public class ScenarioSetupPanel extends BorderPane {
 
         Label oceanOptHeader = new Label(I18n.getOrDefault("scenario.ocean_opt.header", "🌊 OPTIMISATIONS ET PERFORMANCES OCÉANIQUES"));
         oceanOptHeader.getStyleClass().add("label-header");
-        oceanOptHeader.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
 
         Label oceanOptDesc = new Label(I18n.getOrDefault("scenario.ocean_opt.desc", "Ajuster les simplifications algorithmiques pour les cellules d'eau profonde afin de maximiser le nombre de TPS (Ticks Par Seconde)."));
-        oceanOptDesc.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        oceanOptDesc.setStyle("-fx-font-size: 11px; -fx-font-style: italic;");
         oceanOptDesc.setWrapText(true);
 
         oceanMacroAggregationCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.macro_aggregation", "🌊 Macro-agrégation Océanique (Traiter les bassins profonds en blocs virtuels)"));
         oceanMacroAggregationCheckBox.setSelected(true);
-        oceanMacroAggregationCheckBox.setStyle("-fx-text-fill: #e2e8f0;");
+        oceanMacroAggregationCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
         oceanMacroAggregationCheckBox.setTooltip(new Tooltip("Regroupe les cellules d'eau profonde pour éviter le calcul individuel de micro-courants inutiles."));
         oceanMacroAggregationCheckBox.setOnAction(e -> notifyParamChange());
 
         coastalNavigationOnlyCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.coastal_nav", "⚓ Navigation Maritime Littorale Uniquement (Simplifier les routes hauturières)"));
         coastalNavigationOnlyCheckBox.setSelected(false);
-        coastalNavigationOnlyCheckBox.setStyle("-fx-text-fill: #e2e8f0;");
+        coastalNavigationOnlyCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
         coastalNavigationOnlyCheckBox.setTooltip(new Tooltip("Restreint le pathfinding naval détaillé aux côtes et détroits commercialement actifs."));
         coastalNavigationOnlyCheckBox.setOnAction(e -> notifyParamChange());
 
         oceanMultiRateTickingCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.multirate", "⏱ Ticking Océanique Asynchrone / Multi-Cadence (Cadence réduite ×5)"));
         oceanMultiRateTickingCheckBox.setSelected(true);
-        oceanMultiRateTickingCheckBox.setStyle("-fx-text-fill: #e2e8f0;");
+        oceanMultiRateTickingCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
         oceanMultiRateTickingCheckBox.setTooltip(new Tooltip("Exécute la mise à jour des dynamiques océaniques 1 tick sur 5 pour libérer du CPU aux sociétés terrestres."));
         oceanMultiRateTickingCheckBox.setOnAction(e -> notifyParamChange());
 
-        VBox box = new VBox(6, oceanMacroAggregationCheckBox, coastalNavigationOnlyCheckBox, oceanMultiRateTickingCheckBox);
-        box.setStyle("-fx-padding: 6 0 0 12;");
+        VBox box = new VBox(8, oceanMacroAggregationCheckBox, coastalNavigationOnlyCheckBox, oceanMultiRateTickingCheckBox);
+        box.setStyle("-fx-padding: 10px; -fx-background-color: rgba(56, 189, 248, 0.04); -fx-background-radius: 6px; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 6px; -fx-border-width: 1px;");
 
         section.getChildren().addAll(oceanOptHeader, oceanOptDesc, box);
         return section;
@@ -1526,15 +1549,15 @@ public class ScenarioSetupPanel extends BorderPane {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER);
 
-        previewTitleLabel = new Label(I18n.getOrDefault("scenario.preview_title", "🌍 DISTRIBUTION DÉMOGRAPHIQUE, EMPREINTE & PRESSION MALTHUSIENNE (T₀)"));
+        previewTitleLabel = new Label(I18n.getOrDefault("scenario.preview_title", "🌍 Carte de densité de population initiale, empreinte écologique et pression de Malthus (T₀)"));
         previewTitleLabel.getStyleClass().add("label-header");
 
         previewModeCombo = new ComboBox<>();
         previewModeCombo.getItems().addAll(
-                "🗺️ Densité Démographique (hab/km²)",
-                "🌱 Empreinte Écologique & Pression Malthusienne"
+                "🗺️ Carte de densité de la population",
+                "🌱 Empreinte écologique et pression de Malthus"
         );
-        previewModeCombo.setValue("🗺️ Densité Démographique (hab/km²)");
+        previewModeCombo.setValue("🗺️ Carte de densité de la population");
         previewModeCombo.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         previewModeCombo.setOnAction(e -> drawPreview());
 
@@ -1545,19 +1568,27 @@ public class ScenarioSetupPanel extends BorderPane {
 
         header.getChildren().addAll(previewTitleLabel, spacer1, previewModeCombo, spacer2);
 
-        Pane canvasContainer = new StackPane();
+        StackPane canvasContainer = new StackPane();
         canvasContainer.setStyle("-fx-background-color: black; -fx-border-color: #475569;");
         previewCanvas = new Canvas(600, 400);
 
+        // Clip container (not canvas directly) to prevent JavaFX Prism NGCanvas renderForClip 0x0 NPE
+        javafx.scene.shape.Rectangle containerClip = new javafx.scene.shape.Rectangle();
+        containerClip.widthProperty().bind(canvasContainer.widthProperty());
+        containerClip.heightProperty().bind(canvasContainer.heightProperty());
+        canvasContainer.setClip(containerClip);
+
         canvasContainer.widthProperty().addListener((obs, oldV, newV) -> {
-            if (newV.doubleValue() > 0) {
-                previewCanvas.setWidth(newV.doubleValue());
+            double w = Math.floor(newV.doubleValue());
+            if (w >= 10.0 && Math.abs(w - previewCanvas.getWidth()) >= 4.0) {
+                previewCanvas.setWidth(w);
                 drawPreview();
             }
         });
         canvasContainer.heightProperty().addListener((obs, oldV, newV) -> {
-            if (newV.doubleValue() > 0) {
-                previewCanvas.setHeight(newV.doubleValue());
+            double h = Math.floor(newV.doubleValue());
+            if (h >= 10.0 && Math.abs(h - previewCanvas.getHeight()) >= 4.0) {
+                previewCanvas.setHeight(h);
                 drawPreview();
             }
         });
@@ -1863,29 +1894,8 @@ public class ScenarioSetupPanel extends BorderPane {
                         )
                 );
 
-                // Map elevation and biome images if preset is Earth or has custom Base64 map
-                boolean isEarth = cfg == PlanetPreset.EARTH_LIKE || "earth".equalsIgnoreCase(cfg.elevationMapSource()) ||
-                        (cfg.name() != null && (cfg.name().toLowerCase().contains("earth") || cfg.name().toLowerCase().contains("terre") || cfg.name().toLowerCase().contains("terran")));
-                if (isEarth) {
-                    try (var elevStream = getClass().getResourceAsStream("/maps/earth_elevation.png");
-                         var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png")) {
-                        if (elevStream != null || biomeStream != null) {
-                            new org.ether.society.data.ImageMapLoader().mapDataToCells(previewCells, elevStream, biomeStream);
-                        }
-                    } catch (Exception e) {
-                        logger.warn("Could not load Earth elevation map image for preview", e);
-                    }
-                } else if (cfg.customElevBase64() != null && !cfg.customElevBase64().isBlank()) {
-                    try {
-                        Image customElev = org.ether.society.data.ImageMapLoader.base64PngToImage(cfg.customElevBase64());
-                        Image customBiome = org.ether.society.data.ImageMapLoader.base64PngToImage(cfg.customBiomeBase64());
-                        if (customElev != null) {
-                            new org.ether.society.data.ImageMapLoader().mapImagesToCells(previewCells, customElev, customBiome, null, cfg.minAltitudeMeters(), cfg.maxAltitudeMeters());
-                        }
-                    } catch (Exception e) {
-                        logger.warn("Could not decode custom Base64 elevation map image for preview", e);
-                    }
-                }
+                // Map elevation and biome images corresponding to the selected planet preset
+                applyPresetMapToCells(previewCells, cfg);
 
                 distributeInitialPopulation(previewCells);
 
@@ -2050,9 +2060,11 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void drawPreview() {
-        GraphicsContext gc = previewCanvas.getGraphicsContext2D();
+        if (previewCanvas == null) return;
         double w = previewCanvas.getWidth();
         double h = previewCanvas.getHeight();
+        if (w < 1.0 || h < 1.0) return;
+        GraphicsContext gc = previewCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, w, h);
         gc.setFill(Color.rgb(15, 23, 42));
         gc.fillRect(0, 0, w, h);
@@ -2124,14 +2136,58 @@ public class ScenarioSetupPanel extends BorderPane {
             gc.setStroke(Color.rgb(56, 189, 248, 0.95));
             gc.setLineWidth(2.0);
             gc.setLineDashes(6.0, 4.0);
-            gc.strokeRect(rx, ry, rw, rh);
-            gc.setLineDashes(null);
-
             // Text tag
             gc.setFill(Color.rgb(56, 189, 248));
             gc.setFont(javafx.scene.text.Font.font("System", javafx.scene.text.FontWeight.BOLD, 11));
             gc.fillText(String.format("✂️ Zone: Lat[%.1f°, %.1f°] Lng[%.1f°, %.1f°]", cMinLat, cMaxLat, cMinLng, cMaxLng), rx + 4, ry - 6);
         }
+
+        // Draw HUD Legend Bar Overlay
+        boolean isFootprint = previewModeCombo != null && previewModeCombo.getValue() != null && previewModeCombo.getValue().toLowerCase().contains("empreinte");
+        drawMapHUDLegend(gc, w, h, isFootprint);
+    }
+
+    private void drawMapHUDLegend(GraphicsContext gc, double w, double h, boolean isFootprint) {
+        double legendW = 410;
+        double legendH = 46;
+        double lx = 12;
+        double ly = 12;
+
+        // Background Glass Box
+        gc.setFill(Color.rgb(15, 23, 42, 0.88));
+        gc.fillRoundRect(lx, ly, legendW, legendH, 8, 8);
+        gc.setStroke(Color.rgb(56, 189, 248, 0.4));
+        gc.setLineWidth(1.0);
+        gc.strokeRoundRect(lx, ly, legendW, legendH, 8, 8);
+
+        gc.setFont(javafx.scene.text.Font.font("System", javafx.scene.text.FontWeight.BOLD, 10));
+
+        if (isFootprint) {
+            gc.setFill(Color.rgb(56, 189, 248));
+            gc.fillText("🌱 EMPREINTE ÉCOLOGIQUE & PRESSION MALTHUSIENNE (Pop / Capacité K)", lx + 10, ly + 16);
+
+            double dotY = ly + 32;
+            drawLegendDot(gc, lx + 10, dotY, Color.rgb(16, 185, 129), "<50% (Abondance)");
+            drawLegendDot(gc, lx + 120, dotY, Color.rgb(234, 179, 8), "50-100% (Modéré)");
+            drawLegendDot(gc, lx + 220, dotY, Color.rgb(249, 115, 22), "100-150% (Tension)");
+            drawLegendDot(gc, lx + 325, dotY, Color.rgb(239, 68, 68), ">150% (Surpop)");
+        } else {
+            gc.setFill(Color.rgb(56, 189, 248));
+            gc.fillText("🗺️ DENSITÉ DE POPULATION INITIALE (hab/km²)", lx + 10, ly + 16);
+
+            double dotY = ly + 32;
+            drawLegendDot(gc, lx + 10, dotY, Color.rgb(16, 185, 129), "<50 hab");
+            drawLegendDot(gc, lx + 90, dotY, Color.rgb(234, 179, 8), "50-500 hab");
+            drawLegendDot(gc, lx + 180, dotY, Color.rgb(249, 115, 22), "500-2500");
+            drawLegendDot(gc, lx + 275, dotY, Color.rgb(239, 68, 68), ">2500 hab");
+        }
+    }
+
+    private void drawLegendDot(GraphicsContext gc, double x, double y, Color c, String label) {
+        gc.setFill(c);
+        gc.fillOval(x, y - 7, 8, 8);
+        gc.setFill(Color.rgb(226, 232, 240));
+        gc.fillText(label, x + 12, y);
     }
 
     private void drawInstant2DDensityPreview(GraphicsContext gc, double w, double h, double scale, double offX, double offY) {
@@ -2144,13 +2200,10 @@ public class ScenarioSetupPanel extends BorderPane {
         boolean isEarth = planet == PlanetPreset.EARTH_LIKE || "earth".equalsIgnoreCase(planet.elevationMapSource()) ||
                 (planet.name() != null && (planet.name().toLowerCase().contains("earth") || planet.name().toLowerCase().contains("terre")));
 
-        Image bgImage = null;
-        if (isEarth) {
-            try (var is = getClass().getResourceAsStream("/maps/earth_elevation.png")) {
-                if (is != null) bgImage = new Image(is);
-            } catch (Exception ignored) {}
-        }
+        Image bgImage = isEarth ? getCachedEarthElevationImage() : null;
         PixelReader bgReader = bgImage != null ? bgImage.getPixelReader() : null;
+
+        boolean isFootprintMode = previewModeCombo != null && previewModeCombo.getValue() != null && previewModeCombo.getValue().toLowerCase().contains("empreinte");
 
         for (int py = 0; py < pwHeight; py++) {
             for (int px = 0; px < pwWidth; px++) {
@@ -2163,6 +2216,30 @@ public class ScenarioSetupPanel extends BorderPane {
                     double alt = Math.sin(lat * Math.PI / 180.0) * Math.cos(lon * Math.PI / 180.0);
                     pxColor = alt < 0 ? Color.rgb(20, 60, 140) : Color.rgb(40, 140, 60);
                 }
+
+                // Apply heat overlay for instant 2D preview based on active mode
+                double lat = 90.0 - (py / (double) pwHeight) * 180.0;
+                double lon = -180.0 + (px / (double) pwWidth) * 360.0;
+                boolean isLand = bgReader != null ? (pxColor.getGreen() > pxColor.getBlue() || pxColor.getRed() > 0.18) : (pxColor.getGreen() > 0.4);
+
+                if (isLand && lat > -50 && lat < 70) {
+                    boolean isArid = (lat > 14 && lat < 33 && lon > -15 && lon < 55) || (lat > 32 && lat < 48 && lon > 60 && lon < 105);
+                    boolean isFertileHub = (lat > 20 && lat < 38 && lon > 25 && lon < 90) || (lat > 5 && lat < 25 && lon > 95 && lon < 125);
+
+                    if (isFootprintMode) {
+                        if (isArid) {
+                            // Arid/Desert zones under human presence suffer critical Malthusian tension (Pop > Carrying Capacity K)
+                            pxColor = Color.rgb(239, 68, 68); // Red
+                        } else if (isFertileHub) {
+                            pxColor = Color.rgb(234, 179, 8); // Yellow (Moderate footprint)
+                        }
+                    } else {
+                        if (isFertileHub) {
+                            pxColor = Color.rgb(249, 115, 22); // Orange (Population Density Hubs)
+                        }
+                    }
+                }
+
                 writer.setColor(px, py, pxColor);
             }
         }
@@ -2173,7 +2250,17 @@ public class ScenarioSetupPanel extends BorderPane {
 
         gc.setFill(Color.rgb(56, 189, 248, 0.95));
         gc.setFont(javafx.scene.text.Font.font("System", javafx.scene.text.FontWeight.BOLD, 12));
-        gc.fillText("⚡ Génération de la grille H3 démographique en arrière-plan...", 20, h - 15);
+        gc.fillText("⚡ Aperçu 2D dynamique instantané (Valider pour générer les cellules H3)...", 20, h - 15);
+    }
+
+    private static Image cachedEarthElevationImage = null;
+    private Image getCachedEarthElevationImage() {
+        if (cachedEarthElevationImage == null) {
+            try (var is = getClass().getResourceAsStream("/maps/earth_elevation.png")) {
+                if (is != null) cachedEarthElevationImage = new Image(is);
+            } catch (Exception ignored) {}
+        }
+        return cachedEarthElevationImage;
     }
 
     // =========================================================================
@@ -2318,6 +2405,9 @@ public class ScenarioSetupPanel extends BorderPane {
 
                 if (cancelRequested) throw new java.util.concurrent.CancellationException("Generation cancelled by user");
 
+                // Map elevation and biome images corresponding to the selected planet preset
+                applyPresetMapToCells(cells, cfg);
+
                 // Hydrography and river basin accumulation (70% -> 78%)
                 updateProgress(0.72, "🌊 Calcul du réseau hydrographique et accumulation des bassins versants (72%)...");
 
@@ -2388,6 +2478,61 @@ public class ScenarioSetupPanel extends BorderPane {
         }, "H3-Scenario-Generator-Thread");
         generationThread.setDaemon(true);
         generationThread.start();
+    }
+
+    private void applyPresetMapToCells(List<H3Cell> cells, PlanetPreset cfg) {
+        if (cfg == null || cells == null || cells.isEmpty()) return;
+        
+        String mapSource = cfg.elevationMapSource() != null ? cfg.elevationMapSource().toLowerCase() : "";
+        String presetName = cfg.name() != null ? cfg.name().toLowerCase() : "";
+        
+        if (cfg.customElevBase64() != null && !cfg.customElevBase64().isBlank()) {
+            try {
+                Image customElev = org.ether.society.data.ImageMapLoader.base64PngToImage(cfg.customElevBase64());
+                Image customBiome = org.ether.society.data.ImageMapLoader.base64PngToImage(cfg.customBiomeBase64());
+                if (customElev != null) {
+                    new org.ether.society.data.ImageMapLoader().mapImagesToCells(cells, customElev, customBiome, null, cfg.minAltitudeMeters(), cfg.maxAltitudeMeters());
+                }
+            } catch (Exception e) {
+                logger.warn("Could not decode custom Base64 elevation map image for preset {}", cfg.name(), e);
+            }
+        } else if (mapSource.equals("earth") || presetName.contains("earth") || presetName.contains("terre") || presetName.contains("terran")) {
+            try (var elevStream = getClass().getResourceAsStream("/maps/earth_elevation.png");
+                 var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png")) {
+                if (elevStream != null || biomeStream != null) {
+                    new org.ether.society.data.ImageMapLoader().mapDataToCells(cells, elevStream, biomeStream);
+                }
+            } catch (Exception e) {
+                logger.warn("Could not load Earth elevation map image", e);
+            }
+        } else if (mapSource.equals("mars") || presetName.contains("mars") || presetName.contains("ares")) {
+            try (var elevStream = getClass().getResourceAsStream("/maps/mars_elevation.png");
+                 var biomeStream = getClass().getResourceAsStream("/maps/mars_biomes.png")) {
+                if (elevStream != null || biomeStream != null) {
+                    new org.ether.society.data.ImageMapLoader().mapDataToCells(cells, elevStream, biomeStream);
+                }
+            } catch (Exception e) {
+                logger.debug("No static Mars image resource found, using physical Simplex terrain generator");
+            }
+        } else if (mapSource.equals("venus") || presetName.contains("venus") || presetName.contains("vénus") || presetName.contains("hesperos")) {
+            try (var elevStream = getClass().getResourceAsStream("/maps/venus_elevation.png");
+                 var biomeStream = getClass().getResourceAsStream("/maps/venus_biomes.png")) {
+                if (elevStream != null || biomeStream != null) {
+                    new org.ether.society.data.ImageMapLoader().mapDataToCells(cells, elevStream, biomeStream);
+                }
+            } catch (Exception e) {
+                logger.debug("No static Venus image resource found, using physical Simplex terrain generator");
+            }
+        } else if (mapSource.equals("moon") || presetName.contains("lune") || presetName.contains("moon") || presetName.contains("selene")) {
+            try (var elevStream = getClass().getResourceAsStream("/maps/moon_elevation.png");
+                 var biomeStream = getClass().getResourceAsStream("/maps/moon_biomes.png")) {
+                if (elevStream != null || biomeStream != null) {
+                    new org.ether.society.data.ImageMapLoader().mapDataToCells(cells, elevStream, biomeStream);
+                }
+            } catch (Exception e) {
+                logger.debug("No static Moon image resource found, using physical Simplex terrain generator");
+            }
+        }
     }
 
     // =========================================================================
@@ -2474,7 +2619,7 @@ public class ScenarioSetupPanel extends BorderPane {
         loadEarthEventsBtn.setOnAction(e -> loadEarthHistoricalEvents());
 
         CheckBox eventsCheckBox = new CheckBox(org.ether.society.i18n.I18n.getOrDefault("scenario.events.enable", "Planifier des événements climatiques & catastrophes historiques"));
-        eventsCheckBox.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        eventsCheckBox.setStyle("-fx-font-weight: bold;");
 
         randomEventsCheckBox = new CheckBox(org.ether.society.i18n.I18n.getOrDefault("scenario.events.random_checkbox", "☑️ Générer dynamiquement les événements géologiques & dérives climatiques (séismes, volcanisme, élévation mer, Sahara vert)"));
         randomEventsCheckBox.setSelected(true);
@@ -2719,11 +2864,28 @@ public class ScenarioSetupPanel extends BorderPane {
         return s;
     }
 
+    private java.util.function.BiConsumer<PlanetPreset, EcologyPreset> onScenarioLoadedCallback;
+
+    public void setOnScenarioLoadedCallback(java.util.function.BiConsumer<PlanetPreset, EcologyPreset> callback) {
+        this.onScenarioLoadedCallback = callback;
+    }
+
     public List<H3Cell> getCells() { return currentPreviewCells; }
 
     public void setGeneratedCells(List<H3Cell> cells) {
         this.currentPreviewCells = cells;
+        if (cells != null && !cells.isEmpty()) {
+            distributeInitialPopulation(cells);
+        }
         drawPreview();
+    }
+
+    public void ensurePreviewGeneratedIfNeeded() {
+        if (currentPreviewCells == null || currentPreviewCells.isEmpty()) {
+            generatePreview();
+        } else {
+            drawPreview();
+        }
     }
 
     public List<ClimateEvent> getScheduledEvents() {

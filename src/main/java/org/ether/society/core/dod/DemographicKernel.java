@@ -24,7 +24,7 @@ public class DemographicKernel {
     }
 
     /**
-     * Chaque cohorte consomme de l'énergie et met à jour sa masse.
+     * Chaque cohorte consomme de l'énergie/nourriture et met à jour sa masse et son âge.
      */
     private void processMetabolism(WorldBuffer world, AgentBuffer agents, float dt) {
         float[] mass = agents.getMass();
@@ -37,55 +37,69 @@ public class DemographicKernel {
         float[] births = agents.getBirths();
         float[] deaths = agents.getDeaths();
 
-        // Constants in SI units
-        final float SECONDS_PER_DAY = 86400f;
-        final float ENERGY_REQ_PER_KG_DAY = 150000f; // 150 kJ/kg/day (approx 10 MJ for 70kg)
+        // Re-accumulate human biomass across all active cohorts into WorldBuffer
+        float[] biomassHuman = world.getBiomassHuman();
+        java.util.Arrays.fill(biomassHuman, 0.0f);
+
+        // dt is passed in seconds (e.g. 2,592,000s for 30 days) or days. Convert to fractional years.
+        float dtInYears = Math.max(0.0001f, dt > 1000.0f ? (dt / (86400.0f * 365.25f)) : (dt / 365.25f));
 
         for (int i = 0; i < agents.getCapacity(); i++) {
             if (hexIds[i] == -1) continue;
             
             int hIdx = hexIds[i];
             float m = mass[i];
+            if (m <= 0.01f) {
+                hexIds[i] = -1;
+                continue;
+            }
             
-            // Update Age (dt is in seconds)
-            age[i] += dt;
+            // Update Age (tracked in years)
+            age[i] += dtInYears;
+            float ageYears = age[i];
             
-            // Structure cost (Sigma) in Joules
-            sigma[i] = (float) Math.pow(m, 1.1) * 1000f; 
+            // Structure cost (Sigma)
+            sigma[i] = (float) Math.pow(m, 1.05) * 0.01f; 
             
-            // Basal consumption (Joules per tick)
-            float dailyReq = m * ENERGY_REQ_PER_KG_DAY;
-            float consumption = (dailyReq / SECONDS_PER_DAY + sigma[i]) * dt;
-            
-            // Take from local pixel (food is in Joules)
-            float foodTaken = Math.min(food[hIdx], consumption);
+            // Food consumption: 1 food unit in WorldBuffer feeds 1 human per year
+            float foodRequired = m * dtInYears;
+            float foodTaken = Math.min(food[hIdx], foodRequired);
             food[hIdx] -= foodTaken;
             
-            // Update internal energy
-            energy[i] += foodTaken - consumption;
+            // Calculate food satisfaction ratio (0.0 to 1.0)
+            float foodSatisfaction = foodRequired > 0.0001f ? (foodTaken / foodRequired) : 1.0f;
+            
+            // Update internal energy store (0 to 100)
+            if (foodSatisfaction >= 0.8f) {
+                energy[i] = Math.min(100.0f, energy[i] + 5.0f * foodSatisfaction);
+            } else {
+                energy[i] = Math.max(0.0f, energy[i] - 15.0f * (1.0f - foodSatisfaction));
+            }
             
             // --- Cycle Naissances / Décès ---
-            // Taux de natalité : f(énergie, nourriture disponible, densité)
-            float fertility = (energy[i] > 100 ? 0.05f : 0.01f) * (1.0f - m/2000.0f); 
-            float newBirths = m * fertility * dt;
+            // Taux de natalité annuel (2% à 4.5% par an selon le niveau d'énergie)
+            float fertility = (energy[i] > 50.0f ? 0.035f : 0.010f);
+            float newBirths = m * fertility * dtInYears;
             births[i] = newBirths;
-            mass[i] += newBirths;
 
-            // Taux de mortalité : f(âge, famine, température)
-            float baseMortality = 0.02f;
-            float ageMortality = (age[i] / 100.0f); // Augmente avec l'âge
-            float starvationMortality = (energy[i] < 0 ? 0.2f : 0);
+            // Taux de mortalité annuel (Loi de Gompertz-Makeham + famine)
+            float baseMortality = 0.015f; // 1.5% baseline
+            float ageMortality = (float) (Math.pow(ageYears / 75.0f, 3.5) * 0.04f); // Sénescence
+            float starvationMortality = (energy[i] < 20.0f ? 0.15f * (1.0f - energy[i] / 20.0f) : 0.0f);
             
-            float mortality = (baseMortality + ageMortality + starvationMortality) * dt;
-            float newDeaths = m * mortality;
+            float annualMortality = Math.min(0.95f, baseMortality + ageMortality + starvationMortality);
+            float newDeaths = m * annualMortality * dtInYears;
             deaths[i] = newDeaths;
-            mass[i] = Math.max(0, mass[i] - newDeaths);
 
-            // Mise à jour de la biomasse humaine
-            world.getBiomassHuman()[hIdx] = mass[i];
+            // Solde démographique de la cohorte
+            float newMass = m + newBirths - newDeaths;
+            mass[i] = Math.max(0.0f, newMass);
+
+            // Accumulation dans la biomasse humaine de la cellule H3
+            biomassHuman[hIdx] += mass[i];
             
-            // Suppression de la cohorte si masse critique atteinte
-            if (mass[i] <= 1.0f) {
+            // Suppression de la cohorte si masse tombe sous 1 personne
+            if (mass[i] < 1.0f) {
                 hexIds[i] = -1;
             }
         }
@@ -103,7 +117,7 @@ public class DemographicKernel {
             if (hexIds[i] == -1) continue;
             
             // Seuil de reproduction (mitose de cohorte basé sur la taille cible)
-            if (mass[i] > targetCohortSize * 2.0f && energy[i] > 100.0f) {
+            if (mass[i] >= targetCohortSize * 2.0f && energy[i] >= 50.0f) {
                 // Trouver un slot libre
                 int newSlot = findFreeSlot(agents);
                 if (newSlot != -1) {

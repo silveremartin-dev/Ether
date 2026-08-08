@@ -109,12 +109,17 @@ public class ImageMapLoader {
                 int y = (int) Math.min(v * hElev, hElev - 1);
                 Color c = elevReader.getColor(x, y);
                 double brightness = c.getBrightness(); // 0..1
-                double waterLvl = 0.35; // Standard sea level baseline threshold
                 double elevation;
-                if (brightness < waterLvl) {
-                    elevation = minAlt * (1.0 - brightness / waterLvl);
+                if (Math.abs(minAlt + maxAlt) < 500.0) {
+                    // Standard linear grayscale heightmap (-Alt to +Alt)
+                    elevation = minAlt + brightness * (maxAlt - minAlt);
                 } else {
-                    elevation = maxAlt * ((brightness - waterLvl) / (1.0 - waterLvl));
+                    double waterLvl = 0.35; // Standard sea level baseline threshold
+                    if (brightness < waterLvl) {
+                        elevation = minAlt * (1.0 - brightness / waterLvl);
+                    } else {
+                        elevation = maxAlt * ((brightness - waterLvl) / (1.0 - waterLvl));
+                    }
                 }
                 cell.setElevation(elevation);
             }
@@ -201,6 +206,10 @@ public class ImageMapLoader {
      * Match pixel color to nearest Biome.
      */
     public Biome matchBiomeColor(Color c) {
+        if (c == null) return Biome.OCEAN;
+        if (c.getBrightness() < 0.08) {
+            return Biome.DEEP_OCEAN;
+        }
         Biome best = Biome.OCEAN;
         double minDist = Double.MAX_VALUE;
 
@@ -226,7 +235,7 @@ public class ImageMapLoader {
      */
     public Color getBiomeTargetColor(Biome b) {
         return switch (b) {
-            case DEEP_OCEAN -> Color.rgb(0, 0, 100);
+            case DEEP_OCEAN -> Color.rgb(0, 0, 40);
             case OCEAN -> Color.rgb(0, 50, 200);
             case BEACH -> Color.rgb(240, 220, 150);
             case PLAINS -> Color.rgb(100, 200, 50);

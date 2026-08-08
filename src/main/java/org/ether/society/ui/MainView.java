@@ -98,6 +98,14 @@ public class MainView extends StackPane {
 
         // 3. Setup Tab
         setupPanel = new ScenarioSetupPanel(this::onStartSimulation);
+        setupPanel.setOnScenarioLoadedCallback((planet, eco) -> {
+            if (planet != null && planetGeneratorPanel != null) {
+                planetGeneratorPanel.applyPreset(planet);
+            }
+            if (eco != null && resourcePanel != null) {
+                resourcePanel.applyEcologyPreset(eco);
+            }
+        });
         setupTab = new Tab();
         setupTab.setContent(setupPanel);
         setupTab.setClosable(false);
@@ -124,6 +132,14 @@ public class MainView extends StackPane {
             if (newTab == resourcesTab && planetGeneratorPanel != null) {
                 resourcePanel.setActivePlanetPreset(planetGeneratorPanel.buildPresetFromUI());
             }
+            if (newTab == setupTab && setupPanel != null) {
+                if (resourcePanel != null) {
+                    org.ether.society.procedural.PlanetPreset activePlanet = resourcePanel.getActivePlanetPreset();
+                    org.ether.society.model.EcologyPreset activeEco = resourcePanel.getSelectedEcologyPreset();
+                    setupPanel.setInheritedContext(activePlanet, activeEco != null ? activeEco.name() : null);
+                }
+                setupPanel.ensurePreviewGeneratedIfNeeded();
+            }
         });
 
         getChildren().add(tabPane);
@@ -142,7 +158,7 @@ public class MainView extends StackPane {
         logger.info("Planet generated with {} cells", cells.size());
         engine.setCells(cells);
         mapCanvas.setCells(cells);
-        miniMap.setCells(cells);
+        if (miniMap != null) miniMap.setCells(cells);
         controlPanel.updateSeason(engine.getTimeManager().getCurrentMonth());
         mapCanvas.draw();
 
@@ -159,7 +175,7 @@ public class MainView extends StackPane {
         logger.info("Resource distribution applied to {} cells", cells.size());
         engine.setCells(cells);
         mapCanvas.setCells(cells);
-        miniMap.setCells(cells);
+        if (miniMap != null) miniMap.setCells(cells);
         mapCanvas.draw();
 
         setupPanel.setGeneratedCells(cells);
@@ -180,20 +196,15 @@ public class MainView extends StackPane {
         scroll.setPannable(true);
         mapStack.getChildren().add(scroll);
 
-        // 2. Overlays
-        StackPane.setAlignment(hud, Pos.TOP_RIGHT);
-        StackPane.setMargin(hud, new javafx.geometry.Insets(10));
-        mapStack.getChildren().add(hud);
-
-        StackPane.setAlignment(miniMap, Pos.BOTTOM_RIGHT);
-        StackPane.setMargin(miniMap, new javafx.geometry.Insets(10));
-        mapStack.getChildren().add(miniMap);
-
-        // 3. Notification Overlay
+        // 2. Notification Overlay
         notificationOverlay = new NotificationOverlay();
-        // Make sure it doesn't block mouse
         notificationOverlay.setPickOnBounds(false);
+        StackPane.setAlignment(notificationOverlay, Pos.BOTTOM_CENTER);
         mapStack.getChildren().add(notificationOverlay);
+
+        if (controlPanel != null) {
+            controlPanel.setNotificationOverlay(notificationOverlay);
+        }
 
         // 4. Deferred Calculation Progress Overlay for Tab 4
         ProgressBar simProgressBar = new ProgressBar(0);
@@ -219,24 +230,9 @@ public class MainView extends StackPane {
 
         startEventPolling();
 
-        // Legend (New compact version will be added here? Or passed in App.java?)
-        // Assuming App.java wires legend into a container, but here we construct the
-        // layout.
-        // We need to add ColorLegend here too if we want it shown.
-        // Let's rely on caller or reconstruct. For now, let's assume valid.
-
-        // NOTE: In App.java, mapCanvas.setTooltipContainer was called on the
-        // 'mapContainer'.
-        // We should ensure tooltip container is set correctly.
         mapCanvas.setTooltipContainer(mapStack);
 
-        // Inject Visualization Engines
-        if (engine.getWorldBuffer() != null) {
-            // New DOD-aware injection would go here
-        }
-
         // Connect Control Panel callbacks
-        controlPanel.setOnAnalytics(this::showAnalytics);
         controlPanel.setOnSave(this::saveGame);
         controlPanel.setOnLoad(this::loadGame);
         controlPanel.setOnContourToggle(show -> mapCanvas.toggleContours(show));
@@ -248,19 +244,22 @@ public class MainView extends StackPane {
         controlPanel.setOnTimelapseRecord(this::toggleTimelapseRecording);
         controlPanel.setOnTimelapseSeek(this::seekTimelapse);
 
-        root.setCenter(mapStack);
+        TabPane leftSidebar = new TabPane();
+        leftSidebar.setPrefWidth(380);
+        leftSidebar.setStyle("-fx-background-color: transparent;");
+        leftSidebar.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
-        TabPane rightSidebar = new TabPane();
-        rightSidebar.setPrefWidth(380);
-        rightSidebar.setStyle("-fx-background-color: transparent;");
-        rightSidebar.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        javafx.scene.control.ScrollPane controlScroll = new javafx.scene.control.ScrollPane(controlPanel);
+        controlScroll.setFitToWidth(true);
+        controlScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
+        Tab controlTab = new Tab("🎛️ Rendu 3D & Contrôles", controlScroll);
         Tab statsTab = new Tab("📊 Stats", statsPanel);
         Tab godModeTab = new Tab("⚡ God Mode & Timeline", godModePanel);
-        rightSidebar.getTabs().addAll(statsTab, godModeTab);
+        leftSidebar.getTabs().addAll(controlTab, statsTab, godModeTab);
 
-        root.setRight(rightSidebar);
-        root.setBottom(controlPanel);
+        root.setLeft(leftSidebar);
+        root.setCenter(mapStack);
 
         return root;
     }
@@ -290,7 +289,7 @@ public class MainView extends StackPane {
         var snapshot = engine.getHistoryManager().getWorldSnapshot(year);
         if (snapshot != null) {
             mapCanvas.setCells(snapshot);
-            miniMap.setCells(snapshot);
+            if (miniMap != null) miniMap.setCells(snapshot);
             controlPanel.updateYear(String.valueOf(year));
             logger.info("Timelapse seek to year: {}", year);
         }
@@ -325,10 +324,12 @@ public class MainView extends StackPane {
         }
 
         // Update UI components
+        mapCanvas.setWorldBuffer(engine.getWorldBuffer());
         mapCanvas.setCells(newCells);
-        miniMap.setCells(newCells);
+        if (miniMap != null) miniMap.setCells(newCells);
 
         // Update control panel with scenario info
+        controlPanel.updateScenarioName(scenario.getName());
         controlPanel.updateYear(String.valueOf(scenario.getStartDateYear()));
 
         // Switch Tab
@@ -398,31 +399,7 @@ public class MainView extends StackPane {
         return "RENAISSANCE";
     }
 
-    private void showAnalytics() {
-        if (engine == null)
-            return;
 
-        javafx.scene.control.Dialog<Void> dialog = new javafx.scene.control.Dialog<>();
-        dialog.setTitle("Simulation Analytics");
-        dialog.setHeaderText("Historical Data");
-
-        AnalyticsDashboard dashboard = new AnalyticsDashboard(engine.getHistoryManager().getHistory());
-        // Refresh initially
-        dashboard.refresh();
-
-        dialog.getDialogPane().setContent(dashboard);
-        dialog.getDialogPane().getButtonTypes().add(javafx.scene.control.ButtonType.CLOSE);
-
-        // Auto-refresh when open
-        javafx.animation.Timeline updater = new javafx.animation.Timeline(
-                new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e -> dashboard.refresh()));
-        updater.setCycleCount(javafx.animation.Animation.INDEFINITE);
-        updater.play();
-
-        dialog.setOnHidden(e -> updater.stop());
-
-        dialog.show();
-    }
 
     public void saveGame() {
         // Prompt for save name
@@ -445,6 +422,6 @@ public class MainView extends StackPane {
         
         // Refresh UI
         mapCanvas.setCells(engine.getCells());
-        miniMap.setCells(engine.getCells());
+        if (miniMap != null) miniMap.setCells(engine.getCells());
     }
 }

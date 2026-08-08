@@ -16,13 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Preferences & Settings UI Panel for Language and Theme configuration.
+ * Preferences &amp; Settings UI Panel for Language, Theme and GPU configuration.
  * 
  * @author Silvere Martin-Michiellot
- * @version 2.0.0
+ * @version 2.1.0
  */
 public class PreferencesPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(PreferencesPanel.class);
+
+    private static final java.util.prefs.Preferences prefs =
+            java.util.prefs.Preferences.userNodeForPackage(PreferencesPanel.class);
+    private static final String PREF_GPU_KEY = "ether_gpu_enabled";
 
     private Label titleHeader;
     private Label langLabel;
@@ -33,6 +37,12 @@ public class PreferencesPanel extends BorderPane {
     private ToggleGroup themeToggleGroup;
     private VBox langSection;
     private VBox themeSection;
+
+    // GPU section
+    private RadioButton gpuAutoRadio;
+    private RadioButton gpuOffRadio;
+    private ToggleGroup gpuToggleGroup;
+    private Label gpuHintLabel;
 
     public PreferencesPanel() {
         getStyleClass().add("glass-panel");
@@ -96,13 +106,48 @@ public class PreferencesPanel extends BorderPane {
         HBox themeOptions = new HBox(20, darkThemeRadio, lightThemeRadio);
         themeSection = createCardSection("🎨 " + I18n.get("pref.theme"), new VBox(10, themeLabel, themeOptions));
 
-        root.getChildren().addAll(titleHeader, langSection, themeSection);
+        // 3. GPU Section
+        boolean gpuEnabled = prefs.getBoolean(PREF_GPU_KEY, true);
+        gpuToggleGroup = new ToggleGroup();
+        gpuAutoRadio = new RadioButton();
+        gpuOffRadio  = new RadioButton();
+        gpuAutoRadio.setToggleGroup(gpuToggleGroup);
+        gpuOffRadio.setToggleGroup(gpuToggleGroup);
+        gpuAutoRadio.setSelected(gpuEnabled);
+        gpuOffRadio.setSelected(!gpuEnabled);
+
+        gpuHintLabel = new Label();
+        gpuHintLabel.setWrapText(true);
+        gpuHintLabel.getStyleClass().add("control-label");
+        gpuHintLabel.setStyle("-fx-font-size: 11px; -fx-font-style: italic;");
+
+        gpuAutoRadio.setOnAction(e -> saveGpuPreference(true));
+        gpuOffRadio.setOnAction(e -> saveGpuPreference(false));
+
+        HBox gpuOptions = new HBox(20, gpuAutoRadio, gpuOffRadio);
+        VBox gpuContent = new VBox(10, gpuOptions, gpuHintLabel);
+        VBox gpuSection = createCardSection("⚡ " + I18n.getOrDefault("pref.gpu", "Accélération Matérielle (GPU)"), gpuContent);
+
+        root.getChildren().addAll(titleHeader, langSection, themeSection, gpuSection);
 
         ScrollPane scroll = new ScrollPane(root);
         scroll.setFitToWidth(true);
         scroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
         setCenter(scroll);
+    }
+
+    private void saveGpuPreference(boolean enabled) {
+        prefs.putBoolean(PREF_GPU_KEY, enabled);
+        logger.info("GPU preference saved: {}", enabled ? "AUTO (hardware)" : "OFF (software)");
+    }
+
+    /**
+     * Returns the saved GPU preference (true = hardware auto, false = software only).
+     * Intended to be read at startup by the main App class to configure Prism pipeline.
+     */
+    public static boolean isGpuEnabled() {
+        return prefs.getBoolean(PREF_GPU_KEY, true);
     }
 
     private VBox createCardSection(String title, VBox content) {
@@ -120,5 +165,12 @@ public class PreferencesPanel extends BorderPane {
         darkThemeRadio.setText(I18n.get("pref.theme.dark"));
         lightThemeRadio.setText(I18n.get("pref.theme.light"));
         languageCombo.setValue(I18n.getCurrentLanguage());
+        if (gpuAutoRadio != null)
+            gpuAutoRadio.setText(I18n.getOrDefault("pref.gpu.auto", "🖥️ GPU On (Automatique — JavaFX Prism Hardware)"));
+        if (gpuOffRadio != null)
+            gpuOffRadio.setText(I18n.getOrDefault("pref.gpu.off", "🔧 GPU Off (Rendu Logiciel — Software Prism)"));
+        if (gpuHintLabel != null)
+            gpuHintLabel.setText(I18n.getOrDefault("pref.gpu.hint",
+                    "ℹ️ Ce paramètre est sauvegardé automatiquement. La modification prendra effet au prochain démarrage de l'application (GPU Activé : accélération matérielle DirectX/OpenGL | GPU Désactivé : rendu logiciel avec -Dprism.order=sw pour éviter les clignotements ou artefacts graphiques)."));
     }
 }

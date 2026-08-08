@@ -90,14 +90,22 @@ public class EventSystem {
                 "First nuclear weapons used."));
     }
 
+    private final java.util.Set<String> firedHistoricalEvents = new java.util.HashSet<>();
+
+    public void reset() {
+        firedHistoricalEvents.clear();
+        eventQueue.clear();
+    }
+
     /**
      * Check for events occurring at the current state.
      */
     public void checkEvents(int year, long totalPopulation, double totalFood) {
         // Historical events
         for (HistoricalEvent event : historicalEvents) {
-            if (event.year() == year) {
+            if (event.year() == year && !firedHistoricalEvents.contains(event.title())) {
                 eventQueue.add(String.format("📜 HISTORICAL: %s - %s", event.title(), event.message()));
+                firedHistoricalEvents.add(event.title());
             }
         }
 

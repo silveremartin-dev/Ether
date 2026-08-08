@@ -309,3 +309,104 @@
     -fx-border-color: #f1f5f9;
 }
 
+/* ============================================================
+   LIGHT MODE: Fix for elements using dark-mode inline styles
+   These override the most common dark-only inline color values
+   used in ResourceDistributionPanel, ScenarioSetupPanel, etc.
+   ============================================================ */
+
+/* Hint/status labels that use -fx-text-fill: #94a3b8 inline */
+.root .glass-panel .card-section Label,
+.root .glass-panel Label {
+    -fx-text-fill: #1e293b;
+}
+
+/* Italic hint labels (those with -fx-font-style: italic) */
+/* The class-based approach: add .hint-label class in code to pick up this rule */
+.hint-label {
+    -fx-text-fill: #475569;
+    -fx-font-style: italic;
+    -fx-font-size: 11px;
+}
+
+/* Status labels */
+.status-label {
+    -fx-text-fill: #0284c7;
+    -fx-font-size: 11px;
+}
+
+/* Radio buttons with inline blue/purple dark-mode colors */
+.radio-button .text {
+    -fx-fill: #0f172a;
+}
+
+/* ScrollPane scrollbars - ensure they are visible in light mode */
+.scroll-pane .scroll-bar:vertical,
+.scroll-pane .scroll-bar:horizontal {
+    -fx-background-color: #f1f5f9;
+    -fx-opacity: 1.0;
+}
+
+.scroll-pane .scroll-bar:vertical .thumb,
+.scroll-pane .scroll-bar:horizontal .thumb {
+    -fx-background-color: #94a3b8;
+    -fx-background-radius: 4;
+}
+
+.scroll-pane .scroll-bar:vertical .thumb:hover,
+.scroll-pane .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #0284c7;
+}
+
+.scroll-pane .increment-button,
+.scroll-pane .decrement-button {
+    -fx-background-color: #e2e8f0;
+}
+
+/* TextArea (scenario description) */
+.text-area {
+    -fx-background-color: #ffffff;
+    -fx-control-inner-background: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 4;
+}
+
+.text-area .content {
+    -fx-background-color: #ffffff;
+}
+
+/* ComboBox arrow button */
+.combo-box .arrow-button {
+    -fx-background-color: #f1f5f9;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #475569;
+}
+
+/* Separator */
+.separator {
+    -fx-background-color: #e2e8f0;
+}
+
+/* Info badges & Hint cards */
+.info-badge {
+    -fx-font-size: 11px;
+    -fx-text-fill: #1e293b;
+    -fx-padding: 8 10;
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 6;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6;
+}
+
+.hint-card {
+    -fx-font-size: 12px;
+    -fx-text-fill: #065f46;
+    -fx-font-style: italic;
+    -fx-padding: 8 12;
+    -fx-background-color: #ecfdf5;
+    -fx-background-radius: 6;
+    -fx-border-color: #a7f3d0;
+    -fx-border-radius: 6;
+}

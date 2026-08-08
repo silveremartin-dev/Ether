@@ -323,3 +323,24 @@
     -fx-text-fill: #e2e8f0;
     -fx-border-color: rgba(255, 255, 255, 0.05);
 }
+
+.info-badge {
+    -fx-font-size: 11px;
+    -fx-text-fill: #94a3b8;
+    -fx-padding: 8 10;
+    -fx-background-color: rgba(30, 41, 59, 0.5);
+    -fx-background-radius: 6;
+    -fx-border-color: rgba(56, 189, 248, 0.2);
+    -fx-border-radius: 6;
+}
+
+.hint-card {
+    -fx-font-size: 12px;
+    -fx-text-fill: #94a3b8;
+    -fx-font-style: italic;
+    -fx-padding: 8 12;
+    -fx-background-color: rgba(16, 185, 129, 0.07);
+    -fx-background-radius: 6;
+    -fx-border-color: rgba(16, 185, 129, 0.2);
+    -fx-border-radius: 6;
+}

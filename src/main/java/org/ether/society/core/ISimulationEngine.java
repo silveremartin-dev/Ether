@@ -15,6 +15,8 @@ public interface ISimulationEngine {
 
     void setSpeed(int multiplier);
 
+    int getSpeed();
+
     TimeManager getTimeManager();
 
     boolean isRunning();

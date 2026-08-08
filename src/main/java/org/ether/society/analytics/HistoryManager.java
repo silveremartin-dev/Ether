@@ -76,12 +76,17 @@ public class HistoryManager {
      * Capture a full world state snapshot for replay (expensive, call less frequently).
      */
     public void captureWorldSnapshot(H3SimulationEngine engine) {
+        if (engine.getCells() == null || engine.getCells().isEmpty()) return;
         int year = engine.getTimeManager().getCurrentYear();
         
         List<H3Cell> snapshot = engine.getCells().parallelStream()
             .map(H3Cell::snapshot)
             .collect(Collectors.toList());
             
+        // Bounded ring buffer: keep max 50 snapshots in memory (~5MB max RAM)
+        if (worldSnapshots.size() >= 50) {
+            worldSnapshots.pollFirstEntry();
+        }
         worldSnapshots.put(year, snapshot);
     }
 

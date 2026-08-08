@@ -88,7 +88,7 @@ public record PlanetPreset(
 
     /** Default Terran / Earth-like settings */
     public static final PlanetPreset EARTH_LIKE = new PlanetPreset(
-            "Terre (Terran)", 6, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.35, 40.0, 21.0, 0.30, 1.0,
+            "Terre (Terran)", 6, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.38, 40.0, 21.0, 0.30, 1.0,
             false, 1.0, 0.0, 420.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "ERA5 Reanalysis (Copernicus / ECMWF — terrestres)", 12445L,

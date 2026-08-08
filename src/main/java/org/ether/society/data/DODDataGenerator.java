@@ -35,7 +35,8 @@ public class DODDataGenerator {
             buffer.getMetalResource()[i] = cell.getResourceMetal().floatValue();
             buffer.getClayResource()[i] = cell.getResourceClay().floatValue();
             
-            buffer.getBiomassHuman()[i] = cell.getBiomassHuman().floatValue();
+            double humanPop = (cell.getBiomassHuman() != null && cell.getBiomassHuman() > 0) ? cell.getBiomassHuman() : (cell.getPopulation() != null ? cell.getPopulation().doubleValue() : 0.0);
+            buffer.getBiomassHuman()[i] = (float) humanPop;
             buffer.getBiomassLivestock()[i] = cell.getBiomassLivestock().floatValue();
             buffer.getBiomassFish()[i] = cell.getBiomassFish().floatValue();
             buffer.getBiomassAgriculture()[i] = cell.getBiomassAgriculture().floatValue();

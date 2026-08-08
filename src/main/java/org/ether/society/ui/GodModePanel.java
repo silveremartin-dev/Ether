@@ -36,8 +36,14 @@ public class GodModePanel extends VBox {
     private final ScenarioTimeline timeline;
 
     private final ListView<String> timelineListView;
-    private final Button pauseResumeBtn;
-    private final Label statusLabel;
+
+    // Configurable Form Controls
+    private final ComboBox<String> eventTypeCombo;
+    private final TextField eventNameField;
+    private final Spinner<Integer> targetYearSpinner;
+    private final Spinner<Double> latSpinner;
+    private final Spinner<Double> lngSpinner;
+    private final Spinner<Double> magnitudeSpinner;
 
     public GodModePanel(H3SimulationEngine engine, ScenarioTimeline timeline) {
         this.engine = engine;
@@ -49,21 +55,64 @@ public class GodModePanel extends VBox {
         setStyle("-fx-background-color: rgba(15, 23, 42, 0.92); -fx-border-color: #38bdf8; -fx-border-radius: 8; -fx-background-radius: 8;");
 
         // Title Header
-        Label header = new Label("⚡ MODE DIEU & CHRONOLOGIE DU SCÉNARIO (GOD MODE & TIMELINE)");
+        Label header = new Label("⚡ MODE DIEU & CHRONOLOGIE (GOD MODE)");
         header.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #38bdf8;");
 
-        // Pause / Resume Control Bar
-        pauseResumeBtn = new Button("⏸ Interrompre la Simulation (Pause)");
-        pauseResumeBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #ef4444; -fx-text-fill: white;");
-        pauseResumeBtn.setOnAction(e -> togglePause());
+        // Form fields initialization
+        eventTypeCombo = new ComboBox<>();
+        eventTypeCombo.getItems().addAll(
+            "VOLCANO",
+            "HEATWAVE",
+            "SOLAR_EMP",
+            "PANDEMIC",
+            "METEOR",
+            "NUCLEAR_WINTER",
+            "FAMINE"
+        );
+        eventTypeCombo.setValue("VOLCANO");
+        eventTypeCombo.setMaxWidth(Double.MAX_VALUE);
+        eventTypeCombo.setTooltip(new Tooltip("Type de perturbation physique ou climatique à injecter dans l'écosystème."));
 
-        statusLabel = new Label("Statut : En cours d'exécution");
-        statusLabel.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
+        eventNameField = new TextField("Éruption Stratosphérique SO₂");
+        eventNameField.setPromptText("Titre ou Nom de l'événement...");
+        eventNameField.setTooltip(new Tooltip("Titre personnalisé qui apparaîtra dans le registre chronologique et l'audit trail."));
 
-        HBox controlBar = new HBox(12, pauseResumeBtn, statusLabel);
-        controlBar.setAlignment(Pos.CENTER_LEFT);
+        int currentYr = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
+        targetYearSpinner = new Spinner<>(-100000, 2100, currentYr, 1);
+        targetYearSpinner.setEditable(true);
+        targetYearSpinner.setMaxWidth(Double.MAX_VALUE);
+        targetYearSpinner.setTooltip(new Tooltip("Année cible exacte de déclenchement de l'événement dans le calendrier de la simulation."));
 
-        // Section 1: Event Injector (Direct Physical Forcing)
+        latSpinner = new Spinner<>(-90.0, 90.0, 0.0, 1.0);
+        latSpinner.setEditable(true);
+        latSpinner.setMaxWidth(Double.MAX_VALUE);
+        latSpinner.setTooltip(new Tooltip("Latitude de l'épicentre du phénomène physique (-90° Sud à +90° Nord)."));
+
+        lngSpinner = new Spinner<>(-180.0, 180.0, 0.0, 1.0);
+        lngSpinner.setEditable(true);
+        lngSpinner.setMaxWidth(Double.MAX_VALUE);
+        lngSpinner.setTooltip(new Tooltip("Longitude de l'épicentre du phénomène physique (-180° Ouest à +180° Est)."));
+
+        magnitudeSpinner = new Spinner<>(0.1, 10.0, 1.5, 0.5);
+        magnitudeSpinner.setEditable(true);
+        magnitudeSpinner.setMaxWidth(Double.MAX_VALUE);
+        magnitudeSpinner.setTooltip(new Tooltip("Intensité / Magnitude du choc (détermine la profondeur et l'impact spatial de la perturbation)."));
+
+        // Update default event name when type changes
+        eventTypeCombo.valueProperty().addListener((obs, oldV, newV) -> {
+            if (newV == null) return;
+            switch (newV) {
+                case "VOLCANO" -> eventNameField.setText("Éruption Stratosphérique SO₂");
+                case "HEATWAVE" -> eventNameField.setText("Canicule Globale & Forçage Radiatif");
+                case "SOLAR_EMP" -> eventNameField.setText("Tempête Solaire Carrington (EMP)");
+                case "PANDEMIC" -> eventNameField.setText("Épidémie Zoonotique Bio-Moléculaire");
+                case "METEOR" -> eventNameField.setText("Impact d'Astéroïde Majeur");
+                case "NUCLEAR_WINTER" -> eventNameField.setText("Hiver Nucléaire / Glaciation");
+                case "FAMINE" -> eventNameField.setText("Sécheresse & Famine Répandue");
+            }
+        });
+
+        // Section 1: Event Builder (Direct & Scheduled Physical Forcing)
         VBox injectorBox = createInjectorSection();
 
         // Section 2: Scenario Timeline Audit Log
@@ -73,39 +122,84 @@ public class GodModePanel extends VBox {
         timelineListView = new ListView<>();
         timelineListView.setPrefHeight(180);
         timelineListView.setStyle("-fx-control-inner-background: #090d16; -fx-font-family: 'Consolas', monospace; -fx-font-size: 11px;");
+        timelineListView.setTooltip(new Tooltip("Registre d'audit temporel : Liste chronologique de tous les forçages et évènements du scénario."));
         refreshTimelineView();
 
-        getChildren().addAll(header, controlBar, new Separator(), injectorBox, new Separator(), timelineHeader, timelineListView);
-    }
-
-    private void togglePause() {
-        if (engine == null) return;
-        if (engine.isRunning()) {
-            engine.pause();
-            pauseResumeBtn.setText("▶ Reprendre la Simulation (Play)");
-            pauseResumeBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #10b981; -fx-text-fill: white;");
-            statusLabel.setText("Statut : EN PAUSE (Modifications autorisées)");
-            statusLabel.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
-        } else {
-            engine.start();
-            pauseResumeBtn.setText("⏸ Interrompre la Simulation (Pause)");
-            pauseResumeBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #ef4444; -fx-text-fill: white;");
-            statusLabel.setText("Statut : En cours d'exécution");
-            statusLabel.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-        }
+        getChildren().addAll(header, new Separator(), injectorBox, new Separator(), timelineHeader, timelineListView);
     }
 
     private VBox createInjectorSection() {
         VBox box = new VBox(8);
-        Label title = new Label("🌍 INJECTION D'ÉVÉNEMENTS PHYSIQUES EN DIRECT :");
+        Label title = new Label("🛠️ ÉDITION & PROGRAMMATION D'ÉVÉNEMENTS CLIMATIQUES :");
         title.setStyle("-fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
 
         GridPane grid = new GridPane();
         grid.setHgap(8);
-        grid.setVgap(8);
+        grid.setVgap(6);
 
+        grid.addRow(0, createLabel("Type d'Événement :"), eventTypeCombo);
+        grid.addRow(1, createLabel("Nom / Titre :"), eventNameField);
+        grid.addRow(2, createLabel("Année Cible (Date) :"), targetYearSpinner);
+        grid.addRow(3, createLabel("Latitude (-90 à +90°) :"), latSpinner);
+        grid.addRow(4, createLabel("Longitude (-180 à +180°) :"), lngSpinner);
+        grid.addRow(5, createLabel("Intensité / Magnitude :"), magnitudeSpinner);
+
+        Button scheduleBtn = new Button("📅 Programmer dans la Chronologie");
+        scheduleBtn.setTooltip(new Tooltip("Inscrit l'événement dans le calendrier du scénario pour un déclenchement automatique à l'année cible spécifiée."));
+        scheduleBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 12; -fx-background-radius: 6;");
+        scheduleBtn.setMaxWidth(Double.MAX_VALUE);
+        scheduleBtn.setOnAction(e -> scheduleEvent(false));
+
+        Button triggerNowBtn = new Button("⚡ Déclencher Immédiatement");
+        triggerNowBtn.setTooltip(new Tooltip("Applique instantanément les perturbations climatiques et physiques sur le monde à l'année courante en direct."));
+        triggerNowBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 12; -fx-background-radius: 6;");
+        triggerNowBtn.setMaxWidth(Double.MAX_VALUE);
+        triggerNowBtn.setOnAction(e -> scheduleEvent(true));
+
+        HBox btnBox = new HBox(8, scheduleBtn, triggerNowBtn);
+        HBox.setHgrow(scheduleBtn, Priority.ALWAYS);
+        HBox.setHgrow(triggerNowBtn, Priority.ALWAYS);
+
+        box.getChildren().addAll(title, grid, btnBox);
+        return box;
+    }
+
+    private Label createLabel(String text) {
+        Label l = new Label(text);
+        l.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
+        return l;
+    }
+
+    private void scheduleEvent(boolean immediate) {
+        String type = eventTypeCombo.getValue();
+        String name = eventNameField.getText();
+        if (name == null || name.isBlank()) name = type;
+
+        int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
+        int targetYear = immediate ? currentYear : targetYearSpinner.getValue();
+
+        double lat = latSpinner.getValue();
+        double lng = lngSpinner.getValue();
+        double mag = magnitudeSpinner.getValue();
+
+        String details = String.format(java.util.Locale.US, "Lat: %.2f°, Lng: %.2f°, Mag: %.1f", lat, lng, mag);
+
+        timeline.addEntry(targetYear, type, name, details, true);
+        refreshTimelineView();
+
+        // If target year is current year or immediate, execute physical forcing directly
+        if (immediate || targetYear <= currentYear) {
+            executePhysicalForcing(type, mag, lat, lng);
+            logger.info("God Mode intervention EXECUTED immediately (Year {}): {} - {}", currentYear, name, details);
+        } else {
+            logger.info("God Mode intervention SCHEDULED for Year {}: {} - {}", targetYear, name, details);
+        }
+    }
+
+    private void executePhysicalForcing(String type, double mag, double lat, double lng) {
         // Volcano SO2 Injection
         Button volcanoBtn = new Button("🌋 Éruption Stratosphérique SO₂");
+        volcanoBtn.setTooltip(new Tooltip("Injecter une éruption super-volcanique stratosphérique (aérosols SO₂ τ = 1.20). Réduit le rayonnement solaire global et déclenche un hiver volcanique."));
         volcanoBtn.setOnAction(e -> {
             NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(1.2);
             recordIntervention("VOLCANO", "Éruption Volcanique Majeure", "Injection d'aérosols stratosphériques (τ = 1.20)");
@@ -113,6 +207,7 @@ public class GodModePanel extends VBox {
 
         // Heatwave / Radiative Forcing
         Button heatwaveBtn = new Button("🔥 Canicule Globale (+3°C)");
+        heatwaveBtn.setTooltip(new Tooltip("Injecter une canicule mondiale (+3°C). Augmente instantanément la température de surface de toutes les cellules hexagonales H3."));
         heatwaveBtn.setOnAction(e -> {
             if (engine != null && engine.getCells() != null) {
                 for (H3Cell c : engine.getCells()) {
@@ -124,25 +219,41 @@ public class GodModePanel extends VBox {
 
         // Solar Carrington EMP Storm
         Button solarEmpBtn = new Button("⚡ Tempête Solaire EMP (Carrington)");
+        solarEmpBtn.setTooltip(new Tooltip("Injecter une tempête géomagnétique solaire majeure (Événement Carrington). Désactive le réseau électrique et détruit temporairement le capital d'information."));
         solarEmpBtn.setOnAction(e -> {
             recordIntervention("SOLAR_EMP", "Tempête Géomagnétique Solaire", "Perturbation EMP et effondrement temporaire du réseau électrique");
         });
 
         // Pandémie Pathogène
         Button pandemicBtn = new Button("🦠 Épidémie Zoonotique");
+        pandemicBtn.setTooltip(new Tooltip("Injecter un choc épidémique zoonotique global. Augmente brutalement le taux de mortalité de Gompertz et réduit la fécondité."));
         pandemicBtn.setOnAction(e -> {
             recordIntervention("PANDEMIC", "Outbreak Épidémique Bio-Moléculaire", "Choc immunitaire et hausse de la mortalité de Gompertz");
         });
 
-        grid.addRow(0, volcanoBtn, heatwaveBtn);
-        grid.addRow(1, solarEmpBtn, pandemicBtn);
-
-        box.getChildren().addAll(title, grid);
-        return box;
+        if (type == null) return;
+        switch (type) {
+            case "VOLCANO" -> {
+                NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(mag);
+            }
+            case "HEATWAVE" -> {
+                if (engine != null && engine.getCells() != null) {
+                    for (H3Cell c : engine.getCells()) {
+                        c.setTemperature((c.getTemperature() != null ? c.getTemperature() : 15.0) + mag);
+                    }
+                }
+            }
+            case "NUCLEAR_WINTER" -> {
+                NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(mag * 2.0);
+            }
+            case "PANDEMIC", "SOLAR_EMP", "METEOR", "FAMINE" -> {
+                // Logged & tracked in event system timeline
+            }
+        }
     }
 
     public void recordIntervention(String type, String title, String details) {
-        long currentYear = engine != null ? engine.getTimeManager().getCurrentYear() : 2026;
+        long currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
         timeline.addEntry(currentYear, type, title, details, true);
         refreshTimelineView();
         logger.info("God Mode intervention recorded at Year {}: {} - {}", currentYear, title, details);

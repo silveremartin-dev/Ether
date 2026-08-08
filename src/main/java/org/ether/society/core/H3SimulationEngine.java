@@ -122,6 +122,9 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.cells = cells;
 
         timeManager.reset((int) scenario.getStartDateYear());
+        if (eventSystem != null) {
+            eventSystem.reset();
+        }
 
         if (diplomacyManager != null) {
             diplomacyManager.clear();
@@ -224,6 +227,11 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     @Override
+    public int getSpeed() {
+        return speedMultiplier;
+    }
+
+    @Override
     public TimeManager getTimeManager() {
         return timeManager;
     }
@@ -297,6 +305,9 @@ public class H3SimulationEngine implements ISimulationEngine {
         running.set(false);
         if (executorService != null && !executorService.isShutdown()) {
             executorService.shutdownNow();
+        }
+        if (saveExecutor != null && !saveExecutor.isShutdown()) {
+            saveExecutor.shutdownNow();
         }
     }
 
@@ -405,6 +416,14 @@ public class H3SimulationEngine implements ISimulationEngine {
 
                 historyManager.captureSnapshot(this);
                 eventSystem.checkEvents(timeManager.getCurrentYear(), getTotalPopulation(), getTotalFood());
+
+                syncBufferToCells();
+            }
+
+            // Every 60 Ticks: capture world state snapshot and trigger rolling checkpoint auto-save
+            if (tickCounter > 0 && tickCounter % 60 == 0) {
+                historyManager.captureWorldSnapshot(this);
+                autoSaveCheckpoint();
             }
 
             agentManager.update();
@@ -412,6 +431,46 @@ public class H3SimulationEngine implements ISimulationEngine {
 
         } catch (Exception e) {
             logger.error("Error during simulation tick", e);
+        }
+    }
+
+    private final java.util.concurrent.ExecutorService saveExecutor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "Ether-AutoSave-Thread");
+        t.setDaemon(true);
+        return t;
+    });
+
+    private void autoSaveCheckpoint() {
+        if (cells == null || cells.isEmpty()) return;
+        final int currentTick = tickCounter;
+        saveExecutor.submit(() -> {
+            try {
+                gameSaveManager.saveCheckpoint(this, currentTick);
+            } catch (Exception ex) {
+                logger.error("Failed to save 60-tick checkpoint", ex);
+            }
+        });
+    }
+
+    public void syncBufferToCells() {
+        if (worldBuffer == null || cells == null) return;
+        float[] pop = worldBuffer.getBiomassHuman();
+        float[] food = worldBuffer.getFoodResource();
+        float[] tech = worldBuffer.getTechnologyLevel();
+        float[] water = worldBuffer.getWaterResource();
+        float[] wood = worldBuffer.getWoodResource();
+        float[] gini = worldBuffer.getGiniIndex();
+
+        for (int i = 0; i < cells.size() && i < worldBuffer.getCapacity(); i++) {
+            H3Cell cell = cells.get(i);
+            int p = (int) Math.max(0, pop[i]);
+            cell.setPopulation(p);
+            cell.setBiomassHuman((double) pop[i]);
+            cell.setFoodResource((double) food[i]);
+            cell.setTechnologyLevel((double) tech[i]);
+            cell.setWaterResource((double) water[i]);
+            cell.setWoodResource((double) wood[i]);
+            cell.setGiniIndex((double) gini[i]);
         }
     }
 

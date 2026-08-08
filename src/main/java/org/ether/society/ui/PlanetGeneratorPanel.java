@@ -1688,6 +1688,9 @@ public class PlanetGeneratorPanel extends BorderPane {
             radioSeasonProc.setSelected(true);
         }
 
+        if (presetBar != null) {
+            presetBar.markClean(p);
+        }
         isUpdatingFromPreset = false;
         updatePreview();
     }
@@ -1802,13 +1805,13 @@ public class PlanetGeneratorPanel extends BorderPane {
             minLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
             legendBar.getChildren().add(minLabel);
-            addLegendItem("DEEP_OCEAN", Color.rgb(10, 30, 110), "Abysses");
-            addLegendItem("OCEAN", Color.rgb(25, 60, 160), "Océan");
-            addLegendItem("PLAINS", Color.rgb(110, 210, 80), "Plaines");
-            addLegendItem("FOREST", Color.rgb(34, 139, 34), "Forêt");
-            addLegendItem("HILLS", Color.rgb(160, 160, 110), "Collines");
-            addLegendItem("MOUNTAINS", Color.rgb(140, 130, 130), "Montagnes");
-            addLegendItem("SNOW", Color.rgb(245, 245, 250), "Neige");
+            addLegendItem("DEEP_OCEAN", Color.rgb(10, 15, 25), "Abysses (-11 km)");
+            addLegendItem("OCEAN", Color.rgb(36, 54, 86), "Fosse Océanique");
+            addLegendItem("SEA_LEVEL", Color.rgb(96, 96, 96), "Niveau de la mer (0 m)");
+            addLegendItem("PLAINS", Color.rgb(140, 140, 140), "Basses Terres");
+            addLegendItem("HILLS", Color.rgb(180, 180, 180), "Moyen Relief");
+            addLegendItem("MOUNTAINS", Color.rgb(220, 220, 220), "Montagnes");
+            addLegendItem("SNOW", Color.rgb(255, 255, 255), "Sommets (+8.8 km)");
 
             Label maxLabel = new Label(String.format("Max: %,.0f m", maxAlt));
             maxLabel.getStyleClass().add("control-label");
@@ -1890,6 +1893,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         int canvasW = (int) previewCanvas.getWidth();
         int canvasH = (int) previewCanvas.getHeight();
+        if (canvasW < 1 || canvasH < 1) return;
 
         int mapMode = viewModeCombo != null ? viewModeCombo.getSelectionModel().getSelectedIndex() : 0;
         boolean isImportMode = radioImport != null && radioImport.isSelected();
@@ -1941,49 +1945,38 @@ public class PlanetGeneratorPanel extends BorderPane {
 
                 Color pxColor;
 
-                if (mapMode == 0) { // Heightmap / Relief (Biomes)
-                    Biome cellBiome;
+                if (mapMode == 0) { // Heightmap / Relief (Niveaux de gris fond de mer -> sommets)
+                    double normElev;
+                    boolean isOcean;
+
                     if (elevReader != null) {
                         double u = (lng + 180.0) / 360.0;
                         double v = (90.0 - lat) / 180.0;
                         int ex = (int) Math.min(u * wElev, wElev - 1);
                         int ey = (int) Math.min(v * hElev, hElev - 1);
                         int argb = elevReader.getArgb(ex, ey);
-                        double brightness = (((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / (3.0 * 255.0);
-
-                        if (customBiomeImage != null) {
-                            PixelReader bReader = customBiomeImage.getPixelReader();
-                            double wB = customBiomeImage.getWidth();
-                            double hB = customBiomeImage.getHeight();
-                            int bx = (int) Math.min(u * wB, wB - 1);
-                            int by = (int) Math.min(v * hB, hB - 1);
-                            Color bCol = bReader.getColor(bx, by);
-                            cellBiome = mapLoader.matchBiomeColor(bCol);
-                        } else {
-                            double waterLvl = preset.waterLevel();
-                            if (brightness < waterLvl) {
-                                cellBiome = Biome.OCEAN;
-                            } else if (brightness > 0.85) {
-                                cellBiome = Biome.SNOW;
-                            } else if (brightness > 0.65) {
-                                cellBiome = Biome.MOUNTAINS;
-                            } else if (brightness > 0.48) {
-                                cellBiome = Biome.HILLS;
-                            } else if (brightness > 0.38) {
-                                cellBiome = Biome.PLAINS;
-                            } else {
-                                cellBiome = Biome.BEACH;
-                            }
-                        }
+                        normElev = (((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / (3.0 * 255.0);
+                        isOcean = normElev < preset.waterLevel();
                     } else {
                         PlanetPoint p = generator.getPlanetPoint(lat, lng, preset);
-                        cellBiome = p.biome();
+                        // p.elevation() is normalised [-1.0, 1.0]
+                        normElev = (p.elevation() + 1.0) / 2.0;
+                        isOcean = p.elevation() < preset.waterLevel();
                     }
 
-                    if (cellBiome == Biome.OCEAN || cellBiome == Biome.DEEP_OCEAN) {
+                    if (isOcean) {
                         oceanCount++;
+                        // Ocean: Abysses to sea surface (dark slate/navy grayscale gradient)
+                        double oceanNorm = Math.min(1.0, normElev / Math.max(0.01, (preset.waterLevel() + 1.0) / 2.0));
+                        int g = (int) Math.min(255, Math.max(8, oceanNorm * 88.0 + 8.0));
+                        pxColor = Color.rgb((int)(g * 0.4), (int)(g * 0.6), (int)(g * 0.95));
+                    } else {
+                        // Terrestrial land: Sea level to Everest peak (pure hypsometric grayscale)
+                        double waterNorm = (preset.waterLevel() + 1.0) / 2.0;
+                        double landNorm = Math.min(1.0, Math.max(0.0, (normElev - waterNorm) / Math.max(0.01, 1.0 - waterNorm)));
+                        int g = (int) Math.min(255, Math.max(96, 96.0 + landNorm * 159.0));
+                        pxColor = Color.rgb(g, g, g);
                     }
-                    pxColor = getBiomeColor(cellBiome);
 
                 } else if (mapMode == 1) { // Température (°C)
                     double tempC;

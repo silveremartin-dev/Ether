@@ -332,7 +332,8 @@ public class H3Cell {
     }
 
     public void setPopulation(Integer population) {
-        this.population = population;
+        this.population = population != null ? population : 0;
+        this.biomassHuman = this.population.doubleValue();
     }
 
     public Double getFoodResource() {
@@ -378,11 +379,12 @@ public class H3Cell {
     // New Fields Getters/Setters
 
     public Double getBiomassHuman() {
-        return biomassHuman;
+        return biomassHuman != null ? biomassHuman : (population != null ? population.doubleValue() : 0.0);
     }
 
     public void setBiomassHuman(Double biomassHuman) {
-        this.biomassHuman = biomassHuman;
+        this.biomassHuman = biomassHuman != null ? biomassHuman : 0.0;
+        this.population = (int) Math.round(this.biomassHuman);
     }
 
     public Double getBiomassLivestock() {

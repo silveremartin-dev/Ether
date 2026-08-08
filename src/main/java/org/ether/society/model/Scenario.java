@@ -62,6 +62,9 @@ public class Scenario implements Serializable {
     public Scenario() {
         // Defaults
         this.name = "New Scenario";
+        this.planetPreset = PlanetPreset.EARTH_LIKE;
+        this.ecologyPreset = EcologyPreset.EARTH_STANDARD;
+        this.ecologyPresetName = EcologyPreset.EARTH_STANDARD.name();
         this.planetRadiusKm = 6371.0;
         this.rotationPeriodHours = 24.0;
         this.revolutionPeriodDays = 365.25;
