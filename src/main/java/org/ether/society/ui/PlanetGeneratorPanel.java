@@ -218,7 +218,8 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     private void initUI() {
         VBox controlsBox = new VBox(15);
-        controlsBox.setPrefWidth(460);
+        controlsBox.setPrefWidth(480);
+        controlsBox.setMinWidth(480);
         controlsBox.setPadding(new Insets(10));
 
         headerLabel = new Label();

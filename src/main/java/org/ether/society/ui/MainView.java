@@ -236,16 +236,12 @@ public class MainView extends StackPane {
         controlPanel.setOnSave(this::saveGame);
         controlPanel.setOnLoad(this::loadGame);
         controlPanel.setOnContourToggle(show -> mapCanvas.toggleContours(show));
-        controlPanel.setOnStatsToggle(show -> {
-            boolean visible = statsPanel.isVisible();
-            statsPanel.setVisible(!visible);
-            statsPanel.setManaged(!visible);
-        });
         controlPanel.setOnTimelapseRecord(this::toggleTimelapseRecording);
         controlPanel.setOnTimelapseSeek(this::seekTimelapse);
 
         TabPane leftSidebar = new TabPane();
-        leftSidebar.setPrefWidth(380);
+        leftSidebar.setPrefWidth(480);
+        leftSidebar.setMinWidth(480);
         leftSidebar.setStyle("-fx-background-color: transparent;");
         leftSidebar.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
@@ -253,9 +249,17 @@ public class MainView extends StackPane {
         controlScroll.setFitToWidth(true);
         controlScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
-        Tab controlTab = new Tab("🎛️ Rendu 3D & Contrôles", controlScroll);
-        Tab statsTab = new Tab("📊 Stats", statsPanel);
-        Tab godModeTab = new Tab("⚡ God Mode & Timeline", godModePanel);
+        javafx.scene.control.ScrollPane statsScroll = new javafx.scene.control.ScrollPane(statsPanel);
+        statsScroll.setFitToWidth(true);
+        statsScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+
+        javafx.scene.control.ScrollPane godScroll = new javafx.scene.control.ScrollPane(godModePanel);
+        godScroll.setFitToWidth(true);
+        godScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+
+        Tab controlTab = new Tab(I18n.getOrDefault("sim.tab.controls", "🎛️ Rendu 3D & Contrôles"), controlScroll);
+        Tab statsTab = new Tab(I18n.getOrDefault("sim.tab.stats", "📊 Stats"), statsScroll);
+        Tab godModeTab = new Tab(I18n.getOrDefault("sim.tab.godmode", "⚡ Mode Dieu"), godScroll);
         leftSidebar.getTabs().addAll(controlTab, statsTab, godModeTab);
 
         root.setLeft(leftSidebar);
@@ -296,8 +300,43 @@ public class MainView extends StackPane {
     }
 
     private void onStartSimulation(Scenario scenario) {
+        if (setupPanel != null && setupPanel.isResumeFromSnapshotSelected()) {
+            var meta = setupPanel.getSelectedSnapshotMetadata();
+            if (meta != null) {
+                logger.info("Resuming simulation from snapshot: {} (Year {}, Month {})", meta.getName(), meta.getYear(), meta.getMonth());
+                engine.loadGame(meta.getId());
+                if (meta.getYear() != 0) {
+                    engine.getTimeManager().reset((int) meta.getYear());
+                }
+
+                timeline.clear();
+                timeline.addEntry(meta.getYear(), "REPRISE_SNAPSHOT", "Reprise depuis Snapshot : " + meta.getName(),
+                    String.format("Restauré à l'An %,d (Mois %d) - Scénario %s", meta.getYear(), meta.getMonth(), meta.getScenarioName()), false);
+
+                if (godModePanel != null) {
+                    godModePanel.refreshTimelineView();
+                }
+
+                List<H3Cell> restoredCells = engine.getCells();
+                if (restoredCells != null && !restoredCells.isEmpty()) {
+                    mapCanvas.setWorldBuffer(engine.getWorldBuffer());
+                    mapCanvas.setCells(restoredCells);
+                    if (miniMap != null) miniMap.setCells(restoredCells);
+                }
+
+                controlPanel.updateScenarioName(meta.getScenarioName() + " (Snapshot Restauré)");
+                controlPanel.updateYear(String.valueOf(meta.getYear()));
+
+                simulationTab.setDisable(false);
+                tabPane.getSelectionModel().select(simulationTab);
+                logger.info("Simulation tab activated via snapshot restore");
+                return;
+            }
+        }
+
         // Retrieve generated cells from setup
         List<H3Cell> newCells = setupPanel.getCells();
+
 
         if (newCells == null || newCells.isEmpty()) {
             logger.warn("Cannot start simulation: no cells generated");

@@ -43,6 +43,12 @@ Thumbs.db
 logs/
 *.log.*
 
+# Temporary build artifacts & saves
+build_output.txt
+classpath.txt
+saves/
+
 # Generated Javadoc
 javadoc/
 docs/javadoc/
+

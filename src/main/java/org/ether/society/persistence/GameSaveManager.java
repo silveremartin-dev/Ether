@@ -170,4 +170,41 @@ public class GameSaveManager {
             logger.error("Failed to save 60-tick checkpoint", ex);
         }
     }
+
+    /**
+     * Lists all available saved game snapshots across normal saves and auto-checkpoints.
+     */
+    public List<SaveMetadata> listSaves() {
+        List<SaveMetadata> list = new java.util.ArrayList<>();
+        Path baseSaveDir = Paths.get(SAVE_DIR);
+        if (!Files.exists(baseSaveDir)) return list;
+
+        try (Stream<Path> stream = Files.walk(baseSaveDir, 3)) {
+            stream.filter(p -> p.getFileName().toString().endsWith(".json"))
+                  .forEach(jsonFile -> {
+                      try {
+                          SaveMetadata meta = objectMapper.readValue(jsonFile.toFile(), SaveMetadata.class);
+                          if (meta != null && meta.getId() != null) {
+                              // Avoid duplicate entries if checkpoint_latest points to same tick
+                              boolean exists = list.stream().anyMatch(existing -> existing.getId().equals(meta.getId()));
+                              if (!exists) {
+                                  list.add(meta);
+                              }
+                          }
+                      } catch (Exception ignored) {}
+                  });
+        } catch (IOException e) {
+            logger.error("Failed to list saves", e);
+        }
+
+        // Sort newest first
+        list.sort((a, b) -> {
+            if (a.getTimestamp() == null) return 1;
+            if (b.getTimestamp() == null) return -1;
+            return b.getTimestamp().compareTo(a.getTimestamp());
+        });
+
+        return list;
+    }
 }
+

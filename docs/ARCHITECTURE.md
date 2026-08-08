@@ -1,19 +1,20 @@
-# 🏗️ Ether Simulation Engine - Technical Architecture (v4.0.0)
+# Ether Simulation — Core Technical & System Architecture
 
-**Version:** 4.0.0-SNAPSHOT (Cliodynamic Physicalist Edition)  
-**Last Updated:** August 2, 2026
+> **Master System Architecture Specification**: System Component Overview, Data-Oriented Design (DOD), 30 Type B Procedural Engines, Ocean Optimizations & Determinism Architecture, Sovereign AI Governance Architecture ("Archon Engine"), and Multi-Scale Execution Pipeline.
 
 ---
 
-## 📐 System Architecture Overview
+## 1. System Architecture Overview & Component Topology
+
+Ether is engineered as a physicalist, data-oriented planetary simulation engine. The architecture decouples state presentation, central orchestration, and vector physics:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                            UI Layer (JavaFX)                                │
 │  ┌──────────────────┐  ┌──────────────────┐  ┌───────────────────────────┐  │
 │  │   ControlPanel   │  │   H3MapCanvas    │  │   Live Performance HUD    │  │
-│  │ - GodMode Panel  │  │  - 2D/3D Mercator│  │ - TPS (Pas par seconde)   │  │
-│  │ - Multiverse Tree│  │  - 30 Type B Maps│  │ - RAM / Throughput        │  │
+│  │ - GodMode Panel  │  │  - 2D/3D Globe   │  │ - TPS (Ticks per second)  │  │
+│  │ - Scenario Tree  │  │  - Display Modes │  │ - Memory / Cell Throughput│  │
 │  └──────────────────┘  └──────────────────┘  └───────────────────────────┘  │
 └──────────────────────────────────────┬──────────────────────────────────────┘
                                        │
@@ -21,22 +22,22 @@
 │                    Simulation Layer (H3SimulationEngine)                    │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │ H3SimulationEngine (Central Orchestrator)                             │  │
-│  │  ├─ Monthly Sub-step physics (Climate, Solar Radiance, Wet-Bulb)      │  │
+│  │  ├─ Monthly Sub-step physics (Climate, Radiance, Hydrography)         │  │
 │  │  ├─ Annual Macro Physics (Ore Grade, Entropic Dissipation, Jevons)   │  │
 │  │  ├─ ProceduralEngineRegistry (30 Type B Pluggable Engines)            │  │
-│  │  └─ HistoricalValidationKernel (RMSE & R² Telemetry Fit)              │  │
+│  │  └─ SovereignAIGovernanceEngine (Closed-Loop MPC Regulation)          │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────┬──────────────────────────────────────┘
                                        │
 ┌──────────────────────────────────────▼──────────────────────────────────────┐
 │                 Procedural Engine Registry & Plugins                        │
 │  ┌─────────────────┐ ┌───────────────────┐ ┌──────────────────────────────┐ │
-│  │ Turchin (B29)   │ │ Henrich (B26)     │ │ Braudel (B27)                │ │
+│  │ Turchin (B22)   │ │ Henrich (B19)     │ │ Braudel (B20)                │ │
 │  │ Frontier        │ │ Tasmanian Loss    │ │ Mediterranean Sea Highway    │ │
 │  │ Asabiyyah       │ │ (N < 5000)        │ │ Maritime Trade Efficiency    │ │
 │  └─────────────────┘ └───────────────────┘ └──────────────────────────────┘ │
 │  ┌─────────────────┐ ┌───────────────────┐ ┌──────────────────────────────┐ │
-│  │ Buss (B30)      │ │ Hamilton (B28)    │ │ Ostrom / Smil / Scott        │ │
+│  │ Buss (B23)      │ │ Hamilton (B21)    │ │ Ostrom / Smil / Scott        │ │
 │  │ Mating Mobil.   │ │ Kin Selection     │ │ Commons, Inertia, Agrarian   │ │
 │  └─────────────────┘ └───────────────────┘ └──────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -44,96 +45,178 @@
 
 ---
 
-## 🚀 Performance Metrics & Benchmark (175,000 H3 Cells)
+## 2. Core Data Model & Data-Oriented Design (DOD)
 
-### High-Fidelity Earth Benchmark Telemetry (`EarthFullResolution175kBenchmarkTest`)
-- **Spatial Discretization**: **175,000 H3 Cells** (Uber H3 Resolution 6-8 full Earth mesh).
-- **Simulated Population**: **50,000,000 Humans** (-500 BCE Classical Antiquity).
-- **Simulation Duration**: **10.62 seconds** (6 full annual cycles / 72 monthly sub-steps).
-- **Simulation Speed (TPS)**: **0.56 Ticks / second** *(Pas par seconde)*.
-- **Average Tick Duration**: **1,350 ms – 1,770 ms / simulated year**.
-- **Cell Update Throughput**: **1,185,994 cell-updates / second** (~1.19 Million cell-updates/sec).
----
-
-## 🌊 Ocean Cell Optimizations & Determinism Tradeoffs
-
-Ether implements three scenario-persisted ocean optimizations to handle planetary grids where oceans account for >70% of spatial cells:
-1. **Ocean Macro-Aggregation (`oceanMacroAggregationEnabled`)**: Aggregates deep abyssal ocean cells into macro-blocks (+300% to +600% TPS gain; slight spatial smoothing of deep thermohaline gradients).
-2. **Coastal Navigation Only (`coastalNavigationOnlyEnabled`)**: Restricts open-ocean pathfinding prior to maritime technology milestones (+200% to +400% TPS gain; eliminates pre-industrial open-sea agent drift).
-3. **Ocean Multi-Rate Ticking (`oceanMultiRateTickingEnabled`)**: Evaluates slow marine processes at sub-sampled tick intervals (+150% to +300% TPS gain; temporal aliasing under sudden atmospheric shocks).
-
-> [!NOTE]  
-> For strict bit-identical determinism validation (`strictDeterminism = true`), all ocean approximations can be disabled.  
-> 📖 See [Ocean Optimizations & Determinism Specification](OCEAN_OPTIMIZATIONS_AND_DETERMINISM.md) for detailed mathematical and architectural breakdown.
-
----
-
-## 🔌 Procedural Engine Plugin Architecture (`ProceduralEngineRegistry`)
-
-Ether implements a cumulative procedural plugin architecture allowing independent registration, execution, and comparison of dual **Pure** and **Hybrid** engines:
+### A. Geographic & Demographic `Cell` Representation
+Each spatial unit on the Uber H3 grid is indexed by an 64-bit unsigned integer `h3Index` (Resolutions 6–8):
 
 ```java
-// Register custom Cliodynamic / Physical plugin
-ProceduralEngineRegistry.registerPlugin("B29_FrontierAsabiyyah", FrontierAsabiyyahEngine::processHybrid);
-
-// Execute registered plugins in cumulative pipeline during simulation tick
-ProceduralEngineRegistry.processPlugins(cells, deltaYears);
+public class Cell {
+    private final int x;
+    private final int y;
+    private double elevation;
+    private double temperature;
+    private double rainfall;
+    private Biome biome;
+    private final Map<String, Double> resources = new HashMap<>();
+    private final Map<String, Double> biomass = new HashMap<>();
+    private final Map<String, Double> energy = new HashMap<>();
+    private int humanCount = 0;
+    private double cellLifespan = 40.0;
+    private double cellFertility = 6.0;
+    private double localPopulation = 0.0;
+}
 ```
 
-### Pluggable Catalog of 30 Type B Engines
-1. **World3 Systems Dynamics** (Limits to Growth)
-2. **HANDY NASA Collapse** (Elites vs Commoners)
-3. **Nordhaus DICE Climate-Economy** (Carbon Social Cost)
-4. **Lenski Inequality & Tech** (Subsistence stages)
-5. **Leslie White Energy Harness** ($C = E \cdot T$)
-6. **Kardashev Energy Scale** (Planetary energy harness)
-7. **Asimov Psychohistory** (Macro statistical mechanics)
-8. **Harris Cultural Materialism** (Infrastructure $\to$ Superstructure)
-9. **Pinker Decline of Violence** (Pacification)
-10. **Scott Against the Grain** (Agrarian state fragility)
-11. **AI Autonomous Regulation** (Algorithmic governance)
-12. **Ostrom Polycentric Commons** (Aquifer management)
-13. **Smil Material Transitions** (35-year turnover inertia)
-14. **Mori Spatial Urban Fractals** (Power-law city distribution)
-15. **Lahire Self-Domestication** (Density-driven learning)
-16. **Monastic Demographic Buffer** (Celibacy Malthusian buffer)
-17. **Tanegashima Tech Shock** (Gunpowder unification)
-18. **Portuguese Asymmetric Trade** (Bullion drain)
-19. **Henrich Tasmanian Loss** (Cultural regression under isolation $N < 5000$)
-20. **Braudel Mediterranean Highway** (Maritime highway efficiency)
-21. **Hamilton Kin Selection** ($r \cdot B > C$ & outgroup hostility)
-22. **Turchin Frontier Asabiyyah** (Frontier solidarity forge)
-23. **Buss Sexual Selection Mating** (Surplus young male military expansion)
+### B. `WorldBuffer` Structure-of-Arrays (SoA) for SIMD & GPU Locality
+To eliminate object dereferencing overhead and ensure zero-copy transfers to GPU VRAM and SIMD vector units, cell properties are packed into contiguous primitive arrays in `WorldBuffer`:
 
----
-
-## 📈 Historical Validation Kernel (`HistoricalValidationKernel`)
-
-The `HistoricalValidationKernel` evaluates model trajectory accuracy against empirical demographic and economic datasets from -10,000 BCE to 2026 CE:
-
-- **Root Mean Square Error (RMSE)**:
-  $$\text{RMSE} = \sqrt{\frac{1}{N} \sum_{t=1}^N (P_{\text{sim}}(t) - P_{\text{obs}}(t))^2}$$
-- **Coefficient of Determination ($R^2$)**:
-  $$R^2 = 1 - \frac{\sum (P_{\text{sim}}(t) - P_{\text{obs}}(t))^2}{\sum (P_{\text{obs}}(t) - \bar{P}_{\text{obs}})^2}$$
-
----
-
-## 🗄️ Core Data Model & Execution Loop
-
-### H3Cell Entity
 ```java
-public class H3Cell {
-    Long h3Index;
-    double latitude, longitude;
-    double elevation, temperature, rainfall;
-    Biome biome;
-    Double foodResource, resourceCapital, resourceWork, resourceMetal, accessibleAquifer;
-    long population;
-    double technologyLevel, lifespan, pollutionLevel;
+public class WorldBuffer {
+    private final double[] biomassHuman;
+    private final double[] foodResource;
+    private final double[] temperature;
+    private final double[] technologyLevel;
+    private final double[] waterResource;
+    private final double[] woodResource;
+    private final double[] giniIndex;
+    private final int capacity;
 }
 ```
 
 ---
 
-**Last Updated:** August 2, 2026 by Antigravity / Gemini AI  
-**Maintained by:** Silvere Martin-Michiellot & Google DeepMind Team
+## 3. Catalog of 30 Type B Cliodynamic Engines (`ProceduralEngineRegistry`)
+
+Ether incorporates 30 pluggable engines operating in dual **Pure** (isolated analytical ODEs) and **Hybrid** (grid-injected spatial forcing) modes:
+
+1. **World3 Systems Dynamics** (Meadows et al., 1972): 5-variable industrial-demographic feedback loop.
+2. **HANDY NASA Collapse** (Motesharrei et al., 2014): Socio-economic inequality (Elites vs Commoners) & nature depletion.
+3. **Nordhaus DICE Climate-Economy** (Nordhaus, 2017): Dynamic Integrated Climate-Economy model with abatement cost functions.
+4. **Lenski Macro-Sociology** (Lenski, 1966): Technological subsistence stages and distribution of surplus value.
+5. **Leslie White Energy Harness** (White, 1943): Culture evolution as energy harness per capita ($C = E \cdot T$).
+6. **Kardashev Planetary Scale** (Kardashev, 1964): Type I planetary energy harness metrics ($10^{16}\text{ Watts}$).
+7. **Asimov Psychohistory Mechanics** (Asimov, 1951 / Turchin, 2003): Statistical mechanics of large human populations.
+8. **Marvin Harris Cultural Materialism** (Harris, 1979): Infrastructure $\to$ Structure $\to$ Superstructure causal cascade.
+9. **Steven Pinker Pacification** (Pinker, 2011): Leviathan state violence monopoly & decline of inter-group conflict.
+10. **James C. Scott Agrarian Fragility** (Scott, 2017): Early state taxability penalty and vulnerability to collapse.
+11. **Autonomous AI Governance** (Archon Engine): Cybernetic closed-loop Model Predictive Control.
+12. **Elinor Ostrom Polycentric Commons** (Ostrom, 1990): Groundwater and common-pool resource governance rules.
+13. **Vaclav Smil Material Transition Inertia** (Smil, 2017): 35-year turnover time for physical infrastructure.
+14. **Mori & Smith Urban Fractals** (Mori et al., 2008): Zipf power-law city size hierarchy.
+15. **Bernard Lahire Self-Domestication** (Lahire, 2018): Density-driven cognitive specialization and capital transmission.
+16. **Monastic Demographic Buffer**: Non-reproductive celibacy institutions mitigating Malthusian demographic shocks.
+17. **Tanegashima Military Shock**: Gunpowder technology diffusion driving rapid state unification.
+18. **Portuguese Asymmetric Trade**: Precious metal drain and mercantilist capital accumulation dynamics.
+19. **Joseph Henrich Tasmanian Loss** (Henrich, 2004): Cultural skill loss in isolated populations ($N < 5000$).
+20. **Fernand Braudel Maritime Highway** (Braudel, 1949): Sea trade friction reduction ($\mu_{\text{sea}} \ll \mu_{\text{land}}$).
+21. **Hamilton & Wilson Kin Selection** (Hamilton, 1964): Inclusive fitness ($r \cdot B > C$) and outgroup hostility.
+22. **Peter Turchin Frontier Asabiyyah** (Turchin, 2003): Collective solidarity forged at hostile borders; decay in hinterlands.
+23. **David Buss Mating Mobilization** (Buss, 1989): Surplus unattached males driving military expansion.
+24. **Dunbar Social Brain Scale** (Dunbar, 1992): Cohesion drop-off beyond $N \approx 150$ individuals.
+25. **Tainter Complexity Collapse** (Tainter, 1988): Diminishing marginal returns on organizational complexity.
+26. **Jevons Energy Efficiency Paradox** (Jevons, 1865): Efficiency gains increasing aggregate resource consumption.
+27. **Arrhenius Growth Kinetics**: Temperature-dependent enzymatic growth response.
+28. **Kleiber Allometric Scaling**: $3/4$ power law metabolic scaling ($B = B_0 M^{3/4}$).
+29. **Gompertz-Makeham Senescence**: Exponential age-dependent actuarial mortality.
+30. **Onsager Free-Energy Migration**: Population transport driven by free-energy potential gradients $\Delta \Phi_{ij}$.
+
+---
+
+## 4. Ocean Optimizations, Physical Distortion & Determinism Architecture
+
+To maintain high throughput on planetary Earth grids (where oceans cover **70.8% of all cells**), Ether integrates three architectural optimizations controlled via `Scenario` and `SimulationPerformanceConfig`:
+
+```
+                                  Global Earth Grid
+                                         │
+        ┌────────────────────────────────┼────────────────────────────────┐
+        ▼                                ▼                                ▼
+1. Abyssal Macro-Aggregation    2. Coastal Transport Filtering   3. Multi-Rate Frequency Ticking
+   (z < -200m aggregated)          (A* restricted to coast)         (Slow fluid engines sub-sampled)
+   [+300% to +600% Speedup]        [+200% to +400% Speedup]        [+150% to +300% Speedup]
+```
+
+### 1️⃣ Abyssal Ocean Cell Macro-Aggregation (`oceanMacroAggregationEnabled`)
+- **Mechanism**: Cells with elevation $z < -200\text{ m}$ lacking maritime infrastructure are virtually grouped into macro-blocks. Fluid equations resolve at the macro-block scale.
+- **Speedup**: **+300% to +600%** (4x–7x reduction in cell updates).
+- **Physical Distortion**: Spatial smoothing of micro-local temperature/salinity gradients in deep trenches.
+- **Determinism**: Disabled when `strictDeterminism = true`. When enabled, self-deterministic per seed.
+
+### 2️⃣ Coastal Navigation Filtering (`coastalNavigationOnlyEnabled`)
+- **Mechanism**: Restricts $A^*$ pathfinding to continental shelf nodes until transoceanic navigation technologies are unlocked in `TechnologyTree`.
+- **Speedup**: **+200% to +400%** on transport evaluation.
+- **Physical Distortion**: Eliminates pre-industrial accidental ocean drift.
+- **Determinism**: 100% bit-deterministic under modified graph rules.
+
+### 3️⃣ Ocean Multi-Rate Frequency Ticking (`oceanMultiRateTickingEnabled`)
+- **Mechanism**: Executes slow ocean engines (`ThermohalineOceanEngine`) at sub-sampled frequencies ($\Delta t_{\text{ocean}} = N \cdot \Delta t_{\text{atmosphere}}$).
+- **Speedup**: **+150% to +300%** on climate loop.
+- **Physical Distortion**: Step-wise temporal lag during volcanic aerosol shocks.
+- **Determinism**: Sensitive to sub-sampling rate $N$.
+
+### Performance vs Determinism Matrix
+
+| Optimization Flag | Speedup (TPS) | Physical Distortion | Determinism Level |
+| :--- | :--- | :--- | :--- |
+| **Strict Determinism Mode** | Baseline (1.0x) | **0% (Absolute Precision)** | **Bit-Identical (100%)** |
+| **Abyssal Macro-Aggregation** | **+300% to +600%** | Abyssal spatial smoothing | Reproducible Heuristic |
+| **Coastal Transport Filter** | **+200% to +400%** | Coastal confinement pre-tech | 100% Deterministic |
+| **Ocean Multi-Rate Ticking** | **+150% to +300%** | Temporal step lag on shocks | Sensitive to Sub-Sampling Rate $N$ |
+
+---
+
+## 5. Sovereign AI Governance Architecture ("Archon Engine")
+
+The **Sovereign AI Governor (`SovereignAIGovernanceEngine`)** models future planetary regulation (2040+ horizon) via a closed-loop **Model Predictive Control (MPC)** framework:
+
+```
+                      ┌───────────────────────────────────────┐
+                      │       Earth System (H3 Grid)          │
+                      │ 175,000 Hexagons - Phys/Bio/Socio     │
+                      └───────────────────┬───────────────────┘
+                                          │
+                               Observability S(t)
+                                          ▼
+                      ┌───────────────────────────────────────┐
+                      │     SovereignAIGovernanceEngine       │
+                      │  - Computes Entropy & Net EROEI       │
+                      │  - Evaluates Objective Function J(S)  │
+                      └───────────────────┬───────────────────┘
+                                          │
+                                Control Actions A(t)
+                                          ▼
+                      ┌───────────────────────────────────────┐
+                      │      Dynamic Allocation Injector      │
+                      │  - Capital Re-allocation              │
+                      │  - Sequestration & Depollution        │
+                      │  - Clean Energy Injection (Fusion/Sol)│
+                      └───────────────────────────────────────┘
+```
+
+### State Observability Vector $S(t)$ & Objective Function $J(S)$
+The governor monitors the aggregated planetary state at each tick $t$:
+$$S(t) = \Big( \text{Pop}_{\text{total}}, \overline{T}, \overline{\text{Pollution}}, \overline{\text{Gini}}, \text{Capital}_{\text{total}}, \text{EROEI}_{\text{net}} \Big)$$
+
+The Pareto objective function maximized by the engine is:
+$$J(S) = w_1 \cdot \text{Welfare} + w_2 \cdot \text{EROEI}_{\text{net}} - w_3 \cdot \text{Pollution} - w_4 \cdot \text{Conflict}$$
+
+### Taxonomy of 4 Governance Scenarios
+1. **Unified Cybernetic Leviathan**: Single ASI global monopoly overriding state boundaries to equalize capital and eliminate pollution.
+2. **Sovereign AI Cold War**: Multipolar regional AI blocks competing under Nash Equilibrium dynamics for phosphate, energy, and water reserves.
+3. **Macro-Economic Soft Nudge**: Indirect steering via dynamic carbon taxation and energy tariff adjustments.
+4. **Entropic Dystopia**: Rigid over-optimization of single metrics (e.g. zero $\text{CO}_2$), triggering forced calorie and fertility rationing.
+
+---
+
+## 6. Multi-Scale Temporal Execution Pipeline
+
+Ether decouples simulation processes across two distinct temporal tick frequencies:
+
+- **Fast Tick Scale ($\Delta t_{\text{fast}} = 1\text{ day}$)**: Daily trade logistics, market price equilibria, and viral epidemiological spread.
+- **Slow Tick Scale ($\Delta t_{\text{slow}} = 30\text{ days}$)**: Monthly climate forcing, soil nutrient depletion, aquifer drawdowns, demographic cohort aging, and cliodynamic institutional cohesion shifts.
+
+---
+
+> [!NOTE]
+> For details on the proposed future distributed multi-node cluster scaling extension, see [PROPOSAL_DISTRIBUTED_ARCHITECTURE_EXTENSION.md](PROPOSAL_DISTRIBUTED_ARCHITECTURE_EXTENSION.md).

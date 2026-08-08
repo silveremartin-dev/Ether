@@ -1,80 +1,81 @@
-# 🌊 Documentation des Optimisations Océaniques, Distorsion Physique & Déterminisme (`Ether Engine`)
+# Ether Simulation — Ocean Optimizations, Physical Distortion & Determinism Guide
 
-**Version du document :** 4.0.0-SNAPSHOT  
-**Dernière mise à jour :** 6 Août 2026  
-**Auteurs :** Silvere Martin-Michiellot & Équipe Google DeepMind  
-
----
-
-## 1. Contexte & Enjeux de Performance
-
-Sur une grille planétaire globale Uber H3 (résolutions 6 à 8, représentant de 175 000 à plus de 1.2 million de cellules hexagonales), la surface océanique couvre plus de **70.8% de la superficie du globe**. Traiter chaque cellule d'océan abyssal (non peuplée par des sociétés humaines) avec la même résolution spatio-temporelle fine que les plaines alluviales ou les nœuds urbains terrestres entraîne un surcoût de calcul considérable.
-
-Pour résoudre cette inefficience tout en offrant un contrôle précis aux chercheurs et utilisateurs, le moteur **Ether** intègre trois options majeures d'optimisation de la physique et de la navigation océanique. Ces options sont stockées au niveau de la structure `Scenario` (pour garantir la persistance et la portabilité des expériences) et sont ajustables dans le panneau `ScenarioSetupPanel` ainsi que via la classe `SimulationPerformanceConfig`.
+> **Master Technical Document**: Performance Tuning, Abyssal Macro-Aggregation, Coastal Navigation Filtering, Multi-Rate Frequency Ticking, and Numerical Determinism Benchmarks.  
+> *Note: This specification is integrated into Section 4 of the Master Architecture Document ([docs/ARCHITECTURE.md](ARCHITECTURE.md)).*  
+> **Document Version**: 4.0.0  
+> **Authors**: Silvere Martin-Michiellot & Google DeepMind Team  
 
 ---
 
-## 2. Analyse Détaillée des 3 Options d'Optimisation
+## 1. Context & Performance Challenges
 
-### 1️⃣ Fusion & Macro-Agrégation des Cellules Océaniques Abyssales (`oceanMacroAggregationEnabled`)
+On a global Uber H3 Earth grid (Resolutions 6 to 8, spanning 175,000 to over 1,200,000 hexagonal cells), the oceanic surface covers **70.8% of the planet**. Evaluating unpopulated abyssal ocean cells with the same fine spatio-temporal resolution as alluvial plains or dense urban nodes introduces massive computational overhead.
 
-- **Principe & Mécanisme :**  
-  Les cellules océaniques d'altitude négative stérile ou abyssale ($z < -200\text{ m}$ sans présence d'infrastructure maritime) sont regroupées virtuellement en macro-agrégats. Les équations de la dynamique thermohaline et des bilans de masse d'eau sont résolues à l'échelle du macro-bloc plutôt qu'individuellement sur chaque cellule H3.
-- **Gain de Performance :**  
-  Accélération globale de **+300% à +600%** (réduction de 4x à 7x de la charge de mise à jour des cellules fluides).
-- **Distorsion Physique Introduite :**  
-  - Lissage spatial des gradients micro-locaux de température, de salinité et d'acidification dans les fosses abyssales.
-  - Atténuation des micro-vortex et des variations fines d'albedo à petite échelle.
-- **Impact sur le Déterminisme :**  
-  - En mode strict (`strictDeterminism = true`), cette option est désactivée pour garantir un calcul bit-à-bit identique cellule par cellule.
-  - Lorsque l'option est active, la simulation reste déterministe par rapport à elle-même (reproductible avec la même graine `seed`), mais sa trajectoire diverge numériquement du calcul intégral 1:1.
+To resolve this inefficiency while giving researchers precise control over physical fidelity, the **Ether Engine** incorporates three major ocean and transport optimization toggles. These flags are stored inside the `Scenario` data model (ensuring experiment reproducibility and portability) and can be toggled via `ScenarioSetupPanel` or `SimulationPerformanceConfig`.
 
 ---
 
-### 2️⃣ Filtrage de Navigation & Transport Littoral vs Hauturier (`coastalNavigationOnlyEnabled`)
+## 2. Detailed Technical Analysis of the 3 Optimization Toggles
 
-- **Principe & Mécanisme :**  
-  Restreint la recherche de chemin (pathfinding $A^*$) et le calcul de mobilité des agents maritimes aux mailles du plateau continental et des zones littorales. La navigation hauturière (en haute mer) est désactivée jusqu'à ce que les technologies de navigation transocéanique (boussole, caravelle, sextant, propulsion à vapeur) soient débloquées dans l'arbre technologique (`TechnologyTree`).
-- **Gain de Performance :**  
-  Gain de **+200% à +400%** sur la phase d'évaluation des flux d'agents et du commerce maritime par tick (élimine l'exploration inutile du réseau hauturier mondial).
-- **Distorsion Physique Introduite :**  
-  - Supprime les dérives transocéaniques accidentelles d'agents aux époques pré-industrielles/archaïques.
-  - Introduit un léger biais de confinement des flux maritimes le long des côtes avant le franchissement des jalons technologiques.
-- **Impact sur le Déterminisme :**  
-  - Intégralement déterministe sous les mêmes règles logiques, mais modifie le graphe d'états des agents par rapport à une mobilité hauturière sans restriction.
+### 1️⃣ Abyssal Ocean Cell Macro-Aggregation (`oceanMacroAggregationEnabled`)
 
----
-
-### 3️⃣ Sous-Échantillonnage Fréquentiel des Cycles Océaniques (`oceanMultiRateTickingEnabled`)
-
-- **Principe & Mécanisme :**  
-  Exécute les moteurs fluides et écologiques marins à évolution lente (`ThermohalineOceanEngine`, `OceanAcidificationEngine`) à une fréquence réduite ($\Delta t_{\text{océan}} = N \times \Delta t_{\text{atmosphère}}$, par exemple tous les 5 ou 10 ticks au lieu de chaque tick mensuel).
-- **Gain de Performance :**  
-  Gain de **+150% à +300%** sur le temps d'exécution de la boucle d'environnement planétaire.
-- **Distorsion Physique Introduite :**  
-  - Décalage par paliers (aliasing temporel) lors des chocs climatiques soudains (par exemple, injection d'aérosols stratosphériques lors d'éruptions volcaniques VEI-7 comme Tambora ou Samalas).
-  - Lissage de la réponse thermique de la couche d'eau superficielle aux variations saisonnières extrêmes.
-- **Impact sur le Déterminisme :**  
-  - Rompt la continuité pas-à-pas d'une intégration à fréquence unitaire. La simulation demeure déterministe pour une fréquence $N$ et une graine `seed` données, mais ne produit pas des résultats bit-à-bit identiques avec un calcul à chaque tick.
+- **Mechanism & Algorithm**:  
+  Ocean cells with negative elevation below sterile thresholds ($z < -200\text{ m}$) lacking maritime trade infrastructure are virtually aggregated into macro-blocks. Thermohaline circulation and water mass balances are computed at the macro-block scale rather than individually per discrete H3 hexagon cell.
+- **Performance Impact**:  
+  Throughput increase of **+300% to +600%** (4x to 7x reduction in fluid update workload).
+- **Physical Distortion Introduced**:  
+  - Spatial smoothing of micro-local temperature, salinity, and acidification gradients in deep abyssal trenches.
+  - Dampening of micro-vortex structures and localized albedo variations.
+- **Impact on Determinism**:  
+  - When strict determinism is enforced (`strictDeterminism = true`), this option is automatically disabled to guarantee bit-identical cell-by-cell integration.
+  - When enabled, execution remains self-deterministic (reproducible with the same random `seed`), but numerical trajectories diverge slightly from 1:1 cell integration.
 
 ---
 
-## 3. Matrice Comparative : Performance vs Distorsion vs Déterminisme
+### 2️⃣ Coastal Navigation & Littoral Transport Filtering (`coastalNavigationOnlyEnabled`)
 
-| Configuration / Option | Gain de Vitesse (TPS) | Distorsion Physique | Niveau de Déterminisme |
+- **Mechanism & Algorithm**:  
+  Restricts $A^*$ pathfinding and agent transport mobility to continental shelf and littoral coastal hexagons. Open-sea transoceanic navigation is filtered out until relevant maritime technologies (compass, caravel, sextant, steam propulsion) are unlocked in the `TechnologyTree`.
+- **Performance Impact**:  
+  Throughput increase of **+200% to +400%** during agent transport and trade flux evaluation (eliminates pathfinding exploration over empty deep-sea nodes).
+- **Physical Distortion Introduced**:  
+  - Prevents accidental transoceanic agent drift in pre-industrial or ancient historical epochs.
+  - Introduces a slight coastal confinement bias prior to achieving technological navigation milestones.
+- **Impact on Determinism**:  
+  - Fully deterministic under modified logical graph rules. Produces identical results across identical runs.
+
+---
+
+### 3️⃣ Ocean Multi-Rate Frequency Ticking (`oceanMultiRateTickingEnabled`)
+
+- **Mechanism & Algorithm**:  
+  Executes slow-evolving fluid and marine ecological engines (`ThermohalineOceanEngine`, `OceanAcidificationEngine`) at a reduced sub-sampling frequency ($\Delta t_{\text{ocean}} = N \times \Delta t_{\text{atmosphere}}$, e.g. evaluating ocean dynamics every 5 or 10 ticks instead of every monthly step).
+- **Performance Impact**:  
+  Throughput increase of **+150% to +300%** on planetary climate loop execution.
+- **Physical Distortion Introduced**:  
+  - Step-wise temporal lag (temporal aliasing) during sudden cataclysmic climate shocks (e.g., stratospheric aerosol injection from VEI-7 volcanic eruptions like Tambora or Samalas).
+  - Minor dampening of seasonal surface water thermal response.
+- **Impact on Determinism**:  
+  - Sensitive to sub-sampling rate $N$. Deterministic for a fixed rate $N$ and random seed, but results diverge from unit-frequency integration.
+
+---
+
+## 3. Comparative Performance & Determinism Matrix
+
+| Optimization Flag / Mode | Simulation Speedup (TPS) | Physical Distortion | Numerical Determinism Level |
 | :--- | :--- | :--- | :--- |
-| **Strict Determinism Mode** | Baseline (1x) | **0%** (Fidélité Physique Minimale & Absolue) | **Bit-Identical (100%)** |
-| **Ocean Macro-Aggregation** | **+300% à +600%** | Lissage spatial des gradients abyssaux | Heuristique Reproductible |
-| **Coastal Navigation Only** | **+200% à +400%** | Confinement littoral pré-technologique | Déterministe sous règles modifiées |
-| **Ocean Multi-Rate Ticking** | **+150% à +300%** | Aliasing temporel des chocs marins | Sensible à la fréquence $N$ |
+| **Strict Determinism Mode** (`strictDeterminism = true`) | Baseline (1.0x) | **0% (Absolute Physical Precision)** | **Bit-Identical (100%)** |
+| **Ocean Macro-Aggregation** (`oceanMacroAggregationEnabled`) | **+300% to +600%** | Abyssal spatial gradient smoothing | Reproducible Heuristic |
+| **Coastal Navigation Only** (`coastalNavigationOnlyEnabled`) | **+200% to +400%** | Coastal confinement pre-tech | 100% Deterministic (Modified Graph) |
+| **Ocean Multi-Rate Ticking** (`oceanMultiRateTickingEnabled`) | **+150% to +300%** | Temporal aliasing during shocks | Sensitive to Sub-Sampling Rate $N$ |
 
 ---
 
-## 4. Recommandations de Configuration
+## 4. Operational Configuration Guidelines
 
-1. **Recherche Scientifique & Benchmarks de Fidélité :**  
-   Désactiver toutes les optimisations ou activer `strictDeterminism = true`. Cela garantit des trajectoires d'intégration numérique d'une précision maximale.
-2. **Simulations Longue Durée / Mode Interactif :**  
-   Activer les trois options d'optimisation pour atteindre un débit élevé (> 50-100 TPS) sur des scénarios couvrant plusieurs millénaires.
-3. **Cliodynamique Régionale & Simulation Tronquée (Clipping) :**  
-   Combiner la sélection de zone tronquée (`clippingEnabled = true`) avec la macro-agrégation pour isoler des bassins régionaux (ex: Mésopotamie, Méditerranée, Mer Jaune) sans consommer de ressources sur les océans mondiaux extérieurs.
+1. **Scientific Calibration & Precision Research**:  
+   Disable all ocean optimizations or enable `strictDeterminism = true`. This guarantees maximum numerical integration accuracy for peer-reviewed historical calibration.
+2. **Multi-Millennial Interactive Runs**:  
+   Enable all three optimization flags to achieve high frame rates (> 50–100 TPS) across long historical time spans.
+3. **Regional Cliodynamic Sub-Grid Modeling**:  
+   Combine spatial clipping (`clippingEnabled = true`) with macro-aggregation to focus compute resources on targeted land basins (e.g. Mesopotamia, Mediterranean, Yellow River Basin) without incurring overhead on external ocean regions.

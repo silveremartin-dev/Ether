@@ -16,8 +16,11 @@ org.ether.society.h3
 org.ether.society.i18n
 org.ether.society.model
 org.ether.society.model.events
+org.ether.society.network
 org.ether.society.persistence
 org.ether.society.procedural
+org.ether.society.procedural.jit
+org.ether.society.procedural.typeb
 org.ether.society.ui
 org.ether.society.util
 uk.ac.manchester.tornado.api

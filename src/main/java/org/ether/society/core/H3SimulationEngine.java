@@ -565,6 +565,282 @@ public class H3SimulationEngine implements ISimulationEngine {
     public float getCurrentLifeExpectancy() { return currentLifeExpectancy; }
     public float getCurrentFertility() { return currentFertility; }
 
+    // --- EXTENDED CLIODYNAMIC & PHYSICAL METRICS ---
+
+    public double getEnergyCaptured() {
+        if (worldBuffer == null) return 0;
+        double energy = 0;
+        float[] tech = worldBuffer.getTechnologyLevel();
+        float[] pop = worldBuffer.getBiomassHuman();
+        for (int i = 0; i < worldBuffer.getCapacity(); i++) {
+            energy += (100.0 + tech[i] * 15.0) * (pop[i] > 0 ? 1 : 0);
+        }
+        return energy;
+    }
+
+    public double getResourceDepletionRate() {
+        if (worldBuffer == null || worldBuffer.getCapacity() == 0) return 0;
+        double maxRes = worldBuffer.getCapacity() * 1000.0;
+        double currentRes = 0;
+        float[] res = worldBuffer.getResourceCapital();
+        for (int i = 0; i < worldBuffer.getCapacity(); i++) currentRes += res[i];
+        return Math.max(0, Math.min(100.0, (1.0 - currentRes / Math.max(1, maxRes)) * 100.0));
+    }
+
+    public double getEnergyPerCapita() {
+        long pop = getTotalPopulation();
+        return pop > 0 ? getEnergyCaptured() / pop : 0;
+    }
+
+    public double getFoodPerCapita() {
+        long pop = getTotalPopulation();
+        return pop > 0 ? getTotalFood() / pop : 0;
+    }
+
+    public double getBiomassDomesticated() {
+        return getTotalPopulation() * 0.15 + getTotalFood() * 0.4;
+    }
+
+    public double getPotableWaterTotal() {
+        if (worldBuffer == null) return 0;
+        double water = 0;
+        float[] w = worldBuffer.getWaterResource();
+        for (int i = 0; i < worldBuffer.getCapacity(); i++) water += w[i];
+        return water;
+    }
+
+    public double getRemainingResourcesRatio() {
+        return 100.0 - getResourceDepletionRate();
+    }
+
+    public double getSystemicEntropy() {
+        float tech = getAverageTechnology();
+        long pop = getTotalPopulation();
+        return (pop * 0.05 + tech * 2.5) % 1000.0;
+    }
+
+    public double getPollutionLevel() {
+        float tech = getAverageTechnology();
+        long pop = getTotalPopulation();
+        return Math.max(0, (tech > 50 ? (tech - 50) * 1.5 * (pop / 100000.0) : 0));
+    }
+
+    public double getOccupiedTerritoryArea() {
+        return getPopulatedCellCount() * 1250.0;
+    }
+
+    public double getOffspringPercentage() {
+        float fert = getCurrentFertility();
+        return Math.min(95.0, Math.max(20.0, 40.0 + fert * 12.0));
+    }
+
+    public double getAgeAtFirstChild() {
+        float tech = getAverageTechnology();
+        return Math.min(32.0, Math.max(16.0, 18.0 + (tech / 200.0) * 10.0));
+    }
+
+    public double getImmigrationRate() {
+        long pop = getTotalPopulation();
+        return pop > 0 ? (pop % 1000) / 10.0 : 0;
+    }
+
+    public double getEducationLevel() {
+        float tech = getAverageTechnology();
+        return Math.min(100.0, (tech / 250.0) * 100.0);
+    }
+
+    public double getHappinessIndex() {
+        float gini = getCurrentGini();
+        float life = getCurrentLifeExpectancy();
+        double foodPerCap = getFoodPerCapita();
+        double base = (life / 80.0) * 50.0 + Math.min(50.0, foodPerCap * 10.0) - (gini * 30.0);
+        return Math.max(0.0, Math.min(100.0, base));
+    }
+
+    public double getConflictLevel() {
+        float gini = getCurrentGini();
+        double happiness = getHappinessIndex();
+        return Math.max(0.0, Math.min(100.0, (gini * 60.0) + (100.0 - happiness) * 0.4));
+    }
+
+    public int getCityStatesCount() {
+        long popCells = getPopulatedCellCount();
+        return (int) Math.max(1, popCells / 5);
+    }
+
+    public double getInstitutionalMaturity() {
+        float tech = getAverageTechnology();
+        return Math.min(100.0, tech * 0.45);
+    }
+
+    public double getDivisionOfLaborIndex() {
+        float tech = getAverageTechnology();
+        long pop = getTotalPopulation();
+        return Math.min(100.0, (tech * 0.5) + Math.log10(Math.max(1, pop)) * 5.0);
+    }
+
+    public int getMaxHierarchyLevel() {
+        float tech = getAverageTechnology();
+        if (tech < 10) return 1;
+        if (tech < 30) return 2;
+        if (tech < 60) return 3;
+        if (tech < 100) return 4;
+        if (tech < 200) return 5;
+        return 6;
+    }
+
+    public long getLargestCulturalUnitSize() {
+        long pop = getTotalPopulation();
+        return (long) (pop * Math.min(0.85, 0.2 + (getAverageTechnology() / 300.0)));
+    }
+
+    public double getKardashevScale() {
+        double energy = getEnergyCaptured();
+        if (energy <= 0) return 0.0;
+        double watts = energy * 1e6;
+        double k = (Math.log10(Math.max(1.0, watts)) - 6.0) / 10.0;
+        return Math.max(0.0, Math.min(3.0, k));
+    }
+
+    public double getBuiltCapitalTotal() {
+        float tech = getAverageTechnology();
+        long pop = getTotalPopulation();
+        return pop * (5.0 + tech * 12.0);
+    }
+
+    public double getEliteFormationRatio() {
+        float gini = getCurrentGini();
+        return Math.min(25.0, Math.max(0.5, 1.0 + gini * 15.0));
+    }
+
+    public double getElderCapitalShare() {
+        float gini = getCurrentGini();
+        float life = getCurrentLifeExpectancy();
+        return Math.min(90.0, Math.max(30.0, 40.0 + (life / 80.0) * 30.0 + gini * 20.0));
+    }
+
+    public double getLandRentIndex() {
+        long pop = getTotalPopulation();
+        long cells = getPopulatedCellCount();
+        double density = cells > 0 ? (double) pop / cells : 0;
+        return density * 1.5 + getAverageTechnology() * 0.8;
+    }
+
+    public long getToolsCount() {
+        float tech = getAverageTechnology();
+        return (long) (getTotalPopulation() * (1.2 + tech * 0.5));
+    }
+
+    public long getProductsCount() {
+        float tech = getAverageTechnology();
+        return (long) (10.0 + Math.pow(tech, 1.8));
+    }
+
+    public double getSystemComplexityIndex() {
+        float tech = getAverageTechnology();
+        double divLabor = getDivisionOfLaborIndex();
+        return Math.min(100.0, (tech * 0.4 + divLabor * 0.6));
+    }
+
+    public double getReconstructionCapabilityIndex() {
+        double edu = getEducationLevel();
+        float tech = getAverageTechnology();
+        return Math.min(100.0, (edu * 0.7 + tech * 0.3));
+    }
+
+    public double getSystemInterdependenceIndex() {
+        double complexity = getSystemComplexityIndex();
+        return Math.min(100.0, complexity * 0.95);
+    }
+
+    public int[] getAgePyramid() {
+        long pop = getTotalPopulation();
+        int youth = (int) (pop * 0.35);
+        int adult = (int) (pop * 0.50);
+        int elder = (int) (pop * 0.15);
+        return new int[]{youth, adult, elder};
+    }
+
+    // --- 🧠 COGNITION & INFORMATION ---
+    public double getShannonBandwidth() {
+        float tech = getAverageTechnology();
+        return 1.0 + Math.pow(tech, 1.4) * 0.8;
+    }
+
+    public double getCollectiveMemoryStock() {
+        float tech = getAverageTechnology();
+        long pop = getTotalPopulation();
+        return (pop * 0.05 + Math.pow(tech, 2.1));
+    }
+
+    public double getInnovationDiffusionSpeed() {
+        float tech = getAverageTechnology();
+        double divLabor = getDivisionOfLaborIndex();
+        return Math.min(100.0, (tech * 0.4 + divLabor * 0.6));
+    }
+
+    public double getKnowledgeDecayRate() {
+        float gini = getCurrentGini();
+        double conflict = getConflictLevel();
+        return Math.min(100.0, (conflict * 0.7 + gini * 30.0));
+    }
+
+    // --- 🌍 ÉCOLOGIE & FRONTIÈRES PLANÉTAIRES ---
+    public double getSoilNPKQuality() {
+        float tech = getAverageTechnology();
+        double resDep = getResourceDepletionRate();
+        return Math.max(5.0, 100.0 - (resDep * 0.6) + Math.min(15.0, tech * 0.1));
+    }
+
+    public double getCarbonFootprint() {
+        double energy = getEnergyCaptured();
+        float tech = getAverageTechnology();
+        return (energy * (tech > 40 && tech < 180 ? 0.85 : 0.2)) / 1000.0;
+    }
+
+    public double getWildBiodiversityIndex() {
+        float bioNat = getTotalBiomassNatural();
+        double bioDom = getBiomassDomesticated();
+        double total = bioNat + bioDom;
+        return total > 0 ? Math.min(100.0, (bioNat / total) * 100.0) : 100.0;
+    }
+
+    public double getWetBulbSafetyMargin() {
+        float temp = 15.0f;
+        float[] temps = worldBuffer != null ? worldBuffer.getTemperature() : null;
+        if (temps != null && temps.length > 0) {
+            float sum = 0; for(float t : temps) sum += t;
+            temp = sum / temps.length;
+        }
+        return Math.max(0.0, 35.0 - (temp + 3.5));
+    }
+
+    // --- ⏳ CLIODYNAMIQUE & RISQUES SYSTÉMIQUES ---
+    public double getEliteOverproductionIndex() {
+        double eliteForm = getEliteFormationRatio();
+        float gini = getCurrentGini();
+        return Math.min(10.0, (eliteForm / 5.0) * (1.0 + gini * 2.0));
+    }
+
+    public double getFiscalStressIndex() {
+        double landRent = getLandRentIndex();
+        float gini = getCurrentGini();
+        return Math.min(100.0, (gini * 50.0) + (landRent * 0.3));
+    }
+
+    public double getGeopoliticalTension() {
+        int cityStates = getCityStatesCount();
+        double conflict = getConflictLevel();
+        return Math.min(100.0, (cityStates * 2.5) + (conflict * 0.7));
+    }
+
+    public double getCollapseVulnerability() {
+        double resDep = getResourceDepletionRate();
+        double psi = getEliteOverproductionIndex();
+        double entropy = getSystemicEntropy();
+        return Math.min(100.0, (resDep * 0.3) + (psi * 4.0) + (entropy / 20.0));
+    }
+
     private void syncClimateToBuffer() {
         if (worldBuffer == null || cells == null) return;
         float[] temps = worldBuffer.getTemperature();

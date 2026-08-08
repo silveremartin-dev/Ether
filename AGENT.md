@@ -28,4 +28,4 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
 ---
 
 ## 📄 4. Technical Documentation Standard
-* All equations, physical constants, historical eras, and heuristic catalog items MUST be documented in **`EQUATION_DOCUMENTATION.md`** (UPPERCASE) in English.
+* All equations, physical constants, historical eras, and heuristic catalog items MUST be documented in **`docs/SIMULATION_EQUATIONS_AND_VARIABLES.md`** in English.

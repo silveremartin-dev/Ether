@@ -75,10 +75,9 @@ public class ControlPanel extends VBox {
     private final Button recordVideoBtn;
     private boolean isRecordingVideo = false;
 
-    private final Button viewToggle;
-    private final Button displayToggle;
-    private final ToggleButton contourToggle;
-    private final Button statsToggle;
+    private final CheckBox mode3dCheck;
+    private final CheckBox contourCheck;
+    private final ComboBox<DisplayMode> displayModeCombo;
 
     // Callbacks
     private Runnable onSave;
@@ -91,57 +90,55 @@ public class ControlPanel extends VBox {
     public ControlPanel(ISimulationEngine engine) {
         this.engine = engine;
 
-        setSpacing(12);
-        setPadding(new Insets(14));
+        setSpacing(10);
+        setPadding(new Insets(12));
         getStyleClass().add("glass-panel");
-        setStyle("-fx-background-color: rgba(15, 23, 42, 0.85); -fx-background-radius: 10; -fx-border-color: rgba(56, 189, 248, 0.25); -fx-border-radius: 10; -fx-border-width: 1;");
+        setStyle("-fx-background-color: rgba(15, 23, 42, 0.85); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 8;");
 
         // --- 1. DATE & TIME HEADER CARD ---
-        scenarioHeaderLabel = new Label("🎬 Scénario : Out of Africa");
+        scenarioHeaderLabel = new Label("🎬 " + I18n.getOrDefault("sim.header.scenario", "Scénario : ") + "Out of Africa");
         scenarioHeaderLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #a78bfa;");
 
-        dateHeaderLabel = new Label("📅 Date & Heure : T=0 (An -100 000)");
+        dateHeaderLabel = new Label("📅 " + I18n.getOrDefault("sim.header.date", "Date & Heure : ") + "T=0");
         dateHeaderLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
-        tpsLabel = new Label("⏱️ Cadence : 0.0 ticks/s (1 mois / tick)");
-        tpsLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8; -fx-font-family: monospace;");
+        tpsLabel = new Label("⏱️ " + I18n.getOrDefault("sim.header.tps", "Cadence : 0.0 ticks/s (1 mois / tick)"));
+        tpsLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
 
         VBox dateHeaderBox = new VBox(4, scenarioHeaderLabel, dateHeaderLabel, tpsLabel);
-        dateHeaderBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.7); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 8;");
+        styleCard(dateHeaderBox);
 
         // --- 2. TEMPORAL & PLAYBACK CONTROLS CARD ---
-        Label timeTitle = createCardTitle("⏱️ CONTRÔLES TEMPS, VITESSE & LECTURE");
+        Label timeTitle = createCardTitle("⏱️ " + I18n.getOrDefault("sim.card.time", "CONTRÔLES TEMPS & LECTURE"));
 
         rewindBtn = new Button("|<<");
-        rewindBtn.setTooltip(new Tooltip("Réinitialiser T=0 : Remet l'horloge temporelle à l'an T=0 et réinjecte la configuration d'origine du scénario."));
+        rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Réinitialiser T=0")));
         rewindBtn.setOnAction(e -> {
             engine.pause();
             if (onTimelapseSeek != null) onTimelapseSeek.accept(0);
         });
 
         stepBackBtn = new Button("<<");
-        stepBackBtn.setTooltip(new Tooltip("Ralentir / Reculer : Divise par 2 la vitesse de la simulation pas-à-pas."));
+        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Ralentir / Reculer")));
         stepBackBtn.setOnAction(e -> engine.setSpeed(Math.max(1, (int)(engine.getSpeed() / 2))));
 
         startBtn = new Button("▶");
-        startBtn.setTooltip(new Tooltip("Lancer / Reprendre : Démarre la boucle de calcul des équations physiques, climatiques et démographiques."));
+        startBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
         startBtn.setStyle("-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold;");
         startBtn.setOnAction(e -> engine.start());
 
         pauseBtn = new Button("⏸");
-        pauseBtn.setTooltip(new Tooltip("Mettre en pause : Interrompt temporairement l'avancement du temps sans modifier l'état actif."));
+        pauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause", "Mettre en pause")));
         pauseBtn.setStyle("-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-font-weight: bold;");
         pauseBtn.setOnAction(e -> engine.pause());
 
         stopBtn = new Button("⏹");
-        stopBtn.setTooltip(new Tooltip("Arrêter : Fige l'exécution du moteur de simulation et stoppe le thread actif."));
+        stopBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stop", "Arrêter")));
         stopBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;");
-        stopBtn.setOnAction(e -> {
-            engine.pause();
-        });
+        stopBtn.setOnAction(e -> engine.pause());
 
         stepForwardBtn = new Button(">>");
-        stepForwardBtn.setTooltip(new Tooltip("Avancer rapide : Multiplie par 2 la cadence de calcul temporel (jusqu'à 20x)."));
+        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer rapide")));
         stepForwardBtn.setOnAction(e -> engine.setSpeed(Math.min(20, (int)(engine.getSpeed() * 2))));
 
         HBox playBar = new HBox(6, rewindBtn, stepBackBtn, startBtn, pauseBtn, stopBtn, stepForwardBtn);
@@ -151,24 +148,20 @@ public class ControlPanel extends VBox {
         speedSlider.setBlockIncrement(1);
         speedSlider.setMajorTickUnit(5);
         speedSlider.setShowTickMarks(true);
-        speedSlider.setTooltip(new Tooltip("Ajustement continu de la vitesse d'exécution de la simulation (1x à 20x ticks/s)."));
+        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.slider", "Vitesse de simulation")));
         speedSlider.valueProperty().addListener((obs, oldV, newV) -> engine.setSpeed(newV.intValue()));
 
         // Speed preset buttons
         speed1x = new Button("1x");
-        speed1x.setTooltip(new Tooltip("Cadence standard (1x) : 1 tick temporel (1 mois) par seconde."));
         speed1x.setOnAction(e -> { engine.setSpeed(1); speedSlider.setValue(1); });
         
         speed2x = new Button("2x");
-        speed2x.setTooltip(new Tooltip("Cadence accélérée (2x) : 2 ticks temporels par seconde."));
         speed2x.setOnAction(e -> { engine.setSpeed(2); speedSlider.setValue(2); });
         
         speed5x = new Button("5x");
-        speed5x.setTooltip(new Tooltip("Cadence rapide (5x) : 5 ticks temporels par seconde."));
         speed5x.setOnAction(e -> { engine.setSpeed(5); speedSlider.setValue(5); });
         
         speed20x = new Button("20x");
-        speed20x.setTooltip(new Tooltip("Cadence maximale (20x) : 20 ticks temporels par seconde."));
         speed20x.setOnAction(e -> { engine.setSpeed(20); speedSlider.setValue(20); });
 
         HBox speedBtnBox = new HBox(5, speed1x, speed2x, speed5x, speed20x);
@@ -178,73 +171,64 @@ public class ControlPanel extends VBox {
         styleCard(timeCard);
 
         // --- 3. MEDIA & EXPORT MP4 CARD ---
-        Label mediaTitle = createCardTitle("📸 CAPTURES & VIDÉO MP4");
+        Label mediaTitle = createCardTitle("📸 " + I18n.getOrDefault("sim.card.media", "CAPTURES & VIDÉO"));
 
-        hdScreenshotBtn = new Button("📸 Capture Photo HD");
-        hdScreenshotBtn.setTooltip(new Tooltip("Exporte un instantané PNG haute définition du canevas géographique dans saves/screenshots/."));
+        hdScreenshotBtn = new Button("📸 " + I18n.getOrDefault("sim.btn.screenshot", "Capture Photo HD"));
+        hdScreenshotBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.screenshot", "Exporte un instantané PNG HD dans saves/screenshots/")));
         hdScreenshotBtn.setMaxWidth(Double.MAX_VALUE);
-        hdScreenshotBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8;");
+        hdScreenshotBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-padding: 6 10; -fx-background-radius: 6;");
         hdScreenshotBtn.setOnAction(e -> takeHDScreenshot());
 
-        recordVideoBtn = new Button("🎥 Enregistrer Vidéo MP4");
-        recordVideoBtn.setTooltip(new Tooltip("Démarre ou arrête la capture vidéo MP4 trame par trame de la simulation dans saves/timelapse/."));
+        recordVideoBtn = new Button("🎥 " + I18n.getOrDefault("sim.btn.video", "Enregistrer Vidéo MP4"));
+        recordVideoBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.video", "Démarre la capture vidéo MP4 dans saves/timelapse/")));
         recordVideoBtn.setMaxWidth(Double.MAX_VALUE);
-        recordVideoBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8;");
+        recordVideoBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-padding: 6 10; -fx-background-radius: 6;");
         recordVideoBtn.setOnAction(e -> toggleVideoRecording());
 
         VBox mediaCard = new VBox(8, mediaTitle, hdScreenshotBtn, recordVideoBtn);
         styleCard(mediaCard);
 
-        // --- 4. DISPLAY & VISUAL OVERLAYS CARD ---
-        Label viewTitle = createCardTitle("🎨 STYLE, OVERLAYS & AFFICHAGE");
+        // --- 4. DISPLAY & VISUAL LAYERS (CASES À COCHER) ---
+        Label viewTitle = createCardTitle("🎨 " + I18n.getOrDefault("sim.card.layers", "COUCHES & OVERLAYS VISUELS"));
 
-        viewToggle = new Button("Mode 3D");
-        viewToggle.setTooltip(new Tooltip("Bascule le rendu cartographique entre la projection équirectangulaire 2D et le globe sphérique 3D H3."));
-        viewToggle.setOnAction(e -> {
+        mode3dCheck = new CheckBox(I18n.getOrDefault("sim.layer.mode3d", "🌐 Globe 3D H3"));
+        mode3dCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.mode3d", "Bascule entre globe sphérique 3D et carte plate 2D")));
+        mode3dCheck.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        mode3dCheck.setOnAction(e -> {
             if (mapCanvas != null) {
-                ViewMode current = mapCanvas.getViewMode();
-                ViewMode next = (current == ViewMode.VIEW_2D) ? ViewMode.VIEW_3D : ViewMode.VIEW_2D;
-                mapCanvas.setViewMode(next);
-                updateViewToggleButton();
+                mapCanvas.setViewMode(mode3dCheck.isSelected() ? ViewMode.VIEW_3D : ViewMode.VIEW_2D);
             }
         });
 
-        displayToggle = new Button("Biomes");
-        displayToggle.setTooltip(new Tooltip("Filtres & Couches visuelles : Alterne l'affichage entre Biomes, Population, Alimentation, Température, Gini et PIB."));
-        displayToggle.setOnAction(e -> {
-            if (mapCanvas != null) {
-                DisplayMode current = mapCanvas.getDisplayMode();
-                DisplayMode[] modes = DisplayMode.values();
-                int nextIndex = (current.ordinal() + 1) % modes.length;
-                mapCanvas.setDisplayMode(modes[nextIndex]);
-                updateDisplayToggleButton();
-                if (colorLegend != null) colorLegend.setDisplayMode(modes[nextIndex]);
+        contourCheck = new CheckBox(I18n.getOrDefault("sim.layer.contours", "📈 Courbes de Niveau (Contours)"));
+        contourCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.contours", "Affiche le dénivelé d'altitude sur les cellules H3")));
+        contourCheck.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        contourCheck.setOnAction(e -> {
+            if (onContourToggle != null) onContourToggle.accept(contourCheck.isSelected());
+        });
+
+        Label layerComboLabel = new Label(I18n.getOrDefault("sim.layer.datacategory", "Couche Donnée Active :"));
+        layerComboLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px;");
+
+        displayModeCombo = new ComboBox<>();
+        displayModeCombo.getItems().addAll(DisplayMode.values());
+        displayModeCombo.setValue(DisplayMode.BIOME);
+        displayModeCombo.setMaxWidth(Double.MAX_VALUE);
+        displayModeCombo.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.datacategory", "Alterne la couche de couleur principale sur la carte")));
+        displayModeCombo.setOnAction(e -> {
+            if (mapCanvas != null && displayModeCombo.getValue() != null) {
+                mapCanvas.setDisplayMode(displayModeCombo.getValue());
+                if (colorLegend != null) colorLegend.setDisplayMode(displayModeCombo.getValue());
             }
         });
 
-        contourToggle = new ToggleButton("Contours");
-        contourToggle.setTooltip(new Tooltip("Courbes de niveau topographiques : Affiche ou masque le tracé vectoriel du dénivelé d'altitude sur les cellules H3."));
-        contourToggle.setOnAction(e -> {
-            if (onContourToggle != null) onContourToggle.accept(contourToggle.isSelected());
-        });
+        VBox layersVBox = new VBox(6, mode3dCheck, contourCheck, layerComboLabel, displayModeCombo);
 
-        statsToggle = new Button("Stats");
-        statsToggle.setTooltip(new Tooltip("Panneau Analytique : Ouvre ou ferme le volet latéral des statistiques sociétales et métriques techniques."));
-        statsToggle.setOnAction(e -> {
-            if (onStatsToggle != null) onStatsToggle.accept(true);
-        });
-
-        GridPane viewGrid = new GridPane();
-        viewGrid.setHgap(6);
-        viewGrid.setVgap(6);
-        viewGrid.addRow(0, viewToggle, displayToggle);
-        viewGrid.addRow(1, contourToggle, statsToggle);
-
-        VBox viewCard = new VBox(8, viewTitle, viewGrid);
+        VBox viewCard = new VBox(8, viewTitle, layersVBox);
         styleCard(viewCard);
 
         // --- 5. SYSTEM STATUS CARD ---
-        dbStatusLabel = new Label("DB: Vérification...");
+        dbStatusLabel = new Label(I18n.getOrDefault("sim.status.dbcheck", "BDD: Vérification..."));
         dbStatusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
 
         eventLabel = new Label("");
@@ -271,12 +255,12 @@ public class ControlPanel extends VBox {
 
     private Label createCardTitle(String title) {
         Label label = new Label(title);
-        label.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;");
+        label.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
         return label;
     }
 
     private void styleCard(VBox card) {
-        card.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.5); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+        card.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 8; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 8;");
     }
 
     public void setNotificationOverlay(NotificationOverlay overlay) {
@@ -423,19 +407,14 @@ public class ControlPanel extends VBox {
     }
 
     private void updateViewToggleButton() {
-        if (mapCanvas != null) {
-            ViewMode current = mapCanvas.getViewMode();
-            viewToggle.setText(current == ViewMode.VIEW_2D ? "Mode 3D Globe" : "Mode 2D Carte");
-        } else {
-            viewToggle.setText("Mode 3D Globe");
+        if (mapCanvas != null && mode3dCheck != null) {
+            mode3dCheck.setSelected(mapCanvas.getViewMode() == ViewMode.VIEW_3D);
         }
     }
 
     private void updateDisplayToggleButton() {
-        if (mapCanvas != null) {
-            displayToggle.setText(mapCanvas.getDisplayMode().getDisplayName());
-        } else {
-            displayToggle.setText("Biomes");
+        if (mapCanvas != null && displayModeCombo != null) {
+            displayModeCombo.setValue(mapCanvas.getDisplayMode());
         }
     }
 }

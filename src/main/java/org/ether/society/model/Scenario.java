@@ -41,6 +41,7 @@ public class Scenario implements Serializable {
     // Simulation Parameters
     private double cellSizeKm2;
     private int targetCohortSize = 500; // Target population per demographic cohort node (1 to 10,000+)
+    private double temporalResolutionDays = 30.0; // Temporal resolution time step Δt in days (default: 30.0 days = 1 month)
     private double climateHarshness; // 0.0 to 1.0 (storms, droughts)
     private long startDateYear; // e.g. -100000
     private long seed = 12345L;
@@ -382,5 +383,13 @@ public class Scenario implements Serializable {
 
     public void setOceanMultiRateTickingEnabled(boolean oceanMultiRateTickingEnabled) {
         this.oceanMultiRateTickingEnabled = oceanMultiRateTickingEnabled;
+    }
+
+    public double getTemporalResolutionDays() {
+        return temporalResolutionDays;
+    }
+
+    public void setTemporalResolutionDays(double temporalResolutionDays) {
+        this.temporalResolutionDays = temporalResolutionDays;
     }
 }

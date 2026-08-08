@@ -49,13 +49,13 @@ public class GodModePanel extends VBox {
         this.engine = engine;
         this.timeline = timeline != null ? timeline : new ScenarioTimeline();
 
-        setPadding(new Insets(15));
-        setSpacing(12);
+        setPadding(new Insets(12));
+        setSpacing(10);
         getStyleClass().add("glass-panel");
-        setStyle("-fx-background-color: rgba(15, 23, 42, 0.92); -fx-border-color: #38bdf8; -fx-border-radius: 8; -fx-background-radius: 8;");
+        setStyle("-fx-background-color: rgba(15, 23, 42, 0.85); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 8;");
 
         // Title Header
-        Label header = new Label("⚡ MODE DIEU & CHRONOLOGIE (GOD MODE)");
+        Label header = new Label(org.ether.society.i18n.I18n.getOrDefault("godmode.title", "⚡ MODE DIEU & CHRONOLOGIE"));
         header.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #38bdf8;");
 
         // Form fields initialization
@@ -114,18 +114,22 @@ public class GodModePanel extends VBox {
 
         // Section 1: Event Builder (Direct & Scheduled Physical Forcing)
         VBox injectorBox = createInjectorSection();
+        injectorBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
 
         // Section 2: Scenario Timeline Audit Log
-        Label timelineHeader = new Label("📜 CHRONOLOGIE DU SCÉNARIO & MODIFICATIONS EN DIRECT :");
-        timelineHeader.setStyle("-fx-font-weight: bold; -fx-text-fill: #a78bfa;");
+        Label timelineHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("godmode.timeline.title", "📜 CHRONOLOGIE DU SCÉNARIO & MODIFICATIONS EN DIRECT :"));
+        timelineHeader.setStyle("-fx-font-weight: bold; -fx-text-fill: #a78bfa; -fx-font-size: 12px;");
 
         timelineListView = new ListView<>();
         timelineListView.setPrefHeight(180);
-        timelineListView.setStyle("-fx-control-inner-background: #090d16; -fx-font-family: 'Consolas', monospace; -fx-font-size: 11px;");
+        timelineListView.setStyle("-fx-control-inner-background: #090d16; -fx-font-size: 11px;");
         timelineListView.setTooltip(new Tooltip("Registre d'audit temporel : Liste chronologique de tous les forçages et évènements du scénario."));
         refreshTimelineView();
 
-        getChildren().addAll(header, new Separator(), injectorBox, new Separator(), timelineHeader, timelineListView);
+        VBox timelineBox = new VBox(6, timelineHeader, timelineListView);
+        timelineBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+
+        getChildren().addAll(header, injectorBox, timelineBox);
     }
 
     private VBox createInjectorSection() {

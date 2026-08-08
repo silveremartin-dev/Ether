@@ -71,6 +71,10 @@ public enum Theme {
             var res = Theme.class.getResource(theme.getStylesheetPath());
             if (res != null) {
                 scene.getStylesheets().add(res.toExternalForm());
+                if (scene.getRoot() != null) {
+                    scene.getRoot().applyCss();
+                    scene.getRoot().layout();
+                }
                 logger.info("UI Theme applied to scene: {}", theme);
             } else {
                 logger.error("Theme stylesheet resource not found: {}", theme.getStylesheetPath());

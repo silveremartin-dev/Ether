@@ -246,21 +246,27 @@ public class ResourceDistributionPanel extends BorderPane {
 
     public void setActivePlanetPreset(PlanetPreset planetPreset) {
         this.activePlanetPreset = planetPreset;
-        if (planetPreset != null && planetPresetCombo != null) {
-            PlanetPreset match = planetPresetCombo.getItems().stream()
-                    .filter(p -> p.name() != null && p.name().equalsIgnoreCase(planetPreset.name()))
-                    .findFirst().orElse(null);
-            if (match != null) {
-                planetPresetCombo.setValue(match);
-            } else {
-                planetPresetCombo.getItems().add(planetPreset);
-                planetPresetCombo.setValue(planetPreset);
+        boolean oldState = isUpdatingFromPreset;
+        isUpdatingFromPreset = true;
+        try {
+            if (planetPreset != null && planetPresetCombo != null) {
+                PlanetPreset match = planetPresetCombo.getItems().stream()
+                        .filter(p -> p.name() != null && p.name().equalsIgnoreCase(planetPreset.name()))
+                        .findFirst().orElse(null);
+                if (match != null) {
+                    planetPresetCombo.setValue(match);
+                } else {
+                    planetPresetCombo.getItems().add(planetPreset);
+                    planetPresetCombo.setValue(planetPreset);
+                }
             }
+            // Auto-load maps for known celestial bodies (mirrors Tab 1 behaviour)
+            autoApplyMapsForPreset(planetPreset);
+            updatePlanetContextDisplay();
+            updatePreviewCanvas();
+        } finally {
+            isUpdatingFromPreset = oldState;
         }
-        // Auto-load maps for known celestial bodies (mirrors Tab 1 behaviour)
-        autoApplyMapsForPreset(planetPreset);
-        updatePlanetContextDisplay();
-        updatePreviewCanvas();
     }
 
     public void setActiveCells(List<H3Cell> cells) {
@@ -271,7 +277,8 @@ public class ResourceDistributionPanel extends BorderPane {
 
     private void initUI() {
         VBox controlsBox = new VBox(15);
-        controlsBox.setPrefWidth(460);
+        controlsBox.setPrefWidth(480);
+        controlsBox.setMinWidth(480);
         controlsBox.setPadding(new Insets(10));
 
         headerLabel = new Label();
@@ -1262,37 +1269,43 @@ public class ResourceDistributionPanel extends BorderPane {
 
     private void adaptResourceSlidersToPlanet(PlanetPreset p) {
         if (p == null) return;
-        if (seismicActivitySlider != null) seismicActivitySlider.setValue(p.seismicActivityLevel());
-        if (volcanicActivitySlider != null) volcanicActivitySlider.setValue(p.volcanicActivityLevel());
+        boolean oldState = isUpdatingFromPreset;
+        isUpdatingFromPreset = true;
+        try {
+            if (seismicActivitySlider != null) seismicActivitySlider.setValue(p.seismicActivityLevel());
+            if (volcanicActivitySlider != null) volcanicActivitySlider.setValue(p.volcanicActivityLevel());
 
-        if (p.isSatellite() || p.radiusKm() < 3000) { // Moon/Titan
-            terrestrialBiomassSlider.setValue(10.0);
-            soilCarbonSlider.setValue(50.0);
-            faunaBiomassSlider.setValue(0.01);
-            crustalMetalSlider.setValue(150.0);
-            mantleHeatSlider.setValue(25.0);
-            if (seismicActivitySlider != null) seismicActivitySlider.setValue(1.0);
-            if (volcanicActivitySlider != null) volcanicActivitySlider.setValue(0.5);
-        } else if (p.waterLevel() < -0.2) { // Arid / Mars
-            terrestrialBiomassSlider.setValue(50.0);
-            soilCarbonSlider.setValue(200.0);
-            aquaticBiomassSlider.setValue(0.2);
-            freshwaterAquiferSlider.setValue(1200.0);
-            if (seismicActivitySlider != null) seismicActivitySlider.setValue(1.2);
-            if (volcanicActivitySlider != null) volcanicActivitySlider.setValue(0.8);
-        } else if (p.waterLevel() > 0.4) { // Ocean World
-            terrestrialBiomassSlider.setValue(120.0);
-            aquaticBiomassSlider.setValue(25.0);
-            freshwaterAquiferSlider.setValue(45000.0);
-        } else { // Earth-Like
-            terrestrialBiomassSlider.setValue(450.0);
-            soilCarbonSlider.setValue(1500.0);
-            faunaBiomassSlider.setValue(2.0);
-            aquaticBiomassSlider.setValue(6.0);
-            crustalMetalSlider.setValue(80.0);
-            preciousMetalSlider.setValue(1200.0);
-            mantleHeatSlider.setValue(87.0);
-            freshwaterAquiferSlider.setValue(15000.0);
+            if (p.isSatellite() || p.radiusKm() < 3000) { // Moon/Titan
+                terrestrialBiomassSlider.setValue(10.0);
+                soilCarbonSlider.setValue(50.0);
+                faunaBiomassSlider.setValue(0.01);
+                crustalMetalSlider.setValue(150.0);
+                mantleHeatSlider.setValue(25.0);
+                if (seismicActivitySlider != null) seismicActivitySlider.setValue(1.0);
+                if (volcanicActivitySlider != null) volcanicActivitySlider.setValue(0.5);
+            } else if (p.waterLevel() < -0.2) { // Arid / Mars
+                terrestrialBiomassSlider.setValue(50.0);
+                soilCarbonSlider.setValue(200.0);
+                aquaticBiomassSlider.setValue(0.2);
+                freshwaterAquiferSlider.setValue(1200.0);
+                if (seismicActivitySlider != null) seismicActivitySlider.setValue(1.2);
+                if (volcanicActivitySlider != null) volcanicActivitySlider.setValue(0.8);
+            } else if (p.waterLevel() > 0.4) { // Ocean World
+                terrestrialBiomassSlider.setValue(120.0);
+                aquaticBiomassSlider.setValue(25.0);
+                freshwaterAquiferSlider.setValue(45000.0);
+            } else { // Earth-Like
+                terrestrialBiomassSlider.setValue(450.0);
+                soilCarbonSlider.setValue(1500.0);
+                faunaBiomassSlider.setValue(2.0);
+                aquaticBiomassSlider.setValue(6.0);
+                crustalMetalSlider.setValue(80.0);
+                preciousMetalSlider.setValue(1200.0);
+                mantleHeatSlider.setValue(87.0);
+                freshwaterAquiferSlider.setValue(15000.0);
+            }
+        } finally {
+            isUpdatingFromPreset = oldState;
         }
         updateSummary();
     }
@@ -1389,6 +1402,9 @@ public class ResourceDistributionPanel extends BorderPane {
             if (radioImportClimate != null) radioImportClimate.setSelected(true);
         }
 
+        if (ecologyPresetBar != null) {
+            ecologyPresetBar.markClean(p);
+        }
         isUpdatingFromPreset = false;
         updateSummary();
         updatePreviewCanvas();

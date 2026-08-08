@@ -10,6 +10,17 @@
 
 ---
 
+## 🎨 Interactive Editors & Simulation Showcase
+
+| Component View | Description & Visual Preview |
+| :--- | :--- |
+| **🌐 3D Planetary Simulation Canvas (`H3MapCanvas`)** | **Real-Time 3D/2D H3 Globe Visualizer**<br>Features dynamic rendering of 175,000 hexagonal cells, multi-layer heatmaps (Malthusian Pressure, Biomes, Population, Radiance, Demographics, Asabiyyah), coordinate tracking badge, and interactive Mini-Map viewport.<br><br>![3D H3 Globe Simulation](docs/images/h3_map_simulation_3d.png) |
+| **🗺️ World & Planet Generator Editor (`PlanetGeneratorPanel`)** | **Procedural World Sculptor & Terrarium Editor**<br>Allows custom planet generation with parameters for tectonic noise, sea level ratio, temperature gradients, soil strata, freshwater aquifer capacity, and initial biophysical biomes.<br><br>![Planet Generator Editor](docs/images/planet_generator_editor.png) |
+| **⚡ Cybernetic God Mode Panel (`GodModePanel`)** | **Sovereign AI ("Archon Engine") & Catastrophe Manipulator**<br>Real-time climate and demographic injection interface. Trigger volcanic aerosol shocks, pandemics, orbital solar mirrors, asteroid impacts, and direct Model Predictive Control (MPC) interventions.<br><br>![God Mode Panel](docs/images/god_mode_panel.png) |
+| **📊 Cliodynamics & Analytics Dashboard (`StatsPanel`)** | **Planetary Telemetry & Mathematical Comparison**<br>Comparative telemetry comparing World3 Systems Dynamics vs Kurzweil Technological Singularity trajectory, age pyramids, Gini inequality indices, and EROEI net surplus curves.<br><br>![Analytics Dashboard](docs/images/analytics_dashboard.png) |
+
+---
+
 ## ⚡ High-Fidelity Earth Benchmark (175,000 H3 Cells & 50M Humans)
 
 Ether has been benchmarked on a full planetary Earth grid at resolution 6-8 (175,000 H3 cells) with 50 Million humans in Classical Antiquity (-500 BCE) under complete physical, thermodynamic, and cliodynamic models:
@@ -19,7 +30,7 @@ Ether has been benchmarked on a full planetary Earth grid at resolution 6-8 (175
 | **H3 Grid Resolution** | **175,000 H3 Cells** | Full Earth planetary coverage |
 | **Simulated Population** | **50,000,000 Humans** | Classical Antiquity (-500 BCE) |
 | **Total Execution Time** | **10.62 seconds** | Complete 10-second multi-cycle run |
-| **Simulation Speed (TPS)** | **0.56 Ticks / sec** *(Pas par sec)* | **1 simulated year every 1.35s – 1.77s** |
+| **Simulation Speed (TPS)** | **0.56 Ticks / sec** | **1 simulated year every 1.35s – 1.77s** |
 | **Average Duration per Tick** | **1,350 ms – 1,770 ms / year** | 12 monthly sub-steps + macro cycle |
 | **Cell Update Throughput** | **1,185,994 cell-updates / sec** | **~1.19 Million cell-updates per second** |
 | **RAM Footprint (Heap Delta)** | **194 MB → 742 MB (+548 MB)** | Highly optimized memory consumption |
@@ -66,7 +77,7 @@ Ether provides 30 pluggable Type B simulation plugins operating in dual **Pure**
 23. **David Buss Evolutionary Mating & Mobilization** (Elite polygyny surplus $\to$ young male military expansion)
 
 ### 📈 Historical Validation Kernel (`HistoricalValidationKernel`)
-Ether includes an empirical validation engine computing **Root Mean Square Error (RMSE)** and **Coefficient of Determination ($R^2$)** against a 20-variable empirical dataset from -10,000 BCE to 2026 CE (sourced from **Seshat Databank**, **Maddison Project**, **Correlates of War**, **HYDE 3.2**, and **PAGES 2k**). See [docs/HISTORICAL_BENCHMARKS.md](docs/HISTORICAL_BENCHMARKS.md) for full citations and metrics.
+Ether includes an empirical validation engine computing **Root Mean Square Error (RMSE)** and **Coefficient of Determination ($R^2$)** against a 20-variable empirical dataset from -10,000 BCE to 2026 CE (sourced from **Seshat Databank**, **Maddison Project**, **Correlates of War**, **HYDE 3.2**, and **PAGES 2k**). See [docs/HISTORICAL_BENCHMARKS_AND_VALIDATION.md](docs/HISTORICAL_BENCHMARKS_AND_VALIDATION.md) for full citations and metrics.
 
 ---
 
@@ -82,13 +93,19 @@ Ether includes an empirical validation engine computing **Root Mean Square Error
 git clone https://github.com/silveremartin-dev/Ether.git
 cd Ether
 
-# Build the project & run all 102 JUnit tests
-mvn clean test
+# Build the project & compile sources
+mvn clean compile
+
+# Run all 102 JUnit tests
+mvn test
 
 # Run the High-Fidelity 175k Cell Benchmark
 mvn test -Dtest=EarthFullResolution175kBenchmarkTest
 
-# Run the UI Simulation
+# Regenerate Javadoc API documentation
+mvn javadoc:javadoc
+
+# Launch the JavaFX Simulation Application
 mvn javafx:run
 ```
 
@@ -105,12 +122,17 @@ mvn javafx:run
 | **Multiverse Branching** | Snapshot & side-by-side trajectory comparison | ✅ Complete |
 | **175k Cell Benchmark** | **1.19M cell-updates/sec** throughput verified | ✅ Verified |
 
-## 📄 Documentation & Architecture
-- 🎮 [Guide d'Intégration & Activation GPU](docs/GPU_INTEGRATION_GUIDE.md) (NVIDIA, AMD, Intel, OpenCL, Fallback CPU JIT)
-- 📊 [Audit d'Architecture & Rapport de Gains de Performance](docs/GPU_AND_CPU_JIT_AUDIT_REPORT.md)
-- 🌊 [Optimisations Océaniques, Distorsion Physique & Déterminisme](docs/OCEAN_OPTIMIZATIONS_AND_DETERMINISM.md)
-- ⚙️ [Spécification JIT, AST & Ordre des Moteurs](docs/ENGINE_EXECUTION_AND_JIT_SPECIFICATION.md)
-- 📈 [Empirical Historical Calibration & Benchmarks](docs/HISTORICAL_BENCHMARKS.md)
+## 📄 Master Technical Documentation
+- 🏗️ [Core System Architecture & DOD](docs/ARCHITECTURE.md) (H3 Grid, `WorldBuffer`, 30 Type B Engines, Multi-Scale Decoupling)
+- 🔒 [Security & System Integrity Audit](docs/SECURITY.md) (Deserialization, Threat Matrix, Concurrency & Memory Bounds Safety)
+- 📡 [Distributed Cluster Extension Proposal](docs/PROPOSAL_DISTRIBUTED_ARCHITECTURE_EXTENSION.md) (RFC / Planned Multi-Node Cluster Scaling)
+- 🛠️ [Getting Started & Hardware Setup Guide](docs/GETTING_STARTED_AND_HARDWARE_SETUP.md) (Quickstart, Scripts, Docker DB, OpenCL, TornadoVM)
+- 📐 [Differential Equations & State Variables](docs/SIMULATION_EQUATIONS_AND_VARIABLES.md) (Catalog of State Variables, Kleiber Scaling, Gompertz Mortality, Onsager Transport)
+- ⚡ [GPU & CPU JIT Engine Specification](docs/GPU_JIT_ENGINE_SPECIFICATION.md) (7 Phasing Tiers, Additive Integration, Kernel Fusion, JOCL / TornadoVM)
+- 🌊 [Ocean Optimizations & Determinism Guide](docs/OCEAN_OPTIMIZATIONS_AND_DETERMINISM.md) (Macro-Aggregation, Coastal Filtering, Multi-Rate Ticking, Determinism Levels)
+- 🤖 [Sovereign AI Governance Design ("Archon Engine")](docs/SOVEREIGN_AI_GOVERNANCE_DESIGN.md) (Closed-Loop MPC, Pareto Objectives, 4 Planetary Scenarios)
+- 📈 [Historical Benchmarks & Empirical Validation](docs/HISTORICAL_BENCHMARKS_AND_VALIDATION.md) (20-Variable Benchmark Suite, RMSE / $R^2$ Metrics, Scenarios)
+- 📜 [Academic Data Credits & Dataset Citations](docs/CREDITS.md) (Seshat, Maddison, COW, HYDE 3.2, ETOPO1, USGS, ORBIS)
 
 ---
 

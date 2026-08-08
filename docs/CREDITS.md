@@ -69,7 +69,7 @@ This simulation uses real-world datasets from the following sources:
 
 ## Macro-Historical & Cliodynamic Data Sources
 
-For detailed citations and metric mappings across the 20-variable benchmark suite, see [HISTORICAL_BENCHMARKS.md](HISTORICAL_BENCHMARKS.md).
+For detailed citations and metric mappings across the 20-variable benchmark suite, see [HISTORICAL_BENCHMARKS_AND_VALIDATION.md](HISTORICAL_BENCHMARKS_AND_VALIDATION.md).
 
 ### **Seshat: Global History Databank**
 - **Source**: Global History Databank / Peter Turchin et al.
