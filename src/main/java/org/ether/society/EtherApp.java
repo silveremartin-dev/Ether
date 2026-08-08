@@ -15,6 +15,7 @@ import org.ether.society.ui.H3MapCanvas;
 import org.ether.society.ui.MainView;
 import org.ether.society.ui.MiniMap;
 import org.ether.society.ui.PerformanceHUD;
+import org.ether.society.ui.Theme;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -90,7 +91,9 @@ public class EtherApp extends Application {
 
             // Configure stage
             primaryStage.setScene(scene);
+            Theme.applyCurrentTheme(scene);
             updateTexts();
+            org.ether.society.ui.WindowUtils.applyWindowIcon(primaryStage);
 
             // Register i18n listener
             I18n.languageProperty().addListener((obs, old, val) -> updateTexts());

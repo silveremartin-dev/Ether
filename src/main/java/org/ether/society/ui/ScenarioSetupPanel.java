@@ -11,6 +11,7 @@ import org.ether.society.model.EcologyPreset;
 import org.ether.society.model.Scenario;
 import org.ether.society.model.StartDatePreset;
 import org.ether.society.i18n.I18n;
+import org.ether.society.ui.util.LaTeXFormatter;
 import org.ether.society.procedural.PlanetPreset;
 import org.ether.society.procedural.ProceduralGenerator;
 import org.ether.society.procedural.ProceduralPopulationEngine;
@@ -200,11 +201,29 @@ public class ScenarioSetupPanel extends BorderPane {
     private CheckBox oceanMultiRateTickingCheckBox;
     private final java.util.Map<String, CheckBox> typeBCheckBoxMap = new java.util.HashMap<>();
     private VBox typeBBoxContainer;
+    private String selectedEngineClassName = "FrontierAsabiyyahEngine";
+    private Label engineInspectorTitle;
+    private Label engineInspectorText;
+    private Label engineInspectorEquationsTitle;
+    private Label engineInspectorEquations;
+    private Label engineInspectorRef;
+    private Button exportSelectedEngineBtn;
 
     // Async Calculation & Thread Control Fields
     private volatile boolean isCalculationRunning = false;
     private volatile boolean cancelRequested = false;
     private Thread generationThread = null;
+
+    private void updateEngineInspector(String className, String title, String description, String reference, String equations) {
+        this.selectedEngineClassName = className;
+        if (engineInspectorTitle != null) engineInspectorTitle.setText("🔎 " + className + " — " + title);
+        if (engineInspectorText != null) engineInspectorText.setText(LaTeXFormatter.formatLaTeX(description));
+        if (engineInspectorEquations != null) engineInspectorEquations.setText(LaTeXFormatter.formatLaTeX(equations));
+        if (engineInspectorRef != null) engineInspectorRef.setText("📚 " + reference);
+        if (exportSelectedEngineBtn != null) exportSelectedEngineBtn.setText("📤 Exporter " + className + ".java");
+    }
+
+
 
     // Events section
     private TableView<ClimateEvent> eventsTable;
@@ -320,6 +339,9 @@ public class ScenarioSetupPanel extends BorderPane {
             if (p.name().equalsIgnoreCase(name)) return p;
         }
         String lower = name.toLowerCase();
+        if (lower.contains("earth") || lower.contains("terre") || lower.contains("terran")) {
+            return PlanetPreset.EARTH_LIKE;
+        }
         for (PlanetPreset p : PlanetPreset.getPresets()) {
             if (p.name().toLowerCase().contains(lower) || lower.contains(p.name().toLowerCase())) {
                 return p;
@@ -428,29 +450,33 @@ public class ScenarioSetupPanel extends BorderPane {
         planetPresetCombo.setValue(PlanetPreset.EARTH_LIKE);
         planetPresetCombo.setMaxWidth(Double.MAX_VALUE);
         planetPresetCombo.setDisable(true); // Greyed out: cascade-derived from Tab 2 Ecology
-        planetPresetCombo.setStyle("-fx-opacity: 0.75;");
-        planetPresetCombo.setCellFactory(p -> new ListCell<>() {
+        planetPresetCombo.setStyle("-fx-opacity: 0.85;");
+        planetPresetCombo.setConverter(new javafx.util.StringConverter<PlanetPreset>() {
             @Override
-            protected void updateItem(PlanetPreset item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? "" : item.name());
+            public String toString(PlanetPreset item) {
+                return item == null ? "" : item.name();
+            }
+            @Override
+            public PlanetPreset fromString(String string) {
+                return null;
             }
         });
-        planetPresetCombo.setButtonCell(planetPresetCombo.getCellFactory().call(null));
         planetPresetCombo.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.planet_preset_disabled", "Préréglage planétaire hérité et déduit automatiquement de l'écologie choisie (Onglet 2).")));
 
         ecologyPresetCombo = new ComboBox<>();
         ecologyPresetCombo.getItems().setAll(EcologyPreset.getBuiltInPresets());
         ecologyPresetCombo.setValue(EcologyPreset.getBuiltInPresets().get(0));
         ecologyPresetCombo.setMaxWidth(Double.MAX_VALUE);
-        ecologyPresetCombo.setCellFactory(p -> new ListCell<>() {
+        ecologyPresetCombo.setConverter(new javafx.util.StringConverter<EcologyPreset>() {
             @Override
-            protected void updateItem(EcologyPreset item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? "" : item.name());
+            public String toString(EcologyPreset item) {
+                return item == null ? "" : item.name();
+            }
+            @Override
+            public EcologyPreset fromString(String string) {
+                return null;
             }
         });
-        ecologyPresetCombo.setButtonCell(ecologyPresetCombo.getCellFactory().call(null));
         ecologyPresetCombo.setOnAction(e -> {
             EcologyPreset selected = ecologyPresetCombo.getValue();
             if (selected != null) {
@@ -466,12 +492,12 @@ public class ScenarioSetupPanel extends BorderPane {
 
         inheritedContextLabel = new Label("🌿 Écologie : Earth Standard Baseline  ➔  🪐 Planète (déduite) : Terre (Terran)");
         inheritedContextLabel.setWrapText(true);
-        inheritedContextLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 6 10; -fx-background-color: rgba(56, 189, 248, 0.12); -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 6;");
+        inheritedContextLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #0284c7; -fx-padding: 6 10; -fx-background-color: rgba(56, 189, 248, 0.12); -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 6;");
 
         VBox inheritedSection = createSection(planetSectionHeader, new VBox(8,
-                new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.label.ecology_preset", "1️⃣ Préréglage Écologique (Onglet 2) :")),
+                new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.label.ecology_preset", "1. Préréglage Écologique (Onglet 2) :")),
                 ecologyPresetCombo,
-                new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.label.planet_preset", "2️⃣ Préréglage Planétaire (Onglet 1 — Déduit en cascade de l'Écologie) :")),
+                new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.label.planet_preset", "2. Préréglage Planétaire (Onglet 1 — Déduit en cascade de l'Écologie) :")),
                 planetPresetCombo,
                 inheritedContextLabel
         ));
@@ -496,14 +522,16 @@ public class ScenarioSetupPanel extends BorderPane {
         h3ResolutionCombo.getItems().addAll(3, 4, 5, 6, 7, 8);
         h3ResolutionCombo.setValue(5);
         h3ResolutionCombo.setMaxWidth(Double.MAX_VALUE);
-        h3ResolutionCombo.setCellFactory(p -> new ListCell<>() {
+        h3ResolutionCombo.setConverter(new javafx.util.StringConverter<Integer>() {
             @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? "" : org.ether.society.i18n.I18n.get("planet.param.resolution.res" + item));
+            public String toString(Integer item) {
+                return item == null ? "" : org.ether.society.i18n.I18n.getOrDefault("planet.param.resolution.res" + item, "Résolution " + item);
+            }
+            @Override
+            public Integer fromString(String string) {
+                return null;
             }
         });
-        h3ResolutionCombo.setButtonCell(h3ResolutionCombo.getCellFactory().call(null));
         Tooltip.install(h3ResolutionCombo, new Tooltip(org.ether.society.i18n.I18n.getOrDefault("planet.tooltip.resolution", "Résolution de la grille H3")));
         Tooltip.install(h3ResolutionLabel, h3ResolutionCombo.getTooltip());
         h3ResolutionCombo.valueProperty().addListener((obs, oldV, newV) -> notifyParamChange());
@@ -528,34 +556,25 @@ public class ScenarioSetupPanel extends BorderPane {
         temporalResolutionCombo.getItems().addAll(1.0, 7.0, 15.0, 30.0, 60.0, 90.0, 180.0, 365.0);
         temporalResolutionCombo.setValue(30.0);
         temporalResolutionCombo.setMaxWidth(Double.MAX_VALUE);
-        temporalResolutionCombo.setCellFactory(p -> new ListCell<>() {
+        temporalResolutionCombo.setConverter(new javafx.util.StringConverter<Double>() {
             @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else if (item == 1.0) {
-                    setText("1 jour (Haute Précision Saisons & Épidémies)");
-                } else if (item == 7.0) {
-                    setText("1 semaine (7 jours)");
-                } else if (item == 15.0) {
-                    setText("15 jours");
-                } else if (item == 30.0) {
-                    setText("1 mois (~30 jours) [Défaut - Équilibré]");
-                } else if (item == 60.0) {
-                    setText("2 mois");
-                } else if (item == 90.0) {
-                    setText("1 trimestre (~3 mois)");
-                } else if (item == 180.0) {
-                    setText("1 semestre (~6 mois)");
-                } else if (item == 365.0) {
-                    setText("1 an (365 jours) [Ultra-Rapide Multi-Millénaires]");
-                } else {
-                    setText(String.format("%.0f jours", item));
-                }
+            public String toString(Double item) {
+                if (item == null) return "";
+                if (item == 1.0) return "1 jour (Haute Précision Saisons & Épidémies)";
+                if (item == 7.0) return "1 semaine (7 jours)";
+                if (item == 15.0) return "15 jours";
+                if (item == 30.0) return "1 mois (~30 jours) [Défaut - Équilibré]";
+                if (item == 60.0) return "2 mois";
+                if (item == 90.0) return "1 trimestre (~3 mois)";
+                if (item == 180.0) return "1 semestre (~6 mois)";
+                if (item == 365.0) return "1 an (365 jours) [Ultra-Rapide Multi-Millénaires]";
+                return String.format("%.0f jours", item);
+            }
+            @Override
+            public Double fromString(String string) {
+                return null;
             }
         });
-        temporalResolutionCombo.setButtonCell(temporalResolutionCombo.getCellFactory().call(null));
         Tooltip temporalTooltip = new Tooltip("""
             ⏱️ Résolution Temporelle de la Simulation (Pas de Temps Δt) :
             Détermine la granularité temporelle de chaque pas de calcul de la simulation.
@@ -643,20 +662,16 @@ public class ScenarioSetupPanel extends BorderPane {
         densityPatternCombo.getItems().addAll("UNBIASED_NATURAL", "FERTILE_CRESCENT", "MESOAMERICA", "MESOPOTAMIA_ASSYRIA", "RIVER_VALLEYS", "URBAN_CLUSTERS", "SPARSE_NOMADIC");
         densityPatternCombo.setValue("UNBIASED_NATURAL");
         densityPatternCombo.setMaxWidth(Double.MAX_VALUE);
-        densityPatternCombo.setCellFactory(p -> new ListCell<>() {
+        densityPatternCombo.setConverter(new javafx.util.StringConverter<String>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setTooltip(null);
-                } else {
-                    setText(DENSITY_LABELS.getOrDefault(item, item));
-                    setTooltip(new Tooltip(DENSITY_DESCRIPTIONS.getOrDefault(item, item)));
-                }
+            public String toString(String item) {
+                return item == null ? "" : DENSITY_LABELS.getOrDefault(item, item);
+            }
+            @Override
+            public String fromString(String string) {
+                return null;
             }
         });
-        densityPatternCombo.setButtonCell(densityPatternCombo.getCellFactory().call(null));
         densityPatternCombo.setTooltip(new Tooltip(DENSITY_DESCRIPTIONS.get("UNBIASED_NATURAL")));
         densityPatternCombo.valueProperty().addListener((obs, oldV, newV) -> {
             notifyParamChange();
@@ -891,13 +906,13 @@ public class ScenarioSetupPanel extends BorderPane {
 
         Label subtitle = new Label("Si la simulation a déjà été exécutée dans une session précédente et qu'il existe des snapshots ou des checkpoints, vous pouvez repartir directement de cet instantané sans relancer depuis le début.");
         subtitle.setWrapText(true);
-        subtitle.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        subtitle.setStyle("-fx-font-size: 11px;");
 
         ToggleGroup modeGroup = new ToggleGroup();
         radioNewSimulation = new RadioButton("🌱 Démarrer une nouvelle simulation depuis le début (An T₀)");
-        radioNewSimulation.setStyle("-fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
+        radioNewSimulation.setStyle("-fx-font-weight: bold;");
         radioResumeSnapshot = new RadioButton("📸 Repartir d'un Snapshot existant (Session Précédente / Checkpoint)");
-        radioResumeSnapshot.setStyle("-fx-font-weight: bold; -fx-text-fill: #a78bfa;");
+        radioResumeSnapshot.setStyle("-fx-font-weight: bold; -fx-text-fill: #7c3aed;");
 
         radioNewSimulation.setToggleGroup(modeGroup);
         radioResumeSnapshot.setToggleGroup(modeGroup);
@@ -905,19 +920,18 @@ public class ScenarioSetupPanel extends BorderPane {
 
         snapshotCombo = new ComboBox<>();
         snapshotCombo.setMaxWidth(Double.MAX_VALUE);
-        snapshotCombo.setCellFactory(p -> new ListCell<>() {
+        snapshotCombo.setConverter(new javafx.util.StringConverter<org.ether.society.persistence.SaveMetadata>() {
             @Override
-            protected void updateItem(org.ether.society.persistence.SaveMetadata item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    String timeStr = item.getTimestamp() != null ? item.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "N/A";
-                    setText(String.format("💾 [An %,d - M%02d] %s (%s) - %s", item.getYear(), item.getMonth(), item.getName(), item.getScenarioName(), timeStr));
-                }
+            public String toString(org.ether.society.persistence.SaveMetadata item) {
+                if (item == null) return "";
+                String timeStr = item.getTimestamp() != null ? item.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "N/A";
+                return String.format("💾 [An %,d - M%02d] %s (%s) - %s", item.getYear(), item.getMonth(), item.getName(), item.getScenarioName(), timeStr);
+            }
+            @Override
+            public org.ether.society.persistence.SaveMetadata fromString(String string) {
+                return null;
             }
         });
-        snapshotCombo.setButtonCell(snapshotCombo.getCellFactory().call(null));
 
         snapshotDateLabel = new Label("📅 Horodatage : -");
         snapshotTimeLabel = new Label("⏳ Moment : -");
@@ -925,7 +939,7 @@ public class ScenarioSetupPanel extends BorderPane {
         snapshotPathLabel = new Label("📁 ID Snapshot : -");
 
         for (Label l : List.of(snapshotDateLabel, snapshotTimeLabel, snapshotScenarioLabel, snapshotPathLabel)) {
-            l.setStyle("-fx-font-size: 11px; -fx-text-fill: #cbd5e1;");
+            l.setStyle("-fx-font-size: 11px;");
         }
 
         GridPane detailsGrid = new GridPane();
@@ -1707,23 +1721,22 @@ public class ScenarioSetupPanel extends BorderPane {
         boundaryModeCombo.setValue("DYNAMIC_RESERVOIR");
         boundaryModeCombo.setMaxWidth(Double.MAX_VALUE);
         boundaryModeCombo.setOnAction(e -> notifyParamChange());
-        boundaryModeCombo.setCellFactory(p -> new ListCell<>() {
+        boundaryModeCombo.setConverter(new javafx.util.StringConverter<String>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    switch (item) {
-                        case "DYNAMIC_RESERVOIR" -> setText(I18n.getOrDefault("scenario.boundary.reservoir", "🌊 Réservoir Virtuel Extérieur (Flux Libres)"));
-                        case "CLOSED_BARRIER" -> setText(I18n.getOrDefault("scenario.boundary.barrier", "🧱 Frontière Étanche / Isolée (Bords Fermés)"));
-                        case "PERIODIC_WRAP" -> setText(I18n.getOrDefault("scenario.boundary.wrap", "🌐 Raccordement Périodique (Torique)"));
-                        default -> setText(item);
-                    }
+            public String toString(String item) {
+                if (item == null) return "";
+                switch (item) {
+                    case "DYNAMIC_RESERVOIR" -> { return I18n.getOrDefault("scenario.boundary.reservoir", "🌊 Réservoir Virtuel Extérieur (Flux Libres)"); }
+                    case "CLOSED_BARRIER" -> { return I18n.getOrDefault("scenario.boundary.barrier", "🧱 Frontière Étanche / Isolée (Bords Fermés)"); }
+                    case "PERIODIC_WRAP" -> { return I18n.getOrDefault("scenario.boundary.wrap", "🌐 Raccordement Périodique (Torique)"); }
+                    default -> { return item; }
                 }
             }
+            @Override
+            public String fromString(String string) {
+                return null;
+            }
         });
-        boundaryModeCombo.setButtonCell(boundaryModeCombo.getCellFactory().call(null));
 
         resetClippingBtn = new Button(I18n.getOrDefault("scenario.clipping.reset", "🔄 Réinitialiser la Zone (Pleine Planète)"));
         resetClippingBtn.setMaxWidth(Double.MAX_VALUE);
@@ -1783,34 +1796,40 @@ public class ScenarioSetupPanel extends BorderPane {
             ⚡ BÉNÉFICE : Économie majeure de calculs CPU sur le réseau commercial et naval.
             ⚠️ RISQUE / IMPACT : Les navires empruntent préférentiellement les côtes; traversée hauturière sauvage restreinte.
             """));
-        coastalNavigationOnlyCheckBox.setOnAction(e -> notifyParamChange());
 
-        oceanMultiRateTickingCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.multirate", "⏱️ Ticking Océanique Multi-Cadence (Cadence réduite ×5)"));
-        oceanMultiRateTickingCheckBox.setSelected(true);
-        oceanMultiRateTickingCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;");
-        oceanMultiRateTickingCheckBox.setTooltip(new Tooltip("""
-            ⚡ BÉNÉFICE : Division par 5 de la fréquence de calcul physique des océans au profit des sociétés terrestres.
-            ⚠️ RISQUE / IMPACT : Latence minime sur la dérive thermique lente des océans à court terme.
-            """));
-        oceanMultiRateTickingCheckBox.setOnAction(e -> notifyParamChange());
+        VBox optBox = new VBox(6, oceanMacroAggregationCheckBox, coastalNavigationOnlyCheckBox);
 
-        VBox optBox = new VBox(8, oceanMacroAggregationCheckBox, coastalNavigationOnlyCheckBox, oceanMultiRateTickingCheckBox);
-        optBox.setStyle("-fx-padding: 10px; -fx-background-color: rgba(56, 189, 248, 0.04); -fx-background-radius: 6px; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 6px; -fx-border-width: 1px;");
-
-        // Detail Inspector Card for selected/hovered Engine (Technical Description + Academic References)
-        Label engineInspectorTitle = new Label("🔎 Fiche Technico-Algorithmique & Références Académiques du Moteur :");
+        // Detail Inspector Card for selected/hovered Engine (Technical Description + Math Equations + Academic References)
+        engineInspectorTitle = new Label("🔎 FrontierAsabiyyahEngine — ⚔️ Asabiyyah de Frontière (Ibn Khaldoun & Peter Turchin)");
         engineInspectorTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8;");
         
-        Label engineInspectorText = new Label("Survolez ou cliquez sur n'importe quel moteur (Cœur Ether ou Optionnel) pour afficher son équation, sa description physique et ses publications académiques de référence.");
+        engineInspectorText = new Label("Théorie Khaldounienne de la solidarité de groupe et déclin des dynasties (Badiya vs Hadara). Modélise l'érosion de la cohésion sociale lors du passage de la frontière métastable aux métropoles opulentes.");
         engineInspectorText.setWrapText(true);
         engineInspectorText.setStyle("-fx-font-size: 11px; -fx-text-fill: #cbd5e1;");
 
-        Label engineInspectorRef = new Label("📚 Référence Académique : Modèles fondamentaux de thermodynamique, cliodynamique et géophysique.");
+        engineInspectorEquationsTitle = new Label("📐 Équations Mathématiques & Formulation Cliodynamique :");
+        engineInspectorEquationsTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 10px; -fx-text-fill: #38bdf8; -fx-padding: 4 0 0 0;");
+
+        engineInspectorEquations = new Label(
+            "• Variation d'Asabiyyah (Cohésion A) : dA/dt = c1*F(x)*(1 - A) - c2*(K(x)/N(x))*A\n" +
+            "  où F(x) est la pression militaire de frontière et K(x)/N(x) le capital par habitant (luxe).\n" +
+            "• Métropole opulente (K > 1000 kg/hab) : Déclin d'Asabiyyah dA/dt = -2.0% par pas de temps.\n" +
+            "• Zone de frontière (K <= 1000 kg/hab) : Forge la cohésion militaire dA/dt = +2.0% par pas de temps.\n" +
+            "• Inégalité & Déclin Dynastique : S_cohesion(t) = A(t) * Pop(t) * (1 - Gini(t))."
+        );
+        engineInspectorEquations.setWrapText(true);
+        engineInspectorEquations.setStyle("-fx-font-size: 10px; -fx-font-family: 'Consolas', 'Courier New', monospace; -fx-text-fill: #7dd3fc; -fx-background-color: rgba(15,23,42,0.85); -fx-padding: 6 8; -fx-background-radius: 4; -fx-border-color: rgba(56,189,248,0.25); -fx-border-radius: 4;");
+
+        engineInspectorRef = new Label("📚 Ref: Ibn Khaldun (1377). Muqaddimah; Turchin, P. (2003). Historical Dynamics: Securing the Peace, Princeton Univ. Press.");
         engineInspectorRef.setWrapText(true);
         engineInspectorRef.setStyle("-fx-font-size: 10px; -fx-font-style: italic; -fx-text-fill: #a78bfa;");
 
-        VBox engineInspectorCard = new VBox(4, engineInspectorTitle, engineInspectorText, engineInspectorRef);
-        engineInspectorCard.setStyle("-fx-padding: 8 10; -fx-background-color: rgba(15, 23, 42, 0.9); -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.35); -fx-border-radius: 6; -fx-border-width: 1px;");
+        exportSelectedEngineBtn = new Button("📤 Exporter FrontierAsabiyyahEngine.java");
+        exportSelectedEngineBtn.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 10; -fx-background-radius: 4;");
+        exportSelectedEngineBtn.setOnAction(e -> exportCustomEngineTemplate());
+
+        VBox engineInspectorCard = new VBox(5, engineInspectorTitle, engineInspectorText, engineInspectorEquationsTitle, engineInspectorEquations, engineInspectorRef, exportSelectedEngineBtn);
+        engineInspectorCard.setStyle("-fx-padding: 10 12; -fx-background-color: rgba(15, 23, 42, 0.95); -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 6; -fx-border-width: 1px;");
 
         // --- 🔒 ETHER CORE ENGINES SECTION (Cœur Central Applicatif - 24 Moteurs Permanents) ---
         VBox typeABox = new VBox(6);
@@ -1822,101 +1841,121 @@ public class ScenarioSetupPanel extends BorderPane {
         typeABox.getChildren().add(coreExplanationLabel);
 
         List<String[]> coreEngines = List.of(
-            new String[]{"🌍 PhysicalLawEngine", "Moteur Physique & Lois de Conservation",
+            new String[]{"PhysicalLawEngine", "Moteur Physique & Lois de Conservation",
                 "Moteur de conservation thermodynamique de la matière et de l'énergie (Premier et Second Principes). Calcule le bilan calorifique planétaire et la dégradation de l'énergie en chaleur dissipée.",
-                "Ref: Carnot, N. L. S. (1824); Clausius, R. (1865); Prigogine, I. (1977). Non-Equilibrium Thermodynamics."},
-            new String[]{"🧬 BiologicalDemographicsEngine", "Démographie Cellulaire & Métabolisme",
+                "Ref: Carnot, N. L. S. (1824); Clausius, R. (1865); Prigogine, I. (1977). Non-Equilibrium Thermodynamics.",
+                "• Premier Principe (Énergie) : dE_total/dt = Q_in - Q_out = 0\n• Second Principe (Entropie) : dS/dt = dS_ext + dS_int >= 0 avec dS_int = Q_dissipee / Temp_surface"},
+            new String[]{"BiologicalDemographicsEngine", "Démographie Cellulaire & Métabolisme",
                 "Régulation métabolique de la population humaine. Calcule la mortalité de Gompertz-Makeham selon l'âge, l'espérance de vie, la natalité malthusienne et la sous-alimentation.",
-                "Ref: Kleiber, M. (1932); Gompertz, B. (1825); Makeham, W. M. (1860); Malthus, T. R. (1798)."},
-            new String[]{"⚡ PhysicalEnergyGridEngine", "Grille Énergétique & EROEI Brut",
+                "Ref: Kleiber, M. (1932); Gompertz, B. (1825); Makeham, W. M. (1860); Malthus, T. R. (1798).",
+                "• Mortalité Gompertz-Makeham : μ(x) = α · exp(β · x) + γ\n• Bilan Métabolique de Kleiber : B_metabolisme = q₀ · M^(0.75)\n• Dynamique de Population : dN/dt = r · N · (1 - N / K_soutenable)"},
+            new String[]{"PhysicalEnergyGridEngine", "Grille Énergétique & EROEI Brut",
                 "Modélisation des flux d'énergie primaire planétaire (solaire, géothermie, biomasse). Détermine l'EROEI brut (Energy Return on Energy Invested) pour les récoltes et l'extraction.",
-                "Ref: Hall, C. A. S., et al. (2014). EROEI of Global Energy Resources. Nature Climate Change."},
-            new String[]{"🧠 TechTreeEngine", "Diffusion Technologique & Capital Savoir",
+                "Ref: Hall, C. A. S., et al. (2014). EROEI of Global Energy Resources. Nature Climate Change.",
+                "• EROEI Brut = E_produite_brute / E_investie_extraction\n• Énergie Utile Net = E_brute · (1 - 1 / EROEI)\n• Seuil Critique Civilisationnel : EROEI >= 3.0 requis pour soutenir les institutions."},
+            new String[]{"TechTreeEngine", "Diffusion Technologique & Capital Savoir",
                 "Arbre d'innovation technologique et diffusion cognitive. Simule l'accumulation du capital d'instruction, la propagation spatiale des inventions et le franchissement des seuils d'étapes (Niveaux Tech 0.0 à 10.0+).",
-                "Ref: Mokyr, J. (1990). The Lever of Riches: Technological Creativity. Oxford Univ. Press."},
-            new String[]{"💧 AquiferDepletionEngine", "Hydrologie & Transfert d'Eau Douce",
+                "Ref: Mokyr, J. (1990). The Lever of Riches: Technological Creativity. Oxford Univ. Press.",
+                "• Croissance du Capital Savoir : dT/dt = α · Pop · (T / T_max)^β + Σ D_voisinage · (T_j - T_i)\n• Diffusion Spatiale : Flux_innovation = -D_diffusion · ∇T(x)"},
+            new String[]{"AquiferDepletionEngine", "Hydrologie & Transfert d'Eau Douce",
                 "Hydrologie continentale et réplétion/déplétion des nappes phréatiques. Simule le bilan précipitations-évapotranspiration, le débit des rivières et le stress hydrique.",
-                "Ref: Gleick, P. H. (2000). Water Futures; Wada, Y. et al. (2010). Global Groundwater Depletion. GRL."},
-            new String[]{"🌡️ H3ClimateSystem", "Système Climatique H3 & Saisons",
+                "Ref: Gleick, P. H. (2000). Water Futures; Wada, Y. et al. (2010). Global Groundwater Depletion. GRL.",
+                "• Bilan Hydrique Cellulaire : dW_nappe/dt = Precipitations - Evapotranspiration - Extraction_agricole - Ruissellement\n• Stress Hydrique = Extraction_totale / Recharge_annuelle"},
+            new String[]{"H3ClimateSystem", "Système Climatique H3 & Saisons",
                 "Moteur climato-saisonnier basé sur la discrétisation hexagonale H3. Calcule la température moyenne de surface, le gradient équateur-pôle, l'insolation selon l'obliquité orbitale et les saisons.",
-                "Ref: Uber H3 Spatial Index (2018); Sellers, W. D. (1969). Energy Balance Climate Models."},
-            new String[]{"🏛️ PoliticalSimulationEngine", "Moteur Politique & Frontières",
+                "Ref: Uber H3 Spatial Index (2018); Sellers, W. D. (1969). Energy Balance Climate Models.",
+                "• Bilan Radiatif Solaire : S(lat, t) = (S_const / 4) · [1 + e · cos(ω · t)] · cos(lat - declinaison)\n• Équilibre Thermique : C_thermique · dT/dt = S(1 - Albédo) - ε·σ·T⁴ + Div(K_transport · ∇T)"},
+            new String[]{"PoliticalSimulationEngine", "Moteur Politique & Frontières",
                 "Modélisation des structures politiques et géopolitiques. Gère la délimitation des territoires, la souveraineté des cités-états, les confédérations culturelles et la stabilité des frontières.",
-                "Ref: Tilly, C. (1990). Coercion, Capital, and European States; Mann, M. (1986). Sources of Social Power."},
-            new String[]{"📊 StatisticsKernel", "Noyau Statistique & Cliodynamique",
+                "Ref: Tilly, C. (1990). Coercion, Capital, and European States; Mann, M. (1986). Sources of Social Power.",
+                "• Projection de Puissance d'État : P_militaire(d) = (Capacité_Fiscale · Taux_Levée) / (1 + α · Distance_Capitale)\n• Stabilité des Frontières : Seuil d'annexion si P_i(x) > 1.35 · P_j(x)"},
+            new String[]{"StatisticsKernel", "Noyau Statistique & Cliodynamique",
                 "Noyau d'agrégation statistique et d'analyse cliodynamique en temps réel. Calcule l'indice de Gini, le PIB mondial, la complexité de Turchin, le risque d'effondrement et exporte les bilans CSV.",
-                "Ref: Gini, C. (1912); Turchin, P. (2016). Ages of Discord; Tainter, J. (1988). Collapse of Complex Societies."},
-            new String[]{"🚀 WorldBuffer / AgentBuffer", "Noyau DOD Allocateur Mémoire",
+                "Ref: Gini, C. (1912); Turchin, P. (2016). Ages of Discord; Tainter, J. (1988). Collapse of Complex Societies.",
+                "• Indice de Gini : G = (Σ Σ |y_i - y_j|) / (2 · n² · y_moyen)\n• Pression de Crise Systémique (PSI) = (Pop / Pop_soutenable) · (1 / Salaire_reel) · Inegalité_Elite"},
+            new String[]{"WorldBuffer / AgentBuffer", "Noyau DOD Allocateur Mémoire",
                 "Allocateur de mémoire et registres DOD (Data-Oriented Design). Optimise la mémoire cache du processeur en vectorisant les attributs des cohortes d'agents et des mailles H3.",
-                "Ref: Acton, M. (2014). Data-Oriented Design; LMAX Disruptor High-Performance Ring Buffer (2011)."},
-            new String[]{"🌊 OceanPhysicsEngine", "Dynamo Fluidique & Basculement Océanique",
-                "Dynamo fluidique et inertie thermique des océans. Modélise la capacité calorifique de la masse d'eau marine, la dérive thermique lente et la régulation du climat côtier.",
-                "Ref: Stommel, H. (1961). Thermohaline Convection; Rahmstorf, S. (1995). AMOC Stability. Nature."},
-            new String[]{"⚖️ MalthusianCapacityEngine", "Pression Malthusienne & Capacité Portante",
+                "Ref: Acton, M. (2014). Data-Oriented Design; LMAX Disruptor High-Performance Ring Buffer (2011).",
+                "• Structure des Tableaux d'Attributs (SoA) : float[] capitalWork, float[] capitalResource, int[] populationCohorts\n• Alignement Cache SIMD Vectorisé : 64-byte aligned blocks for AVX-512 execution."},
+            new String[]{"OceanPhysicsEngine", "Dynamo Fluidique & Basculement Océanique",
+                "Dynamo fluidique et inertie thermique des océans. Modélise la capacité calorifique de la masse d'eau marine, la dérive thermique lente et la régulation du climat végétal.",
+                "Ref: Stommel, H. (1961). Thermohaline Convection; Rahmstorf, S. (1995). AMOC Stability. Nature.",
+                "• Modèle à Deux Mailles de Stommel : dq/dt = c_T · ΔT - c_S · ΔS\n• Transport de Chaleur Océanique : F_ocean = ρ · C_p · V_derive · (T_equateur - T_pole)"},
+            new String[]{"MalthusianCapacityEngine", "Pression Malthusienne & Capacité Portante",
                 "Capacité portante écologique (K) et pression Malthusienne. Calcule le seuil maximal d'habitants soutenables par cellule avant dégradation irréversible de l'environnement.",
-                "Ref: Malthus, T. R. (1798); Catton, W. R. (1980). Overshoot: Ecological Footprint."},
-            new String[]{"⛏️ OreGradeThermodynamicsEngine", "Géo-Métallurgie & Déplétion Crustale",
+                "Ref: Malthus, T. R. (1798); Catton, W. R. (1980). Overshoot: Ecological Footprint.",
+                "• Capacité Portante K(t) = Fertilité_Sol · Eau_Disponible · Niveau_Tech\n• Ratio Malthusien M = Pop / K\n• Dégradation Environnementale en cas de Surconsommation (M > 1) : dK/dt = -γ · (M - 1) · K"},
+            new String[]{"OreGradeThermodynamicsEngine", "Géo-Métallurgie & Déplétion Crustale",
                 "Géo-métallurgie et thermodynamique d'épuisement des filons minéraux crustaux. Simule le déclin du titre des minerais (Loi de Lasky) et la hausse de l'énergie nécessaire à l'extraction.",
-                "Ref: Lasky, S. G. (1950). Mineral Resource Depletion Law; Ayres, R. U. (1998). Industrial Ecology."},
-            new String[]{"🌾 SoilNutrientNPKEngine", "Cycle NPK & Fertilité des Sols",
+                "Ref: Lasky, S. G. (1950). Mineral Resource Depletion Law; Ayres, R. U. (1998). Industrial Ecology.",
+                "• Loi de Lasky (Titre du Minerai) : Grade(g) = g₀ · exp(-k · Cumul_Extrait)\n• Énergie Spécifique d'Extraction : E_extraction(g) = E₀ / (Grade(g))^1.35"},
+            new String[]{"SoilNutrientNPKEngine", "Cycle NPK & Fertilité des Sols",
                 "Cycles biogéochimiques des nutriments NPK (Azote, Phosphore, Potassium). Régit l'épuisement des sols agricoles par la culture intensive et la restauration organique.",
-                "Ref: Liebig, J. von (1840). Law of the Minimum; Smil, V. (2001). Enriching the Earth (N-P-K Cycles)."},
-            new String[]{"🍞 FluxEngine", "Flux de Subsistance & Routes Commerciales",
+                "Ref: Liebig, J. von (1840). Law of the Minimum; Smil, V. (2001). Enriching the Earth (N-P-K Cycles).",
+                "• Loi du Minimum de Liebig : Rendement = Y_max · min( N/N_ref, P/P_ref, K/K_ref )\n• Épuisement des Nutriment : dN/dt = Restauration_Naturelle + Apport_Engrais - Export_Recolte"},
+            new String[]{"FluxEngine", "Flux de Subsistance & Routes Commerciales",
                 "Routes commerciales et flux de subsistance inter-cellules H3. Calcule les coûts de transport, l'arbitrage marchand et l'équilibrage des stocks alimentaires par le commerce.",
-                "Ref: Tinbergen, J. (1962). Gravity Model of Trade; Onsager, L. (1931). Reciprocal Relations."},
-            new String[]{"💨 AtmosphericOxygenEngine", "Dynamique de l'Oxygène Atmosphérique",
+                "Ref: Tinbergen, J. (1962). Gravity Model of Trade; Onsager, L. (1931). Reciprocal Relations.",
+                "• Modèle Gravitationnel de Commerce : Flux(i, j) = G · (PIB_i · PIB_j) / (Distance(i, j)^1.8)\n• Friction de Transport : Coût_fret = Exp(Friction_Relief · Distance)"},
+            new String[]{"AtmosphericOxygenEngine", "Dynamique de l'Oxygène Atmosphérique",
                 "Bilan de la pression partielle d'oxygène (O₂) atmosphérique. Régule les conditions métaboliques pour la survie des organismes complexes et le risque d'incendies forestiers.",
-                "Ref: Berner, R. A. (2006). GEOCARBSULF: Atmospheric Oxygen over Phanerozoic Time."},
-            new String[]{"🌋 CrustalGeothermalEngine", "Géothermie Crustale & Tectonique",
+                "Ref: Berner, R. A. (2006). GEOCARBSULF: Atmospheric Oxygen over Phanerozoic Time.",
+                "• Bilan d'O₂ Atmosphérique : dO₂/dt = Photosynthese_Net - Respiration_Biomasse - Oxydation_Minérale\n• Risque d'Embrasement Sauvage = Max(0, (pO₂ - 0.15) / 0.06)"},
+            new String[]{"CrustalGeothermalEngine", "Géothermie Crustale & Tectonique",
                 "Flux de chaleur interne terrestre et potentiel géothermique crustal. Simule le gradient géothermique et le potentiel d'énergie géothermique de surface.",
-                "Ref: Turcotte, D. L. & Schubert, G. (2002). Geodynamics: Mantle Heat Transport. Cambridge Univ. Press."},
-            new String[]{"🏞️ DynamicHydrographicSiltationEngine", "Hydrographie & Ensablement Fluvial",
+                "Ref: Turcotte, D. L. & Schubert, G. (2002). Geodynamics: Mantle Heat Transport. Cambridge Univ. Press.",
+                "• Conductivité Thermique Crustale : q = -k_roche · (dT/dz)\n• Potentiel Géothermique d'Exploitation : P_geoth = q_surface · Surface_H3 · Rendement_Carnot"},
+            new String[]{"DynamicHydrographicSiltationEngine", "Hydrographie & Ensablement Fluvial",
                 "Hydrographie et dynamique d'érosion/ensablement des bassins versants. Modélise la modification du lit des fleuves et le dépôt d'alluvions fertiles.",
-                "Ref: Horton, R. E. (1945). Drainage-Basin Development; Schumm, S. A. (1977). The Fluvial System."},
-            new String[]{"☀️ GreenhouseRadiativeEngine", "Forçage Radiatif & Effet de Serre",
+                "Ref: Horton, R. E. (1945). Drainage-Basin Development; Schumm, S. A. (1977). The Fluvial System.",
+                "• Équation d'Érosion Fluviale : E_sediment = k_erodibilite · (Débit_eau)^1.4 · (Pente_terrain)^1.2\n• Dépôt Alluvionnaire : dSilt/dt = E_amont - Sedimentation_loc_lit"},
+            new String[]{"GreenhouseRadiativeEngine", "Forçage Radiatif & Effet de Serre",
                 "Bilan de forçage radiatif et effet de serre. Calcule l'impact des concentrations de CO₂, CH₄ et H₂O sur l'infrarouge réémis vers la surface.",
-                "Ref: Myhre, G. et al. (1998). Radiative Forcing Equations; IPCC AR6 WG1 (2021)."},
-            new String[]{"🔌 InfrastructureEnergyEngine", "Réseaux d'Infrastructure Énergétique",
+                "Ref: Myhre, G. et al. (1998). Radiative Forcing Equations; IPCC AR6 WG1 (2021).",
+                "• Forçage Radiatif du CO₂ : ΔF_CO2 = 5.35 · ln(C / C₀)  [W/m²]\n• Sensibilité Climatique : ΔT_eq = λ · (ΔF_CO2 + ΔF_CH4 + ΔF_aerosols)"},
+            new String[]{"InfrastructureEnergyEngine", "Réseaux d'Infrastructure Énergétique",
                 "Réseaux d'infrastructures énergétiques et transport de puissance. Modélise la perte en ligne des réseaux électriques et oléoducs.",
-                "Ref: Bak, P. et al. (1987). Self-Organized Criticality in Grid Infrastructure."},
-            new String[]{"🔄 NetEnergyEROEIEngine", "EROEI Net & Rendement Énergétique",
+                "Ref: Bak, P. et al. (1987). Self-Organized Criticality in Grid Infrastructure.",
+                "• Perte en Ligne Électrique : Perte_Joule = R_cable · I² · Distance\n• Capacité Maximale de Transit : Cap_max = V_reseau · I_max_thermique"},
+            new String[]{"NetEnergyEROEIEngine", "EROEI Net & Rendement Énergétique",
                 "Calcul du rendement énergétique net (EROEI Net civilisationnel). Évalue la fraction d'énergie réinvestie dans l'extraction par rapport à l'énergie utilisable pour la société.",
-                "Ref: Hall, C. A. S. & Klitgaard, K. A. (2018). Energy and the Wealth of Nations. Springer."},
-            new String[]{"❄️ PermafrostThawEngine", "Dégel du Permafrost & Relargage Méthane",
+                "Ref: Hall, C. A. S. & Klitgaard, K. A. (2018). Energy and the Wealth of Nations. Springer.",
+                "• Fraction d'Énergie Réinvestie : F_invest = 1 / EROEI_systemique\n• Énergie Nette Utile Société = Énergie_Totale · (1 - F_invest)"},
+            new String[]{"PermafrostThawEngine", "Dégel du Permafrost & Relargage Méthane",
                 "Dynamique de fonte du cryosol (Permafrost). Simule la déstabilisation des sols gelés et le relargage rétroactif de méthane et CO₂ stratosphériques.",
-                "Ref: Schuur, E. A. G. et al. (2015). Vulnerability of Permafrost Carbon to Climate Change. Nature."},
-            new String[]{"🚚 PhysicsTransportEngine", "Frictions Thermodynamiques de Transport",
+                "Ref: Schuur, E. A. G. et al. (2015). Vulnerability of Permafrost Carbon to Climate Change. Nature.",
+                "• Fonte du Cryosol : dV_gel/dt = -α · Max(0, T_surface - 0.0 °C)\n• Émission Rétroactive CH₄/CO₂ : Emiss_gaz = Stock_carbone_degele · K_microbien(T)"},
+            new String[]{"PhysicsTransportEngine", "Frictions Thermodynamiques de Transport",
                 "Coûts énergétiques et frictions thermodynamiques des transports. Calcule l'énergie consommée par tonne-kilomètre selon le relief et le mode de transport.",
-                "Ref: Smil, V. (2017). Energy and Civilization: A History. MIT Press."},
-            new String[]{"🌀 ThermohalineOceanEngine", "Circulation Thermohaline Océanique",
+                "Ref: Smil, V. (2017). Energy and Civilization: A History. MIT Press.",
+                "• Énergie Spécifique par Mode (MJ/t-km) : Maritim=0.15, Ferroviaire=0.35, Route=2.5, Porteur=12.0\n• Friction du Relief : Coût_total = E_specifique · (1 + k_pente · Pente_moyenne) · Distance"},
+            new String[]{"ThermohalineOceanEngine", "Circulation Thermohaline Océanique",
                 "Circulation thermohaline globale (Boucle AMOC). Modélise la plongée des eaux salées froides en Atlantique Nord et la redistribution de la chaleur planétaire.",
-                "Ref: Broecker, W. S. (1991). The Great Ocean Conveyor; Rahmstorf, S. (2002). Ocean Circulation. Nature."},
-            new String[]{"🌿 TrophicEcosystemEngine", "Réseau Trophique & Écosystèmes",
+                "Ref: Broecker, W. S. (1991). The Great Ocean Conveyor; Rahmstorf, S. (2002). Ocean Circulation. Nature.",
+                "• Débit AMOC Q_amoc = k_thermo · (ρ_nord - ρ_equateur)\n• Point de Basculement Salin : Si Dilution_Eau_Douce > Seuil_Critique -> Effondrement AMOC (Q -> 0)"},
+            new String[]{"TrophicEcosystemEngine", "Réseau Trophique & Écosystèmes",
                 "Réseau trophique et dynamique des écosystèmes fauniques. Simule les équations de Lotka-Volterra entre prédateurs, herbivores et producteurs primaires.",
-                "Ref: Lotka, A. J. (1925); Volterra, V. (1926); MacArthur, R. H. & Wilson, E. O. (1967)."}
+                "Ref: Lotka, A. J. (1925); Volterra, V. (1926); MacArthur, R. H. & Wilson, E. O. (1967).",
+                "• Dynamique Herbivores H : dH/dt = r_h · H · (1 - H/K) - a · H · P\n• Dynamique Prédateurs P : dP/dt = b · a · H · P - m_p · P"}
         );
 
         for (String[] eng : coreEngines) {
             HBox row = new HBox(8);
             row.setAlignment(Pos.CENTER_LEFT);
-            Label statusBadge = new Label("[🔒 CŒUR ETHER]");
-            statusBadge.setStyle("-fx-font-size: 9px; -fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-background-color: rgba(56,189,248,0.15); -fx-padding: 2 6; -fx-background-radius: 4;");
-            Label iconTitle = new Label(eng[0]);
+            Label iconTitle = new Label("🔒 " + eng[0]);
             iconTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #e2e8f0;");
             Label descLbl = new Label("— " + eng[1]);
             descLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
             HBox.setHgrow(descLbl, Priority.ALWAYS);
-            row.getChildren().addAll(statusBadge, iconTitle, descLbl);
+            row.getChildren().addAll(iconTitle, descLbl);
 
-            Tooltip tooltip = new Tooltip("🔒 [MOTEUR CŒUR ETHER PERMANENT]\n" + eng[0] + " — " + eng[1] + "\n\n" + eng[2] + "\n\n📚 " + eng[3]);
-            tooltip.setStyle("-fx-font-size: 11px; -fx-max-width: 450px;");
+            String eqText = eng.length > 4 ? eng[4] : "📐 Équation d'État : dX/dt = f(X, t) + Σ F_inter-cellulaire";
+            Tooltip tooltip = new Tooltip("🔒 [MOTEUR PERMANENT]\n" + eng[0] + " — " + eng[1] + "\n\n" + eng[2] + "\n\n" + eqText + "\n\n📚 " + eng[3]);
+            tooltip.setStyle("-fx-font-size: 11px; -fx-max-width: 480px;");
             Tooltip.install(row, tooltip);
 
-            row.setOnMouseEntered(e -> {
-                engineInspectorTitle.setText("🔎 " + eng[0] + " [🔒 CŒUR ETHER PERMANENT]");
-                engineInspectorText.setText(eng[2]);
-                engineInspectorRef.setText("📚 " + eng[3]);
-            });
+            row.setOnMouseEntered(e -> updateEngineInspector(eng[0], eng[1], eng[2], eng[3], eqText));
+            row.setOnMouseClicked(e -> updateEngineInspector(eng[0], eng[1], eng[2], eng[3], eqText));
 
             typeABox.getChildren().add(row);
         }
@@ -1944,87 +1983,221 @@ public class ScenarioSetupPanel extends BorderPane {
         typeBBoxContainer.getChildren().add(importExportBox);
 
         List<String[]> optionalEngines = List.of(
-            new String[]{"AiAutonomousRegulationPureEngine", "🤖 Régulation Autonome de l'IA & Gouvernance", "Modélisation de la régulation et des risques de l'intelligence artificielle. Évalue les probabilités d'émergence d'infrastructures autonomes et de gestion des risques.", "Ref: Bostrom, N. (2014). Superintelligence; Russell, S. (2019). Human Compatible."},
-            new String[]{"AmerindianEcosystemEngine", "🌾 Agro-foresterie Amérindienne & Terra Preta", "Techniques agricoles précolombiennes et enrichissement des sols en biochar. Augmente la capacité portante et la résilience des sols de forêt tropicale.", "Ref: Denevan, W. M. (1992). The Pristine Myth; Glaser, B. et al. (2002). Terra Preta Biochar."},
-            new String[]{"AsymmetricColonialTradeEngine", "🚢 Commerce Colonial Asymétrique & Extraction", "Flux de ressources et fuite de valeur des colonies vers les métropoles. Simule la capture de rente et le blocage de l'industrialisation périphérique.", "Ref: Wallerstein, I. (1974). The Modern World-System; Frank, A. G. (1967). Dependency Theory."},
-            new String[]{"BifurcationChaosEngine", "🌀 Chaos & Analyse des Bifurcations Systémiques", "Sensibilité aux conditions initiales et points de basculement. Génère des micro-oscillations chaotiques pouvant déclencher des cascades d'instabilité.", "Ref: Lorenz, E. N. (1963). Deterministic Nonperiodic Flow; May, R. M. (1976)."},
-            new String[]{"BioMolecularEpidemiologyEngine", "☣️ Épidémiologie Bio-Moléculaire & Immunité Pop", "Simulation avancée de la transmission virale et foyers infectieux. Modélise la transmission SIR/SEIR selon la densité urbaine et le réseau de commerce.", "Ref: Kermack, W. O. & McKendrick, A. G. (1927). SIR Epidemiological Model."},
-            new String[]{"CulturalMaterialismPureEngine", "📜 Materialisme Culturel (Marvin Harris)", "Déterminisme de l'infrastructure technologique et démographique sur les croyances. Adapte les valeurs morales aux contraintes d'extraction d'énergie.", "Ref: Harris, M. (1979). Cultural Materialism: The Struggle for a Science of Culture."},
-            new String[]{"CulturalSociologyEngine", "📜 Sociologie Culturelle & Matrice de Voisinage", "Évolution des valeurs culturelles et métissage régional. Gère la diffusion des langues, des normes et la dérive culturelle entre mailles voisines.", "Ref: Cavalli-Sforza, L. L. & Feldman, M. W. (1981). Cultural Transmission and Evolution."},
-            new String[]{"DeforestationErosionEngine", "🏜️ Érosion Forestière & Ensablement Fluvial", "Dégradation des sols et perte de couverture végétale. Entraîne le ravinement des terres arables et le comblement des lits de rivières lors de coupes rases.", "Ref: Montgomery, D. R. (2007). Dirt: The Erosion of Civilizations. Univ. of California Press."},
-            new String[]{"EdoJapanIsolationEngine", "⛩️ Isolationnisme du Japon Edo (Sakoku)", "Maintien d'un équilibre zéro-croissance et fermeture des frontières. Élimine la dépendance extérieure au détriment du rythme de progrès technologique.", "Ref: Totman, C. (1993). Early Modern Japan; Diamond, J. (2005). Collapse (Tokugawa Forestry)."},
-            new String[]{"EntropicMetalDissipationEngine", "🏭 Dissipation Entropique des Métaux & Jevons Rebound", "Dispersion irrémédiable des métaux rares et effets rebond. Calcule la perte irrécupérable de cuivre et de métaux précieux par usure mécanique et oxydation.", "Ref: Georgescu-Roegen, N. (1971). The Entropy Law and the Economic Process."},
-            new String[]{"EcotoxicologyFertilityEngine", "🧪 Ecotoxicologie & Stérilité Chimique", "Impacts des polluants synthétiques sur le taux de fécondité. Simule la baisse de fertilité humaine liée à la concentration cumulée d'entropie chimique.", "Ref: Colborn, T. et al. (1996). Our Stolen Future; Swan, S. H. (2021). Count Down."},
-            new String[]{"FertileCrescentSalinizationEngine", "🌾 Salinisation du Croissant Fertile", "Dégradation historique des sols irrigués en Mésopotamie antique. Accumulation de sels minéraux toxiques par évaporation de l'eau d'irrigation.", "Ref: Jacobsen, T. & Adams, R. M. (1958). Salt and Silt in Ancient Mesopotamian Agriculture."},
-            new String[]{"FrontierAsabiyyahEngine", "⚔️ Asabiyyah de Frontière (Ibn Khaldoun)", "Théorie Khaldounienne de la solidarité de groupe et déclin des dynasties. Modélise l'érosion de la cohésion sociale lors du passage de la frontière à la métropole opulente.", "Ref: Ibn Khaldun (1377). Muqaddimah; Turchin, P. (2003). Historical Dynamics."},
-            new String[]{"GeoengineeringAlbedoFeedbackEngine", "🧪 Géo-ingénierie & Rétroaction d'Albédo Artificiel", "Injections d'aérosols stratosphériques et terraformation. Diminue l'insolation solaire globale pour contrer le réchauffement climatique.", "Ref: Crutzen, P. J. (2006). Albedo Modification via Stratospheric Aerosol Injection."},
-            new String[]{"HandyNasaHybridEngine", "📉 Modèle HANDY NASA Hybride (Démographie & Élites)", "Rétroactions entre élites, travailleurs et ressources (NASA / Motesharrei). Simule les scénarios d'effondrement par surconsommation des élites.", "Ref: Motesharrei, S., Rivas, J., & Kalnay, E. (2014). HANDY: Human and Nature Dynamics."},
-            new String[]{"HandyNasaPureEngine", "📉 Modèle HANDY NASA Pur (Équations Différentielles)", "Système dynamique pur de la dynamique homme-nature (Handy Model). Système à 4 équations couplées (Élites, Travailleurs, Nature, Capital).", "Ref: Motesharrei, S. et al. (2014). HANDY Model Equations. Ecological Economics 101."},
-            new String[]{"JevonsParadoxEngine", "⚡ Effet Rebond & Paradoxe de Jevons", "L'augmentation de l'efficacité énergétique accroît la consommation globale. Annule les gains d'économie d'énergie par l'expansion de l'échelle industrielle.", "Ref: Jevons, W. S. (1865). The Coal Question; Alcott, B. (2005). Jevons' Paradox."},
-            new String[]{"KardashevPureEngine", "🌌 Échelle de Kardashev & Capture Énergétique", "Transition vers le contrôle de l'énergie planétaire intégrale. Évalue le score de Kardashev (Type 0.0 à 1.0) selon la puissance totale captée en watts.", "Ref: Kardashev, N. S. (1964). Transmission of Information by Extraterrestrial Civilizations."},
-            new String[]{"KinSelectionHamiltonEngine", "🧬 Sélection de Parentèle (Règle de Hamilton)", "Évolution de l'altruisme génétique et coopération inter-individus (rB > C). Détermine la cohésion des petites tribus et familles étendues.", "Ref: Hamilton, W. D. (1964). The Genetical Evolution of Social Behaviour. J. Theor. Biol."},
-            new String[]{"KurzweilAcceleratingReturnsEngine", "🚀 Loi des Rendements Accélérés (Ray Kurzweil)", "Accélération exponentielle du progrès scientifique et des processeurs. Réduit les délais d'invention à mesure que le niveau technologique s'élève.", "Ref: Kurzweil, R. (2005). The Singularity Is Near; Moore, G. E. (1965)."},
-            new String[]{"LenskiPureEngine", "🧠 Évolution Socioculturelle (Gerhard Lenski)", "Classification des sociétés selon leur mode d'extraction d'information et d'énergie. Rétrograde ou promeut le type de société (Chasseurs, Agricoles, Industriels).", "Ref: Lenski, G. (1966). Power and Privilege: A Theory of Social Stratification."},
-            new String[]{"LeslieWhitePureEngine", "⚡ Loi de Leslie White (Culture = E × T)", "Le développement culturel varie directement avec l'énergie captée par habitant (C = E × T). Détermine la complexité symbolique selon l'énergie.", "Ref: White, L. A. (1943). Energy and the Evolution of Culture. American Anthropologist."},
-            new String[]{"MediterraneanSeaHighwayEngine", "⛵ Autoroute Maritime Méditerranéenne & Thalassocraties", "Réseau de navigation côtière et émergence des cités-états maritimes. Réduit la friction de transport sur l'eau et stimule les comptoirs maritimes.", "Ref: Braudel, F. (1949). La Méditerranée et le Monde Méditerranéen."},
-            new String[]{"MegafaunaEcosystemEngine", "🦕 Conservation de la Biodiversité Sauvage & Mégafaune", "Pressions de chasse et extinction/préservation des espèces sauvages. Simule la disparition de la grande faune lors de l'expansion humaine néolithique.", "Ref: Martin, P. S. (1984). Quaternary Extinctions: A Prehistoric Revolution."},
-            new String[]{"MilitaryTechShockEngine", "💣 Chocs de Technologie Militaire & Poudre à Canon", "Révolution militaire et transformation de l'architecture des fortifs. Augmente la capacité de conquête des empires centralisés.", "Ref: Parker, G. (1988). The Military Revolution; McNeill, W. H. (1982)."},
-            new String[]{"MonasticDemographicBufferEngine", "🏛️ Buffers Démographiques Monastiques & Savoir", "Préservation du capital intellectuel et régulation démographique par les monastères. Empêche la perte totale de savoir lors de la chute d'un empire.", "Ref: Weber, M. (1905); Kautsky, K. (1889). Thomas More and his Utopia."},
-            new String[]{"NordhausDiceHybridEngine", "🌡️ Modèle DICE Hybride (Nordhaus - Climat & Économie)", "Couplage économie-climat intégré avec boucle de dommage du carbone. Évalue la perte de PIB causée par l'élévation des températures extrêmes.", "Ref: Nordhaus, W. D. (1992, 2017). Integrated Assessment Models (DICE-2016R)."},
-            new String[]{"NordhausDicePureEngine", "🌡️ Modèle DICE Pur (Taxe Carbone & PIB)", "Modélisation analytique du coût du carbone et investissements verts. Calcule le prix social du carbone pour inciter la décarbonation.", "Ref: Nordhaus, W. D. (1992). An Optimal Transition Path for Controlling Greenhouse Gases. Science."},
-            new String[]{"NuclearSafetyRadiotoxicityEngine", "⚛️ Radiotoxicité & Fusion Nucléaire", "Gestion des risques d'accidents atomiques et retombées toxiques. Simule la contamination des terres et les surcoûts de sécurité industrielle.", "Ref: Perrow, C. (1984). Normal Accidents: Living with High-Risk Technologies."},
-            new String[]{"NuclearWarfareClimateEngine", "💥 Guerres Thermodynamiques & Hiver Nucléaire", "Modélisation des incendies massifs et refroidissement climatique. Injection de suie stratosphérique bloquant les rayons solaires pendant des années.", "Ref: Turco, R. P., Toon, O. B., Ackerman, T. P., Pollack, J. B., & Sagan, C. (1983). TTAPS."},
-            new String[]{"OstromCommonsPureEngine", "🏞️ Auto-Gouvernance des Communs (Elinor Ostrom)", "Règles institutionnelles locales pour éviter la tragédie des communs. Maintient la durabilité des pâturages et de la pêche sans privatisation.", "Ref: Ostrom, E. (1990). Governing the Commons: Evolution of Institutions."},
-            new String[]{"PinkerViolenceDeclinePureEngine", "🕊️ Déclin Historique de la Violence (Steven Pinker)", "Baisse de la mortalité violente par l'État, le commerce et l'alphabétisation. Réduit les homicides et les guerres à mesure que l'État de droit progresse.", "Ref: Pinker, S. (2011). The Better Angels of Our Nature: Why Violence Has Declined."},
-            new String[]{"ProtestantWorkEthicEngine", "✝️ Éthique du Travail & Accumulation de Capital (Max Weber)", "Impact des valeurs morales sur la formation du capital industriel. Stimule le réinvestissement des bénéfices dans les machines au lieu du luxe.", "Ref: Weber, M. (1905). Die protestantische Ethik und der Geist des Kapitalismus."},
-            new String[]{"PsychohistoryPureEngine", "📊 Psychohistoire Cliodynamique (Modèle d'Asimov)", "Prédiction statistique des grandes masses humaines à long terme. Anticipe les cycles de stabilité et prévient les crises d'effondrement.", "Ref: Asimov, I. (1951). Foundation; Turchin, P. (2008). Arise Cliodynamics. Nature."},
-            new String[]{"RomanImperialCliodynamicEngine", "🪙 Cycle Cliodynamique Romain & Altération de la Monnaie", "Dégradation de la pureté du Denier et crises fiscales impériales. Entraîne l'hyper-inflation et le déclin du pouvoir d'achat des légions.", "Ref: Turchin, P. & Scheidel, W. (2009). Coin Debasement and Structural Cycles in Rome."},
-            new String[]{"ScottAgainstTheGrainPureEngine", "🌾 Modèle de l'État Céréalier (James C. Scott)", "Attractivité des céréales taxables et émergence de l'État archaïque. Privilégie le blé/riz stockables pour l'impôt au détriment des tubercules.", "Ref: Scott, J. C. (2017). Against the Grain: A Deep History of the Earliest States."},
-            new String[]{"SelfDomesticationEngine", "🐕 Auto-Domestication Humaine & Réduction de l'Agressivité", "Sélection contre l'agressivité réactive dans les fortes densités. Sélectionne les comportements coopératifs indispensables à la vie urbaine.", "Ref: Hare, B. (2017). Survival of the Friendliest; Lahire, B. (2018). Structures Fondamentales."},
-            new String[]{"SexualSelectionMatingEngine", "💍 Sélection Sexuelle & Marché Matrimonial", "Structures de parenté et polygamie/monogamie selon les ressources. Régule l'accès aux partenaires selon l'inégalité de capital.", "Ref: Buss, D. M. (1989). Sex differences in human mate preferences. BBS."},
-            new String[]{"SmilMaterialTransitionsPureEngine", "🏗️ Transitions Matérielles & Énergétiques (Vaclav Smil)", "Inertie physique des transitions vers l'acier, le béton, l'ammoniac et le plastique. Impose des délais de plusieurs décennies pour remplacer un matériau de base.", "Ref: Smil, V. (2019). Material World & Energy Transitions: History, Requirements."},
-            new String[]{"SpatialCityFractalEngine", "🏙️ Distribution Fractale des Villes (Loi de Zipf / Batty)", "Hiérarchie des métropoles et loi rang-taille urbaine. Organise le réseau urbain en sous-centres régionaux et métropoles primatiales.", "Ref: Batty, M. (2008). The Size, Scale, and Shape of Cities. Science; Zipf, G. K. (1949)."},
-            new String[]{"TasmanianCulturalRegressionEngine", "🏝️ Régression Culturelle de Tasmanie (Henrich)", "Perte de technologies complexes par goulet d'étranglement démographique. Fait régresser l'outillage si la population tombe sous le seuil critique d'apprentissage.", "Ref: Henrich, J. (2004). Demography and Cultural Loss in Tasmania. American Antiquity."},
-            new String[]{"TechnologicalSingularityEngine", "🌌 Singularité Technologique & Kurzweil Rebound", "Accélération exponentielle du progrès scientifique et IA. Franchit le point d'inflexion où les machines auto-améliorent leur propre conception.", "Ref: Good, I. J. (1965); Vinge, V. (1993); Kurzweil, R. (2005). The Singularity Is Near."},
-            new String[]{"UrbanThermodynamicsEngine", "🏙️ Thermodynamique Urbaine & Métropoles", "Îlots de chaleur urbains et densité bâtie hyper-concentrée. Élève la température locale des métropoles et consomme de la puissance de climatisation.", "Ref: Oke, T. R. (1982). The Energetic Basis of the Urban Heat Island. Q. J. R. Meteorol. Soc."},
-            new String[]{"World3CouplingEngine", "📉 Modèle Couplé World3 & Limites à la Croissance", "Rétroactions entre population, pollution et capital (Club de Rome). Connecte le modèle World3 Meadows aux cellules hexagonales H3.", "Ref: Meadows, D. H., Meadows, D. L., Randers, J., & Behrens, W. W. (1972). Limits to Growth."},
-            new String[]{"World3HybridEngine", "📉 Modèle World3 Hybride (Physique & Capital)", "Couplage de la dynamique de World3 aux variables spatiales H3. Intègre la dispersion spatiale de la pollution et des ressources finies.", "Ref: Meadows, D. H. et al. (1972, 2004). Limits to Growth: The 30-Year Update."},
-            new String[]{"World3PureEngine", "📉 Modèle World3 Pur (Équations du Club de Rome)", "Reproduction fidèle des 5 sous-systèmes du rapport Meadows 1972 (Population, Capital, Agriculture, Pollution, Ressources).", "Ref: Meadows, D. H. et al. (1972). World3 Model Equations (Club of Rome Report)."}
+            new String[]{"FrontierAsabiyyahEngine", "⚔️ Asabiyyah de Frontière (Ibn Khaldoun & Peter Turchin)",
+                "Théorie Khaldounienne de la solidarité de groupe et déclin des dynasties (Badiya vs Hadara). Modélise l'érosion de la cohésion sociale lors du passage de la frontière métastable aux métropoles opulentes.",
+                "Ref: Ibn Khaldun (1377). Muqaddimah; Turchin, P. (2003). Historical Dynamics: Securing the Peace, Princeton Univ. Press.",
+                "• Variation d'Asabiyyah (Cohésion A) : dA/dt = c₁·F(x)·(1 - A) - c₂·(K(x)/N(x))·A\n  où F(x) est la pression militaire de frontière et K(x)/N(x) le capital par habitant (luxe).\n• Métropole opulente (K > 1000 kg/hab) : Déclin d'Asabiyyah dA/dt = -2.0% par pas de temps.\n• Zone de frontière (K ≤ 1000 kg/hab) : Forge la cohésion militaire dA/dt = +2.0% par pas de temps.\n• Inégalité & Déclin Dynastique : S_cohesion(t) = A(t) · Pop(t) · (1 - Gini(t))."},
+            new String[]{"AiAutonomousRegulationPureEngine", "🤖 Régulation Autonome de l'IA & Gouvernance",
+                "Modélisation de la régulation et des risques de l'intelligence artificielle. Évalue les probabilités d'émergence d'infrastructures autonomes et de gestion des risques.",
+                "Ref: Bostrom, N. (2014). Superintelligence; Russell, S. (2019). Human Compatible.",
+                "• Seuil d'Autonomie IA : P_alignement = 1 / (1 + exp(-k · (Niveau_Gouvernance - Complexité_IA)))\n• Taux de Risque Systémique R_ia = (1 - P_alignement) · Puissance_Calcul_Planétaire"},
+            new String[]{"AmerindianEcosystemEngine", "🌾 Agro-foresterie Amérindienne & Terra Preta",
+                "Techniques agricoles précolombiennes et enrichissement des sols en biochar. Augmente la capacité portante et la résilience des sols de forêt tropicale.",
+                "Ref: Denevan, W. M. (1992). The Pristine Myth; Glaser, B. et al. (2002). Terra Preta Biochar.",
+                "• Formation de Terra Preta : dC_biochar/dt = Apport_Charbon_Organique - Oxidation_Lente(0.001)\n• Gain de Capacité Portante : K_sols = K_base · (1 + α · ln(1 + C_biochar))"},
+            new String[]{"AsymmetricColonialTradeEngine", "🚢 Commerce Colonial Asymétrique & Extraction",
+                "Flux de ressources et fuite de valeur des colonies vers les métropoles. Simule la capture de rente et le blocage de l'industrialisation périphérique.",
+                "Ref: Wallerstein, I. (1974). The Modern World-System; Frank, A. G. (1967). Dependency Theory.",
+                "• Capture de Rente : Transfert_Richesse = Termes_Echange_Asym · Export_Matières_Premières\n• Frein d'Industrialisation Périphérique : dT_peripherie/dt = T_base · (1 - Ratio_Extraction)"},
+            new String[]{"BifurcationChaosEngine", "🌀 Chaos & Analyse des Bifurcations Systémiques",
+                "Sensibilité aux conditions initiales et points de basculement. Génère des micro-oscillations chaotiques pouvant déclencher des cascades d'instabilité.",
+                "Ref: Lorenz, E. N. (1963). Deterministic Nonperiodic Flow; May, R. M. (1976).",
+                "• Attracteur de Lorenz / Bifurcation Logistique : x_{t+1} = r · x_t · (1 - x_t)\n• Exposant de Liapounov λ > 0 -> Divergence exponentielle des trajectoires de simulation"},
+            new String[]{"BioMolecularEpidemiologyEngine", "☣️ Épidémiologie Bio-Moléculaire & Immunité Pop",
+                "Simulation avancée de la transmission virale et foyers infectieux. Modélise la transmission SIR/SEIR selon la densité urbaine et le réseau de commerce.",
+                "Ref: Kermack, W. O. & McKendrick, A. G. (1927). SIR Epidemiological Model.",
+                "• Modèle SEIR : dS/dt = -β·S·I/N, dE/dt = β·S·I/N - σ·E, dI/dt = σ·E - γ·I, dR/dt = γ·I\n• Taux de Reproduction de Base R₀ = β / γ · (1 + Variance_Contacts_Densité)"},
+            new String[]{"CulturalMaterialismPureEngine", "📜 Materialisme Culturel (Marvin Harris)",
+                "Déterminisme de l'infrastructure technologique et démographique sur les croyances. Adapte les valeurs morales aux contraintes d'extraction d'énergie.",
+                "Ref: Harris, M. (1979). Cultural Materialism: The Struggle for a Science of Culture.",
+                "• Alignement Superstructure : Superstructure(t) = f(Infrastructure_Énergétique, Pression_Démographique)\n• Transition Morale : dM/dt = k_adaptation · (Mode_Production - M)"},
+            new String[]{"CulturalSociologyEngine", "📜 Sociologie Culturelle & Matrice de Voisinage",
+                "Évolution des valeurs culturelles et métissage régional. Gère la diffusion des langues, des normes et la dérive culturelle entre mailles voisines.",
+                "Ref: Cavalli-Sforza, L. L. & Feldman, M. W. (1981). Cultural Transmission and Evolution.",
+                "• Matrice de Diffusion Culturelle : dC_i/dt = Σ_j w_{ij} · (C_j - C_i) + Drift_Accidentel\n• Distance Culturelle d(i,j) = || Vector_Langue_i - Vector_Langue_j ||"},
+            new String[]{"DeforestationErosionEngine", "🏜️ Érosion Forestière & Ensablement Fluvial",
+                "Dégradation des sols et perte de couverture végétale. Entraîne le ravinement des terres arables et le comblement des lits de rivières lors de coupes rases.",
+                "Ref: Montgomery, D. R. (2007). Dirt: The Erosion of Civilizations. Univ. of California Press.",
+                "• Érosion des Sols : Perte_Sol = k_coupe · (1 - Couverture_Forestiere) · Precipitations³\n• Comblement Fluvial = Σ Perte_Sol_Amont"},
+            new String[]{"EdoJapanIsolationEngine", "⛩️ Isolationnisme du Japon Edo (Sakoku)",
+                "Maintien d'un équilibre zéro-croissance et fermeture des frontières. Élimine la dépendance extérieure au détriment du rythme de progrès technologique.",
+                "Ref: Totman, C. (1993). Early Modern Japan; Diamond, J. (2005). Collapse (Tokugawa Forestry).",
+                "• Équilibre Sylvicole & Zéro-Croissance : Extraction_Bois <= Auto_Régénération_Forêt\n• Isolement Commercial : Flux_Externe = 0, Stabilité_Interne = Maximale"},
+            new String[]{"EntropicMetalDissipationEngine", "🏭 Dissipation Entropique des Métaux & Jevons Rebound",
+                "Dispersion irrémédiable des métaux rares et effets rebond. Calcule la perte irrécupérable de cuivre et de métaux précieux par usure mécanique et oxydation.",
+                "Ref: Georgescu-Roegen, N. (1971). The Entropy Law and the Economic Process.",
+                "• Pertes Entropiques Irrécupérables : dMetal_dissipe/dt = Production · (1 - Taux_Recyclage_Max)\n• Limite d'Usure Recyclage : Max_Recyclage = 85% par contrainte thermodynamique"},
+            new String[]{"EcotoxicologyFertilityEngine", "🧪 Ecotoxicologie & Stérilité Chimique",
+                "Impacts des polluants synthétiques sur le taux de fécondité. Simule la baisse de fertilité humaine liée à la concentration cumulée d'entropie chimique.",
+                "Ref: Colborn, T. et al. (1996). Our Stolen Future; Swan, S. H. (2021). Count Down.",
+                "• Baisse de Fécondité : F_effective = F_naturelle · exp(-k_tox · Charge_Pollution_Cumulee)"},
+            new String[]{"FertileCrescentSalinizationEngine", "🌾 Salinisation du Croissant Fertile",
+                "Dégradation historique des sols irrigués en Mésopotamie antique. Accumulation de sels minéraux toxiques par évaporation de l'eau d'irrigation.",
+                "Ref: Jacobsen, T. & Adams, R. M. (1958). Salt and Silt in Ancient Mesopotamian Agriculture.",
+                "• Accumulation Saline : dSel/dt = (Volume_Irrigation · Concentration_Sel_Eau) - Leaching_Drainage"},
+            new String[]{"GeoengineeringAlbedoFeedbackEngine", "🧪 Géo-ingénierie & Rétroaction d'Albédo Artificiel",
+                "Injections d'aérosols stratosphériques et terraformation. Diminue l'insolation solaire globale pour contrer le réchauffement climatique.",
+                "Ref: Crutzen, P. J. (2006). Albedo Modification via Stratospheric Aerosol Injection.",
+                "• Delta Albédo Artificiel : ΔAlbédo = k_aerosol · Mass_SO2_Injectee\n• Refroidissement Forcé : ΔT_cooling = -λ · S₀ · ΔAlbédo"},
+            new String[]{"HandyNasaHybridEngine", "📉 Modèle HANDY NASA Hybride (Démographie & Élites)",
+                "Rétroactions entre élites, travailleurs et ressources (NASA / Motesharrei). Simule les scénarios d'effondrement par surconsommation des élites.",
+                "Ref: Motesharrei, S., Rivas, J., & Kalnay, E. (2014). HANDY: Human and Nature Dynamics.",
+                "• Équations HANDY (4 Variables) : dx_w/dt = α_w·x_w - β_w·x_w,  dx_e/dt = α_e·x_e - β_e·x_e\n• Surconsommation Élites : Consommation_Elite = s · Consommation_Travailleur avec s >> 1"},
+            new String[]{"HandyNasaPureEngine", "📉 Modèle HANDY NASA Pur (Équations Différentielles)",
+                "Système dynamique pur de la dynamique homme-nature (Handy Model). Système à 4 équations couplées (Élites, Travailleurs, Nature, Capital).",
+                "Ref: Motesharrei, S. et al. (2014). HANDY Model Equations. Ecological Economics 101.",
+                "• Nature N : dN/dt = γ·N·(λ - N) - δ·x_w·N\n• Accumulation de Capital K : dK/dt = δ·x_w·N - C_w - C_e"},
+            new String[]{"JevonsParadoxEngine", "⚡ Effet Rebond & Paradoxe de Jevons",
+                "L'augmentation de l'efficacité énergétique accroît la consommation globale. Annule les gains d'économie d'énergie par l'expansion de l'échelle industrielle.",
+                "Ref: Jevons, W. S. (1865). The Coal Question; Alcott, B. (2005). Jevons' Paradox.",
+                "• Énergie Consommée E_total = Pop · Efficacité^ε avec ε > 1.0 (Paradoxe de Jevons)"},
+            new String[]{"KardashevPureEngine", "🌌 Échelle de Kardashev & Capture Énergétique",
+                "Transition vers le contrôle de l'énergie planétaire intégrale. Évalue le score de Kardashev (Type 0.0 à 1.0) selon la puissance totale captée en watts.",
+                "Ref: Kardashev, N. S. (1964). Transmission of Information by Extraterrestrial Civilizations.",
+                "• Indice de Kardashev K = (log₁₀(Puissance_Watts) - 6) / 10\n• Type I = 10¹⁶ Watts (Énergie Planétaire Intégrale)"},
+            new String[]{"KinSelectionHamiltonEngine", "🧬 Sélection de Parentèle (Règle de Hamilton)",
+                "Évolution de l'altruisme génétique et coopération inter-individus (rB > C). Détermine la cohésion des petites tribus et familles étendues.",
+                "Ref: Hamilton, W. D. (1964). The Genetical Evolution of Social Behaviour. J. Theor. Biol.",
+                "• Condition d'Altruisme : r · Benefit > Cost avec r = Coefficient d'Apparentement Génétique"},
+            new String[]{"KurzweilAcceleratingReturnsEngine", "🚀 Loi des Rendements Accélérés (Ray Kurzweil)",
+                "Accélération exponentielle du progrès scientifique et des processeurs. Réduit les délais d'invention à mesure que le niveau technologique s'élève.",
+                "Ref: Kurzweil, R. (2005). The Singularity Is Near; Moore, G. E. (1965).",
+                "• Vitesse d'Invention dTech/dt = V₀ · exp(λ · Tech(t))"},
+            new String[]{"LenskiPureEngine", "🧠 Évolution Socioculturelle (Gerhard Lenski)",
+                "Classification des sociétés selon leur mode d'extraction d'information et d'énergie. Rétrograde ou promeut le type de société (Chasseurs, Agricoles, Industriels).",
+                "Ref: Lenski, G. (1966). Power and Privilege: A Theory of Social Stratification.",
+                "• Stade Sociétal = f(Énergie_Par_Habitant, Stock_Information_Technologique)"},
+            new String[]{"LeslieWhitePureEngine", "⚡ Loi de Leslie White (Culture = E × T)",
+                "Le développement culturel varie directly avec l'énergie captée par habitant (C = E × T). Détermine la complexité symbolique selon l'énergie.",
+                "Ref: White, L. A. (1943). Energy and the Evolution of Culture. American Anthropologist.",
+                "• Complexité Culturelle C = Énergie_Par_Capita · Efficacité_Technologique"},
+            new String[]{"MediterraneanSeaHighwayEngine", "⛵ Autoroute Maritime Méditerranéenne & Thalassocraties",
+                "Réseau de navigation côtière et émergence des cités-états maritimes. Réduit la friction de transport sur l'eau et stimule les comptoirs maritimes.",
+                "Ref: Braudel, F. (1949). La Méditerranée et le Monde Méditerranéen.",
+                "• Multiplicateur de Transport Maritime = 0.12 × Friction_Terrestre"},
+            new String[]{"MegafaunaEcosystemEngine", "🦕 Conservation de la Biodiversité Sauvage & Mégafaune",
+                "Pressions de chasse et extinction/préservation des espèces sauvages. Simule la disparition de la grande faune lors de l'expansion humaine néolithique.",
+                "Ref: Martin, P. S. (1984). Quaternary Extinctions: A Prehistoric Revolution.",
+                "• Extinction Mégafaune dM/dt = r_m·M - k_chasse·Pop_Humaine·M"},
+            new String[]{"MilitaryTechShockEngine", "💣 Chocs de Technologie Militaire & Poudre à Canon",
+                "Révolution militaire et transformation de l'architecture des fortifs. Augmente la capacité de conquête des empires centralisés.",
+                "Ref: Parker, G. (1988). The Military Revolution; McNeill, W. H. (1982).",
+                "• Puissance Offensive = Puissance_Base · (1 + Multiplicateur_Poudre_Canon)"},
+            new String[]{"MonasticDemographicBufferEngine", "🏛️ Buffers Démographiques Monastiques & Savoir",
+                "Préservation du capital intellectuel et régulation démographique par les monastères. Empêche la perte totale de savoir lors de la chute d'un empire.",
+                "Ref: Weber, M. (1905); Kautsky, K. (1889). Thomas More and his Utopia.",
+                "• Plancher de Rétention du Savoir : T_min = Max(T_courant, T_monastique_sauvegardé)"},
+            new String[]{"NordhausDiceHybridEngine", "🌡️ Modèle DICE Hybride (Nordhaus - Climat & Économie)",
+                "Couplage économie-climat intégré avec boucle de dommage du carbone. Évalue la perte de PIB causée par l'élévation des températures extrêmes.",
+                "Ref: Nordhaus, W. D. (1992, 2017). Integrated Assessment Models (DICE-2016R).",
+                "• Fonction de Dommage Nordhaus Ω(T) = 1 / (1 + π₁·T + π₂·T²)\n• PIB Ajusté Climat Y_net = Ω(T) · Y_brut"},
+            new String[]{"NordhausDicePureEngine", "🌡️ Modèle DICE Pur (Taxe Carbone & PIB)",
+                "Modélisation analytique du coût du carbone et investissements verts. Calcule le prix social du carbone pour inciter la décarbonation.",
+                "Ref: Nordhaus, W. D. (1992). An Optimal Transition Path for Controlling Greenhouse Gases. Science.",
+                "• Prix Social du Carbone SCC = d(Dommages_Futurs_Actualisés) / d(Émission_CO2)"},
+            new String[]{"NuclearSafetyRadiotoxicityEngine", "⚛️ Radiotoxicité & Fusion Nucléaire",
+                "Gestion des risques d'accidents atomiques et retombées toxiques. Simule la contamination des terres et les surcoûts de sécurité industrielle.",
+                "Ref: Perrow, C. (1984). Normal Accidents: Living with High-Risk Technologies.",
+                "• Probabilité d'Accident Majeur = 1 - exp(-Taux_Défaillance_Système · Nombre_Reacteurs)"},
+            new String[]{"NuclearWarfareClimateEngine", "💥 Guerres Thermodynamiques & Hiver Nucléaire",
+                "Modélisation des incendies massifs et refroidissement climatique. Injection de suie stratosphérique bloquant les rayons solaires pendant des années.",
+                "Ref: Turco, R. P., Toon, O. B., Ackerman, T. P., Pollack, J. B., & Sagan, C. (1983). TTAPS.",
+                "• Baisse Température Mondiale ΔT_nucléaire = -15.0 °C · (Masse_Suie / 150 Tg)"},
+            new String[]{"OstromCommonsPureEngine", "🏞️ Auto-Gouvernance des Communs (Elinor Ostrom)",
+                "Règles institutionnelles locales pour éviter la tragédie des communs. Maintient la durabilité des pâturages et de la pêche sans privatisation.",
+                "Ref: Ostrom, E. (1990). Governing the Commons: Evolution of Institutions.",
+                "• Maintien des Communs : Taux_Survie_Communs = f(Institution_Locale, Sanctions_Graduées)"},
+            new String[]{"PinkerViolenceDeclinePureEngine", "🕊️ Déclin Historique de la Violence (Steven Pinker)",
+                "Baisse de la mortalité violente par l'État, le commerce et l'alphabétisation. Réduit les homicides et les guerres à mesure que l'État de droit progresse.",
+                "Ref: Pinker, S. (2011). The Better Angels of Our Nature: Why Violence Has Declined.",
+                "• Taux de Mortalité Violente = V₀ · exp(-k_etat · Monopole_Violence - k_commerce · Fret)"},
+            new String[]{"ProtestantWorkEthicEngine", "✝️ Éthique du Travail & Accumulation de Capital (Max Weber)",
+                "Impact des valeurs morales sur la formation du capital industriel. Stimule le réinvestissement des bénéfices dans les machines au lieu du luxe.",
+                "Ref: Weber, M. (1905). Die protestantische Ethik und der Geist des Kapitalismus.",
+                "• Taux d'Épargne Réinvestie : S_épargne = S_base · (1 + α_ethique_travail)"},
+            new String[]{"PsychohistoryPureEngine", "📊 Psychohistoire Cliodynamique (Modèle d'Asimov)",
+                "Prédiction statistique des grandes masses humaines à long terme. Anticipe les cycles de stabilité et prévient les crises d'effondrement.",
+                "Ref: Asimov, I. (1951). Foundation; Turchin, P. (2008). Arise Cliodynamics. Nature.",
+                "• Trajectoire Macro-Historique : X(t+Δt) = Matrix_P · X(t) avec Invariance Statistique"},
+            new String[]{"RomanImperialCliodynamicEngine", "🪙 Cycle Cliodynamique Romain & Altération de la Monnaie",
+                "Dégradation de la pureté du Denier et crises fiscales impériales. Entraîne l'hyper-inflation et le déclin du pouvoir d'achat des légions.",
+                "Ref: Turchin, P. & Scheidel, W. (2009). Coin Debasement and Structural Cycles in Rome.",
+                "• Pureté de la Monnaie : Teneur_Argent = T₀ · exp(-k_solde_fiscal · Déficit_Armée)\n• Inflation & Solde des Légions : Solde_Reelle = Solde_Nominale / Inflation"},
+            new String[]{"ScottAgainstTheGrainPureEngine", "🌾 Modèle de l'État Céréalier (James C. Scott)",
+                "Attractivité des céréales taxables et émergence de l'État archaïque. Privilégie le blé/riz stockables pour l'impôt au détriment des tubercules.",
+                "Ref: Scott, J. C. (2017). Against the Grain: A Deep History of the Earliest States.",
+                "• Capacité Taxable : Assiette_Fiscale = Production_Céréales_Stockables - Subsistance_Minimale"},
+            new String[]{"SelfDomesticationEngine", "🐕 Auto-Domestication Humaine & Réduction de l'Agressivité",
+                "Sélection contre l'agressivité réactive dans les fortes densités. Sélectionne les comportements coopératifs indispensables à la vie urbaine.",
+                "Ref: Hare, B. (2017). Survival of the Friendliest; Lahire, B. (2018). Structures Fondamentales.",
+                "• Réduction Agressivité Réactive : dAgressivite/dt = -k_urbain · Densité_Cellule"},
+            new String[]{"SexualSelectionMatingEngine", "💍 Sélection Sexuelle & Marché Matrimonial",
+                "Structures de parenté et polygamie/monogamie selon les ressources. Régule l'accès aux partenaires selon l'inégalité de capital.",
+                "Ref: Buss, D. M. (1989). Sex differences in human mate preferences. BBS.",
+                "• Indice Polygynie = f(Gini_Richesse, Monopole_Ressources_Elites)"},
+            new String[]{"SmilMaterialTransitionsPureEngine", "🏗️ Transitions Matérielles & Énergétiques (Vaclav Smil)",
+                "Inertie physique des transitions vers l'acier, le béton, l'ammoniac et le plastique. Impose des délais de plusieurs décennies pour remplacer un matériau de base.",
+                "Ref: Smil, V. (2019). Material World & Energy Transitions: History, Requirements.",
+                "• Temps de Transition Matérielle T_transition = 40 à 60 ans par inertie du capital fixe"},
+            new String[]{"SpatialCityFractalEngine", "🏙️ Distribution Fractale des Villes (Loi de Zipf / Batty)",
+                "Hiérarchie des métropoles et loi rang-taille urbaine. Organise le réseau urbain en sous-centres régionaux et métropoles primatiales.",
+                "Ref: Batty, M. (2008). The Size, Scale, and Shape of Cities. Science; Zipf, G. K. (1949).",
+                "• Loi de Zipf Rang-Taille : Pop(Rang r) = Pop_Max / r^α avec α ≈ 1.0"},
+            new String[]{"TasmanianCulturalRegressionEngine", "🏝️ Régression Culturelle de Tasmanie (Henrich)",
+                "Perte de technologies complexes par goulet d'étranglement démographique. Fait régresser l'outillage si la population tombe sous le seuil critique d'apprentissage.",
+                "Ref: Henrich, J. (2004). Demography and Cultural Loss in Tasmania. American Antiquity.",
+                "• Seuil Critique d'Apprentissage : dTech/dt < 0 si Pop_Tribu < N_critique"},
+            new String[]{"TechnologicalSingularityEngine", "🌌 Singularité Technologique & Kurzweil Rebound",
+                "Accélération exponentielle du progrès scientifique et IA. Franchit le point d'inflexion où les machines auto-améliorent leur propre conception.",
+                "Ref: Good, I. J. (1965); Vinge, V. (1993); Kurzweil, R. (2005). The Singularity Is Near.",
+                "• Boucle de Rétroaction Singularité : d(Capacité_IA)/dt = (Capacité_IA)^1.5"},
+            new String[]{"UrbanThermodynamicsEngine", "🏙️ Thermodynamique Urbaine & Métropoles",
+                "Îlots de chaleur urbains et densité bâtie hyper-concentrée. Élève la température locale des métropoles et consomme de la puissance de climatisation.",
+                "Ref: Oke, T. R. (1982). The Energetic Basis of the Urban Heat Island. Q. J. R. Meteorol. Soc.",
+                "• Îlot de Chaleur Urbain ΔT_urbain = a · log₁₀(Immobilier_Densité) + b"},
+            new String[]{"World3CouplingEngine", "📉 Modèle Couplé World3 & Limites à la Croissance",
+                "Rétroactions entre population, pollution et capital (Club de Rome). Connecte le modèle World3 Meadows aux cellules hexagonales H3.",
+                "Ref: Meadows, D. H., Meadows, D. L., Randers, J., & Behrens, W. W. (1972). Limits to Growth.",
+                "• System Dynamic 5 Subsystems (Population, Capital, Agriculture, Pollution, Non-Renewables)"},
+            new String[]{"World3HybridEngine", "📉 Modèle World3 Hybride (Physique & Capital)",
+                "Couplage de la dynamique de World3 aux variables spatiales H3. Intègre la dispersion spatiale de la pollution et des ressources finies.",
+                "Ref: Meadows, D. H. et al. (1972, 2004). Limits to Growth: The 30-Year Update.",
+                "• Dispersion Spatiale H3 de la Pollution Persistante"},
+            new String[]{"World3PureEngine", "📉 Modèle World3 Pur (Équations du Club de Rome)",
+                "Reproduction fidèle des 5 sous-systèmes du rapport Meadows 1972 (Population, Capital, Agriculture, Pollution, Ressources).",
+                "Ref: Meadows, D. H. et al. (1972). World3 Model Equations (Club of Rome Report).",
+                "• Reproduction Intégrale des Équations World3 DYNAMO / Stella"}
         );
 
         typeBCheckBoxMap.clear();
         for (String[] eng : optionalEngines) {
             CheckBox cb = new CheckBox(eng[1]);
-            cb.setSelected(false);
+            cb.setSelected("FrontierAsabiyyahEngine".equals(eng[0]));
             cb.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #e2e8f0;");
 
-            Tooltip tooltip = new Tooltip("⚙️ [MOTEUR TYPE B OPTIONNEL]\n" + eng[0] + " — " + eng[1] + "\n\n" + eng[2]);
-            tooltip.setStyle("-fx-font-size: 11px; -fx-max-width: 400px;");
+            String eqText = eng.length > 4 ? eng[4] : "📐 Équation d'État : dX/dt = f(X, t) + Σ F_inter-cellulaire";
+            Tooltip tooltip = new Tooltip("⚙️ [MOTEUR OPTIONNEL]\n" + eng[0] + " — " + eng[1] + "\n\n" + eng[2] + "\n\n" + eqText + "\n\n📚 " + eng[3]);
+            tooltip.setStyle("-fx-font-size: 11px; -fx-max-width: 480px;");
             cb.setTooltip(tooltip);
 
             cb.setOnAction(e -> notifyParamChange());
 
             typeBCheckBoxMap.put(eng[0], cb);
 
-            Label badge = new Label("[⚙️ TYPE B]");
-            badge.setStyle("-fx-font-size: 9px; -fx-font-weight: bold; -fx-text-fill: #a78bfa; -fx-background-color: rgba(167,139,250,0.15); -fx-padding: 2 6; -fx-background-radius: 4;");
-
-            HBox row = new HBox(8, badge, cb);
+            HBox row = new HBox(8, cb);
             row.setAlignment(Pos.CENTER_LEFT);
 
-            row.setOnMouseEntered(e -> {
-                engineInspectorTitle.setText("🔎 " + eng[0] + " [⚙️ TYPE B OPTIONNEL]");
-                engineInspectorText.setText(eng[2]);
-            });
+            row.setOnMouseEntered(e -> updateEngineInspector(eng[0], eng[1], eng[2], eng[3], eqText));
+            row.setOnMouseClicked(e -> updateEngineInspector(eng[0], eng[1], eng[2], eng[3], eqText));
 
             typeBBoxContainer.getChildren().add(row);
         }
 
-        TitledPane typeBPane = new TitledPane("⚙️ MODULES OPTIONNELS TYPE B (" + typeBEngines.size() + " MOTEURS EXTENSIBLES & IMPORT/EXPORT)", typeBBoxContainer);
+        TitledPane typeBPane = new TitledPane("⚙️ MODULES OPTIONNELS (" + optionalEngines.size() + " MOTEURS EXTENSIBLES & IMPORT/EXPORT)", typeBBoxContainer);
         typeBPane.setExpanded(true);
         typeBPane.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 11px; -fx-font-weight: bold;");
 
-        section.getChildren().addAll(oceanOptHeader, oceanOptDesc, optBox, engineInspectorCard, typeAPane, typeBPane);
+        section.getChildren().addAll(oceanOptHeader, oceanOptDesc, optBox, engineInspectorCard, corePane, typeBPane);
         return section;
 
     }
@@ -2051,61 +2224,6 @@ public class ScenarioSetupPanel extends BorderPane {
 
         if (typeBBoxContainer != null) {
             typeBBoxContainer.getChildren().add(row);
-        }
-    }
-
-    private void exportCustomEngineTemplate() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Exporter un Template de Moteur Custom (.java)");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers Java Source (*.java)", "*.java"));
-        chooser.setInitialFileName("MonMoteurSimulationCustom.java");
-        File targetFile = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
-
-        if (targetFile != null) {
-            try {
-                String className = targetFile.getName().replace(".java", "");
-                String code = org.ether.society.procedural.jit.DynamicEngineCompiler.generateEngineTemplateCode(className);
-                java.nio.file.Files.writeString(targetFile.toPath(), code);
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Exportation Template Réussie");
-                alert.setHeaderText("Fichier Source Java Généré");
-                alert.setContentText("Le fichier modèle pour créer votre propre moteur de simulation a été enregistré sous :\n" + targetFile.getAbsolutePath() + "\n\nModifiez la méthode process() puis ré-importez le fichier avec le bouton Importer.");
-                alert.showAndWait();
-            } catch (Exception ex) {
-                logger.error("Failed to export engine template", ex);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erreur d'Exportation");
-                alert.setContentText("Impossible d'exporter le fichier template : " + ex.getMessage());
-                alert.showAndWait();
-            }
-        }
-    }
-
-    private void importCustomEngineFile() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Importer et Compiler un Moteur Java Custom (.java / .class)");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers Java (*.java, *.class)", "*.java", "*.class"));
-        File sourceFile = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
-
-        if (sourceFile != null) {
-            var result = org.ether.society.procedural.jit.DynamicEngineCompiler.compileAndLoadEngine(sourceFile);
-            if (result.success()) {
-                addCustomEngineCheckBoxToUI(result.engineName(), "🔌 Moteur Custom : " + result.engineName(), "Moteur compilé dynamiquement à la volée et injecté dans le compilateur JIT.", true);
-                notifyParamChange();
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Compilation & Injection JIT Réussie");
-                alert.setHeaderText("⚡ Moteur compilé à la volée !");
-                alert.setContentText(result.message() + "\n\nLe moteur a été enregistré dans le registre ProceduralEngineRegistry et couplé au compilateur JIT d'équations.");
-                alert.showAndWait();
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Échec de Compilation Moteur");
-                alert.setHeaderText("Impossible d'injecter le moteur custom");
-                alert.setContentText(result.message());
-                alert.showAndWait();
-            }
         }
     }
 
@@ -3105,8 +3223,8 @@ public class ScenarioSetupPanel extends BorderPane {
         colMag.setOnEditCommit(e -> e.getRowValue().setMagnitude(e.getNewValue()));
         colMag.setPrefWidth(80);
 
-        eventsTable.getColumns().addAll(colType, colName, colYear, colLat, colLon, colDepth, colMag);
-        eventsTable.setUserData(new TableColumn[]{colType, colName, colYear, colLat, colLon, colDepth, colMag});
+        eventsTable.getColumns().addAll(colName, colYear, colLat, colLon, colDepth, colMag);
+        eventsTable.setUserData(new TableColumn[]{colName, colYear, colLat, colLon, colDepth, colMag});
 
         addEventBtn = new Button();
         addEventBtn.getStyleClass().add("button-secondary");
@@ -3118,7 +3236,18 @@ public class ScenarioSetupPanel extends BorderPane {
         removeEventBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events.remove", "Supprimer l'événement sélectionné.")));
         removeEventBtn.setOnAction(e -> {
             ClimateEvent sel = eventsTable.getSelectionModel().getSelectedItem();
-            if (sel != null) eventsList.remove(sel);
+            if (sel != null) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle(org.ether.society.i18n.I18n.getOrDefault("dialog.confirm.title", "Confirmation de suppression"));
+                alert.setHeaderText(null);
+                alert.setContentText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.confirm_delete", "Voulez-vous vraiment supprimer cet événement ?"));
+                WindowUtils.applyWindowIcon(alert);
+                alert.showAndWait().ifPresent(res -> {
+                    if (res == ButtonType.OK) {
+                        eventsList.remove(sel);
+                    }
+                });
+            }
         });
 
         loadEarthEventsBtn = new Button();
@@ -3306,17 +3435,18 @@ public class ScenarioSetupPanel extends BorderPane {
         if (exportDensityMapBtn != null) exportDensityMapBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.demo.btn_export", "📤 Exporter Carte de Densité Générée (PNG)"));
 
         if (boundaryModeCombo != null) {
-            boundaryModeCombo.setButtonCell(boundaryModeCombo.getCellFactory().call(null));
+            String val = boundaryModeCombo.getValue();
+            boundaryModeCombo.setValue(null);
+            boundaryModeCombo.setValue(val);
         }
 
-        if (eventsTable != null && eventsTable.getUserData() instanceof TableColumn[] cols && cols.length == 7) {
-            cols[0].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.type", "Type"));
-            cols[1].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.name", "Nom / Description"));
-            cols[2].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.year", "Année"));
-            cols[3].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.lat", "Latitude"));
-            cols[4].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.lon", "Longitude"));
-            cols[5].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.depth", "Profondeur (km)"));
-            cols[6].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.magnitude", "Magnitude"));
+        if (eventsTable != null && eventsTable.getUserData() instanceof TableColumn[] cols && cols.length == 6) {
+            cols[0].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.name", "Nom / Description"));
+            cols[1].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.year", "Année"));
+            cols[2].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.lat", "Latitude"));
+            cols[3].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.lon", "Longitude"));
+            cols[4].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.depth", "Profondeur (km)"));
+            cols[5].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.magnitude", "Magnitude"));
         }
         if (getLeft() instanceof ScrollPane sp && sp.getContent() instanceof VBox root) {
             root.lookupAll("#__popHeader").forEach(n -> { if (n instanceof Label l) l.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "2. DÉMOGRAPHIE & RÉPARTITION DE POPULATION")); });
@@ -3408,6 +3538,60 @@ public class ScenarioSetupPanel extends BorderPane {
 
     public List<ClimateEvent> getScheduledEvents() {
         return eventsList != null ? new ArrayList<>(eventsList) : new ArrayList<>();
+    }
+
+    private void exportCustomEngineTemplate() {
+        try {
+            javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+            fileChooser.setTitle("Exporter un Template de Moteur Custom Ether (.java)");
+            fileChooser.setInitialFileName("MyCustomOptionalEngine.java");
+            fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Fichiers Source Java (*.java)", "*.java"));
+            java.io.File file = fileChooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
+            if (file != null) {
+                String template = """
+                    package org.ether.society.procedural;
+
+                    import org.ether.society.core.H3SimulationEngine;
+                    import org.ether.society.model.H3Cell;
+
+                    /**
+                     * Template Moteur Dynamic Optional Ether.
+                     */
+                    public class MyCustomOptionalEngine {
+                        private final String name = "MyCustomOptionalEngine";
+
+                        public void update(H3SimulationEngine engine, H3Cell cell, double deltaTime) {
+                            // Implémentation personnalisée des équations cliodynamiques
+                        }
+                    }
+                    """;
+                java.nio.file.Files.writeString(file.toPath(), template);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Template de moteur personnalisé exporté avec succès :\n" + file.getAbsolutePath());
+                alert.show();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void importCustomEngineFile() {
+        try {
+            javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+            fileChooser.setTitle("Importer un Moteur Personnalisé (.java / .class)");
+            fileChooser.getExtensionFilters().addAll(
+                new javafx.stage.FileChooser.ExtensionFilter("Moteurs Java (*.java, *.class)", "*.java", "*.class")
+            );
+            java.io.File file = fileChooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
+            if (file != null) {
+                String fileName = file.getName();
+                String engineKey = fileName.substring(0, fileName.lastIndexOf('.'));
+                addCustomEngineCheckBoxToUI(engineKey, "🔌 " + engineKey + " (Moteur Custom Importé)", "Moteur dynamique personnalisé importé depuis " + file.getName(), true);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Moteur personnalisé importé et enregistré dans le scénario :\n" + file.getName());
+                alert.show();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**

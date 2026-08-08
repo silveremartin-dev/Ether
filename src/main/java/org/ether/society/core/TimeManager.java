@@ -97,6 +97,15 @@ public class TimeManager {
     }
 
     /**
+     * Gets the current day of the month (1-30).
+     *
+     * @return Current day (default 1)
+     */
+    public int getCurrentDay() {
+        return 1;
+    }
+
+    /**
      * Gets total simulation ticks.
      *
      * @return Total ticks (months)

@@ -67,10 +67,6 @@ public class ControlPanel extends VBox {
     private final Button stepForwardBtn;
     private final Button fastForwardBtn;
 
-    private final Button speed1x;
-    private final Button speed2x;
-    private final Button speed5x;
-    private final Button speed20x;
     private final Button speedMax;
     private final Slider speedSlider;
 
@@ -105,7 +101,7 @@ public class ControlPanel extends VBox {
         dateHeaderLabel = new Label("📅 " + I18n.getOrDefault("sim.header.date", "Date & Heure : ") + "T=0");
         dateHeaderLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
-        tpsLabel = new Label("⏱️ " + I18n.getOrDefault("sim.header.tps", "Cadence : 0.0 itérations/sec (1 tick = 1 mois)"));
+        tpsLabel = new Label("⏱️ " + I18n.getOrDefault("sim.header.tps", "Cadence : 0.0 itér/sec (30 ticks = 1 mois)"));
         tpsLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
 
         VBox dateHeaderBox = new VBox(4, scenarioHeaderLabel, dateHeaderLabel, tpsLabel);
@@ -154,7 +150,6 @@ public class ControlPanel extends VBox {
 
         HBox playBar = new HBox(4, rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stopBtn, stepForwardBtn, fastForwardBtn);
         playBar.setAlignment(Pos.CENTER);
-        playBar.setAlignment(Pos.CENTER);
 
         speedSlider = new Slider(1, 20, 1);
         speedSlider.setBlockIncrement(1);
@@ -163,70 +158,30 @@ public class ControlPanel extends VBox {
         speedSlider.setShowTickMarks(true);
         speedSlider.setShowTickLabels(true);
         speedSlider.setSnapToTicks(true);
-        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.slider", "Vitesse de simulation")));
+        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.slider", "Vitesse de simulation (Multiplicateur de fréquence)")));
+        HBox.setHgrow(speedSlider, Priority.ALWAYS);
 
-        Label speedValueLabel = new Label("⏱️ Vitesse : 1x (1 mois / sec)");
+        Label speedValueLabel = new Label("⏱️ Vitesse : 1x (Cible)");
         speedValueLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;");
 
         speedSlider.valueProperty().addListener((obs, oldV, newV) -> {
             int spd = newV.intValue();
             engine.setSpeed(spd);
-            String timeRate;
-            if (spd >= 100) {
-                timeRate = "Calcul CPU Max (Illimité)";
-            } else if (spd >= 12) {
-                timeRate = String.format(java.util.Locale.FRANCE, "%.1f ans / sec", spd / 12.0);
-            } else {
-                timeRate = String.format("%d mois / sec", spd);
-            }
-            speedValueLabel.setText(String.format("⏱️ Vitesse : %s (%s)", spd >= 100 ? "MAX 🚀" : spd + "x", timeRate));
+            speedValueLabel.setText(String.format("⏱️ Vitesse Cible : %dx", spd));
         });
-
-        // Speed graduation scale label line
-        HBox scaleLabelsBox = new HBox();
-        scaleLabelsBox.setAlignment(Pos.CENTER_LEFT);
-        Label lbl1 = new Label("1x");
-        Label lbl5 = new Label("5x");
-        Label lbl10 = new Label("10x");
-        Label lbl15 = new Label("15x");
-        Label lbl20 = new Label("20x");
-        Label lblMax = new Label("MAX");
-        for (Label l : List.of(lbl1, lbl5, lbl10, lbl15, lbl20, lblMax)) {
-            l.setStyle("-fx-font-size: 9px; -fx-text-fill: #94a3b8; -fx-font-weight: bold;");
-        }
-        Region s1 = new Region(); HBox.setHgrow(s1, Priority.ALWAYS);
-        Region s2 = new Region(); HBox.setHgrow(s2, Priority.ALWAYS);
-        Region s3 = new Region(); HBox.setHgrow(s3, Priority.ALWAYS);
-        Region s4 = new Region(); HBox.setHgrow(s4, Priority.ALWAYS);
-        Region s5 = new Region(); HBox.setHgrow(s5, Priority.ALWAYS);
-        scaleLabelsBox.getChildren().addAll(lbl1, s1, lbl5, s2, lbl10, s3, lbl15, s4, lbl20, s5, lblMax);
-
-        // Speed preset buttons
-        speed1x = new Button("1x");
-        speed1x.setOnAction(e -> { engine.setSpeed(1); speedSlider.setValue(1); });
-        
-        speed2x = new Button("2x");
-        speed2x.setOnAction(e -> { engine.setSpeed(2); speedSlider.setValue(2); });
-        
-        speed5x = new Button("5x");
-        speed5x.setOnAction(e -> { engine.setSpeed(5); speedSlider.setValue(5); });
-        
-        speed20x = new Button("20x");
-        speed20x.setOnAction(e -> { engine.setSpeed(20); speedSlider.setValue(20); });
 
         speedMax = new Button("MAX 🚀");
         speedMax.setTooltip(new Tooltip("Calcule les ticks à la vitesse maximale permise par le processeur (Uncapped CPU)"));
-        speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 8;");
+        speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4;");
         speedMax.setOnAction(e -> {
             engine.setSpeed(999);
-            speedValueLabel.setText("⏱️ Vitesse : MAX 🚀 (Calcul CPU Max - Uncapped)");
+            speedValueLabel.setText("⏱️ Vitesse Cible : MAX 🚀 (Illimité CPU)");
         });
 
-        HBox speedBtnBox = new HBox(5, speed1x, speed2x, speed5x, speed20x, speedMax);
-        speedBtnBox.setAlignment(Pos.CENTER);
-        speedBtnBox.setAlignment(Pos.CENTER);
+        HBox sliderRow = new HBox(8, speedSlider, speedMax);
+        sliderRow.setAlignment(Pos.CENTER_LEFT);
 
-        VBox timeCard = new VBox(8, timeTitle, playBar, speedValueLabel, speedBtnBox, speedSlider, scaleLabelsBox);
+        VBox timeCard = new VBox(8, timeTitle, playBar, speedValueLabel, sliderRow);
         styleCard(timeCard);
 
         // --- 3. MEDIA & EXPORT MP4 CARD ---
@@ -311,6 +266,7 @@ public class ControlPanel extends VBox {
 
         eventLabel = new Label("");
         eventLabel.setStyle("-fx-text-fill: #f43f5e; -fx-font-size: 11px;");
+        eventLabel.setOnMouseClicked(e -> parseAndCenterEvent(eventLabel.getText()));
 
         VBox systemCard = new VBox(6, dbStatusLabel, eventLabel);
         styleCard(systemCard);
@@ -378,17 +334,24 @@ public class ControlPanel extends VBox {
             onTimelapseRecord.run();
         }
         this.isRecordingVideo = !this.isRecordingVideo;
+        if (mapCanvas != null) {
+            if (isRecordingVideo) {
+                mapCanvas.startVideoRecording();
+            } else {
+                mapCanvas.stopVideoRecording();
+            }
+        }
         if (isRecordingVideo) {
-            recordVideoBtn.setText("⏹️ Arrêter Vidéo MP4");
+            recordVideoBtn.setText("⏹️ Arrêter Vidéo MP4 (1:1 Tick)");
             recordVideoBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8;");
             if (notificationOverlay != null) {
-                notificationOverlay.showNotification("🎥 Enregistrement Vidéo MP4 Démarré !", "#ef4444");
+                notificationOverlay.showNotification("🎥 Enregistrement Vidéo 1:1 Frame/Tick Démarré !", "#ef4444");
             }
         } else {
-            recordVideoBtn.setText("🎥 Enregistrer Vidéo MP4");
+            recordVideoBtn.setText("🎥 Enregistrer Vidéo MP4 (1:1 Tick)");
             recordVideoBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8;");
             if (notificationOverlay != null) {
-                notificationOverlay.showNotification("🎬 Enregistrement Vidéo MP4 Finalisé !\nStocké dans saves/timelapse/", "#10b981");
+                notificationOverlay.showNotification("🎬 Vidéo 1:1 Finalisée !\nImages stockées dans saves/timelapse/", "#10b981");
             }
         }
     }
@@ -427,7 +390,8 @@ public class ControlPanel extends VBox {
         popStatValue.setText(String.format("Pop. Totale : %s", formatNumber(population)));
         foodStatValue.setText(String.format("Stocks Alim. : %s", formatNumber((long) food)));
         cellStatValue.setText(String.format("Cellules Habitées : %,d", populatedCells));
-        tpsLabel.setText(String.format(java.util.Locale.FRANCE, "⏱️ Cadence : %.1f itérations/sec (1 tick = 1 mois)", tps));
+        double monthsPerSec = tps / 30.0;
+        tpsLabel.setText(String.format(java.util.Locale.FRANCE, "⏱️ Cadence Réelle : %.1f itér/sec (%.1f mois/sec | 30 ticks = 1 mois)", tps, monthsPerSec));
     }
 
     private String formatNumber(long num) {
@@ -460,6 +424,25 @@ public class ControlPanel extends VBox {
         eventHistory.addAll(events);
         String lastEvent = events.get(events.size() - 1);
         eventLabel.setText(lastEvent);
+        eventLabel.setTooltip(new Tooltip("🎯 Cliquer pour centrer la vue sur les coordonnées de cet événement.\n\n" + lastEvent));
+        eventLabel.setCursor(javafx.scene.Cursor.HAND);
+    }
+
+    private void parseAndCenterEvent(String eventText) {
+        if (eventText == null || mapCanvas == null) return;
+        try {
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("Lat:\\s*(-?\\d+(?:\\.\\d+)?)(?:°)?([NS])?,\\s*Lng:\\s*(-?\\d+(?:\\.\\d+)?)(?:°)?([EW])?");
+            java.util.regex.Matcher matcher = pattern.matcher(eventText);
+            if (matcher.find()) {
+                double lat = Double.parseDouble(matcher.group(1));
+                if ("S".equalsIgnoreCase(matcher.group(2))) lat = -Math.abs(lat);
+                double lng = Double.parseDouble(matcher.group(3));
+                if ("W".equalsIgnoreCase(matcher.group(4))) lng = -Math.abs(lng);
+                mapCanvas.centerOnCoordinates(lat, lng);
+            }
+        } catch (Exception ex) {
+            logger.debug("Could not parse coordinates from event text: {}", eventText);
+        }
     }
 
     public void updateAge(String ageName) {

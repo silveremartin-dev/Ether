@@ -12,10 +12,15 @@ import org.ether.society.culture.CultureEngine;
 import org.ether.society.culture.CultureVector;
 import org.ether.society.flux.FluxEngine;
 import org.ether.society.model.Biome;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +75,21 @@ public class H3MapCanvas extends Canvas {
     private Pane tooltipContainer;
     private H3Service h3Service;
     private H3Cell hoveredCell = null;
+    private boolean showLegendOverlay = false;
+    private final Map<Long, Integer> h3ToBufferIndexMap = new HashMap<>();
+    private org.ether.society.events.EventSystem eventSystem;
+
+    public org.ether.society.events.EventSystem getEventSystem() { return eventSystem; }
+    public void setEventSystem(org.ether.society.events.EventSystem eventSystem) {
+        this.eventSystem = eventSystem;
+        draw();
+    }
+
+    public boolean isShowLegendOverlay() { return showLegendOverlay; }
+    public void setShowLegendOverlay(boolean show) { 
+        this.showLegendOverlay = show; 
+        draw(); 
+    }
 
     // 3D isometric parameters
     // private static final double ISO_ANGLE = Math.toRadians(30);
@@ -118,7 +138,75 @@ public class H3MapCanvas extends Canvas {
         this.agentManager = agentManager;
     }
 
+    // Hover timer for 2-second cell tooltip delay
+    private javafx.animation.PauseTransition hoverTimer;
+    private H3Cell pendingHoverCell = null;
+    private double pendingCanvasX, pendingCanvasY, pendingSceneX, pendingSceneY;
+
+    // Video Recording & Overlay Metadata
+    private String scenarioName = "Scénario Standard";
+    private String currentDateStr = "An 2026 - M.01 D.01";
+    private boolean isRecordingVideo = false;
+    private java.io.File videoSessionDir = null;
+    private long frameCounter = 0;
+
+    public void setScenarioName(String name) {
+        if (name != null && !name.isBlank()) {
+            this.scenarioName = name;
+        }
+        draw();
+    }
+
+    public String getScenarioName() { return scenarioName; }
+
+    public void setCurrentDateStr(String dateStr) {
+        if (dateStr != null && !dateStr.isBlank()) {
+            this.currentDateStr = dateStr;
+        }
+    }
+
+    public boolean isRecordingVideo() { return isRecordingVideo; }
+
+    public void startVideoRecording() {
+        this.isRecordingVideo = true;
+        this.frameCounter = 0;
+        java.io.File baseDir = new java.io.File("saves/timelapse");
+        if (!baseDir.exists()) baseDir.mkdirs();
+        this.videoSessionDir = new java.io.File(baseDir, "recording_" + System.currentTimeMillis());
+        if (!this.videoSessionDir.exists()) this.videoSessionDir.mkdirs();
+        draw();
+        logger.info("Started 1-frame-per-tick video recording into {}", videoSessionDir.getAbsolutePath());
+    }
+
+    public void stopVideoRecording() {
+        this.isRecordingVideo = false;
+        draw();
+        logger.info("Stopped video recording. Total frames saved: {}", frameCounter);
+    }
+
+    public void captureTickFrame() {
+        if (!isRecordingVideo || videoSessionDir == null) return;
+        try {
+            draw();
+            WritableImage writableImage = snapshot(new SnapshotParameters(), null);
+            java.awt.image.BufferedImage bufferedImage = javafx.embed.swing.SwingFXUtils.fromFXImage(writableImage, null);
+
+            String fileName = String.format("frame_%06d.png", frameCounter++);
+            java.io.File frameFile = new java.io.File(videoSessionDir, fileName);
+            javax.imageio.ImageIO.write(bufferedImage, "png", frameFile);
+        } catch (Exception ex) {
+            logger.error("Error capturing frame {}", frameCounter, ex);
+        }
+    }
+
     private void setupMouseHandlers() {
+        hoverTimer = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2.0));
+        hoverTimer.setOnFinished(e -> {
+            if (pendingHoverCell != null && tooltip != null && tooltipContainer != null) {
+                updateTooltip(pendingCanvasX, pendingCanvasY, pendingSceneX, pendingSceneY);
+            }
+        });
+
         // Mouse wheel zoom (Google Maps style towards mouse position)
         setOnScroll(event -> {
             double delta = event.getDeltaY();
@@ -159,35 +247,35 @@ public class H3MapCanvas extends Canvas {
             dragStartY = event.getY();
 
             if (event.isSecondaryButtonDown()) {
-                // Right click = unused for now
                 setCursor(javafx.scene.Cursor.CROSSHAIR);
             } else if (event.isPrimaryButtonDown()) {
-                // Left click = pan/rotate
-
                 setCursor(javafx.scene.Cursor.MOVE);
             }
         });
 
-        // Mouse drag
+        // Mouse drag - Rotate globe on its axis in 3D without shifting center on screen
         setOnMouseDragged(event -> {
             double dx = event.getX() - dragStartX;
             double dy = event.getY() - dragStartY;
 
             if (viewMode == ViewMode.VIEW_3D) {
-                // 3D Globe camera rotation (Longitude Y-axis & Latitude X-axis tilt)
-                double sensitivity = 0.4 / zoomFactor;
-                centerLng += dx * sensitivity;
-                centerLat -= dy * sensitivity;
-                centerLat = Math.clamp(centerLat, -89.0, 89.0);
-                while (centerLng > 180.0) centerLng -= 360.0;
-                while (centerLng < -180.0) centerLng += 360.0;
-            } else {
-                // 2D Flat Map Panning
-                centerLng -= dx / scale;
-                centerLat += dy / scale;
-                centerLat = Math.max(minLat, Math.min(maxLat, centerLat));
-                centerLng = Math.max(minLng, Math.min(maxLng, centerLng));
+                double sensitivity = 0.35 / zoomFactor;
+                centerLng -= dx * sensitivity;
+                centerLat += dy * sensitivity;
+                centerLat = Math.max(-89.0, Math.min(89.0, centerLat));
+                centerLng = Math.max(-180.0, Math.min(180.0, centerLng));
+
+                dragStartX = event.getX();
+                dragStartY = event.getY();
+                draw();
+                return;
             }
+
+            // 2D Flat Map Panning
+            centerLng -= dx / scale;
+            centerLat += dy / scale;
+            centerLat = Math.max(minLat, Math.min(maxLat, centerLat));
+            centerLng = Math.max(minLng, Math.min(maxLng, centerLng));
 
             dragStartX = event.getX();
             dragStartY = event.getY();
@@ -197,7 +285,6 @@ public class H3MapCanvas extends Canvas {
 
         // Mouse release
         setOnMouseReleased(event -> {
-
             setCursor(javafx.scene.Cursor.DEFAULT);
         });
 
@@ -213,16 +300,36 @@ public class H3MapCanvas extends Canvas {
             }
         });
 
-        // Mouse move for tooltip
+        // Mouse move for tooltip - Requirement 1: 2-second hover delay
         setOnMouseMoved(event -> {
-            if (tooltip != null && tooltipContainer != null) {
-                updateTooltip(event.getX(), event.getY(),
-                        event.getSceneX(), event.getSceneY());
+            H3Cell cell = findCellAt(event.getX(), event.getY());
+            if (cell == null || cell != pendingHoverCell) {
+                if (tooltip != null) {
+                    tooltip.hide();
+                    hoveredCell = null;
+                }
+                hoverTimer.stop();
+                pendingHoverCell = cell;
+                pendingCanvasX = event.getX();
+                pendingCanvasY = event.getY();
+                pendingSceneX = event.getSceneX();
+                pendingSceneY = event.getSceneY();
+
+                if (cell != null) {
+                    hoverTimer.playFromStart();
+                }
+            } else {
+                pendingCanvasX = event.getX();
+                pendingCanvasY = event.getY();
+                pendingSceneX = event.getSceneX();
+                pendingSceneY = event.getSceneY();
             }
         });
 
         // Hide tooltip when leaving canvas
         setOnMouseExited(event -> {
+            if (hoverTimer != null) hoverTimer.stop();
+            pendingHoverCell = null;
             if (tooltip != null) {
                 tooltip.hide();
                 hoveredCell = null;
@@ -232,6 +339,7 @@ public class H3MapCanvas extends Canvas {
 
     public void setViewMode(ViewMode mode) {
         this.viewMode = mode;
+        this.showLegendOverlay = true; // Ensure rainbow spectrum legend box is always displayed
         draw();
         logger.info("View mode changed to: {}", mode);
     }
@@ -273,17 +381,37 @@ public class H3MapCanvas extends Canvas {
         minLng = cells.stream().mapToDouble(H3Cell::getLongitude).min().orElse(0);
         maxLng = cells.stream().mapToDouble(H3Cell::getLongitude).max().orElse(0);
 
-        // Initialize center to midpoint
-        centerLat = (minLat + maxLat) / 2.0;
-        centerLng = (minLng + maxLng) / 2.0;
+        // Initialize center to midpoint if not already validly set
+        boolean needsRecenter = (centerLat == 0.0 && centerLng == 0.0) || centerLat < minLat || centerLat > maxLat || centerLng < minLng || centerLng > maxLng;
+        if (needsRecenter) {
+            centerLat = (minLat + maxLat) / 2.0;
+            centerLng = (minLng + maxLng) / 2.0;
+        }
 
         logger.info("H3 Canvas initialized with {} cells. Bounds: lat[{}, {}], lng[{}, {}]",
                 cells.size(), minLat, maxLat, minLng, maxLng);
         draw();
     }
 
+    public void centerOnCoordinates(double lat, double lng) {
+        this.centerLat = Math.max(-90.0, Math.min(90.0, lat));
+        this.centerLng = Math.max(-180.0, Math.min(180.0, lng));
+        draw();
+        logger.info("Canvas view re-centered to Lat: {}, Lng: {}", centerLat, centerLng);
+    }
+
     public void setWorldBuffer(org.ether.society.core.dod.WorldBuffer buffer) {
         this.worldBuffer = buffer;
+        this.h3ToBufferIndexMap.clear();
+        if (buffer != null) {
+            long[] indexes = buffer.getH3Indexes();
+            int cap = buffer.getCapacity();
+            for (int k = 0; k < cap; k++) {
+                if (indexes[k] != 0L) {
+                    h3ToBufferIndexMap.put(indexes[k], k);
+                }
+            }
+        }
         draw();
     }
 
@@ -331,9 +459,143 @@ public class H3MapCanvas extends Canvas {
         }
 
         // Draw legend overlay box with rainbow spectrum, min/max, mean (μ) and median (M) indicators
-        drawLegendOverlay(gc);
+        if (showLegendOverlay) {
+            drawLegendOverlay(gc);
+        }
+
+        drawEventBeacons(gc);
+        drawCornerOverlays(gc);
 
         logger.debug("Drew {} cells in {} mode", cells.size(), viewMode);
+    }
+
+    private void drawCornerOverlays(GraphicsContext gc) {
+        double h = getHeight();
+        double w = getWidth();
+        if (h < 60 || w < 220) return;
+
+        // Bottom-Left: Scenario Name
+        String scenText = "🎬 " + (scenarioName != null ? scenarioName : "Scénario Ether");
+        gc.setFont(javafx.scene.text.Font.font("Consolas", javafx.scene.text.FontWeight.BOLD, 12));
+        double scenWidth = Math.max(170, scenText.length() * 8.0 + 24);
+
+        gc.setFill(Color.rgb(15, 23, 42, 0.88));
+        gc.fillRoundRect(14, h - 42, scenWidth, 28, 8, 8);
+        gc.setStroke(Color.rgb(56, 189, 248, 0.85));
+        gc.setLineWidth(1.2);
+        gc.strokeRoundRect(14, h - 42, scenWidth, 28, 8, 8);
+
+        gc.setFill(Color.rgb(241, 245, 249));
+        gc.fillText(scenText, 22, h - 23);
+
+        // Bottom-Right: Scrolling Date
+        String dateText = "📅 " + (currentDateStr != null ? currentDateStr : "An 2026");
+        double dateWidth = Math.max(150, dateText.length() * 8.5 + 24);
+        double dateX = w - dateWidth - 14;
+
+        gc.setFill(Color.rgb(15, 23, 42, 0.88));
+        gc.fillRoundRect(dateX, h - 42, dateWidth, 28, 8, 8);
+        gc.setStroke(isRecordingVideo ? Color.rgb(239, 68, 68, 0.9) : Color.rgb(74, 222, 128, 0.85));
+        gc.setLineWidth(1.2);
+        gc.strokeRoundRect(dateX, h - 42, dateWidth, 28, 8, 8);
+
+        gc.setFill(isRecordingVideo ? Color.rgb(254, 202, 202) : Color.rgb(241, 245, 249));
+        gc.fillText(dateText, dateX + 12, h - 23);
+
+        // REC Indicator on Top-Right when video recording is active
+        if (isRecordingVideo) {
+            long now = System.currentTimeMillis();
+            boolean blink = (now % 1000) < 500;
+            if (blink) {
+                gc.setFill(Color.rgb(239, 68, 68));
+                gc.fillOval(w - 85, 14, 11, 11);
+            }
+            gc.setFill(Color.rgb(248, 113, 113));
+            gc.setFont(javafx.scene.text.Font.font("Consolas", javafx.scene.text.FontWeight.BOLD, 12));
+            gc.fillText("REC 1:1", w - 68, 24);
+        }
+    }
+
+    private void drawEventBeacons(GraphicsContext gc) {
+        if (eventSystem == null) return;
+        List<org.ether.society.events.ActiveEvent> events = eventSystem.getActiveEvents();
+        if (events == null || events.isEmpty()) return;
+
+        long now = System.currentTimeMillis();
+
+        for (org.ether.society.events.ActiveEvent event : events) {
+            if (event.isExpired()) continue;
+
+            double lat = event.getLatitude();
+            double lng = event.getLongitude();
+
+            double screenX, screenY;
+
+            if (viewMode == ViewMode.VIEW_3D) {
+                double radius = Math.min(getWidth(), getHeight()) * 0.45 * zoomFactor;
+                double cx = getWidth() / 2;
+                double cy = getHeight() / 2;
+
+                double radLat = Math.toRadians(lat);
+                double radLng = Math.toRadians(lng - centerLng);
+
+                double cosLat = Math.cos(radLat);
+                double x3d = radius * cosLat * Math.sin(radLng);
+                double z3d = radius * cosLat * Math.cos(radLng);
+                double y3d = -radius * Math.sin(radLat);
+
+                double radTilt = Math.toRadians(centerLat);
+                double yRotated = y3d * Math.cos(radTilt) - z3d * Math.sin(radTilt);
+                double zRotated = y3d * Math.sin(radTilt) + z3d * Math.cos(radTilt);
+
+                if (zRotated < -radius * 0.1) continue; // Behind sphere
+
+                screenX = cx + x3d;
+                screenY = cy + yRotated;
+            } else {
+                screenX = (lng - minLng) * scale + offsetX;
+                screenY = (maxLat - lat) * scale + offsetY;
+            }
+
+            if (screenX < -50 || screenX > getWidth() + 50 || screenY < -50 || screenY > getHeight() + 50) {
+                continue;
+            }
+
+            // Pulse animation based on time
+            double cycle = ((now - event.getCreatedAtMs()) % 1500) / 1500.0; // 0.0 to 1.0
+            double pulseRadius = 12.0 + cycle * 28.0;
+            double alpha = Math.max(0.0, 1.0 - cycle);
+
+            Color eventColor = switch (event.getType()) {
+                case "VOLCANO", "METEOR", "NUCLEAR_WINTER" -> Color.rgb(239, 68, 68); // Red
+                case "FLOOD", "ECOLOGICAL" -> Color.rgb(14, 165, 233); // Cyan
+                case "FAMINE" -> Color.rgb(234, 179, 8); // Yellow
+                case "PANDEMIC" -> Color.rgb(168, 85, 247); // Purple
+                case "EARTHQUAKE" -> Color.rgb(249, 115, 22); // Orange
+                case "GOD_MODE" -> Color.rgb(236, 72, 153); // Pink
+                default -> Color.rgb(34, 197, 94); // Green
+            };
+
+            // Inner glowing core
+            gc.setFill(eventColor);
+            gc.fillOval(screenX - 6, screenY - 6, 12, 12);
+
+            // Outer pulsing ring
+            gc.setStroke(Color.color(eventColor.getRed(), eventColor.getGreen(), eventColor.getBlue(), alpha));
+            gc.setLineWidth(2.5);
+            gc.strokeOval(screenX - pulseRadius / 2, screenY - pulseRadius / 2, pulseRadius, pulseRadius);
+
+            // Label text banner
+            gc.setFill(Color.rgb(15, 23, 42, 0.85));
+            gc.fillRect(screenX + 8, screenY - 18, Math.min(220, event.getTitle().length() * 7 + 10), 18);
+            gc.setStroke(eventColor);
+            gc.setLineWidth(1.0);
+            gc.strokeRect(screenX + 8, screenY - 18, Math.min(220, event.getTitle().length() * 7 + 10), 18);
+
+            gc.setFill(Color.WHITE);
+            gc.setFont(javafx.scene.text.Font.font("Consolas", javafx.scene.text.FontWeight.BOLD, 10));
+            gc.fillText(event.getTitle(), screenX + 12, screenY - 5);
+        }
     }
 
     private final Map<Long, Integer> previousPopMap = new HashMap<>();
@@ -406,9 +668,10 @@ public class H3MapCanvas extends Canvas {
 
         int startIndex = findLatIndex(cullMinLat);
 
-        // Dynamic hex cell size calculation for seamless 2D coverage without black gaps
-        double cellSpacing = (360.0 / Math.sqrt(Math.max(1, cells.size()))) * scale;
-        double cellSize = Math.max(3.5, cellSpacing * 1.08); // Contiguous coverage
+        double lngSpan = Math.max(1.0, maxLng - minLng);
+        double cellSpacing = (lngSpan / Math.sqrt(Math.max(1, cells.size()))) * scale;
+        double cellSize = Math.max(5.0, cellSpacing * 1.45);
+        boolean showHexBorders = cellSpacing > 8.0;
 
         for (int i = startIndex; i < cells.size(); i++) {
             H3Cell cell = cells.get(i);
@@ -418,20 +681,43 @@ public class H3MapCanvas extends Canvas {
             double x = (cell.getLongitude() - minLng) * scale + offsetX;
             double y = (maxLat - cell.getLatitude()) * scale + offsetY;
 
-            if (x < -cellSize || x > getWidth() + cellSize || y < -cellSize || y > getHeight() + cellSize) {
+            if (x < -cellSize * 2 || x > getWidth() + cellSize * 2 || y < -cellSize * 2 || y > getHeight() + cellSize * 2) {
                 continue;
             }
 
-            Color color;
-            if (worldBuffer != null) {
-                color = getBufferCellColor(i);
-            } else {
-                color = getCellColor(cell);
-            }
-            
+            Color color = getBufferOrCellColor(cell);
             gc.setFill(color);
-            gc.fillRect(x - cellSize / 2, y - cellSize / 2, cellSize, cellSize);
+
+            drawHexCell2D(gc, x, y, cellSize / 2.0);
+
+            if (showHexBorders) {
+                gc.setStroke(Color.rgb(15, 23, 42, 0.35));
+                gc.setLineWidth(0.8);
+                strokeHexCell2D(gc, x, y, cellSize / 2.0);
+            }
         }
+    }
+
+    private void drawHexCell2D(GraphicsContext gc, double cx, double cy, double radius) {
+        double[] xs = new double[6];
+        double[] ys = new double[6];
+        for (int i = 0; i < 6; i++) {
+            double angle = Math.toRadians(60 * i - 30);
+            xs[i] = cx + radius * Math.cos(angle);
+            ys[i] = cy + radius * Math.sin(angle);
+        }
+        gc.fillPolygon(xs, ys, 6);
+    }
+
+    private void strokeHexCell2D(GraphicsContext gc, double cx, double cy, double radius) {
+        double[] xs = new double[6];
+        double[] ys = new double[6];
+        for (int i = 0; i < 6; i++) {
+            double angle = Math.toRadians(60 * i - 30);
+            xs[i] = cx + radius * Math.cos(angle);
+            ys[i] = cy + radius * Math.sin(angle);
+        }
+        gc.strokePolygon(xs, ys, 6);
     }
 
     private int findLatIndex(double targetLat) {
@@ -454,18 +740,43 @@ public class H3MapCanvas extends Canvas {
 
     private void draw3D(GraphicsContext gc, double minLat, double maxLat, double minLng, double maxLng) {
         double radius = Math.min(getWidth(), getHeight()) * 0.45 * zoomFactor;
-        
         double cx = getWidth() / 2;
         double cy = getHeight() / 2;
 
         double radRotationY = Math.toRadians(-centerLng - 90);
         double radTilt = Math.toRadians(centerLat);
 
-        class RenderPoint {
+        // 1. Draw Ocean Base Sphere (Deep navy gradient body)
+        RadialGradient oceanGrad = new RadialGradient(
+                0, 0, cx - radius * 0.25, cy - radius * 0.25, radius * 1.25, false,
+                CycleMethod.NO_CYCLE,
+                new Stop(0.0, Color.rgb(16, 50, 95)),
+                new Stop(0.65, Color.rgb(10, 30, 65)),
+                new Stop(1.0, Color.rgb(4, 15, 40))
+        );
+        gc.setFill(oceanGrad);
+        gc.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
+
+        // 2. Draw Atmosphere Glow Rings
+        gc.setLineWidth(1.5);
+        gc.setStroke(Color.rgb(56, 189, 248, 0.40));
+        gc.strokeOval(cx - radius - 1, cy - radius - 1, (radius + 1) * 2, (radius + 1) * 2);
+
+        gc.setLineWidth(4.0);
+        gc.setStroke(Color.rgb(14, 165, 233, 0.22));
+        gc.strokeOval(cx - radius - 4, cy - radius - 4, (radius + 4) * 2, (radius + 4) * 2);
+
+        gc.setLineWidth(9.0);
+        gc.setStroke(Color.rgb(56, 189, 248, 0.08));
+        gc.strokeOval(cx - radius - 8, cy - radius - 8, (radius + 8) * 2, (radius + 8) * 2);
+
+        // 3. Tessellated Spherical Hexagon Polygon Projection
+        class RenderPoly {
             double z;
-            double screenX, screenY;
+            double[] px = new double[6];
+            double[] py = new double[6];
             Color color;
-            double dotSize;
+            boolean drawBorder;
         }
 
         final double finalRadRotationY = radRotationY;
@@ -474,47 +785,99 @@ public class H3MapCanvas extends Canvas {
         final double finalCx = cx;
         final double finalCy = cy;
 
-        List<RenderPoint> points = java.util.stream.IntStream.range(0, cells.size()).parallel().mapToObj(i -> {
+        double numCells = Math.max(1, cells.size());
+        double rawHexRadius = Math.toDegrees(Math.sqrt(4.0 * Math.PI / numCells) * 0.58);
+        double hexRadiusDeg = Math.min(4.5, Math.max(0.5, rawHexRadius));
+
+        List<RenderPoly> polys = java.util.stream.IntStream.range(0, cells.size()).parallel().mapToObj(i -> {
             H3Cell cell = cells.get(i);
-            ProjectedPoint pp = project3D(cell.getLatitude(), cell.getLongitude(), 
-                                         cell.getElevation() != null ? cell.getElevation() : 0,
-                                         finalRadRotationY, finalRadTilt, finalRadius, finalCx, finalCy);
-            
-            if (pp == null) return null;
+            double lat = cell.getLatitude();
+            double lng = cell.getLongitude();
+            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
 
-            // Dynamic cell diameter calculation so hex cells form a continuous, gapless globe mesh
-            double baseDotSize = (7.8 * finalRadius / Math.sqrt(Math.max(1, cells.size()))) * zoomFactor;
-            double dotSize = Math.max(3.8, baseDotSize * (0.65 + 0.5 * Math.max(0, pp.z)));
+            // Fast spherical backface culling check before computing 6 vertices or matrix projections
+            double radLat1 = Math.toRadians(lat);
+            double radLngDiff = Math.toRadians(lng - centerLng);
+            double radCamLat = Math.toRadians(centerLat);
+            double dotProd = Math.sin(radLat1) * Math.sin(radCamLat) + Math.cos(radLat1) * Math.cos(radCamLat) * Math.cos(radLngDiff);
+            if (dotProd < -0.05) return null; // Cull cells on back hemisphere
 
-            // High-contrast dynamic ambient lighting
-            Color baseColor = (worldBuffer != null && i < worldBuffer.getCapacity()) ? getBufferCellColor(i) : getCellColor(cell);
-            double lightFactor = 0.55 + 0.45 * Math.max(0, pp.z);
+            ProjectedPoint centerPP = project3D(lat, lng, elev, finalRadRotationY, finalRadTilt, finalRadius, finalCx, finalCy);
+            if (centerPP == null || centerPP.z <= 0.02) return null;
+
+            double cosLat = Math.max(0.15, Math.cos(Math.toRadians(lat)));
+            double[] px = new double[6];
+            double[] py = new double[6];
+
+            for (int k = 0; k < 6; k++) {
+                double angleRad = Math.toRadians(60 * k - 30);
+                double dLat = hexRadiusDeg * Math.sin(angleRad);
+                double dLng = (hexRadiusDeg * Math.cos(angleRad)) / cosLat;
+
+                double vLat = Math.min(89.5, Math.max(-89.5, lat + dLat));
+                double vLng = lng + dLng;
+
+                ProjectedPoint vPP = project3D(vLat, vLng, elev, finalRadRotationY, finalRadTilt, finalRadius, finalCx, finalCy);
+                if (vPP == null) {
+                    px[k] = centerPP.screenX + (Math.cos(angleRad) * 4.0);
+                    py[k] = centerPP.screenY + (Math.sin(angleRad) * 4.0);
+                } else {
+                    px[k] = vPP.screenX;
+                    py[k] = vPP.screenY;
+                }
+            }
+
+            Color baseColor = getBufferOrCellColor(cell);
+            double lightFactor = 0.45 + 0.55 * Math.max(0.0, centerPP.z);
             Color shadedColor = Color.color(
                     Math.min(1.0, baseColor.getRed() * lightFactor),
                     Math.min(1.0, baseColor.getGreen() * lightFactor),
-                    Math.min(1.0, baseColor.getBlue() * lightFactor));
+                    Math.min(1.0, baseColor.getBlue() * lightFactor),
+                    baseColor.getOpacity()
+            );
 
-            RenderPoint p = new RenderPoint();
-            p.z = pp.z;
-            p.screenX = pp.screenX;
-            p.screenY = pp.screenY;
-            p.color = shadedColor;
-            p.dotSize = dotSize;
-            return p;
+            RenderPoly poly = new RenderPoly();
+            poly.z = centerPP.z;
+            poly.px = px;
+            poly.py = py;
+            poly.color = shadedColor;
+            poly.drawBorder = (finalRadius / Math.sqrt(numCells)) > 12.0;
+            return poly;
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
-        points.sort((a, b) -> Double.compare(a.z, b.z));
+        polys.sort((a, b) -> Double.compare(a.z, b.z));
 
-        // Draw all visible points
-        for (RenderPoint p : points) {
-            gc.setFill(p.color);
-            gc.fillOval(p.screenX - p.dotSize / 2, p.screenY - p.dotSize / 2, p.dotSize, p.dotSize);
+        // Clip cell rendering to planet radius so vertices don't protrude past the limb
+        gc.save();
+        gc.beginPath();
+        gc.arc(cx, cy, radius, radius, 0, 360);
+        gc.closePath();
+        gc.clip();
+
+        for (RenderPoly poly : polys) {
+            gc.setFill(poly.color);
+            gc.fillPolygon(poly.px, poly.py, 6);
+
+            if (poly.drawBorder) {
+                gc.setStroke(Color.rgb(0, 0, 0, 0.20));
+                gc.setLineWidth(0.5);
+                gc.strokePolygon(poly.px, poly.py, 6);
+            }
         }
 
-        // Draw subtle atmosphere glow ring
-        gc.setStroke(Color.rgb(100, 150, 255, 0.25));
-        gc.setLineWidth(2);
-        gc.strokeOval(cx - radius - 3, cy - radius - 3, (radius + 3) * 2, (radius + 3) * 2);
+        gc.restore();
+
+        // Soft limb shadow edge overlay
+        RadialGradient limbGradient = new RadialGradient(
+                0, 0, cx, cy, radius, false,
+                CycleMethod.NO_CYCLE,
+                new Stop(0.0, Color.rgb(0, 0, 0, 0.0)),
+                new Stop(0.85, Color.rgb(0, 0, 0, 0.05)),
+                new Stop(0.98, Color.rgb(0, 0, 0, 0.45)),
+                new Stop(1.0, Color.rgb(0, 0, 0, 0.70))
+        );
+        gc.setFill(limbGradient);
+        gc.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
     }
 
     private void drawAgents(GraphicsContext gc) {
@@ -799,23 +1162,30 @@ public class H3MapCanvas extends Canvas {
         return Color.color(risk, 1.0 - risk, 0.1); // Green (safe) to Crimson (collapse risk)
     }
 
-    private Color getBufferCellColor(int index) {
-        if (worldBuffer == null) return Color.BLACK;
-        Biome cellBiome = org.ether.society.model.Biome.values()[worldBuffer.getBiomes()[index]];
-        boolean isWater = (cellBiome == Biome.OCEAN || cellBiome == Biome.DEEP_OCEAN || worldBuffer.getElevation()[index] <= 0);
+    private Color getBufferOrCellColor(H3Cell cell) {
+        if (cell == null) return Color.BLACK;
+        if (worldBuffer != null && !h3ToBufferIndexMap.isEmpty()) {
+            Integer idx = h3ToBufferIndexMap.get(cell.getH3Index());
+            if (idx != null && idx >= 0 && idx < worldBuffer.getCapacity()) {
+                int index = idx;
+                Biome cellBiome = org.ether.society.model.Biome.values()[worldBuffer.getBiomes()[index]];
+                boolean isWater = (cellBiome == Biome.OCEAN || cellBiome == Biome.DEEP_OCEAN || worldBuffer.getElevation()[index] <= 0);
 
-        return switch (displayMode) {
-            case BIOME -> getBiomeColor(cellBiome);
-            case POPULATION -> getPopulationColor((int)worldBuffer.getBiomassHuman()[index], isWater);
-            case FOOD -> isWater ? Color.rgb(10, 20, 50) : getFoodColor(worldBuffer.getFoodResource()[index]);
-            case TEMPERATURE -> getTemperatureColor(worldBuffer.getTemperature()[index]);
-            case TECHNOLOGY -> isWater ? Color.rgb(10, 20, 50) : getTechColor((double)worldBuffer.getTechnologyLevel()[index]);
-            case WATER -> getWaterColor((double)worldBuffer.getWaterResource()[index]);
-            case WOOD -> isWater ? Color.rgb(10, 20, 50) : getWoodColor((double)worldBuffer.getWoodResource()[index]);
-            case INEQUALITY -> isWater ? Color.rgb(10, 20, 50) : getGiniColor((double)worldBuffer.getGiniIndex()[index]);
-            case FLUX -> isWater ? Color.rgb(10, 20, 50) : getPriceColor(worldBuffer.getLocalPrice()[index]);
-            default -> (cells != null && index >= 0 && index < cells.size()) ? getCellColor(cells.get(index)) : Color.BLACK;
-        };
+                return switch (displayMode) {
+                    case BIOME -> getBiomeColor(cellBiome);
+                    case POPULATION -> getPopulationColor((int)worldBuffer.getBiomassHuman()[index], isWater);
+                    case FOOD -> isWater ? Color.rgb(10, 20, 50) : getFoodColor(worldBuffer.getFoodResource()[index]);
+                    case TEMPERATURE -> getTemperatureColor(worldBuffer.getTemperature()[index]);
+                    case TECHNOLOGY -> isWater ? Color.rgb(10, 20, 50) : getTechColor((double)worldBuffer.getTechnologyLevel()[index]);
+                    case WATER -> getWaterColor((double)worldBuffer.getWaterResource()[index]);
+                    case WOOD -> isWater ? Color.rgb(10, 20, 50) : getWoodColor((double)worldBuffer.getWoodResource()[index]);
+                    case INEQUALITY -> isWater ? Color.rgb(10, 20, 50) : getGiniColor((double)worldBuffer.getGiniIndex()[index]);
+                    case FLUX -> isWater ? Color.rgb(10, 20, 50) : getPriceColor(worldBuffer.getLocalPrice()[index]);
+                    default -> getCellColor(cell);
+                };
+            }
+        }
+        return getCellColor(cell);
     }
 
     private Color getPriceColor(float price) {
@@ -1407,19 +1777,23 @@ public class H3MapCanvas extends Canvas {
         gc.fillText(maxStr, barX + barWidth - (maxStr.length() * 6.2), ly + 76);
     }
 
-    private double getCellDisplayValue(H3Cell cell, int index) {
-        if (worldBuffer != null && index >= 0 && index < worldBuffer.getCapacity()) {
-            return switch (displayMode) {
-                case POPULATION -> worldBuffer.getBiomassHuman()[index];
-                case FOOD -> worldBuffer.getFoodResource()[index];
-                case TEMPERATURE -> worldBuffer.getTemperature()[index];
-                case TECHNOLOGY -> worldBuffer.getTechnologyLevel()[index];
-                case WATER -> worldBuffer.getWaterResource()[index];
-                case WOOD -> worldBuffer.getWoodResource()[index];
-                case INEQUALITY -> worldBuffer.getGiniIndex()[index];
-                case FLUX -> worldBuffer.getLocalPrice()[index];
-                default -> cell != null && cell.getElevation() != null ? cell.getElevation() : 0.0;
-            };
+    private double getCellDisplayValue(H3Cell cell, int unusedIndex) {
+        if (worldBuffer != null && cell != null && !h3ToBufferIndexMap.isEmpty()) {
+            Integer idx = h3ToBufferIndexMap.get(cell.getH3Index());
+            if (idx != null && idx >= 0 && idx < worldBuffer.getCapacity()) {
+                int index = idx;
+                return switch (displayMode) {
+                    case POPULATION -> worldBuffer.getBiomassHuman()[index];
+                    case FOOD -> worldBuffer.getFoodResource()[index];
+                    case TEMPERATURE -> worldBuffer.getTemperature()[index];
+                    case TECHNOLOGY -> worldBuffer.getTechnologyLevel()[index];
+                    case WATER -> worldBuffer.getWaterResource()[index];
+                    case WOOD -> worldBuffer.getWoodResource()[index];
+                    case INEQUALITY -> worldBuffer.getGiniIndex()[index];
+                    case FLUX -> worldBuffer.getLocalPrice()[index];
+                    default -> cell.getElevation() != null ? cell.getElevation() : 0.0;
+                };
+            }
         }
         if (cell == null) return 0.0;
         return switch (displayMode) {

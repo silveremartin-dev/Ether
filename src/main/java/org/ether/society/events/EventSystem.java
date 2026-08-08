@@ -97,43 +97,74 @@ public class EventSystem {
         eventQueue.clear();
     }
 
+    private final List<ActiveEvent> activeEvents = new CopyOnWriteArrayList<>();
+
+    public void recordSpatialEvent(ActiveEvent event) {
+        if (event == null) return;
+        activeEvents.removeIf(ActiveEvent::isExpired);
+        activeEvents.add(event);
+        eventQueue.add(event.getFullMessage());
+    }
+
+    public List<ActiveEvent> getActiveEvents() {
+        activeEvents.removeIf(ActiveEvent::isExpired);
+        return new ArrayList<>(activeEvents);
+    }
+
     /**
      * Check for events occurring at the current state.
      */
-    public void checkEvents(int year, long totalPopulation, double totalFood) {
+    public void checkEvents(int year, int month, long totalPopulation, double totalFood, List<H3Cell> cells) {
         // Historical events
         for (HistoricalEvent event : historicalEvents) {
             if (event.year() == year && !firedHistoricalEvents.contains(event.title())) {
-                eventQueue.add(String.format("📜 HISTORICAL: %s - %s", event.title(), event.message()));
+                H3Cell cell = (cells != null && !cells.isEmpty()) ? cells.get(random.nextInt(cells.size())) : null;
+                double lat = cell != null ? cell.getLatitude() : 0.0;
+                double lng = cell != null ? cell.getLongitude() : 0.0;
+                ActiveEvent ae = new ActiveEvent(
+                    "HIST_" + year,
+                    "📜 HISTORIQUE : " + event.title() + " - " + event.message(),
+                    "HISTORICAL",
+                    lat, lng, year, month, 1, 25.0
+                );
+                recordSpatialEvent(ae);
                 firedHistoricalEvents.add(event.title());
             }
         }
 
         // Triggered events based on state
-        checkFamine(year, totalPopulation, totalFood);
-        checkPlague(year, totalPopulation);
-        checkNaturalDisasters(year, totalPopulation);
-        checkAchievements(year, totalPopulation);
+        checkFamine(year, month, totalPopulation, totalFood, cells);
+        checkPlague(year, month, totalPopulation, cells);
+        checkNaturalDisasters(year, month, totalPopulation, cells);
+        checkAchievements(year, month, totalPopulation);
+    }
+
+    public void checkEvents(int year, long totalPopulation, double totalFood) {
+        checkEvents(year, 0, totalPopulation, totalFood, null);
     }
 
     /**
      * Check for events based on cell-level data.
      * Call this for more detailed event generation.
      */
-    public void checkCellEvents(int year, List<H3Cell> cells) {
+    public void checkCellEvents(int year, int month, List<H3Cell> cells) {
+        if (cells == null || cells.isEmpty()) return;
+
         // Count biome statistics
-        long forestCells = cells.stream().filter(c -> c.getBiome() == Biome.FOREST || c.getBiome() == Biome.JUNGLE)
-                .count();
+        long forestCells = cells.stream().filter(c -> c.getBiome() == Biome.FOREST || c.getBiome() == Biome.JUNGLE).count();
         long desertCells = cells.stream().filter(c -> c.getBiome() == Biome.DESERT).count();
-        long totalLandCells = cells.stream()
-                .filter(c -> c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN).count();
+        long totalLandCells = cells.stream().filter(c -> c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN).count();
 
         // Deforestation warning
         if (totalLandCells > 0) {
             double forestRatio = (double) forestCells / totalLandCells;
             if (forestRatio < 0.1 && random.nextDouble() < 0.01) {
-                eventQueue.add("⚠️ ECOLOGICAL: Forests are nearly depleted! Only " +
-                        String.format("%.1f%%", forestRatio * 100) + " remains.");
+                H3Cell target = cells.get(random.nextInt(cells.size()));
+                recordSpatialEvent(new ActiveEvent(
+                    "ECO_DEFOR_" + System.currentTimeMillis(),
+                    "⚠️ ÉCOLOGIE : Déforestation critique! Plus que " + String.format("%.1f%%", forestRatio * 100) + " de forêts.",
+                    "ECOLOGICAL", target.getLatitude(), target.getLongitude(), year, month, 1, 20.0
+                ));
             }
         }
 
@@ -141,90 +172,104 @@ public class EventSystem {
         if (totalLandCells > 0) {
             double desertRatio = (double) desertCells / totalLandCells;
             if (desertRatio > 0.4 && random.nextDouble() < 0.01) {
-                eventQueue.add("🏜️ ECOLOGICAL: Desertification is spreading! " +
-                        String.format("%.1f%%", desertRatio * 100) + " of land is now desert.");
+                H3Cell target = cells.get(random.nextInt(cells.size()));
+                recordSpatialEvent(new ActiveEvent(
+                    "ECO_DESERT_" + System.currentTimeMillis(),
+                    "🏜️ ÉCOLOGIE : Désertification rampante! " + String.format("%.1f%%", desertRatio * 100) + " des terres sont de véritables déserts.",
+                    "ECOLOGICAL", target.getLatitude(), target.getLongitude(), year, month, 1, 20.0
+                ));
             }
         }
 
         // Regional famine detection
-        long starvingCells = cells.stream()
+        List<H3Cell> starvingList = cells.stream()
                 .filter(c -> c.getPopulation() > 10 && c.getFoodResource() < c.getPopulation())
-                .count();
+                .toList();
 
-        if (starvingCells > cells.size() * 0.2 && random.nextDouble() < 0.05) {
-            eventQueue.add("🍂 FAMINE: Regional food shortages affect " + starvingCells + " areas!");
+        if (starvingList.size() > cells.size() * 0.2 && random.nextDouble() < 0.05) {
+            H3Cell target = starvingList.get(random.nextInt(starvingList.size()));
+            recordSpatialEvent(new ActiveEvent(
+                "FAMINE_REG_" + System.currentTimeMillis(),
+                "🍂 FAMINE RÉGIONALE : Pénurie alimentaire grave affectant " + starvingList.size() + " mailles!",
+                "FAMINE", target.getLatitude(), target.getLongitude(), year, month, 1, 20.0
+            ));
         }
     }
 
-    private void checkFamine(int year, long totalPopulation, double totalFood) {
-        if (year - lastFamineYear < 10)
-            return; // 10-year cooldown
+    public void checkCellEvents(int year, List<H3Cell> cells) {
+        checkCellEvents(year, 0, cells);
+    }
+
+    private void checkFamine(int year, int month, long totalPopulation, double totalFood, List<H3Cell> cells) {
+        if (year - lastFamineYear < 10) return; // 10-year cooldown
 
         if (totalFood < totalPopulation * 0.8 && totalPopulation > 500) {
             double severity = 1.0 - (totalFood / (totalPopulation * 0.8));
 
-            if (severity > 0.5 && random.nextDouble() < 0.1) {
-                eventQueue.add("💀 FAMINE: Severe food shortage! Population is starving.");
-                lastFamineYear = year;
-            } else if (severity > 0.2 && random.nextDouble() < 0.05) {
-                eventQueue.add("🍂 FOOD CRISIS: Harvests have failed, food is scarce.");
+            if (severity > 0.2 && random.nextDouble() < 0.08) {
+                H3Cell target = (cells != null && !cells.isEmpty()) ? cells.get(random.nextInt(cells.size())) : null;
+                double lat = target != null ? target.getLatitude() : 0.0;
+                double lng = target != null ? target.getLongitude() : 0.0;
+                String msg = severity > 0.5 ? "💀 FAMINE CRITIQUE : Famine généralisée et crise de subsistance!" : "🍂 CRISE ALIMENTAIRE : Mauvaises récoltes et hausse des prix de la nourriture.";
+                recordSpatialEvent(new ActiveEvent("FAMINE_" + year, msg, "FAMINE", lat, lng, year, month, 1, 20.0));
                 lastFamineYear = year;
             }
         }
     }
 
-    private void checkPlague(int year, long totalPopulation) {
-        if (year - lastPlagueYear < 50)
-            return; // 50-year cooldown
+    private void checkPlague(int year, int month, long totalPopulation, List<H3Cell> cells) {
+        if (year - lastPlagueYear < 50) return;
 
-        // Higher population = higher plague risk
         double plagueRisk = Math.min(0.01, totalPopulation / 10_000_000.0);
 
         if (totalPopulation > 10000 && random.nextDouble() < plagueRisk) {
-            if (random.nextDouble() < 0.3) {
-                eventQueue.add("☠️ PANDEMIC: A devastating plague sweeps across the land!");
-                lastPlagueYear = year;
-            } else {
-                eventQueue.add("🤒 EPIDEMIC: Disease outbreak in crowded areas.");
-                lastPlagueYear = year;
-            }
+            H3Cell target = (cells != null && !cells.isEmpty()) ? cells.get(random.nextInt(cells.size())) : null;
+            double lat = target != null ? target.getLatitude() : 0.0;
+            double lng = target != null ? target.getLongitude() : 0.0;
+            String msg = random.nextDouble() < 0.3 ? "☠️ PANDÉMIE MAJEURE : Une peste dévastatrice ravage les populations!" : "🤒 ÉPIDÉMIE LOCALE : Foyer infectieux propagé dans les centres urbains.";
+            recordSpatialEvent(new ActiveEvent("PLAGUE_" + year, msg, "PANDEMIC", lat, lng, year, month, 1, 20.0));
+            lastPlagueYear = year;
         }
     }
 
-    private void checkNaturalDisasters(int year, long totalPopulation) {
+    private void checkNaturalDisasters(int year, int month, long totalPopulation, List<H3Cell> cells) {
+        H3Cell target = (cells != null && !cells.isEmpty()) ? cells.get(random.nextInt(cells.size())) : null;
+        double lat = target != null ? target.getLatitude() : 0.0;
+        double lng = target != null ? target.getLongitude() : 0.0;
+
         // Drought
         if (year - lastDroughtYear > 20 && random.nextDouble() < 0.005) {
-            eventQueue.add("☀️ DROUGHT: Extended dry period threatens crops and water supplies.");
+            recordSpatialEvent(new ActiveEvent("DROUGHT_" + year, "☀️ SÉCHERESSE : Stress hydrique prolongé et assèchement des nappes.", "DROUGHT", lat, lng, year, month, 1, 20.0));
             lastDroughtYear = year;
         }
 
         // Volcanic eruption
         if (year - lastVolcanoYear > 100 && random.nextDouble() < 0.001) {
-            eventQueue.add("🌋 VOLCANO: Major eruption! Ash clouds affect climate.");
+            recordSpatialEvent(new ActiveEvent("VOLCANO_" + year, "🌋 ÉRUPTION VOLCANIQUE : Éjection massive de cendres stratosphériques!", "VOLCANO", lat, lng, year, month, 1, 25.0));
             lastVolcanoYear = year;
         }
 
-        // Earthquake (random, no cooldown needed)
+        // Earthquake
         if (random.nextDouble() < 0.002) {
-            eventQueue.add("🌍 EARTHQUAKE: Tremors shake the region.");
+            recordSpatialEvent(new ActiveEvent("EARTHQUAKE_" + year, "🌍 SÉISME / TREMBLEMENT DE TERRE : Secousse cataclysmique locale.", "EARTHQUAKE", lat, lng, year, month, 1, 20.0));
         }
 
-        // Flood (seasonal, more likely in monsoon regions)
-        if ((year % 1 == 0) && random.nextDouble() < 0.003) { // Simplified
-            eventQueue.add("🌊 FLOOD: Rivers overflow their banks.");
+        // Flood
+        if (random.nextDouble() < 0.003) {
+            recordSpatialEvent(new ActiveEvent("FLOOD_" + year, "🌊 INONDATION / CRUE MAJEURE : Les cours d'eau débordent de leur lit.", "FLOOD", lat, lng, year, month, 1, 20.0));
         }
     }
 
-    private void checkAchievements(int year, long totalPopulation) {
+    private void checkAchievements(int year, int month, long totalPopulation) {
         // Population milestones
         if (totalPopulation >= 1_000_000 && totalPopulation < 1_100_000) {
-            eventQueue.add("🎉 MILESTONE: World population reaches 1 million!");
+            recordSpatialEvent(new ActiveEvent("MILESTONE_1M", "🎉 SEUIL DÉMOGRAPHIQUE : La population mondiale franchit 1 million d'habitants!", "MILESTONE", 0, 0, year, month, 1, 20.0));
         } else if (totalPopulation >= 10_000_000 && totalPopulation < 10_500_000) {
-            eventQueue.add("🎉 MILESTONE: World population reaches 10 million!");
+            recordSpatialEvent(new ActiveEvent("MILESTONE_10M", "🎉 SEUIL DÉMOGRAPHIQUE : La population mondiale atteint 10 millions d'habitants!", "MILESTONE", 0, 0, year, month, 1, 20.0));
         } else if (totalPopulation >= 100_000_000 && totalPopulation < 105_000_000) {
-            eventQueue.add("🎉 MILESTONE: World population reaches 100 million!");
+            recordSpatialEvent(new ActiveEvent("MILESTONE_100M", "🎉 SEUIL DÉMOGRAPHIQUE : La population mondiale atteint 100 millions d'habitants!", "MILESTONE", 0, 0, year, month, 1, 20.0));
         } else if (totalPopulation >= 1_000_000_000 && totalPopulation < 1_050_000_000) {
-            eventQueue.add("🎉 MILESTONE: World population reaches 1 billion!");
+            recordSpatialEvent(new ActiveEvent("MILESTONE_1B", "🎉 SEUIL DÉMOGRAPHIQUE : La population mondiale atteint 1 milliard d'habitants!", "MILESTONE", 0, 0, year, month, 1, 20.0));
         }
     }
 

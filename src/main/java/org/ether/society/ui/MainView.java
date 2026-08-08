@@ -282,8 +282,8 @@ public class MainView extends StackPane {
             // Update slider range
             var snapshots = engine.getHistoryManager().getWorldSnapshots();
             if (!snapshots.isEmpty()) {
-                int minYear = snapshots.firstKey();
-                int maxYear = snapshots.lastKey();
+                int minYear = (int) (long) snapshots.firstKey();
+                int maxYear = (int) (long) snapshots.lastKey();
                 controlPanel.updateTimelapseSlider(minYear, maxYear, maxYear);
             }
         }
@@ -310,7 +310,7 @@ public class MainView extends StackPane {
                 }
 
                 timeline.clear();
-                timeline.addEntry(meta.getYear(), "REPRISE_SNAPSHOT", "Reprise depuis Snapshot : " + meta.getName(),
+                timeline.addEntry((int) meta.getYear(), "REPRISE_SNAPSHOT", "Reprise depuis Snapshot : " + meta.getName(),
                     String.format("Restauré à l'An %,d (Mois %d) - Scénario %s", meta.getYear(), meta.getMonth(), meta.getScenarioName()), false);
 
                 if (godModePanel != null) {
@@ -370,6 +370,9 @@ public class MainView extends StackPane {
         // Update control panel with scenario info
         controlPanel.updateScenarioName(scenario.getName());
         controlPanel.updateYear(String.valueOf(scenario.getStartDateYear()));
+        if (mapCanvas != null) {
+            mapCanvas.setScenarioName(scenario.getName());
+        }
 
         // Switch Tab
         simulationTab.setDisable(false);
@@ -390,16 +393,48 @@ public class MainView extends StackPane {
     }
 
     private void startEventPolling() {
+        if (mapCanvas != null && engine != null) {
+            mapCanvas.setEventSystem(engine.getEventSystem());
+        }
+
+        if (engine instanceof org.ether.society.core.H3SimulationEngine h3Engine) {
+            h3Engine.setOnTickCallback(() -> {
+                int year = engine.getTimeManager().getCurrentYear();
+                int month = engine.getTimeManager().getCurrentMonth();
+                int day = engine.getTimeManager().getCurrentDay();
+                String dateStr = String.format("An %d - M.%02d D.%02d", year, month + 1, day);
+
+                javafx.application.Platform.runLater(() -> {
+                    if (mapCanvas != null) {
+                        mapCanvas.setCurrentDateStr(dateStr);
+                        if (mapCanvas.isRecordingVideo()) {
+                            mapCanvas.captureTickFrame();
+                        }
+                    }
+                });
+            });
+        }
+
         AnimationTimer eventLoop = new AnimationTimer() {
             private long lastUpdate = 0;
 
             @Override
             public void handle(long now) {
-                if (now - lastUpdate >= 500_000_000) { // Check every 500ms
+                if (now - lastUpdate >= 250_000_000) { // Check every 250ms for smooth beacon animation & logs
                     List<String> events = engine.getEventSystem().flushEvents();
-                    for (String event : events) {
-                        notificationOverlay.showEvent(event);
-                        logger.info("Event triggered: {}", event);
+                    if (!events.isEmpty()) {
+                        for (String event : events) {
+                            notificationOverlay.showEvent(event);
+                            logger.info("Event triggered: {}", event);
+                        }
+                        if (controlPanel != null) {
+                            controlPanel.logEvents(events);
+                        }
+                    }
+
+                    // Redraw map for event beacons if active events exist
+                    if (mapCanvas != null && mapCanvas.getEventSystem() != null && !mapCanvas.getEventSystem().getActiveEvents().isEmpty()) {
+                        mapCanvas.draw();
                     }
 
                     // Update Global Age Display

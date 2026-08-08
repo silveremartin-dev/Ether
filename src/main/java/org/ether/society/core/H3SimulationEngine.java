@@ -311,6 +311,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
+    private Runnable onTickCallback;
+
+    public void setOnTickCallback(Runnable callback) {
+        this.onTickCallback = callback;
+    }
+
     private int tickCounter = 0;
 
     private void tick() {
@@ -319,7 +325,10 @@ public class H3SimulationEngine implements ISimulationEngine {
         long now = System.nanoTime();
         if (lastTickTime != 0) {
             double diff = (now - lastTickTime) / 1_000_000_000.0;
-            currentTPS = 1.0 / diff;
+            if (diff > 0) {
+                double instantTPS = 1.0 / diff;
+                currentTPS = (currentTPS <= 0) ? instantTPS : (currentTPS * 0.90 + instantTPS * 0.10);
+            }
         }
         lastTickTime = now;
 
@@ -416,7 +425,8 @@ public class H3SimulationEngine implements ISimulationEngine {
 
                 historyManager.captureSnapshot(this);
                 historyManager.captureWorldSnapshot(this);
-                eventSystem.checkEvents(timeManager.getCurrentYear(), getTotalPopulation(), getTotalFood());
+                eventSystem.checkEvents(timeManager.getCurrentYear(), timeManager.getCurrentMonth(), getTotalPopulation(), getTotalFood(), cells);
+                eventSystem.checkCellEvents(timeManager.getCurrentYear(), timeManager.getCurrentMonth(), cells);
 
                 syncBufferToCells();
             }
@@ -428,6 +438,10 @@ public class H3SimulationEngine implements ISimulationEngine {
 
             agentManager.update();
             tickCounter++;
+
+            if (onTickCallback != null) {
+                onTickCallback.run();
+            }
 
         } catch (Exception e) {
             logger.error("Error during simulation tick", e);

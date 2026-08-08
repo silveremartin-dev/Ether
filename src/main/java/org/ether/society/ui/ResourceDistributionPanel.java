@@ -489,10 +489,19 @@ public class ResourceDistributionPanel extends BorderPane {
         clearBiomeBtn = new Button("❌");
         clearBiomeBtn.getStyleClass().add("button-secondary");
         clearBiomeBtn.setOnAction(e -> {
-            customBiomeImage = null;
-            biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
-            updatePreviewCanvas();
-            updateSummary();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(I18n.getOrDefault("dialog.confirm.title", "Confirmation de suppression"));
+            alert.setHeaderText(null);
+            alert.setContentText(I18n.getOrDefault("resource.confirm.clear_biome", "Voulez-vous vraiment effacer la carte de biomes importée ?"));
+            WindowUtils.applyWindowIcon(alert);
+            alert.showAndWait().ifPresent(res -> {
+                if (res == ButtonType.OK) {
+                    customBiomeImage = null;
+                    biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
+                    updatePreviewCanvas();
+                    updateSummary();
+                }
+            });
         });
         HBox biomeBox = new HBox(5, loadBiomeBtn, clearBiomeBtn);
 
@@ -510,10 +519,19 @@ public class ResourceDistributionPanel extends BorderPane {
         clearResourceBtn = new Button("❌");
         clearResourceBtn.getStyleClass().add("button-secondary");
         clearResourceBtn.setOnAction(e -> {
-            customResourceImage = null;
-            resourceFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
-            updatePreviewCanvas();
-            updateSummary();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(I18n.getOrDefault("dialog.confirm.title", "Confirmation de suppression"));
+            alert.setHeaderText(null);
+            alert.setContentText(I18n.getOrDefault("resource.confirm.clear_resource", "Voulez-vous vraiment effacer la carte géologique importée ?"));
+            WindowUtils.applyWindowIcon(alert);
+            alert.showAndWait().ifPresent(res -> {
+                if (res == ButtonType.OK) {
+                    customResourceImage = null;
+                    resourceFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
+                    updatePreviewCanvas();
+                    updateSummary();
+                }
+            });
         });
         HBox resourceBox = new HBox(5, loadResourceBtn, clearResourceBtn);
 
@@ -531,10 +549,19 @@ public class ResourceDistributionPanel extends BorderPane {
         clearHydroBtn = new Button("❌");
         clearHydroBtn.getStyleClass().add("button-secondary");
         clearHydroBtn.setOnAction(e -> {
-            customHydroImage = null;
-            hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
-            updatePreviewCanvas();
-            updateSummary();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(I18n.getOrDefault("dialog.confirm.title", "Confirmation de suppression"));
+            alert.setHeaderText(null);
+            alert.setContentText(I18n.getOrDefault("resource.confirm.clear_hydro", "Voulez-vous vraiment effacer la carte hydrographique importée ?"));
+            WindowUtils.applyWindowIcon(alert);
+            alert.showAndWait().ifPresent(res -> {
+                if (res == ButtonType.OK) {
+                    customHydroImage = null;
+                    hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
+                    updatePreviewCanvas();
+                    updateSummary();
+                }
+            });
         });
         HBox hydroBox = new HBox(5, loadHydroBtn, clearHydroBtn);
 
@@ -583,7 +610,20 @@ public class ResourceDistributionPanel extends BorderPane {
         loadClimateBtn.setOnAction(e -> chooseClimateMapFile());
         clearClimateBtn = new Button("❌");
         clearClimateBtn.getStyleClass().add("button-secondary");
-        clearClimateBtn.setOnAction(e -> { customClimateImage = null; climateFileLabel.setText(I18n.get("planet.map.none")); updatePreviewCanvas(); });
+        clearClimateBtn.setOnAction(e -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(I18n.getOrDefault("dialog.confirm.title", "Confirmation de suppression"));
+            alert.setHeaderText(null);
+            alert.setContentText(I18n.getOrDefault("resource.confirm.clear_climate", "Voulez-vous vraiment effacer la carte climatique importée ?"));
+            WindowUtils.applyWindowIcon(alert);
+            alert.showAndWait().ifPresent(res -> {
+                if (res == ButtonType.OK) {
+                    customClimateImage = null;
+                    climateFileLabel.setText(I18n.get("planet.map.none"));
+                    updatePreviewCanvas();
+                }
+            });
+        });
         HBox climateBox = new HBox(5, loadClimateBtn, clearClimateBtn);
 
         rainfallMapRowLabel = new Label();
@@ -594,7 +634,20 @@ public class ResourceDistributionPanel extends BorderPane {
         loadRainfallBtn.setOnAction(e -> chooseRainfallMapFile());
         clearRainfallBtn = new Button("❌");
         clearRainfallBtn.getStyleClass().add("button-secondary");
-        clearRainfallBtn.setOnAction(e -> { customRainfallImage = null; rainfallFileLabel.setText(I18n.get("planet.map.none")); updatePreviewCanvas(); });
+        clearRainfallBtn.setOnAction(e -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(I18n.getOrDefault("dialog.confirm.title", "Confirmation de suppression"));
+            alert.setHeaderText(null);
+            alert.setContentText(I18n.getOrDefault("resource.confirm.clear_rainfall", "Voulez-vous vraiment effacer la carte de précipitations importée ?"));
+            WindowUtils.applyWindowIcon(alert);
+            alert.showAndWait().ifPresent(res -> {
+                if (res == ButtonType.OK) {
+                    customRainfallImage = null;
+                    rainfallFileLabel.setText(I18n.get("planet.map.none"));
+                    updatePreviewCanvas();
+                }
+            });
+        });
         HBox rainfallBox = new HBox(5, loadRainfallBtn, clearRainfallBtn);
 
         seasonalityMapRowLabel = new Label();
@@ -605,7 +658,20 @@ public class ResourceDistributionPanel extends BorderPane {
         loadSeasonalityBtn.setOnAction(e -> chooseSeasonalityMapFile());
         clearSeasonalityBtn = new Button("❌");
         clearSeasonalityBtn.getStyleClass().add("button-secondary");
-        clearSeasonalityBtn.setOnAction(e -> { customSeasonalityImage = null; seasonalityFileLabel.setText(I18n.get("planet.map.none")); updatePreviewCanvas(); });
+        clearSeasonalityBtn.setOnAction(e -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(I18n.getOrDefault("dialog.confirm.title", "Confirmation de suppression"));
+            alert.setHeaderText(null);
+            alert.setContentText(I18n.getOrDefault("resource.confirm.clear_seasonality", "Voulez-vous vraiment effacer la carte de saisonnalité importée ?"));
+            WindowUtils.applyWindowIcon(alert);
+            alert.showAndWait().ifPresent(res -> {
+                if (res == ButtonType.OK) {
+                    customSeasonalityImage = null;
+                    seasonalityFileLabel.setText(I18n.get("planet.map.none"));
+                    updatePreviewCanvas();
+                }
+            });
+        });
         HBox seasonalityBox = new HBox(5, loadSeasonalityBtn, clearSeasonalityBtn);
 
         fetchOnlineClimateBtn = new Button(I18n.getOrDefault("planet.map.btn_fetch_online_climate", "🌐 Télécharger Climat Satellite NASA/USGS (WMS)"));

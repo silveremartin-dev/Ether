@@ -19,6 +19,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
+import javafx.util.StringConverter;
+
 import java.util.*;
 
 /**
@@ -161,33 +163,56 @@ public class StatsPanel extends VBox {
         windowLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 10px; -fx-font-weight: bold;");
 
         ToggleGroup windowGroup = new ToggleGroup();
-        ToggleButton btn50 = new ToggleButton("50 Ticks");
-        ToggleButton btn200 = new ToggleButton("200 Ticks");
-        ToggleButton btn1000 = new ToggleButton("1000 Ticks");
+        ToggleButton btn1Yr = new ToggleButton("1 An");
+        ToggleButton btn10Yr = new ToggleButton("10 Ans");
+        ToggleButton btn100Yr = new ToggleButton("100 Ans");
+        ToggleButton btn1000Yr = new ToggleButton("1000 Ans");
         ToggleButton btnAll = new ToggleButton("Tout");
 
-        for (ToggleButton b : new ToggleButton[]{btn50, btn200, btn1000, btnAll}) {
+        for (ToggleButton b : new ToggleButton[]{btn1Yr, btn10Yr, btn100Yr, btn1000Yr, btnAll}) {
             b.setToggleGroup(windowGroup);
             b.setStyle("-fx-font-size: 10px; -fx-padding: 3 8; -fx-background-radius: 4;");
         }
-        btn200.setSelected(true);
+        btn10Yr.setSelected(true);
+        this.timeWindowSize = 120; // 10 years = 120 ticks (1 tick = 1 month)
 
-        btn50.setOnAction(e -> setTimeWindow(50));
-        btn200.setOnAction(e -> setTimeWindow(200));
-        btn1000.setOnAction(e -> setTimeWindow(1000));
+        btn1Yr.setOnAction(e -> setTimeWindow(12));
+        btn10Yr.setOnAction(e -> setTimeWindow(120));
+        btn100Yr.setOnAction(e -> setTimeWindow(1200));
+        btn1000Yr.setOnAction(e -> setTimeWindow(12000));
         btnAll.setOnAction(e -> setTimeWindow(-1));
 
-        HBox windowBox = new HBox(6, windowLabel, btn50, btn200, btn1000, btnAll);
+        HBox windowBox = new HBox(6, windowLabel, btn1Yr, btn10Yr, btn100Yr, btn1000Yr, btnAll);
         windowBox.setAlignment(Pos.CENTER_LEFT);
 
         NumberAxis xAxis = new NumberAxis();
-        xAxis.setLabel("Année");
+        xAxis.setLabel("Temps (Année)");
         xAxis.setTickLabelFill(Color.GRAY);
         xAxis.setAutoRanging(true);
+        xAxis.setForceZeroInRange(false);
+        xAxis.setTickLabelFormatter(new StringConverter<Number>() {
+            @Override
+            public String toString(Number object) {
+                if (object == null) return "";
+                double val = object.doubleValue();
+                long y = (long) Math.floor(val);
+                long absY = Math.abs(y);
+                if (y < 0) {
+                    return String.format("%,d av. J.-C.", absY);
+                } else if (y > 0) {
+                    return String.format("%,d ap. J.-C.", y);
+                } else {
+                    return "An 0";
+                }
+            }
+            @Override
+            public Number fromString(String string) { return 0; }
+        });
 
         NumberAxis yAxis = new NumberAxis();
         yAxis.setTickLabelFill(Color.GRAY);
         yAxis.setAutoRanging(true);
+        yAxis.setForceZeroInRange(false);
 
         lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle("Courbe d'Évolution Temporelle");
@@ -216,7 +241,9 @@ public class StatsPanel extends VBox {
         barChart.getData().add(barSeries);
 
         VBox barBox = new VBox(6, barHeaderLabel, barChart);
-        barBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255,         // --- SECTION 3: METRIC CARDS & CATEGORY FILTER ---
+        barBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+
+        // --- SECTION 3: METRIC CARDS & CATEGORY FILTER ---
         Label metricsHeaderLabel = new Label("📋 MÉTRIQUES DÉTAILLÉES & INDICATEURS CLIODYNAMIQUES");
         metricsHeaderLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #ffd700;");
 
@@ -380,13 +407,6 @@ public class StatsPanel extends VBox {
             }
         });
         metricCards.put(key, card);
-    }imulation par seconde.");
-        addCard("ramMemory", "Utilisation Mémoire RAM", "💻 Performances Techniques", "MB", "Consommation mémoire vive du moteur.");
-        addCard("cellCount", "Cellules Hexagonales H3", "💻 Performances Techniques", "hex", "Nombre total de mailles hexagonales chargées en mémoire.");
-    }
-
-    private void addCard(String key, String title, String category, String unit, String tooltip) {
-        metricCards.put(key, new MetricCard(key, title, category, unit, tooltip));
     }
 
     private void buildMetricsList() {
@@ -642,8 +662,17 @@ public class StatsPanel extends VBox {
                 default -> pop;
             };
 
-            if (chartSeries.getData().isEmpty() || chartSeries.getData().get(chartSeries.getData().size() - 1).getXValue().intValue() != year) {
-                chartSeries.getData().add(new XYChart.Data<>(year, yVal));
+            double currentTime = year + (engine.getTimeManager().getCurrentMonth() / 12.0);
+            if (chartSeries.getData().isEmpty()) {
+                // Pre-populate baseline starting points so the line chart is populated immediately
+                double startYear = Math.max(0, currentTime - 10.0);
+                for (double past = startYear; past < currentTime; past += 1.0) {
+                    chartSeries.getData().add(new XYChart.Data<>(past, yVal));
+                }
+            }
+
+            if (chartSeries.getData().isEmpty() || Math.abs(chartSeries.getData().get(chartSeries.getData().size() - 1).getXValue().doubleValue() - currentTime) >= 0.001) {
+                chartSeries.getData().add(new XYChart.Data<>(currentTime, yVal));
                 while (timeWindowSize > 0 && chartSeries.getData().size() > timeWindowSize) {
                     chartSeries.getData().remove(0);
                 }

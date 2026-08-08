@@ -75,6 +75,21 @@ public class WindowUtils {
     }
 
     /**
+     * Applies icon.png to a JavaFX Dialog or Alert window.
+     *
+     * @param dialog target Dialog window
+     */
+    public static void applyWindowIcon(javafx.scene.control.Dialog<?> dialog) {
+        if (dialog == null) return;
+        try {
+            javafx.stage.Stage stage = (javafx.stage.Stage) dialog.getDialogPane().getScene().getWindow();
+            applyWindowIcon(stage);
+        } catch (Exception e) {
+            logger.debug("Could not apply icon to dialog", e);
+        }
+    }
+
+    /**
      * Sets the Windows AppUserModelID via Win32 Shell32 API if running on Windows OS.
      * This prevents Windows Taskbar from falling back to generic javaw.exe icon or delaying icon rendering.
      */

@@ -319,6 +319,8 @@ public class GodModePanel extends VBox {
         if (name == null || name.isBlank()) name = type;
 
         int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
+        int currentMonth = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() : 0;
+        int currentDay = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentDay() : 1;
         int targetYear = immediate ? currentYear : targetYearSpinner.getValue();
 
         double lat = latSpinner.getValue();
@@ -329,6 +331,15 @@ public class GodModePanel extends VBox {
 
         timeline.addEntry(targetYear, type, name, details, true);
         refreshTimelineView();
+
+        if (engine != null && engine.getEventSystem() != null) {
+            org.ether.society.events.ActiveEvent ae = new org.ether.society.events.ActiveEvent(
+                "GM_" + System.currentTimeMillis(),
+                "⚡ GOD MODE: " + name,
+                type, lat, lng, targetYear, currentMonth, currentDay, 30.0
+            );
+            engine.getEventSystem().recordSpatialEvent(ae);
+        }
 
         // If target year is current year or immediate, execute physical forcing directly
         if (immediate || targetYear <= currentYear) {
@@ -363,8 +374,22 @@ public class GodModePanel extends VBox {
 
     public void recordIntervention(String type, String title, String details) {
         long currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
+        int currentMonth = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() : 0;
+        int currentDay = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentDay() : 1;
         timeline.addEntry(currentYear, type, title, details, true);
         refreshTimelineView();
+
+        if (engine != null && engine.getEventSystem() != null) {
+            double lat = latSpinner != null ? latSpinner.getValue() : 0.0;
+            double lng = lngSpinner != null ? lngSpinner.getValue() : 0.0;
+            org.ether.society.events.ActiveEvent ae = new org.ether.society.events.ActiveEvent(
+                "GM_" + System.currentTimeMillis(),
+                "⚡ GOD MODE: " + title,
+                "GOD_MODE", lat, lng, (int) currentYear, currentMonth, currentDay, 30.0
+            );
+            engine.getEventSystem().recordSpatialEvent(ae);
+        }
+
         logger.info("God Mode intervention recorded at Year {}: {} - {}", currentYear, title, details);
     }
 
