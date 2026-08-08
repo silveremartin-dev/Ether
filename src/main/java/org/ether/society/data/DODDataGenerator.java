@@ -35,7 +35,8 @@ public class DODDataGenerator {
             buffer.getMetalResource()[i] = cell.getResourceMetal().floatValue();
             buffer.getClayResource()[i] = cell.getResourceClay().floatValue();
             
-            double humanPop = (cell.getBiomassHuman() != null && cell.getBiomassHuman() > 0) ? cell.getBiomassHuman() : (cell.getPopulation() != null ? cell.getPopulation().doubleValue() : 0.0);
+            boolean isWater = (cell.getBiome() == org.ether.society.model.Biome.OCEAN || cell.getBiome() == org.ether.society.model.Biome.DEEP_OCEAN || (cell.getElevation() != null && cell.getElevation() <= 0));
+            double humanPop = isWater ? 0.0 : ((cell.getBiomassHuman() != null && cell.getBiomassHuman() > 0) ? cell.getBiomassHuman() : (cell.getPopulation() != null ? cell.getPopulation().doubleValue() : 0.0));
             buffer.getBiomassHuman()[i] = (float) humanPop;
             buffer.getBiomassLivestock()[i] = cell.getBiomassLivestock().floatValue();
             buffer.getBiomassFish()[i] = cell.getBiomassFish().floatValue();

@@ -14,6 +14,8 @@ import java.util.Map;
  * Container for global socio-economic indices.
  */
 public class SocietyIndices implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private long totalPopulation;
     private double globalBiomass;
     private double giniCoefficient;

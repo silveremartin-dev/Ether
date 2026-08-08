@@ -20,6 +20,7 @@ import java.util.List;
  * @version 4.0.0
  */
 public class ScenarioTimeline implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     public record TimelineEntry(long year, String eventType, String title, String details, boolean isGodModeIntervention) implements Serializable {}
 

@@ -297,7 +297,7 @@ public class H3SimulationEngine implements ISimulationEngine {
             t.setDaemon(true);
             return t;
         });
-        long period = Math.max(1, config.simulation().tickRateMs() / speedMultiplier);
+        long period = speedMultiplier >= 100 ? 1 : Math.max(1, config.simulation().tickRateMs() / Math.max(1, speedMultiplier));
         executorService.scheduleAtFixedRate(this::tick, 0, period, TimeUnit.MILLISECONDS);
     }
 

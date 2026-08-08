@@ -54,9 +54,10 @@ public class ProceduralPopulationEngine {
     public static void distributePopulation(List<H3Cell> cells, Scenario scenario, long totalPopulation, double techLevel, String pattern, boolean isEarthPreset, long startYear) {
         if (cells == null || cells.isEmpty()) return;
 
-        // Reset populations first
+        // Reset populations and human biomass first
         for (H3Cell c : cells) {
             c.setPopulation(0);
+            c.setBiomassHuman(0.0);
         }
 
         // Filter land cells

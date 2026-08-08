@@ -13,6 +13,8 @@ import java.io.Serializable;
  * Configuration for a simulation scenario.
  */
 public class Scenario implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String name;
     private String description;
     private Long id;
@@ -51,6 +53,9 @@ public class Scenario implements Serializable {
     private boolean oceanMacroAggregationEnabled = true;
     private boolean coastalNavigationOnlyEnabled = true;
     private boolean oceanMultiRateTickingEnabled = true;
+
+    // Type B Procedural & Cliodynamic Engine Checkbox States (Persisted per Scenario)
+    private java.util.Map<String, Boolean> typeBEngineStates = new java.util.HashMap<>();
 
     // Spatial Clipping & Boundary Conditions
     private boolean clippingEnabled = false;
@@ -391,5 +396,16 @@ public class Scenario implements Serializable {
 
     public void setTemporalResolutionDays(double temporalResolutionDays) {
         this.temporalResolutionDays = temporalResolutionDays;
+    }
+
+    public java.util.Map<String, Boolean> getTypeBEngineStates() {
+        if (typeBEngineStates == null) {
+            typeBEngineStates = new java.util.HashMap<>();
+        }
+        return typeBEngineStates;
+    }
+
+    public void setTypeBEngineStates(java.util.Map<String, Boolean> typeBEngineStates) {
+        this.typeBEngineStates = typeBEngineStates != null ? typeBEngineStates : new java.util.HashMap<>();
     }
 }

@@ -239,6 +239,7 @@ public class ResourceDistributionPanel extends BorderPane {
         setPadding(new Insets(20));
 
         initUI();
+        applyEcologyPreset(EcologyPreset.EARTH_STANDARD);
         updateTexts();
 
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());

@@ -69,6 +69,7 @@ public class ControlPanel extends VBox {
     private final Button speed2x;
     private final Button speed5x;
     private final Button speed20x;
+    private final Button speedMax;
     private final Slider speedSlider;
 
     private final Button hdScreenshotBtn;
@@ -102,7 +103,7 @@ public class ControlPanel extends VBox {
         dateHeaderLabel = new Label("📅 " + I18n.getOrDefault("sim.header.date", "Date & Heure : ") + "T=0");
         dateHeaderLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
-        tpsLabel = new Label("⏱️ " + I18n.getOrDefault("sim.header.tps", "Cadence : 0.0 ticks/s (1 mois / tick)"));
+        tpsLabel = new Label("⏱️ " + I18n.getOrDefault("sim.header.tps", "Cadence : 0.0 itérations/sec (1 tick = 1 mois)"));
         tpsLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
 
         VBox dateHeaderBox = new VBox(4, scenarioHeaderLabel, dateHeaderLabel, tpsLabel);
@@ -147,9 +148,47 @@ public class ControlPanel extends VBox {
         speedSlider = new Slider(1, 20, 1);
         speedSlider.setBlockIncrement(1);
         speedSlider.setMajorTickUnit(5);
+        speedSlider.setMinorTickCount(4);
         speedSlider.setShowTickMarks(true);
+        speedSlider.setShowTickLabels(true);
+        speedSlider.setSnapToTicks(true);
         speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.slider", "Vitesse de simulation")));
-        speedSlider.valueProperty().addListener((obs, oldV, newV) -> engine.setSpeed(newV.intValue()));
+
+        Label speedValueLabel = new Label("⏱️ Vitesse : 1x (1 mois / sec)");
+        speedValueLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;");
+
+        speedSlider.valueProperty().addListener((obs, oldV, newV) -> {
+            int spd = newV.intValue();
+            engine.setSpeed(spd);
+            String timeRate;
+            if (spd >= 100) {
+                timeRate = "Calcul CPU Max (Illimité)";
+            } else if (spd >= 12) {
+                timeRate = String.format(java.util.Locale.FRANCE, "%.1f ans / sec", spd / 12.0);
+            } else {
+                timeRate = String.format("%d mois / sec", spd);
+            }
+            speedValueLabel.setText(String.format("⏱️ Vitesse : %s (%s)", spd >= 100 ? "MAX 🚀" : spd + "x", timeRate));
+        });
+
+        // Speed graduation scale label line
+        HBox scaleLabelsBox = new HBox();
+        scaleLabelsBox.setAlignment(Pos.CENTER_LEFT);
+        Label lbl1 = new Label("1x");
+        Label lbl5 = new Label("5x");
+        Label lbl10 = new Label("10x");
+        Label lbl15 = new Label("15x");
+        Label lbl20 = new Label("20x");
+        Label lblMax = new Label("MAX");
+        for (Label l : List.of(lbl1, lbl5, lbl10, lbl15, lbl20, lblMax)) {
+            l.setStyle("-fx-font-size: 9px; -fx-text-fill: #94a3b8; -fx-font-weight: bold;");
+        }
+        Region s1 = new Region(); HBox.setHgrow(s1, Priority.ALWAYS);
+        Region s2 = new Region(); HBox.setHgrow(s2, Priority.ALWAYS);
+        Region s3 = new Region(); HBox.setHgrow(s3, Priority.ALWAYS);
+        Region s4 = new Region(); HBox.setHgrow(s4, Priority.ALWAYS);
+        Region s5 = new Region(); HBox.setHgrow(s5, Priority.ALWAYS);
+        scaleLabelsBox.getChildren().addAll(lbl1, s1, lbl5, s2, lbl10, s3, lbl15, s4, lbl20, s5, lblMax);
 
         // Speed preset buttons
         speed1x = new Button("1x");
@@ -164,10 +203,19 @@ public class ControlPanel extends VBox {
         speed20x = new Button("20x");
         speed20x.setOnAction(e -> { engine.setSpeed(20); speedSlider.setValue(20); });
 
-        HBox speedBtnBox = new HBox(5, speed1x, speed2x, speed5x, speed20x);
+        speedMax = new Button("MAX 🚀");
+        speedMax.setTooltip(new Tooltip("Calcule les ticks à la vitesse maximale permise par le processeur (Uncapped CPU)"));
+        speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 8;");
+        speedMax.setOnAction(e -> {
+            engine.setSpeed(999);
+            speedValueLabel.setText("⏱️ Vitesse : MAX 🚀 (Calcul CPU Max - Uncapped)");
+        });
+
+        HBox speedBtnBox = new HBox(5, speed1x, speed2x, speed5x, speed20x, speedMax);
+        speedBtnBox.setAlignment(Pos.CENTER);
         speedBtnBox.setAlignment(Pos.CENTER);
 
-        VBox timeCard = new VBox(8, timeTitle, playBar, speedBtnBox, speedSlider);
+        VBox timeCard = new VBox(8, timeTitle, playBar, speedValueLabel, speedBtnBox, speedSlider, scaleLabelsBox);
         styleCard(timeCard);
 
         // --- 3. MEDIA & EXPORT MP4 CARD ---
@@ -211,10 +259,29 @@ public class ControlPanel extends VBox {
         layerComboLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px;");
 
         displayModeCombo = new ComboBox<>();
-        displayModeCombo.getItems().addAll(DisplayMode.values());
+        List<DisplayMode> sortedModes = java.util.Arrays.stream(DisplayMode.values())
+                .sorted(java.util.Comparator.comparing(DisplayMode::getCategory).thenComparing(DisplayMode::ordinal))
+                .toList();
+        displayModeCombo.getItems().addAll(sortedModes);
         displayModeCombo.setValue(DisplayMode.BIOME);
         displayModeCombo.setMaxWidth(Double.MAX_VALUE);
         displayModeCombo.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.datacategory", "Alterne la couche de couleur principale sur la carte")));
+
+        displayModeCombo.setCellFactory(p -> new ListCell<>() {
+            @Override
+            protected void updateItem(DisplayMode item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    String catName = item.getCategory().getCategoryName();
+                    String catPrefix = catName.contains(" ") ? catName.split(" ")[1] : catName;
+                    setText("[" + catPrefix + "] " + item.getDisplayName());
+                }
+            }
+        });
+        displayModeCombo.setButtonCell(displayModeCombo.getCellFactory().call(null));
+
         displayModeCombo.setOnAction(e -> {
             if (mapCanvas != null && displayModeCombo.getValue() != null) {
                 mapCanvas.setDisplayMode(displayModeCombo.getValue());
@@ -349,7 +416,7 @@ public class ControlPanel extends VBox {
         popStatValue.setText(String.format("Pop. Totale : %s", formatNumber(population)));
         foodStatValue.setText(String.format("Stocks Alim. : %s", formatNumber((long) food)));
         cellStatValue.setText(String.format("Cellules Habitées : %,d", populatedCells));
-        tpsLabel.setText(String.format("⏱️ Cadence : %.1f ticks/s (1 mois / tick)", tps));
+        tpsLabel.setText(String.format(java.util.Locale.FRANCE, "⏱️ Cadence : %.1f itérations/sec (1 tick = 1 mois)", tps));
     }
 
     private String formatNumber(long num) {

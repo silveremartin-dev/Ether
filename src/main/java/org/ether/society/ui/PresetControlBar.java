@@ -269,16 +269,17 @@ public class PresetControlBar<T> extends VBox {
     public void notifyParametersChanged() {
         if (trackingChanges || presetCombo.getValue() != null) {
             String current = nameField.getText() != null ? nameField.getText().trim() : "";
-            if (current.isBlank() || presetCombo.getValue() != null) {
-                String presetName = presetCombo.getValue() != null ? formatPresetItem(presetCombo.getValue()) : current;
-                nameField.setText(presetName.isBlank() ? "Custom" : presetName + " (Personnalisé)");
+            if (presetCombo.getValue() != null) {
+                String presetName = formatPresetItem(presetCombo.getValue());
+                if (!presetName.contains("Personnalisé")) {
+                    presetName = presetName + " (Personnalisé)";
+                }
+                nameField.setText(presetName);
             } else if (!current.contains("Personnalisé") && !current.equalsIgnoreCase("Custom")) {
-                nameField.setText(current + " (Personnalisé)");
+                nameField.setText(current.isBlank() ? "Custom (Personnalisé)" : current + " (Personnalisé)");
             }
             nameField.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
-            // Deselect combo without triggering its action
-            presetCombo.getSelectionModel().clearSelection();
-            trackingChanges = false;
+            trackingChanges = true;
         }
     }
 

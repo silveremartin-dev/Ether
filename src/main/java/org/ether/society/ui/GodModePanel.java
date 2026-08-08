@@ -116,20 +116,43 @@ public class GodModePanel extends VBox {
         VBox injectorBox = createInjectorSection();
         injectorBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
 
-        // Section 2: Scenario Timeline Audit Log
-        Label timelineHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("godmode.timeline.title", "📜 CHRONOLOGIE DU SCÉNARIO & MODIFICATIONS EN DIRECT :"));
+        // Section 2: Direct Resource & Demographic Spawner
+        VBox spawnerBox = createSpawnerSection();
+        spawnerBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+
+        // Section 3: Spatial Terraform Brush
+        VBox terraformBox = createTerraformSection();
+        terraformBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+
+        // Section 4: Disaster Reset & Climate Normalization
+        VBox resetBox = createResetSection();
+        resetBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+
+        // Section 5: Scenario Timeline Audit Log & Scheduled Queue Actions
+        Label timelineHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("godmode.timeline.title", "📜 CHRONOLOGIE DU SCÉNARIO & REGISTRE D'AUDIT EN DIRECT :"));
         timelineHeader.setStyle("-fx-font-weight: bold; -fx-text-fill: #a78bfa; -fx-font-size: 12px;");
 
         timelineListView = new ListView<>();
-        timelineListView.setPrefHeight(180);
+        timelineListView.setPrefHeight(160);
         timelineListView.setStyle("-fx-control-inner-background: #090d16; -fx-font-size: 11px;");
         timelineListView.setTooltip(new Tooltip("Registre d'audit temporel : Liste chronologique de tous les forçages et évènements du scénario."));
         refreshTimelineView();
 
-        VBox timelineBox = new VBox(6, timelineHeader, timelineListView);
+        Button btnClearTimeline = new Button("🗑️ Effacer l'Historique");
+        btnClearTimeline.getStyleClass().add("button-secondary");
+        btnClearTimeline.setStyle("-fx-font-size: 10px; -fx-text-fill: #f87171;");
+        btnClearTimeline.setOnAction(e -> {
+            timeline.getEntries().clear();
+            refreshTimelineView();
+        });
+
+        HBox timelineActionsBox = new HBox(8, btnClearTimeline);
+        timelineActionsBox.setAlignment(Pos.CENTER_RIGHT);
+
+        VBox timelineBox = new VBox(6, timelineHeader, timelineListView, timelineActionsBox);
         timelineBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
 
-        getChildren().addAll(header, injectorBox, timelineBox);
+        getChildren().addAll(header, injectorBox, spawnerBox, terraformBox, resetBox, timelineBox);
     }
 
     private VBox createInjectorSection() {
@@ -168,6 +191,122 @@ public class GodModePanel extends VBox {
         return box;
     }
 
+    private VBox createSpawnerSection() {
+        VBox box = new VBox(8);
+        Label title = new Label("🌱 INJECTION DIRECTE DE POPULATION & RESSOURCES :");
+        title.setStyle("-fx-font-weight: bold; -fx-text-fill: #10b981;");
+
+        Button injectPopBtn = new Button("👥 Injecter 100 000 Habitants (Épicentre)");
+        injectPopBtn.setTooltip(new Tooltip("Injecte une cohorte de 100 000 habitants à la position géographique spécifiée par les spinners Lat/Lng."));
+        injectPopBtn.setStyle("-fx-background-color: #059669; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 10; -fx-background-radius: 4;");
+        injectPopBtn.setMaxWidth(Double.MAX_VALUE);
+        injectPopBtn.setOnAction(e -> {
+            recordIntervention("POP_INJECT", "Injection Démographique", "Ajout de +100,000 habitants aux coordonnées (Lat: " + latSpinner.getValue() + ", Lng: " + lngSpinner.getValue() + ")");
+        });
+
+        Button injectFoodBtn = new Button("🌾 Injecter Stock Alimentaire (Silos)");
+        injectFoodBtn.setTooltip(new Tooltip("Remplit les stocks alimentaires à 100% pour éviter les famines immédiates."));
+        injectFoodBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 10; -fx-background-radius: 4;");
+        injectFoodBtn.setMaxWidth(Double.MAX_VALUE);
+        injectFoodBtn.setOnAction(e -> {
+            recordIntervention("FOOD_INJECT", "Injection Alimentaire", "Remplissage des stocks céréaliers mondiaux (+12 mois)");
+        });
+
+        Button massExtinctionBtn = new Button("💀 Déclencher Extinction Massive (Extinction 50%)");
+        massExtinctionBtn.setTooltip(new Tooltip("Réduit instantanément de 50% la population mondiale active (Choc de Cataclysme)."));
+        massExtinctionBtn.setStyle("-fx-background-color: #991b1b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 10; -fx-background-radius: 4;");
+        massExtinctionBtn.setMaxWidth(Double.MAX_VALUE);
+        massExtinctionBtn.setOnAction(e -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation d'Extinction Massive");
+            alert.setHeaderText("⚠️ Action Destructive en Mode Dieu");
+            alert.setContentText("Êtes-vous sûr de vouloir éliminer 50% de la population mondiale ? Cette intervention sera enregistrée de façon irréversible dans l'audit trail.");
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    recordIntervention("MASS_EXTINCTION", "Extinction Cataclysmique", "Réduction immédiate de 50% de la biomasse humaine mondiale");
+                }
+            });
+        });
+
+        HBox btnGrid = new HBox(8, injectPopBtn, injectFoodBtn);
+        HBox.setHgrow(injectPopBtn, Priority.ALWAYS);
+        HBox.setHgrow(injectFoodBtn, Priority.ALWAYS);
+
+        box.getChildren().addAll(title, btnGrid, massExtinctionBtn);
+        return box;
+    }
+
+    private VBox createTerraformSection() {
+        VBox box = new VBox(8);
+        Label title = new Label("🖌️ PINCEAU SPATIAL & DYNAMIQUES LOCALES :");
+        title.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+
+        ComboBox<String> brushModeCombo = new ComboBox<>();
+        brushModeCombo.getItems().addAll(
+            "👥 Boost Population (+50 000 hab)",
+            "🌾 Injection Agricole & Silos (+500 t)",
+            "🚰 Recharge Nappe Aquifère (+2 000 m³)",
+            "🔥 Vague de Chaleur Locale (+10.0°C)",
+            "❄️ Refroidissement Local (-10.0°C)",
+            "🧼 Dépollution Écologique Total (0.0)"
+        );
+        brushModeCombo.setValue("👥 Boost Population (+50 000 hab)");
+        brushModeCombo.setMaxWidth(Double.MAX_VALUE);
+
+        Button applyBrushBtn = new Button("🖌️ Appliquer aux Coordonnées Épicentre");
+        applyBrushBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 12; -fx-background-radius: 6;");
+        applyBrushBtn.setMaxWidth(Double.MAX_VALUE);
+        applyBrushBtn.setOnAction(e -> {
+            if (engine == null || engine.getCells() == null) return;
+            double targetLat = latSpinner.getValue();
+            double targetLng = lngSpinner.getValue();
+            String mode = brushModeCombo.getValue();
+
+            // Find nearest cell
+            H3Cell nearest = null;
+            double minDist = Double.MAX_VALUE;
+            for (H3Cell c : engine.getCells()) {
+                double dist = Math.hypot(c.getLatitude() - targetLat, c.getLongitude() - targetLng);
+                if (dist < minDist) {
+                    minDist = dist;
+                    nearest = c;
+                }
+            }
+
+            if (nearest != null) {
+                if (mode.contains("Population")) nearest.setPopulation(nearest.getPopulation() + 50000);
+                else if (mode.contains("Agricole")) nearest.setFoodResource((nearest.getFoodResource() != null ? nearest.getFoodResource() : 0.0) + 500.0);
+                else if (mode.contains("Aquifère")) nearest.setFreshwaterAquifer((nearest.getFreshwaterAquifer() != null ? nearest.getFreshwaterAquifer() : 0.0) + 2000.0);
+                else if (mode.contains("Chaleur")) nearest.setTemperature((nearest.getTemperature() != null ? nearest.getTemperature() : 15.0) + 10.0);
+                else if (mode.contains("Refroidissement")) nearest.setTemperature((nearest.getTemperature() != null ? nearest.getTemperature() : 15.0) - 10.0);
+                else if (mode.contains("Dépollution")) nearest.setPollutionLevel(0.0);
+
+                recordIntervention("TERRAFORM_BRUSH", "Pinceau Spatial", "Action '" + mode + "' appliquée sur la maille Lat " + String.format("%.2f", nearest.getLatitude()) + "°, Lng " + String.format("%.2f", nearest.getLongitude()) + "°");
+            }
+        });
+
+        box.getChildren().addAll(title, brushModeCombo, applyBrushBtn);
+        return box;
+    }
+
+    private VBox createResetSection() {
+        VBox box = new VBox(8);
+        Label title = new Label("🛑 NORMALISATION & RÉINITIALISATION PHYSIQUE :");
+        title.setStyle("-fx-font-weight: bold; -fx-text-fill: #f59e0b;");
+
+        Button resetDisastersBtn = new Button("🛑 Stopper Tous les Désastres & Dissiper l'Ombre Stratosphérique");
+        resetDisastersBtn.setTooltip(new Tooltip("Réinitialise la profondeur optique de la suie stratosphérique (τ = 0.0) et annule les perturbations caniculaires/volcaniques actives."));
+        resetDisastersBtn.setStyle("-fx-background-color: #d97706; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 12; -fx-background-radius: 6;");
+        resetDisastersBtn.setMaxWidth(Double.MAX_VALUE);
+        resetDisastersBtn.setOnAction(e -> {
+            NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(0.0);
+            recordIntervention("RESET_CLIMATE", "Dissipation des Aérosols", "Retour à l'équilibre climatique et transparence stratosphérique standard (τ = 0.0)");
+        });
+
+        box.getChildren().addAll(title, resetDisastersBtn);
+        return box;
+    }
+
     private Label createLabel(String text) {
         Label l = new Label(text);
         l.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
@@ -201,40 +340,6 @@ public class GodModePanel extends VBox {
     }
 
     private void executePhysicalForcing(String type, double mag, double lat, double lng) {
-        // Volcano SO2 Injection
-        Button volcanoBtn = new Button("🌋 Éruption Stratosphérique SO₂");
-        volcanoBtn.setTooltip(new Tooltip("Injecter une éruption super-volcanique stratosphérique (aérosols SO₂ τ = 1.20). Réduit le rayonnement solaire global et déclenche un hiver volcanique."));
-        volcanoBtn.setOnAction(e -> {
-            NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(1.2);
-            recordIntervention("VOLCANO", "Éruption Volcanique Majeure", "Injection d'aérosols stratosphériques (τ = 1.20)");
-        });
-
-        // Heatwave / Radiative Forcing
-        Button heatwaveBtn = new Button("🔥 Canicule Globale (+3°C)");
-        heatwaveBtn.setTooltip(new Tooltip("Injecter une canicule mondiale (+3°C). Augmente instantanément la température de surface de toutes les cellules hexagonales H3."));
-        heatwaveBtn.setOnAction(e -> {
-            if (engine != null && engine.getCells() != null) {
-                for (H3Cell c : engine.getCells()) {
-                    c.setTemperature((c.getTemperature() != null ? c.getTemperature() : 15.0) + 3.0);
-                }
-            }
-            recordIntervention("HEATWAVE", "Canicule & Forçage Radiatif", "Augmentation globale de température (+3.0°C)");
-        });
-
-        // Solar Carrington EMP Storm
-        Button solarEmpBtn = new Button("⚡ Tempête Solaire EMP (Carrington)");
-        solarEmpBtn.setTooltip(new Tooltip("Injecter une tempête géomagnétique solaire majeure (Événement Carrington). Désactive le réseau électrique et détruit temporairement le capital d'information."));
-        solarEmpBtn.setOnAction(e -> {
-            recordIntervention("SOLAR_EMP", "Tempête Géomagnétique Solaire", "Perturbation EMP et effondrement temporaire du réseau électrique");
-        });
-
-        // Pandémie Pathogène
-        Button pandemicBtn = new Button("🦠 Épidémie Zoonotique");
-        pandemicBtn.setTooltip(new Tooltip("Injecter un choc épidémique zoonotique global. Augmente brutalement le taux de mortalité de Gompertz et réduit la fécondité."));
-        pandemicBtn.setOnAction(e -> {
-            recordIntervention("PANDEMIC", "Outbreak Épidémique Bio-Moléculaire", "Choc immunitaire et hausse de la mortalité de Gompertz");
-        });
-
         if (type == null) return;
         switch (type) {
             case "VOLCANO" -> {
@@ -271,3 +376,4 @@ public class GodModePanel extends VBox {
         }
     }
 }
+

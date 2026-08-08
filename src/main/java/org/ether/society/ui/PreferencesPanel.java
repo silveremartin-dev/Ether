@@ -29,9 +29,9 @@ public class PreferencesPanel extends BorderPane {
     private static final String PREF_GPU_KEY = "ether_gpu_enabled";
 
     private Label titleHeader;
-    private Label langLabel;
+    private Label langHeaderLabel;
     private ComboBox<Language> languageCombo;
-    private Label themeLabel;
+    private Label themeHeaderLabel;
     private RadioButton darkThemeRadio;
     private RadioButton lightThemeRadio;
     private ToggleGroup themeToggleGroup;
@@ -64,9 +64,6 @@ public class PreferencesPanel extends BorderPane {
         titleHeader.getStyleClass().add("label-title");
 
         // 1. Language Section
-        langLabel = new Label();
-        langLabel.getStyleClass().add("control-label");
-
         languageCombo = new ComboBox<>();
         languageCombo.getItems().addAll(Language.values());
         languageCombo.setValue(I18n.getCurrentLanguage());
@@ -78,12 +75,11 @@ public class PreferencesPanel extends BorderPane {
             }
         });
 
-        langSection = createCardSection("🌐 " + I18n.get("pref.language"), new VBox(10, langLabel, languageCombo));
+        langHeaderLabel = new Label();
+        langHeaderLabel.getStyleClass().add("label-section-header");
+        langSection = createCardSectionWithHeader(langHeaderLabel, new VBox(10, languageCombo));
 
         // 2. Theme Section
-        themeLabel = new Label();
-        themeLabel.getStyleClass().add("control-label");
-
         themeToggleGroup = new ToggleGroup();
         darkThemeRadio = new RadioButton();
         darkThemeRadio.setToggleGroup(themeToggleGroup);
@@ -104,7 +100,9 @@ public class PreferencesPanel extends BorderPane {
         });
 
         HBox themeOptions = new HBox(20, darkThemeRadio, lightThemeRadio);
-        themeSection = createCardSection("🎨 " + I18n.get("pref.theme"), new VBox(10, themeLabel, themeOptions));
+        themeHeaderLabel = new Label();
+        themeHeaderLabel.getStyleClass().add("label-section-header");
+        themeSection = createCardSectionWithHeader(themeHeaderLabel, new VBox(10, themeOptions));
 
         // 3. GPU Section
         boolean gpuEnabled = prefs.getBoolean(PREF_GPU_KEY, true);
@@ -150,6 +148,12 @@ public class PreferencesPanel extends BorderPane {
         return prefs.getBoolean(PREF_GPU_KEY, true);
     }
 
+    private VBox createCardSectionWithHeader(Label header, VBox content) {
+        VBox card = new VBox(12, header, content);
+        card.getStyleClass().add("card-section");
+        return card;
+    }
+
     private VBox createCardSection(String title, VBox content) {
         Label header = new Label(title);
         header.getStyleClass().add("label-section-header");
@@ -160,8 +164,8 @@ public class PreferencesPanel extends BorderPane {
 
     public void updateTexts() {
         titleHeader.setText(I18n.get("pref.title"));
-        langLabel.setText(I18n.get("pref.language"));
-        themeLabel.setText(I18n.get("pref.theme"));
+        if (langHeaderLabel != null) langHeaderLabel.setText("🌐 " + I18n.get("pref.language"));
+        if (themeHeaderLabel != null) themeHeaderLabel.setText("🎨 " + I18n.get("pref.theme"));
         darkThemeRadio.setText(I18n.get("pref.theme.dark"));
         lightThemeRadio.setText(I18n.get("pref.theme.light"));
         languageCombo.setValue(I18n.getCurrentLanguage());

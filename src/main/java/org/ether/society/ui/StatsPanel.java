@@ -109,6 +109,9 @@ public class StatsPanel extends VBox {
         public String getTitle() { return title; }
     }
 
+    // Sliding Time Window size (-1 for unlimited)
+    private int timeWindowSize = 200;
+
     public StatsPanel(H3SimulationEngine engine) {
         this.engine = engine;
 
@@ -117,9 +120,115 @@ public class StatsPanel extends VBox {
         getStyleClass().add("glass-panel");
         setStyle("-fx-background-color: rgba(15, 23, 42, 0.90); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 8;");
 
-        // --- TOP TOOLBAR & CONTROLS ---
+        // --- TOP HEADER TOOLBAR ---
         Label headerTitle = new Label("📊 TABLEAU DE BORD DES STATISTIQUES & CLIODYNAMIQUE");
         headerTitle.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #ffd700;");
+
+        VBox topControlsBox = new VBox(6, headerTitle);
+        topControlsBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+
+        // --- SECTION 1: GRAPH SELECTION & TIME SERIES ---
+        Label chartHeaderLabel = new Label("📈 ÉVOLUTION CHRONOLOGIQUE TEMPORELLE (Courbe Glissante)");
+        chartHeaderLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+
+        Label comboLabel = new Label("Statistique Tracée :");
+        comboLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 10px; -fx-font-weight: bold;");
+
+        chartMetricCombo = new ComboBox<>();
+        chartMetricCombo.getItems().addAll(
+            "Population Humaine",
+            "Échelle de Kardashev (Type K)",
+            "Énergie Captée (MW)",
+            "Indice de Gini (Inégalités)",
+            "Indice de Bonheur (%)",
+            "Taux de Conflits (%)",
+            "PIB Global (GDP)",
+            "Espérance de Vie (ans)",
+            "Division du Travail & Spécialisation",
+            "Matière Déplacée & Capital Bâti",
+            "Risque d'Effondrement Systémique (%)",
+            "Pression Élitaire (Indice Turchin)",
+            "Empreinte Carbone (GtCO2)",
+            "Stock de Mémoire Collective (TB)",
+            "Interdépendance & Complexité Systémique"
+        );
+        chartMetricCombo.setValue("Population Humaine");
+        chartMetricCombo.setMaxWidth(Double.MAX_VALUE);
+        chartMetricCombo.setOnAction(e -> resetChartSeries());
+
+        // Sliding Time Window Toggle Buttons
+        Label windowLabel = new Label("Fenêtre :");
+        windowLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 10px; -fx-font-weight: bold;");
+
+        ToggleGroup windowGroup = new ToggleGroup();
+        ToggleButton btn50 = new ToggleButton("50 Ticks");
+        ToggleButton btn200 = new ToggleButton("200 Ticks");
+        ToggleButton btn1000 = new ToggleButton("1000 Ticks");
+        ToggleButton btnAll = new ToggleButton("Tout");
+
+        for (ToggleButton b : new ToggleButton[]{btn50, btn200, btn1000, btnAll}) {
+            b.setToggleGroup(windowGroup);
+            b.setStyle("-fx-font-size: 10px; -fx-padding: 3 8; -fx-background-radius: 4;");
+        }
+        btn200.setSelected(true);
+
+        btn50.setOnAction(e -> setTimeWindow(50));
+        btn200.setOnAction(e -> setTimeWindow(200));
+        btn1000.setOnAction(e -> setTimeWindow(1000));
+        btnAll.setOnAction(e -> setTimeWindow(-1));
+
+        HBox windowBox = new HBox(6, windowLabel, btn50, btn200, btn1000, btnAll);
+        windowBox.setAlignment(Pos.CENTER_LEFT);
+
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Année");
+        xAxis.setTickLabelFill(Color.GRAY);
+        xAxis.setAutoRanging(true);
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setTickLabelFill(Color.GRAY);
+        yAxis.setAutoRanging(true);
+
+        lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("Courbe d'Évolution Temporelle");
+        lineChart.setCreateSymbols(false);
+        lineChart.setAnimated(false);
+        lineChart.setLegendVisible(false);
+        lineChart.setPrefHeight(160);
+        lineChart.getData().add(chartSeries);
+
+        VBox chartBox = new VBox(6, chartHeaderLabel, comboLabel, chartMetricCombo, windowBox, lineChart);
+        chartBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+
+        // --- SECTION 2: DEMOGRAPHICS (AGE PYRAMID) ---
+        Label barHeaderLabel = new Label("📊 REPARTITION DEMOGRAPHIQUE (Pyramide des Âges)");
+        barHeaderLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+
+        CategoryAxis barX = new CategoryAxis();
+        barX.setTickLabelFill(Color.GRAY);
+        NumberAxis barY = new NumberAxis();
+        barY.setTickLabelFill(Color.GRAY);
+        barChart = new BarChart<>(barX, barY);
+        barChart.setTitle("Pyramide des Âges");
+        barChart.setAnimated(false);
+        barChart.setLegendVisible(false);
+        barChart.setPrefHeight(130);
+        barChart.getData().add(barSeries);
+
+        VBox barBox = new VBox(6, barHeaderLabel, barChart);
+        barBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255,         // --- SECTION 3: METRIC CARDS & CATEGORY FILTER ---
+        Label metricsHeaderLabel = new Label("📋 MÉTRIQUES DÉTAILLÉES & INDICATEURS CLIODYNAMIQUES");
+        metricsHeaderLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #ffd700;");
+
+        // Interactive Metric Inspector Panel
+        Label metricInspectorTitle = new Label("🔎 Explication de la Métrique Cliodynamique :");
+        metricInspectorTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #ffd700;");
+        Label metricInspectorText = new Label("Survolez ou cliquez sur une carte de statistique ci-dessous pour afficher sa formule mathématique, sa méthode de calcul et sa signification sociétale.");
+        metricInspectorText.setWrapText(true);
+        metricInspectorText.setStyle("-fx-font-size: 11px; -fx-text-fill: #cbd5e1;");
+
+        VBox metricInspectorCard = new VBox(4, metricInspectorTitle, metricInspectorText);
+        metricInspectorCard.setStyle("-fx-padding: 8 10; -fx-background-color: rgba(255, 215, 0, 0.08); -fx-background-radius: 6; -fx-border-color: rgba(255, 215, 0, 0.25); -fx-border-radius: 6;");
 
         // Category Filter
         categoryFilterCombo = new ComboBox<>();
@@ -152,142 +261,126 @@ public class StatsPanel extends VBox {
         exportBtn.setMaxWidth(Double.MAX_VALUE);
         exportBtn.setOnAction(e -> exportCsv());
 
-        VBox topControlsBox = new VBox(6, headerTitle, categoryFilterCombo, searchField, exportBtn);
-        topControlsBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+        VBox cardsControlBox = new VBox(6, metricsHeaderLabel, metricInspectorCard, categoryFilterCombo, searchField, exportBtn);
+        cardsControlBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
 
-        // --- GRAPH SELECTION & TIME SERIES ---
-        Label chartHeaderLabel = new Label("📈 EVOLUTION CHRONOLOGIQUE TEMPORELLE");
-        chartHeaderLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
-
-        chartMetricCombo = new ComboBox<>();
-        chartMetricCombo.getItems().addAll(
-            "Population Humaine",
-            "Échelle de Kardashev (Type K)",
-            "Énergie Captée (MW)",
-            "Indice de Gini (Inégalités)",
-            "Indice de Bonheur (%)",
-            "Taux de Conflits (%)",
-            "PIB Global (GDP)",
-            "Espérance de Vie (ans)",
-            "Division du Travail & Spécialisation",
-            "Matière Déplacée & Capital Bâti",
-            "Risque d'Effondrement Systémique (%)",
-            "Pression Élitaire (Indice Turchin)",
-            "Empreinte Carbone (GtCO2)",
-            "Stock de Mémoire Collective (TB)",
-            "Interdépendance & Complexité Systémique"
-        );
-        chartMetricCombo.setValue("Population Humaine");
-        chartMetricCombo.setMaxWidth(Double.MAX_VALUE);
-        chartMetricCombo.setOnAction(e -> resetChartSeries());
-
-        NumberAxis xAxis = new NumberAxis();
-        xAxis.setLabel("Année");
-        xAxis.setTickLabelFill(Color.GRAY);
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setTickLabelFill(Color.GRAY);
-
-        lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setTitle("Courbe d'Évolution Temporelle");
-        lineChart.setCreateSymbols(false);
-        lineChart.setAnimated(false);
-        lineChart.setLegendVisible(false);
-        lineChart.setPrefHeight(160);
-        lineChart.getData().add(chartSeries);
-
-        // Bar Chart for Age Pyramid & Distribution
-        CategoryAxis barX = new CategoryAxis();
-        barX.setTickLabelFill(Color.GRAY);
-        NumberAxis barY = new NumberAxis();
-        barY.setTickLabelFill(Color.GRAY);
-        barChart = new BarChart<>(barX, barY);
-        barChart.setTitle("Pyramide des Âges & Répartition");
-        barChart.setAnimated(false);
-        barChart.setLegendVisible(false);
-        barChart.setPrefHeight(140);
-        barChart.getData().add(barSeries);
-
-        VBox chartBox = new VBox(6, chartHeaderLabel, chartMetricCombo, lineChart, barChart);
-        chartBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
-
-        // --- METRICS LIST CONTAINER ---
+        // Container for metric sections
         metricsContainer = new VBox(6);
 
-        registerMetricCards();
+        registerMetricCards(metricInspectorTitle, metricInspectorText);
+
+        // Populate Chart Metric Combo with ALL registered metrics dynamically
+        chartMetricCombo.getItems().clear();
+        for (MetricCard card : metricCards.values()) {
+            chartMetricCombo.getItems().add(card.getTitle());
+        }
+        chartMetricCombo.setValue("Population Humaine");
+
         buildMetricsList();
 
-        getChildren().addAll(topControlsBox, chartBox, metricsContainer);
+        getChildren().addAll(topControlsBox, chartBox, barBox, cardsControlBox, metricsContainer);
     }
 
-    private void registerMetricCards() {
+    private void setTimeWindow(int window) {
+        this.timeWindowSize = window;
+        while (timeWindowSize > 0 && chartSeries.getData().size() > timeWindowSize) {
+            chartSeries.getData().remove(0);
+        }
+    }
+
+    private void registerMetricCards(Label inspectorTitle, Label inspectorText) {
         // Category 1: Énergie & Matière
-        addCard("energyCaptured", "Énergie Captée", "⚡ Énergie & Matière", "MW", "Flux d'énergie primaire solaire, géothermique et biomasse capté par les infrastructures.");
-        addCard("resourceDepletion", "Déplétion des Ressources", "⚡ Énergie & Matière", "%", "Pourcentage de consommation cumulée des minerais et combustibles finis.");
-        addCard("energyPerCapita", "Énergie / Individu", "⚡ Énergie & Matière", "MJ/hab", "Consommation d'énergie primaire moyenne par habitant.");
-        addCard("foodPerCapita", "Nourriture / Individu", "⚡ Énergie & Matière", "mois/hab", "Réserve alimentaire et métabolique disponible par individu.");
-        addCard("pibMaterialFlow", "PIB Flux de Matière", "⚡ Énergie & Matière", "Mt/an", "Volume de matière physique brute transformée et déplacée par an.");
-        addCard("biomassNatural", "Biomasse Naturelle", "⚡ Énergie & Matière", "GtC", "Stock total de carbone végétal et faunique sauvage.");
-        addCard("biomassDomesticated", "Biomasse Domestiquée", "⚡ Énergie & Matière", "GtC", "Biomasse totale des cultures agricoles et du bétail domestique.");
-        addCard("potableWater", "Eau Douce & Aquifères", "⚡ Énergie & Matière", "10³ km³", "Réserves globales d'eau potable et nappe phréatique continentale.");
-        addCard("remainingResources", "Ressources Restantes", "⚡ Énergie & Matière", "%", "Capital minéral et géologique non-extrait restant au sol.");
-        addCard("entropyPollution", "Entropie & Pollution", "⚡ Énergie & Matière", "Idx", "Génération d'entropie thermodynamique et rejets polluants.");
-        addCard("occupiedTerritory", "Territoire Occupé", "⚡ Énergie & Matière", "km²", "Surface géographique totale colonisée ou exploitée.");
+        addCard("energyCaptured", "Énergie Captée", "⚡ Énergie & Matière", "MW",
+            "P_tot = ∑ (P_solaire + P_biomasse + P_géothermie). Total de la puissance brute extraite du milieu physique par la société.", inspectorTitle, inspectorText);
+        addCard("resourceDepletion", "Déplétion des Ressources", "⚡ Énergie & Matière", "%",
+            "D = (Stock_initial - Stock_actuel) / Stock_initial. Pourcentage cumulé de consommation des réserves minérales non-renouvelables.", inspectorTitle, inspectorText);
+        addCard("energyPerCapita", "Énergie / Individu", "⚡ Énergie & Matière", "MJ/hab",
+            "E_cap = P_tot / N_pop. Énergie primaire utilisable disponible par habitant selon la loi de Leslie White (Culture = E × T).", inspectorTitle, inspectorText);
+        addCard("foodPerCapita", "Nourriture / Individu", "⚡ Énergie & Matière", "mois/hab",
+            "F_cap = Stock_Alimentaire / (N_pop × Consommation_mensuelle). Autonomie métabolique résiduelle sans nouvelle récolte.", inspectorTitle, inspectorText);
+        addCard("pibMaterialFlow", "PIB Flux de Matière", "⚡ Énergie & Matière", "Mt/an", "Volume total de biomasse et de minerais déplacé par le métabolisme industriel.", inspectorTitle, inspectorText);
+        addCard("biomassNatural", "Biomasse Naturelle", "⚡ Énergie & Matière", "GtC", "Stock total de carbone végétal et faunique sauvage préservé.", inspectorTitle, inspectorText);
+        addCard("biomassDomesticated", "Biomasse Domestiquée", "⚡ Énergie & Matière", "GtC", "Biomasse totale des cultures agricoles et du bétail domestique.", inspectorTitle, inspectorText);
+        addCard("potableWater", "Eau Douce & Aquifères", "⚡ Énergie & Matière", "10³ km³", "Réserves globales d'eau potable et nappe phréatique continentale.", inspectorTitle, inspectorText);
+        addCard("remainingResources", "Ressources Restantes", "⚡ Énergie & Matière", "%", "Capital minéral et géologique non-extrait restant au sol.", inspectorTitle, inspectorText);
+        addCard("entropyPollution", "Entropie & Pollution", "⚡ Énergie & Matière", "Idx", "Génération d'entropie thermodynamique et rejets polluants.", inspectorTitle, inspectorText);
+        addCard("occupiedTerritory", "Territoire Occupé", "⚡ Énergie & Matière", "km²", "Surface géographique totale colonisée ou exploitée.", inspectorTitle, inspectorText);
 
         // Category 2: Démographie & Santé
-        addCard("population", "Population Humaine", "👥 Démographie & Santé", "hab", "Population totale d'habitants sur la planète.");
-        addCard("fertilityRate", "Taux de Fertilité", "👥 Démographie & Santé", "enf/femme", "Nombre moyen d'enfants par femme en âge de procréer.");
-        addCard("offspringPct", "Taux avec Descendance", "👥 Démographie & Santé", "%", "Proportion d'adultes ayant au moins un descendant.");
-        addCard("ageFirstChild", "Âge au 1er Enfant", "👥 Démographie & Santé", "ans", "Âge moyen de la mère à la naissance du premier enfant.");
-        addCard("immigrationRate", "Taux d'Immigration", "👥 Démographie & Santé", "‰", "Flux migratoires nets inter-régionaux.");
-        addCard("lifeExpectancy", "Espérance de Vie", "👥 Démographie & Santé", "ans", "Espérance de vie moyenne à la naissance.");
-        addCard("healthIndex", "Niveau de Santé Global", "👥 Démographie & Santé", "%", "Indice global de résistance sanitaire et d'immunité.");
-        addCard("educationLevel", "Niveau d'Éducation", "👥 Démographie & Santé", "%", "Taux d'instruction et capital de savoir accumulé.");
+        addCard("population", "Population Humaine", "👥 Démographie & Santé", "hab", "Population totale d'habitants sur la planète.", inspectorTitle, inspectorText);
+        addCard("fertilityRate", "Taux de Fertilité", "👥 Démographie & Santé", "enf/femme", "Nombre moyen d'enfants par femme en âge de procréer.", inspectorTitle, inspectorText);
+        addCard("offspringPct", "Taux avec Descendance", "👥 Démographie & Santé", "%", "Proportion d'adultes ayant au moins un descendant.", inspectorTitle, inspectorText);
+        addCard("ageFirstChild", "Âge au 1er Enfant", "👥 Démographie & Santé", "ans", "Âge moyen de la mère à la naissance du premier enfant.", inspectorTitle, inspectorText);
+        addCard("immigrationRate", "Taux d'Immigration", "👥 Démographie & Santé", "‰", "Flux migratoires nets inter-régionaux.", inspectorTitle, inspectorText);
+        addCard("lifeExpectancy", "Espérance de Vie", "👥 Démographie & Santé", "ans", "Espérance de vie moyenne à la naissance.", inspectorTitle, inspectorText);
+        addCard("healthIndex", "Niveau de Santé Global", "👥 Démographie & Santé", "%", "Indice global de résistance sanitaire et d'immunité.", inspectorTitle, inspectorText);
+        addCard("educationLevel", "Niveau d'Éducation", "👥 Démographie & Santé", "%", "Taux d'instruction et capital de savoir accumulé.", inspectorTitle, inspectorText);
 
         // Category 3: Société & Institutions
-        addCard("happinessIndex", "Indice de Bonheur", "🏛️ Société & Institutions", "%", "Niveau de satisfaction globale et de bien-être mesuré.");
-        addCard("conflictLevel", "Taux de Conflits", "🏛️ Société & Institutions", "%", "Intensité des frictions sociales, guerres et violence.");
-        addCard("cityStates", "Nombre de Cités-États", "🏛️ Société & Institutions", "cités", "Pôles autonomes d'administration et institutions urbaines.");
-        addCard("institutionalMaturity", "Naissance des Institutions", "🏛️ Société & Institutions", "Idx", "Maturité juridique, administrative et étatiste.");
-        addCard("divisionLabor", "Division du Travail", "🏛️ Société & Institutions", "Idx", "Niveau de spécialisation des métiers et de différenciation sociale.");
-        addCard("maxHierarchy", "Niveau Max Hiérarchique", "🏛️ Société & Institutions", "Niv", "Niveau d'empilement institutionnel (Tribu 1 ➔ Empire/Réseau 6).");
-        addCard("largestCulture", "Plus Grande Unité Culturelle", "🏛️ Société & Institutions", "hab", "Taille de la plus vaste confédération culturelle/politique.");
-        addCard("kardashevScale", "Échelle de Kardashev", "🏛️ Société & Institutions", "Type K", "Niveau de maîtrise énergétique globale (Type 0.0 à 1.0+).");
+        addCard("happinessIndex", "Indice de Bonheur", "🏛️ Société & Institutions", "%", "Niveau de satisfaction globale et de bien-être mesuré.", inspectorTitle, inspectorText);
+        addCard("conflictLevel", "Taux de Conflits", "🏛️ Société & Institutions", "%", "Intensité des frictions sociales, guerres et violence.", inspectorTitle, inspectorText);
+        addCard("cityStates", "Nombre de Cités-États", "🏛️ Société & Institutions", "cités", "Pôles autonomes d'administration et institutions urbaines.", inspectorTitle, inspectorText);
+        addCard("institutionalMaturity", "Naissance des Institutions", "🏛️ Société & Institutions", "Idx", "Maturité juridique, administrative et étatiste.", inspectorTitle, inspectorText);
+        addCard("divisionLabor", "Division du Travail", "🏛️ Société & Institutions", "Idx", "Niveau de spécialisation des métiers et de différenciation sociale.", inspectorTitle, inspectorText);
+        addCard("maxHierarchy", "Niveau Max Hiérarchique", "🏛️ Société & Institutions", "Niv", "Niveau d'empilement institutionnel (Tribu 1 ➔ Empire/Réseau 6).", inspectorTitle, inspectorText);
+        addCard("largestCulture", "Plus Grande Unité Culturelle", "🏛️ Société & Institutions", "hab", "Taille de la plus vaste confédération culturelle/politique.", inspectorTitle, inspectorText);
+        addCard("kardashevScale", "Échelle de Kardashev", "🏛️ Société & Institutions", "Type K", "K = (log10(P_watts) - 6) / 10. Niveau de maîtrise énergétique globale (Type 0.0 à 1.0+).", inspectorTitle, inspectorText);
 
         // Category 4: Économie & Richesse
-        addCard("giniIndex", "Indice de Gini (Inégalité)", "💎 Économie & Richesse", "Coeff", "Mesure de concentration des richesses (0 = égalité, 1 = inégalité absolue).");
-        addCard("gdpTotal", "PIB Global (GDP)", "💎 Économie & Richesse", "G$", "Produit Intérieur Brut total converti en monnaie constante.");
-        addCard("builtCapital", "Capital Bâti & Outillage", "💎 Économie & Richesse", "kg/hab", "Stock total d'infrastructures physiques et de machines.");
-        addCard("eliteFormation", "Formation d'Élite", "💎 Économie & Richesse", "%", "Proportion de la population détenant les fonctions de commandement.");
-        addCard("elderCapitalShare", "Possession Capital (Aînés)", "💎 Économie & Richesse", "%", "Part de la richesse foncière détenue par la tranche d'âge senior.");
-        addCard("landRent", "Rente Foncière & Immobilière", "💎 Économie & Richesse", "Idx", "Valorisation de la rente du sol liée à la densité et aux infrastructures.");
-        addCard("toolsCount", "Nombre d'Outils en Service", "💎 Économie & Richesse", "unités", "Quantité totale d'outils et équipements de production.");
-        addCard("productsCount", "Variété de Produits", "💎 Économie & Richesse", "types", "Diversité des produits manufacturés au catalogue technique.");
+        addCard("giniIndex", "Indice de Gini (Inégalité)", "💎 Économie & Richesse", "Coeff", "G = A / (A + B). Mesure de concentration des richesses (0 = égalité, 1 = inégalité absolue).", inspectorTitle, inspectorText);
+        addCard("gdpTotal", "PIB Global (GDP)", "💎 Économie & Richesse", "G$", "Produit Intérieur Brut total converti en monnaie constante.", inspectorTitle, inspectorText);
+        addCard("builtCapital", "Capital Bâti & Outillage", "💎 Économie & Richesse", "kg/hab", "Stock total d'infrastructures physiques et de machines.", inspectorTitle, inspectorText);
+        addCard("eliteFormation", "Formation d'Élite", "💎 Économie & Richesse", "%", "Proportion de la population détenant les fonctions de commandement.", inspectorTitle, inspectorText);
+        addCard("elderCapitalShare", "Possession Capital (Aînés)", "💎 Économie & Richesse", "%", "Part de la richesse foncière détenue par la tranche d'âge senior.", inspectorTitle, inspectorText);
+        addCard("landRent", "Rente Foncière & Immobilière", "💎 Économie & Richesse", "Idx", "Valorisation de la rente du sol liée à la densité et aux infrastructures.", inspectorTitle, inspectorText);
+        addCard("toolsCount", "Nombre d'Outils en Service", "💎 Économie & Richesse", "unités", "Quantité totale d'outils et équipements de production.", inspectorTitle, inspectorText);
+        addCard("productsCount", "Variété de Produits", "💎 Économie & Richesse", "types", "Diversité des produits manufacturés au catalogue technique.", inspectorTitle, inspectorText);
 
         // Category 5: Cognition & Information
-        addCard("shannonBandwidth", "Bande Passante Shannon", "🧠 Cognition & Information", "Gbps", "Débit maximal de transmission d'information à travers le réseau civilisationnel.");
-        addCard("collectiveMemory", "Stock Mémoire Collective", "🧠 Cognition & Information", "TB", "Volume cumulé des connaissances, données et patrimoines écrits.");
-        addCard("innovationDiffusion", "Vitesse de Diffusion Tech", "🧠 Cognition & Information", "km/an", "Vitesse de propagation spatiale des nouvelles technologies.");
-        addCard("knowledgeDecay", "Taux d'Amnésie Historique", "🧠 Cognition & Information", "%/décade", "Vitesse de déperdition ou d'oubli du savoir lors des crises.");
+        addCard("shannonBandwidth", "Bande Passante Shannon", "🧠 Cognition & Information", "Gbps", "Débit maximal de transmission d'information à travers le réseau civilisationnel.", inspectorTitle, inspectorText);
+        addCard("collectiveMemory", "Stock Mémoire Collective", "🧠 Cognition & Information", "TB", "Volume cumulé des connaissances, données et patrimoines écrits.", inspectorTitle, inspectorText);
+        addCard("innovationDiffusion", "Vitesse de Diffusion Tech", "🧠 Cognition & Information", "km/an", "Vitesse de propagation spatiale des nouvelles technologies.", inspectorTitle, inspectorText);
+        addCard("knowledgeDecay", "Taux d'Amnésie Historique", "🧠 Cognition & Information", "%/décade", "Vitesse de déperdition ou d'oubli du savoir lors des crises.", inspectorTitle, inspectorText);
 
         // Category 6: Écologie & Frontières Planétaires
-        addCard("soilNPK", "Qualité NPK des Sols", "🌍 Écologie & Frontières Planétaires", "%", "Indice de fertilité et teneur en nutriments organiques des sols cultivés.");
-        addCard("carbonFootprint", "Empreinte Carbone", "🌍 Écologie & Frontières Planétaires", "GtCO₂", "Émissions annuelles de gaz à effet de serre et carbone fossile.");
-        addCard("wildBiodiversity", "Biodiversité Sauvage", "🌍 Écologie & Frontières Planétaires", "%", "Part de la biomasse faunique et florale sauvage préservée.");
-        addCard("wetBulbSafety", "Marge Sécurité Bulbe Humide", "🌍 Écologie & Frontières Planétaires", "°C", "Écart de température avec le seuil létal de bulbe humide (35°C).");
+        addCard("soilNPK", "Qualité NPK des Sols", "🌍 Écologie & Frontières Planétaires", "%", "Indice de fertilité et teneur en nutriments organiques des sols cultivés.", inspectorTitle, inspectorText);
+        addCard("carbonFootprint", "Empreinte Carbone", "🌍 Écologie & Frontières Planétaires", "GtCO₂", "Émissions annuelles de gaz à effet de serre et carbone fossile.", inspectorTitle, inspectorText);
+        addCard("wildBiodiversity", "Biodiversité Sauvage", "🌍 Écologie & Frontières Planétaires", "%", "Part de la biomasse faunique et florale sauvage préservée.", inspectorTitle, inspectorText);
+        addCard("wetBulbSafety", "Marge Sécurité Bulbe Humide", "🌍 Écologie & Frontières Planétaires", "°C", "Écart de température avec le seuil létal de bulbe humide (35°C).", inspectorTitle, inspectorText);
 
         // Category 7: Cliodynamique & Risques Systémiques
-        addCard("eliteOverproduction", "Surproduction Élitaire (Turchin)", "⏳ Cliodynamique & Risques Systémiques", "Idx", "Ratio de compétition pour les postes de pouvoir (Indice PSI de Turchin).");
-        addCard("fiscalStress", "Pression & Stress Fiscal", "⏳ Cliodynamique & Risques Systémiques", "%", "Stress financier et charge de maintien des institutions publiques.");
-        addCard("geopoliticalTension", "Tension Géopolitique", "⏳ Cliodynamique & Risques Systémiques", "%", "Friction diplomatique et risque d'escalade guerrière multipolaire.");
-        addCard("collapseVulnerability", "Risque d'Effondrement", "⏳ Cliodynamique & Risques Systémiques", "%", "Probabilité d'effondrement systémique ou de boucle d'entropie.");
+        addCard("eliteOverproduction", "Surproduction Élitaire (Turchin)", "⏳ Cliodynamique & Risques Systémiques", "Idx", "PSI = (Élites_aspirantes / Postes_disponibles) × Inégalité. Ratio de compétition pour le pouvoir (Indice PSI de Turchin).", inspectorTitle, inspectorText);
+        addCard("fiscalStress", "Pression & Stress Fiscal", "⏳ Cliodynamique & Risques Systémiques", "%", "Stress financier et charge de maintien des institutions publiques.", inspectorTitle, inspectorText);
+        addCard("geopoliticalTension", "Tension Géopolitique", "⏳ Cliodynamique & Risques Systémiques", "%", "Friction diplomatique et risque d'escalade guerrière multipolaire.", inspectorTitle, inspectorText);
+        addCard("collapseVulnerability", "Risque d'Effondrement", "⏳ Cliodynamique & Risques Systémiques", "%", "Probabilité d'effondrement systémique ou de boucle d'entropie.", inspectorTitle, inspectorText);
 
         // Category 8: Complexité Systémique
-        addCard("systemComplexity", "Complexité Systémique", "⚙️ Complexité Systémique", "Idx", "Indice d'interconnexion des rouages économiques et sociaux.");
-        addCard("reconstructionCapability", "Capacité à Reconstruire", "⚙️ Complexité Systémique", "%", "Résilience et capacité à rebâtir la civilisation à partir de zéro.");
-        addCard("systemInterdependence", "Interdépendance (Rouages)", "⚙️ Complexité Systémique", "%", "Fragilité systémique liée à l'interdépendance des chaînes logistiques.");
+        addCard("systemComplexity", "Complexité Systémique", "⚙️ Complexité Systémique", "Idx", "Indice d'interconnexion des rouages économiques et sociaux.", inspectorTitle, inspectorText);
+        addCard("reconstructionCapability", "Capacité à Reconstruire", "⚙️ Complexité Systémique", "%", "Résilience et capacité à rebâtir la civilisation à partir de zéro.", inspectorTitle, inspectorText);
+        addCard("systemInterdependence", "Interdépendance (Rouages)", "⚙️ Complexité Systémique", "%", "Fragilité systémique liée à l'interdépendance des chaînes logistiques.", inspectorTitle, inspectorText);
 
         // Category 9: Performances Engine
-        addCard("engineTPS", "TPS (Images/s)", "💻 Performances Techniques", "TPS", "Taux de rafraîchissement des cycles de simulation par seconde.");
+        addCard("engineTPS", "TPS (Images/s)", "💻 Performances Techniques", "TPS", "Taux de rafraîchissement des cycles de simulation par seconde.", inspectorTitle, inspectorText);
+        addCard("ramMemory", "Utilisation Mémoire RAM", "💻 Performances Techniques", "MB", "Consommation mémoire vive du moteur.", inspectorTitle, inspectorText);
+        addCard("cellCount", "Cellules Hexagonales H3", "💻 Performances Techniques", "hex", "Nombre total de mailles hexagonales chargées en mémoire.", inspectorTitle, inspectorText);
+    }
+
+    private void addCard(String key, String title, String category, String unit, String tooltip, Label inspectorTitle, Label inspectorText) {
+        MetricCard card = new MetricCard(key, title, category, unit, tooltip);
+        card.setOnMouseEntered(e -> {
+            inspectorTitle.setText("🔎 " + title + " [" + category + "]");
+            inspectorText.setText(tooltip);
+        });
+        card.setOnMouseClicked(e -> {
+            inspectorTitle.setText("🔎 " + title + " [" + category + "]");
+            inspectorText.setText(tooltip);
+            if (chartMetricCombo != null) {
+                chartMetricCombo.setValue(title);
+                resetChartSeries();
+            }
+        });
+        metricCards.put(key, card);
+    }imulation par seconde.");
         addCard("ramMemory", "Utilisation Mémoire RAM", "💻 Performances Techniques", "MB", "Consommation mémoire vive du moteur.");
         addCard("cellCount", "Cellules Hexagonales H3", "💻 Performances Techniques", "hex", "Nombre total de mailles hexagonales chargées en mémoire.");
     }
@@ -475,26 +568,83 @@ public class StatsPanel extends VBox {
             // Update Time Series Chart
             String selectedMetric = chartMetricCombo.getValue();
             double yVal = switch (selectedMetric) {
-                case "Échelle de Kardashev (Type K)" -> kardashev;
-                case "Énergie Captée (MW)" -> energyCap;
-                case "Indice de Gini (Inégalités)" -> gini;
-                case "Indice de Bonheur (%)" -> happiness;
-                case "Taux de Conflits (%)" -> conflict;
+                // Category 1: Énergie & Matière
+                case "Énergie Captée" -> energyCap;
+                case "Déplétion des Ressources" -> resDep;
+                case "Énergie / Individu" -> energyPerCap;
+                case "Nourriture / Individu" -> foodPerCap;
+                case "PIB Flux de Matière" -> resDep * 5.2;
+                case "Biomasse Naturelle" -> bio;
+                case "Biomasse Domestiquée" -> bioDom;
+                case "Eau Douce & Aquifères" -> water;
+                case "Ressources Restantes" -> remRes;
+                case "Entropie & Pollution" -> entropy;
+                case "Territoire Occupé" -> territory;
+
+                // Category 2: Démographie & Santé
+                case "Population Humaine" -> pop;
+                case "Taux de Fertilité" -> fert;
+                case "Taux avec Descendance" -> offspring;
+                case "Âge au 1er Enfant" -> ageFirstChild;
+                case "Taux d'Immigration" -> immigration;
+                case "Espérance de Vie" -> life;
+                case "Niveau de Santé Global" -> Math.min(100.0, life * 1.1);
+                case "Niveau d'Éducation" -> education;
+
+                // Category 3: Société & Institutions
+                case "Indice de Bonheur" -> happiness;
+                case "Taux de Conflits" -> conflict;
+                case "Nombre de Cités-États" -> cityStates;
+                case "Naissance des Institutions" -> instMaturity;
+                case "Division du Travail" -> divLabor;
+                case "Niveau Max Hiérarchique" -> maxHier;
+                case "Plus Grande Unité Culturelle" -> largestCult;
+                case "Échelle de Kardashev" -> kardashev;
+
+                // Category 4: Économie & Richesse
+                case "Indice de Gini (Inégalité)" -> gini;
                 case "PIB Global (GDP)" -> gdp;
-                case "Espérance de Vie (ans)" -> life;
-                case "Division du Travail & Spécialisation" -> divLabor;
-                case "Matière Déplacée & Capital Bâti" -> builtCap / 1000.0;
-                case "Risque d'Effondrement Systémique (%)" -> collapseVuln;
-                case "Pression Élitaire (Indice Turchin)" -> eliteOver;
-                case "Empreinte Carbone (GtCO2)" -> carbonFp;
-                case "Stock de Mémoire Collective (TB)" -> memoryStock;
-                case "Interdépendance & Complexité Systémique" -> sysComp;
+                case "Capital Bâti & Outillage" -> builtCap / Math.max(1, pop);
+                case "Formation d'Élite" -> eliteForm;
+                case "Possession Capital (Aînés)" -> elderCap;
+                case "Rente Foncière & Immobilière" -> landRent;
+                case "Nombre d'Outils en Service" -> tools;
+                case "Variété de Produits" -> products;
+
+                // Category 5: Cognition & Information
+                case "Bande Passante Shannon" -> shannonBw;
+                case "Stock Mémoire Collective" -> memoryStock;
+                case "Vitesse de Diffusion Tech" -> innovSpeed;
+                case "Taux d'Amnésie Historique" -> knowDecay;
+
+                // Category 6: Écologie & Frontières Planétaires
+                case "Qualité NPK des Sols" -> soilNPK;
+                case "Empreinte Carbone" -> carbonFp;
+                case "Biodiversité Sauvage" -> wildBio;
+                case "Marge Sécurité Bulbe Humide" -> wetBulb;
+
+                // Category 7: Cliodynamique & Risques Systémiques
+                case "Surproduction Élitaire (Turchin)" -> eliteOver;
+                case "Pression & Stress Fiscal" -> fiscalStress;
+                case "Tension Géopolitique" -> geoTension;
+                case "Risque d'Effondrement" -> collapseVuln;
+
+                // Category 8: Complexité Systémique
+                case "Complexité Systémique" -> sysComp;
+                case "Capacité à Reconstruire" -> reconCap;
+                case "Interdépendance (Rouages)" -> sysInter;
+
+                // Category 9: Performances
+                case "TPS (Images/s)" -> tps;
+                case "Utilisation Mémoire RAM" -> usedMem;
+                case "Cellules Hexagonales H3" -> totalCells;
+
                 default -> pop;
             };
 
             if (chartSeries.getData().isEmpty() || chartSeries.getData().get(chartSeries.getData().size() - 1).getXValue().intValue() != year) {
                 chartSeries.getData().add(new XYChart.Data<>(year, yVal));
-                if (chartSeries.getData().size() > 60) {
+                while (timeWindowSize > 0 && chartSeries.getData().size() > timeWindowSize) {
                     chartSeries.getData().remove(0);
                 }
 

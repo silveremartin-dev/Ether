@@ -22,20 +22,25 @@ public class CellTooltip extends VBox {
     private final Label elevationLabel;
     private final Label temperatureLabel;
     private final Label rainfallLabel;
+    private final Label popLabel;
+    private final Label foodLabel;
+    private final Label waterLabel;
+    private final Label techLabel;
+    private final Label malthusLabel;
     private final Label coordLabel;
     private final Label h3Label;
 
     public CellTooltip() {
-        // Container styling - semi-transparent dark background
-        setStyle("-fx-background-color: rgba(40, 40, 40, 0.95);" +
-                "-fx-padding: 10;" +
+        // Container styling - glassmorphism dark HUD panel
+        setStyle("-fx-background-color: rgba(15, 23, 42, 0.95);" +
+                "-fx-padding: 12;" +
                 "-fx-background-radius: 8;" +
-                "-fx-border-color: rgba(255, 255, 255, 0.3);" +
+                "-fx-border-color: rgba(56, 189, 248, 0.4);" +
                 "-fx-border-radius: 8;" +
                 "-fx-border-width: 1;" +
-                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 2);");
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 12, 0, 0, 3);");
 
-        setPadding(new Insets(8));
+        setPadding(new Insets(10));
         setSpacing(4);
 
         // Create labels with consistent styling
@@ -43,6 +48,12 @@ public class CellTooltip extends VBox {
         elevationLabel = createLabel();
         temperatureLabel = createLabel();
         rainfallLabel = createLabel();
+        popLabel = createLabel();
+        popLabel.setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 11px; -fx-font-weight: bold; -fx-font-family: 'Consolas', 'Monaco', monospace;");
+        foodLabel = createLabel();
+        waterLabel = createLabel();
+        techLabel = createLabel();
+        malthusLabel = createLabel();
         coordLabel = createLabel();
         h3Label = createLabel();
 
@@ -52,6 +63,11 @@ public class CellTooltip extends VBox {
                 elevationLabel,
                 temperatureLabel,
                 rainfallLabel,
+                popLabel,
+                foodLabel,
+                waterLabel,
+                techLabel,
+                malthusLabel,
                 coordLabel,
                 h3Label);
 
@@ -65,45 +81,106 @@ public class CellTooltip extends VBox {
      */
     private Label createLabel() {
         Label label = new Label();
-        label.setStyle("-fx-text-fill: white;" +
+        label.setStyle("-fx-text-fill: #e2e8f0;" +
                 "-fx-font-size: 11px;" +
                 "-fx-font-family: 'Consolas', 'Monaco', monospace;");
         return label;
     }
 
     /**
-     * Update tooltip with cell data.
+     * Update tooltip with cell data and previous population state for trend calculation.
      * 
      * @param cell The H3 cell to display information for
+     * @param prevPop Previous tick/year population count (can be null if unknown)
      */
-    public void updateCell(H3Cell cell) {
+    public void updateCell(H3Cell cell, Integer prevPop) {
         if (cell == null) {
             setVisible(false);
             return;
         }
 
-        biomeLabel.setText(String.format("%-12s %s", I18n.get("ui.tooltip.biome"),
+        biomeLabel.setText(String.format("%-14s %s", I18n.getOrDefault("ui.tooltip.biome", "Biomes :"),
                 getBiomeName(cell.getBiome().name())));
 
-        elevationLabel.setText(String.format("%-12s %,d m", I18n.get("ui.tooltip.elevation"),
+        elevationLabel.setText(String.format("%-14s %,d m", I18n.getOrDefault("ui.tooltip.elevation", "Altitude :"),
                 cell.getElevation() != null ? cell.getElevation().intValue() : 0));
 
-        temperatureLabel.setText(String.format("%-12s %.1f°C", I18n.get("ui.tooltip.temperature"),
+        temperatureLabel.setText(String.format("%-14s %.1f°C", I18n.getOrDefault("ui.tooltip.temperature", "Température :"),
                 cell.getTemperature() != null ? cell.getTemperature() : 0.0));
 
-        rainfallLabel.setText(String.format("%-12s %,d mm/year", I18n.get("ui.tooltip.rainfall"),
+        rainfallLabel.setText(String.format("%-14s %,d mm/an", I18n.getOrDefault("ui.tooltip.rainfall", "Précipitations:"),
                 cell.getRainfall() != null ? cell.getRainfall().intValue() : 0));
+
+        // Population & Trend Arrow
+        int currentPop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+        String trendStr = "";
+        if (prevPop != null && prevPop > 0) {
+            int diff = currentPop - prevPop;
+            double pct = ((double) diff / prevPop) * 100.0;
+            if (diff > 0) {
+                trendStr = String.format(" (🟢 ⬆ +%,d | +%.1f%%)", diff, pct);
+            } else if (diff < 0) {
+                trendStr = String.format(" (🔴 ⬇ %,d | %.1f%%)", diff, pct);
+            } else {
+                trendStr = " (⚪ ➡ 0.0%)";
+            }
+        }
+        popLabel.setText(String.format("%-14s %,d hab%s", "Population :", currentPop, trendStr));
+
+        // Resources
+        double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
+        foodLabel.setText(String.format("%-14s %.1f t", "Alimentation :", food));
+
+        double water = cell.getWaterResource() != null ? cell.getWaterResource() : 0.0;
+        double aquifer = cell.getFreshwaterAquifer() != null ? cell.getFreshwaterAquifer() : 0.0;
+        waterLabel.setText(String.format("%-14s %.1f m³ (Nappe: %.0f)", "Eau / Aquifère:", water, aquifer));
+
+        // Tech level
+        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+        techLabel.setText(String.format("%-14s Niv. %.2f", "Technologie :", tech));
+
+        // Carrying Capacity (K) & Malthusian Ratio
+        double capK = computeCarryingCapacity(cell);
+        double ratio = capK > 0 ? ((double) currentPop / capK) * 100.0 : 0.0;
+        String malthusStatus = ratio > 150.0 ? "🚨 SURPOPULATION" : ratio > 100.0 ? "⚠️ TENSION" : "✅ SOUTENABLE";
+        malthusLabel.setText(String.format("%-14s %.0f hab (Charge: %.1f%% %s)", "Capacité K :", capK, ratio, malthusStatus));
 
         String latDir = cell.getLatitude() >= 0 ? "N" : "S";
         String lngDir = cell.getLongitude() >= 0 ? "E" : "W";
-        coordLabel.setText(String.format("%-12s %.4f°%s, %.4f°%s", I18n.get("ui.tooltip.coords"),
+        coordLabel.setText(String.format("%-14s %.4f°%s, %.4f°%s", I18n.getOrDefault("ui.tooltip.coords", "Coordonnées :"),
                 Math.abs(cell.getLatitude()), latDir,
                 Math.abs(cell.getLongitude()), lngDir));
 
-        h3Label.setText(String.format("%-12s %s", I18n.get("ui.tooltip.h3"),
-                cell.getH3Index()));
+        h3Label.setText(String.format("%-14s %s", I18n.getOrDefault("ui.tooltip.h3", "H3 Index :"),
+                Long.toHexString(cell.getH3Index()).toUpperCase()));
 
         setVisible(true);
+    }
+
+    public void updateCell(H3Cell cell) {
+        updateCell(cell, null);
+    }
+
+    private double computeCarryingCapacity(H3Cell c) {
+        if (c == null || c.getElevation() == null || c.getElevation() <= 0) return 0.0;
+        double baseCap = 250.0;
+        if (c.getBiome() != null) {
+            switch (c.getBiome()) {
+                case DESERT, TUNDRA, SNOW -> baseCap *= 0.1;
+                case PLAINS, FOREST -> baseCap *= 1.5;
+                case JUNGLE -> baseCap *= 0.8;
+                default -> {}
+            }
+        }
+        if (c.getWaterResource() != null && c.getWaterResource() > 0.1) {
+            baseCap *= (1.0 + 3.0 * (c.getWaterResource() / 1000.0));
+        }
+        if (c.getFreshwaterAquifer() != null && c.getFreshwaterAquifer() > 0.1) {
+            baseCap *= (1.0 + 1.5 * (c.getFreshwaterAquifer() / 1000.0));
+        }
+        double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
+        baseCap *= Math.max(0.5, tech * 0.8);
+        return Math.max(10.0, baseCap);
     }
 
     /**
@@ -115,22 +192,28 @@ public class CellTooltip extends VBox {
             return;
         }
 
-        biomeLabel.setText(String.format("%-12s %s", I18n.get("ui.tooltip.biome"),
+        biomeLabel.setText(String.format("%-14s %s", I18n.getOrDefault("ui.tooltip.biome", "Biomes :"),
                 getBiomeName(org.ether.society.model.Biome.values()[world.getBiomes()[index]].name())));
 
-        elevationLabel.setText(String.format("%-12s %,d m", I18n.get("ui.tooltip.elevation"),
+        elevationLabel.setText(String.format("%-14s %,d m", I18n.getOrDefault("ui.tooltip.elevation", "Altitude :"),
                 (int)world.getElevation()[index]));
 
-        temperatureLabel.setText(String.format("%-12s %.1f°C", I18n.get("ui.tooltip.temperature"),
+        temperatureLabel.setText(String.format("%-14s %.1f°C", I18n.getOrDefault("ui.tooltip.temperature", "Température :"),
                 world.getTemperature()[index]));
 
-        rainfallLabel.setText(String.format("%-12s %,d mm/year", I18n.get("ui.tooltip.rainfall"),
+        rainfallLabel.setText(String.format("%-14s %,d mm/an", I18n.getOrDefault("ui.tooltip.rainfall", "Précipitations:"),
                 (int)world.getRainfall()[index]));
 
-        coordLabel.setText(String.format("%-12s Pop: %.1f", "Density", world.getBiomassHuman()[index]));
+        popLabel.setText(String.format("%-14s %,.0f hab", "Population :", world.getBiomassHuman()[index]));
+        foodLabel.setText("");
+        waterLabel.setText("");
+        techLabel.setText("");
+        malthusLabel.setText("");
 
-        h3Label.setText(String.format("%-12s %s", I18n.get("ui.tooltip.h3"),
-                world.getH3Indexes()[index]));
+        coordLabel.setText(String.format("%-14s Index #%d", "Index DOD :", index));
+
+        h3Label.setText(String.format("%-14s %s", I18n.getOrDefault("ui.tooltip.h3", "H3 Index :"),
+                Long.toHexString(world.getH3Indexes()[index]).toUpperCase()));
 
         setVisible(true);
     }
@@ -140,7 +223,7 @@ public class CellTooltip extends VBox {
      */
     private String getBiomeName(String biomeEnumName) {
         String key = "biome." + biomeEnumName.toLowerCase();
-        return I18n.get(key);
+        return I18n.getOrDefault(key, biomeEnumName);
     }
 
     /**

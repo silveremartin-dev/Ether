@@ -210,6 +210,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         setPadding(new Insets(20));
 
         initUI();
+        applyPreset(PlanetPreset.EARTH_LIKE);
         updateTexts();
 
         // Bind to i18n language changes
