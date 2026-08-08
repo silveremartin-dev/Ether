@@ -62,8 +62,10 @@ public class ControlPanel extends VBox {
     private final Button pauseBtn;
     private final Button stopBtn;
     private final Button rewindBtn;
+    private final Button fastRewindBtn;
     private final Button stepBackBtn;
     private final Button stepForwardBtn;
+    private final Button fastForwardBtn;
 
     private final Button speed1x;
     private final Button speed2x;
@@ -119,9 +121,13 @@ public class ControlPanel extends VBox {
             if (onTimelapseSeek != null) onTimelapseSeek.accept(0);
         });
 
-        stepBackBtn = new Button("<<");
-        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Ralentir / Reculer")));
-        stepBackBtn.setOnAction(e -> engine.setSpeed(Math.max(1, (int)(engine.getSpeed() / 2))));
+        fastRewindBtn = new Button("<<");
+        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Reculer d'un an (-12 mois)")));
+        fastRewindBtn.setOnAction(e -> engine.stepBackward(12));
+
+        stepBackBtn = new Button("|<");
+        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Reculer d'une frame / tick (-1 mois)")));
+        stepBackBtn.setOnAction(e -> engine.stepBackward(1));
 
         startBtn = new Button("▶");
         startBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
@@ -138,11 +144,16 @@ public class ControlPanel extends VBox {
         stopBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;");
         stopBtn.setOnAction(e -> engine.pause());
 
-        stepForwardBtn = new Button(">>");
-        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer rapide")));
-        stepForwardBtn.setOnAction(e -> engine.setSpeed(Math.min(20, (int)(engine.getSpeed() * 2))));
+        stepForwardBtn = new Button(">|");
+        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer d'une frame / tick (+1 mois)")));
+        stepForwardBtn.setOnAction(e -> engine.stepForward(1));
 
-        HBox playBar = new HBox(6, rewindBtn, stepBackBtn, startBtn, pauseBtn, stopBtn, stepForwardBtn);
+        fastForwardBtn = new Button(">>");
+        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Avancer d'un an (+12 mois)")));
+        fastForwardBtn.setOnAction(e -> engine.stepForward(12));
+
+        HBox playBar = new HBox(4, rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stopBtn, stepForwardBtn, fastForwardBtn);
+        playBar.setAlignment(Pos.CENTER);
         playBar.setAlignment(Pos.CENTER);
 
         speedSlider = new Slider(1, 20, 1);

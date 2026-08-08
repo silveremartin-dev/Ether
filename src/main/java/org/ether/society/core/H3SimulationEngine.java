@@ -415,14 +415,14 @@ public class H3SimulationEngine implements ISimulationEngine {
                 currentFertility = statisticsKernel.calculateFertilityRate(agentBuffer.getBirths(), agentBuffer.getMass());
 
                 historyManager.captureSnapshot(this);
+                historyManager.captureWorldSnapshot(this);
                 eventSystem.checkEvents(timeManager.getCurrentYear(), getTotalPopulation(), getTotalFood());
 
                 syncBufferToCells();
             }
 
-            // Every 60 Ticks: capture world state snapshot and trigger rolling checkpoint auto-save
+            // Every 60 Ticks: trigger rolling checkpoint auto-save
             if (tickCounter > 0 && tickCounter % 60 == 0) {
-                historyManager.captureWorldSnapshot(this);
                 autoSaveCheckpoint();
             }
 
@@ -431,6 +431,54 @@ public class H3SimulationEngine implements ISimulationEngine {
 
         } catch (Exception e) {
             logger.error("Error during simulation tick", e);
+        }
+    }
+
+    @Override
+    public void stepForward(int ticks) {
+        pause();
+        for (int i = 0; i < Math.max(1, ticks); i++) {
+            boolean wasRunning = running.getAndSet(true);
+            try {
+                tick();
+            } finally {
+                running.set(wasRunning);
+            }
+        }
+    }
+
+    @Override
+    public void stepBackward(int ticks) {
+        pause();
+        if (historyManager == null || cells == null || cells.isEmpty()) return;
+        long currentTicks = timeManager.getTotalTicks();
+        long targetTicks = Math.max(0, currentTicks - ticks);
+
+        java.util.NavigableMap<Long, List<H3Cell>> snapshots = historyManager.getWorldSnapshots();
+        if (snapshots.isEmpty()) return;
+
+        java.util.Map.Entry<Long, List<H3Cell>> entry = snapshots.floorEntry(targetTicks);
+        if (entry == null) {
+            entry = snapshots.firstEntry();
+        }
+
+        if (entry != null && entry.getValue() != null) {
+            List<H3Cell> snapshot = entry.getValue();
+            java.util.Map<Long, H3Cell> map = snapshot.stream().collect(java.util.stream.Collectors.toMap(H3Cell::getH3Index, c -> c));
+            for (H3Cell c : cells) {
+                H3Cell snap = map.get(c.getH3Index());
+                if (snap != null) {
+                    c.setPopulation(snap.getPopulation());
+                    c.setTemperature(snap.getTemperature());
+                    c.setFoodResource(snap.getFoodResource());
+                    c.setWaterResource(snap.getWaterResource());
+                    c.setFreshwaterAquifer(snap.getFreshwaterAquifer());
+                    c.setTechnologyLevel(snap.getTechnologyLevel());
+                }
+            }
+            if (worldBuffer != null) {
+                org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
+            }
         }
     }
 

@@ -20,5 +20,9 @@ public interface ISimulationEngine {
     TimeManager getTimeManager();
 
     boolean isRunning();
+
+    void stepForward(int ticks);
+
+    void stepBackward(int ticks);
 }
 

@@ -17,11 +17,7 @@ public class HistoryManager {
 
 
     private final SimulationHistory history = new SimulationHistory();
-    private final NavigableMap<Integer, List<H3Cell>> worldSnapshots = new TreeMap<>();
-
-    // Config: How often to capture? Every month might be too much for long runs.
-    // Let's capture every tick for now, or maybe filtering in UI.
-    // Ideally capture every month or year.
+    private final NavigableMap<Long, List<H3Cell>> worldSnapshots = new TreeMap<>();
 
     public SimulationHistory getHistory() {
         return history;
@@ -73,28 +69,28 @@ public class HistoryManager {
     }
 
     /**
-     * Capture a full world state snapshot for replay (expensive, call less frequently).
+     * Capture a full world state snapshot for replay (bounded ring buffer).
      */
     public void captureWorldSnapshot(H3SimulationEngine engine) {
         if (engine.getCells() == null || engine.getCells().isEmpty()) return;
-        int year = engine.getTimeManager().getCurrentYear();
+        long tickIndex = engine.getTimeManager().getTotalTicks();
         
         List<H3Cell> snapshot = engine.getCells().parallelStream()
             .map(H3Cell::snapshot)
             .collect(Collectors.toList());
             
-        // Bounded ring buffer: keep max 50 snapshots in memory (~5MB max RAM)
-        if (worldSnapshots.size() >= 50) {
+        // Bounded ring buffer: keep max 120 monthly snapshots in memory (~6MB RAM)
+        if (worldSnapshots.size() >= 120) {
             worldSnapshots.pollFirstEntry();
         }
-        worldSnapshots.put(year, snapshot);
+        worldSnapshots.put(tickIndex, snapshot);
     }
 
-    public List<H3Cell> getWorldSnapshot(int year) {
-        return worldSnapshots.get(year);
+    public List<H3Cell> getWorldSnapshot(long tickIndex) {
+        return worldSnapshots.get(tickIndex);
     }
     
-    public NavigableMap<Integer, List<H3Cell>> getWorldSnapshots() {
+    public NavigableMap<Long, List<H3Cell>> getWorldSnapshots() {
         return worldSnapshots;
     }
 
