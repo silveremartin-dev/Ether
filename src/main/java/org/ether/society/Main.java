@@ -37,6 +37,20 @@ package org.ether.society;
  */
 public class Main {
     public static void main(String[] args) {
-        EtherApp.main(args);
+        boolean headless = false;
+        if (args != null) {
+            for (String arg : args) {
+                if ("--headless".equalsIgnoreCase(arg) || "-h".equalsIgnoreCase(arg)) {
+                    headless = true;
+                    break;
+                }
+            }
+        }
+
+        if (headless) {
+            org.ether.society.cli.HeadlessRunner.run(args);
+        } else {
+            EtherApp.main(args);
+        }
     }
 }

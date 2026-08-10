@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
@@ -49,16 +51,22 @@ public class I18n {
      * 
      * @param language The language to switch to
      */
+    private static final ResourceBundle.Control NO_DEFAULT_LOCALE_CONTROL = new ResourceBundle.Control() {
+        @Override
+        public List<Locale> getCandidateLocales(String baseName, Locale locale) {
+            return List.of(locale, Locale.ROOT);
+        }
+    };
+
     public static void setLanguage(Language language) {
-        if (language != null && currentLanguage.get() != language) {
+        if (language != null) {
             try {
-                bundle = ResourceBundle.getBundle(BUNDLE_NAME, language.getLocale());
+                bundle = ResourceBundle.getBundle(BUNDLE_NAME, language.getLocale(), NO_DEFAULT_LOCALE_CONTROL);
                 currentLanguage.set(language);
                 prefs.put(PREF_LANG_KEY, language.getCode());
                 logger.info("Language switched to: {}", language);
             } catch (Exception e) {
                 logger.error("Failed to load resource bundle for language: {}", language, e);
-                // Fallback to English if not already
                 if (language != Language.ENGLISH) {
                     setLanguage(Language.ENGLISH);
                 }

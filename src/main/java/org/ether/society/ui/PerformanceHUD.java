@@ -30,6 +30,8 @@ public class PerformanceHUD extends VBox {
     private boolean arrayFilled = false;
     private long lastUiUpdate = 0;
 
+    private final Label profilerLabel;
+
     public PerformanceHUD() {
         // Styling - Top Right alignment, semi-transparent
         setStyle("-fx-background-color: rgba(40, 40, 40, 0.85);" +
@@ -49,8 +51,9 @@ public class PerformanceHUD extends VBox {
         memoryLabel = createLabel("Memory: --");
         entitiesLabel = createLabel("Cells: --");
         cameraLabel = createLabel("Zoom: --");
+        profilerLabel = createLabel("Tick: -- ms");
 
-        getChildren().addAll(fpsLabel, memoryLabel, entitiesLabel, cameraLabel);
+        getChildren().addAll(fpsLabel, memoryLabel, entitiesLabel, cameraLabel, profilerLabel);
 
         // Ensure it doesn't capture mouse events intended for the map
         setMouseTransparent(true);
@@ -119,6 +122,12 @@ public class PerformanceHUD extends VBox {
         entitiesLabel.setText(String.format("%s %,d", I18n.get("ui.hud.cells"), cellCount));
         cameraLabel.setText(
                 String.format("%s %.1fx | %.2f°N, %.2f°E", I18n.get("ui.hud.zoom"), zoom, centerLat, centerLng));
+    }
+
+    public void updateProfilerInfo(double avgTickMs, double p95TickMs) {
+        if (profilerLabel != null) {
+            profilerLabel.setText(String.format("⏱️ Tick: %.1fms (P95: %.1fms)", avgTickMs, p95TickMs));
+        }
     }
 }
 

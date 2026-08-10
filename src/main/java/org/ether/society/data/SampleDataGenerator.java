@@ -194,6 +194,14 @@ public class SampleDataGenerator {
         return generator.generateRegion(35, 70, -10, 40);
     }
 
+    public static List<H3Cell> generateSampleCells(int count) {
+        List<H3Cell> cells = generateEuropeSample();
+        if (cells.size() > count) {
+            return new ArrayList<>(cells.subList(0, count));
+        }
+        return cells;
+    }
+
     public static void main(String[] args) {
         logger.info("=== Sample Data Generator ===");
         List<H3Cell> cells = generateEuropeSample();

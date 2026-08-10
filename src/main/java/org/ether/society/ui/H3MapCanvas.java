@@ -172,7 +172,11 @@ public class H3MapCanvas extends Canvas {
         this.frameCounter = 0;
         java.io.File baseDir = new java.io.File("saves/timelapse");
         if (!baseDir.exists()) baseDir.mkdirs();
-        this.videoSessionDir = new java.io.File(baseDir, "recording_" + System.currentTimeMillis());
+        String safeScenario = (scenarioName != null && !scenarioName.isBlank()) 
+            ? scenarioName.replaceAll("[^a-zA-Z0-9_\\-]", "_") 
+            : "Scenario";
+        String timeStamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
+        this.videoSessionDir = new java.io.File(baseDir, safeScenario + "_" + timeStamp);
         if (!this.videoSessionDir.exists()) this.videoSessionDir.mkdirs();
         draw();
         logger.info("Started 1-frame-per-tick video recording into {}", videoSessionDir.getAbsolutePath());
@@ -185,17 +189,46 @@ public class H3MapCanvas extends Canvas {
     }
 
     public void captureTickFrame() {
+        captureTickFrame(frameCounter);
+    }
+
+    public void captureTickFrame(long currentTick) {
         if (!isRecordingVideo || videoSessionDir == null) return;
         try {
+            this.frameCounter = currentTick;
+            // Truncate any obsolete future frames if user rewound / stepped back
+            cleanFutureFrames(this.frameCounter);
+
             draw();
             WritableImage writableImage = snapshot(new SnapshotParameters(), null);
             java.awt.image.BufferedImage bufferedImage = javafx.embed.swing.SwingFXUtils.fromFXImage(writableImage, null);
 
-            String fileName = String.format("frame_%06d.png", frameCounter++);
+            String fileName = String.format("frame_%06d.png", frameCounter);
             java.io.File frameFile = new java.io.File(videoSessionDir, fileName);
             javax.imageio.ImageIO.write(bufferedImage, "png", frameFile);
+            this.frameCounter++;
         } catch (Exception ex) {
             logger.error("Error capturing frame {}", frameCounter, ex);
+        }
+    }
+
+    public void truncateVideoFramesAbove(long tickIndex) {
+        this.frameCounter = tickIndex;
+        cleanFutureFrames(tickIndex);
+    }
+
+    private void cleanFutureFrames(long startTickIndex) {
+        if (videoSessionDir == null || !videoSessionDir.exists()) return;
+        java.io.File[] files = videoSessionDir.listFiles((dir, name) -> name.startsWith("frame_") && name.endsWith(".png"));
+        if (files == null) return;
+        for (java.io.File file : files) {
+            try {
+                String numStr = file.getName().substring(6, file.getName().length() - 4);
+                long frameNum = Long.parseLong(numStr);
+                if (frameNum >= startTickIndex) {
+                    file.delete();
+                }
+            } catch (Exception ignored) {}
         }
     }
 

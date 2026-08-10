@@ -46,6 +46,7 @@ public class Scenario implements Serializable {
     private double temporalResolutionDays = 30.0; // Temporal resolution time step Δt in days (default: 30.0 days = 1 month)
     private double climateHarshness; // 0.0 to 1.0 (storms, droughts)
     private long startDateYear; // e.g. -100000
+    private long endDateYear = 100; // e.g. 100
     private long seed = 12345L;
     private boolean randomEventsEnabled = true;
     private String customDensityBase64;
@@ -86,6 +87,19 @@ public class Scenario implements Serializable {
         this.useRealEarthData = false;
         this.seed = 12345L;
         this.randomEventsEnabled = true;
+    }
+
+    public static Scenario createDefaultScenario() {
+        return new Scenario();
+    }
+
+    /**
+     * Calculates the default number of simulation ticks required to run this scenario from startDateYear to endDateYear.
+     */
+    public int calculateScenarioTicks() {
+        long durationYears = Math.max(1, endDateYear - startDateYear);
+        double ticksPerYear = 365.25 / Math.max(1.0, temporalResolutionDays);
+        return (int) Math.clamp((long) (durationYears * ticksPerYear), 100L, 1000000L);
     }
 
     // Getters and Setters
@@ -292,6 +306,14 @@ public class Scenario implements Serializable {
 
     public void setStartDateYear(long startDateYear) {
         this.startDateYear = startDateYear;
+    }
+
+    public long getEndDateYear() {
+        return endDateYear;
+    }
+
+    public void setEndDateYear(long endDateYear) {
+        this.endDateYear = endDateYear;
     }
 
     public long getSeed() {

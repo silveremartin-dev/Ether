@@ -27,6 +27,7 @@ public class CellTooltip extends VBox {
     private final Label waterLabel;
     private final Label techLabel;
     private final Label malthusLabel;
+    private final Label wealthVarianceLabel;
     private final Label coordLabel;
     private final Label h3Label;
 
@@ -53,6 +54,8 @@ public class CellTooltip extends VBox {
         foodLabel = createLabel();
         waterLabel = createLabel();
         techLabel = createLabel();
+        wealthVarianceLabel = createLabel();
+        wealthVarianceLabel.setStyle("-fx-text-fill: #ffd700; -fx-font-size: 11px; -fx-font-family: 'Consolas', 'Monaco', monospace;");
         malthusLabel = createLabel();
         coordLabel = createLabel();
         h3Label = createLabel();
@@ -67,6 +70,7 @@ public class CellTooltip extends VBox {
                 foodLabel,
                 waterLabel,
                 techLabel,
+                wealthVarianceLabel,
                 malthusLabel,
                 coordLabel,
                 h3Label);
@@ -138,6 +142,10 @@ public class CellTooltip extends VBox {
         // Tech level
         double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
         techLabel.setText(String.format("%-14s Niv. %.2f", "Technologie :", tech));
+
+        // Wealth & Individual Variance Indicator
+        double wealth = currentPop * tech * 15.0;
+        wealthVarianceLabel.setText(String.format("%-14s G$ %,.0f (Niv. Tech x Pop)", "Richesse Maille:", wealth));
 
         // Carrying Capacity (K) & Malthusian Ratio
         double capK = computeCarryingCapacity(cell);

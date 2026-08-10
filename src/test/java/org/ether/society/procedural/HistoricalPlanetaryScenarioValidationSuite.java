@@ -262,6 +262,116 @@ public class HistoricalPlanetaryScenarioValidationSuite {
         assertTrue(avgCoastalMarine > 500.0, "Coastal cells must offer abundant marine fish & shellfish resources");
     }
 
+    @Test
+    @DisplayName("Scenario 6: Roman Empire Pax Romana (0 AD) Mediterranean Density & Administrative Friction")
+    public void testRomanEmpirePaxRomanaAndCliodynamics() {
+        List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
+
+        Scenario scenario = new Scenario();
+        scenario.setName("Empire Romain & Pax Romana (An 0)");
+        scenario.setStartDateYear(0);
+        scenario.setInitialHumanCount(55_000_000L);
+        scenario.setInitialCapitalPerCapita(350.0);
+        scenario.setInitialEnergyPerCapita(120.0);
+        scenario.setInitialFoodReserveMonths(6.0);
+        scenario.setInitialInformationPerCapita(400.0);
+        scenario.setPopulationDensityType("ROMAN_EMPIRE");
+
+        PreComputePhase preCompute = new PreComputePhase(scenario);
+        preCompute.execute(planetaryGrid);
+
+        List<H3Cell> romanCells = planetaryGrid.stream()
+                .filter(c -> c.getLatitude() >= 25.0 && c.getLatitude() <= 55.0)
+                .filter(c -> c.getLongitude() >= -10.0 && c.getLongitude() <= 45.0)
+                .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
+                .toList();
+
+        long totalRomanPop = romanCells.stream().mapToLong(H3Cell::getPopulation).sum();
+        logger.info("Roman Empire Metric: Populated Roman Cells = {}, Total Populated = {}", romanCells.size(), totalRomanPop);
+
+        assertTrue(romanCells.size() > 0, "Roman Mediterranean basin must be populated during 0 AD scenario setup");
+        assertTrue(totalRomanPop > 0, "Roman population must reflect dataset baselines");
+
+        // Run simulation ticks using Roman Imperial Cliodynamics
+        for (int tick = 1; tick <= 30; tick++) {
+            RomanImperialCliodynamicEngine.processHybrid(planetaryGrid, 1.0);
+            FrontierAsabiyyahEngine.processHybrid(planetaryGrid, 1.0);
+        }
+
+        double avgCapitalAfter = romanCells.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+        logger.info("Roman Empire Post-Cliodynamic Metric: Average Capital in Roman Cells = {}", avgCapitalAfter);
+        assertTrue(avgCapitalAfter > 0.0, "Roman Empire capital must remain valid post administrative friction ticking");
+    }
+
+    @Test
+    @DisplayName("Scenario 7: Sahul & Australian Dispersal (-50,000 BCE)")
+    public void testSahulDispersalScenario() {
+        List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
+        Scenario scenario = new Scenario();
+        scenario.setName("Sahul & Premier Peuplement (-50000)");
+        scenario.setStartDateYear(-50000);
+        scenario.setInitialHumanCount(30_000L);
+        scenario.setPopulationDensityType("AUSTRALIA_SAHUL");
+
+        PreComputePhase preCompute = new PreComputePhase(scenario);
+        preCompute.execute(planetaryGrid);
+
+        List<H3Cell> sahulCells = planetaryGrid.stream()
+                .filter(c -> c.getLatitude() >= -42.0 && c.getLatitude() <= -10.0)
+                .filter(c -> c.getLongitude() >= 112.0 && c.getLongitude() <= 155.0)
+                .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
+                .toList();
+
+        logger.info("Sahul Metric: Populated Sahul Cells = {}", sahulCells.size());
+        assertTrue(sahulCells.size() > 0, "Sahul basin must be populated during -50,000 BCE setup");
+    }
+
+    @Test
+    @DisplayName("Scenario 8: Ancient Egypt & Nile Valley (-3000 BCE)")
+    public void testEgyptNileScenario() {
+        List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
+        Scenario scenario = new Scenario();
+        scenario.setName("Égypte Antique (-3000)");
+        scenario.setStartDateYear(-3000);
+        scenario.setInitialHumanCount(1_500_000L);
+        scenario.setPopulationDensityType("EGYPT_NILE");
+
+        PreComputePhase preCompute = new PreComputePhase(scenario);
+        preCompute.execute(planetaryGrid);
+
+        List<H3Cell> nileCells = planetaryGrid.stream()
+                .filter(c -> c.getLatitude() >= 21.0 && c.getLatitude() <= 32.0)
+                .filter(c -> c.getLongitude() >= 24.0 && c.getLongitude() <= 36.0)
+                .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
+                .toList();
+
+        logger.info("Egypt Metric: Populated Nile Cells = {}", nileCells.size());
+        assertTrue(nileCells.size() > 0, "Nile corridor must be populated during -3000 BCE setup");
+    }
+
+    @Test
+    @DisplayName("Scenario 9: Mesoamerica Olmec & Maya (-1500 BCE)")
+    public void testMesoamericaScenario() {
+        List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
+        Scenario scenario = new Scenario();
+        scenario.setName("Civilisations Mésoaméricaines (-1500)");
+        scenario.setStartDateYear(-1500);
+        scenario.setInitialHumanCount(3_000_000L);
+        scenario.setPopulationDensityType("MESOAMERICA");
+
+        PreComputePhase preCompute = new PreComputePhase(scenario);
+        preCompute.execute(planetaryGrid);
+
+        List<H3Cell> mesoCells = planetaryGrid.stream()
+                .filter(c -> c.getLatitude() >= 12.0 && c.getLatitude() <= 24.0)
+                .filter(c -> c.getLongitude() >= -105.0 && c.getLongitude() <= -85.0)
+                .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
+                .toList();
+
+        logger.info("Mesoamerica Metric: Populated Cells = {}", mesoCells.size());
+        assertTrue(mesoCells.size() > 0, "Mesoamerican basin must be populated during -1500 BCE setup");
+    }
+
     private void processMaritimeAndTerrestrialDispersal(List<H3Cell> cells, Map<Long, H3Cell> lookup, H3Service service, boolean allowSeafaring) {
         List<H3Cell> sourceCells = cells.stream()
                 .filter(c -> c.getPopulation() != null && c.getPopulation() > 50)

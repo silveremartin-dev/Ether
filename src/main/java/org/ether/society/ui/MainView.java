@@ -49,11 +49,15 @@ public class MainView extends StackPane {
     private Tab planetTab;
     private Tab resourcesTab;
     private Tab setupTab;
+    private Tab executionContextTab;
     private Tab simulationTab;
+    private Tab comparativeAnalyticsTab;
     private Tab preferencesTab;
     private PlanetGeneratorPanel planetGeneratorPanel;
     private ResourceDistributionPanel resourcePanel;
     private ScenarioSetupPanel setupPanel;
+    private ExecutionContextPanel executionContextPanel;
+    private ComparativeAnalyticsPanel comparativeAnalyticsPanel;
     private PreferencesPanel preferencesPanel;
     private NotificationOverlay notificationOverlay;
 
@@ -110,24 +114,39 @@ public class MainView extends StackPane {
         setupTab.setContent(setupPanel);
         setupTab.setClosable(false);
 
-        // 4. Simulation Tab
+        // 4. Execution Context Tab (between Setup and Simulation)
+        executionContextPanel = new ExecutionContextPanel(this::launchSimulationFromContext);
+        executionContextTab = new Tab();
+        executionContextTab.setContent(executionContextPanel);
+        executionContextTab.setClosable(false);
+
+        // 5. Simulation Tab
         simulationTab = new Tab();
         simulationTab.setContent(createSimulationView());
         simulationTab.setDisable(true); // Disabled until started
 
-        // 5. Preferences Tab
+        // 6. Comparative Analytics Tab (Offline Benchmark & Sensitivity Analytics)
+        comparativeAnalyticsPanel = new ComparativeAnalyticsPanel();
+        comparativeAnalyticsTab = new Tab();
+        comparativeAnalyticsTab.setContent(comparativeAnalyticsPanel);
+        comparativeAnalyticsTab.setClosable(false);
+
+        // 7. Preferences Tab
         preferencesPanel = new PreferencesPanel();
         preferencesTab = new Tab();
         preferencesTab.setContent(preferencesPanel);
         preferencesTab.setClosable(false);
 
-        tabPane.getTabs().addAll(planetTab, resourcesTab, setupTab, simulationTab, preferencesTab);
+        tabPane.getTabs().addAll(planetTab, resourcesTab, setupTab, executionContextTab, simulationTab, comparativeAnalyticsTab, preferencesTab);
 
         // Tab selection change listener
         tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
             if (oldTab == simulationTab && newTab != simulationTab) {
                 logger.info("Auto-pausing simulation due to tab switch");
                 engine.pause();
+            }
+            if (newTab == comparativeAnalyticsTab && comparativeAnalyticsPanel != null) {
+                comparativeAnalyticsPanel.refreshRunList();
             }
             if (newTab == resourcesTab && planetGeneratorPanel != null) {
                 resourcePanel.setActivePlanetPreset(planetGeneratorPanel.buildPresetFromUI());
@@ -149,7 +168,9 @@ public class MainView extends StackPane {
         planetTab.setText(org.ether.society.i18n.I18n.get("tab.planet_generator"));
         resourcesTab.setText(org.ether.society.i18n.I18n.get("tab.resources"));
         setupTab.setText(org.ether.society.i18n.I18n.get("tab.scenario"));
+        executionContextTab.setText(org.ether.society.i18n.I18n.getOrDefault("tab.execution_context", "⚡ Contexte d'Exécution"));
         simulationTab.setText(org.ether.society.i18n.I18n.get("tab.simulation"));
+        comparativeAnalyticsTab.setText(org.ether.society.i18n.I18n.getOrDefault("tab.comparative_analytics", "📊 Analyse Comparative"));
         preferencesTab.setText(org.ether.society.i18n.I18n.get("tab.preferences"));
     }
 
@@ -374,11 +395,30 @@ public class MainView extends StackPane {
             mapCanvas.setScenarioName(scenario.getName());
         }
 
-        // Switch Tab
+        // Switch to Execution Context tab first if coming from setup, or directly activate Simulation tab
+        simulationTab.setDisable(false);
+        if (tabPane.getSelectionModel().getSelectedItem() == setupTab) {
+            tabPane.getSelectionModel().select(executionContextTab);
+            logger.info("Execution Context tab selected after scenario setup validation");
+        } else {
+            tabPane.getSelectionModel().select(simulationTab);
+            logger.info("Simulation tab activated with {} cells", newCells.size());
+        }
+    }
+
+    private void launchSimulationFromContext() {
+        if (setupPanel != null) {
+            org.ether.society.model.Scenario currentScenario = setupPanel.getScenario();
+            List<H3Cell> cells = setupPanel.getCells();
+            if (currentScenario != null && cells != null && !cells.isEmpty()) {
+                if (engine.getCells() == null || engine.getCells().isEmpty()) {
+                    engine.initializeFromScenario(currentScenario, cells);
+                }
+            }
+        }
         simulationTab.setDisable(false);
         tabPane.getSelectionModel().select(simulationTab);
-
-        logger.info("Simulation tab activated with {} cells", newCells.size());
+        logger.info("Simulation tab activated from Execution Context Panel");
     }
 
     // Add ColorLegend helper
@@ -398,20 +438,28 @@ public class MainView extends StackPane {
         }
 
         if (engine instanceof org.ether.society.core.H3SimulationEngine h3Engine) {
+            final java.util.concurrent.atomic.AtomicLong lastUiUpdateNanos = new java.util.concurrent.atomic.AtomicLong(0);
             h3Engine.setOnTickCallback(() -> {
-                int year = engine.getTimeManager().getCurrentYear();
-                int month = engine.getTimeManager().getCurrentMonth();
-                int day = engine.getTimeManager().getCurrentDay();
-                String dateStr = String.format("An %d - M.%02d D.%02d", year, month + 1, day);
+                long now = System.nanoTime();
+                boolean isRecording = mapCanvas != null && mapCanvas.isRecordingVideo();
+                // Throttle UI update calls to ~30 FPS unless video frame capture is requested
+                if (isRecording || (now - lastUiUpdateNanos.get() >= 33_000_000L)) {
+                    lastUiUpdateNanos.set(now);
+                    int year = engine.getTimeManager().getCurrentYear();
+                    int month = engine.getTimeManager().getCurrentMonth();
+                    int day = engine.getTimeManager().getCurrentDay();
+                    String dateStr = String.format("An %d - M.%02d D.%02d", year, month + 1, day);
 
-                javafx.application.Platform.runLater(() -> {
-                    if (mapCanvas != null) {
-                        mapCanvas.setCurrentDateStr(dateStr);
-                        if (mapCanvas.isRecordingVideo()) {
-                            mapCanvas.captureTickFrame();
+                    long currentTick = h3Engine.getTickCounter();
+                    javafx.application.Platform.runLater(() -> {
+                        if (mapCanvas != null) {
+                            mapCanvas.setCurrentDateStr(dateStr);
+                            if (mapCanvas.isRecordingVideo()) {
+                                mapCanvas.captureTickFrame(currentTick);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             });
         }
 

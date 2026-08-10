@@ -121,6 +121,12 @@ public class EtherApp extends Application {
                     if (h3Engine.getWorldBuffer() != null) {
                         hud.registerFrame(now);
                         hud.updateSimulationInfo((int) h3Engine.getPopulatedCellCount(), 1.0, 0, 0);
+                        if (h3Engine.getProfiler() != null) {
+                            hud.updateProfilerInfo(
+                                h3Engine.getProfiler().getAverageTickTimeMs(),
+                                h3Engine.getProfiler().getP95TickTimeMs()
+                            );
+                        }
                     }
 
                     // Update control panel stats

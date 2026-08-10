@@ -304,6 +304,18 @@ public class PreComputePhase {
                 int centerIdx = habitable.indexOf(levantOrigin);
                 distributeNearCell(habitable, centerIdx, totalPop, 0.25);
             }
+            case "ROMAN_EMPIRE" -> {
+                // Distribute population across Roman Mediterranean provinces
+                List<H3Cell> romanCells = habitable.stream()
+                        .filter(c -> c.getLatitude() >= 25.0 && c.getLatitude() <= 55.0)
+                        .filter(c -> c.getLongitude() >= -10.0 && c.getLongitude() <= 45.0)
+                        .toList();
+                if (!romanCells.isEmpty()) {
+                    distributeByRomanDensity(romanCells, totalPop);
+                } else {
+                    distributeByCapacity(habitable, totalPop);
+                }
+            }
             case "RIVER_VALLEYS", "FERTILE_CRESCENT", "MESOPOTAMIA_ASSYRIA" -> {
                 // Prefer high water access
                 distributeByWater(habitable, totalPop);
@@ -329,8 +341,87 @@ public class PreComputePhase {
                     optimal = habitable;
                 distributeByCapacity(optimal, totalPop);
             }
+            case "AUSTRALIA_SAHUL" -> {
+                List<H3Cell> sahulCells = habitable.stream()
+                        .filter(c -> c.getLatitude() >= -42.0 && c.getLatitude() <= -10.0)
+                        .filter(c -> c.getLongitude() >= 112.0 && c.getLongitude() <= 155.0)
+                        .toList();
+                if (!sahulCells.isEmpty()) {
+                    distributeBySahulDensity(sahulCells, totalPop);
+                } else {
+                    distributeByCapacity(habitable, totalPop);
+                }
+            }
+            case "EGYPT_NILE" -> {
+                List<H3Cell> nileCells = habitable.stream()
+                        .filter(c -> c.getLatitude() >= 21.0 && c.getLatitude() <= 32.0)
+                        .filter(c -> c.getLongitude() >= 27.0 && c.getLongitude() <= 35.0)
+                        .toList();
+                if (!nileCells.isEmpty()) {
+                    distributeByNileDensity(nileCells, totalPop);
+                } else {
+                    distributeByWater(habitable, totalPop);
+                }
+            }
             case "MESOAMERICA" -> {
-                distributeByCapacity(habitable, totalPop);
+                List<H3Cell> mesoCells = habitable.stream()
+                        .filter(c -> c.getLatitude() >= 12.0 && c.getLatitude() <= 24.0)
+                        .filter(c -> c.getLongitude() >= -105.0 && c.getLongitude() <= -85.0)
+                        .toList();
+                if (!mesoCells.isEmpty()) {
+                    distributeByMesoamericaDensity(mesoCells, totalPop);
+                } else {
+                    distributeByCapacity(habitable, totalPop);
+                }
+            }
+            case "AMERICAS_1491" -> {
+                List<H3Cell> americasCells = habitable.stream()
+                        .filter(c -> c.getLongitude() >= -130.0 && c.getLongitude() <= -35.0)
+                        .toList();
+                if (!americasCells.isEmpty()) {
+                    distributeByAmericas1491Density(americasCells, totalPop);
+                } else {
+                    distributeByCapacity(habitable, totalPop);
+                }
+            }
+            case "INDUSTRIAL_1800" -> {
+                distributeByIndustrial1800Density(habitable, totalPop);
+            }
+            case "JAPAN_SAKOKU" -> {
+                List<H3Cell> japanCells = habitable.stream()
+                        .filter(c -> c.getLatitude() >= 30.0 && c.getLatitude() <= 45.0)
+                        .filter(c -> c.getLongitude() >= 128.0 && c.getLongitude() <= 146.0)
+                        .toList();
+                if (!japanCells.isEmpty()) {
+                    distributeByJapanSakokuDensity(japanCells, totalPop);
+                } else {
+                    distributeByCapacity(habitable, totalPop);
+                }
+            }
+            case "WEST_AFRICA_MALI" -> {
+                List<H3Cell> maliCells = habitable.stream()
+                        .filter(c -> c.getLatitude() >= 5.0 && c.getLatitude() <= 25.0)
+                        .filter(c -> c.getLongitude() >= -18.0 && c.getLongitude() <= 15.0)
+                        .toList();
+                if (!maliCells.isEmpty()) {
+                    distributeByWestAfricaMaliDensity(maliCells, totalPop);
+                } else {
+                    distributeByCapacity(habitable, totalPop);
+                }
+            }
+            case "INDIA_MAURYA" -> {
+                List<H3Cell> indiaCells = habitable.stream()
+                        .filter(c -> c.getLatitude() >= 8.0 && c.getLatitude() <= 35.0)
+                        .filter(c -> c.getLongitude() >= 68.0 && c.getLongitude() <= 90.0)
+                        .toList();
+                if (!indiaCells.isEmpty()) {
+                    distributeByIndiaMauryaDensity(indiaCells, totalPop);
+                } else {
+                    distributeByCapacity(habitable, totalPop);
+                }
+            }
+            case "COLUMBIAN_CONTACT" -> {
+                distributeByColumbianContactDensity(habitable, totalPop);
             }
             case "RANDOM" -> {
                 // Randomized with capacity weighting
@@ -484,6 +575,196 @@ public class PreComputePhase {
             double weight = calculateCarryingCapacity(c);
             long pop = Math.round(totalPop * weight / totalWeight);
             c.setPopulation((int) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
+        }
+    }
+
+    private void distributeByRomanDensity(List<H3Cell> cells, long totalPop) {
+        double[] weights = new double[cells.size()];
+        double totalWeight = 0;
+
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+
+            // Distance to Rome (41.9, 12.5)
+            double distRome = Math.sqrt(Math.pow(lat - 41.9, 2) + Math.pow(lng - 12.5, 2));
+            // Distance to Alexandria (31.2, 29.9)
+            double distAlex = Math.sqrt(Math.pow(lat - 31.2, 2) + Math.pow(lng - 29.9, 2));
+
+            double centerBonus = Math.max(3.0 - distRome * 0.2, 0.0) + Math.max(2.5 - distAlex * 0.2, 0.0);
+            double coastalBonus = Boolean.TRUE.equals(c.getIsCoastal()) ? 1.5 : 1.0;
+            double baseCap = calculateCarryingCapacity(c);
+
+            weights[i] = (baseCap + 0.1) * (1.0 + centerBonus) * coastalBonus;
+            totalWeight += weights[i];
+        }
+
+        if (totalWeight == 0) {
+            long perCell = totalPop / cells.size();
+            cells.forEach(c -> c.setPopulation((int) Math.clamp(perCell, 0L, (long) Integer.MAX_VALUE)));
+            return;
+        }
+
+        for (int i = 0; i < cells.size(); i++) {
+            long pop = Math.round(totalPop * weights[i] / totalWeight);
+            cells.get(i).setPopulation((int) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
+        }
+    }
+
+    private void distributeBySahulDensity(List<H3Cell> cells, long totalPop) {
+        double[] weights = new double[cells.size()];
+        double totalWeight = 0;
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            double coastalBonus = Boolean.TRUE.equals(c.getIsCoastal()) ? 2.0 : 0.8;
+            double waterBonus = c.getWaterResource() != null ? c.getWaterResource() * 0.002 : 0.1;
+            weights[i] = (calculateCarryingCapacity(c) + 0.1) * coastalBonus * (1.0 + waterBonus);
+            totalWeight += weights[i];
+        }
+        distributeWithWeights(cells, weights, totalWeight, totalPop);
+    }
+
+    private void distributeByNileDensity(List<H3Cell> cells, long totalPop) {
+        double[] weights = new double[cells.size()];
+        double totalWeight = 0;
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            double waterBonus = c.getWaterResource() != null ? c.getWaterResource() * 0.005 : 0.05;
+            weights[i] = waterBonus + 0.05;
+            totalWeight += weights[i];
+        }
+        distributeWithWeights(cells, weights, totalWeight, totalPop);
+    }
+
+    private void distributeByMesoamericaDensity(List<H3Cell> cells, long totalPop) {
+        double[] weights = new double[cells.size()];
+        double totalWeight = 0;
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+            double distTenochtitlan = Math.sqrt(Math.pow(lat - 19.4, 2) + Math.pow(lng - 99.1, 2));
+            double distTikal = Math.sqrt(Math.pow(lat - 17.2, 2) + Math.pow(lng - 89.6, 2));
+            double hubBonus = Math.max(3.0 - distTenochtitlan * 0.3, 0.0) + Math.max(3.0 - distTikal * 0.3, 0.0);
+            weights[i] = (calculateCarryingCapacity(c) + 0.1) * (1.0 + hubBonus);
+            totalWeight += weights[i];
+        }
+        distributeWithWeights(cells, weights, totalWeight, totalPop);
+    }
+
+    private void distributeByAmericas1491Density(List<H3Cell> cells, long totalPop) {
+        double[] weights = new double[cells.size()];
+        double totalWeight = 0;
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+            double meso = (lat >= 12 && lat <= 24 && lng >= -105 && lng <= -85) ? 3.0 : 0.2;
+            double andes = (lat >= -22 && lat <= 2 && lng >= -82 && lng <= -68) ? 3.5 : 0.2;
+            double mississippi = (lat >= 30 && lat <= 40 && lng >= -92 && lng <= -80) ? 1.5 : 0.2;
+            weights[i] = calculateCarryingCapacity(c) * (meso + andes + mississippi);
+            totalWeight += weights[i];
+        }
+        distributeWithWeights(cells, weights, totalWeight, totalPop);
+    }
+
+    private void distributeByIndustrial1800Density(List<H3Cell> cells, long totalPop) {
+        double[] weights = new double[cells.size()];
+        double totalWeight = 0;
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+            double europe = (lat >= 35 && lat <= 60 && lng >= -10 && lng <= 30) ? 4.0 : 0.5;
+            double eastAsia = (lat >= 20 && lat <= 42 && lng >= 100 && lng <= 130) ? 3.5 : 0.5;
+            double northAmerica = (lat >= 30 && lat <= 50 && lng >= -90 && lng <= -70) ? 1.5 : 0.5;
+            weights[i] = calculateCarryingCapacity(c) * (europe + eastAsia + northAmerica);
+            totalWeight += weights[i];
+        }
+        distributeWithWeights(cells, weights, totalWeight, totalPop);
+    }
+
+    private void distributeByJapanSakokuDensity(List<H3Cell> cells, long totalPop) {
+        double[] weights = new double[cells.size()];
+        double totalWeight = 0;
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+            double distEdo = Math.sqrt(Math.pow(lat - 35.7, 2) + Math.pow(lng - 139.7, 2));
+            double distKyoto = Math.sqrt(Math.pow(lat - 35.0, 2) + Math.pow(lng - 135.7, 2));
+            double distOsaka = Math.sqrt(Math.pow(lat - 34.7, 2) + Math.pow(lng - 135.5, 2));
+            double urbanHotspot = Math.max(5.0 - distEdo * 1.5, 0.0) + Math.max(4.0 - distKyoto * 1.5, 0.0) + Math.max(4.0 - distOsaka * 1.5, 0.0);
+            double coastalBonus = Boolean.TRUE.equals(c.getIsCoastal()) ? 1.8 : 1.0;
+            weights[i] = (calculateCarryingCapacity(c) + 0.1) * (1.0 + urbanHotspot) * coastalBonus;
+            totalWeight += weights[i];
+        }
+        distributeWithWeights(cells, weights, totalWeight, totalPop);
+    }
+
+    private void distributeByWestAfricaMaliDensity(List<H3Cell> cells, long totalPop) {
+        double[] weights = new double[cells.size()];
+        double totalWeight = 0;
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+            double distTimbuktu = Math.sqrt(Math.pow(lat - 16.7, 2) + Math.pow(lng - (-3.0), 2));
+            double distGao = Math.sqrt(Math.pow(lat - 16.3, 2) + Math.pow(lng - 0.0, 2));
+            double distJenne = Math.sqrt(Math.pow(lat - 13.9, 2) + Math.pow(lng - (-4.5), 2));
+            double urbanHotspot = Math.max(4.0 - distTimbuktu * 1.2, 0.0) + Math.max(3.5 - distGao * 1.2, 0.0) + Math.max(4.0 - distJenne * 1.2, 0.0);
+            double waterBonus = c.getWaterResource() != null ? c.getWaterResource() * 0.003 : 0.1;
+            weights[i] = (calculateCarryingCapacity(c) + 0.1) * (1.0 + urbanHotspot + waterBonus);
+            totalWeight += weights[i];
+        }
+        distributeWithWeights(cells, weights, totalWeight, totalPop);
+    }
+
+    private void distributeByIndiaMauryaDensity(List<H3Cell> cells, long totalPop) {
+        double[] weights = new double[cells.size()];
+        double totalWeight = 0;
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+            double distPatali = Math.sqrt(Math.pow(lat - 25.6, 2) + Math.pow(lng - 85.1, 2));
+            double distTaxila = Math.sqrt(Math.pow(lat - 33.7, 2) + Math.pow(lng - 72.8, 2));
+            double distVaranasi = Math.sqrt(Math.pow(lat - 25.3, 2) + Math.pow(lng - 83.0, 2));
+            double urbanHotspot = Math.max(5.0 - distPatali * 0.8, 0.0) + Math.max(4.0 - distTaxila * 0.8, 0.0) + Math.max(4.0 - distVaranasi * 0.8, 0.0);
+            double waterBonus = c.getWaterResource() != null ? c.getWaterResource() * 0.004 : 0.1;
+            weights[i] = (calculateCarryingCapacity(c) + 0.1) * (1.0 + urbanHotspot + waterBonus);
+            totalWeight += weights[i];
+        }
+        distributeWithWeights(cells, weights, totalWeight, totalPop);
+    }
+
+    private void distributeByColumbianContactDensity(List<H3Cell> cells, long totalPop) {
+        double[] weights = new double[cells.size()];
+        double totalWeight = 0;
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+            double distTeno = Math.sqrt(Math.pow(lat - 19.4, 2) + Math.pow(lng - (-99.1), 2));
+            double distSanto = Math.sqrt(Math.pow(lat - 18.5, 2) + Math.pow(lng - (-69.9), 2));
+            double distCusco = Math.sqrt(Math.pow(lat - (-13.5), 2) + Math.pow(lng - (-71.9), 2));
+            double urbanHotspot = Math.max(5.0 - distTeno * 0.5, 0.0) + Math.max(4.0 - distSanto * 0.5, 0.0) + Math.max(5.0 - distCusco * 0.5, 0.0);
+            weights[i] = (calculateCarryingCapacity(c) + 0.1) * (1.0 + urbanHotspot);
+            totalWeight += weights[i];
+        }
+        distributeWithWeights(cells, weights, totalWeight, totalPop);
+    }
+
+    private void distributeWithWeights(List<H3Cell> cells, double[] weights, double totalWeight, long totalPop) {
+        if (totalWeight == 0) {
+            long perCell = totalPop / cells.size();
+            cells.forEach(c -> c.setPopulation((int) Math.clamp(perCell, 0L, (long) Integer.MAX_VALUE)));
+            return;
+        }
+        for (int i = 0; i < cells.size(); i++) {
+            long pop = Math.round(totalPop * weights[i] / totalWeight);
+            cells.get(i).setPopulation((int) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
         }
     }
 }

@@ -29,7 +29,7 @@ class I18nTest {
 
         // Switch to German
         I18n.setLanguage(Language.GERMAN);
-        assertEquals("Start", I18n.get("ui.control.start"));
+        assertEquals("Starten", I18n.get("ui.control.start"));
         assertEquals("Biom:", I18n.get("ui.tooltip.biome"));
 
         // Switch to Chinese

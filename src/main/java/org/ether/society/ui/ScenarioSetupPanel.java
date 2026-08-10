@@ -71,6 +71,7 @@ public class ScenarioSetupPanel extends BorderPane {
     // Form Controls
     private TextArea scenarioDescriptionArea;
     private Spinner<Integer> startYearSpinner;
+    private Spinner<Integer> endYearSpinner;
     private ComboBox<Integer> h3ResolutionCombo;
     private Label h3ResolutionLabel;
     private Spinner<Integer> targetCohortSizeSpinner;
@@ -127,6 +128,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label title3Events;
     private Label nameLabel;
     private Label startYearLabel;
+    private Label endYearLabel;
     private Label popCountLabel;
     private Label capitalLabel;
     private Label energyLabel;
@@ -167,24 +169,54 @@ public class ScenarioSetupPanel extends BorderPane {
     private RadioButton radioImportDemo;
     private Label demoCompatibilityLabel;
 
-    private static final Map<String, String> DENSITY_LABELS = Map.of(
-        "UNBIASED_NATURAL", "⚖️ Équilibre Naturel Pur (Sans Favoritisme / Par Défaut)",
-        "FERTILE_CRESCENT", "🌾 Plaines Alluviales & Littoraux (Croissant Fertile)",
-        "MESOAMERICA", "🌴 Jungles Tropicales & Collines (Mésoamérique)",
-        "MESOPOTAMIA_ASSYRIA", "🏛️ Deltas & Bassins Fluviaux (Mésopotamie)",
-        "RIVER_VALLEYS", "🌊 Axes Fluviaux & Deltas",
-        "URBAN_CLUSTERS", "🏙️ Nœuds Urbains & Métropoles Concentrées",
-        "SPARSE_NOMADIC", "⛺ Dispersion Pastoraliste Nomade (Déserts/Tundras)"
+    private static final Map<String, String> DENSITY_LABELS = Map.ofEntries(
+        Map.entry("UNBIASED_NATURAL", "⚖️ Équilibre Naturel Pur (Sans Favoritisme / Par Défaut)"),
+        Map.entry("ONE_CONTINENT", "🌍 Expansion Continentale Mono-Foyer"),
+        Map.entry("AUSTRALIA_SAHUL", "🦘 Continent Sahul & Côtes Australes"),
+        Map.entry("BERINGIA_AMERICAS", "🏔️ Corridor Béringien & Dispersion Américaine"),
+        Map.entry("YOUNGER_DRYAS", "❄️ Refuges Natufiens du Récents Dryas"),
+        Map.entry("FERTILE_CRESCENT", "🌾 Plaines Alluviales & Littoraux (Croissant Fertile)"),
+        Map.entry("GREEN_SAHARA", "🌴 Savane Lacustre & Sahara Vert"),
+        Map.entry("EGYPT_NILE", "𓀀 Bande d'Irrigation du Nil Égyptien"),
+        Map.entry("MESOPOTAMIA_ASSYRIA", "🏛️ Deltas & Bassins Fluviaux (Mésopotamie)"),
+        Map.entry("MESOAMERICA", "🌴 Jungles Tropicales & Collines (Mésoamérique)"),
+        Map.entry("INDIA_MAURYA", "☸️ Plaine Gângétique & Indus (Empire Maurya)"),
+        Map.entry("ROMAN_EMPIRE", "🏛️ Bassin Méditerranéen (Empire Romain)"),
+        Map.entry("RIVER_VALLEYS", "🌊 Axes Fluviaux & Deltas"),
+        Map.entry("WEST_AFRICA_MALI", "🕌 Boucle du Niger & Mines d'Or (Empire du Mali)"),
+        Map.entry("AMERICAS_1491", "🌽 Tawantinsuyu & Anahuac (Amériques 1491)"),
+        Map.entry("COLUMBIAN_CONTACT", "⛵ Littoraux Transatlantiques & Choc Contact"),
+        Map.entry("JAPAN_SAKOKU", "⛩️ Archipel Japonais Autarcique (Tokugawa Sakoku)"),
+        Map.entry("INDUSTRIAL_1800", "⚙️ Bassins Houillers & Villes Charbonnières (1800)"),
+        Map.entry("URBAN_CLUSTERS", "🏙️ Nœuds Urbains & Métropoles Concentrées"),
+        Map.entry("SPARSE_NOMADIC", "⛺ Dispersion Pastoraliste Nomade (Déserts/Tundras)"),
+        Map.entry("UNIFORM", "🟦 Distribution Homogène Absolue"),
+        Map.entry("RANDOM", "🎲 Distribution Stochastique Léviathan")
     );
 
-    private static final Map<String, String> DENSITY_DESCRIPTIONS = Map.of(
-        "UNBIASED_NATURAL", "⚖️ Équilibre Naturel Pur : Aucun favoritisme régional ni biais artificiel. La population s'établit strictement selon la viabilité environnementale réelle (température, eau, altitude, biomes).",
-        "FERTILE_CRESCENT", "🌾 Plaines Alluviales & Littoraux : Implantation le long des plaines alluviales et littoraux tempérés (Plaines/Littoraux: ×4.5, autres: ×0.3). Archetype: Croissant Fertile.",
-        "MESOAMERICA", "🌴 Valées Tropicales & Collines : Dispersion adaptée aux jungles tropicales et vallées d'altitude (Jungles/Collines: ×3.5, autres: ×0.5). Archetype: Mésoamérique.",
-        "MESOPOTAMIA_ASSYRIA", "🏛️ Deltas & Bassins Fluviaux : Hyper-concentration le long des réseaux hydrographiques majeurs et deltas (Plaines: ×5.0, autres: ×0.2). Archetype: Mésopotamie.",
-        "RIVER_VALLEYS", "🌊 Axes Fluviaux : Colonisation linéaire le long du tracé des fleuves et deltas (Fleuves/Littoraux: ×4.5, autres: ×0.3).",
-        "URBAN_CLUSTERS", "🏙️ Nœuds Urbains : Émergence de métropoles hyper-concentrées avec grappes urbaines (Booster Cités: ×15.0).",
-        "SPARSE_NOMADIC", "⛺ Dispersion Nomade : Population pastorale dispersée à faible densité sur de grands espaces (Déserts/Tundras: ×1.5, autres: ×0.8)."
+    private static final Map<String, String> DENSITY_DESCRIPTIONS = Map.ofEntries(
+        Map.entry("UNBIASED_NATURAL", "⚖️ Équilibre Naturel Pur : Aucun favoritisme régional ni biais artificiel. La population s'établit strictly selon la viabilité environnementale réelle."),
+        Map.entry("ONE_CONTINENT", "🌍 Expansion Continentale : Concentration initiale sur un unique foyer géographique avec gradient d'expansion."),
+        Map.entry("AUSTRALIA_SAHUL", "🦘 Continent Sahul : Implantation sur les marges côtières et bassins intérieurs de la plaque australo-papoue."),
+        Map.entry("BERINGIA_AMERICAS", "🏔️ Corridor Béringien : Distribution le long du pont terrestre et colonisation côtière Pacifique."),
+        Map.entry("YOUNGER_DRYAS", "❄️ Refuges Dryas : Densification forcée autour des rares micro-climats d'oasis et corridors humides Levantins."),
+        Map.entry("FERTILE_CRESCENT", "🌾 Croissant Fertile : Implantation le long des plaines alluviales et littoraux tempérés."),
+        Map.entry("GREEN_SAHARA", "🌴 Sahara Vert : Colonisation autour des réceptacles lacustres du Mega-Tchad et savanes de l'AHP."),
+        Map.entry("EGYPT_NILE", "𓀀 Vallée du Nil : Hyper-concentration linéaire exclusive sur les berges inondables et le Delta."),
+        Map.entry("MESOPOTAMIA_ASSYRIA", "🏛️ Mésopotamie : Concentration le long des vallées du Tigre et de l'Euphrate et canaux d'irrigation."),
+        Map.entry("MESOAMERICA", "🌴 Mésoamérique : Distribution au sein des terres basses tropicales mayas et hautes vallées aztèques."),
+        Map.entry("INDIA_MAURYA", "☸️ Empire Maurya : Forte densité dans la fertile plaine gângétique et les ports de l'Océan Indien."),
+        Map.entry("ROMAN_EMPIRE", "🏛️ Empire Romain : Distribution centrée sur la péninsule italienne, la Gaule, l'Hispanie et la côte nord-africaine."),
+        Map.entry("RIVER_VALLEYS", "🌊 Axes Fluviaux : Colonisation linéaire le long du tracé des fleuves et deltas."),
+        Map.entry("WEST_AFRICA_MALI", "🕌 Empire du Mali : Concentration urbaine le long de la boucle du Niger (Tombouctou, Gao, Djenné)."),
+        Map.entry("AMERICAS_1491", "🌽 Amériques 1491 : Densités majeures dans les Andes centrales et le plateau central d'Anahuac."),
+        Map.entry("COLUMBIAN_CONTACT", "⛵ Contact Colombien : Modélise la redistribution démographique post-1492 suite aux chocs épidémiques."),
+        Map.entry("JAPAN_SAKOKU", "⛩️ Japon Sakoku : Forte concentration sur les plaines côtières de Honshu (Kanto, Kansai) sous autarcie."),
+        Map.entry("INDUSTRIAL_1800", "⚙️ Révolution Industrielle : Implantation massive à proximité des bassins houillers et nœuds ferroviaires."),
+        Map.entry("URBAN_CLUSTERS", "🏙️ Nœuds Urbains : Émergence de métropoles hyper-concentrées avec grappes urbaines."),
+        Map.entry("SPARSE_NOMADIC", "⛺ Dispersion Nomade : Population pastorale dispersée à faible densité sur de grands espaces."),
+        Map.entry("UNIFORM", "🟦 Distribution Homogène : Densité strictement constante sur toutes les cellules de la grille H3."),
+        Map.entry("RANDOM", "🎲 Distribution Stochastique : Attribution aléatoire uniforme de la population entre les cellules.")
     );
 
     // Clipping & Boundary Label Fields for live i18n
@@ -510,11 +542,17 @@ public class ScenarioSetupPanel extends BorderPane {
         grid1.setHgap(10);
         grid1.setVgap(10);
 
-        startYearSpinner = new Spinner<>(-100000, 2100, -8000, 100);
+        startYearSpinner = new Spinner<>(-100000, 5000, -8000, 100);
         startYearSpinner.setEditable(true);
         startYearSpinner.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.start_year", "Marqueur chronologique à T=0 pour caler la simulation sur un repère calendaire standard. Ce chiffre est à titre indicatif et n'influence pas directement les équations de la simulation.")));
 
+        endYearSpinner = new Spinner<>(-100000, 5000, 100, 100);
+        endYearSpinner.setEditable(true);
+        endYearSpinner.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.end_year", "Année cible de fin de simulation. Détermine la durée totale de la campagne pour les exécutions Headless et les analyses comparatives.")));
+        endYearSpinner.valueProperty().addListener((obs, oldV, newV) -> notifyParamChange());
+
         startYearLabel = new Label();
+        endYearLabel = new Label();
         h3ResolutionLabel = new Label();
 
         // H3 Resolution (Row 0)
@@ -604,12 +642,14 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         });
         Tooltip.install(startYearLabel, startYearSpinner.getTooltip());
+        Tooltip.install(endYearLabel, endYearSpinner.getTooltip());
 
-        // Add to grid1: Row 0 = H3 Res, Row 1 = Pas de temps, Row 2 = Cohort Size, Row 3 = Start Year
+        // Add to grid1: Row 0 = H3 Res, Row 1 = Pas de temps, Row 2 = Cohort Size, Row 3 = Start Year, Row 4 = End Year
         grid1.addRow(0, h3ResolutionLabel, h3ResolutionCombo);
         grid1.addRow(1, temporalResolutionLabel, temporalResolutionCombo);
         grid1.addRow(2, cohortSizeLabel, targetCohortSizeSpinner);
         grid1.addRow(3, startYearLabel, startYearSpinner);
+        grid1.addRow(4, endYearLabel, endYearSpinner);
 
         Label descLabel = new Label("📖 Description Détaillée & Termes de Forçage Physiques :");
         descLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 6 0 2 0;");
@@ -659,7 +699,7 @@ public class ScenarioSetupPanel extends BorderPane {
         initialCapitalSpinner.valueProperty().addListener((obs, oldV, newV) -> notifyParamChange());
 
         densityPatternCombo = new ComboBox<>();
-        densityPatternCombo.getItems().addAll("UNBIASED_NATURAL", "FERTILE_CRESCENT", "MESOAMERICA", "MESOPOTAMIA_ASSYRIA", "RIVER_VALLEYS", "URBAN_CLUSTERS", "SPARSE_NOMADIC");
+        densityPatternCombo.getItems().addAll("UNBIASED_NATURAL", "ONE_CONTINENT", "AUSTRALIA_SAHUL", "BERINGIA_AMERICAS", "YOUNGER_DRYAS", "FERTILE_CRESCENT", "GREEN_SAHARA", "EGYPT_NILE", "MESOPOTAMIA_ASSYRIA", "MESOAMERICA", "INDIA_MAURYA", "ROMAN_EMPIRE", "RIVER_VALLEYS", "WEST_AFRICA_MALI", "AMERICAS_1491", "COLUMBIAN_CONTACT", "JAPAN_SAKOKU", "INDUSTRIAL_1800", "URBAN_CLUSTERS", "SPARSE_NOMADIC", "UNIFORM", "RANDOM");
         densityPatternCombo.setValue("UNBIASED_NATURAL");
         densityPatternCombo.setMaxWidth(Double.MAX_VALUE);
         densityPatternCombo.setConverter(new javafx.util.StringConverter<String>() {
@@ -1235,6 +1275,7 @@ public class ScenarioSetupPanel extends BorderPane {
         Scenario s0 = new Scenario();
         s0.setName("Sortie d'Afrique & Expansion Homo Sapiens (-100000)");
         s0.setStartDateYear(-100000);
+        s0.setEndDateYear(-20000);
         s0.setInitialHumanCount(50000);
         s0.setInitialCapitalPerCapita(2.0);
         s0.setInitialEnergyPerCapita(5.0);
@@ -1257,9 +1298,76 @@ public class ScenarioSetupPanel extends BorderPane {
             """);
         list.add(s0);
 
+        // --- SCÉNARIO : SAHUL (-50000) ---
+        Scenario sSahul = new Scenario();
+        sSahul.setName("Sahul & Premier Peuplement de l'Australie (-50000)");
+        sSahul.setStartDateYear(-50000);
+        sSahul.setEndDateYear(-10000);
+        sSahul.setInitialHumanCount(30000);
+        sSahul.setInitialCapitalPerCapita(3.0);
+        sSahul.setInitialEnergyPerCapita(6.0);
+        sSahul.setInitialFoodReserveMonths(2.0);
+        sSahul.setInitialInformationPerCapita(3.0);
+        sSahul.setPopulationDensityType("AUSTRALIA_SAHUL");
+        sSahul.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sSahul.setClippingEnabled(true);
+        sSahul.setMinLat(-42.0); sSahul.setMaxLat(-10.0); sSahul.setMinLng(112.0); sSahul.setMaxLng(155.0);
+        sSahul.setBoundaryMode("DYNAMIC_RESERVOIR");
+        sSahul.setDescription("""
+            🦘 SCÉNARIO PALÉOLITHIQUE : Traversée Maritime & Incursion dans le Sahul (-50 000 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Premier franchissement maritime majeur de la ligne de Wallace par les ancêtres des Aborigènes d'Australie. Modélise la colonisation du continent Sahul (Australie, Tasmanie, Nouvelle-Guinée réunies) et l'adaptation aux écosystèmes arides.
+            """);
+        list.add(sSahul);
+
+        // --- SCÉNARIO : BÉRINGIE & PEUPLEMENT DES AMÉRIQUES (-25000) ---
+        Scenario sBeringia = new Scenario();
+        sBeringia.setName("Béringie & Peuplement des Amériques (-25000)");
+        sBeringia.setStartDateYear(-25000);
+        sBeringia.setEndDateYear(-10000);
+        sBeringia.setInitialHumanCount(15000);
+        sBeringia.setInitialCapitalPerCapita(3.0);
+        sBeringia.setInitialEnergyPerCapita(6.0);
+        sBeringia.setInitialFoodReserveMonths(2.0);
+        sBeringia.setInitialInformationPerCapita(4.0);
+        sBeringia.setPopulationDensityType("BERINGIA_AMERICAS");
+        sBeringia.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sBeringia.setClippingEnabled(true);
+        sBeringia.setMinLat(45.0); sBeringia.setMaxLat(75.0); sBeringia.setMinLng(140.0); sBeringia.setMaxLng(-120.0);
+        sBeringia.setBoundaryMode("DYNAMIC_RESERVOIR");
+        sBeringia.setDescription("""
+            🏔️ SCÉNARIO PALÉOLITHIQUE : Le Pont Terrestre de Béringie & Incursion Américaine (-25 000 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise l'isolation des populations paléolithiques sur le pont terrestre de Béringie pendant le Dernier Maximum Glaciaire (LGM), suivie de leur dispersion à travers le corridor libre de glace et la route côtière du Pacifique.
+            """);
+        list.add(sBeringia);
+
+        // --- SCÉNARIO : RÉCENTS DRYAS (-10900) ---
+        Scenario sYoungerDryas = new Scenario();
+        sYoungerDryas.setName("Le Récents Dryas & Choc Climatique Natufien (-10900)");
+        sYoungerDryas.setStartDateYear(-10900);
+        sYoungerDryas.setEndDateYear(-9500);
+        sYoungerDryas.setInitialHumanCount(40000);
+        sYoungerDryas.setInitialCapitalPerCapita(4.0);
+        sYoungerDryas.setInitialEnergyPerCapita(8.0);
+        sYoungerDryas.setInitialFoodReserveMonths(2.5);
+        sYoungerDryas.setInitialInformationPerCapita(8.0);
+        sYoungerDryas.setPopulationDensityType("YOUNGER_DRYAS");
+        sYoungerDryas.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sYoungerDryas.setDescription("""
+            ❄️ SCÉNARIO PALÉOCLIMATIQUE : Le Récents Dryas & Pression Foragère Au Levant (-10 900 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Refroidissement brutal de 5 à 8°C de l'Atlantique Nord déclenché par le déversement d'eau douce du Lac Agassiz. Au Levant, la sécheresse aiguë réduit les céréales sauvages, contraignant les populations Natufiennes à la sédentarisation pré-agricole et au contrôle des graines.
+            """);
+        list.add(sYoungerDryas);
+
         Scenario s1 = new Scenario();
         s1.setName("Croissant Fertile & Néolithique (-8000)");
         s1.setStartDateYear(-8000);
+        s1.setEndDateYear(-5000);
         s1.setInitialHumanCount(25000);
         s1.setInitialCapitalPerCapita(5.0);
         s1.setInitialEnergyPerCapita(10.0);
@@ -1275,13 +1383,6 @@ public class ScenarioSetupPanel extends BorderPane {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Ce scénario modélise la transition majeure du Néolithique entre l'économie de subsistance des chasseurs-cueilleurs et l'émergence des premières communautés agricoles sédentaires le long du Tigre, de l'Euphrate, du Nil et de la côte Levantine.
-            
-            [CONDITIONS INITIALES PHYSIQUES (T_0)]
-            • Stock Capital Physique (K₀) : 5 kg/habitant (outillage en silex, bois, vannerie).
-            • Énergie Stockée (E₀) : 10 MJ/habitant (combustible bois & biomosse).
-            • Réserves Alimentaires (F₀) : 3 mois de subsistance en baies, graines et viande séchée.
-            • Savoir Archivé (I₀) : 5 bits/habitant (tradition orale & transmission du savoir-faire).
-            • Température Moyenne du Globe : ~14.0°C (Fin de la glaciation du Würm, Climat Holocène doux).
             """);
         list.add(s1);
 
@@ -1289,6 +1390,7 @@ public class ScenarioSetupPanel extends BorderPane {
         Scenario sGreenSahara = new Scenario();
         sGreenSahara.setName("Le Sahara Vert & Période Humide Africaine (-6000)");
         sGreenSahara.setStartDateYear(-6000);
+        sGreenSahara.setEndDateYear(-3500);
         sGreenSahara.setInitialHumanCount(60000);
         sGreenSahara.setInitialCapitalPerCapita(6.0);
         sGreenSahara.setInitialEnergyPerCapita(12.0);
@@ -1301,65 +1403,36 @@ public class ScenarioSetupPanel extends BorderPane {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise la Période Humide Africaine (AHP) où l'insolation printanière amplifiée par l'orbite terrestre a intensifié la mousson africaine. Le désert du Sahara était alors une savane verdoyante parsemée de lac majeurs (Lac Méga-Tchad), peuplée d'éleveurs néolithiques et de chasseurs-cueilleurs.
-            
-            [CONDITIONS INITIALES PHYSIQUES (T_0)]
-            • Précipitations Sahariennes : 800 à 1200 mm/an (Savane arborée & lacs).
-            • Stock Capital Physique (K₀) : 6 kg/habitant (poterie pastorale, harpons en os).
-            • Biomasse Halieutique & Lacustre (B_fish) : Abondance maximale le long des berges lacustres.
             """);
         list.add(sGreenSahara);
 
-        // --- SCÉNARIO : RÉCENTS DRYAS (-10900) ---
-        Scenario sYoungerDryas = new Scenario();
-        sYoungerDryas.setName("Le Récents Dryas & Choc Climatique Natufien (-10900)");
-        sYoungerDryas.setStartDateYear(-10900);
-        sYoungerDryas.setInitialHumanCount(40000);
-        sYoungerDryas.setInitialCapitalPerCapita(4.0);
-        sYoungerDryas.setInitialEnergyPerCapita(8.0);
-        sYoungerDryas.setInitialFoodReserveMonths(2.5);
-        sYoungerDryas.setInitialInformationPerCapita(8.0);
-        sYoungerDryas.setPopulationDensityType("YOUNGER_DRYAS");
-        sYoungerDryas.setPlanetPreset(PlanetPreset.EARTH_LIKE);
-        sYoungerDryas.setDescription("""
-            ❄️ SCÉNARIO PALÉOCLIMATIQUE : Le Récents Dryas & Pression Foragère Au Levant (-10 900 av. J.-C.)
+        // --- SCÉNARIO : ÉGYPTE ANTIQUE (-3000) ---
+        Scenario sEgypt = new Scenario();
+        sEgypt.setName("Égypte Antique & Vallée du Nil (-3000)");
+        sEgypt.setStartDateYear(-3000);
+        sEgypt.setEndDateYear(-1000);
+        sEgypt.setInitialHumanCount(1500000);
+        sEgypt.setInitialCapitalPerCapita(60.0);
+        sEgypt.setInitialEnergyPerCapita(40.0);
+        sEgypt.setInitialFoodReserveMonths(6.0);
+        sEgypt.setInitialInformationPerCapita(40.0);
+        sEgypt.setPopulationDensityType("EGYPT_NILE");
+        sEgypt.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sEgypt.setClippingEnabled(true);
+        sEgypt.setMinLat(21.0); sEgypt.setMaxLat(32.0); sEgypt.setMinLng(24.0); sEgypt.setMaxLng(36.0);
+        sEgypt.setBoundaryMode("DYNAMIC_RESERVOIR");
+        sEgypt.setDescription("""
+            𓀀 SCÉNARIO HISTORIQUE : Unification Thinite & Crues du Nil (-3000 av. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
-            Refroidissement brutal de 5 à 8°C de l'Atlantique Nord déclenché par le déversement d'eau douce du Lac Agassiz. Au Levant, la sécheresse aiguë réduit les céréales sauvages, contraignant les populations Natufiennes à la sédentarisation pré-agricole et au contrôle des graines.
-            
-            [CONDITIONS INITIALES PHYSIQUES (T_0)]
-            • Refroidissement Stratosphérique : -5.5°C au-dessus de l'Eurasie.
-            • Sécheresse Levantine : Précipitations chutant sous 250 mm/an.
-            • Capital Lithique (K₀) : 4 kg/habitant (faucilles en silex, mortiers en pierre).
+            Modélise l'émergence de la première civilisation pharaonique unifiée. Dépendance absolue vis-à-vis du rythme annuel du Nil, de la gestion du bassin d'irrigation et de l'administration hiéroglyphique.
             """);
-        list.add(sYoungerDryas);
-
-        Scenario s2 = new Scenario();
-        s2.setName("Le Petit Âge Glaciaire de l'Antiquité Tardive & Peste de Justinien (536)");
-        s2.setStartDateYear(536);
-        s2.setInitialHumanCount(180000000);
-        s2.setInitialCapitalPerCapita(250.0);
-        s2.setInitialEnergyPerCapita(100.0);
-        s2.setInitialFoodReserveMonths(1.5);
-        s2.setInitialInformationPerCapita(300.0);
-        s2.setPopulationDensityType("URBAN_CLUSTERS");
-        s2.setPlanetPreset(PlanetPreset.EARTH_LIKE);
-        s2.setDescription("""
-            🌋 SCÉNARIO HISTORIQUE : L'Anomalie Climatique Volcanique de 536 & Choc Sanitaire
-            
-            [CONTEXTE HISTORIQUE & PHYSIQUE]
-            L'année 536 est considérée par les historiens du climat comme "la pire année de l'histoire humaine". Deux éruptions volcaniques super-massives consécutives (Ilopango et Krakatoa) ont injecté un voile d'aérosols stratosphériques occultant le Soleil pendant 18 mois.
-            
-            [CONDITIONS INITIALES PHYSIQUES (T_0)]
-            • Stock Capital Physique (K₀) : 250 kg/habitant (outils fer, fermes, infrastructures romaines).
-            • Énergie Stockée (E₀) : 100 MJ/habitant (réserves de bois de chauffe).
-            • Réserves Alimentaires (F₀) : 1.5 mois (famine aiguë post-éruption volcanique).
-            • Savoir Archivé (I₀) : 300 bits/habitant (manuscrits, parchemins, administration impériale).
-            """);
-        list.add(s2);
+        list.add(sEgypt);
 
         Scenario s3 = new Scenario();
         s3.setName("Empire Assyrien & Irrigation Mésopotamienne (-2000)");
         s3.setStartDateYear(-2000);
+        s3.setEndDateYear(-600);
         s3.setInitialHumanCount(500000);
         s3.setInitialCapitalPerCapita(80.0);
         s3.setInitialEnergyPerCapita(50.0);
@@ -1375,18 +1448,103 @@ public class ScenarioSetupPanel extends BorderPane {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'apogée et les vulnérabilités de la civilisation mésopotamienne et de l'Empire Assyrien basés sur l'irrigation intensive à partir du Tigre et de l'Euphrate.
-            
-            [CONDITIONS INITIALES PHYSIQUES (T_0)]
-            • Stock Capital Physique (K₀) : 80 kg/habitant (outillage bronze, canaux, chars).
-            • Énergie Stockée (E₀) : 50 MJ/habitant (bois, réserves d'huile & fourrage).
-            • Réserves Alimentaires (F₀) : 6 mois (silos à grain urbains Mésopotamiens).
-            • Savoir Archivé (I₀) : 50 bits/habitant (cunéiforme & comptabilité argile).
             """);
         list.add(s3);
+
+        // --- SCÉNARIO : MÉSOAMÉRIQUE (-1500) ---
+        Scenario sMeso = new Scenario();
+        sMeso.setName("Civilisations Mésoaméricaines (Olmèques & Mayas) (-1500)");
+        sMeso.setStartDateYear(-1500);
+        sMeso.setEndDateYear(900);
+        sMeso.setInitialHumanCount(3000000);
+        sMeso.setInitialCapitalPerCapita(120.0);
+        sMeso.setInitialEnergyPerCapita(80.0);
+        sMeso.setInitialFoodReserveMonths(6.0);
+        sMeso.setInitialInformationPerCapita(150.0);
+        sMeso.setPopulationDensityType("MESOAMERICA");
+        sMeso.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sMeso.setClippingEnabled(true);
+        sMeso.setMinLat(12.0); sMeso.setMaxLat(24.0); sMeso.setMinLng(-105.0); sMeso.setMaxLng(-85.0);
+        sMeso.setBoundaryMode("DYNAMIC_RESERVOIR");
+        sMeso.setDescription("""
+            𛀀 SCÉNARIO HISTORIQUE : Culture Mère Olmèque & Cités-États Mayas (-1500 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Émergence des centres cérémoniels de San Lorenzo et La Venta, puis essor de la civilisation maya classique. Modélise la maïsiculture intensive, les réservoirs d'eau pluviale et l'astronomie de précision.
+            """);
+        list.add(sMeso);
+
+        // --- SCÉNARIO : EMPIRE MAURYA & INDE (-300) ---
+        Scenario sMaurya = new Scenario();
+        sMaurya.setName("Empire Maurya & Civilisation de l'Indus-Gange (-300)");
+        sMaurya.setStartDateYear(-300);
+        sMaurya.setEndDateYear(100);
+        sMaurya.setInitialHumanCount(50000000);
+        sMaurya.setInitialCapitalPerCapita(200.0);
+        sMaurya.setInitialEnergyPerCapita(90.0);
+        sMaurya.setInitialFoodReserveMonths(6.0);
+        sMaurya.setInitialInformationPerCapita(300.0);
+        sMaurya.setPopulationDensityType("INDIA_MAURYA");
+        sMaurya.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sMaurya.setClippingEnabled(true);
+        sMaurya.setMinLat(8.0); sMaurya.setMaxLat(35.0); sMaurya.setMinLng(68.0); sMaurya.setMaxLng(90.0);
+        sMaurya.setBoundaryMode("DYNAMIC_RESERVOIR");
+        sMaurya.setDescription("""
+            ☸️ SCÉNARIO HISTORIQUE : L'Empire Maurya d'Ashoka & La Vallée du Gange (-300 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Unification du sous-continent indien sous Chandragupta et Ashoka. Modélise l'agriculture rizicole de la plaine gângétique, les routes commerciales de la Soie et le réseau urbain autour de Pataliputra et Taxila.
+            """);
+        list.add(sMaurya);
+
+        // --- SCÉNARIO : EMPIRE ROMAIN & PAX ROMANA (AN 0) ---
+        Scenario sRoman = new Scenario();
+        sRoman.setName("Empire Romain & Pax Romana (An 0)");
+        sRoman.setStartDateYear(0);
+        sRoman.setEndDateYear(476);
+        sRoman.setInitialHumanCount(55000000);
+        sRoman.setInitialCapitalPerCapita(350.0);
+        sRoman.setInitialEnergyPerCapita(120.0);
+        sRoman.setInitialFoodReserveMonths(6.0);
+        sRoman.setInitialInformationPerCapita(400.0);
+        sRoman.setPopulationDensityType("ROMAN_EMPIRE");
+        sRoman.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sRoman.setClippingEnabled(true);
+        sRoman.setMinLat(25.0); sRoman.setMaxLat(55.0); sRoman.setMinLng(-10.0); sRoman.setMaxLng(45.0);
+        sRoman.setBoundaryMode("DYNAMIC_RESERVOIR");
+        sRoman.getTypeBEngineStates().put("RomanImperialCliodynamicEngine", true);
+        sRoman.getTypeBEngineStates().put("FrontierAsabiyyahEngine", true);
+        sRoman.setDescription("""
+            🏛️ SCÉNARIO HISTORIQUE : L'Empire Romain à son Apogée (Pax Romana, An 0)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE - SOURCES BESSES & BENCHMARKS CIA / SESHAT / HYDE]
+            Modélise le bassin méditerranéen au moment de la Pax Romana sous Auguste. Intègre les données démographiques historiques (55 millions d'habitants), les réseaux d'infrastructures (viae, aqueducs) et les dynamiques cliodynamiques de Turchin.
+            """);
+        list.add(sRoman);
+
+        Scenario s2 = new Scenario();
+        s2.setName("Le Petit Âge Glaciaire de l'Antiquité Tardive & Peste de Justinien (536)");
+        s2.setStartDateYear(536);
+        s2.setEndDateYear(650);
+        s2.setInitialHumanCount(180000000);
+        s2.setInitialCapitalPerCapita(250.0);
+        s2.setInitialEnergyPerCapita(100.0);
+        s2.setInitialFoodReserveMonths(1.5);
+        s2.setInitialInformationPerCapita(300.0);
+        s2.setPopulationDensityType("URBAN_CLUSTERS");
+        s2.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s2.setDescription("""
+            🌋 SCÉNARIO HISTORIQUE : L'Anomalie Climatique Volcanique de 536 & Choc Sanitaire
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            L'année 536 est considérée par les historiens du climat comme "la pire année de l'histoire humaine". Deux éruptions volcaniques super-massives consécutives ont injecté un voile d'aérosols stratosphériques occultant le Soleil pendant 18 mois.
+            """);
+        list.add(s2);
 
         Scenario s4 = new Scenario();
         s4.setName("Dynastie Song & Pré-Industrialisation Hydraulique (1000)");
         s4.setStartDateYear(1000);
+        s4.setEndDateYear(1279);
         s4.setInitialHumanCount(100000000);
         s4.setInitialCapitalPerCapita(600.0);
         s4.setInitialEnergyPerCapita(500.0);
@@ -1399,19 +1557,143 @@ public class ScenarioSetupPanel extends BorderPane {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             La Chine des Song a connu la première pré-industrialisation de l'histoire, avec une utilisation massive du charbon de terre pour la fonte du fer et des réseaux de transport fluviaux ultra-efficaces.
-            
-            [CONDITIONS INITIALES PHYSIQUES (T_0)]
-            • Stock Capital Physique (K₀) : 600 kg/habitant (moulins hydrauliques, hauts fourneaux charbon, jonques).
-            • Énergie Stockée (E₀) : 500 MJ/habitant (stocks de charbon de terre & bois).
-            • Réserves Alimentaires (F₀) : 8 mois (greniers d'État Song & riziculture Champa).
-            • Savoir Archivé (I₀) : 1200 bits/habitant (imprimerie typographique, papier monnaie).
             """);
         list.add(s4);
+
+        // --- SCÉNARIO : EMPIRE DU MALI (1324) ---
+        Scenario sMali = new Scenario();
+        sMali.setName("Empire du Mali & Commerce Trans-Saharien (1324)");
+        sMali.setStartDateYear(1324);
+        sMali.setEndDateYear(1591);
+        sMali.setInitialHumanCount(12000000);
+        sMali.setInitialCapitalPerCapita(250.0);
+        sMali.setInitialEnergyPerCapita(120.0);
+        sMali.setInitialFoodReserveMonths(6.0);
+        sMali.setInitialInformationPerCapita(400.0);
+        sMali.setPopulationDensityType("WEST_AFRICA_MALI");
+        sMali.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sMali.setClippingEnabled(true);
+        sMali.setMinLat(5.0); sMali.setMaxLat(25.0); sMali.setMinLng(-18.0); sMali.setMaxLng(15.0);
+        sMali.setBoundaryMode("DYNAMIC_RESERVOIR");
+        sMali.setDescription("""
+            🕌 SCÉNARIO HISTORIQUE : L'Apogée de l'Empire du Mali sous Mansa Musa (1324 ap. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise le réseau urbain et marchand trans-saharien de la boucle du Niger (Tombouctou, Gao, Djenné). Contrôle des mines d'or de Bambouk/Boure et des salines de Teghaza.
+            """);
+        list.add(sMali);
+
+        // --- SCÉNARIO : AMÉRIQUES PRÉCOLOMBIENNES (1491) ---
+        Scenario sAmericas1491 = new Scenario();
+        sAmericas1491.setName("Amériques Précolombiennes : Tawantinsuyu & Anahuac (1491)");
+        sAmericas1491.setStartDateYear(1491);
+        sAmericas1491.setEndDateYear(1650);
+        sAmericas1491.setInitialHumanCount(60000000);
+        sAmericas1491.setInitialCapitalPerCapita(220.0);
+        sAmericas1491.setInitialEnergyPerCapita(150.0);
+        sAmericas1491.setInitialFoodReserveMonths(6.0);
+        sAmericas1491.setInitialInformationPerCapita(250.0);
+        sAmericas1491.setPopulationDensityType("AMERICAS_1491");
+        sAmericas1491.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sAmericas1491.setClippingEnabled(true);
+        sAmericas1491.setMinLat(-45.0); sAmericas1491.setMaxLat(30.0); sAmericas1491.setMinLng(-110.0); sAmericas1491.setMaxLng(-35.0);
+        sAmericas1491.setBoundaryMode("DYNAMIC_RESERVOIR");
+        sAmericas1491.setDescription("""
+            🌽 SCÉNARIO HISTORIQUE : Les Amériques à la Veille du Contact (1491 ap. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise les grands empires précolombiens (Empire Inca du Tawantinsuyu, Empire Aztèque de la Triple Alliance) et les sociétés Mississippiennes avant la rupture épidémique.
+            """);
+        list.add(sAmericas1491);
+
+        // --- SCÉNARIO : CHOC DU CONTACT PRÉCOLOMBIEN (1492) ---
+        Scenario sColumbian = new Scenario();
+        sColumbian.setName("Arrivée des Européens aux Amériques & Choc Microbiens (1492)");
+        sColumbian.setStartDateYear(1492);
+        sColumbian.setEndDateYear(1650);
+        sColumbian.setInitialHumanCount(60000000);
+        sColumbian.setInitialCapitalPerCapita(250.0);
+        sColumbian.setInitialEnergyPerCapita(160.0);
+        sColumbian.setInitialFoodReserveMonths(5.0);
+        sColumbian.setInitialInformationPerCapita(300.0);
+        sColumbian.setPopulationDensityType("COLUMBIAN_CONTACT");
+        sColumbian.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sColumbian.setDescription("""
+            ⛵ SCÉNARIO HISTORIQUE : Le Choc du Contact d'Échange Colombien & Effondrement Épidémique (1492)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise l'impact bio-démographique mondial de la rencontre entre l'Ancien et le Nouveau Monde. Trajectoire de choc microbiologique (chute démographique de 80-90% du continent américain) et réorganisation commerciale transatlantique.
+            """);
+        list.add(sColumbian);
+
+        // --- SCÉNARIO : JAPON EDO & SAKOKU (1639) ---
+        Scenario sSakoku = new Scenario();
+        sSakoku.setName("Japon Tokugawa & Isolement Sakoku (1639)");
+        sSakoku.setStartDateYear(1639);
+        sSakoku.setEndDateYear(1853);
+        sSakoku.setInitialHumanCount(27000000);
+        sSakoku.setInitialCapitalPerCapita(450.0);
+        sSakoku.setInitialEnergyPerCapita(200.0);
+        sSakoku.setInitialFoodReserveMonths(8.0);
+        sSakoku.setInitialInformationPerCapita(800.0);
+        sSakoku.setPopulationDensityType("JAPAN_SAKOKU");
+        sSakoku.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sSakoku.setClippingEnabled(true);
+        sSakoku.setMinLat(30.0); sSakoku.setMaxLat(45.0); sSakoku.setMinLng(128.0); sSakoku.setMaxLng(146.0);
+        sSakoku.setBoundaryMode("DYNAMIC_RESERVOIR");
+        sSakoku.setDescription("""
+            ⛩️ SCÉNARIO HISTORIQUE : L'Ère d'Isolement Autarcique Tokugawa (Sakoku, 1639 ap. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Fermeture des frontières de l'archipel japonais décrétée par le Shogunat Tokugawa. Modélise une économie circulaire hautement autarcique, l'urbanisation géante d'Edo (Tokyo, 1 million d'habitants) et l'absence d'intrants extérieurs jusqu'à l'arrivée des bateaux noirs du Commandant Perry en 1853.
+            """);
+        list.add(sSakoku);
+
+        // --- SCÉNARIO : RÉVOLUTION INDUSTRIELLE (1800) ---
+        Scenario sIndustrial1800 = new Scenario();
+        sIndustrial1800.setName("Révolution Industrielle & Transition Charbonnière (1800)");
+        sIndustrial1800.setStartDateYear(1800);
+        sIndustrial1800.setEndDateYear(1900);
+        sIndustrial1800.setInitialHumanCount(900000000);
+        sIndustrial1800.setInitialCapitalPerCapita(1200.0);
+        sIndustrial1800.setInitialEnergyPerCapita(1500.0);
+        sIndustrial1800.setInitialFoodReserveMonths(6.0);
+        sIndustrial1800.setInitialInformationPerCapita(15000.0);
+        sIndustrial1800.setPopulationDensityType("INDUSTRIAL_1800");
+        sIndustrial1800.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sIndustrial1800.setDescription("""
+            ⚙️ SCÉNARIO HISTORIQUE : La Machine à Vapeur & L'Émergence du Charbon (1800 ap. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Basculement énergétique mondial du régime organique vers le régime minéral fossile (charbon de terre, machine à vapeur de Watt).
+            """);
+        list.add(sIndustrial1800);
+
+        // --- SCÉNARIO : ANTHROPOCÈNE (2000) ---
+        Scenario sModern2000 = new Scenario();
+        sModern2000.setName("Anthropocène & Grande Accélération Mondiale (2000)");
+        sModern2000.setStartDateYear(2000);
+        sModern2000.setEndDateYear(2100);
+        sModern2000.setInitialHumanCount(6127000000L);
+        sModern2000.setInitialCapitalPerCapita(12000.0);
+        sModern2000.setInitialEnergyPerCapita(20000.0);
+        sModern2000.setInitialFoodReserveMonths(8.0);
+        sModern2000.setInitialInformationPerCapita(2500000.0);
+        sModern2000.setPopulationDensityType("URBAN_CLUSTERS");
+        sModern2000.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sModern2000.setDescription("""
+            🌐 SCÉNARIO HISTORIQUE : L'Ère Numérique & La Grande Accélération (2000 ap. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Consolidation du système économique mondial interconnecté, essor des microprocesseurs en silicium, de l'Internet mondial et de l'urbanisation globale.
+            """);
+        list.add(sModern2000);
 
         // --- SCÉNARIOS DU FUTUR ---
         Scenario s5 = new Scenario();
         s5.setName("Business As Usual : Fossil Fuel Reliance & Warming (SSP5-8.5)");
         s5.setStartDateYear(2026);
+        s5.setEndDateYear(2100);
         s5.setInitialHumanCount(8200000000L);
         s5.setInitialCapitalPerCapita(15000.0);
         s5.setInitialEnergyPerCapita(25000.0);
@@ -1424,18 +1706,13 @@ public class ScenarioSetupPanel extends BorderPane {
             
             [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
             Poursuite de l'extraction des combustibles fossiles traditionnels sans déploiement massif de la fusion ni captage du carbone.
-            
-            [CONDITIONS INITIALES PHYSIQUES (T_0)]
-            • Stock Capital Physique (K₀) : 15 000 kg/habitant (infrastructures lourdes, réseaux, machines).
-            • Énergie Stockée (E₀) : 25 000 MJ/habitant (stocks pétroliers, gaziers & charbon).
-            • Réserves Alimentaires (F₀) : 9 mois (logistique agro-alimentaire mondiale).
-            • Savoir Archivé (I₀) : 5 000 000 bits/habitant (Internet, bibliothèques numériques, brevets).
             """);
         list.add(s5);
 
         Scenario s6 = new Scenario();
         s6.setName("Singularité Technologique, ASI & Fusion D-T (2045)");
         s6.setStartDateYear(2045);
+        s6.setEndDateYear(2100);
         s6.setInitialHumanCount(9000000000L);
         s6.setInitialCapitalPerCapita(50000.0);
         s6.setInitialEnergyPerCapita(100000.0);
@@ -1448,18 +1725,13 @@ public class ScenarioSetupPanel extends BorderPane {
             
             [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
             Franchissement du seuil d'émergence d'une Super-Intelligence Artificielle (ASI) et maîtrise industrielle de la fusion nucléaire deutérium-tritium.
-            
-            [CONDITIONS INITIALES PHYSIQUES (T_0)]
-            • Stock Capital Physique (K₀) : 50 000 kg/habitant (robotique moléculaire, fonderies orbitales).
-            • Énergie Stockée (E₀) : 100 000 MJ/habitant (fusion D-T & super-batteries).
-            • Réserves Alimentaires (F₀) : 24 mois (synthèse protéique fermée & hydroponie géante).
-            • Savoir Archivé (I₀) : 100 000 000 bits/habitant (Super-Intelligence Artificielle).
             """);
         list.add(s6);
 
         Scenario s7 = new Scenario();
         s7.setName("Hiver Nucléaire & Ombre Stratosphérique (2035)");
         s7.setStartDateYear(2035);
+        s7.setEndDateYear(2085);
         s7.setInitialHumanCount(8500000000L);
         s7.setInitialCapitalPerCapita(18000.0);
         s7.setInitialEnergyPerCapita(1500.0);
@@ -1472,18 +1744,13 @@ public class ScenarioSetupPanel extends BorderPane {
             
             [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
             Conflit nucléaire à haute intensité déclenchant d'immenses tempêtes de feu urbaines et l'injection massive de carbone suie dans la stratosphère.
-            
-            [CONDITIONS INITIALES PHYSIQUES (T_0)]
-            • Stock Capital Physique (K₀) : 18 000 kg/habitant (infrastructures modernes dégradées).
-            • Énergie Stockée (E₀) : 1 500 MJ/habitant (réseaux électriques et stocks pétroliers fragmentés).
-            • Réserves Alimentaires (F₀) : 1.5 mois (effondrement logistique et gel des cultures).
-            • Savoir Archivé (I₀) : 500 000 bits/habitant (serveurs et réseaux isolés).
             """);
         list.add(s7);
 
         Scenario s8 = new Scenario();
         s8.setName("Falaise du Phosphate Minéral & Crise N-P-K (2050)");
         s8.setStartDateYear(2050);
+        s8.setEndDateYear(2150);
         s8.setInitialHumanCount(9500000000L);
         s8.setInitialCapitalPerCapita(22000.0);
         s8.setInitialEnergyPerCapita(12000.0);
@@ -1496,18 +1763,13 @@ public class ScenarioSetupPanel extends BorderPane {
             
             [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
             Épuisement géologique complet des gisements de phosphate de roche bon marché sans transition vers un recyclage circulaire intégral.
-            
-            [CONDITIONS INITIALES PHYSIQUES (T_0)]
-            • Stock Capital Physique (K₀) : 22 000 kg/habitant (infrastructure technologique poussée).
-            • Énergie Stockée (E₀) : 12 000 MJ/habitant (transition renouvelable/nucléaire partielle).
-            • Réserves Alimentaires (F₀) : 4.0 mois (crise d'engrais NPK réduisant les récoltes de 50%).
-            • Savoir Archivé (I₀) : 2 000 000 bits/habitant (mémoire numérique mondiale).
             """);
         list.add(s8);
 
         Scenario s9 = new Scenario();
         s9.setName("Super-Éruption Volcanique Toba/Yellowstone (2060)");
         s9.setStartDateYear(2060);
+        s9.setEndDateYear(2110);
         s9.setInitialHumanCount(9800000000L);
         s9.setInitialCapitalPerCapita(25000.0);
         s9.setInitialEnergyPerCapita(20000.0);
@@ -1581,6 +1843,9 @@ public class ScenarioSetupPanel extends BorderPane {
 
             if (startYearSpinner != null && startYearSpinner.getValueFactory() != null) {
                 startYearSpinner.getValueFactory().setValue((int) s.getStartDateYear());
+            }
+            if (endYearSpinner != null && endYearSpinner.getValueFactory() != null) {
+                endYearSpinner.getValueFactory().setValue((int) s.getEndDateYear());
             }
             if (targetCohortSizeSpinner != null && targetCohortSizeSpinner.getValueFactory() != null) {
                 targetCohortSizeSpinner.getValueFactory().setValue(s.getTargetCohortSize() > 0 ? s.getTargetCohortSize() : 500);
@@ -3405,6 +3670,7 @@ public class ScenarioSetupPanel extends BorderPane {
         if (title1 != null) title1.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.general_params", "1. PARAMÈTRES GÉNÉRAUX"));
         if (title3Events != null) title3Events.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events_section", "4. ÉVÉNEMENTS PLANÉTAIRES HISTORIQUES"));
         if (startYearLabel != null) startYearLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.start_year", "Année de départ (Repère chronologique) :"));
+        if (endYearLabel != null) endYearLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.end_year", "Année de fin / Cible (Repère chronologique) :"));
         if (popCountLabel != null) popCountLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_count", "Population Initiale (1 000 à 10 000 000 000) :"));
         if (capitalLabel != null) capitalLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.capital_per_capita", "🛠️ Capital Physique Initial (K₀) (kg/hab) :"));
         if (densityPatternLabel != null) densityPatternLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.density_pattern", "Motif de Répartition :"));
@@ -3461,6 +3727,7 @@ public class ScenarioSetupPanel extends BorderPane {
             s.setDescription(scenarioDescriptionArea.getText());
         }
         s.setStartDateYear(startYearSpinner.getValue());
+        s.setEndDateYear(endYearSpinner != null && endYearSpinner.getValue() != null ? endYearSpinner.getValue() : 100);
         s.setTargetCohortSize(targetCohortSizeSpinner != null ? targetCohortSizeSpinner.getValue() : 500);
         s.setTemporalResolutionDays(temporalResolutionCombo != null && temporalResolutionCombo.getValue() != null ? temporalResolutionCombo.getValue() : 30.0);
         s.setInitialHumanCount(initialHumanCountSpinner.getValue());

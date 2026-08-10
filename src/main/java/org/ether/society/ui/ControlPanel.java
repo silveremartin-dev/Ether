@@ -72,6 +72,7 @@ public class ControlPanel extends VBox {
 
     private final Button hdScreenshotBtn;
     private final Button recordVideoBtn;
+    private final CheckBox autoRecordCheck;
     private boolean isRecordingVideo = false;
 
     private final CheckBox mode3dCheck;
@@ -125,20 +126,40 @@ public class ControlPanel extends VBox {
         stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Reculer d'une frame / tick (-1 mois)")));
         stepBackBtn.setOnAction(e -> engine.stepBackward(1));
 
+        // Auto Record Checkbox (initialized early for button handlers)
+        autoRecordCheck = new CheckBox("🎬 Auto Sync Vidéo (Lancement & Pause)");
+        autoRecordCheck.setTooltip(new Tooltip("Démarre/Arrête la vidéo 1:1 automatiquement en synchronisation avec le lancement et la pause du scénario"));
+        autoRecordCheck.setStyle("-fx-text-fill: #f87171; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+
         startBtn = new Button("▶");
         startBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
         startBtn.setStyle("-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold;");
-        startBtn.setOnAction(e -> engine.start());
+        startBtn.setOnAction(e -> {
+            if (autoRecordCheck.isSelected() && !isRecordingVideo) {
+                toggleVideoRecording();
+            }
+            engine.start();
+        });
 
         pauseBtn = new Button("⏸");
         pauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause", "Mettre en pause")));
         pauseBtn.setStyle("-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-font-weight: bold;");
-        pauseBtn.setOnAction(e -> engine.pause());
+        pauseBtn.setOnAction(e -> {
+            engine.pause();
+            if (autoRecordCheck != null && autoRecordCheck.isSelected() && isRecordingVideo) {
+                toggleVideoRecording();
+            }
+        });
 
         stopBtn = new Button("⏹");
         stopBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stop", "Arrêter")));
         stopBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;");
-        stopBtn.setOnAction(e -> engine.pause());
+        stopBtn.setOnAction(e -> {
+            engine.pause();
+            if (autoRecordCheck != null && autoRecordCheck.isSelected() && isRecordingVideo) {
+                toggleVideoRecording();
+            }
+        });
 
         stepForwardBtn = new Button(">|");
         stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer d'une frame / tick (+1 mois)")));
@@ -194,12 +215,12 @@ public class ControlPanel extends VBox {
         hdScreenshotBtn.setOnAction(e -> takeHDScreenshot());
 
         recordVideoBtn = new Button("🎥 " + I18n.getOrDefault("sim.btn.video", "Enregistrer Vidéo MP4"));
-        recordVideoBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.video", "Démarre la capture vidéo MP4 dans saves/timelapse/")));
+        recordVideoBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.video", "Démarre la capture vidéo MP4 (1:1 tick) dans saves/timelapse/")));
         recordVideoBtn.setMaxWidth(Double.MAX_VALUE);
         recordVideoBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-padding: 6 10; -fx-background-radius: 6;");
         recordVideoBtn.setOnAction(e -> toggleVideoRecording());
 
-        VBox mediaCard = new VBox(8, mediaTitle, hdScreenshotBtn, recordVideoBtn);
+        VBox mediaCard = new VBox(8, mediaTitle, hdScreenshotBtn, recordVideoBtn, autoRecordCheck);
         styleCard(mediaCard);
 
         // --- 4. DISPLAY & VISUAL LAYERS (CASES À COCHER) ---

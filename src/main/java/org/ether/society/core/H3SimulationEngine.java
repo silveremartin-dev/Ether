@@ -43,6 +43,7 @@ public class H3SimulationEngine implements ISimulationEngine {
     private final GameSaveManager gameSaveManager;
 
     // DOD Layer
+    private final org.ether.society.core.profiling.SimulationProfiler profiler = new org.ether.society.core.profiling.SimulationProfiler();
     private org.ether.society.core.dod.WorldBuffer worldBuffer;
     private org.ether.society.core.dod.AgentBuffer agentBuffer;
     private org.ether.society.flux.FluxEngine fluxEngine;
@@ -317,84 +318,116 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.onTickCallback = callback;
     }
 
+    public org.ether.society.core.profiling.SimulationProfiler getProfiler() {
+        return profiler;
+    }
+
     private int tickCounter = 0;
+
+    public long getTickCounter() {
+        return tickCounter;
+    }
 
     private void tick() {
         if (!running.get()) return;
 
-        long now = System.nanoTime();
+        long tickStartNanos = System.nanoTime();
         if (lastTickTime != 0) {
-            double diff = (now - lastTickTime) / 1_000_000_000.0;
+            double diff = (tickStartNanos - lastTickTime) / 1_000_000_000.0;
             if (diff > 0) {
                 double instantTPS = 1.0 / diff;
                 currentTPS = (currentTPS <= 0) ? instantTPS : (currentTPS * 0.90 + instantTPS * 0.10);
             }
         }
-        lastTickTime = now;
+        lastTickTime = tickStartNanos;
 
         try {
             final float DT_FAST = 86400f; 
             final int SLOW_FACTOR = 30;
 
             // 1. FAST SCALE DYNAMICS
+            profiler.beginPhase("1_FastScaleFlux");
             fluxEngine.tick(worldBuffer, DT_FAST);
             politicalEngine.tick(cells);
+            profiler.endPhase("1_FastScaleFlux");
 
             // 2. SLOW SCALE PHYSICALIST DYNAMICS
             if (tickCounter % SLOW_FACTOR == 0) {
                 timeManager.advanceMonth();
+                if (currentScenario != null && timeManager.getCurrentYear() >= currentScenario.getEndDateYear()) {
+                    logger.info("🏁 Simulation reached scenario target end date (Year {}). Auto-pausing.", currentScenario.getEndDateYear());
+                    pause();
+                    return;
+                }
                 int month = timeManager.getCurrentMonth();
                 float dtSlow = DT_FAST * SLOW_FACTOR;
 
+                profiler.beginPhase("2_ClimateAndEnvironment");
                 climateSystem.updateClimate(cells, month);
                 syncClimateToBuffer();
                 environmentalKernel.tick(worldBuffer, month, dtSlow);
+                profiler.endPhase("2_ClimateAndEnvironment");
 
+                profiler.beginPhase("3_DemographicsAndCulture");
                 demographicKernel.tick(worldBuffer, agentBuffer, dtSlow);
                 urbanKernel.tick(worldBuffer, dtSlow);
                 cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
+                profiler.endPhase("3_DemographicsAndCulture");
 
-                // --- GROUNDED PHYSICAL & CLIODYNAMIC ENGINES ---
+                profiler.beginPhase("4_ProceduralEngines");
                 double avgTech = getAverageTechnology();
 
-                // Step 1: Solar/Wind Radiance & Atmosphere
-                org.ether.society.procedural.RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(cells);
-                org.ether.society.procedural.AtmosphericOxygenEngine.processAtmosphericOxygen(cells, 0.21, 1.0);
-                org.ether.society.procedural.WetBulbTemperatureEngine.processWetBulbHyperthermia(cells);
-                org.ether.society.procedural.AlbedoClimateEngine.processAlbedoFeedback(cells);
+                // Multi-threaded Parallel Execution of Procedural Engine Steps
+                java.util.concurrent.CompletableFuture<Void> step1 = java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    org.ether.society.procedural.RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(cells);
+                    org.ether.society.procedural.AtmosphericOxygenEngine.processAtmosphericOxygen(cells, 0.21, 1.0);
+                    org.ether.society.procedural.WetBulbTemperatureEngine.processWetBulbHyperthermia(cells);
+                    org.ether.society.procedural.AlbedoClimateEngine.processAlbedoFeedback(cells);
+                });
 
-                // Step 2: Soil Nutrients, Aquifer & Erosion
-                org.ether.society.procedural.SoilNutrientNPKEngine.processSoilNutrients(cells);
-                org.ether.society.procedural.DeforestationErosionEngine.processDeforestationErosion(cells);
-                org.ether.society.procedural.AquiferDepletionEngine.processAquiferDepletion(cells);
-                org.ether.society.procedural.EcologicalDegradationEngine.processEcologicalDegradation(cells, avgTech);
+                java.util.concurrent.CompletableFuture<Void> step2 = java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    org.ether.society.procedural.SoilNutrientNPKEngine.processSoilNutrients(cells);
+                    org.ether.society.procedural.DeforestationErosionEngine.processDeforestationErosion(cells);
+                    org.ether.society.procedural.AquiferDepletionEngine.processAquiferDepletion(cells);
+                    org.ether.society.procedural.EcologicalDegradationEngine.processEcologicalDegradation(cells, avgTech);
+                });
 
-                // Step 3: Demographics & Bio-molecular Epidemiology
-                org.ether.society.procedural.BiologicalDemographicsEngine.processBiologicalDemographics(cells);
-                org.ether.society.procedural.BioMolecularEpidemiologyEngine.processBioMolecularImmunity(cells);
-                org.ether.society.procedural.EcotoxicologyFertilityEngine.processEcotoxicologyFertility(cells);
+                java.util.concurrent.CompletableFuture<Void> step3 = java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    org.ether.society.procedural.BiologicalDemographicsEngine.processBiologicalDemographics(cells);
+                    org.ether.society.procedural.BioMolecularEpidemiologyEngine.processBioMolecularImmunity(cells);
+                    org.ether.society.procedural.EcotoxicologyFertilityEngine.processEcotoxicologyFertility(cells);
+                });
 
-                // Step 4: EROEI, Energy Conversion & Metallurgy Enthalpy
-                org.ether.society.procedural.PhysicalEnergyGridEngine.processPhysicalEnergyGrid(cells);
-                org.ether.society.procedural.NetEnergyEROEIEngine.processNetEnergyEROEI(cells);
-                org.ether.society.procedural.MetallurgyEnthalpyEngine.processOreSmelting(cells);
-                org.ether.society.procedural.ResourceRecyclingEngine.processResourceRecycling(cells);
-                org.ether.society.procedural.NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(cells);
-                org.ether.society.procedural.OzoneLayerDepletionEngine.processOzoneLayerDepletion(cells);
+                java.util.concurrent.CompletableFuture<Void> step4 = java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    org.ether.society.procedural.PhysicalEnergyGridEngine.processPhysicalEnergyGrid(cells);
+                    org.ether.society.procedural.NetEnergyEROEIEngine.processNetEnergyEROEI(cells);
+                    org.ether.society.procedural.MetallurgyEnthalpyEngine.processOreSmelting(cells);
+                    org.ether.society.procedural.ResourceRecyclingEngine.processResourceRecycling(cells);
+                    org.ether.society.procedural.NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(cells);
+                    org.ether.society.procedural.OzoneLayerDepletionEngine.processOzoneLayerDepletion(cells);
+                });
 
-                // Step 5: Mechanical Transport Work & Kinetic Warfare
-                org.ether.society.procedural.PhysicsTransportEngine.processPhysicsTransport(cells);
-                org.ether.society.procedural.ThermodynamicWarfareEngine.processKineticWarfare(cells);
-                org.ether.society.procedural.NuclearWarfareClimateEngine.processNuclearWarfareClimate(cells);
-                org.ether.society.procedural.InfrastructureEnergyEngine.processInfrastructureEnergy(cells);
-                org.ether.society.procedural.ThermodynamicMigrationEngine.processThermodynamicMigration(cells);
+                // Await completion of parallel environmental, energy, & biological steps
+                java.util.concurrent.CompletableFuture.allOf(step1, step2, step3, step4).join();
 
-                // Step 6: Shannon Information Capacity & Evolution
-                org.ether.society.procedural.InformationEntropyEngine.processInformationEntropy(cells);
-                org.ether.society.procedural.MegafaunaEcosystemEngine.processMegafaunaEcosystem(cells);
-                org.ether.society.procedural.SelectiveBreedingEngine.processSelectiveBreeding(cells);
-                org.ether.society.procedural.TechnologicalSingularityEngine.processTechnologicalSingularity(cells);
-                org.ether.society.procedural.TechTreeEngine.processTechnologyDiffusion(cells, null);
+                // Step 5 & 6: Transport, Warfare & Information Evolution (Parallel Batch)
+                java.util.concurrent.CompletableFuture<Void> step5 = java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    org.ether.society.procedural.PhysicsTransportEngine.processPhysicsTransport(cells);
+                    org.ether.society.procedural.ThermodynamicWarfareEngine.processKineticWarfare(cells);
+                    org.ether.society.procedural.NuclearWarfareClimateEngine.processNuclearWarfareClimate(cells);
+                    org.ether.society.procedural.InfrastructureEnergyEngine.processInfrastructureEnergy(cells);
+                    org.ether.society.procedural.ThermodynamicMigrationEngine.processThermodynamicMigration(cells);
+                });
+
+                java.util.concurrent.CompletableFuture<Void> step6 = java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    org.ether.society.procedural.InformationEntropyEngine.processInformationEntropy(cells);
+                    org.ether.society.procedural.MegafaunaEcosystemEngine.processMegafaunaEcosystem(cells);
+                    org.ether.society.procedural.SelectiveBreedingEngine.processSelectiveBreeding(cells);
+                    org.ether.society.procedural.TechnologicalSingularityEngine.processTechnologicalSingularity(cells);
+                    org.ether.society.procedural.TechTreeEngine.processTechnologyDiffusion(cells, null);
+                });
+
+                java.util.concurrent.CompletableFuture.allOf(step5, step6).join();
 
                 // Step 7: Advanced Physicalist & Cliodynamic Extensions
                 org.ether.society.procedural.TerraformingEngine.processTerraforming(cells, 1.0);
@@ -415,8 +448,10 @@ public class H3SimulationEngine implements ISimulationEngine {
                 org.ether.society.procedural.PhysicalLeontiefInputOutputEngine.processLeontiefInputOutput(cells, 1.0);
                 org.ether.society.procedural.GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(cells, 1.0);
                 org.ether.society.procedural.ProceduralEngineRegistry.processPlugins(cells, 1.0);
+                profiler.endPhase("4_ProceduralEngines");
 
-                // Statistics
+                // Statistics & Snapshots
+                profiler.beginPhase("5_StatisticsAndHistory");
                 currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
                 densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
                 currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital());
@@ -427,8 +462,11 @@ public class H3SimulationEngine implements ISimulationEngine {
                 historyManager.captureWorldSnapshot(this);
                 eventSystem.checkEvents(timeManager.getCurrentYear(), timeManager.getCurrentMonth(), getTotalPopulation(), getTotalFood(), cells);
                 eventSystem.checkCellEvents(timeManager.getCurrentYear(), timeManager.getCurrentMonth(), cells);
+                profiler.endPhase("5_StatisticsAndHistory");
 
+                profiler.beginPhase("6_BufferSync");
                 syncBufferToCells();
+                profiler.endPhase("6_BufferSync");
             }
 
             // Every 60 Ticks: trigger rolling checkpoint auto-save
@@ -439,9 +477,15 @@ public class H3SimulationEngine implements ISimulationEngine {
             agentManager.update();
             tickCounter++;
 
+            long tickDuration = System.nanoTime() - tickStartNanos;
+
+            long renderStartNanos = System.nanoTime();
             if (onTickCallback != null) {
                 onTickCallback.run();
             }
+            long renderDuration = System.nanoTime() - renderStartNanos;
+
+            profiler.recordTick(tickDuration, renderDuration);
 
         } catch (Exception e) {
             logger.error("Error during simulation tick", e);

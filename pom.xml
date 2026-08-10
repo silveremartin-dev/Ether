@@ -293,7 +293,12 @@
                 <version>3.1.0</version>
                 <configuration>
                     <mainClass>org.ether.society.Main</mainClass>
-                    <commandlineArgs>--add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED</commandlineArgs>
+                    <commandlineArgs>--headless --ticks 300</commandlineArgs>
+                    <cleanupDaemonThreads>false</cleanupDaemonThreads>
+                    <arguments>
+                        <argument>--add-modules</argument>
+                        <argument>jdk.incubator.vector</argument>
+                    </arguments>
                 </configuration>
             </plugin>
 

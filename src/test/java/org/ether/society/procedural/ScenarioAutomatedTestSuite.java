@@ -213,8 +213,20 @@ public class ScenarioAutomatedTestSuite {
     public void testFullBuiltInScenarioBattery() {
         List<Scenario> builtInScenarios = List.of(
                 createScenario("Out of Africa", -100000, 50_000L, "ONE_CONTINENT"),
+                createScenario("Sahul Dispersal", -50000, 30_000L, "AUSTRALIA_SAHUL"),
+                createScenario("Beringia Peopling", -25000, 15_000L, "BERINGIA_AMERICAS"),
+                createScenario("Younger Dryas", -10900, 40_000L, "YOUNGER_DRYAS"),
                 createScenario("Fertile Crescent", -8000, 25_000L, "FERTILE_CRESCENT"),
+                createScenario("Green Sahara", -6000, 60_000L, "GREEN_SAHARA"),
+                createScenario("Ancient Egypt", -3000, 1_500_000L, "EGYPT_NILE"),
+                createScenario("Mesopotamia Assyria", -2000, 500_000L, "MESOPOTAMIA_ASSYRIA"),
+                createScenario("Mesoamerica Olmec Maya", -1500, 3_000_000L, "MESOAMERICA"),
+                createScenario("Roman Empire", 0, 55_000_000L, "ROMAN_EMPIRE"),
+                createScenario("Late Antique LIA", 536, 180_000_000L, "URBAN_CLUSTERS"),
                 createScenario("Song Dynasty", 1000, 100_000_000L, "RIVER_VALLEYS"),
+                createScenario("Americas 1491", 1491, 60_000_000L, "AMERICAS_1491"),
+                createScenario("Industrial Revolution", 1800, 900_000_000L, "INDUSTRIAL_1800"),
+                createScenario("Modern 2000", 2000, 6_127_000_000L, "URBAN_CLUSTERS"),
                 createScenario("Business As Usual", 2026, 8_200_000_000L, "URBAN_CLUSTERS"),
                 createScenario("Singularity", 2045, 9_000_000_000L, "URBAN_CLUSTERS"),
                 createScenario("Nuclear Winter", 2035, 8_500_000_000L, "URBAN_CLUSTERS")

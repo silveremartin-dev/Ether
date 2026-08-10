@@ -5,6 +5,7 @@
 package org.ether.society.ui;
 
 import org.ether.society.core.H3SimulationEngine;
+import org.ether.society.core.dod.PluggableStatEngine;
 import org.ether.society.i18n.I18n;
 
 import javafx.application.Platform;
@@ -49,6 +50,14 @@ public class StatsPanel extends VBox {
 
     // Metric Labels Registry
     private final Map<String, MetricCard> metricCards = new LinkedHashMap<>();
+
+    // Pluggable Formula & Variance Analytics Engine
+    private final PluggableStatEngine pluggableStatEngine = new PluggableStatEngine();
+    private final VarianceDistributionPanel variancePanel;
+    private final SpatialHeatmapPanel spatialHeatmapPanel = new SpatialHeatmapPanel();
+    private boolean isLiveCollectionActive = true;
+    private int samplingIntervalTicks = 1;
+    private long tickCounter = 0;
 
     // Container for metric sections
     private final VBox metricsContainer;
@@ -116,6 +125,7 @@ public class StatsPanel extends VBox {
 
     public StatsPanel(H3SimulationEngine engine) {
         this.engine = engine;
+        this.variancePanel = new VarianceDistributionPanel(pluggableStatEngine);
 
         setPadding(new Insets(12));
         setSpacing(12);
@@ -126,7 +136,46 @@ public class StatsPanel extends VBox {
         Label headerTitle = new Label("📊 TABLEAU DE BORD DES STATISTIQUES & CLIODYNAMIQUE");
         headerTitle.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #ffd700;");
 
-        VBox topControlsBox = new VBox(6, headerTitle);
+        ToggleButton btnLiveCollection = new ToggleButton("⚡ Collecte Stats : ACTIF");
+        btnLiveCollection.setSelected(true);
+        btnLiveCollection.setTooltip(new Tooltip("Activer/Désactiver le calcul dynamique des statistiques en arrière-plan pour économiser du processeur."));
+        btnLiveCollection.setStyle("-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;");
+        btnLiveCollection.setOnAction(e -> {
+            isLiveCollectionActive = btnLiveCollection.isSelected();
+            btnLiveCollection.setText(isLiveCollectionActive ? "⚡ Collecte Stats : ACTIF" : "⏸️ Collecte Stats : EN PAUSE");
+            btnLiveCollection.setStyle(isLiveCollectionActive
+                    ? "-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;"
+                    : "-fx-background-color: #64748b; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;");
+        });
+
+        ComboBox<String> samplingCombo = new ComboBox<>();
+        samplingCombo.getItems().addAll("1 Tick (Chaque Cycle)", "5 Ticks", "20 Ticks (~1 Secondes)", "100 Ticks (~5 Secondes)");
+        samplingCombo.setValue("1 Tick (Chaque Cycle)");
+        samplingCombo.setStyle("-fx-font-size: 10px;");
+        samplingCombo.setTooltip(new Tooltip("Cadence d'échantillonnage et d'actualisation des métriques."));
+        samplingCombo.setOnAction(e -> {
+            int idx = samplingCombo.getSelectionModel().getSelectedIndex();
+            samplingIntervalTicks = switch (idx) {
+                case 1 -> 5;
+                case 2 -> 20;
+                case 3 -> 100;
+                default -> 1;
+            };
+        });
+
+        Button btnFormulaEditor = new Button("🧮 Éditeur de Formules & Variables");
+        btnFormulaEditor.setTooltip(new Tooltip("Ouvrir l'éditeur interactif de formules pluggables (SUM, AVG, MEDIAN, VAR, STDDEV, GINI, custom expressions)."));
+        btnFormulaEditor.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;");
+        btnFormulaEditor.setOnAction(e -> {
+            PluggableFormulaEditorDialog dlg = new PluggableFormulaEditorDialog(pluggableStatEngine, engine != null ? engine.getCells() : null);
+            dlg.showAndWait();
+            update();
+        });
+
+        HBox perfToolbar = new HBox(8, btnLiveCollection, samplingCombo, btnFormulaEditor);
+        perfToolbar.setAlignment(Pos.CENTER_LEFT);
+
+        VBox topControlsBox = new VBox(6, headerTitle, perfToolbar);
         topControlsBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
 
         // --- SECTION 1: GRAPH SELECTION & TIME SERIES ---
@@ -215,12 +264,36 @@ public class StatsPanel extends VBox {
         yAxis.setForceZeroInRange(false);
 
         lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setTitle("Courbe d'Évolution Temporelle");
+        lineChart.setTitle("Courbe d'Évolution Temporelle (🔍 Zoom Molette / Pan Glissé)");
         lineChart.setCreateSymbols(false);
         lineChart.setAnimated(false);
         lineChart.setLegendVisible(false);
         lineChart.setPrefHeight(160);
         lineChart.getData().add(chartSeries);
+
+        // Interactive Mouse Zoom (Scroll Wheel) & Pan (Drag)
+        final double[] dragAnchor = new double[2];
+        lineChart.setOnMousePressed(e -> {
+            dragAnchor[0] = e.getX();
+            dragAnchor[1] = e.getY();
+        });
+        lineChart.setOnMouseDragged(e -> {
+            if (xAxis.isAutoRanging()) xAxis.setAutoRanging(false);
+            double dx = e.getX() - dragAnchor[0];
+            dragAnchor[0] = e.getX();
+            double range = xAxis.getUpperBound() - xAxis.getLowerBound();
+            double shift = (dx / Math.max(1.0, lineChart.getWidth())) * range;
+            xAxis.setLowerBound(xAxis.getLowerBound() - shift);
+            xAxis.setUpperBound(xAxis.getUpperBound() - shift);
+        });
+        lineChart.setOnScroll(e -> {
+            if (xAxis.isAutoRanging()) xAxis.setAutoRanging(false);
+            double zoomFactor = e.getDeltaY() > 0 ? 0.85 : 1.15;
+            double center = (xAxis.getLowerBound() + xAxis.getUpperBound()) / 2.0;
+            double halfSpan = Math.max(1.0, ((xAxis.getUpperBound() - xAxis.getLowerBound()) / 2.0) * zoomFactor);
+            xAxis.setLowerBound(center - halfSpan);
+            xAxis.setUpperBound(center + halfSpan);
+        });
 
         VBox chartBox = new VBox(6, chartHeaderLabel, comboLabel, chartMetricCombo, windowBox, lineChart);
         chartBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
@@ -303,9 +376,7 @@ public class StatsPanel extends VBox {
         }
         chartMetricCombo.setValue("Population Humaine");
 
-        buildMetricsList();
-
-        getChildren().addAll(topControlsBox, chartBox, barBox, cardsControlBox, metricsContainer);
+        getChildren().addAll(topControlsBox, chartBox, barBox, spatialHeatmapPanel, variancePanel, cardsControlBox, metricsContainer);
     }
 
     private void setTimeWindow(int window) {
@@ -453,7 +524,9 @@ public class StatsPanel extends VBox {
     }
 
     public void update() {
-        if (engine == null) return;
+        if (engine == null || !isLiveCollectionActive) return;
+        tickCounter++;
+        if (tickCounter % samplingIntervalTicks != 0) return;
 
         // Extract values from engine
         long pop = engine.getTotalPopulation();
@@ -522,6 +595,9 @@ public class StatsPanel extends VBox {
         int year = engine.getTimeManager().getCurrentYear();
 
         Platform.runLater(() -> {
+            spatialHeatmapPanel.setHistoryManager(engine.getHistoryManager());
+            spatialHeatmapPanel.updateCells(engine.getCells());
+
             // Update cards
             setCardVal("energyCaptured", String.format("%,.1f", energyCap), energyCap / 100000.0);
             setCardVal("resourceDepletion", String.format("%.1f", resDep), resDep / 100.0);
@@ -683,6 +759,9 @@ public class StatsPanel extends VBox {
                 barSeries.getData().add(new XYChart.Data<>("Jeunes (<15ans)", pyramid[0]));
                 barSeries.getData().add(new XYChart.Data<>("Adultes (15-60ans)", pyramid[1]));
                 barSeries.getData().add(new XYChart.Data<>("Aînés (>60ans)", pyramid[2]));
+
+                // Update Variance & Distribution Panel
+                variancePanel.updateData(engine.getCells());
             }
         });
     }
