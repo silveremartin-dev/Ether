@@ -237,13 +237,13 @@ public class ControlPanel extends VBox {
         reliefLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px;");
         reliefLabel.setDisable(true);
 
-        reliefSlider = new Slider(1.0, 50.0, 25.0);
+        reliefSlider = new Slider(0.0, 50.0, 25.0);
         reliefSlider.setBlockIncrement(5.0);
         reliefSlider.setMajorTickUnit(15.0);
         reliefSlider.setMinorTickCount(2);
         reliefSlider.setShowTickMarks(true);
         reliefSlider.setShowTickLabels(false);
-        reliefSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.relief3d", "Ajuste la hauteur du relief topographique en mode Globe 3D")));
+        reliefSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.relief3d", "Ajuste la hauteur du relief topographique en mode Globe 3D (0.0x à 50x)")));
         reliefSlider.setDisable(true);
         reliefSlider.valueProperty().addListener((obs, oldV, newV) -> {
             double val = newV.doubleValue();
@@ -290,6 +290,16 @@ public class ControlPanel extends VBox {
             }
         });
 
+        CheckBox smoothMapCheck = new CheckBox(I18n.getOrDefault("sim.layer.smoothmap", "🎨 Carte Lissée (Continuous Heatmap)"));
+        smoothMapCheck.setSelected(false);
+        smoothMapCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.smoothmap", "Affiche une carte continue avec dégradés fluides au lieu d'hexagones individuels")));
+        smoothMapCheck.setStyle("-fx-text-fill: #34d399; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        smoothMapCheck.setOnAction(e -> {
+            if (mapCanvas != null) {
+                mapCanvas.setSmoothMap(smoothMapCheck.isSelected());
+            }
+        });
+
         Label layerComboLabel = new Label(I18n.getOrDefault("sim.layer.datacategory", "Couche Donnée Active :"));
         layerComboLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px;");
 
@@ -324,7 +334,7 @@ public class ControlPanel extends VBox {
             }
         });
 
-        VBox layersVBox = new VBox(6, mode3dCheck, reliefLabel, reliefSlider, autoRotateCheck, contourCheck, hexGridCheck, layerComboLabel, displayModeCombo);
+        VBox layersVBox = new VBox(6, mode3dCheck, reliefLabel, reliefSlider, autoRotateCheck, contourCheck, hexGridCheck, smoothMapCheck, layerComboLabel, displayModeCombo);
 
         VBox viewCard = new VBox(8, viewTitle, layersVBox);
         styleCard(viewCard);

@@ -71,16 +71,35 @@ public class SvgMapIngestor {
     }
 
     /**
-     * Attempts to ingest an embedded SVG file for a given scenario type.
-     * Looks in classpath: /maps/svg/{scenarioType_lowercase}.svg
+     * Ingests SVG maps for a given scenario.
+     * Searches external filesystem directory 'data/maps/svg/' first, then falls back to classpath.
      */
     public static SvgIngestionResult ingestForScenario(String scenarioType) {
         if (scenarioType == null || scenarioType.isBlank()) return null;
 
-        String resourcePath = "/maps/svg/" + scenarioType.toLowerCase(Locale.ROOT) + ".svg";
+        String fileName = scenarioType.toLowerCase(Locale.ROOT) + ".svg";
+        List<java.io.File> searchFiles = List.of(
+            new java.io.File("data/maps/svg/" + fileName),
+            new java.io.File("user_data/maps/svg/" + fileName),
+            new java.io.File("../data/maps/svg/" + fileName)
+        );
+
+        for (java.io.File file : searchFiles) {
+            if (file.exists() && file.isFile()) {
+                try (InputStream is = new java.io.FileInputStream(file)) {
+                    logger.info("Ingesting external SVG cartographic asset for scenario '{}': {}", scenarioType, file.getAbsolutePath());
+                    return ingestSvg(is);
+                } catch (Exception e) {
+                    logger.warn("Failed to read external SVG file '{}': {}", file.getAbsolutePath(), e.getMessage());
+                }
+            }
+        }
+
+        // Search classpath fallback
+        String resourcePath = "/maps/svg/" + fileName;
         try (InputStream is = SvgMapIngestor.class.getResourceAsStream(resourcePath)) {
             if (is != null) {
-                logger.info("Ingesting embedded SVG cartographic asset for scenario '{}': {}", scenarioType, resourcePath);
+                logger.info("Ingesting classpath SVG cartographic asset for scenario '{}': {}", scenarioType, resourcePath);
                 return ingestSvg(is);
             }
         } catch (Exception e) {
@@ -88,32 +107,43 @@ public class SvgMapIngestor {
         }
 
         // Try fallback default map names if specific name not found
-        String fallbackPath = getFallbackSvgPath(scenarioType);
-        if (fallbackPath != null) {
-            try (InputStream is = SvgMapIngestor.class.getResourceAsStream(fallbackPath)) {
+        String fallbackFileName = getFallbackSvgFileName(scenarioType);
+        if (fallbackFileName != null) {
+            java.io.File fallbackFile = new java.io.File("data/maps/svg/" + fallbackFileName);
+            if (fallbackFile.exists() && fallbackFile.isFile()) {
+                try (InputStream is = new java.io.FileInputStream(fallbackFile)) {
+                    logger.info("Ingesting external fallback SVG cartographic asset for scenario '{}': {}", scenarioType, fallbackFile.getAbsolutePath());
+                    return ingestSvg(is);
+                } catch (Exception e) {
+                    logger.warn("Failed to read fallback SVG file '{}': {}", fallbackFile.getAbsolutePath(), e.getMessage());
+                }
+            }
+
+            String fallbackResourcePath = "/maps/svg/" + fallbackFileName;
+            try (InputStream is = SvgMapIngestor.class.getResourceAsStream(fallbackResourcePath)) {
                 if (is != null) {
-                    logger.info("Ingesting fallback SVG cartographic asset for scenario '{}': {}", scenarioType, fallbackPath);
+                    logger.info("Ingesting classpath fallback SVG cartographic asset for scenario '{}': {}", scenarioType, fallbackResourcePath);
                     return ingestSvg(is);
                 }
             } catch (Exception e) {
-                logger.warn("Failed to load fallback SVG resource '{}': {}", fallbackPath, e.getMessage());
+                logger.warn("Failed to load fallback SVG resource '{}': {}", fallbackResourcePath, e.getMessage());
             }
         }
 
         return null;
     }
 
-    private static String getFallbackSvgPath(String scenarioType) {
+    private static String getFallbackSvgFileName(String scenarioType) {
         String typeUpper = scenarioType.toUpperCase(Locale.ROOT);
-        if (typeUpper.contains("ROMAN")) return "/maps/svg/roman_empire_0.svg";
-        if (typeUpper.contains("MALI")) return "/maps/svg/mali_empire_1324.svg";
-        if (typeUpper.contains("SONG")) return "/maps/svg/song_dynasty_1000.svg";
-        if (typeUpper.contains("FERTILE") || typeUpper.contains("MESOPOTAMIA")) return "/maps/svg/fertile_crescent_8000bc.svg";
-        if (typeUpper.contains("AMERICA")) return "/maps/svg/americas_1491.svg";
-        if (typeUpper.contains("AFRICA") || typeUpper.contains("CONTINENT")) return "/maps/svg/out_of_africa_100k.svg";
-        if (typeUpper.contains("JAPAN") || typeUpper.contains("SAKOKU")) return "/maps/svg/japan_sakoku_1639.svg";
-        if (typeUpper.contains("INDUSTRIAL")) return "/maps/svg/industrial_1800.svg";
-        if (typeUpper.contains("URBAN") || typeUpper.contains("MODERN") || typeUpper.contains("SSP5")) return "/maps/svg/anthropocene_2000.svg";
+        if (typeUpper.contains("ROMAN")) return "roman_empire_0.svg";
+        if (typeUpper.contains("MALI")) return "mali_empire_1324.svg";
+        if (typeUpper.contains("SONG")) return "song_dynasty_1000.svg";
+        if (typeUpper.contains("FERTILE") || typeUpper.contains("MESOPOTAMIA")) return "fertile_crescent_8000bc.svg";
+        if (typeUpper.contains("AMERICA")) return "americas_1491.svg";
+        if (typeUpper.contains("AFRICA") || typeUpper.contains("CONTINENT")) return "out_of_africa_100k.svg";
+        if (typeUpper.contains("JAPAN") || typeUpper.contains("SAKOKU")) return "japan_sakoku_1639.svg";
+        if (typeUpper.contains("INDUSTRIAL")) return "industrial_1800.svg";
+        if (typeUpper.contains("URBAN") || typeUpper.contains("MODERN") || typeUpper.contains("SSP5")) return "anthropocene_2000.svg";
         return null;
     }
 

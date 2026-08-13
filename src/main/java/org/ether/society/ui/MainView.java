@@ -142,11 +142,15 @@ public class MainView extends StackPane {
 
         // Tab selection change listener
         tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
-            if (oldTab == simulationTab && newTab != simulationTab) {
-                logger.info("Auto-pausing simulation due to tab switch");
+            boolean isSim = (newTab == simulationTab);
+            if (mapCanvas != null) {
+                mapCanvas.setTabVisible(isSim);
+            }
+            if (oldTab == simulationTab && !isSim) {
+                logger.info("Auto-pausing simulation and halting 2D/3D map rendering due to tab switch");
                 engine.pause();
             }
-            if (newTab == simulationTab) {
+            if (isSim) {
                 if (mapCanvas != null) {
                     mapCanvas.resetView();
                 }

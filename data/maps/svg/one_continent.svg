@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2001/XMLSchema-instance" viewBox="0 0 1024 512" width="1024" height="512">
+  <g id="sovereignty_layer" data-layer="SOVEREIGNTY">
+    <!-- Pan-African Homo Sapiens Territory (-100k BP) -->
+    <path id="polity_homo_sapiens" fill="#10B981" data-density="0.85" d="M 470 160 L 530 160 L 650 200 L 655 270 L 610 355 L 560 355 L 500 250 L 460 210 Z" />
+    <!-- Eurasian Neanderthal Territory (-100k BP) -->
+    <path id="polity_neanderthal" fill="#3B82F6" data-density="0.65" d="M 480 90 L 620 90 L 710 110 L 680 165 L 610 165 L 510 140 Z" />
+    <!-- Denisovan / Asian Hominid Territory (-100k BP) -->
+    <path id="polity_denisova" fill="#F59E0B" data-density="0.55" d="M 680 85 L 850 85 L 865 225 L 750 225 L 690 140 Z" />
+  </g>
+
+  <g id="isogloss_layer" data-layer="ISOGLOSS">
+    <!-- Proto-Sapiens Vocalization / Symbolic System (Pan-African) -->
+    <path id="isogloss_proto_sapiens" fill="#10B981" d="M 470 160 L 655 200 L 610 355 L 460 210 Z" />
+    <!-- Neanderthal Acoustic System (Mousterian / Western Eurasia) -->
+    <path id="isogloss_neanderthal" fill="#3B82F6" d="M 480 90 L 710 110 L 610 165 Z" />
+    <!-- Denisovan / Archaic Asian Acoustic System -->
+    <path id="isogloss_denisova" fill="#F59E0B" d="M 680 85 L 850 85 L 750 225 Z" />
+    <!-- Levant Contact Hybridization Zone -->
+    <circle id="isogloss_levant_hybrid" cx="611" cy="165" r="25" fill="#EC4899" />
+  </g>
+
+  <g id="kinship_layer" data-layer="KINSHIP">
+    <!-- Pan-African Sapiens Matrilineal / Hunter-Gatherer Bands -->
+    <path id="kinship_sapiens_clans" fill="#059669" d="M 470 160 L 655 200 L 610 355 L 460 210 Z" />
+    <!-- Neanderthal Small Family Groups (Patrilocal) -->
+    <path id="kinship_neanderthal_bands" fill="#2563EB" d="M 480 90 L 710 110 L 610 165 Z" />
+    <!-- Denisovan High-Altitude Lineages -->
+    <path id="kinship_denisova_clans" fill="#D97706" d="M 680 85 L 850 85 L 750 225 Z" />
+  </g>
+
+  <g id="rituals_layer" data-layer="RITUALS">
+    <!-- Jebel Irhoud Pigment & Burial Site (North Africa) -->
+    <circle id="ritual_jebel_irhoud" cx="486" cy="167" r="18" fill="#10B981" />
+    <!-- Omo Kibish / Rift Valley Cradle (East Africa) -->
+    <circle id="ritual_omo_kibish" cx="614" cy="244" r="22" fill="#10B981" />
+    <!-- Pinnacle Point / Blombos Pigment Workshop (South Africa) -->
+    <circle id="ritual_blombos" cx="580" cy="352" r="20" fill="#10B981" />
+    <!-- Shanidar Flower Burial / Neanderthal Site (Zagros) -->
+    <circle id="ritual_shanidar" cx="637" cy="153" r="18" fill="#3B82F6" />
+    <!-- Denisova Cave / Altai Hybridization Site (Siberia) -->
+    <circle id="ritual_denisova_cave" cx="750" cy="111" r="22" fill="#EC4899" />
+  </g>
+
+  <g id="density_layer" data-layer="DENSITY">
+    <!-- Pan-African Sapiens Core Density -->
+    <path id="density_sapiens_core" fill="#FFFFFF" data-density="0.9" d="M 490 170 L 640 210 L 600 340 L 480 220 Z" />
+    <!-- Neanderthal European Core Density -->
+    <path id="density_neanderthal_core" fill="#CCCCCC" data-density="0.7" d="M 500 100 L 680 115 L 600 155 Z" />
+    <!-- Denisovan Asian Core Density -->
+    <path id="density_denisova_core" fill="#AAAAAA" data-density="0.6" d="M 700 95 L 830 95 L 760 210 Z" />
+  </g>
+</svg>

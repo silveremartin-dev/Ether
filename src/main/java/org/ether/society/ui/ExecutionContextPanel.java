@@ -21,21 +21,25 @@ import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.Random;
 import java.util.prefs.Preferences;
+import java.util.stream.IntStream;
 
 /**
- * Execution Context &amp; Infrastructure UI Panel.
+ * Execution Context & Infrastructure UI Panel.
  * Manages compute hardware acceleration (CPU / GPU / Software), execution topology
  * (Local vs Distributed Cluster), and rendering mode (GUI vs Headless Batch).
  *
  * @author Silvere Martin-Michiellot
- * @version 2.0.0
+ * @version 2.1.0
  */
 public class ExecutionContextPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ExecutionContextPanel.class);
     private static final Preferences prefs = Preferences.userNodeForPackage(PreferencesPanel.class);
     private static final String PREF_GPU_KEY = "ether_gpu_enabled";
+    private static String cachedGpuName = null;
 
     public enum ExecutionMode {
         CPU,
@@ -204,26 +208,29 @@ public class ExecutionContextPanel extends BorderPane {
             prefs.putBoolean(PREF_GPU_KEY, true);
             gpuManager.setGpuEnabled(true);
             logger.info("Hardware acceleration mode set to GPU AUTO");
+            updateSystemInfoLabel();
         });
         cpuJitRadio.setOnAction(e -> {
             prefs.putBoolean(PREF_GPU_KEY, false);
             gpuManager.setGpuEnabled(false);
             logger.info("Hardware acceleration mode set to CPU JIT");
+            updateSystemInfoLabel();
         });
         gpuOffRadio.setOnAction(e -> {
             prefs.putBoolean(PREF_GPU_KEY, false);
             gpuManager.setGpuEnabled(false);
             logger.info("Hardware acceleration mode set to GPU OFF (Software Prism)");
+            updateSystemInfoLabel();
         });
 
-        VBox gpuAutoCard = new VBox(4, gpuAutoRadio, gpuAutoDescLabel);
-        gpuAutoCard.setStyle("-fx-padding: 10; -fx-background-color: rgba(167, 139, 250, 0.05); -fx-background-radius: 8; -fx-border-color: rgba(167, 139, 250, 0.2); -fx-border-radius: 8;");
+        VBox gpuAutoCard = new VBox(6, gpuAutoRadio, gpuAutoDescLabel);
+        gpuAutoCard.getStyleClass().add("card-section");
 
-        VBox cpuJitCard = new VBox(4, cpuJitRadio, cpuJitDescLabel);
-        cpuJitCard.setStyle("-fx-padding: 10; -fx-background-color: rgba(56, 189, 248, 0.05); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 8;");
+        VBox cpuJitCard = new VBox(6, cpuJitRadio, cpuJitDescLabel);
+        cpuJitCard.getStyleClass().add("card-section");
 
-        VBox gpuOffCard = new VBox(4, gpuOffRadio, gpuOffDescLabel);
-        gpuOffCard.setStyle("-fx-padding: 10; -fx-background-color: rgba(244, 63, 94, 0.05); -fx-background-radius: 8; -fx-border-color: rgba(244, 63, 94, 0.2); -fx-border-radius: 8;");
+        VBox gpuOffCard = new VBox(6, gpuOffRadio, gpuOffDescLabel);
+        gpuOffCard.getStyleClass().add("card-section");
 
         VBox hardwareSection = createCardSection(hardwareSectionHeader, new VBox(10, gpuAutoCard, cpuJitCard, gpuOffCard));
 
@@ -241,11 +248,11 @@ public class ExecutionContextPanel extends BorderPane {
         localTopologyDescLabel = createDescLabel();
         clusterTopologyDescLabel = createDescLabel();
 
-        VBox localCard = new VBox(4, localTopologyRadio, localTopologyDescLabel);
-        localCard.setStyle("-fx-padding: 10; -fx-background-color: rgba(56, 189, 248, 0.05); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 8;");
+        VBox localCard = new VBox(6, localTopologyRadio, localTopologyDescLabel);
+        localCard.getStyleClass().add("card-section");
 
-        VBox clusterCard = new VBox(4, clusterTopologyRadio, clusterTopologyDescLabel);
-        clusterCard.setStyle("-fx-padding: 10; -fx-background-color: rgba(34, 197, 94, 0.05); -fx-background-radius: 8; -fx-border-color: rgba(34, 197, 94, 0.2); -fx-border-radius: 8;");
+        VBox clusterCard = new VBox(6, clusterTopologyRadio, clusterTopologyDescLabel);
+        clusterCard.getStyleClass().add("card-section");
 
         // Cluster configuration block
         clusterHeaderLabel = createSectionHeader("");
@@ -277,7 +284,7 @@ public class ExecutionContextPanel extends BorderPane {
         HBox clusterActions = new HBox(10, startMasterBtn, joinClusterBtn, testConnBtn, refreshNodesBtn);
 
         clusterStatusLabel = new Label();
-        clusterStatusLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #4ade80; -fx-padding: 8 12; -fx-background-color: rgba(34, 197, 94, 0.15); -fx-background-radius: 6; -fx-border-color: rgba(74, 222, 128, 0.3); -fx-border-radius: 6;");
+        clusterStatusLabel.getStyleClass().add("info-badge");
 
         nodeList = FXCollections.observableArrayList();
         nodeTable = new TableView<>(nodeList);
@@ -335,15 +342,15 @@ public class ExecutionContextPanel extends BorderPane {
         syncIntervalCombo.setMaxWidth(Double.MAX_VALUE);
 
         Label lbl1 = new Label("Rôle du Nœud Local :");
-        lbl1.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        lbl1.getStyleClass().add("control-label");
         Label lbl2 = new Label("Adresse Master IP / Hôte :");
-        lbl2.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        lbl2.getStyleClass().add("control-label");
         Label lbl3 = new Label("Port gRPC / TCP :");
-        lbl3.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        lbl3.getStyleClass().add("control-label");
         Label lbl4 = new Label("Stratégie de Découpage H3 :");
-        lbl4.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        lbl4.getStyleClass().add("control-label");
         Label lbl5 = new Label("Intervalle de Synchro Consensus :");
-        lbl5.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        lbl5.getStyleClass().add("control-label");
 
         GridPane clusterForm = new GridPane();
         clusterForm.setHgap(10);
@@ -355,7 +362,7 @@ public class ExecutionContextPanel extends BorderPane {
         clusterForm.addRow(4, lbl5, syncIntervalCombo);
 
         clusterConfigCard = new VBox(12, clusterHeaderLabel, clusterForm, clusterActions, clusterStatusLabel, nodeTable);
-        clusterConfigCard.setStyle("-fx-padding: 12; -fx-background-color: rgba(15, 23, 42, 0.4); -fx-background-radius: 8; -fx-border-color: rgba(34, 197, 94, 0.3); -fx-border-radius: 8;");
+        clusterConfigCard.getStyleClass().add("card-section");
         clusterConfigCard.setVisible(false);
         clusterConfigCard.setManaged(false);
 
@@ -385,11 +392,11 @@ public class ExecutionContextPanel extends BorderPane {
         guiRenderingDescLabel = createDescLabel();
         headlessRenderingDescLabel = createDescLabel();
 
-        VBox guiCard = new VBox(4, guiRenderingRadio, guiRenderingDescLabel);
-        guiCard.setStyle("-fx-padding: 10; -fx-background-color: rgba(56, 189, 248, 0.05); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 8;");
+        VBox guiCard = new VBox(6, guiRenderingRadio, guiRenderingDescLabel);
+        guiCard.getStyleClass().add("card-section");
 
-        VBox headlessCard = new VBox(4, headlessRenderingRadio, headlessRenderingDescLabel);
-        headlessCard.setStyle("-fx-padding: 10; -fx-background-color: rgba(245, 158, 11, 0.05); -fx-background-radius: 8; -fx-border-color: rgba(245, 158, 11, 0.2); -fx-border-radius: 8;");
+        VBox headlessCard = new VBox(6, headlessRenderingRadio, headlessRenderingDescLabel);
+        headlessCard.getStyleClass().add("card-section");
 
         // Headless settings
         targetTicksSpinner = new Spinner<>(0, 1_000_000, 1000, 100);
@@ -404,15 +411,22 @@ public class ExecutionContextPanel extends BorderPane {
         dumpFormatCombo.getItems().addAll("JSON Summary + SQLite History DB", "CSV Data Metrics Dump", "Binary WorldBuffer Snapshot (.bin)");
         dumpFormatCombo.setValue(dumpFormatCombo.getItems().get(0));
 
+        Label hlbl1 = new Label(I18n.getOrDefault("exec.headless.target_ticks", "Nombre de Ticks Cible (0 = Illimité) :"));
+        hlbl1.getStyleClass().add("control-label");
+        Label hlbl2 = new Label(I18n.getOrDefault("exec.headless.snapshot_interval", "Intervalle de Sauvegarde Snapshot (Années) :"));
+        hlbl2.getStyleClass().add("control-label");
+        Label hlbl3 = new Label(I18n.getOrDefault("exec.headless.dump_format", "Format des Rapports de Sortie :"));
+        hlbl3.getStyleClass().add("control-label");
+
         GridPane headlessForm = new GridPane();
         headlessForm.setHgap(12);
         headlessForm.setVgap(8);
-        headlessForm.addRow(0, new Label(I18n.getOrDefault("exec.headless.target_ticks", "Nombre de Ticks Cible (0 = Illimité) :")), targetTicksSpinner);
-        headlessForm.addRow(1, new Label(I18n.getOrDefault("exec.headless.snapshot_interval", "Intervalle de Sauvegarde Snapshot (Années) :")), snapshotIntervalSpinner);
-        headlessForm.addRow(2, new Label(I18n.getOrDefault("exec.headless.dump_format", "Format des Rapports de Sortie :")), dumpFormatCombo);
+        headlessForm.addRow(0, hlbl1, targetTicksSpinner);
+        headlessForm.addRow(1, hlbl2, snapshotIntervalSpinner);
+        headlessForm.addRow(2, hlbl3, dumpFormatCombo);
 
         headlessConfigCard = new VBox(10, headlessForm);
-        headlessConfigCard.setStyle("-fx-padding: 12; -fx-background-color: rgba(15, 23, 42, 0.4); -fx-background-radius: 8; -fx-border-color: rgba(245, 158, 11, 0.3); -fx-border-radius: 8;");
+        headlessConfigCard.getStyleClass().add("card-section");
         headlessConfigCard.setVisible(false);
         headlessConfigCard.setManaged(false);
 
@@ -431,28 +445,22 @@ public class ExecutionContextPanel extends BorderPane {
         // --- SECTION 4: Live System Detection & Performance Audit ---
         auditSectionHeader = createSectionHeader("");
 
-        int cpus = Runtime.getRuntime().availableProcessors();
-        long maxMemMB = Runtime.getRuntime().maxMemory() / (1024 * 1024);
-        String osName = System.getProperty("os.name");
-        boolean gpuAvail = gpuManager.isGpuAvailable();
-
-        systemInfoLabel = new Label(String.format("💻 Système : %s | Cœurs CPU : %d | Mémoire Heap Max : %,d Mo | GPU OpenCL : %s",
-                osName, cpus, maxMemMB, gpuAvail ? "🟢 TornadoVM Disponible" : "ℹ️ iGPU Intégré / Software CPU Fallback"));
-        systemInfoLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 8 12; -fx-background-color: rgba(56, 189, 248, 0.08); -fx-background-radius: 6;");
+        systemInfoLabel = new Label();
+        systemInfoLabel.getStyleClass().add("info-badge");
+        updateSystemInfoLabel();
 
         auditResultLabel = new Label("ℹ️ Cliquez sur le bouton ci-dessus pour exécuter une mesure réelle de calcul (10 000 cellules H3).");
-        auditResultLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8; -fx-font-style: italic;");
+        auditResultLabel.getStyleClass().add("hint-label");
 
         runAuditBtn = new Button();
         runAuditBtn.getStyleClass().add("button-secondary");
-        runAuditBtn.setStyle("-fx-font-weight: bold; -fx-padding: 10 18; -fx-border-color: #38bdf8; -fx-border-radius: 6;");
         runAuditBtn.setOnAction(e -> runRealAudit());
 
         VBox auditSection = createCardSection(auditSectionHeader, new VBox(12, systemInfoLabel, runAuditBtn, auditResultLabel));
 
         // --- SECTION 5: Launch Button ---
         launchBtn = new Button();
-        launchBtn.getStyleClass().add("button-primary");
+        launchBtn.getStyleClass().add("button");
         launchBtn.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-padding: 12 30;");
         launchBtn.setOnAction(e -> launchSimulation());
 
@@ -469,16 +477,52 @@ public class ExecutionContextPanel extends BorderPane {
         setCenter(scroll);
     }
 
+    private static String getDetectedGpuName() {
+        if (cachedGpuName != null) return cachedGpuName;
+        try {
+            if (System.getProperty("os.name", "").toLowerCase().contains("win")) {
+                Process p = new ProcessBuilder("powershell", "-Command", "(Get-CimInstance Win32_VideoController).Name").start();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+                    String line = reader.readLine();
+                    if (line != null && !line.isBlank()) {
+                        cachedGpuName = line.trim();
+                        return cachedGpuName;
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+        cachedGpuName = "Carte Graphique Intégrée (iGPU)";
+        return cachedGpuName;
+    }
+
+    private void updateSystemInfoLabel() {
+        int cpus = Runtime.getRuntime().availableProcessors();
+        long maxMemMB = Runtime.getRuntime().maxMemory() / (1024 * 1024);
+        String osName = System.getProperty("os.name");
+        String gpuName = getDetectedGpuName();
+
+        boolean isIntegrated = gpuName.contains("Intel") || gpuName.contains("UHD") || gpuName.contains("Iris")
+                || gpuName.contains("Radeon(TM) Graphics") || gpuName.contains("Vega") || gpuName.contains("Integrated");
+
+        String gpuTypeNotice = isIntegrated ? " (iGPU Intégré - Accélération OpenCL/Prism)" : " (dGPU Dédié)";
+
+        systemInfoLabel.setText(String.format("💻 Système : %s | Cœurs CPU : %d | Mémoire Heap Max : %,d Mo | GPU Détecté : %s%s",
+                osName, cpus, maxMemMB, gpuName, gpuTypeNotice));
+    }
+
     private void runRealAudit() {
         runAuditBtn.setDisable(true);
         auditResultLabel.setText(I18n.getOrDefault("exec.audit.running", "⏳ Audit en cours : calcul récursif de 200 itérations climatiques sur 10 000 cellules..."));
-        auditResultLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8;");
+        auditResultLabel.setStyle("");
+
+        final HardwareMode selectedMode = getHardwareMode();
 
         new Thread(() -> {
             int numCells = 10_000;
             float[] temps = new float[numCells];
             float[] lats = new float[numCells];
             float[] elevs = new float[numCells];
+            float[] seasonBase = new float[]{15.0f};
 
             Random rnd = new Random(42);
             for (int i = 0; i < numCells; i++) {
@@ -487,15 +531,38 @@ public class ExecutionContextPanel extends BorderPane {
             }
 
             // JVM JIT Warm-up pass to stabilize benchmark measurements
-            for (int warmup = 0; warmup < 30; warmup++) {
-                SimulationKernel.computeClimate(temps, lats, elevs, new float[]{(float) warmup});
+            for (int warmup = 0; warmup < 50; warmup++) {
+                SimulationKernel.computeClimate(temps, lats, elevs, seasonBase);
             }
 
             int iterations = 200;
             long startNanos = System.nanoTime();
 
-            for (int it = 0; it < iterations; it++) {
-                SimulationKernel.computeClimate(temps, lats, elevs, new float[]{(float) it});
+            if (selectedMode == HardwareMode.GPU_AUTO) {
+                // GPU Auto dispatch benchmark
+                for (int it = 0; it < iterations; it++) {
+                    SimulationKernel.computeClimate(temps, lats, elevs, seasonBase);
+                }
+            } else if (selectedMode == HardwareMode.CPU_JIT) {
+                // Multi-threaded CPU JVM benchmark across all cores
+                for (int it = 0; it < iterations; it++) {
+                    final float sBase = seasonBase[0];
+                    IntStream.range(0, numCells).parallel().forEach(i -> {
+                        float lat = lats[i];
+                        float elev = elevs[i];
+                        float latFactor = Math.abs(lat) / 90.0f;
+                        float base = 30.0f - latFactor * 50.0f;
+                        float seasonal = (lat >= 0) ? sBase : -sBase;
+                        seasonal *= latFactor;
+                        float lapse = -(elev * 0.006f);
+                        temps[i] = base + seasonal + lapse;
+                    });
+                }
+            } else {
+                // Single-threaded Software Fallback SW benchmark
+                for (int it = 0; it < iterations; it++) {
+                    SimulationKernel.computeClimate(temps, lats, elevs, seasonBase);
+                }
             }
 
             long elapsedNanos = System.nanoTime() - startNanos;
@@ -504,16 +571,21 @@ public class ExecutionContextPanel extends BorderPane {
             double msPerTick = (elapsedSec * 1000.0) / iterations;
             long cellThroughput = (long) (tps * numCells);
 
-            String activeEngineStr = gpuAutoRadio.isSelected()
-                    ? (gpuManager.isGpuAvailable() ? "GPU OpenCL (TornadoVM)" : "iGPU Fallback CPU JIT")
-                    : (cpuJitRadio.isSelected() ? "CPU Multi-Thread JIT (" + Runtime.getRuntime().availableProcessors() + " Cores)" : "Software Prism SW");
+            String gpuName = getDetectedGpuName();
+            boolean isIntegrated = gpuName.contains("Intel") || gpuName.contains("UHD") || gpuName.contains("Iris")
+                    || gpuName.contains("Radeon(TM) Graphics") || gpuName.contains("Vega");
+
+            String activeEngineStr = (selectedMode == HardwareMode.GPU_AUTO)
+                    ? (gpuManager.isGpuAvailable() ? "GPU OpenCL (" + gpuName + ")" : "iGPU Intégré - Software Prism")
+                    : (selectedMode == HardwareMode.CPU_JIT ? "CPU Multi-Thread (" + Runtime.getRuntime().availableProcessors() + " Cœurs JVM JIT)" : "Mode Secours Monothread SW");
 
             javafx.application.Platform.runLater(() -> {
                 String formatted = String.format(I18n.getOrDefault("exec.audit.result",
                         "✅ Audit Réussi [%s] : %.1f TPS | %.2f ms/tick | %,d cellules H3/sec"),
                         activeEngineStr, tps, msPerTick, cellThroughput);
                 auditResultLabel.setText(formatted);
-                auditResultLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #22c55e; -fx-font-weight: bold;");
+                auditResultLabel.getStyleClass().removeAll("hint-label");
+                auditResultLabel.getStyleClass().add("value-label");
                 runAuditBtn.setDisable(false);
             });
         }).start();
@@ -522,7 +594,7 @@ public class ExecutionContextPanel extends BorderPane {
     private Label createDescLabel() {
         Label lbl = new Label();
         lbl.setWrapText(true);
-        lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        lbl.getStyleClass().add("hint-label");
         return lbl;
     }
 
@@ -546,7 +618,7 @@ public class ExecutionContextPanel extends BorderPane {
         } catch (Exception ignored) {}
         int cores = Runtime.getRuntime().availableProcessors();
         long maxMemGb = Math.max(1, Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024));
-        String localGpu = (gpuManager != null && gpuManager.isGpuAvailable()) ? "GPU OpenCL / TornadoVM" : "CPU JIT Engine";
+        String localGpu = getDetectedGpuName();
 
         String p = (portField != null && portField.getText() != null && !portField.getText().isBlank()) ? portField.getText() : "9090";
 
@@ -556,15 +628,19 @@ public class ExecutionContextPanel extends BorderPane {
     }
 
     private void startMasterServer() {
-        logger.info("Starting Master Server on port {}...", portField.getText());
-        clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.master_started", "🟢 Serveur Master démarré sur port " + portField.getText() + " — 3 Nœuds connectés (128.4 GFLOPS total)"));
+        String p = (portField != null && portField.getText() != null) ? portField.getText() : "9090";
+        logger.info("Starting Master Server on port {}...", p);
+        String msg = String.format(I18n.getOrDefault("exec.cluster.status.master_started", "🟢 Serveur Master actif sur le port %s — Nœuds locaux et distants synchronisés."), p);
+        clusterStatusLabel.setText(msg);
+        populateInitialClusterNodes();
     }
 
     private void joinCluster() {
         String host = hostField.getText();
         String port = portField.getText();
         logger.info("Joining cluster at {}:{}...", host, port);
-        clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.joined", "🟢 Connecté au cluster master " + host + ":" + port + " — Nœud attribué : Secteur Hexagonale #3"));
+        String msg = String.format(I18n.getOrDefault("exec.cluster.status.joined", "🟢 Connecté au nœud Master du cluster %s:%s."), host, port);
+        clusterStatusLabel.setText(msg);
     }
 
     private void testConnection() {
@@ -646,13 +722,13 @@ public class ExecutionContextPanel extends BorderPane {
         auditSectionHeader.setText(I18n.getOrDefault("exec.section.audit", "4. 📊 AUDIT & DÉTECTION MATÉRIELLE EN DIRECT"));
 
         // Section 1: Hardware
-        gpuAutoRadio.setText(I18n.getOrDefault("exec.hardware.auto", "🖥️ GPU / Accélération Matérielle Auto (JavaFX Prism & OpenCL / TornadoVM)"));
+        gpuAutoRadio.setText(I18n.getOrDefault("exec.hardware.auto", "🖥️ GPU / Accélération Matérielle Auto (OpenCL / TornadoVM & Prism)"));
         gpuAutoDescLabel.setText(I18n.getOrDefault("exec.hardware.auto.desc", "Accélération parallèle sur carte graphique ou iGPU. Optimise le rendu visuel et la vitesse d'exécution des noyaux climatiques et démographiques."));
 
-        cpuJitRadio.setText(I18n.getOrDefault("exec.hardware.cpu", "💻 Software CPU JIT (Multi-Thread Java JVM)"));
-        cpuJitDescLabel.setText(I18n.getOrDefault("exec.hardware.cpu.desc", "Exécution séquentielle ou multi-threadée sur les cœurs du processeur principal. Recommandé en l'absence de driver OpenCL dédié."));
+        cpuJitRadio.setText(I18n.getOrDefault("exec.hardware.cpu", "💻 CPU Multi-Thread Standard (Tous les cœurs processeur JVM JIT)"));
+        cpuJitDescLabel.setText(I18n.getOrDefault("exec.hardware.cpu.desc", "Exécution multi-threadée tirant parti de 100% des cœurs de votre processeur principal pour des performances optimales sur CPU."));
 
-        gpuOffRadio.setText(I18n.getOrDefault("exec.hardware.off", "🔧 Rendu Logiciel CPU Uniquement (-Dprism.order=sw)"));
+        gpuOffRadio.setText(I18n.getOrDefault("exec.hardware.off", "🛡️ Mode de Secours Logiciel / Safe Fallback (Rendu Monothread SW)"));
         gpuOffDescLabel.setText(I18n.getOrDefault("exec.hardware.off.desc", "Désactive totalement l'accélération matérielle graphique pour éviter tout artefact ou clignotement d'affichage."));
 
         // Section 2: Topology
@@ -669,7 +745,7 @@ public class ExecutionContextPanel extends BorderPane {
         refreshNodesBtn.setText(I18n.getOrDefault("exec.cluster.refresh", "🔄 Actualiser Nœuds"));
 
         if (clusterStatusLabel.getText() == null || clusterStatusLabel.getText().isEmpty()) {
-            clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.idle", "ℹ️ Prêt pour la connexion cluster. Choisissez d'héberger le Master ou de rejoindre un nœud distant."));
+            clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.idle", "ℹ️ Prêt pour la connexion cluster. Sélectionnez le rôle Master ou Worker."));
         }
 
         // Section 3: Rendering
@@ -684,5 +760,7 @@ public class ExecutionContextPanel extends BorderPane {
 
         // Section 5: Launch Button
         launchBtn.setText(I18n.getOrDefault("exec.btn.launch", "▶ VALIDER LE CONTEXTE ET LANCER LA SIMULATION"));
+
+        updateSystemInfoLabel();
     }
 }

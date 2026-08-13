@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2001/XMLSchema-instance" viewBox="0 0 1024 512" width="1024" height="512">
+  <g id="sovereignty_layer" data-layer="SOVEREIGNTY">
+    <!-- Roman Empire (Imperium Romanum, Year 0) -->
+    <path id="polity_imperium_romanum" fill="#DC2626" data-density="0.85" d="M 483 99 L 550 99 L 585 119 L 640 136 L 640 184 L 597 184 L 540 153 L 483 153 Z" />
+    <!-- Parthian Empire (Persian Realm, Year 0) -->
+    <path id="polity_parthia" fill="#D97706" data-density="0.70" d="M 640 136 L 696 136 L 696 184 L 640 184 Z" />
+    <!-- Germanic Tribal Confederation -->
+    <path id="polity_germania" fill="#16A34A" data-density="0.45" d="M 526 91 L 583 91 L 583 119 L 526 119 Z" />
+  </g>
+
+  <g id="isogloss_layer" data-layer="ISOGLOSS">
+    <!-- Latin Linguistic Sphere (Western Empire) -->
+    <path id="isogloss_latin" fill="#E11D48" d="M 483 99 L 555 99 L 555 153 L 483 153 Z" />
+    <!-- Koine Greek Linguistic Sphere (Eastern Empire & Levant) -->
+    <path id="isogloss_greek" fill="#2563EB" d="M 555 119 L 640 119 L 640 184 L 555 184 Z" />
+    <!-- Germanic Dialect Continuity -->
+    <path id="isogloss_germanic" fill="#16A34A" d="M 526 91 L 583 91 L 583 119 L 526 119 Z" />
+    <!-- Aramaic & Semitic Isogloss -->
+    <path id="isogloss_aramaic" fill="#D97706" d="M 611 150 L 696 150 L 696 184 L 611 184 Z" />
+  </g>
+
+  <g id="kinship_layer" data-layer="KINSHIP">
+    <!-- Roman Civic Citizenship & Legal Kinship -->
+    <path id="kinship_patrician_civic" fill="#9333EA" d="M 483 99 L 640 119 L 640 184 L 483 153 Z" />
+    <!-- Tribal Lineage & Clan Structures (Germania / Celtic Fringes) -->
+    <path id="kinship_tribal_clans" fill="#059669" d="M 526 91 L 583 91 L 583 119 L 526 119 Z" />
+  </g>
+
+  <g id="rituals_layer" data-layer="RITUALS">
+    <!-- Rome (Imperial Cult & Capitolium) -->
+    <circle id="ritual_rome" cx="547" cy="136" r="20" fill="#DC2626" />
+    <!-- Alexandria (Library & Serapeum) -->
+    <circle id="ritual_alexandria" cx="597" cy="167" r="18" fill="#2563EB" />
+    <!-- Antioch (Hellenistic Cultural Hub) -->
+    <circle id="ritual_antioch" cx="614" cy="153" r="16" fill="#F59E0B" />
+    <!-- Jerusalem (Second Temple Period) -->
+    <circle id="ritual_jerusalem" cx="612" cy="165" r="17" fill="#EAB308" />
+  </g>
+
+  <g id="density_layer" data-layer="DENSITY">
+    <!-- Italian Peninsula Urban Density Core -->
+    <circle id="density_rome_core" cx="547" cy="136" r="25" fill="#FFFFFF" data-density="0.95" />
+    <!-- Nile Delta Agricultural Density Belt -->
+    <path id="density_nile_delta" fill="#E2E8F0" data-density="0.90" d="M 590 165 L 605 165 L 605 180 L 590 180 Z" />
+    <!-- Aegean & Anatolian Urban Corridor -->
+    <path id="density_aegean" fill="#CBD5E1" data-density="0.80" d="M 570 135 L 610 135 L 610 155 L 570 155 Z" />
+  </g>
+</svg>
