@@ -372,8 +372,17 @@ public class H3MapCanvas extends Canvas {
             setCursor(javafx.scene.Cursor.DEFAULT);
         });
 
-        // Double-click to reset view to full centered perspective
+        // Click on event beacon overlay or double-click to reset
         setOnMouseClicked(event -> {
+            synchronized (activeBeaconTargets) {
+                for (EventBeaconTarget target : activeBeaconTargets) {
+                    if (event.getX() >= target.x && event.getX() <= target.x + target.width &&
+                        event.getY() >= target.y && event.getY() <= target.y + target.height) {
+                        flyTo(target.lat, target.lng);
+                        return;
+                    }
+                }
+            }
             if (event.getClickCount() == 2) {
                 zoomFactor = 1.0;
                 centerLat = (minLat + maxLat) / 2.0;
@@ -458,6 +467,34 @@ public class H3MapCanvas extends Canvas {
         notifyMiniMap();
     }
 
+    private H3Globe3DSubScene globe3DSubScene;
+    private double reliefScale = 1.0;
+
+    public H3Globe3DSubScene getGlobe3DSubScene() {
+        if (globe3DSubScene == null) {
+            globe3DSubScene = new H3Globe3DSubScene(getWidth() > 0 ? getWidth() : 1280, getHeight() > 0 ? getHeight() : 800);
+            if (cells != null && !cells.isEmpty()) {
+                globe3DSubScene.updateTerrainMesh(cells);
+            }
+        }
+        return globe3DSubScene;
+    }
+
+    public void setReliefScale(double scale) {
+        this.reliefScale = scale;
+        if (globe3DSubScene != null) {
+            globe3DSubScene.setReliefScale(scale);
+            if (cells != null && !cells.isEmpty()) {
+                globe3DSubScene.updateTerrainMesh(cells);
+            }
+        }
+        draw();
+    }
+
+    public double getReliefScale() {
+        return reliefScale;
+    }
+
     public void setCells(List<H3Cell> cells) {
         // Sort by latitude for faster culling
         this.cells = new ArrayList<>(cells); // Copy to allow sorting
@@ -476,6 +513,10 @@ public class H3MapCanvas extends Canvas {
         maxLng = cells.stream().mapToDouble(H3Cell::getLongitude).max().orElse(0);
 
         resetView();
+
+        if (globe3DSubScene != null) {
+            globe3DSubScene.updateTerrainMesh(cells);
+        }
 
         logger.info("H3 Canvas initialized with {} cells. Bounds: lat[{}, {}], lng[{}, {}]",
                 cells.size(), minLat, maxLat, minLng, maxLng);
@@ -604,9 +645,63 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
+    private static class EventBeaconTarget {
+        double x, y, width, height;
+        double lat, lng;
+    }
+
+    private final List<EventBeaconTarget> activeBeaconTargets = new ArrayList<>();
+    private javafx.animation.AnimationTimer activeFlyTimer;
+
+    public void flyTo(double targetLat, double targetLng) {
+        if (activeFlyTimer != null) {
+            activeFlyTimer.stop();
+        }
+
+        final double startLat = this.centerLat;
+        final double startLng = this.centerLng;
+
+        double dLng = targetLng - startLng;
+        while (dLng > 180.0) dLng -= 360.0;
+        while (dLng < -180.0) dLng += 360.0;
+        final double finalTargetLng = startLng + dLng;
+
+        final long startNs = System.nanoTime();
+        final long durationNs = 1_000_000_000L; // 1 second smooth flight
+
+        activeFlyTimer = new javafx.animation.AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                double elapsed = (now - startNs) / (double) durationNs;
+                if (elapsed >= 1.0) {
+                    centerLat = targetLat;
+                    centerLng = ((finalTargetLng + 180.0) % 360.0) - 180.0;
+                    draw();
+                    notifyMiniMap();
+                    stop();
+                    activeFlyTimer = null;
+                } else {
+                    double t = 0.5 - 0.5 * Math.cos(elapsed * Math.PI);
+                    centerLat = startLat + t * (targetLat - startLat);
+                    double currentLng = startLng + t * (finalTargetLng - startLng);
+                    centerLng = ((currentLng + 180.0) % 360.0) - 180.0;
+                    draw();
+                    notifyMiniMap();
+                }
+            }
+        };
+        activeFlyTimer.start();
+        logger.info("Flying camera to lat={}, lng={}", String.format("%.2f", targetLat), String.format("%.2f", targetLng));
+    }
+
     private void drawEventBeacons(GraphicsContext gc) {
         if (eventSystem == null) return;
         List<org.ether.society.events.ActiveEvent> events = eventSystem.getActiveEvents();
+        
+        synchronized (activeBeaconTargets) {
+            activeBeaconTargets.clear();
+        }
+
         if (events == null || events.isEmpty()) return;
 
         long now = System.currentTimeMillis();
@@ -673,16 +768,44 @@ public class H3MapCanvas extends Canvas {
             gc.setLineWidth(2.5);
             gc.strokeOval(screenX - pulseRadius / 2, screenY - pulseRadius / 2, pulseRadius, pulseRadius);
 
-            // Label text banner
-            gc.setFill(Color.rgb(15, 23, 42, 0.85));
-            gc.fillRect(screenX + 8, screenY - 18, Math.min(220, event.getTitle().length() * 7 + 10), 18);
-            gc.setStroke(eventColor);
-            gc.setLineWidth(1.0);
-            gc.strokeRect(screenX + 8, screenY - 18, Math.min(220, event.getTitle().length() * 7 + 10), 18);
+            // Title & Fly-To Banner
+            double titleWidth = Math.min(180, event.getTitle().length() * 7 + 10);
+            double flyBtnWidth = 54;
+            double totalWidth = titleWidth + flyBtnWidth + 6;
 
+            gc.setFill(Color.rgb(15, 23, 42, 0.90));
+            gc.fillRect(screenX + 8, screenY - 18, totalWidth, 20);
+            gc.setStroke(eventColor);
+            gc.setLineWidth(1.2);
+            gc.strokeRect(screenX + 8, screenY - 18, totalWidth, 20);
+
+            // Event Title
             gc.setFill(Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("Consolas", javafx.scene.text.FontWeight.BOLD, 10));
-            gc.fillText(event.getTitle(), screenX + 12, screenY - 5);
+            gc.fillText(event.getTitle(), screenX + 12, screenY - 4);
+
+            // Fly-To Action Button
+            double btnX = screenX + 12 + titleWidth;
+            double btnY = screenY - 16;
+            gc.setFill(Color.rgb(14, 165, 233, 0.95)); // Vibrant cyan
+            gc.fillRoundRect(btnX, btnY, flyBtnWidth, 16, 4, 4);
+
+            gc.setFill(Color.WHITE);
+            gc.setFont(javafx.scene.text.Font.font("Consolas", javafx.scene.text.FontWeight.BOLD, 9));
+            gc.fillText("✈ FLY TO", btnX + 5, btnY + 11);
+
+            // Record target hit box
+            EventBeaconTarget target = new EventBeaconTarget();
+            target.x = screenX - 10;
+            target.y = screenY - 20;
+            target.width = totalWidth + 25;
+            target.height = 32;
+            target.lat = lat;
+            target.lng = lng;
+
+            synchronized (activeBeaconTargets) {
+                activeBeaconTargets.add(target);
+            }
         }
     }
 
