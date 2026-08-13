@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 512" width="1024" height="512">
+  <!-- Europe 1500 AD (Early Modern / Renaissance Era) -->
+  <g data-layer="SOVEREIGNTY">
+    <!-- Kingdom of France (Charles VIII / Louis XII) -->
+    <path d="M 450 120 L 505 115 L 495 170 L 445 165 Z" fill="#1D4ED8" data-sovereignty="1" data-density="0.85" data-label="Royaume de France (Valois)"/>
+    <!-- Holy Roman Empire & Habsburg Monarchy -->
+    <path d="M 500 105 L 565 100 L 570 170 L 505 165 Z" fill="#EAB308" data-sovereignty="2" data-density="0.8" data-label="Saint-Empire &amp; Terres des Habsbourg"/>
+    <!-- Ottoman Empire (Bayezid II / Conquest of Constantinople 1453) -->
+    <path d="M 565 150 L 670 140 L 660 225 L 555 215 Z" fill="#15803D" data-sovereignty="3" data-density="0.85" data-label="Empire Ottoman (Sublime Porte)"/>
+    <!-- Grand Duchy of Moscow / Tsardom of Russia (Ivan III the Great) -->
+    <path d="M 580 75 L 700 65 L 685 145 L 575 145 Z" fill="#B91C1C" data-sovereignty="4" data-density="0.5" data-label="Grande-Principauté de Moscou (Ivan III)"/>
+    <!-- Spanish Catholic Monarchy (Ferdinand & Isabella / Reconquista 1492) -->
+    <path d="M 425 150 L 485 145 L 475 205 L 415 195 Z" fill="#DC2626" data-sovereignty="5" data-density="0.7" data-label="Monarchie Catholique Espagnole"/>
+  </g>
+  <g data-layer="ISOGLOSS">
+    <!-- Middle French -->
+    <path d="M 450 120 L 505 115 L 495 170 L 445 165 Z" fill="#2563EB" data-isogloss="1" data-label="Moyen Français (Langue d'État)"/>
+    <!-- Early New High German -->
+    <path d="M 500 105 L 565 100 L 570 170 L 505 165 Z" fill="#F59E0B" data-isogloss="2" data-label="Moyen-Haut-Allemand &amp; Dialectes"/>
+    <!-- Ottoman Turkish -->
+    <path d="M 565 150 L 670 140 L 660 225 L 555 215 Z" fill="#16A34A" data-isogloss="3" data-label="Turc Ottoman &amp; Langues Balkaniques"/>
+    <!-- Early Modern Russian -->
+    <path d="M 580 75 L 700 65 L 685 145 L 575 145 Z" fill="#EF4444" data-isogloss="4" data-label="Russe Moscovite"/>
+    <!-- Castilian Spanish -->
+    <path d="M 425 150 L 485 145 L 475 205 L 415 195 Z" fill="#E11D48" data-isogloss="5" data-label="Espagnol Castillan"/>
+  </g>
+  <g data-layer="KINSHIP">
+    <!-- Western European Lineages -->
+    <path d="M 420 100 L 565 95 L 555 200 L 415 195 Z" fill="#EC4899" data-kinship="1" data-label="Lignées d'Europe Occidentale"/>
+    <!-- Slavic & Eurasian Lineages -->
+    <path d="M 565 75 L 700 65 L 685 150 L 565 145 Z" fill="#8B5CF6" data-kinship="2" data-label="Lignées Slaves Orientales"/>
+  </g>
+  <g data-layer="RITUALS">
+    <!-- Roman Catholic Church -->
+    <path d="M 420 100 L 565 95 L 555 200 L 415 195 Z" fill="#EAB308" data-rituals="1" data-label="Église Catholique Romaine"/>
+    <!-- Eastern Orthodoxy -->
+    <path d="M 580 75 L 700 65 L 685 150 L 575 145 Z" fill="#A855F7" data-rituals="2" data-label="Orthodoxie Russe (Troisième Rome)"/>
+    <!-- Ottoman Sunni Islam -->
+    <path d="M 565 150 L 670 140 L 660 225 L 555 215 Z" fill="#15803D" data-rituals="3" data-label="Islam Sunnite Ottoman"/>
+  </g>
+</svg>

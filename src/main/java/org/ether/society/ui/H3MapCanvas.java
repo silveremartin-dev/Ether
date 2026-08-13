@@ -52,6 +52,7 @@ public class H3MapCanvas extends Canvas {
     private ViewMode viewMode = ViewMode.VIEW_2D;
     private DisplayMode displayMode = DisplayMode.BIOME;
     private boolean showContours = false; // Toggle for contour lines
+    private boolean showHexGrid = true; // Toggle for H3 hexagonal cell grid outlines
     private double scale = 1.0;
     private double offsetX = 0;
     private double offsetY = 0;
@@ -89,6 +90,12 @@ public class H3MapCanvas extends Canvas {
     public void setShowLegendOverlay(boolean show) { 
         this.showLegendOverlay = show; 
         draw(); 
+    }
+
+    public boolean isShowHexGrid() { return showHexGrid; }
+    public void setShowHexGrid(boolean showHexGrid) {
+        this.showHexGrid = showHexGrid;
+        draw();
     }
 
     // 3D isometric parameters
@@ -483,7 +490,7 @@ public class H3MapCanvas extends Canvas {
         gc.clearRect(0, 0, getWidth(), getHeight());
 
         // Draw background
-        gc.setFill(Color.rgb(15, 20, 25));
+        gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, getWidth(), getHeight());
 
         // Calculate scale to fit all cells with zoom
@@ -716,7 +723,7 @@ public class H3MapCanvas extends Canvas {
             double yrt = dy / radius;
             double zrt = Math.sqrt(Math.max(0.0, 1.0 - xr * xr - yrt * yrt));
 
-            double radRotationY = Math.toRadians(-centerLng - 90);
+            double radRotationY = Math.toRadians(-centerLng);
             double radTilt = Math.toRadians(centerLat);
 
             double cosT = Math.cos(radTilt);
@@ -769,7 +776,7 @@ public class H3MapCanvas extends Canvas {
         double lngSpan = Math.max(1.0, maxLng - minLng);
         double cellSpacing = (lngSpan / Math.sqrt(Math.max(1, cells.size()))) * scale;
         double cellSize = Math.max(5.0, cellSpacing * 1.45);
-        boolean showHexBorders = cellSpacing > 8.0;
+        boolean renderHexBorders = showHexGrid && cellSpacing > 3.0;
 
         for (int i = startIndex; i < cells.size(); i++) {
             H3Cell cell = cells.get(i);
@@ -786,34 +793,46 @@ public class H3MapCanvas extends Canvas {
             Color color = getBufferOrCellColor(cell);
             gc.setFill(color);
 
-            drawHexCell2D(gc, x, y, cellSize / 2.0);
+            double cosLat = Math.max(0.15, Math.cos(Math.toRadians(cell.getLatitude())));
+            double radiusX = Math.max(1.0, (cellSize / 2.0) * cosLat);
+            double radiusY = Math.max(1.0, cellSize / 2.0);
 
-            if (showHexBorders) {
+            drawHexCell2D(gc, x, y, radiusX, radiusY);
+
+            if (renderHexBorders) {
                 gc.setStroke(Color.rgb(15, 23, 42, 0.35));
                 gc.setLineWidth(0.8);
-                strokeHexCell2D(gc, x, y, cellSize / 2.0);
+                strokeHexCell2D(gc, x, y, radiusX, radiusY);
             }
         }
     }
 
     private void drawHexCell2D(GraphicsContext gc, double cx, double cy, double radius) {
+        drawHexCell2D(gc, cx, cy, radius, radius);
+    }
+
+    private void drawHexCell2D(GraphicsContext gc, double cx, double cy, double radiusX, double radiusY) {
         double[] xs = new double[6];
         double[] ys = new double[6];
         for (int i = 0; i < 6; i++) {
             double angle = Math.toRadians(60 * i - 30);
-            xs[i] = cx + radius * Math.cos(angle);
-            ys[i] = cy + radius * Math.sin(angle);
+            xs[i] = cx + radiusX * Math.cos(angle);
+            ys[i] = cy + radiusY * Math.sin(angle);
         }
         gc.fillPolygon(xs, ys, 6);
     }
 
     private void strokeHexCell2D(GraphicsContext gc, double cx, double cy, double radius) {
+        strokeHexCell2D(gc, cx, cy, radius, radius);
+    }
+
+    private void strokeHexCell2D(GraphicsContext gc, double cx, double cy, double radiusX, double radiusY) {
         double[] xs = new double[6];
         double[] ys = new double[6];
         for (int i = 0; i < 6; i++) {
             double angle = Math.toRadians(60 * i - 30);
-            xs[i] = cx + radius * Math.cos(angle);
-            ys[i] = cy + radius * Math.sin(angle);
+            xs[i] = cx + radiusX * Math.cos(angle);
+            ys[i] = cy + radiusY * Math.sin(angle);
         }
         gc.strokePolygon(xs, ys, 6);
     }
@@ -841,7 +860,7 @@ public class H3MapCanvas extends Canvas {
         double cx = getWidth() / 2;
         double cy = getHeight() / 2;
 
-        double radRotationY = Math.toRadians(-centerLng - 90);
+        double radRotationY = Math.toRadians(-centerLng);
         double radTilt = Math.toRadians(centerLat);
 
         // 1. Draw Ocean Base Sphere (Deep navy gradient body)
@@ -884,8 +903,14 @@ public class H3MapCanvas extends Canvas {
         final double finalCy = cy;
 
         double numCells = Math.max(1, cells.size());
-        double rawHexRadius = Math.toDegrees(Math.sqrt(4.0 * Math.PI / numCells) * 0.58);
-        double hexRadiusDeg = Math.min(4.5, Math.max(0.5, rawHexRadius));
+        double hexRadiusRad = Math.sqrt(4.0 * Math.PI / numCells) * 0.58;
+        double screenCellRadius = (finalRadius / Math.sqrt(numCells)) * 0.95;
+        double tanHexRad = Math.tan(hexRadiusRad);
+
+        double cosR = Math.cos(finalRadRotationY);
+        double sinR = Math.sin(finalRadRotationY);
+        double cosT = Math.cos(finalRadTilt);
+        double sinT = Math.sin(finalRadTilt);
 
         List<RenderPoly> polys = java.util.stream.IntStream.range(0, cells.size()).parallel().mapToObj(i -> {
             H3Cell cell = cells.get(i);
@@ -900,33 +925,81 @@ public class H3MapCanvas extends Canvas {
             double dotProd = Math.sin(radLat1) * Math.sin(radCamLat) + Math.cos(radLat1) * Math.cos(radCamLat) * Math.cos(radLngDiff);
             if (dotProd < -0.05) return null; // Cull cells on back hemisphere
 
-            ProjectedPoint centerPP = project3D(lat, lng, elev, finalRadRotationY, finalRadTilt, finalRadius, finalCx, finalCy);
-            if (centerPP == null || centerPP.z <= 0.02) return null;
+            // Center unit vector
+            double latRad = Math.toRadians(lat);
+            double lngRad = Math.toRadians(lng);
+            double nx = Math.cos(latRad) * Math.sin(lngRad);
+            double ny = Math.sin(latRad);
+            double nz = Math.cos(latRad) * Math.cos(lngRad);
 
-            double cosLat = Math.max(0.15, Math.cos(Math.toRadians(lat)));
+            // Matrix rotate center point
+            double xr = nx * cosR + nz * sinR;
+            double zr = -nx * sinR + nz * cosR;
+            double yrt = ny * cosT - zr * sinT;
+            double zrt = ny * sinT + zr * cosT;
+
+            if (zrt <= 0.02) return null;
+
+            double elevationRatio = (elev / 6371000.0) * verticalExaggeration;
+            double r = finalRadius * (1.0 + elevationRatio);
+
+            double cxCenter = finalCx + xr * r;
+            double cyCenter = finalCy - yrt * r;
+
             double[] px = new double[6];
             double[] py = new double[6];
 
-            for (int k = 0; k < 6; k++) {
-                double angleRad = Math.toRadians(60 * k - 30);
-                double dLat = hexRadiusDeg * Math.sin(angleRad);
-                double dLng = (hexRadiusDeg * Math.cos(angleRad)) / cosLat;
-
-                double vLat = Math.min(89.5, Math.max(-89.5, lat + dLat));
-                double vLng = lng + dLng;
-
-                ProjectedPoint vPP = project3D(vLat, vLng, elev, finalRadRotationY, finalRadTilt, finalRadius, finalCx, finalCy);
-                if (vPP == null) {
-                    px[k] = centerPP.screenX + (Math.cos(angleRad) * 4.0);
-                    py[k] = centerPP.screenY + (Math.sin(angleRad) * 4.0);
+            if (screenCellRadius < 2.5) {
+                // Low LOD: Fast screen-space hex offset to avoid trigonometric vertex calculations
+                for (int k = 0; k < 6; k++) {
+                    double angleRad = (Math.PI / 3.0) * k - (Math.PI / 6.0);
+                    px[k] = cxCenter + Math.cos(angleRad) * screenCellRadius;
+                    py[k] = cyCenter + Math.sin(angleRad) * screenCellRadius;
+                }
+            } else {
+                // High LOD: True 3D spherical tangent-basis vertex projection (zero polar distortion)
+                double ux, uy, uz;
+                if (Math.abs(ny) < 0.99) {
+                    double uLen = Math.hypot(nz, nx);
+                    ux = -nz / uLen;
+                    uy = 0.0;
+                    uz = nx / uLen;
                 } else {
-                    px[k] = vPP.screenX;
-                    py[k] = vPP.screenY;
+                    double uLen = Math.hypot(nz, ny);
+                    ux = 0.0;
+                    uy = -nz / uLen;
+                    uz = ny / uLen;
+                }
+                double vx = ny * uz - nz * uy;
+                double vy = nz * ux - nx * uz;
+                double vz = nx * uy - ny * ux;
+
+                for (int k = 0; k < 6; k++) {
+                    double angleRad = (Math.PI / 3.0) * k - (Math.PI / 6.0);
+                    double cosA = Math.cos(angleRad);
+                    double sinA = Math.sin(angleRad);
+
+                    double dx = tanHexRad * (cosA * ux + sinA * vx);
+                    double dy = tanHexRad * (cosA * uy + sinA * vy);
+                    double dz = tanHexRad * (cosA * uz + sinA * vz);
+
+                    double vx3 = nx + dx;
+                    double vy3 = ny + dy;
+                    double vz3 = nz + dz;
+                    double vLen = Math.sqrt(vx3 * vx3 + vy3 * vy3 + vz3 * vz3);
+                    vx3 /= vLen; vy3 /= vLen; vz3 /= vLen;
+
+                    double vxr = vx3 * cosR + vz3 * sinR;
+                    double vzr = -vx3 * sinR + vz3 * cosR;
+                    double vyrt = vy3 * cosT - vzr * sinT;
+
+                    px[k] = finalCx + vxr * r;
+                    py[k] = finalCy - vyrt * r;
                 }
             }
 
             Color baseColor = getBufferOrCellColor(cell);
-            double lightFactor = 0.45 + 0.55 * Math.max(0.0, centerPP.z);
+            double lightFactor = 0.45 + 0.55 * Math.max(0.0, zrt);
             Color shadedColor = Color.color(
                     Math.min(1.0, baseColor.getRed() * lightFactor),
                     Math.min(1.0, baseColor.getGreen() * lightFactor),
@@ -935,11 +1008,11 @@ public class H3MapCanvas extends Canvas {
             );
 
             RenderPoly poly = new RenderPoly();
-            poly.z = centerPP.z;
+            poly.z = zrt;
             poly.px = px;
             poly.py = py;
             poly.color = shadedColor;
-            poly.drawBorder = (finalRadius / Math.sqrt(numCells)) > 12.0;
+            poly.drawBorder = showHexGrid && (screenCellRadius > 1.2);
             return poly;
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
@@ -984,7 +1057,7 @@ public class H3MapCanvas extends Canvas {
         double radius = Math.min(getWidth(), getHeight()) * 0.45 * zoomFactor;
         double cx = getWidth() / 2.0;
         double cy = getHeight() / 2.0;
-        double radRotationY = Math.toRadians(-centerLng - 90);
+        double radRotationY = Math.toRadians(-centerLng);
         double radTilt = Math.toRadians(centerLat);
 
         for (org.ether.society.agents.Agent agent : agentManager.getAgents()) {
@@ -1672,8 +1745,9 @@ public class H3MapCanvas extends Canvas {
             double e = c.getElevation() != null ? c.getElevation() : 0;
             if (e > maxElev) maxElev = e;
         }
-        double step = (maxElev > 100) ? Math.min(500.0, maxElev / 8.0) : 50.0;
-        if (step < 10) step = 10;
+        double adaptiveZoomScale = Math.max(0.5, zoomFactor);
+        double step = (maxElev > 100) ? Math.min(1000.0, (maxElev / 6.0) / adaptiveZoomScale) : (50.0 / adaptiveZoomScale);
+        if (step < 20) step = 20;
         
         // Optimize: Iterate only visible cells if possible, but O(N) is fast enough for N<100k
         for (H3Cell cell : cells) {
@@ -1693,14 +1767,10 @@ public class H3MapCanvas extends Canvas {
                 List<Long> neighbors = h3Service.getNeighbors(cell.getH3Index());
                 for (Long nIdx : neighbors) {
                     H3Cell neighbor = cellMap.get(nIdx);
-                    // If neighbor is null (out of map) or has different level -> Draw edge
-                    // Logic: Draw edge if level > nLevel (to draw once) OR neighbor is null (map edge)
+                    if (neighbor == null) continue; // Ignore map boundary edge cells to prevent parallel lines across latitudes
                     
-                    int nLevel = -1000;
-                    if (neighbor != null) {
-                        double nElev = neighbor.getElevation() != null ? neighbor.getElevation() : 0;
-                        nLevel = (int) (nElev / step);
-                    }
+                    double nElev = neighbor.getElevation() != null ? neighbor.getElevation() : 0;
+                    int nLevel = (int) (nElev / step);
                     
                     if (level > nLevel) {
                         long edge = h3Service.getDirectedEdge(cell.getH3Index(), nIdx);
@@ -1721,7 +1791,7 @@ public class H3MapCanvas extends Canvas {
                                 double radius = Math.min(getWidth(), getHeight()) * 0.45 * zoomFactor;
                                 double cx = getWidth() / 2;
                                 double cy = getHeight() / 2;
-                                double radRotationY = Math.toRadians(-centerLng - 90);
+                                double radRotationY = Math.toRadians(-centerLng);
                                 double radTilt = Math.toRadians(centerLat);
 
                                 LatLng p1 = boundary.get(0);

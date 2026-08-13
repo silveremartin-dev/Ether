@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 512" width="1024" height="512">
+  <!-- Asia 1200 AD (On the Eve of Genghis Khan's Mongol Conquests) -->
+  <g data-layer="SOVEREIGNTY">
+    <!-- Southern Song Dynasty (Hangzhou Capital) -->
+    <path d="M 780 180 L 860 170 L 850 240 L 770 235 Z" fill="#EAB308" data-sovereignty="1" data-density="0.95" data-label="Dynastie Song du Sud (Chine Méridionale)"/>
+    <!-- Jurchen Jin Dynasty (Northern China) -->
+    <path d="M 770 120 L 870 110 L 860 175 L 775 180 Z" fill="#B91C1C" data-sovereignty="2" data-density="0.85" data-label="Dynastie Jurchen Jin (Chine du Nord)"/>
+    <!-- Mongol Confederation (Genghis Khan / Temüjin) -->
+    <path d="M 740 70 L 880 60 L 860 120 L 735 125 Z" fill="#0EA5E9" data-sovereignty="3" data-density="0.25" data-label="Confédération Mongole (Genghis Khan)"/>
+    <!-- Khwarazmian Empire (Central Asia / Persia) -->
+    <path d="M 620 130 L 730 120 L 720 200 L 610 190 Z" fill="#15803D" data-sovereignty="4" data-density="0.65" data-label="Empire Khwarazmien (Transoxiane &amp; Perse)"/>
+    <!-- Delhi Sultanate & Ghurid Realm (Northern India) -->
+    <path d="M 680 195 L 760 190 L 745 270 L 670 260 Z" fill="#8B5CF6" data-sovereignty="5" data-density="0.9" data-label="Sultanat de Delhi (Inde du Nord)"/>
+  </g>
+  <g data-layer="ISOGLOSS">
+    <!-- Middle Chinese -->
+    <path d="M 770 120 L 870 110 L 850 240 L 770 235 Z" fill="#EAB308" data-isogloss="1" data-label="Moyen Chinois (Han)"/>
+    <!-- Mongolic & Tungusic Dialects -->
+    <path d="M 740 70 L 880 60 L 860 120 L 735 125 Z" fill="#0284C7" data-isogloss="2" data-label="Langues Mongoliques &amp; Toungouses"/>
+    <!-- Persian & Turkic -->
+    <path d="M 620 130 L 730 120 L 720 200 L 610 190 Z" fill="#16A34A" data-isogloss="3" data-label="Persan &amp; Langues Turciques"/>
+    <!-- Indo-Aryan / Sanskrit & Prakrit -->
+    <path d="M 680 195 L 760 190 L 745 270 L 670 260 Z" fill="#A855F7" data-isogloss="4" data-label="Langues Indo-Aryennes (Indien)"/>
+  </g>
+  <g data-layer="KINSHIP">
+    <!-- Han Lineages -->
+    <path d="M 770 120 L 870 110 L 850 240 L 770 235 Z" fill="#F59E0B" data-kinship="1" data-label="Ethnos Han"/>
+    <!-- Turco-Mongol Nomadic Lineages -->
+    <path d="M 620 70 L 880 60 L 860 170 L 610 170 Z" fill="#3B82F6" data-kinship="2" data-label="Lignées Nomades Turco-Mongoles"/>
+  </g>
+  <g data-layer="RITUALS">
+    <!-- Neo-Confucianism, Buddhism & Daoism -->
+    <path d="M 770 120 L 870 110 L 850 240 L 770 235 Z" fill="#EAB308" data-rituals="1" data-label="Trois Enseignements (Confucianisme, Bouddhisme, Taoïsme)"/>
+    <!-- Islamic Sphere (Sunni Khwarazm & Delhi) -->
+    <path d="M 610 130 L 760 120 L 745 270 L 610 190 Z" fill="#15803D" data-rituals="2" data-label="Islam Sunnite Central &amp; Sud-Asiatique"/>
+    <!-- Tengrism (Steppe Shamanism) -->
+    <path d="M 740 70 L 880 60 L 860 120 L 735 125 Z" fill="#0EA5E9" data-rituals="3" data-label="Tengrisme &amp; Chamanisme des Steppes"/>
+  </g>
+</svg>

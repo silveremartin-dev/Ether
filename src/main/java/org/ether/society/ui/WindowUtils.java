@@ -75,7 +75,7 @@ public class WindowUtils {
     }
 
     /**
-     * Applies icon.png to a JavaFX Dialog or Alert window.
+     * Applies icon.png to a JavaFX Dialog or Alert window and styles its dialog pane with theme CSS.
      *
      * @param dialog target Dialog window
      */
@@ -84,8 +84,33 @@ public class WindowUtils {
         try {
             javafx.stage.Stage stage = (javafx.stage.Stage) dialog.getDialogPane().getScene().getWindow();
             applyWindowIcon(stage);
+            styleDialogPane(dialog.getDialogPane());
         } catch (Exception e) {
-            logger.debug("Could not apply icon to dialog", e);
+            logger.debug("Could not apply icon/style to dialog", e);
+        }
+    }
+
+    /**
+     * Styles a DialogPane with application CSS stylesheets so popup modals respect the active UI theme.
+     *
+     * @param pane target DialogPane
+     */
+    public static void styleDialogPane(javafx.scene.control.DialogPane pane) {
+        if (pane == null) return;
+        try {
+            String lightCss = WindowUtils.class.getResource("/css/light.css") != null ? 
+                WindowUtils.class.getResource("/css/light.css").toExternalForm() : null;
+            String darkCss = WindowUtils.class.getResource("/css/index.css") != null ? 
+                WindowUtils.class.getResource("/css/index.css").toExternalForm() : null;
+
+            if (darkCss != null && !pane.getStylesheets().contains(darkCss)) {
+                pane.getStylesheets().add(darkCss);
+            }
+            if (lightCss != null && !pane.getStylesheets().contains(lightCss)) {
+                pane.getStylesheets().add(lightCss);
+            }
+        } catch (Exception e) {
+            logger.debug("Could not style dialog pane", e);
         }
     }
 

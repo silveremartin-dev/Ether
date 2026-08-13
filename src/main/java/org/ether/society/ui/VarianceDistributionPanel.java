@@ -46,24 +46,23 @@ public class VarianceDistributionPanel extends VBox {
     public VarianceDistributionPanel(PluggableStatEngine pluggableStatEngine) {
         this.pluggableStatEngine = pluggableStatEngine;
 
+        getStyleClass().add("card-section");
         setPadding(new Insets(10));
         setSpacing(10);
-        getStyleClass().add("glass-panel");
-        setStyle("-fx-background-color: rgba(15, 23, 42, 0.85); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.25); -fx-border-radius: 8;");
 
         // Header
-        Label headerTitle = new Label("📊 STATISTIQUE DE VARIANCE ENTRE INDIVIDUS & DISTRIBUTION");
-        headerTitle.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #ffd700;");
+        Label headerTitle = new Label("\uD83D\uDCCA STATISTIQUE DE VARIANCE ENTRE INDIVIDUS & DISTRIBUTION");
+        headerTitle.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #0f172a;");
 
-        Label subtitle = new Label("Évalue à quel point les individus / mailles s'éloignent du schéma standard (Moyenne μ ± Écart-type σ)");
-        subtitle.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
+        Label subtitle = new Label("\u00C9value \u00E0 quel point les individus / mailles s'\u00E9loignent du sch\u00E9ma standard (Moyenne \u03BC \u00B1 \u00C9cart-type \u03C3)");
+        subtitle.setStyle("-fx-font-size: 10px; -fx-text-fill: #475569;");
         subtitle.setWrapText(true);
 
         VBox headerBox = new VBox(3, headerTitle, subtitle);
 
         // Variable Selector
         Label comboPrompt = new Label("Variable Étudiée :");
-        comboPrompt.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        comboPrompt.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #0f172a;");
 
         variableCombo = new ComboBox<>();
         variableCombo.getItems().addAll(
@@ -88,22 +87,19 @@ public class VarianceDistributionPanel extends VBox {
         kpiGrid.add(createMiniKpi("Moyenne (μ) :", lblMean, "Valeur moyenne standard de la population"), 0, 0);
         kpiGrid.add(createMiniKpi("Variance (σ²) :", lblVariance, "Mesure de la dispersion au carré des individus par rapport à la moyenne"), 1, 0);
         kpiGrid.add(createMiniKpi("Écart-Type (σ) :", lblStdDev, "Écart moyen au schéma standard (μ ± σ)"), 2, 0);
-
         kpiGrid.add(createMiniKpi("Indice Gini :", lblGini, "Mesure d'inégalité (0 = répartition égale, 1 = concentration totale)"), 0, 1);
         kpiGrid.add(createMiniKpi("Min / Max :", lblMinMax, "Valeurs extrêmes minimale et maximale observées"), 1, 1, 2, 1);
 
-        lblSpreadDesc.setStyle("-fx-font-size: 11px; -fx-text-fill: #cbd5e1; -fx-font-style: italic;");
+        lblSpreadDesc.setStyle("-fx-font-size: 11px; -fx-text-fill: #334155; -fx-font-style: italic;");
         VBox descCard = new VBox(lblSpreadDesc);
-        descCard.setStyle("-fx-padding: 6 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.05);");
+        descCard.setStyle("-fx-padding: 6 10; -fx-background-color: rgba(241, 245, 249, 0.8); -fx-background-radius: 6; -fx-border-color: rgba(203, 213, 225, 0.4);");
 
         // Histogram BarChart
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Tranches d'Écart au Schéma Standard (Histogramme 10 Bins)");
-        xAxis.setStyle("-fx-tick-label-fill: #94a3b8;");
 
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Nombre d'Individus / Cellules");
-        yAxis.setStyle("-fx-tick-label-fill: #94a3b8;");
 
         histogramChart = new BarChart<>(xAxis, yAxis);
         histogramChart.setTitle("Courbe de Répartition et Variance des Individus");
@@ -118,12 +114,12 @@ public class VarianceDistributionPanel extends VBox {
     private HBox createMiniKpi(String title, Label valLabel, String tooltip) {
         HBox box = new HBox(6);
         box.setAlignment(Pos.CENTER_LEFT);
-        box.setStyle("-fx-background-color: rgba(30, 41, 59, 0.5); -fx-padding: 4 8; -fx-background-radius: 4;");
+        box.setStyle("-fx-background-color: rgba(241, 245, 249, 0.7); -fx-padding: 4 8; -fx-background-radius: 4; -fx-border-color: rgba(203, 213, 225, 0.3);");
 
         Label tLbl = new Label(title);
-        tLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
+        tLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #475569;");
 
-        valLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        valLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #0284c7;");
 
         box.getChildren().addAll(tLbl, valLabel);
         Tooltip.install(box, new Tooltip(tooltip));
@@ -167,11 +163,11 @@ public class VarianceDistributionPanel extends VBox {
         double cv = avg > 0 ? (stdDev / avg) * 100.0 : 0.0; // Coefficient of Variation
         String spreadText;
         if (cv > 80.0 || gini > 0.5) {
-            spreadText = String.format("🚨 Forte dispersion : Les individus s'éloignent très fortement du schéma standard (Écart-Type σ = %.2f, Gini = %.3f). Inégalité très prononcée.", stdDev, gini);
+            spreadText = String.format("\uD83D\uDEA8 Forte dispersion : Les individus s'\u00E9loignent tr\u00E8s fortement du sch\u00E9ma standard (\u00C9cart-Type \u03C3 = %.2f, Gini = %.3f). In\u00E9galit\u00E9 tr\u00E8s prononc\u00E9e.", stdDev, gini);
         } else if (cv > 35.0 || gini > 0.25) {
-            spreadText = String.format("⚠️ Dispersion modérée : Écart significatif de la population par rapport au schéma standard (68%% des individus entre %.2f et %.2f).", Math.max(0, avg - stdDev), avg + stdDev);
+            spreadText = String.format("\u26A0\uFE0F Dispersion mod\u00E9r\u00E9e : \u00C9cart significatif de la population par rapport au sch\u00E9ma standard (68%% des individus entre %.2f et %.2f).", Math.max(0, avg - stdDev), avg + stdDev);
         } else {
-            spreadText = String.format("✅ Dispersion faible : Population homogène et très proche de la moyenne standard (μ = %.2f ± %.2f).", avg, stdDev);
+            spreadText = String.format("\u2705 Dispersion faible : Population homog\u00E8ne et tr\u00E8s proche de la moyenne standard (\u03BC = %.2f \u00B1 %.2f).", avg, stdDev);
         }
         lblSpreadDesc.setText(spreadText);
 

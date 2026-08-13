@@ -35,6 +35,7 @@ public class H3GlobeIntegrationTest {
             try {
                 Platform.startup(() -> {
                     jfxInitialized = true;
+                    Platform.setImplicitExit(false);
                     latch.countDown();
                 });
             } catch (IllegalStateException e) {

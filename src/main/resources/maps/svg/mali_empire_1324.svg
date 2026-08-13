@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2001/XMLSchema-instance" viewBox="0 0 1024 512" width="1024" height="512">
+  <g id="sovereignty_layer" data-layer="SOVEREIGNTY">
+    <!-- Mali Empire Sovereignty Sphere (Niger Bend, Timbuktu, Gao, Niani) -->
+    <path id="mali_sovereignty" fill="#10B981" data-density="0.80" d="M 460 210 L 512 205 L 525 235 L 485 250 L 455 240 Z" />
+  </g>
+
+  <g id="isogloss_layer" data-layer="ISOGLOSS">
+    <!-- Manding / Mande Language Sphere -->
+    <path id="lang_mande" fill="#F59E0B" d="M 450 200 L 530 200 L 530 255 L 450 255 Z" />
+    <!-- Berber / Tuareg Trans-Saharan Isogloss -->
+    <path id="lang_berber" fill="#3B82F6" d="M 450 170 L 540 170 L 530 200 L 450 200 Z" />
+  </g>
+
+  <g id="kinship_layer" data-layer="KINSHIP">
+    <!-- Nyamakala Artisan Castes & Mande Clan Kinship -->
+    <path id="kinship_mande_clans" fill="#EC4899" d="M 450 200 L 530 200 L 530 255 L 450 255 Z" />
+  </g>
+
+  <g id="rituals_layer" data-layer="RITUALS">
+    <!-- Sankore University & Mosque of Timbuktu -->
+    <circle id="ritual_timbuktu" cx="504" cy="208" r="16" fill="#F59E0B" />
+    <!-- Djinguereber Sacred Center -->
+    <circle id="ritual_djenne" cx="492" cy="222" r="14" fill="#10B981" />
+  </g>
+
+  <g id="density_layer" data-layer="DENSITY">
+    <!-- Timbuktu Urban Center -->
+    <circle id="density_timbuktu" cx="504" cy="208" r="18" fill="#FFFFFF" data-density="0.95" />
+    <!-- Gao Center -->
+    <circle id="density_gao" cx="512" cy="210" r="15" fill="#E2E8F0" data-density="0.85" />
+    <!-- Niani Capital -->
+    <circle id="density_niani" cx="482" cy="235" r="14" fill="#CBD5E1" data-density="0.80" />
+  </g>
+</svg>

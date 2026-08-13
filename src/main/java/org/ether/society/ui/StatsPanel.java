@@ -187,6 +187,8 @@ public class StatsPanel extends VBox {
         chartMetricCombo = new ComboBox<>();
         chartMetricCombo.getItems().addAll(
             "Population Humaine",
+            "Survie de la population (%)",
+            "Cohésion sociale (Asabiyyah %)",
             "Échelle de Kardashev (Type K)",
             "Énergie Captée (MW)",
             "Indice de Gini (Inégalités)",
@@ -263,20 +265,21 @@ public class StatsPanel extends VBox {
         yAxis.setForceZeroInRange(false);
 
         lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setTitle("Courbe d'Évolution Temporelle (🔍 Zoom Molette / Pan Glissé)");
+        lineChart.setTitle("Courbe d'Évolution Temporelle (💡 [CTRL] + Molette pour Zoomer | [CTRL] + Glisser pour Naviguer | Double-Clic pour Réinitialiser)");
         lineChart.setCreateSymbols(false);
         lineChart.setAnimated(false);
         lineChart.setLegendVisible(false);
         lineChart.setPrefHeight(160);
         lineChart.getData().add(chartSeries);
 
-        // Interactive Mouse Zoom (Scroll Wheel) & Pan (Drag)
+        // Interactive Mouse Zoom (CTRL + Scroll Wheel) & Pan (CTRL + Drag)
         final double[] dragAnchor = new double[2];
         lineChart.setOnMousePressed(e -> {
             dragAnchor[0] = e.getX();
             dragAnchor[1] = e.getY();
         });
         lineChart.setOnMouseDragged(e -> {
+            if (!e.isControlDown()) return;
             if (xAxis.isAutoRanging()) xAxis.setAutoRanging(false);
             double dx = e.getX() - dragAnchor[0];
             dragAnchor[0] = e.getX();
@@ -286,12 +289,20 @@ public class StatsPanel extends VBox {
             xAxis.setUpperBound(xAxis.getUpperBound() - shift);
         });
         lineChart.setOnScroll(e -> {
+            if (!e.isControlDown()) return;
+            e.consume();
             if (xAxis.isAutoRanging()) xAxis.setAutoRanging(false);
             double zoomFactor = e.getDeltaY() > 0 ? 0.85 : 1.15;
             double center = (xAxis.getLowerBound() + xAxis.getUpperBound()) / 2.0;
             double halfSpan = Math.max(1.0, ((xAxis.getUpperBound() - xAxis.getLowerBound()) / 2.0) * zoomFactor);
             xAxis.setLowerBound(center - halfSpan);
             xAxis.setUpperBound(center + halfSpan);
+        });
+        lineChart.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2 || (e.isControlDown() && e.getButton() == javafx.scene.input.MouseButton.SECONDARY)) {
+                xAxis.setAutoRanging(true);
+                yAxis.setAutoRanging(true);
+            }
         });
 
         VBox chartBox = new VBox(6, chartHeaderLabel, comboLabel, chartMetricCombo, windowBox, lineChart);
@@ -678,11 +689,13 @@ public class StatsPanel extends VBox {
 
                 // Category 2: Démographie & Santé
                 case "Population Humaine" -> pop;
+                case "Survie de la population (%)" -> engine.getPopulationSurvivalRate();
+                case "Cohésion sociale (Asabiyyah %)" -> engine.getAverageAsabiyyah();
                 case "Taux de Fertilité" -> fert;
                 case "Taux avec Descendance" -> offspring;
                 case "Âge au 1er Enfant" -> ageFirstChild;
                 case "Taux d'Immigration" -> immigration;
-                case "Espérance de Vie" -> life;
+                case "Espérance de Vie", "Espérance de Vie (ans)" -> life;
                 case "Niveau de Santé Global" -> Math.min(100.0, life * 1.1);
                 case "Niveau d'Éducation" -> education;
 
@@ -738,14 +751,6 @@ public class StatsPanel extends VBox {
             };
 
             double currentTime = year + (engine.getTimeManager().getCurrentMonth() / 12.0);
-            if (chartSeries.getData().isEmpty()) {
-                // Pre-populate baseline starting points so the line chart is populated immediately
-                double startYear = Math.max(0, currentTime - 10.0);
-                for (double past = startYear; past < currentTime; past += 1.0) {
-                    chartSeries.getData().add(new XYChart.Data<>(past, yVal));
-                }
-            }
-
             if (chartSeries.getData().isEmpty() || Math.abs(chartSeries.getData().get(chartSeries.getData().size() - 1).getXValue().doubleValue() - currentTime) >= 0.001) {
                 chartSeries.getData().add(new XYChart.Data<>(currentTime, yVal));
                 while (timeWindowSize > 0 && chartSeries.getData().size() > timeWindowSize) {

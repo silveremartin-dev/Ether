@@ -9,7 +9,9 @@ import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -19,6 +21,16 @@ import java.util.Random;
  */
 public class HeadlessBatchRunner {
     private static final Logger logger = LoggerFactory.getLogger(HeadlessBatchRunner.class);
+
+    public static List<SimulationRunRecord> executeBatch(List<Scenario> scenarios) {
+        List<SimulationRunRecord> results = new ArrayList<>();
+        if (scenarios != null) {
+            for (Scenario s : scenarios) {
+                results.add(executeScenarioHeadless(s));
+            }
+        }
+        return results;
+    }
 
     public static SimulationRunRecord executeScenarioHeadless(Scenario scenario) {
         logger.info("Starting Headless execution for scenario: '{}' (Years {} -> {})",

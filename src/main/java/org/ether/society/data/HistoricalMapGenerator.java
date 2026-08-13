@@ -44,6 +44,15 @@ public class HistoricalMapGenerator {
             String type = scenario.getPopulationDensityType();
             if (type == null) type = "URBAN_CLUSTERS";
 
+            // 0. Try SVG Vector Ingestion Pipeline First
+            SvgMapIngestor.SvgIngestionResult svgResult = SvgMapIngestor.ingestForScenario(type);
+            if (svgResult != null) {
+                SvgMapIngestor.applyToScenario(scenario, svgResult);
+                logger.info("Successfully populated scenario '{}' using embedded SVG vector cartography.", scenario.getName());
+                return;
+            }
+
+            // Fallback: Clean Procedural Multi-Channel Maps
             // 1. Clean Grayscale Density Map (Black background, 0..255 intensity)
             BufferedImage imgDensity = generateCleanDensityMap(type, scenario);
             scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
@@ -75,7 +84,7 @@ public class HistoricalMapGenerator {
         BufferedImage img = createPureBlackCanvas();
         double[][] density = new double[WIDTH][HEIGHT];
 
-        List<CityPoint> cities = getCitiesForScenario(type);
+        List<CityPoint> cities = getCitiesForScenario(type, scenario);
         List<RiverRibbon> rivers = getRiversForScenario(type);
 
         for (int y = 0; y < HEIGHT; y++) {
@@ -429,6 +438,31 @@ public class HistoricalMapGenerator {
             {-81.0, 5.0}, {-75.0, -10.0}, {-70.0, -25.0}, {-68.0, -40.0}, {-75.0, -45.0}, {-81.0, -5.0}
         }));
 
+        // Greenland & Arctic
+        LAND_POLYGONS.add(createPolygon(new double[][]{
+            {-73.0, 78.0}, {-20.0, 82.0}, {-20.0, 70.0}, {-40.0, 60.0}, {-55.0, 60.0}, {-73.0, 78.0}
+        }));
+
+        // North America
+        LAND_POLYGONS.add(createPolygon(new double[][]{
+            {-168.0, 65.0}, {-140.0, 70.0}, {-80.0, 75.0}, {-60.0, 45.0}, {-80.0, 25.0}, {-105.0, 20.0}, {-125.0, 35.0}, {-168.0, 60.0}
+        }));
+
+        // Northern Europe & Scandinavia
+        LAND_POLYGONS.add(createPolygon(new double[][]{
+            {5.0, 58.0}, {18.0, 70.0}, {30.0, 70.0}, {30.0, 55.0}, {10.0, 54.0}
+        }));
+
+        // Siberia & Northern Eurasia
+        LAND_POLYGONS.add(createPolygon(new double[][]{
+            {30.0, 55.0}, {30.0, 75.0}, {175.0, 68.0}, {140.0, 50.0}, {50.0, 50.0}
+        }));
+
+        // Antarctica
+        LAND_POLYGONS.add(createPolygon(new double[][]{
+            {-180.0, -65.0}, {180.0, -65.0}, {180.0, -90.0}, {-180.0, -90.0}
+        }));
+
         // INLAND SEAS
         SEA_POLYGONS.add(createPolygon(new double[][]{
             {-5.0, 36.0}, {0.0, 36.0}, {10.0, 38.0}, {15.0, 39.0}, {22.0, 38.0}, {30.0, 32.0}, {35.0, 32.0},
@@ -462,7 +496,68 @@ public class HistoricalMapGenerator {
         return p;
     }
 
-    // --- ALL 19 SCENARIO HISTORICAL RESOLUTIONS ---
+    public static void generateProceduralMapsForScenario(Scenario scenario) {
+        populateScenarioHistoricalMaps(scenario);
+    }
+
+    private static List<CityPoint> getCitiesForScenario(String type, Scenario scenario) {
+        if (scenario == null || scenario.getInitialHumanCount() <= 0) {
+            return getCitiesForScenario(type);
+        }
+        long pop = scenario.getInitialHumanCount();
+        List<CityPoint> list = new ArrayList<>();
+
+        if (pop >= 1_000_000_000L) { // 10^9+ Global Megacities (high tech urban hubs)
+            list.add(new CityPoint("Tokyo Megacity", 35.6, 139.7, 5.5, 2.8));
+            list.add(new CityPoint("New York Tri-State", 40.7, -74.0, 5.2, 2.6));
+            list.add(new CityPoint("London Metro", 51.5, -0.1, 4.8, 2.4));
+            list.add(new CityPoint("Shanghai Yangtze Hub", 31.2, 121.5, 5.5, 2.8));
+            list.add(new CityPoint("Mumbai Metropolis", 19.0, 72.8, 5.2, 2.6));
+            list.add(new CityPoint("Cairo Nile Megacity", 30.0, 31.2, 4.8, 2.4));
+            list.add(new CityPoint("Lagos Gulf Corridor", 6.5, 3.3, 4.5, 2.2));
+            list.add(new CityPoint("São Paulo Hub", -23.5, -46.6, 4.8, 2.4));
+            list.add(new CityPoint("Beijing Capital Node", 39.9, 116.4, 5.2, 2.6));
+            list.add(new CityPoint("Paris Isle Hub", 48.8, 2.35, 4.5, 2.2));
+            list.add(new CityPoint("Mexico City Valley", 19.4, -99.1, 4.8, 2.4));
+            list.add(new CityPoint("Sydney Pacific Hub", -33.8, 151.2, 4.0, 2.0));
+        } else if (pop >= 100_000_000L) { // 10^8 Industrial / Modern Urban Networks
+            list.add(new CityPoint("London", 51.5, -0.1, 4.5, 2.5));
+            list.add(new CityPoint("Paris", 48.8, 2.35, 4.2, 2.2));
+            list.add(new CityPoint("New York", 40.7, -74.0, 4.5, 2.5));
+            list.add(new CityPoint("Tokyo", 35.6, 139.7, 4.8, 2.5));
+            list.add(new CityPoint("Beijing", 39.9, 116.4, 4.5, 2.4));
+            list.add(new CityPoint("Calcutta", 22.5, 88.3, 4.2, 2.2));
+            list.add(new CityPoint("Cairo", 30.0, 31.2, 4.0, 2.0));
+        } else if (pop >= 1_000_000L) { // 10^7 Imperial / Agrarian Networks
+            list.add(new CityPoint("Rome", 41.9, 12.5, 4.2, 2.5));
+            list.add(new CityPoint("Alexandria", 31.2, 29.9, 3.8, 2.2));
+            list.add(new CityPoint("Chang'an", 34.2, 108.9, 4.2, 2.5));
+            list.add(new CityPoint("Pataliputra", 25.6, 85.1, 4.0, 2.2));
+            list.add(new CityPoint("Babylon", 32.5, 44.4, 3.8, 2.0));
+        } else if (pop >= 100_000L) { // Early Agricultural Settlements
+            list.add(new CityPoint("Uruk", 31.3, 45.6, 3.5, 2.0));
+            list.add(new CityPoint("Memphis", 29.8, 31.2, 3.5, 2.0));
+            list.add(new CityPoint("Mohenjo-Daro", 27.3, 68.1, 3.2, 2.0));
+        } else { // Low / Hunter-Gatherer Band Dispersal (< 100k)
+            list.add(new CityPoint("Omo", 4.5, 36.0, 2.0, 3.5));
+            list.add(new CityPoint("Blombos", -34.4, 21.2, 1.8, 3.0));
+            list.add(new CityPoint("Madjedbebe", -12.5, 132.9, 1.8, 3.0));
+        }
+
+        List<CityPoint> specific = getCitiesForScenario(type);
+        if (specific != null && !specific.isEmpty() && pop < 1_000_000_000L) {
+            for (CityPoint cp : specific) {
+                boolean exists = false;
+                for (CityPoint ex : list) {
+                    if (distSq(cp.lng, cp.lat, ex.lng, ex.lat) < 25.0) {
+                        exists = true; break;
+                    }
+                }
+                if (!exists) list.add(cp);
+            }
+        }
+        return list;
+    }
 
     private static List<CityPoint> getCitiesForScenario(String type) {
         List<CityPoint> list = new ArrayList<>();
@@ -521,9 +616,16 @@ public class HistoricalMapGenerator {
                 list.add(new CityPoint("Bluefish Caves", 67.1, -140.7, 2.5, 2.0));
                 break;
             case "ONE_CONTINENT":
-                list.add(new CityPoint("Omo", 4.5, 36.0, 3.5, 3.0));
-                list.add(new CityPoint("Klasies River", -34.1, 24.4, 2.5, 2.5));
-                list.add(new CityPoint("Blombos", -34.4, 21.2, 2.2, 2.0));
+                // Pan-African Homo sapiens archaeological sites (-100,000 BP)
+                list.add(new CityPoint("Jebel Irhoud (Sapiens)", 31.6, -8.8, 3.2, 3.5)); // Morocco / North Africa
+                list.add(new CityPoint("Omo Kibish (Sapiens)", 4.5, 36.0, 3.5, 3.0)); // Ethiopia / East Africa
+                list.add(new CityPoint("Herto (Sapiens)", 8.9, 40.5, 3.2, 2.8)); // Horn of Africa
+                list.add(new CityPoint("Blombos & Klasies (Sapiens)", -34.4, 21.2, 3.0, 3.2)); // South Africa
+                list.add(new CityPoint("Iho Eleru (Sapiens)", 7.4, 5.1, 2.5, 3.0)); // West Africa
+                // Archaic Hominins (Neanderthal & Denisova)
+                list.add(new CityPoint("Atapuerca & Spy (Néandertal)", 42.3, -3.5, 2.8, 3.0)); // Western Europe
+                list.add(new CityPoint("Shanidar (Néandertal)", 36.8, 44.2, 2.8, 2.8)); // Near East / Zagros
+                list.add(new CityPoint("Denisova & Xiahe (Denisova)", 51.4, 84.7, 2.5, 3.5)); // Siberia / Altai
                 break;
             default:
                 list.add(new CityPoint("Tokyo", 35.6, 139.7, 4.0, 2.5));
@@ -600,9 +702,17 @@ public class HistoricalMapGenerator {
                 list.add(inca);
                 break;
             case "ONE_CONTINENT":
-                EmpireTerritory africa = new EmpireTerritory("Foyer Homo Sapiens", new Color(234, 179, 8));
-                africa.addBoundingBox(10.0, -35.0, 52.0, 15.0);
-                list.add(africa);
+                EmpireTerritory sapiens = new EmpireTerritory("Foyer Pan-Africain Homo Sapiens", new Color(234, 179, 8)); // Yellow/Gold
+                sapiens.addBoundingBox(-18.0, -35.0, 51.0, 37.0); // Entire African continent
+                list.add(sapiens);
+
+                EmpireTerritory neanderthal = new EmpireTerritory("Niche Homo Neanderthalensis (Eurasie Ouest)", new Color(14, 165, 233)); // Cyan/Sky Blue
+                neanderthal.addBoundingBox(-10.0, 32.0, 55.0, 58.0); // Europe, Near East, Caucasus
+                list.add(neanderthal);
+
+                EmpireTerritory denisova = new EmpireTerritory("Niche Homo Denisova (Eurasie Est & Asie)", new Color(217, 70, 239)); // Purple/Magenta
+                denisova.addBoundingBox(55.0, 20.0, 125.0, 65.0); // Altai, Siberia, East Asia
+                list.add(denisova);
                 break;
             default:
                 EmpireTerritory generic = new EmpireTerritory("Sphère Démographique", new Color(59, 130, 246));
@@ -629,8 +739,9 @@ public class HistoricalMapGenerator {
                 list.add(new LanguageZone("Anatolian", 38.9, 37.2, new Color(168, 85, 247)));
                 break;
             case "ONE_CONTINENT":
-                list.add(new LanguageZone("Khoisan", 21.2, -34.4, new Color(234, 179, 8)));
-                list.add(new LanguageZone("Niger-Congo", 36.0, 4.5, new Color(16, 185, 129)));
+                list.add(new LanguageZone("Proto-Sapiens (Afrique)", 36.0, 4.5, new Color(234, 179, 8)));
+                list.add(new LanguageZone("Proto-Néandertalien (Eurasie Ouest)", -3.5, 42.3, new Color(14, 165, 233)));
+                list.add(new LanguageZone("Proto-Denisovien (Asie & Altai)", 84.7, 51.4, new Color(217, 70, 239)));
                 break;
             default:
                 list.add(new LanguageZone("Indo-European", 15.0, 48.0, new Color(59, 130, 246)));

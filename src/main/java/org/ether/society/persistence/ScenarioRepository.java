@@ -19,6 +19,10 @@ public class ScenarioRepository extends JsonRepository<Scenario> {
         super("scenarios.json", Scenario.class);
     }
 
+    public List<Scenario> getAllScenarios() {
+        return findAll();
+    }
+
     public void saveOrUpdate(Scenario scenario) {
         List<Scenario> all = findAll();
         // Remove existing with same name (simple ID strategy)

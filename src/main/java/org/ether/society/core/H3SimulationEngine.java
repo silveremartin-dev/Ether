@@ -264,7 +264,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         if (diplomacyManager != null) diplomacyManager.clear();
 
         if (newCells != null && !newCells.isEmpty()) {
-            initializePopulation();
+            if (currentScenario != null) {
+                PreComputePhase preCompute = new PreComputePhase(currentScenario);
+                preCompute.execute(newCells);
+            } else {
+                initializePopulation();
+            }
             int cohortSize = currentScenario != null && currentScenario.getTargetCohortSize() > 0 ? currentScenario.getTargetCohortSize() : 150;
             if (demographicKernel != null) {
                 demographicKernel.setTargetCohortSize(cohortSize);
@@ -973,6 +978,26 @@ public class H3SimulationEngine implements ISimulationEngine {
         double psi = getEliteOverproductionIndex();
         double entropy = getSystemicEntropy();
         return Math.min(100.0, (resDep * 0.3) + (psi * 4.0) + (entropy / 20.0));
+    }
+
+    public double getAverageAsabiyyah() {
+        if (cells == null || cells.isEmpty()) return 80.0;
+        double sum = 0;
+        int count = 0;
+        for (H3Cell c : cells) {
+            if (c.getOwner() != null) {
+                sum += c.getOwner().getAsabiyyah();
+                count++;
+            }
+        }
+        return count > 0 ? (sum / count) * 100.0 : 80.0;
+    }
+
+    public double getPopulationSurvivalRate() {
+        long currentPop = getTotalPopulation();
+        long initPop = currentScenario != null ? currentScenario.getInitialHumanCount() : 1_000_000L;
+        if (initPop <= 0) return 100.0;
+        return Math.min(100.0, Math.max(0.0, ((double) currentPop / initPop) * 100.0));
     }
 
     private void syncClimateToBuffer() {

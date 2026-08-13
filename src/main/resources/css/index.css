@@ -1,6 +1,6 @@
 /* Global Reset & Fonts */
 .root {
-    -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'Inter', sans-serif;
     -fx-base: #1e1e2e;
     -fx-background: #1e1e2e;
     -fx-control-inner-background: #252538;
@@ -311,16 +311,27 @@
     -fx-text-fill: #e2e8f0;
 }
 
-.table-row-cell:selected {
-    -fx-background-color: rgba(56, 189, 248, 0.15);
+.table-row-cell:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
 }
 
-.table-row-cell:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.05);
+.table-row-cell:selected {
+    -fx-background-color: rgba(56, 189, 248, 0.35);
+    -fx-text-fill: #ffffff;
+}
+
+.table-row-cell:selected:hover {
+    -fx-background-color: rgba(56, 189, 248, 0.48);
+    -fx-text-fill: #ffffff;
+}
+
+.table-row-cell:focused:selected {
+    -fx-background-color: rgba(56, 189, 248, 0.42);
+    -fx-text-fill: #ffffff;
 }
 
 .table-cell {
-    -fx-text-fill: #e2e8f0;
+    -fx-text-fill: inherit;
     -fx-border-color: rgba(255, 255, 255, 0.05);
 }
 

@@ -97,8 +97,9 @@ public class SpatialHeatmapPanel extends VBox {
         double h = mapCanvas.getHeight();
 
         // Background
-        gc.setFill(Color.web("#0f172a"));
-        gc.fillRect(0, 0, w, h);
+        gc.clearRect(0, 0, w, h);
+        gc.setFill(Color.rgb(15, 23, 42, 0.45));
+        gc.fillRoundRect(0, 0, w, h, 8, 8);
 
         if (currentCells == null || currentCells.isEmpty()) {
             gc.setFill(Color.web("#64748b"));

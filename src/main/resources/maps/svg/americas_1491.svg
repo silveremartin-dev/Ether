@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2001/XMLSchema-instance" viewBox="0 0 1024 512" width="1024" height="512">
+  <g id="sovereignty_layer" data-layer="SOVEREIGNTY">
+    <!-- Aztec Empire / Triple Alliance (Tenochtitlan, Anahuac) -->
+    <path id="aztec_sovereignty" fill="#F59E0B" data-density="0.85" d="M 221 200 L 243 200 L 243 216 L 221 216 Z" />
+    <!-- Inca Empire / Tawantinsuyu (Cuzco, Andes Corridor) -->
+    <path id="inca_sovereignty" fill="#DC2626" data-density="0.90" d="M 284 270 L 318 270 L 318 384 L 284 384 Z" />
+  </g>
+
+  <g id="isogloss_layer" data-layer="ISOGLOSS">
+    <!-- Nahuatl Language Sphere -->
+    <path id="lang_nahuatl" fill="#F59E0B" d="M 213 192 L 256 192 L 256 220 L 213 220 Z" />
+    <!-- Mayan Language Family -->
+    <path id="lang_mayan" fill="#10B981" d="M 256 200 L 277 200 L 277 220 L 256 220 Z" />
+    <!-- Quechua & Aymara Andean Sphere -->
+    <path id="lang_quechua" fill="#3B82F6" d="M 284 260 L 325 260 L 325 390 L 284 390 Z" />
+  </g>
+
+  <g id="kinship_layer" data-layer="KINSHIP">
+    <!-- Mexica Calpulli Neighborhood Kinship -->
+    <path id="kinship_calpulli" fill="#A855F7" d="M 213 192 L 277 192 L 277 220 L 213 220 Z" />
+    <!-- Andean Ayllu Reciprocal Lineage System -->
+    <path id="kinship_ayllu" fill="#EC4899" d="M 284 260 L 325 260 L 325 390 L 284 390 Z" />
+  </g>
+
+  <g id="rituals_layer" data-layer="RITUALS">
+    <!-- Templo Mayor Tenochtitlan (Sun Sacrifices) -->
+    <circle id="ritual_tenochtitlan" cx="229" cy="200" r="18" fill="#EF4444" />
+    <!-- Coricancha Sun Temple Cuzco -->
+    <circle id="ritual_cuzco" cx="308" cy="294" r="18" fill="#F59E0B" />
+  </g>
+
+  <g id="density_layer" data-layer="DENSITY">
+    <!-- Tenochtitlan Island Megacity (200k+ inhabitants) -->
+    <circle id="density_tenochtitlan" cx="229" cy="200" r="22" fill="#FFFFFF" data-density="1.0" />
+    <!-- Cuzco Imperial Heart -->
+    <circle id="density_cuzco" cx="308" cy="294" r="20" fill="#E2E8F0" data-density="0.9" />
+  </g>
+</svg>

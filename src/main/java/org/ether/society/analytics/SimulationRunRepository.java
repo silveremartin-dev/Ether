@@ -36,6 +36,10 @@ public class SimulationRunRepository {
         logger.info("Registered simulation run in repository: {} ({})", record.getScenarioName(), record.getRunId());
     }
 
+    public void saveRun(SimulationRunRecord record) {
+        registerRun(record);
+    }
+
     public SimulationRunRecord getRun(String runId) {
         return repository.get(runId);
     }

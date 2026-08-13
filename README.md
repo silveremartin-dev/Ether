@@ -4,7 +4,7 @@
 ![Build](https://img.shields.io/badge/Build-Maven-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)
-![Tests](https://img.shields.io/badge/Tests-102%2F102%20Passed-brightgreen.svg)
+![Tests](https://img.shields.io/badge/Tests-162%2F162%20Passed-brightgreen.svg)
 
 **Ether** is a high-fidelity, physicalist and cliodynamic simulation engine modeling planetary human civilization dynamics from 100,000 BCE into future planetary scenarios. Driven by strict thermodynamic principles (Joules, Net EROEI, Carnot limits, Shannon entropy, Soil N-P-K & Carbon, and Aquifer depletion), Ether eliminates heuristic short-circuits in favor of deterministic physical forcing equations and empirical cliodynamic models on a global hexagonal Earth grid (Uber H3).
 
@@ -18,6 +18,25 @@
 | **🗺️ World & Planet Generator Editor (`PlanetGeneratorPanel`)** | **Procedural World Sculptor & Terrarium Editor**<br>Allows custom planet generation with parameters for tectonic noise, sea level ratio, temperature gradients, soil strata, freshwater aquifer capacity, and initial biophysical biomes.<br><br>![Planet Generator Editor](docs/images/planet_generator_editor.png) |
 | **⚡ Cybernetic God Mode Panel (`GodModePanel`)** | **Sovereign AI ("Archon Engine") & Catastrophe Manipulator**<br>Real-time climate and demographic injection interface. Trigger volcanic aerosol shocks, pandemics, orbital solar mirrors, asteroid impacts, and direct Model Predictive Control (MPC) interventions.<br><br>![God Mode Panel](docs/images/god_mode_panel.png) |
 | **📊 Cliodynamics & Analytics Dashboard (`StatsPanel`)** | **Planetary Telemetry & Mathematical Comparison**<br>Comparative telemetry comparing World3 Systems Dynamics vs Kurzweil Technological Singularity trajectory, age pyramids, Gini inequality indices, and EROEI net surplus curves.<br><br>![Analytics Dashboard](docs/images/analytics_dashboard.png) |
+
+---
+
+## 🎛️ Standardized Scenario Setup Navigation (Sections 1 to 12)
+
+The `ScenarioSetupPanel` uses a standardized 1–12 numerical navigation hierarchy ensuring a seamless configuration workflow across planetary parameters, cliodynamics, and performance toggles:
+
+1. **1. Présélections & Archétypes Historiques** (Scenario presets & historical archetypes)
+2. **2. Temporalités & Chronologie** (Start year, end year, simulation tick rate)
+3. **3. Géographie Physico-Planétaire & H3** (Planet presets, atmospheric pressure, sea level offset, axial tilt)
+4. **4. Forçages Astro-Climatiques & Événements Paleoclimatiques** (Greenhouse radiative forcing, insolation, climate harshness)
+5. **5. Matrice Démographique & Cohortes** (Initial human population, cohort size, carrying capacity sensitivity)
+6. **6. Densité Spatiale & Distribution Initiale** (Settlement pattern: One Continent, Nile, Fertile Crescent, Beringia, Urban Clusters)
+7. **7. Biophysique & Réserves de Ressources** (Initial food reserve months, capital per capita K₀, metal/wood/water stockpiles)
+8. **8. Technologie Initiale & Diffusion** (Initial tech level, innovation rate, Shannon bandwidth)
+9. **9. Sociologie, Institutions & Cohésion** (Asabiyyah, elite formation ratio, fiscal stress threshold)
+10. **10. Sélection des Moteurs de Simulation** (Core physical laws, Type B cliodynamic plugins, future scenario forcings)
+11. **11. Calibration, JIT Engine & Performance Opts** (Parallel execution, multi-freq climate ticks, JIT warm-up cycles)
+12. **12. Aperçu du Monde & Initialisation** (Interactive cartographic preview canvas, layer toggles, scenario validation summary)
 
 ---
 

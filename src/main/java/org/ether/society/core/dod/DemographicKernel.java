@@ -12,7 +12,7 @@ public class DemographicKernel {
     }
 
     public void setTargetCohortSize(float targetCohortSize) {
-        this.targetCohortSize = Math.max(1.0f, targetCohortSize);
+        this.targetCohortSize = Math.max(0.1f, targetCohortSize);
     }
 
     /**
@@ -41,15 +41,16 @@ public class DemographicKernel {
         float[] biomassHuman = world.getBiomassHuman();
         java.util.Arrays.fill(biomassHuman, 0.0f);
 
-        // dt is passed in seconds (e.g. 2,592,000s for 30 days) or days. Convert to fractional years.
         float dtInYears = Math.max(0.0001f, dt > 1000.0f ? (dt / (86400.0f * 365.25f)) : (dt / 365.25f));
+        // Dynamic minimum mass threshold supporting small cohorts (<= 10) down to single individuals without underflow
+        float minMassThreshold = Math.max(0.0001f, Math.min(0.05f, targetCohortSize * 0.001f));
 
         for (int i = 0; i < agents.getCapacity(); i++) {
             if (hexIds[i] == -1) continue;
             
             int hIdx = hexIds[i];
             float m = mass[i];
-            if (m <= 0.01f) {
+            if (m < minMassThreshold) {
                 hexIds[i] = -1;
                 continue;
             }
@@ -98,8 +99,8 @@ public class DemographicKernel {
             // Accumulation dans la biomasse humaine de la cellule H3
             biomassHuman[hIdx] += mass[i];
             
-            // Suppression de la cohorte si masse tombe sous 1 personne
-            if (mass[i] < 1.0f) {
+            // Suppression de la cohorte si masse tombe sous le seuil dynamique minimal
+            if (mass[i] < minMassThreshold) {
                 hexIds[i] = -1;
             }
         }

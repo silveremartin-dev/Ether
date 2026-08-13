@@ -277,7 +277,7 @@ public class ExecutionContextPanel extends BorderPane {
         HBox clusterActions = new HBox(10, startMasterBtn, joinClusterBtn, testConnBtn, refreshNodesBtn);
 
         clusterStatusLabel = new Label();
-        clusterStatusLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #22c55e; -fx-padding: 6 10; -fx-background-color: rgba(34, 197, 94, 0.1); -fx-background-radius: 6;");
+        clusterStatusLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #4ade80; -fx-padding: 8 12; -fx-background-color: rgba(34, 197, 94, 0.15); -fx-background-radius: 6; -fx-border-color: rgba(74, 222, 128, 0.3); -fx-border-radius: 6;");
 
         nodeList = FXCollections.observableArrayList();
         nodeTable = new TableView<>(nodeList);
@@ -315,30 +315,44 @@ public class ExecutionContextPanel extends BorderPane {
 
         partitionStrategyCombo = new ComboBox<>();
         partitionStrategyCombo.getItems().addAll(
+            "Grappes Spatiales Hexagonales H3 (Spatial H3 Cluster Partitioning - Recommandé)",
             "Bandes Équirectangulaires (Equirectangular Latitudinal Slices)",
-            "Grappes Spatiales Hexagonales H3 (Spatial H3 Cluster Partitioning)",
             "Répartition Dynamique selon Charge CPU/GPU (Dynamic Load Balancing)"
         );
-        partitionStrategyCombo.setValue(partitionStrategyCombo.getItems().get(1));
+        partitionStrategyCombo.setValue(partitionStrategyCombo.getItems().get(0));
         partitionStrategyCombo.setMaxWidth(Double.MAX_VALUE);
 
         syncIntervalCombo = new ComboBox<>();
         syncIntervalCombo.getItems().addAll(
-            "Synchronisation Chaque Tick (Haute Précision Pas de Temps Δt)",
+            "Synchronisation Chaque Tick (Pas de Temps Δt - Consommation Réseau Haute)",
             "Synchronisation Tous les 5 Ticks (Standard Équilibré)",
-            "Synchronisation Tous les 10 Ticks (Haute Performance Réseau)"
+            "Synchronisation Tous les 10 Ticks (Haute Performance Réseau)",
+            "Synchronisation Tous les 25 Ticks (Basse Bande Passante)",
+            "Synchronisation Tous les 50 Ticks (Recommandé pour Réseau WAN / Internet)",
+            "Synchronisation Tous les 100 Ticks (Ultra-Basse Bande Passante)"
         );
-        syncIntervalCombo.setValue(syncIntervalCombo.getItems().get(0));
+        syncIntervalCombo.setValue(syncIntervalCombo.getItems().get(1));
         syncIntervalCombo.setMaxWidth(Double.MAX_VALUE);
+
+        Label lbl1 = new Label("Rôle du Nœud Local :");
+        lbl1.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        Label lbl2 = new Label("Adresse Master IP / Hôte :");
+        lbl2.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        Label lbl3 = new Label("Port gRPC / TCP :");
+        lbl3.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        Label lbl4 = new Label("Stratégie de Découpage H3 :");
+        lbl4.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        Label lbl5 = new Label("Intervalle de Synchro Consensus :");
+        lbl5.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
 
         GridPane clusterForm = new GridPane();
         clusterForm.setHgap(10);
         clusterForm.setVgap(10);
-        clusterForm.addRow(0, new Label("Rôle du Nœud Local :"), roleCombo);
-        clusterForm.addRow(1, new Label("Adresse Master IP / Hôte :"), hostField);
-        clusterForm.addRow(2, new Label("Port gRPC / TCP :"), portField);
-        clusterForm.addRow(3, new Label("Stratégie de Découpage H3 :"), partitionStrategyCombo);
-        clusterForm.addRow(4, new Label("Intervalle de Synchro Consensus :"), syncIntervalCombo);
+        clusterForm.addRow(0, lbl1, roleCombo);
+        clusterForm.addRow(1, lbl2, hostField);
+        clusterForm.addRow(2, lbl3, portField);
+        clusterForm.addRow(3, lbl4, partitionStrategyCombo);
+        clusterForm.addRow(4, lbl5, syncIntervalCombo);
 
         clusterConfigCard = new VBox(12, clusterHeaderLabel, clusterForm, clusterActions, clusterStatusLabel, nodeTable);
         clusterConfigCard.setStyle("-fx-padding: 12; -fx-background-color: rgba(15, 23, 42, 0.4); -fx-background-radius: 8; -fx-border-color: rgba(34, 197, 94, 0.3); -fx-border-radius: 8;");
@@ -457,7 +471,7 @@ public class ExecutionContextPanel extends BorderPane {
 
     private void runRealAudit() {
         runAuditBtn.setDisable(true);
-        auditResultLabel.setText(I18n.getOrDefault("exec.audit.running", "⏳ Audit en cours : calcul récursif de 100 itérations climatiques sur 10 000 cellules..."));
+        auditResultLabel.setText(I18n.getOrDefault("exec.audit.running", "⏳ Audit en cours : calcul récursif de 200 itérations climatiques sur 10 000 cellules..."));
         auditResultLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8;");
 
         new Thread(() -> {
@@ -472,7 +486,12 @@ public class ExecutionContextPanel extends BorderPane {
                 elevs[i] = (float) (rnd.nextDouble() * 5000.0);
             }
 
-            int iterations = 100;
+            // JVM JIT Warm-up pass to stabilize benchmark measurements
+            for (int warmup = 0; warmup < 30; warmup++) {
+                SimulationKernel.computeClimate(temps, lats, elevs, new float[]{(float) warmup});
+            }
+
+            int iterations = 200;
             long startNanos = System.nanoTime();
 
             for (int it = 0; it < iterations; it++) {
@@ -486,8 +505,8 @@ public class ExecutionContextPanel extends BorderPane {
             long cellThroughput = (long) (tps * numCells);
 
             String activeEngineStr = gpuAutoRadio.isSelected()
-                    ? (gpuManager.isGpuAvailable() ? "GPU TornadoVM" : "iGPU Fallback CPU JIT")
-                    : (cpuJitRadio.isSelected() ? "CPU Multi-Thread JIT" : "Software Prism");
+                    ? (gpuManager.isGpuAvailable() ? "GPU OpenCL (TornadoVM)" : "iGPU Fallback CPU JIT")
+                    : (cpuJitRadio.isSelected() ? "CPU Multi-Thread JIT (" + Runtime.getRuntime().availableProcessors() + " Cores)" : "Software Prism SW");
 
             javafx.application.Platform.runLater(() -> {
                 String formatted = String.format(I18n.getOrDefault("exec.audit.result",
@@ -521,9 +540,19 @@ public class ExecutionContextPanel extends BorderPane {
 
     private void populateInitialClusterNodes() {
         nodeList.clear();
-        nodeList.add(new ClusterNode("node-01-master", "127.0.0.1:9090", "Master", "🟢 Actif", "16 Cores | RTX 4090", "Zone Hex 0-4000"));
-        nodeList.add(new ClusterNode("node-02-worker", "192.168.1.45:9090", "Worker", "🟢 Actif", "32 Cores | RTX 3080", "Zone Hex 4001-8000"));
-        nodeList.add(new ClusterNode("node-03-worker", "192.168.1.88:9090", "Worker", "🟡 En Attente", "8 Cores | CPU Only", "Non Attribué"));
+        String localHost = "127.0.0.1";
+        try {
+            localHost = java.net.InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception ignored) {}
+        int cores = Runtime.getRuntime().availableProcessors();
+        long maxMemGb = Math.max(1, Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024));
+        String localGpu = (gpuManager != null && gpuManager.isGpuAvailable()) ? "GPU OpenCL / TornadoVM" : "CPU JIT Engine";
+
+        String p = (portField != null && portField.getText() != null && !portField.getText().isBlank()) ? portField.getText() : "9090";
+
+        nodeList.add(new ClusterNode("node-01-local-master", localHost + ":" + p, "Master", "🟢 Actif", cores + " Cores (" + maxMemGb + " GB RAM) | " + localGpu, "Zone Hex 0-4000 (Consensus Master)"));
+        nodeList.add(new ClusterNode("node-02-worker", "192.168.1.45:9090", "Worker", "🟢 Connecté", "16 Cores | GPU Compute Node", "Zone Hex 4001-8000"));
+        nodeList.add(new ClusterNode("node-03-worker", "192.168.1.88:9090", "Worker", "🟡 En Attente", "8 Cores | CPU Sub-Mesh", "Non Attribué"));
     }
 
     private void startMasterServer() {

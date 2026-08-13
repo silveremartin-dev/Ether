@@ -1,6 +1,6 @@
 /* Light Theme - Clean Modern Glassmorphism & High Contrast Text */
 .root {
-    -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'Inter', sans-serif;
     -fx-base: #f8fafc;
     -fx-background: #f8fafc;
     -fx-control-inner-background: #ffffff;
@@ -296,16 +296,26 @@
     -fx-text-fill: #0f172a;
 }
 
-.table-row-cell:selected {
-    -fx-background-color: rgba(2, 132, 199, 0.1);
+.table-row-cell:hover {
+    -fx-background-color: #f1f5f9;
 }
 
-.table-row-cell:hover {
-    -fx-background-color: #f8fafc;
+.table-row-cell:selected {
+    -fx-background-color: rgba(2, 132, 199, 0.22);
+    -fx-text-fill: #0284c7;
+}
+
+.table-row-cell:selected:hover {
+    -fx-background-color: rgba(2, 132, 199, 0.30);
+    -fx-text-fill: #0369a1;
+}
+
+.table-row-cell:focused:selected {
+    -fx-background-color: rgba(2, 132, 199, 0.25);
 }
 
 .table-cell {
-    -fx-text-fill: #0f172a;
+    -fx-text-fill: inherit;
     -fx-border-color: #f1f5f9;
 }
 
@@ -447,4 +457,36 @@
     -fx-border-color: #cbd5e1;
     -fx-border-radius: 6px;
 }
+
+.info-badge {
+    -fx-font-size: 11px;
+    -fx-text-fill: #334155;
+    -fx-padding: 8 10;
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 6;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6;
+}
+
+.hint-card {
+    -fx-font-size: 12px;
+    -fx-text-fill: #065f46;
+    -fx-font-style: italic;
+    -fx-padding: 8 12;
+    -fx-background-color: #ecfdf5;
+    -fx-background-radius: 6;
+    -fx-border-color: #a7f3d0;
+    -fx-border-radius: 6;
+}
+
+.titled-pane > .title {
+    -fx-background-color: #f1f5f9;
+    -fx-border-color: #cbd5e1;
+}
+
+.titled-pane > .title > .text {
+    -fx-fill: #0f172a;
+    -fx-font-weight: bold;
+}
+
 

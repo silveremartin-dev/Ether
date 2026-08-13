@@ -38,9 +38,12 @@ public class ScenarioTestProtocol {
         private final double rSquared;
         private final boolean isCalibrated;
 
+        private final MapComparisonMetrics.MapComparisonResult spatialMetrics;
+
         public ProtocolReport(Scenario initialScenario, SimulationRunRecord executionRecord,
                               SimulationRunRecord targetRecord, RootCauseAnalyzer.ComparisonResult comparisonResult,
-                              double rmse, double rSquared, boolean isCalibrated) {
+                              double rmse, double rSquared, boolean isCalibrated,
+                              MapComparisonMetrics.MapComparisonResult spatialMetrics) {
             this.initialScenario = initialScenario;
             this.executionRecord = executionRecord;
             this.targetRecord = targetRecord;
@@ -48,6 +51,7 @@ public class ScenarioTestProtocol {
             this.rmse = rmse;
             this.rSquared = rSquared;
             this.isCalibrated = isCalibrated;
+            this.spatialMetrics = spatialMetrics;
         }
 
         public Scenario getInitialScenario() { return initialScenario; }
@@ -57,19 +61,21 @@ public class ScenarioTestProtocol {
         public double getRmse() { return rmse; }
         public double getRSquared() { return rSquared; }
         public boolean isCalibrated() { return isCalibrated; }
+        public MapComparisonMetrics.MapComparisonResult getSpatialMetrics() { return spatialMetrics; }
 
         public String getSummary() {
+            String spatialSummaryStr = spatialMetrics != null ? "\n  - Spatial SSIM: " + String.format("%.4f", spatialMetrics.getSsim()) + " | Spatial Pearson r: " + String.format("%.4f", spatialMetrics.getPearsonR()) : "";
             return String.format(
                 "📋 Protocol Report for [%s]:\n" +
                 "  - Status: %s\n" +
                 "  - Divergence Year (T_divergence): %s\n" +
-                "  - RMSE: %.2f | R^2: %.4f\n" +
+                "  - RMSE: %.2f | R^2: %.4f%s\n" +
                 "  - Explanation: %s\n" +
                 "  - Corrections Proposed: %d",
                 initialScenario != null ? initialScenario.getName() : "Unknown",
                 isCalibrated ? "🟢 CALIBRATED" : "🔴 DIVERGENT (Corrections Required)",
                 comparisonResult != null && comparisonResult.getDivergenceYear() != -1 ? "An " + comparisonResult.getDivergenceYear() : "Aucune",
-                rmse, rSquared,
+                rmse, rSquared, spatialSummaryStr,
                 comparisonResult != null ? comparisonResult.getPrimaryRootCauseExplanation() : "N/A",
                 comparisonResult != null ? comparisonResult.getProposedCorrections().size() : 0
             );
@@ -109,7 +115,7 @@ public class ScenarioTestProtocol {
         double rSquared = HistoricalValidationKernel.calculateRSquared(simulatedPopMap, targetPopMap);
         boolean isCalibrated = comparison.getDivergenceYear() == -1 && rmse < 1000.0 && rSquared >= 0.90;
 
-        ProtocolReport report = new ProtocolReport(scenario, executionRecord, targetRun, comparison, rmse, rSquared, isCalibrated);
+        ProtocolReport report = new ProtocolReport(scenario, executionRecord, targetRun, comparison, rmse, rSquared, isCalibrated, null);
         logger.info(report.getSummary());
 
         return report;

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 512" width="1024" height="512">
+  <!-- Europe 500 AD (Post-Western Roman Empire Fall) -->
+  <g data-layer="SOVEREIGNTY">
+    <!-- Frankish Kingdom (Clovis I) -->
+    <path d="M 450 120 L 510 115 L 500 170 L 440 165 Z" fill="#2563EB" data-sovereignty="1" data-density="0.7" data-label="Royaume des Francs (Clovis Ier)"/>
+    <!-- Ostrogothic Kingdom (Theodoric the Great) -->
+    <path d="M 505 155 L 565 150 L 555 210 L 495 205 Z" fill="#D97706" data-sovereignty="2" data-density="0.75" data-label="Royaume des Ostrogoths (Théodoric)"/>
+    <!-- Visigothic Kingdom -->
+    <path d="M 420 155 L 485 150 L 475 210 L 410 200 Z" fill="#DC2626" data-sovereignty="3" data-density="0.65" data-label="Royaume des Visigoths"/>
+    <!-- Byzantine / Eastern Roman Empire (Anastasius I) -->
+    <path d="M 565 150 L 660 140 L 650 220 L 560 210 Z" fill="#7C3AED" data-sovereignty="4" data-density="0.85" data-label="Empire Romain d'Orient (Byzance)"/>
+  </g>
+  <g data-layer="ISOGLOSS">
+    <!-- Gallo-Roman / Proto-Romance -->
+    <path d="M 420 120 L 510 115 L 495 210 L 410 200 Z" fill="#3B82F6" data-isogloss="1" data-label="Romance Occidental (Gallo-Romain)"/>
+    <!-- Germanic Dialects (Frankish, Gothic, Alemannic) -->
+    <path d="M 480 90 L 570 85 L 565 160 L 475 155 Z" fill="#F59E0B" data-isogloss="2" data-label="Langues Germaniques"/>
+    <!-- Byzantine Greek -->
+    <path d="M 565 150 L 660 140 L 650 220 L 560 210 Z" fill="#8B5CF6" data-isogloss="3" data-label="Grec Byzantin"/>
+  </g>
+  <g data-layer="KINSHIP">
+    <!-- Germanic Tribal Lineages -->
+    <path d="M 440 90 L 570 85 L 560 200 L 420 195 Z" fill="#EC4899" data-kinship="1" data-label="Lignées Germaniques"/>
+    <!-- Greco-Roman Lineages -->
+    <path d="M 500 160 L 660 140 L 650 220 L 500 210 Z" fill="#10B981" data-kinship="2" data-label="Lignées Gréco-Romaines"/>
+  </g>
+  <g data-layer="RITUALS">
+    <!-- Nicene Catholic / Orthodox Christianity -->
+    <path d="M 450 120 L 660 140 L 650 220 L 440 165 Z" fill="#EAB308" data-rituals="1" data-label="Christianisme Nicéen"/>
+    <!-- Arian Christianity -->
+    <path d="M 420 155 L 565 150 L 555 210 L 410 200 Z" fill="#EF4444" data-rituals="2" data-label="Arianisme Germanique"/>
+  </g>
+</svg>

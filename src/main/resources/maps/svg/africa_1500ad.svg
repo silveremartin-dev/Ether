@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 512" width="1024" height="512">
+  <!-- Africa 1500 AD (Pre-Colonies African Empires & Civilizations) -->
+  <g data-layer="SOVEREIGNTY">
+    <!-- Songhai Empire (Askia the Great / Timbuktu) -->
+    <path d="M 440 210 L 515 205 L 505 255 L 430 250 Z" fill="#EAB308" data-sovereignty="1" data-density="0.75" data-label="Empire Songhaï (Askia le Grand)"/>
+    <!-- Ethiopian Solomonic Empire (Na'od / Lebna Dengel) -->
+    <path d="M 580 230 L 635 225 L 625 280 L 570 275 Z" fill="#8B5CF6" data-sovereignty="2" data-density="0.8" data-label="Empire Salomonique d'Éthiopie"/>
+    <!-- Kingdom of Kongo (Manikongo Nzinga a Nkuwu / Afonso I) -->
+    <path d="M 500 290 L 550 285 L 545 340 L 490 335 Z" fill="#2563EB" data-sovereignty="3" data-density="0.7" data-label="Royaume du Kongo (Manikongo)"/>
+    <!-- Empire of Mutapa (Great Zimbabwe / Monomotapa) -->
+    <path d="M 550 350 L 605 345 L 595 405 L 540 395 Z" fill="#15803D" data-sovereignty="4" data-density="0.65" data-label="Empire de Mutapa (Monomotapa)"/>
+    <!-- Kingdom of Benin (Oba Esigie) -->
+    <path d="M 490 250 L 525 248 L 520 280 L 485 278 Z" fill="#B91C1C" data-sovereignty="5" data-density="0.85" data-label="Royaume du Bénin (Oba)"/>
+  </g>
+  <g data-layer="ISOGLOSS">
+    <!-- Mande & Songhay Languages -->
+    <path d="M 440 210 L 515 205 L 505 255 L 430 250 Z" fill="#F59E0B" data-isogloss="1" data-label="Langues Mandé &amp; Songhaï"/>
+    <!-- Ethiopic / Amharic & Ge'ez -->
+    <path d="M 580 230 L 635 225 L 625 280 L 570 275 Z" fill="#A855F7" data-isogloss="2" data-label="Langues Sémitiques Éthiopiennes (Amharique, Guèze)"/>
+    <!-- Bantu Languages (Kikongo, Shona, Swahili) -->
+    <path d="M 480 280 L 610 275 L 600 410 L 480 400 Z" fill="#06B6D4" data-isogloss="3" data-label="Continuum Linguistique Bantou"/>
+  </g>
+  <g data-layer="KINSHIP">
+    <!-- Niger-Congo Lineages -->
+    <path d="M 430 200 L 610 190 L 600 410 L 430 400 Z" fill="#EC4899" data-kinship="1" data-label="Lignées Niger-Congo"/>
+    <!-- Afroasiatic / Horn Lineages -->
+    <path d="M 570 210 L 640 205 L 630 285 L 565 280 Z" fill="#3B82F6" data-kinship="2" data-label="Lignées Afro-Asiatiques (Corne de l'Afrique)"/>
+  </g>
+  <g data-layer="RITUALS">
+    <!-- West African Sunni Islam (Timbuktu University) -->
+    <path d="M 440 210 L 515 205 L 505 255 L 430 250 Z" fill="#15803D" data-rituals="1" data-label="Islam Sunnite Ouest-Africain"/>
+    <!-- Tewahedo Orthodox Christianity -->
+    <path d="M 580 230 L 635 225 L 625 280 L 570 275 Z" fill="#EAB308" data-rituals="2" data-label="Christianisme Orthodoxe Téwahédo"/>
+    <!-- Traditional Ancestral & Vodun Rituals -->
+    <path d="M 480 250 L 605 245 L 595 405 L 480 395 Z" fill="#D97706" data-rituals="3" data-label="Traditions Réligieuses &amp; Culte des Ancêtres"/>
+  </g>
+</svg>

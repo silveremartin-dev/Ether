@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2001/XMLSchema-instance" viewBox="0 0 1024 512" width="1024" height="512">
+  <g id="sovereignty_layer" data-layer="SOVEREIGNTY">
+    <!-- Tokugawa Shogunate Autarkic Boundaries (Honshu, Kyushu, Shikoku) -->
+    <path id="japan_sovereignty" fill="#A855F7" data-density="0.95" d="M 876 125 L 925 125 L 925 170 L 876 170 Z" />
+  </g>
+
+  <g id="isogloss_layer" data-layer="ISOGLOSS">
+    <!-- Early Modern Japanese (Edo / Kansai Dialects) -->
+    <path id="lang_japanese" fill="#F59E0B" d="M 876 125 L 925 125 L 925 170 L 876 170 Z" />
+  </g>
+
+  <g id="kinship_layer" data-layer="KINSHIP">
+    <!-- Ie (Household Lineage) System & Samurai Feudal Clan -->
+    <path id="kinship_ie_system" fill="#3B82F6" d="M 876 125 L 925 125 L 925 170 L 876 170 Z" />
+  </g>
+
+  <g id="rituals_layer" data-layer="RITUALS">
+    <!-- Ise Grand Shrine & Nikko Toshogu (Shinto-Buddhist Syncretism) -->
+    <circle id="ritual_ise" cx="898" cy="154" r="16" fill="#EF4444" />
+    <!-- Kyoto Imperial Court Palace -->
+    <circle id="ritual_kyoto" cx="896" cy="156" r="14" fill="#F59E0B" />
+  </g>
+
+  <g id="density_layer" data-layer="DENSITY">
+    <!-- Edo (Tokyo) - Largest City in the World (1 Million+ inhabitants) -->
+    <circle id="density_edo" cx="909" cy="154" r="24" fill="#FFFFFF" data-density="1.0" />
+    <!-- Osaka Merchant Metropolis -->
+    <circle id="density_osaka" cx="897" cy="157" r="18" fill="#E2E8F0" data-density="0.9" />
+    <!-- Kyoto Cultural Capital -->
+    <circle id="density_kyoto" cx="896" cy="156" r="16" fill="#CBD5E1" data-density="0.85" />
+  </g>
+</svg>

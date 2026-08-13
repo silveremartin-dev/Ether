@@ -321,8 +321,8 @@ public class PlanetGeneratorPanel extends BorderPane {
                     setText("");
                 } else {
                     setText("satellite".equals(item) ? 
-                            I18n.getOrDefault("planet.body_type.satellite", "🌕 Satellite Naturel / Lune (Orbite Planétaire)") :
-                            I18n.getOrDefault("planet.body_type.planet", "🪐 Planète Indépendante (Orbite Stellaire Directe)"));
+                            I18n.getOrDefault("planet.body_type.satellite", "🌙 Satellite Naturel / Lune (Orbite Planétaire)") :
+                            I18n.getOrDefault("planet.body_type.planet", "🌍 Planète Indépendante (Orbite Stellaire Directe)"));
                 }
             }
         });
@@ -1257,12 +1257,12 @@ public class PlanetGeneratorPanel extends BorderPane {
              var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png")) {
             if (elevStream != null) customElevImage = new Image(elevStream);
             if (biomeStream != null) customBiomeImage = new Image(biomeStream);
-            if (elevFileLabel != null) elevFileLabel.setText("📷 Earth Elevation Map");
-            if (biomeFileLabel != null) biomeFileLabel.setText("🌿 Earth Biome Map");
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.get("planet.map.none"));
-            if (climateFileLabel != null) climateFileLabel.setText(I18n.get("planet.map.none"));
-            if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.get("planet.map.none"));
-            if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.get("planet.map.none"));
+            if (elevFileLabel != null) elevFileLabel.setText("📷 Preset actif : Élévation Terre (USGS DEM 2160x1080)");
+            if (biomeFileLabel != null) biomeFileLabel.setText("🌿 Preset actif : Biomes & Couvert Terre");
+            if (resourceFileLabel != null) resourceFileLabel.setText("📄 Aucun fichier (Procédural actif)");
+            if (climateFileLabel != null) climateFileLabel.setText("🌡️ Data Source : ERA5 Reanalysis (Copernicus / ECMWF)");
+            if (rainfallFileLabel != null) rainfallFileLabel.setText("🌧️ Data Source : WorldClim v2.1");
+            if (seasonalityFileLabel != null) seasonalityFileLabel.setText("❄️ Data Source : ERA5 Seasonal Variance");
         } catch (Exception e) {
             logger.warn("Could not load internal Earth maps", e);
         }
@@ -1275,12 +1275,13 @@ public class PlanetGeneratorPanel extends BorderPane {
         customClimateImage = null;
         customRainfallImage = null;
         customSeasonalityImage = null;
-        if (elevFileLabel != null) elevFileLabel.setText(I18n.get("planet.map.none"));
-        if (biomeFileLabel != null) biomeFileLabel.setText(I18n.get("planet.map.none"));
-        if (resourceFileLabel != null) resourceFileLabel.setText(I18n.get("planet.map.none"));
-        if (climateFileLabel != null) climateFileLabel.setText(I18n.get("planet.map.none"));
-        if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.get("planet.map.none"));
-        if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.get("planet.map.none"));
+        String procDefault = "📄 Aucun fichier externe (Génération procédurale active)";
+        if (elevFileLabel != null) elevFileLabel.setText(procDefault);
+        if (biomeFileLabel != null) biomeFileLabel.setText(procDefault);
+        if (resourceFileLabel != null) resourceFileLabel.setText(procDefault);
+        if (climateFileLabel != null) climateFileLabel.setText(procDefault);
+        if (rainfallFileLabel != null) rainfallFileLabel.setText(procDefault);
+        if (seasonalityFileLabel != null) seasonalityFileLabel.setText(procDefault);
     }
 
     private void applyMapSourcePreset(String sourceKey) {

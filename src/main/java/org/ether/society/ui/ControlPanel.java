@@ -80,6 +80,7 @@ public class ControlPanel extends VBox {
     private final Label reliefLabel;
     private final Slider reliefSlider;
     private final CheckBox contourCheck;
+    private final CheckBox hexGridCheck;
     private final ComboBox<DisplayMode> displayModeCombo;
 
     // Callbacks
@@ -279,6 +280,16 @@ public class ControlPanel extends VBox {
             if (onContourToggle != null) onContourToggle.accept(contourCheck.isSelected());
         });
 
+        hexGridCheck = new CheckBox(I18n.getOrDefault("sim.layer.hexgrid", "⬡ Bordures Hexagones H3"));
+        hexGridCheck.setSelected(true);
+        hexGridCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hexgrid", "Affiche ou masque le maillage hexagonale H3 (vue lissée sans bordures vs vue maillée)")));
+        hexGridCheck.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        hexGridCheck.setOnAction(e -> {
+            if (mapCanvas != null) {
+                mapCanvas.setShowHexGrid(hexGridCheck.isSelected());
+            }
+        });
+
         Label layerComboLabel = new Label(I18n.getOrDefault("sim.layer.datacategory", "Couche Donnée Active :"));
         layerComboLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px;");
 
@@ -313,7 +324,7 @@ public class ControlPanel extends VBox {
             }
         });
 
-        VBox layersVBox = new VBox(6, mode3dCheck, reliefLabel, reliefSlider, autoRotateCheck, contourCheck, layerComboLabel, displayModeCombo);
+        VBox layersVBox = new VBox(6, mode3dCheck, reliefLabel, reliefSlider, autoRotateCheck, contourCheck, hexGridCheck, layerComboLabel, displayModeCombo);
 
         VBox viewCard = new VBox(8, viewTitle, layersVBox);
         styleCard(viewCard);
@@ -529,6 +540,8 @@ public class ControlPanel extends VBox {
         autoRotateCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.autorotate", "Fait pivoter automatiquement le globe sphérique 3D")));
         contourCheck.setText(I18n.getOrDefault("sim.layer.contours", "📈 Courbes de Niveau (Contours)"));
         contourCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.contours", "Affiche le dénivelé d'altitude sur les cellules H3")));
+        hexGridCheck.setText(I18n.getOrDefault("sim.layer.hexgrid", "⬡ Bordures Hexagones H3"));
+        hexGridCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hexgrid", "Affiche ou masque le maillage hexagonale H3 (vue lissée sans bordures vs vue maillée)")));
         updateViewToggleButton();
         updateDisplayToggleButton();
     }
@@ -540,6 +553,7 @@ public class ControlPanel extends VBox {
             if (reliefSlider != null) reliefSlider.setDisable(!is3D);
             if (reliefLabel != null) reliefLabel.setDisable(!is3D);
             if (autoRotateCheck != null) autoRotateCheck.setDisable(!is3D);
+            if (hexGridCheck != null) hexGridCheck.setSelected(mapCanvas.isShowHexGrid());
         }
     }
 

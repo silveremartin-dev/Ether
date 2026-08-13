@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2001/XMLSchema-instance" viewBox="0 0 1024 512" width="1024" height="512">
+  <g id="sovereignty_layer" data-layer="SOVEREIGNTY">
+    <!-- Fertile Crescent Early Proto-Polities & Tribal Domains -->
+    <path id="fertile_crescent_polity" fill="#F59E0B" data-density="0.75" d="M 583 136 L 640 136 L 668 165 L 610 180 L 583 150 Z" />
+  </g>
+
+  <g id="isogloss_layer" data-layer="ISOGLOSS">
+    <!-- Proto-Semitic Sphere -->
+    <path id="lang_proto_semitic" fill="#EF4444" d="M 583 150 L 635 150 L 620 180 L 583 180 Z" />
+    <!-- Sumerian Isogloss Isolate -->
+    <path id="lang_sumerian" fill="#3B82F6" d="M 635 150 L 668 150 L 668 175 L 620 175 Z" />
+    <!-- Anatolian / Hurrian Sphere -->
+    <path id="lang_anatolian" fill="#A855F7" d="M 583 130 L 650 130 L 640 150 L 583 150 Z" />
+  </g>
+
+  <g id="kinship_layer" data-layer="KINSHIP">
+    <!-- Early Neolithic Village Clan / Lineage Organization -->
+    <path id="kinship_neolithic_clan" fill="#EC4899" d="M 583 130 L 668 130 L 668 180 L 583 180 Z" />
+  </g>
+
+  <g id="rituals_layer" data-layer="RITUALS">
+    <!-- Göbekli Tepe Pre-Pottery Sanctuary (World's Oldest Temple) -->
+    <circle id="ritual_gobekli_tepe" cx="622" cy="149" r="20" fill="#EF4444" />
+    <!-- Jericho Proto-Tower Shrine -->
+    <circle id="ritual_jericho" cx="612" cy="165" r="15" fill="#F59E0B" />
+  </g>
+
+  <g id="density_layer" data-layer="DENSITY">
+    <!-- Göbekli Tepe Region -->
+    <circle id="density_gobekli" cx="622" cy="149" r="18" fill="#FFFFFF" data-density="0.9" />
+    <!-- Jericho Oasis -->
+    <circle id="density_jericho" cx="612" cy="165" r="15" fill="#E2E8F0" data-density="0.8" />
+    <!-- Catalhoyuk Proto-City -->
+    <circle id="density_catalhoyuk" cx="605" cy="145" r="16" fill="#CBD5E1" data-density="0.85" />
+  </g>
+</svg>

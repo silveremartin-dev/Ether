@@ -38,12 +38,6 @@ public class PreferencesPanel extends BorderPane {
     private VBox langSection;
     private VBox themeSection;
 
-    // GPU section
-    private RadioButton gpuAutoRadio;
-    private RadioButton gpuOffRadio;
-    private ToggleGroup gpuToggleGroup;
-    private Label gpuHintLabel;
-
     public PreferencesPanel() {
         getStyleClass().add("glass-panel");
         setPadding(new Insets(30));
@@ -104,40 +98,13 @@ public class PreferencesPanel extends BorderPane {
         themeHeaderLabel.getStyleClass().add("label-section-header");
         themeSection = createCardSectionWithHeader(themeHeaderLabel, new VBox(10, themeOptions));
 
-        // 3. GPU Section
-        boolean gpuEnabled = prefs.getBoolean(PREF_GPU_KEY, true);
-        gpuToggleGroup = new ToggleGroup();
-        gpuAutoRadio = new RadioButton();
-        gpuOffRadio  = new RadioButton();
-        gpuAutoRadio.setToggleGroup(gpuToggleGroup);
-        gpuOffRadio.setToggleGroup(gpuToggleGroup);
-        gpuAutoRadio.setSelected(gpuEnabled);
-        gpuOffRadio.setSelected(!gpuEnabled);
-
-        gpuHintLabel = new Label();
-        gpuHintLabel.setWrapText(true);
-        gpuHintLabel.getStyleClass().add("control-label");
-        gpuHintLabel.setStyle("-fx-font-size: 11px; -fx-font-style: italic;");
-
-        gpuAutoRadio.setOnAction(e -> saveGpuPreference(true));
-        gpuOffRadio.setOnAction(e -> saveGpuPreference(false));
-
-        HBox gpuOptions = new HBox(20, gpuAutoRadio, gpuOffRadio);
-        VBox gpuContent = new VBox(10, gpuOptions, gpuHintLabel);
-        VBox gpuSection = createCardSection("⚡ " + I18n.getOrDefault("pref.gpu", "Accélération Matérielle (GPU)"), gpuContent);
-
-        root.getChildren().addAll(titleHeader, langSection, themeSection, gpuSection);
+        root.getChildren().addAll(titleHeader, langSection, themeSection);
 
         ScrollPane scroll = new ScrollPane(root);
         scroll.setFitToWidth(true);
         scroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
         setCenter(scroll);
-    }
-
-    private void saveGpuPreference(boolean enabled) {
-        prefs.putBoolean(PREF_GPU_KEY, enabled);
-        logger.info("GPU preference saved: {}", enabled ? "AUTO (hardware)" : "OFF (software)");
     }
 
     /**
@@ -154,14 +121,6 @@ public class PreferencesPanel extends BorderPane {
         return card;
     }
 
-    private VBox createCardSection(String title, VBox content) {
-        Label header = new Label(title);
-        header.getStyleClass().add("label-section-header");
-        VBox card = new VBox(12, header, content);
-        card.getStyleClass().add("card-section");
-        return card;
-    }
-
     public void updateTexts() {
         titleHeader.setText(I18n.get("pref.title"));
         if (langHeaderLabel != null) langHeaderLabel.setText("🌐 " + I18n.get("pref.language"));
@@ -169,12 +128,5 @@ public class PreferencesPanel extends BorderPane {
         darkThemeRadio.setText(I18n.get("pref.theme.dark"));
         lightThemeRadio.setText(I18n.get("pref.theme.light"));
         languageCombo.setValue(I18n.getCurrentLanguage());
-        if (gpuAutoRadio != null)
-            gpuAutoRadio.setText(I18n.getOrDefault("pref.gpu.auto", "🖥️ GPU On (Automatique — JavaFX Prism Hardware)"));
-        if (gpuOffRadio != null)
-            gpuOffRadio.setText(I18n.getOrDefault("pref.gpu.off", "🔧 GPU Off (Rendu Logiciel — Software Prism)"));
-        if (gpuHintLabel != null)
-            gpuHintLabel.setText(I18n.getOrDefault("pref.gpu.hint",
-                    "ℹ️ Ce paramètre est sauvegardé automatiquement. La modification prendra effet au prochain démarrage de l'application (GPU Activé : accélération matérielle DirectX/OpenGL | GPU Désactivé : rendu logiciel avec -Dprism.order=sw pour éviter les clignotements ou artefacts graphiques)."));
     }
 }
