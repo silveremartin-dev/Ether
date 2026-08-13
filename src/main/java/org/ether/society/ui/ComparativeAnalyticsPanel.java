@@ -73,13 +73,29 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private TableView<ScenarioSelectableItem> scenarioTable;
     private ObservableList<ScenarioSelectableItem> scenarioList;
 
+    private Label headerLabel;
+    private Label metricLabel;
     private ComboBox<String> metricSelectorCombo;
+    private Button analyzeBtn;
+    private Button exportMdBtn;
+    private Button exportCsvBtn;
+    private Label tableTitle;
+
+    private TableColumn<ScenarioSelectableItem, Boolean> selectCol;
+    private TableColumn<ScenarioSelectableItem, String> nameCol;
+    private TableColumn<ScenarioSelectableItem, String> yearsCol;
+    private TableColumn<ScenarioSelectableItem, String> statusCol;
+
+    private NumberAxis xAxis;
+    private NumberAxis yAxis;
     private LineChart<Number, Number> chart;
     private Label warningLabel;
     private Button executeMissingBtn;
 
+    private Label diagHeader;
     private Label divergenceLabel;
     private Label explanationLabel;
+    private Label synthHeader;
     private TextArea reportPreviewArea;
 
     public ComparativeAnalyticsPanel() {
@@ -101,34 +117,33 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         topBox.setPadding(new Insets(0, 0, 10, 0));
 
         // Header Title
-        Label headerLabel = new Label("📊 ANALYSE COMPARATIVE & BATAILLE DE SCÉNARIOS (DEEP ANALYTICS)");
+        headerLabel = new Label();
         headerLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #38bdf8;");
 
         // Action Toolbar
+        metricLabel = new Label();
         metricSelectorCombo = new ComboBox<>();
-        metricSelectorCombo.getItems().addAll("Population Totale", "Nourriture / Subsistance", "Niveau Technologique", "Indice de Stabilité");
-        metricSelectorCombo.setValue("Population Totale");
         metricSelectorCombo.setOnAction(e -> updateChartAndAnalysis());
 
-        Button analyzeBtn = new Button("⚡ Calculer les Écarts & Cause Racinaire");
+        analyzeBtn = new Button();
         analyzeBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 6 14;");
         analyzeBtn.setOnAction(e -> runAnalysis());
 
-        executeMissingBtn = new Button("🚀 Exécuter les Scénarios Manquants (Headless)");
+        executeMissingBtn = new Button();
         executeMissingBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #ef4444; -fx-text-fill: white; -fx-padding: 6 14;");
         executeMissingBtn.setOnAction(e -> executeMissingScenarios());
         executeMissingBtn.setVisible(false);
         executeMissingBtn.setManaged(false);
 
-        Button exportMdBtn = new Button("📝 Exporter Rapport (.md)");
+        exportMdBtn = new Button();
         exportMdBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #10b981; -fx-text-fill: white; -fx-padding: 6 14;");
         exportMdBtn.setOnAction(e -> exportMarkdownReport());
 
-        Button exportCsvBtn = new Button("📥 Exporter Données (.csv)");
+        exportCsvBtn = new Button();
         exportCsvBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-padding: 6 14;");
         exportCsvBtn.setOnAction(e -> exportCsvData());
 
-        HBox actionsBox = new HBox(10, new Label("Indicateur Visualisé :"), metricSelectorCombo, analyzeBtn, executeMissingBtn, exportMdBtn, exportCsvBtn);
+        HBox actionsBox = new HBox(10, metricLabel, metricSelectorCombo, analyzeBtn, executeMissingBtn, exportMdBtn, exportCsvBtn);
         actionsBox.setAlignment(Pos.CENTER_LEFT);
 
         // Status warning bar for missing runs
@@ -147,14 +162,14 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         VBox leftPane = new VBox(10);
         
         // Scenario Selection Table
-        Label tableTitle = new Label("📋 Sélection des Scénarios de la Base de Données à Comparer :");
+        tableTitle = new Label();
         tableTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
 
         scenarioTable = new TableView<>();
         scenarioTable.setPrefHeight(150);
         scenarioTable.setEditable(true);
 
-        TableColumn<ScenarioSelectableItem, Boolean> selectCol = new TableColumn<>("Comparer");
+        selectCol = new TableColumn<>();
         selectCol.setCellValueFactory(p -> {
             var item = p.getValue();
             var prop = javafx.beans.binding.Bindings.createBooleanBinding(item::isSelected);
@@ -168,15 +183,15 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         });
         selectCol.setPrefWidth(80);
 
-        TableColumn<ScenarioSelectableItem, String> nameCol = new TableColumn<>("Nom du Scénario");
+        nameCol = new TableColumn<>();
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         nameCol.setPrefWidth(220);
 
-        TableColumn<ScenarioSelectableItem, String> yearsCol = new TableColumn<>("Plage Chronologique");
+        yearsCol = new TableColumn<>();
         yearsCol.setCellValueFactory(new PropertyValueFactory<>("yearRange"));
         yearsCol.setPrefWidth(140);
 
-        TableColumn<ScenarioSelectableItem, String> statusCol = new TableColumn<>("Statut Exécution BD");
+        statusCol = new TableColumn<>();
         statusCol.setCellValueFactory(new PropertyValueFactory<>("statusDisplay"));
         statusCol.setPrefWidth(220);
 
@@ -186,15 +201,12 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         scenarioTable.setItems(scenarioList);
 
         // Multi-curve Line Chart
-        NumberAxis xAxis = new NumberAxis();
-        xAxis.setLabel("Années de Simulation (Ticks)");
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel("Valeur de l'Indicateur");
+        xAxis = new NumberAxis();
+        yAxis = new NumberAxis();
 
         chart = new LineChart<>(xAxis, yAxis);
-        chart.setTitle("Superposition Chronologique Multi-Scénarios");
         chart.setAnimated(false);
-        chart.setStyle("-fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 8;");
+        chart.getStyleClass().add("card-section");
         VBox.setVgrow(chart, Priority.ALWAYS);
 
         leftPane.getChildren().addAll(tableTitle, scenarioTable, chart);
@@ -202,24 +214,26 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         // Right Diagnostics & Report Area
         VBox diagBox = new VBox(10);
         diagBox.setPadding(new Insets(12));
-        diagBox.setStyle("-fx-background-color: rgba(15, 23, 42, 0.85); -fx-background-radius: 8; -fx-border-color: #38bdf8; -fx-border-radius: 8;");
+        diagBox.getStyleClass().add("card-section");
 
-        Label diagHeader = new Label("🔍 ANALYSE DE DIVERGENCE & ANATOMIE DES ÉCARTS");
-        diagHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #38bdf8;");
+        diagHeader = new Label();
+        diagHeader.getStyleClass().add("label-header");
 
-        divergenceLabel = new Label("Point de rupture : Sélectionnez au moins 2 scénarios");
+        divergenceLabel = new Label();
         divergenceLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #f59e0b;");
 
-        explanationLabel = new Label("Cochez les scénarios dans la liste ci-dessus pour lancer la comparaison.");
+        explanationLabel = new Label();
         explanationLabel.setWrapText(true);
-        explanationLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 12px;");
+        explanationLabel.getStyleClass().add("hint-label");
+
+        synthHeader = new Label();
 
         reportPreviewArea = new TextArea();
         reportPreviewArea.setEditable(false);
-        reportPreviewArea.setStyle("-fx-control-inner-background: #090d16; -fx-font-family: 'Consolas', monospace; -fx-font-size: 11px;");
+        reportPreviewArea.getStyleClass().add("scenario-description-area");
         VBox.setVgrow(reportPreviewArea, Priority.ALWAYS);
 
-        diagBox.getChildren().addAll(diagHeader, divergenceLabel, explanationLabel, new Label("📄 Synthèse Comparative Auto-Générée :"), reportPreviewArea);
+        diagBox.getChildren().addAll(diagHeader, divergenceLabel, explanationLabel, synthHeader, reportPreviewArea);
 
         mainSplit.getItems().addAll(leftPane, diagBox);
         mainSplit.setDividerPositions(0.60);
@@ -417,6 +431,45 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     public void updateTexts() {
-        // i18n dynamic updates
+        if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("analytics.header", "📊 ANALYSE COMPARATIVE & BATAILLE DE SCÉNARIOS (DEEP ANALYTICS)"));
+        if (metricLabel != null) metricLabel.setText(I18n.getOrDefault("analytics.metric_label", "Indicateur Visualisé :"));
+        if (analyzeBtn != null) analyzeBtn.setText(I18n.getOrDefault("analytics.btn.analyze", "⚡ Calculer les Écarts & Cause Racinaire"));
+        if (exportMdBtn != null) exportMdBtn.setText(I18n.getOrDefault("analytics.btn.export_md", "📝 Exporter Rapport (.md)"));
+        if (exportCsvBtn != null) exportCsvBtn.setText(I18n.getOrDefault("analytics.btn.export_csv", "📥 Exporter Données (.csv)"));
+        if (tableTitle != null) tableTitle.setText(I18n.getOrDefault("analytics.table_title", "📋 Sélection des Scénarios de la Base de Données à Comparer :"));
+        if (selectCol != null) selectCol.setText(I18n.getOrDefault("analytics.col.compare", "Comparer"));
+        if (nameCol != null) nameCol.setText(I18n.getOrDefault("analytics.col.name", "Nom du Scénario"));
+        if (yearsCol != null) yearsCol.setText(I18n.getOrDefault("analytics.col.years", "Plage Chronologique"));
+        if (statusCol != null) statusCol.setText(I18n.getOrDefault("analytics.col.status", "Statut Exécution BD"));
+        if (xAxis != null) xAxis.setLabel(I18n.getOrDefault("analytics.axis.x", "Années de Simulation (Ticks)"));
+        if (yAxis != null) yAxis.setLabel(I18n.getOrDefault("analytics.axis.y", "Valeur de l'Indicateur"));
+        if (chart != null) chart.setTitle(I18n.getOrDefault("analytics.chart.title", "Superposition Chronologique Multi-Scénarios"));
+        if (diagHeader != null) diagHeader.setText(I18n.getOrDefault("analytics.diag_header", "🔍 ANALYSE DE DIVERGENCE & ANATOMIE DES ÉCARTS"));
+        if (synthHeader != null) synthHeader.setText(I18n.getOrDefault("analytics.synth_header", "📄 Synthèse Comparative Auto-Générée :"));
+
+        if (divergenceLabel != null && (divergenceLabel.getText() == null || divergenceLabel.getText().isBlank() || divergenceLabel.getText().startsWith("Point de rupture") || divergenceLabel.getText().startsWith("Point of divergence") || divergenceLabel.getText().startsWith("Punto de ruptura") || divergenceLabel.getText().startsWith("Bruchpunkt") || divergenceLabel.getText().startsWith("临界断点"))) {
+            divergenceLabel.setText(I18n.getOrDefault("analytics.divergence.select_hint", "Point de rupture : Sélectionnez au moins 2 scénarios"));
+        }
+        if (explanationLabel != null && (explanationLabel.getText() == null || explanationLabel.getText().isBlank() || explanationLabel.getText().startsWith("Cochez les scénarios") || explanationLabel.getText().startsWith("Check scenarios") || explanationLabel.getText().startsWith("Marque los escenarios") || explanationLabel.getText().startsWith("Wählen Sie Szenarien") || explanationLabel.getText().startsWith("勾选上方列表"))) {
+            explanationLabel.setText(I18n.getOrDefault("analytics.divergence.check_hint", "Cochez les scénarios dans la liste ci-dessus pour lancer la comparaison."));
+        }
+
+        if (metricSelectorCombo != null) {
+            String selected = metricSelectorCombo.getValue();
+            metricSelectorCombo.getItems().clear();
+            metricSelectorCombo.getItems().addAll(
+                I18n.getOrDefault("analytics.metric.population", "Population Totale"),
+                I18n.getOrDefault("analytics.metric.food", "Nourriture / Subsistance"),
+                I18n.getOrDefault("analytics.metric.tech", "Niveau Technologique"),
+                I18n.getOrDefault("analytics.metric.stability", "Indice de Stabilité")
+            );
+            if (selected != null && metricSelectorCombo.getItems().contains(selected)) {
+                metricSelectorCombo.setValue(selected);
+            } else if (!metricSelectorCombo.getItems().isEmpty()) {
+                metricSelectorCombo.setValue(metricSelectorCombo.getItems().get(0));
+            }
+        }
+
+        checkExecutionStatus();
     }
 }

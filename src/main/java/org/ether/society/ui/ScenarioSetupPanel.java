@@ -86,6 +86,121 @@ public class ScenarioSetupPanel extends BorderPane {
         if (!isUpdatingFromPreset && scenarioPresetBar != null) {
             scenarioPresetBar.notifyParametersChanged();
         }
+        updateLiveDiagnosticBlock();
+        updateDefaultValueIndicators();
+    }
+
+    /**
+     * Attaches default value handling to a JavaFX control:
+     * 1. Appends "[VALEUR PAR DÉFAUT : X]" to the tooltip.
+     * 2. Adds a right-click Context Menu ("🔄 Réinitialiser à la valeur par défaut (X)").
+     */
+    private <T> void attachDefaultValueHandling(Control control, T defaultValue, Runnable resetAction) {
+        if (control == null) return;
+
+        String defaultStr;
+        if (defaultValue instanceof Double d) {
+            defaultStr = String.format(java.util.Locale.US, "%.2f", d);
+        } else {
+            defaultStr = String.valueOf(defaultValue);
+        }
+
+        // 1. Tooltip enhancement
+        Tooltip currentTooltip = control.getTooltip();
+        String baseTooltip = currentTooltip != null ? currentTooltip.getText() : "";
+        if (!baseTooltip.contains("[VALEUR PAR DÉFAUT")) {
+            String defaultNotice = (baseTooltip.isEmpty() ? "" : "\n\n") + "📌 [VALEUR PAR DÉFAUT : " + defaultStr + "] — Clic droit pour réinitialiser.";
+            control.setTooltip(new Tooltip(baseTooltip + defaultNotice));
+        }
+
+        // 2. Right-click Context Menu
+        ContextMenu contextMenu = control.getContextMenu();
+        if (contextMenu == null) {
+            contextMenu = new ContextMenu();
+        }
+        MenuItem resetItem = new MenuItem("🔄 Réinitialiser à la valeur par défaut (" + defaultStr + ")");
+        resetItem.setOnAction(e -> {
+            if (resetAction != null) {
+                resetAction.run();
+                notifyParamChange();
+            }
+        });
+        contextMenu.getItems().add(resetItem);
+        control.setContextMenu(contextMenu);
+    }
+
+    private void updateDefaultValueIndicators() {
+        if (isUpdatingFromPreset) return;
+
+        highlightControlIfModified(startYearSpinner, startYearSpinner != null && startYearSpinner.getValue() != null && startYearSpinner.getValue() != -100000);
+        highlightControlIfModified(endYearSpinner, endYearSpinner != null && endYearSpinner.getValue() != null && endYearSpinner.getValue() != 100);
+        highlightControlIfModified(targetCohortSizeSpinner, targetCohortSizeSpinner != null && targetCohortSizeSpinner.getValue() != null && targetCohortSizeSpinner.getValue() != 150);
+        highlightControlIfModified(temporalResolutionCombo, temporalResolutionCombo != null && temporalResolutionCombo.getValue() != null && Math.abs(temporalResolutionCombo.getValue() - 30.0) > 0.001);
+        highlightControlIfModified(initialHumanCountSpinner, initialHumanCountSpinner != null && initialHumanCountSpinner.getValue() != null && initialHumanCountSpinner.getValue() != 1000L);
+        highlightControlIfModified(initialCapitalSpinner, initialCapitalSpinner != null && initialCapitalSpinner.getValue() != null && Math.abs(initialCapitalSpinner.getValue() - 10.0) > 0.001);
+        highlightControlIfModified(initialEnergySpinner, initialEnergySpinner != null && initialEnergySpinner.getValue() != null && Math.abs(initialEnergySpinner.getValue() - 50.0) > 0.001);
+        highlightControlIfModified(initialFoodSpinner, initialFoodSpinner != null && initialFoodSpinner.getValue() != null && Math.abs(initialFoodSpinner.getValue() - 6.0) > 0.001);
+        highlightControlIfModified(initialInfoSpinner, initialInfoSpinner != null && initialInfoSpinner.getValue() != null && Math.abs(initialInfoSpinner.getValue() - 100.0) > 0.001);
+        highlightControlIfModified(cultureVectorDimSpinner, cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null && cultureVectorDimSpinner.getValue() != 8);
+        highlightControlIfModified(culturalDiffusionRateSpinner, culturalDiffusionRateSpinner != null && culturalDiffusionRateSpinner.getValue() != null && Math.abs(culturalDiffusionRateSpinner.getValue() - 0.05) > 0.001);
+        highlightControlIfModified(culturalMutationRateSpinner, culturalMutationRateSpinner != null && culturalMutationRateSpinner.getValue() != null && Math.abs(culturalMutationRateSpinner.getValue() - 0.01) > 0.001);
+        highlightControlIfModified(strictDeterminismCheckBox, strictDeterminismCheckBox != null && strictDeterminismCheckBox.isSelected());
+        highlightControlIfModified(climateTickFreqSlider, climateTickFreqSlider != null && Math.abs(climateTickFreqSlider.getValue() - 6.0) > 0.001);
+        highlightControlIfModified(threadCountSlider, threadCountSlider != null && Math.abs(threadCountSlider.getValue() - 4.0) > 0.001);
+
+        for (Map.Entry<String, Map<String, Spinner<Double>>> engEntry : typeBParamSpinnersMap.entrySet()) {
+            for (Map.Entry<String, Spinner<Double>> pEntry : engEntry.getValue().entrySet()) {
+                Spinner<Double> sp = pEntry.getValue();
+                if (sp != null && sp.getValue() != null) {
+                    double defVal = getTypeBParamDefault(engEntry.getKey(), pEntry.getKey());
+                    highlightControlIfModified(sp, Math.abs(sp.getValue() - defVal) > 0.0001);
+                }
+            }
+        }
+    }
+
+    private double getTypeBParamDefault(String engineKey, String paramKey) {
+        if ("MaritimeHighwayEngine".equals(engineKey)) {
+            if ("capitalBoostRate".equals(paramKey)) return 0.05;
+            if ("frictionMultiplier".equals(paramKey)) return 0.20;
+        } else if ("HydrologicalEngineeringEngine".equals(engineKey)) {
+            if ("tenochtitlanTech".equals(paramKey)) return 3.5;
+            if ("tenochtitlanCapital".equals(paramKey)) return 150.0;
+            if ("aralRainfallThreshold".equals(paramKey)) return 300.0;
+            if ("damMinElevation".equals(paramKey)) return 300.0;
+        } else if ("FertileCrescentSalinizationEngine".equals(engineKey)) {
+            if ("salinizationRate".equals(paramKey)) return 0.02;
+        } else if ("LandReclamationEngine".equals(engineKey)) {
+            if ("polderTechThreshold".equals(paramKey)) return 4.0;
+            if ("polderCapitalThreshold".equals(paramKey)) return 100.0;
+        }
+        return 0.0;
+    }
+
+    private void highlightControlIfModified(Control control, boolean isModified) {
+        if (control == null) return;
+        if (isModified) {
+            control.setStyle("-fx-border-color: #f59e0b; -fx-border-width: 1.5px; -fx-border-radius: 4px;");
+        } else {
+            control.setStyle("");
+        }
+    }
+
+    public void resetAllToDefaults() {
+        boolean oldUpdating = isUpdatingFromPreset;
+        isUpdatingFromPreset = true;
+        try {
+            Scenario def = new Scenario();
+            def.setName(org.ether.society.i18n.I18n.getOrDefault("scenario.default_name", "Nouveau Scénario Baseline"));
+            applyScenarioToUI(def);
+        } finally {
+            isUpdatingFromPreset = oldUpdating;
+        }
+        notifyParamChange();
+        updateDefaultValueIndicators();
+        if (scenarioDescriptionArea != null) {
+            scenarioDescriptionArea.setText("Scénario réinitialisé aux valeurs par défaut canoniques de la simulation.");
+        }
     }
 
     // Population & Density Controls
@@ -104,6 +219,19 @@ public class ScenarioSetupPanel extends BorderPane {
     private Button demoHelpBtn;
     private Label densityFormatHintLabel;
     private Button exportDensityMapBtn;
+
+    // Cultural Vector & Multi-Field Layer Controls (Tab 3)
+    private Spinner<Integer> cultureVectorDimSpinner;
+    private Spinner<Double> culturalDiffusionRateSpinner;
+    private Spinner<Double> culturalMutationRateSpinner;
+    private Label isoglossFileLabel;
+    private Label kinshipFileLabel;
+    private Label ritualsFileLabel;
+    private Label sovereigntyFileLabel;
+    private Image customIsoglossImage;
+    private Image customKinshipImage;
+    private Image customRitualsImage;
+    private Image customSovereigntyImage;
 
     // Map Preview
     private Canvas previewCanvas;
@@ -177,7 +305,7 @@ public class ScenarioSetupPanel extends BorderPane {
         Map.entry("YOUNGER_DRYAS", "❄️ Refuges Natufiens du Récents Dryas"),
         Map.entry("FERTILE_CRESCENT", "🌾 Plaines Alluviales & Littoraux (Croissant Fertile)"),
         Map.entry("GREEN_SAHARA", "🌴 Savane Lacustre & Sahara Vert"),
-        Map.entry("EGYPT_NILE", "𓀀 Bande d'Irrigation du Nil Égyptien"),
+        Map.entry("EGYPT_NILE", "🏛️ Bande d'Irrigation du Nil Égyptien"),
         Map.entry("MESOPOTAMIA_ASSYRIA", "🏛️ Deltas & Bassins Fluviaux (Mésopotamie)"),
         Map.entry("MESOAMERICA", "🌴 Jungles Tropicales & Collines (Mésoamérique)"),
         Map.entry("INDIA_MAURYA", "☸️ Plaine Gângétique & Indus (Empire Maurya)"),
@@ -202,7 +330,7 @@ public class ScenarioSetupPanel extends BorderPane {
         Map.entry("YOUNGER_DRYAS", "❄️ Refuges Dryas : Densification forcée autour des rares micro-climats d'oasis et corridors humides Levantins."),
         Map.entry("FERTILE_CRESCENT", "🌾 Croissant Fertile : Implantation le long des plaines alluviales et littoraux tempérés."),
         Map.entry("GREEN_SAHARA", "🌴 Sahara Vert : Colonisation autour des réceptacles lacustres du Mega-Tchad et savanes de l'AHP."),
-        Map.entry("EGYPT_NILE", "𓀀 Vallée du Nil : Hyper-concentration linéaire exclusive sur les berges inondables et le Delta."),
+        Map.entry("EGYPT_NILE", "🏛️ Vallée du Nil : Hyper-concentration linéaire exclusive sur les berges inondables et le Delta."),
         Map.entry("MESOPOTAMIA_ASSYRIA", "🏛️ Mésopotamie : Concentration le long des vallées du Tigre et de l'Euphrate et canaux d'irrigation."),
         Map.entry("MESOAMERICA", "🌴 Mésoamérique : Distribution au sein des terres basses tropicales mayas et hautes vallées aztèques."),
         Map.entry("INDIA_MAURYA", "☸️ Empire Maurya : Forte densité dans la fertile plaine gângétique et les ports de l'Océan Indien."),
@@ -227,12 +355,24 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label boundaryLabel;
     private Label previewTitleLabel;
 
-    // Ocean Optimization & Engine Architecture Checkboxes (Persisted at Scenario Level)
+    // Ocean & Engine Optimization Architecture Checkboxes (Persisted at Scenario Level for Physical Conformance)
+    private CheckBox strictDeterminismCheckBox;
+    private CheckBox sparseCellSkippingCheckBox;
     private CheckBox oceanMacroAggregationCheckBox;
     private CheckBox coastalNavigationOnlyCheckBox;
     private CheckBox oceanMultiRateTickingCheckBox;
+    private Slider climateTickFreqSlider;
+    private Label climateTickFreqValueLabel;
+    private CheckBox parallelExecutionCheckBox;
+    private Slider threadCountSlider;
+    private Label threadCountValueLabel;
+    private CheckBox spatialRangeTruncationCheckBox;
     private final java.util.Map<String, CheckBox> typeBCheckBoxMap = new java.util.HashMap<>();
+    private final java.util.Map<String, java.util.Map<String, Spinner<Double>>> typeBParamSpinnersMap = new java.util.HashMap<>();
     private VBox typeBBoxContainer;
+    private VBox liveDiagnosticCard;
+    private Label liveDiagnosticHeader;
+    private VBox liveDiagnosticContentBox;
     private String selectedEngineClassName = "FrontierAsabiyyahEngine";
     private Label engineInspectorTitle;
     private Label engineInspectorText;
@@ -253,6 +393,126 @@ public class ScenarioSetupPanel extends BorderPane {
         if (engineInspectorEquations != null) engineInspectorEquations.setText(LaTeXFormatter.formatLaTeX(equations));
         if (engineInspectorRef != null) engineInspectorRef.setText("📚 " + reference);
         if (exportSelectedEngineBtn != null) exportSelectedEngineBtn.setText("📤 Exporter " + className + ".java");
+    }
+
+    private javafx.scene.Node createEngineParameterBox(String engineKey) {
+        GridPane grid = new GridPane();
+        grid.setHgap(8);
+        grid.setVgap(4);
+        grid.setPadding(new Insets(4, 8, 8, 24));
+        grid.setStyle("-fx-background-color: rgba(30, 41, 59, 0.5); -fx-background-radius: 4px; -fx-border-color: rgba(99, 102, 241, 0.3); -fx-border-radius: 4px;");
+
+        Map<String, Spinner<Double>> spinners = new HashMap<>();
+
+        if ("MaritimeHighwayEngine".equals(engineKey)) {
+            Label l1 = new Label("Boost Capital/Tick (α):");
+            l1.setStyle("-fx-font-size: 10px; -fx-text-fill: #cbd5e1;");
+            Spinner<Double> s1 = new Spinner<>(0.0, 0.50, 0.05, 0.01);
+            s1.setEditable(true);
+            s1.setPrefWidth(90);
+            s1.valueProperty().addListener((obs, o, n) -> notifyParamChange());
+            attachDefaultValueHandling(s1, 0.05, () -> s1.getValueFactory().setValue(0.05));
+            grid.add(l1, 0, 0);
+            grid.add(s1, 1, 0);
+            spinners.put("capitalBoostRate", s1);
+
+            Label l2 = new Label("Mult. Friction Eau (μ):");
+            l2.setStyle("-fx-font-size: 10px; -fx-text-fill: #cbd5e1;");
+            Spinner<Double> s2 = new Spinner<>(0.05, 1.00, 0.20, 0.05);
+            s2.setEditable(true);
+            s2.setPrefWidth(90);
+            s2.valueProperty().addListener((obs, o, n) -> notifyParamChange());
+            attachDefaultValueHandling(s2, 0.20, () -> s2.getValueFactory().setValue(0.20));
+            grid.add(l2, 2, 0);
+            grid.add(s2, 3, 0);
+            spinners.put("frictionMultiplier", s2);
+
+        } else if ("HydrologicalEngineeringEngine".equals(engineKey)) {
+            Label l1 = new Label("Seuil Tech Tenochtitlan:");
+            l1.setStyle("-fx-font-size: 10px; -fx-text-fill: #cbd5e1;");
+            Spinner<Double> s1 = new Spinner<>(1.0, 10.0, 3.5, 0.5);
+            s1.setEditable(true);
+            s1.setPrefWidth(90);
+            s1.valueProperty().addListener((obs, o, n) -> notifyParamChange());
+            attachDefaultValueHandling(s1, 3.5, () -> s1.getValueFactory().setValue(3.5));
+            grid.add(l1, 0, 0);
+            grid.add(s1, 1, 0);
+            spinners.put("tenochtitlanTech", s1);
+
+            Label l2 = new Label("Seuil Capital Tenochtitlan:");
+            l2.setStyle("-fx-font-size: 10px; -fx-text-fill: #cbd5e1;");
+            Spinner<Double> s2 = new Spinner<>(10.0, 1000.0, 150.0, 10.0);
+            s2.setEditable(true);
+            s2.setPrefWidth(90);
+            s2.valueProperty().addListener((obs, o, n) -> notifyParamChange());
+            attachDefaultValueHandling(s2, 150.0, () -> s2.getValueFactory().setValue(150.0));
+            grid.add(l2, 2, 0);
+            grid.add(s2, 3, 0);
+            spinners.put("tenochtitlanCapital", s2);
+
+            Label l3 = new Label("Seuil Pluie Aral (mm):");
+            l3.setStyle("-fx-font-size: 10px; -fx-text-fill: #cbd5e1;");
+            Spinner<Double> s3 = new Spinner<>(50.0, 1000.0, 300.0, 25.0);
+            s3.setEditable(true);
+            s3.setPrefWidth(90);
+            s3.valueProperty().addListener((obs, o, n) -> notifyParamChange());
+            attachDefaultValueHandling(s3, 300.0, () -> s3.getValueFactory().setValue(300.0));
+            grid.add(l3, 0, 1);
+            grid.add(s3, 1, 1);
+            spinners.put("aralRainfallThreshold", s3);
+
+            Label l4 = new Label("Altitude Min Barrage (m):");
+            l4.setStyle("-fx-font-size: 10px; -fx-text-fill: #cbd5e1;");
+            Spinner<Double> s4 = new Spinner<>(50.0, 2000.0, 300.0, 50.0);
+            s4.setEditable(true);
+            s4.setPrefWidth(90);
+            s4.valueProperty().addListener((obs, o, n) -> notifyParamChange());
+            attachDefaultValueHandling(s4, 300.0, () -> s4.getValueFactory().setValue(300.0));
+            grid.add(l4, 2, 1);
+            grid.add(s4, 3, 1);
+            spinners.put("damMinElevation", s4);
+
+        } else if ("FertileCrescentSalinizationEngine".equals(engineKey)) {
+            Label l1 = new Label("Taux Salinisation Sol (k_salt):");
+            l1.setStyle("-fx-font-size: 10px; -fx-text-fill: #cbd5e1;");
+            Spinner<Double> s1 = new Spinner<>(0.001, 0.20, 0.02, 0.005);
+            s1.setEditable(true);
+            s1.setPrefWidth(90);
+            s1.valueProperty().addListener((obs, o, n) -> notifyParamChange());
+            attachDefaultValueHandling(s1, 0.02, () -> s1.getValueFactory().setValue(0.02));
+            grid.add(l1, 0, 0);
+            grid.add(s1, 1, 0);
+            spinners.put("salinizationRate", s1);
+
+        } else if ("LandReclamationEngine".equals(engineKey)) {
+            Label l1 = new Label("Seuil Tech Poldérisation:");
+            l1.setStyle("-fx-font-size: 10px; -fx-text-fill: #cbd5e1;");
+            Spinner<Double> s1 = new Spinner<>(1.0, 10.0, 4.0, 0.5);
+            s1.setEditable(true);
+            s1.setPrefWidth(90);
+            s1.valueProperty().addListener((obs, o, n) -> notifyParamChange());
+            attachDefaultValueHandling(s1, 4.0, () -> s1.getValueFactory().setValue(4.0));
+            grid.add(l1, 0, 0);
+            grid.add(s1, 1, 0);
+            spinners.put("polderTechThreshold", s1);
+
+            Label l2 = new Label("Seuil Capital Poldérisation:");
+            l2.setStyle("-fx-font-size: 10px; -fx-text-fill: #cbd5e1;");
+            Spinner<Double> s2 = new Spinner<>(10.0, 1000.0, 100.0, 10.0);
+            s2.setEditable(true);
+            s2.setPrefWidth(90);
+            s2.valueProperty().addListener((obs, o, n) -> notifyParamChange());
+            attachDefaultValueHandling(s2, 100.0, () -> s2.getValueFactory().setValue(100.0));
+            grid.add(l2, 2, 0);
+            grid.add(s2, 3, 0);
+            spinners.put("polderCapitalThreshold", s2);
+        }
+
+        if (!spinners.isEmpty()) {
+            typeBParamSpinnersMap.put(engineKey, spinners);
+            return grid;
+        }
+        return null;
     }
 
 
@@ -335,33 +595,38 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     public void setInheritedContext(PlanetPreset planetPreset, String ecologyName) {
-        if (planetPreset != null) {
-            this.activePlanetPreset = planetPreset;
-        } else {
-            EcologyPreset activeEco = ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null;
-            if (activeEco != null) {
-                this.activePlanetPreset = findPlanetPresetByName(activeEco.planetPresetName());
-            }
-        }
-        if (this.activePlanetPreset == null) {
-            this.activePlanetPreset = PlanetPreset.EARTH_LIKE;
-        }
-
-        if (planetPresetCombo != null) {
-            planetPresetCombo.setValue(this.activePlanetPreset);
-        }
-        if (ecologyName != null && ecologyPresetCombo != null) {
-            for (EcologyPreset eco : ecologyPresetCombo.getItems()) {
-                if (eco.name().equalsIgnoreCase(ecologyName)) {
-                    ecologyPresetCombo.setValue(eco);
-                    break;
+        boolean oldUpdating = isUpdatingFromPreset;
+        isUpdatingFromPreset = true;
+        try {
+            if (planetPreset != null) {
+                this.activePlanetPreset = planetPreset;
+            } else {
+                EcologyPreset activeEco = ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null;
+                if (activeEco != null) {
+                    this.activePlanetPreset = findPlanetPresetByName(activeEco.planetPresetName());
                 }
             }
-        }
-        updateInheritedContextDisplay(ecologyName);
-        notifyParamChange();
-        if (currentPreviewCells != null) {
-            generatePreview();
+            if (this.activePlanetPreset == null) {
+                this.activePlanetPreset = PlanetPreset.EARTH_LIKE;
+            }
+
+            if (planetPresetCombo != null) {
+                planetPresetCombo.setValue(this.activePlanetPreset);
+            }
+            if (ecologyName != null && ecologyPresetCombo != null) {
+                for (EcologyPreset eco : ecologyPresetCombo.getItems()) {
+                    if (eco.name().equalsIgnoreCase(ecologyName)) {
+                        ecologyPresetCombo.setValue(eco);
+                        break;
+                    }
+                }
+            }
+            updateInheritedContextDisplay(ecologyName);
+            if (currentPreviewCells != null) {
+                generatePreview();
+            }
+        } finally {
+            isUpdatingFromPreset = oldUpdating;
         }
     }
 
@@ -421,7 +686,7 @@ public class ScenarioSetupPanel extends BorderPane {
         root.setPadding(new Insets(0, 20, 0, 0));
 
         // --- 1. Standardized Preset Control Bar for Scenarios ---
-        scenarioPresetBar = new PresetControlBar<>(org.ether.society.i18n.I18n.getOrDefault("scenario.preset_bar", "Préréglage de Scénario"));
+        scenarioPresetBar = new PresetControlBar<>("scenario.preset_bar", "Préréglage de Scénario");
         scenarioPresetBar.setExportCategory("scenario");
         List<Scenario> builtInScenarios = getBuiltInScenarios();
         Scenario defaultScenario = builtInScenarios.isEmpty() ? null : builtInScenarios.get(0);
@@ -576,15 +841,15 @@ public class ScenarioSetupPanel extends BorderPane {
 
         // Target Cohort Size (Row 1)
         cohortSizeLabel = new Label();
-        targetCohortSizeSpinner = new Spinner<>(1, 100000, 500, 100);
+        targetCohortSizeSpinner = new Spinner<>(1, 100000, 150, 25);
         targetCohortSizeSpinner.setEditable(true);
         targetCohortSizeSpinner.setMaxWidth(Double.MAX_VALUE);
         targetCohortSizeSpinner.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.cohort_size", 
                 "👥 Taille Cible des Cohortes Démographiques (Nœuds Agents DOD) [hab/cohorte] :\n" +
                 "Détermine la taille moyenne des groupes d'habitants représentés par un même nœud agent.\n" +
-                "• 1 000 à 10 000 hab/cohorte : Macro-simulation haute performance (par défaut)\n" +
-                "• 100 à 500 hab/cohorte : Démographie fine et micro-groupes\n" +
-                "• 1 hab/cohorte : Agent 1:1 (Modèle Individu par Individu - Mode Expérimental)")));
+                "• 30 à 50 hab/cohorte : Bandes nomades & paléolithiques (Chasseurs-cueilleurs)\n" +
+                "• 150 hab/cohorte : Nombre de Dunbar (Villages sédentaires & communautés de base)\n" +
+                "• 500 à 10 000 hab/cohorte : Villes, empires & macro-simulation industrielle/moderne")));
         Tooltip.install(cohortSizeLabel, targetCohortSizeSpinner.getTooltip());
         targetCohortSizeSpinner.valueProperty().addListener((obs, oldV, newV) -> notifyParamChange());
 
@@ -865,6 +1130,9 @@ public class ScenarioSetupPanel extends BorderPane {
 
         popSection.getChildren().addAll(popHeader, radioProcDemo, proceduralDemoPanel, radioImportDemo, importDemoPanel);
 
+        // --- 4. Cultural Vector & Multi-Field Layers Section (Tab 3) ---
+        VBox cultureSection = createCulturalVectorAndLayersSection();
+
         // --- 5. Spatial Clipping & Boundary Condition Section ---
         VBox clippingSection = createClippingSection();
 
@@ -892,27 +1160,23 @@ public class ScenarioSetupPanel extends BorderPane {
         progressStatusLabel.setVisible(false);
         progressStatusLabel.setManaged(false);
 
-        Button btnPreFlight = new Button("📋 Diagnostic de Viabilité Civilisationnelle");
+        // Real-Time Integrated Diagnostic Block
+        liveDiagnosticCard = new VBox(8);
+        liveDiagnosticCard.getStyleClass().add("card-section");
+        liveDiagnosticCard.setStyle("-fx-background-color: rgba(15, 23, 42, 0.6); -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 6px; -fx-padding: 10px;");
+
+        liveDiagnosticHeader = new Label("📋 DIAGNOSTIC DE VIABILITÉ CIVILISATIONNELLE (TEMPS RÉEL)");
+        liveDiagnosticHeader.getStyleClass().add("label-header");
+
+        liveDiagnosticContentBox = new VBox(4);
+        liveDiagnosticCard.getChildren().addAll(liveDiagnosticHeader, liveDiagnosticContentBox);
+        updateLiveDiagnosticBlock();
+
+        Button btnPreFlight = new Button("📋 Rafraîchir Diagnostic Viabilité");
         btnPreFlight.getStyleClass().add("button-secondary");
         btnPreFlight.setMaxWidth(Double.MAX_VALUE);
         btnPreFlight.setStyle("-fx-font-weight: bold; -fx-text-fill: #eab308;");
         btnPreFlight.setOnAction(e -> runPreFlightSanityCheck());
-
-        Button btnExportBundle = new Button("📦 Exporter Bundle (.ether)");
-        btnExportBundle.getStyleClass().add("button-secondary");
-        btnExportBundle.setMaxWidth(Double.MAX_VALUE);
-        btnExportBundle.setStyle("-fx-text-fill: #38bdf8;");
-        btnExportBundle.setOnAction(e -> exportUnifiedBundle());
-
-        Button btnImportBundle = new Button("📂 Importer Bundle (.ether)");
-        btnImportBundle.getStyleClass().add("button-secondary");
-        btnImportBundle.setMaxWidth(Double.MAX_VALUE);
-        btnImportBundle.setStyle("-fx-text-fill: #a78bfa;");
-        btnImportBundle.setOnAction(e -> importUnifiedBundle());
-
-        HBox bundleBox = new HBox(8, btnExportBundle, btnImportBundle);
-        HBox.setHgrow(btnExportBundle, Priority.ALWAYS);
-        HBox.setHgrow(btnImportBundle, Priority.ALWAYS);
 
         startBtn = new Button();
         startBtn.setPrefHeight(50);
@@ -922,11 +1186,12 @@ public class ScenarioSetupPanel extends BorderPane {
         startBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.start", "Calculer les cellules H3 et lancer la simulation.")));
 
         VBox snapshotSection = createSnapshotSection();
+        VBox bundleSection = createBundleSection();
 
-        bottomActionBox = new VBox(8, btnPreFlight, bundleBox, progressBar, progressStatusLabel, startBtn);
+        bottomActionBox = new VBox(8, btnPreFlight, progressBar, progressStatusLabel, startBtn);
         bottomActionBox.setAlignment(Pos.CENTER);
 
-        root.getChildren().addAll(scenarioPresetBar, inheritedSection, section1, popSection, oceanOptSection, clippingSection, eventsSection, snapshotSection);
+        root.getChildren().addAll(scenarioPresetBar, inheritedSection, section1, liveDiagnosticCard, popSection, cultureSection, oceanOptSection, clippingSection, eventsSection, snapshotSection, bundleSection);
 
         // Populate preset bar and load default scenario description after all controls exist
         scenarioPresetBar.setPresets(builtInScenarios, defaultScenario);
@@ -935,6 +1200,39 @@ public class ScenarioSetupPanel extends BorderPane {
         }
 
         return root;
+    }
+
+    private VBox createBundleSection() {
+        VBox section = new VBox(10);
+        section.getStyleClass().add("card-section");
+
+        Label header = new Label("📦 9. IMPORTATION ET EXPORTATION DE BUNDLE UNIFIÉ (.ETHER)");
+        header.getStyleClass().add("label-header");
+
+        Label subtitle = new Label("Exportez ou importez l'intégralité du scénario (contexte planétaire, écologie, moteurs actifs, calques culturels et grille démographique) au format unifié .ether pour archivage ou partage.");
+        subtitle.setWrapText(true);
+        subtitle.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+
+        Button btnExportBundle = new Button("📦 Exporter Bundle (.ether)");
+        btnExportBundle.getStyleClass().add("button-secondary");
+        btnExportBundle.setMaxWidth(Double.MAX_VALUE);
+        btnExportBundle.setStyle("-fx-text-fill: #38bdf8;");
+        btnExportBundle.setOnAction(e -> exportUnifiedBundle());
+        btnExportBundle.setTooltip(new Tooltip("Exporter le scénario complet (physique, écologie, moteurs, calques et démographie) dans un fichier de bundle unifié .ether."));
+
+        Button btnImportBundle = new Button("📂 Importer Bundle (.ether)");
+        btnImportBundle.getStyleClass().add("button-secondary");
+        btnImportBundle.setMaxWidth(Double.MAX_VALUE);
+        btnImportBundle.setStyle("-fx-text-fill: #a78bfa;");
+        btnImportBundle.setOnAction(e -> importUnifiedBundle());
+        btnImportBundle.setTooltip(new Tooltip("Importer et appliquer un fichier de bundle unifié .ether pour restaurer instantanément un état complet de scénario."));
+
+        HBox bundleBox = new HBox(8, btnExportBundle, btnImportBundle);
+        HBox.setHgrow(btnExportBundle, Priority.ALWAYS);
+        HBox.setHgrow(btnImportBundle, Priority.ALWAYS);
+
+        section.getChildren().addAll(header, subtitle, bundleBox);
+        return section;
     }
 
     private VBox createSnapshotSection() {
@@ -1184,8 +1482,14 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+
     private void runPreFlightSanityCheck() {
-        PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
+        updateLiveDiagnosticBlock();
+    }
+
+    private void updateLiveDiagnosticBlock() {
+        if (liveDiagnosticContentBox == null) return;
+        PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
         if (p == null) p = PlanetPreset.EARTH_LIKE;
         EcologyPreset eco = ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : EcologyPreset.EARTH_STANDARD;
 
@@ -1201,7 +1505,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
 
         if (p.waterLevel() < -0.3) {
-            warnings.add("⚠️ Ressources en Eau Limités : Monde très aride. Stress hydrique majeur prévisible.");
+            warnings.add("⚠️ Ressources en Eau Limitées : Monde très aride. Stress hydrique majeur prévisible.");
         } else {
             passes.add("✅ Hydrologie équilibrée (Niveau d'eau = " + String.format("%.0f%%", (1.0 + p.waterLevel()) * 50) + ")");
         }
@@ -1241,29 +1545,52 @@ public class ScenarioSetupPanel extends BorderPane {
             passes.add("⚡ Compilation JIT Moteurs : 100% Compatible & Fusions Validées");
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("📋 Diagnostic de Viabilité Civilisationnelle (Scénario '").append(scenarioPresetBar != null ? scenarioPresetBar.getCurrentName() : "Custom").append("') :\n\n");
-
-        if (!warnings.isEmpty()) {
-            sb.append("⚠️ ALERTES DE VIABILITÉ & TENSIONS :\n");
-            for (String w : warnings) sb.append("• ").append(w).append("\n");
-            sb.append("\n");
+        liveDiagnosticContentBox.getChildren().clear();
+        if (liveDiagnosticHeader != null) {
+            if (warnings.isEmpty()) {
+                liveDiagnosticHeader.setText("📋 DIAGNOSTIC DE VIABILITÉ CIVILISATIONNELLE : SCÉNARIO ENTIÈREMENT VIABLE");
+                liveDiagnosticHeader.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-font-size: 11px;");
+            } else {
+                liveDiagnosticHeader.setText("📋 DIAGNOSTIC DE VIABILITÉ CIVILISATIONNELLE : " + warnings.size() + " ALERTE(S) / TENSION(S)");
+                liveDiagnosticHeader.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold; -fx-font-size: 11px;");
+            }
         }
 
-        sb.append("✔️ POINTS DE STABILITÉ CONFIRMÉS :\n");
-        for (String pass : passes) sb.append("• ").append(pass).append("\n");
-
-        Alert alert = new Alert(warnings.isEmpty() ? Alert.AlertType.INFORMATION : Alert.AlertType.WARNING);
-        alert.setTitle("Diagnostic de Viabilité Civilisationnelle");
-        alert.setHeaderText(warnings.isEmpty() ? "✅ Scénario Viable et Équilibré" : "⚠️ Tension(s) ou Risque(s) Détecté(s)");
-        alert.setContentText(sb.toString());
-        alert.getDialogPane().setPrefWidth(520);
-        alert.showAndWait();
+        for (String w : warnings) {
+            Label lbl = new Label("• " + w);
+            lbl.setWrapText(true);
+            lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #f87171;");
+            liveDiagnosticContentBox.getChildren().add(lbl);
+        }
+        for (String pass : passes) {
+            Label lbl = new Label("• " + pass);
+            lbl.setWrapText(true);
+            lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #34d399;");
+            liveDiagnosticContentBox.getChildren().add(lbl);
+        }
     }
 
     private VBox createSection(Label header, javafx.scene.Node content) {
+        return createSection(header, content, null);
+    }
+
+    private VBox createSection(Label header, javafx.scene.Node content, Runnable sectionResetAction) {
         header.getStyleClass().add("label-section-header");
-        VBox box = new VBox(8, header, content);
+        HBox headerRow = new HBox(8, header);
+        headerRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        if (sectionResetAction != null) {
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+            Button resetSecBtn = new Button("🔄 " + org.ether.society.i18n.I18n.getOrDefault("scenario.btn.reset_section", "Par défaut"));
+            resetSecBtn.setStyle("-fx-font-size: 10px; -fx-padding: 2 6; -fx-background-color: rgba(148, 163, 184, 0.15); -fx-text-fill: #94a3b8; -fx-border-color: rgba(148, 163, 184, 0.3); -fx-border-radius: 4;");
+            resetSecBtn.setTooltip(new Tooltip("Réinitialiser les paramètres de cette section à leurs valeurs par défaut canoniques."));
+            resetSecBtn.setOnAction(e -> {
+                sectionResetAction.run();
+                notifyParamChange();
+            });
+            headerRow.getChildren().addAll(spacer, resetSecBtn);
+        }
+        VBox box = new VBox(8, headerRow, content);
         box.getStyleClass().add("card-section");
         return box;
     }
@@ -1282,6 +1609,7 @@ public class ScenarioSetupPanel extends BorderPane {
         s0.setInitialFoodReserveMonths(2.0);
         s0.setInitialInformationPerCapita(2.0);
         s0.setPopulationDensityType("ONE_CONTINENT");
+        s0.setTargetCohortSize(30);
         s0.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s0.setDescription("""
             🌍 SCÉNARIO PALÉOLITHIQUE : Berceau Africain, Traversée des Continents & Out of Africa (-100 000 av. J.-C.)
@@ -1309,6 +1637,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sSahul.setInitialFoodReserveMonths(2.0);
         sSahul.setInitialInformationPerCapita(3.0);
         sSahul.setPopulationDensityType("AUSTRALIA_SAHUL");
+        sSahul.setTargetCohortSize(35);
         sSahul.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sSahul.setClippingEnabled(true);
         sSahul.setMinLat(-42.0); sSahul.setMaxLat(-10.0); sSahul.setMinLng(112.0); sSahul.setMaxLng(155.0);
@@ -1332,6 +1661,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sBeringia.setInitialFoodReserveMonths(2.0);
         sBeringia.setInitialInformationPerCapita(4.0);
         sBeringia.setPopulationDensityType("BERINGIA_AMERICAS");
+        sBeringia.setTargetCohortSize(40);
         sBeringia.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sBeringia.setClippingEnabled(true);
         sBeringia.setMinLat(45.0); sBeringia.setMaxLat(75.0); sBeringia.setMinLng(140.0); sBeringia.setMaxLng(-120.0);
@@ -1355,6 +1685,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sYoungerDryas.setInitialFoodReserveMonths(2.5);
         sYoungerDryas.setInitialInformationPerCapita(8.0);
         sYoungerDryas.setPopulationDensityType("YOUNGER_DRYAS");
+        sYoungerDryas.setTargetCohortSize(50);
         sYoungerDryas.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sYoungerDryas.setDescription("""
             ❄️ SCÉNARIO PALÉOCLIMATIQUE : Le Récents Dryas & Pression Foragère Au Levant (-10 900 av. J.-C.)
@@ -1374,6 +1705,7 @@ public class ScenarioSetupPanel extends BorderPane {
         s1.setInitialFoodReserveMonths(3.0);
         s1.setInitialInformationPerCapita(5.0);
         s1.setPopulationDensityType("FERTILE_CRESCENT");
+        s1.setTargetCohortSize(150);
         s1.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s1.setClippingEnabled(true);
         s1.setMinLat(25.0); s1.setMaxLat(42.0); s1.setMinLng(25.0); s1.setMaxLng(55.0);
@@ -1397,6 +1729,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sGreenSahara.setInitialFoodReserveMonths(4.0);
         sGreenSahara.setInitialInformationPerCapita(10.0);
         sGreenSahara.setPopulationDensityType("GREEN_SAHARA");
+        sGreenSahara.setTargetCohortSize(60);
         sGreenSahara.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sGreenSahara.setDescription("""
             🌴 SCÉNARIO PALÉOCLIMATIQUE : Le Sahara Vert & Période Humide Africaine (-6000 av. J.-C.)
@@ -1417,6 +1750,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sEgypt.setInitialFoodReserveMonths(6.0);
         sEgypt.setInitialInformationPerCapita(40.0);
         sEgypt.setPopulationDensityType("EGYPT_NILE");
+        sEgypt.setTargetCohortSize(300);
         sEgypt.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sEgypt.setClippingEnabled(true);
         sEgypt.setMinLat(21.0); sEgypt.setMaxLat(32.0); sEgypt.setMinLng(24.0); sEgypt.setMaxLng(36.0);
@@ -1439,6 +1773,7 @@ public class ScenarioSetupPanel extends BorderPane {
         s3.setInitialFoodReserveMonths(6.0);
         s3.setInitialInformationPerCapita(50.0);
         s3.setPopulationDensityType("MESOPOTAMIA_ASSYRIA");
+        s3.setTargetCohortSize(500);
         s3.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s3.setClippingEnabled(true);
         s3.setMinLat(28.0); s3.setMaxLat(40.0); s3.setMinLng(38.0); s3.setMaxLng(52.0);
@@ -1462,6 +1797,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sMeso.setInitialFoodReserveMonths(6.0);
         sMeso.setInitialInformationPerCapita(150.0);
         sMeso.setPopulationDensityType("MESOAMERICA");
+        sMeso.setTargetCohortSize(250);
         sMeso.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sMeso.setClippingEnabled(true);
         sMeso.setMinLat(12.0); sMeso.setMaxLat(24.0); sMeso.setMinLng(-105.0); sMeso.setMaxLng(-85.0);
@@ -1485,6 +1821,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sMaurya.setInitialFoodReserveMonths(6.0);
         sMaurya.setInitialInformationPerCapita(300.0);
         sMaurya.setPopulationDensityType("INDIA_MAURYA");
+        sMaurya.setTargetCohortSize(1000);
         sMaurya.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sMaurya.setClippingEnabled(true);
         sMaurya.setMinLat(8.0); sMaurya.setMaxLat(35.0); sMaurya.setMinLng(68.0); sMaurya.setMaxLng(90.0);
@@ -1508,6 +1845,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sRoman.setInitialFoodReserveMonths(6.0);
         sRoman.setInitialInformationPerCapita(400.0);
         sRoman.setPopulationDensityType("ROMAN_EMPIRE");
+        sRoman.setTargetCohortSize(1000);
         sRoman.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sRoman.setClippingEnabled(true);
         sRoman.setMinLat(25.0); sRoman.setMaxLat(55.0); sRoman.setMinLng(-10.0); sRoman.setMaxLng(45.0);
@@ -1532,6 +1870,7 @@ public class ScenarioSetupPanel extends BorderPane {
         s2.setInitialFoodReserveMonths(1.5);
         s2.setInitialInformationPerCapita(300.0);
         s2.setPopulationDensityType("URBAN_CLUSTERS");
+        s2.setTargetCohortSize(1500);
         s2.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s2.setDescription("""
             🌋 SCÉNARIO HISTORIQUE : L'Anomalie Climatique Volcanique de 536 & Choc Sanitaire
@@ -1551,6 +1890,7 @@ public class ScenarioSetupPanel extends BorderPane {
         s4.setInitialFoodReserveMonths(8.0);
         s4.setInitialInformationPerCapita(1200.0);
         s4.setPopulationDensityType("RIVER_VALLEYS");
+        s4.setTargetCohortSize(2000);
         s4.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s4.setDescription("""
             🏮 SCÉNARIO HISTORIQUE : Le Siècle d'Or de la Dynastie Song (1000 ap. J.-C.)
@@ -1571,6 +1911,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sMali.setInitialFoodReserveMonths(6.0);
         sMali.setInitialInformationPerCapita(400.0);
         sMali.setPopulationDensityType("WEST_AFRICA_MALI");
+        sMali.setTargetCohortSize(500);
         sMali.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sMali.setClippingEnabled(true);
         sMali.setMinLat(5.0); sMali.setMaxLat(25.0); sMali.setMinLng(-18.0); sMali.setMaxLng(15.0);
@@ -1594,6 +1935,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sAmericas1491.setInitialFoodReserveMonths(6.0);
         sAmericas1491.setInitialInformationPerCapita(250.0);
         sAmericas1491.setPopulationDensityType("AMERICAS_1491");
+        sAmericas1491.setTargetCohortSize(1000);
         sAmericas1491.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sAmericas1491.setClippingEnabled(true);
         sAmericas1491.setMinLat(-45.0); sAmericas1491.setMaxLat(30.0); sAmericas1491.setMinLng(-110.0); sAmericas1491.setMaxLng(-35.0);
@@ -1617,6 +1959,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sColumbian.setInitialFoodReserveMonths(5.0);
         sColumbian.setInitialInformationPerCapita(300.0);
         sColumbian.setPopulationDensityType("COLUMBIAN_CONTACT");
+        sColumbian.setTargetCohortSize(1000);
         sColumbian.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sColumbian.setDescription("""
             ⛵ SCÉNARIO HISTORIQUE : Le Choc du Contact d'Échange Colombien & Effondrement Épidémique (1492)
@@ -1637,6 +1980,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sSakoku.setInitialFoodReserveMonths(8.0);
         sSakoku.setInitialInformationPerCapita(800.0);
         sSakoku.setPopulationDensityType("JAPAN_SAKOKU");
+        sSakoku.setTargetCohortSize(500);
         sSakoku.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sSakoku.setClippingEnabled(true);
         sSakoku.setMinLat(30.0); sSakoku.setMaxLat(45.0); sSakoku.setMinLng(128.0); sSakoku.setMaxLng(146.0);
@@ -1660,6 +2004,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sIndustrial1800.setInitialFoodReserveMonths(6.0);
         sIndustrial1800.setInitialInformationPerCapita(15000.0);
         sIndustrial1800.setPopulationDensityType("INDUSTRIAL_1800");
+        sIndustrial1800.setTargetCohortSize(5000);
         sIndustrial1800.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sIndustrial1800.setDescription("""
             ⚙️ SCÉNARIO HISTORIQUE : La Machine à Vapeur & L'Émergence du Charbon (1800 ap. J.-C.)
@@ -1680,6 +2025,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sModern2000.setInitialFoodReserveMonths(8.0);
         sModern2000.setInitialInformationPerCapita(2500000.0);
         sModern2000.setPopulationDensityType("URBAN_CLUSTERS");
+        sModern2000.setTargetCohortSize(10000);
         sModern2000.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sModern2000.setDescription("""
             🌐 SCÉNARIO HISTORIQUE : L'Ère Numérique & La Grande Accélération (2000 ap. J.-C.)
@@ -1700,6 +2046,7 @@ public class ScenarioSetupPanel extends BorderPane {
         s5.setInitialFoodReserveMonths(9.0);
         s5.setInitialInformationPerCapita(5000000.0);
         s5.setPopulationDensityType("URBAN_CLUSTERS");
+        s5.setTargetCohortSize(10000);
         s5.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s5.setDescription("""
             📉 SCÉNARIO FUTUR : Business As Usual (Trajectoire GIEC SSP5-8.5)
@@ -1719,6 +2066,7 @@ public class ScenarioSetupPanel extends BorderPane {
         s6.setInitialFoodReserveMonths(24.0);
         s6.setInitialInformationPerCapita(100000000.0);
         s6.setPopulationDensityType("URBAN_CLUSTERS");
+        s6.setTargetCohortSize(10000);
         s6.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s6.setDescription("""
             🤖 SCÉNARIO FUTUR : Singularité Technologique & Énergie de Fusion D-T
@@ -1738,6 +2086,7 @@ public class ScenarioSetupPanel extends BorderPane {
         s7.setInitialFoodReserveMonths(1.5);
         s7.setInitialInformationPerCapita(500000.0);
         s7.setPopulationDensityType("URBAN_CLUSTERS");
+        s7.setTargetCohortSize(250);
         s7.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s7.setDescription("""
             ☢️ SCÉNARIO FUTUR : Catastrophe de la Guerre Nucléaire & Hiver Stratosphérique
@@ -1757,6 +2106,7 @@ public class ScenarioSetupPanel extends BorderPane {
         s8.setInitialFoodReserveMonths(4.0);
         s8.setInitialInformationPerCapita(2000000.0);
         s8.setPopulationDensityType("URBAN_CLUSTERS");
+        s8.setTargetCohortSize(5000);
         s8.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s8.setDescription("""
             ⛏️ SCÉNARIO FUTUR : Épuisement du Phosphate de Roche (Peak P 2050)
@@ -1776,6 +2126,7 @@ public class ScenarioSetupPanel extends BorderPane {
         s9.setInitialFoodReserveMonths(3.0);
         s9.setInitialInformationPerCapita(5000000.0);
         s9.setPopulationDensityType("URBAN_CLUSTERS");
+        s9.setTargetCohortSize(250);
         s9.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s9.setDescription("""
             🌋 SCÉNARIO FUTUR : Super-Volcan VEI-8 & Refroidissement Vulcanologique
@@ -1790,6 +2141,11 @@ public class ScenarioSetupPanel extends BorderPane {
             • Savoir Archivé (I₀) : 5 000 000 bits/habitant (savoir automatisé & archives).
             """);
         list.add(s9);
+
+        // Pre-populate high-fidelity historical cartographic buffers for all scenarios
+        for (Scenario scenario : list) {
+            org.ether.society.data.HistoricalMapGenerator.populateScenarioHistoricalMaps(scenario);
+        }
 
         return list;
     }
@@ -1848,7 +2204,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 endYearSpinner.getValueFactory().setValue((int) s.getEndDateYear());
             }
             if (targetCohortSizeSpinner != null && targetCohortSizeSpinner.getValueFactory() != null) {
-                targetCohortSizeSpinner.getValueFactory().setValue(s.getTargetCohortSize() > 0 ? s.getTargetCohortSize() : 500);
+                targetCohortSizeSpinner.getValueFactory().setValue(s.getTargetCohortSize() > 0 ? s.getTargetCohortSize() : 150);
             }
             if (temporalResolutionCombo != null) {
                 temporalResolutionCombo.setValue(s.getTemporalResolutionDays() > 0 ? s.getTemporalResolutionDays() : 30.0);
@@ -1886,6 +2242,12 @@ public class ScenarioSetupPanel extends BorderPane {
                 if (maxLngSpinner != null && maxLngSpinner.getValueFactory() != null) maxLngSpinner.getValueFactory().setValue(s.getMaxLng());
                 if (s.getBoundaryMode() != null && boundaryModeCombo != null) boundaryModeCombo.setValue(s.getBoundaryMode());
             }
+            if (strictDeterminismCheckBox != null) {
+                strictDeterminismCheckBox.setSelected(s.isStrictDeterminism());
+            }
+            if (sparseCellSkippingCheckBox != null) {
+                sparseCellSkippingCheckBox.setSelected(s.isSparseCellSkippingEnabled());
+            }
             if (oceanMacroAggregationCheckBox != null) {
                 oceanMacroAggregationCheckBox.setSelected(s.isOceanMacroAggregationEnabled());
             }
@@ -1895,6 +2257,18 @@ public class ScenarioSetupPanel extends BorderPane {
             if (oceanMultiRateTickingCheckBox != null) {
                 oceanMultiRateTickingCheckBox.setSelected(s.isOceanMultiRateTickingEnabled());
             }
+            if (climateTickFreqSlider != null) {
+                climateTickFreqSlider.setValue(s.getClimateTickFrequency());
+            }
+            if (parallelExecutionCheckBox != null) {
+                parallelExecutionCheckBox.setSelected(s.isParallelExecutionEnabled());
+            }
+            if (threadCountSlider != null) {
+                threadCountSlider.setValue(s.getParallelThreadCount());
+            }
+            if (spatialRangeTruncationCheckBox != null) {
+                spatialRangeTruncationCheckBox.setSelected(s.isSpatialRangeTruncationEnabled());
+            }
 
             // Restore Type B engine checkbox states
             java.util.Map<String, Boolean> typeBStates = s.getTypeBEngineStates();
@@ -1902,14 +2276,60 @@ public class ScenarioSetupPanel extends BorderPane {
                 boolean active = typeBStates != null && typeBStates.getOrDefault(entry.getKey(), false);
                 entry.getValue().setSelected(active);
             }
-            if (s.getCustomDensityBase64() != null) {
+
+            // Restore Type B engine fine-grained parameter values
+            java.util.Map<String, java.util.Map<String, Double>> typeBParams = s.getTypeBEngineParameters();
+            if (typeBParams != null) {
+                for (java.util.Map.Entry<String, java.util.Map<String, Spinner<Double>>> engEntry : typeBParamSpinnersMap.entrySet()) {
+                    String engKey = engEntry.getKey();
+                    java.util.Map<String, Double> savedEngParams = typeBParams.get(engKey);
+                    if (savedEngParams != null) {
+                        for (java.util.Map.Entry<String, Spinner<Double>> paramEntry : engEntry.getValue().entrySet()) {
+                            Double val = savedEngParams.get(paramEntry.getKey());
+                            if (val != null && paramEntry.getValue() != null && paramEntry.getValue().getValueFactory() != null) {
+                                paramEntry.getValue().getValueFactory().setValue(val);
+                            }
+                        }
+                    }
+                }
+            }
+            if (s.getCustomDensityBase64() != null && !s.getCustomDensityBase64().isBlank()) {
                 customDensityImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomDensityBase64());
                 if (densityMapFileLabel != null) densityMapFileLabel.setText("📷 Preset Density Map");
+                if (radioImportDemo != null) radioImportDemo.setSelected(true);
                 updateDemoCompatibilityDisplay();
             } else {
                 customDensityImage = null;
                 if (densityMapFileLabel != null) densityMapFileLabel.setText(org.ether.society.i18n.I18n.get("planet.map.none"));
+                if (radioProcDemo != null) radioProcDemo.setSelected(true);
                 updateDemoCompatibilityDisplay();
+            }
+
+            // Restore Cultural Vector & Multi-Layer UI Controls
+            if (s.getCultureVectorDimensions() > 0 && cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValueFactory() != null) {
+                cultureVectorDimSpinner.getValueFactory().setValue(s.getCultureVectorDimensions());
+            }
+            if (s.getCulturalDiffusionRate() > 0 && culturalDiffusionRateSpinner != null && culturalDiffusionRateSpinner.getValueFactory() != null) {
+                culturalDiffusionRateSpinner.getValueFactory().setValue(s.getCulturalDiffusionRate());
+            }
+            if (s.getCulturalMutationRate() > 0 && culturalMutationRateSpinner != null && culturalMutationRateSpinner.getValueFactory() != null) {
+                culturalMutationRateSpinner.getValueFactory().setValue(s.getCulturalMutationRate());
+            }
+            if (s.getCustomIsoglossBase64() != null && !s.getCustomIsoglossBase64().isBlank()) {
+                customIsoglossImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomIsoglossBase64());
+                if (isoglossFileLabel != null) isoglossFileLabel.setText("📜 Calque Isoglosses Chargé");
+            }
+            if (s.getCustomKinshipBase64() != null && !s.getCustomKinshipBase64().isBlank()) {
+                customKinshipImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomKinshipBase64());
+                if (kinshipFileLabel != null) kinshipFileLabel.setText("🏛️ Calque Parenté Chargé");
+            }
+            if (s.getCustomRitualsBase64() != null && !s.getCustomRitualsBase64().isBlank()) {
+                customRitualsImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomRitualsBase64());
+                if (ritualsFileLabel != null) ritualsFileLabel.setText("🔮 Calque Croyances Chargé");
+            }
+            if (s.getCustomSovereigntyBase64() != null && !s.getCustomSovereigntyBase64().isBlank()) {
+                customSovereigntyImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomSovereigntyBase64());
+                if (sovereigntyFileLabel != null) sovereigntyFileLabel.setText("👑 Calque Souveraineté Chargé");
             }
             if (currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
                 distributeInitialPopulation(currentPreviewCells);
@@ -1918,6 +2338,7 @@ public class ScenarioSetupPanel extends BorderPane {
             if (onScenarioLoadedCallback != null) {
                 onScenarioLoadedCallback.accept(this.activePlanetPreset, activeEco != null ? activeEco : s.getEcologyPreset());
             }
+            updatePerformanceControlsState();
             if (scenarioPresetBar != null) {
                 scenarioPresetBar.markClean(s);
             }
@@ -1930,7 +2351,7 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
 
-        clippingHeader = new Label(I18n.getOrDefault("scenario.clipping.header", "✂️ SIMULATION LOCALE & FRONTIÈRES (CLIPPING)"));
+        clippingHeader = new Label(I18n.getOrDefault("scenario.clipping.header", "✂️ 6. SIMULATION LOCALE & FRONTIÈRES (CLIPPING)"));
         clippingHeader.getStyleClass().add("label-header");
 
         clippingCheckBox = new CheckBox(I18n.getOrDefault("scenario.clipping.enable", "Activer la simulation partielle (Zone Tronquée)"));
@@ -1954,6 +2375,12 @@ public class ScenarioSetupPanel extends BorderPane {
         minLatSpinner = new Spinner<>(-90.0, 90.0, -90.0, 1.0);
         minLngSpinner = new Spinner<>(-180.0, 180.0, -180.0, 1.0);
         maxLngSpinner = new Spinner<>(-180.0, 180.0, 180.0, 1.0);
+
+        attachDefaultValueHandling(clippingCheckBox, false, () -> clippingCheckBox.setSelected(false));
+        attachDefaultValueHandling(maxLatSpinner, 90.0, () -> maxLatSpinner.getValueFactory().setValue(90.0));
+        attachDefaultValueHandling(minLatSpinner, -90.0, () -> minLatSpinner.getValueFactory().setValue(-90.0));
+        attachDefaultValueHandling(minLngSpinner, -180.0, () -> minLngSpinner.getValueFactory().setValue(-180.0));
+        attachDefaultValueHandling(maxLngSpinner, 180.0, () -> maxLngSpinner.getValueFactory().setValue(180.0));
 
         for (Spinner<Double> sp : List.of(maxLatSpinner, minLatSpinner, minLngSpinner, maxLngSpinner)) {
             sp.setEditable(true);
@@ -1986,6 +2413,7 @@ public class ScenarioSetupPanel extends BorderPane {
         boundaryModeCombo.setValue("DYNAMIC_RESERVOIR");
         boundaryModeCombo.setMaxWidth(Double.MAX_VALUE);
         boundaryModeCombo.setOnAction(e -> notifyParamChange());
+        attachDefaultValueHandling(boundaryModeCombo, "DYNAMIC_RESERVOIR", () -> boundaryModeCombo.setValue("DYNAMIC_RESERVOIR"));
         boundaryModeCombo.setConverter(new javafx.util.StringConverter<String>() {
             @Override
             public String toString(String item) {
@@ -2040,35 +2468,179 @@ public class ScenarioSetupPanel extends BorderPane {
         Label oceanOptHeader = new Label(I18n.getOrDefault("scenario.ocean_opt.header", "⚙️ ARCHITECTURE DES MOTEURS & OPTIMISATIONS (CŒUR ETHER & OPTIONNELS)"));
         oceanOptHeader.getStyleClass().add("label-header");
 
-        Label oceanOptDesc = new Label(I18n.getOrDefault("scenario.ocean_opt.desc", "Définition et paramétrage des 24 moteurs Cœur Ether (permanents) et des 46+ modules optionnels & custom. Chaque moteur intègre sa fiche algorithmique et ses références académiques."));
+        Label oceanOptDesc = new Label(I18n.getOrDefault("scenario.ocean_opt.desc", "Définition et paramétrage du mode de déterminisme, des 7 optimisations de simulation et des moteurs procéduraux Cœur Ether et modules optionnels. Chaque scénario embarque sa configuration d'optimisation pour garantir une reproductibilité parfaite."));
         oceanOptDesc.setStyle("-fx-font-size: 11px; -fx-font-style: italic; -fx-text-fill: #94a3b8;");
         oceanOptDesc.setWrapText(true);
 
-        // Ocean & Performance Optimizations Checkboxes
-        oceanMacroAggregationCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.macro_aggregation", "🌊 Macro-agrégation Océanique (Bassins profonds en blocs virtuels)"));
+        // --- 🎯 MASTER CONTROL : MODE DÉTERMINISME STRICTE ---
+        strictDeterminismCheckBox = new CheckBox(I18n.getOrDefault("scenario.opt.strict_determinism", "🔒 MODE DÉTERMINISME STRICTE (0% d'approximation / 100% Reproductibilité Bit-à-Bit)"));
+        strictDeterminismCheckBox.setSelected(false);
+        strictDeterminismCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #38bdf8;");
+        strictDeterminismCheckBox.setTooltip(new Tooltip("""
+            🎯 DÉTERMINISME STRICT BIT-À-BIT (MODE RECHERCHE ACADÉMIQUE)
+            • Désactive TOUTES les optimisations et raccourcis algorithmiques.
+            • Garantit des trajectoires de simulation 100% identiques bit-à-bit sur la même graine (seed).
+            • Recommandé pour les tests de validation, benchmarks et audits de convergence.
+            """));
+        attachDefaultValueHandling(strictDeterminismCheckBox, false, () -> strictDeterminismCheckBox.setSelected(false));
+
+        Label determinismNote = new Label("💡 Remarque : Cocher le Déterminisme Stricte neutralise toutes les approches heuristiques et garantit une fidélité numérique bit-identique.");
+        determinismNote.setStyle("-fx-font-size: 10px; -fx-font-style: italic; -fx-text-fill: #94a3b8;");
+        determinismNote.setWrapText(true);
+
+        VBox masterBox = new VBox(4, strictDeterminismCheckBox, determinismNote);
+        masterBox.setStyle("-fx-padding: 8px 12px; -fx-background-color: rgba(56, 189, 248, 0.08); -fx-background-radius: 6px; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 6px; -fx-border-width: 1px;");
+
+        // --- ⚡ INDIVIDUAL OPTIMIZATIONS & APPROXIMATIONS ---
+        Label optSubHeader = new Label(I18n.getOrDefault("scenario.opt.sub_header", "⚡ OPTIMISATIONS ALGORITHMIQUES & RACCOURCIS PERFORMANCES :"));
+        optSubHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #cbd5e1; -fx-padding: 2 0 2 0;");
+
+        sparseCellSkippingCheckBox = new CheckBox(I18n.getOrDefault("scenario.opt.sparse_cell_skipping", "🏜️ Sauts de Cellules Creuses / Inhabitées (Skipping Déserts & Abysses)"));
+        sparseCellSkippingCheckBox.setSelected(true);
+        sparseCellSkippingCheckBox.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
+        sparseCellSkippingCheckBox.setTooltip(new Tooltip("""
+            ⚡ BÉNÉFICE : +40% à +60% de vitesse (TPS) sur la grille globale.
+            ⚠️ IMPACT PHYSIQUE : Interrompt les boucles d'évaluation sur les mailles désertiques/océaniques sans présence humaine ni événement actif.
+            """));
+        attachDefaultValueHandling(sparseCellSkippingCheckBox, true, () -> sparseCellSkippingCheckBox.setSelected(true));
+
+        oceanMacroAggregationCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.macro_aggregation", "🌊 Macro-agrégation Océanique Abyssale (Bassins profonds z < -200m en blocs)"));
         oceanMacroAggregationCheckBox.setSelected(true);
-        oceanMacroAggregationCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;");
+        oceanMacroAggregationCheckBox.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
         oceanMacroAggregationCheckBox.setTooltip(new Tooltip("""
             ⚡ BÉNÉFICE : +25% à +35% de TPS en regroupant les cellules d'eau profonde.
-            ⚠️ RISQUE / IMPACT : Simplification des micro-courants abyssaux sans impact sur les civilisations terrestres.
+            ⚠️ IMPACT PHYSIQUE : Lissage des micro-courants abyssaux sans impact sur les civilisations terrestres.
             """));
-        oceanMacroAggregationCheckBox.setOnAction(e -> notifyParamChange());
+        attachDefaultValueHandling(oceanMacroAggregationCheckBox, true, () -> oceanMacroAggregationCheckBox.setSelected(true));
 
-        coastalNavigationOnlyCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.coastal_nav", "⚓ Navigation Littorale (Pathfinding focalisé côtes & détroits)"));
-        coastalNavigationOnlyCheckBox.setSelected(false);
-        coastalNavigationOnlyCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;");
+        coastalNavigationOnlyCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.coastal_nav", "⚓ Navigation Littorale Exclusive (Pathfinding focalisé côtes & détroits)"));
+        coastalNavigationOnlyCheckBox.setSelected(true);
+        coastalNavigationOnlyCheckBox.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
         coastalNavigationOnlyCheckBox.setTooltip(new Tooltip("""
             ⚡ BÉNÉFICE : Économie majeure de calculs CPU sur le réseau commercial et naval.
-            ⚠️ RISQUE / IMPACT : Les navires empruntent préférentiellement les côtes; traversée hauturière sauvage restreinte.
+            ⚠️ IMPACT PHYSIQUE : Les navires empruntent préférentiellement les côtes; traversée hauturière restreinte avant l'ère des découvertes.
             """));
+        attachDefaultValueHandling(coastalNavigationOnlyCheckBox, true, () -> coastalNavigationOnlyCheckBox.setSelected(true));
 
-        VBox optBox = new VBox(6, oceanMacroAggregationCheckBox, coastalNavigationOnlyCheckBox);
+        oceanMultiRateTickingCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.multi_rate_ticking", "⏱️ Cadence Océanique & Climat Multi-Cadence (Mise à jour tous les N ticks)"));
+        oceanMultiRateTickingCheckBox.setSelected(true);
+        oceanMultiRateTickingCheckBox.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
+        oceanMultiRateTickingCheckBox.setTooltip(new Tooltip("""
+            ⚡ BÉNÉFICE : +30% de débit en exécutant la circulation thermohaline et l'inertie fluide à sous-fréquence.
+            ⚠️ IMPACT PHYSIQUE : Aliasing temporel potentiel lors d'événements atmosphériques ultra-rapides.
+            """));
+        attachDefaultValueHandling(oceanMultiRateTickingCheckBox, true, () -> oceanMultiRateTickingCheckBox.setSelected(true));
+
+        climateTickFreqSlider = new Slider(1, 30, 5);
+        climateTickFreqSlider.setMajorTickUnit(5);
+        climateTickFreqSlider.setMinorTickCount(4);
+        climateTickFreqSlider.setSnapToTicks(true);
+        climateTickFreqSlider.setShowTickMarks(true);
+        climateTickFreqSlider.setStyle("-fx-pref-width: 200px;");
+        climateTickFreqValueLabel = new Label("Ratio Fréquence Climat : 1:5 ticks");
+        climateTickFreqValueLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;");
+        climateTickFreqSlider.valueProperty().addListener((obs, oldV, newV) -> {
+            int val = newV.intValue();
+            climateTickFreqValueLabel.setText(val == 1 ? "Ratio Fréquence Climat : 1:1 (Cadence Stricte Bit-à-Bit)" : "Ratio Fréquence Climat : 1:" + val + " ticks");
+            notifyParamChange();
+        });
+        attachDefaultValueHandling(climateTickFreqSlider, 6.0, () -> climateTickFreqSlider.setValue(6.0));
+
+        HBox climateSliderBox = new HBox(10, new Label("   └─"), climateTickFreqValueLabel, climateTickFreqSlider);
+        climateSliderBox.setAlignment(Pos.CENTER_LEFT);
+
+        parallelExecutionCheckBox = new CheckBox(I18n.getOrDefault("scenario.opt.parallel_execution", "🚀 Parallélisation Multi-Thread Async (CompletableFuture / AVX)"));
+        parallelExecutionCheckBox.setSelected(true);
+        parallelExecutionCheckBox.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
+        parallelExecutionCheckBox.setTooltip(new Tooltip("""
+            ⚡ BÉNÉFICE : Exploitation intégrale de tous les cœurs CPU du système.
+            ⚠️ IMPACT PHYSIQUE : L'ordre de sommation flottante peut varier légèrement entre exécutions (non-associativité IEEE 754 en multi-threading).
+            """));
+        attachDefaultValueHandling(parallelExecutionCheckBox, true, () -> parallelExecutionCheckBox.setSelected(true));
+
+        threadCountSlider = new Slider(0, 32, 0);
+        threadCountSlider.setMajorTickUnit(8);
+        threadCountSlider.setMinorTickCount(7);
+        threadCountSlider.setSnapToTicks(true);
+        threadCountSlider.setShowTickMarks(true);
+        threadCountSlider.setStyle("-fx-pref-width: 200px;");
+        threadCountValueLabel = new Label("Threads Multi-Thread : Auto (Tous cœurs CPU)");
+        threadCountValueLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;");
+        threadCountSlider.valueProperty().addListener((obs, oldV, newV) -> {
+            int val = newV.intValue();
+            if (val == 0) {
+                threadCountValueLabel.setText("Threads Multi-Thread : Auto (Tous cœurs " + Runtime.getRuntime().availableProcessors() + ")");
+            } else if (val == 1) {
+                threadCountValueLabel.setText("Threads Multi-Thread : 1 (Monothread Déterministe)");
+            } else {
+                threadCountValueLabel.setText("Threads Multi-Thread : " + val + " threads");
+            }
+            notifyParamChange();
+        });
+        attachDefaultValueHandling(threadCountSlider, 4.0, () -> threadCountSlider.setValue(4.0));
+
+        HBox threadSliderBox = new HBox(10, new Label("   └─"), threadCountValueLabel, threadCountSlider);
+        threadSliderBox.setAlignment(Pos.CENTER_LEFT);
+
+        spatialRangeTruncationCheckBox = new CheckBox(I18n.getOrDefault("scenario.opt.spatial_truncation", "💨 Troncature de Portée Spatiale des Plumes & Diffusions (Cutoff 10⁻⁶)"));
+        spatialRangeTruncationCheckBox.setSelected(true);
+        spatialRangeTruncationCheckBox.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
+        spatialRangeTruncationCheckBox.setTooltip(new Tooltip("""
+            ⚡ BÉNÉFICE : Limite le calcul de dispersion atmosphérique aux cellules adjacentes affectées.
+            ⚠️ IMPACT PHYSIQUE : Néglige les concentrations d'aérosols et suie ultra-diluées devenant inférieures à 10⁻⁶ ppm.
+            """));
+        attachDefaultValueHandling(spatialRangeTruncationCheckBox, true, () -> spatialRangeTruncationCheckBox.setSelected(true));
+
+        List<CheckBox> subOpts = List.of(
+            sparseCellSkippingCheckBox,
+            oceanMacroAggregationCheckBox,
+            coastalNavigationOnlyCheckBox,
+            oceanMultiRateTickingCheckBox,
+            parallelExecutionCheckBox,
+            spatialRangeTruncationCheckBox
+        );
+
+        strictDeterminismCheckBox.setOnAction(e -> {
+            boolean strict = strictDeterminismCheckBox.isSelected();
+            if (strict) {
+                for (CheckBox cb : subOpts) {
+                    cb.setSelected(false);
+                }
+            }
+            updatePerformanceControlsState();
+            notifyParamChange();
+        });
+
+        for (CheckBox cb : subOpts) {
+            cb.setOnAction(e -> {
+                if (cb.isSelected() && strictDeterminismCheckBox.isSelected()) {
+                    strictDeterminismCheckBox.setSelected(false);
+                } else if (subOpts.stream().noneMatch(CheckBox::isSelected)) {
+                    strictDeterminismCheckBox.setSelected(true);
+                }
+                updatePerformanceControlsState();
+                notifyParamChange();
+            });
+        }
+
+        VBox optBox = new VBox(5,
+            optSubHeader,
+            sparseCellSkippingCheckBox,
+            oceanMacroAggregationCheckBox,
+            coastalNavigationOnlyCheckBox,
+            oceanMultiRateTickingCheckBox,
+            climateSliderBox,
+            parallelExecutionCheckBox,
+            threadSliderBox,
+            spatialRangeTruncationCheckBox
+        );
+        optBox.setStyle("-fx-padding: 8px 12px; -fx-background-color: rgba(15, 23, 42, 0.4); -fx-background-radius: 6px; -fx-border-color: rgba(148, 163, 184, 0.15); -fx-border-radius: 6px; -fx-border-width: 1px;");
 
         // Detail Inspector Card for selected/hovered Engine (Technical Description + Math Equations + Academic References)
-        engineInspectorTitle = new Label("🔎 FrontierAsabiyyahEngine — ⚔️ Asabiyyah de Frontière (Ibn Khaldoun & Peter Turchin)");
+        engineInspectorTitle = new Label("🔎 Inspecteur de Moteur Cliodynamique (Survolez un moteur pour inspecter)");
         engineInspectorTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8;");
         
-        engineInspectorText = new Label("Théorie Khaldounienne de la solidarité de groupe et déclin des dynasties (Badiya vs Hadara). Modélise l'érosion de la cohésion sociale lors du passage de la frontière métastable aux métropoles opulentes.");
+        engineInspectorText = new Label("Sélectionnez ou survolez un moteur de Type A (Cœur) ou Type B (Optionnel) pour afficher ses équations d'état, principes physiques et références académiques.");
         engineInspectorText.setWrapText(true);
         engineInspectorText.setStyle("-fx-font-size: 11px; -fx-text-fill: #cbd5e1;");
 
@@ -2076,29 +2648,26 @@ public class ScenarioSetupPanel extends BorderPane {
         engineInspectorEquationsTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 10px; -fx-text-fill: #38bdf8; -fx-padding: 4 0 0 0;");
 
         engineInspectorEquations = new Label(
-            "• Variation d'Asabiyyah (Cohésion A) : dA/dt = c1*F(x)*(1 - A) - c2*(K(x)/N(x))*A\n" +
-            "  où F(x) est la pression militaire de frontière et K(x)/N(x) le capital par habitant (luxe).\n" +
-            "• Métropole opulente (K > 1000 kg/hab) : Déclin d'Asabiyyah dA/dt = -2.0% par pas de temps.\n" +
-            "• Zone de frontière (K <= 1000 kg/hab) : Forge la cohésion militaire dA/dt = +2.0% par pas de temps.\n" +
-            "• Inégalité & Déclin Dynastique : S_cohesion(t) = A(t) * Pop(t) * (1 - Gini(t))."
+            "• Formulations mathématiques et bilans de conservation affichés dynamiquement."
         );
         engineInspectorEquations.setWrapText(true);
-        engineInspectorEquations.setStyle("-fx-font-size: 10px; -fx-font-family: 'Consolas', 'Courier New', monospace; -fx-text-fill: #7dd3fc; -fx-background-color: rgba(15,23,42,0.85); -fx-padding: 6 8; -fx-background-radius: 4; -fx-border-color: rgba(56,189,248,0.25); -fx-border-radius: 4;");
+        engineInspectorEquations.getStyleClass().add("engine-inspector-equations");
 
-        engineInspectorRef = new Label("📚 Ref: Ibn Khaldun (1377). Muqaddimah; Turchin, P. (2003). Historical Dynamics: Securing the Peace, Princeton Univ. Press.");
+        engineInspectorRef = new Label("📚 Références scientifiques et littérature académique.");
         engineInspectorRef.setWrapText(true);
-        engineInspectorRef.setStyle("-fx-font-size: 10px; -fx-font-style: italic; -fx-text-fill: #a78bfa;");
+        engineInspectorRef.getStyleClass().add("hint-label");
 
-        exportSelectedEngineBtn = new Button("📤 Exporter FrontierAsabiyyahEngine.java");
+        exportSelectedEngineBtn = new Button("📤 Exporter Template Moteur Custom (.java)");
         exportSelectedEngineBtn.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 10; -fx-background-radius: 4;");
         exportSelectedEngineBtn.setOnAction(e -> exportCustomEngineTemplate());
 
         VBox engineInspectorCard = new VBox(5, engineInspectorTitle, engineInspectorText, engineInspectorEquationsTitle, engineInspectorEquations, engineInspectorRef, exportSelectedEngineBtn);
-        engineInspectorCard.setStyle("-fx-padding: 10 12; -fx-background-color: rgba(15, 23, 42, 0.95); -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 6; -fx-border-width: 1px;");
+        engineInspectorCard.getStyleClass().add("engine-inspector-card");
+        engineInspectorCard.setMinHeight(160);
 
         // --- 🔒 ETHER CORE ENGINES SECTION (Cœur Central Applicatif - 24 Moteurs Permanents) ---
         VBox typeABox = new VBox(6);
-        typeABox.setStyle("-fx-padding: 10px; -fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 6px; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 6px;");
+        typeABox.getStyleClass().add("card-section");
 
         Label coreExplanationLabel = new Label("ℹ️ Pourquoi les moteurs Cœur Ether sont-ils permanents ? Ils appliquent les lois de conservation physique (masse & énergie, thermodynamique, hydrologie, insolation H3, métabolisme) nécessaires à la survie élémentaire du monde.");
         coreExplanationLabel.setStyle("-fx-font-size: 10px; -fx-font-style: italic; -fx-text-fill: #94a3b8; -fx-padding: 0 0 4 0;");
@@ -2231,7 +2800,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
         // --- ⚙️ OPTIONAL & CUSTOM ENGINES SECTION (Optionnels, Extensibles & Dynamic Import/Export) ---
         typeBBoxContainer = new VBox(8);
-        typeBBoxContainer.setStyle("-fx-padding: 10px; -fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 6px; -fx-border-color: rgba(167, 139, 250, 0.2); -fx-border-radius: 6px;");
+        typeBBoxContainer.getStyleClass().add("custom-module-card");
 
         // Action bar for Import / Export Custom Engines
         Button exportTemplateBtn = new Button("📤 Exporter Template Moteur Java (.java)");
@@ -2336,10 +2905,26 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Le développement culturel varie directly avec l'énergie captée par habitant (C = E × T). Détermine la complexité symbolique selon l'énergie.",
                 "Ref: White, L. A. (1943). Energy and the Evolution of Culture. American Anthropologist.",
                 "• Complexité Culturelle C = Énergie_Par_Capita · Efficacité_Technologique"},
-            new String[]{"MediterraneanSeaHighwayEngine", "⛵ Autoroute Maritime Méditerranéenne & Thalassocraties",
-                "Réseau de navigation côtière et émergence des cités-états maritimes. Réduit la friction de transport sur l'eau et stimule les comptoirs maritimes.",
-                "Ref: Braudel, F. (1949). La Méditerranée et le Monde Méditerranéen.",
-                "• Multiplicateur de Transport Maritime = 0.12 × Friction_Terrestre"},
+            new String[]{"MaritimeHighwayEngine", "⛵ Autoroute Maritime & Thalassocraties (Braudel/Fluid Dynamics)",
+                "Réseau de navigation côtière et autoroutes maritimes universelles. Réduit la friction de transport sur l'eau libre de glace (thermodynamique) et stimule l'accumulation de capital.",
+                "Ref: Braudel, F. (1949). La Méditerranée; Archimedes Buoyancy Transport Models.",
+                "• Multiplicateur de Transport Maritime = 0.20 × Friction_Terrestre (Cap : +5%/tick)"},
+            new String[]{"DynamicMaritimeRoutingGraph", "🌐 Graphe de Routage Trans-Océanique Dynamique",
+                "Calcul dynamique et adaptatif des routes maritimes globales selon l'évolution technologique (cabotage -> navigation hauturière -> brise-glace) et thermodynamique.",
+                "Ref: Dynamic Graph Routing & Fluid Drag; Bowditch, N. (1802). American Practical Navigator.",
+                "• Invalidation auto selon Niveau Tech & Glace de Mer\n• Portée de Cabotage (Tech < 3.0: 300km, Tech >= 6.0: Trans-Océanique)"},
+            new String[]{"LandReclamationEngine", "🏗️ Poldérisation & Habitats Flottants (Seasteading)",
+                "Transformation de zones côtières en polders agricoles et création de cités flottantes en haute mer selon le niveau technologique et le capital.",
+                "Ref: Dutch Water Boards History; Seasteading Institute (2008).",
+                "• Tech >= 4.0 & K >= 100 -> Poldérisation ; Tech >= 8.5 & K >= 500 -> Habitat Flottant"},
+            new String[]{"MarineSubmersionEngine", "🚨 Submersion Marine & Évacuation Physique",
+                "Modélisation physique de l'élévation du niveau de la mer et de la maintenance des digues. Évacuation préventive (jusqu'à 98% en société moderne) et flux de réfugiés sans mortalité brutale irréaliste.",
+                "Ref: IPCC Coastal Inundation & Flood Early Warning Physics; Adger, W. N. (2006). Vulnerability.",
+                "• Évacuation Physique: Ratio_Evac = 1 - exp(-0.4 · Tech · (1 + K/500))\n• Déplacement de Population vers mailles sèches adjacentes"},
+            new String[]{"HydrologicalEngineeringEngine", "💧 Ingénierie Hydrologique & Transgressions Paysagères",
+                "Assèchement/remplissage de lacs urbains (Texcoco / Tenochtitlan), assèchement anthropique de mers intérieures endoréiques (Mer d'Aral) et retenues d'eau / barrages hydroélectriques de montagne.",
+                "Ref: IPCC Water Resource Engineering; World Commission on Dams (2000); Tenochtitlan Chinampa Hydro-Engineering.",
+                "• Drenage Texcoco: Lac -> Plaine Urbaine (Tech >= 3.5, K >= 150)\n• Assèchement Aral: Lac -> Désert Salé (Drainage > Recharge)\n• Barrage Montagne: Retenue d'eau (1000L) & Énergie Hydroélectrique (Tech >= 4.5, Alt >= 300m)"},
             new String[]{"MegafaunaEcosystemEngine", "🦕 Conservation de la Biodiversité Sauvage & Mégafaune",
                 "Pressions de chasse et extinction/préservation des espèces sauvages. Simule la disparition de la grande faune lors de l'expansion humaine néolithique.",
                 "Ref: Martin, P. S. (1984). Quaternary Extinctions: A Prehistoric Revolution.",
@@ -2435,6 +3020,7 @@ public class ScenarioSetupPanel extends BorderPane {
         );
 
         typeBCheckBoxMap.clear();
+        typeBParamSpinnersMap.clear();
         for (String[] eng : optionalEngines) {
             CheckBox cb = new CheckBox(eng[1]);
             cb.setSelected("FrontierAsabiyyahEngine".equals(eng[0]));
@@ -2455,16 +3041,164 @@ public class ScenarioSetupPanel extends BorderPane {
             row.setOnMouseEntered(e -> updateEngineInspector(eng[0], eng[1], eng[2], eng[3], eqText));
             row.setOnMouseClicked(e -> updateEngineInspector(eng[0], eng[1], eng[2], eng[3], eqText));
 
-            typeBBoxContainer.getChildren().add(row);
+            VBox engContainer = new VBox(4, row);
+            javafx.scene.Node paramBox = createEngineParameterBox(eng[0]);
+            if (paramBox != null) {
+                paramBox.visibleProperty().bind(cb.selectedProperty());
+                paramBox.managedProperty().bind(cb.selectedProperty());
+                engContainer.getChildren().add(paramBox);
+            }
+
+            typeBBoxContainer.getChildren().add(engContainer);
         }
 
         TitledPane typeBPane = new TitledPane("⚙️ MODULES OPTIONNELS (" + optionalEngines.size() + " MOTEURS EXTENSIBLES & IMPORT/EXPORT)", typeBBoxContainer);
         typeBPane.setExpanded(true);
         typeBPane.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 11px; -fx-font-weight: bold;");
 
-        section.getChildren().addAll(oceanOptHeader, oceanOptDesc, optBox, engineInspectorCard, corePane, typeBPane);
+        section.getChildren().addAll(oceanOptHeader, oceanOptDesc, masterBox, optBox, engineInspectorCard, corePane, typeBPane);
         return section;
+    }
 
+    private VBox createCulturalVectorAndLayersSection() {
+        VBox section = new VBox(10);
+        section.getStyleClass().add("card-section");
+
+        Label header = new Label("🧠 3. DIMENSION DU VECTEUR CULTUREL & CALQUES MULTI-CHAMPS (ONGLET 3)");
+        header.getStyleClass().add("label-header");
+        header.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold;");
+
+        Label desc = new Label("Configuration du tenseur d'information N-dimensionnel et importation/génération des calques cartographiques d'isoglosses, parenté, rituels et souveraineté politique.");
+        desc.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        desc.setWrapText(true);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(8);
+
+        // 1. Vector Dimension (M)
+        Label dimLbl = new Label("Taille Tenseur Culturel (M dims) :");
+        dimLbl.getStyleClass().add("control-label");
+        cultureVectorDimSpinner = new Spinner<>(4, 32, 8, 2);
+        cultureVectorDimSpinner.setEditable(true);
+        cultureVectorDimSpinner.setMaxWidth(Double.MAX_VALUE);
+        cultureVectorDimSpinner.valueProperty().addListener((obs, o, n) -> notifyParamChange());
+        Tooltip.install(cultureVectorDimSpinner, new Tooltip("Nombre de composantes N-dimensionnelles du vecteur d'information culturelle (ex: 8D, 16D, 32D)."));
+
+        // 2. Cultural Diffusion Rate
+        Label diffLbl = new Label("Conductivité Diffusion Culturelle (α) :");
+        diffLbl.getStyleClass().add("control-label");
+        culturalDiffusionRateSpinner = new Spinner<>(0.001, 0.50, 0.05, 0.01);
+        culturalDiffusionRateSpinner.setEditable(true);
+        culturalDiffusionRateSpinner.setMaxWidth(Double.MAX_VALUE);
+        culturalDiffusionRateSpinner.valueProperty().addListener((obs, o, n) -> notifyParamChange());
+        Tooltip.install(culturalDiffusionRateSpinner, new Tooltip("Taux de diffusion de l'énergie d'association entre hexagones H3 voisins."));
+
+        // 3. Cultural Mutation Noise Rate
+        Label mutLbl = new Label("Bruit de Mutation / Dérive (1/√N) :");
+        mutLbl.getStyleClass().add("control-label");
+        culturalMutationRateSpinner = new Spinner<>(0.001, 0.10, 0.01, 0.005);
+        culturalMutationRateSpinner.setEditable(true);
+        culturalMutationRateSpinner.setMaxWidth(Double.MAX_VALUE);
+        culturalMutationRateSpinner.valueProperty().addListener((obs, o, n) -> notifyParamChange());
+        Tooltip.install(culturalMutationRateSpinner, new Tooltip("Facteur de dérive Langevin (bruit de fond d'innovation stochastique)."));
+
+        grid.add(dimLbl, 0, 0); grid.add(cultureVectorDimSpinner, 1, 0);
+        grid.add(diffLbl, 0, 1); grid.add(culturalDiffusionRateSpinner, 1, 1);
+        grid.add(mutLbl, 0, 2); grid.add(culturalMutationRateSpinner, 1, 2);
+
+        // Layer Import Panel
+        VBox layersPanel = new VBox(8);
+        layersPanel.getStyleClass().add("layers-panel-card");
+
+        Label layerTitle = new Label("🗺️ Calques Spécifiques (Isoglosses, Parenté, Croyances, Souveraineté)");
+        layerTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
+        layerTitle.setWrapText(true);
+        HBox.setHgrow(layerTitle, Priority.ALWAYS);
+
+        Button culturalHelpBtn = new Button("❓ Format Calques");
+        culturalHelpBtn.getStyleClass().add("button-secondary");
+        culturalHelpBtn.setStyle("-fx-font-size: 11px;");
+        culturalHelpBtn.setMinWidth(Region.USE_PREF_SIZE);
+        culturalHelpBtn.setTooltip(new Tooltip("Spécifications des formats d'images et données cartographiques pour l'import des calques culturels et géopolitiques."));
+        culturalHelpBtn.setOnAction(e -> showCulturalImportFormatHelp());
+
+        HBox layerHeaderBox = new HBox(8, layerTitle, culturalHelpBtn);
+        layerHeaderBox.setAlignment(Pos.CENTER_LEFT);
+
+        Label culturalFormatHintLabel = new Label("PNG / JPEG (projection équirectangulaire 2:1) :\n  Niveaux de gris & Canaux RVB codant les distances linguistiques (Isoglosses), structures de parenté, systèmes de croyances & souverainetés politiques.");
+        culturalFormatHintLabel.setWrapText(true);
+        culturalFormatHintLabel.getStyleClass().add("hint-label");
+
+        // Calque 1: Isoglosses
+        isoglossFileLabel = new Label("📜 Calque Isoglosses : Génération procédurale active");
+        isoglossFileLabel.getStyleClass().add("hint-label");
+        Button btnIsogloss = new Button("📥 Importer Calque Isoglosses & Langues (PNG/GeoJSON)");
+        btnIsogloss.getStyleClass().add("button-secondary");
+        btnIsogloss.setOnAction(e -> loadCustomCultureLayer("Isoglosses & Langues", img -> {
+            customIsoglossImage = img;
+            isoglossFileLabel.setText("📜 Calque Isoglosses : Image PNG/GeoJSON chargée");
+            notifyParamChange();
+        }));
+
+        // Calque 2: Kinship
+        kinshipFileLabel = new Label("🏛️ Calque Parenté & Outillage : Génération procédurale active");
+        kinshipFileLabel.getStyleClass().add("hint-label");
+        Button btnKinship = new Button("📥 Importer Calque Outillage & Parenté (PNG/GeoJSON)");
+        btnKinship.getStyleClass().add("button-secondary");
+        btnKinship.setOnAction(e -> loadCustomCultureLayer("Outillage & Parenté", img -> {
+            customKinshipImage = img;
+            kinshipFileLabel.setText("🏛️ Calque Parenté : Image PNG/GeoJSON chargée");
+            notifyParamChange();
+        }));
+
+        // Calque 3: Rituals
+        ritualsFileLabel = new Label("🔮 Calque Croyances & Rituels : Génération procédurale active");
+        ritualsFileLabel.getStyleClass().add("hint-label");
+        Button btnRituals = new Button("📥 Importer Calque Normes & Rituels (PNG/GeoJSON)");
+        btnRituals.getStyleClass().add("button-secondary");
+        btnRituals.setOnAction(e -> loadCustomCultureLayer("Normes & Rituels", img -> {
+            customRitualsImage = img;
+            ritualsFileLabel.setText("🔮 Calque Croyances : Image PNG/GeoJSON chargée");
+            notifyParamChange();
+        }));
+
+        // Calque 4: Sovereignty
+        sovereigntyFileLabel = new Label("👑 Calque Souveraineté Politico-Militaire : Foyers de Capitales");
+        sovereigntyFileLabel.getStyleClass().add("hint-label");
+        Button btnSovereignty = new Button("📥 Importer Calque Souveraineté & Capitales (PNG/GeoJSON)");
+        btnSovereignty.getStyleClass().add("button-secondary");
+        btnSovereignty.setOnAction(e -> loadCustomCultureLayer("Souveraineté & Capitales", img -> {
+            customSovereigntyImage = img;
+            sovereigntyFileLabel.setText("👑 Calque Souveraineté : Image PNG/GeoJSON chargée");
+            notifyParamChange();
+        }));
+
+        HBox b1 = new HBox(8, btnIsogloss, isoglossFileLabel); b1.setAlignment(Pos.CENTER_LEFT);
+        HBox b2 = new HBox(8, btnKinship, kinshipFileLabel); b2.setAlignment(Pos.CENTER_LEFT);
+        HBox b3 = new HBox(8, btnRituals, ritualsFileLabel); b3.setAlignment(Pos.CENTER_LEFT);
+        HBox b4 = new HBox(8, btnSovereignty, sovereigntyFileLabel); b4.setAlignment(Pos.CENTER_LEFT);
+
+        layersPanel.getChildren().addAll(layerHeaderBox, culturalFormatHintLabel, b1, b2, b3, b4);
+        section.getChildren().addAll(header, desc, grid, layersPanel);
+        return section;
+    }
+
+    private void loadCustomCultureLayer(String layerName, Consumer<Image> onLoaded) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Importer le calque " + layerName + " (PNG/GeoJSON/JPG)");
+        chooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Images & Cartes", "*.png", "*.jpg", "*.jpeg", "*.geojson", "*.json")
+        );
+        File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
+        if (file != null) {
+            try {
+                Image img = new Image(new FileInputStream(file));
+                onLoaded.accept(img);
+            } catch (Exception ex) {
+                logger.error("Failed to load culture layer {}", layerName, ex);
+            }
+        }
     }
 
     private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, String tooltipText, boolean defaultSelected) {
@@ -2711,6 +3445,7 @@ public class ScenarioSetupPanel extends BorderPane {
             try {
                 customDensityImage = new Image(new FileInputStream(file));
                 densityMapFileLabel.setText("📷 " + file.getName());
+                if (radioImportDemo != null) radioImportDemo.setSelected(true);
                 updateDemoCompatibilityDisplay();
                 if (currentPreviewCells != null) {
                     distributeInitialPopulation(currentPreviewCells);
@@ -2808,6 +3543,28 @@ public class ScenarioSetupPanel extends BorderPane {
                 "2. INTÉGRATION AVEC LE TERRAIN ET L'ÉCOLOGIE :\n" +
                 "   • Les zones d'eau (océans/mers) définies dans l'onglet 1 sont automatiquement filtrées pour éviter l'apparition de populations en pleine mer.\n" +
                 "   • La population totale paramétrée dans le spinner est distribuée au prorata de la luminosité de chaque pixel."
+        );
+        dialog.showAndWait();
+    }
+
+    private void showCulturalImportFormatHelp() {
+        Alert dialog = new Alert(Alert.AlertType.INFORMATION);
+        dialog.setTitle("Spécifications des Calques Cartographiques Culturels & Géopolitiques");
+        dialog.setHeaderText("Formats d'images et données spatiales supportées (Projection Équirectangulaire 2:1)");
+        dialog.setContentText(
+                "Vous pouvez importer des cartes d'isoglosses, de parenté, de rituels et de souveraineté sous forme d'images PNG/JPEG au ratio 2:1 (ex: 2048x1024 pixels, Plate Carrée) :\n\n" +
+                "1. 📜 CALQUE ISOGLOSSES & LANGUES (Isogloss & Dialects) :\n" +
+                "   • Canaux de couleur R/V/B codant le continuum linguistique et les isolats.\n" +
+                "   • Les gradients de teinte définissent la distance d'intelligibilité inter-tribale ΔL (friction isoglossique).\n\n" +
+                "2. 🏛️ CALQUE PARENTÉ & OUTILLAGE (Kinship & Toolsets) :\n" +
+                "   • Nuances codant les structures de clan, règles d'exogamie/endogamie et traditions techniques.\n" +
+                "   • Permet d'initialiser les réseaux d'échange de savoirs et le seuil critique d'apprentissage de Henrich.\n\n" +
+                "3. 🔮 CALQUE CROYANCES & NORME (Rituals & Taboos) :\n" +
+                "   • Canaux de fréquence codant les zones sacrées, religions d'État, tabous et syncrétismes.\n" +
+                "   • Influence le forçage thermodynamique des conversions et la cohésion d'Asabiyyah.\n\n" +
+                "4. 👑 CALQUE SOUVERAINETÉ POLITIQUE (Sovereignty & Borders) :\n" +
+                "   • Démarcation géographique des États, confédérations et zones d'influence des capitales.\n" +
+                "   • Définit la friction de frontière σ_friction et le contrôle administratif pour les simulations cliodynamiques."
         );
         dialog.showAndWait();
     }
@@ -3728,7 +4485,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
         s.setStartDateYear(startYearSpinner.getValue());
         s.setEndDateYear(endYearSpinner != null && endYearSpinner.getValue() != null ? endYearSpinner.getValue() : 100);
-        s.setTargetCohortSize(targetCohortSizeSpinner != null ? targetCohortSizeSpinner.getValue() : 500);
+        s.setTargetCohortSize(targetCohortSizeSpinner != null ? targetCohortSizeSpinner.getValue() : 150);
         s.setTemporalResolutionDays(temporalResolutionCombo != null && temporalResolutionCombo.getValue() != null ? temporalResolutionCombo.getValue() : 30.0);
         s.setInitialHumanCount(initialHumanCountSpinner.getValue());
         s.setInitialCapitalPerCapita(initialCapitalSpinner != null ? initialCapitalSpinner.getValue() : 10.0);
@@ -3756,6 +4513,12 @@ public class ScenarioSetupPanel extends BorderPane {
             s.setMaxLng(maxLngSpinner.getValue());
             s.setBoundaryMode(boundaryModeCombo.getValue());
         }
+        if (strictDeterminismCheckBox != null) {
+            s.setStrictDeterminism(strictDeterminismCheckBox.isSelected());
+        }
+        if (sparseCellSkippingCheckBox != null) {
+            s.setSparseCellSkippingEnabled(sparseCellSkippingCheckBox.isSelected());
+        }
         if (oceanMacroAggregationCheckBox != null) {
             s.setOceanMacroAggregationEnabled(oceanMacroAggregationCheckBox.isSelected());
         }
@@ -3765,8 +4528,43 @@ public class ScenarioSetupPanel extends BorderPane {
         if (oceanMultiRateTickingCheckBox != null) {
             s.setOceanMultiRateTickingEnabled(oceanMultiRateTickingCheckBox.isSelected());
         }
+        if (climateTickFreqSlider != null) {
+            s.setClimateTickFrequency((int) climateTickFreqSlider.getValue());
+        }
+        if (parallelExecutionCheckBox != null) {
+            s.setParallelExecutionEnabled(parallelExecutionCheckBox.isSelected());
+        }
+        if (threadCountSlider != null) {
+            s.setParallelThreadCount((int) threadCountSlider.getValue());
+        }
+        if (spatialRangeTruncationCheckBox != null) {
+            s.setSpatialRangeTruncationEnabled(spatialRangeTruncationCheckBox.isSelected());
+        }
         if (customDensityImage != null) {
             s.setCustomDensityBase64(org.ether.society.data.ImageMapLoader.imageToBase64Png(customDensityImage));
+        }
+
+        // Save Cultural Vector & Multi-Field Layers
+        if (cultureVectorDimSpinner != null) {
+            s.setCultureVectorDimensions(cultureVectorDimSpinner.getValue());
+        }
+        if (culturalDiffusionRateSpinner != null) {
+            s.setCulturalDiffusionRate(culturalDiffusionRateSpinner.getValue());
+        }
+        if (culturalMutationRateSpinner != null) {
+            s.setCulturalMutationRate(culturalMutationRateSpinner.getValue());
+        }
+        if (customIsoglossImage != null) {
+            s.setCustomIsoglossBase64(org.ether.society.data.ImageMapLoader.imageToBase64Png(customIsoglossImage));
+        }
+        if (customKinshipImage != null) {
+            s.setCustomKinshipBase64(org.ether.society.data.ImageMapLoader.imageToBase64Png(customKinshipImage));
+        }
+        if (customRitualsImage != null) {
+            s.setCustomRitualsBase64(org.ether.society.data.ImageMapLoader.imageToBase64Png(customRitualsImage));
+        }
+        if (customSovereigntyImage != null) {
+            s.setCustomSovereigntyBase64(org.ether.society.data.ImageMapLoader.imageToBase64Png(customSovereigntyImage));
         }
 
         // Save Type B engine checkbox states
@@ -3775,6 +4573,21 @@ public class ScenarioSetupPanel extends BorderPane {
             typeBStates.put(entry.getKey(), entry.getValue().isSelected());
         }
         s.setTypeBEngineStates(typeBStates);
+
+        // Save Type B engine fine-grained parameter values
+        java.util.Map<String, java.util.Map<String, Double>> typeBParams = new java.util.HashMap<>();
+        for (java.util.Map.Entry<String, java.util.Map<String, Spinner<Double>>> engEntry : typeBParamSpinnersMap.entrySet()) {
+            java.util.Map<String, Double> engParams = new java.util.HashMap<>();
+            for (java.util.Map.Entry<String, Spinner<Double>> paramEntry : engEntry.getValue().entrySet()) {
+                if (paramEntry.getValue() != null && paramEntry.getValue().getValue() != null) {
+                    engParams.put(paramEntry.getKey(), paramEntry.getValue().getValue());
+                }
+            }
+            if (!engParams.isEmpty()) {
+                typeBParams.put(engEntry.getKey(), engParams);
+            }
+        }
+        s.setTypeBEngineParameters(typeBParams);
 
         return s;
     }
@@ -3858,6 +4671,38 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    private void updatePerformanceControlsState() {
+        boolean strict = strictDeterminismCheckBox != null && strictDeterminismCheckBox.isSelected();
+        List<CheckBox> subOpts = List.of(
+            sparseCellSkippingCheckBox,
+            oceanMacroAggregationCheckBox,
+            coastalNavigationOnlyCheckBox,
+            oceanMultiRateTickingCheckBox,
+            parallelExecutionCheckBox,
+            spatialRangeTruncationCheckBox
+        );
+        if (strict) {
+            for (CheckBox cb : subOpts) {
+                if (cb != null) {
+                    cb.setSelected(false);
+                    cb.setDisable(true);
+                }
+            }
+            if (climateTickFreqSlider != null) climateTickFreqSlider.setDisable(true);
+            if (threadCountSlider != null) threadCountSlider.setDisable(true);
+        } else {
+            for (CheckBox cb : subOpts) {
+                if (cb != null) cb.setDisable(false);
+            }
+            if (climateTickFreqSlider != null && oceanMultiRateTickingCheckBox != null) {
+                climateTickFreqSlider.setDisable(!oceanMultiRateTickingCheckBox.isSelected());
+            }
+            if (threadCountSlider != null && parallelExecutionCheckBox != null) {
+                threadCountSlider.setDisable(!parallelExecutionCheckBox.isSelected());
+            }
         }
     }
 

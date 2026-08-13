@@ -95,11 +95,32 @@ public class H3MapCanvas extends Canvas {
     // private static final double ISO_ANGLE = Math.toRadians(30);
     private static final double ELEVATION_SCALE = 0.05; // px per meter
     private double verticalExaggeration = 25.0; // 25x exaggeration for 3D terrain relief
+    private boolean autoRotating = false;
+    private double autoRotationSpeed = 0.3; // degrees per frame tick
 
     public double getVerticalExaggeration() { return verticalExaggeration; }
     public void setVerticalExaggeration(double verticalExaggeration) { 
         this.verticalExaggeration = verticalExaggeration; 
         draw(); 
+    }
+
+    public boolean isAutoRotating() { return autoRotating; }
+    public void setAutoRotating(boolean autoRotating) {
+        this.autoRotating = autoRotating;
+        draw();
+    }
+
+    public double getAutoRotationSpeed() { return autoRotationSpeed; }
+    public void setAutoRotationSpeed(double autoRotationSpeed) {
+        this.autoRotationSpeed = autoRotationSpeed;
+    }
+
+    public void tickAutoRotation() {
+        if (autoRotating && viewMode == ViewMode.VIEW_3D) {
+            centerLng = (centerLng + autoRotationSpeed + 180.0) % 360.0 - 180.0;
+            draw();
+            notifyMiniMap();
+        }
     }
 
     // Center view tracking
@@ -397,6 +418,16 @@ public class H3MapCanvas extends Canvas {
         draw();
     }
 
+    public void resetView() {
+        this.zoomFactor = 1.0;
+        if (cells != null && !cells.isEmpty()) {
+            this.centerLat = (minLat + maxLat) / 2.0;
+            this.centerLng = (minLng + maxLng) / 2.0;
+        }
+        draw();
+        notifyMiniMap();
+    }
+
     public void setCells(List<H3Cell> cells) {
         // Sort by latitude for faster culling
         this.cells = new ArrayList<>(cells); // Copy to allow sorting
@@ -414,16 +445,10 @@ public class H3MapCanvas extends Canvas {
         minLng = cells.stream().mapToDouble(H3Cell::getLongitude).min().orElse(0);
         maxLng = cells.stream().mapToDouble(H3Cell::getLongitude).max().orElse(0);
 
-        // Initialize center to midpoint if not already validly set
-        boolean needsRecenter = (centerLat == 0.0 && centerLng == 0.0) || centerLat < minLat || centerLat > maxLat || centerLng < minLng || centerLng > maxLng;
-        if (needsRecenter) {
-            centerLat = (minLat + maxLat) / 2.0;
-            centerLng = (minLng + maxLng) / 2.0;
-        }
+        resetView();
 
         logger.info("H3 Canvas initialized with {} cells. Bounds: lat[{}, {}], lng[{}, {}]",
                 cells.size(), minLat, maxLat, minLng, maxLng);
-        draw();
     }
 
     public void centerOnCoordinates(double lat, double lng) {
@@ -667,25 +692,65 @@ public class H3MapCanvas extends Canvas {
 
     /**
      * Find the H3 cell at the given canvas coordinates.
+     * Supports exact inverse 3D ray projection on 3D spherical Globe mode.
      */
     private H3Cell findCellAt(double mouseX, double mouseY) {
         if (cells == null || cells.isEmpty()) {
             return null;
         }
 
-        // Convert canvas coordinates to lat/lng (reverse of draw() transform)
-        double lng = ((mouseX - offsetX) / scale) + minLng;
-        double lat = maxLat - ((mouseY - offsetY) / scale);
+        double lat, lng;
+        if (viewMode == ViewMode.VIEW_3D) {
+            double radius = Math.min(getWidth(), getHeight()) * 0.45 * zoomFactor;
+            double cx = getWidth() / 2.0;
+            double cy = getHeight() / 2.0;
 
-        // Check if within bounds
-        if (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng) {
-            return null;
+            double dx = mouseX - cx;
+            double dy = cy - mouseY;
+            double r2 = dx * dx + dy * dy;
+            if (r2 > radius * radius) {
+                return null; // Outside sphere disk
+            }
+
+            double xr = dx / radius;
+            double yrt = dy / radius;
+            double zrt = Math.sqrt(Math.max(0.0, 1.0 - xr * xr - yrt * yrt));
+
+            double radRotationY = Math.toRadians(-centerLng - 90);
+            double radTilt = Math.toRadians(centerLat);
+
+            double cosT = Math.cos(radTilt);
+            double sinT = Math.sin(radTilt);
+            double y = yrt * cosT + zrt * sinT;
+            double zr = -yrt * sinT + zrt * cosT;
+
+            double cosR = Math.cos(radRotationY);
+            double sinR = Math.sin(radRotationY);
+            double x = xr * cosR - zr * sinR;
+            double z = xr * sinR + zr * cosR;
+
+            lat = Math.toDegrees(Math.asin(Math.clamp(y, -1.0, 1.0)));
+            lng = Math.toDegrees(Math.atan2(x, z));
+        } else {
+            // Convert canvas coordinates to lat/lng (reverse of draw() transform)
+            lng = ((mouseX - offsetX) / scale) + minLng;
+            lat = maxLat - ((mouseY - offsetY) / scale);
+
+            // Check if within bounds
+            if (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng) {
+                return null;
+            }
         }
 
         // Get H3 index at this location
         long h3Index = h3Service.latLngToCell(lat, lng);
 
-        // Find matching cell in our dataset
+        // Fast lookup via cellMap
+        if (cellMap != null && !cellMap.isEmpty()) {
+            return cellMap.get(h3Index);
+        }
+
+        // Fallback search in dataset
         return cells.stream()
                 .filter(c -> c.getH3Index() == h3Index)
                 .findFirst()
@@ -914,9 +979,17 @@ public class H3MapCanvas extends Canvas {
     }
 
     private void drawAgents(GraphicsContext gc) {
+        if (agentManager == null || agentManager.getAgents() == null) return;
+
+        double radius = Math.min(getWidth(), getHeight()) * 0.45 * zoomFactor;
+        double cx = getWidth() / 2.0;
+        double cy = getHeight() / 2.0;
+        double radRotationY = Math.toRadians(-centerLng - 90);
+        double radTilt = Math.toRadians(centerLat);
+
         for (org.ether.society.agents.Agent agent : agentManager.getAgents()) {
-            H3Cell cell = cells.stream()
-                    .filter(c -> c.getH3Index() == agent.getH3Index()) // Optimized lookup needed later
+            H3Cell cell = cellMap != null ? cellMap.get(agent.getH3Index()) : cells.stream()
+                    .filter(c -> c.getH3Index() == agent.getH3Index())
                     .findFirst()
                     .orElse(null);
 
@@ -925,11 +998,11 @@ public class H3MapCanvas extends Canvas {
 
             double x, y;
             if (viewMode == ViewMode.VIEW_3D) {
-                // Simplified 3D projection for agents (reuse logic or approximate)
-                // For MVP, skip 3D agents or just draw flat over center
-                // Better: Reuse 3D projection logic.
-                // For now, only 2D agents supported to save complexity in this step
-                continue;
+                double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+                ProjectedPoint pp = project3D(cell.getLatitude(), cell.getLongitude(), elev, radRotationY, radTilt, radius, cx, cy);
+                if (pp == null || pp.z <= 0.02) continue; // Behind sphere limb
+                x = pp.screenX;
+                y = pp.screenY;
             } else {
                 x = (cell.getLongitude() - minLng) * scale + offsetX;
                 y = (maxLat - cell.getLatitude()) * scale + offsetY;
@@ -1254,6 +1327,7 @@ public class H3MapCanvas extends Canvas {
             case TUNDRA -> Color.rgb(221, 221, 187);
             case SNOW -> Color.rgb(255, 250, 250);
             case GLACIER -> Color.rgb(220, 240, 255);
+            case LAKE -> Color.rgb(25, 50, 150);
         };
     }
 

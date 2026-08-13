@@ -248,6 +248,7 @@ public class ImageMapLoader {
             case GLACIER -> Color.rgb(220, 240, 255);
             case TUNDRA -> Color.rgb(150, 200, 220);
             case SNOW -> Color.rgb(255, 255, 255);
+            case LAKE -> Color.rgb(30, 120, 220);
         };
     }
 

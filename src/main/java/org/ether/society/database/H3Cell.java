@@ -197,6 +197,10 @@ public class H3Cell {
     private Boolean isCoastal = false; // True if cell borders ocean/sea coast
     @Column(nullable = false)
     private Double coastalMarineResource = 0.0; // Marine/coastal fish & shellfish biomass (boosts carrying capacity)
+    @Column(nullable = false)
+    private Boolean isPolder = false; // True if cell is reclaimed land from ocean/sea
+    @Column(nullable = false)
+    private Boolean hasFloatingInfrastructure = false; // True if cell hosts seasteading / floating habitats
 
     // --- Detailed Demographic Age Pyramid (7 Fine-Grained Cohorts) ---
     @Column(nullable = false)
@@ -773,6 +777,31 @@ public class H3Cell {
     public Double getCoastalMarineResource() { return coastalMarineResource != null ? coastalMarineResource : 0.0; }
     public void setCoastalMarineResource(Double coastalMarineResource) { this.coastalMarineResource = coastalMarineResource; }
 
+    public Boolean getIsPolder() { return isPolder != null ? isPolder : false; }
+    public void setIsPolder(Boolean isPolder) { this.isPolder = isPolder; }
+
+    public Boolean getHasFloatingInfrastructure() { return hasFloatingInfrastructure != null ? hasFloatingInfrastructure : false; }
+    public void setHasFloatingInfrastructure(Boolean hasFloatingInfrastructure) { this.hasFloatingInfrastructure = hasFloatingInfrastructure; }
+
+    /**
+     * Calculates the effective 3D real surface area of the cell in km², taking into account:
+     * 1. Spherical projection latitude distortion (Equal-Area H3 base planimetric projection).
+     * 2. Topographical 3D slope expansion derived from terrain ruggedness / movement friction.
+     * 
+     * @return Effective 3D surface area in km² (>= 0.737 km² base).
+     */
+    public double getEffectiveSurfaceAreaKm2() {
+        double latRad = Math.toRadians(latitude != null ? latitude : 0.0);
+        // Base planimetric area for H3 Level 8 (~0.737 km² near equator with spherical latitudinal cosine scaling)
+        double baseArea2D = 0.7373276 * Math.max(0.20, Math.cos(latRad));
+        
+        // 3D Topographical slope expansion factor: slope declivity derived from movement friction
+        double friction = movementFriction != null ? movementFriction : 1.0;
+        double slopeFactor3D = Math.sqrt(1.0 + 0.15 * Math.pow(Math.max(0.0, friction - 1.0), 1.8));
+        
+        return baseArea2D * slopeFactor3D;
+    }
+
     /**
      * Create a snapshot copy of this cell.
      */
@@ -808,6 +837,10 @@ public class H3Cell {
         copy.setPopYouth(this.popYouth);
         copy.setPopAdult(this.popAdult);
         copy.setPopElderly(this.popElderly);
+        copy.setIsCoastal(this.isCoastal);
+        copy.setCoastalMarineResource(this.coastalMarineResource);
+        copy.setIsPolder(this.isPolder);
+        copy.setHasFloatingInfrastructure(this.hasFloatingInfrastructure);
         
         // Biomass & Energy
         copy.setBiomassHuman(this.biomassHuman);

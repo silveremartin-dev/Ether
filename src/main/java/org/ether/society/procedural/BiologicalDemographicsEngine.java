@@ -53,9 +53,17 @@ public class BiologicalDemographicsEngine {
             if (pop <= 0) continue;
 
             double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
-            double environmentalHazardGamma = 0.01 + (pollution / 5000.0); // Baseline hazard
+            double food = cell.getFoodResource() != null ? cell.getFoodResource() : 500.0;
 
-            // Mean age assumed 30 years
+            // Physical carrying capacity K = baseline (100) + food * 50.0
+            double carryingCapacity = 100.0 + food * 50.0;
+            double stressRatio = (double) pop / carryingCapacity;
+
+            // Over-population stress factor: when pop > carrying capacity, hazard γ increases
+            double nutritionalStress = stressRatio > 1.0 ? Math.min(0.08, (stressRatio - 1.0) * 0.02) : 0.0;
+            double environmentalHazardGamma = 0.01 + (pollution / 5000.0) + nutritionalStress;
+
+            // Gompertz actuarial hazard rate for cohort mean age 30
             double hazardRate = calculateGompertzHazardRate(30.0, environmentalHazardGamma);
 
             int naturalDeaths = (int) (pop * hazardRate);

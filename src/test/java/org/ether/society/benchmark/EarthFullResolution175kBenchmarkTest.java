@@ -99,7 +99,7 @@ public class EarthFullResolution175kBenchmarkTest {
         ProceduralEngineRegistry.registerPlugin("B18_AiRegulation", AiAutonomousRegulationPureEngine::processHybrid);
         ProceduralEngineRegistry.registerPlugin("B21_SpatialFractal", SpatialCityFractalEngine::processHybrid);
         ProceduralEngineRegistry.registerPlugin("B24_MilitaryTechShock", MilitaryTechShockEngine::processHybrid);
-        ProceduralEngineRegistry.registerPlugin("B27_MediterraneanHighway", MediterraneanSeaHighwayEngine::processHybrid);
+        ProceduralEngineRegistry.registerPlugin("B27_MaritimeHighway", MaritimeHighwayEngine::processHybrid);
         ProceduralEngineRegistry.registerPlugin("B29_FrontierAsabiyyah", FrontierAsabiyyahEngine::processHybrid);
 
         // Clean RAM before measuring

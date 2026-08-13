@@ -54,7 +54,6 @@ public class AlbedoClimateEngine {
 
         // 1. Calculate Orbital Precession Phase (21,000-year Milankovitch cycle)
         double precessionPhase = Math.sin((simulationYear % 21000L) / 21000.0 * 2.0 * Math.PI);
-        boolean greenSaharaActive = precessionPhase > 0.65; // High solar insolation in northern subtropical belt
 
         int greenSaharaCells = 0;
         int floodDisasterCells = 0;
@@ -68,18 +67,26 @@ public class AlbedoClimateEngine {
                 continue;
             }
 
-            // ── 1. Orbital Precession / Green Sahara Effect ─────────────────────
-            if (greenSaharaActive && lat >= 12.0 && lat <= 32.0 && cell.getBiome() == Biome.DESERT) {
-                greenSaharaCells++;
-                // Monsoon penetration: increase rainfall and replenish aquifers
-                cell.setRainfall(Math.min(1200.0, cell.getRainfall() + 500.0 * (precessionPhase - 0.65)));
-                cell.setAccessibleAquifer(Math.min(15000.0, cell.getAccessibleAquifer() + 2000.0));
-                cell.setWaterResource(Math.min(1000.0, cell.getWaterResource() + 400.0));
+            // ── 1. Orbital Precession / Continuous Subtropical Monsoon Forcing ─
+            // Continuous physical insolation curve across subtropical latitudes (5°N to 35°N)
+            double latitudinalMonsoonWeight = (lat >= 5.0 && lat <= 35.0) 
+                    ? Math.sin(Math.toRadians((lat - 5.0) / 30.0 * 180.0)) 
+                    : 0.0;
+            double continuousMonsoonForcing = latitudinalMonsoonWeight * Math.max(0.0, precessionPhase);
 
-                // Biome transition: Desert -> Plains / Savanna
-                cell.setBiome(Biome.PLAINS);
-                cell.setSoilOrganicCarbon(Math.min(60.0, cell.getSoilOrganicCarbon() + 15.0));
-                cell.setBiomassNatural(Math.min(800.0, cell.getBiomassNatural() + 300.0));
+            if (continuousMonsoonForcing > 0.05 && cell.getBiome() == Biome.DESERT) {
+                greenSaharaCells++;
+                // Continuous monsoon penetration: increase rainfall, aquifers, and soil carbon proportional to solar insolation
+                cell.setRainfall(Math.min(1200.0, cell.getRainfall() + 500.0 * continuousMonsoonForcing));
+                cell.setAccessibleAquifer(Math.min(15000.0, cell.getAccessibleAquifer() + 2000.0 * continuousMonsoonForcing));
+                cell.setWaterResource(Math.min(1000.0, cell.getWaterResource() + 400.0 * continuousMonsoonForcing));
+
+                // Gradual ecological biome transition based on cumulative forcing
+                if (continuousMonsoonForcing > 0.3) {
+                    cell.setBiome(Biome.PLAINS);
+                }
+                cell.setSoilOrganicCarbon(Math.min(60.0, cell.getSoilOrganicCarbon() + 15.0 * continuousMonsoonForcing));
+                cell.setBiomassNatural(Math.min(800.0, cell.getBiomassNatural() + 300.0 * continuousMonsoonForcing));
             }
 
             // ── 2. Albedo Radiative Feedback Loop ─────────────────────────────

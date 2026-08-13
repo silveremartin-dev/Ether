@@ -357,7 +357,7 @@ public class ResourceDistributionPanel extends BorderPane {
         ));
 
         // --- 2. Standardized Preset Control Bar for Ecology ---
-        ecologyPresetBar = new PresetControlBar<>(I18n.getOrDefault("resource.preset_title", "Préréglage Écologique & Ressources"));
+        ecologyPresetBar = new PresetControlBar<>("resource.preset_title", "Préréglage Écologique & Ressources");
         ecologyPresetBar.setExportCategory("ecology");
         ecologyPresetBar.setPresets(EcologyPreset.getBuiltInPresets(), EcologyPreset.EARTH_STANDARD);
 

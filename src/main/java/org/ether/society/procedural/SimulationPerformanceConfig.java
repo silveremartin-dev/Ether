@@ -63,6 +63,10 @@ public class SimulationPerformanceConfig implements Serializable {
         return enableSparseCellSkipping;
     }
 
+    public boolean isSparseCellSkipping() {
+        return enableSparseCellSkipping;
+    }
+
     public void setEnableSparseCellSkipping(boolean enableSparseCellSkipping) {
         this.enableSparseCellSkipping = enableSparseCellSkipping;
         if (enableSparseCellSkipping) {
@@ -100,6 +104,9 @@ public class SimulationPerformanceConfig implements Serializable {
         }
     }
 
+    /** Number of parallel execution threads (0 = auto-detect all available CPU cores, 1 = single-threaded deterministic) */
+    private int parallelThreadCount = 0;
+
     public boolean isEnableSpatialRangeTruncation() {
         return enableSpatialRangeTruncation;
     }
@@ -109,5 +116,13 @@ public class SimulationPerformanceConfig implements Serializable {
         if (enableSpatialRangeTruncation) {
             this.strictDeterminism = false;
         }
+    }
+
+    public int getParallelThreadCount() {
+        return parallelThreadCount;
+    }
+
+    public void setParallelThreadCount(int parallelThreadCount) {
+        this.parallelThreadCount = Math.max(0, parallelThreadCount);
     }
 }

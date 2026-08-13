@@ -60,9 +60,12 @@ public class ProceduralPopulationEngine {
             c.setBiomassHuman(0.0);
         }
 
-        // Filter land cells
+        // Filter habitable cells (including land, reclaimed polders, seasteading floating habitats, and high-tech oceanic settlements)
         List<H3Cell> landCells = cells.stream()
-                .filter(c -> c.getElevation() > 0 && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
+                .filter(c -> (c.getElevation() != null && c.getElevation() > 0 && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
+                        || c.getIsPolder()
+                        || c.getHasFloatingInfrastructure()
+                        || (techLevel >= 8.5 && (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN)))
                 .toList();
 
         if (landCells.isEmpty()) return;
@@ -232,8 +235,15 @@ public class ProceduralPopulationEngine {
      * Biome & Elevation suitability adjusted by technological capacity.
      */
     private static double calculateBiomeAndElevSuitability(H3Cell cell, double techLevel) {
+        if (cell.getIsPolder()) {
+            return 1.5; // Reclaimed rich alluvial land
+        }
+        if (cell.getHasFloatingInfrastructure()) {
+            return 0.8 + Math.min(1.0, techLevel * 0.1); // Seasteading floating habitat
+        }
+
         Biome b = cell.getBiome();
-        double elev = cell.getElevation();
+        double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
 
         // Biome base score
         double biomeScore = switch (b) {
@@ -246,6 +256,7 @@ public class ProceduralPopulationEngine {
             case DESERT -> 0.05 + (techLevel * 0.06); // High tech allows irrigation/air-cond/wells
             case MOUNTAINS -> 0.02 + (techLevel * 0.04);
             case SNOW -> 0.005 + (techLevel * 0.01);
+            case OCEAN, DEEP_OCEAN -> techLevel >= 8.5 ? 0.4 + (techLevel - 8.5) * 0.15 : 0.0001;
             default -> 0.1;
         };
 

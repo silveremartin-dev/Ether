@@ -5,7 +5,7 @@ package org.ether.society.core.dod;
  */
 public class DemographicKernel {
 
-    private float targetCohortSize = 500.0f; // Target individual population threshold per cohort
+    private float targetCohortSize = 150.0f; // Target individual population threshold per cohort (Dunbar pivot)
 
     public float getTargetCohortSize() {
         return targetCohortSize;

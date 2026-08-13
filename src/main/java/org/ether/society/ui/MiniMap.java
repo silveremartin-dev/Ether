@@ -203,6 +203,7 @@ public class MiniMap extends Canvas {
             case TUNDRA -> Color.rgb(189, 195, 199);
             case SNOW -> Color.rgb(236, 240, 241);
             case GLACIER -> Color.rgb(220, 240, 255);
+            case LAKE -> Color.rgb(41, 128, 185);
         };
     }
 }

@@ -410,3 +410,41 @@
     -fx-border-color: #a7f3d0;
     -fx-border-radius: 6;
 }
+
+.engine-inspector-card {
+    -fx-padding: 10 12;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 6;
+    -fx-border-color: #0284c7;
+    -fx-border-radius: 6;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 4, 0, 0, 2);
+}
+
+.engine-inspector-equations {
+    -fx-font-size: 10px;
+    -fx-font-family: 'Consolas', 'Courier New', monospace;
+    -fx-text-fill: #0369a1;
+    -fx-background-color: #f0f9ff;
+    -fx-padding: 6 8;
+    -fx-background-radius: 4;
+    -fx-border-color: #bae6fd;
+    -fx-border-radius: 4;
+}
+
+.custom-module-card {
+    -fx-padding: 10px;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 6px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+}
+
+.layers-panel-card {
+    -fx-padding: 8px;
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 6px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+}
+

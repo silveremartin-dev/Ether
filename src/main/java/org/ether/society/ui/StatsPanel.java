@@ -80,7 +80,7 @@ public class StatsPanel extends VBox {
             setPadding(new Insets(6, 10, 6, 10));
             setSpacing(10);
             setAlignment(Pos.CENTER_LEFT);
-            setStyle("-fx-background-color: rgba(30, 41, 59, 0.5); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.05); -fx-border-radius: 6;");
+            getStyleClass().add("card-section");
 
             Label titleLabel = new Label(title + ":");
             titleLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
@@ -130,7 +130,6 @@ public class StatsPanel extends VBox {
         setPadding(new Insets(12));
         setSpacing(12);
         getStyleClass().add("glass-panel");
-        setStyle("-fx-background-color: rgba(15, 23, 42, 0.90); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 8;");
 
         // --- TOP HEADER TOOLBAR ---
         Label headerTitle = new Label("📊 TABLEAU DE BORD DES STATISTIQUES & CLIODYNAMIQUE");
@@ -176,7 +175,7 @@ public class StatsPanel extends VBox {
         perfToolbar.setAlignment(Pos.CENTER_LEFT);
 
         VBox topControlsBox = new VBox(6, headerTitle, perfToolbar);
-        topControlsBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+        topControlsBox.getStyleClass().add("card-section");
 
         // --- SECTION 1: GRAPH SELECTION & TIME SERIES ---
         Label chartHeaderLabel = new Label("📈 ÉVOLUTION CHRONOLOGIQUE TEMPORELLE (Courbe Glissante)");
@@ -296,7 +295,7 @@ public class StatsPanel extends VBox {
         });
 
         VBox chartBox = new VBox(6, chartHeaderLabel, comboLabel, chartMetricCombo, windowBox, lineChart);
-        chartBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+        chartBox.getStyleClass().add("card-section");
 
         // --- SECTION 2: DEMOGRAPHICS (AGE PYRAMID) ---
         Label barHeaderLabel = new Label("📊 REPARTITION DEMOGRAPHIQUE (Pyramide des Âges)");
@@ -314,7 +313,7 @@ public class StatsPanel extends VBox {
         barChart.getData().add(barSeries);
 
         VBox barBox = new VBox(6, barHeaderLabel, barChart);
-        barBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+        barBox.getStyleClass().add("card-section");
 
         // --- SECTION 3: METRIC CARDS & CATEGORY FILTER ---
         Label metricsHeaderLabel = new Label("📋 MÉTRIQUES DÉTAILLÉES & INDICATEURS CLIODYNAMIQUES");
@@ -362,7 +361,7 @@ public class StatsPanel extends VBox {
         exportBtn.setOnAction(e -> exportCsv());
 
         VBox cardsControlBox = new VBox(6, metricsHeaderLabel, metricInspectorCard, categoryFilterCombo, searchField, exportBtn);
-        cardsControlBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+        cardsControlBox.getStyleClass().add("card-section");
 
         // Container for metric sections
         metricsContainer = new VBox(6);

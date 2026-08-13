@@ -67,7 +67,7 @@ public class EarthScenarioPerformanceBenchmarkTest {
         ProceduralEngineRegistry.registerPlugin("B16_PinkerDecline", PinkerViolenceDeclinePureEngine::processHybrid);
         ProceduralEngineRegistry.registerPlugin("B18_AiRegulation", AiAutonomousRegulationPureEngine::processHybrid);
         ProceduralEngineRegistry.registerPlugin("B21_SpatialFractal", SpatialCityFractalEngine::processHybrid);
-        ProceduralEngineRegistry.registerPlugin("B27_MediterraneanHighway", MediterraneanSeaHighwayEngine::processHybrid);
+        ProceduralEngineRegistry.registerPlugin("B27_MaritimeHighway", MaritimeHighwayEngine::processHybrid);
 
         // Memory usage before benchmark
         Runtime runtime = Runtime.getRuntime();

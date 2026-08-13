@@ -63,6 +63,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     private List<H3Cell> cells;
     private Scenario currentScenario;
+    private org.ether.society.procedural.SimulationPerformanceConfig performanceConfig = new org.ether.society.procedural.SimulationPerformanceConfig(true);
 
     private ScheduledExecutorService executorService;
     private final AtomicBoolean running = new AtomicBoolean(false);
@@ -120,6 +121,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
 
         this.currentScenario = scenario;
+        this.performanceConfig = scenario != null ? scenario.toPerformanceConfig() : new org.ether.society.procedural.SimulationPerformanceConfig(true);
         this.cells = cells;
 
         timeManager.reset((int) scenario.getStartDateYear());
@@ -137,7 +139,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         int populatedCount = (int) cells.stream().filter(c -> c.getPopulation() != null && c.getPopulation() > 0).count();
         initializePoliticalSeeding(populatedCount);
 
-        int cohortSize = scenario != null && scenario.getTargetCohortSize() > 0 ? scenario.getTargetCohortSize() : 500;
+        int cohortSize = scenario != null && scenario.getTargetCohortSize() > 0 ? scenario.getTargetCohortSize() : 150;
         if (demographicKernel != null) {
             demographicKernel.setTargetCohortSize(cohortSize);
         }
@@ -157,6 +159,14 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     public Scenario getCurrentScenario() {
         return currentScenario;
+    }
+
+    public org.ether.society.procedural.SimulationPerformanceConfig getPerformanceConfig() {
+        return performanceConfig;
+    }
+
+    public void setPerformanceConfig(org.ether.society.procedural.SimulationPerformanceConfig performanceConfig) {
+        this.performanceConfig = performanceConfig;
     }
 
     private void initializePopulation() {
@@ -255,7 +265,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
         if (newCells != null && !newCells.isEmpty()) {
             initializePopulation();
-            int cohortSize = currentScenario != null && currentScenario.getTargetCohortSize() > 0 ? currentScenario.getTargetCohortSize() : 500;
+            int cohortSize = currentScenario != null && currentScenario.getTargetCohortSize() > 0 ? currentScenario.getTargetCohortSize() : 150;
             if (demographicKernel != null) {
                 demographicKernel.setTargetCohortSize(cohortSize);
             }
@@ -363,8 +373,12 @@ public class H3SimulationEngine implements ISimulationEngine {
                 float dtSlow = DT_FAST * SLOW_FACTOR;
 
                 profiler.beginPhase("2_ClimateAndEnvironment");
-                climateSystem.updateClimate(cells, month);
-                syncClimateToBuffer();
+                int climateFreq = (performanceConfig != null && performanceConfig.isEnableMultiFreqClimateTicks()) 
+                        ? performanceConfig.getClimateTickFrequency() : 1;
+                if (climateFreq <= 1 || (tickCounter / SLOW_FACTOR) % climateFreq == 0) {
+                    climateSystem.updateClimate(cells, month);
+                    syncClimateToBuffer();
+                }
                 environmentalKernel.tick(worldBuffer, month, dtSlow);
                 profiler.endPhase("2_ClimateAndEnvironment");
 
@@ -377,57 +391,71 @@ public class H3SimulationEngine implements ISimulationEngine {
                 profiler.beginPhase("4_ProceduralEngines");
                 double avgTech = getAverageTechnology();
 
-                // Multi-threaded Parallel Execution of Procedural Engine Steps
-                java.util.concurrent.CompletableFuture<Void> step1 = java.util.concurrent.CompletableFuture.runAsync(() -> {
+                boolean isParallel = performanceConfig != null && performanceConfig.isEnableParallelExecution() && !performanceConfig.isStrictDeterminism();
+
+                Runnable step1Run = () -> {
                     org.ether.society.procedural.RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(cells);
                     org.ether.society.procedural.AtmosphericOxygenEngine.processAtmosphericOxygen(cells, 0.21, 1.0);
                     org.ether.society.procedural.WetBulbTemperatureEngine.processWetBulbHyperthermia(cells);
                     org.ether.society.procedural.AlbedoClimateEngine.processAlbedoFeedback(cells);
-                });
+                };
 
-                java.util.concurrent.CompletableFuture<Void> step2 = java.util.concurrent.CompletableFuture.runAsync(() -> {
+                Runnable step2Run = () -> {
                     org.ether.society.procedural.SoilNutrientNPKEngine.processSoilNutrients(cells);
                     org.ether.society.procedural.DeforestationErosionEngine.processDeforestationErosion(cells);
                     org.ether.society.procedural.AquiferDepletionEngine.processAquiferDepletion(cells);
                     org.ether.society.procedural.EcologicalDegradationEngine.processEcologicalDegradation(cells, avgTech);
-                });
+                };
 
-                java.util.concurrent.CompletableFuture<Void> step3 = java.util.concurrent.CompletableFuture.runAsync(() -> {
+                Runnable step3Run = () -> {
                     org.ether.society.procedural.BiologicalDemographicsEngine.processBiologicalDemographics(cells);
                     org.ether.society.procedural.BioMolecularEpidemiologyEngine.processBioMolecularImmunity(cells);
                     org.ether.society.procedural.EcotoxicologyFertilityEngine.processEcotoxicologyFertility(cells);
-                });
+                };
 
-                java.util.concurrent.CompletableFuture<Void> step4 = java.util.concurrent.CompletableFuture.runAsync(() -> {
+                Runnable step4Run = () -> {
                     org.ether.society.procedural.PhysicalEnergyGridEngine.processPhysicalEnergyGrid(cells);
                     org.ether.society.procedural.NetEnergyEROEIEngine.processNetEnergyEROEI(cells);
                     org.ether.society.procedural.MetallurgyEnthalpyEngine.processOreSmelting(cells);
                     org.ether.society.procedural.ResourceRecyclingEngine.processResourceRecycling(cells);
                     org.ether.society.procedural.NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(cells);
                     org.ether.society.procedural.OzoneLayerDepletionEngine.processOzoneLayerDepletion(cells);
-                });
+                };
 
-                // Await completion of parallel environmental, energy, & biological steps
-                java.util.concurrent.CompletableFuture.allOf(step1, step2, step3, step4).join();
-
-                // Step 5 & 6: Transport, Warfare & Information Evolution (Parallel Batch)
-                java.util.concurrent.CompletableFuture<Void> step5 = java.util.concurrent.CompletableFuture.runAsync(() -> {
+                Runnable step5Run = () -> {
                     org.ether.society.procedural.PhysicsTransportEngine.processPhysicsTransport(cells);
                     org.ether.society.procedural.ThermodynamicWarfareEngine.processKineticWarfare(cells);
                     org.ether.society.procedural.NuclearWarfareClimateEngine.processNuclearWarfareClimate(cells);
                     org.ether.society.procedural.InfrastructureEnergyEngine.processInfrastructureEnergy(cells);
-                    org.ether.society.procedural.ThermodynamicMigrationEngine.processThermodynamicMigration(cells);
-                });
+                    org.ether.society.procedural.ThermodynamicMigrationEngine.processThermodynamicMigration(cells, performanceConfig);
+                };
 
-                java.util.concurrent.CompletableFuture<Void> step6 = java.util.concurrent.CompletableFuture.runAsync(() -> {
+                Runnable step6Run = () -> {
                     org.ether.society.procedural.InformationEntropyEngine.processInformationEntropy(cells);
                     org.ether.society.procedural.MegafaunaEcosystemEngine.processMegafaunaEcosystem(cells);
                     org.ether.society.procedural.SelectiveBreedingEngine.processSelectiveBreeding(cells);
                     org.ether.society.procedural.TechnologicalSingularityEngine.processTechnologicalSingularity(cells);
                     org.ether.society.procedural.TechTreeEngine.processTechnologyDiffusion(cells, null);
-                });
+                };
 
-                java.util.concurrent.CompletableFuture.allOf(step5, step6).join();
+                if (isParallel) {
+                    java.util.concurrent.CompletableFuture<Void> s1 = java.util.concurrent.CompletableFuture.runAsync(step1Run);
+                    java.util.concurrent.CompletableFuture<Void> s2 = java.util.concurrent.CompletableFuture.runAsync(step2Run);
+                    java.util.concurrent.CompletableFuture<Void> s3 = java.util.concurrent.CompletableFuture.runAsync(step3Run);
+                    java.util.concurrent.CompletableFuture<Void> s4 = java.util.concurrent.CompletableFuture.runAsync(step4Run);
+                    java.util.concurrent.CompletableFuture.allOf(s1, s2, s3, s4).join();
+
+                    java.util.concurrent.CompletableFuture<Void> s5 = java.util.concurrent.CompletableFuture.runAsync(step5Run);
+                    java.util.concurrent.CompletableFuture<Void> s6 = java.util.concurrent.CompletableFuture.runAsync(step6Run);
+                    java.util.concurrent.CompletableFuture.allOf(s5, s6).join();
+                } else {
+                    step1Run.run();
+                    step2Run.run();
+                    step3Run.run();
+                    step4Run.run();
+                    step5Run.run();
+                    step6Run.run();
+                }
 
                 // Step 7: Advanced Physicalist & Cliodynamic Extensions
                 org.ether.society.procedural.TerraformingEngine.processTerraforming(cells, 1.0);

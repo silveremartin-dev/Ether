@@ -53,7 +53,24 @@ public class ComparativeReportGenerator {
                 delta.getAbsoluteChange(),
                 delta.getPercentageChange()));
         }
-        sb.append("\n---\n*Rapport généré automatiquement par Ether Analytics Engine (v4.5.0)*\n");
+
+        sb.append("\n## 🛠️ 4. Recommandations de Correction Automatisée (\"Corriger\")\n\n");
+        if (result.getProposedCorrections().isEmpty()) {
+            sb.append("✅ *Aucune correction paramétrique requise. La trajectoire est conforme aux tolérances.* \n\n");
+        } else {
+            sb.append("| Paramètre à Ajuster | Valeur Actuelle | Valeur Proposée | Justification & Impact Estímé |\n");
+            sb.append("| :--- | :--- | :--- | :--- |\n");
+            for (RootCauseAnalyzer.ParameterCorrection corr : result.getProposedCorrections()) {
+                sb.append(String.format("| `%s` | `%s` | `%s` | %s |\n",
+                    corr.getParameterName(),
+                    corr.getCurrentValue(),
+                    corr.getProposedValue(),
+                    corr.getRationale()));
+            }
+            sb.append("\n");
+        }
+
+        sb.append("---\n*Rapport généré automatiquement par Ether Analytics Engine (v4.5.0)*\n");
         return sb.toString();
     }
 

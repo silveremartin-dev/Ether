@@ -118,6 +118,7 @@ public class MainView extends StackPane {
         executionContextPanel = new ExecutionContextPanel(this::launchSimulationFromContext);
         executionContextTab = new Tab();
         executionContextTab.setContent(executionContextPanel);
+        executionContextTab.setDisable(true); // Disabled until scenario setup is completed
         executionContextTab.setClosable(false);
 
         // 5. Simulation Tab
@@ -144,6 +145,11 @@ public class MainView extends StackPane {
             if (oldTab == simulationTab && newTab != simulationTab) {
                 logger.info("Auto-pausing simulation due to tab switch");
                 engine.pause();
+            }
+            if (newTab == simulationTab) {
+                if (mapCanvas != null) {
+                    mapCanvas.resetView();
+                }
             }
             if (newTab == comparativeAnalyticsTab && comparativeAnalyticsPanel != null) {
                 comparativeAnalyticsPanel.refreshRunList();
@@ -210,12 +216,10 @@ public class MainView extends StackPane {
         // Map Container (Layered)
         StackPane mapStack = new StackPane();
 
-        // 1. Scrollable Map
-        javafx.scene.control.ScrollPane scroll = new javafx.scene.control.ScrollPane(mapCanvas);
-        scroll.setFitToWidth(true);
-        scroll.setFitToHeight(true);
-        scroll.setPannable(true);
-        mapStack.getChildren().add(scroll);
+        // 1. Direct Map Canvas (Bound to container dimensions to eliminate scrollbars and fill 100% of space)
+        mapCanvas.widthProperty().bind(mapStack.widthProperty());
+        mapCanvas.heightProperty().bind(mapStack.heightProperty());
+        mapStack.getChildren().add(mapCanvas);
 
         // 2. Notification Overlay
         notificationOverlay = new NotificationOverlay();
@@ -395,12 +399,13 @@ public class MainView extends StackPane {
             mapCanvas.setScenarioName(scenario.getName());
         }
 
-        // Switch to Execution Context tab first if coming from setup, or directly activate Simulation tab
-        simulationTab.setDisable(false);
+        // Enable Execution Context tab (Tab 4) and switch to it after Scenario Setup (Tab 3) validation
+        executionContextTab.setDisable(false);
         if (tabPane.getSelectionModel().getSelectedItem() == setupTab) {
             tabPane.getSelectionModel().select(executionContextTab);
-            logger.info("Execution Context tab selected after scenario setup validation");
+            logger.info("Execution Context tab enabled and selected after scenario setup validation");
         } else {
+            simulationTab.setDisable(false);
             tabPane.getSelectionModel().select(simulationTab);
             logger.info("Simulation tab activated with {} cells", newCells.size());
         }
@@ -413,12 +418,20 @@ public class MainView extends StackPane {
             if (currentScenario != null && cells != null && !cells.isEmpty()) {
                 if (engine.getCells() == null || engine.getCells().isEmpty()) {
                     engine.initializeFromScenario(currentScenario, cells);
+                    mapCanvas.setWorldBuffer(engine.getWorldBuffer());
+                    mapCanvas.setCells(cells);
+                    if (miniMap != null) miniMap.setCells(cells);
+                    controlPanel.updateScenarioName(currentScenario.getName());
+                    controlPanel.updateYear(String.valueOf(currentScenario.getStartDateYear()));
                 }
             }
         }
         simulationTab.setDisable(false);
         tabPane.getSelectionModel().select(simulationTab);
-        logger.info("Simulation tab activated from Execution Context Panel");
+        if (mapCanvas != null) {
+            mapCanvas.resetView();
+        }
+        logger.info("Simulation tab enabled and activated from Execution Context Panel");
     }
 
     // Add ColorLegend helper

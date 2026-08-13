@@ -168,7 +168,7 @@ public class PreComputePhase {
                 case SAVANNAH -> 700 + random.nextDouble() * 300;
                 case PLAINS -> 400 + random.nextDouble() * 200;
                 case HILLS -> 300 + random.nextDouble() * 150;
-                case BEACH -> 200 + random.nextDouble() * 100;
+                case BEACH, LAKE -> 200 + random.nextDouble() * 100;
                 case TUNDRA -> 100 + random.nextDouble() * 50;
                 case DESERT, SNOW -> 20 + random.nextDouble() * 30;
                 case GLACIER -> 10 + random.nextDouble() * 10;
@@ -189,7 +189,7 @@ public class PreComputePhase {
 
             // Water resources (also used as proxy for freshwater access)
             double water = switch (biome) {
-                case JUNGLE -> 1000;
+                case JUNGLE, LAKE -> 1000;
                 case SAVANNAH -> 800;
                 case FOREST, PLAINS -> 600 + random.nextDouble() * 200;
                 case HILLS, BEACH -> 400;
@@ -224,7 +224,7 @@ public class PreComputePhase {
             case SAVANNAH -> 1.1; // Rich game & pasture
             case FOREST, PLAINS -> 1.0;
             case HILLS -> 0.9;
-            case BEACH -> 0.7;
+            case BEACH, LAKE -> 0.7;
             case TUNDRA -> 0.4;
             case DESERT, SNOW -> 0.2;
             case GLACIER -> 0.05;

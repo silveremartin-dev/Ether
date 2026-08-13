@@ -30,6 +30,13 @@ public class I18n {
     private static final ObjectProperty<Language> currentLanguage = new SimpleObjectProperty<>();
     private static ResourceBundle bundle;
 
+    private static final ResourceBundle.Control NO_DEFAULT_LOCALE_CONTROL = new ResourceBundle.Control() {
+        @Override
+        public List<Locale> getCandidateLocales(String baseName, Locale locale) {
+            return List.of(locale, Locale.ROOT);
+        }
+    };
+
     static {
         // Load saved language preference or fallback to ENGLISH
         setLanguage(loadSavedLanguage());
@@ -44,19 +51,6 @@ public class I18n {
         }
         return Language.ENGLISH;
     }
-
-    /**
-     * Set the current application language.
-     * Loads the appropriate resource bundle and persists preference.
-     * 
-     * @param language The language to switch to
-     */
-    private static final ResourceBundle.Control NO_DEFAULT_LOCALE_CONTROL = new ResourceBundle.Control() {
-        @Override
-        public List<Locale> getCandidateLocales(String baseName, Locale locale) {
-            return List.of(locale, Locale.ROOT);
-        }
-    };
 
     public static void setLanguage(Language language) {
         if (language != null) {
@@ -86,6 +80,11 @@ public class I18n {
         return currentLanguage.get();
     }
 
+    private static String sanitize(String str) {
+        if (str == null) return null;
+        return str.replace("\ufe0f", "").replace("\ufe0e", "");
+    }
+
     /**
      * Get a localized string for the given key.
      * 
@@ -95,13 +94,13 @@ public class I18n {
     public static String get(String key) {
         try {
             if (bundle.containsKey(key)) {
-                return bundle.getString(key);
+                return sanitize(bundle.getString(key));
             } else {
                 logger.warn("Missing translation key: {}", key);
-                return key;
+                return sanitize(key);
             }
         } catch (Exception e) {
-            return key;
+            return sanitize(key);
         }
     }
 
@@ -111,10 +110,10 @@ public class I18n {
     public static String getOrDefault(String key, String defaultValue) {
         try {
             if (bundle != null && bundle.containsKey(key)) {
-                return bundle.getString(key);
+                return sanitize(bundle.getString(key));
             }
         } catch (Exception ignored) {}
-        return defaultValue;
+        return sanitize(defaultValue);
     }
 
     /**

@@ -42,7 +42,7 @@ public class Scenario implements Serializable {
 
     // Simulation Parameters
     private double cellSizeKm2;
-    private int targetCohortSize = 500; // Target population per demographic cohort node (1 to 10,000+)
+    private int targetCohortSize = 150; // Target population per demographic cohort node (1 to 10,000+, default 150 = Dunbar pivot)
     private double temporalResolutionDays = 30.0; // Temporal resolution time step Δt in days (default: 30.0 days = 1 month)
     private double climateHarshness; // 0.0 to 1.0 (storms, droughts)
     private long startDateYear; // e.g. -100000
@@ -50,13 +50,27 @@ public class Scenario implements Serializable {
     private long seed = 12345L;
     private boolean randomEventsEnabled = true;
     private String customDensityBase64;
-    // Ocean Optimization Options (Persisted at Scenario Level for Physical Determinism)
+    // Cultural Vector & Multi-Field Layers (Persisted per Scenario)
+    private int cultureVectorDimensions = 8; // 4D to 32D culture vector dimensions
+    private double culturalDiffusionRate = 0.05; // Free-energy cultural diffusion conductance
+    private double culturalMutationRate = 0.01; // Mutation & innovation noise rate
+    private String customIsoglossBase64; // Linguistic / Isogloss map layer
+    private String customKinshipBase64; // Kinship & Social structure map layer
+    private String customRitualsBase64; // Beliefs & Rituals map layer
+    private String customSovereigntyBase64; // State sovereignty & Capital centers map layer
+
+    // Engine Optimization & Determinism Controls (Persisted at Scenario Level for Physical Conformance)
+    private boolean strictDeterminism = false;
+    private boolean sparseCellSkippingEnabled = true;
     private boolean oceanMacroAggregationEnabled = true;
     private boolean coastalNavigationOnlyEnabled = true;
     private boolean oceanMultiRateTickingEnabled = true;
+    private boolean parallelExecutionEnabled = true;
+    private boolean spatialRangeTruncationEnabled = true;
 
-    // Type B Procedural & Cliodynamic Engine Checkbox States (Persisted per Scenario)
+    // Type B Procedural & Cliodynamic Engine Checkbox States & Parameters (Persisted per Scenario)
     private java.util.Map<String, Boolean> typeBEngineStates = new java.util.HashMap<>();
+    private java.util.Map<String, java.util.Map<String, Double>> typeBEngineParameters = new java.util.HashMap<>();
 
     // Spatial Clipping & Boundary Conditions
     private boolean clippingEnabled = false;
@@ -388,6 +402,31 @@ public class Scenario implements Serializable {
         this.boundaryMode = boundaryMode;
     }
 
+    public boolean isStrictDeterminism() {
+        return strictDeterminism;
+    }
+
+    public void setStrictDeterminism(boolean strictDeterminism) {
+        this.strictDeterminism = strictDeterminism;
+        if (strictDeterminism) {
+            this.sparseCellSkippingEnabled = false;
+            this.oceanMultiRateTickingEnabled = false;
+            this.parallelExecutionEnabled = false;
+            this.spatialRangeTruncationEnabled = false;
+        }
+    }
+
+    public boolean isSparseCellSkippingEnabled() {
+        return sparseCellSkippingEnabled;
+    }
+
+    public void setSparseCellSkippingEnabled(boolean sparseCellSkippingEnabled) {
+        this.sparseCellSkippingEnabled = sparseCellSkippingEnabled;
+        if (sparseCellSkippingEnabled) {
+            this.strictDeterminism = false;
+        }
+    }
+
     public boolean isOceanMacroAggregationEnabled() {
         return oceanMacroAggregationEnabled;
     }
@@ -410,6 +449,65 @@ public class Scenario implements Serializable {
 
     public void setOceanMultiRateTickingEnabled(boolean oceanMultiRateTickingEnabled) {
         this.oceanMultiRateTickingEnabled = oceanMultiRateTickingEnabled;
+        if (oceanMultiRateTickingEnabled) {
+            this.strictDeterminism = false;
+        }
+    }
+
+    public boolean isParallelExecutionEnabled() {
+        return parallelExecutionEnabled;
+    }
+
+    public void setParallelExecutionEnabled(boolean parallelExecutionEnabled) {
+        this.parallelExecutionEnabled = parallelExecutionEnabled;
+        if (parallelExecutionEnabled) {
+            this.strictDeterminism = false;
+        }
+    }
+
+    public boolean isSpatialRangeTruncationEnabled() {
+        return spatialRangeTruncationEnabled;
+    }
+
+    public void setSpatialRangeTruncationEnabled(boolean spatialRangeTruncationEnabled) {
+        this.spatialRangeTruncationEnabled = spatialRangeTruncationEnabled;
+        if (spatialRangeTruncationEnabled) {
+            this.strictDeterminism = false;
+        }
+    }
+
+    private int climateTickFrequency = 5;
+    private int parallelThreadCount = 0;
+
+    public int getClimateTickFrequency() {
+        return climateTickFrequency;
+    }
+
+    public void setClimateTickFrequency(int climateTickFrequency) {
+        this.climateTickFrequency = Math.max(1, climateTickFrequency);
+    }
+
+    public int getParallelThreadCount() {
+        return parallelThreadCount;
+    }
+
+    public void setParallelThreadCount(int parallelThreadCount) {
+        this.parallelThreadCount = Math.max(0, parallelThreadCount);
+    }
+
+    /**
+     * Converts this scenario's optimization settings into a runtime SimulationPerformanceConfig instance.
+     */
+    public org.ether.society.procedural.SimulationPerformanceConfig toPerformanceConfig() {
+        org.ether.society.procedural.SimulationPerformanceConfig config = new org.ether.society.procedural.SimulationPerformanceConfig();
+        config.setStrictDeterminism(strictDeterminism);
+        config.setEnableSparseCellSkipping(!strictDeterminism && sparseCellSkippingEnabled);
+        config.setEnableMultiFreqClimateTicks(!strictDeterminism && oceanMultiRateTickingEnabled);
+        config.setClimateTickFrequency(strictDeterminism ? 1 : climateTickFrequency);
+        config.setEnableParallelExecution(!strictDeterminism && parallelExecutionEnabled);
+        config.setParallelThreadCount(parallelExecutionEnabled ? parallelThreadCount : 1);
+        config.setEnableSpatialRangeTruncation(!strictDeterminism && spatialRangeTruncationEnabled);
+        return config;
     }
 
     public double getTemporalResolutionDays() {
@@ -429,5 +527,72 @@ public class Scenario implements Serializable {
 
     public void setTypeBEngineStates(java.util.Map<String, Boolean> typeBEngineStates) {
         this.typeBEngineStates = typeBEngineStates != null ? typeBEngineStates : new java.util.HashMap<>();
+    }
+
+    public java.util.Map<String, java.util.Map<String, Double>> getTypeBEngineParameters() {
+        if (typeBEngineParameters == null) {
+            typeBEngineParameters = new java.util.HashMap<>();
+        }
+        return typeBEngineParameters;
+    }
+
+    public void setTypeBEngineParameters(java.util.Map<String, java.util.Map<String, Double>> typeBEngineParameters) {
+        this.typeBEngineParameters = typeBEngineParameters != null ? typeBEngineParameters : new java.util.HashMap<>();
+    }
+
+    public int getCultureVectorDimensions() {
+        return cultureVectorDimensions;
+    }
+
+    public void setCultureVectorDimensions(int cultureVectorDimensions) {
+        this.cultureVectorDimensions = cultureVectorDimensions;
+    }
+
+    public double getCulturalDiffusionRate() {
+        return culturalDiffusionRate;
+    }
+
+    public void setCulturalDiffusionRate(double culturalDiffusionRate) {
+        this.culturalDiffusionRate = culturalDiffusionRate;
+    }
+
+    public double getCulturalMutationRate() {
+        return culturalMutationRate;
+    }
+
+    public void setCulturalMutationRate(double culturalMutationRate) {
+        this.culturalMutationRate = culturalMutationRate;
+    }
+
+    public String getCustomIsoglossBase64() {
+        return customIsoglossBase64;
+    }
+
+    public void setCustomIsoglossBase64(String customIsoglossBase64) {
+        this.customIsoglossBase64 = customIsoglossBase64;
+    }
+
+    public String getCustomKinshipBase64() {
+        return customKinshipBase64;
+    }
+
+    public void setCustomKinshipBase64(String customKinshipBase64) {
+        this.customKinshipBase64 = customKinshipBase64;
+    }
+
+    public String getCustomRitualsBase64() {
+        return customRitualsBase64;
+    }
+
+    public void setCustomRitualsBase64(String customRitualsBase64) {
+        this.customRitualsBase64 = customRitualsBase64;
+    }
+
+    public String getCustomSovereigntyBase64() {
+        return customSovereigntyBase64;
+    }
+
+    public void setCustomSovereigntyBase64(String customSovereigntyBase64) {
+        this.customSovereigntyBase64 = customSovereigntyBase64;
     }
 }

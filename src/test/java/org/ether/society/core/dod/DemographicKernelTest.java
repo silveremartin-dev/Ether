@@ -58,4 +58,31 @@ class DemographicKernelTest {
         }
         assertTrue(secondAgentExists, "Mitosis should create a child cohort in a free slot");
     }
+
+    @Test
+    @DisplayName("Mitosis threshold scales smoothly from Pure ABM (target=1.0) to Dunbar Cohort (target=150.0)")
+    void testMitosisRespectsTargetCohortSizeDunbarPivot() {
+        // 1. Pure ABM Regime (Target = 1.0 individual)
+        demographicKernel.setTargetCohortSize(1.0f);
+        agentBuffer.getMass()[0] = 2.5f; // Should trigger split since 2.5 >= 2.0 * 1.0
+        agentBuffer.getEnergy()[0] = 100.0f;
+        
+        demographicKernel.tick(worldBuffer, agentBuffer, 1.0f);
+        
+        boolean splitInAbmMode = agentBuffer.getHexIds()[1] == 0;
+        assertTrue(splitInAbmMode, "In pure ABM regime (targetCohortSize=1.0), individual mass >= 2.0 triggers discrete agent mitosis.");
+
+        // Reset buffer
+        agentBuffer.getHexIds()[1] = -1;
+        
+        // 2. Dunbar Cohort Regime (Target = 150.0 individuals)
+        demographicKernel.setTargetCohortSize(150.0f);
+        agentBuffer.getMass()[0] = 100.0f; // 100 < 300.0 (2 * Dunbar limit) -> No split
+        agentBuffer.getEnergy()[0] = 100.0f;
+
+        demographicKernel.tick(worldBuffer, agentBuffer, 1.0f);
+
+        boolean noSplitInDunbarMode = agentBuffer.getHexIds()[1] == -1;
+        assertTrue(noSplitInDunbarMode, "In Dunbar cohort regime (targetCohortSize=150.0), mass of 100 individuals does not split prematurely.");
+    }
 }

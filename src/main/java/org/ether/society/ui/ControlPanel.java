@@ -76,6 +76,9 @@ public class ControlPanel extends VBox {
     private boolean isRecordingVideo = false;
 
     private final CheckBox mode3dCheck;
+    private final CheckBox autoRotateCheck;
+    private final Label reliefLabel;
+    private final Slider reliefSlider;
     private final CheckBox contourCheck;
     private final ComboBox<DisplayMode> displayModeCombo;
 
@@ -93,7 +96,6 @@ public class ControlPanel extends VBox {
         setSpacing(10);
         setPadding(new Insets(12));
         getStyleClass().add("glass-panel");
-        setStyle("-fx-background-color: rgba(15, 23, 42, 0.85); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 8;");
 
         // --- 1. DATE & TIME HEADER CARD ---
         scenarioHeaderLabel = new Label("🎬 " + I18n.getOrDefault("sim.header.scenario", "Scénario : ") + "Out of Africa");
@@ -223,16 +225,51 @@ public class ControlPanel extends VBox {
         VBox mediaCard = new VBox(8, mediaTitle, hdScreenshotBtn, recordVideoBtn, autoRecordCheck);
         styleCard(mediaCard);
 
-        // --- 4. DISPLAY & VISUAL LAYERS (CASES À COCHER) ---
+        // --- 4. DISPLAY & VISUAL LAYERS (GLOBE 3D & COUCHES) ---
         Label viewTitle = createCardTitle("🎨 " + I18n.getOrDefault("sim.card.layers", "COUCHES & OVERLAYS VISUELS"));
 
         mode3dCheck = new CheckBox(I18n.getOrDefault("sim.layer.mode3d", "🌐 Globe 3D H3"));
         mode3dCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.mode3d", "Bascule entre globe sphérique 3D et carte plate 2D")));
         mode3dCheck.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        mode3dCheck.setOnAction(e -> {
+
+        reliefLabel = new Label(I18n.getOrDefault("sim.layer.relief3d", "⛰️ Relief 3D") + " : 25x");
+        reliefLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px;");
+        reliefLabel.setDisable(true);
+
+        reliefSlider = new Slider(1.0, 50.0, 25.0);
+        reliefSlider.setBlockIncrement(5.0);
+        reliefSlider.setMajorTickUnit(15.0);
+        reliefSlider.setMinorTickCount(2);
+        reliefSlider.setShowTickMarks(true);
+        reliefSlider.setShowTickLabels(false);
+        reliefSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.relief3d", "Ajuste la hauteur du relief topographique en mode Globe 3D")));
+        reliefSlider.setDisable(true);
+        reliefSlider.valueProperty().addListener((obs, oldV, newV) -> {
+            double val = newV.doubleValue();
             if (mapCanvas != null) {
-                mapCanvas.setViewMode(mode3dCheck.isSelected() ? ViewMode.VIEW_3D : ViewMode.VIEW_2D);
+                mapCanvas.setVerticalExaggeration(val);
             }
+            reliefLabel.setText(String.format(java.util.Locale.ROOT, "%s : %.0fx", I18n.getOrDefault("sim.layer.relief3d", "⛰️ Relief 3D"), val));
+        });
+
+        autoRotateCheck = new CheckBox(I18n.getOrDefault("sim.layer.autorotate", "🔄 Auto-rotation Globe"));
+        autoRotateCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.autorotate", "Fait pivoter automatiquement le globe sphérique 3D")));
+        autoRotateCheck.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        autoRotateCheck.setDisable(true);
+        autoRotateCheck.setOnAction(e -> {
+            if (mapCanvas != null) {
+                mapCanvas.setAutoRotating(autoRotateCheck.isSelected());
+            }
+        });
+
+        mode3dCheck.setOnAction(e -> {
+            boolean is3D = mode3dCheck.isSelected();
+            if (mapCanvas != null) {
+                mapCanvas.setViewMode(is3D ? ViewMode.VIEW_3D : ViewMode.VIEW_2D);
+            }
+            reliefSlider.setDisable(!is3D);
+            reliefLabel.setDisable(!is3D);
+            autoRotateCheck.setDisable(!is3D);
         });
 
         contourCheck = new CheckBox(I18n.getOrDefault("sim.layer.contours", "📈 Courbes de Niveau (Contours)"));
@@ -276,7 +313,7 @@ public class ControlPanel extends VBox {
             }
         });
 
-        VBox layersVBox = new VBox(6, mode3dCheck, contourCheck, layerComboLabel, displayModeCombo);
+        VBox layersVBox = new VBox(6, mode3dCheck, reliefLabel, reliefSlider, autoRotateCheck, contourCheck, layerComboLabel, displayModeCombo);
 
         VBox viewCard = new VBox(8, viewTitle, layersVBox);
         styleCard(viewCard);
@@ -315,7 +352,7 @@ public class ControlPanel extends VBox {
     }
 
     private void styleCard(VBox card) {
-        card.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 8; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 8;");
+        card.getStyleClass().add("card-section");
     }
 
     public void setNotificationOverlay(NotificationOverlay overlay) {
@@ -484,13 +521,25 @@ public class ControlPanel extends VBox {
         startBtn.setText("▶");
         pauseBtn.setText("⏸");
         stopBtn.setText("⏹");
+        mode3dCheck.setText(I18n.getOrDefault("sim.layer.mode3d", "🌐 Globe 3D H3"));
+        mode3dCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.mode3d", "Bascule entre globe sphérique 3D et carte plate 2D")));
+        reliefLabel.setText(String.format(java.util.Locale.ROOT, "%s : %.0fx", I18n.getOrDefault("sim.layer.relief3d", "⛰️ Relief 3D"), reliefSlider != null ? reliefSlider.getValue() : 25.0));
+        reliefSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.relief3d", "Ajuste la hauteur du relief topographique en mode Globe 3D")));
+        autoRotateCheck.setText(I18n.getOrDefault("sim.layer.autorotate", "🔄 Auto-rotation Globe"));
+        autoRotateCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.autorotate", "Fait pivoter automatiquement le globe sphérique 3D")));
+        contourCheck.setText(I18n.getOrDefault("sim.layer.contours", "📈 Courbes de Niveau (Contours)"));
+        contourCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.contours", "Affiche le dénivelé d'altitude sur les cellules H3")));
         updateViewToggleButton();
         updateDisplayToggleButton();
     }
 
     private void updateViewToggleButton() {
         if (mapCanvas != null && mode3dCheck != null) {
-            mode3dCheck.setSelected(mapCanvas.getViewMode() == ViewMode.VIEW_3D);
+            boolean is3D = mapCanvas.getViewMode() == ViewMode.VIEW_3D;
+            mode3dCheck.setSelected(is3D);
+            if (reliefSlider != null) reliefSlider.setDisable(!is3D);
+            if (reliefLabel != null) reliefLabel.setDisable(!is3D);
+            if (autoRotateCheck != null) autoRotateCheck.setDisable(!is3D);
         }
     }
 

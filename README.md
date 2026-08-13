@@ -132,6 +132,7 @@ mvn javafx:run
 - 🌊 [Ocean Optimizations & Determinism Guide](docs/OCEAN_OPTIMIZATIONS_AND_DETERMINISM.md) (Macro-Aggregation, Coastal Filtering, Multi-Rate Ticking, Determinism Levels)
 - 🤖 [Sovereign AI Governance Design ("Archon Engine")](docs/SOVEREIGN_AI_GOVERNANCE_DESIGN.md) (Closed-Loop MPC, Pareto Objectives, 4 Planetary Scenarios)
 - 📈 [Historical Benchmarks & Empirical Validation](docs/HISTORICAL_BENCHMARKS_AND_VALIDATION.md) (20-Variable Benchmark Suite, RMSE / $R^2$ Metrics, Scenarios)
+- 🧪 [Scenario Testing & Auto-Calibration Protocol](docs/SCENARIO_TESTING_PROTOCOL_REPORT.md) ("Début Connu, Fin à Comparer, Expliquer et Corriger" Framework)
 - 📜 [Academic Data Credits & Dataset Citations](docs/CREDITS.md) (Seshat, Maddison, COW, HYDE 3.2, ETOPO1, USGS, ORBIS)
 
 ---

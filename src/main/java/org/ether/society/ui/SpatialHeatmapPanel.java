@@ -44,7 +44,7 @@ public class SpatialHeatmapPanel extends VBox {
     public SpatialHeatmapPanel() {
         setPadding(new Insets(8));
         setSpacing(8);
-        setStyle("-fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+        getStyleClass().add("card-section");
 
         // Header
         Label title = new Label("🗺️ CARTE DE DENSITÉ SPATIALE & SÉQUENCE ANIMÉE (2D + 1D Temps)");

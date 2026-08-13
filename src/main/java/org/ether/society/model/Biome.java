@@ -73,6 +73,9 @@ public enum Biome {
     GLACIER,
 
     /** Tropical savannah grassland */
-    SAVANNAH
+    SAVANNAH,
+
+    /** Inland lake / enclosed water basin */
+    LAKE
 }
 

@@ -52,7 +52,6 @@ public class GodModePanel extends VBox {
         setPadding(new Insets(12));
         setSpacing(10);
         getStyleClass().add("glass-panel");
-        setStyle("-fx-background-color: rgba(15, 23, 42, 0.85); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 8;");
 
         // Title Header
         Label header = new Label(org.ether.society.i18n.I18n.getOrDefault("godmode.title", "⚡ MODE DIEU & CHRONOLOGIE"));
@@ -114,19 +113,19 @@ public class GodModePanel extends VBox {
 
         // Section 1: Event Builder (Direct & Scheduled Physical Forcing)
         VBox injectorBox = createInjectorSection();
-        injectorBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+        injectorBox.getStyleClass().add("card-section");
 
         // Section 2: Direct Resource & Demographic Spawner
         VBox spawnerBox = createSpawnerSection();
-        spawnerBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+        spawnerBox.getStyleClass().add("card-section");
 
         // Section 3: Spatial Terraform Brush
         VBox terraformBox = createTerraformSection();
-        terraformBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+        terraformBox.getStyleClass().add("card-section");
 
         // Section 4: Disaster Reset & Climate Normalization
         VBox resetBox = createResetSection();
-        resetBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+        resetBox.getStyleClass().add("card-section");
 
         // Section 5: Scenario Timeline Audit Log & Scheduled Queue Actions
         Label timelineHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("godmode.timeline.title", "📜 CHRONOLOGIE DU SCÉNARIO & REGISTRE D'AUDIT EN DIRECT :"));
@@ -150,7 +149,7 @@ public class GodModePanel extends VBox {
         timelineActionsBox.setAlignment(Pos.CENTER_RIGHT);
 
         VBox timelineBox = new VBox(6, timelineHeader, timelineListView, timelineActionsBox);
-        timelineBox.setStyle("-fx-padding: 10; -fx-background-color: rgba(30, 41, 59, 0.6); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+        timelineBox.getStyleClass().add("card-section");
 
         getChildren().addAll(header, injectorBox, spawnerBox, terraformBox, resetBox, timelineBox);
     }

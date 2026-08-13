@@ -86,6 +86,10 @@ public class ResourceSystem {
                 foodRegen = 0.5;
                 waterRegen = 1.0;
                 break;
+            case LAKE:
+                foodRegen = 3.5; // Freshwater fish & aquatic flora
+                waterRegen = 5.0; // Abundant freshwater
+                break;
         }
 
         // Temperature affects food production

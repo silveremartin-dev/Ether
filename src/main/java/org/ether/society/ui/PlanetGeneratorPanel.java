@@ -227,7 +227,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         headerLabel.getStyleClass().add("label-title");
 
         // --- 1. Global Presets Control Bar ---
-        PresetControlBar<PlanetPreset> topPresetBar = new PresetControlBar<>(I18n.getOrDefault("planet.preset", "Préréglage Global"));
+        PresetControlBar<PlanetPreset> topPresetBar = new PresetControlBar<>("planet.preset", "Préréglage Global");
         this.presetBar = topPresetBar;
         topPresetBar.setExportCategory("planetgenerator");
         presetCombo = topPresetBar.getPresetCombo();

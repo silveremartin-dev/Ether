@@ -44,6 +44,9 @@ public class PresetControlBar<T> extends VBox {
     /** Prefix category used for export file naming (e.g. "planetgenerator", "ecology", "scenario") */
     private String exportCategory = "preset";
 
+    private String labelKey;
+    private String defaultLabelText;
+
     private final Label presetLabel;
     private final ComboBox<T> presetCombo;
 
@@ -78,12 +81,20 @@ public class PresetControlBar<T> extends VBox {
     }
 
     public PresetControlBar(String labelText) {
+        this(null, labelText);
+    }
+
+    public PresetControlBar(String labelKey, String defaultLabelText) {
         super(8);
+        this.labelKey = labelKey;
+        this.defaultLabelText = defaultLabelText;
+
         setAlignment(Pos.TOP_LEFT);
         setPadding(new Insets(10, 12, 10, 12));
         getStyleClass().add("card-section");
 
-        presetLabel = new Label(labelText + ":");
+        String initialLabelText = (labelKey != null ? I18n.getOrDefault(labelKey, defaultLabelText) : defaultLabelText);
+        presetLabel = new Label(initialLabelText + ":");
         presetLabel.getStyleClass().add("control-label");
 
         // --- Inline editable name field ---
@@ -117,18 +128,6 @@ public class PresetControlBar<T> extends VBox {
             protected void updateItem(T item, boolean empty) {
                 super.updateItem(item, empty);
                 setText(empty || item == null ? "" : formatPresetItem(item));
-            }
-        });
-
-        presetCombo.setButtonCell(new ListCell<>() {
-            @Override
-            protected void updateItem(T item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(presetCombo.getPromptText() != null ? presetCombo.getPromptText() : "");
-                } else {
-                    setText(formatPresetItem(item));
-                }
             }
         });
 
@@ -485,10 +484,13 @@ public class PresetControlBar<T> extends VBox {
     // -------------------------------------------------------------------------
 
     public void updateTexts() {
-        if (saveBtn != null) saveBtn.setText("💾 " + I18n.get("preset.save"));
-        if (deleteBtn != null) deleteBtn.setText("🗑️ " + I18n.get("preset.delete"));
-        if (exportBtn != null) exportBtn.setText("📤 " + I18n.get("preset.export"));
-        if (importBtn != null) importBtn.setText("📥 " + I18n.get("preset.import"));
+        if (presetLabel != null && labelKey != null) {
+            presetLabel.setText(I18n.getOrDefault(labelKey, defaultLabelText) + ":");
+        }
+        if (saveBtn != null) saveBtn.setText("💾 " + I18n.getOrDefault("preset.save", "Enregistrer"));
+        if (deleteBtn != null) deleteBtn.setText("🗑️ " + I18n.getOrDefault("preset.delete", "Supprimer"));
+        if (exportBtn != null) exportBtn.setText("📤 " + I18n.getOrDefault("preset.export", "Exporter"));
+        if (importBtn != null) importBtn.setText("📥 " + I18n.getOrDefault("preset.import", "Importer"));
         if (presetCombo != null)
             presetCombo.setPromptText(I18n.getOrDefault("preset.combo.placeholder", "— Choisir un préréglage —"));
         if (nameField != null)
