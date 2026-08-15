@@ -1,12 +1,9 @@
-/*
- * Ether - Human Society Simulation
- * Copyright (c) 2024-2026 Silvere Martin-Michiellot
- * MIT License
- */
 package org.ether.society.ui;
 
 import org.ether.society.analytics.HistoryManager;
 import org.ether.society.database.H3Cell;
+import org.ether.society.i18n.I18n;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
@@ -30,9 +27,10 @@ import java.util.*;
  */
 public class SpatialHeatmapPanel extends VBox {
 
+    private final Label titleLabel;
     private final ComboBox<String> mapTypeCombo;
     private final Canvas mapCanvas;
-    private final Label lblMoranI = new Label("I de Moran (Autocorrélation Spatiale) : --");
+    private final Label lblMoranI;
     private final Button playPauseBtn;
 
     private List<H3Cell> currentCells = new ArrayList<>();
@@ -47,37 +45,56 @@ public class SpatialHeatmapPanel extends VBox {
         getStyleClass().add("card-section");
 
         // Header
-        Label title = new Label("🗺️ CARTE DE DENSITÉ SPATIALE & SÉQUENCE ANIMÉE (2D + 1D Temps)");
-        title.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        titleLabel = new Label();
+        titleLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
         // Controls
         mapTypeCombo = new ComboBox<>();
-        mapTypeCombo.getItems().addAll(
-                "👥 Densité de Population",
-                "💎 Richesse & Capital Spécialisé",
-                "🗣️ Diffusion Linguistique & Culturelle",
-                "🌡️ Température & Biome"
-        );
-        mapTypeCombo.setValue("👥 Densité de Population");
         mapTypeCombo.setMaxWidth(Double.MAX_VALUE);
         mapTypeCombo.setOnAction(e -> renderMap());
 
-        playPauseBtn = new Button("▶ Jouer Séquence Temporelle (2D+1D)");
+        playPauseBtn = new Button();
         playPauseBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px;");
         playPauseBtn.setOnAction(e -> toggleAnimation());
 
         HBox controlBox = new HBox(8, mapTypeCombo, playPauseBtn);
         HBox.setHgrow(mapTypeCombo, Priority.ALWAYS);
 
-        // Map Canvas (280x140)
+        // Map Canvas (320x140)
         mapCanvas = new Canvas(320, 140);
 
         // Spatial Autocorrelation Label
+        lblMoranI = new Label();
         lblMoranI.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #ffd700;");
 
-        getChildren().addAll(title, controlBox, mapCanvas, lblMoranI);
+        getChildren().addAll(titleLabel, controlBox, mapCanvas, lblMoranI);
 
         setupAnimation();
+
+        updateTexts();
+        I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
+    }
+
+    public void updateTexts() {
+        titleLabel.setText(I18n.getOrDefault("heatmap.title", "🗺️ CARTE DE DENSITÉ SPATIALE & SÉQUENCE ANIMÉE (2D + 1D Temps)"));
+
+        int selIdx = mapTypeCombo.getSelectionModel().getSelectedIndex();
+        mapTypeCombo.getItems().clear();
+        mapTypeCombo.getItems().addAll(
+                I18n.getOrDefault("heatmap.mode.population", "👥 Densité de Population"),
+                I18n.getOrDefault("heatmap.mode.wealth", "💎 Richesse & Capital Spécialisé"),
+                I18n.getOrDefault("heatmap.mode.language", "🗣️ Diffusion Linguistique & Culturelle"),
+                I18n.getOrDefault("heatmap.mode.climate", "🌡️ Température & Biome")
+        );
+        mapTypeCombo.getSelectionModel().select(selIdx >= 0 ? selIdx : 0);
+
+        if (isPlayingAnimation) {
+            playPauseBtn.setText(I18n.getOrDefault("heatmap.btn.pause", "⏸ Pause Animation"));
+        } else {
+            playPauseBtn.setText(I18n.getOrDefault("heatmap.btn.play", "▶ Jouer Séquence Temporelle (2D+1D)"));
+        }
+
+        renderMap();
     }
 
     public void setHistoryManager(HistoryManager historyManager) {
@@ -103,11 +120,14 @@ public class SpatialHeatmapPanel extends VBox {
 
         if (currentCells == null || currentCells.isEmpty()) {
             gc.setFill(Color.web("#64748b"));
-            gc.fillText("Aucune donnée spatiale", w / 3, h / 2);
+            gc.fillText(I18n.getOrDefault("heatmap.no_data", "Aucune donnée spatiale"), w / 3, h / 2);
+            lblMoranI.setText(I18n.getOrDefault("heatmap.moran_none", "I de Moran (Autocorrélation Spatiale) : --"));
             return;
         }
 
         String mode = mapTypeCombo.getValue();
+        if (mode == null) mode = "population";
+
         double minLat = 90, maxLat = -90, minLng = 180, maxLng = -180;
         double maxVal = 0.001;
 
@@ -144,18 +164,22 @@ public class SpatialHeatmapPanel extends VBox {
 
         // Compute Moran's I Live
         double moranI = computeMoranI(mode, minLat, maxLat, minLng, maxLng);
-        String desc = moranI > 0.3 ? "Clusters Concentrés (Agrégation)" : (moranI < -0.1 ? "Dispersion Spatiale" : "Répartition Aléatoire");
-        lblMoranI.setText(String.format(Locale.US, "I de Moran (Autocorrélation) : %.3f (%s)", moranI, desc));
+        String descKey = moranI > 0.3 ? "heatmap.moran.clusters" : (moranI < -0.1 ? "heatmap.moran.dispersed" : "heatmap.moran.random");
+        String descFallback = moranI > 0.3 ? "Clusters Concentrés (Agrégation)" : (moranI < -0.1 ? "Dispersion Spatiale" : "Répartition Aléatoire");
+        String desc = I18n.getOrDefault(descKey, descFallback);
+        String labelPattern = I18n.getOrDefault("heatmap.moran.label", "I de Moran (Autocorrélation) : %.3f (%s)");
+        lblMoranI.setText(String.format(Locale.US, labelPattern, moranI, desc));
     }
 
     private double getCellValue(H3Cell c, String mode) {
-        if (mode.contains("Richesse")) {
+        if (mode == null) return 0.0;
+        if (mode.contains("Richesse") || mode.contains("Wealth") || mode.contains("Reichtum") || mode.contains("Riqueza") || mode.contains("财富")) {
             double pop = c.getPopulation() != null ? c.getPopulation() : 0;
             double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
             return pop * tech * 15.0;
-        } else if (mode.contains("Linguistique")) {
+        } else if (mode.contains("Linguistique") || mode.contains("Language") || mode.contains("Sprache") || mode.contains("Lingüística") || mode.contains("语言")) {
             return c.getLanguageGroup() != null ? Math.abs(c.getLanguageGroup().hashCode() % 100) : 1.0;
-        } else if (mode.contains("Température")) {
+        } else if (mode.contains("Température") || mode.contains("Temperature") || mode.contains("Temperatur") || mode.contains("Temperatura") || mode.contains("温度")) {
             return c.getTemperature() != null ? c.getTemperature() : 15.0;
         } else {
             return c.getPopulation() != null ? c.getPopulation().doubleValue() : 0.0;
@@ -163,12 +187,11 @@ public class SpatialHeatmapPanel extends VBox {
     }
 
     private Color getColorForRatio(double ratio, String mode) {
-        if (mode.contains("Linguistique")) {
+        if (mode != null && (mode.contains("Linguistique") || mode.contains("Language") || mode.contains("Sprache") || mode.contains("Lingüística") || mode.contains("语言"))) {
             return Color.hsb(ratio * 360, 0.8, 0.9);
-        } else if (mode.contains("Température")) {
+        } else if (mode != null && (mode.contains("Température") || mode.contains("Temperature") || mode.contains("Temperatur") || mode.contains("Temperatura") || mode.contains("温度"))) {
             return Color.color(ratio, 0.3, 1.0 - ratio);
         } else {
-            // Yellow to Red heat
             return Color.color(Math.min(1.0, ratio * 1.5), Math.max(0.1, 0.9 - ratio * 0.8), 0.1);
         }
     }
@@ -212,16 +235,16 @@ public class SpatialHeatmapPanel extends VBox {
         if (isPlayingAnimation) {
             animationTimeline.pause();
             isPlayingAnimation = false;
-            playPauseBtn.setText("▶ Jouer Séquence Temporelle (2D+1D)");
+            playPauseBtn.setText(I18n.getOrDefault("heatmap.btn.play", "▶ Jouer Séquence Temporelle (2D+1D)"));
             playPauseBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px;");
         } else {
             if (historyManager != null && !historyManager.getWorldSnapshots().isEmpty()) {
                 animationTimeline.play();
                 isPlayingAnimation = true;
-                playPauseBtn.setText("⏸ Pause Animation");
+                playPauseBtn.setText(I18n.getOrDefault("heatmap.btn.pause", "⏸ Pause Animation"));
                 playPauseBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px;");
             } else {
-                lblMoranI.setText("Aucun snapshot disponible pour l'animation temporelle 2D+1D.");
+                lblMoranI.setText(I18n.getOrDefault("heatmap.no_snapshot", "Aucun snapshot disponible pour l'animation temporelle 2D+1D."));
             }
         }
     }

@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
  */
 public enum Theme {
     DARK("Dark", "/css/index.css"),
-    LIGHT("Light", "/css/light.css");
+    LIGHT("Light", "/css/light.css"),
+    PRESENTATION("Presentation", "/css/presentation.css");
 
     private static final Logger logger = LoggerFactory.getLogger(Theme.class);
     private static final java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(Theme.class);
@@ -59,8 +60,15 @@ public enum Theme {
     public static void setTheme(Scene scene, Theme theme) {
         if (theme == null) return;
         currentTheme.set(theme);
-        prefs.put(PREF_THEME_KEY, theme.name());
-        applyCurrentTheme(scene);
+        try {
+            prefs.put(PREF_THEME_KEY, theme.name());
+            prefs.flush();
+        } catch (Exception e) {
+            logger.warn("Could not flush theme preference: {}", e.getMessage());
+        }
+        if (scene != null) {
+            applyCurrentTheme(scene);
+        }
     }
 
     public static void applyCurrentTheme(Scene scene) {

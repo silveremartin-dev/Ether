@@ -400,7 +400,7 @@ public class H3MapCanvas extends Canvas {
             setCursor(javafx.scene.Cursor.DEFAULT);
         });
 
-        // Click on event beacon overlay or double-click to reset
+        // Click on event beacon overlay or double-click to reset, or single click to update coordinates
         setOnMouseClicked(event -> {
             synchronized (activeBeaconTargets) {
                 for (EventBeaconTarget target : activeBeaconTargets) {
@@ -418,6 +418,11 @@ public class H3MapCanvas extends Canvas {
                 draw();
                 notifyMiniMap();
                 logger.info("Double-click: reset H3 map view to full centered perspective.");
+            } else if (event.getClickCount() == 1) {
+                double[] latLng = getLatLngAt(event.getX(), event.getY());
+                if (latLng != null && onCellClickedCallback != null) {
+                    onCellClickedCallback.accept(latLng[0], latLng[1]);
+                }
             }
         });
 
@@ -866,9 +871,61 @@ public class H3MapCanvas extends Canvas {
     }
 
     private java.util.function.BiConsumer<H3Cell, double[]> onHoverCallback;
+    private java.util.function.BiConsumer<Double, Double> onCellClickedCallback;
 
     public void setOnHoverCallback(java.util.function.BiConsumer<H3Cell, double[]> callback) {
         this.onHoverCallback = callback;
+    }
+
+    public void setOnCellClickedCallback(java.util.function.BiConsumer<Double, Double> callback) {
+        this.onCellClickedCallback = callback;
+    }
+
+    /**
+     * Compute geographical coordinates (lat, lng) from canvas pixel position.
+     * Supports both 2D Equirectangular projection and 3D Globe orthographic view.
+     */
+    public double[] getLatLngAt(double mouseX, double mouseY) {
+        if (viewMode == ViewMode.VIEW_3D) {
+            double radius = Math.min(getWidth(), getHeight()) * 0.45 * zoomFactor;
+            double cx = getWidth() / 2.0;
+            double cy = getHeight() / 2.0;
+
+            double dx = mouseX - cx;
+            double dy = cy - mouseY;
+            double r2 = dx * dx + dy * dy;
+            if (r2 > radius * radius) {
+                return null;
+            }
+
+            double xr = dx / radius;
+            double yrt = dy / radius;
+            double zrt = Math.sqrt(Math.max(0.0, 1.0 - xr * xr - yrt * yrt));
+
+            double radRotationY = Math.toRadians(-centerLng);
+            double radTilt = Math.toRadians(centerLat);
+
+            double cosT = Math.cos(radTilt);
+            double sinT = Math.sin(radTilt);
+            double y = yrt * cosT + zrt * sinT;
+            double zr = -yrt * sinT + zrt * cosT;
+
+            double cosR = Math.cos(radRotationY);
+            double sinR = Math.sin(radRotationY);
+            double x = xr * cosR - zr * sinR;
+            double z = xr * sinR + zr * cosR;
+
+            double lat = Math.toDegrees(Math.asin(Math.clamp(y, -1.0, 1.0)));
+            double lng = Math.toDegrees(Math.atan2(x, z));
+            return new double[]{lat, lng};
+        } else {
+            double lng = ((mouseX - offsetX) / scale) + minLng;
+            double lat = maxLat - ((mouseY - offsetY) / scale);
+            if (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng) {
+                return null;
+            }
+            return new double[]{lat, lng};
+        }
     }
 
     private final Map<Long, Integer> previousPopMap = new HashMap<>();

@@ -245,7 +245,7 @@ public class MainView extends StackPane {
         simProgressBar.setMaxWidth(400);
         simProgressBar.setPrefHeight(18);
 
-        Label simStatusLabel = new Label("⚡ Initialisation de la simulation...");
+        Label simStatusLabel = new Label(I18n.getOrDefault("mainview.status.init", "⚡ Initialisation de la simulation..."));
         simStatusLabel.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 14px;");
 
         VBox simProgressOverlay = new VBox(12, simStatusLabel, simProgressBar);
@@ -308,7 +308,7 @@ public class MainView extends StackPane {
 
         // Collapsible Sidebar Button (Full-Screen Map Mode Toggle)
         Button toggleSidebarBtn = new Button("◀");
-        toggleSidebarBtn.setTooltip(new Tooltip("Masquer / Afficher le panneau de contrôle (Mode Plein Écran)"));
+        toggleSidebarBtn.setTooltip(new Tooltip(I18n.getOrDefault("mainview.tooltip.toggle_sidebar", "Masquer / Afficher le panneau de contrôle (Mode Plein Écran)")));
         toggleSidebarBtn.setStyle("-fx-background-color: rgba(15, 23, 42, 0.90); -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8 6; -fx-background-radius: 0 6 6 0; -fx-border-color: #38bdf8; -fx-border-width: 1 1 1 0; -fx-border-radius: 0 6 6 0; -fx-cursor: hand;");
 
         final boolean[] isSidebarVisible = {true};
@@ -323,7 +323,7 @@ public class MainView extends StackPane {
         HBox.setHgrow(leftSidebar, Priority.NEVER);
 
         // Bottom Telemetry Status Bar
-        Label statusBarLabel = new Label("📍 Coordonnées : Survolez une cellule H3 sur la carte...");
+        Label statusBarLabel = new Label(I18n.getOrDefault("mainview.status.coords_hover", "📍 Coordonnées : Survolez une cellule H3 sur la carte..."));
         statusBarLabel.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', sans-serif; -fx-font-weight: bold;");
 
         HBox statusBar = new HBox(statusBarLabel);
@@ -345,8 +345,14 @@ public class MainView extends StackPane {
                 ));
             } else {
                 statusBarLabel.setText(String.format(java.util.Locale.ROOT,
-                    "📍 Lat: %.2f° | Lng: %.2f° | Survolez un hexagone H3...", coords[0], coords[1]
+                    "📍 Lat: %.2f° | Lng: %.2f° | " + I18n.getOrDefault("mainview.status.hover_hex", "Survolez un hexagone H3..."), coords[0], coords[1]
                 ));
+            }
+        });
+
+        mapCanvas.setOnCellClickedCallback((lat, lng) -> {
+            if (godModePanel != null) {
+                godModePanel.updateCoordinates(lat, lng);
             }
         });
 
@@ -363,11 +369,9 @@ public class MainView extends StackPane {
         isRecording = !isRecording;
         if (isRecording) {
             logger.info("Timelapse recording STARTED");
-            // Initial snapshot
             engine.getHistoryManager().captureWorldSnapshot(engine);
         } else {
             logger.info("Timelapse recording STOPPED");
-            // Update slider range
             var snapshots = engine.getHistoryManager().getWorldSnapshots();
             if (!snapshots.isEmpty()) {
                 int minYear = (int) (long) snapshots.firstKey();
@@ -398,8 +402,8 @@ public class MainView extends StackPane {
                 }
 
                 timeline.clear();
-                timeline.addEntry((int) meta.getYear(), "REPRISE_SNAPSHOT", "Reprise depuis Snapshot : " + meta.getName(),
-                    String.format("Restauré à l'An %,d (Mois %d) - Scénario %s", meta.getYear(), meta.getMonth(), meta.getScenarioName()), false);
+                timeline.addEntry((int) meta.getYear(), "REPRISE_SNAPSHOT", I18n.getOrDefault("mainview.timeline.resume_title", "Reprise depuis Snapshot : ") + meta.getName(),
+                    String.format(I18n.getOrDefault("mainview.timeline.resume_details", "Restauré à l'An %,d (Mois %d) - Scénario %s"), meta.getYear(), meta.getMonth(), meta.getScenarioName()), false);
 
                 if (godModePanel != null) {
                     godModePanel.refreshTimelineView();
@@ -412,7 +416,7 @@ public class MainView extends StackPane {
                     if (miniMap != null) miniMap.setCells(restoredCells);
                 }
 
-                controlPanel.updateScenarioName(meta.getScenarioName() + " (Snapshot Restauré)");
+                controlPanel.updateScenarioName(meta.getScenarioName() + " (" + I18n.getOrDefault("mainview.restored_snapshot", "Snapshot Restauré") + ")");
                 controlPanel.updateYear(String.valueOf(meta.getYear()));
 
                 simulationTab.setDisable(false);
@@ -422,9 +426,7 @@ public class MainView extends StackPane {
             }
         }
 
-        // Retrieve generated cells from setup
         List<H3Cell> newCells = setupPanel.getCells();
-
 
         if (newCells == null || newCells.isEmpty()) {
             logger.warn("Cannot start simulation: no cells generated");
@@ -433,12 +435,10 @@ public class MainView extends StackPane {
 
         logger.info("Starting simulation with scenario: {}", scenario.getName());
 
-        // Initialize engine with scenario (runs PreComputePhase)
         engine.initializeFromScenario(scenario, newCells);
 
-        // Record T_0 setup and events in Timeline
         timeline.clear();
-        timeline.addEntry(scenario.getStartDateYear(), "SETUP", "Scénario Initial : " + scenario.getName(),
+        timeline.addEntry(scenario.getStartDateYear(), "SETUP", I18n.getOrDefault("mainview.timeline.init_title", "Scénario Initial : ") + scenario.getName(),
             String.format("Pop: %,d | Tech: %.1f | Motif: %s", scenario.getInitialHumanCount(), scenario.getInitialTechLevel(), scenario.getPopulationDensityType()), false);
 
         for (var evt : setupPanel.getScheduledEvents()) {
@@ -450,19 +450,16 @@ public class MainView extends StackPane {
             godModePanel.refreshTimelineView();
         }
 
-        // Update UI components
         mapCanvas.setWorldBuffer(engine.getWorldBuffer());
         mapCanvas.setCells(newCells);
         if (miniMap != null) miniMap.setCells(newCells);
 
-        // Update control panel with scenario info
         controlPanel.updateScenarioName(scenario.getName());
         controlPanel.updateYear(String.valueOf(scenario.getStartDateYear()));
         if (mapCanvas != null) {
             mapCanvas.setScenarioName(scenario.getName());
         }
 
-        // Enable Execution Context tab (Tab 4) and switch to it after Scenario Setup (Tab 3) validation
         executionContextTab.setDisable(false);
         if (tabPane.getSelectionModel().getSelectedItem() == setupTab) {
             tabPane.getSelectionModel().select(executionContextTab);
@@ -497,7 +494,6 @@ public class MainView extends StackPane {
         logger.info("Simulation tab enabled and activated from Execution Context Panel");
     }
 
-    // Add ColorLegend helper
     public void addLegend(javafx.scene.Node legend) {
         if (simulationTab != null && simulationTab.getContent() instanceof BorderPane bp) {
             if (bp.getCenter() instanceof StackPane sp) {
@@ -529,7 +525,6 @@ public class MainView extends StackPane {
                 int day = engine.getTimeManager().getCurrentDay();
                 String dateStr = String.format("An %d - M.%02d D.%02d", year, month + 1, day);
 
-                // 1. VIDEO RECORDING: Guarantee 1:1 capture for EVERY tick without dropping any frame
                 if (isRecording) {
                     javafx.application.Platform.runLater(() -> {
                         if (mapCanvas != null) {
@@ -539,9 +534,7 @@ public class MainView extends StackPane {
                     });
                 }
 
-                // 2. UI SCREEN DISPLAY (2D/3D Globe View): Frame-skipping mechanism at ~60 FPS max rate
-                // If a UI render is already queued or in progress on the JavaFX thread, skip queuing duplicate frames!
-                if (now - lastUiUpdateNanos.get() >= 16_000_000L) { // ~60 FPS max UI refresh rate
+                if (now - lastUiUpdateNanos.get() >= 16_000_000L) {
                     if (renderPending.compareAndSet(false, true)) {
                         lastUiUpdateNanos.set(now);
                         javafx.application.Platform.runLater(() -> {
@@ -554,7 +547,7 @@ public class MainView extends StackPane {
                                     colorLegend.updateFromCanvas(mapCanvas);
                                 }
                             } finally {
-                                renderPending.set(false); // Mark UI thread ready for next frame
+                                renderPending.set(false);
                             }
                         });
                     }
@@ -567,7 +560,7 @@ public class MainView extends StackPane {
 
             @Override
             public void handle(long now) {
-                if (now - lastUpdate >= 250_000_000) { // Check every 250ms for smooth beacon animation & logs
+                if (now - lastUpdate >= 250_000_000) {
                     List<String> events = engine.getEventSystem().flushEvents();
                     if (!events.isEmpty()) {
                         for (String event : events) {
@@ -579,28 +572,24 @@ public class MainView extends StackPane {
                         }
                     }
 
-                    // Redraw map for event beacons if active events exist
                     if (mapCanvas != null && mapCanvas.getEventSystem() != null && !mapCanvas.getEventSystem().getActiveEvents().isEmpty()) {
                         mapCanvas.draw();
                     }
 
-                    // Update Global Age Display
                     if (controlPanel != null) {
                         float avgTech = ((org.ether.society.core.H3SimulationEngine)engine).getAverageTechnology();
                         String currentAge = getAgeName(avgTech);
                         controlPanel.updateAge(currentAge);
-                        
-                        // Update Stats
+
                         controlPanel.updateStats(
                             ((org.ether.society.core.H3SimulationEngine)engine).getTotalPopulation(),
                             ((org.ether.society.core.H3SimulationEngine)engine).getTotalFood(),
                             ((org.ether.society.core.H3SimulationEngine)engine).getPopulatedCellCount(),
                             ((org.ether.society.core.H3SimulationEngine)engine).getCurrentTPS()
                         );
-                        
+
                         statsPanel.update();
-                        
-                        // Update Season
+
                         controlPanel.updateSeason(engine.getTimeManager().getCurrentMonth());
                     }
 
@@ -612,36 +601,30 @@ public class MainView extends StackPane {
     }
 
     private String getAgeName(float techLevel) {
-        if (techLevel < 10) return "STONE AGE";
-        if (techLevel < 30) return "BRONZE AGE";
-        if (techLevel < 60) return "IRON AGE";
-        if (techLevel < 100) return "CLASSICAL AGE";
-        if (techLevel < 200) return "MEDIEVAL AGE";
-        return "RENAISSANCE";
+        if (techLevel < 10) return I18n.getOrDefault("age.stone", "STONE AGE");
+        if (techLevel < 30) return I18n.getOrDefault("age.bronze", "BRONZE AGE");
+        if (techLevel < 60) return I18n.getOrDefault("age.iron", "IRON AGE");
+        if (techLevel < 100) return I18n.getOrDefault("age.classical", "CLASSICAL AGE");
+        if (techLevel < 200) return I18n.getOrDefault("age.medieval", "MEDIEVAL AGE");
+        return I18n.getOrDefault("age.renaissance", "RENAISSANCE");
     }
 
-
-
     public void saveGame() {
-        // Prompt for save name
-        javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog("My Save");
-        dialog.setTitle("Save Game");
-        dialog.setHeaderText("Enter name for this save:");
-        dialog.setContentText("Name:");
+        javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog(I18n.getOrDefault("mainview.save.default_name", "Sauvegarde Scenario"));
+        dialog.setTitle(I18n.getOrDefault("mainview.save.dialog_title", "Sauvegarder la Simulation"));
+        dialog.setHeaderText(I18n.getOrDefault("mainview.save.dialog_header", "Entrez le nom de la sauvegarde :"));
+        dialog.setContentText(I18n.getOrDefault("mainview.save.dialog_label", "Nom :"));
 
         dialog.showAndWait().ifPresent(name -> {
             engine.saveGame(name);
-            notificationOverlay.showEvent("Game Saved: " + name);
+            notificationOverlay.showEvent(I18n.getOrDefault("mainview.save.success", "Partie Sauvegardée : ") + name);
         });
     }
 
     public void loadGame() {
-        // Simple Load (MVP: just load from DB)
-        // In future: Show list of saves
         engine.loadGame(null);
-        notificationOverlay.showEvent("Game Loaded from Database");
-        
-        // Refresh UI
+        notificationOverlay.showEvent(I18n.getOrDefault("mainview.load.success", "Partie chargée depuis la base de données"));
+
         mapCanvas.setCells(engine.getCells());
         if (miniMap != null) miniMap.setCells(engine.getCells());
     }

@@ -255,6 +255,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private final org.ether.society.persistence.ScenarioRepository scenarioRepo;
 
     // Labels for i18n
+    private Label headerLabel;
     private Label title1;
     private Label title3Events;
     private Label nameLabel;
@@ -277,6 +278,8 @@ public class ScenarioSetupPanel extends BorderPane {
 
     // Spatial Clipping & Boundary Condition Controls
     private Label clippingHeader;
+    private Label oceanOptHeader;
+    private Label cultureHeader;
     private CheckBox clippingCheckBox;
     private ToggleButton graphicSelectBtn;
     private Spinner<Double> minLatSpinner;
@@ -523,6 +526,13 @@ public class ScenarioSetupPanel extends BorderPane {
     // Events section
     private TableView<ClimateEvent> eventsTable;
     private ObservableList<ClimateEvent> eventsList;
+    private TableColumn<ClimateEvent, String> colType;
+    private TableColumn<ClimateEvent, String> colName;
+    private TableColumn<ClimateEvent, Integer> colYear;
+    private TableColumn<ClimateEvent, Double> colLat;
+    private TableColumn<ClimateEvent, Double> colLon;
+    private TableColumn<ClimateEvent, Double> colDepth;
+    private TableColumn<ClimateEvent, Double> colMag;
     private Button addEventBtn;
     private Button removeEventBtn;
     private Button loadEarthEventsBtn;
@@ -695,6 +705,11 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox root = new VBox(15);
         root.setPadding(new Insets(0, 20, 0, 0));
 
+        headerLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.panel.title", "📜 Configuration & Paramétrage du Scénario"));
+        headerLabel.getStyleClass().add("label-title");
+        headerLabel.setAlignment(Pos.CENTER);
+        headerLabel.setMaxWidth(Double.MAX_VALUE);
+
         // --- 1. Standardized Preset Control Bar for Scenarios ---
         scenarioPresetBar = new PresetControlBar<>("scenario.preset_bar", "1. PRÉRÉGLAGES DE SCÉNARIOS");
         scenarioPresetBar.setExportCategory("scenario");
@@ -749,8 +764,8 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         });
 
-        // --- 2. Inherited Presets (Tab 1 Planet + Tab 2 Ecology) Header ---
-        planetSectionHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.section.inherited", "2. CONTEXTE HÉRITÉ (ONGLETS 1 & 2)"));
+        // --- Inherited Presets (Tab 1 Planet + Tab 2 Ecology) Header ---
+        planetSectionHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.section.inherited", "🪐 CONTEXTE HÉRITÉ (ONGLETS 1 & 2)"));
 
         planetPresetCombo = new ComboBox<>();
         planetPresetCombo.getItems().setAll(PlanetPreset.getPresets());
@@ -807,9 +822,9 @@ public class ScenarioSetupPanel extends BorderPane {
                 inheritedContextLabel
         ));
 
-        // --- 3. Scenario General Info Section ---
+        // --- 1. Scenario General Info Section ---
         VBox section1 = new VBox(10);
-        title1 = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "3. DÉFINITION ÉPOQUE & SPATIO-TEMPORELLE"));
+        title1 = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "🌐 1. DÉFINITION ÉPOQUE & SPATIO-TEMPORELLE"));
         title1.getStyleClass().add("label-header");
         GridPane grid1 = new GridPane();
         grid1.setHgap(10);
@@ -935,10 +950,10 @@ public class ScenarioSetupPanel extends BorderPane {
 
         section1.getChildren().addAll(title1, grid1, descLabel, scenarioDescriptionArea);
 
-        // --- 4. Demographics & Density Map Management (RadioButtons) ---
+        // --- 2. Demographics & Density Map Management (RadioButtons) ---
         VBox popSection = new VBox(10);
         popSection.getStyleClass().add("card-section");
-        Label popHeader = new Label("👥 4. CARTE D'IDENTITÉ DE POPULATION INITIALE");
+        Label popHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "👥 2. CARTE D'IDENTITÉ DE POPULATION INITIALE"));
         popHeader.getStyleClass().add("label-section-header");
         popHeader.setId("__popHeader");
 
@@ -979,18 +994,18 @@ public class ScenarioSetupPanel extends BorderPane {
         densityPatternCombo.setConverter(new javafx.util.StringConverter<String>() {
             @Override
             public String toString(String item) {
-                return item == null ? "" : DENSITY_LABELS.getOrDefault(item, item);
+                return item == null ? "" : org.ether.society.i18n.I18n.getOrDefault("scenario.density." + item, DENSITY_LABELS.getOrDefault(item, item));
             }
             @Override
             public String fromString(String string) {
                 return null;
             }
         });
-        densityPatternCombo.setTooltip(new Tooltip(DENSITY_DESCRIPTIONS.get("UNBIASED_NATURAL")));
+        densityPatternCombo.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.density.desc.UNBIASED_NATURAL", DENSITY_DESCRIPTIONS.get("UNBIASED_NATURAL"))));
         densityPatternCombo.valueProperty().addListener((obs, oldV, newV) -> {
             notifyParamChange();
             if (newV != null) {
-                densityPatternCombo.setTooltip(new Tooltip(DENSITY_DESCRIPTIONS.getOrDefault(newV, "")));
+                densityPatternCombo.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.density.desc." + newV, DENSITY_DESCRIPTIONS.getOrDefault(newV, ""))));
             }
         });
 
@@ -1187,7 +1202,7 @@ public class ScenarioSetupPanel extends BorderPane {
         liveDiagnosticCard = new VBox(8);
         liveDiagnosticCard.getStyleClass().add("card-section");
 
-        liveDiagnosticHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.diagnostic.header", "📋 11. DIAGNOSTIC DE VIABILITÉ CIVILISATIONNELLE (TEMPS RÉEL)"));
+        liveDiagnosticHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.diagnostic.header", "📋 9. DIAGNOSTIC DE VIABILITÉ CIVILISATIONNELLE (TEMPS RÉEL)"));
         liveDiagnosticHeader.getStyleClass().add("label-section-header");
 
         liveDiagnosticContentBox = new VBox(4);
@@ -1207,7 +1222,7 @@ public class ScenarioSetupPanel extends BorderPane {
         startBtn.setOnAction(e -> handleStartOrCancel());
         startBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.start", "Calculer les cellules H3 et lancer la simulation.")));
 
-        scenarioPresetHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "1. PRÉRÉGLAGES GLOBAUX & SAUVEGARDE DU SCÉNARIO"));
+        scenarioPresetHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "🎛️ PRÉRÉGLAGES GLOBAUX & SAUVEGARDE DU SCÉNARIO"));
         VBox scenarioPresetSection = createSection(scenarioPresetHeader, scenarioPresetBar);
 
         VBox snapshotSection = createSnapshotSection();
@@ -1216,7 +1231,7 @@ public class ScenarioSetupPanel extends BorderPane {
         bottomActionBox = new VBox(8, btnPreFlight, progressBar, progressStatusLabel, startBtn);
         bottomActionBox.setAlignment(Pos.CENTER);
 
-        root.getChildren().addAll(scenarioPresetSection, inheritedSection, section1, popSection, cultureSection, clippingSection, oceanOptSection, eventsSection, snapshotSection, bundleSection, liveDiagnosticCard);
+        root.getChildren().addAll(headerLabel, scenarioPresetSection, inheritedSection, section1, popSection, cultureSection, clippingSection, oceanOptSection, eventsSection, snapshotSection, bundleSection, liveDiagnosticCard);
 
         scenarioPresetBar.setPresets(builtInScenarios, defaultScenario);
         if (defaultScenario != null) {
@@ -1230,7 +1245,7 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
 
-        bundleHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.bundle.header", "📦 10. IMPORTATION ET EXPORTATION MULTI-SCÉNARIOS DE BUNDLE UNIFIÉ (.ETHER)"));
+        bundleHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.bundle.header", "📦 8. IMPORTATION ET EXPORTATION MULTI-SCÉNARIOS DE BUNDLE UNIFIÉ (.ETHER)"));
         bundleHeader.getStyleClass().add("label-header");
 
         Label subtitle = new Label("Exportez ou importez l'intégralité du scénario (contexte planétaire, écologie, moteurs actifs, calques culturels et grille démographique) au format unifié .ether pour archivage ou partage.");
@@ -1263,7 +1278,7 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
 
-        snapshotHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.header", "📸 9. REPRISE DEPUIS UN SNAPSHOT EXISTANT (SESSION PRÉCÉDENTE)"));
+        snapshotHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.header", "📸 7. REPRISE DEPUIS UN SNAPSHOT EXISTANT (SESSION PRÉCÉDENTE)"));
         snapshotHeader.getStyleClass().add("label-section-header");
 
         Label subtitle = new Label("Si la simulation a déjà été exécutée dans une session précédente et qu'il existe des snapshots ou des checkpoints, vous pouvez repartir directement de cet instantané sans relancer depuis le début.");
@@ -2376,7 +2391,7 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
 
-        clippingHeader = new Label(I18n.getOrDefault("scenario.clipping.header", "✂️ 6. FRONTIÈRES & DÉCOUPAGE SPATIAL DE L'HISTOIRE"));
+        clippingHeader = new Label(I18n.getOrDefault("scenario.clipping.header", "✂️ 4. FRONTIÈRES & DÉCOUPAGE SPATIAL DE L'HISTOIRE"));
         clippingHeader.getStyleClass().add("label-header");
 
         clippingCheckBox = new CheckBox(I18n.getOrDefault("scenario.clipping.enable", "Activer la simulation partielle (Zone Tronquée)"));
@@ -3089,11 +3104,11 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
 
-        Label header = new Label("🧠 5. DIMENSION DU VECTEUR CULTUREL & CALQUES MULTI-CHAMPS");
-        header.getStyleClass().add("label-header");
-        header.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold;");
+        cultureHeader = new Label(I18n.getOrDefault("scenario.culture_section", "🧠 3. DIMENSION DU VECTEUR CULTUREL & CALQUES MULTI-CHAMPS"));
+        cultureHeader.getStyleClass().add("label-header");
+        cultureHeader.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold;");
 
-        Label desc = new Label("5.1 Noyau Tenseur Culturel & Langevin-SDE (Diffusion & Mutation) :\nConfiguration du tenseur d'information N-dimensionnel et importation/génération des calques cartographiques d'isoglosses, parenté, rituels et souveraineté politique.");
+        Label desc = new Label("3.1 Noyau Tenseur Culturel & Langevin-SDE (Diffusion & Mutation) :\nConfiguration du tenseur d'information N-dimensionnel et importation/génération des calques cartographiques d'isoglosses, parenté, rituels et souveraineté politique.");
         desc.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
         desc.setWrapText(true);
 
@@ -3217,7 +3232,7 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox b4 = new VBox(3, btnSovereignty, sovereigntyFileLabel);
 
         layersPanel.getChildren().addAll(layerHeaderBox, culturalFormatHintLabel, b1, b2, b3, b4);
-        section.getChildren().addAll(header, desc, grid, layersPanel);
+        section.getChildren().addAll(cultureHeader, desc, grid, layersPanel);
         return section;
     }
 
@@ -3268,7 +3283,7 @@ public class ScenarioSetupPanel extends BorderPane {
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(10));
 
-        previewTitleLabel = new Label("👁️ 11. PRÉVISUALISATION DU SCÉNARIO & APERÇU CARTOGRAPHIQUE (T₀)");
+        previewTitleLabel = new Label("👁️ PRÉVISUALISATION DU SCÉNARIO & APERÇU CARTOGRAPHIQUE (T₀)");
         previewTitleLabel.getStyleClass().add("label-header");
         previewTitleLabel.setMaxWidth(Double.MAX_VALUE);
         previewTitleLabel.setAlignment(Pos.CENTER);
@@ -3495,21 +3510,15 @@ public class ScenarioSetupPanel extends BorderPane {
 
     private void updatePreviewTitleText() {
         if (previewTitleLabel == null) return;
-        String mode = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue() : "";
-        if (mode.contains("Isoglosses") || mode.contains("Linguistiques")) {
-            previewTitleLabel.setText("📜 12. CARTE DU TENSEUR 1 : ISOGLOSSES & CONTINUA LINGUISTIQUES (T₀)");
-        } else if (mode.contains("Kinship") || mode.contains("Clans")) {
-            previewTitleLabel.setText("🏛️ 12. CARTE DU TENSEUR 2 : KINSHIP & STRUCTURES DE CLANS (T₀)");
-        } else if (mode.contains("Rituels") || mode.contains("Asabiyyah")) {
-            previewTitleLabel.setText("🔮 12. CARTE DU TENSEUR 3 : RITUELS, CROYANCES & ASABIYYAH (T₀)");
-        } else if (mode.contains("Souveraineté") || mode.contains("Politiques")) {
-            previewTitleLabel.setText("👑 12. CARTE DU TENSEUR 4 : SOUVERAINETÉ POLITIQUE & CAPITALES (T₀)");
-        } else if (mode.contains("Friction")) {
-            previewTitleLabel.setText("🧱 12. CARTE DU GRADIENT DE FRICTION FRONTALIÈRE σ_friction (T₀)");
-        } else if (mode.contains("Empreinte") || mode.contains("Malthusienne")) {
-            previewTitleLabel.setText("⚠️ 12. CARTE DE L'EMPREINTE DÉMOGRAPHIQUE & TENSION MALTHUSIENNE (T₀)");
-        } else {
-            previewTitleLabel.setText("🌐 12. CARTE D'ALTITUDE & DENSITÉ DE POPULATION INITIALE (T₀)");
+        int idx = previewModeCombo != null ? previewModeCombo.getSelectionModel().getSelectedIndex() : 0;
+        switch (idx) {
+            case 1 -> previewTitleLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.preview.title.isogloss", "📜 CARTE DU TENSEUR 1 : ISOGLOSSES & CONTINUA LINGUISTIQUES (T₀)"));
+            case 2 -> previewTitleLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.preview.title.kinship", "🏛️ CARTE DU TENSEUR 2 : KINSHIP & STRUCTURES DE CLANS (T₀)"));
+            case 3 -> previewTitleLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.preview.title.rituals", "🔮 CARTE DU TENSEUR 3 : RITUELS, CROYANCES & ASABIYYAH (T₀)"));
+            case 4 -> previewTitleLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.preview.title.sovereignty", "👑 CARTE DU TENSEUR 4 : SOUVERAINETÉ POLITIQUE & CAPITALES (T₀)"));
+            case 6 -> previewTitleLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.preview.title.footprint", "⚠️ CARTE DE L'EMPREINTE DÉMOGRAPHIQUE & TENSION MALTHUSIENNE (T₀)"));
+            case 7 -> previewTitleLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.preview.title.friction", "🧱 CARTE DU GRADIENT DE FRICTION FRONTALIÈRE σ_friction (T₀)"));
+            default -> previewTitleLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.preview.title.density", "🌐 CARTE D'ALTITUDE & DENSITÉ DE POPULATION INITIALE (T₀)"));
         }
     }
 
@@ -3517,13 +3526,14 @@ public class ScenarioSetupPanel extends BorderPane {
         if (legendItemsContainer == null) return;
         legendItemsContainer.getChildren().clear();
 
+        int idx = previewModeCombo != null ? previewModeCombo.getSelectionModel().getSelectedIndex() : 0;
         String mode = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue() : "";
 
         Color[] colors;
         String[] labels;
         String[] fullTooltips;
 
-        if (mode.contains("Isoglosses") || mode.contains("Linguistiques")) {
+        if (idx == 1 || mode.contains("Isoglosses") || mode.contains("Linguistiques")) {
             colors = new Color[]{
                 Color.rgb(30, 95, 165), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68)
             };
@@ -3535,7 +3545,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Innovations Substratiques : Lexique technique ou grammatical rénové",
                 "Dialecte Exogène / Innovant : Standard de communication émergent"
             };
-        } else if (mode.contains("Kinship") || mode.contains("Clans")) {
+        } else if (idx == 2 || mode.contains("Kinship") || mode.contains("Clans")) {
             colors = new Color[]{
                 Color.rgb(56, 189, 248), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(167, 139, 250)
             };
@@ -3547,7 +3557,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Patriarcat Hiérarchique : Structure agnatique et chefferies martiales",
                 "Confédération Tribale : Assemblée de clans fédérés à grande échelle"
             };
-        } else if (mode.contains("Rituels") || mode.contains("Asabiyyah")) {
+        } else if (idx == 3 || mode.contains("Rituels") || mode.contains("Asabiyyah")) {
             colors = new Color[]{
                 Color.rgb(14, 165, 233), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(225, 29, 72)
             };
@@ -3559,7 +3569,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Asabiyyah Élevée : Forte solidarité tribale (Cohésion d'Ibn Khaldoun)",
                 "Dogme Transcendant : Monothéisme ou idéologie universaliste"
             };
-        } else if (mode.contains("Souveraineté") || mode.contains("Politiques")) {
+        } else if (idx == 4 || mode.contains("Souveraineté") || mode.contains("Politiques")) {
             colors = new Color[]{
                 Color.rgb(30, 95, 165), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68)
             };
@@ -3571,7 +3581,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Empire Centralisé : Administration unifiée et prélèvement fiscal",
                 "Capitale Core : Foyer du pouvoir politique et militaire suprême"
             };
-        } else if (mode.contains("Friction")) {
+        } else if (idx == 7 || mode.contains("Friction")) {
             colors = new Color[]{
                 Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68), Color.rgb(167, 139, 250)
             };
@@ -3931,12 +3941,13 @@ public class ScenarioSetupPanel extends BorderPane {
     private Color getPreviewColorForCell(H3Cell c) {
         if (c == null) return Color.BLACK;
 
+        int idx = previewModeCombo != null ? previewModeCombo.getSelectionModel().getSelectedIndex() : 0;
         String mode = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue().toLowerCase() : "";
 
         double lat = c.getLatitude() != null ? c.getLatitude() : 0.0;
         double lon = c.getLongitude() != null ? c.getLongitude() : 0.0;
 
-        if (mode.contains("isogloss") || mode.contains("linguistique")) {
+        if (idx == 1 || mode.contains("isogloss") || mode.contains("linguistique")) {
             if (customIsoglossImage != null && customIsoglossImage.getWidth() > 0) {
                 Color customCol = sampleImageColorAtLatLon(customIsoglossImage, lat, lon);
                 if (customCol != null) return customCol;
@@ -3944,21 +3955,21 @@ public class ScenarioSetupPanel extends BorderPane {
             // Procedural isogloss color gradient fallback
             double val = Math.clamp((lat + 90.0) / 180.0 * 0.7 + (lon + 180.0) / 360.0 * 0.3, 0.0, 1.0);
             return Color.hsb(val * 300.0, 0.75, 0.90);
-        } else if (mode.contains("kinship") || mode.contains("parente") || mode.contains("clan")) {
+        } else if (idx == 2 || mode.contains("kinship") || mode.contains("parente") || mode.contains("clan")) {
             if (customKinshipImage != null && customKinshipImage.getWidth() > 0) {
                 Color customCol = sampleImageColorAtLatLon(customKinshipImage, lat, lon);
                 if (customCol != null) return customCol;
             }
             double val = Math.clamp(Math.abs(Math.sin(lat * 0.1) * Math.cos(lon * 0.1)), 0.0, 1.0);
             return Color.hsb(180.0 + val * 120.0, 0.80, 0.85);
-        } else if (mode.contains("ritual") || mode.contains("croyance") || mode.contains("asabiyyah")) {
+        } else if (idx == 3 || mode.contains("ritual") || mode.contains("croyance") || mode.contains("asabiyyah")) {
             if (customRitualsImage != null && customRitualsImage.getWidth() > 0) {
                 Color customCol = sampleImageColorAtLatLon(customRitualsImage, lat, lon);
                 if (customCol != null) return customCol;
             }
             double val = Math.clamp((c.getElevation() != null ? c.getElevation() : 0) / 3000.0, 0.0, 1.0);
             return Color.hsb(40.0 + val * 200.0, 0.85, 0.95);
-        } else if (mode.contains("sovereign") || mode.contains("souverainete") || mode.contains("frontiere")) {
+        } else if (idx == 4 || mode.contains("sovereign") || mode.contains("souverainete") || mode.contains("frontiere")) {
             if (customSovereigntyImage != null && customSovereigntyImage.getWidth() > 0) {
                 Color customCol = sampleImageColorAtLatLon(customSovereigntyImage, lat, lon);
                 if (customCol != null) return customCol;
@@ -4106,17 +4117,18 @@ public class ScenarioSetupPanel extends BorderPane {
         Image bgImage = isEarth ? getCachedEarthElevationImage() : null;
         PixelReader bgReader = bgImage != null ? bgImage.getPixelReader() : null;
 
+        int idx = previewModeCombo != null ? previewModeCombo.getSelectionModel().getSelectedIndex() : 0;
         String mode = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue().toLowerCase() : "";
         Image activeCustomImage = null;
-        if (mode.contains("isogloss") || mode.contains("linguistique")) activeCustomImage = customIsoglossImage;
-        else if (mode.contains("kinship") || mode.contains("parente") || mode.contains("clan")) activeCustomImage = customKinshipImage;
-        else if (mode.contains("ritual") || mode.contains("croyance") || mode.contains("asabiyyah")) activeCustomImage = customRitualsImage;
-        else if (mode.contains("sovereign") || mode.contains("souverainete") || mode.contains("frontiere")) activeCustomImage = customSovereigntyImage;
+        if (idx == 1 || mode.contains("isogloss") || mode.contains("linguistique")) activeCustomImage = customIsoglossImage;
+        else if (idx == 2 || mode.contains("kinship") || mode.contains("parente") || mode.contains("clan")) activeCustomImage = customKinshipImage;
+        else if (idx == 3 || mode.contains("ritual") || mode.contains("croyance") || mode.contains("asabiyyah")) activeCustomImage = customRitualsImage;
+        else if (idx == 4 || mode.contains("sovereign") || mode.contains("souverainete") || mode.contains("frontiere")) activeCustomImage = customSovereigntyImage;
         else activeCustomImage = customDensityImage;
 
         PixelReader customReader = activeCustomImage != null ? activeCustomImage.getPixelReader() : null;
 
-        boolean isFootprintMode = mode.contains("empreinte");
+        boolean isFootprintMode = idx == 6 || mode.contains("empreinte");
 
         for (int py = 0; py < pwHeight; py++) {
             for (int px = 0; px < pwWidth; px++) {
@@ -4474,58 +4486,78 @@ public class ScenarioSetupPanel extends BorderPane {
         eventsTable.setEditable(true);
         eventsTable.setPrefHeight(200);
 
-        List<String> eventTypes = List.of("earthquake","volcano","tsunami","tornado","wildfire","flood","drought","pandemic","impact");
+        List<String> eventTypes = List.of(
+            "volcano",
+            "heatwave",
+            "solar_emp",
+            "pandemic",
+            "meteor",
+            "nuclear_winter",
+            "famine",
+            "tsunami",
+            "earthquake",
+            "ice_age",
+            "cyber_attack",
+            "economic_crash",
+            "biodiversity_collapse",
+            "geoengineering",
+            "renaissance_boom",
+            "tech_singularity",
+            "alien_contact"
+        );
 
-        TableColumn<ClimateEvent, String> colType = new TableColumn<>();
+        colType = new TableColumn<>();
         colType.setCellValueFactory(d -> d.getValue().typeProperty());
         colType.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableArrayList(eventTypes)));
         colType.setOnEditCommit(e -> e.getRowValue().setType(e.getNewValue()));
-        colType.setPrefWidth(120);
+        colType.setPrefWidth(130);
 
-        TableColumn<ClimateEvent, String> colName = new TableColumn<>();
+        colName = new TableColumn<>();
         colName.setCellValueFactory(d -> d.getValue().nameProperty());
         colName.setCellFactory(TextFieldTableCell.forTableColumn());
         colName.setOnEditCommit(e -> e.getRowValue().setName(e.getNewValue()));
-        colName.setPrefWidth(160);
+        colName.setPrefWidth(180);
 
-        TableColumn<ClimateEvent, Integer> colYear = new TableColumn<>();
+        colYear = new TableColumn<>();
         colYear.setCellValueFactory(d -> d.getValue().yearProperty().asObject());
         colYear.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.IntegerStringConverter()));
         colYear.setOnEditCommit(e -> e.getRowValue().setYear(e.getNewValue()));
-        colYear.setPrefWidth(70);
+        colYear.setPrefWidth(85);
 
-        TableColumn<ClimateEvent, Double> colLat = new TableColumn<>();
+        colLat = new TableColumn<>();
         colLat.setCellValueFactory(d -> d.getValue().latitudeProperty().asObject());
         colLat.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.DoubleStringConverter()));
         colLat.setOnEditCommit(e -> e.getRowValue().setLatitude(e.getNewValue()));
         colLat.setPrefWidth(75);
 
-        TableColumn<ClimateEvent, Double> colLon = new TableColumn<>();
+        colLon = new TableColumn<>();
         colLon.setCellValueFactory(d -> d.getValue().longitudeProperty().asObject());
         colLon.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.DoubleStringConverter()));
         colLon.setOnEditCommit(e -> e.getRowValue().setLongitude(e.getNewValue()));
         colLon.setPrefWidth(75);
 
-        TableColumn<ClimateEvent, Double> colDepth = new TableColumn<>();
+        colDepth = new TableColumn<>();
         colDepth.setCellValueFactory(d -> d.getValue().depthProperty().asObject());
         colDepth.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.DoubleStringConverter()));
         colDepth.setOnEditCommit(e -> e.getRowValue().setDepth(e.getNewValue()));
-        colDepth.setPrefWidth(80);
+        colDepth.setPrefWidth(95);
 
-        TableColumn<ClimateEvent, Double> colMag = new TableColumn<>();
+        colMag = new TableColumn<>();
         colMag.setCellValueFactory(d -> d.getValue().magnitudeProperty().asObject());
         colMag.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.DoubleStringConverter()));
         colMag.setOnEditCommit(e -> e.getRowValue().setMagnitude(e.getNewValue()));
-        colMag.setPrefWidth(80);
+        colMag.setPrefWidth(85);
 
-        eventsTable.getColumns().addAll(colName, colYear, colLat, colLon, colDepth, colMag);
-        eventsTable.setUserData(new TableColumn[]{colName, colYear, colLat, colLon, colDepth, colMag});
+        eventsTable.getColumns().clear();
+        eventsTable.getColumns().addAll(colType, colName, colYear, colLat, colLon, colDepth, colMag);
+        eventsTable.setUserData(new TableColumn[]{colType, colName, colYear, colLat, colLon, colDepth, colMag});
+        eventsTable.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events_table", "📋 Tableau d'Événements : Double-cliquez sur une cellule pour modifier son type (17 valeurs disponibles), nom, année, coordonnées ou magnitude.")));
 
         addEventBtn = new Button();
         addEventBtn.getStyleClass().add("button-secondary");
         addEventBtn.setMinWidth(Region.USE_PREF_SIZE);
-        addEventBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events.add", "Ajouter un nouvel événement climatique ou cataclysme.")));
-        addEventBtn.setOnAction(e -> eventsList.add(new ClimateEvent("earthquake", "Nouvel Événement", 0, 0.0, 0.0, 10.0, 6.0)));
+        addEventBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events.add", "➕ Ajouter un nouvel événement (choix parmi les 17 types cataclysmiques/climat).")));
+        addEventBtn.setOnAction(e -> eventsList.add(new ClimateEvent("volcano", "Nouvel Événement", 2026, 0.0, 0.0, 10.0, 6.0)));
 
         removeEventBtn = new Button();
         removeEventBtn.getStyleClass().add("button-secondary");
@@ -4631,12 +4663,12 @@ public class ScenarioSetupPanel extends BorderPane {
         masterList.add(new ClimateEvent("volcano", "Éruption Krakatoa (VEI-6, τ=0.80)", 1883, -6.10, 105.42, 0.0, 6.0));
         masterList.add(new ClimateEvent("volcano", "Éruption Pinatubo (VEI-6, τ=0.40)", 1991, 15.13, 120.35, 0.0, 6.0));
 
-        // Tempêtes Solaire & Éruptions EMP Carrington
-        masterList.add(new ClimateEvent("impact", "Événement Solaire Carrington (EMP & Grille Électrique)", 1859, 50.0, 0.0, 0.0, 8.5));
+        // Tempêtes Solaires & EMP Carrington
+        masterList.add(new ClimateEvent("solar_emp", "Événement Solaire Carrington (EMP & Grille Électrique)", 1859, 50.0, 0.0, 0.0, 8.5));
 
         // Impact Météorique
-        masterList.add(new ClimateEvent("impact", "Impact Chicxulub (Extinction K-Pg VEI-10)", -66000000, 21.40, -89.50, 0.0, 10.0));
-        masterList.add(new ClimateEvent("impact", "Impact Tunguska (Onde de Choc 15Mt)", 1908, 60.89, 101.89, 0.0, 5.0));
+        masterList.add(new ClimateEvent("meteor", "Impact Chicxulub (Extinction K-Pg VEI-10)", -66000000, 21.40, -89.50, 0.0, 10.0));
+        masterList.add(new ClimateEvent("meteor", "Impact Tunguska (Onde de Choc 15Mt)", 1908, 60.89, 101.89, 0.0, 5.0));
 
         // Tectonique, Séismes & Tsunamis
         masterList.add(new ClimateEvent("earthquake", "Séisme Shensi (Chine, 830k victimes)", 1556, 34.50, 109.70, 20.0, 8.0));
@@ -4648,18 +4680,24 @@ public class ScenarioSetupPanel extends BorderPane {
         masterList.add(new ClimateEvent("tsunami", "Tsunami Sumatra (Submersion Littorale)", 2004, 3.30, 95.98, 30.0, 9.1));
         masterList.add(new ClimateEvent("tsunami", "Tsunami Fukushima & Accident Nucléaire", 2011, 38.30, 142.37, 29.0, 9.0));
 
-        // Radiations & Accidents Technologiques
-        masterList.add(new ClimateEvent("impact", "Accident Nucléaire de Tchernobyl (Fallout Bq/m²)", 1986, 51.38, 30.10, 0.0, 7.5));
-
-        // Ozone CFC & Dérive Climatique
-        masterList.add(new ClimateEvent("climate_drift", "Holocène Vert (Sahara Humide & Fertile)", -6000, 20.0, 10.0, 0.0, 3.0));
-        masterList.add(new ClimateEvent("climate_drift", "Optimum Climatique Médiéval (+1.2°C)", 1000, 45.0, 15.0, 0.0, 1.2));
-        masterList.add(new ClimateEvent("climate_drift", "Peste Noire (Europe, 1/3 Pop.)", 1347, 44.00, 10.00, 0.0, 9.0));
-        masterList.add(new ClimateEvent("climate_drift", "Petit Âge Glaciaire (-1.5°C Maunder)", 1650, 50.0, 10.0, 0.0, -1.5));
-        masterList.add(new ClimateEvent("climate_drift", "Trou dans la Couche d'Ozone CFC (Flux UV)", 1985, -80.0, 0.0, 0.0, 4.0));
-        masterList.add(new ClimateEvent("flood", "Grande Inondation Jaune (Chine)", 1931, 32.00, 118.00, 0.0, 8.0));
+        // Glaciations, Pandémies & Famines
+        masterList.add(new ClimateEvent("ice_age", "Glaciation Abrupte Younger Dryas", -10900, 60.0, -20.0, 0.0, 4.5));
+        masterList.add(new ClimateEvent("famine", "Grande Famine Médiévale Européenne (1315-1317)", 1315, 50.0, 10.0, 0.0, 6.0));
+        masterList.add(new ClimateEvent("pandemic", "Peste Noire (Europe, 1/3 Pop.)", 1347, 44.00, 10.00, 0.0, 9.0));
         masterList.add(new ClimateEvent("pandemic", "Grippe Espagnole (50M Victimes)", 1918, 40.00, 0.00, 0.0, 8.0));
-        masterList.add(new ClimateEvent("sea_level", "Élévation Littorale Moderne (+2.5m Submersion)", 2050, 0.0, 0.0, 0.0, 2.5));
+
+        // Hiver Nucléaire & Catastrophes Modernes
+        masterList.add(new ClimateEvent("nuclear_winter", "Hiver Nucléaire Tchernobyl & Fallout Stratosphérique", 1986, 51.38, 30.10, 0.0, 7.5));
+        masterList.add(new ClimateEvent("heatwave", "Canicule Extrême Européenne", 2003, 46.5, 2.5, 0.0, 5.0));
+
+        // Anticipations & Événements Futurs (Cyber, Krach, Bio, Géoingénierie, Singularité)
+        masterList.add(new ClimateEvent("cyber_attack", "Panne Numérique Mondiale / Blackout Système", 2028, 48.85, 2.35, 0.0, 6.5));
+        masterList.add(new ClimateEvent("economic_crash", "Krach Boursier & Crise Systémique Mondiale", 2030, 40.71, -74.00, 0.0, 7.0));
+        masterList.add(new ClimateEvent("biodiversity_collapse", "Effondrement des Pollinisateurs & Biomasse", 2035, 0.0, 0.0, 0.0, 6.0));
+        masterList.add(new ClimateEvent("geoengineering", "Injection Stratosphérique Aérosols Test SRM", 2040, 15.0, 100.0, 0.0, 4.0));
+        masterList.add(new ClimateEvent("renaissance_boom", "Émergence Révolution Énergie Fusion Superconductrice", 2050, 43.60, 5.70, 0.0, 8.0));
+        masterList.add(new ClimateEvent("tech_singularity", "Singularité Technologique & Superintelligence", 2075, 37.77, -122.41, 0.0, 9.5));
+        masterList.add(new ClimateEvent("alien_contact", "Réception Signal Radio Exogène Unificateur", 2090, -31.0, 149.0, 0.0, 10.0));
 
         List<ClimateEvent> filtered = new ArrayList<>();
         for (ClimateEvent ev : masterList) {
@@ -4740,14 +4778,17 @@ public class ScenarioSetupPanel extends BorderPane {
     // =========================================================================
 
     public void updateTexts() {
-        if (scenarioPresetHeader != null) scenarioPresetHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "1. PRÉRÉGLAGES GLOBAUX & SAUVEGARDE DU SCÉNARIO"));
-        if (planetSectionHeader != null) planetSectionHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.inherited", "2. CONTEXTE HÉRITÉ (ONGLETS 1 & 2)"));
-        if (title1 != null) title1.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "🌐 3. DÉFINITION ÉPOQUE & SPATIO-TEMPORELLE"));
-        if (clippingHeader != null) clippingHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.header", "✂️ 6. FRONTIÈRES & DÉCOUPAGE SPATIAL DE L'HISTOIRE"));
-        if (title3Events != null) title3Events.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events_section", "🌪️ 8. ÉVÉNEMENTS PLANÉTAIRES HISTORIQUES & DÉRIVES CLIMATIQUES"));
-        if (snapshotHeader != null) snapshotHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.header", "📸 9. REPRISE DEPUIS UN SNAPSHOT EXISTANT (SESSION PRÉCÉDENTE)"));
-        if (bundleHeader != null) bundleHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.bundle.header", "📦 10. IMPORTATION ET EXPORTATION MULTI-SCÉNARIOS DE BUNDLE UNIFIÉ (.ETHER)"));
-        if (liveDiagnosticHeader != null) liveDiagnosticHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.diagnostic.header", "📋 11. DIAGNOSTIC DE VIABILITÉ CIVILISATIONNELLE (TEMPS RÉEL)"));
+        if (headerLabel != null) headerLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.panel.title", "📜 Configuration & Paramétrage du Scénario"));
+        if (scenarioPresetHeader != null) scenarioPresetHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "🎛️ PRÉRÉGLAGES GLOBAUX & SAUVEGARDE DU SCÉNARIO"));
+        if (planetSectionHeader != null) planetSectionHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.inherited", "🪐 CONTEXTE HÉRITÉ (ONGLETS 1 & 2)"));
+        if (title1 != null) title1.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "🌐 1. DÉFINITION ÉPOQUE & SPATIO-TEMPORELLE"));
+        if (cultureHeader != null) cultureHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.culture_section", "🧠 3. DIMENSION DU VECTEUR CULTUREL & CALQUES MULTI-CHAMPS"));
+        if (clippingHeader != null) clippingHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.header", "✂️ 4. FRONTIÈRES & DÉCOUPAGE SPATIAL DE L'HISTOIRE"));
+        if (oceanOptHeader != null) oceanOptHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.ocean_opt.header", "⚙️ 5. ARCHITECTURE DES MOTEURS & OPTIMISATIONS (CŒUR ETHER & OPTIONNELS)"));
+        if (title3Events != null) title3Events.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events_section", "🌪️ 6. ÉVÉNEMENTS PLANÉTAIRES HISTORIQUES & DÉRIVES CLIMATIQUES"));
+        if (snapshotHeader != null) snapshotHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.header", "📸 7. REPRISE DEPUIS UN SNAPSHOT EXISTANT (SESSION PRÉCÉDENTE)"));
+        if (bundleHeader != null) bundleHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.bundle.header", "📦 8. IMPORTATION ET EXPORTATION MULTI-SCÉNARIOS DE BUNDLE UNIFIÉ (.ETHER)"));
+        if (liveDiagnosticHeader != null) liveDiagnosticHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.diagnostic.header", "📋 9. DIAGNOSTIC DE VIABILITÉ CIVILISATIONNELLE (TEMPS RÉEL)"));
         if (startYearLabel != null) startYearLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.start_year", "Année de départ (Repère chronologique) :"));
         if (endYearLabel != null) endYearLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.end_year", "Année de fin / Cible (Repère chronologique) :"));
         if (popCountLabel != null) popCountLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_count", "Population Initiale (1 000 à 10 000 000 000) :"));
@@ -4763,7 +4804,14 @@ public class ScenarioSetupPanel extends BorderPane {
         if (removeEventBtn != null) removeEventBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.remove", "🗑️ Supprimer"));
         if (loadEarthEventsBtn != null) loadEarthEventsBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.load_earth", "🌍 Charger Événements Historiques Terre"));
 
-        if (clippingHeader != null) clippingHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.header", "✂️ 4. SIMULATION LOCALE & FRONTIÈRES (CLIPPING)"));
+        if (colType != null) colType.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.type", "Type d'Événement"));
+        if (colName != null) colName.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.name", "Nom de l'Événement"));
+        if (colYear != null) colYear.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.year", "Année (An)"));
+        if (colLat != null) colLat.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.lat", "Lat (°)"));
+        if (colLon != null) colLon.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.lon", "Lng (°)"));
+        if (colDepth != null) colDepth.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.depth", "Profondeur (km)"));
+        if (colMag != null) colMag.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.mag", "Magnitude"));
+
         if (clippingCheckBox != null) clippingCheckBox.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.enable", "Activer la simulation partielle (Zone Tronquée)"));
         if (graphicSelectBtn != null) graphicSelectBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.select_mode", "🖱️ Mode Sélection Graphique sur Carte"));
         if (resetClippingBtn != null) resetClippingBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.reset", "🔄 Réinitialiser la Zone (Pleine Planète)"));
@@ -4785,6 +4833,29 @@ public class ScenarioSetupPanel extends BorderPane {
             boundaryModeCombo.setValue(val);
         }
 
+        if (densityPatternCombo != null) {
+            densityPatternCombo.setButtonCell(densityPatternCombo.getCellFactory().call(null));
+        }
+
+        if (previewModeCombo != null) {
+            int idx = previewModeCombo.getSelectionModel().getSelectedIndex();
+            previewModeCombo.getItems().setAll(
+                org.ether.society.i18n.I18n.getOrDefault("scenario.preview.mode.density", "📊 1. Relief & Densité Démographique (Nœuds Agents T₀)"),
+                org.ether.society.i18n.I18n.getOrDefault("scenario.preview.mode.isogloss", "📜 2. Tenseur 1 : Isoglosses & Continua Linguistiques (Langues)"),
+                org.ether.society.i18n.I18n.getOrDefault("scenario.preview.mode.kinship", "🏛️ 3. Tenseur 2 : Kinship & Structures de Clans (Parenté)"),
+                org.ether.society.i18n.I18n.getOrDefault("scenario.preview.mode.rituals", "🔮 4. Tenseur 3 : Rituels, Croyances & Sacré (Asabiyyah)"),
+                org.ether.society.i18n.I18n.getOrDefault("scenario.preview.mode.sovereignty", "👑 5. Tenseur 4 : Souveraineté & Foyers Politiques (Capitales)"),
+                "────────── CALQUES DÉDUITS & DYNAMIQUES ──────────",
+                org.ether.society.i18n.I18n.getOrDefault("scenario.preview.mode.footprint", "⚠️ 6. Empreinte Démographique & Tension Malthusienne (Déduit)"),
+                org.ether.society.i18n.I18n.getOrDefault("scenario.preview.mode.friction", "🧱 7. Gradient de Friction Frontalière σ_friction (Déduit)")
+            );
+            if (idx >= 0 && idx < previewModeCombo.getItems().size()) {
+                previewModeCombo.getSelectionModel().select(idx);
+            } else {
+                previewModeCombo.getSelectionModel().select(0);
+            }
+        }
+
         if (eventsTable != null && eventsTable.getUserData() instanceof TableColumn[] cols && cols.length == 6) {
             cols[0].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.name", "Nom / Description"));
             cols[1].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.year", "Année"));
@@ -4794,7 +4865,7 @@ public class ScenarioSetupPanel extends BorderPane {
             cols[5].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.magnitude", "Magnitude"));
         }
         if (getLeft() instanceof ScrollPane sp && sp.getContent() instanceof VBox root) {
-            root.lookupAll("#__popHeader").forEach(n -> { if (n instanceof Label l) l.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "4. CARTE D'IDENTITÉ DE POPULATION INITIALE")); });
+            root.lookupAll("#__popHeader").forEach(n -> { if (n instanceof Label l) l.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "👥 2. CARTE D'IDENTITÉ DE POPULATION INITIALE")); });
         }
         updateDemoCompatibilityDisplay();
     }

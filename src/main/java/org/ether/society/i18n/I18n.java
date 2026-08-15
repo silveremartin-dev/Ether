@@ -58,6 +58,9 @@ public class I18n {
                 bundle = ResourceBundle.getBundle(BUNDLE_NAME, language.getLocale(), NO_DEFAULT_LOCALE_CONTROL);
                 currentLanguage.set(language);
                 prefs.put(PREF_LANG_KEY, language.getCode());
+                try {
+                    prefs.flush();
+                } catch (Exception ignored) {}
                 logger.info("Language switched to: {}", language);
             } catch (Exception e) {
                 logger.error("Failed to load resource bundle for language: {}", language, e);

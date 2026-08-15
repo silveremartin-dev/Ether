@@ -937,8 +937,8 @@ public class PlanetGeneratorPanel extends BorderPane {
                 }
             }
         });
-        combo.setTooltip(new Tooltip("Sélectionnez la source de données de référence.\n" +
-                "Le bouton '📂 Charger…' ci-dessous permet d'importer votre fichier PNG local."));
+        combo.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.map_source_hint",
+                "Sélectionnez la source de données de référence.\nLe bouton '📂 Charger…' ci-dessous permet d'importer votre fichier PNG local.")));
         return combo;
     }
 
@@ -1017,7 +1017,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     private void chooseElevMapFile() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Load Elevation Heightmap Image");
+        chooser.setTitle(I18n.getOrDefault("planet.chooser.elevation", "Charger l'image de la carte d'altitude"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
@@ -1103,7 +1103,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         int recH = recW / 2;
 
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Exporter la carte " + type + " (PNG)");
+        chooser.setTitle(I18n.getOrDefault("planet.chooser.export", "Exporter la carte ") + type + " (PNG)");
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Image", "*.png"));
         chooser.setInitialFileName(String.format("ether-%s-%s-%dx%d.png",
                 type, preset.name().toLowerCase().replaceAll("[^a-z0-9]", "-"), recW, recH));
@@ -1151,7 +1151,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     private void chooseBiomeMapFile() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Load Biome / Ecology Map Image");
+        chooser.setTitle(I18n.getOrDefault("planet.chooser.biome", "Charger l'image de la carte de biomes / écologie"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
@@ -1167,7 +1167,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     private void chooseResourceMapFile() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Load Geology / Resource Map Image");
+        chooser.setTitle(I18n.getOrDefault("planet.chooser.geology", "Charger l'image de la carte géologique / minerais"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
@@ -1183,7 +1183,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     private void chooseClimateMapFile() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Load Climate / Temperature Map Image");
+        chooser.setTitle(I18n.getOrDefault("planet.chooser.climate", "Charger l'image de la carte climatique / température"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
@@ -1200,7 +1200,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     private void chooseRainfallMapFile() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Load Precipitation / Moisture Map Image");
+        chooser.setTitle(I18n.getOrDefault("planet.chooser.rainfall", "Charger l'image de la carte de précipitations"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
@@ -1217,7 +1217,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     private void chooseSeasonalityMapFile() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Load Seasonality / Temperature Amplitude Map Image");
+        chooser.setTitle(I18n.getOrDefault("planet.chooser.seasonality", "Charger l'image de la carte de saisonnalité"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
@@ -1234,8 +1234,8 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     private void showClimateImportFormatHelp() {
         Alert dialog = new Alert(Alert.AlertType.INFORMATION);
-        dialog.setTitle("Spécifications des Cartes Climatiques");
-        dialog.setHeaderText("Formats d'images supportés pour l'importation du Climat");
+        dialog.setTitle(I18n.getOrDefault("planet.dialog.climate_title", "Spécifications des Cartes Climatiques"));
+        dialog.setHeaderText(I18n.getOrDefault("planet.dialog.climate_header", "Formats d'images supportés pour l'importation du Climat"));
         dialog.setContentText(
                 "Vous pouvez importer des cartes climatiques sous forme d'images PNG/JPEG au ratio 2:1 (ex: 2048x1024 pixels en projection équirectangulaire) :\n\n" +
                 "1. MÉTHODE À TROIS CARTES SÉPARÉES (Parité intégrale) :\n" +
@@ -1489,7 +1489,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     private void exportMapsWithWorldFiles() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Export Map Image with ESRI World File (.tfw)");
+        chooser.setTitle(I18n.getOrDefault("planet.chooser.worldfile", "Exporter la carte avec fichier ESRI World (.tfw)"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Map Image", "*.png"));
         File file = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
@@ -1808,13 +1808,13 @@ public class PlanetGeneratorPanel extends BorderPane {
             minLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
             legendBar.getChildren().add(minLabel);
-            addLegendItem("DEEP_OCEAN", Color.rgb(10, 15, 25), "Abysses (-11 km)");
-            addLegendItem("OCEAN", Color.rgb(36, 54, 86), "Fosse Océanique");
-            addLegendItem("SEA_LEVEL", Color.rgb(96, 96, 96), "Niveau de la mer (0 m)");
-            addLegendItem("PLAINS", Color.rgb(140, 140, 140), "Basses Terres");
-            addLegendItem("HILLS", Color.rgb(180, 180, 180), "Moyen Relief");
-            addLegendItem("MOUNTAINS", Color.rgb(220, 220, 220), "Montagnes");
-            addLegendItem("SNOW", Color.rgb(255, 255, 255), "Sommets (+8.8 km)");
+            addLegendItem("DEEP_OCEAN", Color.rgb(10, 15, 25), I18n.getOrDefault("planet.legend.abyss", "Abysses (-11 km)"));
+            addLegendItem("OCEAN", Color.rgb(36, 54, 86), I18n.getOrDefault("planet.legend.trench", "Fosse Océanique"));
+            addLegendItem("SEA_LEVEL", Color.rgb(96, 96, 96), I18n.getOrDefault("planet.legend.sea_level", "Niveau de la mer (0 m)"));
+            addLegendItem("PLAINS", Color.rgb(140, 140, 140), I18n.getOrDefault("planet.legend.lowlands", "Basses Terres"));
+            addLegendItem("HILLS", Color.rgb(180, 180, 180), I18n.getOrDefault("planet.legend.hills", "Moyen Relief"));
+            addLegendItem("MOUNTAINS", Color.rgb(220, 220, 220), I18n.getOrDefault("planet.legend.mountains", "Montagnes"));
+            addLegendItem("SNOW", Color.rgb(255, 255, 255), I18n.getOrDefault("planet.legend.peaks", "Sommets (+8.8 km)"));
 
             Label maxLabel = new Label(String.format("Max: %,.0f m", maxAlt));
             maxLabel.getStyleClass().add("control-label");
@@ -1829,10 +1829,10 @@ public class PlanetGeneratorPanel extends BorderPane {
             minLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
             legendBar.getChildren().add(minLabel);
-            addLegendItem("POLAR", Color.rgb(40, 0, 120), "Polar / Gel");
-            addLegendItem("MILD", Color.rgb(0, 200, 180), "Tempéré");
-            addLegendItem("WARM", Color.rgb(240, 200, 0), "Chaud");
-            addLegendItem("HOT", Color.rgb(220, 0, 40), "Canicule");
+            addLegendItem("POLAR", Color.rgb(40, 0, 120), I18n.getOrDefault("planet.legend.polar", "Polar / Gel"));
+            addLegendItem("MILD", Color.rgb(0, 200, 180), I18n.getOrDefault("planet.legend.mild", "Tempéré"));
+            addLegendItem("WARM", Color.rgb(240, 200, 0), I18n.getOrDefault("planet.legend.warm", "Chaud"));
+            addLegendItem("HOT", Color.rgb(220, 0, 40), I18n.getOrDefault("planet.legend.hot", "Canicule"));
 
             Label maxLabel = new Label(String.format("Max: %.1f °C", maxT));
             maxLabel.getStyleClass().add("control-label");
@@ -1840,34 +1840,34 @@ public class PlanetGeneratorPanel extends BorderPane {
             legendBar.getChildren().add(maxLabel);
 
         } else if (selectedIdx == 2) { // Précipitations
-            Label minLabel = new Label("Min: 0 mm/an (Aride)");
+            Label minLabel = new Label(I18n.getOrDefault("planet.legend.min_arid", "Min: 0 mm/an (Aride)"));
             minLabel.getStyleClass().add("control-label");
             minLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #eab308;");
 
             legendBar.getChildren().add(minLabel);
-            addLegendItem("ARID", Color.rgb(210, 170, 110), "Aride");
-            addLegendItem("MODERATE", Color.rgb(60, 180, 80), "Modéré");
-            addLegendItem("HUMID", Color.rgb(20, 160, 180), "Humide");
-            addLegendItem("HEAVY", Color.rgb(10, 60, 200), "Déluge");
+            addLegendItem("ARID", Color.rgb(210, 170, 110), I18n.getOrDefault("planet.legend.arid", "Aride"));
+            addLegendItem("MODERATE", Color.rgb(60, 180, 80), I18n.getOrDefault("planet.legend.moderate", "Modéré"));
+            addLegendItem("HUMID", Color.rgb(20, 160, 180), I18n.getOrDefault("planet.legend.humid", "Humide"));
+            addLegendItem("HEAVY", Color.rgb(10, 60, 200), I18n.getOrDefault("planet.legend.deluge", "Déluge"));
 
-            Label maxLabel = new Label("Max: 3 000 mm/an (Humide)");
+            Label maxLabel = new Label(I18n.getOrDefault("planet.legend.max_humid", "Max: 3 000 mm/an (Humide)"));
             maxLabel.getStyleClass().add("control-label");
             maxLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #3b82f6;");
             legendBar.getChildren().add(maxLabel);
 
         } else { // Saisonnalité / Amplitude Thermique
             double maxAmp = Math.min(60.0, (preset.axialTiltDegrees() / 23.5) * 35.0);
-            Label minLabel = new Label("Min: 0.0 °C (Stable)");
+            Label minLabel = new Label(I18n.getOrDefault("planet.legend.min_stable", "Min: 0.0 °C (Stable)"));
             minLabel.getStyleClass().add("control-label");
             minLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
             legendBar.getChildren().add(minLabel);
-            addLegendItem("STABLE", Color.rgb(30, 80, 140), "Faible Variance");
-            addLegendItem("SEASONAL", Color.rgb(80, 180, 100), "Saisonnière");
-            addLegendItem("HIGH", Color.rgb(240, 140, 20), "Élevée");
-            addLegendItem("EXTREME", Color.rgb(220, 30, 80), "Amplitude Extrême");
+            addLegendItem("STABLE", Color.rgb(30, 80, 140), I18n.getOrDefault("planet.legend.low_variance", "Faible Variance"));
+            addLegendItem("SEASONAL", Color.rgb(80, 180, 100), I18n.getOrDefault("planet.legend.seasonal", "Saisonnière"));
+            addLegendItem("HIGH", Color.rgb(240, 140, 20), I18n.getOrDefault("planet.legend.high_variance", "Élevée"));
+            addLegendItem("EXTREME", Color.rgb(220, 30, 80), I18n.getOrDefault("planet.legend.extreme_amp", "Amplitude Extrême"));
 
-            Label maxLabel = new Label(String.format("Max: %.1f °C (Amplitude)", maxAmp));
+            Label maxLabel = new Label(String.format("%s: %.1f °C (%s)", I18n.getOrDefault("planet.short.max", "Max"), maxAmp, I18n.getOrDefault("planet.legend.amplitude", "Amplitude")));
             maxLabel.getStyleClass().add("control-label");
             maxLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #a855f7;");
             legendBar.getChildren().add(maxLabel);

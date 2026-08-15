@@ -135,6 +135,14 @@ public class StatsPanel extends VBox {
         Label headerTitle = new Label("📊 TABLEAU DE BORD DES STATISTIQUES & CLIODYNAMIQUE");
         headerTitle.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #ffd700;");
 
+        Label cpuNoticeLabel = new Label(
+            "⚠️ EXPLICATION PERFORMANCE CPU : L'agrégation statistique en temps réel (indices Gini, entropie thermodynamique, " +
+            "analyse Turchin, variances et maillages H3) effectue des calculs intensifs sur chaque cellule à chaque cycle. " +
+            "Si la simulation ralentit, réduisez la fréquence d'échantillonnage ci-dessous (ex: 5 ou 20 ticks) ou mettez la collecte en pause."
+        );
+        cpuNoticeLabel.setWrapText(true);
+        cpuNoticeLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #93c5fd; -fx-padding: 4 8; -fx-background-color: rgba(30, 58, 138, 0.4); -fx-background-radius: 4; -fx-border-color: rgba(59, 130, 246, 0.4); -fx-border-radius: 4;");
+
         ToggleButton btnLiveCollection = new ToggleButton("⚡ Collecte Stats : ACTIF");
         btnLiveCollection.setSelected(true);
         btnLiveCollection.setTooltip(new Tooltip("Activer/Désactiver le calcul dynamique des statistiques en arrière-plan pour économiser du processeur."));
@@ -174,7 +182,7 @@ public class StatsPanel extends VBox {
         HBox perfToolbar = new HBox(8, btnLiveCollection, samplingCombo, btnFormulaEditor);
         perfToolbar.setAlignment(Pos.CENTER_LEFT);
 
-        VBox topControlsBox = new VBox(6, headerTitle, perfToolbar);
+        VBox topControlsBox = new VBox(6, headerTitle, cpuNoticeLabel, perfToolbar);
         topControlsBox.getStyleClass().add("card-section");
 
         // --- SECTION 1: GRAPH SELECTION & TIME SERIES ---
@@ -769,12 +777,22 @@ public class StatsPanel extends VBox {
                     chartSeries.getData().remove(0);
                 }
 
-                // Update Age Pyramid Bar Chart
+                // Update Age Pyramid Bar Chart (7 Cohorts)
                 int[] pyramid = engine.getAgePyramid();
                 barSeries.getData().clear();
-                barSeries.getData().add(new XYChart.Data<>("Jeunes (<15ans)", pyramid[0]));
-                barSeries.getData().add(new XYChart.Data<>("Adultes (15-60ans)", pyramid[1]));
-                barSeries.getData().add(new XYChart.Data<>("Aînés (>60ans)", pyramid[2]));
+                if (pyramid != null && pyramid.length >= 7) {
+                    barSeries.getData().add(new XYChart.Data<>("0-14 ans", pyramid[0]));
+                    barSeries.getData().add(new XYChart.Data<>("15-24 ans", pyramid[1]));
+                    barSeries.getData().add(new XYChart.Data<>("25-39 ans", pyramid[2]));
+                    barSeries.getData().add(new XYChart.Data<>("40-54 ans", pyramid[3]));
+                    barSeries.getData().add(new XYChart.Data<>("55-69 ans", pyramid[4]));
+                    barSeries.getData().add(new XYChart.Data<>("70-84 ans", pyramid[5]));
+                    barSeries.getData().add(new XYChart.Data<>("85+ ans", pyramid[6]));
+                } else if (pyramid != null && pyramid.length >= 3) {
+                    barSeries.getData().add(new XYChart.Data<>("Jeunes (<15ans)", pyramid[0]));
+                    barSeries.getData().add(new XYChart.Data<>("Adultes (15-60ans)", pyramid[1]));
+                    barSeries.getData().add(new XYChart.Data<>("Aînés (>60ans)", pyramid[2]));
+                }
 
                 // Update Variance & Distribution Panel
                 variancePanel.updateData(engine.getCells());

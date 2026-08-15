@@ -876,7 +876,7 @@ public class ExecutionContextPanel extends BorderPane {
         if (!isMasterRunning) {
             startMasterBtn.setText(I18n.getOrDefault("exec.cluster.start_master", "👑 Démarrer Serveur Master"));
         } else {
-            startMasterBtn.setText("⏹ Arrêter Serveur Master");
+            startMasterBtn.setText(I18n.getOrDefault("exec.cluster.stop_master", "⏹ Arrêter Serveur Master"));
         }
         joinClusterBtn.setText(I18n.getOrDefault("exec.cluster.join", "🔗 Rejoindre le Cluster"));
         testConnBtn.setText(I18n.getOrDefault("exec.cluster.test", "📡 Tester la Connexion"));

@@ -18,6 +18,8 @@
 | **🗺️ World & Planet Generator Editor (`PlanetGeneratorPanel`)** | **Procedural World Sculptor & Terrarium Editor**<br>Allows custom planet generation with parameters for tectonic noise, sea level ratio, temperature gradients, soil strata, freshwater aquifer capacity, and initial biophysical biomes.<br><br>![Planet Generator Editor](docs/images/planet_generator_editor.png) |
 | **⚡ Cybernetic God Mode Panel (`GodModePanel`)** | **Sovereign AI ("Archon Engine") & Catastrophe Manipulator**<br>Real-time climate and demographic injection interface. Trigger volcanic aerosol shocks, pandemics, orbital solar mirrors, asteroid impacts, and direct Model Predictive Control (MPC) interventions.<br><br>![God Mode Panel](docs/images/god_mode_panel.png) |
 | **📊 Cliodynamics & Analytics Dashboard (`StatsPanel`)** | **Planetary Telemetry & Mathematical Comparison**<br>Comparative telemetry comparing World3 Systems Dynamics vs Kurzweil Technological Singularity trajectory, age pyramids, Gini inequality indices, and EROEI net surplus curves.<br><br>![Analytics Dashboard](docs/images/analytics_dashboard.png) |
+| **🧮 Pluggable Formula & Statistics Editor (`PluggableFormulaEditorDialog`)** | **Custom Mathematical & Statistical Engine**<br>Interactive formula creator evaluating spatial state variables (`population`, `wealth`, `temp`, `food`, `tech`, `giniindex`, etc.) with statistical functions (`GINI`, `STDDEV`, `VAR`, `SUM`, `AVG`, `MEDIAN`), live evaluation, and `.properties` library import/export. |
+
 
 ---
 

@@ -1479,7 +1479,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
     private void loadCustomBiomeMap() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Charger une carte de biomes (PNG/JPEG)");
+        chooser.setTitle(I18n.getOrDefault("resource.chooser.biome", "Charger une carte de biomes (PNG/JPEG)"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images PNG/JPG", "*.png", "*.jpg", "*.jpeg"));
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
@@ -1496,7 +1496,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
     private void loadCustomResourceMap() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Charger une carte géologique & minerais (PNG/JPEG)");
+        chooser.setTitle(I18n.getOrDefault("resource.chooser.geology", "Charger une carte géologique & minerais (PNG/JPEG)"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images PNG/JPG", "*.png", "*.jpg", "*.jpeg"));
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
@@ -1778,7 +1778,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
     private void loadCustomHydroMap() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Charger une carte hydrographique (PNG/JPEG)");
+        chooser.setTitle(I18n.getOrDefault("resource.chooser.hydro", "Charger une carte hydrographique (PNG/JPEG)"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images PNG/JPG", "*.png", "*.jpg", "*.jpeg"));
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
@@ -1813,7 +1813,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 updatePreviewCanvas();
                 updateSummary();
             } else {
-                if (mapStatusLabel != null) mapStatusLabel.setText("Information : Basculement sur la carte hydrographique procédurale (déclivité).");
+                if (mapStatusLabel != null) mapStatusLabel.setText(I18n.getOrDefault("resource.map.procedural_fallback", "Information : Basculement sur la carte hydrographique procédurale (déclivité)."));
                 generateProceduralHydrography();
             }
         }));
@@ -1821,8 +1821,8 @@ public class ResourceDistributionPanel extends BorderPane {
 
     private void generateProceduralHydrography() {
         customHydroImage = null;
-        if (hydroFileLabel != null) hydroFileLabel.setText("⚡ Hydrographie Procédurale (Fleuves/Déclivité)");
-        if (mapStatusLabel != null) mapStatusLabel.setText("⚡ Carte hydrographique procédurale générée par calcul de déclivité et de bassins versants.");
+        if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("resource.mode.procedural_hydro", "⚡ Hydrographie Procédurale (Fleuves/Déclivité)"));
+        if (mapStatusLabel != null) mapStatusLabel.setText(I18n.getOrDefault("resource.map.procedural_generated", "⚡ Carte hydrographique procédurale générée par calcul de déclivité et de bassins versants."));
         updateLegend();
         updatePreviewCanvas();
         updateSummary();
@@ -1854,13 +1854,13 @@ public class ResourceDistributionPanel extends BorderPane {
                 });
             });
         } else {
-            mapStatusLabel.setText("Information : Pas de WMS spécifique pour " + body.getName() + ", utilisation du modèle procédural.");
+            mapStatusLabel.setText(I18n.getOrDefault("resource.map.wms_fallback", "Information : Pas de WMS spécifique pour ") + body.getName() + I18n.getOrDefault("resource.map.using_procedural", ", utilisation du modèle procédural."));
         }
     }
 
     private void exportMapsWithWorldFiles() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Exporter l'image de carte avec ESRI World File (.tfw)");
+        chooser.setTitle(I18n.getOrDefault("resource.chooser.worldfile", "Exporter l'image de carte avec ESRI World File (.tfw)"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Carte PNG", "*.png"));
         File file = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
@@ -1872,9 +1872,10 @@ public class ResourceDistributionPanel extends BorderPane {
 
     private void showEcologyImportFormatHelp() {
         Alert dialog = new Alert(Alert.AlertType.INFORMATION);
-        dialog.setTitle("Spécifications des Cartes de Biomes & Géologie");
-        dialog.setHeaderText("Formats d'images et données géologiques attendus");
+        dialog.setTitle(I18n.getOrDefault("resource.dialog.specs_title", "Spécifications des Cartes de Biomes & Géologie"));
+        dialog.setHeaderText(I18n.getOrDefault("resource.dialog.specs_header", "Formats d'images et données géologiques attendus"));
         dialog.setContentText(
+                I18n.getOrDefault("resource.dialog.specs_content",
                 "Vous pouvez importer des cartes de biomes et de géologie sous forme d'images PNG/JPEG au ratio 2:1 (projection équirectangulaire) :\n\n" +
                 "1. CARTE DE BIOMES (ÉCOSYSSTÈMES) :\n" +
                 "   • Océan Profond : RGB(0, 0, 100)\n" +
@@ -1893,7 +1894,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 "   • Canal Vert (V) = Densité du Bois, Forêts et Biomasse Végétale\n" +
                 "   • Canal Bleu (B) = Nappe Phréatique et Poissonnerie Aquatique\n\n" +
                 "3. GÉORÉFÉRENCEMENT ESRI WORLD FILE (.tfw) :\n" +
-                "   • L'export génère automatiquement un fichier compagnon .tfw pour l'alignement dans les logiciels GIS (QGIS, ArcGIS)."
+                "   • L'export génère automatiquement un fichier compagnon .tfw pour l'alignement dans les logiciels GIS (QGIS, ArcGIS).")
         );
         dialog.showAndWait();
     }
@@ -1904,31 +1905,31 @@ public class ResourceDistributionPanel extends BorderPane {
 
         int selectedIdx = viewModeCombo != null ? viewModeCombo.getSelectionModel().getSelectedIndex() : 0;
         if (selectedIdx == 0) { // Biomes
-            addLegendItem("DEEP_OCEAN", Color.rgb(0, 0, 100), "Abysses");
-            addLegendItem("OCEAN", Color.rgb(0, 50, 200), "Océan");
-            addLegendItem("PLAINS", Color.rgb(100, 200, 50), "Plaines");
-            addLegendItem("FOREST", Color.rgb(20, 120, 20), "Forêt");
-            addLegendItem("JUNGLE", Color.rgb(0, 80, 0), "Jungle");
-            addLegendItem("DESERT", Color.rgb(255, 200, 50), "Désert");
-            addLegendItem("MOUNTAINS", Color.rgb(100, 100, 100), "Montagnes");
+            addLegendItem("DEEP_OCEAN", Color.rgb(0, 0, 100), I18n.getOrDefault("resource.legend.deep_ocean", "Abysses"));
+            addLegendItem("OCEAN", Color.rgb(0, 50, 200), I18n.getOrDefault("resource.legend.ocean", "Océan"));
+            addLegendItem("PLAINS", Color.rgb(100, 200, 50), I18n.getOrDefault("resource.legend.plains", "Plaines"));
+            addLegendItem("FOREST", Color.rgb(20, 120, 20), I18n.getOrDefault("resource.legend.forest", "Forêt"));
+            addLegendItem("JUNGLE", Color.rgb(0, 80, 0), I18n.getOrDefault("resource.legend.jungle", "Jungle"));
+            addLegendItem("DESERT", Color.rgb(255, 200, 50), I18n.getOrDefault("resource.legend.desert", "Désert"));
+            addLegendItem("MOUNTAINS", Color.rgb(100, 100, 100), I18n.getOrDefault("resource.legend.mountains", "Montagnes"));
         } else if (selectedIdx == 1) { // Minerals / Ores
-            addLegendItem("LOW", Color.rgb(30, 40, 50), "Faible Deposit");
-            addLegendItem("MED", Color.rgb(180, 100, 40), "Moyen");
-            addLegendItem("HIGH", Color.rgb(240, 60, 20), "Riche Gisements");
+            addLegendItem("LOW", Color.rgb(30, 40, 50), I18n.getOrDefault("resource.legend.mineral_low", "Faible Gisement"));
+            addLegendItem("MED", Color.rgb(180, 100, 40), I18n.getOrDefault("resource.legend.mineral_med", "Gisement Moyen"));
+            addLegendItem("HIGH", Color.rgb(240, 60, 20), I18n.getOrDefault("resource.legend.mineral_high", "Riche Gisement"));
         } else if (selectedIdx == 2) { // Mantle / Tectonic
-            addLegendItem("LOW", Color.rgb(40, 40, 60), "Inerte");
-            addLegendItem("MED", Color.rgb(180, 80, 30), "Tectonique Modérée");
-            addLegendItem("HIGH", Color.rgb(240, 20, 20), "Magmatisme Élevé");
+            addLegendItem("LOW", Color.rgb(40, 40, 60), I18n.getOrDefault("resource.legend.heat_low", "Inerte"));
+            addLegendItem("MED", Color.rgb(180, 80, 30), I18n.getOrDefault("resource.legend.heat_med", "Tectonique Modérée"));
+            addLegendItem("HIGH", Color.rgb(240, 20, 20), I18n.getOrDefault("resource.legend.heat_high", "Magmatisme Élevé"));
         } else if (selectedIdx == 3) { // Aquifer / Aquatic
-            addLegendItem("LOW", Color.rgb(20, 40, 80), "Aride / Sec");
-            addLegendItem("MED", Color.rgb(40, 120, 200), "Abondance Modérée");
-            addLegendItem("HIGH", Color.rgb(0, 220, 255), "Aquifère / Poissonnerie");
+            addLegendItem("LOW", Color.rgb(20, 40, 80), I18n.getOrDefault("resource.legend.aquifer_low", "Aride / Sec"));
+            addLegendItem("MED", Color.rgb(40, 120, 200), I18n.getOrDefault("resource.legend.aquifer_med", "Abondance Modérée"));
+            addLegendItem("HIGH", Color.rgb(0, 220, 255), I18n.getOrDefault("resource.legend.aquifer_high", "Aquifère / Poissonnerie"));
         } else { // Hydrography & River Networks
-            addLegendItem("DEEP_OCEAN", Color.rgb(15, 23, 42), "Océan / Abysses");
-            addLegendItem("MAJOR_RIVER", Color.rgb(2, 132, 199), "Fleuves Majeurs");
-            addLegendItem("RIVER_STREAM", Color.rgb(56, 189, 248), "Cours d'Eau & Rivières");
-            addLegendItem("TRIBUTARY", Color.rgb(20, 184, 166), "Affluents & Ruisseaux");
-            addLegendItem("LAND_SLOPE", Color.rgb(75, 85, 99), "Relief / Déclivité");
+            addLegendItem("DEEP_OCEAN", Color.rgb(15, 23, 42), I18n.getOrDefault("resource.legend.hydro_ocean", "Océan / Abysses"));
+            addLegendItem("MAJOR_RIVER", Color.rgb(2, 132, 199), I18n.getOrDefault("resource.legend.major_river", "Fleuves Majeurs"));
+            addLegendItem("RIVER_STREAM", Color.rgb(56, 189, 248), I18n.getOrDefault("resource.legend.river_stream", "Cours d'Eau & Rivières"));
+            addLegendItem("TRIBUTARY", Color.rgb(20, 184, 166), I18n.getOrDefault("resource.legend.tributary", "Affluents & Ruisseaux"));
+            addLegendItem("LAND_SLOPE", Color.rgb(75, 85, 99), I18n.getOrDefault("resource.legend.land_slope", "Relief / Déclivité"));
         }
     }
 
@@ -2155,8 +2156,9 @@ public class ResourceDistributionPanel extends BorderPane {
         if (summaryLabel == null) return;
 
         summaryLabel.setText(String.format(
-                "🌲 Végétale : %.0f GtC  |  🌾 Sols : %.0f GtC  |  🦌 Faune : %.2f GtC\n" +
-                "⛏️ Métaux : %.0f Gt  |  💎 Précieux : %.0f Mt  |  🌋 Manteau : %.1f mW/m²  |  💧 Aquifères : %.0f x10³ km³",
+                I18n.getOrDefault("resource.summary.format",
+                        "🌲 Végétale : %.0f GtC  |  🌾 Sols : %.0f GtC  |  🦌 Faune : %.2f GtC\n" +
+                        "⛏️ Métaux : %.0f Gt  |  💎 Précieux : %.0f Mt  |  🌋 Manteau : %.1f mW/m²  |  💧 Aquifères : %.0f x10³ km³"),
                 terrestrialBiomassSlider != null ? terrestrialBiomassSlider.getValue() : 450.0,
                 soilCarbonSlider != null ? soilCarbonSlider.getValue() : 1500.0,
                 faunaBiomassSlider != null ? faunaBiomassSlider.getValue() : 2.0,
@@ -2183,6 +2185,14 @@ public class ResourceDistributionPanel extends BorderPane {
             if (faunaSecHeader != null) faunaSecHeader.setText(I18n.getOrDefault("resource.section.fauna", "2. BIOMASSE ANIMALE & AQUATIQUE (MÉTRIQUES)"));
             if (mineralSecHeader != null) mineralSecHeader.setText(I18n.getOrDefault("resource.section.minerals", "3. GÉOLOGIE & HYDROLOGIE (MÉTRIQUES)"));
 
+            if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("resource.title", "DISTRIBUTION DES RESSOURCES & ÉCOLOGIE (MÉTRIQUES SCIENTIFIQUES)"));
+            if (planetSectionHeader != null) planetSectionHeader.setText(I18n.getOrDefault("resource.section.planet_preset", "PARAMÈTRES PLANÉTAIRES (ONGLET 1)"));
+            if (biomeDomainSecHeader != null) biomeDomainSecHeader.setText(I18n.getOrDefault("resource.domain.biome", "1. DOMAINE BIOMES & FLORE (VÉGÉTATION)"));
+            if (hydroDomainSecHeader != null) hydroDomainSecHeader.setText(I18n.getOrDefault("resource.domain.hydro", "2. DOMAINE HYDROGRAPHIE & EAU DOUCE"));
+            if (climateDomainSecHeader != null) climateDomainSecHeader.setText(I18n.getOrDefault("resource.domain.climate", "3. DOMAINE CLIMAT & ATMOSPHÈRE"));
+            if (geologyDomainSecHeader != null) geologyDomainSecHeader.setText(I18n.getOrDefault("resource.domain.geology", "4. DOMAINE GÉOLOGIE, TECTONIQUE & MINERAIS"));
+            if (rightViewTitle != null) rightViewTitle.setText(I18n.getOrDefault("resource.title.right_view", "AFFICHEUR & CARTOGRAPHIE DES RESSOURCES"));
+
             if (syncPlanetBtn != null) syncPlanetBtn.setText(I18n.getOrDefault("resource.btn.sync_planet", "🔄 Synchroniser avec la Planète de l'Onglet 1"));
             if (autoDeriveEcologyBtn != null) autoDeriveEcologyBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_eco", "⚡ Auto-déduire Écologie & Biomes depuis la Physique"));
             if (autoDeriveHydroBtn != null) autoDeriveHydroBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_hydro", "💧 Auto-déduire Aquifères & Eau Douce depuis la Physique"));
@@ -2197,14 +2207,24 @@ public class ResourceDistributionPanel extends BorderPane {
             if (rainfallMapRowLabel != null) rainfallMapRowLabel.setText(I18n.getOrDefault("planet.map.rainfall", "Carte de Précipitations (Humidité) :"));
             if (seasonalityMapRowLabel != null) seasonalityMapRowLabel.setText(I18n.getOrDefault("planet.map.seasonality", "Carte de Saisonnalité / Variance :"));
 
-            if (terrestrialBiomassRowLabel != null) terrestrialBiomassRowLabel.setText(I18n.getOrDefault("resource.param.terrestrial_biomass", "Biomasse Végétale Terrestre (Gt/cell) :"));
-            if (soilCarbonRowLabel != null) soilCarbonRowLabel.setText(I18n.getOrDefault("resource.param.soil_carbon", "Carbone Organique des Sols (t/ha) :"));
-            if (faunaBiomassRowLabel != null) faunaBiomassRowLabel.setText(I18n.getOrDefault("resource.param.fauna_biomass", "Biomasse Faunique Terrestre (kg/km²) :"));
-            if (aquaticBiomassRowLabel != null) aquaticBiomassRowLabel.setText(I18n.getOrDefault("resource.param.aquatic_biomass", "Biomasse & Faune Aquatique (t/km²) :"));
-            if (crustalMetalRowLabel != null) crustalMetalRowLabel.setText(I18n.getOrDefault("resource.param.crustal_metal", "Richesse en Métaux Croûte (Fe/Cu/Al) :"));
-            if (preciousMetalRowLabel != null) preciousMetalRowLabel.setText(I18n.getOrDefault("resource.param.precious_metal", "Concentration en Métaux Précieux (Au/Ag) :"));
-            if (mantleHeatRowLabel != null) mantleHeatRowLabel.setText(I18n.getOrDefault("resource.param.mantle_heat", "Flux Thermique du Manteau & Géothermie :"));
-            if (freshwaterAquiferRowLabel != null) freshwaterAquiferRowLabel.setText(I18n.getOrDefault("resource.param.freshwater_aquifer", "Capacité des Nappes Phréatiques (m³) :"));
+            if (fetchOnlineHydroBtn != null) fetchOnlineHydroBtn.setText(I18n.getOrDefault("resource.btn.fetch_online_hydro", "🌐 Télécharger Hydrographie Satellite (Earth WMS / Preset Terre)"));
+            if (proceduralHydroBtn != null) proceduralHydroBtn.setText(I18n.getOrDefault("resource.btn.procedural_hydro", "⚡ Auto-générer Fleuves & Cours d'eau (Procédural par Déclivité)"));
+            if (fetchOnlineBtn != null) fetchOnlineBtn.setText(I18n.getOrDefault("resource.btn.fetch_online", "🌐 Télécharger cartes satellite WMS (USGS / NASA)"));
+            if (fetchOnlineClimateBtn != null) fetchOnlineClimateBtn.setText(I18n.getOrDefault("planet.map.btn_fetch_online_climate", "🌐 Télécharger Climat Satellite NASA/USGS (WMS)"));
+            if (climateHelpBtn != null) climateHelpBtn.setText(I18n.getOrDefault("planet.map.btn_climate_help", "ℹ️ Spécifications des cartes climatiques"));
+            if (exportMapsBtn != null) exportMapsBtn.setText(I18n.getOrDefault("resource.btn.export_maps", "📤 Exporter cartes (PNG + WorldFile .tfw)"));
+            if (specsHelpBtn != null) specsHelpBtn.setText(I18n.getOrDefault("resource.btn.specs_help", "ℹ️ Spécifications des cartes de biomes & géologie"));
+
+            if (terrestrialBiomassRowLabel != null) terrestrialBiomassRowLabel.setText(I18n.getOrDefault("resource.param.terrestrial_biomass", "Biomasse Végétale Terrestre (GtC) :"));
+            if (soilCarbonRowLabel != null) soilCarbonRowLabel.setText(I18n.getOrDefault("resource.param.soil_carbon", "Carbone Organique des Sols (GtC) :"));
+            if (faunaBiomassRowLabel != null) faunaBiomassRowLabel.setText(I18n.getOrDefault("resource.param.fauna_biomass", "Biomasse Faunique Terrestre (GtC) :"));
+            if (aquaticBiomassRowLabel != null) aquaticBiomassRowLabel.setText(I18n.getOrDefault("resource.param.aquatic_biomass", "Biomasse & Faune Aquatique (GtC) :"));
+            if (crustalMetalRowLabel != null) crustalMetalRowLabel.setText(I18n.getOrDefault("resource.param.crustal_metal", "Richesse en Métaux Croûte (Gt) :"));
+            if (preciousMetalRowLabel != null) preciousMetalRowLabel.setText(I18n.getOrDefault("resource.param.precious_metal", "Concentration en Métaux Précieux (Mt) :"));
+            if (mantleHeatRowLabel != null) mantleHeatRowLabel.setText(I18n.getOrDefault("resource.param.mantle_heat", "Flux Thermique du Manteau (mW/m²) :"));
+            if (freshwaterAquiferRowLabel != null) freshwaterAquiferRowLabel.setText(I18n.getOrDefault("resource.param.freshwater_aquifer", "Capacité des Nappes Phréatiques (10³ km³) :"));
+            if (seismicRowLabel != null) seismicRowLabel.setText(I18n.getOrDefault("resource.param.seismic", "Activité Sismique & Tectonique (Mag Richter) :"));
+            if (volcanicRowLabel != null) volcanicRowLabel.setText(I18n.getOrDefault("resource.param.volcanic", "Activité Volcanique Globale (VEI) :"));
 
             if (radioProcBiome != null) radioProcBiome.setText(I18n.getOrDefault("resource.mode.procedural_biome", "▶ Biomes Procéduraux"));
             if (radioImportBiome != null) radioImportBiome.setText(I18n.getOrDefault("resource.mode.import_biome", "📂 Carte de Biomes (PNG)"));
@@ -2215,9 +2235,27 @@ public class ResourceDistributionPanel extends BorderPane {
             if (radioProcGeology != null) radioProcGeology.setText(I18n.getOrDefault("resource.mode.procedural_geology", "▶ Géologie Procédurale"));
             if (radioImportGeology != null) radioImportGeology.setText(I18n.getOrDefault("resource.mode.import_geology", "📂 Carte Géologique (PNG)"));
 
-            if (mapSourceCombo != null) {
-                mapSourceCombo.setButtonCell(mapSourceCombo.getCellFactory().call(null));
+            if (viewModeCombo != null) {
+                int selected = viewModeCombo.getSelectionModel().getSelectedIndex();
+                viewModeCombo.getItems().setAll(
+                    I18n.getOrDefault("resource.view.biomes", "🌿 Carte des Biomes & Végétation (GtC)"),
+                    I18n.getOrDefault("resource.view.geology", "🪨 Carte Géologique & Métaux (Gt Fer/Cuivre)"),
+                    I18n.getOrDefault("resource.view.heat", "🌋 Flux Thermique & Ceintures Tectoniques (mW/m²)"),
+                    I18n.getOrDefault("resource.view.aquifer", "💧 Aquifères & Biomasse Aquatique (10³ km³)"),
+                    I18n.getOrDefault("resource.view.hydro", "🌊 Carte Hydrographique & Fleuves (Déclivité & Cours d'eau)")
+                );
+                if (selected >= 0 && selected < viewModeCombo.getItems().size()) {
+                    viewModeCombo.getSelectionModel().select(selected);
+                } else {
+                    viewModeCombo.getSelectionModel().select(0);
+                }
             }
+
+            if (mapSourceCombo != null) mapSourceCombo.setButtonCell(mapSourceCombo.getCellFactory().call(null));
+            if (biomeSourceCombo != null) biomeSourceCombo.setButtonCell(biomeSourceCombo.getCellFactory().call(null));
+            if (hydroSourceCombo != null) hydroSourceCombo.setButtonCell(hydroSourceCombo.getCellFactory().call(null));
+            if (climateSourceCombo != null) climateSourceCombo.setButtonCell(climateSourceCombo.getCellFactory().call(null));
+            if (geologySourceCombo != null) geologySourceCombo.setButtonCell(geologySourceCombo.getCellFactory().call(null));
 
             if (loadBiomeBtn != null) loadBiomeBtn.setText(I18n.get("planet.map.btn_load"));
             if (loadResourceBtn != null) loadResourceBtn.setText(I18n.get("planet.map.btn_load"));
@@ -2229,15 +2267,20 @@ public class ResourceDistributionPanel extends BorderPane {
             if (customBiomeImage == null && biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
             if (customResourceImage == null && resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
             if (customHydroImage == null && hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
+            if (customClimateImage == null && climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
+            if (customRainfallImage == null && rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
+            if (customSeasonalityImage == null && seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
 
             if (biomeFormatHintLabel != null) biomeFormatHintLabel.setText(I18n.getOrDefault("resource.format.biome_hint", "PNG / JPEG (projection équirectangulaire 2:1) :\n  Image de biomes ou couvert végétal (niveaux de gris ou RGB)."));
             if (hydroFormatHintLabel != null) hydroFormatHintLabel.setText(I18n.getOrDefault("resource.format.hydro_hint", "PNG / JPEG (projection équirectangulaire 2:1) :\n  Noir (0) = sans eau | Blanc (255) = réseau fluvial / débit max."));
             if (geologyFormatHintLabel != null) geologyFormatHintLabel.setText(I18n.getOrDefault("resource.format.geology_hint", "PNG multi-canaux (projection équirectangulaire 2:1) :\n • Canal R (Rouge) = Métaux crustaux industriels (Fer/Cuivre)\n • Canal G (Vert) = Minerais précieux & terres rares (Or/Pt)\n • Canal B (Bleu) = Flux thermique du manteau & aquifères"));
+            if (climateSummaryLabel != null) climateSummaryLabel.setText(I18n.getOrDefault("resource.climate.summary", "🌡️ Modèle Climatique : Hérité des paramètres planétaires de l'Onglet 1 (Température, Gradient, Pression, O₂, CO₂, Albédo)"));
 
             if (applyBtn != null) applyBtn.setText(I18n.getOrDefault("resource.btn.apply", "✅ Appliquer la distribution scientifique à la simulation"));
 
             updateSummary();
             updatePlanetContextDisplay();
+            updateLegend();
         } finally {
             isUpdatingFromPreset = oldUpdating;
         }

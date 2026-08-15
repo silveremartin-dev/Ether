@@ -98,16 +98,12 @@ public class WindowUtils {
     public static void styleDialogPane(javafx.scene.control.DialogPane pane) {
         if (pane == null) return;
         try {
-            String lightCss = WindowUtils.class.getResource("/css/light.css") != null ? 
-                WindowUtils.class.getResource("/css/light.css").toExternalForm() : null;
-            String darkCss = WindowUtils.class.getResource("/css/index.css") != null ? 
-                WindowUtils.class.getResource("/css/index.css").toExternalForm() : null;
-
-            if (darkCss != null && !pane.getStylesheets().contains(darkCss)) {
-                pane.getStylesheets().add(darkCss);
-            }
-            if (lightCss != null && !pane.getStylesheets().contains(lightCss)) {
-                pane.getStylesheets().add(lightCss);
+            String activeCss = Theme.getCurrentTheme().getStylesheetPath();
+            var activeRes = WindowUtils.class.getResource(activeCss);
+            if (activeRes != null) {
+                String cssForm = activeRes.toExternalForm();
+                pane.getStylesheets().clear();
+                pane.getStylesheets().add(cssForm);
             }
         } catch (Exception e) {
             logger.debug("Could not style dialog pane", e);

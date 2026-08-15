@@ -140,11 +140,62 @@ When maintenance cost $\Sigma_{\text{maint}}$ exceeds total economic output ($P_
 
 ---
 
-## 4. Test Suite Validation Results
+## 5. Pluggable Formula Engine & Dynamic Formula Editor (`PluggableStatEngine`)
 
-All differential schemes and state variable bounds are validated by the automated test suite:
+Ether includes an interactive, high-performance **Pluggable Formula Engine** (`PluggableStatEngine`) paired with a dynamic visual editor (`PluggableFormulaEditorDialog`). This system allows researchers and users to write custom mathematical and statistical expressions over the spatial H3 grid, compute metrics live, evaluate custom forcing factors, and import/export formula libraries via `.properties` or `.json` files.
+
+### A. Accessible State Variable Index
+
+The formula evaluator resolves scalar and array variables across all `H3Cell` nodes and the optimized `WorldBuffer`:
+
+| Domain | Variable Identifier(s) | Description / Type |
+| :--- | :--- | :--- |
+| **Socio-Economy & Capital** | `wealth`, `gdp`, `capital`, `resourcecapital` | Accumulated capital stock and economic output per cell. |
+| | `tech`, `technology`, `technologylevel` | Scientific and technological advancement index. |
+| | `giniindex`, `gini` | Wealth/resource inequality distribution coefficient ($0.0 - 1.0$). |
+| | `work`, `resourcework` | Productive workforce capacity ($N_{\text{adult}} \times T_{\text{tech}}$). |
+| **Demographics & Cohorts** | `population`, `pop`, `biomasshuman` | Total human headcount per cell. |
+| | `popyouth`, `popadult`, `popelderly` | Major demographic age cohorts (youth, adult, elderly). |
+| | `pop0to4` ... `pop80plus` | 10 fine-grained 5-year age cohort arrays. |
+| | `fertility`, `lifespan`, `age` | Total fertility rate, average lifespan, and mean population age. |
+| | `epidemicinfected`, `epidemicrecovered` | SIR epidemiological infection and recovery counters. |
+| **Climate & Geophysics** | `temperature`, `temp` | Surface ambient temperature ($^\circ\text{C}$). |
+| | `rainfall`, `rain` | Annual precipitation ($\text{mm/yr}$). |
+| | `elevation`, `alt` | Surface elevation above sea level ($\text{m}$). |
+| | `pollution`, `pollutionlevel` | Environmental pollution concentration index. |
+| | `albedo`, `dynamicalbedo` | Surface dynamic solar reflectance coefficient. |
+| | `mantleheat`, `mantleheatflow` | Geothermal heat flow ($\text{mW/m}^2$). |
+| **Biomass & Resources** | `food`, `foodresource` | Available edible biomass reserves. |
+| | `water`, `aquifer`, `freshwateraquifer` | Freshwater table and aquifer reserves ($\text{m}^3$). |
+| | `wood`, `metal`, `preciousmetal`, `clay` | Raw material reserves. |
+| | `soilcarbon`, `soilorganiccarbon` | Soil organic carbon sequestration stock. |
+| | `biomassnatural`, `biomasslivestock`, `biomassfish`, `biomassagriculture` | Primary natural, livestock, aquatic, and crop biomass stocks. |
+| **Energy & Metabolism** | `energywind`, `energysolar`, `energyfire`, `energyslaves`, `energyfoodconsumed` | Extracted and consumed power flows ($\text{Joules}$). |
+
+### B. Mathematical Operators & Aggregators
+
+Formulas support nested algebraic operations and spatial aggregations:
+
+* **Spatial Aggregators**: `SUM(var)`, `AVG(var)`, `MEDIAN(var)`, `VAR(var)`, `STDDEV(var)`, `MIN(var)`, `MAX(var)`, `GINI(var)`, `COUNT(var)`, `RANGE(var)`.
+* **Algebraic & Transcendental Functions**: `+`, `-`, `*`, `/`, `%`, `^`, `SQRT()`, `ABS()`, `LOG()`, `EXP()`, `ROUND()`.
+
+#### Example Expressions:
+* **Per Capita Food Surplus**: `SUM(food) / COUNT(population)`
+* **Societal Institutional Complexity**: `MAX(population * tech * (1 + giniindex))`
+* **Environmental Degradation Shock**: `STDDEV(pollution) * AVG(popadult)`
+
+### C. Library Persistence & Sharing
+
+Custom formula sets are persisted or shared via standard `.properties` files (or `.json` bundles) using `importFormulasFromFile(File)` and `exportFormulasToFile(File)` without requiring application re-compilation or dynamic Java bytecode loading.
+
+---
+
+## 6. Test Suite Validation Results
+
+All differential schemes, formula evaluators, and state variable bounds are validated by the automated test suite:
 ```text
 [INFO] Results:
 [INFO] Tests run: 102, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
 ```
+

@@ -34,6 +34,7 @@ public class PreferencesPanel extends BorderPane {
     private Label themeHeaderLabel;
     private RadioButton darkThemeRadio;
     private RadioButton lightThemeRadio;
+    private RadioButton presentationThemeRadio;
     private ToggleGroup themeToggleGroup;
     private VBox langSection;
     private VBox themeSection;
@@ -78,22 +79,11 @@ public class PreferencesPanel extends BorderPane {
         darkThemeRadio = new RadioButton();
         darkThemeRadio.setToggleGroup(themeToggleGroup);
         darkThemeRadio.setSelected(Theme.getCurrentTheme() == Theme.DARK);
-        darkThemeRadio.setOnAction(e -> {
-            if (getScene() != null) {
-                Theme.setTheme(getScene(), Theme.DARK);
-            }
-        });
+        darkThemeRadio.setOnAction(e -> Theme.setTheme(getScene(), Theme.DARK));
+        lightThemeRadio.setOnAction(e -> Theme.setTheme(getScene(), Theme.LIGHT));
+        presentationThemeRadio.setOnAction(e -> Theme.setTheme(getScene(), Theme.PRESENTATION));
 
-        lightThemeRadio = new RadioButton();
-        lightThemeRadio.setToggleGroup(themeToggleGroup);
-        lightThemeRadio.setSelected(Theme.getCurrentTheme() == Theme.LIGHT);
-        lightThemeRadio.setOnAction(e -> {
-            if (getScene() != null) {
-                Theme.setTheme(getScene(), Theme.LIGHT);
-            }
-        });
-
-        HBox themeOptions = new HBox(20, darkThemeRadio, lightThemeRadio);
+        HBox themeOptions = new HBox(20, darkThemeRadio, lightThemeRadio, presentationThemeRadio);
         themeHeaderLabel = new Label();
         themeHeaderLabel.getStyleClass().add("label-section-header");
         themeSection = createCardSectionWithHeader(themeHeaderLabel, new VBox(10, themeOptions));
@@ -127,6 +117,7 @@ public class PreferencesPanel extends BorderPane {
         if (themeHeaderLabel != null) themeHeaderLabel.setText("🎨 " + I18n.get("pref.theme"));
         darkThemeRadio.setText(I18n.get("pref.theme.dark"));
         lightThemeRadio.setText(I18n.get("pref.theme.light"));
+        if (presentationThemeRadio != null) presentationThemeRadio.setText(I18n.get("pref.theme.presentation"));
         languageCombo.setValue(I18n.getCurrentLanguage());
     }
 }

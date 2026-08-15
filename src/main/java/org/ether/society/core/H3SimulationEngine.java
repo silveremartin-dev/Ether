@@ -955,11 +955,49 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     public int[] getAgePyramid() {
-        long pop = getTotalPopulation();
-        int youth = (int) (pop * 0.35);
-        int adult = (int) (pop * 0.50);
-        int elder = (int) (pop * 0.15);
-        return new int[]{youth, adult, elder};
+        int[] cohorts = new int[7];
+        if (agentBuffer != null && agentBuffer.getCapacity() > 0) {
+            float[] ages = agentBuffer.getAge();
+            int[] hexIds = agentBuffer.getHexIds();
+            for (int i = 0; i < agentBuffer.getCapacity(); i++) {
+                if (hexIds != null && hexIds[i] == -1) continue;
+                float age = ages != null ? ages[i] : 25.0f;
+                if (age < 15) cohorts[0]++;
+                else if (age < 25) cohorts[1]++;
+                else if (age < 40) cohorts[2]++;
+                else if (age < 55) cohorts[3]++;
+                else if (age < 70) cohorts[4]++;
+                else if (age < 85) cohorts[5]++;
+                else cohorts[6]++;
+            }
+            // Scale by cohort weight if agents represent demographic cohorts
+            int cohortSize = currentScenario != null && currentScenario.getTargetCohortSize() > 0 ? currentScenario.getTargetCohortSize() : 150;
+            long realPop = getTotalPopulation();
+            long agentSum = 0; for (int c : cohorts) agentSum += c;
+            if (agentSum > 0 && realPop > agentSum) {
+                double scale = (double) realPop / agentSum;
+                for (int i = 0; i < 7; i++) cohorts[i] = (int) (cohorts[i] * scale);
+            }
+        } else {
+            long pop = getTotalPopulation();
+            float life = getCurrentLifeExpectancy();
+            double c0_pct = Math.max(0.12, 0.35 - (life - 30.0) * 0.003);
+            double c1_pct = 0.18;
+            double c2_pct = 0.24;
+            double c3_pct = 0.18;
+            double c4_pct = 0.12;
+            double c5_pct = 0.06 + Math.min(0.06, (life - 50.0) * 0.002);
+            double c6_pct = Math.max(0.01, 1.0 - (c0_pct + c1_pct + c2_pct + c3_pct + c4_pct + c5_pct));
+
+            cohorts[0] = (int) (pop * c0_pct);
+            cohorts[1] = (int) (pop * c1_pct);
+            cohorts[2] = (int) (pop * c2_pct);
+            cohorts[3] = (int) (pop * c3_pct);
+            cohorts[4] = (int) (pop * c4_pct);
+            cohorts[5] = (int) (pop * c5_pct);
+            cohorts[6] = (int) (pop * c6_pct);
+        }
+        return cohorts;
     }
 
     // --- 🧠 COGNITION & INFORMATION ---
