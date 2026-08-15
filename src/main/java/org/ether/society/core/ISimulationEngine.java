@@ -24,5 +24,9 @@ public interface ISimulationEngine {
     void stepForward(int ticks);
 
     void stepBackward(int ticks);
+
+    default void setPauseAtNextEvent(boolean pause) {}
+
+    default boolean isPauseAtNextEvent() { return false; }
 }
 

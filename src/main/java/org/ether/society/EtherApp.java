@@ -138,9 +138,10 @@ public class EtherApp extends Application {
                     );
 
                     controlPanel.updateYear(
-                        String.format("An %d, Mois %d",
+                        String.format("An %d, Mois %d, Jour %d",
                             h3Engine.getTimeManager().getCurrentYear(),
-                            h3Engine.getTimeManager().getCurrentMonth() + 1)
+                            h3Engine.getTimeManager().getCurrentMonth() + 1,
+                            h3Engine.getTimeManager().getCurrentDay())
                     );
 
                     // Periodic map redraw when needed

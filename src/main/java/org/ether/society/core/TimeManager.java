@@ -42,6 +42,7 @@ import java.util.Locale;
 public class TimeManager {
     private int currentYear;
     private int currentMonth; // 0-11 (0 = January)
+    private int currentDay;   // 1-30
     private long totalTicks;
 
     /**
@@ -52,13 +53,28 @@ public class TimeManager {
     public TimeManager(int startYear) {
         this.currentYear = startYear;
         this.currentMonth = 0;
+        this.currentDay = 1;
         this.totalTicks = 0;
+    }
+
+    /**
+     * Advances time by one day.
+     */
+    public void advanceDay() {
+        currentDay++;
+        if (currentDay > 30) {
+            currentDay = 1;
+            advanceMonth();
+        } else {
+            totalTicks++;
+        }
     }
 
     /**
      * Advances time by one month.
      */
     public void advanceMonth() {
+        currentDay = 1;
         currentMonth++;
         if (currentMonth >= 12) {
             currentMonth = 0;
@@ -99,33 +115,33 @@ public class TimeManager {
     /**
      * Gets the current day of the month (1-30).
      *
-     * @return Current day (default 1)
+     * @return Current day
      */
     public int getCurrentDay() {
-        return 1;
+        return currentDay;
     }
 
     /**
      * Gets total simulation ticks.
      *
-     * @return Total ticks (months)
+     * @return Total ticks
      */
     public long getTotalTicks() {
         return totalTicks;
     }
 
     /**
-     * Returns a formatted date string with era (BC/AD).
+     * Returns a formatted date string with era (BC/AD) and Day.
      *
      * @param locale Locale for month formatting
-     * @return Formatted date (e.g., "Jan 20000 BC")
+     * @return Formatted date (e.g., "Day 1, Jan 20000 BC")
      */
     public String getFormattedDate(Locale locale) {
         String era = currentYear < 0 ? "BC" : "AD";
         int year = Math.abs(currentYear);
         Month month = Month.of(currentMonth + 1);
         String monthName = month.getDisplayName(TextStyle.SHORT, locale);
-        return String.format("%s %d %s", monthName, year, era);
+        return String.format("Day %d, %s %d %s", currentDay, monthName, year, era);
     }
 
     /**
@@ -145,6 +161,7 @@ public class TimeManager {
     public void reset(int startYear) {
         this.currentYear = startYear;
         this.currentMonth = 0;
+        this.currentDay = 1;
         this.totalTicks = 0;
     }
 }

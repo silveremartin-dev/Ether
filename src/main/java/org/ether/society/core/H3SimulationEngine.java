@@ -67,6 +67,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     private ScheduledExecutorService executorService;
     private final AtomicBoolean running = new AtomicBoolean(false);
+    private final java.util.concurrent.atomic.AtomicBoolean pauseAtNextEvent = new java.util.concurrent.atomic.AtomicBoolean(false);
     private int speedMultiplier = 1;
 
     public H3SimulationEngine(Configuration config) {
@@ -252,6 +253,16 @@ public class H3SimulationEngine implements ISimulationEngine {
         return running.get();
     }
 
+    @Override
+    public void setPauseAtNextEvent(boolean pause) {
+        this.pauseAtNextEvent.set(pause);
+    }
+
+    @Override
+    public boolean isPauseAtNextEvent() {
+        return this.pauseAtNextEvent.get();
+    }
+
     public List<H3Cell> getCells() {
         return cells;
     }
@@ -364,11 +375,11 @@ public class H3SimulationEngine implements ISimulationEngine {
             profiler.beginPhase("1_FastScaleFlux");
             fluxEngine.tick(worldBuffer, DT_FAST);
             politicalEngine.tick(cells);
+            timeManager.advanceDay();
             profiler.endPhase("1_FastScaleFlux");
 
             // 2. SLOW SCALE PHYSICALIST DYNAMICS
             if (tickCounter % SLOW_FACTOR == 0) {
-                timeManager.advanceMonth();
                 if (currentScenario != null && timeManager.getCurrentYear() >= currentScenario.getEndDateYear()) {
                     logger.info("🏁 Simulation reached scenario target end date (Year {}). Auto-pausing.", currentScenario.getEndDateYear());
                     pause();
@@ -462,25 +473,26 @@ public class H3SimulationEngine implements ISimulationEngine {
                     step6Run.run();
                 }
 
-                // Step 7: Advanced Physicalist & Cliodynamic Extensions
-                org.ether.society.procedural.TerraformingEngine.processTerraforming(cells, 1.0);
-                org.ether.society.procedural.TrophicEcosystemEngine.processTrophicEcosystem(cells, 1.0);
-                org.ether.society.procedural.PhysicalSupplyChainEngine.processSupplyChains(cells, 1.0);
-                org.ether.society.procedural.UrbanThermodynamicsEngine.processUrbanThermodynamics(cells, 1.0);
-                org.ether.society.procedural.PhysicalLawEngine.applyPhysicalLaws(cells, 1.0);
-                org.ether.society.procedural.CulturalSociologyEngine.processCulturalSociology(cells, 1.0);
-                org.ether.society.procedural.CoGovernanceTradeEngine.processTradeAndGovernance(cells, 1.0);
-                org.ether.society.procedural.OreGradeThermodynamicsEngine.processOreDepletion(cells, 1.0);
-                org.ether.society.procedural.InfrastructureInertiaEngine.processInfrastructureInertia(cells, 1.0);
-                org.ether.society.procedural.EntropicMetalDissipationEngine.processEntropicDissipation(cells, 1.0);
-                org.ether.society.procedural.JevonsParadoxEngine.processJevonsRebound(cells, 1.0);
-                org.ether.society.procedural.World3CouplingEngine.processWorld3System(cells, 1.0);
-                org.ether.society.procedural.KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(cells, 1.0);
-                org.ether.society.procedural.BifurcationChaosEngine.processBifurcationAnalysis(cells, 1.0);
-                org.ether.society.procedural.DynamicHydrographicSiltationEngine.processHydrographicSiltation(cells, 1.0);
-                org.ether.society.procedural.PhysicalLeontiefInputOutputEngine.processLeontiefInputOutput(cells, 1.0);
-                org.ether.society.procedural.GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(cells, 1.0);
-                org.ether.society.procedural.ProceduralEngineRegistry.processPlugins(cells, 1.0);
+                // Step 7: Advanced Physicalist & Cliodynamic Extensions (dt aligned with 30-day slow tick scale)
+                double dtMonthly = (double) dtSlow / 31_557_600.0;
+                org.ether.society.procedural.TerraformingEngine.processTerraforming(cells, dtMonthly);
+                org.ether.society.procedural.TrophicEcosystemEngine.processTrophicEcosystem(cells, dtMonthly);
+                org.ether.society.procedural.PhysicalSupplyChainEngine.processSupplyChains(cells, dtMonthly);
+                org.ether.society.procedural.UrbanThermodynamicsEngine.processUrbanThermodynamics(cells, dtMonthly);
+                org.ether.society.procedural.PhysicalLawEngine.applyPhysicalLaws(cells, dtMonthly);
+                org.ether.society.procedural.CulturalSociologyEngine.processCulturalSociology(cells, dtMonthly);
+                org.ether.society.procedural.CoGovernanceTradeEngine.processTradeAndGovernance(cells, dtMonthly);
+                org.ether.society.procedural.OreGradeThermodynamicsEngine.processOreDepletion(cells, dtMonthly);
+                org.ether.society.procedural.InfrastructureInertiaEngine.processInfrastructureInertia(cells, dtMonthly);
+                org.ether.society.procedural.EntropicMetalDissipationEngine.processEntropicDissipation(cells, dtMonthly);
+                org.ether.society.procedural.JevonsParadoxEngine.processJevonsRebound(cells, dtMonthly);
+                org.ether.society.procedural.World3CouplingEngine.processWorld3System(cells, dtMonthly);
+                org.ether.society.procedural.KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(cells, dtMonthly);
+                org.ether.society.procedural.BifurcationChaosEngine.processBifurcationAnalysis(cells, dtMonthly);
+                org.ether.society.procedural.DynamicHydrographicSiltationEngine.processHydrographicSiltation(cells, dtMonthly);
+                org.ether.society.procedural.PhysicalLeontiefInputOutputEngine.processLeontiefInputOutput(cells, dtMonthly);
+                org.ether.society.procedural.GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(cells, dtMonthly);
+                org.ether.society.procedural.ProceduralEngineRegistry.processPlugins(cells, dtMonthly);
                 profiler.endPhase("4_ProceduralEngines");
 
                 // Statistics & Snapshots
@@ -493,8 +505,16 @@ public class H3SimulationEngine implements ISimulationEngine {
 
                 historyManager.captureSnapshot(this);
                 historyManager.captureWorldSnapshot(this);
+                
+                int eventCountBefore = eventSystem.peekEvents().size();
                 eventSystem.checkEvents(timeManager.getCurrentYear(), timeManager.getCurrentMonth(), getTotalPopulation(), getTotalFood(), cells);
                 eventSystem.checkCellEvents(timeManager.getCurrentYear(), timeManager.getCurrentMonth(), cells);
+                int eventCountAfter = eventSystem.peekEvents().size();
+
+                if (pauseAtNextEvent.get() && eventCountAfter > eventCountBefore) {
+                    logger.info("Auto-pausing simulation tick due to event trigger (pauseAtNextEvent=true)");
+                    pause();
+                }
                 profiler.endPhase("5_StatisticsAndHistory");
 
                 profiler.beginPhase("6_BufferSync");
@@ -599,6 +619,10 @@ public class H3SimulationEngine implements ISimulationEngine {
         float[] water = worldBuffer.getWaterResource();
         float[] wood = worldBuffer.getWoodResource();
         float[] gini = worldBuffer.getGiniIndex();
+        float[] capital = worldBuffer.getResourceCapital();
+        byte[] biomes = worldBuffer.getBiomes();
+
+        org.ether.society.model.Biome[] biomeValues = org.ether.society.model.Biome.values();
 
         for (int i = 0; i < cells.size() && i < worldBuffer.getCapacity(); i++) {
             H3Cell cell = cells.get(i);
@@ -610,6 +634,14 @@ public class H3SimulationEngine implements ISimulationEngine {
             cell.setWaterResource((double) water[i]);
             cell.setWoodResource((double) wood[i]);
             cell.setGiniIndex((double) gini[i]);
+            if (capital != null) cell.setResourceCapital((double) capital[i]);
+
+            // Sync biomes bidirectionally
+            if (cell.getBiome() != null) {
+                biomes[i] = (byte) cell.getBiome().ordinal();
+            } else if (biomes[i] >= 0 && biomes[i] < biomeValues.length) {
+                cell.setBiome(biomeValues[biomes[i]]);
+            }
         }
     }
 
@@ -829,8 +861,38 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     public long getLargestCulturalUnitSize() {
+        if (diplomacyManager != null && !diplomacyManager.getNations().isEmpty()) {
+            return diplomacyManager.getNations().stream()
+                    .mapToLong(org.ether.society.model.Nation::getTotalPopulation)
+                    .max()
+                    .orElse((long) (getTotalPopulation() * Math.min(0.85, 0.2 + (getAverageTechnology() / 300.0))));
+        }
         long pop = getTotalPopulation();
         return (long) (pop * Math.min(0.85, 0.2 + (getAverageTechnology() / 300.0)));
+    }
+
+    public double getLargestOrganizationComplexity() {
+        long largestPop = getLargestCulturalUnitSize();
+        if (largestPop <= 0) return 0.0;
+        float avgTech = getAverageTechnology();
+        int hierarchy = getMaxHierarchyLevel();
+        double stateCap = 0.5;
+        if (diplomacyManager != null && !diplomacyManager.getNations().isEmpty()) {
+            org.ether.society.model.Nation largest = diplomacyManager.getNations().stream()
+                    .max(java.util.Comparator.comparingLong(org.ether.society.model.Nation::getTotalPopulation))
+                    .orElse(null);
+            if (largest != null) {
+                stateCap = largest.getStateCapacity();
+            }
+        }
+        return largestPop * (1.0 + avgTech * 0.4) * stateCap * (Math.log(1.0 + hierarchy) / Math.log(2.0));
+    }
+
+    public double getLargestOrganizationEntropy() {
+        double complexity = getLargestOrganizationComplexity();
+        double pollution = getPollutionLevel();
+        float tech = getAverageTechnology();
+        return (complexity * 0.05 + tech * 1.2) * (1.0 + pollution / 100.0);
     }
 
     public double getKardashevScale() {

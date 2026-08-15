@@ -126,6 +126,46 @@ public class PluggableStatEngine {
                 "Valeur médiane séparant la moitié la plus jeune de la moitié la plus âgée",
                 true
         ));
+
+        registerStat(new StatDefinition(
+                "largest_org_complexity",
+                "Complexité de la Plus Grande Organisation",
+                "🏛️ Société & Institutions",
+                "MAX(population * tech * (1 + giniindex))",
+                "Idx",
+                "Mesure de la complexité sociétale et administrative maximale atteinte par le plus grand empire/organisation",
+                true
+        ));
+
+        registerStat(new StatDefinition(
+                "largest_org_entropy",
+                "Entropie Générée par la Plus Grande Civilisation",
+                "⚡ Énergie & Matière",
+                "MAX(population * tech * pollution)",
+                "J/K",
+                "Quantité d'entropie thermodynamique et de chaleur résiduelle générée par la plus grande civilisation",
+                true
+        ));
+
+        registerStat(new StatDefinition(
+                "avg_tech_level",
+                "Niveau Technologique Moyen",
+                "🏛️ Société & Institutions",
+                "AVG(tech)",
+                "Niv",
+                "Moyenne globale du niveau d'avancement scientifique et technologique à travers la grille",
+                true
+        ));
+
+        registerStat(new StatDefinition(
+                "max_tech_level",
+                "Niveau Technologique Maximal",
+                "🏛️ Société & Institutions",
+                "MAX(tech)",
+                "Niv",
+                "Niveau technologique de pointe atteint par la cellule/civilisation la plus avancée",
+                true
+        ));
     }
 
     public void registerStat(StatDefinition stat) {

@@ -12,11 +12,15 @@ import org.ether.society.i18n.I18n;
 
 import org.ether.society.model.Scenario;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
@@ -60,6 +64,7 @@ public class MainView extends StackPane {
     private ComparativeAnalyticsPanel comparativeAnalyticsPanel;
     private PreferencesPanel preferencesPanel;
     private NotificationOverlay notificationOverlay;
+    private ColorLegend colorLegend;
 
     public MainView(H3SimulationEngine engine, ControlPanel controlPanel, H3MapCanvas mapCanvas, MiniMap miniMap,
             PerformanceHUD hud) {
@@ -175,13 +180,13 @@ public class MainView extends StackPane {
     }
 
     public void updateTabTitles() {
-        planetTab.setText(org.ether.society.i18n.I18n.get("tab.planet_generator"));
-        resourcesTab.setText(org.ether.society.i18n.I18n.get("tab.resources"));
-        setupTab.setText(org.ether.society.i18n.I18n.get("tab.scenario"));
-        executionContextTab.setText(org.ether.society.i18n.I18n.getOrDefault("tab.execution_context", "⚡ Contexte d'Exécution"));
-        simulationTab.setText(org.ether.society.i18n.I18n.get("tab.simulation"));
-        comparativeAnalyticsTab.setText(org.ether.society.i18n.I18n.getOrDefault("tab.comparative_analytics", "📊 Analyse Comparative"));
-        preferencesTab.setText(org.ether.society.i18n.I18n.get("tab.preferences"));
+        planetTab.setText("1. " + org.ether.society.i18n.I18n.get("tab.planet_generator"));
+        resourcesTab.setText("2. " + org.ether.society.i18n.I18n.get("tab.resources"));
+        setupTab.setText("3. " + org.ether.society.i18n.I18n.get("tab.scenario"));
+        executionContextTab.setText("4. " + org.ether.society.i18n.I18n.getOrDefault("tab.execution_context", "⚡ Contexte d'Exécution"));
+        simulationTab.setText("5. " + org.ether.society.i18n.I18n.get("tab.simulation"));
+        comparativeAnalyticsTab.setText("6. " + org.ether.society.i18n.I18n.getOrDefault("tab.comparative_analytics", "📊 Analyse Comparative"));
+        preferencesTab.setText("7. " + org.ether.society.i18n.I18n.get("tab.preferences"));
     }
 
     private void onPlanetGenerated(List<H3Cell> cells) {
@@ -257,6 +262,16 @@ public class MainView extends StackPane {
             setupPanel.setProgressControls(simProgressBar, simStatusLabel, simProgressOverlay);
         }
 
+        // 5. Color Legend Component (Bottom-Right overlay on map StackPane)
+        colorLegend = new ColorLegend();
+        colorLegend.updateFromCanvas(mapCanvas);
+        if (controlPanel != null) {
+            controlPanel.setColorLegend(colorLegend);
+        }
+        StackPane.setAlignment(colorLegend, Pos.BOTTOM_RIGHT);
+        StackPane.setMargin(colorLegend, new javafx.geometry.Insets(0, 20, 50, 0));
+        mapStack.getChildren().add(colorLegend);
+
         startEventPolling();
 
         mapCanvas.setTooltipContainer(mapStack);
@@ -291,7 +306,51 @@ public class MainView extends StackPane {
         Tab godModeTab = new Tab(I18n.getOrDefault("sim.tab.godmode", "⚡ Mode Dieu"), godScroll);
         leftSidebar.getTabs().addAll(controlTab, statsTab, godModeTab);
 
-        root.setLeft(leftSidebar);
+        // Collapsible Sidebar Button (Full-Screen Map Mode Toggle)
+        Button toggleSidebarBtn = new Button("◀");
+        toggleSidebarBtn.setTooltip(new Tooltip("Masquer / Afficher le panneau de contrôle (Mode Plein Écran)"));
+        toggleSidebarBtn.setStyle("-fx-background-color: rgba(15, 23, 42, 0.90); -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8 6; -fx-background-radius: 0 6 6 0; -fx-border-color: #38bdf8; -fx-border-width: 1 1 1 0; -fx-border-radius: 0 6 6 0; -fx-cursor: hand;");
+
+        final boolean[] isSidebarVisible = {true};
+        toggleSidebarBtn.setOnAction(e -> {
+            isSidebarVisible[0] = !isSidebarVisible[0];
+            leftSidebar.setVisible(isSidebarVisible[0]);
+            leftSidebar.setManaged(isSidebarVisible[0]);
+            toggleSidebarBtn.setText(isSidebarVisible[0] ? "◀" : "▶");
+        });
+
+        HBox sidebarContainer = new HBox(leftSidebar, toggleSidebarBtn);
+        HBox.setHgrow(leftSidebar, Priority.NEVER);
+
+        // Bottom Telemetry Status Bar
+        Label statusBarLabel = new Label("📍 Coordonnées : Survolez une cellule H3 sur la carte...");
+        statusBarLabel.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', sans-serif; -fx-font-weight: bold;");
+
+        HBox statusBar = new HBox(statusBarLabel);
+        statusBar.setAlignment(Pos.CENTER_LEFT);
+        statusBar.setStyle("-fx-background-color: rgba(15, 23, 42, 0.90); -fx-padding: 5 14; -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 6;");
+        statusBar.setMaxWidth(600);
+        StackPane.setAlignment(statusBar, Pos.BOTTOM_LEFT);
+        StackPane.setMargin(statusBar, new javafx.geometry.Insets(0, 0, 10, 20));
+        mapStack.getChildren().add(statusBar);
+
+        mapCanvas.setOnHoverCallback((cell, coords) -> {
+            if (cell != null) {
+                String biome = cell.getBiome() != null ? cell.getBiome().name() : "N/A";
+                int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+                double temp = cell.getTemperature() != null ? cell.getTemperature() : 0.0;
+                statusBarLabel.setText(String.format(java.util.Locale.ROOT,
+                    "📍 Lat: %.2f° | Lng: %.2f° | H3: %s | Biome: %s | Pop: %,d | T°: %.1f°C",
+                    coords[0], coords[1], Long.toHexString(cell.getH3Index()), biome, pop, temp
+                ));
+            } else {
+                statusBarLabel.setText(String.format(java.util.Locale.ROOT,
+                    "📍 Lat: %.2f° | Lng: %.2f° | Survolez un hexagone H3...", coords[0], coords[1]
+                ));
+            }
+        });
+
+        root.setLeft(sidebarContainer);
         root.setCenter(mapStack);
 
         return root;
@@ -440,11 +499,13 @@ public class MainView extends StackPane {
 
     // Add ColorLegend helper
     public void addLegend(javafx.scene.Node legend) {
-        if (simulationTab.getContent() instanceof BorderPane bp) {
+        if (simulationTab != null && simulationTab.getContent() instanceof BorderPane bp) {
             if (bp.getCenter() instanceof StackPane sp) {
-                StackPane.setAlignment(legend, Pos.BOTTOM_LEFT);
-                StackPane.setMargin(legend, new javafx.geometry.Insets(10));
-                sp.getChildren().add(legend);
+                StackPane.setAlignment(legend, Pos.BOTTOM_RIGHT);
+                StackPane.setMargin(legend, new javafx.geometry.Insets(0, 20, 50, 0));
+                if (!sp.getChildren().contains(legend)) {
+                    sp.getChildren().add(legend);
+                }
             }
         }
     }
@@ -456,26 +517,47 @@ public class MainView extends StackPane {
 
         if (engine instanceof org.ether.society.core.H3SimulationEngine h3Engine) {
             final java.util.concurrent.atomic.AtomicLong lastUiUpdateNanos = new java.util.concurrent.atomic.AtomicLong(0);
+            final java.util.concurrent.atomic.AtomicBoolean renderPending = new java.util.concurrent.atomic.AtomicBoolean(false);
+
             h3Engine.setOnTickCallback(() -> {
                 long now = System.nanoTime();
                 boolean isRecording = mapCanvas != null && mapCanvas.isRecordingVideo();
-                // Throttle UI update calls to ~30 FPS unless video frame capture is requested
-                if (isRecording || (now - lastUiUpdateNanos.get() >= 33_000_000L)) {
-                    lastUiUpdateNanos.set(now);
-                    int year = engine.getTimeManager().getCurrentYear();
-                    int month = engine.getTimeManager().getCurrentMonth();
-                    int day = engine.getTimeManager().getCurrentDay();
-                    String dateStr = String.format("An %d - M.%02d D.%02d", year, month + 1, day);
+                long currentTick = h3Engine.getTickCounter();
 
-                    long currentTick = h3Engine.getTickCounter();
+                int year = engine.getTimeManager().getCurrentYear();
+                int month = engine.getTimeManager().getCurrentMonth();
+                int day = engine.getTimeManager().getCurrentDay();
+                String dateStr = String.format("An %d - M.%02d D.%02d", year, month + 1, day);
+
+                // 1. VIDEO RECORDING: Guarantee 1:1 capture for EVERY tick without dropping any frame
+                if (isRecording) {
                     javafx.application.Platform.runLater(() -> {
                         if (mapCanvas != null) {
                             mapCanvas.setCurrentDateStr(dateStr);
-                            if (mapCanvas.isRecordingVideo()) {
-                                mapCanvas.captureTickFrame(currentTick);
-                            }
+                            mapCanvas.captureTickFrame(currentTick);
                         }
                     });
+                }
+
+                // 2. UI SCREEN DISPLAY (2D/3D Globe View): Frame-skipping mechanism at ~60 FPS max rate
+                // If a UI render is already queued or in progress on the JavaFX thread, skip queuing duplicate frames!
+                if (now - lastUiUpdateNanos.get() >= 16_000_000L) { // ~60 FPS max UI refresh rate
+                    if (renderPending.compareAndSet(false, true)) {
+                        lastUiUpdateNanos.set(now);
+                        javafx.application.Platform.runLater(() -> {
+                            try {
+                                if (mapCanvas != null) {
+                                    mapCanvas.setCurrentDateStr(dateStr);
+                                    mapCanvas.draw();
+                                }
+                                if (colorLegend != null && mapCanvas != null) {
+                                    colorLegend.updateFromCanvas(mapCanvas);
+                                }
+                            } finally {
+                                renderPending.set(false); // Mark UI thread ready for next frame
+                            }
+                        });
+                    }
                 }
             });
         }

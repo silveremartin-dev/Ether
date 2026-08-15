@@ -280,7 +280,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             }
         });
 
-        presetsSecHeader = new Label();
+        presetsSecHeader = new Label(I18n.getOrDefault("planet.section.presets", "PRÉRÉGLAGES GLOBAUX & SAUVEGARDE DE LA PLANÈTE"));
         VBox presetSection = createSection(presetsSecHeader, topPresetBar);
 
         // --- 2. General Parameters (seed moved to topo/procedural panel; kept for astro labels) ---
@@ -379,7 +379,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                 createControlRow(tempRowLabel, avgTempSlider, "%.1f °C", I18n.getOrDefault("planet.tooltip.avg_temp", "Température moyenne globale à la surface"))
         );
 
-        astroSecHeader = new Label();
+        astroSecHeader = new Label(I18n.getOrDefault("planet.section.astro", "1. DOMAINE ASTRONOMIE, PHYSIQUE & CORPS CÉLESTES"));
         VBox astroSection = createSection(astroSecHeader, astroControls);
 
         // --- 4. Topography & Relief Section — RadioButton: Procedural OR Import Heightmap ---
@@ -547,7 +547,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                 importPanel
         );
 
-        topoSecHeader = new Label();
+        topoSecHeader = new Label(I18n.getOrDefault("planet.section.topo", "2. DOMAINE TOPOGRAPHIE & RELIEF PLANÉTAIRE"));
         VBox topoSection = createSection(topoSecHeader, topoControls);
 
         // --- 5. Climate & Ecosystem Section — 3 independent sub-blocks ---
@@ -766,7 +766,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                 seasonSubBlock
         );
 
-        climateSecHeader = new Label(I18n.getOrDefault("planet.section.atmosphere", "ATMOSPHÈRE & CLIMAT PLANÉTAIRE"));
+        climateSecHeader = new Label(I18n.getOrDefault("planet.section.climate", "3. DOMAINE ATMOSPHÈRE & CLIMAT PLANÉTAIRE"));
         VBox climateSection = createSection(climateSecHeader, climateControls);
 
         controlsBox.getChildren().addAll(
@@ -2128,11 +2128,11 @@ public class PlanetGeneratorPanel extends BorderPane {
         isUpdatingFromPreset = true;
         try {
             headerLabel.setText(I18n.get("planet.section.header"));
-            presetsSecHeader.setText(I18n.get("planet.section.presets"));
+            presetsSecHeader.setText(I18n.getOrDefault("planet.section.presets", "PRÉRÉGLAGES GLOBAUX & SAUVEGARDE DE LA PLANÈTE"));
             generalSecHeader.setText(I18n.getOrDefault("planet.section.general", "PARAMÈTRES GÉNÉRAUX & RÉSOLUTION"));
-            astroSecHeader.setText(I18n.get("planet.section.astro"));
-            topoSecHeader.setText(I18n.get("planet.section.topo"));
-            climateSecHeader.setText(I18n.get("planet.section.climate"));
+            astroSecHeader.setText(I18n.getOrDefault("planet.section.astro", "1. DOMAINE ASTRONOMIE, PHYSIQUE & CORPS CÉLESTES"));
+            topoSecHeader.setText(I18n.getOrDefault("planet.section.topo", "2. DOMAINE TOPOGRAPHIE & RELIEF PLANÉTAIRE"));
+            climateSecHeader.setText(I18n.getOrDefault("planet.section.climate", "3. DOMAINE ATMOSPHÈRE & CLIMAT PLANÉTAIRE"));
             previewTitle.setText(I18n.get("planet.preview.title"));
 
             if (presetRowLabel != null) presetRowLabel.setText(I18n.get("planet.preset"));

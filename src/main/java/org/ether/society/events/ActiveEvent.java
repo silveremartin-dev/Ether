@@ -19,8 +19,9 @@ public class ActiveEvent {
     private final int day;   // 1-30
     private final long createdAtMs;
     private final double durationSeconds;
+    private final double magnitude;
 
-    public ActiveEvent(String id, String title, String type, double latitude, double longitude, int year, int month, int day, double durationSeconds) {
+    public ActiveEvent(String id, String title, String type, double latitude, double longitude, int year, int month, int day, double durationSeconds, double magnitude) {
         this.id = id;
         this.title = title;
         this.type = type != null ? type : "GENERIC";
@@ -31,6 +32,11 @@ public class ActiveEvent {
         this.day = Math.max(1, Math.min(30, day));
         this.createdAtMs = System.currentTimeMillis();
         this.durationSeconds = durationSeconds > 0 ? durationSeconds : 15.0;
+        this.magnitude = magnitude > 0 ? magnitude : 5.0;
+    }
+
+    public ActiveEvent(String id, String title, String type, double latitude, double longitude, int year, int month, int day, double durationSeconds) {
+        this(id, title, type, latitude, longitude, year, month, day, durationSeconds, 5.0);
     }
 
     public String getId() { return id; }
@@ -43,6 +49,7 @@ public class ActiveEvent {
     public int getDay() { return day; }
     public long getCreatedAtMs() { return createdAtMs; }
     public double getDurationSeconds() { return durationSeconds; }
+    public double getMagnitude() { return magnitude; }
 
     public boolean isExpired() {
         return (System.currentTimeMillis() - createdAtMs) > (durationSeconds * 1000L);

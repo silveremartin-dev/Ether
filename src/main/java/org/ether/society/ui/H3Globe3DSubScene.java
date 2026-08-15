@@ -31,6 +31,7 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
@@ -74,6 +75,9 @@ public class H3Globe3DSubScene {
     private double reliefScale = 1.0;
     private double lastMouseX, lastMouseY;
     private AnimationTimer flyTimer;
+    private AnimationTimer autoRotateTimer;
+    private boolean autoRotating = false;
+    private static final double DEFAULT_CAMERA_Z = -850.0;
 
     public H3Globe3DSubScene(double width, double height) {
         rootGroup.getChildren().add(globeGroup);
@@ -81,7 +85,7 @@ public class H3Globe3DSubScene {
         // Setup 3D Camera
         camera.setNearClip(0.1);
         camera.setFarClip(10000.0);
-        camera.setTranslateZ(-850.0);
+        camera.setTranslateZ(DEFAULT_CAMERA_Z);
         rootGroup.getChildren().add(camera);
 
         // Setup Solar & Ambient Lighting
@@ -133,6 +137,35 @@ public class H3Globe3DSubScene {
 
     public SubScene getSubScene() {
         return subScene;
+    }
+
+    public void resetCamera() {
+        camera.setTranslateZ(DEFAULT_CAMERA_Z);
+        rotateX.setAngle(0);
+        rotateY.setAngle(0);
+    }
+
+    public boolean isAutoRotating() {
+        return autoRotating;
+    }
+
+    public void setAutoRotating(boolean autoRotating) {
+        this.autoRotating = autoRotating;
+        if (autoRotating) {
+            if (autoRotateTimer == null) {
+                autoRotateTimer = new AnimationTimer() {
+                    @Override
+                    public void handle(long now) {
+                        rotateY.setAngle((rotateY.getAngle() + 0.3) % 360.0);
+                    }
+                };
+            }
+            autoRotateTimer.start();
+        } else {
+            if (autoRotateTimer != null) {
+                autoRotateTimer.stop();
+            }
+        }
     }
 
     public void setReliefScale(double scale) {
@@ -254,13 +287,53 @@ public class H3Globe3DSubScene {
             texCoords[i * 2] = u;
             texCoords[i * 2 + 1] = v;
 
-            // Paint texture map pixel for cell
+            // Paint texture map pixel for cell with smooth radial kernel blur
             int px = Math.clamp((int) (u * texWidth), 0, texWidth - 1);
             int py = Math.clamp((int) (v * texHeight), 0, texHeight - 1);
 
             Color cellColor = getBiomeColor(cell);
-            pw.setColor(px, py, cellColor);
+            int radius = 4; // Smooth interpolation radius across H3 cell neighbors
+            for (int dy = -radius; dy <= radius; dy++) {
+                int ny = py + dy;
+                if (ny < 0 || ny >= texHeight) continue;
+                for (int dx = -radius; dx <= radius; dx++) {
+                    int nx = (px + dx + texWidth) % texWidth; // Wrap longitude horizontally
+                    double distSq = dx * dx + dy * dy;
+                    if (distSq <= radius * radius) {
+                        pw.setColor(nx, ny, cellColor);
+                    }
+                }
+            }
         }
+
+        // Apply a fast 3x3 spatial smoothing pass over the texture map for continuous fluid heatmap transitions
+        WritableImage smoothedTextureMap = new WritableImage(texWidth, texHeight);
+        PixelWriter spw = smoothedTextureMap.getPixelWriter();
+        PixelReader pr = textureMap.getPixelReader();
+
+        for (int y = 0; y < texHeight; y++) {
+            for (int x = 0; x < texWidth; x++) {
+                double rAcc = 0, gAcc = 0, bAcc = 0, weightAcc = 0;
+                for (int dy = -1; dy <= 1; dy++) {
+                    int ny = Math.clamp(y + dy, 0, texHeight - 1);
+                    for (int dx = -1; dx <= 1; dx++) {
+                        int nx = (x + dx + texWidth) % texWidth;
+                        Color c = pr.getColor(nx, ny);
+                        double weight = (dx == 0 && dy == 0) ? 2.0 : 1.0;
+                        rAcc += c.getRed() * weight;
+                        gAcc += c.getGreen() * weight;
+                        bAcc += c.getBlue() * weight;
+                        weightAcc += weight;
+                    }
+                }
+                spw.setColor(x, y, Color.color(
+                    Math.clamp(rAcc / weightAcc, 0.0, 1.0),
+                    Math.clamp(gAcc / weightAcc, 0.0, 1.0),
+                    Math.clamp(bAcc / weightAcc, 0.0, 1.0)
+                ));
+            }
+        }
+        textureMap = smoothedTextureMap;
 
         mesh.getPoints().setAll(points);
         mesh.getTexCoords().setAll(texCoords);

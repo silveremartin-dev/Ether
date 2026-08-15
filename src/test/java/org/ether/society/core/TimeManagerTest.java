@@ -20,7 +20,18 @@ class TimeManagerTest {
     void testInitialState() {
         assertEquals(-20000, timeManager.getCurrentYear());
         assertEquals(0, timeManager.getCurrentMonth()); // January
-        assertEquals("Jan 20000 BC", timeManager.getFormattedDate());
+        assertEquals(1, timeManager.getCurrentDay());
+        assertEquals("Day 1, Jan 20000 BC", timeManager.getFormattedDate());
+    }
+
+    @Test
+    @DisplayName("Advancing days should update day, month and year properly")
+    void testAdvanceDay() {
+        for (int i = 0; i < 30; i++) {
+            timeManager.advanceDay();
+        }
+        assertEquals(1, timeManager.getCurrentDay());
+        assertEquals(1, timeManager.getCurrentMonth()); // February
     }
 
     @Test
@@ -38,15 +49,16 @@ class TimeManagerTest {
     void testFormattedDateAD() {
         timeManager.reset(2024);
         assertEquals(2024, timeManager.getCurrentYear());
-        assertEquals("Jan 2024 AD", timeManager.getFormattedDate());
+        assertEquals("Day 1, Jan 2024 AD", timeManager.getFormattedDate());
     }
 
     @Test
-    @DisplayName("Reset should restore year and month")
+    @DisplayName("Reset should restore year, month and day")
     void testReset() {
         timeManager.advanceMonth();
         timeManager.reset(1000);
         assertEquals(1000, timeManager.getCurrentYear());
         assertEquals(0, timeManager.getCurrentMonth());
+        assertEquals(1, timeManager.getCurrentDay());
     }
 }

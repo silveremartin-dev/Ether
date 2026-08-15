@@ -432,6 +432,9 @@ public class StatsPanel extends VBox {
         addCard("divisionLabor", "Division du Travail", "🏛️ Société & Institutions", "Idx", "Niveau de spécialisation des métiers et de différenciation sociale.", inspectorTitle, inspectorText);
         addCard("maxHierarchy", "Niveau Max Hiérarchique", "🏛️ Société & Institutions", "Niv", "Niveau d'empilement institutionnel (Tribu 1 ➔ Empire/Réseau 6).", inspectorTitle, inspectorText);
         addCard("largestCulture", "Plus Grande Unité Culturelle", "🏛️ Société & Institutions", "hab", "Taille de la plus vaste confédération culturelle/politique.", inspectorTitle, inspectorText);
+        addCard("largestOrgComplexity", "Complexité Max Organisation", "🏛️ Société & Institutions", "Idx", "Complexité sociétale de la plus grande organisation/empire (Population × Tech × Capacités d'État × Hiérarchie).", inspectorTitle, inspectorText);
+        addCard("largestOrgEntropy", "Entropie Max Civilisation", "⚡ Énergie & Matière", "J/K", "Génération d'entropie thermodynamique et rejet de chaleur résiduelle de la plus grande civilisation.", inspectorTitle, inspectorText);
+        addCard("avgTechLevel", "Niveau Technologique Moyen", "🏛️ Société & Institutions", "Niv", "Moyenne globale du niveau d'avancement scientifique et technologique.", inspectorTitle, inspectorText);
         addCard("kardashevScale", "Échelle de Kardashev", "🏛️ Société & Institutions", "Type K", "K = (log10(P_watts) - 6) / 10. Niveau de maîtrise énergétique globale (Type 0.0 à 1.0+).", inspectorTitle, inspectorText);
 
         // Category 4: Économie & Richesse
@@ -630,6 +633,9 @@ public class StatsPanel extends VBox {
             setCardVal("healthIndex", String.format("%.1f", Math.min(100.0, life * 1.1)), life / 100.0);
             setCardVal("educationLevel", String.format("%.1f", education), education / 100.0);
 
+            double largestOrgComp = engine.getLargestOrganizationComplexity();
+            double largestOrgEnt = engine.getLargestOrganizationEntropy();
+
             setCardVal("happinessIndex", String.format("%.1f", happiness), happiness / 100.0);
             setCardVal("conflictLevel", String.format("%.1f", conflict), conflict / 100.0);
             setCardVal("cityStates", String.format("%d", cityStates), cityStates / 50.0);
@@ -637,6 +643,9 @@ public class StatsPanel extends VBox {
             setCardVal("divisionLabor", String.format("%.1f", divLabor), divLabor / 100.0);
             setCardVal("maxHierarchy", String.format("Niv %d", maxHier), maxHier / 6.0);
             setCardVal("largestCulture", String.format("%,d", largestCult), largestCult / Math.max(1.0, (double)pop));
+            setCardVal("largestOrgComplexity", String.format("%,.0f", largestOrgComp), largestOrgComp / 100000.0);
+            setCardVal("largestOrgEntropy", String.format("%,.1f", largestOrgEnt), largestOrgEnt / 100000.0);
+            setCardVal("avgTechLevel", String.format("%.2f", tech), tech / 100.0);
             setCardVal("kardashevScale", String.format("%.2f", kardashev), kardashev / 2.0);
 
             setCardVal("giniIndex", String.format("%.2f", gini), gini);
@@ -707,6 +716,9 @@ public class StatsPanel extends VBox {
                 case "Division du Travail" -> divLabor;
                 case "Niveau Max Hiérarchique" -> maxHier;
                 case "Plus Grande Unité Culturelle" -> largestCult;
+                case "Complexité Max Organisation" -> largestOrgComp;
+                case "Entropie Max Civilisation" -> largestOrgEnt;
+                case "Niveau Technologique Moyen" -> tech;
                 case "Échelle de Kardashev" -> kardashev;
 
                 // Category 4: Économie & Richesse

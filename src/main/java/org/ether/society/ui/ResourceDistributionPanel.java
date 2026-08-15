@@ -1071,7 +1071,7 @@ public class ResourceDistributionPanel extends BorderPane {
             }
         });
 
-        geologyDomainSecHeader = new Label(I18n.getOrDefault("resource.domain.geology", "3. DOMAINE GÉOLOGIE, TECTONIQUE & MINERAIS"));
+        geologyDomainSecHeader = new Label(I18n.getOrDefault("resource.domain.geology", "4. DOMAINE GÉOLOGIE, TECTONIQUE & MINERAIS"));
         VBox geologyDomainSection = createSection(geologyDomainSecHeader, new VBox(8,
                 radioProcGeology, geologyProcBox, radioImportGeology, geologyImportBox
         ));

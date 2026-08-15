@@ -52,7 +52,27 @@ public class H3MapCanvas extends Canvas {
     private ViewMode viewMode = ViewMode.VIEW_2D;
     private DisplayMode displayMode = DisplayMode.BIOME;
     private boolean showContours = false; // Toggle for contour lines
+    private boolean showFlowVectors = false; // Toggle for flux & movement vectors
+    private boolean showResourceOverlay = false; // Toggle for resource deposits & capital overlay
     private boolean showHexGrid = true; // Toggle for H3 hexagonal cell grid outlines
+
+    public boolean isShowContours() { return showContours; }
+    public void setShowContours(boolean showContours) {
+        this.showContours = showContours;
+        draw();
+    }
+
+    public boolean isShowFlowVectors() { return showFlowVectors; }
+    public void setShowFlowVectors(boolean showFlowVectors) {
+        this.showFlowVectors = showFlowVectors;
+        draw();
+    }
+
+    public boolean isShowResourceOverlay() { return showResourceOverlay; }
+    public void setShowResourceOverlay(boolean showResourceOverlay) {
+        this.showResourceOverlay = showResourceOverlay;
+        draw();
+    }
     private double scale = 1.0;
     private double offsetX = 0;
     private double offsetY = 0;
@@ -93,7 +113,7 @@ public class H3MapCanvas extends Canvas {
     }
 
     private boolean tabVisible = true;
-    private boolean smoothMap = false;
+    private boolean smoothMap = true;
 
     // Zero-allocation primitive rendering buffers for 3D globe mode (60 FPS optimization)
     private double[] polyZBuf = new double[0];
@@ -134,9 +154,17 @@ public class H3MapCanvas extends Canvas {
         draw(); 
     }
 
+    private boolean showMouseOverInfo = true;
+
+    public boolean isShowMouseOverInfo() { return showMouseOverInfo; }
+    public void setShowMouseOverInfo(boolean show) { this.showMouseOverInfo = show; }
+
     public boolean isAutoRotating() { return autoRotating; }
     public void setAutoRotating(boolean autoRotating) {
         this.autoRotating = autoRotating;
+        if (globe3DSubScene != null) {
+            globe3DSubScene.setAutoRotating(autoRotating);
+        }
         draw();
     }
 
@@ -196,7 +224,7 @@ public class H3MapCanvas extends Canvas {
 
     // Video Recording & Overlay Metadata
     private String scenarioName = "Scénario Standard";
-    private String currentDateStr = "An 2026 - M.01 D.01";
+    private String currentDateStr = "An -100000 - M.01 D.01";
     private boolean isRecordingVideo = false;
     private java.io.File videoSessionDir = null;
     private long frameCounter = 0;
@@ -393,8 +421,15 @@ public class H3MapCanvas extends Canvas {
             }
         });
 
-        // Mouse move for tooltip - Requirement 1: 2-second hover delay
+        // Mouse move for tooltip - disabled when showMouseOverInfo is false
         setOnMouseMoved(event -> {
+            if (!showMouseOverInfo) {
+                if (tooltip != null) {
+                    tooltip.hide();
+                    hoveredCell = null;
+                }
+                return;
+            }
             H3Cell cell = findCellAt(event.getX(), event.getY());
             if (cell == null || cell != pendingHoverCell) {
                 if (tooltip != null) {
@@ -463,6 +498,9 @@ public class H3MapCanvas extends Canvas {
             this.centerLat = (minLat + maxLat) / 2.0;
             this.centerLng = (minLng + maxLng) / 2.0;
         }
+        if (globe3DSubScene != null) {
+            globe3DSubScene.resetCamera();
+        }
         draw();
         notifyMiniMap();
     }
@@ -494,6 +532,8 @@ public class H3MapCanvas extends Canvas {
     public double getReliefScale() {
         return reliefScale;
     }
+
+    public List<H3Cell> getCells() { return cells; }
 
     public void setCells(List<H3Cell> cells) {
         // Sort by latitude for faster culling
@@ -587,6 +627,14 @@ public class H3MapCanvas extends Canvas {
             drawContours(gc);
         }
 
+        if (showFlowVectors) {
+            drawFlowVectors(gc);
+        }
+
+        if (showResourceOverlay) {
+            drawResourceOverlay(gc);
+        }
+
         // Draw legend overlay box with rainbow spectrum, min/max, mean (μ) and median (M) indicators
         if (showLegendOverlay) {
             drawLegendOverlay(gc);
@@ -618,7 +666,7 @@ public class H3MapCanvas extends Canvas {
         gc.fillText(scenText, 22, h - 23);
 
         // Bottom-Right: Scrolling Date
-        String dateText = "📅 " + (currentDateStr != null ? currentDateStr : "An 2026");
+        String dateText = "📅 " + (currentDateStr != null ? currentDateStr : "An --");
         double dateWidth = Math.max(150, dateText.length() * 8.5 + 24);
         double dateX = w - dateWidth - 14;
 
@@ -744,10 +792,12 @@ public class H3MapCanvas extends Canvas {
                 continue;
             }
 
-            // Pulse animation based on time
-            double cycle = ((now - event.getCreatedAtMs()) % 1500) / 1500.0; // 0.0 to 1.0
-            double pulseRadius = 12.0 + cycle * 28.0;
-            double alpha = Math.max(0.0, 1.0 - cycle);
+            // Pulse & magnitude scaling (core sphere proportional to event magnitude)
+            double mag = event.getMagnitude() > 0 ? event.getMagnitude() : 5.0;
+            double coreRadius = Math.clamp(6.0 + (mag * 3.5), 6.0, 48.0);
+            
+            long elapsedMs = event.getCreatedAtMs() > 0 ? now - event.getCreatedAtMs() : 0;
+            boolean isBlinking = elapsedMs >= 0 && elapsedMs < 8000; // Pulsing ring stops blinking after 8s max
 
             Color eventColor = switch (event.getType()) {
                 case "VOLCANO", "METEOR", "NUCLEAR_WINTER" -> Color.rgb(239, 68, 68); // Red
@@ -759,14 +809,20 @@ public class H3MapCanvas extends Canvas {
                 default -> Color.rgb(34, 197, 94); // Green
             };
 
-            // Inner glowing core
+            // Inner glowing core sphere (sized by magnitude)
             gc.setFill(eventColor);
-            gc.fillOval(screenX - 6, screenY - 6, 12, 12);
+            gc.fillOval(screenX - coreRadius / 2.0, screenY - coreRadius / 2.0, coreRadius, coreRadius);
 
-            // Outer pulsing ring
-            gc.setStroke(Color.color(eventColor.getRed(), eventColor.getGreen(), eventColor.getBlue(), alpha));
-            gc.setLineWidth(2.5);
-            gc.strokeOval(screenX - pulseRadius / 2, screenY - pulseRadius / 2, pulseRadius, pulseRadius);
+            // Outer pulsing ring (fades and stops after 8 seconds)
+            if (isBlinking) {
+                double cycle = (elapsedMs % 1500) / 1500.0; // 0.0 to 1.0
+                double pulseRadius = coreRadius + cycle * (coreRadius * 1.6);
+                double alpha = Math.max(0.0, 1.0 - cycle);
+
+                gc.setStroke(Color.color(eventColor.getRed(), eventColor.getGreen(), eventColor.getBlue(), alpha));
+                gc.setLineWidth(2.5);
+                gc.strokeOval(screenX - pulseRadius / 2.0, screenY - pulseRadius / 2.0, pulseRadius, pulseRadius);
+            }
 
             // Title & Fly-To Banner
             double titleWidth = Math.min(180, event.getTitle().length() * 7 + 10);
@@ -809,6 +865,12 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
+    private java.util.function.BiConsumer<H3Cell, double[]> onHoverCallback;
+
+    public void setOnHoverCallback(java.util.function.BiConsumer<H3Cell, double[]> callback) {
+        this.onHoverCallback = callback;
+    }
+
     private final Map<Long, Integer> previousPopMap = new HashMap<>();
 
     /**
@@ -816,6 +878,12 @@ public class H3MapCanvas extends Canvas {
      */
     private void updateTooltip(double canvasX, double canvasY, double sceneX, double sceneY) {
         H3Cell cell = findCellAt(canvasX, canvasY);
+
+        if (onHoverCallback != null) {
+            double lat = cell != null ? cell.getLatitude() : 0.0;
+            double lng = cell != null ? cell.getLongitude() : 0.0;
+            onHoverCallback.accept(cell, new double[]{lat, lng});
+        }
 
         if (cell != null) {
             if (cell != hoveredCell) {
@@ -939,9 +1007,9 @@ public class H3MapCanvas extends Canvas {
             Color color = getBufferOrCellColor(cell);
             gc.setFill(color);
 
-            double cosLat = Math.max(0.15, Math.cos(Math.toRadians(cell.getLatitude())));
-            double radiusX = Math.max(1.0, (cellSize / 2.0) * cosLat);
             double radiusY = Math.max(1.0, cellSize / 2.0);
+            double cosLat = Math.max(0.20, Math.cos(Math.toRadians(cell.getLatitude())));
+            double radiusX = Math.max(radiusY * 0.45, (cellSize / 2.0) * cosLat);
 
             drawHexCell2D(gc, x, y, radiusX, radiusY);
 
@@ -1952,6 +2020,7 @@ public class H3MapCanvas extends Canvas {
                             if (viewMode == ViewMode.VIEW_2D) {
                                 LatLng p1 = boundary.get(0);
                                 LatLng p2 = boundary.get(1);
+                                if (Math.abs(p1.lng - p2.lng) > 180.0) continue; // Prevent antimeridian wrap streak lines
                                 
                                 double x1 = (p1.lng - minLng) * scale + offsetX;
                                 double y1 = (maxLat - p1.lat) * scale + offsetY;
@@ -1981,6 +2050,137 @@ public class H3MapCanvas extends Canvas {
                 }
             } catch (Exception e) {
                 // Ignore H3 errors
+            }
+        }
+    }
+
+    private void drawFlowVectors(GraphicsContext gc) {
+        if (!showFlowVectors || cells == null || cellMap == null || zoomFactor < 0.3) return;
+
+        gc.setLineWidth(1.5);
+        gc.setStroke(Color.rgb(251, 146, 60, 0.85)); // Vibrant neon amber/orange for vector field
+        gc.setFill(Color.rgb(251, 146, 60, 0.90));
+
+        double arrowLength = Math.max(8.0, 14.0 * zoomFactor);
+
+        for (H3Cell cell : cells) {
+            double flux = cell.getFluxPressure();
+            if (flux <= 0.001) continue;
+
+            // Compute vector direction toward highest flux gradient neighbor
+            List<Long> neighbors = h3Service != null ? h3Service.getNeighbors(cell.getH3Index()) : null;
+            if (neighbors == null || neighbors.isEmpty()) continue;
+
+            double maxNeighborFlux = flux;
+            H3Cell targetNeighbor = null;
+
+            for (Long nIdx : neighbors) {
+                H3Cell neighbor = cellMap.get(nIdx);
+                if (neighbor != null && neighbor.getFluxPressure() > maxNeighborFlux) {
+                    maxNeighborFlux = neighbor.getFluxPressure();
+                    targetNeighbor = neighbor;
+                }
+            }
+
+            double angle;
+            if (targetNeighbor != null) {
+                double dLat = targetNeighbor.getLatitude() - cell.getLatitude();
+                double dLng = targetNeighbor.getLongitude() - cell.getLongitude();
+                angle = Math.atan2(-dLat, dLng);
+            } else {
+                angle = Math.toRadians((cell.getH3Index() % 360));
+            }
+
+            if (viewMode == ViewMode.VIEW_2D) {
+                double lat = cell.getLatitude();
+                double lng = cell.getLongitude();
+
+                double cx = (lng - minLng) * scale + offsetX;
+                double cy = (maxLat - lat) * scale + offsetY;
+
+                if (cx < -20 || cx > getWidth() + 20 || cy < -20 || cy > getHeight() + 20) continue;
+
+                double endX = cx + arrowLength * Math.cos(angle);
+                double endY = cy + arrowLength * Math.sin(angle);
+
+                gc.strokeLine(cx, cy, endX, endY);
+                double headAngle1 = angle + Math.toRadians(150);
+                double headAngle2 = angle - Math.toRadians(150);
+                double headLen = arrowLength * 0.35;
+                gc.strokeLine(endX, endY, endX + headLen * Math.cos(headAngle1), endY + headLen * Math.sin(headAngle1));
+                gc.strokeLine(endX, endY, endX + headLen * Math.cos(headAngle2), endY + headLen * Math.sin(headAngle2));
+            } else if (viewMode == ViewMode.VIEW_3D) {
+                double radius = Math.min(getWidth(), getHeight()) * 0.45 * zoomFactor;
+                double screenCx = getWidth() / 2.0;
+                double screenCy = getHeight() / 2.0;
+                double radRotationY = Math.toRadians(-centerLng);
+                double radTilt = Math.toRadians(centerLat);
+
+                ProjectedPoint pt = project3D(cell.getLatitude(), cell.getLongitude(), cell.getElevation() != null ? cell.getElevation() : 0, radRotationY, radTilt, radius, screenCx, screenCy);
+                if (pt != null) {
+                    double endX = pt.screenX + arrowLength * Math.cos(angle);
+                    double endY = pt.screenY + arrowLength * Math.sin(angle);
+                    gc.strokeLine(pt.screenX, pt.screenY, endX, endY);
+                }
+            }
+        }
+    }
+
+    private void drawResourceOverlay(GraphicsContext gc) {
+        if (!showResourceOverlay || cells == null) return;
+
+        double markerSize = Math.max(3.0, 6.0 * zoomFactor);
+
+        for (H3Cell cell : cells) {
+            double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0;
+            double precious = cell.getResourcePreciousMetal() != null ? cell.getResourcePreciousMetal() : 0;
+            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0;
+            double aquifer = cell.getFreshwaterAquifer() != null ? cell.getFreshwaterAquifer() : 0;
+
+            if (metal <= 0 && precious <= 0 && capital <= 0 && aquifer <= 0) continue;
+
+            double cx = 0, cy = 0;
+            boolean visible = false;
+
+            if (viewMode == ViewMode.VIEW_2D) {
+                double lat = cell.getLatitude();
+                double lng = cell.getLongitude();
+                cx = (lng - minLng) * scale + offsetX;
+                cy = (maxLat - lat) * scale + offsetY;
+                if (cx >= -20 && cx <= getWidth() + 20 && cy >= -20 && cy <= getHeight() + 20) {
+                    visible = true;
+                }
+            } else if (viewMode == ViewMode.VIEW_3D) {
+                double radius = Math.min(getWidth(), getHeight()) * 0.45 * zoomFactor;
+                double screenCx = getWidth() / 2.0;
+                double screenCy = getHeight() / 2.0;
+                double radRotationY = Math.toRadians(-centerLng);
+                double radTilt = Math.toRadians(centerLat);
+
+                ProjectedPoint pt = project3D(cell.getLatitude(), cell.getLongitude(), cell.getElevation() != null ? cell.getElevation() : 0, radRotationY, radTilt, radius, screenCx, screenCy);
+                if (pt != null) {
+                    cx = pt.screenX;
+                    cy = pt.screenY;
+                    visible = true;
+                }
+            }
+
+            if (!visible) continue;
+
+            if (precious > 0 || metal > 20) {
+                // Gold / Metal glyph (diamond marker)
+                gc.setFill(precious > 0 ? Color.rgb(234, 179, 8, 0.85) : Color.rgb(148, 163, 184, 0.85));
+                double[] xPoints = {cx, cx + markerSize, cx, cx - markerSize};
+                double[] yPoints = {cy - markerSize, cy, cy + markerSize, cy};
+                gc.fillPolygon(xPoints, yPoints, 4);
+            } else if (aquifer > 50) {
+                // Aquifer glyph (cyan dot)
+                gc.setFill(Color.rgb(6, 182, 212, 0.80));
+                gc.fillOval(cx - markerSize * 0.7, cy - markerSize * 0.7, markerSize * 1.4, markerSize * 1.4);
+            } else if (capital > 50) {
+                // Capital / Infrastructure glyph (purple square)
+                gc.setFill(Color.rgb(168, 85, 247, 0.80));
+                gc.fillRect(cx - markerSize * 0.6, cy - markerSize * 0.6, markerSize * 1.2, markerSize * 1.2);
             }
         }
     }
@@ -2030,8 +2230,8 @@ public class H3MapCanvas extends Canvas {
         double w = getWidth();
         double h = getHeight();
 
-        double legendWidth = 310.0;
-        double legendHeight = 94.0;
+        double legendWidth = 320.0;
+        double legendHeight = 112.0;
         double marginRight = 30.0;
         double marginBottom = 35.0;
         double lx = Math.max(10.0, w - legendWidth - marginRight);
@@ -2047,7 +2247,7 @@ public class H3MapCanvas extends Canvas {
         // Header label
         gc.setFill(Color.rgb(56, 189, 248));
         gc.setFont(javafx.scene.text.Font.font("Segoe UI", javafx.scene.text.FontWeight.BOLD, 11));
-        gc.fillText(org.ether.society.i18n.I18n.getOrDefault("sim.legend.title", "LÉGENDE — ") + displayMode.getDisplayName().toUpperCase(), lx + 12, ly + 20);
+        gc.fillText(org.ether.society.i18n.I18n.getOrDefault("sim.legend.title", "LÉGENDE — ") + displayMode.getDisplayName().toUpperCase(), lx + 12, ly + 18);
 
         // Compute stats (Min, Max, Mean, Median)
         double minVal = Double.MAX_VALUE;
@@ -2072,11 +2272,36 @@ public class H3MapCanvas extends Canvas {
                 ? (values[values.length / 2 - 1] + values[values.length / 2]) / 2.0
                 : values[values.length / 2];
 
-        // Spectrum color bar
+        double range = Math.max(1e-6, maxVal - minVal);
         double barX = lx + 12;
-        double barY = ly + 34;
         double barWidth = legendWidth - 24;
-        double barHeight = 16;
+
+        // --- Compact Distribution Histogram (20 Bins) ---
+        int numBins = 20;
+        int[] binCounts = new int[numBins];
+        int maxBinCount = 1;
+        for (double v : values) {
+            int binIdx = (int) Math.clamp(((v - minVal) / range) * numBins, 0, numBins - 1);
+            binCounts[binIdx]++;
+            if (binCounts[binIdx] > maxBinCount) {
+                maxBinCount = binCounts[binIdx];
+            }
+        }
+
+        double histoY = ly + 46;
+        double histoMaxH = 18.0;
+        double binW = barWidth / numBins;
+
+        gc.setFill(Color.rgb(56, 189, 248, 0.45));
+        for (int b = 0; b < numBins; b++) {
+            if (binCounts[b] == 0) continue;
+            double bh = ((double) binCounts[b] / maxBinCount) * histoMaxH;
+            gc.fillRect(barX + b * binW, histoY - bh, binW - 0.8, bh);
+        }
+
+        // Spectrum color bar
+        double barY = ly + 48;
+        double barHeight = 14;
 
         javafx.scene.paint.LinearGradient grad = new javafx.scene.paint.LinearGradient(
                 barX, barY, barX + barWidth, barY, false, javafx.scene.paint.CycleMethod.NO_CYCLE,
@@ -2092,9 +2317,6 @@ public class H3MapCanvas extends Canvas {
         gc.setStroke(Color.rgb(255, 255, 255, 0.4));
         gc.strokeRoundRect(barX, barY, barWidth, barHeight, 4, 4);
 
-        // Range for normalization
-        double range = Math.max(1e-6, maxVal - minVal);
-
         // Mean Indicator (Cyan triangle pointing down above bar)
         double meanNorm = Math.clamp((meanVal - minVal) / range, 0.0, 1.0);
         double meanX = barX + meanNorm * barWidth;
@@ -2107,26 +2329,28 @@ public class H3MapCanvas extends Canvas {
         gc.setFill(Color.rgb(245, 158, 11));
         gc.fillPolygon(new double[]{medX - 4, medX + 4, medX}, new double[]{barY + barHeight + 5, barY + barHeight + 5, barY + barHeight}, 3);
 
-        // Explicit Min, Mean & Max text labels below bar
-        gc.setFont(javafx.scene.text.Font.font("Segoe UI", javafx.scene.text.FontWeight.BOLD, 10));
+        // Explicit Statistics Line (Min, Mean, Median, Max)
+        gc.setFont(javafx.scene.text.Font.font("Segoe UI", javafx.scene.text.FontWeight.BOLD, 9.5));
         
-        // Min Label
+        // Min Label (Gray)
         gc.setFill(Color.rgb(148, 163, 184));
-        String minStr = String.format("Min: %.1f", minVal);
-        gc.fillText(minStr, barX, ly + 76);
+        gc.fillText(String.format("Min: %.1f", minVal), barX, ly + 88);
 
-        // Mean Label (Center)
+        // Mean Label (Cyan μ)
         gc.setFill(Color.rgb(56, 189, 248));
-        String meanStr = String.format("μ: %.1f", meanVal);
-        gc.fillText(meanStr, lx + (legendWidth / 2.0) - 15, ly + 76);
+        gc.fillText(String.format("μ: %.1f", meanVal), barX + barWidth * 0.28, ly + 88);
 
-        // Max Label (Right)
+        // Median Label (Amber x̃)
+        gc.setFill(Color.rgb(245, 158, 11));
+        gc.fillText(String.format("x̃: %.1f", medianVal), barX + barWidth * 0.54, ly + 88);
+
+        // Max Label (Red)
         gc.setFill(Color.rgb(248, 113, 113));
         String maxStr = String.format("Max: %.1f", maxVal);
-        gc.fillText(maxStr, barX + barWidth - (maxStr.length() * 6.2), ly + 76);
+        gc.fillText(maxStr, barX + barWidth - (maxStr.length() * 5.8), ly + 88);
     }
 
-    private double getCellDisplayValue(H3Cell cell, int unusedIndex) {
+    public double getCellDisplayValue(H3Cell cell, int unusedIndex) {
         if (worldBuffer != null && cell != null && !h3ToBufferIndexMap.isEmpty()) {
             Integer idx = h3ToBufferIndexMap.get(cell.getH3Index());
             if (idx != null && idx >= 0 && idx < worldBuffer.getCapacity()) {

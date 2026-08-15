@@ -65,6 +65,9 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label inheritedContextLabel;
 
     // Standardized Preset Bar for Scenarios
+    private Label scenarioPresetHeader;
+    private Label snapshotHeader;
+    private Label bundleHeader;
     private PresetControlBar<Scenario> scenarioPresetBar;
     private VBox bottomActionBox;
 
@@ -1184,7 +1187,7 @@ public class ScenarioSetupPanel extends BorderPane {
         liveDiagnosticCard = new VBox(8);
         liveDiagnosticCard.getStyleClass().add("card-section");
 
-        liveDiagnosticHeader = new Label("📋 11. DIAGNOSTIC DE VIABILITÉ CIVILISATIONNELLE (TEMPS RÉEL)");
+        liveDiagnosticHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.diagnostic.header", "📋 11. DIAGNOSTIC DE VIABILITÉ CIVILISATIONNELLE (TEMPS RÉEL)"));
         liveDiagnosticHeader.getStyleClass().add("label-section-header");
 
         liveDiagnosticContentBox = new VBox(4);
@@ -1204,13 +1207,16 @@ public class ScenarioSetupPanel extends BorderPane {
         startBtn.setOnAction(e -> handleStartOrCancel());
         startBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.start", "Calculer les cellules H3 et lancer la simulation.")));
 
+        scenarioPresetHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "1. PRÉRÉGLAGES GLOBAUX & SAUVEGARDE DU SCÉNARIO"));
+        VBox scenarioPresetSection = createSection(scenarioPresetHeader, scenarioPresetBar);
+
         VBox snapshotSection = createSnapshotSection();
         VBox bundleSection = createBundleSection();
 
         bottomActionBox = new VBox(8, btnPreFlight, progressBar, progressStatusLabel, startBtn);
         bottomActionBox.setAlignment(Pos.CENTER);
 
-        root.getChildren().addAll(scenarioPresetBar, inheritedSection, section1, popSection, cultureSection, clippingSection, oceanOptSection, eventsSection, snapshotSection, bundleSection, liveDiagnosticCard);
+        root.getChildren().addAll(scenarioPresetSection, inheritedSection, section1, popSection, cultureSection, clippingSection, oceanOptSection, eventsSection, snapshotSection, bundleSection, liveDiagnosticCard);
 
         scenarioPresetBar.setPresets(builtInScenarios, defaultScenario);
         if (defaultScenario != null) {
@@ -1224,8 +1230,8 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
 
-        Label header = new Label("📦 10. IMPORTATION ET EXPORTATION MULTI-SCÉNARIOS DE BUNDLE UNIFIÉ (.ETHER)");
-        header.getStyleClass().add("label-header");
+        bundleHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.bundle.header", "📦 10. IMPORTATION ET EXPORTATION MULTI-SCÉNARIOS DE BUNDLE UNIFIÉ (.ETHER)"));
+        bundleHeader.getStyleClass().add("label-header");
 
         Label subtitle = new Label("Exportez ou importez l'intégralité du scénario (contexte planétaire, écologie, moteurs actifs, calques culturels et grille démographique) au format unifié .ether pour archivage ou partage.");
         subtitle.setWrapText(true);
@@ -1249,7 +1255,7 @@ public class ScenarioSetupPanel extends BorderPane {
         HBox.setHgrow(btnExportBundle, Priority.ALWAYS);
         HBox.setHgrow(btnImportBundle, Priority.ALWAYS);
 
-        section.getChildren().addAll(header, subtitle, bundleBox);
+        section.getChildren().addAll(bundleHeader, subtitle, bundleBox);
         return section;
     }
 
@@ -1257,8 +1263,8 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
 
-        Label header = new Label("📸 9. REPRISE DEPUIS UN SNAPSHOT EXISTANT (SESSION PRÉCÉDENTE)");
-        header.getStyleClass().add("label-section-header");
+        snapshotHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.header", "📸 9. REPRISE DEPUIS UN SNAPSHOT EXISTANT (SESSION PRÉCÉDENTE)"));
+        snapshotHeader.getStyleClass().add("label-section-header");
 
         Label subtitle = new Label("Si la simulation a déjà été exécutée dans une session précédente et qu'il existe des snapshots ou des checkpoints, vous pouvez repartir directement de cet instantané sans relancer depuis le début.");
         subtitle.setWrapText(true);
@@ -1345,7 +1351,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
         refreshSnapshotList();
 
-        section.getChildren().addAll(header, subtitle, radioNewSimulation, radioResumeSnapshot, snapshotContainer);
+        section.getChildren().addAll(snapshotHeader, subtitle, radioNewSimulation, radioResumeSnapshot, snapshotContainer);
         return section;
     }
 
@@ -3087,7 +3093,7 @@ public class ScenarioSetupPanel extends BorderPane {
         header.getStyleClass().add("label-header");
         header.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold;");
 
-        Label desc = new Label("3.1 Noyau Tenseur Culturel & Langevin-SDE (Diffusion & Mutation) :\nConfiguration du tenseur d'information N-dimensionnel et importation/génération des calques cartographiques d'isoglosses, parenté, rituels et souveraineté politique.");
+        Label desc = new Label("5.1 Noyau Tenseur Culturel & Langevin-SDE (Diffusion & Mutation) :\nConfiguration du tenseur d'information N-dimensionnel et importation/génération des calques cartographiques d'isoglosses, parenté, rituels et souveraineté politique.");
         desc.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
         desc.setWrapText(true);
 
@@ -3130,7 +3136,7 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox layersPanel = new VBox(8);
         layersPanel.getStyleClass().add("layers-panel-card");
 
-        Label layerTitle = new Label("🗺️ 3.2 Calques Spécifiques (Isoglosses, Parenté, Croyances, Souveraineté)");
+        Label layerTitle = new Label("🗺️ 5.2 Calques Spécifiques (Isoglosses, Parenté, Croyances, Souveraineté)");
         layerTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
         layerTitle.setWrapText(true);
         HBox.setHgrow(layerTitle, Priority.ALWAYS);
@@ -3262,7 +3268,7 @@ public class ScenarioSetupPanel extends BorderPane {
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(10));
 
-        previewTitleLabel = new Label("🌐 12. APERÇU CARTOGRAPHIQUE & TENSEURS SPATIALISÉS (T₀)");
+        previewTitleLabel = new Label("👁️ 11. PRÉVISUALISATION DU SCÉNARIO & APERÇU CARTOGRAPHIQUE (T₀)");
         previewTitleLabel.getStyleClass().add("label-header");
         previewTitleLabel.setMaxWidth(Double.MAX_VALUE);
         previewTitleLabel.setAlignment(Pos.CENTER);
@@ -4354,17 +4360,21 @@ public class ScenarioSetupPanel extends BorderPane {
 
                 if (cancelRequested) throw new java.util.concurrent.CancellationException("Generation cancelled by user");
 
-                // Distribute Initial Population (85% -> 95%)
-                updateProgress(0.88, "👥 Répartition de la population, empreinte écologique & capital K₀ (88%)...");
+                int totalCellCount = cells.size();
+
+                // Distribute Initial Population (88% -> 94%)
+                updateProgress(0.88, String.format("👥 Répartition de la population, empreinte écologique & capital K₀ : 88%% (%d / %d cellules)", totalCellCount, totalCellCount));
 
                 distributeInitialPopulation(cells);
                 if (cancelRequested) throw new java.util.concurrent.CancellationException("Generation cancelled by user");
+
+                updateProgress(0.94, String.format("⚡ Synchronisation des buffers de simulation & précalculs thermodynamiques : 94%% (%d / %d cellules)", totalCellCount, totalCellCount));
 
                 currentPreviewCells = cells;
 
                 final List<H3Cell> finalCells = cells;
                 javafx.application.Platform.runLater(() -> {
-                    updateProgress(1.0, "✅ " + finalCells.size() + " cellules H3 calculées ! Lancement du scénario '" + scenarioToSave.getName() + "'...");
+                    updateProgress(1.0, String.format("✅ %d cellules H3 calculées ! Lancement du scénario '%s'...", finalCells.size(), scenarioToSave.getName()));
                     drawPreview();
                     previewStatusLabel.setText("Généré : " + finalCells.size() + " cellules H3.");
 
@@ -4730,9 +4740,13 @@ public class ScenarioSetupPanel extends BorderPane {
     // =========================================================================
 
     public void updateTexts() {
-        if (title1 != null) title1.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "🌐 3. DÉFINITION ÉPOQUE & SPATIO-TEMPORELLE"));
-        if (title3Events != null) title3Events.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events_section", "🌪️ 8. ÉVÉNEMENTS PLANÉTAIRES HISTORIQUES & DÉRIVES CLIMATIQUES"));
+        if (scenarioPresetHeader != null) scenarioPresetHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "1. PRÉRÉGLAGES GLOBAUX & SAUVEGARDE DU SCÉNARIO"));
         if (planetSectionHeader != null) planetSectionHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.inherited", "2. CONTEXTE HÉRITÉ (ONGLETS 1 & 2)"));
+        if (title1 != null) title1.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "🌐 3. DÉFINITION ÉPOQUE & SPATIO-TEMPORELLE"));
+        if (clippingHeader != null) clippingHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.header", "✂️ 6. FRONTIÈRES & DÉCOUPAGE SPATIAL DE L'HISTOIRE"));
+        if (title3Events != null) title3Events.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events_section", "🌪️ 8. ÉVÉNEMENTS PLANÉTAIRES HISTORIQUES & DÉRIVES CLIMATIQUES"));
+        if (snapshotHeader != null) snapshotHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.header", "📸 9. REPRISE DEPUIS UN SNAPSHOT EXISTANT (SESSION PRÉCÉDENTE)"));
+        if (bundleHeader != null) bundleHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.bundle.header", "📦 10. IMPORTATION ET EXPORTATION MULTI-SCÉNARIOS DE BUNDLE UNIFIÉ (.ETHER)"));
         if (liveDiagnosticHeader != null) liveDiagnosticHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.diagnostic.header", "📋 11. DIAGNOSTIC DE VIABILITÉ CIVILISATIONNELLE (TEMPS RÉEL)"));
         if (startYearLabel != null) startYearLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.start_year", "Année de départ (Repère chronologique) :"));
         if (endYearLabel != null) endYearLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.end_year", "Année de fin / Cible (Repère chronologique) :"));
