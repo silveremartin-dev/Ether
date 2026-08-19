@@ -42,8 +42,7 @@ public class WorkflowPanel extends HBox {
         setAlignment(Pos.CENTER_LEFT);
         setPadding(new Insets(10));
         setSpacing(15);
-        setStyle(
-                "-fx-background-color: #2c3e50; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 0);");
+        getStyleClass().add("glass-panel");
 
         // 1. Planet Section
         VBox planetSection = createSection("PLANET", "Create or Load World");
@@ -97,7 +96,8 @@ public class WorkflowPanel extends HBox {
 
         // Title / Branding
         Label brand = new Label("ETHER");
-        brand.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 18px; -fx-padding: 0 20 0 0;");
+        brand.getStyleClass().add("label-title");
+        brand.setStyle("-fx-padding: 0 20 0 0;");
 
         getChildren().addAll(
                 brand,
@@ -114,10 +114,10 @@ public class WorkflowPanel extends HBox {
     private VBox createSection(String title, String subtitle) {
         VBox box = new VBox(2);
         Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-text-fill: #bdc3c7; -fx-font-weight: bold; -fx-font-size: 10px;");
+        titleLabel.getStyleClass().add("label-section-header");
 
         Label subLabel = new Label(subtitle);
-        subLabel.setStyle("-fx-text-fill: #7f8c8d; -fx-font-size: 9px;");
+        subLabel.getStyleClass().add("hint-label");
 
         box.getChildren().addAll(titleLabel, subLabel);
         return box;
@@ -126,11 +126,7 @@ public class WorkflowPanel extends HBox {
     private Button createActionButton(String text, String tooltip) {
         Button btn = new Button(text);
         btn.setTooltip(new javafx.scene.control.Tooltip(tooltip));
-        btn.setStyle("-fx-background-color: #34495e; -fx-text-fill: white; -fx-font-size: 11px; -fx-cursor: hand;");
-        btn.setOnMouseEntered(e -> btn.setStyle(
-                "-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 11px; -fx-cursor: hand;"));
-        btn.setOnMouseExited(e -> btn.setStyle(
-                "-fx-background-color: #34495e; -fx-text-fill: white; -fx-font-size: 11px; -fx-cursor: hand;"));
+        btn.getStyleClass().add("button-secondary");
         return btn;
     }
 

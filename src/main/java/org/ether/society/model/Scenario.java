@@ -20,9 +20,9 @@ public class Scenario implements Serializable {
     private Long id;
 
     // Planet Configuration
-    private PlanetPreset planetPreset;
-    private EcologyPreset ecologyPreset;
-    private String ecologyPresetName;
+    private PlanetPreset planetPreset = PlanetPreset.EARTH_LIKE;
+    private EcologyPreset ecologyPreset = EcologyPreset.EARTH_STANDARD;
+    private String ecologyPresetName = "Earth Standard Baseline";
     private boolean useRealEarthData;
 
     // Planet Physics
@@ -54,10 +54,8 @@ public class Scenario implements Serializable {
     private int cultureVectorDimensions = 8; // 4D to 32D culture vector dimensions
     private double culturalDiffusionRate = 0.05; // Free-energy cultural diffusion conductance
     private double culturalMutationRate = 0.01; // Mutation & innovation noise rate
-    private String customIsoglossBase64; // Linguistic / Isogloss map layer
-    private String customKinshipBase64; // Kinship & Social structure map layer
-    private String customRitualsBase64; // Beliefs & Rituals map layer
-    private String customSovereigntyBase64; // State sovereignty & Capital centers map layer
+    private java.util.List<String> customTensorMapsBase64 = new java.util.ArrayList<>();
+    private java.util.List<Boolean> tensorProceduralModes = new java.util.ArrayList<>();
 
     // Engine Optimization & Determinism Controls (Persisted at Scenario Level for Physical Conformance)
     private boolean strictDeterminism = false;
@@ -71,6 +69,9 @@ public class Scenario implements Serializable {
     // Type B Procedural & Cliodynamic Engine Checkbox States & Parameters (Persisted per Scenario)
     private java.util.Map<String, Boolean> typeBEngineStates = new java.util.HashMap<>();
     private java.util.Map<String, java.util.Map<String, Double>> typeBEngineParameters = new java.util.HashMap<>();
+
+    // Scheduled Climate and Planetary Cataclysm Events
+    private java.util.List<ClimateEvent> climateEvents = new java.util.ArrayList<>();
 
     // Spatial Clipping & Boundary Conditions
     private boolean clippingEnabled = false;
@@ -564,35 +565,49 @@ public class Scenario implements Serializable {
         this.culturalMutationRate = culturalMutationRate;
     }
 
-    public String getCustomIsoglossBase64() {
-        return customIsoglossBase64;
+    public java.util.List<String> getCustomTensorMapsBase64() {
+        if (customTensorMapsBase64 == null) {
+            customTensorMapsBase64 = new java.util.ArrayList<>();
+        }
+        return customTensorMapsBase64;
     }
 
-    public void setCustomIsoglossBase64(String customIsoglossBase64) {
-        this.customIsoglossBase64 = customIsoglossBase64;
+    public void setCustomTensorMapsBase64(java.util.List<String> customTensorMapsBase64) {
+        this.customTensorMapsBase64 = customTensorMapsBase64 != null ? customTensorMapsBase64 : new java.util.ArrayList<>();
     }
 
-    public String getCustomKinshipBase64() {
-        return customKinshipBase64;
+    public java.util.List<Boolean> getTensorProceduralModes() {
+        if (tensorProceduralModes == null) {
+            tensorProceduralModes = new java.util.ArrayList<>();
+        }
+        return tensorProceduralModes;
     }
 
-    public void setCustomKinshipBase64(String customKinshipBase64) {
-        this.customKinshipBase64 = customKinshipBase64;
+    public void setTensorProceduralModes(java.util.List<Boolean> tensorProceduralModes) {
+        this.tensorProceduralModes = tensorProceduralModes != null ? tensorProceduralModes : new java.util.ArrayList<>();
     }
 
-    public String getCustomRitualsBase64() {
-        return customRitualsBase64;
+    public String getCustomTensorMapBase64(int index) {
+        java.util.List<String> list = getCustomTensorMapsBase64();
+        if (index >= 0 && index < list.size() && list.get(index) != null && !list.get(index).isBlank()) {
+            return list.get(index);
+        }
+        return null;
     }
 
-    public void setCustomRitualsBase64(String customRitualsBase64) {
-        this.customRitualsBase64 = customRitualsBase64;
+    public void setCustomTensorMapBase64(int index, String base64) {
+        java.util.List<String> list = getCustomTensorMapsBase64();
+        while (list.size() <= index) {
+            list.add(null);
+        }
+        list.set(index, base64);
     }
 
-    public String getCustomSovereigntyBase64() {
-        return customSovereigntyBase64;
+    public java.util.List<ClimateEvent> getClimateEvents() {
+        return climateEvents;
     }
 
-    public void setCustomSovereigntyBase64(String customSovereigntyBase64) {
-        this.customSovereigntyBase64 = customSovereigntyBase64;
+    public void setClimateEvents(java.util.List<ClimateEvent> climateEvents) {
+        this.climateEvents = climateEvents != null ? climateEvents : new java.util.ArrayList<>();
     }
 }

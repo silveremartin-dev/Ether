@@ -132,42 +132,19 @@ public class GameSaveManager {
     }
 
     /**
-     * Saves a 60-tick lightweight intermediate checkpoint to disk with a bounded rolling window.
+     * Saves a 60-tick periodic simulation snapshot into the central database.
      */
     public void saveCheckpoint(H3SimulationEngine engine, int tickCounter) {
         if (engine == null || engine.getCells() == null || engine.getCells().isEmpty()) return;
         try {
-            Path dir = Paths.get("saves/checkpoints");
-            Files.createDirectories(dir);
-
-            SaveMetadata metadata = new SaveMetadata(
-                "checkpoint_" + tickCounter,
-                "AutoCheckPoint_Tick_" + tickCounter,
-                engine.getTimeManager().getCurrentYear(),
-                engine.getTimeManager().getCurrentMonth(),
-                engine.getCurrentScenario() != null ? engine.getCurrentScenario().getName() : "AutoSave"
-            );
-
-            // 1. Overwrite latest autosave for instant application resume
-            File latestFile = dir.resolve("checkpoint_latest.json").toFile();
-            objectMapper.writeValue(latestFile, metadata);
-
-            // 2. Manage rolling checkpoint window (max 5 checkpoint files on disk)
-            try (Stream<Path> stream = Files.list(dir)) {
-                List<Path> files = stream.filter(p -> p.getFileName().toString().startsWith("checkpoint_tick_"))
-                                         .sorted(java.util.Comparator.comparingLong(p -> p.toFile().lastModified()))
-                                         .collect(Collectors.toList());
-                while (files.size() >= 5) {
-                    Path old = files.remove(0);
-                    Files.deleteIfExists(old);
-                }
+            if (DatabaseConfig.isDatabaseAvailable()) {
+                logger.info("Persisting 60-tick snapshot (tick {}) to database...", tickCounter);
+                cellRepository.saveAll(engine.getCells());
+            } else {
+                logger.debug("Database offline mode: 60-tick snapshot retained in HistoryManager memory.");
             }
-
-            File tickFile = dir.resolve("checkpoint_tick_" + tickCounter + ".json").toFile();
-            objectMapper.writeValue(tickFile, metadata);
-
         } catch (Exception ex) {
-            logger.error("Failed to save 60-tick checkpoint", ex);
+            logger.error("Failed to save periodic DB checkpoint", ex);
         }
     }
 

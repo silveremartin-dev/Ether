@@ -38,6 +38,7 @@ import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -101,6 +102,8 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private Label headerLabel;
     private Label metricLabel;
     private ComboBox<String> metricSelectorCombo;
+    private Label interpolationLabel;
+    private ComboBox<HistoricalValidationKernel.InterpolationMethod> interpolationCombo;
     private Button analyzeBtn;
     private Button exportMdBtn;
     private Button exportCsvBtn;
@@ -161,7 +164,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         // Header Title (Uniform Black Header Style)
         headerLabel = new Label();
-        headerLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #0f172a;");
+        headerLabel.getStyleClass().add("label-title");
         topBox.getChildren().add(headerLabel);
         setTop(topBox);
 
@@ -173,11 +176,10 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         // --- SECTION 1: SCENARIO SELECTION TABLE & FILTER ---
         tableTitle = new Label();
-        tableTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #0f172a; -fx-font-size: 13px;");
+        tableTitle.getStyleClass().add("label-section-header");
 
         searchField = new TextField();
         searchField.setPromptText("🔍 Filtrer les scénarios par nom, statut ou plage d'années...");
-        searchField.setStyle("-fx-background-radius: 4; -fx-padding: 4 8;");
         HBox.setHgrow(searchField, Priority.ALWAYS);
 
         HBox filterBox = new HBox(10, tableTitle, searchField);
@@ -187,14 +189,28 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         scenarioTable.setPrefHeight(180);
         scenarioTable.setEditable(true);
 
-        // Double-click row toggles scenario selection
+        // Single-click or Double-click row toggles scenario selection
         scenarioTable.setRowFactory(tv -> {
             TableRow<ScenarioSelectableItem> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY) {
                     ScenarioSelectableItem item = row.getItem();
                     if (item != null) {
-                        item.setSelected(!item.isSelected());
+                        // Check if click target was directly on the CheckBox widget inside the cell
+                        boolean isCheckBoxClick = false;
+                        if (event.getTarget() instanceof javafx.scene.Node) {
+                            javafx.scene.Node target = (javafx.scene.Node) event.getTarget();
+                            while (target != null && target != row) {
+                                if (target instanceof CheckBox) {
+                                    isCheckBoxClick = true;
+                                    break;
+                                }
+                                target = target.getParent();
+                            }
+                        }
+                        if (!isCheckBoxClick) {
+                            item.setSelected(!item.isSelected());
+                        }
                     }
                 }
             });
@@ -209,7 +225,30 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         selectCol = new TableColumn<>();
         selectCol.setCellValueFactory(p -> p.getValue().selectedProperty());
-        selectCol.setCellFactory(CheckBoxTableCell.forTableColumn(selectCol));
+        selectCol.setCellFactory(col -> new TableCell<>() {
+            private final CheckBox checkBox = new CheckBox();
+            {
+                setAlignment(Pos.CENTER);
+                checkBox.setMnemonicParsing(false);
+                checkBox.setOnAction(e -> {
+                    ScenarioSelectableItem item = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (item != null) {
+                        item.setSelected(checkBox.isSelected());
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    checkBox.setSelected(item);
+                    setGraphic(checkBox);
+                }
+            }
+        });
         selectCol.setPrefWidth(80);
 
         nameCol = new TableColumn<>();
@@ -259,13 +298,22 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         // --- TAB 1: 1D TIME-SERIES CHART ---
         metricLabel = new Label();
-        metricLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #0f172a;");
+        metricLabel.getStyleClass().add("control-label");
 
         metricSelectorCombo = new ComboBox<>();
-        metricSelectorCombo.setPrefWidth(300);
+        metricSelectorCombo.setPrefWidth(280);
         metricSelectorCombo.setOnAction(e -> updateChartAndAnalysis());
 
-        HBox chartControlBox = new HBox(10, metricLabel, metricSelectorCombo);
+        interpolationLabel = new Label();
+        interpolationLabel.getStyleClass().add("control-label");
+
+        interpolationCombo = new ComboBox<>();
+        interpolationCombo.setPrefWidth(220);
+        interpolationCombo.getItems().setAll(HistoricalValidationKernel.InterpolationMethod.values());
+        interpolationCombo.setValue(HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+        interpolationCombo.setOnAction(e -> updateChartAndAnalysis());
+
+        HBox chartControlBox = new HBox(12, metricLabel, metricSelectorCombo, interpolationLabel, interpolationCombo);
         chartControlBox.setAlignment(Pos.CENTER_LEFT);
 
         xAxis = new NumberAxis();
@@ -321,7 +369,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         // Spatial Channel Selector & Controls
         Label channelLabel = new Label("Canal Tensoriel :");
-        channelLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #0f172a;");
+        channelLabel.getStyleClass().add("control-label");
 
         spatialChannelCombo = new ComboBox<>();
         spatialChannelCombo.getItems().addAll(
@@ -335,7 +383,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         spatialChannelCombo.setOnAction(e -> update2DSpatialComparison());
 
         currentDateLabel = new Label("📅 Année : 0 AD");
-        currentDateLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 13px;");
+        currentDateLabel.getStyleClass().add("value-label");
 
         playTimelineBtn = new Button("▶️ Lecture Temporelle");
         playTimelineBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-cursor: hand;");
@@ -359,7 +407,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         // Side-by-Side Spatial Map Viewers
         mapLabelA = new Label("Scénario A (Référence)");
-        mapLabelA.setStyle("-fx-font-weight: bold; -fx-text-fill: #1e3a8a;");
+        mapLabelA.getStyleClass().add("label-section-header");
         mapImageViewA = new ImageView();
         mapImageViewA.setFitWidth(320);
         mapImageViewA.setFitHeight(160);
@@ -370,7 +418,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         mapBoxA.setAlignment(Pos.CENTER);
 
         mapLabelB = new Label("Scénario B (Cible)");
-        mapLabelB.setStyle("-fx-font-weight: bold; -fx-text-fill: #065f46;");
+        mapLabelB.getStyleClass().add("label-section-header");
         mapImageViewB = new ImageView();
         mapImageViewB.setFitWidth(320);
         mapImageViewB.setFitHeight(160);
@@ -403,17 +451,17 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         diagBox.getStyleClass().add("card-section");
 
         diagHeader = new Label();
-        diagHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #0f172a;");
+        diagHeader.getStyleClass().add("label-title");
 
         divergenceLabel = new Label();
         divergenceLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #f59e0b;");
 
         explanationLabel = new Label();
         explanationLabel.setWrapText(true);
-        explanationLabel.setStyle("-fx-text-fill: #334155;");
+        explanationLabel.getStyleClass().add("hint-label");
 
         synthHeader = new Label();
-        synthHeader.setStyle("-fx-font-weight: bold; -fx-text-fill: #0f172a;");
+        synthHeader.getStyleClass().add("label-section-header");
 
         reportPreviewArea = new TextArea();
         reportPreviewArea.setEditable(false);
@@ -773,15 +821,41 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         String metric = metricSelectorCombo.getValue();
         if (metric == null || selectedExecuted.isEmpty()) return;
 
+        // Determine timeline range across target scenarios for interpolated ground truth alignment
+        int minYear = 0;
+        int maxYear = 2026;
+        boolean hasTargetScenarios = false;
+        for (ScenarioSelectableItem other : selectedExecuted) {
+            if (!"HISTORICAL_GROUND_TRUTH".equals(other.getRunId()) && other.getScenario() != null) {
+                if (!hasTargetScenarios) {
+                    minYear = (int) other.getScenario().getStartDateYear();
+                    maxYear = (int) other.getScenario().getEndDateYear();
+                    hasTargetScenarios = true;
+                } else {
+                    minYear = (int) Math.min(minYear, other.getScenario().getStartDateYear());
+                    maxYear = (int) Math.max(maxYear, other.getScenario().getEndDateYear());
+                }
+            }
+        }
+        if (!hasTargetScenarios) {
+            minYear = -1000;
+            maxYear = 2026;
+        }
+
+        HistoricalValidationKernel.InterpolationMethod interpMethod = (interpolationCombo != null && interpolationCombo.getValue() != null)
+            ? interpolationCombo.getValue()
+            : HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC;
+
         for (ScenarioSelectableItem item : selectedExecuted) {
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
             series.setName(item.getName());
 
             if ("HISTORICAL_GROUND_TRUTH".equals(item.getRunId())) {
                 String benchKey = mapMetricToBenchmarkKey(metric);
-                Map<Integer, Double> benchData = HistoricalValidationKernel.getBenchmarkDataset(benchKey);
-                for (var entry : benchData.entrySet()) {
-                    series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+                int step = Math.max(1, (maxYear - minYear) / 60);
+                for (int yr = minYear; yr <= maxYear; yr += step) {
+                    double val = HistoricalValidationKernel.getInterpolatedBenchmarkValue(benchKey, yr, interpMethod);
+                    series.getData().add(new XYChart.Data<>(yr, val));
                 }
             } else {
                 SimulationRunRecord record = runRepository.getRun(item.getRunId());
@@ -846,21 +920,26 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         String channel = spatialChannelCombo != null ? spatialChannelCombo.getValue() : "👥 Densité Démographique";
         if (channel == null) channel = "👥 Densité Démographique";
 
-        // Generate scenario maps if not already populated
-        HistoricalMapGenerator.populateScenarioHistoricalMaps(scA);
-        HistoricalMapGenerator.populateScenarioHistoricalMaps(scB);
+        int targetYear = dateSlider != null ? (int) dateSlider.getValue() : 0;
 
-        String base64A = extractChannelBase64(scA, channel);
-        String base64B = extractChannelBase64(scB, channel);
+        java.awt.image.BufferedImage bufA = null;
+        java.awt.image.BufferedImage bufB = null;
 
-        Image imgFxA = base64ToFxImage(base64A);
-        Image imgFxB = base64ToFxImage(base64B);
+        if (channel.contains("Densité")) {
+            bufA = HistoricalMapGenerator.generateCleanDensityMapForYear(scA.getPopulationDensityType(), scA, targetYear);
+            bufB = HistoricalMapGenerator.generateCleanDensityMapForYear(scB.getPopulationDensityType(), scB, targetYear);
+        } else {
+            HistoricalMapGenerator.populateScenarioHistoricalMaps(scA);
+            HistoricalMapGenerator.populateScenarioHistoricalMaps(scB);
+            bufA = base64ToBufferedImage(extractChannelBase64(scA, channel));
+            bufB = base64ToBufferedImage(extractChannelBase64(scB, channel));
+        }
+
+        Image imgFxA = bufferedImageToFxImage(bufA);
+        Image imgFxB = bufferedImageToFxImage(bufB);
 
         if (mapImageViewA != null) mapImageViewA.setImage(imgFxA);
         if (mapImageViewB != null) mapImageViewB.setImage(imgFxB);
-
-        java.awt.image.BufferedImage bufA = base64ToBufferedImage(base64A);
-        java.awt.image.BufferedImage bufB = base64ToBufferedImage(base64B);
 
         if (bufA != null && bufB != null && spatialMetricsReportArea != null) {
             MapComparisonMetrics.MapComparisonResult metrics = MapComparisonMetrics.compareImages(bufA, bufB);
@@ -897,11 +976,22 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
     private String extractChannelBase64(Scenario sc, String channel) {
         if (sc == null || channel == null) return null;
-        if (channel.contains("Souveraineté")) return sc.getCustomSovereigntyBase64();
-        if (channel.contains("Isoglosses") || channel.contains("Langues")) return sc.getCustomIsoglossBase64();
-        if (channel.contains("Parenté") || channel.contains("Kinship")) return sc.getCustomKinshipBase64();
-        if (channel.contains("Rituels") || channel.contains("Croyances")) return sc.getCustomRitualsBase64();
+        if (channel.contains("Souveraineté")) return sc.getCustomTensorMapBase64(3);
+        if (channel.contains("Isoglosses") || channel.contains("Langues")) return sc.getCustomTensorMapBase64(0);
+        if (channel.contains("Parenté") || channel.contains("Kinship")) return sc.getCustomTensorMapBase64(1);
+        if (channel.contains("Rituels") || channel.contains("Croyances")) return sc.getCustomTensorMapBase64(2);
         return sc.getCustomDensityBase64();
+    }
+
+    private Image bufferedImageToFxImage(java.awt.image.BufferedImage buf) {
+        if (buf == null) return null;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(buf, "PNG", baos);
+            return new Image(new ByteArrayInputStream(baos.toByteArray()));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private Image base64ToFxImage(String base64) {
@@ -950,17 +1040,11 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
     private double extractValue(SimulationRunRecord.MetricSnapshot snap, String metric, int year) {
         if (metric == null || snap == null) return 0.0;
-        if (metric.contains("Population")) return (double) snap.getPopulation();
-        if (metric.contains("Richesse")) return snap.getPopulation() * Math.max(1.0, snap.getAvgTech()) * 1.5;
-        if (metric.contains("Asabiyyah") || metric.contains("Stabilité") || metric.contains("Cohésion")) return snap.getStability();
-        if (metric.contains("Survie")) return Math.min(100.0, snap.getStability() * 100.0);
-        if (metric.contains("Technologique") || metric.contains("Tech")) return snap.getAvgTech();
-        if (metric.contains("Alimentaires") || metric.contains("Nourriture") || metric.contains("Subsistance")) return snap.getFood();
-        if (metric.contains("Eau")) return snap.getFood() * 1.25;
-        if (metric.contains("Température")) return 15.0 + Math.sin(year / 10.0) * 2.0;
-        if (metric.contains("Précipitations")) return 800.0 + Math.cos(year / 8.0) * 150.0;
-        if (metric.contains("Diversité") || metric.contains("Isoglosse") || metric.contains("Langues")) return Math.log(Math.max(1, snap.getPopulatedCellCount())) * 0.5;
-        return (double) snap.getPopulation();
+        MetricDescriptor desc = MetricRegistry.getInstance().getDescriptorByName(metric);
+        if (desc != null) {
+            return snap.getValue(desc.getId());
+        }
+        return snap.getValue(metric);
     }
 
     private void exportMarkdownReport() {
@@ -1015,6 +1099,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     public void updateTexts() {
         if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("analytics.header", "📊 ANALYSE COMPARATIVE & BATAILLE DE SCÉNARIOS (DEEP ANALYTICS)"));
         if (metricLabel != null) metricLabel.setText(I18n.getOrDefault("analytics.metric_label", "Indicateur Visualisé :"));
+        if (interpolationLabel != null) interpolationLabel.setText(I18n.getOrDefault("analytics.interp_label", "Interpolation :"));
         if (analyzeBtn != null) analyzeBtn.setText(I18n.getOrDefault("analytics.btn.analyze", "⚡ Recalculer les Écarts"));
         if (exportMdBtn != null) exportMdBtn.setText(I18n.getOrDefault("analytics.btn.export_md", "📝 Exporter Rapport (.md)"));
         if (exportCsvBtn != null) exportCsvBtn.setText(I18n.getOrDefault("analytics.btn.export_csv", "📥 Exporter Données (.csv)"));
@@ -1039,18 +1124,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         if (metricSelectorCombo != null) {
             String selected = metricSelectorCombo.getValue();
             metricSelectorCombo.getItems().clear();
-            metricSelectorCombo.getItems().addAll(
-                "👥 Population Totale (habitants)",
-                "💎 Richesse & Capital Total (G$)",
-                "⚔️ Asabiyyah Moyenne (Cohésion Sociale)",
-                "🛡️ Taux de Survie de la Population (%)",
-                "🔬 Niveau Technologique Moyen (Tech)",
-                "🌾 Stocks Alimentaires Répartis (Unités)",
-                "💧 Ressources en Eau Disponibles (m³)",
-                "🌡️ Température Moyenne (°C)",
-                "🌧️ Précipitations Moyennes (mm)",
-                "🗣️ Diversité Isoglosse & Langues (Entropie)"
-            );
+            metricSelectorCombo.getItems().addAll(MetricRegistry.getInstance().getAllMetricNames());
             if (selected != null && metricSelectorCombo.getItems().contains(selected)) {
                 metricSelectorCombo.setValue(selected);
             } else if (!metricSelectorCombo.getItems().isEmpty()) {

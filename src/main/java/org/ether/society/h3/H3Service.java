@@ -79,6 +79,10 @@ public class H3Service {
         return h3.gridDisk(h3Index, k);
     }
 
+    public long cellToParent(long h3Index, int parentRes) {
+        return h3.cellToParent(h3Index, parentRes);
+    }
+
     /**
      * Get immediate neighbors of a cell (ring 1).
      */

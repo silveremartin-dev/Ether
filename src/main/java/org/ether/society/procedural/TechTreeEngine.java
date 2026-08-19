@@ -67,7 +67,7 @@ public class TechTreeEngine {
         }
 
         if (eraUpgrades > 0) {
-            logger.info("Physical Tech Engine: {} cells evaluated along physical power & material strength vectors.", eraUpgrades);
+            logger.debug("Physical Tech Engine: {} cells evaluated along physical power & material strength vectors.", eraUpgrades);
         }
     }
 }

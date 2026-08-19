@@ -35,15 +35,15 @@ public class ScenarioBranchingPanel extends VBox {
 
         setPadding(new Insets(15));
         setSpacing(10);
-        setStyle("-fx-background-color: rgba(15, 23, 42, 0.92); -fx-border-color: #a78bfa; -fx-border-radius: 8; -fx-background-radius: 8;");
+        getStyleClass().add("branching-panel");
 
         headerLabel = new Label();
-        headerLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #a78bfa;");
+        headerLabel.getStyleClass().add("sidebar-title");
 
         newBranchNameField = new TextField();
 
         createBranchBtn = new Button();
-        createBranchBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #8b5cf6; -fx-text-fill: white;");
+        createBranchBtn.getStyleClass().add("button");
         createBranchBtn.setOnAction(e -> forkCurrentTrajectory());
 
         HBox forkBox = new HBox(8, newBranchNameField, createBranchBtn);
@@ -52,10 +52,10 @@ public class ScenarioBranchingPanel extends VBox {
 
         branchListView = new ListView<>();
         branchListView.setPrefHeight(140);
-        branchListView.setStyle("-fx-control-inner-background: #090d16; -fx-font-family: 'Consolas', monospace; -fx-font-size: 11px;");
+        branchListView.getStyleClass().add("branching-list-view");
 
         infoLabel = new Label();
-        infoLabel.setStyle("-fx-text-fill: #94a3b8;");
+        infoLabel.getStyleClass().add("hint-label");
 
         getChildren().addAll(headerLabel, forkBox, infoLabel, branchListView);
 

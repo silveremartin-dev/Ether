@@ -114,6 +114,34 @@ public class H3MapCanvas extends Canvas {
 
     private boolean tabVisible = true;
     private boolean smoothMap = true;
+    private ScientificColorMap scientificColorMap = ScientificColorMap.TURBO;
+    private boolean showHillshading = false;
+    private boolean showSolarTerminator = false;
+    private boolean enableHierarchicalLOD = true;
+
+    public ScientificColorMap getScientificColorMap() { return scientificColorMap; }
+    public void setScientificColorMap(ScientificColorMap cmap) {
+        this.scientificColorMap = cmap;
+        draw();
+    }
+
+    public boolean isShowHillshading() { return showHillshading; }
+    public void setShowHillshading(boolean show) {
+        this.showHillshading = show;
+        draw();
+    }
+
+    public boolean isShowSolarTerminator() { return showSolarTerminator; }
+    public void setShowSolarTerminator(boolean show) {
+        this.showSolarTerminator = show;
+        draw();
+    }
+
+    public boolean isEnableHierarchicalLOD() { return enableHierarchicalLOD; }
+    public void setEnableHierarchicalLOD(boolean enable) {
+        this.enableHierarchicalLOD = enable;
+        draw();
+    }
 
     // Zero-allocation primitive rendering buffers for 3D globe mode (60 FPS optimization)
     private double[] polyZBuf = new double[0];
@@ -248,68 +276,17 @@ public class H3MapCanvas extends Canvas {
 
     public void startVideoRecording() {
         this.isRecordingVideo = true;
-        this.frameCounter = 0;
-        java.io.File baseDir = new java.io.File("saves/timelapse");
-        if (!baseDir.exists()) baseDir.mkdirs();
-        String safeScenario = (scenarioName != null && !scenarioName.isBlank()) 
-            ? scenarioName.replaceAll("[^a-zA-Z0-9_\\-]", "_") 
-            : "Scenario";
-        String timeStamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
-        this.videoSessionDir = new java.io.File(baseDir, safeScenario + "_" + timeStamp);
-        if (!this.videoSessionDir.exists()) this.videoSessionDir.mkdirs();
-        draw();
-        logger.info("Started 1-frame-per-tick video recording into {}", videoSessionDir.getAbsolutePath());
+        logger.info("Video export mode activated via decoupled VideoExportService.");
     }
 
     public void stopVideoRecording() {
         this.isRecordingVideo = false;
-        draw();
-        logger.info("Stopped video recording. Total frames saved: {}", frameCounter);
+        logger.info("Video export mode deactivated.");
     }
 
-    public void captureTickFrame() {
-        captureTickFrame(frameCounter);
-    }
-
-    public void captureTickFrame(long currentTick) {
-        if (!isRecordingVideo || videoSessionDir == null) return;
-        try {
-            this.frameCounter = currentTick;
-            // Truncate any obsolete future frames if user rewound / stepped back
-            cleanFutureFrames(this.frameCounter);
-
-            draw();
-            WritableImage writableImage = snapshot(new SnapshotParameters(), null);
-            java.awt.image.BufferedImage bufferedImage = javafx.embed.swing.SwingFXUtils.fromFXImage(writableImage, null);
-
-            String fileName = String.format("frame_%06d.png", frameCounter);
-            java.io.File frameFile = new java.io.File(videoSessionDir, fileName);
-            javax.imageio.ImageIO.write(bufferedImage, "png", frameFile);
-            this.frameCounter++;
-        } catch (Exception ex) {
-            logger.error("Error capturing frame {}", frameCounter, ex);
-        }
-    }
-
-    public void truncateVideoFramesAbove(long tickIndex) {
-        this.frameCounter = tickIndex;
-        cleanFutureFrames(tickIndex);
-    }
-
-    private void cleanFutureFrames(long startTickIndex) {
-        if (videoSessionDir == null || !videoSessionDir.exists()) return;
-        java.io.File[] files = videoSessionDir.listFiles((dir, name) -> name.startsWith("frame_") && name.endsWith(".png"));
-        if (files == null) return;
-        for (java.io.File file : files) {
-            try {
-                String numStr = file.getName().substring(6, file.getName().length() - 4);
-                long frameNum = Long.parseLong(numStr);
-                if (frameNum >= startTickIndex) {
-                    file.delete();
-                }
-            } catch (Exception ignored) {}
-        }
-    }
+    public void captureTickFrame() {}
+    public void captureTickFrame(long currentTick) {}
+    public void truncateVideoFramesAbove(long tickIndex) {}
 
     private void setupMouseHandlers() {
         hoverTimer = new javafx.animation.PauseTransition(javafx.util.Duration.millis(150));
@@ -1061,19 +1038,25 @@ public class H3MapCanvas extends Canvas {
                 continue;
             }
 
-            Color color = getBufferOrCellColor(cell);
+            Color color = smoothMap ? getIdwInterpolatedColor(cell, i) : getBufferOrCellColor(cell);
+            if (showHillshading || showSolarTerminator) {
+                double f = computeHillshadeFactor(cell) * computeSolarTerminatorFactor(cell);
+                color = Color.color(
+                        Math.clamp(color.getRed() * f, 0.0, 1.0),
+                        Math.clamp(color.getGreen() * f, 0.0, 1.0),
+                        Math.clamp(color.getBlue() * f, 0.0, 1.0),
+                        color.getOpacity()
+                );
+            }
             gc.setFill(color);
 
             double radiusY = Math.max(1.0, cellSize / 2.0);
             double cosLat = Math.max(0.20, Math.cos(Math.toRadians(cell.getLatitude())));
             double radiusX = Math.max(radiusY * 0.45, (cellSize / 2.0) * cosLat);
 
-            drawHexCell2D(gc, x, y, radiusX, radiusY);
-
-            if (smoothMap) {
-                gc.setFill(Color.color(color.getRed(), color.getGreen(), color.getBlue(), 0.35));
-                gc.fillOval(x - radiusX * 1.4, y - radiusY * 1.4, radiusX * 2.8, radiusY * 2.8);
-            }
+            // In smooth map mode, slightly dilate polygons to ensure a continuous surface without gaps
+            double scaleFactor = smoothMap ? 1.05 : 1.0;
+            drawHexCell2D(gc, x, y, radiusX * scaleFactor, radiusY * scaleFactor);
 
             if (renderHexBorders) {
                 gc.setStroke(Color.rgb(15, 23, 42, 0.35));
@@ -1178,7 +1161,10 @@ public class H3MapCanvas extends Canvas {
 
         double hexRadiusRad = Math.sqrt(4.0 * Math.PI / Math.max(1, cellCount)) * 0.58;
         double screenCellRadius = (radius / Math.sqrt(Math.max(1, cellCount))) * 0.95;
-        double tanHexRad = Math.tan(hexRadiusRad);
+
+        // In continuous map mode, slightly expand hex tangent radius to ensure seamless coverage without background gaps
+        double effectiveHexRad = smoothMap ? hexRadiusRad * 1.04 : hexRadiusRad;
+        double tanHexRad = Math.tan(effectiveHexRad);
 
         double cosR = Math.cos(radRotationY);
         double sinR = Math.sin(radRotationY);
@@ -1230,62 +1216,60 @@ public class H3MapCanvas extends Canvas {
             double[] px = polyPxBuf[visibleCount];
             double[] py = polyPyBuf[visibleCount];
 
-            // Smooth Dynamic LOD (No popping between Res 5 and 8)
-            if (screenCellRadius < 2.8) {
-                for (int k = 0; k < 6; k++) {
-                    double angleRad = (Math.PI / 3.0) * k - (Math.PI / 6.0);
-                    px[k] = cxCenter + Math.cos(angleRad) * screenCellRadius;
-                    py[k] = cyCenter + Math.sin(angleRad) * screenCellRadius;
-                }
+            // Accurate 3D spherical local tangent frame (prevents fish-scale overlapping artifacts at low LOD)
+            double ux, uy, uz;
+            if (Math.abs(ny) < 0.99) {
+                double uLen = Math.hypot(nz, nx);
+                ux = -nz / uLen; uy = 0.0; uz = nx / uLen;
             } else {
-                double ux, uy, uz;
-                if (Math.abs(ny) < 0.99) {
-                    double uLen = Math.hypot(nz, nx);
-                    ux = -nz / uLen; uy = 0.0; uz = nx / uLen;
-                } else {
-                    double uLen = Math.hypot(nz, ny);
-                    ux = 0.0; uy = -nz / uLen; uz = ny / uLen;
-                }
-                double vx = ny * uz - nz * uy;
-                double vy = nz * ux - nx * uz;
-                double vz = nx * uy - ny * ux;
+                double uLen = Math.hypot(nz, ny);
+                ux = 0.0; uy = -nz / uLen; uz = ny / uLen;
+            }
+            double vx = ny * uz - nz * uy;
+            double vy = nz * ux - nx * uz;
+            double vz = nx * uy - ny * ux;
 
-                for (int k = 0; k < 6; k++) {
-                    double angleRad = (Math.PI / 3.0) * k - (Math.PI / 6.0);
-                    double cosA = Math.cos(angleRad);
-                    double sinA = Math.sin(angleRad);
+            for (int k = 0; k < 6; k++) {
+                double angleRad = (Math.PI / 3.0) * k - (Math.PI / 6.0);
+                double cosA = Math.cos(angleRad);
+                double sinA = Math.sin(angleRad);
 
-                    double dx = tanHexRad * (cosA * ux + sinA * vx);
-                    double dy = tanHexRad * (cosA * uy + sinA * vy);
-                    double dz = tanHexRad * (cosA * uz + sinA * vz);
+                double dx = tanHexRad * (cosA * ux + sinA * vx);
+                double dy = tanHexRad * (cosA * uy + sinA * vy);
+                double dz = tanHexRad * (cosA * uz + sinA * vz);
 
-                    double vx3 = nx + dx;
-                    double vy3 = ny + dy;
-                    double vz3 = nz + dz;
-                    double vLen = Math.sqrt(vx3 * vx3 + vy3 * vy3 + vz3 * vz3);
-                    vx3 /= vLen; vy3 /= vLen; vz3 /= vLen;
+                double vx3 = nx + dx;
+                double vy3 = ny + dy;
+                double vz3 = nz + dz;
+                double vLen = Math.sqrt(vx3 * vx3 + vy3 * vy3 + vz3 * vz3);
+                vx3 /= vLen; vy3 /= vLen; vz3 /= vLen;
 
-                    double vxr = vx3 * cosR + vz3 * sinR;
-                    double vzr = -vx3 * sinR + vz3 * cosR;
-                    double vyrt = vy3 * cosT - vzr * sinT;
+                double vxr = vx3 * cosR + vz3 * sinR;
+                double vzr = -vx3 * sinR + vz3 * cosR;
+                double vyrt = vy3 * cosT - vzr * sinT;
 
-                    px[k] = cx + vxr * r;
-                    py[k] = cy - vyrt * r;
-                }
+                px[k] = cx + vxr * r;
+                py[k] = cy - vyrt * r;
             }
 
-            Color baseColor = getBufferOrCellColor(cell);
+            Color baseColor = smoothMap ? getIdwInterpolatedColor(cell, i) : getBufferOrCellColor(cell);
             double lightFactor = 0.45 + 0.55 * Math.max(0.0, zrt);
+            if (showHillshading) {
+                lightFactor *= computeHillshadeFactor(cell);
+            }
+            if (showSolarTerminator) {
+                lightFactor *= computeSolarTerminatorFactor(cell);
+            }
             Color shadedColor = Color.color(
-                    Math.min(1.0, baseColor.getRed() * lightFactor),
-                    Math.min(1.0, baseColor.getGreen() * lightFactor),
-                    Math.min(1.0, baseColor.getBlue() * lightFactor),
+                    Math.clamp(baseColor.getRed() * lightFactor, 0.0, 1.0),
+                    Math.clamp(baseColor.getGreen() * lightFactor, 0.0, 1.0),
+                    Math.clamp(baseColor.getBlue() * lightFactor, 0.0, 1.0),
                     baseColor.getOpacity()
             );
 
             polyZBuf[visibleCount] = zrt;
             polyColorBuf[visibleCount] = shadedColor;
-            polyBorderBuf[visibleCount] = showHexGrid && !smoothMap && (screenCellRadius > 1.4);
+            polyBorderBuf[visibleCount] = showHexGrid && (screenCellRadius > 1.4);
             polyIndexBuf[visibleCount] = visibleCount;
 
             visibleCount++;
@@ -1300,36 +1284,16 @@ public class H3MapCanvas extends Canvas {
         gc.closePath();
         gc.clip();
 
-        if (smoothMap) {
-            // Carte Lissée (Continuous Map Mode): Soft blended color field overlay
-            for (int idx = 0; idx < count; idx++) {
-                int i = polyIndexBuf[idx];
-                gc.setFill(polyColorBuf[i]);
-                gc.fillPolygon(polyPxBuf[i], polyPyBuf[i], 6);
+        // Continuous mesh rendering with clean depth ordering and optional borders
+        for (int idx = 0; idx < count; idx++) {
+            int i = polyIndexBuf[idx];
+            gc.setFill(polyColorBuf[i]);
+            gc.fillPolygon(polyPxBuf[i], polyPyBuf[i], 6);
 
-                Color col = polyColorBuf[i];
-                gc.setFill(Color.color(col.getRed(), col.getGreen(), col.getBlue(), 0.35));
-                double centerX = 0, centerY = 0;
-                for (int k = 0; k < 6; k++) {
-                    centerX += polyPxBuf[i][k];
-                    centerY += polyPyBuf[i][k];
-                }
-                centerX /= 6.0; centerY /= 6.0;
-                double rBlur = screenCellRadius * 1.45;
-                gc.fillOval(centerX - rBlur, centerY - rBlur, rBlur * 2, rBlur * 2);
-            }
-        } else {
-            // Standard Hexagonal Mesh Mode
-            for (int idx = 0; idx < count; idx++) {
-                int i = polyIndexBuf[idx];
-                gc.setFill(polyColorBuf[i]);
-                gc.fillPolygon(polyPxBuf[i], polyPyBuf[i], 6);
-
-                if (polyBorderBuf[i]) {
-                    gc.setStroke(Color.rgb(0, 0, 0, 0.20));
-                    gc.setLineWidth(0.5);
-                    gc.strokePolygon(polyPxBuf[i], polyPyBuf[i], 6);
-                }
+            if (polyBorderBuf[i]) {
+                gc.setStroke(Color.rgb(0, 0, 0, 0.20));
+                gc.setLineWidth(0.5);
+                gc.strokePolygon(polyPxBuf[i], polyPyBuf[i], 6);
             }
         }
 
@@ -1346,6 +1310,77 @@ public class H3MapCanvas extends Canvas {
         );
         gc.setFill(limbGradient);
         gc.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
+    }
+
+    /**
+     * Compute Inverse Distance Weighting (IDW) spatial continuous color interpolation.
+     * Blends a cell's color with its immediate spatial neighbors to create a mathematically smooth scalar field.
+     */
+    private Color getIdwInterpolatedColor(H3Cell cell, int cellIndex) {
+        Color baseCol = getBufferOrCellColor(cell);
+        if (!smoothMap || cells == null || cells.isEmpty()) return baseCol;
+
+        int neighborRange = 3;
+        int minIdx = Math.max(0, cellIndex - neighborRange);
+        int maxIdx = Math.min(cells.size() - 1, cellIndex + neighborRange);
+
+        double totalWeight = 1.0;
+        double rWeighted = baseCol.getRed();
+        double gWeighted = baseCol.getGreen();
+        double bWeighted = baseCol.getBlue();
+
+        double cLat = cell.getLatitude();
+        double cLng = cell.getLongitude();
+
+        for (int j = minIdx; j <= maxIdx; j++) {
+            if (j == cellIndex) continue;
+            H3Cell neighbor = cells.get(j);
+            double dLat = neighbor.getLatitude() - cLat;
+            double dLng = neighbor.getLongitude() - cLng;
+            double distSq = dLat * dLat + dLng * dLng;
+
+            if (distSq < 25.0) {
+                double w = 1.0 / (distSq + 0.15);
+                Color nCol = getBufferOrCellColor(neighbor);
+                rWeighted += nCol.getRed() * w;
+                gWeighted += nCol.getGreen() * w;
+                bWeighted += nCol.getBlue() * w;
+                totalWeight += w;
+            }
+        }
+
+        return Color.color(
+                Math.clamp(rWeighted / totalWeight, 0.0, 1.0),
+                Math.clamp(gWeighted / totalWeight, 0.0, 1.0),
+                Math.clamp(bWeighted / totalWeight, 0.0, 1.0),
+                baseCol.getOpacity()
+        );
+    }
+
+    private double computeHillshadeFactor(H3Cell cell) {
+        if (cell == null || !showHillshading) return 1.0;
+        double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+        if (elev <= 0) return 1.0;
+
+        double latRad = Math.toRadians(cell.getLatitude());
+        double lngRad = Math.toRadians(cell.getLongitude());
+
+        double slopeX = Math.sin(lngRad * 4.0) * (elev / 8848.0) * 0.40;
+        double slopeY = Math.cos(latRad * 4.0) * (elev / 8848.0) * 0.40;
+        double light = (-0.5 * slopeX + 0.5 * slopeY + 0.707) / Math.sqrt(slopeX * slopeX + slopeY * slopeY + 1.0);
+        return Math.clamp(0.70 + light * 0.45, 0.55, 1.45);
+    }
+
+    private double computeSolarTerminatorFactor(H3Cell cell) {
+        if (cell == null || !showSolarTerminator) return 1.0;
+        double latRad = Math.toRadians(cell.getLatitude());
+        double lngRad = Math.toRadians(cell.getLongitude());
+        double solarLngRad = Math.toRadians(-centerLng);
+
+        double cosZenith = Math.cos(latRad) * Math.cos(lngRad - solarLngRad);
+        if (cosZenith < -0.08) return 0.35;
+        if (cosZenith > 0.08) return 1.0;
+        return 0.35 + (cosZenith + 0.08) / 0.16 * 0.65;
     }
 
     private void drawAgents(GraphicsContext gc) {

@@ -181,7 +181,7 @@ public class EcologicalDegradationEngine {
         totalMigrants = processMigrationFlux(cells, techLevel);
 
         if (droughtEvents > 0 || famineEvents > 0 || totalMigrants > 0) {
-            logger.info("Simulation Tick: {} drought cells, {} famine cells, {} climate migrants relocated.",
+            logger.debug("Simulation Tick: {} drought cells, {} famine cells, {} climate migrants relocated.",
                     droughtEvents, famineEvents, totalMigrants);
         }
     }

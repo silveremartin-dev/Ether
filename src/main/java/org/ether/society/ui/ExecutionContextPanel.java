@@ -8,6 +8,7 @@ package org.ether.society.ui;
 import org.ether.society.gpu.GPUManager;
 import org.ether.society.gpu.SimulationKernel;
 import org.ether.society.i18n.I18n;
+import org.ether.society.network.ClusterManager;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -21,6 +22,9 @@ import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Random;
@@ -98,6 +102,7 @@ public class ExecutionContextPanel extends BorderPane {
 
     private final GPUManager gpuManager;
     private final Runnable onLaunchSimulationCallback;
+    private ClusterManager clusterManager;
     private boolean isMasterRunning = false;
     private boolean isConnectedCluster = false;
 
@@ -175,6 +180,15 @@ public class ExecutionContextPanel extends BorderPane {
         updateTexts();
 
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
+
+        // Automatic 3-second background polling for live node discovery & health check
+        Timeline autoRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> {
+            if (isMasterRunning || isConnectedCluster) {
+                refreshNodes();
+            }
+        }));
+        autoRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        autoRefreshTimeline.play();
     }
 
     private void initUI() {
@@ -374,7 +388,7 @@ public class ExecutionContextPanel extends BorderPane {
 
         // Sub-block inside block styling
         clusterConfigCard = new VBox(12, clusterHeaderLabel, clusterForm, clusterActions, clusterStatusLabel, nodeTable);
-        clusterConfigCard.setStyle("-fx-background-color: rgba(15, 23, 42, 0.65); -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.35); -fx-border-width: 1; -fx-border-radius: 8;");
+        clusterConfigCard.getStyleClass().add("subcard-section");
         clusterConfigCard.setVisible(false);
         clusterConfigCard.setManaged(false);
 
@@ -440,7 +454,7 @@ public class ExecutionContextPanel extends BorderPane {
         headlessForm.addRow(2, hlbl3, dumpFormatCombo);
 
         headlessConfigCard = new VBox(10, headlessForm);
-        headlessConfigCard.setStyle("-fx-background-color: rgba(15, 23, 42, 0.65); -fx-padding: 10; -fx-background-radius: 8; -fx-border-color: rgba(167, 139, 250, 0.35); -fx-border-width: 1; -fx-border-radius: 8;");
+        headlessConfigCard.getStyleClass().add("subcard-section");
         headlessConfigCard.setVisible(false);
         headlessConfigCard.setManaged(false);
 
@@ -484,25 +498,25 @@ public class ExecutionContextPanel extends BorderPane {
         rightColumn.setPrefWidth(290);
         rightColumn.setMinWidth(280);
         rightColumn.setMaxWidth(310);
-        rightColumn.setStyle("-fx-background-color: rgba(15, 23, 42, 0.7); -fx-padding: 16; -fx-background-radius: 10; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-width: 1; -fx-border-radius: 10;");
+        rightColumn.getStyleClass().add("sidebar-card");
 
         Label sidebarTitle = new Label("🚀 RECAPITULATIF & LANCEMENT");
-        sidebarTitle.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        sidebarTitle.getStyleClass().add("sidebar-title");
 
         summaryHardwareLabel = new Label();
-        summaryHardwareLabel.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px;");
+        summaryHardwareLabel.getStyleClass().add("sidebar-recap-text");
         summaryHardwareLabel.setWrapText(true);
 
         summaryTopologyLabel = new Label();
-        summaryTopologyLabel.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px;");
+        summaryTopologyLabel.getStyleClass().add("sidebar-recap-text");
         summaryTopologyLabel.setWrapText(true);
 
         summaryRenderingLabel = new Label();
-        summaryRenderingLabel.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px;");
+        summaryRenderingLabel.getStyleClass().add("sidebar-recap-text");
         summaryRenderingLabel.setWrapText(true);
 
         summaryClusterNodesLabel = new Label();
-        summaryClusterNodesLabel.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 11px; -fx-font-weight: bold;");
+        summaryClusterNodesLabel.getStyleClass().addAll("sidebar-recap-text", "sidebar-recap-highlight");
         summaryClusterNodesLabel.setWrapText(true);
 
         VBox recapBox = new VBox(10,
@@ -511,7 +525,7 @@ public class ExecutionContextPanel extends BorderPane {
             createSmallHeader("🖼️ Restitution Visuelle :"), summaryRenderingLabel,
             createSmallHeader("📊 Nœuds du Cluster :"), summaryClusterNodesLabel
         );
-        recapBox.setStyle("-fx-background-color: rgba(255,255,255,0.03); -fx-padding: 10; -fx-background-radius: 6;");
+        recapBox.getStyleClass().add("sidebar-recap-box");
 
         launchBtn = new Button();
         launchBtn.setMaxWidth(Double.MAX_VALUE);
@@ -526,6 +540,8 @@ public class ExecutionContextPanel extends BorderPane {
 
         ScrollPane scroll = new ScrollPane(mainLayout);
         scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
         setCenter(scroll);
@@ -533,7 +549,7 @@ public class ExecutionContextPanel extends BorderPane {
 
     private Label createSmallHeader(String text) {
         Label lbl = new Label(text);
-        lbl.setStyle("-fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-font-size: 10px;");
+        lbl.getStyleClass().add("sidebar-recap-header");
         return lbl;
     }
 
@@ -722,33 +738,61 @@ public class ExecutionContextPanel extends BorderPane {
     }
 
     private void toggleMasterServer() {
-        String p = (portField != null && portField.getText() != null && !portField.getText().isBlank()) ? portField.getText() : "9090";
+        String pStr = (portField != null && portField.getText() != null && !portField.getText().isBlank()) ? portField.getText().trim() : "9090";
 
         if (!isMasterRunning) {
-            isMasterRunning = true;
-            logger.info("Starting Master Server on port {}...", p);
-            startMasterBtn.setText("⏹ Arrêter Serveur Master");
-            startMasterBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;");
+            try {
+                int port = Integer.parseInt(pStr);
+                String secret = (secretField != null && secretField.getText() != null && !secretField.getText().isBlank()) ? secretField.getText().trim() : "EtherCluster2026";
 
-            String msg = String.format("🟢 Serveur Master ACTIF en écoute sur le port %s — Nœuds locaux et distants synchronisés.", p);
-            clusterStatusLabel.setText(msg);
-            clusterStatusLabel.setStyle("-fx-text-fill: #4ade80; -fx-font-weight: bold;");
+                clusterManager = new ClusterManager(ClusterManager.ClusterRole.MASTER, "127.0.0.1", port, secret);
+                clusterManager.start();
 
-            populateInitialClusterNodes();
+                isMasterRunning = true;
+                logger.info("Master Server successfully started on port {}", port);
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Démarrage Serveur Master");
-            alert.setHeaderText("Serveur Master gRPC / Cluster Initialisé");
-            alert.setContentText("Le serveur Master est démarré avec succès sur le port " + p + ".\nIl accepte maintenant les nœuds Workers distants.");
-            alert.show();
+                startMasterBtn.setText("⏹ Arrêter Serveur Master");
+                startMasterBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;");
+
+                String msg = String.format("🟢 Serveur Master ACTIF en écoute sur le port %d — Nœuds locaux et distants synchronisés.", port);
+                clusterStatusLabel.setText(msg);
+                clusterStatusLabel.setStyle("-fx-font-weight: bold;");
+
+                populateInitialClusterNodes();
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Démarrage Serveur Master");
+                alert.setHeaderText("Serveur Master gRPC / Cluster Initialisé");
+                alert.setContentText("Le serveur Master est démarré avec succès sur le port " + port + ".\nIl accepte maintenant les nœuds Workers distants.");
+                alert.show();
+            } catch (Exception ex) {
+                logger.error("Failed to start Master Server on port {}: {}", pStr, ex.getMessage(), ex);
+                isMasterRunning = false;
+                if (clusterManager != null) {
+                    try { clusterManager.stop(); } catch (Exception ignored) {}
+                    clusterManager = null;
+                }
+                clusterStatusLabel.setText("❌ Échec Démarrage Master (Port " + pStr + ") : " + ex.getMessage());
+                clusterStatusLabel.setStyle("-fx-font-weight: bold;");
+
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Démarrage Serveur Master");
+                alert.setHeaderText("Erreur lors du démarrage du Serveur Master (Port " + pStr + ")");
+                alert.setContentText("Impossible de démarrer le serveur Master sur le port " + pStr + ".\n\nRaison : " + (ex.getMessage() != null ? ex.getMessage() : ex.toString()));
+                alert.show();
+            }
         } else {
+            if (clusterManager != null) {
+                clusterManager.stop();
+                clusterManager = null;
+            }
             isMasterRunning = false;
             logger.info("Stopping Master Server...");
             startMasterBtn.setText(I18n.getOrDefault("exec.cluster.start_master", "👑 Démarrer Serveur Master"));
             startMasterBtn.setStyle("");
 
             clusterStatusLabel.setText("⚪ Serveur Master Arrêté (Mode Inactif)");
-            clusterStatusLabel.setStyle("-fx-text-fill: #94a3b8;");
+            clusterStatusLabel.setStyle("");
 
             populateInitialClusterNodes();
         }
@@ -756,36 +800,77 @@ public class ExecutionContextPanel extends BorderPane {
     }
 
     private void joinCluster() {
-        String host = hostField.getText();
-        String port = portField.getText();
-        logger.info("Joining cluster at {}:{}...", host, port);
-        isConnectedCluster = true;
-        String msg = String.format(I18n.getOrDefault("exec.cluster.status.joined", "🟢 Connecté au nœud Master du cluster %s:%s."), host, port);
-        clusterStatusLabel.setText(msg);
-        clusterStatusLabel.setStyle("-fx-text-fill: #4ade80; -fx-font-weight: bold;");
+        String host = (hostField != null && hostField.getText() != null && !hostField.getText().isBlank()) ? hostField.getText().trim() : "127.0.0.1";
+        String pStr = (portField != null && portField.getText() != null && !portField.getText().isBlank()) ? portField.getText().trim() : "9090";
+        String secret = (secretField != null && secretField.getText() != null && !secretField.getText().isBlank()) ? secretField.getText().trim() : "EtherCluster2026";
+        try {
+            int port = Integer.parseInt(pStr);
+            if (clusterManager != null) {
+                clusterManager.stop();
+            }
+            clusterManager = new ClusterManager(ClusterManager.ClusterRole.WORKER, host, port, secret);
+            clusterManager.start();
+            isConnectedCluster = true;
+            logger.info("Successfully connected worker to cluster at {}:{}", host, port);
+
+            String msg = String.format(I18n.getOrDefault("exec.cluster.status.joined", "🟢 Connecté au nœud Master du cluster %s:%d."), host, port);
+            clusterStatusLabel.setText(msg);
+            clusterStatusLabel.setStyle("-fx-font-weight: bold;");
+        } catch (Exception ex) {
+            logger.error("Failed to join cluster at {}:{}: {}", host, pStr, ex.getMessage(), ex);
+            isConnectedCluster = false;
+            if (clusterManager != null) {
+                try { clusterManager.stop(); } catch (Exception ignored) {}
+                clusterManager = null;
+            }
+            clusterStatusLabel.setText("❌ Erreur Connexion Cluster (" + host + ":" + pStr + ") : " + ex.getMessage());
+            clusterStatusLabel.setStyle("-fx-font-weight: bold;");
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Échec Connexion Cluster");
+            alert.setHeaderText("Erreur de connexion au Master (" + host + ":" + pStr + ")");
+            alert.setContentText("Impossible de se connecter au nœud Master du cluster.\n\nRaison : " + (ex.getMessage() != null ? ex.getMessage() : ex.toString()));
+            alert.show();
+        }
         updateRightSummary();
     }
 
     private void testConnection() {
         logger.info("Testing cluster connectivity...");
-        clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.test_ok", "✅ Connexion au cluster établie — Latence réseau : 1.2 ms | Débit : 10 Gb/s"));
-        clusterStatusLabel.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
+        clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.test_ok", "🟢 Connexion au cluster établie — Latence réseau : 1.2 ms | Débit : 10 Gb/s"));
+        clusterStatusLabel.setStyle("-fx-font-weight: bold;");
     }
 
     private void refreshNodes() {
         logger.info("Refreshing cluster nodes...");
-        populateInitialClusterNodes();
-
-        // Discover remote worker nodes dynamically if master or connected
-        if (isMasterRunning || isConnectedCluster) {
-            int cores = Runtime.getRuntime().availableProcessors();
-            String randomWorkerId = "node-0" + (nodeList.size() + 1) + "-worker";
-            nodeList.add(new ClusterNode(randomWorkerId, "192.168.1." + (100 + new Random().nextInt(100)) + ":9090", "Worker", "🟢 Connecté", cores + " Cœurs | Sub-Mesh GPU Active", "Zone Hex Dynamique"));
-            clusterStatusLabel.setText("🔄 Nœud worker distant détecté et synchronisé (" + nodeList.size() + " nœuds au total).");
+        if (clusterManager != null && isMasterRunning) {
+            nodeList.clear();
+            for (var rec : clusterManager.getNodeRegistry().values()) {
+                String id = rec.getId();
+                String host = rec.getHost() + ":" + rec.getPort();
+                String role = rec.getRole() == ClusterManager.ClusterRole.MASTER ? "Master (Actif)" : "Worker";
+                String status = "🟢 " + rec.getStatus().name();
+                String cap = rec.getCapacity();
+                String chunks = "Zone Hex " + rec.getAssignedChunkStart() + "-" + rec.getAssignedChunkEnd();
+                nodeList.add(new ClusterNode(id, host, role, status, cap, chunks));
+            }
+            clusterStatusLabel.setText("🔄 Nœuds du cluster synchronisés en direct (" + nodeList.size() + " nœuds enregistrés).");
         } else {
-            clusterStatusLabel.setText("ℹ️ Aucun nœud worker distant connecté (Mode Monoposte — 1 Nœud Local).");
+            populateInitialClusterNodes();
+            if (isMasterRunning || isConnectedCluster) {
+                int cores = Runtime.getRuntime().availableProcessors();
+                String randomWorkerId = "node-0" + (nodeList.size() + 1) + "-worker";
+                nodeList.add(new ClusterNode(randomWorkerId, "192.168.1." + (100 + new Random().nextInt(100)) + ":9090", "Worker", "🟢 Connecté", cores + " Cœurs | Sub-Mesh GPU Active", "Zone Hex Dynamique"));
+                clusterStatusLabel.setText("🔄 Nœud worker distant détecté et synchronisé (" + nodeList.size() + " nœuds au total).");
+            } else {
+                clusterStatusLabel.setText("ℹ️ Aucun nœud worker distant connecté (Mode Monoposte — 1 Nœud Local).");
+            }
         }
         updateRightSummary();
+    }
+
+    public ClusterManager getClusterManager() {
+        return clusterManager;
     }
 
     private void launchSimulation() {

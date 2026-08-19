@@ -155,22 +155,22 @@ public class ControlPanel extends VBox {
 
         startBtn = new Button("▶");
         startBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
-        startBtn.setStyle("-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold;");
         startBtn.setOnAction(e -> {
             if (autoRecordCheck.isSelected() && !isRecordingVideo) {
                 toggleVideoRecording();
             }
             engine.start();
+            updatePlayPauseVisuals(true);
         });
 
-        pauseBtn = new Button("⏸");
+        pauseBtn = new Button("⏸ EN PAUSE");
         pauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause", "Mettre en pause")));
-        pauseBtn.setStyle("-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-font-weight: bold;");
         pauseBtn.setOnAction(e -> {
             engine.pause();
             if (autoRecordCheck != null && autoRecordCheck.isSelected() && isRecordingVideo) {
                 toggleVideoRecording();
             }
+            updatePlayPauseVisuals(false);
         });
 
         stopBtn = new Button("⏹");
@@ -181,7 +181,10 @@ public class ControlPanel extends VBox {
             if (autoRecordCheck != null && autoRecordCheck.isSelected() && isRecordingVideo) {
                 toggleVideoRecording();
             }
+            updatePlayPauseVisuals(false);
         });
+
+        updatePlayPauseVisuals(engine.isRunning());
 
         stepForwardBtn = new Button(">|");
         stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer d'une frame / tick (+1 mois)")));
@@ -199,7 +202,18 @@ public class ControlPanel extends VBox {
         HBox playBar = new HBox(4, rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stopBtn, stepForwardBtn, fastForwardBtn);
         playBar.setAlignment(Pos.CENTER);
 
-        speedSlider = new Slider(1, 20, 1);
+        ComboBox<org.ether.society.core.H3SimulationEngine.TemporalScale> temporalScaleCombo = new ComboBox<>();
+        temporalScaleCombo.getItems().addAll(org.ether.society.core.H3SimulationEngine.TemporalScale.values());
+        temporalScaleCombo.setValue(engine.getTemporalScale());
+        temporalScaleCombo.setMaxWidth(Double.MAX_VALUE);
+        temporalScaleCombo.setTooltip(new Tooltip("Choisis la résolution temporelle : 1 tick/jour (précision flux) vs 1 tick/mois (vitesse macro x30)"));
+        temporalScaleCombo.setOnAction(e -> {
+            if (temporalScaleCombo.getValue() != null) {
+                engine.setTemporalScale(temporalScaleCombo.getValue());
+            }
+        });
+
+        speedSlider = new Slider(1, 30, 1);
         speedSlider.setBlockIncrement(1);
         speedSlider.setMajorTickUnit(5);
         speedSlider.setMinorTickCount(4);
@@ -228,7 +242,7 @@ public class ControlPanel extends VBox {
 
         HBox sliderRow = new HBox(8, speedSlider, speedMax);
         // --- 1. HORLOGE & CONTRÔLE TEMPOREL CARD ---
-        VBox timeCard = new VBox(8, scenarioHeaderLabel, dateHeaderLabel, tpsLabel, timeTitle, playBar, pauseOnEventCheck, speedValueLabel, sliderRow);
+        VBox timeCard = new VBox(8, scenarioHeaderLabel, dateHeaderLabel, tpsLabel, timeTitle, playBar, temporalScaleCombo, pauseOnEventCheck, speedValueLabel, sliderRow);
         styleCard(timeCard);
 
         // --- 3. MEDIA & EXPORT MP4 CARD ---
@@ -297,7 +311,9 @@ public class ControlPanel extends VBox {
                 }
             }
         });
-        displayModeCombo.setButtonCell(displayModeCombo.getCellFactory().call(null));
+        if (displayModeCombo.getCellFactory() != null) {
+            displayModeCombo.setButtonCell(displayModeCombo.getCellFactory().call(null));
+        }
 
         displayModeCombo.setOnAction(e -> {
             if (mapCanvas != null && displayModeCombo.getValue() != null) {
@@ -404,7 +420,51 @@ public class ControlPanel extends VBox {
             }
         });
 
-        VBox renderCard = new VBox(8, renderTitle, mode3dCheck, reliefLabel, reliefSlider, autoRotateCheck, smoothMapCheck, hexGridCheck);
+        Label paletteLabel = new Label("🎨 Palette Scientifique :");
+        paletteLabel.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11px; -fx-font-weight: bold;");
+
+        ComboBox<ScientificColorMap> paletteCombo = new ComboBox<>();
+        paletteCombo.getItems().addAll(ScientificColorMap.values());
+        paletteCombo.setValue(ScientificColorMap.TURBO);
+        paletteCombo.setMaxWidth(Double.MAX_VALUE);
+        paletteCombo.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #e2e8f0; -fx-font-size: 11px;");
+        paletteCombo.setOnAction(e -> {
+            if (mapCanvas != null && paletteCombo.getValue() != null) {
+                mapCanvas.setScientificColorMap(paletteCombo.getValue());
+            }
+        });
+
+        CheckBox hillshadingCheck = new CheckBox("⛰️ Hillshading Relief Topographique");
+        hillshadingCheck.setSelected(false);
+        hillshadingCheck.setTooltip(new Tooltip("Applique un ombrage topographique lambertien selon la pente du relief"));
+        hillshadingCheck.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        hillshadingCheck.setOnAction(e -> {
+            if (mapCanvas != null) {
+                mapCanvas.setShowHillshading(hillshadingCheck.isSelected());
+            }
+        });
+
+        CheckBox solarTerminatorCheck = new CheckBox("☀️ Terminateur Solaire Jour/Nuit");
+        solarTerminatorCheck.setSelected(false);
+        solarTerminatorCheck.setTooltip(new Tooltip("Affiche l'ombre portée de la nuit et de la pénombre crépusculaire"));
+        solarTerminatorCheck.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        solarTerminatorCheck.setOnAction(e -> {
+            if (mapCanvas != null) {
+                mapCanvas.setShowSolarTerminator(solarTerminatorCheck.isSelected());
+            }
+        });
+
+        CheckBox lodCheck = new CheckBox("📐 Agrégation Pyramide LOD H3");
+        lodCheck.setSelected(true);
+        lodCheck.setTooltip(new Tooltip("Agrège automatiquement les cellules vers leurs parents H3 lors du dézoom"));
+        lodCheck.setStyle("-fx-text-fill: #a855f7; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        lodCheck.setOnAction(e -> {
+            if (mapCanvas != null) {
+                mapCanvas.setEnableHierarchicalLOD(lodCheck.isSelected());
+            }
+        });
+
+        VBox renderCard = new VBox(8, renderTitle, mode3dCheck, reliefLabel, reliefSlider, autoRotateCheck, smoothMapCheck, hexGridCheck, lodCheck, paletteLabel, paletteCombo, hillshadingCheck, solarTerminatorCheck);
         styleCard(renderCard);
 
         // --- 4. TÉLÉMÉTRIE, CAPTURES & EXPORT CARD ---
@@ -434,6 +494,21 @@ public class ControlPanel extends VBox {
 
         updateTexts();
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
+    }
+
+    public void updatePlayPauseVisuals(boolean isRunning) {
+        if (startBtn == null || pauseBtn == null) return;
+        if (isRunning) {
+            startBtn.setText("▶ EN COURS");
+            startBtn.setStyle("-fx-background-color: #059669; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-border-color: #34d399; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.7), 8, 0, 0, 0);");
+            pauseBtn.setText("⏸");
+            pauseBtn.setStyle("-fx-background-color: #334155; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 6; -fx-effect: none;");
+        } else {
+            startBtn.setText("▶");
+            startBtn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 6; -fx-effect: none;");
+            pauseBtn.setText("⏸ EN PAUSE");
+            pauseBtn.setStyle("-fx-background-color: #d97706; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-border-color: #fbbf24; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(245,158,11,0.7), 8, 0, 0, 0);");
+        }
     }
 
     private Button createPresetBtn(String label, String tooltip, Runnable action) {
@@ -564,30 +639,35 @@ public class ControlPanel extends VBox {
         }
     }
 
+    private final org.ether.society.persistence.VideoExportService videoExportService = new org.ether.society.persistence.VideoExportService();
+
     public void toggleVideoRecording() {
         if (onTimelapseRecord != null) {
             onTimelapseRecord.run();
         }
-        this.isRecordingVideo = !this.isRecordingVideo;
-        if (mapCanvas != null) {
-            if (isRecordingVideo) {
-                mapCanvas.startVideoRecording();
-            } else {
-                mapCanvas.stopVideoRecording();
-            }
-        }
-        if (isRecordingVideo) {
-            recordVideoBtn.setText("⏹️ Arrêter Vidéo MP4 (1:1 Tick)");
-            recordVideoBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8;");
+
+        if (engine instanceof org.ether.society.core.H3SimulationEngine h3Engine) {
             if (notificationOverlay != null) {
-                notificationOverlay.showNotification("🎥 Enregistrement Vidéo 1:1 Frame/Tick Démarré !", "#ef4444");
+                notificationOverlay.showNotification("🎬 Lancement de l'Export Vidéo MP4 (Arrière-plan)...", "#38bdf8");
             }
-        } else {
-            recordVideoBtn.setText("🎥 Enregistrer Vidéo MP4 (1:1 Tick)");
-            recordVideoBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8;");
-            if (notificationOverlay != null) {
-                notificationOverlay.showNotification("🎬 Vidéo 1:1 Finalisée !\nImages stockées dans saves/timelapse/", "#10b981");
-            }
+
+            String scenarioName = (mapCanvas != null && mapCanvas.getScenarioName() != null) ? mapCanvas.getScenarioName() : "Simulation";
+            videoExportService.exportSimulationVideoAsync(h3Engine, scenarioName)
+                    .thenAccept(outputDir -> {
+                        javafx.application.Platform.runLater(() -> {
+                            if (notificationOverlay != null) {
+                                notificationOverlay.showNotification("✅ Export Vidéo Réussi !\nFichiers dans saves/exports/", "#10b981");
+                            }
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        javafx.application.Platform.runLater(() -> {
+                            if (notificationOverlay != null) {
+                                notificationOverlay.showNotification("❌ Erreur Export Vidéo: " + ex.getMessage(), "#ef4444");
+                            }
+                        });
+                        return null;
+                    });
         }
     }
 

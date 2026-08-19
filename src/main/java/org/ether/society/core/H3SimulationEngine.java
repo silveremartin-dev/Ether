@@ -63,6 +63,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     private List<H3Cell> cells;
     private Scenario currentScenario;
+    private final java.util.Set<String> firedScenarioEventKeys = new java.util.HashSet<>();
     private org.ether.society.procedural.SimulationPerformanceConfig performanceConfig = new org.ether.society.procedural.SimulationPerformanceConfig(true);
 
     private ScheduledExecutorService executorService;
@@ -126,6 +127,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.cells = cells;
 
         timeManager.reset((int) scenario.getStartDateYear());
+        firedScenarioEventKeys.clear();
         if (eventSystem != null) {
             eventSystem.reset();
         }
@@ -224,6 +226,7 @@ public class H3SimulationEngine implements ISimulationEngine {
     @Override
     public void reset() {
         pause();
+        firedScenarioEventKeys.clear();
         timeManager.reset(config.simulation().startYear());
         historyManager.reset();
         initialize();
@@ -354,6 +357,37 @@ public class H3SimulationEngine implements ISimulationEngine {
         return tickCounter;
     }
 
+    public enum TemporalScale {
+        DAILY(1, "📅 Pas Quotidien (Jour par Jour - Détaillé)"),
+        MONTHLY(30, "🚀 Pas Mensuel (Mois par Mois - Mode Rapide)");
+
+        private final int factor;
+        private final String label;
+
+        TemporalScale(int factor, String label) {
+            this.factor = factor;
+            this.label = label;
+        }
+
+        public int getFactor() { return factor; }
+        public String getLabel() { return label; }
+
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
+
+    private TemporalScale temporalScale = TemporalScale.DAILY;
+
+    public TemporalScale getTemporalScale() { return temporalScale; }
+    public void setTemporalScale(TemporalScale scale) {
+        if (scale != null) {
+            this.temporalScale = scale;
+            logger.info("Temporal scale updated to: {}", scale);
+        }
+    }
+
     private void tick() {
         if (!running.get()) return;
 
@@ -370,16 +404,23 @@ public class H3SimulationEngine implements ISimulationEngine {
         try {
             final float DT_FAST = 86400f; 
             final int SLOW_FACTOR = 30;
+            boolean isMonthly = (temporalScale == TemporalScale.MONTHLY);
 
             // 1. FAST SCALE DYNAMICS
             profiler.beginPhase("1_FastScaleFlux");
-            fluxEngine.tick(worldBuffer, DT_FAST);
-            politicalEngine.tick(cells);
-            timeManager.advanceDay();
+            if (isMonthly) {
+                fluxEngine.tick(worldBuffer, DT_FAST * SLOW_FACTOR);
+                politicalEngine.tick(cells);
+                timeManager.advanceMonth();
+            } else {
+                fluxEngine.tick(worldBuffer, DT_FAST);
+                politicalEngine.tick(cells);
+                timeManager.advanceDay();
+            }
             profiler.endPhase("1_FastScaleFlux");
 
             // 2. SLOW SCALE PHYSICALIST DYNAMICS
-            if (tickCounter % SLOW_FACTOR == 0) {
+            if (isMonthly || tickCounter % SLOW_FACTOR == 0) {
                 if (currentScenario != null && timeManager.getCurrentYear() >= currentScenario.getEndDateYear()) {
                     logger.info("🏁 Simulation reached scenario target end date (Year {}). Auto-pausing.", currentScenario.getEndDateYear());
                     pause();
@@ -507,6 +548,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                 historyManager.captureWorldSnapshot(this);
                 
                 int eventCountBefore = eventSystem.peekEvents().size();
+                checkScenarioClimateEvents();
                 eventSystem.checkEvents(timeManager.getCurrentYear(), timeManager.getCurrentMonth(), getTotalPopulation(), getTotalFood(), cells);
                 eventSystem.checkCellEvents(timeManager.getCurrentYear(), timeManager.getCurrentMonth(), cells);
                 int eventCountAfter = eventSystem.peekEvents().size();
@@ -542,6 +584,68 @@ public class H3SimulationEngine implements ISimulationEngine {
 
         } catch (Exception e) {
             logger.error("Error during simulation tick", e);
+        }
+    }
+
+    private void checkScenarioClimateEvents() {
+        if (currentScenario == null || currentScenario.getClimateEvents() == null || currentScenario.getClimateEvents().isEmpty()) return;
+        int currentYear = timeManager.getCurrentYear();
+
+        for (org.ether.society.model.ClimateEvent evt : currentScenario.getClimateEvents()) {
+            if (evt.getYear() == currentYear) {
+                String eventKey = evt.getName() + "_" + evt.getYear() + "_" + evt.getType();
+                if (!firedScenarioEventKeys.contains(eventKey)) {
+                    firedScenarioEventKeys.add(eventKey);
+
+                    org.ether.society.events.ActiveEvent ae = new org.ether.society.events.ActiveEvent(
+                        "SCENARIO_EVT_" + System.currentTimeMillis(),
+                        "🌋 SCÉNARIO : " + evt.getName() + " (" + evt.getType() + " - Mag: " + evt.getMagnitude() + ")",
+                        evt.getType().toUpperCase(),
+                        evt.getLatitude(), evt.getLongitude(),
+                        currentYear, timeManager.getCurrentMonth(), 1, 25.0
+                    );
+                    eventSystem.recordSpatialEvent(ae);
+                    logger.info("Triggered scheduled scenario climate event: {} at year {}", evt.getName(), currentYear);
+
+                    applyClimateEventImpact(evt);
+                }
+            }
+        }
+    }
+
+    private void applyClimateEventImpact(org.ether.society.model.ClimateEvent evt) {
+        if (cells == null || cells.isEmpty()) return;
+        double evtLat = evt.getLatitude();
+        double evtLng = evt.getLongitude();
+        double mag = evt.getMagnitude();
+
+        for (H3Cell cell : cells) {
+            double cLat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
+            double cLng = cell.getLongitude() != null ? cell.getLongitude() : 0.0;
+            double distDeg = Math.hypot(cLat - evtLat, cLng - evtLng);
+
+            double impactRadius = Math.max(5.0, mag * 3.0);
+            if (distDeg <= impactRadius) {
+                double attenuation = 1.0 - (distDeg / impactRadius);
+                String type = evt.getType() != null ? evt.getType().toLowerCase() : "";
+
+                if (type.contains("volcano") || type.contains("nuclear") || type.contains("ice")) {
+                    double cooling = -0.5 * mag * attenuation;
+                    cell.setTemperature(Math.max(-50.0, (cell.getTemperature() != null ? cell.getTemperature() : 15.0) + cooling));
+                } else if (type.contains("earthquake") || type.contains("tsunami") || type.contains("meteor")) {
+                    if (cell.getResourceCapital() != null) {
+                        cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * (1.0 - 0.08 * mag * attenuation)));
+                    }
+                    if (cell.getPopulation() != null && cell.getPopulation() > 0) {
+                        int lost = (int) (cell.getPopulation() * (0.05 * mag * attenuation));
+                        cell.setPopulation(Math.max(0, cell.getPopulation() - lost));
+                    }
+                } else if (type.contains("famine") || type.contains("drought")) {
+                    if (cell.getFoodResource() != null) {
+                        cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.10 * mag * attenuation)));
+                    }
+                }
+            }
         }
     }
 

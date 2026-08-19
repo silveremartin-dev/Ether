@@ -75,7 +75,7 @@ public class GreenhouseRadiativeEngine {
         double deltaT = computeTemperatureAnomalyC();
         double seaShift = computeSeaLevelDeltaMeters();
 
-        logger.info("Greenhouse Engine Step: CO2={} ppm, CH4={} ppb | DeltaT=+{:.2f}°C, SeaLevelDelta=+{:.1f}m",
+        logger.debug("Greenhouse Engine Step: CO2={} ppm, CH4={} ppb | DeltaT=+{:.2f}°C, SeaLevelDelta=+{:.1f}m",
                 currentCo2Ppm, currentCh4Ppb, deltaT, seaShift);
 
         cells.parallelStream().forEach(cell -> {

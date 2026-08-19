@@ -123,13 +123,8 @@ public class PresetControlBar<T> extends VBox {
             @Override public T fromString(String string) { return null; }
         });
 
-        presetCombo.setCellFactory(p -> new ListCell<>() {
-            @Override
-            protected void updateItem(T item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? "" : formatPresetItem(item));
-            }
-        });
+        presetCombo.setCellFactory(p -> createPresetListCell());
+        presetCombo.setButtonCell(createPresetListCell());
 
         presetCombo.setOnAction(e -> {
             T selected = presetCombo.getValue();
@@ -517,6 +512,9 @@ public class PresetControlBar<T> extends VBox {
         if (item == null) return "";
         if (item instanceof org.ether.society.procedural.PlanetPreset p) return p.name();
         if (item instanceof org.ether.society.model.EcologyPreset e) return e.name();
+        if (item instanceof org.ether.society.model.Scenario s) {
+            return cleanScenarioName(s.getName());
+        }
         try {
             var method = item.getClass().getMethod("name");
             Object val = method.invoke(item);
@@ -528,5 +526,62 @@ public class PresetControlBar<T> extends VBox {
             if (val != null) return val.toString();
         } catch (Exception ignored) {}
         return item.toString();
+    }
+
+    private String cleanScenarioName(String name) {
+        if (name == null) return "";
+        return name.replaceAll("\\s*\\((?:\\-?\\d+|An 0|SSP[0-9\\-\\.]+)\\)\\s*$", "").trim();
+    }
+
+    private String getPresetDateText(T item) {
+        if (item instanceof org.ether.society.model.Scenario s) {
+            long year = s.getStartDateYear();
+            if (year < 0) {
+                return String.format("%,d av. J.-C.", Math.abs(year)).replace(',', ' ');
+            } else if (year == 0) {
+                return "An 0";
+            } else {
+                return String.valueOf(year);
+            }
+        }
+        return null;
+    }
+
+    private ListCell<T> createPresetListCell() {
+        return new ListCell<>() {
+            private final Label nameLabel = new Label();
+            private final Label dateLabel = new Label();
+            private final Region spacer = new Region();
+            private final HBox container = new HBox(8, nameLabel, spacer, dateLabel);
+
+            {
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+                container.setAlignment(Pos.CENTER_LEFT);
+                nameLabel.getStyleClass().add("preset-cell-name");
+                dateLabel.getStyleClass().add("preset-cell-date");
+                dateLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
+            }
+
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    String formattedName = formatPresetItem(item);
+                    String dateText = getPresetDateText(item);
+                    if (dateText != null && !dateText.isBlank()) {
+                        nameLabel.setText(formattedName);
+                        dateLabel.setText("📅 " + dateText);
+                        setGraphic(container);
+                        setText(null);
+                    } else {
+                        setGraphic(null);
+                        setText(formattedName);
+                    }
+                }
+            }
+        };
     }
 }

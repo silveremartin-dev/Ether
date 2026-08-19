@@ -76,11 +76,20 @@ public class PreferencesPanel extends BorderPane {
 
         // 2. Theme Section
         themeToggleGroup = new ToggleGroup();
+        
         darkThemeRadio = new RadioButton();
         darkThemeRadio.setToggleGroup(themeToggleGroup);
         darkThemeRadio.setSelected(Theme.getCurrentTheme() == Theme.DARK);
         darkThemeRadio.setOnAction(e -> Theme.setTheme(getScene(), Theme.DARK));
+
+        lightThemeRadio = new RadioButton();
+        lightThemeRadio.setToggleGroup(themeToggleGroup);
+        lightThemeRadio.setSelected(Theme.getCurrentTheme() == Theme.LIGHT);
         lightThemeRadio.setOnAction(e -> Theme.setTheme(getScene(), Theme.LIGHT));
+
+        presentationThemeRadio = new RadioButton();
+        presentationThemeRadio.setToggleGroup(themeToggleGroup);
+        presentationThemeRadio.setSelected(Theme.getCurrentTheme() == Theme.PRESENTATION);
         presentationThemeRadio.setOnAction(e -> Theme.setTheme(getScene(), Theme.PRESENTATION));
 
         HBox themeOptions = new HBox(20, darkThemeRadio, lightThemeRadio, presentationThemeRadio);
@@ -92,6 +101,8 @@ public class PreferencesPanel extends BorderPane {
 
         ScrollPane scroll = new ScrollPane(root);
         scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
         setCenter(scroll);
@@ -112,12 +123,12 @@ public class PreferencesPanel extends BorderPane {
     }
 
     public void updateTexts() {
-        titleHeader.setText(I18n.get("pref.title"));
+        if (titleHeader != null) titleHeader.setText(I18n.get("pref.title"));
         if (langHeaderLabel != null) langHeaderLabel.setText("🌐 " + I18n.get("pref.language"));
         if (themeHeaderLabel != null) themeHeaderLabel.setText("🎨 " + I18n.get("pref.theme"));
-        darkThemeRadio.setText(I18n.get("pref.theme.dark"));
-        lightThemeRadio.setText(I18n.get("pref.theme.light"));
+        if (darkThemeRadio != null) darkThemeRadio.setText(I18n.get("pref.theme.dark"));
+        if (lightThemeRadio != null) lightThemeRadio.setText(I18n.get("pref.theme.light"));
         if (presentationThemeRadio != null) presentationThemeRadio.setText(I18n.get("pref.theme.presentation"));
-        languageCombo.setValue(I18n.getCurrentLanguage());
+        if (languageCombo != null) languageCombo.setValue(I18n.getCurrentLanguage());
     }
 }

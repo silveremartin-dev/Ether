@@ -89,7 +89,33 @@ public class HeadlessBatchRunner {
             double stability = Math.max(20.0, Math.min(100.0, 85.0 - (elapsed * 0.05) + (rand.nextDouble() * 5.0 - 2.5)));
             int cells = (int) Math.min(5000, 50 + (pop / 2000));
 
-            record.addSnapshot((int) yr, pop, food, currentTech, stability, cells);
+            Map<String, Double> metricsMap = new LinkedHashMap<>();
+            metricsMap.put("population", (double) pop);
+            metricsMap.put("foodPerCapita", food / Math.max(1, pop));
+            metricsMap.put("avgTechLevel", currentTech);
+            metricsMap.put("asabiyyah", stability);
+            metricsMap.put("gini", Math.max(0.1, Math.min(0.85, 0.25 + (elapsed * 0.001) + (rand.nextDouble() * 0.04))));
+            metricsMap.put("gdp", pop * currentTech * 1.5);
+            metricsMap.put("energyCaptured", pop * (10.0 + currentTech * 0.5));
+            metricsMap.put("energyPerCapita", 10.0 + currentTech * 0.5);
+            metricsMap.put("resourceDepletion", Math.min(100.0, elapsed * 0.2));
+            metricsMap.put("potableWater", Math.max(1000.0, 50000.0 - elapsed * 10.0));
+            metricsMap.put("entropyPollution", elapsed * 1.2);
+            metricsMap.put("temperature", 15.0 + Math.sin(yr / 50.0) * 1.5);
+            metricsMap.put("precipitation", 800.0 + Math.cos(yr / 40.0) * 100.0);
+            metricsMap.put("fertilityRate", Math.max(1.2, 5.0 - (currentTech * 0.03)));
+            metricsMap.put("lifeExpectancy", Math.min(85.0, 30.0 + (currentTech * 0.4)));
+            metricsMap.put("educationLevel", Math.min(100.0, currentTech * 0.8));
+            metricsMap.put("happiness", Math.max(10.0, Math.min(95.0, stability * 0.8 + (food / Math.max(1, pop)) * 2.0)));
+            metricsMap.put("conflict", Math.max(0.0, 100.0 - stability));
+            metricsMap.put("kardashev", currentTech > 10.0 ? (Math.log10(pop * (10.0 + currentTech * 0.5) * 1e6) - 6.0) / 10.0 : 0.0);
+            metricsMap.put("builtCapital", capital * pop);
+            metricsMap.put("collectiveMemory", currentTech * 100.0);
+            metricsMap.put("eliteOverproduction", (100.0 - stability) * 0.1);
+            metricsMap.put("collapseRisk", Math.max(0.0, (100.0 - stability) * 0.8 + (elapsed * 0.05)));
+            metricsMap.put("systemInterdependence", Math.min(100.0, currentTech * 0.7));
+
+            record.addSnapshot((int) yr, pop, food, currentTech, stability, cells, metricsMap);
         }
 
         SimulationRunRepository.getInstance().registerRun(record);

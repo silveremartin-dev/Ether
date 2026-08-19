@@ -187,10 +187,10 @@ public class SvgMapIngestor {
         if (scenario == null || result == null) return;
 
         if (result.densityBase64 != null) scenario.setCustomDensityBase64(result.densityBase64);
-        if (result.isoglossBase64 != null) scenario.setCustomIsoglossBase64(result.isoglossBase64);
-        if (result.kinshipBase64 != null) scenario.setCustomKinshipBase64(result.kinshipBase64);
-        if (result.ritualsBase64 != null) scenario.setCustomRitualsBase64(result.ritualsBase64);
-        if (result.sovereigntyBase64 != null) scenario.setCustomSovereigntyBase64(result.sovereigntyBase64);
+        if (result.isoglossBase64 != null) scenario.setCustomTensorMapBase64(0, result.isoglossBase64);
+        if (result.kinshipBase64 != null) scenario.setCustomTensorMapBase64(1, result.kinshipBase64);
+        if (result.ritualsBase64 != null) scenario.setCustomTensorMapBase64(2, result.ritualsBase64);
+        if (result.sovereigntyBase64 != null) scenario.setCustomTensorMapBase64(3, result.sovereigntyBase64);
 
         logger.info("Successfully applied SVG vector cartography ({} parsed features) to scenario '{}'",
                 result.parsedFeaturesCount, scenario.getName());

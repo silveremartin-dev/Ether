@@ -50,6 +50,29 @@ public class HistoricalAutoCalibrationTest {
     }
 
     @Test
+    public void testInterpolatedBenchmarkValue() {
+        double exactVal1900 = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", 1900);
+        double exactVal2000 = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", 2000);
+        double pchip1950 = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", 1950, HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+        double catmull1950 = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", 1950, HistoricalValidationKernel.InterpolationMethod.CATMULL_ROM_SPLINE);
+        double linear1950 = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", 1950, HistoricalValidationKernel.InterpolationMethod.LINEAR);
+
+        assertTrue(exactVal1900 > 0, "1900 benchmark population should be positive.");
+        assertTrue(exactVal2000 > exactVal1900, "2000 benchmark population should exceed 1900.");
+        assertTrue(pchip1950 >= exactVal1900 && pchip1950 <= exactVal2000, "PCHIP 1950 interpolated population should be monotonic between 1900 and 2000.");
+        assertTrue(catmull1950 > 0, "Catmull-Rom spline output should be valid.");
+        assertTrue(linear1950 >= exactVal1900 && linear1950 <= exactVal2000, "Linear 1950 interpolated population should be valid.");
+
+        // C1 Differentiability Check: numerical derivative dy/dt around year 1950
+        double eps = 1e-4;
+        double valMinus = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", 1950.0 - eps, HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+        double valPlus = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", 1950.0 + eps, HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+        double derivative = (valPlus - valMinus) / (2.0 * eps);
+
+        assertTrue(derivative > 0, "Derivative dy/dt of population around 1950 should be positive and well-defined (C1 differentiable).");
+    }
+
+    @Test
     public void testAutoCalibrationExecution() {
         HistoricalAutoCalibrator.CalibrationResult bestFit = HistoricalAutoCalibrator.evaluateAndAutoCalibrate();
 

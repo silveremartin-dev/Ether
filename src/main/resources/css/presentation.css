@@ -446,3 +446,88 @@
     -fx-fill: #00f2fe;
     -fx-font-weight: bold;
 }
+
+.subcard-section {
+    -fx-background-color: rgba(14, 18, 40, 0.75);
+    -fx-padding: 12px;
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(0, 242, 254, 0.4);
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+}
+
+.sidebar-card {
+    -fx-background-color: rgba(12, 16, 36, 0.85);
+    -fx-padding: 16px;
+    -fx-background-radius: 10px;
+    -fx-border-color: linear-gradient(to right, rgba(0, 242, 254, 0.45), rgba(255, 0, 127, 0.45));
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 242, 254, 0.25), 14, 0, 0, 4);
+}
+
+.sidebar-recap-box {
+    -fx-background-color: rgba(0, 242, 254, 0.08);
+    -fx-padding: 10px;
+    -fx-background-radius: 6px;
+}
+
+.sidebar-recap-text {
+    -fx-text-fill: #f1f5f9;
+    -fx-font-size: 11px;
+}
+
+.sidebar-recap-highlight {
+    -fx-text-fill: #ff007f;
+    -fx-font-weight: bold;
+}
+
+.preset-cell-name {
+    -fx-text-fill: #f1f5f9;
+}
+
+.preset-cell-date {
+    -fx-text-fill: #00f2fe;
+}
+
+.sidebar-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #00f2fe;
+}
+
+.sidebar-recap-header {
+    -fx-text-fill: #38bdf8;
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+}
+
+.hud-panel {
+    -fx-background-color: rgba(10, 13, 29, 0.92);
+    -fx-padding: 10px;
+    -fx-background-radius: 0 0 0 10;
+    -fx-border-color: #00f2fe;
+    -fx-border-width: 0 0 1.5 1.5;
+    -fx-border-radius: 0 0 0 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 242, 254, 0.4), 10, 0, 0, 0);
+}
+
+.hud-label {
+    -fx-text-fill: #00f2fe;
+    -fx-font-size: 11px;
+    -fx-font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.branching-panel {
+    -fx-background-color: rgba(10, 13, 29, 0.95);
+    -fx-border-color: #ff007f;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.branching-list-view {
+    -fx-control-inner-background: #070913;
+    -fx-font-family: 'Consolas', monospace;
+    -fx-font-size: 11px;
+    -fx-text-fill: #00f2fe;
+}

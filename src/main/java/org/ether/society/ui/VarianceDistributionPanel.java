@@ -69,17 +69,17 @@ public class VarianceDistributionPanel extends VBox {
 
         // Header
         headerTitle = new Label();
-        headerTitle.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #0f172a;");
+        headerTitle.getStyleClass().add("label-title");
 
         subtitle = new Label();
-        subtitle.setStyle("-fx-font-size: 10px; -fx-text-fill: #475569;");
+        subtitle.getStyleClass().add("hint-label");
         subtitle.setWrapText(true);
 
         VBox headerBox = new VBox(3, headerTitle, subtitle);
 
         // Variable Selector
         comboPrompt = new Label();
-        comboPrompt.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #0f172a;");
+        comboPrompt.getStyleClass().add("control-label");
 
         variableCombo = new ComboBox<>();
         variableCombo.setMaxWidth(Double.MAX_VALUE);
@@ -102,9 +102,9 @@ public class VarianceDistributionPanel extends VBox {
         kpiGrid.add(giniKpiBox, 0, 1);
         kpiGrid.add(minMaxKpiBox, 1, 1, 2, 1);
 
-        lblSpreadDesc.setStyle("-fx-font-size: 11px; -fx-text-fill: #334155; -fx-font-style: italic;");
+        lblSpreadDesc.getStyleClass().add("hint-label");
         VBox descCard = new VBox(lblSpreadDesc);
-        descCard.setStyle("-fx-padding: 6 10; -fx-background-color: rgba(241, 245, 249, 0.8); -fx-background-radius: 6; -fx-border-color: rgba(203, 213, 225, 0.4);");
+        descCard.getStyleClass().add("hint-card");
 
         // Histogram BarChart
         xAxis = new CategoryAxis();
@@ -167,10 +167,10 @@ public class VarianceDistributionPanel extends VBox {
     private HBox createMiniKpi(Label titleLabel, Label valLabel) {
         HBox box = new HBox(6);
         box.setAlignment(Pos.CENTER_LEFT);
-        box.setStyle("-fx-background-color: rgba(241, 245, 249, 0.7); -fx-padding: 4 8; -fx-background-radius: 4; -fx-border-color: rgba(203, 213, 225, 0.3);");
+        box.getStyleClass().add("info-badge");
 
-        titleLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #475569;");
-        valLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #0284c7;");
+        titleLabel.getStyleClass().add("control-label");
+        valLabel.getStyleClass().add("value-label");
 
         box.getChildren().addAll(titleLabel, valLabel);
         return box;

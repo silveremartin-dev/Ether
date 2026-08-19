@@ -219,8 +219,6 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     private void initUI() {
         VBox controlsBox = new VBox(15);
-        controlsBox.setPrefWidth(480);
-        controlsBox.setMinWidth(480);
         controlsBox.setPadding(new Insets(10));
 
         headerLabel = new Label();
@@ -242,6 +240,9 @@ public class PlanetGeneratorPanel extends BorderPane {
 
             @Override
             public void onSavePreset(String name) {
+                if (!validatePlanetSetup()) {
+                    return;
+                }
                 PlanetPreset current = buildPresetFromUI();
                 PlanetPreset custom = current.withName(name);
                 topPresetBar.getPresetCombo().getItems().add(custom);
@@ -779,6 +780,8 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         ScrollPane scrollControls = new ScrollPane(controlsBox);
         scrollControls.setFitToWidth(true);
+        scrollControls.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollControls.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollControls.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
         // --- Center: Map Preview & Generation ---
@@ -2207,10 +2210,10 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (precipFormatHintLabel != null) precipFormatHintLabel.setText(I18n.getOrDefault("planet.climate.precip.format", "PNG niveaux de gris (projection équirectangulaire 2:1) :\n  Noir (0) = 0 mm/an | Blanc (255) = 3 000 mm/an"));
             if (seasonFormatHintLabel != null) seasonFormatHintLabel.setText(I18n.getOrDefault("planet.climate.season.format", "PNG niveaux de gris (projection équirectangulaire 2:1) :\n  Noir (0) = 0°C d'amplitude | Blanc (255) = 50°C d'amplitude annuelle"));
 
-            if (bodyTypeCombo != null) {
+            if (bodyTypeCombo != null && bodyTypeCombo.getCellFactory() != null) {
                 bodyTypeCombo.setButtonCell(bodyTypeCombo.getCellFactory().call(null));
             }
-            if (mapSourceCombo != null) {
+            if (mapSourceCombo != null && mapSourceCombo.getCellFactory() != null) {
                 mapSourceCombo.setButtonCell(mapSourceCombo.getCellFactory().call(null));
             }
 
@@ -2250,6 +2253,66 @@ public class PlanetGeneratorPanel extends BorderPane {
         if (loadSeasonalityBtn != null) loadSeasonalityBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.seasonality_load", "Charger une carte de variabilité saisonnière externe")));
         if (clearSeasonalityBtn != null) clearSeasonalityBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.seasonality_clear", "Effacer la carte de variabilité saisonnière")));
         if (randSeedBtn != null) randSeedBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.seed_rand", "Générer une nouvelle graine aléatoire")));
+    }
+
+    public boolean validatePlanetSetup() {
+        boolean isValid = true;
+        StringBuilder errorMsg = new StringBuilder();
+
+        if (radioImport != null && radioImport.isSelected() && customElevImage == null) {
+            isValid = false;
+            errorMsg.append("• ").append(I18n.getOrDefault("planet.validation.missing_elev_map", "Image heightmap d'altitude manquante en mode d'importation.")).append("\n");
+            if (loadElevBtn != null) {
+                loadElevBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+            }
+        } else if (loadElevBtn != null) {
+            loadElevBtn.setStyle("");
+        }
+
+        if (radioTempImport != null && radioTempImport.isSelected() && customClimateImage == null) {
+            isValid = false;
+            errorMsg.append("• ").append(I18n.getOrDefault("planet.validation.missing_temp_map", "Carte thermique manquante en mode d'importation.")).append("\n");
+            if (loadClimateBtn != null) {
+                loadClimateBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+            }
+        } else if (loadClimateBtn != null) {
+            loadClimateBtn.setStyle("");
+        }
+
+        if (radioPrecipImport != null && radioPrecipImport.isSelected() && customRainfallImage == null) {
+            isValid = false;
+            errorMsg.append("• ").append(I18n.getOrDefault("planet.validation.missing_precip_map", "Carte pluviométrique manquante en mode d'importation.")).append("\n");
+            if (loadRainfallBtn != null) {
+                loadRainfallBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+            }
+        } else if (loadRainfallBtn != null) {
+            loadRainfallBtn.setStyle("");
+        }
+
+        if (radioSeasonImport != null && radioSeasonImport.isSelected() && customSeasonalityImage == null) {
+            isValid = false;
+            errorMsg.append("• ").append(I18n.getOrDefault("planet.validation.missing_season_map", "Carte de saisonnalité manquante en mode d'importation.")).append("\n");
+            if (loadSeasonalityBtn != null) {
+                loadSeasonalityBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+            }
+        } else if (loadSeasonalityBtn != null) {
+            loadSeasonalityBtn.setStyle("");
+        }
+
+        if (minAltSlider != null && maxAltSlider != null && minAltSlider.getValue() >= maxAltSlider.getValue()) {
+            isValid = false;
+            errorMsg.append("• ").append(I18n.getOrDefault("planet.validation.invalid_alt_range", "L'altitude minimale doit être strictly inférieure à l'altitude maximale.")).append("\n");
+        }
+
+        if (!isValid) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle(I18n.getOrDefault("planet.validation.title", "Validation du Contexte Planétaire (Onglet 1)"));
+            alert.setHeaderText(I18n.getOrDefault("planet.validation.header", "⚠️ Des paramètres ou des cartes obligatoires sont invalides ou manquants :"));
+            alert.setContentText(errorMsg.toString());
+            alert.showAndWait();
+        }
+
+        return isValid;
     }
 
 }

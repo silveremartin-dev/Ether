@@ -489,4 +489,176 @@
     -fx-font-weight: bold;
 }
 
+.subcard-section {
+    -fx-background-color: #f8fafc;
+    -fx-padding: 12px;
+    -fx-background-radius: 8px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+}
+
+.sidebar-card {
+    -fx-background-color: #ffffff;
+    -fx-padding: 16px;
+    -fx-background-radius: 10px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 8, 0, 0, 3);
+}
+
+.sidebar-recap-box {
+    -fx-background-color: #f1f5f9;
+    -fx-padding: 10px;
+    -fx-background-radius: 6px;
+}
+
+.sidebar-recap-text {
+    -fx-text-fill: #0f172a;
+    -fx-font-size: 11px;
+}
+
+.sidebar-recap-highlight {
+    -fx-text-fill: #6d28d9;
+    -fx-font-weight: bold;
+}
+
+.preset-cell-name {
+    -fx-text-fill: #0f172a;
+}
+
+.preset-cell-date {
+    -fx-text-fill: #0284c7;
+}
+
+.sidebar-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0369a1;
+}
+
+.sidebar-recap-header {
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+}
+
+.hud-panel {
+    -fx-background-color: #ffffff;
+    -fx-padding: 10px;
+    -fx-background-radius: 0 0 0 10;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 0 0 1 1;
+    -fx-border-radius: 0 0 0 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 8, 0, 0, 2);
+}
+
+.hud-label {
+    -fx-text-fill: #0f172a;
+    -fx-font-size: 11px;
+    -fx-font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.branching-panel {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #0284c7;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 8, 0, 0, 2);
+}
+
+.branching-list-view {
+    -fx-control-inner-background: #f8fafc;
+    -fx-font-family: 'Consolas', monospace;
+    -fx-font-size: 11px;
+    -fx-text-fill: #0f172a;
+}
+
+/* Subcard & Sidebar standardized styles for Tab 2 (ResourceDistributionPanel) */
+.subcard-procedural-box {
+    -fx-padding: 8px 0 0 12px;
+    -fx-border-color: #0284c7;
+    -fx-border-radius: 6px;
+    -fx-border-width: 0 0 0 3px;
+    -fx-background-color: rgba(240, 249, 255, 0.7);
+}
+
+.subcard-import-box {
+    -fx-padding: 8px 0 0 12px;
+    -fx-border-color: #7c3aed;
+    -fx-border-radius: 6px;
+    -fx-border-width: 0 0 0 3px;
+    -fx-background-color: rgba(245, 243, 255, 0.7);
+}
+
+.radio-proc {
+    -fx-text-fill: #0284c7;
+    -fx-font-weight: bold;
+}
+
+.radio-import {
+    -fx-text-fill: #7c3aed;
+    -fx-font-weight: bold;
+}
+
+.planet-context-badge {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0369a1;
+    -fx-padding: 6px 10px;
+    -fx-background-color: #e0f2fe;
+    -fx-background-radius: 6px;
+    -fx-border-color: #7dd3fc;
+    -fx-border-radius: 6px;
+}
+
+.subcard-status-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #0284c7;
+    -fx-font-style: italic;
+}
+
+.subcard-status-muted {
+    -fx-font-size: 11px;
+    -fx-text-fill: #64748b;
+    -fx-font-style: italic;
+}
+
+.button-accent-blue {
+    -fx-font-weight: bold;
+    -fx-text-fill: #0284c7;
+}
+
+.compatibility-success {
+    -fx-font-size: 11px;
+    -fx-text-fill: #059669;
+    -fx-font-weight: bold;
+}
+
+.compatibility-error {
+    -fx-font-size: 11px;
+    -fx-text-fill: #dc2626;
+    -fx-font-weight: bold;
+}
+
+.compatibility-neutral {
+    -fx-font-size: 11px;
+    -fx-text-fill: #64748b;
+}
+
+.transparent-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.map-canvas-shadow {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 10, 0, 0, 0);
+}
+
+.summary-centered-label {
+    -fx-alignment: center;
+}
+
+
 

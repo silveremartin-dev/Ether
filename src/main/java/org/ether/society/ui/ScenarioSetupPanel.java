@@ -724,6 +724,9 @@ public class ScenarioSetupPanel extends BorderPane {
 
             @Override
             public void onSavePreset(String name) {
+                if (!validateScenarioSetup()) {
+                    return;
+                }
                 Scenario custom = getScenario();
                 custom.setName(name);
                 scenarioRepo.saveOrUpdate(custom);
@@ -2355,20 +2358,20 @@ public class ScenarioSetupPanel extends BorderPane {
             if (s.getCulturalMutationRate() > 0 && culturalMutationRateSpinner != null && culturalMutationRateSpinner.getValueFactory() != null) {
                 culturalMutationRateSpinner.getValueFactory().setValue(s.getCulturalMutationRate());
             }
-            if (s.getCustomIsoglossBase64() != null && !s.getCustomIsoglossBase64().isBlank()) {
-                customIsoglossImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomIsoglossBase64());
+            if (s.getCustomTensorMapBase64(0) != null && !s.getCustomTensorMapBase64(0).isBlank()) {
+                customIsoglossImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomTensorMapBase64(0));
                 if (isoglossFileLabel != null) isoglossFileLabel.setText("📜 Calque Isoglosses Chargé");
             }
-            if (s.getCustomKinshipBase64() != null && !s.getCustomKinshipBase64().isBlank()) {
-                customKinshipImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomKinshipBase64());
+            if (s.getCustomTensorMapBase64(1) != null && !s.getCustomTensorMapBase64(1).isBlank()) {
+                customKinshipImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomTensorMapBase64(1));
                 if (kinshipFileLabel != null) kinshipFileLabel.setText("🏛️ Calque Parenté Chargé");
             }
-            if (s.getCustomRitualsBase64() != null && !s.getCustomRitualsBase64().isBlank()) {
-                customRitualsImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomRitualsBase64());
+            if (s.getCustomTensorMapBase64(2) != null && !s.getCustomTensorMapBase64(2).isBlank()) {
+                customRitualsImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomTensorMapBase64(2));
                 if (ritualsFileLabel != null) ritualsFileLabel.setText("🔮 Calque Croyances Chargé");
             }
-            if (s.getCustomSovereigntyBase64() != null && !s.getCustomSovereigntyBase64().isBlank()) {
-                customSovereigntyImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomSovereigntyBase64());
+            if (s.getCustomTensorMapBase64(3) != null && !s.getCustomTensorMapBase64(3).isBlank()) {
+                customSovereigntyImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomTensorMapBase64(3));
                 if (sovereigntyFileLabel != null) sovereigntyFileLabel.setText("👑 Calque Souveraineté Chargé");
             }
             if (currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
@@ -4250,6 +4253,8 @@ public class ScenarioSetupPanel extends BorderPane {
         });
     }
 
+
+
     private void handleStartOrCancel() {
         if (isCalculationRunning) {
             cancelCalculation();
@@ -4268,6 +4273,10 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void startSimulationDeferred() {
+        if (!validateScenarioSetup()) {
+            resetStartButtonState();
+            return;
+        }
         cancelRequested = false;
         setStartButtonCancelState();
         updateProgress(0.02, "⚡ Enregistrement du scénario & préparation du calcul H3...");
@@ -4948,16 +4957,16 @@ public class ScenarioSetupPanel extends BorderPane {
             s.setCulturalMutationRate(culturalMutationRateSpinner.getValue());
         }
         if (customIsoglossImage != null) {
-            s.setCustomIsoglossBase64(org.ether.society.data.ImageMapLoader.imageToBase64Png(customIsoglossImage));
+            s.setCustomTensorMapBase64(0, org.ether.society.data.ImageMapLoader.imageToBase64Png(customIsoglossImage));
         }
         if (customKinshipImage != null) {
-            s.setCustomKinshipBase64(org.ether.society.data.ImageMapLoader.imageToBase64Png(customKinshipImage));
+            s.setCustomTensorMapBase64(1, org.ether.society.data.ImageMapLoader.imageToBase64Png(customKinshipImage));
         }
         if (customRitualsImage != null) {
-            s.setCustomRitualsBase64(org.ether.society.data.ImageMapLoader.imageToBase64Png(customRitualsImage));
+            s.setCustomTensorMapBase64(2, org.ether.society.data.ImageMapLoader.imageToBase64Png(customRitualsImage));
         }
         if (customSovereigntyImage != null) {
-            s.setCustomSovereigntyBase64(org.ether.society.data.ImageMapLoader.imageToBase64Png(customSovereigntyImage));
+            s.setCustomTensorMapBase64(3, org.ether.society.data.ImageMapLoader.imageToBase64Png(customSovereigntyImage));
         }
 
         // Save Type B engine checkbox states
@@ -5176,4 +5185,95 @@ public class ScenarioSetupPanel extends BorderPane {
             setValue(newValue);
         }
     }
+
+    private java.util.function.Supplier<PlanetGeneratorPanel> planetPanelSupplier;
+    private java.util.function.Supplier<ResourceDistributionPanel> resourcePanelSupplier;
+
+    public void setPlanetPanelSupplier(java.util.function.Supplier<PlanetGeneratorPanel> supplier) {
+        this.planetPanelSupplier = supplier;
+    }
+
+    public void setResourcePanelSupplier(java.util.function.Supplier<ResourceDistributionPanel> supplier) {
+        this.resourcePanelSupplier = supplier;
+    }
+
+    public boolean validateScenarioSetup() {
+        boolean isValid = true;
+        StringBuilder errorMsg = new StringBuilder();
+
+        // 1. Cross-Tab Validation: Tab 1 (Planet) and Tab 2 (Ecology/Resource)
+        if (planetPanelSupplier != null && planetPanelSupplier.get() != null) {
+            boolean planetOk = planetPanelSupplier.get().validatePlanetSetup();
+            if (!planetOk) {
+                isValid = false;
+                errorMsg.append("• ").append(I18n.getOrDefault("scenario.validation.planet_failed", "L'Onglet 1 (Contexte Planétaire) contient des erreurs ou des cartes manquantes.")).append("\n");
+            }
+        }
+        if (resourcePanelSupplier != null && resourcePanelSupplier.get() != null) {
+            boolean ecoOk = resourcePanelSupplier.get().validateResourceSetup();
+            if (!ecoOk) {
+                isValid = false;
+                errorMsg.append("• ").append(I18n.getOrDefault("scenario.validation.resource_failed", "L'Onglet 2 (Écologie & Ressources) contient des erreurs ou des cartes manquantes.")).append("\n");
+            }
+        }
+
+        // 2. Dates Validation
+        if (startYearSpinner != null && endYearSpinner != null) {
+            int startYr = startYearSpinner.getValue();
+            int endYr = endYearSpinner.getValue();
+            if (startYr >= endYr) {
+                isValid = false;
+                errorMsg.append("• ").append(I18n.getOrDefault("scenario.validation.invalid_years", "L'année de début doit être strictement inférieure à l'année de fin.")).append("\n");
+                startYearSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+                endYearSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+            } else {
+                startYearSpinner.setStyle("");
+                endYearSpinner.setStyle("");
+            }
+        }
+
+        // 3. Population Count Validation
+        if (initialHumanCountSpinner != null) {
+            long count = initialHumanCountSpinner.getValue();
+            if (count <= 0) {
+                isValid = false;
+                errorMsg.append("• ").append(I18n.getOrDefault("scenario.validation.invalid_pop", "La population humaine initiale doit être supérieure à 0.")).append("\n");
+                initialHumanCountSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+            } else {
+                initialHumanCountSpinner.setStyle("");
+            }
+        }
+
+        // 4. Demographic Density Map Import
+        if (radioImportDemo != null && radioImportDemo.isSelected() && customDensityImage == null) {
+            isValid = false;
+            errorMsg.append("• ").append(I18n.getOrDefault("scenario.validation.missing_density_map", "Carte de densité démographique manquante en mode d'importation.")).append("\n");
+            if (loadDensityMapBtn != null) loadDensityMapBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+        } else if (loadDensityMapBtn != null) {
+            loadDensityMapBtn.setStyle("");
+        }
+
+        // 5. Cultural Tensor Dimensions Index Bounds Protection
+        if (cultureVectorDimSpinner != null) {
+            int dims = cultureVectorDimSpinner.getValue();
+            if (dims < 1 || dims > 32) {
+                isValid = false;
+                errorMsg.append("• ").append(I18n.getOrDefault("scenario.validation.invalid_tensor_dim", "La dimension des tenseurs culturels doit être comprise entre 1 et 32.")).append("\n");
+                cultureVectorDimSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+            } else {
+                cultureVectorDimSpinner.setStyle("");
+            }
+        }
+
+        if (!isValid) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle(I18n.getOrDefault("scenario.validation.title", "Validation du Scénario (Onglet 3)"));
+            alert.setHeaderText(I18n.getOrDefault("scenario.validation.header", "⚠️ Des paramètres ou pré-requis obligatoires sont invalides :"));
+            alert.setContentText(errorMsg.toString());
+            alert.showAndWait();
+        }
+
+        return isValid;
+    }
+
 }

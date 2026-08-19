@@ -23,10 +23,10 @@ public class SvgMapIngestorTest {
         HistoricalMapGenerator.populateScenarioHistoricalMaps(scenario);
 
         assertThat(scenario.getCustomDensityBase64()).isNotNull();
-        assertThat(scenario.getCustomIsoglossBase64()).isNotNull();
-        assertThat(scenario.getCustomKinshipBase64()).isNotNull();
-        assertThat(scenario.getCustomRitualsBase64()).isNotNull();
-        assertThat(scenario.getCustomSovereigntyBase64()).isNotNull();
+        assertThat(scenario.getCustomTensorMapBase64(0)).isNotNull();
+        assertThat(scenario.getCustomTensorMapBase64(1)).isNotNull();
+        assertThat(scenario.getCustomTensorMapBase64(2)).isNotNull();
+        assertThat(scenario.getCustomTensorMapBase64(3)).isNotNull();
     }
 
     @Test

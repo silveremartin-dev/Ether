@@ -105,7 +105,7 @@ public class ThermodynamicMigrationEngine {
         }
 
         if (migrationEvents > 0) {
-            logger.info("Migration Engine: Spatial Onsager demographic vector shifts evaluated across {} spatial neighbor pairs.", migrationEvents);
+            logger.debug("Migration Engine: Spatial Onsager demographic vector shifts evaluated across {} spatial neighbor pairs.", migrationEvents);
         }
     }
 

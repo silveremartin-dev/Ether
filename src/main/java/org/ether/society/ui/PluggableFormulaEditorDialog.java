@@ -68,7 +68,7 @@ public class PluggableFormulaEditorDialog extends Stage {
 
         VBox root = new VBox(12);
         root.setPadding(new Insets(14));
-        root.setStyle("-fx-background-color: #0f172a; -fx-text-fill: white;");
+        root.getStyleClass().add("glass-panel");
 
         // Header Title
         headerLabel = new Label();
@@ -186,6 +186,7 @@ public class PluggableFormulaEditorDialog extends Stage {
         root.getChildren().addAll(headerLabel, mainSplit);
 
         Scene scene = new Scene(root, 840, 560);
+        Theme.applyCurrentTheme(scene);
         setScene(scene);
 
         updateTexts();

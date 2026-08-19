@@ -28,5 +28,9 @@ public interface ISimulationEngine {
     default void setPauseAtNextEvent(boolean pause) {}
 
     default boolean isPauseAtNextEvent() { return false; }
+
+    default H3SimulationEngine.TemporalScale getTemporalScale() { return H3SimulationEngine.TemporalScale.DAILY; }
+
+    default void setTemporalScale(H3SimulationEngine.TemporalScale scale) {}
 }
 

@@ -33,13 +33,7 @@ public class PerformanceHUD extends VBox {
     private final Label profilerLabel;
 
     public PerformanceHUD() {
-        // Styling - Top Right alignment, semi-transparent
-        setStyle("-fx-background-color: rgba(40, 40, 40, 0.85);" +
-                "-fx-padding: 10;" +
-                "-fx-background-radius: 0 0 0 10;" + // Rounded bottom-left corner
-                "-fx-border-color: rgba(255, 255, 255, 0.2);" +
-                "-fx-border-width: 0 0 1 1;" +
-                "-fx-border-radius: 0 0 0 10;");
+        getStyleClass().add("hud-panel");
 
         setPadding(new Insets(10));
         setSpacing(5);
@@ -61,9 +55,7 @@ public class PerformanceHUD extends VBox {
 
     private Label createLabel(String text) {
         Label label = new Label(text);
-        label.setStyle("-fx-text-fill: white;" +
-                "-fx-font-size: 11px;" +
-                "-fx-font-family: 'Consolas', 'Monaco', monospace;");
+        label.getStyleClass().add("hud-label");
         return label;
     }
 

@@ -23,8 +23,8 @@ public class GenerateMapArtifactsTest {
         roman.setPopulationDensityType("ROMAN_EMPIRE");
         HistoricalMapGenerator.populateScenarioHistoricalMaps(roman);
         saveBase64ToPng(roman.getCustomDensityBase64(), new File(dir, "roman_empire_density.png"));
-        saveBase64ToPng(roman.getCustomSovereigntyBase64(), new File(dir, "roman_empire_sovereignty.png"));
-        saveBase64ToPng(roman.getCustomIsoglossBase64(), new File(dir, "roman_empire_isogloss.png"));
+        saveBase64ToPng(roman.getCustomTensorMapBase64(3), new File(dir, "roman_empire_sovereignty.png"));
+        saveBase64ToPng(roman.getCustomTensorMapBase64(0), new File(dir, "roman_empire_isogloss.png"));
 
         // 2. Croissant Fertile
         Scenario fertile = new Scenario();
@@ -32,8 +32,8 @@ public class GenerateMapArtifactsTest {
         fertile.setPopulationDensityType("FERTILE_CRESCENT");
         HistoricalMapGenerator.populateScenarioHistoricalMaps(fertile);
         saveBase64ToPng(fertile.getCustomDensityBase64(), new File(dir, "fertile_crescent_density.png"));
-        saveBase64ToPng(fertile.getCustomRitualsBase64(), new File(dir, "fertile_crescent_rituals.png"));
-        saveBase64ToPng(fertile.getCustomIsoglossBase64(), new File(dir, "fertile_crescent_isogloss.png"));
+        saveBase64ToPng(fertile.getCustomTensorMapBase64(2), new File(dir, "fertile_crescent_rituals.png"));
+        saveBase64ToPng(fertile.getCustomTensorMapBase64(0), new File(dir, "fertile_crescent_isogloss.png"));
 
         // 3. Sortie d'Afrique
         Scenario africa = new Scenario();
@@ -41,8 +41,8 @@ public class GenerateMapArtifactsTest {
         africa.setPopulationDensityType("ONE_CONTINENT");
         HistoricalMapGenerator.populateScenarioHistoricalMaps(africa);
         saveBase64ToPng(africa.getCustomDensityBase64(), new File(dir, "out_of_africa_density.png"));
-        saveBase64ToPng(africa.getCustomKinshipBase64(), new File(dir, "out_of_africa_kinship.png"));
-        saveBase64ToPng(africa.getCustomIsoglossBase64(), new File(dir, "out_of_africa_isogloss.png"));
+        saveBase64ToPng(africa.getCustomTensorMapBase64(1), new File(dir, "out_of_africa_kinship.png"));
+        saveBase64ToPng(africa.getCustomTensorMapBase64(0), new File(dir, "out_of_africa_isogloss.png"));
 
         System.out.println("GENERATED MAP ARTIFACTS SUCCESSFULLY");
     }

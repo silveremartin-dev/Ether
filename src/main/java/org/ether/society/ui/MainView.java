@@ -107,6 +107,12 @@ public class MainView extends StackPane {
 
         // 3. Setup Tab
         setupPanel = new ScenarioSetupPanel(this::onStartSimulation);
+        if (planetGeneratorPanel != null) {
+            setupPanel.setPlanetPanelSupplier(() -> planetGeneratorPanel);
+        }
+        if (resourcePanel != null) {
+            setupPanel.setResourcePanelSupplier(() -> resourcePanel);
+        }
         setupPanel.setOnScenarioLoadedCallback((planet, eco) -> {
             if (planet != null && planetGeneratorPanel != null) {
                 planetGeneratorPanel.applyPreset(planet);
@@ -233,6 +239,7 @@ public class MainView extends StackPane {
         // 2. Notification Overlay
         notificationOverlay = new NotificationOverlay();
         notificationOverlay.setPickOnBounds(false);
+        notificationOverlay.setMaxSize(javafx.scene.layout.Region.USE_PREF_SIZE, javafx.scene.layout.Region.USE_PREF_SIZE);
         StackPane.setAlignment(notificationOverlay, Pos.BOTTOM_CENTER);
         mapStack.getChildren().add(notificationOverlay);
 
@@ -264,6 +271,7 @@ public class MainView extends StackPane {
 
         // 5. Color Legend Component (Bottom-Right overlay on map StackPane)
         colorLegend = new ColorLegend();
+        colorLegend.setMaxSize(javafx.scene.layout.Region.USE_PREF_SIZE, javafx.scene.layout.Region.USE_PREF_SIZE);
         colorLegend.updateFromCanvas(mapCanvas);
         if (controlPanel != null) {
             controlPanel.setColorLegend(colorLegend);
@@ -291,14 +299,20 @@ public class MainView extends StackPane {
 
         javafx.scene.control.ScrollPane controlScroll = new javafx.scene.control.ScrollPane(controlPanel);
         controlScroll.setFitToWidth(true);
+        controlScroll.setHbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
+        controlScroll.setVbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.AS_NEEDED);
         controlScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
         javafx.scene.control.ScrollPane statsScroll = new javafx.scene.control.ScrollPane(statsPanel);
         statsScroll.setFitToWidth(true);
+        statsScroll.setHbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
+        statsScroll.setVbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.AS_NEEDED);
         statsScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
         javafx.scene.control.ScrollPane godScroll = new javafx.scene.control.ScrollPane(godModePanel);
         godScroll.setFitToWidth(true);
+        godScroll.setHbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
+        godScroll.setVbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.AS_NEEDED);
         godScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
         Tab controlTab = new Tab(I18n.getOrDefault("sim.tab.controls", "🎛️ Rendu 3D & Contrôles"), controlScroll);
@@ -329,7 +343,7 @@ public class MainView extends StackPane {
         HBox statusBar = new HBox(statusBarLabel);
         statusBar.setAlignment(Pos.CENTER_LEFT);
         statusBar.setStyle("-fx-background-color: rgba(15, 23, 42, 0.90); -fx-padding: 5 14; -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 6;");
-        statusBar.setMaxWidth(600);
+        statusBar.setMaxSize(600, javafx.scene.layout.Region.USE_PREF_SIZE);
         StackPane.setAlignment(statusBar, Pos.BOTTOM_LEFT);
         StackPane.setMargin(statusBar, new javafx.geometry.Insets(0, 0, 10, 20));
         mapStack.getChildren().add(statusBar);
@@ -529,7 +543,6 @@ public class MainView extends StackPane {
                     javafx.application.Platform.runLater(() -> {
                         if (mapCanvas != null) {
                             mapCanvas.setCurrentDateStr(dateStr);
-                            mapCanvas.captureTickFrame(currentTick);
                         }
                     });
                 }
