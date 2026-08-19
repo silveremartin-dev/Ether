@@ -16,7 +16,7 @@ echo "  Target Ticks    : ${TICKS}"
 echo "  H3 Grid Cells   : ${CELLS}"
 echo "----------------------------------------------------------"
 
-JAR_PATH="target/society-simulation-2.0.0-SNAPSHOT-jar-with-dependencies.jar"
+JAR_PATH="target/society-simulation-2.0.0-SNAPSHOT-executable.jar"
 
 if [ ! -f "$JAR_PATH" ]; then
     echo "🔨 Building executable JAR..."
@@ -24,4 +24,4 @@ if [ ! -f "$JAR_PATH" ]; then
 fi
 
 echo "🚀 Executing Headless Batch Run..."
-java -jar "$JAR_PATH" --scenario="${SCENARIO}" --ticks="${TICKS}" --cells="${CELLS}" --profile
+java --add-modules jdk.incubator.vector -jar "$JAR_PATH" --headless --scenario="${SCENARIO}" --ticks="${TICKS}" --cells="${CELLS}" --profile

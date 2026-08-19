@@ -71,6 +71,16 @@ public class TimeManager {
     }
 
     /**
+     * Advances time by the specified number of days.
+     */
+    public void advanceDays(int days) {
+        int count = Math.max(1, days);
+        for (int i = 0; i < count; i++) {
+            advanceDay();
+        }
+    }
+
+    /**
      * Advances time by one month.
      */
     public void advanceMonth() {

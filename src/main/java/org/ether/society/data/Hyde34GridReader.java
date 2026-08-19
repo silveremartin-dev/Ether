@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Native Esri ASCII Grid (.asc) and NetCDF (.nc) Reader for HYDE 3.4 (History Database of the Global Environment).
@@ -91,7 +93,7 @@ public class Hyde34GridReader {
                 }
             }
 
-            // 3. Resample grid to 1024x512 Ether Canvas
+            // 3. Resample 4320x2160 real grid to 1024x512 Ether Canvas with Fine Grayscale Density
             BufferedImage img = new BufferedImage(ETHER_WIDTH, ETHER_HEIGHT, BufferedImage.TYPE_INT_RGB);
             for (int y = 0; y < ETHER_HEIGHT; y++) {
                 int srcR = (int) ((y / (double) ETHER_HEIGHT) * meta.nrows);
@@ -102,10 +104,17 @@ public class Hyde34GridReader {
                     srcC = Math.max(0, Math.min(meta.ncols - 1, srcC));
 
                     float val = grid[srcR][srcC];
-                    float norm = Math.min(1.0f, val / maxVal);
-                    int gray = (int) (norm * 255.0f);
-                    int rgb = (gray << 16) | (gray << 8) | gray;
-                    img.setRGB(x, y, rgb);
+                    if (val < 0 || val == meta.nodataValue) {
+                        img.setRGB(x, y, 0x050811); // Deep Ocean Dark Background
+                    } else if (val == 0.0f) {
+                        img.setRGB(x, y, 0x182030); // Land Baseline (Uninhabited)
+                    } else {
+                        // Logarithmic scale for smooth population density transition
+                        double logNorm = Math.log1p(val) / Math.log1p(maxVal);
+                        int gray = Math.min(255, Math.max(20, (int) (logNorm * 235.0) + 20));
+                        int rgb = (gray << 16) | (gray << 8) | gray;
+                        img.setRGB(x, y, rgb);
+                    }
                 }
             }
 
@@ -117,23 +126,81 @@ public class Hyde34GridReader {
     }
 
     /**
+     * Maps HYDE population density (inh/km2) or grid cell count to the official Copernicus / Utrecht University HYDE color palette.
+     */
+    public static int getHydeColor(float density, boolean isLand) {
+        if (!isLand) {
+            return 0xE0F3F8; // Light Blue Ocean (#e0f3f8)
+        }
+        if (density <= 0.0f) {
+            return 0xFFFFFF; // Uninhabited Land (#ffffff)
+        } else if (density <= 10.0f) {
+            return 0x7EF0FF; // Cyan (0.0 - 10.0 inh/km2)
+        } else if (density <= 25.0f) {
+            return 0x66FFCC; // Cyan-Green (10.0 - 25.0 inh/km2)
+        } else if (density <= 50.0f) {
+            return 0x36E09E; // Green (25.0 - 50.0 inh/km2)
+        } else if (density <= 100.0f) {
+            return 0xA0F050; // Yellow-Green (50.0 - 100.0 inh/km2)
+        } else if (density <= 250.0f) {
+            return 0xFFEB3B; // Yellow (100.0 - 250.0 inh/km2)
+        } else if (density <= 500.0f) {
+            return 0xFF9800; // Orange (250.0 - 500.0 inh/km2)
+        } else {
+            return 0xF44336; // Red (> 500.0 inh/km2)
+        }
+    }
+
+    /**
      * Reads a local HYDE 3.4 ASCII grid file for a specific scenario year.
      */
     public static BufferedImage loadForYear(long year) {
-        String fileName = "popc_" + (year < 0 ? Math.abs(year) + "BC" : year + "AD") + ".asc";
-        File f = new File("user_data/maps/hyde34/" + fileName);
-        if (!f.exists()) {
-            f = new File("data/maps/hyde34/" + fileName);
+        String yearTag = DataDownloaderService.getHydeYearTag(year);
+        String zipName = yearTag + "_pop.zip";
+        File zipFile = new File("user_data/maps/hyde34/" + zipName);
+        if (!zipFile.exists()) {
+            zipFile = new File("data/maps/hyde34/" + zipName);
+        }
+        if (!zipFile.exists() && year == 0) {
+            zipFile = new File("data/maps/hyde34/0AD_pop.zip");
         }
 
-        if (f.exists() && f.isFile()) {
-            try (InputStream is = new FileInputStream(f)) {
-                logger.info("Ingesting local HYDE 3.4 Grid for year {}: {}", year, f.getAbsolutePath());
-                return readAsciiGridToImage(is);
-            } catch (Exception e) {
-                logger.warn("Error reading HYDE 3.4 file '{}': {}", f.getAbsolutePath(), e.getMessage());
+        if (!zipFile.exists() || zipFile.length() < 100000) {
+            logger.info("Local HYDE 3.4 archive '{}' missing. Triggering empirical dataset downloader...", zipName);
+            DataDownloaderService.downloadHydeGridForYear(year);
+            zipFile = new File("data/maps/hyde34/" + zipName);
+            if (!zipFile.exists() && year == 0) {
+                zipFile = new File("data/maps/hyde34/0AD_pop.zip");
             }
         }
-        return null;
+
+        if (zipFile.exists() && zipFile.isFile() && zipFile.length() > 100000) {
+            try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
+                ZipEntry entry;
+                while ((entry = zis.getNextEntry()) != null) {
+                    String entryName = entry.getName().toLowerCase();
+                    if (entryName.startsWith("popc_") && entryName.endsWith(".asc")) {
+                        logger.info("Streaming empirical HYDE 3.4 grid '{}' directly from ZIP archive {} for year {}...", entry.getName(), zipFile.getName(), year);
+                        return readAsciiGridToImage(zis);
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Error streaming HYDE 3.4 grid from ZIP '{}': {}", zipFile.getAbsolutePath(), e.getMessage());
+            }
+        }
+
+        // Direct ASC fallback if available
+        String ascName = "popc_" + yearTag + ".asc";
+        File ascFile = new File("data/maps/hyde34/" + ascName);
+        if (ascFile.exists()) {
+            try (InputStream is = new FileInputStream(ascFile)) {
+                logger.info("Ingesting local HYDE 3.4 ASC File for year {}: {}", year, ascFile.getAbsolutePath());
+                return readAsciiGridToImage(is);
+            } catch (Exception e) {
+                logger.error("Error reading HYDE 3.4 ASC file '{}': {}", ascFile.getAbsolutePath(), e.getMessage());
+            }
+        }
+        
+        throw new IllegalStateException("ZERO FALLBACK VIOLATION: Failed to stream empirical HYDE 3.4 raster grid for year " + year + " from ZIP archive " + zipName);
     }
 }

@@ -24,7 +24,7 @@ Write-Host "  Master Host : $MasterHost" -ForegroundColor Yellow
 Write-Host "  Port        : $Port" -ForegroundColor Yellow
 Write-Host "----------------------------------------------------------"
 
-$JAR_PATH = "target/society-simulation-2.0.0-SNAPSHOT-jar-with-dependencies.jar"
+$JAR_PATH = "target/society-simulation-2.0.0-SNAPSHOT-executable.jar"
 
 if (-not (Test-Path $JAR_PATH)) {
     Write-Host "🔨 Building executable JAR..." -ForegroundColor Yellow
@@ -32,4 +32,4 @@ if (-not (Test-Path $JAR_PATH)) {
 }
 
 Write-Host "🔗 Connecting Worker Node to Master at ${MasterHost}:${Port}..." -ForegroundColor Green
-java -jar $JAR_PATH --mode=cluster --role=worker --master-host=$MasterHost --port=$Port --secret=$Secret
+java --add-modules jdk.incubator.vector -jar $JAR_PATH --headless --mode=cluster --role=worker --master-host=$MasterHost --port=$Port --secret=$Secret

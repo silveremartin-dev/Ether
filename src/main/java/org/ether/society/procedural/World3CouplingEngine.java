@@ -58,8 +58,8 @@ public class World3CouplingEngine {
 
             // 4. Persistent Pollution Generation (PPG) vs Assimilation (PPA)
             double ppg = industrialOutput * 0.01 * deltaYears;
-            double ppa = pollution * 0.05 * deltaYears; // Biospheric natural assimilation rate
-            cell.setPollutionLevel(Math.max(0.0, pollution + ppg - ppa));
+            double ppaFactor = Math.exp(-0.05 * Math.max(0.001, deltaYears)); // Stable biospheric assimilation
+            cell.setPollutionLevel(Math.max(0.0, pollution * ppaFactor + ppg));
 
             // 5. Non-Renewable Resource Depletion (NRUR)
             double nrur = industrialOutput * 0.005 * deltaYears;

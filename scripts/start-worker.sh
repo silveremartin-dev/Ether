@@ -15,7 +15,7 @@ echo "  Master Host : ${MASTER_HOST}"
 echo "  Port        : ${PORT}"
 echo "----------------------------------------------------------"
 
-JAR_PATH="target/society-simulation-2.0.0-SNAPSHOT-jar-with-dependencies.jar"
+JAR_PATH="target/society-simulation-2.0.0-SNAPSHOT-executable.jar"
 
 if [ ! -f "$JAR_PATH" ]; then
     echo "🔨 Building executable JAR..."
@@ -23,4 +23,4 @@ if [ ! -f "$JAR_PATH" ]; then
 fi
 
 echo "🔗 Connecting Worker Node to Master at ${MASTER_HOST}:${PORT}..."
-java -jar "$JAR_PATH" --mode=cluster --role=worker --master-host="${MASTER_HOST}" --port="${PORT}" --secret="${SECRET}"
+java --add-modules jdk.incubator.vector -jar "$JAR_PATH" --headless --mode=cluster --role=worker --master-host="${MASTER_HOST}" --port="${PORT}" --secret="${SECRET}"

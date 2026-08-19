@@ -9,7 +9,12 @@ echo ========================================
 echo.
 
 echo Stopping PostgreSQL database...
-docker-compose down
+where docker-compose >nul 2>&1
+if %errorlevel% equ 0 (
+    docker-compose down
+) else (
+    docker compose down
+)
 
 if %errorlevel% eq 0 (
     echo.

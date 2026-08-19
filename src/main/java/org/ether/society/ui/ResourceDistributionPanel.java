@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -1091,11 +1092,17 @@ public class ResourceDistributionPanel extends BorderPane {
         );
 
 
+        controlsBox.setPrefWidth(460);
+        controlsBox.setMinWidth(460);
+
         ScrollPane scrollControls = new ScrollPane(controlsBox);
         scrollControls.setFitToWidth(true);
         scrollControls.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollControls.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollControls.getStyleClass().add("transparent-scroll-pane");
+        scrollControls.setPrefWidth(480);
+        scrollControls.setMinWidth(480);
+        scrollControls.setMaxWidth(480);
 
         // --- Center / Right View: Interactive Visualization & Summary ---
         VBox centerBox = new VBox(15);
@@ -1779,32 +1786,39 @@ public class ResourceDistributionPanel extends BorderPane {
             try (var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png")) {
                 if (biomeStream != null) {
                     customBiomeImage = new Image(biomeStream);
-                    biomeFileLabel.setText("📷 Earth MODIS Biomes");
+                    if (biomeFileLabel != null) biomeFileLabel.setText("🌿 Earth MODIS Biomes");
                     if (radioImportBiome != null) radioImportBiome.setSelected(true);
                 }
             } catch (Exception ex) {
                 logger.warn("Could not load default earth biome resource map", ex);
             }
-            // Set geology source to earth and trigger hydro load
             if (geologySourceCombo != null) geologySourceCombo.setValue("earth");
+            if (resourceFileLabel != null) resourceFileLabel.setText("🪨 Earth USGS Geology");
+            if (hydroFileLabel != null) hydroFileLabel.setText("🌊 Earth SWBD Hydrography");
             fetchOnlineHydroData();
             if (ecoCompatibilityLabel != null) {
-                ecoCompatibilityLabel.setText("🌍 Cartes Terre chargées (MODIS Biomes + NASA SWBD Hydrographie)");
+                ecoCompatibilityLabel.setText("🌍 Cartes Terre chargées (MODIS Biomes + USGS Géologie + SWBD Hydrographie)");
                 ecoCompatibilityLabel.getStyleClass().setAll("compatibility-success");
             }
         } else if ("mars".equals(sourceKey)) {
-            biomeFileLabel.setText("📷 Mars MOLA Geology");
+            if (biomeFileLabel != null) biomeFileLabel.setText("🌿 Biomes Mars (Procédural)");
+            if (resourceFileLabel != null) resourceFileLabel.setText("🪨 Mars MOLA Geology");
+            if (hydroFileLabel != null) hydroFileLabel.setText("⚡ Hydrographie (Aride)");
             if (geologySourceCombo != null) geologySourceCombo.setValue("mars");
-            if (mapStatusLabel != null) mapStatusLabel.setText("🔴 Source : Mars — Géologie MOLA (mode procédural pour hydro)");
-            if (radioProcHydro != null) radioProcHydro.setSelected(true); // Mars has no surface water
+            if (mapStatusLabel != null) mapStatusLabel.setText("🔴 Source : Mars — Géologie MOLA (mode procédural pour hydro & biomes)");
+            if (radioProcHydro != null) radioProcHydro.setSelected(true);
         } else if ("moon".equals(sourceKey)) {
-            biomeFileLabel.setText("🌕 Lune — Carte topographique (Procédural)");
-            if (mapStatusLabel != null) mapStatusLabel.setText("🌕 Source : Lune — Topographie procédurale (pas d'hydrologie)");
+            if (biomeFileLabel != null) biomeFileLabel.setText("🌿 Lune (Sans Biomes)");
+            if (resourceFileLabel != null) resourceFileLabel.setText("🪨 Lune Topographie & Regolithe");
+            if (hydroFileLabel != null) hydroFileLabel.setText("⚡ Hydrographie (Nulle)");
+            if (mapStatusLabel != null) mapStatusLabel.setText("🌕 Source : Lune — Topographie procédurale");
             if (radioProcHydro != null) radioProcHydro.setSelected(true);
             if (radioProcBiome != null) radioProcBiome.setSelected(true);
         } else if ("venus".equals(sourceKey)) {
-            biomeFileLabel.setText("♀ Vénus — Carte Magellan (Procédural)");
-            if (mapStatusLabel != null) mapStatusLabel.setText("♀ Source : Vénus — Radar Magellan (pas d'hydrologie)");
+            if (biomeFileLabel != null) biomeFileLabel.setText("🌿 Vénus (Atmosphère extrême)");
+            if (resourceFileLabel != null) resourceFileLabel.setText("🪨 Vénus Radar Magellan");
+            if (hydroFileLabel != null) hydroFileLabel.setText("⚡ Hydrographie (Sublimée)");
+            if (mapStatusLabel != null) mapStatusLabel.setText("♀ Source : Vénus — Radar Magellan");
             if (radioProcHydro != null) radioProcHydro.setSelected(true);
             if (radioProcBiome != null) radioProcBiome.setSelected(true);
         }
@@ -2130,23 +2144,45 @@ public class ResourceDistributionPanel extends BorderPane {
                         pxColor = Color.rgb(r, g, b);
                     }
                 } else { // Mode 4: Hydrography & River Networks
-                    var point = generator.getPlanetPoint(lat, lon, planet);
-                    if (point.elevation() < planet.waterLevel()) {
-                        pxColor = Color.rgb(15, 23, 42); // Sea/Ocean
-                    } else {
-                        double riverFlow = point.riverFlow();
-                        double declivity = point.declivity();
-                        if (riverFlow > 0.42) {
-                            pxColor = Color.rgb(2, 132, 199); // Fleuve Majeur
-                        } else if (riverFlow > 0.28) {
-                            pxColor = Color.rgb(56, 189, 248); // Cours d'Eau
-                        } else if (riverFlow > 0.16) {
-                            pxColor = Color.rgb(20, 184, 166); // Affluent
+                    if (customHydroReader != null) {
+                        int hx = (int) Math.min((x_base / (double) w) * wHydro, wHydro - 1);
+                        int hy = (int) Math.min((y_base / (double) h) * hHydro, hHydro - 1);
+                        Color c = customHydroReader.getColor(hx, hy);
+                        double waterIntensity = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
+                        if (waterIntensity > 0.6) {
+                            pxColor = Color.rgb(2, 132, 199); // Major hydro river
+                        } else if (waterIntensity > 0.3) {
+                            pxColor = Color.rgb(56, 189, 248); // Tributary / Stream
                         } else {
-                            int r = (int) Math.min(255, 45 + declivity * 100);
-                            int g = (int) Math.min(255, 60 + declivity * 80);
-                            int b = (int) Math.min(255, 55 + declivity * 50);
-                            pxColor = Color.rgb(r, g, b);
+                            var pt = generator.getPlanetPoint(lat, lon, planet);
+                            if (pt.elevation() < planet.waterLevel()) {
+                                pxColor = Color.rgb(15, 23, 42);
+                            } else {
+                                int r = (int) Math.min(255, 45 + pt.declivity() * 100);
+                                int g = (int) Math.min(255, 60 + pt.declivity() * 80);
+                                int b = (int) Math.min(255, 55 + pt.declivity() * 50);
+                                pxColor = Color.rgb(r, g, b);
+                            }
+                        }
+                    } else {
+                        var point = generator.getPlanetPoint(lat, lon, planet);
+                        if (point.elevation() < planet.waterLevel()) {
+                            pxColor = Color.rgb(15, 23, 42); // Sea/Ocean
+                        } else {
+                            double riverFlow = point.riverFlow();
+                            double declivity = point.declivity();
+                            if (riverFlow > 0.42) {
+                                pxColor = Color.rgb(2, 132, 199); // Fleuve Majeur
+                            } else if (riverFlow > 0.28) {
+                                pxColor = Color.rgb(56, 189, 248); // Cours d'Eau
+                            } else if (riverFlow > 0.16) {
+                                pxColor = Color.rgb(20, 184, 166); // Affluent
+                            } else {
+                                int r = (int) Math.min(255, 45 + declivity * 100);
+                                int g = (int) Math.min(255, 60 + declivity * 80);
+                                int b = (int) Math.min(255, 55 + declivity * 50);
+                                pxColor = Color.rgb(r, g, b);
+                            }
                         }
                     }
                 }
@@ -2447,42 +2483,70 @@ public class ResourceDistributionPanel extends BorderPane {
     }
 
     public boolean validateResourceSetup() {
-        boolean isValid = true;
-        StringBuilder errorMsg = new StringBuilder();
+        return validateResourceSetup(true);
+    }
 
-        if (radioImportEco != null && radioImportEco.isSelected() && customBiomeImage == null) {
-            isValid = false;
-            errorMsg.append("• ").append(I18n.getOrDefault("resource.validation.missing_biome_map", "Carte de distribution des biomes manquante en mode importation.")).append("\n");
+    private boolean isCustomFileRequired(ComboBox<String> domainCombo, ComboBox<String> masterCombo) {
+        String val = null;
+        if (domainCombo != null && domainCombo.getValue() != null && !"none".equalsIgnoreCase(domainCombo.getValue())) {
+            val = domainCombo.getValue().trim().toLowerCase();
+        } else if (masterCombo != null && masterCombo.getValue() != null && !"none".equalsIgnoreCase(masterCombo.getValue())) {
+            val = masterCombo.getValue().trim().toLowerCase();
+        }
+        if (val == null) return false;
+        return "custom".equals(val) || "file".equals(val);
+    }
+
+    public List<String> getValidationErrors() {
+        List<String> errors = new ArrayList<>();
+        if (radioImportEco != null && radioImportEco.isSelected() && isCustomFileRequired(biomeSourceCombo, mapSourceCombo) && customBiomeImage == null) {
+            errors.add(I18n.getOrDefault("resource.validation.missing_biome_map", "Carte de distribution des biomes manquante en mode importation (Onglet 2)."));
+        }
+        if (radioImportHydro != null && radioImportHydro.isSelected() && isCustomFileRequired(hydroSourceCombo, mapSourceCombo) && customHydroImage == null) {
+            errors.add(I18n.getOrDefault("resource.validation.missing_hydro_map", "Carte hydrographique manquante en mode importation (Onglet 2)."));
+        }
+        if (radioImportGeology != null && radioImportGeology.isSelected() && isCustomFileRequired(geologySourceCombo, mapSourceCombo) && customResourceImage == null) {
+            errors.add(I18n.getOrDefault("resource.validation.missing_geology_map", "Carte géologique & gisements manquante en mode importation (Onglet 2)."));
+        }
+        if (radioImportClimate != null && radioImportClimate.isSelected() && isCustomFileRequired(climateSourceCombo, null) && customClimateImage == null) {
+            errors.add(I18n.getOrDefault("resource.validation.missing_climate_map", "Carte macro-climatique manquante en mode importation (Onglet 2)."));
+        }
+        return errors;
+    }
+
+    public boolean validateResourceSetup(boolean showDialog) {
+        List<String> errors = getValidationErrors();
+        boolean isValid = errors.isEmpty();
+
+        if (radioImportEco != null && radioImportEco.isSelected() && isCustomFileRequired(biomeSourceCombo, mapSourceCombo) && customBiomeImage == null) {
             if (loadBiomeBtn != null) loadBiomeBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
         } else if (loadBiomeBtn != null) {
             loadBiomeBtn.setStyle("");
         }
 
-        if (radioImportHydro != null && radioImportHydro.isSelected() && customHydroImage == null) {
-            isValid = false;
-            errorMsg.append("• ").append(I18n.getOrDefault("resource.validation.missing_hydro_map", "Carte hydrographique manquante en mode importation.")).append("\n");
+        if (radioImportHydro != null && radioImportHydro.isSelected() && isCustomFileRequired(hydroSourceCombo, mapSourceCombo) && customHydroImage == null) {
             if (loadHydroBtn != null) loadHydroBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
         } else if (loadHydroBtn != null) {
             loadHydroBtn.setStyle("");
         }
 
-        if (radioImportGeology != null && radioImportGeology.isSelected() && customResourceImage == null) {
-            isValid = false;
-            errorMsg.append("• ").append(I18n.getOrDefault("resource.validation.missing_geology_map", "Carte géologique & gisements manquante en mode importation.")).append("\n");
+        if (radioImportGeology != null && radioImportGeology.isSelected() && isCustomFileRequired(geologySourceCombo, mapSourceCombo) && customResourceImage == null) {
             if (loadResourceBtn != null) loadResourceBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
         } else if (loadResourceBtn != null) {
             loadResourceBtn.setStyle("");
         }
 
-        if (radioImportClimate != null && radioImportClimate.isSelected() && customClimateImage == null) {
-            isValid = false;
-            errorMsg.append("• ").append(I18n.getOrDefault("resource.validation.missing_climate_map", "Carte macro-climatique manquante en mode importation.")).append("\n");
+        if (radioImportClimate != null && radioImportClimate.isSelected() && isCustomFileRequired(climateSourceCombo, null) && customClimateImage == null) {
             if (loadClimateBtn != null) loadClimateBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
         } else if (loadClimateBtn != null) {
             loadClimateBtn.setStyle("");
         }
 
-        if (!isValid) {
+        if (!isValid && showDialog) {
+            StringBuilder errorMsg = new StringBuilder();
+            for (String err : errors) {
+                errorMsg.append("• ").append(err).append("\n");
+            }
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle(I18n.getOrDefault("resource.validation.title", "Validation Écologique (Onglet 2)"));
             alert.setHeaderText(I18n.getOrDefault("resource.validation.header", "⚠️ Des cartes ou paramètres écologiques obligatoires sont invalides ou manquants :"));

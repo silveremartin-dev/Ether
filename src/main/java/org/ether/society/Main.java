@@ -40,7 +40,9 @@ public class Main {
         boolean headless = false;
         if (args != null) {
             for (String arg : args) {
-                if ("--headless".equalsIgnoreCase(arg) || "-h".equalsIgnoreCase(arg)) {
+                if ("--headless".equalsIgnoreCase(arg) || "-h".equalsIgnoreCase(arg)
+                        || "--mode=cluster".equalsIgnoreCase(arg) || "--cluster".equalsIgnoreCase(arg)
+                        || arg.startsWith("--role=") || "--help".equalsIgnoreCase(arg) || "-help".equalsIgnoreCase(arg)) {
                     headless = true;
                     break;
                 }

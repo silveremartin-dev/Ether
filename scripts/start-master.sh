@@ -19,7 +19,7 @@ echo "  Target Ticks    : ${TICKS}"
 echo "  H3 Grid Cells   : ${CELLS}"
 echo "----------------------------------------------------------"
 
-JAR_PATH="target/society-simulation-2.0.0-SNAPSHOT-jar-with-dependencies.jar"
+JAR_PATH="target/society-simulation-2.0.0-SNAPSHOT-executable.jar"
 
 if [ ! -f "$JAR_PATH" ]; then
     echo "🔨 Building executable JAR..."
@@ -27,4 +27,4 @@ if [ ! -f "$JAR_PATH" ]; then
 fi
 
 echo "🚀 Launching Master Node Server..."
-java -jar "$JAR_PATH" --mode=cluster --role=master --port="${PORT}" --secret="${SECRET}" --scenario="${SCENARIO}" --ticks="${TICKS}" --cells="${CELLS}" --profile
+java --add-modules jdk.incubator.vector -jar "$JAR_PATH" --headless --mode=cluster --role=master --port="${PORT}" --secret="${SECRET}" --scenario="${SCENARIO}" --ticks="${TICKS}" --cells="${CELLS}" --profile

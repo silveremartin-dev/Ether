@@ -98,7 +98,7 @@ Ether provides 30 pluggable Type B simulation plugins operating in dual **Pure**
 23. **David Buss Evolutionary Mating & Mobilization** (Elite polygyny surplus $\to$ young male military expansion)
 
 ### 📈 Historical Validation Kernel (`HistoricalValidationKernel`)
-Ether includes an empirical validation engine computing **Root Mean Square Error (RMSE)** and **Coefficient of Determination ($R^2$)** against a 20-variable empirical dataset from -10,000 BCE to 2026 CE (sourced from **Seshat Databank**, **Maddison Project**, **Correlates of War**, **HYDE 3.2**, and **PAGES 2k**). See [docs/HISTORICAL_BENCHMARKS_AND_VALIDATION.md](docs/HISTORICAL_BENCHMARKS_AND_VALIDATION.md) for full citations and metrics.
+Ether includes an empirical validation engine computing **Root Mean Square Error (RMSE)** and **Coefficient of Determination ($R^2$)** against a 20-variable empirical dataset from -10,000 BCE to 2026 CE (sourced from **Seshat Databank**, **Maddison Project**, **Correlates of War**, **HYDE 3.4**, and **PAGES 2k**). See [docs/SIMULATION_EQUATIONS_AND_VARIABLES.md](docs/SIMULATION_EQUATIONS_AND_VARIABLES.md) for full citations and metrics.
 
 ---
 
@@ -144,17 +144,11 @@ mvn javafx:run
 | **175k Cell Benchmark** | **1.19M cell-updates/sec** throughput verified | ✅ Verified |
 
 ## 📄 Master Technical Documentation
-- 🏗️ [Core System Architecture & DOD](docs/ARCHITECTURE.md) (H3 Grid, `WorldBuffer`, 30 Type B Engines, Multi-Scale Decoupling)
-- 🔒 [Security & System Integrity Audit](docs/SECURITY.md) (Deserialization, Threat Matrix, Concurrency & Memory Bounds Safety)
-- 📡 [Distributed Cluster Extension Proposal](docs/PROPOSAL_DISTRIBUTED_ARCHITECTURE_EXTENSION.md) (RFC / Planned Multi-Node Cluster Scaling)
-- 🛠️ [Getting Started & Hardware Setup Guide](docs/GETTING_STARTED_AND_HARDWARE_SETUP.md) (Quickstart, Scripts, Docker DB, OpenCL, TornadoVM)
-- 📐 [Differential Equations & State Variables](docs/SIMULATION_EQUATIONS_AND_VARIABLES.md) (Catalog of State Variables, Kleiber Scaling, Gompertz Mortality, Onsager Transport)
-- ⚡ [GPU & CPU JIT Engine Specification](docs/GPU_JIT_ENGINE_SPECIFICATION.md) (7 Phasing Tiers, Additive Integration, Kernel Fusion, JOCL / TornadoVM)
-- 🌊 [Ocean Optimizations & Determinism Guide](docs/OCEAN_OPTIMIZATIONS_AND_DETERMINISM.md) (Macro-Aggregation, Coastal Filtering, Multi-Rate Ticking, Determinism Levels)
-- 🤖 [Sovereign AI Governance Design ("Archon Engine")](docs/SOVEREIGN_AI_GOVERNANCE_DESIGN.md) (Closed-Loop MPC, Pareto Objectives, 4 Planetary Scenarios)
-- 📈 [Historical Benchmarks & Empirical Validation](docs/HISTORICAL_BENCHMARKS_AND_VALIDATION.md) (20-Variable Benchmark Suite, RMSE / $R^2$ Metrics, Scenarios)
-- 🧪 [Scenario Testing & Auto-Calibration Protocol](docs/SCENARIO_TESTING_PROTOCOL_REPORT.md) ("Début Connu, Fin à Comparer, Expliquer et Corriger" Framework)
-- 📜 [Academic Data Credits & Dataset Citations](docs/CREDITS.md) (Seshat, Maddison, COW, HYDE 3.2, ETOPO1, USGS, ORBIS)
+- 🏗️ [Core System Architecture & DOD](docs/ARCHITECTURE.md) (H3 Grid, `WorldBuffer`, 30 Type B Engines, Ocean Optimizations, GPU JIT Spec, Archon Engine, Cluster Scaling)
+- 🛠️ [Setup & Operational Guide](docs/SETUP.md) (Quickstart, Standalone & Docker DB, Cluster Setup, OpenCL, TornadoVM, Troubleshooting)
+- 📐 [Differential Equations & State Variables](docs/SIMULATION_EQUATIONS_AND_VARIABLES.md) (State Variables, ODEs/PDEs, Pluggable Formula Engine, Historical Benchmarks & Validation)
+- 🔒 [Security & System Integrity Audit](docs/SECURITY.md) (Deserialization, Threat Matrix, Concurrency & Memory Safety)
+- 📜 [Academic Data Credits & Citations](docs/CREDITS.md) (Seshat, Maddison, COW, HYDE 3.4, ETOPO1, USGS, ORBIS)
 
 ---
 

@@ -213,31 +213,31 @@ public class ControlPanel extends VBox {
             }
         });
 
-        speedSlider = new Slider(1, 30, 1);
-        speedSlider.setBlockIncrement(1);
-        speedSlider.setMajorTickUnit(5);
+        speedSlider = new Slider(1, 100, 1);
+        speedSlider.setBlockIncrement(5);
+        speedSlider.setMajorTickUnit(25);
         speedSlider.setMinorTickCount(4);
         speedSlider.setShowTickMarks(true);
         speedSlider.setShowTickLabels(true);
         speedSlider.setSnapToTicks(true);
-        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.slider", "Vitesse de simulation (Multiplicateur de fréquence)")));
+        speedSlider.setTooltip(new Tooltip("Vitesse de simulation CPU (Gauche = 1 tick/sec soit 1 jour/sec | Droite = Mode Rapide)"));
         HBox.setHgrow(speedSlider, Priority.ALWAYS);
 
-        Label speedValueLabel = new Label("⏱️ Vitesse : 1x (Cible)");
+        Label speedValueLabel = new Label("⏱️ Vitesse : 1 tick/sec (1 jour/sec)");
         speedValueLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;");
 
         speedSlider.valueProperty().addListener((obs, oldV, newV) -> {
             int spd = newV.intValue();
             engine.setSpeed(spd);
-            speedValueLabel.setText(String.format("⏱️ Vitesse Cible : %dx", spd));
+            speedValueLabel.setText(String.format("⏱️ Vitesse Cible : %d ticks/sec (%d jours/sec)", spd, spd));
         });
 
         speedMax = new Button("MAX 🚀");
-        speedMax.setTooltip(new Tooltip("Calcule les ticks à la vitesse maximale permise par le processeur (Uncapped CPU)"));
+        speedMax.setTooltip(new Tooltip("Calcule les ticks à la vitesse maximale permise par le processeur sans aucune limite (Uncapped CPU ticks/sec)"));
         speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4;");
         speedMax.setOnAction(e -> {
             engine.setSpeed(999);
-            speedValueLabel.setText("⏱️ Vitesse Cible : MAX 🚀 (Illimité CPU)");
+            speedValueLabel.setText("⏱️ Vitesse Cible : MAX 🚀 (Illimité - Autant de ticks CPU/sec que possible)");
         });
 
         HBox sliderRow = new HBox(8, speedSlider, speedMax);

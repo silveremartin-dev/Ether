@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -383,14 +384,14 @@ public class PlanetGeneratorPanel extends BorderPane {
         astroSecHeader = new Label(I18n.getOrDefault("planet.section.astro", "1. DOMAINE ASTRONOMIE, PHYSIQUE & CORPS CÉLESTES"));
         VBox astroSection = createSection(astroSecHeader, astroControls);
 
-        // --- 4. Topography & Relief Section — RadioButton: Procedural OR Import Heightmap ---
+        // --- 4. Topography & Relief Section — Common Physical Scale Header + RadioButton: Procedural OR Import ---
         VBox topoControls = new VBox(10);
 
         minAltSlider = createSlider(-15000, -500, -11000);
         maxAltSlider = createSlider(500, 25000, 8848);
         minAltSlider.valueProperty().addListener((obs, old, val) -> updateAltRangeDisplay());
         maxAltSlider.valueProperty().addListener((obs, old, val) -> updateAltRangeDisplay());
-        waterSlider = createSlider(-0.5, 1.0, 0.0);
+        waterSlider = createSlider(-0.5, 1.0, 0.38);
         noiseFreqSlider = createSlider(0.1, 2.0, 1.0);
         noiseScaleSlider = createSlider(0.5, 3.0, 1.0);
 
@@ -403,9 +404,22 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         altRangeLabel = new Label();
         altRangeLabel.getStyleClass().add("value-label");
+        altRangeLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 2 0 4 0;");
         updateAltRangeDisplay();
 
-        // Seed + random button (now inside procedural panel)
+        // Common Physical Scale Header Box (Shared by Procedural Generation AND PNG Map Import)
+        Label commonTopoHeader = new Label("📐 PARAMÈTRES PHYSIQUES D'ÉCHELLE (Communs aux bruits et imports PNG 0-255) :");
+        commonTopoHeader.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        VBox commonTopoBox = new VBox(6,
+                commonTopoHeader,
+                createControlRow(minAltRowLabel, minAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.min_alt", "Altitude minimale absolue (fond océanique) [Correspond au niveau 0 de l'image]")),
+                createControlRow(maxAltRowLabel, maxAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.max_alt", "Altitude maximale absolue (sommet montagneux) [Correspond au niveau 255 de l'image]")),
+                altRangeLabel,
+                createControlRow(waterRowLabel, waterSlider, "%.2f", I18n.getOrDefault("planet.tooltip.water_level", "Seuil d’immergence océanique (bruit e) — 0.38 correspond à ~71% d'océans immergés sur Terre"))
+        );
+        commonTopoBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(56,189,248,0.05); -fx-background-radius: 6; -fx-border-color: rgba(56,189,248,0.2); -fx-border-radius: 6;");
+
+        // Seed + random button (inside procedural panel)
         seedField = new TextField("12345");
         seedField.textProperty().addListener((obs, old, val) -> updatePreview());
         randSeedBtn = new Button("🎲");
@@ -418,13 +432,11 @@ public class PlanetGeneratorPanel extends BorderPane {
         HBox seedBox = new HBox(5, seedField, randSeedBtn);
         HBox.setHgrow(seedField, Priority.ALWAYS);
 
-
         // Resolution info label relative to planet radius
         Label resolutionInfoLabel = new Label();
         resolutionInfoLabel.getStyleClass().add("value-label");
         resolutionInfoLabel.setWrapText(true);
         resolutionInfoLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
-        // Update resolution info when radius changes
         radiusSlider.valueProperty().addListener((obs, old, val) -> {
             double r = val.doubleValue();
             double circumference = 2 * Math.PI * r;
@@ -434,7 +446,6 @@ public class PlanetGeneratorPanel extends BorderPane {
                     "📎 Rayon %.0f km → circonférence %.0f km. Résolution recommandée : %d×%d px min."),
                 r, circumference, rec, rec / 2));
         });
-        // Trigger once at init
         double initR = radiusSlider.getValue();
         double initC = 2 * Math.PI * initR;
         int initRec = initC > 60000 ? 2048 : (initC > 20000 ? 1024 : 512);
@@ -459,13 +470,9 @@ public class PlanetGeneratorPanel extends BorderPane {
         radioProc.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
         radioImport.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold;");
 
-        // Procedural panel
+        // Procedural panel (contains seed, noise frequency, noise scale)
         VBox proceduralPanel = new VBox(8,
                 createControlRow(seedRowLabel, seedBox, I18n.getOrDefault("planet.tooltip.seed", "Graine aléatoire pour la génération déterministe")),
-                createControlRow(minAltRowLabel, minAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.min_alt", "Altitude minimale absolue (fond océanique)")),
-                createControlRow(maxAltRowLabel, maxAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.max_alt", "Altitude maximale absolue (sommet montagneux)")),
-                altRangeLabel,
-                createControlRow(waterRowLabel, waterSlider, "%.2f", I18n.getOrDefault("planet.tooltip.water_level", "Seuil d’eau — détermine la proportion de surface immergée")),
                 createControlRow(freqRowLabel, noiseFreqSlider, "%.2f", I18n.getOrDefault("planet.tooltip.noise_freq", "Fréquence spatiale du bruit altimétrique")),
                 createControlRow(scaleRowLabel, noiseScaleSlider, "%.2f", I18n.getOrDefault("planet.tooltip.noise_scale", "Échelle d’amplitude des reliefs (montagnes / plaines)")),
                 exportProceduralBtn,
@@ -532,7 +539,6 @@ public class PlanetGeneratorPanel extends BorderPane {
             importPanel.setVisible(!isProc);
             importPanel.setManaged(!isProc);
             if (!isProc && customElevImage == null) {
-                // Auto-load the selected preset when switching to import mode
                 applyMapSourcePreset(mapSourceCombo.getValue());
             }
             if (!isUpdatingFromPreset) {
@@ -542,6 +548,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         });
 
         topoControls.getChildren().addAll(
+                commonTopoBox,
                 radioProc,
                 proceduralPanel,
                 radioImport,
@@ -778,11 +785,17 @@ public class PlanetGeneratorPanel extends BorderPane {
                 climateSection
         );
 
+        controlsBox.setPrefWidth(460);
+        controlsBox.setMinWidth(460);
+
         ScrollPane scrollControls = new ScrollPane(controlsBox);
         scrollControls.setFitToWidth(true);
         scrollControls.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollControls.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollControls.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+        scrollControls.setPrefWidth(480);
+        scrollControls.setMinWidth(480);
+        scrollControls.setMaxWidth(480);
 
         // --- Center: Map Preview & Generation ---
         VBox centerBox = new VBox(15);
@@ -1972,16 +1985,46 @@ public class PlanetGeneratorPanel extends BorderPane {
 
                     if (isOcean) {
                         oceanCount++;
-                        // Ocean: Abysses to sea surface (dark slate/navy grayscale gradient)
+                        // Ocean: Abysses to sea surface (dark slate/navy blue gradient)
                         double oceanNorm = Math.min(1.0, normElev / Math.max(0.01, (preset.waterLevel() + 1.0) / 2.0));
                         int g = (int) Math.min(255, Math.max(8, oceanNorm * 88.0 + 8.0));
                         pxColor = Color.rgb((int)(g * 0.4), (int)(g * 0.6), (int)(g * 0.95));
                     } else {
-                        // Terrestrial land: Sea level to Everest peak (pure hypsometric grayscale)
+                        // Terrestrial land elevation: Hypsometric realistic tinting for Earth/oceanic worlds vs grayscale for dry worlds
                         double waterNorm = (preset.waterLevel() + 1.0) / 2.0;
                         double landNorm = Math.min(1.0, Math.max(0.0, (normElev - waterNorm) / Math.max(0.01, 1.0 - waterNorm)));
-                        int g = (int) Math.min(255, Math.max(96, 96.0 + landNorm * 159.0));
-                        pxColor = Color.rgb(g, g, g);
+                        if (preset.waterLevel() > -0.4) {
+                            // Earth / Oceanic worlds: Coastal & Lowland Green -> Savannah/Hill Khaki -> Mountain Slate -> Snow Peaks
+                            if (landNorm < 0.25) {
+                                double t = landNorm / 0.25;
+                                int r = (int) (34 + t * (140 - 34));
+                                int g = (int) (139 + t * (175 - 139));
+                                int b = (int) (34 + t * (75 - 34));
+                                pxColor = Color.rgb(r, g, b);
+                            } else if (landNorm < 0.60) {
+                                double t = (landNorm - 0.25) / 0.35;
+                                int r = (int) (140 + t * (170 - 140));
+                                int g = (int) (175 + t * (130 - 175));
+                                int b = (int) (75 + t * (80 - 75));
+                                pxColor = Color.rgb(r, g, b);
+                            } else if (landNorm < 0.85) {
+                                double t = (landNorm - 0.60) / 0.25;
+                                int r = (int) (170 + t * (120 - 170));
+                                int g = (int) (130 + t * (120 - 130));
+                                int b = (int) (80 + t * (125 - 80));
+                                pxColor = Color.rgb(r, g, b);
+                            } else {
+                                double t = (landNorm - 0.85) / 0.15;
+                                int r = (int) (120 + t * (245 - 120));
+                                int g = (int) (120 + t * (248 - 120));
+                                int b = (int) (125 + t * (255 - 125));
+                                pxColor = Color.rgb(r, g, b);
+                            }
+                        } else {
+                            // Airless/Dry bodies (Mars, Moon, Venus): Grayscale / Crustal relief
+                            int g = (int) Math.min(255, Math.max(96, 96.0 + landNorm * 159.0));
+                            pxColor = Color.rgb(g, g, g);
+                        }
                     }
 
                 } else if (mapMode == 1) { // Température (°C)
@@ -2256,55 +2299,68 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     public boolean validatePlanetSetup() {
-        boolean isValid = true;
-        StringBuilder errorMsg = new StringBuilder();
+        return validatePlanetSetup(true);
+    }
+
+    private boolean isCustomFileRequired(ComboBox<String> combo) {
+        if (combo == null || combo.getValue() == null) return false;
+        String val = combo.getValue().trim().toLowerCase();
+        return "custom".equalsIgnoreCase(val) || "file".equalsIgnoreCase(val);
+    }
+
+    public List<String> getValidationErrors() {
+        List<String> errors = new ArrayList<>();
+        if (radioImport != null && radioImport.isSelected() && isCustomFileRequired(mapSourceCombo) && customElevImage == null) {
+            errors.add(I18n.getOrDefault("planet.validation.missing_elev_map", "Image heightmap d'altitude manquante en mode d'importation (Onglet 1)."));
+        }
+        if (radioTempImport != null && radioTempImport.isSelected() && isCustomFileRequired(tempSourceCombo) && customClimateImage == null) {
+            errors.add(I18n.getOrDefault("planet.validation.missing_temp_map", "Carte thermique manquante en mode d'importation (Onglet 1)."));
+        }
+        if (radioPrecipImport != null && radioPrecipImport.isSelected() && isCustomFileRequired(precipSourceCombo) && customRainfallImage == null) {
+            errors.add(I18n.getOrDefault("planet.validation.missing_precip_map", "Carte pluviométrique manquante en mode d'importation (Onglet 1)."));
+        }
+        if (radioSeasonImport != null && radioSeasonImport.isSelected() && isCustomFileRequired(seasonSourceCombo) && customSeasonalityImage == null) {
+            errors.add(I18n.getOrDefault("planet.validation.missing_season_map", "Carte de saisonnalité manquante en mode d'importation (Onglet 1)."));
+        }
+        if (minAltSlider != null && maxAltSlider != null && minAltSlider.getValue() >= maxAltSlider.getValue()) {
+            errors.add(I18n.getOrDefault("planet.validation.invalid_alt_range", "L'altitude minimale doit être strictly inférieure à l'altitude maximale (Onglet 1)."));
+        }
+        return errors;
+    }
+
+    public boolean validatePlanetSetup(boolean showDialog) {
+        List<String> errors = getValidationErrors();
+        boolean isValid = errors.isEmpty();
 
         if (radioImport != null && radioImport.isSelected() && customElevImage == null) {
-            isValid = false;
-            errorMsg.append("• ").append(I18n.getOrDefault("planet.validation.missing_elev_map", "Image heightmap d'altitude manquante en mode d'importation.")).append("\n");
-            if (loadElevBtn != null) {
-                loadElevBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-            }
+            if (loadElevBtn != null) loadElevBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
         } else if (loadElevBtn != null) {
             loadElevBtn.setStyle("");
         }
 
         if (radioTempImport != null && radioTempImport.isSelected() && customClimateImage == null) {
-            isValid = false;
-            errorMsg.append("• ").append(I18n.getOrDefault("planet.validation.missing_temp_map", "Carte thermique manquante en mode d'importation.")).append("\n");
-            if (loadClimateBtn != null) {
-                loadClimateBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-            }
+            if (loadClimateBtn != null) loadClimateBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
         } else if (loadClimateBtn != null) {
             loadClimateBtn.setStyle("");
         }
 
         if (radioPrecipImport != null && radioPrecipImport.isSelected() && customRainfallImage == null) {
-            isValid = false;
-            errorMsg.append("• ").append(I18n.getOrDefault("planet.validation.missing_precip_map", "Carte pluviométrique manquante en mode d'importation.")).append("\n");
-            if (loadRainfallBtn != null) {
-                loadRainfallBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-            }
+            if (loadRainfallBtn != null) loadRainfallBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
         } else if (loadRainfallBtn != null) {
             loadRainfallBtn.setStyle("");
         }
 
         if (radioSeasonImport != null && radioSeasonImport.isSelected() && customSeasonalityImage == null) {
-            isValid = false;
-            errorMsg.append("• ").append(I18n.getOrDefault("planet.validation.missing_season_map", "Carte de saisonnalité manquante en mode d'importation.")).append("\n");
-            if (loadSeasonalityBtn != null) {
-                loadSeasonalityBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-            }
+            if (loadSeasonalityBtn != null) loadSeasonalityBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
         } else if (loadSeasonalityBtn != null) {
             loadSeasonalityBtn.setStyle("");
         }
 
-        if (minAltSlider != null && maxAltSlider != null && minAltSlider.getValue() >= maxAltSlider.getValue()) {
-            isValid = false;
-            errorMsg.append("• ").append(I18n.getOrDefault("planet.validation.invalid_alt_range", "L'altitude minimale doit être strictly inférieure à l'altitude maximale.")).append("\n");
-        }
-
-        if (!isValid) {
+        if (!isValid && showDialog) {
+            StringBuilder errorMsg = new StringBuilder();
+            for (String err : errors) {
+                errorMsg.append("• ").append(err).append("\n");
+            }
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle(I18n.getOrDefault("planet.validation.title", "Validation du Contexte Planétaire (Onglet 1)"));
             alert.setHeaderText(I18n.getOrDefault("planet.validation.header", "⚠️ Des paramètres ou des cartes obligatoires sont invalides ou manquants :"));

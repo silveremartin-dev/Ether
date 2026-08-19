@@ -402,37 +402,37 @@ public class H3SimulationEngine implements ISimulationEngine {
         lastTickTime = tickStartNanos;
 
         try {
-            final float DT_FAST = 86400f; 
-            final int SLOW_FACTOR = 30;
-            boolean isMonthly = (temporalScale == TemporalScale.MONTHLY);
+            int stepDays = (currentScenario != null && currentScenario.getTemporalResolutionDays() > 0)
+                    ? (int) Math.round(currentScenario.getTemporalResolutionDays()) : 1;
+            stepDays = Math.max(1, stepDays);
 
-            // 1. FAST SCALE DYNAMICS
+            final float DT_TICK = stepDays * 86400f; // Delta time for this tick in seconds
+
+            // 1. FAST SCALE DYNAMICS (Scaled to stepDays)
             profiler.beginPhase("1_FastScaleFlux");
-            if (isMonthly) {
-                fluxEngine.tick(worldBuffer, DT_FAST * SLOW_FACTOR);
-                politicalEngine.tick(cells);
-                timeManager.advanceMonth();
-            } else {
-                fluxEngine.tick(worldBuffer, DT_FAST);
-                politicalEngine.tick(cells);
-                timeManager.advanceDay();
-            }
+            fluxEngine.tick(worldBuffer, DT_TICK);
+            politicalEngine.tick(cells, stepDays);
+            timeManager.advanceDays(stepDays);
             profiler.endPhase("1_FastScaleFlux");
 
             // 2. SLOW SCALE PHYSICALIST DYNAMICS
-            if (isMonthly || tickCounter % SLOW_FACTOR == 0) {
+            // Triggered every tick if stepDays >= 30, or every (30 / stepDays) ticks if stepDays < 30
+            int slowModulo = Math.max(1, 30 / stepDays);
+            boolean runSlowScale = (stepDays >= 30) || (tickCounter % slowModulo == 0);
+
+            if (runSlowScale) {
                 if (currentScenario != null && timeManager.getCurrentYear() >= currentScenario.getEndDateYear()) {
                     logger.info("🏁 Simulation reached scenario target end date (Year {}). Auto-pausing.", currentScenario.getEndDateYear());
                     pause();
                     return;
                 }
                 int month = timeManager.getCurrentMonth();
-                float dtSlow = DT_FAST * SLOW_FACTOR;
+                float dtSlow = Math.max(DT_TICK, 30.0f * 86400f);
 
                 profiler.beginPhase("2_ClimateAndEnvironment");
                 int climateFreq = (performanceConfig != null && performanceConfig.isEnableMultiFreqClimateTicks()) 
                         ? performanceConfig.getClimateTickFrequency() : 1;
-                if (climateFreq <= 1 || (tickCounter / SLOW_FACTOR) % climateFreq == 0) {
+                if (climateFreq <= 1 || (tickCounter / slowModulo) % climateFreq == 0) {
                     climateSystem.updateClimate(cells, month);
                     syncClimateToBuffer();
                 }
@@ -465,7 +465,8 @@ public class H3SimulationEngine implements ISimulationEngine {
                 };
 
                 Runnable step3Run = () -> {
-                    org.ether.society.procedural.BiologicalDemographicsEngine.processBiologicalDemographics(cells);
+                    double dtYears = (double) dtSlow / 31_557_600.0;
+                    org.ether.society.procedural.BiologicalDemographicsEngine.processBiologicalDemographics(cells, dtYears);
                     org.ether.society.procedural.BioMolecularEpidemiologyEngine.processBioMolecularImmunity(cells);
                     org.ether.society.procedural.EcotoxicologyFertilityEngine.processEcotoxicologyFertility(cells);
                 };

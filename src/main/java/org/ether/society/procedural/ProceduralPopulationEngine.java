@@ -375,32 +375,56 @@ public class ProceduralPopulationEngine {
     }
 
     /**
+     * Detects urban nodes / spatial density singularities on the H3 grid based on local population maxima.
+     * Identifies cells with peak density relative to their surroundings and returns them sorted by density.
+     */
+    public static List<H3Cell> detectUrbanNodes(List<H3Cell> cells) {
+        if (cells == null || cells.isEmpty()) return List.of();
+
+        List<H3Cell> populated = cells.stream()
+                .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
+                .sorted(Comparator.comparingInt(H3Cell::getPopulation).reversed())
+                .toList();
+
+        if (populated.isEmpty()) return List.of();
+
+        int maxPop = populated.get(0).getPopulation();
+        // Threshold: top density cells (>20% of max population and >= 10 inhabitants)
+        int threshold = Math.max(10, (int) (maxPop * 0.20));
+
+        List<H3Cell> nodes = new ArrayList<>();
+        for (H3Cell c : populated) {
+            if (c.getPopulation() >= threshold) {
+                nodes.add(c);
+            } else {
+                break;
+            }
+        }
+        return nodes;
+    }
+
+    /**
      * Normalizes weights so sum of cell populations exactly matches totalPopulation.
-     * Computes cell terrain friction matrix and populates age pyramid cohorts based on tech level.
+     * Computes cell terrain friction matrix, spatializes K(x), E(x), F(x), I(x), and populates age pyramid cohorts.
      */
     private static void applyNormalizedPopulation(List<H3Cell> landCells, double[] weights, double totalWeight, long totalPopulation, double capitalPerCapita) {
         if (totalWeight <= 0) return;
 
         double derivedTech = Math.clamp(Math.log10(Math.max(1.0, capitalPerCapita)) * 2.2 + 0.2, 0.2, 10.0);
 
+        // First pass: calculate populations
         long assigned = 0;
+        long maxCellPop = 1;
         for (int i = 0; i < landCells.size(); i++) {
             H3Cell cell = landCells.get(i);
             double proportion = weights[i] / totalWeight;
             long pop = Math.round(totalPopulation * proportion);
             cell.setPopulation((int) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
             cell.setBiomassHuman((double) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
-            
-            // Seed physical capital & tool stocks from initial capital K0
-            double cellCapital = pop * capitalPerCapita;
-            cell.setResourceCapital(cellCapital);
-            cell.setResourceMetal(cellCapital * 0.15);
-            cell.setTechnologyLevel(derivedTech);
 
-            // Calculate movement friction & age pyramid cohort distribution
-            cell.calculateMovementFriction(derivedTech);
-            cell.updateAgePyramidFromTotal(derivedTech);
-
+            if (cell.getPopulation() > maxCellPop) {
+                maxCellPop = cell.getPopulation();
+            }
             assigned += pop;
         }
 
@@ -411,8 +435,36 @@ public class ProceduralPopulationEngine {
             long newTopPop = Math.clamp((long) topCell.getPopulation() + diff, 0L, (long) Integer.MAX_VALUE);
             topCell.setPopulation((int) newTopPop);
             topCell.setBiomassHuman((double) newTopPop);
-            topCell.setResourceCapital(topCell.getPopulation() * capitalPerCapita);
-            topCell.updateAgePyramidFromTotal(derivedTech);
+            if (newTopPop > maxCellPop) maxCellPop = newTopPop;
+        }
+
+        // Second pass: Spatialization of Physical Capital K(x), Food Reserves F(x), Energy E(x), and Info I(x)
+        double baseCapital = capitalPerCapita;
+        for (H3Cell cell : landCells) {
+            int pop = cell.getPopulation();
+            double normDensity = (double) pop / (double) maxCellPop; // 0.0 to 1.0
+
+            // 1. Spatial Physical Capital K(x) [kg/capita]
+            double envSuit = calculateBiomeAndElevSuitability(cell, derivedTech);
+            double cellCapitalPerCapita = baseCapital * (0.4 + 0.6 * normDensity) * Math.clamp(envSuit, 0.2, 2.0);
+            double cellCapitalTotal = pop * cellCapitalPerCapita;
+            cell.setResourceCapital(cellCapitalTotal);
+            cell.setResourceMetal(cellCapitalTotal * 0.15);
+
+            // 2. Spatial Food Reserves F(x)
+            double foodBiomeFactor = cell.getFoodResource() != null && cell.getFoodResource() > 0 ? Math.clamp(cell.getFoodResource() / 1000.0, 0.2, 2.0) : 1.0;
+            double soilNPK = cell.getSoilOrganicCarbon() != null && cell.getSoilOrganicCarbon() > 0 ? Math.clamp(cell.getSoilOrganicCarbon() / 100.0, 0.2, 2.5) : 1.0;
+            cell.setFoodResource(pop * 6.0 * foodBiomeFactor * soilNPK * 10.0);
+
+            // 3. Spatial Energy Stock E(x)
+            double energyBiomePot = (cell.getWoodResource() != null ? cell.getWoodResource() / 1000.0 : 0.5) * 0.5 + (cell.getMantleHeatFlow() != null ? cell.getMantleHeatFlow() / 100.0 : 0.8) * 0.5;
+            double cellEnergyPerCapita = 50.0 * (0.7 * (cellCapitalPerCapita / Math.max(1.0, baseCapital)) + 0.3 * Math.clamp(energyBiomePot, 0.1, 2.0));
+            cell.setEnergyFire(pop * cellEnergyPerCapita);
+
+            // 4. Tech & Movement friction & Age pyramid
+            cell.setTechnologyLevel(derivedTech);
+            cell.calculateMovementFriction(derivedTech);
+            cell.updateAgePyramidFromTotal(derivedTech);
         }
     }
 }

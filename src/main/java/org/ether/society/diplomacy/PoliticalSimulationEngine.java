@@ -26,9 +26,9 @@ public class PoliticalSimulationEngine {
     }
 
     /**
-     * Run political simulation step (e.g. once per month or year).
+     * Run political simulation step with explicit deltaDays.
      */
-    public void tick(List<H3Cell> allCells) {
+    public void tick(List<H3Cell> allCells, double deltaDays) {
         if (allCells == null || allCells.isEmpty()) return;
         List<Nation> nations = diplomacyManager.getNations();
         if (nations.isEmpty()) return;
@@ -39,12 +39,19 @@ public class PoliticalSimulationEngine {
             cellMap.put(c.getH3Index(), c);
         }
 
+        // Scale base monthly expansion probability (0.05 per 30 days) to deltaDays
+        double scaledProb = 1.0 - Math.pow(1.0 - 0.05, Math.max(0.01, deltaDays / 30.0));
+
         for (Nation nation : nations) {
-            expandNation(nation, cellMap);
+            expandNation(nation, cellMap, scaledProb);
         }
     }
 
-    private void expandNation(Nation nation, java.util.Map<Long, H3Cell> cellMap) {
+    public void tick(List<H3Cell> allCells) {
+        tick(allCells, 1.0);
+    }
+
+    private void expandNation(Nation nation, java.util.Map<Long, H3Cell> cellMap, double expansionProbability) {
         Set<H3Cell> territory = nation.getTerritory();
         if (territory.isEmpty()) return;
 
@@ -57,7 +64,7 @@ public class PoliticalSimulationEngine {
                 if (neighbor != null && neighbor.getOwner() == null) {
                     if (neighbor.getBiome() != org.ether.society.model.Biome.OCEAN &&
                         neighbor.getBiome() != org.ether.society.model.Biome.DEEP_OCEAN) {
-                        if (Math.random() < 0.05) {
+                        if (Math.random() < expansionProbability) {
                             nation.addCell(neighbor);
                         }
                     }

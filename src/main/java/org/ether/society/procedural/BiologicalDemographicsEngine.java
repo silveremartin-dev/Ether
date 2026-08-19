@@ -43,10 +43,12 @@ public class BiologicalDemographicsEngine {
     }
 
     /**
-     * Executes one biological demographic mortality tick across cells.
+     * Executes one biological demographic mortality tick across cells with dt.
      */
-    public static void processBiologicalDemographics(List<H3Cell> cells) {
+    public static void processBiologicalDemographics(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
+
+        double dt = Math.max(0.001, deltaYears);
 
         for (H3Cell cell : cells) {
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
@@ -66,8 +68,13 @@ public class BiologicalDemographicsEngine {
             // Gompertz actuarial hazard rate for cohort mean age 30
             double hazardRate = calculateGompertzHazardRate(30.0, environmentalHazardGamma);
 
-            int naturalDeaths = (int) (pop * hazardRate);
+            double deathProb = 1.0 - Math.exp(-hazardRate * dt);
+            int naturalDeaths = (int) (pop * deathProb);
             cell.setPopulation(Math.max(0, pop - naturalDeaths));
         }
+    }
+
+    public static void processBiologicalDemographics(List<H3Cell> cells) {
+        processBiologicalDemographics(cells, 30.0 / 365.25);
     }
 }

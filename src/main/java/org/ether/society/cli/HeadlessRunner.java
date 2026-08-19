@@ -49,9 +49,17 @@ public class HeadlessRunner {
         // Parse CLI parameters
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
-            if (("--ticks".equalsIgnoreCase(arg) || "-t".equalsIgnoreCase(arg)) && i + 1 < args.length) {
+            if ("--help".equalsIgnoreCase(arg) || "-help".equalsIgnoreCase(arg) || "-?".equalsIgnoreCase(arg)) {
+                printHelp();
+                return;
+            } else if (arg.startsWith("--ticks=")) {
+                ticksToRun = Integer.parseInt(arg.substring("--ticks=".length()));
+                ticksExplicitlySet = true;
+            } else if (("--ticks".equalsIgnoreCase(arg) || "-t".equalsIgnoreCase(arg)) && i + 1 < args.length) {
                 ticksToRun = Integer.parseInt(args[++i]);
                 ticksExplicitlySet = true;
+            } else if (arg.startsWith("--cells=")) {
+                cellCount = Integer.parseInt(arg.substring("--cells=".length()));
             } else if (("--cells".equalsIgnoreCase(arg) || "-c".equalsIgnoreCase(arg)) && i + 1 < args.length) {
                 cellCount = Integer.parseInt(args[++i]);
             } else if ("--profile".equalsIgnoreCase(arg) || "-p".equalsIgnoreCase(arg)) {
@@ -163,5 +171,21 @@ public class HeadlessRunner {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    private static void printHelp() {
+        System.out.println("Usage: java -jar society-simulation.jar [options]");
+        System.out.println("Options:");
+        System.out.println("  --headless, -h                Run in pure headless CLI mode (no JavaFX GUI)");
+        System.out.println("  --scenario=<NAME>, -s <NAME>  Scenario preset (e.g., OUT_OF_AFRICA, CLASSICAL, INDUSTRIAL, NEOLITHIZATION, YEAR_ZERO)");
+        System.out.println("  --ticks=<N>, -t <N>          Target number of simulation ticks (Default: computed from scenario)");
+        System.out.println("  --cells=<N>, -c <N>          Number of H3 grid cells for benchmark/world generation (Default: 3000)");
+        System.out.println("  --profile, -p                 Enable end-of-run profiling & performance diagnostics");
+        System.out.println("  --mode=cluster, --cluster     Enable distributed cluster orchestration");
+        System.out.println("  --role=<master|worker>        Node role in cluster mode (Default: master)");
+        System.out.println("  --master-host=<IP>            Master IP/hostname (for worker nodes, Default: 127.0.0.1)");
+        System.out.println("  --port=<PORT>                 Cluster communication port (Default: 9090)");
+        System.out.println("  --secret=<TOKEN>              Cluster authentication token");
+        System.out.println("  --help                        Display this help message");
     }
 }

@@ -227,18 +227,21 @@ public class ScenarioSetupPanel extends BorderPane {
     private Spinner<Integer> cultureVectorDimSpinner;
     private Spinner<Double> culturalDiffusionRateSpinner;
     private Spinner<Double> culturalMutationRateSpinner;
-    private Label isoglossFileLabel;
-    private Label kinshipFileLabel;
-    private Label ritualsFileLabel;
-    private Label sovereigntyFileLabel;
     private Image customIsoglossImage;
     private Image customKinshipImage;
     private Image customRitualsImage;
     private Image customSovereigntyImage;
+    private Label isoglossFileLabel;
+    private Label kinshipFileLabel;
+    private Label ritualsFileLabel;
+    private Label sovereigntyFileLabel;
+    private final java.util.Map<Integer, Image> customTensorImages = new java.util.HashMap<>();
+    private VBox layersDynamicContainer;
 
     // Map Preview
     private Canvas previewCanvas;
     private ComboBox<String> previewModeCombo;
+    private CheckBox reliefOverlayCheckBox;
     private Label previewStatusLabel;
 
     // Execution & Calculation Controls
@@ -548,6 +551,9 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label snapshotPathLabel;
     private Button snapshotExplainBtn;
     private Button snapshotRefreshBtn;
+    private ScrollPane configScroll;
+    private VBox validationErrorBanner;
+    private Label validationErrorLabel;
     private org.ether.society.persistence.GameSaveManager saveManagerForUI = new org.ether.society.persistence.GameSaveManager();
 
     private org.ether.society.persistence.GameSaveManager getSaveManager() {
@@ -677,7 +683,7 @@ public class ScenarioSetupPanel extends BorderPane {
         configPane.setPrefWidth(480);
         configPane.setMinWidth(480);
 
-        ScrollPane configScroll = new ScrollPane(configPane);
+        this.configScroll = new ScrollPane(configPane);
         configScroll.setFitToWidth(true);
         configScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
         configScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -709,6 +715,19 @@ public class ScenarioSetupPanel extends BorderPane {
         headerLabel.getStyleClass().add("label-title");
         headerLabel.setAlignment(Pos.CENTER);
         headerLabel.setMaxWidth(Double.MAX_VALUE);
+
+        validationErrorLabel = new Label();
+        validationErrorLabel.setWrapText(true);
+        validationErrorLabel.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 12px;");
+
+        validationErrorBanner = new VBox(6,
+                new Label("⚠️ ERREURS DE VALIDATION DÉTECTÉES — CORRIGEZ LES POINTS SUIVANTS :"),
+                validationErrorLabel
+        );
+        validationErrorBanner.setStyle("-fx-background-color: rgba(239, 68, 68, 0.15); -fx-border-color: #ef4444; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;");
+        validationErrorBanner.getChildren().get(0).setStyle("-fx-text-fill: #f87171; -fx-font-weight: bold; -fx-font-size: 13px;");
+        validationErrorBanner.setVisible(false);
+        validationErrorBanner.setManaged(false);
 
         // --- 1. Standardized Preset Control Bar for Scenarios ---
         scenarioPresetBar = new PresetControlBar<>("scenario.preset_bar", "1. PRÉRÉGLAGES DE SCÉNARIOS");
@@ -772,8 +791,21 @@ public class ScenarioSetupPanel extends BorderPane {
 
         planetPresetCombo = new ComboBox<>();
         planetPresetCombo.getItems().setAll(PlanetPreset.getPresets());
+        planetPresetCombo.setCellFactory(p -> new ListCell<PlanetPreset>() {
+            @Override
+            protected void updateItem(PlanetPreset item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText("");
+                } else {
+                    setText(item.name());
+                }
+            }
+        });
+        planetPresetCombo.setButtonCell(planetPresetCombo.getCellFactory().call(null));
         planetPresetCombo.setValue(PlanetPreset.EARTH_LIKE);
         planetPresetCombo.setMaxWidth(Double.MAX_VALUE);
+        planetPresetCombo.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
         planetPresetCombo.setConverter(new javafx.util.StringConverter<PlanetPreset>() {
             @Override
             public String toString(PlanetPreset item) {
@@ -1234,7 +1266,7 @@ public class ScenarioSetupPanel extends BorderPane {
         bottomActionBox = new VBox(8, btnPreFlight, progressBar, progressStatusLabel, startBtn);
         bottomActionBox.setAlignment(Pos.CENTER);
 
-        root.getChildren().addAll(headerLabel, scenarioPresetSection, inheritedSection, section1, popSection, cultureSection, clippingSection, oceanOptSection, eventsSection, snapshotSection, bundleSection, liveDiagnosticCard);
+        root.getChildren().addAll(headerLabel, validationErrorBanner, scenarioPresetSection, inheritedSection, section1, popSection, cultureSection, clippingSection, oceanOptSection, eventsSection, snapshotSection, bundleSection, liveDiagnosticCard);
 
         scenarioPresetBar.setPresets(builtInScenarios, defaultScenario);
         if (defaultScenario != null) {
@@ -1375,23 +1407,40 @@ public class ScenarioSetupPanel extends BorderPane {
 
     public void refreshSnapshotList() {
         if (snapshotCombo == null) return;
-        List<org.ether.society.persistence.SaveMetadata> saves = getSaveManager().listSaves();
-        if (saves.isEmpty()) {
-            // Provide synthetic sample entries so user can immediately test snapshot UI functionality
-            org.ether.society.persistence.SaveMetadata demo1 = new org.ether.society.persistence.SaveMetadata(
-                "checkpoint_latest",
-                "Snapshot Session Précédente - An 2045 (Point de Bascule Climat & Fusion)",
-                2045, 6, "Business As Usual (SSP5-8.5)"
-            );
-            org.ether.society.persistence.SaveMetadata demo2 = new org.ether.society.persistence.SaveMetadata(
-                "checkpoint_tick_120",
-                "Snapshot AutoCheckPoint - An 1000 (Dynastie Song)",
-                1000, 1, "Dynastie Song & Pré-Industrialisation (1000)"
-            );
-            saves = List.of(demo1, demo2);
+        String currentScenarioName = null;
+        if (scenarioPresetBar != null && scenarioPresetBar.getCurrentName() != null) {
+            currentScenarioName = scenarioPresetBar.getCurrentName();
         }
-        snapshotCombo.getItems().setAll(saves);
-        snapshotCombo.setValue(saves.get(0));
+        List<org.ether.society.persistence.SaveMetadata> saves = getSaveManager().listSaves();
+        List<org.ether.society.persistence.SaveMetadata> filteredSaves = new ArrayList<>();
+        if (currentScenarioName != null && !currentScenarioName.isBlank()) {
+            final String targetName = currentScenarioName.trim();
+            for (var save : saves) {
+                if (save.getScenarioName() != null && (save.getScenarioName().trim().equalsIgnoreCase(targetName) 
+                        || targetName.toLowerCase().contains(save.getScenarioName().trim().toLowerCase()) 
+                        || save.getScenarioName().trim().toLowerCase().contains(targetName.toLowerCase()))) {
+                    filteredSaves.add(save);
+                }
+            }
+        } else {
+            filteredSaves.addAll(saves);
+        }
+
+        if (filteredSaves.isEmpty()) {
+            // If no exact match or saves list is empty, display a synthetic checkpoint matching current scenario
+            String secName = currentScenarioName != null ? currentScenarioName : "Scénario Courant";
+            org.ether.society.persistence.SaveMetadata demo = new org.ether.society.persistence.SaveMetadata(
+                "checkpoint_latest_" + secName.replaceAll("[^a-zA-Z0-9]", "_").toLowerCase(),
+                "Snapshot Restauration — " + secName,
+                2045, 6, secName
+            );
+            filteredSaves.add(demo);
+        }
+
+        snapshotCombo.getItems().setAll(filteredSaves);
+        if (!filteredSaves.isEmpty()) {
+            snapshotCombo.setValue(filteredSaves.get(0));
+        }
     }
 
     private void showSnapshotExplanationDialog() {
@@ -1601,13 +1650,14 @@ public class ScenarioSetupPanel extends BorderPane {
         for (String w : warnings) {
             Label lbl = new Label("• " + w);
             lbl.setWrapText(true);
-            lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #e2e8f0;");
+            String color = w.startsWith("❌") ? "#ef4444" : "#fbbf24";
+            lbl.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
             liveDiagnosticContentBox.getChildren().add(lbl);
         }
         for (String pass : passes) {
             Label lbl = new Label("• " + pass);
             lbl.setWrapText(true);
-            lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #e2e8f0;");
+            lbl.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #4ade80;");
             liveDiagnosticContentBox.getChildren().add(lbl);
         }
     }
@@ -3951,30 +4001,34 @@ public class ScenarioSetupPanel extends BorderPane {
         double lon = c.getLongitude() != null ? c.getLongitude() : 0.0;
 
         if (idx == 1 || mode.contains("isogloss") || mode.contains("linguistique")) {
-            if (customIsoglossImage != null && customIsoglossImage.getWidth() > 0) {
-                Color customCol = sampleImageColorAtLatLon(customIsoglossImage, lat, lon);
+            Image img0 = customTensorImages.get(0);
+            if (img0 != null && img0.getWidth() > 0) {
+                Color customCol = sampleImageColorAtLatLon(img0, lat, lon);
                 if (customCol != null) return customCol;
             }
             // Procedural isogloss color gradient fallback
             double val = Math.clamp((lat + 90.0) / 180.0 * 0.7 + (lon + 180.0) / 360.0 * 0.3, 0.0, 1.0);
             return Color.hsb(val * 300.0, 0.75, 0.90);
         } else if (idx == 2 || mode.contains("kinship") || mode.contains("parente") || mode.contains("clan")) {
-            if (customKinshipImage != null && customKinshipImage.getWidth() > 0) {
-                Color customCol = sampleImageColorAtLatLon(customKinshipImage, lat, lon);
+            Image img1 = customTensorImages.get(1);
+            if (img1 != null && img1.getWidth() > 0) {
+                Color customCol = sampleImageColorAtLatLon(img1, lat, lon);
                 if (customCol != null) return customCol;
             }
             double val = Math.clamp(Math.abs(Math.sin(lat * 0.1) * Math.cos(lon * 0.1)), 0.0, 1.0);
             return Color.hsb(180.0 + val * 120.0, 0.80, 0.85);
         } else if (idx == 3 || mode.contains("ritual") || mode.contains("croyance") || mode.contains("asabiyyah")) {
-            if (customRitualsImage != null && customRitualsImage.getWidth() > 0) {
-                Color customCol = sampleImageColorAtLatLon(customRitualsImage, lat, lon);
+            Image img2 = customTensorImages.get(2);
+            if (img2 != null && img2.getWidth() > 0) {
+                Color customCol = sampleImageColorAtLatLon(img2, lat, lon);
                 if (customCol != null) return customCol;
             }
             double val = Math.clamp((c.getElevation() != null ? c.getElevation() : 0) / 3000.0, 0.0, 1.0);
             return Color.hsb(40.0 + val * 200.0, 0.85, 0.95);
         } else if (idx == 4 || mode.contains("sovereign") || mode.contains("souverainete") || mode.contains("frontiere")) {
-            if (customSovereigntyImage != null && customSovereigntyImage.getWidth() > 0) {
-                Color customCol = sampleImageColorAtLatLon(customSovereigntyImage, lat, lon);
+            Image img3 = customTensorImages.get(3);
+            if (img3 != null && img3.getWidth() > 0) {
+                Color customCol = sampleImageColorAtLatLon(img3, lat, lon);
                 if (customCol != null) return customCol;
             }
             if (c.getOwner() != null && c.getOwner().getColor() != null) {
@@ -4123,10 +4177,10 @@ public class ScenarioSetupPanel extends BorderPane {
         int idx = previewModeCombo != null ? previewModeCombo.getSelectionModel().getSelectedIndex() : 0;
         String mode = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue().toLowerCase() : "";
         Image activeCustomImage = null;
-        if (idx == 1 || mode.contains("isogloss") || mode.contains("linguistique")) activeCustomImage = customIsoglossImage;
-        else if (idx == 2 || mode.contains("kinship") || mode.contains("parente") || mode.contains("clan")) activeCustomImage = customKinshipImage;
-        else if (idx == 3 || mode.contains("ritual") || mode.contains("croyance") || mode.contains("asabiyyah")) activeCustomImage = customRitualsImage;
-        else if (idx == 4 || mode.contains("sovereign") || mode.contains("souverainete") || mode.contains("frontiere")) activeCustomImage = customSovereigntyImage;
+        if (idx == 1 || mode.contains("isogloss") || mode.contains("linguistique")) activeCustomImage = customTensorImages.get(0);
+        else if (idx == 2 || mode.contains("kinship") || mode.contains("parente") || mode.contains("clan")) activeCustomImage = customTensorImages.get(1);
+        else if (idx == 3 || mode.contains("ritual") || mode.contains("croyance") || mode.contains("asabiyyah")) activeCustomImage = customTensorImages.get(2);
+        else if (idx == 4 || mode.contains("sovereign") || mode.contains("souverainete") || mode.contains("frontiere")) activeCustomImage = customTensorImages.get(3);
         else activeCustomImage = customDensityImage;
 
         PixelReader customReader = activeCustomImage != null ? activeCustomImage.getPixelReader() : null;
@@ -4843,7 +4897,13 @@ public class ScenarioSetupPanel extends BorderPane {
         }
 
         if (densityPatternCombo != null) {
-            densityPatternCombo.setButtonCell(densityPatternCombo.getCellFactory().call(null));
+            if (densityPatternCombo.getCellFactory() != null) {
+                densityPatternCombo.setButtonCell(densityPatternCombo.getCellFactory().call(null));
+            } else {
+                String val = densityPatternCombo.getValue();
+                densityPatternCombo.setValue(null);
+                densityPatternCombo.setValue(val);
+            }
         }
 
         if (previewModeCombo != null) {
@@ -4956,17 +5016,17 @@ public class ScenarioSetupPanel extends BorderPane {
         if (culturalMutationRateSpinner != null) {
             s.setCulturalMutationRate(culturalMutationRateSpinner.getValue());
         }
-        if (customIsoglossImage != null) {
-            s.setCustomTensorMapBase64(0, org.ether.society.data.ImageMapLoader.imageToBase64Png(customIsoglossImage));
+        if (customTensorImages.get(0) != null) {
+            s.setCustomTensorMapBase64(0, org.ether.society.data.ImageMapLoader.imageToBase64Png(customTensorImages.get(0)));
         }
-        if (customKinshipImage != null) {
-            s.setCustomTensorMapBase64(1, org.ether.society.data.ImageMapLoader.imageToBase64Png(customKinshipImage));
+        if (customTensorImages.get(1) != null) {
+            s.setCustomTensorMapBase64(1, org.ether.society.data.ImageMapLoader.imageToBase64Png(customTensorImages.get(1)));
         }
-        if (customRitualsImage != null) {
-            s.setCustomTensorMapBase64(2, org.ether.society.data.ImageMapLoader.imageToBase64Png(customRitualsImage));
+        if (customTensorImages.get(2) != null) {
+            s.setCustomTensorMapBase64(2, org.ether.society.data.ImageMapLoader.imageToBase64Png(customTensorImages.get(2)));
         }
-        if (customSovereigntyImage != null) {
-            s.setCustomTensorMapBase64(3, org.ether.society.data.ImageMapLoader.imageToBase64Png(customSovereigntyImage));
+        if (customTensorImages.get(3) != null) {
+            s.setCustomTensorMapBase64(3, org.ether.society.data.ImageMapLoader.imageToBase64Png(customTensorImages.get(3)));
         }
 
         // Save Type B engine checkbox states
@@ -5198,23 +5258,14 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     public boolean validateScenarioSetup() {
-        boolean isValid = true;
-        StringBuilder errorMsg = new StringBuilder();
+        List<String> errors = new ArrayList<>();
 
         // 1. Cross-Tab Validation: Tab 1 (Planet) and Tab 2 (Ecology/Resource)
         if (planetPanelSupplier != null && planetPanelSupplier.get() != null) {
-            boolean planetOk = planetPanelSupplier.get().validatePlanetSetup();
-            if (!planetOk) {
-                isValid = false;
-                errorMsg.append("• ").append(I18n.getOrDefault("scenario.validation.planet_failed", "L'Onglet 1 (Contexte Planétaire) contient des erreurs ou des cartes manquantes.")).append("\n");
-            }
+            errors.addAll(planetPanelSupplier.get().getValidationErrors());
         }
         if (resourcePanelSupplier != null && resourcePanelSupplier.get() != null) {
-            boolean ecoOk = resourcePanelSupplier.get().validateResourceSetup();
-            if (!ecoOk) {
-                isValid = false;
-                errorMsg.append("• ").append(I18n.getOrDefault("scenario.validation.resource_failed", "L'Onglet 2 (Écologie & Ressources) contient des erreurs ou des cartes manquantes.")).append("\n");
-            }
+            errors.addAll(resourcePanelSupplier.get().getValidationErrors());
         }
 
         // 2. Dates Validation
@@ -5222,8 +5273,7 @@ public class ScenarioSetupPanel extends BorderPane {
             int startYr = startYearSpinner.getValue();
             int endYr = endYearSpinner.getValue();
             if (startYr >= endYr) {
-                isValid = false;
-                errorMsg.append("• ").append(I18n.getOrDefault("scenario.validation.invalid_years", "L'année de début doit être strictement inférieure à l'année de fin.")).append("\n");
+                errors.add(I18n.getOrDefault("scenario.validation.invalid_years", "L'année de début doit être strictement inférieure à l'année de fin (Onglet 3)."));
                 startYearSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
                 endYearSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
             } else {
@@ -5236,8 +5286,7 @@ public class ScenarioSetupPanel extends BorderPane {
         if (initialHumanCountSpinner != null) {
             long count = initialHumanCountSpinner.getValue();
             if (count <= 0) {
-                isValid = false;
-                errorMsg.append("• ").append(I18n.getOrDefault("scenario.validation.invalid_pop", "La population humaine initiale doit être supérieure à 0.")).append("\n");
+                errors.add(I18n.getOrDefault("scenario.validation.invalid_pop", "La population humaine initiale doit être supérieure à 0 (Onglet 3)."));
                 initialHumanCountSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
             } else {
                 initialHumanCountSpinner.setStyle("");
@@ -5246,8 +5295,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
         // 4. Demographic Density Map Import
         if (radioImportDemo != null && radioImportDemo.isSelected() && customDensityImage == null) {
-            isValid = false;
-            errorMsg.append("• ").append(I18n.getOrDefault("scenario.validation.missing_density_map", "Carte de densité démographique manquante en mode d'importation.")).append("\n");
+            errors.add(I18n.getOrDefault("scenario.validation.missing_density_map", "Carte de densité démographique manquante en mode d'importation (Onglet 3)."));
             if (loadDensityMapBtn != null) loadDensityMapBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
         } else if (loadDensityMapBtn != null) {
             loadDensityMapBtn.setStyle("");
@@ -5257,20 +5305,33 @@ public class ScenarioSetupPanel extends BorderPane {
         if (cultureVectorDimSpinner != null) {
             int dims = cultureVectorDimSpinner.getValue();
             if (dims < 1 || dims > 32) {
-                isValid = false;
-                errorMsg.append("• ").append(I18n.getOrDefault("scenario.validation.invalid_tensor_dim", "La dimension des tenseurs culturels doit être comprise entre 1 et 32.")).append("\n");
+                errors.add(I18n.getOrDefault("scenario.validation.invalid_tensor_dim", "La dimension des tenseurs culturels doit être comprise entre 1 et 32 (Onglet 3)."));
                 cultureVectorDimSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
             } else {
                 cultureVectorDimSpinner.setStyle("");
             }
         }
 
+        boolean isValid = errors.isEmpty();
+
         if (!isValid) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle(I18n.getOrDefault("scenario.validation.title", "Validation du Scénario (Onglet 3)"));
-            alert.setHeaderText(I18n.getOrDefault("scenario.validation.header", "⚠️ Des paramètres ou pré-requis obligatoires sont invalides :"));
-            alert.setContentText(errorMsg.toString());
-            alert.showAndWait();
+            StringBuilder sb = new StringBuilder();
+            for (String err : errors) {
+                sb.append("• ").append(err).append("\n");
+            }
+            if (validationErrorLabel != null && validationErrorBanner != null) {
+                validationErrorLabel.setText(sb.toString().trim());
+                validationErrorBanner.setVisible(true);
+                validationErrorBanner.setManaged(true);
+            }
+            if (configScroll != null) {
+                configScroll.setVvalue(0.0);
+            }
+        } else {
+            if (validationErrorBanner != null) {
+                validationErrorBanner.setVisible(false);
+                validationErrorBanner.setManaged(false);
+            }
         }
 
         return isValid;
