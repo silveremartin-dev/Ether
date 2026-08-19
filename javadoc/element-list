@@ -1,9 +1,11 @@
 org.ether.society
 org.ether.society.agents
 org.ether.society.analytics
+org.ether.society.cli
 org.ether.society.config
 org.ether.society.core
 org.ether.society.core.dod
+org.ether.society.core.profiling
 org.ether.society.culture
 org.ether.society.data
 org.ether.society.database
@@ -22,6 +24,7 @@ org.ether.society.procedural
 org.ether.society.procedural.jit
 org.ether.society.procedural.typeb
 org.ether.society.ui
+org.ether.society.ui.util
 org.ether.society.util
 uk.ac.manchester.tornado.api
 uk.ac.manchester.tornado.api.annotations
