@@ -74,6 +74,11 @@ public class MainView extends StackPane {
         this.miniMap = miniMap;
         this.hud = hud;
         this.statsPanel = new StatsPanel(engine);
+        this.statsPanel.setOnDisplayModeRequested(mode -> {
+            if (mapCanvas != null) {
+                mapCanvas.setDisplayMode(mode);
+            }
+        });
         this.timeline = new org.ether.society.model.ScenarioTimeline();
         this.godModePanel = new GodModePanel(engine, timeline);
 

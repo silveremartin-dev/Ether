@@ -138,6 +138,41 @@ public enum DisplayMode {
         return description;
     }
 
+    public String getMetricId() {
+        switch (this) {
+            case TEMPERATURE: return "temperature";
+            case WATER: return "potableWater";
+            case ENERGY_CAPACITY: return "energyCaptured";
+            case ENTROPY_POLLUTION: return "entropyPollution";
+            case POPULATION: return "population";
+            case HEALTH_LIFE_EXPECTANCY: return "lifeExpectancy";
+            case EDUCATION_LEVEL: return "educationLevel";
+            case FOOD: return "foodPerCapita";
+            case MINERAL_RESOURCES: return "resourceDepletion";
+            case TECHNOLOGY: return "avgTechLevel";
+            case INEQUALITY: return "gini";
+            case ASABIYYAH: return "asabiyyah";
+            case HAPPINESS: return "happiness";
+            case CONFLICT: return "conflict";
+            case INSTITUTIONAL_MATURITY: return "institutionalMaturity";
+            case GDP_WEALTH: return "gdp";
+            case ELITE_DENSITY: return "eliteOverproduction";
+            case COLLECTIVE_MEMORY: return "collectiveMemory";
+            case COLLAPSE_RISK: return "collapseRisk";
+            default: return "population";
+        }
+    }
+
+    public static DisplayMode fromMetricId(String metricId) {
+        if (metricId == null) return POPULATION;
+        for (DisplayMode dm : values()) {
+            if (dm.getMetricId().equalsIgnoreCase(metricId) || dm.name().equalsIgnoreCase(metricId)) {
+                return dm;
+            }
+        }
+        return POPULATION;
+    }
+
     @Override
     public String toString() {
         return displayName;

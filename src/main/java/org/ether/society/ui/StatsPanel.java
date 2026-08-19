@@ -58,6 +58,24 @@ public class StatsPanel extends VBox {
     private boolean isLiveCollectionActive = true;
     private int samplingIntervalTicks = 1;
     private long tickCounter = 0;
+    private java.util.function.Consumer<DisplayMode> onDisplayModeRequested;
+
+    public void setOnDisplayModeRequested(java.util.function.Consumer<DisplayMode> listener) {
+        this.onDisplayModeRequested = listener;
+    }
+
+    public void setSelectedMetricByDisplayMode(DisplayMode mode) {
+        if (mode == null) return;
+        String metricId = mode.getMetricId();
+        org.ether.society.analytics.MetricDescriptor desc = org.ether.society.analytics.MetricRegistry.getInstance().getDescriptor(metricId);
+        if (desc != null) {
+            String title = desc.getDisplayName();
+            if (chartMetricCombo != null && chartMetricCombo.getItems().contains(title)) {
+                chartMetricCombo.setValue(title);
+                resetChartSeries();
+            }
+        }
+    }
 
     // Container for metric sections
     private final VBox metricsContainer;
@@ -393,6 +411,16 @@ public class StatsPanel extends VBox {
             chartMetricCombo.getItems().add(card.getTitle());
         }
         chartMetricCombo.setValue("Population Humaine");
+        chartMetricCombo.setOnAction(e -> {
+            resetChartSeries();
+            String title = chartMetricCombo.getValue();
+            if (title != null && onDisplayModeRequested != null) {
+                org.ether.society.analytics.MetricDescriptor desc = org.ether.society.analytics.MetricRegistry.getInstance().getDescriptorByName(title);
+                if (desc != null) {
+                    onDisplayModeRequested.accept(DisplayMode.fromMetricId(desc.getId()));
+                }
+            }
+        });
 
         getChildren().addAll(topControlsBox, chartBox, barBox, spatialHeatmapPanel, variancePanel, cardsControlBox, metricsContainer);
     }
@@ -496,6 +524,9 @@ public class StatsPanel extends VBox {
             if (chartMetricCombo != null) {
                 chartMetricCombo.setValue(title);
                 resetChartSeries();
+            }
+            if (onDisplayModeRequested != null) {
+                onDisplayModeRequested.accept(DisplayMode.fromMetricId(key));
             }
         });
         metricCards.put(key, card);
