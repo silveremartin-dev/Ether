@@ -363,8 +363,8 @@ public class H3MapCanvas extends Canvas {
             // 2D Flat Map Panning
             centerLng -= dx / scale;
             centerLat += dy / scale;
-            centerLat = Math.max(minLat, Math.min(maxLat, centerLat));
-            centerLng = Math.max(minLng, Math.min(maxLng, centerLng));
+            centerLat = Math.max(-90.0, Math.min(90.0, centerLat));
+            centerLng = Math.max(-180.0, Math.min(180.0, centerLng));
 
             dragStartX = event.getX();
             dragStartY = event.getY();

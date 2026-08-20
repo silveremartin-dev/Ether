@@ -119,11 +119,15 @@ public class ProceduralPopulationEngine {
         boolean isMesoamerica = (lat >= 14 && lat <= 22) && (lng >= -105 && lng <= -88);
         boolean isAndes = (lat >= -20 && lat <= 0) && (lng >= -80 && lng <= -65);
 
-        if (techLevel <= 0.5) {
-            // Early Paleolithic / Out of Africa
-            if (isEastAfrica) return 12.0;
-            if (lat >= 10 && lat <= 30 && lng >= 35 && lng <= 75) return 2.0; // Early migration coastal belt
-            return 0.1;
+        if (techLevel <= 0.9) {
+            // Early Paleolithic / Out of Africa (-100,000 BP)
+            // Strictly 0 population in the Americas and Australia/Sahul
+            if (lng < -25.0 || (lat < -10.0 && lng > 110.0)) return 0.0;
+            if (isEastAfrica) return 15.0;
+            if (isNileDelta || isFertileCrescent) return 6.0;
+            if (lat >= -35.0 && lat <= 37.0 && lng >= -18.0 && lng <= 51.0) return 3.0; // Rest of Africa
+            if (lat >= 10.0 && lat <= 55.0 && lng >= 35.0 && lng <= 100.0) return 1.5; // Early Southern Eurasia
+            return 0.0;
         } else if (techLevel <= 1.0) {
             // Upper Paleolithic
             if (isEastAfrica) return 5.0;
@@ -343,13 +347,22 @@ public class ProceduralPopulationEngine {
     private static double calculatePatternMultiplier(H3Cell cell, String pattern) {
         if (pattern == null) return 1.0;
         Biome b = cell.getBiome();
+        double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+        double lat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
+        double water = cell.getWaterResource() != null ? cell.getWaterResource() : 0.0;
+        double aquifer = cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 0.0;
 
         return switch (pattern) {
             case "UNBIASED_NATURAL", "UNBIASED", "NONE", "NATURAL_EQUILIBRIUM" -> 1.0;
-            case "FERTILE_CRESCENT", "RIVER_VALLEYS" -> (b == Biome.PLAINS || b == Biome.BEACH) ? 4.5 : 0.3;
-            case "MESOAMERICA" -> (b == Biome.JUNGLE || b == Biome.HILLS || b == Biome.PLAINS) ? 3.5 : 0.5;
-            case "MESOPOTAMIA_ASSYRIA" -> (b == Biome.PLAINS) ? 5.0 : 0.2;
-            case "SPARSE_NOMADIC" -> (b == Biome.PLAINS || b == Biome.DESERT || b == Biome.TUNDRA) ? 1.5 : 0.8;
+            case "COASTAL_MARITIME" -> (b == Biome.BEACH || elev < 50.0) ? 3.5 : 0.4;
+            case "RIVER_VALLEYS" -> (water > 400.0 || (b == Biome.PLAINS && cell.getRainfall() != null && cell.getRainfall() > 0.4)) ? 4.0 : 0.3;
+            case "HIGHLAND_MOUNTAIN" -> (b == Biome.HILLS || b == Biome.MOUNTAINS || elev > 800.0) ? 3.5 : 0.4;
+            case "INLAND_OASIS" -> (aquifer > 2000.0) ? 4.0 : 0.5;
+            case "EQUATORIAL_BELT" -> (Math.abs(lat) <= 25.0) ? 3.0 : 0.4;
+            case "URBAN_CLUSTERS" -> 1.0;
+            case "SPARSE_NOMADIC" -> 0.8;
+            case "UNIFORM" -> 1.0;
+            case "RANDOM" -> 1.0;
             default -> 1.0;
         };
     }

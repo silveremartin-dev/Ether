@@ -102,11 +102,13 @@ public class ControlPanel extends VBox {
 
         // --- 1. DATE & TIME HEADER CARD ---
         scenarioHeaderLabel = new Label("🎬 " + I18n.getOrDefault("sim.header.scenario", "Scénario : ") + "Out of Africa");
-        scenarioHeaderLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #a78bfa;");
+        scenarioHeaderLabel.getStyleClass().add("sidebar-recap-highlight");
+        scenarioHeaderLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
         scenarioHeaderLabel.setTooltip(new Tooltip("Nom du scénario historique ou procédural en cours de simulation"));
 
         dateHeaderLabel = new Label("📅 " + I18n.getOrDefault("sim.header.date", "Date & Heure : ") + "An -20000, Mois 1, Jour 1");
-        dateHeaderLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        dateHeaderLabel.getStyleClass().add("sidebar-title");
+        dateHeaderLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         dateHeaderLabel.setTooltip(new Tooltip(
             "⏱️ Horloge et Pas de Simulation (Temporal Resolution) :\n" +
             "• An, Mois, Jour : Horloge courante de la simulation.\n" +
@@ -115,7 +117,8 @@ public class ControlPanel extends VBox {
         ));
 
         tpsLabel = new Label("⏱️ " + I18n.getOrDefault("sim.header.tps", "Cadence : 0.0 itér/sec (Échelle rapide 1d / lente 30d)"));
-        tpsLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        tpsLabel.getStyleClass().add("card-description-muted");
+        tpsLabel.setStyle("-fx-font-size: 11px;");
         tpsLabel.setTooltip(new Tooltip(
             "⚙️ Comparatif des Échelles Temporelles (Fast vs Slow Scale) :\n\n" +
             "• Échelle Rapide (1 tick = 1 jour) :\n" +
@@ -151,7 +154,8 @@ public class ControlPanel extends VBox {
         // Auto Record Checkbox (initialized early for button handlers)
         autoRecordCheck = new CheckBox("🎬 Auto Sync Vidéo (Lancement & Pause)");
         autoRecordCheck.setTooltip(new Tooltip("Démarre/Arrête la vidéo 1:1 automatiquement en synchronisation avec le lancement et la pause du scénario"));
-        autoRecordCheck.setStyle("-fx-text-fill: #f87171; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        autoRecordCheck.getStyleClass().add("opt-sub-checkbox");
+        autoRecordCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
 
         startBtn = new Button("▶");
         startBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
@@ -196,7 +200,8 @@ public class ControlPanel extends VBox {
 
         CheckBox pauseOnEventCheck = new CheckBox("⏸️ Pause auto sur évènement");
         pauseOnEventCheck.setTooltip(new Tooltip("Met automatiquement la simulation en pause dès qu'un nouvel événement planétaire ou régional se produit"));
-        pauseOnEventCheck.setStyle("-fx-text-fill: #fbbf24; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        pauseOnEventCheck.getStyleClass().add("opt-sub-checkbox");
+        pauseOnEventCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         pauseOnEventCheck.setOnAction(e -> engine.setPauseAtNextEvent(pauseOnEventCheck.isSelected()));
 
         HBox playBar = new HBox(4, rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stopBtn, stepForwardBtn, fastForwardBtn);
@@ -224,7 +229,8 @@ public class ControlPanel extends VBox {
         HBox.setHgrow(speedSlider, Priority.ALWAYS);
 
         Label speedValueLabel = new Label("⏱️ Vitesse : 1 tick/sec (1 jour/sec)");
-        speedValueLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;");
+        speedValueLabel.getStyleClass().add("value-label");
+        speedValueLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
 
         speedSlider.valueProperty().addListener((obs, oldV, newV) -> {
             int spd = newV.intValue();
@@ -265,7 +271,8 @@ public class ControlPanel extends VBox {
 
         // 1-Click Scientific Presets
         Label presetsTitle = new Label("⚡ Préréglages Scientifiques en 1-Clic :");
-        presetsTitle.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px;");
+        presetsTitle.getStyleClass().add("opt-subheader");
+        presetsTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
         Button presetSynth = createPresetBtn("🌍 Synthèse", "Mode 3D Globe + Biomes + Relief + Isolines", () -> applyPresetSynthesis(pauseOnEventCheck));
         Button presetEcon = createPresetBtn("📈 Économie", "Carte Flux / PIB + Vecteurs Transport + Gisements", () -> applyPresetEcon());
@@ -284,10 +291,11 @@ public class ControlPanel extends VBox {
         presetGrid.getColumnConstraints().addAll(col1, col2);
 
         VBox presetBox = new VBox(4, presetsTitle, presetGrid);
-        presetBox.setStyle("-fx-background-color: rgba(15, 23, 42, 0.5); -fx-padding: 6; -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.25); -fx-border-radius: 6;");
+        presetBox.getStyleClass().add("subcard-section");
 
         Label layerComboLabel = new Label(I18n.getOrDefault("sim.layer.datacategory", "Couche Donnée Active :"));
-        layerComboLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px;");
+        layerComboLabel.getStyleClass().add("card-description-muted");
+        layerComboLabel.setStyle("-fx-font-size: 11px;");
 
         displayModeCombo = new ComboBox<>();
         List<DisplayMode> sortedModes = java.util.Arrays.stream(DisplayMode.values())
@@ -324,7 +332,8 @@ public class ControlPanel extends VBox {
 
         contourCheck = new CheckBox(I18n.getOrDefault("sim.layer.contours", "📈 Courbes de Niveau (Isolines)"));
         contourCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.contours", "Affiche le dénivelé d'altitude et isolines sur les cellules H3")));
-        contourCheck.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        contourCheck.getStyleClass().add("opt-sub-checkbox");
+        contourCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         contourCheck.setOnAction(e -> {
             if (mapCanvas != null) mapCanvas.setShowContours(contourCheck.isSelected());
             if (onContourToggle != null) onContourToggle.accept(contourCheck.isSelected());
@@ -332,23 +341,26 @@ public class ControlPanel extends VBox {
 
         fluxVectorCheck = new CheckBox(I18n.getOrDefault("sim.layer.fluxvectors", "🌊 Flux & Transports (Vecteurs)"));
         fluxVectorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fluxvectors", "Surimpose les vecteurs de flux matériels et transports de population")));
-        fluxVectorCheck.setStyle("-fx-text-fill: #fb923c; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        fluxVectorCheck.getStyleClass().add("opt-sub-checkbox");
+        fluxVectorCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         fluxVectorCheck.setOnAction(e -> {
             if (mapCanvas != null) mapCanvas.setShowFlowVectors(fluxVectorCheck.isSelected());
         });
 
         resourceOverlayCheck = new CheckBox(I18n.getOrDefault("sim.layer.resources", "💎 Gisements & Capital (Overlays)"));
         resourceOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.resources", "Affiche les marqueurs de métaux, nappe phréatique et infrastructure")));
-        resourceOverlayCheck.setStyle("-fx-text-fill: #eab308; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        resourceOverlayCheck.getStyleClass().add("opt-sub-checkbox");
+        resourceOverlayCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         resourceOverlayCheck.setOnAction(e -> {
             if (mapCanvas != null) mapCanvas.setShowResourceOverlay(resourceOverlayCheck.isSelected());
         });
 
         Label stackTitleLabel = new Label(I18n.getOrDefault("sim.layer.overlaystack", "Pile de Couches (Multi-Sélection) :"));
-        stackTitleLabel.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold; -fx-font-size: 11px;");
+        stackTitleLabel.getStyleClass().add("opt-subheader");
+        stackTitleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
         VBox overlayStackBox = new VBox(4, stackTitleLabel, contourCheck, fluxVectorCheck, resourceOverlayCheck);
-        overlayStackBox.setStyle("-fx-background-color: rgba(15, 23, 42, 0.4); -fx-padding: 6; -fx-background-radius: 6; -fx-border-color: rgba(167, 139, 250, 0.2); -fx-border-radius: 6;");
+        overlayStackBox.getStyleClass().add("subcard-section");
 
         VBox layersCard = new VBox(8, layersTitle, presetBox, layerComboLabel, displayModeCombo, overlayStackBox);
         styleCard(layersCard);
@@ -358,7 +370,8 @@ public class ControlPanel extends VBox {
 
         mode3dCheck = new CheckBox(I18n.getOrDefault("sim.layer.mode3d", "🌐 Globe 3D H3"));
         mode3dCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.mode3d", "Bascule entre globe sphérique 3D et carte plate 2D")));
-        mode3dCheck.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        mode3dCheck.getStyleClass().add("opt-sub-checkbox");
+        mode3dCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
 
         reliefLabel = new Label(I18n.getOrDefault("sim.layer.relief3d", "⛰️ Relief 3D") + " : 25x");
         reliefLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px;");
@@ -427,7 +440,7 @@ public class ControlPanel extends VBox {
         paletteCombo.getItems().addAll(ScientificColorMap.values());
         paletteCombo.setValue(ScientificColorMap.TURBO);
         paletteCombo.setMaxWidth(Double.MAX_VALUE);
-        paletteCombo.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #e2e8f0; -fx-font-size: 11px;");
+        paletteCombo.setStyle("-fx-font-size: 11px;");
         paletteCombo.setOnAction(e -> {
             if (mapCanvas != null && paletteCombo.getValue() != null) {
                 mapCanvas.setScientificColorMap(paletteCombo.getValue());
@@ -515,7 +528,8 @@ public class ControlPanel extends VBox {
         Button btn = new Button(label);
         btn.setTooltip(new Tooltip(tooltip));
         btn.setMaxWidth(Double.MAX_VALUE);
-        btn.setStyle("-fx-background-color: rgba(30, 41, 59, 0.85); -fx-text-fill: #e2e8f0; -fx-font-weight: bold; -fx-font-size: 10px; -fx-border-color: #38bdf8; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 5; -fx-cursor: hand;");
+        btn.getStyleClass().add("button-secondary");
+        btn.setStyle("-fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 5; -fx-cursor: hand;");
         btn.setOnAction(e -> action.run());
         return btn;
     }

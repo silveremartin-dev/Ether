@@ -544,7 +544,7 @@
     -fx-font-weight: bold;
     -fx-text-fill: #38bdf8;
     -fx-padding: 6px 10px;
-    -fx-background-color: rgba(56, 189, 248, 0.12);
+    -fx-background-color: rgba(255, 255, 255, 0.04);
     -fx-background-radius: 6px;
     -fx-border-color: rgba(56, 189, 248, 0.3);
     -fx-border-radius: 6px;
@@ -590,12 +590,142 @@
 }
 
 .map-canvas-shadow {
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);
+    -fx-effect: null;
 }
 
 .summary-centered-label {
     -fx-alignment: center;
 }
+
+/* Engine Inspector & Scenario Panel Hardening Styles (Dark Mode) */
+.engine-inspector-card {
+    -fx-padding: 10px;
+    -fx-background-color: rgba(15, 23, 42, 0.6);
+    -fx-background-radius: 6px;
+    -fx-border-color: rgba(56, 189, 248, 0.3);
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+}
+
+.engine-inspector-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-text-fill: #38bdf8;
+}
+
+.engine-inspector-text {
+    -fx-font-size: 11px;
+    -fx-text-fill: #cbd5e1;
+}
+
+.engine-inspector-equations-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+    -fx-text-fill: #38bdf8;
+    -fx-padding: 4 0 0 0;
+}
+
+.engine-inspector-equations {
+    -fx-font-family: 'Consolas', 'Monaco', monospace;
+    -fx-font-size: 10px;
+    -fx-text-fill: #38bdf8;
+}
+
+.titled-pane-primary {
+    -fx-text-fill: #38bdf8;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.titled-pane-secondary {
+    -fx-text-fill: #a78bfa;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.diagnostic-pass {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #4ade80;
+}
+
+.diagnostic-warn {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #fbbf24;
+}
+
+.diagnostic-error {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ef4444;
+}
+
+.diagnostic-header-success {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #10b981;
+}
+
+.diagnostic-header-warn {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f59e0b;
+}
+
+.card-description-muted {
+    -fx-font-size: 11px;
+    -fx-text-fill: #94a3b8;
+}
+
+.control-note {
+    -fx-font-size: 10px;
+    -fx-font-style: italic;
+    -fx-text-fill: #94a3b8;
+}
+
+.opt-subheader {
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-text-fill: #cbd5e1;
+    -fx-padding: 2 0 2 0;
+}
+
+.opt-master-box {
+    -fx-padding: 8 10;
+    -fx-background-color: rgba(56, 189, 248, 0.08);
+    -fx-background-radius: 6;
+    -fx-border-color: rgba(56, 189, 248, 0.3);
+    -fx-border-radius: 6;
+}
+
+.opt-sub-checkbox {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e2e8f0;
+}
+
+.opt-value-highlight {
+    -fx-font-size: 10px;
+    -fx-text-fill: #38bdf8;
+    -fx-font-weight: bold;
+}
+
+.custom-engine-badge {
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #38bdf8;
+    -fx-background-color: rgba(56, 189, 248, 0.15);
+    -fx-padding: 2 6;
+    -fx-background-radius: 4;
+}
+
+.custom-engine-checkbox {
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-text-fill: #38bdf8;
+}
+
 
 
 

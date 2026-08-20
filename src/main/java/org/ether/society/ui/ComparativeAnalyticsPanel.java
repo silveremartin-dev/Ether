@@ -11,11 +11,14 @@ import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
 import org.ether.society.persistence.ScenarioRepository;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+import java.util.Comparator;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.chart.LineChart;
@@ -88,7 +91,11 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         public void setExecuted(boolean executed) { this.executed = executed; }
         public String getRunId() { return runId; }
         public void setRunId(String runId) { this.runId = runId; }
-        public String getStatusDisplay() { return executed ? "🟢 Exécuté (" + runId + ")" : "🔴 Non exécuté (À lancer)"; }
+        public String getStatusDisplay() { 
+            return executed 
+                ? String.format(I18n.getOrDefault("analytics.status.executed", "🟢 Exécuté (%s)"), runId) 
+                : I18n.getOrDefault("analytics.status.not_executed", "🔴 Non exécuté (À lancer)"); 
+        }
     }
 
     private final SimulationRunRepository runRepository;
@@ -127,6 +134,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
     // 2D Spatial Tensor Comparison Controls
     private ComboBox<String> spatialChannelCombo;
+    private Label channelLabel;
     private Slider dateSlider;
     private Label currentDateLabel;
     private Button playTimelineBtn;
@@ -265,8 +273,29 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         scenarioTable.getColumns().addAll(selectCol, nameCol, yearsCol, statusCol);
 
+        selectCol.setComparator((a, b) -> Boolean.compare(a, b));
+        nameCol.setComparator(String.CASE_INSENSITIVE_ORDER);
+        yearsCol.setComparator((a, b) -> a.compareTo(b));
+        statusCol.setComparator(String.CASE_INSENSITIVE_ORDER);
+
         scenarioList = FXCollections.observableArrayList();
         filteredScenarioList = new FilteredList<>(scenarioList, p -> true);
+        SortedList<ScenarioSelectableItem> sortedScenarioList = new SortedList<>(filteredScenarioList);
+        sortedScenarioList.comparatorProperty().bind(Bindings.createObjectBinding(() -> {
+            Comparator<ScenarioSelectableItem> baseComp = scenarioTable.getComparator();
+            return (a, b) -> {
+                if (a == null && b == null) return 0;
+                if (a == null) return 1;
+                if (b == null) return -1;
+                if ("HISTORICAL_GROUND_TRUTH".equals(a.getRunId())) return -1;
+                if ("HISTORICAL_GROUND_TRUTH".equals(b.getRunId())) return 1;
+                if (baseComp != null) {
+                    return baseComp.compare(a, b);
+                }
+                return 0;
+            };
+        }, scenarioTable.comparatorProperty()));
+
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             filteredScenarioList.setPredicate(item -> {
                 if (newVal == null || newVal.isBlank()) return true;
@@ -276,7 +305,25 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                     || item.getStatusDisplay().toLowerCase().contains(lower);
             });
         });
-        scenarioTable.setItems(filteredScenarioList);
+
+        scenarioTable.setRowFactory(tv -> {
+            TableRow<ScenarioSelectableItem> row = new TableRow<>() {
+                @Override
+                protected void updateItem(ScenarioSelectableItem item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setStyle("");
+                    } else if ("HISTORICAL_GROUND_TRUTH".equals(item.getRunId())) {
+                        setStyle("-fx-border-color: transparent transparent #38bdf8 transparent; -fx-border-width: 0 0 3px 0; -fx-border-style: double; -fx-background-color: rgba(56, 189, 248, 0.12); -fx-font-weight: bold;");
+                    } else {
+                        setStyle("");
+                    }
+                }
+            };
+            return row;
+        });
+
+        scenarioTable.setItems(sortedScenarioList);
 
         // --- SECTION 2: EXECUTION CONTROL & STATUS BAR (Directly under Table) ---
         warningLabel = new Label("");
@@ -368,7 +415,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         spatialBox.setPadding(new Insets(8));
 
         // Spatial Channel Selector & Controls
-        Label channelLabel = new Label("Canal Tensoriel :");
+        channelLabel = new Label("Canal Tensoriel :");
         channelLabel.getStyleClass().add("control-label");
 
         spatialChannelCombo = new ComboBox<>();
@@ -500,7 +547,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         // Special Historical Ground Truth Baseline Item
         Scenario histScenario = new Scenario();
         histScenario.setName("🌍 Réalité Historique (Cliodynamic Ground Truth)");
-        histScenario.setStartDateYear(-10000);
+        histScenario.setStartDateYear(-100000);
         histScenario.setEndDateYear(2026);
         ScenarioSelectableItem histItem = new ScenarioSelectableItem(histScenario, true, true, "HISTORICAL_GROUND_TRUTH");
         histItem.selectedProperty().addListener((obs, oldV, newV) -> {
@@ -545,20 +592,29 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         long unexecutedCount = selected.stream().filter(i -> !i.isExecuted()).count();
 
         if (selected.isEmpty()) {
-            warningLabel.setText("ℹ️ Aucun scénario sélectionné pour la comparaison.");
+            warningLabel.setText(I18n.getOrDefault("analytics.warning.none_selected", "ℹ️ Aucun scénario sélectionné pour la comparaison."));
             warningLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #64748b; -fx-padding: 6 10; -fx-background-color: rgba(226, 232, 240, 0.5); -fx-background-radius: 4;");
-            executeMissingBtn.setText("🚀 Exécuter Scénarios");
+            executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.execute_scenarios", "🚀 Exécuter Scénarios"));
             executeMissingBtn.setDisable(true);
         } else if (unexecutedCount > 0) {
-            warningLabel.setText(String.format("⚠️ %d scénario(s) sélectionné(s) n'ont pas encore d'exécution enregistrée.", unexecutedCount));
+            if (unexecutedCount == 1) {
+                warningLabel.setText(I18n.getOrDefault("analytics.warning.unexecuted_single", "⚠️ 1 scénario sélectionné n'a pas encore d'exécution enregistrée."));
+            } else {
+                warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.unexecuted_plural", "⚠️ %d scénarios sélectionnés n'ont pas encore d'exécution enregistrée."), unexecutedCount));
+            }
             warningLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #b45309; -fx-padding: 6 10; -fx-background-color: rgba(254, 243, 199, 0.8); -fx-background-radius: 4;");
-            executeMissingBtn.setText(String.format("🚀 Exécuter les %d Scénario(s) Manquant(s)", unexecutedCount));
+            executeMissingBtn.setText(unexecutedCount == 1
+                ? I18n.getOrDefault("analytics.btn.execute_missing_single", "🚀 Exécuter le Scénario Manquant")
+                : String.format(I18n.getOrDefault("analytics.btn.execute_missing_plural", "🚀 Exécuter les %d Scénarios Manquants"), unexecutedCount));
             executeMissingBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #ef4444; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
             executeMissingBtn.setDisable(false);
         } else {
-            warningLabel.setText(String.format("✅ Tous les scénarios sélectionnés (%d) sont prêts pour l'audit et la comparaison.", selected.size()));
+            warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.ready", "✅ Tous les scénarios sélectionnés (%d) sont prêts pour l'audit et la comparaison."), selected.size()));
             warningLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #15803d; -fx-padding: 6 10; -fx-background-color: rgba(220, 252, 231, 0.8); -fx-background-radius: 4;");
-            executeMissingBtn.setText(String.format("🔄 Re-exécuter les %d Scénarios Simulés", selected.stream().filter(i -> !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId())).count()));
+            long simulatedCount = selected.stream().filter(i -> !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId())).count();
+            executeMissingBtn.setText(simulatedCount == 1
+                ? I18n.getOrDefault("analytics.btn.reexecute_single", "🔄 Re-exécuter le Scénario Simulé")
+                : String.format(I18n.getOrDefault("analytics.btn.reexecute_plural", "🔄 Re-exécuter les %d Scénarios Simulés"), simulatedCount));
             executeMissingBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
             executeMissingBtn.setDisable(false);
         }
@@ -767,7 +823,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         StringBuilder sb = new StringBuilder();
         sb.append("# 🏛️ RAPPORT D'AUDIT ET CALIBRATION CLIODYNAMIQUE (GROUND TRUTH VS SIMULATION)\n\n");
         sb.append(String.format("**Scénario Simulée Audité** : `%s` (ID: `%s`)\n", targetName, targetRun.getRunId()));
-        sb.append("**Référence Ground Truth** : Réalité Historique Cliodynamique (-10 000 ➔ 2026 CE)\n\n");
+        sb.append("**Référence Ground Truth** : Réalité Historique Cliodynamique (-100 000 ➔ 2026 CE)\n\n");
         sb.append("---\n\n");
         sb.append("### 📊 1. Score d'Ajustement Global & Métriques de Précision\n\n");
         sb.append(String.format("- **Coefficient de Détermination Composite ($R^2$)** : `%.4f` (Fit à %.1f%%)\n", rSquared, rSquared * 100.0));
@@ -786,16 +842,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
 
         sb.append("\n---\n\n");
-        sb.append("### 🛠️ 3. Pistes de Calibration des Paramètres Moteur (Offline Tuning Pair-Review)\n\n");
-        sb.append("1. **Moteur Écologique & Ressources (`EcologyEngine`)** :\n");
-        sb.append("   - *Constat* : Si la consommation énergétique et CO2 s'écartent après 1750 CE, réévaluer le coefficient d'efficacité d'extraction technologique.\n");
-        sb.append("   - *Action conseillée* : Ajuster `alpha_burn` de 0.040 à 0.028 et réduire `wood_consumption_per_capita` dans les paramètres du scénario.\n\n");
-        sb.append("2. **Moteur Démographique & Capacité d'Accueil (`DemographicEngine`)** :\n");
-        sb.append("   - *Constat* : Ajuster la courbe logistique de saturation $K(t)$ selon la transition néolithique et industrielle.\n");
-        sb.append("   - *Action conseillée* : Ré-étalonner la vitesse de diffusion agricole `agricultural_spread_rate` à 0.015/an.\n\n");
-        sb.append("3. **Moteur Sociologique & Rituels / Culture (`SociologyEngine` & `CulturalSociologyEngine`)** :\n");
-        sb.append("   - *Constat* : La cohésion sociale (Asabiyyah) s'effondre trop vite au Moyen-Âge.\n");
-        sb.append("   - *Action conseillée* : Réduire le facteur de désintégration par inégalité de richesse de 0.12 à 0.07.\n\n");
+        sb.append(CalibrationDiagnosticRules.generateTuningSuggestions(mapes, rSquared, divergenceYear));
         sb.append("--- *Audit automatique généré par Ether Cliodynamic Benchmark Auditor v5.0* ---");
 
         reportPreviewArea.setText(sb.toString());
@@ -838,7 +885,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
         }
         if (!hasTargetScenarios) {
-            minYear = -1000;
+            minYear = -100000;
             maxYear = 2026;
         }
 
@@ -1100,6 +1147,8 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("analytics.header", "📊 ANALYSE COMPARATIVE & BATAILLE DE SCÉNARIOS (DEEP ANALYTICS)"));
         if (metricLabel != null) metricLabel.setText(I18n.getOrDefault("analytics.metric_label", "Indicateur Visualisé :"));
         if (interpolationLabel != null) interpolationLabel.setText(I18n.getOrDefault("analytics.interp_label", "Interpolation :"));
+        if (channelLabel != null) channelLabel.setText(I18n.getOrDefault("analytics.channel_label", "Canal Tensoriel :"));
+        if (playTimelineBtn != null) playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Lecture Temporelle"));
         if (analyzeBtn != null) analyzeBtn.setText(I18n.getOrDefault("analytics.btn.analyze", "⚡ Recalculer les Écarts"));
         if (exportMdBtn != null) exportMdBtn.setText(I18n.getOrDefault("analytics.btn.export_md", "📝 Exporter Rapport (.md)"));
         if (exportCsvBtn != null) exportCsvBtn.setText(I18n.getOrDefault("analytics.btn.export_csv", "📥 Exporter Données (.csv)"));
@@ -1113,12 +1162,45 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         if (chart != null) chart.setTitle(I18n.getOrDefault("analytics.chart.title", "Superposition Chronologique Multi-Scénarios (💡 CTRL + Molette pour Zoomer, CTRL + Glisser pour Naviguer)"));
         if (diagHeader != null) diagHeader.setText(I18n.getOrDefault("analytics.diag_header", "🔍 ANALYSE DE DIVERGENCE & ANATOMIE DES ÉCARTS"));
         if (synthHeader != null) synthHeader.setText(I18n.getOrDefault("analytics.synth_header", "📄 Synthèse Comparative Auto-Générée :"));
+        if (searchField != null) searchField.setPromptText(I18n.getOrDefault("analytics.search_prompt", "🔍 Filtrer les scénarios par nom, statut ou plage d'années..."));
+        if (timeSeriesTab != null) timeSeriesTab.setText(I18n.getOrDefault("analytics.tab.timeseries", "📈 Séries Temporelles (1D)"));
+        if (spatialCartoTab != null) spatialCartoTab.setText(I18n.getOrDefault("analytics.tab.spatial", "🗺️ Cartographie & Tenseurs (2D)"));
 
         if (divergenceLabel != null && (divergenceLabel.getText() == null || divergenceLabel.getText().isBlank() || divergenceLabel.getText().startsWith("Point de rupture") || divergenceLabel.getText().startsWith("Point of divergence") || divergenceLabel.getText().startsWith("Punto de ruptura") || divergenceLabel.getText().startsWith("Bruchpunkt") || divergenceLabel.getText().startsWith("临界断点"))) {
             divergenceLabel.setText(I18n.getOrDefault("analytics.divergence.select_hint", "Point de rupture : Sélectionnez au moins 2 scénarios"));
         }
         if (explanationLabel != null && (explanationLabel.getText() == null || explanationLabel.getText().isBlank() || explanationLabel.getText().startsWith("Cochez les scénarios") || explanationLabel.getText().startsWith("Check scenarios") || explanationLabel.getText().startsWith("Marque los escenarios") || explanationLabel.getText().startsWith("Wählen Sie Szenarien") || explanationLabel.getText().startsWith("勾选上方列表"))) {
             explanationLabel.setText(I18n.getOrDefault("analytics.divergence.check_hint", "Cochez les scénarios dans la liste ci-dessus pour lancer la comparaison."));
+        }
+
+        if (spatialChannelCombo != null) {
+            int selectedIdx = spatialChannelCombo.getSelectionModel().getSelectedIndex();
+            if (selectedIdx < 0) selectedIdx = 0;
+            spatialChannelCombo.getItems().clear();
+            spatialChannelCombo.getItems().addAll(
+                I18n.getOrDefault("analytics.spatial.density", "👥 Densité Démographique"),
+                I18n.getOrDefault("analytics.spatial.sovereignty", "👑 Souveraineté Politique"),
+                I18n.getOrDefault("analytics.spatial.linguistic", "🗣️ Isoglosses Linguistiques"),
+                I18n.getOrDefault("analytics.spatial.kinship", "🧬 Structure de Parenté (Kinship)"),
+                I18n.getOrDefault("analytics.spatial.rituals", "🔮 Rituels & Croyances Sacrées")
+            );
+            spatialChannelCombo.getSelectionModel().select(selectedIdx);
+        }
+
+        if (interpolationCombo != null) {
+            HistoricalValidationKernel.InterpolationMethod currentInterp = interpolationCombo.getValue();
+            interpolationCombo.setConverter(new javafx.util.StringConverter<HistoricalValidationKernel.InterpolationMethod>() {
+                @Override
+                public String toString(HistoricalValidationKernel.InterpolationMethod object) {
+                    if (object == null) return "";
+                    return I18n.getOrDefault("interpolation." + object.name().toLowerCase(), object.name());
+                }
+                @Override
+                public HistoricalValidationKernel.InterpolationMethod fromString(String string) {
+                    return null;
+                }
+            });
+            if (currentInterp != null) interpolationCombo.setValue(currentInterp);
         }
 
         if (metricSelectorCombo != null) {
@@ -1132,6 +1214,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
         }
 
+        if (scenarioTable != null) scenarioTable.refresh();
         checkExecutionStatus();
     }
 }

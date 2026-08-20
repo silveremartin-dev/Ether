@@ -61,16 +61,18 @@ public class HistoricalMapGenerator {
             }
 
             // 1. Try HYDE 3.4 High-Resolution ASCII Grid Ingestion
-            BufferedImage hydeDensityImg = Hyde34GridReader.loadForYear(scenario.getStartDateYear());
-            if (hydeDensityImg != null) {
-                scenario.setCustomDensityBase64(bufferedImageToBase64Png(hydeDensityImg));
-                logger.info("Successfully populated scenario '{}' density tensor using HYDE 3.4 5-arc-minute grid for year {}.", scenario.getName(), scenario.getStartDateYear());
+            BufferedImage imgDensity = Hyde34GridReader.loadForYear(scenario.getStartDateYear());
+            if (imgDensity != null) {
+                scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+                if (scenario.getStartDateYear() < -10000) {
+                    logger.info("Successfully populated scenario '{}' density tensor using HYDE 3.4 10,000 BC baseline grid (clamped for prehistoric epoch year {}).", scenario.getName(), scenario.getStartDateYear());
+                } else {
+                    logger.info("Successfully populated scenario '{}' density tensor using HYDE 3.4 5-arc-minute grid for year {}.", scenario.getName(), scenario.getStartDateYear());
+                }
+            } else {
+                imgDensity = generateCleanDensityMap(type, scenario);
+                scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
             }
-
-            // Fallback: Clean Procedural Multi-Channel Maps
-            // 0. Clean Grayscale Density Map (Black background, 0..255 intensity)
-            BufferedImage imgDensity = generateCleanDensityMap(type, scenario);
-            scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
 
             // 1. Clean Multi-Channel Isogloss Map (Index 0)
             BufferedImage imgIsogloss = generateCleanIsoglossMap(type, scenario);
@@ -107,6 +109,15 @@ public class HistoricalMapGenerator {
             // 9. Clean Multi-Channel Pathogen Immunity Map (Index 8)
             BufferedImage imgPathogen = generateCleanPathogenImmunityMap(type, scenario);
             scenario.setCustomTensorMapBase64(8, bufferedImageToBase64Png(imgPathogen));
+
+            // 10. Extensible Cultural Tensors (Indices 9 to N-1) if N > 9
+            int dims = scenario.getCultureVectorDimensions();
+            if (dims > 9) {
+                for (int i = 9; i < dims; i++) {
+                    BufferedImage imgExt = generateCleanExtensibleTensorMap(i, type, scenario);
+                    scenario.setCustomTensorMapBase64(i, bufferedImageToBase64Png(imgExt));
+                }
+            }
 
             // Save to disk cache
             saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
@@ -148,6 +159,9 @@ public class HistoricalMapGenerator {
     }
 
     public static BufferedImage generateCleanDensityMapForYear(String type, Scenario scenario, long targetYear) {
+        if (targetYear < -10000) {
+            throw new IllegalStateException("DATA INGESTION ERROR: Target year " + targetYear + " precedes empirical HYDE 3.4 baseline (-10,000 BC)! Zero-fallback policy active: synthetic approximations are disabled.");
+        }
         BufferedImage realHydeImg = Hyde34GridReader.loadForYear(targetYear);
         if (realHydeImg != null) {
             logger.info("Ingested authentic HYDE 3.4 5-arc-minute Esri ASCII raster grid for year {}", targetYear);
@@ -1119,6 +1133,38 @@ public class HistoricalMapGenerator {
         public LanguageZone(String name, double centerLng, double centerLat, Color color) {
             this.name = name; this.centerLng = centerLng; this.centerLat = centerLat; this.color = color;
         }
+    }
+
+    public static BufferedImage generateCleanExtensibleTensorMap(int tensorIndex, String type, Scenario scenario) {
+        int width = 2048, height = 1024;
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = img.createGraphics();
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, width, height);
+
+        long seed = scenario != null ? scenario.getCulturalSeed() : 54321L;
+        if (seed == 0) seed = 54321L;
+        java.util.Random rnd = new java.util.Random(seed ^ (tensorIndex * 0x9E3779B97F4A7C15L));
+        double phaseLng = rnd.nextDouble() * Math.PI * 2.0;
+        double phaseLat = rnd.nextDouble() * Math.PI * 2.0;
+        double scale = 0.005 + (tensorIndex % 5) * 0.002 + (rnd.nextDouble() - 0.5) * 0.001;
+        float hueBase = (float) ((tensorIndex * 0.137 + rnd.nextDouble() * 0.2) % 1.0);
+
+        for (int y = 0; y < height; y++) {
+            double lat = 90.0 - (y / (double) height) * 180.0;
+            for (int x = 0; x < width; x++) {
+                double lon = -180.0 + (x / (double) width) * 360.0;
+                if (!isLand(lon, lat)) continue;
+
+                double val = Math.sin(lon * scale + phaseLng) * Math.cos(lat * scale + phaseLat) * 0.5 + 0.5;
+                float sat = 0.6f + (float)(val * 0.35);
+                float bright = 0.2f + (float)(val * 0.75);
+                int rgb = Color.HSBtoRGB(hueBase, sat, bright);
+                img.setRGB(x, y, rgb);
+            }
+        }
+        g.dispose();
+        return img;
     }
 
     public static void precacheAllBuiltInScenarios() {

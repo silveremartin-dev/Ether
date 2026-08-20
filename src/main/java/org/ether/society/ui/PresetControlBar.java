@@ -510,7 +510,7 @@ public class PresetControlBar<T> extends VBox {
 
     private String formatPresetItem(T item) {
         if (item == null) return "";
-        if (item instanceof org.ether.society.procedural.PlanetPreset p) return p.name();
+        if (item instanceof org.ether.society.procedural.PlanetPreset p) return I18n.getPlanetPresetDisplayName(p.name());
         if (item instanceof org.ether.society.model.EcologyPreset e) return e.name();
         if (item instanceof org.ether.society.model.Scenario s) {
             return cleanScenarioName(s.getName());

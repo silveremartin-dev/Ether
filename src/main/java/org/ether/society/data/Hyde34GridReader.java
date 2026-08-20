@@ -155,6 +155,11 @@ public class Hyde34GridReader {
      * Reads a local HYDE 3.4 ASCII grid file for a specific scenario year.
      */
     public static BufferedImage loadForYear(long year) {
+        long requestedYear = year;
+        if (year < -10000) {
+            logger.warn("Prehistoric epoch {} BC precedes HYDE 3.4 baseline (-10,000 BC). Clamping to Paleolithic baseline 10,000 BC.", Math.abs(requestedYear));
+            year = -10000;
+        }
         String yearTag = DataDownloaderService.getHydeYearTag(year);
         String zipName = yearTag + "_pop.zip";
         File zipFile = new File("user_data/maps/hyde34/" + zipName);
@@ -180,7 +185,11 @@ public class Hyde34GridReader {
                 while ((entry = zis.getNextEntry()) != null) {
                     String entryName = entry.getName().toLowerCase();
                     if (entryName.startsWith("popc_") && entryName.endsWith(".asc")) {
-                        logger.info("Streaming empirical HYDE 3.4 grid '{}' directly from ZIP archive {} for year {}...", entry.getName(), zipFile.getName(), year);
+                        if (requestedYear < -10000) {
+                            logger.info("Streaming HYDE 3.4 10,000 BC baseline grid '{}' from ZIP archive {} for prehistoric epoch year {}...", entry.getName(), zipFile.getName(), requestedYear);
+                        } else {
+                            logger.info("Streaming empirical HYDE 3.4 grid '{}' directly from ZIP archive {} for year {}...", entry.getName(), zipFile.getName(), year);
+                        }
                         return readAsciiGridToImage(zis);
                     }
                 }
@@ -194,13 +203,17 @@ public class Hyde34GridReader {
         File ascFile = new File("data/maps/hyde34/" + ascName);
         if (ascFile.exists()) {
             try (InputStream is = new FileInputStream(ascFile)) {
-                logger.info("Ingesting local HYDE 3.4 ASC File for year {}: {}", year, ascFile.getAbsolutePath());
+                if (requestedYear < -10000) {
+                    logger.info("Ingesting local HYDE 3.4 ASC File for year {} (clamped to 10,000 BC baseline): {}", requestedYear, ascFile.getAbsolutePath());
+                } else {
+                    logger.info("Ingesting local HYDE 3.4 ASC File for year {}: {}", year, ascFile.getAbsolutePath());
+                }
                 return readAsciiGridToImage(is);
             } catch (Exception e) {
                 logger.error("Error reading HYDE 3.4 ASC file '{}': {}", ascFile.getAbsolutePath(), e.getMessage());
             }
         }
         
-        throw new IllegalStateException("ZERO FALLBACK VIOLATION: Failed to stream empirical HYDE 3.4 raster grid for year " + year + " from ZIP archive " + zipName);
+        throw new IllegalStateException("ZERO FALLBACK VIOLATION: Failed to stream empirical HYDE 3.4 raster grid for year " + requestedYear + " from ZIP archive " + zipName);
     }
 }

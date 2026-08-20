@@ -299,11 +299,33 @@ public class ResourceDistributionPanel extends BorderPane {
                 if (empty || item == null) {
                     setText("");
                 } else {
-                    setText(item.name());
+                    setText(I18n.getPlanetPresetDisplayName(item.name()));
                 }
             }
         });
-        planetPresetCombo.setButtonCell(planetPresetCombo.getCellFactory().call(null));
+        planetPresetCombo.setButtonCell(new ListCell<PlanetPreset>() {
+            @Override
+            protected void updateItem(PlanetPreset item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    PlanetPreset current = planetPresetCombo != null ? planetPresetCombo.getValue() : null;
+                    setText(current != null ? I18n.getPlanetPresetDisplayName(current.name()) : I18n.getPlanetPresetDisplayName("Terre (Terran)"));
+                } else {
+                    setText(I18n.getPlanetPresetDisplayName(item.name()));
+                }
+            }
+        });
+        planetPresetCombo.setConverter(new javafx.util.StringConverter<PlanetPreset>() {
+            @Override
+            public String toString(PlanetPreset item) {
+                return item == null ? I18n.getPlanetPresetDisplayName("Terre (Terran)") : I18n.getPlanetPresetDisplayName(item.name());
+            }
+            @Override
+            public PlanetPreset fromString(String string) {
+                return null;
+            }
+        });
+        planetPresetCombo.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-opacity: 1.0; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 4px;");
         planetPresetCombo.setOnAction(e -> {
             PlanetPreset selected = planetPresetCombo.getValue();
             if (selected != null) {
@@ -1162,10 +1184,33 @@ public class ResourceDistributionPanel extends BorderPane {
         HBox viewModeControlBar = new HBox(8, viewModeCombo, btnReliefOverlay);
         viewModeControlBar.setAlignment(Pos.CENTER);
 
-        // 2D Map Canvas
+        StackPane canvasContainer = new StackPane();
+        canvasContainer.setStyle("-fx-background-color: black; -fx-border-color: #475569; -fx-border-radius: 6; -fx-background-radius: 6;");
+
         mapPreviewCanvas = new Canvas(640, 360);
         mapPreviewCanvas.getStyleClass().add("map-canvas-shadow");
         Tooltip.install(mapPreviewCanvas, new Tooltip(I18n.getOrDefault("resource.tooltip.preview", "Aperçu dynamique de la répartition géographique des ressources")));
+
+        // Clip container to prevent JavaFX Prism NGCanvas renderForClip 0x0 NPE
+        javafx.scene.shape.Rectangle containerClip = new javafx.scene.shape.Rectangle();
+        containerClip.widthProperty().bind(canvasContainer.widthProperty());
+        containerClip.heightProperty().bind(canvasContainer.heightProperty());
+        canvasContainer.setClip(containerClip);
+
+        canvasContainer.widthProperty().addListener((obs, oldV, newV) -> {
+            double w = Math.floor(newV.doubleValue());
+            if (w >= 10.0 && Math.abs(w - mapPreviewCanvas.getWidth()) >= 4.0) {
+                mapPreviewCanvas.setWidth(w);
+                updatePreviewCanvas();
+            }
+        });
+        canvasContainer.heightProperty().addListener((obs, oldV, newV) -> {
+            double h = Math.floor(newV.doubleValue());
+            if (h >= 10.0 && Math.abs(h - mapPreviewCanvas.getHeight()) >= 4.0) {
+                mapPreviewCanvas.setHeight(h);
+                updatePreviewCanvas();
+            }
+        });
 
         // Interactive Zoom & Pan Handlers
         mapPreviewCanvas.setOnScroll(e -> {
@@ -1218,6 +1263,9 @@ public class ResourceDistributionPanel extends BorderPane {
             }
         });
 
+        canvasContainer.getChildren().add(mapPreviewCanvas);
+        VBox.setVgrow(canvasContainer, Priority.ALWAYS);
+
         legendBar = new HBox(10);
         legendBar.setAlignment(Pos.CENTER);
         legendBar.setPadding(new Insets(5, 10, 5, 10));
@@ -1228,7 +1276,8 @@ public class ResourceDistributionPanel extends BorderPane {
         summaryLabel.getStyleClass().addAll("control-label", "summary-centered-label");
         summaryLabel.setWrapText(true);
 
-        centerBox.getChildren().addAll(rightViewTitle, viewModeControlBar, mapPreviewCanvas, legendBar, summaryLabel);
+        centerBox.getChildren().addAll(rightViewTitle, viewModeControlBar, canvasContainer, legendBar, summaryLabel);
+        VBox.setVgrow(centerBox, Priority.ALWAYS);
 
         setLeft(scrollControls);
         setCenter(centerBox);
@@ -1858,13 +1907,20 @@ public class ResourceDistributionPanel extends BorderPane {
         onlineMapService.fetchHydroMapAsync(body).thenAccept(img -> javafx.application.Platform.runLater(() -> {
             if (img != null) {
                 customHydroImage = img;
-                if (hydroFileLabel != null) hydroFileLabel.setText("🌐 " + body.getName() + " NASA SWBD Water/Hydro WMS");
+                if (hydroFileLabel != null) hydroFileLabel.setText("🌐 " + body.getName() + " USGS HydroSHEDS / SWBD Hydro WMS");
                 if (mapStatusLabel != null) mapStatusLabel.setText(I18n.getOrDefault("planet.map.status_success", "Carte hydrographique téléchargée avec succès."));
                 updatePreviewCanvas();
                 updateSummary();
             } else {
-                if (mapStatusLabel != null) mapStatusLabel.setText(I18n.getOrDefault("resource.map.procedural_fallback", "Information : Basculement sur la carte hydrographique procédurale (déclivité)."));
-                generateProceduralHydrography();
+                if ("earth".equals(sourceKey) && radioImportHydro != null && radioImportHydro.isSelected()) {
+                    if (hydroFileLabel != null) hydroFileLabel.setText("🌊 Earth SWBD / USGS HydroSHEDS Hydrographie");
+                    if (mapStatusLabel != null) mapStatusLabel.setText("🌍 Carte Hydrographique Terrestre USGS HydroSHEDS / SWBD active.");
+                    updatePreviewCanvas();
+                    updateSummary();
+                } else {
+                    if (mapStatusLabel != null) mapStatusLabel.setText(I18n.getOrDefault("resource.map.procedural_fallback", "Information : Basculement sur la carte hydrographique procédurale (déclivité)."));
+                    generateProceduralHydrography();
+                }
             }
         }));
     }
@@ -1954,9 +2010,9 @@ public class ResourceDistributionPanel extends BorderPane {
         String val = viewModeCombo.getValue().toLowerCase();
         if (val.contains("biome") || val.contains("végétation") || val.contains("1.")) return 0;
         if (val.contains("géologique") || val.contains("métaux") || val.contains("2.")) return 1;
-        if (val.contains("thermique") || val.contains("tectonique") || val.contains("3.")) return 2;
-        if (val.contains("aquifère") || val.contains("aquatique") || val.contains("4.")) return 3;
-        if (val.contains("hydrographique") || val.contains("fleuve") || val.contains("5.")) return 4;
+        if (val.contains("hydrographique") || val.contains("fleuve") || val.contains("3.")) return 2;
+        if (val.contains("thermique") || val.contains("tectonique") || val.contains("4.")) return 3;
+        if (val.contains("aquifère") || val.contains("aquatique") || val.contains("5.")) return 4;
         return 0;
     }
 
@@ -1997,20 +2053,20 @@ public class ResourceDistributionPanel extends BorderPane {
             addLegendItem("LOW", Color.rgb(30, 40, 50), I18n.getOrDefault("resource.legend.mineral_low", "Faible Gisement"));
             addLegendItem("MED", Color.rgb(180, 100, 40), I18n.getOrDefault("resource.legend.mineral_med", "Gisement Moyen"));
             addLegendItem("HIGH", Color.rgb(240, 60, 20), I18n.getOrDefault("resource.legend.mineral_high", "Riche Gisement"));
-        } else if (selectedIdx == 2) { // Mantle / Tectonic
-            addLegendItem("LOW", Color.rgb(40, 40, 60), I18n.getOrDefault("resource.legend.heat_low", "Inerte"));
-            addLegendItem("MED", Color.rgb(180, 80, 30), I18n.getOrDefault("resource.legend.heat_med", "Tectonique Modérée"));
-            addLegendItem("HIGH", Color.rgb(240, 20, 20), I18n.getOrDefault("resource.legend.heat_high", "Magmatisme Élevé"));
-        } else if (selectedIdx == 3) { // Aquifer / Aquatic
-            addLegendItem("LOW", Color.rgb(20, 40, 80), I18n.getOrDefault("resource.legend.aquifer_low", "Aride / Sec"));
-            addLegendItem("MED", Color.rgb(40, 120, 200), I18n.getOrDefault("resource.legend.aquifer_med", "Abondance Modérée"));
-            addLegendItem("HIGH", Color.rgb(0, 220, 255), I18n.getOrDefault("resource.legend.aquifer_high", "Aquifère / Poissonnerie"));
-        } else { // Hydrography & River Networks
+        } else if (selectedIdx == 2) { // Hydrography & River Networks
             addLegendItem("DEEP_OCEAN", Color.rgb(15, 23, 42), I18n.getOrDefault("resource.legend.hydro_ocean", "Océan / Abysses"));
             addLegendItem("MAJOR_RIVER", Color.rgb(2, 132, 199), I18n.getOrDefault("resource.legend.major_river", "Fleuves Majeurs"));
             addLegendItem("RIVER_STREAM", Color.rgb(56, 189, 248), I18n.getOrDefault("resource.legend.river_stream", "Cours d'Eau & Rivières"));
             addLegendItem("TRIBUTARY", Color.rgb(20, 184, 166), I18n.getOrDefault("resource.legend.tributary", "Affluents & Ruisseaux"));
-            addLegendItem("LAND_SLOPE", Color.rgb(75, 85, 99), I18n.getOrDefault("resource.legend.land_slope", "Relief / Déclivité"));
+            addLegendItem("LAND_SLOPE", Color.rgb(75, 85, 99), I18n.getOrDefault("resource.legend.land_slope", "Relief Continental"));
+        } else if (selectedIdx == 3) { // Mantle / Tectonic
+            addLegendItem("LOW", Color.rgb(40, 40, 60), I18n.getOrDefault("resource.legend.heat_low", "Inerte"));
+            addLegendItem("MED", Color.rgb(180, 80, 30), I18n.getOrDefault("resource.legend.heat_med", "Tectonique Modérée"));
+            addLegendItem("HIGH", Color.rgb(240, 20, 20), I18n.getOrDefault("resource.legend.heat_high", "Magmatisme Élevé"));
+        } else { // Aquifer / Aquatic
+            addLegendItem("LOW", Color.rgb(20, 40, 80), I18n.getOrDefault("resource.legend.aquifer_low", "Aride / Sec"));
+            addLegendItem("MED", Color.rgb(40, 120, 200), I18n.getOrDefault("resource.legend.aquifer_med", "Abondance Modérée"));
+            addLegendItem("HIGH", Color.rgb(0, 220, 255), I18n.getOrDefault("resource.legend.aquifer_high", "Aquifère / Poissonnerie"));
         }
     }
 
@@ -2111,39 +2167,7 @@ public class ResourceDistributionPanel extends BorderPane {
                             pxColor = Color.rgb(r, g, b);
                         }
                     }
-                } else if (mode == 2) { // Mantle Heat & Tectonic Map
-                    if (customResReader != null) {
-                        int rx = (int) Math.min((x_base / (double) w) * wRes, wRes - 1);
-                        int ry = (int) Math.min((y_base / (double) h) * hRes, hRes - 1);
-                        Color c = customResReader.getColor(rx, ry);
-                        double heatDensity = c.getBlue();
-                        int r = (int) Math.min(255, 30 + heatDensity * 220);
-                        int g = (int) Math.min(255, 20 + heatDensity * 90);
-                        int b = (int) Math.min(255, 40 + (1.0 - heatDensity) * 100);
-                        pxColor = Color.rgb(r, g, b);
-                    } else {
-                        var point = generator.getPlanetPoint(lat, lon, planet);
-                        double tidalHeat = ProceduralGenerator.computeTidalForceIntensity(planet) * 0.15;
-                        double heatDensity = Math.min(1.0, (mHeat / 150.0) * (0.4 + Math.abs(point.elevation()) * 0.6 + tidalHeat));
-                        int r = (int) Math.min(255, 30 + heatDensity * 220);
-                        int g = (int) Math.min(255, 20 + heatDensity * 90);
-                        int b = (int) Math.min(255, 40 + (1.0 - heatDensity) * 100);
-                        pxColor = Color.rgb(r, g, b);
-                    }
-                } else if (mode == 3) { // Aquatic & Aquifer Map
-                    var point = generator.getPlanetPoint(lat, lon, planet);
-                    if (point.elevation() < planet.waterLevel()) {
-                        // Ocean: Uniform Marine Blue
-                        pxColor = Color.rgb(15, 23, 42);
-                    } else {
-                        // Terrestrial Phreatic Table / Aquifers
-                        double waterTable = Math.min(1.0, point.accessibleAquifer() * (fAquifer / 15000.0));
-                        int r = (int) Math.min(255, 14 + waterTable * 30);
-                        int g = (int) Math.min(255, 100 + waterTable * 120);
-                        int b = (int) Math.min(255, 160 + waterTable * 95);
-                        pxColor = Color.rgb(r, g, b);
-                    }
-                } else { // Mode 4: Hydrography & River Networks
+                } else if (mode == 2) { // Hydrography & River Networks Map
                     if (customHydroReader != null) {
                         int hx = (int) Math.min((x_base / (double) w) * wHydro, wHydro - 1);
                         int hy = (int) Math.min((y_base / (double) h) * hHydro, hHydro - 1);
@@ -2184,6 +2208,38 @@ public class ResourceDistributionPanel extends BorderPane {
                                 pxColor = Color.rgb(r, g, b);
                             }
                         }
+                    }
+                } else if (mode == 3) { // Mantle Heat & Tectonic Map
+                    if (customResReader != null) {
+                        int rx = (int) Math.min((x_base / (double) w) * wRes, wRes - 1);
+                        int ry = (int) Math.min((y_base / (double) h) * hRes, hRes - 1);
+                        Color c = customResReader.getColor(rx, ry);
+                        double heatDensity = c.getBlue();
+                        int r = (int) Math.min(255, 30 + heatDensity * 220);
+                        int g = (int) Math.min(255, 20 + heatDensity * 90);
+                        int b = (int) Math.min(255, 40 + (1.0 - heatDensity) * 100);
+                        pxColor = Color.rgb(r, g, b);
+                    } else {
+                        var point = generator.getPlanetPoint(lat, lon, planet);
+                        double tidalHeat = ProceduralGenerator.computeTidalForceIntensity(planet) * 0.15;
+                        double heatDensity = Math.min(1.0, (mHeat / 150.0) * (0.4 + Math.abs(point.elevation()) * 0.6 + tidalHeat));
+                        int r = (int) Math.min(255, 30 + heatDensity * 220);
+                        int g = (int) Math.min(255, 20 + heatDensity * 90);
+                        int b = (int) Math.min(255, 40 + (1.0 - heatDensity) * 100);
+                        pxColor = Color.rgb(r, g, b);
+                    }
+                } else { // Mode 4: Aquatic & Aquifer Map
+                    var point = generator.getPlanetPoint(lat, lon, planet);
+                    if (point.elevation() < planet.waterLevel()) {
+                        // Ocean: Uniform Marine Blue
+                        pxColor = Color.rgb(15, 23, 42);
+                    } else {
+                        // Terrestrial Phreatic Table / Aquifers
+                        double waterTable = Math.min(1.0, point.accessibleAquifer() * (fAquifer / 15000.0));
+                        int r = (int) Math.min(255, 14 + waterTable * 30);
+                        int g = (int) Math.min(255, 100 + waterTable * 120);
+                        int b = (int) Math.min(255, 160 + waterTable * 95);
+                        pxColor = Color.rgb(r, g, b);
                     }
                 }
 
@@ -2351,13 +2407,13 @@ public class ResourceDistributionPanel extends BorderPane {
             if (viewModeCombo != null) {
                 int selected = viewModeCombo.getSelectionModel().getSelectedIndex();
                 viewModeCombo.getItems().setAll(
-                    I18n.getOrDefault("resource.view.section_param", "────────── CARTES PARAMÉTRÉES & RESSOURCES ──────────"),
+                    I18n.getOrDefault("resource.view.section_param", "────────── CARTES PARAMÉTRÉES & RESSOURCES (3 CARTES) ──────────"),
                     I18n.getOrDefault("resource.view.biomes", "🌿 1. Carte des Biomes & Végétation (GtC)"),
                     I18n.getOrDefault("resource.view.geology", "🪨 2. Carte Géologique & Métaux (Gt Fer/Cuivre)"),
-                    I18n.getOrDefault("resource.view.section_deduced", "────────── CALQUES DÉDUITS & DYNAMIQUES ──────────"),
-                    I18n.getOrDefault("resource.view.heat", "🌋 3. Flux Thermique & Ceintures Tectoniques (mW/m²)"),
-                    I18n.getOrDefault("resource.view.aquifer", "💧 4. Aquifères & Biomasse Aquatique (10³ km³)"),
-                    I18n.getOrDefault("resource.view.hydro", "🌊 5. Carte Hydrographique & Fleuves (Déclivité & Cours d'eau)")
+                    I18n.getOrDefault("resource.view.hydro", "🌊 3. Carte Hydrographique & Fleuves (USGS HydroSHEDS / PNG)"),
+                    I18n.getOrDefault("resource.view.section_deduced", "────────── CALQUES DÉDUITS & DYNAMIQUES (2 CALQUES) ──────────"),
+                    I18n.getOrDefault("resource.view.heat", "🌋 4. Flux Thermique & Ceintures Tectoniques (mW/m²)"),
+                    I18n.getOrDefault("resource.view.aquifer", "💧 5. Aquifères & Biomasse Aquatique (10³ km³)")
                 );
                 if (selected >= 0 && selected < viewModeCombo.getItems().size()) {
                     viewModeCombo.getSelectionModel().select(selected);

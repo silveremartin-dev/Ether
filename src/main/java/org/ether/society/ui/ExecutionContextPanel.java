@@ -168,6 +168,11 @@ public class ExecutionContextPanel extends BorderPane {
     private Label summaryTopologyLabel;
     private Label summaryRenderingLabel;
     private Label summaryClusterNodesLabel;
+    private Label sidebarTitleLabel;
+    private Label hdrEngineLabel;
+    private Label hdrTopologyLabel;
+    private Label hdrRenderingLabel;
+    private Label hdrClusterLabel;
 
     public ExecutionContextPanel(Runnable onLaunchSimulationCallback) {
         this.gpuManager = new GPUManager();
@@ -500,8 +505,8 @@ public class ExecutionContextPanel extends BorderPane {
         rightColumn.setMaxWidth(310);
         rightColumn.getStyleClass().add("sidebar-card");
 
-        Label sidebarTitle = new Label("🚀 RECAPITULATIF & LANCEMENT");
-        sidebarTitle.getStyleClass().add("sidebar-title");
+        sidebarTitleLabel = new Label();
+        sidebarTitleLabel.getStyleClass().add("sidebar-title");
 
         summaryHardwareLabel = new Label();
         summaryHardwareLabel.getStyleClass().add("sidebar-recap-text");
@@ -519,11 +524,16 @@ public class ExecutionContextPanel extends BorderPane {
         summaryClusterNodesLabel.getStyleClass().addAll("sidebar-recap-text", "sidebar-recap-highlight");
         summaryClusterNodesLabel.setWrapText(true);
 
+        hdrEngineLabel = createSmallHeader("");
+        hdrTopologyLabel = createSmallHeader("");
+        hdrRenderingLabel = createSmallHeader("");
+        hdrClusterLabel = createSmallHeader("");
+
         VBox recapBox = new VBox(10,
-            createSmallHeader("🖥️ Moteur de Calcul :"), summaryHardwareLabel,
-            createSmallHeader("🌐 Topologie Réseau :"), summaryTopologyLabel,
-            createSmallHeader("🖼️ Restitution Visuelle :"), summaryRenderingLabel,
-            createSmallHeader("📊 Nœuds du Cluster :"), summaryClusterNodesLabel
+            hdrEngineLabel, summaryHardwareLabel,
+            hdrTopologyLabel, summaryTopologyLabel,
+            hdrRenderingLabel, summaryRenderingLabel,
+            hdrClusterLabel, summaryClusterNodesLabel
         );
         recapBox.getStyleClass().add("sidebar-recap-box");
 
@@ -532,7 +542,7 @@ public class ExecutionContextPanel extends BorderPane {
         launchBtn.setStyle("-fx-background-color: linear-gradient(to right, #10b981, #0284c7); -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 14 16; -fx-background-radius: 6; -fx-cursor: hand;");
         launchBtn.setOnAction(e -> launchSimulation());
 
-        rightColumn.getChildren().addAll(sidebarTitle, recapBox, new Separator(), launchBtn);
+        rightColumn.getChildren().addAll(sidebarTitleLabel, recapBox, new Separator(), launchBtn);
 
         updateRightSummary();
 
@@ -558,32 +568,32 @@ public class ExecutionContextPanel extends BorderPane {
 
         HardwareMode hw = getHardwareMode();
         if (hw == HardwareMode.GPU_AUTO) {
-            summaryHardwareLabel.setText("• GPU OpenCL / TornadoVM & Prism Auto\n(" + getDetectedGpuName() + ")");
+            summaryHardwareLabel.setText("• " + I18n.getOrDefault("exec.summary.gpu_auto", "GPU OpenCL / TornadoVM & Prism Auto") + "\n(" + getDetectedGpuName() + ")");
         } else if (hw == HardwareMode.CPU_JIT) {
-            summaryHardwareLabel.setText("• CPU Multi-Thread JIT\n(" + Runtime.getRuntime().availableProcessors() + " Cœurs Détectés)");
+            summaryHardwareLabel.setText("• " + I18n.getOrDefault("exec.summary.cpu_jit", "CPU Multi-Thread JIT") + "\n(" + Runtime.getRuntime().availableProcessors() + " " + I18n.getOrDefault("exec.summary.cores_detected", "Cœurs Détectés") + ")");
         } else {
-            summaryHardwareLabel.setText("• Rendu Monothread SW Safe Fallback");
+            summaryHardwareLabel.setText("• " + I18n.getOrDefault("exec.summary.gpu_off", "Rendu Monothread SW Safe Fallback"));
         }
 
         ExecutionTopology top = getExecutionTopology();
         if (top == ExecutionTopology.CLUSTER) {
-            String roleStr = isMasterRunning ? "Master Serveur Actif (Port 9090)" : (isConnectedCluster ? "Worker Connecté" : "Cluster Configuré (En attente)");
-            summaryTopologyLabel.setText("• Mode Distribué Cluster gRPC\n(" + roleStr + ")");
+            String roleStr = isMasterRunning ? I18n.getOrDefault("exec.summary.master_active", "Master Serveur Actif (Port 9090)") : (isConnectedCluster ? I18n.getOrDefault("exec.summary.worker_connected", "Worker Connecté") : I18n.getOrDefault("exec.summary.cluster_configured", "Cluster Configuré (En attente)"));
+            summaryTopologyLabel.setText("• " + I18n.getOrDefault("exec.summary.cluster_mode", "Mode Distribué Cluster gRPC") + "\n(" + roleStr + ")");
         } else {
-            summaryTopologyLabel.setText("• Mode Monoposte Local\n(Machine Hôte Autonome)");
+            summaryTopologyLabel.setText("• " + I18n.getOrDefault("exec.summary.local_mode", "Mode Monoposte Local") + "\n(" + I18n.getOrDefault("exec.summary.standalone_host", "Machine Hôte Autonome") + ")");
         }
 
         RenderingMode ren = getRenderingMode();
         if (ren == RenderingMode.HEADLESS) {
-            summaryRenderingLabel.setText("• Mode Headless Batch\n(" + targetTicksSpinner.getValue() + " Ticks Cibles)");
+            summaryRenderingLabel.setText("• " + I18n.getOrDefault("exec.summary.headless_mode", "Mode Headless Batch") + "\n(" + targetTicksSpinner.getValue() + " " + I18n.getOrDefault("exec.summary.target_ticks", "Ticks Cibles") + ")");
         } else {
-            summaryRenderingLabel.setText("• Mode GUI Interactif\n(Visuel Temps Réel 2D/3D)");
+            summaryRenderingLabel.setText("• " + I18n.getOrDefault("exec.summary.gui_mode", "Mode GUI Interactif") + "\n(" + I18n.getOrDefault("exec.summary.realtime_2d3d", "Visuel Temps Réel 2D/3D") + ")");
         }
 
         if (nodeList != null && !nodeList.isEmpty()) {
-            summaryClusterNodesLabel.setText("• " + nodeList.size() + " Nœud(s) Enregistré(s)");
+            summaryClusterNodesLabel.setText("• " + nodeList.size() + " " + I18n.getOrDefault("exec.summary.nodes_registered", "Nœud(s) Enregistré(s)"));
         } else {
-            summaryClusterNodesLabel.setText("• 1 Nœud Local (Monoposte)");
+            summaryClusterNodesLabel.setText("• 1 " + I18n.getOrDefault("exec.summary.single_node", "Nœud Local (Monoposte)"));
         }
     }
 
@@ -932,6 +942,11 @@ public class ExecutionContextPanel extends BorderPane {
 
     public void updateTexts() {
         titleHeader.setText(I18n.getOrDefault("exec.title", "⚡ Contexte d'Exécution & Infrastructure de Calcul"));
+        if (sidebarTitleLabel != null) sidebarTitleLabel.setText(I18n.getOrDefault("exec.sidebar.title", "🚀 RECAPITULATIF & LANCEMENT"));
+        if (hdrEngineLabel != null) hdrEngineLabel.setText(I18n.getOrDefault("exec.sidebar.header.engine", "🖥️ Moteur de Calcul :"));
+        if (hdrTopologyLabel != null) hdrTopologyLabel.setText(I18n.getOrDefault("exec.sidebar.header.topology", "🌐 Topologie Réseau :"));
+        if (hdrRenderingLabel != null) hdrRenderingLabel.setText(I18n.getOrDefault("exec.sidebar.header.rendering", "🖼️ Restitution Visuelle :"));
+        if (hdrClusterLabel != null) hdrClusterLabel.setText(I18n.getOrDefault("exec.sidebar.header.cluster", "📊 Nœuds du Cluster :"));
 
         // Section Headers
         hardwareSectionHeader.setText(I18n.getOrDefault("exec.section.hardware", "1. 🖥️ MOTEUR DE CALCUL & ACCÉLÉRATION MATÉRIELLE"));

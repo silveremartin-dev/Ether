@@ -36,12 +36,12 @@ public class MetricDescriptor {
         }
 
         public String getDisplayName() {
-            return displayName;
+            return org.ether.society.i18n.I18n.getOrDefault("metric.category." + name().toLowerCase(), displayName);
         }
 
         @Override
         public String toString() {
-            return displayName;
+            return getDisplayName();
         }
     }
 
@@ -66,7 +66,9 @@ public class MetricDescriptor {
     }
 
     public String getId() { return id; }
-    public String getDisplayName() { return displayName; }
+    public String getDisplayName() {
+        return org.ether.society.i18n.I18n.getOrDefault("metric." + id, displayName);
+    }
     public Category getCategory() { return category; }
     public String getUnit() { return unit; }
     public String getDescription() { return description; }

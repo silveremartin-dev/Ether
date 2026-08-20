@@ -3,7 +3,7 @@ package org.ether.society.persistence;
 import java.time.LocalDateTime;
 
 /**
- * Metadata for a saved game.
+ * Metadata for a saved simulation.
  */
 public class SaveMetadata {
     private String id;

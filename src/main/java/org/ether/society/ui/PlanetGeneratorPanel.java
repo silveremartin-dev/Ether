@@ -407,17 +407,12 @@ public class PlanetGeneratorPanel extends BorderPane {
         altRangeLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 2 0 4 0;");
         updateAltRangeDisplay();
 
-        // Common Physical Scale Header Box (Shared by Procedural Generation AND PNG Map Import)
-        Label commonTopoHeader = new Label("📐 PARAMÈTRES PHYSIQUES D'ÉCHELLE (Communs aux bruits et imports PNG 0-255) :");
-        commonTopoHeader.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
         VBox commonTopoBox = new VBox(6,
-                commonTopoHeader,
                 createControlRow(minAltRowLabel, minAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.min_alt", "Altitude minimale absolue (fond océanique) [Correspond au niveau 0 de l'image]")),
                 createControlRow(maxAltRowLabel, maxAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.max_alt", "Altitude maximale absolue (sommet montagneux) [Correspond au niveau 255 de l'image]")),
                 altRangeLabel,
                 createControlRow(waterRowLabel, waterSlider, "%.2f", I18n.getOrDefault("planet.tooltip.water_level", "Seuil d’immergence océanique (bruit e) — 0.38 correspond à ~71% d'océans immergés sur Terre"))
         );
-        commonTopoBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(56,189,248,0.05); -fx-background-radius: 6; -fx-border-color: rgba(56,189,248,0.2); -fx-border-radius: 6;");
 
         // Seed + random button (inside procedural panel)
         seedField = new TextField("12345");
@@ -549,6 +544,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         topoControls.getChildren().addAll(
                 commonTopoBox,
+                new Separator(),
                 radioProc,
                 proceduralPanel,
                 radioImport,
@@ -820,9 +816,31 @@ public class PlanetGeneratorPanel extends BorderPane {
             updatePreview();
         });
 
-        previewCanvas = new Canvas(640, 320);
-        previewCanvas.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 10, 0, 0, 0);");
+        StackPane canvasContainer = new StackPane();
+        canvasContainer.setStyle("-fx-background-color: black; -fx-border-color: #475569; -fx-border-radius: 6; -fx-background-radius: 6;");
+        previewCanvas = new Canvas(640, 360);
         Tooltip.install(previewCanvas, new Tooltip(I18n.getOrDefault("planet.tooltip.preview", "Aperçu 2D équirectangulaire dynamique")));
+
+        // Clip container to prevent JavaFX Prism NGCanvas renderForClip 0x0 NPE
+        javafx.scene.shape.Rectangle containerClip = new javafx.scene.shape.Rectangle();
+        containerClip.widthProperty().bind(canvasContainer.widthProperty());
+        containerClip.heightProperty().bind(canvasContainer.heightProperty());
+        canvasContainer.setClip(containerClip);
+
+        canvasContainer.widthProperty().addListener((obs, oldV, newV) -> {
+            double w = Math.floor(newV.doubleValue());
+            if (w >= 10.0 && Math.abs(w - previewCanvas.getWidth()) >= 4.0) {
+                previewCanvas.setWidth(w);
+                updatePreview();
+            }
+        });
+        canvasContainer.heightProperty().addListener((obs, oldV, newV) -> {
+            double h = Math.floor(newV.doubleValue());
+            if (h >= 10.0 && Math.abs(h - previewCanvas.getHeight()) >= 4.0) {
+                previewCanvas.setHeight(h);
+                updatePreview();
+            }
+        });
 
         // Interactive Zoom & Pan Handlers
         previewCanvas.setOnScroll(e -> {
@@ -875,6 +893,9 @@ public class PlanetGeneratorPanel extends BorderPane {
             }
         });
 
+        canvasContainer.getChildren().add(previewCanvas);
+        VBox.setVgrow(canvasContainer, Priority.ALWAYS);
+
         legendBar = new HBox(10);
         legendBar.setAlignment(Pos.CENTER);
         legendBar.setPadding(new Insets(5, 10, 5, 10));
@@ -886,7 +907,8 @@ public class PlanetGeneratorPanel extends BorderPane {
         astroLabel = new Label();
         astroLabel.getStyleClass().add("control-label");
 
-        centerBox.getChildren().addAll(previewTitle, viewModeCombo, previewCanvas, legendBar, statsLabel, astroLabel);
+        centerBox.getChildren().addAll(previewTitle, viewModeCombo, canvasContainer, legendBar, statsLabel, astroLabel);
+        VBox.setVgrow(centerBox, Priority.ALWAYS);
 
         setLeft(scrollControls);
         setCenter(centerBox);
@@ -1825,12 +1847,12 @@ public class PlanetGeneratorPanel extends BorderPane {
 
             legendBar.getChildren().add(minLabel);
             addLegendItem("DEEP_OCEAN", Color.rgb(10, 15, 25), I18n.getOrDefault("planet.legend.abyss", "Abysses (-11 km)"));
-            addLegendItem("OCEAN", Color.rgb(36, 54, 86), I18n.getOrDefault("planet.legend.trench", "Fosse Océanique"));
-            addLegendItem("SEA_LEVEL", Color.rgb(96, 96, 96), I18n.getOrDefault("planet.legend.sea_level", "Niveau de la mer (0 m)"));
-            addLegendItem("PLAINS", Color.rgb(140, 140, 140), I18n.getOrDefault("planet.legend.lowlands", "Basses Terres"));
-            addLegendItem("HILLS", Color.rgb(180, 180, 180), I18n.getOrDefault("planet.legend.hills", "Moyen Relief"));
-            addLegendItem("MOUNTAINS", Color.rgb(220, 220, 220), I18n.getOrDefault("planet.legend.mountains", "Montagnes"));
-            addLegendItem("SNOW", Color.rgb(255, 255, 255), I18n.getOrDefault("planet.legend.peaks", "Sommets (+8.8 km)"));
+            addLegendItem("OCEAN", Color.rgb(25, 40, 70), I18n.getOrDefault("planet.legend.trench", "Fosse Océanique"));
+            addLegendItem("SEA_LEVEL", Color.rgb(36, 54, 86), I18n.getOrDefault("planet.legend.sea_level", "Niveau de la mer (0 m)"));
+            addLegendItem("PLAINS", Color.rgb(34, 139, 34), I18n.getOrDefault("planet.legend.lowlands", "Basses Terres"));
+            addLegendItem("HILLS", Color.rgb(155, 160, 75), I18n.getOrDefault("planet.legend.hills", "Moyen Relief"));
+            addLegendItem("MOUNTAINS", Color.rgb(145, 125, 80), I18n.getOrDefault("planet.legend.mountains", "Montagnes"));
+            addLegendItem("SNOW", Color.rgb(245, 248, 255), I18n.getOrDefault("planet.legend.peaks", "Sommets (+8.8 km)"));
 
             Label maxLabel = new Label(String.format("Max: %,.0f m", maxAlt));
             maxLabel.getStyleClass().add("control-label");

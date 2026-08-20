@@ -57,8 +57,11 @@ public class DataDownloaderService {
      * Downloads and extracts the empirical HYDE 3.4 ASCII raster grid files for a specific year natively.
      */
     public static File downloadHydeGridForYear(long year) {
-        if (year < -10000 || year > 2100) {
-            throw new IllegalStateException("ZERO FALLBACK VIOLATION: Empirical HYDE 3.4 database bounds [-10,000 BC -> 2100 AD]. Year " + year + " has no empirical data.");
+        if (year < -10000) {
+            logger.warn("Prehistoric epoch {} BC precedes HYDE 3.4 baseline (-10,000 BC). Clamping to Paleolithic baseline 10,000 BC.", year);
+            year = -10000;
+        } else if (year > 2100) {
+            year = 2100;
         }
 
         String yearTag = getHydeYearTag(year);

@@ -290,8 +290,8 @@ public class MainView extends StackPane {
         mapCanvas.setTooltipContainer(mapStack);
 
         // Connect Control Panel callbacks
-        controlPanel.setOnSave(this::saveGame);
-        controlPanel.setOnLoad(this::loadGame);
+        controlPanel.setOnSave(this::saveSimulation);
+        controlPanel.setOnLoad(this::loadSimulation);
         controlPanel.setOnContourToggle(show -> mapCanvas.toggleContours(show));
         controlPanel.setOnTimelapseRecord(this::toggleTimelapseRecording);
         controlPanel.setOnTimelapseSeek(this::seekTimelapse);
@@ -415,7 +415,7 @@ public class MainView extends StackPane {
             var meta = setupPanel.getSelectedSnapshotMetadata();
             if (meta != null) {
                 logger.info("Resuming simulation from snapshot: {} (Year {}, Month {})", meta.getName(), meta.getYear(), meta.getMonth());
-                engine.loadGame(meta.getId());
+                engine.loadSimulation(meta.getId());
                 if (meta.getYear() != 0) {
                     engine.getTimeManager().reset((int) meta.getYear());
                 }
@@ -627,21 +627,21 @@ public class MainView extends StackPane {
         return I18n.getOrDefault("age.renaissance", "RENAISSANCE");
     }
 
-    public void saveGame() {
+    public void saveSimulation() {
         javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog(I18n.getOrDefault("mainview.save.default_name", "Sauvegarde Scenario"));
         dialog.setTitle(I18n.getOrDefault("mainview.save.dialog_title", "Sauvegarder la Simulation"));
         dialog.setHeaderText(I18n.getOrDefault("mainview.save.dialog_header", "Entrez le nom de la sauvegarde :"));
         dialog.setContentText(I18n.getOrDefault("mainview.save.dialog_label", "Nom :"));
 
         dialog.showAndWait().ifPresent(name -> {
-            engine.saveGame(name);
-            notificationOverlay.showEvent(I18n.getOrDefault("mainview.save.success", "Partie Sauvegardée : ") + name);
+            engine.saveSimulation(name);
+            notificationOverlay.showEvent(I18n.getOrDefault("mainview.save.success", "Simulation Sauvegardée : ") + name);
         });
     }
 
-    public void loadGame() {
-        engine.loadGame(null);
-        notificationOverlay.showEvent(I18n.getOrDefault("mainview.load.success", "Partie chargée depuis la base de données"));
+    public void loadSimulation() {
+        engine.loadSimulation(null);
+        notificationOverlay.showEvent(I18n.getOrDefault("mainview.load.success", "Simulation chargée depuis la base de données"));
 
         mapCanvas.setCells(engine.getCells());
         if (miniMap != null) miniMap.setCells(engine.getCells());

@@ -86,7 +86,7 @@ public class PluggableFormulaEditorDialog extends Stage {
         lblListTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #94a3b8;");
 
         formulaListView.setPrefHeight(320);
-        formulaListView.setStyle("-fx-control-inner-background: #1e293b; -fx-font-size: 11px;");
+        formulaListView.setStyle("-fx-font-size: 11px;");
         refreshFormulaList();
 
         formulaListView.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {

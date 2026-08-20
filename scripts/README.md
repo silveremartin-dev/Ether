@@ -68,3 +68,22 @@ Ether 2.0 supporte deux modes de fonctionnement pour la persistance et l'analyse
 ### 5. 📚 Documentation & Lancement Standard
 - **`run.bat`** / **`run.sh`** : Commande standard de lancement `mvn exec:java`.
 - **`javadoc.bat`** / **`javadoc.sh`** : Génère la documentation Javadoc dans `target/site/apidocs`.
+
+---
+
+### 6. 🐍 Scripts Python d'Acquisition de Données & Vault (Utilitaires CLI Optionnels)
+
+Ces scripts Python sont des utilitaires en ligne de commande pour pré-charger des jeux de données réels ou gérer les sauvegardes du Vault. **Le moteur Java fonctionne de manière autonome** grâce à ses gestionnaires natifs (`DataDownloaderService`, `SeshatDataIntegrator`), mais ces scripts permettent un enrichissement manuel des jeux de données locaux :
+
+- **`download_seshat.py`** :
+  - **Description** : Interroge l'API live de *Seshat: Global History Databank*, télécharge la base officielle *Equinox* (XLSX/CSV) et les contours géopolitiques historiques *Cliopatria* (GeoJSON). Génère `seshat_polities_database.csv` et `seshat_institutional_tensors.json` dans `data/maps/seshat/`.
+  - **Lancement** : `python scripts/download_seshat.py`
+
+- **`download_additional_datasets.py`** :
+  - **Description** : Télécharge les séries historiques de PIB/Population *Maddison* (OWID), la baseline des biomes *WorldClim 2.1* (JSON) et la cartographie des cours d'eau *Natural Earth* (GeoJSON) dans `data/maps/`.
+  - **Lancement** : `python scripts/download_additional_datasets.py`
+
+- **`postgres_ether_vault.py`** :
+  - **Description** : Empaquette les définitions de scénarios et les rasters cartographiques sous forme de dumps JSON et SQL pour l'import/export rapide vers PostgreSQL (`data/vault_backups/`).
+  - **Lancement** : `python scripts/postgres_ether_vault.py [download <path_to_dump>]`
+

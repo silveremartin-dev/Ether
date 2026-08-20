@@ -20,18 +20,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Manages game persistence (Save/Load).
+ * Manages simulation persistence (Save/Load).
  * Orchestrates saving Metadata (JSON) and World State (Database).
  */
-public class GameSaveManager {
-    private static final Logger logger = LoggerFactory.getLogger(GameSaveManager.class);
+public class SimulationSaveManager {
+    private static final Logger logger = LoggerFactory.getLogger(SimulationSaveManager.class);
     private static final String SAVE_DIR = "saves";
     private static final String METADATA_FILE = "metadata.json";
 
     private final H3CellRepository cellRepository;
     private final ObjectMapper objectMapper;
 
-    public GameSaveManager() {
+    public SimulationSaveManager() {
         this.cellRepository = new H3CellRepository(DatabaseConfig.getEntityManagerFactory());
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
@@ -50,7 +50,7 @@ public class GameSaveManager {
      * @param engine The simulation engine to save
      * @param saveName User-friendly name for the save
      */
-    public void saveGame(H3SimulationEngine engine, String saveName) {
+    public void saveSimulation(H3SimulationEngine engine, String saveName) {
         String saveId = UUID.randomUUID().toString();
         Path baseSaveDir = Paths.get(SAVE_DIR).toAbsolutePath().normalize();
         Path savePath = baseSaveDir.resolve(saveId).normalize();
@@ -79,41 +79,26 @@ public class GameSaveManager {
             }
 
             // 3. Save World State (Database)
-            // In a real DB setup, we might use a separate schema or tag rows with saveId.
-            // For this embedded single-state implementation, we'll overwrite the DB content 
-            // or we need a way to snapshot. 
-            // APPROACH: The H3CellRepository currently manages the "Active" world.
-            // To "Save", we commit the in-memory cells to the persistent store.
-            
-            // Note: H3Cell currently doesn't have a 'saveId'.
-            // For MVP, "Save" implies flushing current state to disk.
-            // If we want multiple slots, we'd need to export DB or add saveId to H3Cell.
-            // Let's implement MVP: Save = Persist current state to DB.
-            
             logger.info("Persisting {} cells to database...", engine.getCells().size());
-            // Clear existing for now (Single slot mode effectively, or overwrite)
             cellRepository.deleteAll(); 
             cellRepository.saveAll(engine.getCells());
             
-            logger.info("Game saved successfully: {} ({})", saveName, saveId);
+            logger.info("Simulation saved successfully: {} ({})", saveName, saveId);
 
         } catch (IOException e) {
-            logger.error("Failed to save game", e);
+            logger.error("Failed to save simulation", e);
             throw new RuntimeException("Save failed", e);
         }
     }
 
     /**
-     * Loads a game state.
+     * Loads a simulation state.
      * 
      * @param saveId The ID of the save to load (not used in single-db MVP but reserved)
      * @param engine The engine to populate
      */
-    public void loadGame(String saveId, H3SimulationEngine engine) {
+    public void loadSimulation(String saveId, H3SimulationEngine engine) {
         try {
-            // For MVP single-DB: just load from DB.
-            // Future: Load specific save snapshot.
-            
             logger.info("Loading world from database...");
             List<H3Cell> cells = cellRepository.findAll();
             
@@ -126,7 +111,7 @@ public class GameSaveManager {
             logger.info("World loaded: {} cells.", cells.size());
 
         } catch (Exception e) {
-            logger.error("Failed to load game", e);
+            logger.error("Failed to load simulation", e);
             throw new RuntimeException("Load failed", e);
         }
     }
@@ -149,7 +134,7 @@ public class GameSaveManager {
     }
 
     /**
-     * Lists all available saved game snapshots across normal saves and auto-checkpoints.
+     * Lists all available saved simulation snapshots across normal saves and auto-checkpoints.
      */
     public List<SaveMetadata> listSaves() {
         List<SaveMetadata> list = new java.util.ArrayList<>();
@@ -162,7 +147,6 @@ public class GameSaveManager {
                       try {
                           SaveMetadata meta = objectMapper.readValue(jsonFile.toFile(), SaveMetadata.class);
                           if (meta != null && meta.getId() != null) {
-                              // Avoid duplicate entries if checkpoint_latest points to same tick
                               boolean exists = list.stream().anyMatch(existing -> existing.getId().equals(meta.getId()));
                               if (!exists) {
                                   list.add(meta);
@@ -184,4 +168,3 @@ public class GameSaveManager {
         return list;
     }
 }
-

@@ -29,3 +29,15 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
 
 ## 📄 4. Technical Documentation Standard
 * All equations, physical constants, historical eras, and heuristic catalog items MUST be documented in **`docs/SIMULATION_EQUATIONS_AND_VARIABLES.md`** in English.
+
+---
+
+## 🎨 5. User Interface, Localization & Accessibility Standards
+1. **Full Localization (5 Languages: EN, FR, DE, ES, ZH) & Complete Technical Tooltips**:
+   * ALL UI components (labels, sliders, buttons, combo box options, table headers, status indicators, tooltips, chart legends, and modal text) MUST be localized across all 5 supported languages (`EN`, `FR`, `DE`, `ES`, `ZH`). Absolutely NO hardcoded user-visible text in Java UI code.
+   * EVERY single interactive UI element MUST feature a detailed mouse-over technical tooltip explaining the underlying simulation variable, physical formula, or feature mechanism.
+2. **Strict High-Contrast & Consistent Theming**:
+   * **Dark Theme**: Dark background with high-luminance (bright/light) text, icons, and control strokes.
+   * **Light Theme**: Light background with low-luminance (dark) text, icons, and control strokes.
+   * Low contrast combinations (e.g., dark blue/gray text on dark backgrounds, saturated blue combo boxes on dark panels) are strictly forbidden. High visual contrast is required systematically across all panels and themes.
+

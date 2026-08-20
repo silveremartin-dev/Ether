@@ -176,7 +176,7 @@ public class EtherApp extends Application {
         if (h3Engine != null) {
             try {
                 logger.info("Auto-saving active simulation state on exit...");
-                h3Engine.saveGame("Autosave_Exit");
+                h3Engine.saveSimulation("Autosave_Exit");
             } catch (Exception ex) {
                 logger.warn("Could not auto-save on exit: {}", ex.getMessage());
             }

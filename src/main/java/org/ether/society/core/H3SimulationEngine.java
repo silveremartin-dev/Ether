@@ -13,7 +13,7 @@ import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.ether.society.persistence.GameSaveManager;
+import org.ether.society.persistence.SimulationSaveManager;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -40,7 +40,7 @@ public class H3SimulationEngine implements ISimulationEngine {
     private final org.ether.society.analytics.HistoryManager historyManager;
     private final org.ether.society.diplomacy.DiplomacyManager diplomacyManager;
     private final org.ether.society.diplomacy.PoliticalSimulationEngine politicalEngine;
-    private final GameSaveManager gameSaveManager;
+    private final SimulationSaveManager simulationSaveManager;
 
     // DOD Layer
     private final org.ether.society.core.profiling.SimulationProfiler profiler = new org.ether.society.core.profiling.SimulationProfiler();
@@ -88,7 +88,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         // Initialize Diplomacy & Politics
         this.diplomacyManager = new org.ether.society.diplomacy.DiplomacyManager();
         this.politicalEngine = new org.ether.society.diplomacy.PoliticalSimulationEngine(this.diplomacyManager);
-        this.gameSaveManager = new GameSaveManager();
+        this.simulationSaveManager = new SimulationSaveManager();
 
         this.fluxEngine = new org.ether.society.flux.FluxEngine();
         this.demographicKernel = new org.ether.society.core.dod.DemographicKernel();
@@ -301,18 +301,19 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
-    public void saveGame(String saveName) {
+    public void saveSimulation(String saveName) {
         boolean wasRunning = running.get();
         if (wasRunning) pause();
-        gameSaveManager.saveGame(this, saveName);
+        simulationSaveManager.saveSimulation(this, saveName);
         if (wasRunning) start();
     }
 
-    public void loadGame(String saveId) {
+    public void loadSimulation(String saveId) {
         boolean wasRunning = running.get();
         if (wasRunning) pause();
-        gameSaveManager.loadGame(saveId, this);
+        simulationSaveManager.loadSimulation(saveId, this);
     }
+
 
     public H3ClimateSystem getClimateSystem() {
         return climateSystem;
@@ -709,7 +710,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         final int currentTick = tickCounter;
         saveExecutor.submit(() -> {
             try {
-                gameSaveManager.saveCheckpoint(this, currentTick);
+                simulationSaveManager.saveCheckpoint(this, currentTick);
             } catch (Exception ex) {
                 logger.error("Failed to save 60-tick checkpoint", ex);
             }

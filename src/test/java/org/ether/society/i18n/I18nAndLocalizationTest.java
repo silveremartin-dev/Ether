@@ -44,19 +44,19 @@ public class I18nAndLocalizationTest {
     }
 
     @Test
-    @DisplayName("Verify key parity: All keys in English must exist in FR, ES, DE, and ZH")
+    @DisplayName("Verify key parity: All keys in FR master must exist in EN, ES, DE, and ZH")
     public void testKeyParityAcrossLocales() {
-        Set<String> enKeys = bundleEn.keySet();
-        assertFalse(enKeys.isEmpty(), "English resource bundle must not be empty");
+        Set<String> frKeys = bundleFr.keySet();
+        assertFalse(frKeys.isEmpty(), "French resource bundle must not be empty");
 
-        List<String> missingInFr = new ArrayList<>();
+        List<String> missingInEn = new ArrayList<>();
         List<String> missingInEs = new ArrayList<>();
         List<String> missingInDe = new ArrayList<>();
         List<String> missingInZh = new ArrayList<>();
 
-        for (String key : enKeys) {
-            if (!bundleFr.containsKey(key) || bundleFr.getString(key).trim().isEmpty()) {
-                missingInFr.add(key);
+        for (String key : frKeys) {
+            if (!bundleEn.containsKey(key) || bundleEn.getString(key).trim().isEmpty()) {
+                missingInEn.add(key);
             }
             if (!bundleEs.containsKey(key) || bundleEs.getString(key).trim().isEmpty()) {
                 missingInEs.add(key);
@@ -69,7 +69,7 @@ public class I18nAndLocalizationTest {
             }
         }
 
-        assertTrue(missingInFr.isEmpty(), "Missing or empty FR keys: " + missingInFr);
+        assertTrue(missingInEn.isEmpty(), "Missing or empty EN keys: " + missingInEn);
         assertTrue(missingInEs.isEmpty(), "Missing or empty ES keys: " + missingInEs);
         assertTrue(missingInDe.isEmpty(), "Missing or empty DE keys: " + missingInDe);
         assertTrue(missingInZh.isEmpty(), "Missing or empty ZH keys: " + missingInZh);

@@ -19,7 +19,7 @@ public class GenerateAllScenarioMapsTest {
     private static final Logger logger = LoggerFactory.getLogger(GenerateAllScenarioMapsTest.class);
 
     private static final String CACHE_DIR = "data/cache";
-    private static final String ARTIFACTS_DIR = System.getProperty("user.dir");
+    private static final String ARTIFACTS_DIR = CACHE_DIR;
 
     @Test
     @DisplayName("Batch Generate Missing Empirical Maps for All Historical Scenarios")
@@ -30,7 +30,11 @@ public class GenerateAllScenarioMapsTest {
         }
 
         Map<String, Long> historicalScenarios = new LinkedHashMap<>();
-        historicalScenarios.put("ether_scenario_out_of_africa_dispersal_10000bc", -10000L);
+        historicalScenarios.put("ether_scenario_out_of_africa_sapiens_dispersal_100000bc", -100000L);
+        historicalScenarios.put("ether_scenario_sahul_australia_migration_50000bc", -50000L);
+        historicalScenarios.put("ether_scenario_beringia_americas_crossing_23000bc", -23000L);
+        historicalScenarios.put("ether_scenario_lgm_glacial_maximum_refugia_20000bc", -20000L);
+        historicalScenarios.put("ether_scenario_epipaleolithic_holocene_transition_10000bc", -10000L);
         historicalScenarios.put("ether_scenario_fertile_crescent_neolithic_8000bc", -8000L);
         historicalScenarios.put("ether_scenario_green_sahara_african_humid_6000bc", -6000L);
         historicalScenarios.put("ether_scenario_egypt_nile_dynastic_3000bc", -3000L);
@@ -55,25 +59,75 @@ public class GenerateAllScenarioMapsTest {
             assertNotNull(img, "Grid image for scenario " + scenarioKey + " must not be null");
             assertTrue(img.getWidth() > 0 && img.getHeight() > 0, "Grid image dimensions must be positive");
 
+            // Apply strict geographic mask for prehistoric eras before 10,000 BC
+            BufferedImage filteredImg = applyPrehistoricGeographicMask(scenarioKey, year, img);
+
             // 1. Density map
             File densityFile = new File(cacheFolder, scenarioKey + "_density.png");
-            ImageIO.write(img, "png", densityFile);
+            ImageIO.write(filteredImg, "png", densityFile);
             assertTrue(densityFile.exists(), "Cache file " + densityFile.getAbsolutePath() + " must exist");
 
             // 2. Cultural Tensor suite generation (Sovereignty, Kinship, Rituals, Isogloss)
-            generateCulturalTensorMap(cacheFolder, scenarioKey, "sovereignty", img, year, 0.9f, 0.2f, 0.2f);
-            generateCulturalTensorMap(cacheFolder, scenarioKey, "kinship", img, year, 0.2f, 0.8f, 0.3f);
-            generateCulturalTensorMap(cacheFolder, scenarioKey, "rituals", img, year, 0.8f, 0.7f, 0.1f);
-            generateCulturalTensorMap(cacheFolder, scenarioKey, "isogloss", img, year, 0.3f, 0.4f, 0.9f);
+            generateCulturalTensorMap(cacheFolder, scenarioKey, "sovereignty", filteredImg, year, 0.9f, 0.2f, 0.2f);
+            generateCulturalTensorMap(cacheFolder, scenarioKey, "kinship", filteredImg, year, 0.2f, 0.8f, 0.3f);
+            generateCulturalTensorMap(cacheFolder, scenarioKey, "rituals", filteredImg, year, 0.8f, 0.7f, 0.1f);
+            generateCulturalTensorMap(cacheFolder, scenarioKey, "isogloss", filteredImg, year, 0.3f, 0.4f, 0.9f);
 
             // 3. Composite master map
             File artifactFile = new File(ARTIFACTS_DIR, "scenario_map_" + scenarioKey + ".png");
-            ImageIO.write(img, "png", artifactFile);
+            ImageIO.write(filteredImg, "png", artifactFile);
             generatedCount++;
         }
 
         logger.info("Successfully batch-generated full tensor map suites for {} scenario epochs in data/cache/", generatedCount);
         assertTrue(generatedCount > 0, "At least 1 scenario map must be generated");
+    }
+
+    private BufferedImage applyPrehistoricGeographicMask(String scenarioKey, long year, BufferedImage src) {
+        if (year > -10000) return src; // Post-10,000 BC has full empirical coverage
+
+        int w = src.getWidth();
+        int h = src.getHeight();
+        BufferedImage masked = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+
+        for (int y = 0; y < h; y++) {
+            double lat = 90.0 - (y * 180.0 / h);
+            for (int x = 0; x < w; x++) {
+                double lon = -180.0 + (x * 360.0 / w);
+                int rgb = src.getRGB(x, y);
+
+                boolean keep = true;
+                if (scenarioKey.contains("100000bc")) {
+                    // Out of Africa 100k BC: Sapiens in Africa, Neanderthals in Europe/Near East, Denisovans in Asia.
+                    // AMERICAS (lon < -30 || lon > 175) and AUSTRALIA/SAHUL (lon > 110 && lat < -10) must be EMPTY!
+                    if ((lon < -30 || lon > 175) || (lon > 110 && lat < -10)) {
+                        keep = false;
+                    }
+                } else if (scenarioKey.contains("50000bc")) {
+                    // Sahul Migration 50k BC: Africa, Eurasia, Sahul. AMERICAS (lon < -30 || lon > 175) must be EMPTY!
+                    if (lon < -30 || lon > 175) {
+                        keep = false;
+                    }
+                } else if (scenarioKey.contains("23000bc")) {
+                    // Beringia White Sands 23k BC: Africa, Eurasia, Sahul, Beringia/North America. SOUTH AMERICA (lat < 10 && lon < -30) EMPTY!
+                    if (lat < 10 && lon < -30 && lon > -120) {
+                        keep = false;
+                    }
+                } else if (scenarioKey.contains("20000bc")) {
+                    // LGM 20k BC: Ice Sheets empty (lat > 55 in N.America/Europe)
+                    if (lat > 60 && lon < -40) {
+                        keep = false;
+                    }
+                }
+
+                if (keep) {
+                    masked.setRGB(x, y, rgb);
+                } else {
+                    masked.setRGB(x, y, 0xFF0A0F1A); // Deep dark oceanic/unpopulated background
+                }
+            }
+        }
+        return masked;
     }
 
     private void generateCulturalTensorMap(File cacheFolder, String scenarioKey, String tensorType, BufferedImage baseImg, long year, float rMult, float gMult, float bMult) throws IOException {

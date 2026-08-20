@@ -8,6 +8,7 @@ package org.ether.society.core;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.*;
+import org.ether.society.procedural.FutureScenarioRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class PreComputePhase {
         this.scenario = scenario;
         this.random = new Random(scenario.getPlanetPreset() != null
                 ? scenario.getPlanetPreset().seed()
-                : System.currentTimeMillis());
+                : 12345L);
     }
 
     /**
@@ -50,10 +51,14 @@ public class PreComputePhase {
         computeClimate(cells);
 
         // Step 2: Apply Future Scenario Physical Forcings if registered
-        org.ether.society.procedural.FutureScenarioRegistry.PhysicalScenarioPreset futurePreset =
-                org.ether.society.procedural.FutureScenarioRegistry.findPresetForScenario(scenario);
-        if (futurePreset != null) {
-            org.ether.society.procedural.FutureScenarioRegistry.applyScenarioForcing(futurePreset, cells);
+        try {
+            FutureScenarioRegistry.PhysicalScenarioPreset futurePreset =
+                    FutureScenarioRegistry.findPresetForScenario(scenario);
+            if (futurePreset != null) {
+                FutureScenarioRegistry.applyScenarioForcing(futurePreset, cells);
+            }
+        } catch (NoClassDefFoundError | Exception e) {
+            logger.warn("Could not apply future scenario forcing for scenario {}: {}", scenario.getName(), e.getMessage());
         }
 
         // Step 3: Initialize resources based on biome

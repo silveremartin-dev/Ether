@@ -12,6 +12,8 @@
 
 ## 🎨 Interactive Editors & Simulation Showcase
 
+![Ether Application Demo](docs/ether_demo.gif)
+
 | Component View | Description & Visual Preview |
 | :--- | :--- |
 | **🌐 3D Planetary Simulation Canvas (`H3MapCanvas`)** | **Real-Time 3D/2D H3 Globe Visualizer**<br>Features dynamic rendering of 175,000 hexagonal cells, multi-layer heatmaps (Malthusian Pressure, Biomes, Population, Radiance, Demographics, Asabiyyah), coordinate tracking badge, and interactive Mini-Map viewport.<br><br>![3D H3 Globe Simulation](docs/images/h3_map_simulation_3d.png) |

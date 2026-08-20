@@ -660,5 +660,135 @@
     -fx-alignment: center;
 }
 
+/* Engine Inspector & Scenario Panel Light Mode High Contrast Styles */
+.engine-inspector-card {
+    -fx-padding: 10px;
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 6px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+}
+
+.engine-inspector-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-text-fill: #0369a1;
+}
+
+.engine-inspector-text {
+    -fx-font-size: 11px;
+    -fx-text-fill: #1e293b;
+}
+
+.engine-inspector-equations-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+    -fx-text-fill: #0284c7;
+    -fx-padding: 4 0 0 0;
+}
+
+.engine-inspector-equations {
+    -fx-font-family: 'Consolas', 'Monaco', monospace;
+    -fx-font-size: 10px;
+    -fx-text-fill: #0369a1;
+}
+
+.titled-pane-primary {
+    -fx-text-fill: #0369a1;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.titled-pane-secondary {
+    -fx-text-fill: #6d28d9;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.diagnostic-pass {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #15803d;
+}
+
+.diagnostic-warn {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #b45309;
+}
+
+.diagnostic-error {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #b91c1c;
+}
+
+.diagnostic-header-success {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #15803d;
+}
+
+.diagnostic-header-warn {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #b45309;
+}
+
+.card-description-muted {
+    -fx-font-size: 11px;
+    -fx-text-fill: #475569;
+}
+
+.control-note {
+    -fx-font-size: 10px;
+    -fx-font-style: italic;
+    -fx-text-fill: #64748b;
+}
+
+.opt-subheader {
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-text-fill: #334155;
+    -fx-padding: 2 0 2 0;
+}
+
+.opt-master-box {
+    -fx-padding: 8 10;
+    -fx-background-color: #f0f9ff;
+    -fx-background-radius: 6;
+    -fx-border-color: #7dd3fc;
+    -fx-border-radius: 6;
+}
+
+.opt-sub-checkbox {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0f172a;
+}
+
+.opt-value-highlight {
+    -fx-font-size: 10px;
+    -fx-text-fill: #0284c7;
+    -fx-font-weight: bold;
+}
+
+.custom-engine-badge {
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0284c7;
+    -fx-background-color: #e0f2fe;
+    -fx-padding: 2 6;
+    -fx-background-radius: 4;
+}
+
+.custom-engine-checkbox {
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-text-fill: #0284c7;
+}
+
+
 
 

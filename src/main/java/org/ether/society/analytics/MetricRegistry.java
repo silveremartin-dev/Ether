@@ -254,11 +254,19 @@ public class MetricRegistry {
     public MetricDescriptor getDescriptor(String id) {
         if (id == null) return null;
         if (metricsById.containsKey(id)) return metricsById.get(id);
+        for (MetricDescriptor d : metricsById.values()) {
+            if (d.getDisplayName().equalsIgnoreCase(id)) return d;
+        }
         return metricsByName.get(id);
     }
 
     public MetricDescriptor getDescriptorByName(String displayName) {
-        return metricsByName.get(displayName);
+        if (displayName == null) return null;
+        if (metricsByName.containsKey(displayName)) return metricsByName.get(displayName);
+        for (MetricDescriptor d : metricsById.values()) {
+            if (d.getDisplayName().equalsIgnoreCase(displayName)) return d;
+        }
+        return null;
     }
 
     public Collection<MetricDescriptor> getAllMetrics() {

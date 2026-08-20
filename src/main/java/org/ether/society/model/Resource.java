@@ -14,7 +14,7 @@ public enum Resource {
     // Renewable Resources
     WOOD("Wood", ResourceCategory.RENEWABLE, 0.02), // ~50 years to full regen
     FISH("Fish", ResourceCategory.RENEWABLE, 0.1), // Fast regeneration
-    GAME("Game", ResourceCategory.RENEWABLE, 0.05), // Wild animals for hunting
+    WILD_FAUNA("Wild Fauna", ResourceCategory.RENEWABLE, 0.05), // Wild animals for foraging
     FRESHWATER("Fresh Water", ResourceCategory.RENEWABLE, 1.0), // Daily replenishment
     CROPS("Crops", ResourceCategory.RENEWABLE, 0.25), // Seasonal
 

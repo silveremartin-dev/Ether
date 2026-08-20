@@ -99,8 +99,8 @@ public class ColorLegend extends VBox {
         this.meanVal = mean;
         this.medianVal = median;
 
-        meanBadge.setText(String.format("▲ μ (Moyenne) : %.1f", meanVal));
-        medianBadge.setText(String.format("▼ M (Médiane) : %.1f", medianVal));
+        meanBadge.setText(String.format("▲ μ (%s) : %.1f", I18n.getOrDefault("sim.legend.mean", "Moyenne"), meanVal));
+        medianBadge.setText(String.format("▼ M (%s) : %.1f", I18n.getOrDefault("sim.legend.median", "Médiane"), medianVal));
 
         drawLegend();
     }
@@ -217,7 +217,13 @@ public class ColorLegend extends VBox {
     }
 
     private void drawBiomeLegend(GraphicsContext gc) {
-        String[] biomeNames = { "Océan", "Plaine", "Forêt", "Désert", "Neige" };
+        String[] biomeNames = {
+            I18n.getBiomeDisplayName(org.ether.society.model.Biome.OCEAN),
+            I18n.getBiomeDisplayName(org.ether.society.model.Biome.PLAINS),
+            I18n.getBiomeDisplayName(org.ether.society.model.Biome.FOREST),
+            I18n.getBiomeDisplayName(org.ether.society.model.Biome.DESERT),
+            I18n.getBiomeDisplayName(org.ether.society.model.Biome.SNOW)
+        };
         Color[] biomeColors = {
                 Color.rgb(25, 50, 150),
                 Color.rgb(124, 252, 0),

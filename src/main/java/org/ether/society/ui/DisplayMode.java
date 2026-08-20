@@ -74,13 +74,13 @@ public enum DisplayMode {
         "Délimitation des frontières territoriales, zones d'influence étatiques et contrôle souverain des cités."),
     INEQUALITY("⚖️ Indice d'Inégalité Économique (Gini)", Category.SOCIETY_POLITICS,
         "Coefficient de Gini local (0.0 à 1.0) mesurant la disparité d'accumulation des richesses et du capital."),
-    ASABIYYAH("⚔️ Cohésion Asabiyyah & Instabilité", Category.SOCIETY_POLITICS,
+    ASABIYYAH("⚔ Cohésion Asabiyyah & Instabilité", Category.SOCIETY_POLITICS,
         "Indice Khaldounien de cohésion sociale, solidarité de groupe et vulnérabilité aux crises de factionnalisme."),
     FLUX("🐫 Routes Commerciales & Flux", Category.SOCIETY_POLITICS,
         "Volume et intensité des flux de marchandises et routes commerciales terrestres/maritimes en transit."),
     HAPPINESS("😊 Indice de Bonheur & Bien-être", Category.SOCIETY_POLITICS,
         "Indice synthétique de satisfaction de vie, bien-être psychologique et sérénité sociale (0 à 100%)."),
-    CONFLICT("⚔️ Frictions & Taux de Conflits", Category.SOCIETY_POLITICS,
+    CONFLICT("⚔ Frictions & Taux de Conflits", Category.SOCIETY_POLITICS,
         "Taux de friction, violence inter-groupe, banditisme et opérations de guerre cinétique."),
     INSTITUTIONAL_MATURITY("🏛️ Maturité Institutionnelle & Cités", Category.SOCIETY_POLITICS,
         "Degré de complexité administrative, juridique et d'organisation des cités-états et gouvernements."),
@@ -106,15 +106,15 @@ public enum DisplayMode {
             this.categoryName = categoryName;
         }
 
-        public String getCategoryName() {
-            return categoryName;
-        }
-
-        @Override
-        public String toString() {
-            return categoryName;
-        }
+    public String getCategoryName() {
+        return org.ether.society.i18n.I18n.getOrDefault("displaymode.category." + name().toLowerCase(), categoryName);
     }
+
+    @Override
+    public String toString() {
+        return getCategoryName();
+    }
+}
 
     private final String displayName;
     private final Category category;
@@ -127,7 +127,7 @@ public enum DisplayMode {
     }
 
     public String getDisplayName() {
-        return displayName;
+        return org.ether.society.i18n.I18n.getOrDefault("displaymode." + name().toLowerCase() + ".name", displayName);
     }
 
     public Category getCategory() {
@@ -135,7 +135,7 @@ public enum DisplayMode {
     }
 
     public String getDescription() {
-        return description;
+        return org.ether.society.i18n.I18n.getOrDefault("displaymode." + name().toLowerCase() + ".desc", description);
     }
 
     public String getMetricId() {

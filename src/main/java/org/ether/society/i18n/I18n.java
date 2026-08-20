@@ -58,9 +58,11 @@ public class I18n {
                 bundle = ResourceBundle.getBundle(BUNDLE_NAME, language.getLocale(), NO_DEFAULT_LOCALE_CONTROL);
                 currentLanguage.set(language);
                 prefs.put(PREF_LANG_KEY, language.getCode());
-                try {
-                    prefs.flush();
-                } catch (Exception ignored) {}
+                java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    try {
+                        prefs.flush();
+                    } catch (Exception ignored) {}
+                });
                 logger.info("Language switched to: {}", language);
             } catch (Exception e) {
                 logger.error("Failed to load resource bundle for language: {}", language, e);
@@ -134,6 +136,57 @@ public class I18n {
             logger.error("Failed to format string key: {}", key, e);
             return pattern;
         }
+    }
+
+    /**
+     * Get localized display name for a planet preset.
+     */
+    public static String getPlanetPresetDisplayName(String name) {
+        if (name == null || name.isBlank()) return getOrDefault("planet.preset.earth", "Terre (Terran)");
+        String lower = name.toLowerCase();
+        if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) {
+            return getOrDefault("planet.preset.earth", "Terre (Terran)");
+        } else if (lower.contains("mars") || lower.contains("ares")) {
+            return getOrDefault("planet.preset.mars", "Mars (Ares)");
+        } else if (lower.contains("vénus") || lower.contains("venus") || lower.contains("hesperos")) {
+            return getOrDefault("planet.preset.venus", "Vénus (Hesperos)");
+        } else if (lower.contains("titan")) {
+            return getOrDefault("planet.preset.titan", "Titan (Cryo-Lune)");
+        } else if (lower.contains("lune") || lower.contains("moon") || lower.contains("selene")) {
+            return getOrDefault("planet.preset.moon", "Lune (Selene)");
+        } else if (lower.contains("super-terre") || lower.contains("super-earth") || lower.contains("gaia")) {
+            return getOrDefault("planet.preset.super_earth", "Super-Terre (Gaia Prime)");
+        } else if (lower.contains("synchrone") || lower.contains("eyeball")) {
+            return getOrDefault("planet.preset.eyeball", "Monde Synchrone (Eyeball)");
+        } else if (lower.contains("océan") || lower.contains("ocean") || lower.contains("oceania")) {
+            return getOrDefault("planet.preset.water", "Monde Océan (Oceania)");
+        } else if (lower.contains("glaciaire") || lower.contains("ice") || lower.contains("boreas")) {
+            return getOrDefault("planet.preset.ice", "Monde Glaciaire (Boreas)");
+        } else if (lower.contains("archipel") || lower.contains("archipelago")) {
+            return getOrDefault("planet.preset.archipelago", "Archipel");
+        }
+        return name;
+    }
+
+    /**
+     * Get localized display name for a biome.
+     */
+    public static String getBiomeDisplayName(org.ether.society.model.Biome biome) {
+        if (biome == null) return "";
+        return switch (biome) {
+            case OCEAN -> getOrDefault("biome.ocean", "Océan");
+            case DEEP_OCEAN -> getOrDefault("biome.deep_ocean", "Océan Profond");
+            case PLAINS -> getOrDefault("biome.plains", "Plaine");
+            case FOREST -> getOrDefault("biome.forest", "Forêt");
+            case DESERT -> getOrDefault("biome.desert", "Désert");
+            case SNOW -> getOrDefault("biome.snow", "Neige");
+            case TUNDRA -> getOrDefault("biome.tundra", "Toundra");
+            case HILLS -> getOrDefault("biome.hills", "Collines");
+            case MOUNTAINS -> getOrDefault("biome.mountains", "Montagnes");
+            case JUNGLE -> getOrDefault("biome.jungle", "Jungle");
+            case BEACH -> getOrDefault("biome.beach", "Plage");
+            default -> biome.name();
+        };
     }
 }
 
