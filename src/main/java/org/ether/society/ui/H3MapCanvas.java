@@ -1051,14 +1051,20 @@ public class H3MapCanvas extends Canvas {
             gc.setFill(color);
 
             double radiusY = Math.max(1.0, cellSize / 2.0);
-            double cosLat = Math.max(0.20, Math.cos(Math.toRadians(cell.getLatitude())));
-            double radiusX = Math.max(radiusY * 0.45, (cellSize / 2.0) * cosLat);
+            double absLat = Math.abs(cell.getLatitude());
+            double cosLat = Math.cos(Math.toRadians(Math.min(88.0, absLat)));
+            double radiusX = (cellSize / 2.0) * cosLat;
+            if (absLat < 70.0) {
+                radiusX = Math.max(radiusY * 0.45, radiusX);
+            } else {
+                radiusX = Math.max(0.75, radiusX);
+            }
 
             // In smooth map mode, slightly dilate polygons to ensure a continuous surface without gaps
             double scaleFactor = smoothMap ? 1.05 : 1.0;
             drawHexCell2D(gc, x, y, radiusX * scaleFactor, radiusY * scaleFactor);
 
-            if (renderHexBorders) {
+            if (renderHexBorders && absLat < 78.0) {
                 gc.setStroke(Color.rgb(15, 23, 42, 0.35));
                 gc.setLineWidth(0.8);
                 strokeHexCell2D(gc, x, y, radiusX, radiusY);
