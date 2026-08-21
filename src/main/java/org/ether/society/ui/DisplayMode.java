@@ -20,6 +20,8 @@ public enum DisplayMode {
         "Cartographie des biomes écologiques (Forêts, Tundras, Déserts, Océans) et de l'altitude du relief H3."),
     TEMPERATURE("🌡️ Température & Climat", Category.PHYSICAL,
         "Affiche la température de surface (°C) calculée par l'insolation solaire, l'albédo local et le forçage radiatif."),
+    PRECIPITATION("🌧️ Précipitations & Pluviométrie", Category.PHYSICAL,
+        "Affiche la hauteur de précipitations annuelles (mm/an) reçue par la maille hexagonale H3."),
     WATER("💧 Ressources en Eau & Aquifères", Category.PHYSICAL,
         "Niveau des réserves d'eau douce (aquifères, rivières et lacs) disponibles par kilomètre carré."),
     ALBEDO("❄️ Albédo de Surface & Glaces", Category.PHYSICAL,

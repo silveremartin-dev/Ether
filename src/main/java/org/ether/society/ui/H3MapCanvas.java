@@ -1446,6 +1446,7 @@ public class H3MapCanvas extends Canvas {
             case POPULATION -> getPopulationColor(cell != null && cell.getPopulation() != null ? cell.getPopulation() : 0, isWater);
             case FOOD -> getFoodColor(cell.getFoodResource());
             case TEMPERATURE -> getTemperatureColor(cell.getTemperature());
+            case PRECIPITATION -> getPrecipitationColor(cell != null && cell.getRainfall() != null ? cell.getRainfall() : 0.0);
             case TECHNOLOGY -> getTechColor(cell.getTechnologyLevel());
             case WATER -> getWaterColor(cell.getWaterResource());
             case WOOD -> getWoodColor(cell.getWoodResource());
@@ -1693,6 +1694,7 @@ public class H3MapCanvas extends Canvas {
                     case POPULATION -> getPopulationColor((int)worldBuffer.getBiomassHuman()[index], isWater);
                     case FOOD -> isWater ? Color.rgb(10, 20, 50) : getFoodColor(worldBuffer.getFoodResource()[index]);
                     case TEMPERATURE -> getTemperatureColor(worldBuffer.getTemperature()[index]);
+                    case PRECIPITATION -> getPrecipitationColor(worldBuffer.getRainfall()[index]);
                     case TECHNOLOGY -> isWater ? Color.rgb(10, 20, 50) : getTechColor((double)worldBuffer.getTechnologyLevel()[index]);
                     case WATER -> getWaterColor((double)worldBuffer.getWaterResource()[index]);
                     case WOOD -> isWater ? Color.rgb(10, 20, 50) : getWoodColor((double)worldBuffer.getWoodResource()[index]);
@@ -1816,6 +1818,32 @@ public class H3MapCanvas extends Canvas {
         } else {
             double t = (normalized - 0.75) / 0.25;
             return Color.rgb(255, (int) (255 * (1 - t)), 0); // Yellow to Red
+        }
+    }
+
+    /**
+     * Get precipitation color (arid sand -> yellow green -> cyan -> deep monsoon blue).
+     */
+    private Color getPrecipitationColor(double precipMm) {
+        // Normalize 0 to 2500 mm/year to 0-1 range
+        double normalized = Math.max(0.0, Math.min(1.0, precipMm / 2500.0));
+
+        if (normalized < 0.2) {
+            // Arid desert (< 500mm): Sand / Light Yellow-Brown to Pale Green
+            double t = normalized / 0.2;
+            return Color.rgb((int)(235 - t * 55), (int)(215 - t * 5), (int)(160 - t * 20));
+        } else if (normalized < 0.5) {
+            // Temperate (500-1250mm): Pale Green to Bright Cyan
+            double t = (normalized - 0.2) / 0.3;
+            return Color.rgb((int)(180 - t * 120), (int)(210 - t * 20), (int)(140 + t * 20));
+        } else if (normalized < 0.8) {
+            // Humid pluvial (1250-2000mm): Bright Cyan to Ocean Blue
+            double t = (normalized - 0.5) / 0.3;
+            return Color.rgb((int)(60 - t * 30), (int)(190 - t * 60), (int)(160 + t * 60));
+        } else {
+            // Extreme Monsoon (> 2000mm): Ocean Blue to Deep Indigo
+            double t = (normalized - 0.8) / 0.2;
+            return Color.rgb((int)(30 - t * 20), (int)(130 - t * 80), (int)(220 - t * 60));
         }
     }
 
@@ -2457,6 +2485,7 @@ public class H3MapCanvas extends Canvas {
                     case POPULATION -> worldBuffer.getBiomassHuman()[index];
                     case FOOD -> worldBuffer.getFoodResource()[index];
                     case TEMPERATURE -> worldBuffer.getTemperature()[index];
+                    case PRECIPITATION -> worldBuffer.getRainfall()[index];
                     case TECHNOLOGY -> worldBuffer.getTechnologyLevel()[index];
                     case WATER -> worldBuffer.getWaterResource()[index];
                     case WOOD -> worldBuffer.getWoodResource()[index];
@@ -2471,6 +2500,7 @@ public class H3MapCanvas extends Canvas {
             case POPULATION -> cell.getPopulation() != null ? cell.getPopulation().doubleValue() : 0.0;
             case FOOD -> cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
             case TEMPERATURE -> cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            case PRECIPITATION -> cell.getRainfall() != null ? cell.getRainfall() : 800.0;
             case TECHNOLOGY -> cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
             case MALTHUSIAN_PRESSURE -> cell.getPopulation() != null && computeCarryingCapacity(cell) > 0 ? (double) cell.getPopulation() / computeCarryingCapacity(cell) : 0.0;
             case MINERAL_RESOURCES -> (cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0) + (cell.getResourcePreciousMetal() != null ? cell.getResourcePreciousMetal() * 3.0 : 0.0);
