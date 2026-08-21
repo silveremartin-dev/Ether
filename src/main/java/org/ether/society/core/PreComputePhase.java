@@ -101,13 +101,20 @@ public class PreComputePhase {
                 baseTemp -= 6.0;
                 cell.setSeaLevelOffsetMeters(-120.0);
 
-                // Laurentide & Fennoscandian Ice Sheets (up to 2,000 meters thickness)
-                if (lat > 48.0 && ((lng >= -160.0 && lng <= -50.0) || (lng >= -10.0 && lng <= 50.0))) {
-                    double iceMeters = Math.min(2000.0, (lat - 48.0) * 120.0);
-                    cell.setIceSheetThicknessMeters(iceMeters);
-                    cell.setDynamicAlbedo(0.80);
-                    cell.setBiome(Biome.GLACIER);
-                    baseTemp -= (iceMeters * 0.005);
+                // Laurentide & Fennoscandian Ice Sheets (up to 2,000 meters thickness on land)
+                boolean isLand = elev > 0 && cell.getBiome() != Biome.OCEAN && cell.getBiome() != Biome.DEEP_OCEAN;
+                if (isLand) {
+                    boolean isLaurentide = (lat > 54.0 && lng >= -160.0 && lng <= -55.0);
+                    boolean isFennoscandian = (lat > 58.0 && lng >= 5.0 && lng <= 50.0);
+                    boolean isGreenlandIceland = (lat > 64.0 && lng >= -55.0 && lng < 5.0);
+                    if (isLaurentide || isFennoscandian || isGreenlandIceland) {
+                        double baseLat = isLaurentide ? 54.0 : (isFennoscandian ? 58.0 : 64.0);
+                        double iceMeters = Math.min(2000.0, (lat - baseLat) * 120.0);
+                        cell.setIceSheetThicknessMeters(iceMeters);
+                        cell.setDynamicAlbedo(0.80);
+                        cell.setBiome(Biome.GLACIER);
+                        baseTemp -= (iceMeters * 0.005);
+                    }
                 }
             } else {
                 cell.setSeaLevelOffsetMeters(0.0);
