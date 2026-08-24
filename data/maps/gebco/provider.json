@@ -1,0 +1,24 @@
+{
+  "provider_id": "gebco",
+  "name": "GEBCO Bathymetric Grids",
+  "organization": "General Bathymetric Chart of the Oceans (GEBCO / IHO / IOC UNESCO)",
+  "domain": "Global Ocean Bathymetry & Polar Sub-Ice Topography",
+  "website": "https://www.gebco.net/data_and_products/gridded_bathymetry_data/",
+  "download_url": "https://www.gebco.net/data_and_products/gridded_bathymetry_data/gebco_2024/gebco_2024_sub_ice_topo.zip",
+  "alternate_urls": [
+    "https://www.bodc.ac.uk/data/open_download/gebco/gebco_2024/zip/"
+  ],
+  "license": "GEBCO Open Data License (CC-BY 4.0)",
+  "spatial_resolution": "15 arc-sec (~450m) Global Mesh",
+  "temporal_coverage": "2024 Release Baseline",
+  "variables": [
+    "BATHYMETRY_METERS",
+    "SUB_ICE_TOPOGRAPHY",
+    "OCEAN_DEPTH"
+  ],
+  "citation": "GEBCO Compilation Group (2024) GEBCO 2024 Grid (doi:10.5285/1c44ce0d-700d-4fcd-9f7a-42a8b34850f4).",
+  "files": [
+    "GEBCO_2024_sub_ice_topo.nc"
+  ],
+  "status": "CONFIGURED"
+}

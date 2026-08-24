@@ -1,0 +1,28 @@
+{
+  "provider_id": "seshat",
+  "name": "Seshat: Global History Databank",
+  "organization": "Evolution Institute & University of Oxford",
+  "domain": "Cliodynamics, Institutional Tensors, Governance Complexity & Political Boundaries (-3000 BCE to 1900 CE)",
+  "website": "http://seshatdatabank.info/",
+  "download_url": "https://raw.githubusercontent.com/SeshatData/Equinox/main/Equinox_on_GitHub_June9_2022.xlsx",
+  "alternate_urls": [
+    "http://seshatdatabank.info/data/download/"
+  ],
+  "license": "CC-BY-NC 4.0 International",
+  "spatial_resolution": "Polity Boundaries & NGA Geopolitical Centroids",
+  "temporal_coverage": "3000 BCE - 1900 CE",
+  "variables": [
+    "POLITY_POPULATION",
+    "TERRITORY_AREA",
+    "GOVERNMENT_LEVELS",
+    "MILITARY_TECH",
+    "WRITING_SYSTEM"
+  ],
+  "citation": "Turchin, P., Brennan, R., Currie, T. E., et al. (2015). Seshat: The Global History Databank. Cliodynamics, 6(1), 77-107.",
+  "files": [
+    "Equinox_on_GitHub_June9_2022.xlsx",
+    "seshat_equinox_raw.csv",
+    "seshat_institutional_tensors.json"
+  ],
+  "status": "AUTHENTIC"
+}

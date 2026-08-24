@@ -1,0 +1,27 @@
+{
+  "provider_id": "usgs",
+  "name": "NOAA NCEI ETOPO 2022 Global Relief Model",
+  "organization": "NOAA National Centers for Environmental Information (NCEI) / USGS",
+  "domain": "Global Relief, Topography, Ice Surface & Bathymetry (ETOPO 2022 v1)",
+  "website": "https://www.ncei.noaa.gov/products/etopo-global-relief-model",
+  "download_url": "https://www.ncei.noaa.gov/pub/data/mgg/global/relief/ETOPO2022/data/60s/60s_bed_elev_gtif/ETOPO_2022_v1_60s_N90W180_bed.tif",
+  "alternate_urls": [
+    "https://www.ncei.noaa.gov/pub/data/mgg/global/relief/ETOPO2022/data/30s/30s_bed_elev_gtif/ETOPO_2022_v1_30s_N90W180_bed.tif",
+    "https://www.ncei.noaa.gov/pub/data/mgg/global/relief/ETOPO2022/data/15s/15s_bed_elev_gtif/ETOPO_2022_v1_15s_N90W180_bed.tif",
+    "https://www.ncei.noaa.gov/pub/data/mgg/global/relief/ETOPO2022/data/60s/60s_surface_elev_gtif/ETOPO_2022_v1_60s_N90W180_surface.tif"
+  ],
+  "license": "US Government Public Domain (Free for any application)",
+  "spatial_resolution": "15 arc-sec (~450m), 30 arc-sec (~900m), 60 arc-sec (~1.8km)",
+  "temporal_coverage": "2022 Release (ICESat-2 / GEBCO 2022 / Copernicus Integration)",
+  "variables": [
+    "BEDROCK_ELEVATION_METERS",
+    "ICE_SURFACE_ELEVATION_METERS",
+    "GEOID_HEIGHT_METERS"
+  ],
+  "citation": "NOAA National Centers for Environmental Information. 2022: ETOPO 2022 15 Arc-Second Global Relief Model. NOAA National Centers for Environmental Information. doi:10.25921/fd07-km46",
+  "files": [
+    "ETOPO_2022_v1_60s_N90W180_bed.tif",
+    "ETOPO_2022_v1_60s_N90W180_surface.tif"
+  ],
+  "status": "CONFIGURED"
+}

@@ -1,0 +1,11 @@
+{
+  "name": "PaleoCLIM High-Res Paleoclimate Surfaces",
+  "domain": "Downscaled Paleoclimate Surfaces for Global Land Areas (-21k BP to Present)",
+  "url": "http://sdmdata.com/PaleoCLIM/LGM_v1_2_5m.zip",
+  "datasets": [
+    "chelsa_LGM_v1_2B_r2_5m.zip",
+    "MH_v1_2_5m.zip",
+    "EH_v1_2_5m.zip"
+  ],
+  "citation": "Brown, J.L., Hill, D.J., Yost, A.B. et al. (2018). PaleoCLIM, high-spatial resolution paleoclimate surfaces for global land areas. Scientific Data 5, 180254."
+}

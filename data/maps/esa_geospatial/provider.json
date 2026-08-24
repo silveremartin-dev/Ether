@@ -1,0 +1,24 @@
+{
+  "provider_id": "esa_geospatial",
+  "name": "ESA Copernicus DEM GLO-30",
+  "organization": "European Space Agency (ESA) & Copernicus",
+  "domain": "Global Digital Elevation Model (DEM) & Land Cover",
+  "website": "https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model",
+  "download_url": "https://copernicus-dem-30m.s3.amazonaws.com/",
+  "alternate_urls": [
+    "https://registry.opendata.aws/copernicus-dem/"
+  ],
+  "license": "Copernicus Open Access License",
+  "spatial_resolution": "30m (1 arc-sec) Global Grid",
+  "temporal_coverage": "2011 - 2015 Satellite Radar Acquisitions (TanDEM-X)",
+  "variables": [
+    "ELEVATION_METERS",
+    "SLOPE_DEGREES",
+    "ASPECT_DEGREES"
+  ],
+  "citation": "European Space Agency (ESA) Copernicus Digital Elevation Model GLO-30 (2023). DOI: 10.5270/ESA-c5d0d65.",
+  "files": [
+    "Copernicus_DSM_COG_10_N00_00_E000_00_DEM.tif"
+  ],
+  "status": "CONFIGURED"
+}

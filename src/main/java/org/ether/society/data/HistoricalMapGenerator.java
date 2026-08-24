@@ -7,6 +7,8 @@
 package org.ether.society.data;
 
 import org.ether.society.model.Scenario;
+import org.ether.society.procedural.PlanetPreset;
+import org.ether.society.procedural.ProceduralGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,6 +118,48 @@ public class HistoricalMapGenerator {
                 for (int i = 9; i < dims; i++) {
                     BufferedImage imgExt = generateCleanExtensibleTensorMap(i, type, scenario);
                     scenario.setCustomTensorMapBase64(i, bufferedImageToBase64Png(imgExt));
+                }
+            }
+
+            // --- EXTENSIBLE GEOLOGICAL & ENERGY RESOURCE TENSORS (TAB 2) ---
+            // Index 0: Coal Deposits
+            BufferedImage imgCoal = generateCleanCoalMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(0, bufferedImageToBase64Png(imgCoal));
+
+            // Index 1: Crude Oil Reserves
+            BufferedImage imgOil = generateCleanOilMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(1, bufferedImageToBase64Png(imgOil));
+
+            // Index 2: Natural Gas Fields
+            BufferedImage imgGas = generateCleanGasMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(2, bufferedImageToBase64Png(imgGas));
+
+            // Index 3: Uranium & Thorium Ores
+            BufferedImage imgUranium = generateCleanUraniumMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(3, bufferedImageToBase64Png(imgUranium));
+
+            // Index 4: Helium-3 Fusion Ores
+            BufferedImage imgHe3 = generateCleanHelium3Map(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(4, bufferedImageToBase64Png(imgHe3));
+
+            // Index 5: Iron & Copper Base Metals
+            BufferedImage imgIronCopper = generateCleanIronCopperMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(5, bufferedImageToBase64Png(imgIronCopper));
+
+            // Index 6: Precious Metals & Rare Earths
+            BufferedImage imgPreciousREE = generateCleanPreciousMetalsMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(6, bufferedImageToBase64Png(imgPreciousREE));
+
+            // Index 7: Freshwater Aquifers
+            BufferedImage imgAquifer = generateCleanAquiferMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(7, bufferedImageToBase64Png(imgAquifer));
+
+            // Extensible Geology Tensors (Indices 8 to N-1) if N > 8
+            int resDims = scenario.getResourceVectorDimensions();
+            if (resDims > 8) {
+                for (int i = 8; i < resDims; i++) {
+                    BufferedImage imgExtRes = generateCleanExtensibleResourceTensorMap(i, type, scenario);
+                    scenario.setCustomGeologyTensorMapBase64(i, bufferedImageToBase64Png(imgExtRes));
                 }
             }
 
@@ -1159,6 +1203,169 @@ public class HistoricalMapGenerator {
                 double val = Math.sin(lon * scale + phaseLng) * Math.cos(lat * scale + phaseLat) * 0.5 + 0.5;
                 float sat = 0.6f + (float)(val * 0.35);
                 float bright = 0.2f + (float)(val * 0.75);
+                int rgb = Color.HSBtoRGB(hueBase, sat, bright);
+                img.setRGB(x, y, rgb);
+            }
+        }
+        g.dispose();
+        return img;
+    }
+
+    private static void drawDepositHotspots(BufferedImage img, double[][] hotspots, Color colorBase) {
+        int width = img.getWidth();
+        int height = img.getHeight();
+        Graphics2D g = img.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        for (double[] spot : hotspots) {
+            double lng = spot[0];
+            double lat = spot[1];
+            double radiusPx = spot[2];
+            double intensity = spot.length > 3 ? spot[3] : 1.0;
+
+            int cx = (int) ((lng + 180.0) / 360.0 * width);
+            int cy = (int) ((90.0 - lat) / 180.0 * height);
+
+            int rInt = (int) radiusPx;
+            for (int dy = -rInt; dy <= rInt; dy++) {
+                int py = cy + dy;
+                if (py < 0 || py >= height) continue;
+                double currentLat = 90.0 - (py / (double) height) * 180.0;
+
+                for (int dx = -rInt; dx <= rInt; dx++) {
+                    int px = cx + dx;
+                    if (px < 0 || px >= width) continue;
+                    double currentLng = -180.0 + (px / (double) width) * 360.0;
+
+                    if (!isLand(currentLng, currentLat)) continue;
+
+                    double d = Math.sqrt(dx * dx + dy * dy);
+                    if (d <= radiusPx) {
+                        double norm = 1.0 - (d / radiusPx);
+                        double factor = Math.pow(norm, 1.5) * intensity;
+
+                        int origRGB = img.getRGB(px, py);
+                        int oldR = (origRGB >> 16) & 0xFF;
+                        int oldG = (origRGB >> 8) & 0xFF;
+                        int oldB = origRGB & 0xFF;
+
+                        int addR = (int) (colorBase.getRed() * factor);
+                        int addG = (int) (colorBase.getGreen() * factor);
+                        int addB = (int) (colorBase.getBlue() * factor);
+
+                        int newR = Math.min(255, oldR + addR);
+                        int newG = Math.min(255, oldG + addG);
+                        int newB = Math.min(255, oldB + addB);
+
+                        img.setRGB(px, py, (newR << 16) | (newG << 8) | newB);
+                    }
+                }
+            }
+        }
+        g.dispose();
+    }
+
+    public static BufferedImage generateCleanCoastlines(int width, int height) {
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = img.createGraphics();
+        g.setColor(new Color(15, 23, 42));
+        g.fillRect(0, 0, width, height);
+
+        g.setColor(new Color(30, 41, 59));
+        ProceduralGenerator gen = ProceduralGenerator.getInstance();
+        for (int y = 0; y < height; y += 4) {
+            double lat = 90.0 - (y / (double) height) * 180.0;
+            for (int x = 0; x < width; x += 4) {
+                double lon = -180.0 + (x / (double) width) * 360.0;
+                var pt = gen.getPlanetPoint(lat, lon, PlanetPreset.EARTH_LIKE);
+                if (pt.elevation() >= 0) {
+                    g.fillRect(x, y, 4, 4);
+                }
+            }
+        }
+        g.dispose();
+        return img;
+    }
+
+    public static BufferedImage generateCleanCoalMap(String type, Scenario scenario) {
+        BufferedImage img = generateCleanCoastlines(2048, 1024);
+        double[][] spots = {{-78.0, 40.5, 35}, {7.2, 51.5, 25}, {19.0, 50.3, 25}, {38.0, 48.0, 30}, {86.0, 54.0, 40}, {112.5, 37.8, 45}, {148.0, -23.5, 30}, {29.2, -25.9, 25}, {86.0, 23.5, 25}};
+        drawDepositHotspots(img, spots, new Color(255, 140, 0));
+        return img;
+    }
+
+    public static BufferedImage generateCleanOilMap(String type, Scenario scenario) {
+        BufferedImage img = generateCleanCoastlines(2048, 1024);
+        double[][] spots = {{49.0, 26.0, 55, 1.2}, {76.0, 61.0, 45, 1.0}, {-102.0, 31.8, 35, 1.0}, {2.5, 56.5, 30, 1.0}, {-71.5, 10.2, 25, 0.9}, {-148.5, 70.2, 30, 0.9}, {6.0, 4.5, 25, 0.9}, {49.8, 40.4, 30, 1.0}, {125.0, 46.5, 30, 0.9}};
+        drawDepositHotspots(img, spots, new Color(220, 38, 38));
+        return img;
+    }
+
+    public static BufferedImage generateCleanGasMap(String type, Scenario scenario) {
+        BufferedImage img = generateCleanCoastlines(2048, 1024);
+        double[][] spots = {{52.0, 26.5, 50, 1.2}, {77.0, 66.0, 55, 1.2}, {-77.5, 41.5, 35, 1.0}, {6.8, 53.2, 20, 0.8}, {3.3, 32.9, 30, 1.0}, {62.2, 37.3, 30, 1.0}, {105.0, 30.5, 30, 0.9}};
+        drawDepositHotspots(img, spots, new Color(6, 182, 212));
+        return img;
+    }
+
+    public static BufferedImage generateCleanUraniumMap(String type, Scenario scenario) {
+        BufferedImage img = generateCleanCoastlines(2048, 1024);
+        double[][] spots = {{-105.0, 58.0, 35, 1.1}, {136.9, -30.4, 30, 1.1}, {68.0, 44.0, 45, 1.2}, {7.4, 18.7, 25, 0.9}, {27.5, -26.2, 25, 0.9}, {118.0, 50.0, 30, 0.9}};
+        drawDepositHotspots(img, spots, new Color(34, 197, 94));
+        return img;
+    }
+
+    public static BufferedImage generateCleanHelium3Map(String type, Scenario scenario) {
+        BufferedImage img = generateCleanCoastlines(2048, 1024);
+        double[][] spots = {{23.5, 8.5, 50, 1.2}, {-43.0, 18.0, 60, 1.2}, {17.5, 28.0, 45, 1.1}, {0.0, 90.0, 25, 0.8}, {0.0, -90.0, 25, 0.8}};
+        drawDepositHotspots(img, spots, new Color(217, 70, 239));
+        return img;
+    }
+
+    public static BufferedImage generateCleanIronCopperMap(String type, Scenario scenario) {
+        BufferedImage img = generateCleanCoastlines(2048, 1024);
+        double[][] spots = {{118.0, -22.5, 45, 1.2}, {-50.0, -6.0, 40, 1.1}, {33.4, 47.9, 25, 0.9}, {-69.0, -22.3, 35, 1.1}, {26.5, -12.0, 30, 1.0}, {-92.5, 47.5, 25, 0.9}};
+        drawDepositHotspots(img, spots, new Color(249, 115, 22));
+        return img;
+    }
+
+    public static BufferedImage generateCleanPreciousMetalsMap(String type, Scenario scenario) {
+        BufferedImage img = generateCleanCoastlines(2048, 1024);
+        double[][] spots = {{27.5, -25.5, 35, 1.2}, {109.9, 41.8, 30, 1.1}, {-116.0, 40.8, 25, 0.9}, {64.6, 41.5, 25, 0.9}, {88.2, 69.3, 30, 1.0}, {-115.5, 35.5, 20, 0.8}};
+        drawDepositHotspots(img, spots, new Color(234, 179, 8));
+        return img;
+    }
+
+    public static BufferedImage generateCleanAquiferMap(String type, Scenario scenario) {
+        BufferedImage img = generateCleanCoastlines(2048, 1024);
+        double[][] spots = {{-60.0, -3.0, 80, 1.2}, {-54.0, -25.0, 60, 1.1}, {25.0, 22.0, 75, 1.2}, {-100.0, 38.0, 50, 1.0}, {80.0, 27.0, 65, 1.1}, {138.0, -26.0, 70, 1.1}, {22.0, -1.0, 70, 1.1}};
+        drawDepositHotspots(img, spots, new Color(59, 130, 246));
+        return img;
+    }
+
+    public static BufferedImage generateCleanExtensibleResourceTensorMap(int index, String type, Scenario scenario) {
+        int width = 2048, height = 1024;
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = img.createGraphics();
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, width, height);
+
+        long seed = scenario != null ? scenario.getCulturalSeed() : 12345L;
+        java.util.Random rnd = new java.util.Random(seed ^ (index * 0x85EBCA6BL));
+        double phaseLng = rnd.nextDouble() * Math.PI * 2.0;
+        double phaseLat = rnd.nextDouble() * Math.PI * 2.0;
+        double scale = 0.004 + (index % 4) * 0.002;
+        float hueBase = (float) ((index * 0.173 + 0.5) % 1.0);
+
+        for (int y = 0; y < height; y++) {
+            double lat = 90.0 - (y / (double) height) * 180.0;
+            for (int x = 0; x < width; x++) {
+                double lon = -180.0 + (x / (double) width) * 360.0;
+                if (!isLand(lon, lat)) continue;
+
+                double val = Math.sin(lon * scale + phaseLng) * Math.cos(lat * scale + phaseLat) * 0.5 + 0.5;
+                float sat = 0.7f;
+                float bright = (float) (val * 0.85);
                 int rgb = Color.HSBtoRGB(hueBase, sat, bright);
                 img.setRGB(x, y, rgb);
             }

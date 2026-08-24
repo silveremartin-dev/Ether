@@ -135,7 +135,8 @@ public class PreComputePhase {
             double harshness = scenario.getClimateHarshness();
             double tempVariation = (random.nextDouble() - 0.5) * 10.0 * harshness;
 
-            cell.setTemperature(baseTemp + elevEffect + tempVariation);
+            double finalTemp = baseTemp + elevEffect + tempVariation;
+            cell.setTemperature(finalTemp);
 
             // Precipitation: based on latitude, ocean proximity, and paleoclimate events
             double basePrecip = 1000 * (1 - Math.abs(lat - 45) / 90.0);
@@ -149,6 +150,13 @@ public class PreComputePhase {
 
             if (cell.getBiome() == Biome.OCEAN || cell.getBiome() == Biome.DEEP_OCEAN) {
                 basePrecip = 0;
+                if (Math.abs(lat) > 72.0 || finalTemp < -2.0) {
+                    cell.setBiome(Biome.GLACIER); // Polar Arctic sea ice & ice cap
+                }
+            } else {
+                if (Math.abs(lat) > 75.0 || finalTemp < -15.0) {
+                    cell.setBiome(Biome.GLACIER); // Continental ice sheet / Glacier
+                }
             }
             cell.setRainfall(Math.max(0, basePrecip + random.nextDouble() * 500));
         }

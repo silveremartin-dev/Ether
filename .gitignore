@@ -64,6 +64,7 @@ data/vault_backups/
 scenario_map_*.png
 user_data/
 .gemini/
+input/
 
 
 

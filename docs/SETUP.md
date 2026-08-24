@@ -33,16 +33,21 @@
 
 Ether can be launched in standalone in-memory mode or full database-backed mode:
 
-### Startup Scripts (`scripts/`)
+### Startup & Operational Scripts (`scripts/`) / Scripts d'Exécution & Orchestration
 
-| Script | Purpose | Description |
-| :--- | :--- | :--- |
-| `start-no-db.bat` / `.ps1` / `.sh` | **Standalone Startup** | Immediate launch in memory without requiring Docker or PostgreSQL. |
-| `start-docker.sh` | **Full Production Startup** | Starts PostgreSQL/PostGIS container, applies schema migrations, and launches application. |
-| `stop.bat` / `.sh` | **Shutdown** | Gracefully stops active database containers. |
-| `database-status.bat` / `.sh` | **Health Inspection** | Checks database health, port bindings, and logs. |
+Ether 2.0 provides cross-platform execution scripts for Windows, Linux, and macOS:
 
-### PostgreSQL Configuration
+| Category / Catégorie | Script | Command / Commande | Description (EN / FR) |
+| :--- | :--- | :--- | :--- |
+| **Standalone GUI (In-Memory)** | `start-no-db` | `.\scripts\start-no-db.ps1`<br>`./scripts/start-no-db.sh` | Launch JavaFX UI directly in memory without Docker or PostgreSQL.<br>*Lancement direct en mémoire sans dépendance externe.* |
+| **Docker + PostgreSQL** | `start-docker` | `.\scripts\start-docker.bat`<br>`./scripts/start-docker.sh` | Start PostgreSQL/PostGIS container, apply migrations & launch GUI.<br>*Démarre le conteneur PostGIS, applique les migrations et lance l'application.* |
+| **Headless CLI Mode** | `start-headless` | `.\scripts\start-headless.ps1 -Scenario OUT_OF_AFRICA -Ticks 500 -Profile`<br>`./scripts/start-headless.sh --scenario=OUT_OF_AFRICA --ticks=500` | Run headless simulation without JavaFX for fast automated benchmarks.<br>*Exécution du moteur en ligne de commande à haute vitesse.* |
+| **Distributed Master** | `start-master` | `.\scripts\start-master.ps1 -Port 9090 -Scenario OUT_OF_AFRICA`<br>`./scripts/start-master.sh --port=9090` | Launch gRPC Master cluster node to partition H3 mesh across workers.<br>*Lance le nœud Maître du cluster gRPC pour orchestrer le calcul distribué.* |
+| **Distributed Worker** | `start-worker` | `.\scripts\start-worker.ps1 -MasterHost "192.168.1.50" -Port 9090`<br>`./scripts/start-worker.sh --master=192.168.1.50:9090` | Connect worker node to remote master node for parallel spatial compute.<br>*Connecte un nœud de calcul Worker au Maître distant.* |
+| **Database Control** | `database-status` / `stop` | `.\scripts\database-status.bat` / `.\scripts\stop.bat` | Inspect PostgreSQL health or stop active Docker database containers.<br>*Vérifie la santé de la base de données ou arrête le conteneur.* |
+| **Javadoc & Build** | `javadoc` / `run` | `.\scripts\javadoc.bat` / `.\scripts\run.bat` | Generate Javadoc HTML API docs or run default Maven target.<br>*Génère la documentation Javadoc ou lance via Maven.* |
+
+### Database Configuration (PostgreSQL / PostGIS)
 - **Host**: `localhost` | **Port**: `54320`
 - **Database**: `ether_simulation` | **User**: `ether` | **Password**: `dev_password`
 

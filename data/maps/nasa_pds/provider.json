@@ -1,0 +1,24 @@
+{
+  "provider_id": "nasa_pds",
+  "name": "NASA Planetary Data System (PDS)",
+  "organization": "NASA Geosciences Node (Washington University in St. Louis)",
+  "domain": "Planetary Topography (Moon LOLA, Mars MOLA, Venus Magellan GTDR)",
+  "website": "https://pds-geosciences.wustl.edu/",
+  "download_url": "https://pds-geosciences.wustl.edu/mgs/mgs-m-mola-5-megdr-l3-v1/mgsl_300x/meg004/megr90n000cb.lbl",
+  "alternate_urls": [
+    "https://pds-geosciences.wustl.edu/lro/lro-l-lola-4-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/float/ldem_4.lbl"
+  ],
+  "license": "US Government Public Domain",
+  "spatial_resolution": "0.25 to 1.0 degree Planetary DEMs",
+  "temporal_coverage": "MGS / LRO Orbital Missions",
+  "variables": [
+    "PLANETARY_RADIUS_KM",
+    "SURFACE_ELEVATION_METERS"
+  ],
+  "citation": "Smith, D. E., et al. (2010), Initial observations from the Lunar Orbiter Laser Altimeter (LOLA), Geophysical Research Letters, 37, L18204.",
+  "files": [
+    "ldem_4.lbl",
+    "megr90n000cb.lbl"
+  ],
+  "status": "AUTHENTIC"
+}

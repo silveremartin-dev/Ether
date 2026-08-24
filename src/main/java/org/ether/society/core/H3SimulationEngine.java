@@ -328,8 +328,13 @@ public class H3SimulationEngine implements ISimulationEngine {
             t.setDaemon(true);
             return t;
         });
-        long period = speedMultiplier >= 100 ? 1 : Math.max(1, config.simulation().tickRateMs() / Math.max(1, speedMultiplier));
-        executorService.scheduleAtFixedRate(this::tick, 0, period, TimeUnit.MILLISECONDS);
+        if (speedMultiplier >= 999) {
+            // MAX speed: continuous non-accumulating loop with fixed delay 0
+            executorService.scheduleWithFixedDelay(this::tick, 0, 0, TimeUnit.MILLISECONDS);
+        } else {
+            long delay = Math.max(1, config.simulation().tickRateMs() / Math.max(1, speedMultiplier));
+            executorService.scheduleWithFixedDelay(this::tick, 0, delay, TimeUnit.MILLISECONDS);
+        }
     }
 
     public void shutdown() {

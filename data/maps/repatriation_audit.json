@@ -1,0 +1,107 @@
+[
+  {
+    "provider": "archaeoglobe",
+    "url": "https://dataverse.harvard.edu/api/access/datafile/3416410",
+    "file": "ArchaeGLOBE_Regions.zip",
+    "status": "AUTHENTIC_DATA_INGESTED",
+    "size_bytes": 19965952
+  },
+  {
+    "provider": "hyde34",
+    "url": "https://cdnpbl.nl/hyde/hyde34/",
+    "file": "10000BC_pop.zip",
+    "status": "AUTHENTIC_DATA_INGESTED",
+    "size_bytes": 4655583232
+  },
+  {
+    "provider": "maddison",
+    "url": "https://www.rug.nl/ggdc/historicaldevelopment/maddison/data/mpd2023.xlsx",
+    "file": "maddison_gdp_population_history.csv",
+    "status": "AUTHENTIC_DATA_INGESTED",
+    "size_bytes": 807424
+  },
+  {
+    "provider": "naturalearth",
+    "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_land.geojson",
+    "file": "ne_110m_land.geojson",
+    "status": "AUTHENTIC_DATA_INGESTED",
+    "size_bytes": 138160
+  },
+  {
+    "provider": "paleoclim",
+    "url": "http://sdmdata.com/PaleoCLIM/LGM_v1_2_5m.zip",
+    "file": "chelsa_LGM_v1_2B_r2_5m.zip",
+    "status": "AUTHENTIC_DATA_INGESTED",
+    "size_bytes": 1970335744
+  },
+  {
+    "provider": "seshat",
+    "url": "https://raw.githubusercontent.com/SeshatData/Equinox/main/Equinox_on_GitHub_June9_2022.xlsx",
+    "file": "Equinox_on_GitHub_June9_2022.xlsx",
+    "status": "AUTHENTIC_DATA_INGESTED",
+    "size_bytes": 170524672
+  },
+  {
+    "provider": "usgs",
+    "url": "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/bedrock/cell_registered/asc/ETOPO1_Bed_c_asc.zip",
+    "file": "ETOPO1_Bed_c_asc.zip",
+    "status": "CONFIGURED_FOR_REPATRIATION",
+    "size_bytes": 0
+  },
+  {
+    "provider": "usgs_mrds",
+    "url": "https://mrdata.usgs.gov/mrds/output/mrds-mrdata.csv",
+    "file": "mrds_mrdata.csv",
+    "status": "CONFIGURED_FOR_REPATRIATION",
+    "size_bytes": 0
+  },
+  {
+    "provider": "gebco",
+    "url": "https://www.gebco.net/data_and_products/gridded_bathymetry_data/gebco_2024/gebco_2024_sub_ice_topo.zip",
+    "file": "gebco_2024_sub_ice_topo.zip",
+    "status": "CONFIGURED_FOR_REPATRIATION",
+    "size_bytes": 0
+  },
+  {
+    "provider": "bgr_germany",
+    "url": "https://www.bgr.bund.de/EN/Themen/Energie/Downloads/BGR_Energiestudie_2023_Data.xlsx?__blob=publicationFile&v=4",
+    "file": "BGR_Energiestudie_2023_Data.xlsx",
+    "status": "CONFIGURED_FOR_REPATRIATION",
+    "size_bytes": 0
+  },
+  {
+    "provider": "iaea_nfcis",
+    "url": "https://soln.iaea.org/NFCIS/UDEPO/Deposits/DownloadCSV",
+    "file": "udepo_uranium_deposits.csv",
+    "status": "CONFIGURED_FOR_REPATRIATION",
+    "size_bytes": 0
+  },
+  {
+    "provider": "lpi_lunar",
+    "url": "https://www.lpi.usra.edu/lunar/resources/LPI_Lunar_Volatiles_Dataset.csv",
+    "file": "LPI_Lunar_Volatiles_Dataset.csv",
+    "status": "CONFIGURED_FOR_REPATRIATION",
+    "size_bytes": 0
+  },
+  {
+    "provider": "whymap_groundwater",
+    "url": "https://whymap.org/whymap/EN/Downloads/GW_Resources/gw_resources_gdb.zip",
+    "file": "gw_resources_gdb.zip",
+    "status": "CONFIGURED_FOR_REPATRIATION",
+    "size_bytes": 0
+  },
+  {
+    "provider": "wep_world_energy",
+    "url": "https://www.eia.gov/maps/map_data/ShaleGas_Oil_Basins_World_EIA.zip",
+    "file": "ShaleGas_Oil_Basins_World_EIA.zip",
+    "status": "CONFIGURED_FOR_REPATRIATION",
+    "size_bytes": 0
+  },
+  {
+    "provider": "esa_geospatial",
+    "url": "https://copernicus-dem-30m.s3.amazonaws.com/",
+    "file": "Copernicus_DSM_COG_10_N00_00_E000_00_DEM.tif",
+    "status": "CONFIGURED_FOR_REPATRIATION",
+    "size_bytes": 0
+  }
+]

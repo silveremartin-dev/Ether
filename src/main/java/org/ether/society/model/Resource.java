@@ -17,6 +17,7 @@ public enum Resource {
     WILD_FAUNA("Wild Fauna", ResourceCategory.RENEWABLE, 0.05), // Wild animals for foraging
     FRESHWATER("Fresh Water", ResourceCategory.RENEWABLE, 1.0), // Daily replenishment
     CROPS("Crops", ResourceCategory.RENEWABLE, 0.25), // Seasonal
+    HYDROGEN("Hydrogen", ResourceCategory.RENEWABLE, 0.5), // Electrolysis & atmospheric
 
     // Non-Renewable Resources
     IRON_ORE("Iron Ore", ResourceCategory.NON_RENEWABLE, 0.0),
@@ -25,6 +26,14 @@ public enum Resource {
     GOLD("Gold", ResourceCategory.NON_RENEWABLE, 0.0),
     COAL("Coal", ResourceCategory.NON_RENEWABLE, 0.0),
     OIL("Oil", ResourceCategory.NON_RENEWABLE, 0.0),
+    CRUDE_OIL("Crude Oil", ResourceCategory.NON_RENEWABLE, 0.0),
+    NATURAL_GAS("Natural Gas", ResourceCategory.NON_RENEWABLE, 0.0),
+    URANIUM_ORE("Uranium Ore", ResourceCategory.NON_RENEWABLE, 0.0),
+    THORIUM_ORE("Thorium Ore", ResourceCategory.NON_RENEWABLE, 0.0),
+    HELIUM_3("Helium-3", ResourceCategory.NON_RENEWABLE, 0.0),
+    RARE_EARTH_ORE("Rare Earth Ore", ResourceCategory.NON_RENEWABLE, 0.0),
+    LITHIUM_ORE("Lithium Ore / Brine", ResourceCategory.NON_RENEWABLE, 0.0),
+    BAUXITE_ORE("Bauxite Ore", ResourceCategory.NON_RENEWABLE, 0.0),
     CLAY("Clay", ResourceCategory.NON_RENEWABLE, 0.0),
     STONE("Stone", ResourceCategory.NON_RENEWABLE, 0.0),
     SALT("Salt", ResourceCategory.NON_RENEWABLE, 0.0);

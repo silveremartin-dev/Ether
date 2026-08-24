@@ -20,8 +20,10 @@ public enum EnergySource {
     WIND_POWER(4, "Wind Power", 5.0, 2.2), // Windmills, sailing
     COAL(5, "Coal", 10.0, 3.0), // Industrial revolution
     OIL(6, "Oil", 20.0, 4.0), // Modern era
+    NATURAL_GAS(6, "Natural Gas", 22.0, 4.2), // Natural gas (CH4)
     SOLAR(7, "Solar", 25.0, 5.0), // Renewable future
-    NUCLEAR(8, "Nuclear", 50.0, 6.0); // High-tech
+    NUCLEAR(8, "Nuclear Fission", 50.0, 6.0), // Uranium/Thorium fission
+    FUSION_HE3(9, "Helium-3 Fusion", 150.0, 10.0); // High-tech Aneutronic Fusion
 
     private final int techLevel;
     private final String displayName;
@@ -71,6 +73,9 @@ public enum EnergySource {
             case FIRE -> Resource.WOOD;
             case COAL -> Resource.COAL;
             case OIL -> Resource.OIL;
+            case NATURAL_GAS -> Resource.NATURAL_GAS;
+            case NUCLEAR -> Resource.URANIUM_ORE;
+            case FUSION_HE3 -> Resource.HELIUM_3;
             default -> null; // No resource required
         };
     }

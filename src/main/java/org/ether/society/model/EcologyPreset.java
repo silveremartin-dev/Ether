@@ -32,7 +32,8 @@ public record EcologyPreset(
         String customHydroBase64,
         String customClimateBase64,
         String customRainfallBase64,
-        String customSeasonalityBase64
+        String customSeasonalityBase64,
+        List<String> customGeologyTensorMapsBase64
 ) implements Serializable {
 
     /** Canonical compact constructor for normalization */
@@ -40,6 +41,33 @@ public record EcologyPreset(
         if (planetPresetName == null || planetPresetName.isBlank()) {
             planetPresetName = embeddedPlanetPreset != null ? embeddedPlanetPreset.name() : org.ether.society.procedural.PlanetPreset.EARTH_LIKE.name();
         }
+    }
+
+    /** Constructor overload without embeddedPlanetPreset & customGeologyTensorMapsBase64 */
+    public EcologyPreset(
+            String name,
+            String planetPresetName,
+            PlanetPreset embeddedPlanetPreset,
+            double terrestrialBiomassGtC,
+            double soilOrganicCarbonGtC,
+            double faunaBiomassGtC,
+            double aquaticBiomassGtC,
+            double crustalMetalOresGt,
+            double preciousMetalOresMt,
+            double mantleHeatFlowMwM2,
+            double freshwaterReserveKm3,
+            long seed,
+            String customBiomeBase64,
+            String customResourceBase64,
+            String customHydroBase64,
+            String customClimateBase64,
+            String customRainfallBase64,
+            String customSeasonalityBase64
+    ) {
+        this(name, planetPresetName, embeddedPlanetPreset, terrestrialBiomassGtC, soilOrganicCarbonGtC, faunaBiomassGtC,
+                aquaticBiomassGtC, crustalMetalOresGt, preciousMetalOresMt, mantleHeatFlowMwM2, freshwaterReserveKm3,
+                seed, customBiomeBase64, customResourceBase64, customHydroBase64, customClimateBase64,
+                customRainfallBase64, customSeasonalityBase64, null);
     }
 
     /** Constructor overload without embeddedPlanetPreset for backward compatibility with JSON / older presets */
@@ -65,7 +93,7 @@ public record EcologyPreset(
         this(name, planetPresetName, null, terrestrialBiomassGtC, soilOrganicCarbonGtC, faunaBiomassGtC,
                 aquaticBiomassGtC, crustalMetalOresGt, preciousMetalOresMt, mantleHeatFlowMwM2, freshwaterReserveKm3,
                 seed, customBiomeBase64, customResourceBase64, customHydroBase64, customClimateBase64,
-                customRainfallBase64, customSeasonalityBase64);
+                customRainfallBase64, customSeasonalityBase64, null);
     }
 
     /** Overloaded constructor without planetPresetName for backward compatibility */
@@ -90,7 +118,7 @@ public record EcologyPreset(
         this(name, org.ether.society.procedural.PlanetPreset.EARTH_LIKE.name(), null, terrestrialBiomassGtC, soilOrganicCarbonGtC, faunaBiomassGtC,
                 aquaticBiomassGtC, crustalMetalOresGt, preciousMetalOresMt, mantleHeatFlowMwM2, freshwaterReserveKm3,
                 seed, customBiomeBase64, customResourceBase64, customHydroBase64, customClimateBase64,
-                customRainfallBase64, customSeasonalityBase64);
+                customRainfallBase64, customSeasonalityBase64, null);
     }
 
     /** Default Earth Standard Baseline preset (used as initial selection in the UI). */

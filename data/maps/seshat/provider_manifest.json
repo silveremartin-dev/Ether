@@ -1,0 +1,11 @@
+{
+  "name": "Seshat: Global History Databank",
+  "domain": "Cliodynamics, Institutional Tensors, Governance Complexity & Political Boundaries (-3000 BCE to 1900 CE)",
+  "url": "https://raw.githubusercontent.com/SeshatData/Equinox/main/Equinox_on_GitHub_June9_2022.xlsx",
+  "datasets": [
+    "Equinox_on_GitHub_June9_2022.xlsx",
+    "seshat_equinox_raw.csv",
+    "seshat_institutional_tensors.json"
+  ],
+  "citation": "Turchin, P., Brennan, R., Currie, T. E., et al. (2015). Seshat: The Global History Databank. Cliodynamics, 6(1), 77-107."
+}

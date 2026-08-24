@@ -54,82 +54,115 @@ public class EtherApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         try {
             this.primaryStage = primaryStage;
-            logger.info("Starting Ether Application...");
+            logger.info("Starting Ether Application with Splash Screen...");
 
-            // Load configuration
-            config = org.ether.society.config.ConfigurationLoader.loadDefault();
+            org.ether.society.ui.SplashScreen splash = new org.ether.society.ui.SplashScreen();
+            splash.show();
 
-            // Initialize simulation engine
-            h3Engine = new H3SimulationEngine(config);
-
-            // Initialize UI components
-            mapCanvas = new H3MapCanvas(1280, 800);
-            miniMap = new MiniMap();
-            hud = new PerformanceHUD();
-            controlPanel = new ControlPanel(h3Engine);
-
-            // Initialize main layout
-            mainView = new MainView(h3Engine, controlPanel, mapCanvas, miniMap, hud);
-
-            // Wire canvas references to control panel
-            controlPanel.setMapCanvas(mapCanvas);
-            controlPanel.setMiniMap(miniMap);
-
-            // Connect database status monitoring
-            controlPanel.updateDatabaseStatus(org.ether.society.database.DatabaseConfig.isDatabaseAvailable());
-
-            // Create scene
-            Scene scene = new Scene(mainView, 1280, 800);
-
-            // Load CSS stylesheet if available
-            try {
-                String css = getClass().getResource("/styles.css").toExternalForm();
-                scene.getStylesheets().add(css);
-            } catch (Exception e) {
-                logger.warn("Could not load styles.css stylesheet: {}", e.getMessage());
-            }
-
-            // Configure stage
-            primaryStage.setScene(scene);
-            Theme.applyCurrentTheme(scene);
-            updateTexts();
-            org.ether.society.ui.WindowUtils.applyWindowIcon(primaryStage);
-
-            // Register i18n listener
-            I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
-
-            primaryStage.setMinWidth(1024);
-            primaryStage.setMinHeight(700);
-
-            // Stop engine on window close
-            primaryStage.setOnCloseRequest(e -> stop());
-
-            primaryStage.show();
-
-            // Start animation timer for UI updates
-            timer = new AnimationTimer() {
+            javafx.concurrent.Task<Void> initTask = new javafx.concurrent.Task<>() {
                 @Override
-                public void handle(long now) {
-                    frameCount++;
-                    if (now - lastFpsUpdate >= 1_000_000_000L) {
-                        currentFps = frameCount / ((now - lastFpsUpdate) / 1_000_000_000.0);
-                        frameCount = 0;
-                        lastFpsUpdate = now;
+                protected Void call() throws Exception {
+                    splash.updateProgress(0.15, "Chargement de la configuration système...", "Lecture des propriétés et paramètres d'exécution");
+                    config = org.ether.society.config.ConfigurationLoader.loadDefault();
+                    Thread.sleep(120);
+
+                    splash.updateProgress(0.40, "Initialisation du moteur spatial H3...", "Allocation du maillage géodésique & buffers DOD");
+                    h3Engine = new H3SimulationEngine(config);
+                    Thread.sleep(150);
+
+                    splash.updateProgress(0.70, "Construction des composants graphiques JavaFX...", "Initialisation du rendu 2D/3D et des panneaux de contrôle");
+                    javafx.application.Platform.runLater(() -> {
+                        mapCanvas = new H3MapCanvas(1280, 800);
+                        miniMap = new MiniMap();
+                        hud = new PerformanceHUD();
+                        controlPanel = new ControlPanel(h3Engine);
+                        mainView = new MainView(h3Engine, controlPanel, mapCanvas, miniMap, hud);
+                        controlPanel.setMapCanvas(mapCanvas);
+                        controlPanel.setMiniMap(miniMap);
+                        controlPanel.updateDatabaseStatus(org.ether.society.database.DatabaseConfig.isDatabaseAvailable());
+                    });
+                    Thread.sleep(200);
+
+                    splash.updateProgress(0.95, "Finalisation de l'affichage et thèmes...", "Application des styles visuels");
+                    Thread.sleep(100);
+                    splash.updateProgress(1.0, "Prêt !", "Ouverture du tableau de bord");
+                    return null;
+                }
+            };
+
+            initTask.setOnSucceeded(ev -> {
+                try {
+                    Scene scene = new Scene(mainView, 1280, 800);
+                    try {
+                        String css = getClass().getResource("/styles.css").toExternalForm();
+                        scene.getStylesheets().add(css);
+                    } catch (Exception e) {
+                        logger.warn("Could not load styles.css stylesheet: {}", e.getMessage());
                     }
 
-                    // Update performance HUD
-                    if (h3Engine.getWorldBuffer() != null) {
-                        hud.registerFrame(now);
-                        hud.updateSimulationInfo((int) h3Engine.getPopulatedCellCount(), 1.0, 0, 0);
-                        if (h3Engine.getProfiler() != null) {
-                            hud.updateProfilerInfo(
-                                h3Engine.getProfiler().getAverageTickTimeMs(),
-                                h3Engine.getProfiler().getP95TickTimeMs()
-                            );
-                        }
-                    }
+                    primaryStage.setScene(scene);
+                    Theme.applyCurrentTheme(scene);
+                    updateTexts();
+                    org.ether.society.ui.WindowUtils.applyWindowIcon(primaryStage);
 
-                    // Update control panel stats
+                    I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
+
+                    primaryStage.setMinWidth(1024);
+                    primaryStage.setMinHeight(700);
+                    primaryStage.setOnCloseRequest(e -> stop());
+
+                    splash.close();
+                    primaryStage.show();
+
+                    startAnimationTimer();
+                    logger.info("Application started successfully");
+                } catch (Exception ex) {
+                    logger.error("Error setting up main stage after splash completion", ex);
+                }
+            });
+
+            initTask.setOnFailed(ev -> {
+                splash.close();
+                logger.error("FATAL ERROR during splash screen initialization task", initTask.getException());
+            });
+
+            new Thread(initTask, "EtherApp-SplashInitThread").start();
+
+        } catch (Throwable t) {
+            System.err.println("!!! FATAL EXCEPTION IN ETHERAPP START !!!");
+            t.printStackTrace(System.err);
+            logger.error("FATAL ERROR in Application start method", t);
+            if (t instanceof RuntimeException re) throw re;
+            if (t instanceof Exception e) throw e;
+            throw new RuntimeException(t);
+        }
+    }
+
+    private void startAnimationTimer() {
+        timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                frameCount++;
+                if (now - lastFpsUpdate >= 1_000_000_000L) {
+                    currentFps = frameCount / ((now - lastFpsUpdate) / 1_000_000_000.0);
+                    frameCount = 0;
+                    lastFpsUpdate = now;
+                }
+
+                // Update performance HUD
+                if (h3Engine != null && h3Engine.getWorldBuffer() != null) {
+                    hud.registerFrame(now);
+                    hud.updateSimulationInfo((int) h3Engine.getPopulatedCellCount(), 1.0, 0, 0);
+                    if (h3Engine.getProfiler() != null) {
+                        hud.updateProfilerInfo(
+                            h3Engine.getProfiler().getAverageTickTimeMs(),
+                            h3Engine.getProfiler().getP95TickTimeMs()
+                        );
+                    }
+                }
+
+                // Update control panel stats
+                if (controlPanel != null && h3Engine != null) {
                     controlPanel.updateStats(
                         h3Engine.getTotalPopulation(),
                         h3Engine.getTotalFood(),
@@ -143,28 +176,21 @@ public class EtherApp extends Application {
                             h3Engine.getTimeManager().getCurrentMonth() + 1,
                             h3Engine.getTimeManager().getCurrentDay())
                     );
+                }
 
-                    // Periodic map redraw when needed
-                    if (now - lastMapRedraw >= 500_000_000L) { // every 0.5s
+                // Periodic map redraw when needed
+                if (now - lastMapRedraw >= 500_000_000L) { // every 0.5s
+                    if (mapCanvas != null) {
                         DisplayMode mode = mapCanvas.getDisplayMode();
                         if (mode != DisplayMode.BIOME) {
                             mapCanvas.draw();
                         }
-                        lastMapRedraw = now;
                     }
+                    lastMapRedraw = now;
                 }
-            };
-            timer.start();
-
-            logger.info("Application started successfully");
-        } catch (Throwable t) {
-            System.err.println("!!! FATAL EXCEPTION IN ETHERAPP START !!!");
-            t.printStackTrace(System.err);
-            logger.error("FATAL ERROR in Application start method", t);
-            if (t instanceof RuntimeException re) throw re;
-            if (t instanceof Exception e) throw e;
-            throw new RuntimeException(t);
-        }
+            }
+        };
+        timer.start();
     }
 
     @Override

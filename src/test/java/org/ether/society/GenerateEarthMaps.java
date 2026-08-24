@@ -66,6 +66,7 @@ public class GenerateEarthMaps {
         Color MOUNTAINS = new Color(100, 100, 100);
         Color TUNDRA = new Color(150, 200, 220);
         Color SNOW = new Color(255, 255, 255);
+        Color GLACIER = new Color(220, 240, 255);
 
         for (int y = 0; y < height; y++) {
             double lat = 90.0 - (y / (double) height) * 180.0;
@@ -86,8 +87,13 @@ public class GenerateEarthMaps {
                 int gray;
                 Color biomeColor;
 
+                double absLat = Math.abs(lat);
+
                 if (rawHeight < 0) { // Ocean
-                    if (rawHeight < -0.4) {
+                    if (absLat > 70.0) { // North / South Pole Arctic Sea Ice
+                        gray = (int) Math.min(255, 220 + detail * 35);
+                        biomeColor = GLACIER;
+                    } else if (rawHeight < -0.4) {
                         gray = (int) Math.max(0, 50 + rawHeight * 80);
                         biomeColor = DEEP_OCEAN;
                     } else {
@@ -95,7 +101,10 @@ public class GenerateEarthMaps {
                         biomeColor = OCEAN;
                     }
                 } else { // Land
-                    if (rawHeight < 0.05) {
+                    if (absLat > 72.0) {
+                        gray = (int) Math.min(255, 230 + detail * 25);
+                        biomeColor = GLACIER;
+                    } else if (rawHeight < 0.05) {
                         gray = 142 + (int)(rawHeight * 100);
                         biomeColor = BEACH;
                     } else if (rawHeight > 0.65) {

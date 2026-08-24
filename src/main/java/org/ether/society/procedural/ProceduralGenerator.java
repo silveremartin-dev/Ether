@@ -28,6 +28,11 @@ import java.util.Map;
  */
 public class ProceduralGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ProceduralGenerator.class);
+    private static final ProceduralGenerator INSTANCE = new ProceduralGenerator();
+
+    public static ProceduralGenerator getInstance() {
+        return INSTANCE;
+    }
 
     /** Pre-industrial Earth reference CO₂ partial pressure (1.0 atm × 280 ppm = 0.00028 atm). */
     private static final double CO2_REF_PARTIAL_PRESSURE_ATM = 0.00028;
@@ -138,7 +143,7 @@ public class ProceduralGenerator {
         double seasonality = computeSeasonalityAt(lat, lng, seasonNoise, preset);
 
         // ── 7. Biome ───────────────────────────────────────────────────────────
-        Biome biome = determineBiome(e, elevMeters, tempC, r, preset, tidalForce);
+        Biome biome = determineBiome(lat, e, elevMeters, tempC, r, preset, tidalForce);
 
         // ── 8. Hydrography ─────────────────────────────────────────────────────
         double avgSurround  = (eN + eS + eE + eW) / 4.0;
@@ -361,7 +366,7 @@ public class ProceduralGenerator {
         return Math.max(0.0, Math.min(1.0, seasonNorm));
     }
 
-    private Biome determineBiome(double elevation, double elevMeters,
+    private Biome determineBiome(double lat, double elevation, double elevMeters,
                                   double tempC, double rainfall, PlanetPreset preset, double tidalForce) {
         double waterLevel = preset.waterLevel();
         double pAtmo = preset.atmospherePressureAtm();
@@ -374,8 +379,11 @@ public class ProceduralGenerator {
             return Biome.DESERT;
         }
 
-        // Ocean biomes
+        // Ocean & Polar Ice Cap biomes
         if (elevation < waterLevel) {
+            if (tempC < -2.0 || Math.abs(lat) > 72.0) {
+                return Biome.GLACIER; // Polar Arctic sea ice & ice cap
+            }
             return (elevation < waterLevel - 0.40) ? Biome.DEEP_OCEAN : Biome.OCEAN;
         }
 
@@ -385,7 +393,10 @@ public class ProceduralGenerator {
             return Biome.BEACH;
         }
 
-        if (tempC < -15.0 || elevation > 0.80) {
+        if (tempC < -15.0 || elevation > 0.85 || Math.abs(lat) > 75.0) {
+            return Biome.GLACIER;
+        }
+        if (tempC < -8.0 || elevation > 0.75) {
             return Biome.SNOW;
         }
 

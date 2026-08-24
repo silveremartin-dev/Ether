@@ -1,0 +1,11 @@
+{
+  "name": "Natural Earth Vector & Raster Data",
+  "domain": "Global Coastlines, Rivers, Lakes, Oceans & Political Boundaries",
+  "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_land.geojson",
+  "datasets": [
+    "ne_110m_land.geojson",
+    "ne_110m_rivers.geojson",
+    "ne_110m_ocean.geojson"
+  ],
+  "citation": "Kelso, N.V. and Patterson, T. (2010). Natural Earth vector and raster data. World Wide Web."
+}

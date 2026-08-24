@@ -95,6 +95,11 @@ public class Scenario implements Serializable {
     private java.util.List<String> customTensorMapsBase64 = new java.util.ArrayList<>();
     private java.util.List<Boolean> tensorProceduralModes = new java.util.ArrayList<>();
 
+    // Geological & Mineral Energy Extensible Tensor Layers (Persisted per Scenario)
+    private int resourceVectorDimensions = 8; // Extensible resource dimensions (COAL, OIL, GAS, URANIUM, HELIUM_3, IRON_COPPER, PRECIOUS_REE, AQUIFERS...)
+    private java.util.List<String> customGeologyTensorMapsBase64 = new java.util.ArrayList<>();
+    private java.util.List<Boolean> geologyTensorProceduralModes = new java.util.ArrayList<>();
+
     // Engine Optimization & Determinism Controls (Persisted at Scenario Level for Physical Conformance)
     private boolean strictDeterminism = true;
     private boolean sparseCellSkippingEnabled = false;
@@ -651,6 +656,52 @@ public class Scenario implements Serializable {
 
     public void setCustomTensorMapBase64(int index, String base64) {
         java.util.List<String> list = getCustomTensorMapsBase64();
+        while (list.size() <= index) {
+            list.add(null);
+        }
+        list.set(index, base64);
+    }
+
+    public int getResourceVectorDimensions() {
+        return resourceVectorDimensions;
+    }
+
+    public void setResourceVectorDimensions(int resourceVectorDimensions) {
+        this.resourceVectorDimensions = resourceVectorDimensions;
+    }
+
+    public java.util.List<String> getCustomGeologyTensorMapsBase64() {
+        if (customGeologyTensorMapsBase64 == null) {
+            customGeologyTensorMapsBase64 = new java.util.ArrayList<>();
+        }
+        return customGeologyTensorMapsBase64;
+    }
+
+    public void setCustomGeologyTensorMapsBase64(java.util.List<String> customGeologyTensorMapsBase64) {
+        this.customGeologyTensorMapsBase64 = customGeologyTensorMapsBase64 != null ? customGeologyTensorMapsBase64 : new java.util.ArrayList<>();
+    }
+
+    public java.util.List<Boolean> getGeologyTensorProceduralModes() {
+        if (geologyTensorProceduralModes == null) {
+            geologyTensorProceduralModes = new java.util.ArrayList<>();
+        }
+        return geologyTensorProceduralModes;
+    }
+
+    public void setGeologyTensorProceduralModes(java.util.List<Boolean> geologyTensorProceduralModes) {
+        this.geologyTensorProceduralModes = geologyTensorProceduralModes != null ? geologyTensorProceduralModes : new java.util.ArrayList<>();
+    }
+
+    public String getCustomGeologyTensorMapBase64(int index) {
+        java.util.List<String> list = getCustomGeologyTensorMapsBase64();
+        if (index >= 0 && index < list.size() && list.get(index) != null && !list.get(index).isBlank()) {
+            return list.get(index);
+        }
+        return null;
+    }
+
+    public void setCustomGeologyTensorMapBase64(int index, String base64) {
+        java.util.List<String> list = getCustomGeologyTensorMapsBase64();
         while (list.size() <= index) {
             list.add(null);
         }

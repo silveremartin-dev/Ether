@@ -575,10 +575,22 @@ public class StatsPanel extends VBox {
         update();
     }
 
+    private final java.util.concurrent.atomic.AtomicLong lastStatsUiUpdateNanos = new java.util.concurrent.atomic.AtomicLong(0);
+    private final java.util.concurrent.atomic.AtomicBoolean statsUpdatePending = new java.util.concurrent.atomic.AtomicBoolean(false);
+
     public void update() {
         if (engine == null || !isLiveCollectionActive) return;
         tickCounter++;
         if (tickCounter % samplingIntervalTicks != 0) return;
+
+        long nowNanos = System.nanoTime();
+        if (nowNanos - lastStatsUiUpdateNanos.get() < 100_000_000L) { // Throttle to max 10 UI updates per second
+            return;
+        }
+        if (!statsUpdatePending.compareAndSet(false, true)) {
+            return;
+        }
+        lastStatsUiUpdateNanos.set(nowNanos);
 
         // Extract values from engine
         long pop = engine.getTotalPopulation();
@@ -647,186 +659,190 @@ public class StatsPanel extends VBox {
         int year = engine.getTimeManager().getCurrentYear();
 
         Platform.runLater(() -> {
-            spatialHeatmapPanel.setHistoryManager(engine.getHistoryManager());
-            spatialHeatmapPanel.updateCells(engine.getCells());
+            try {
+                spatialHeatmapPanel.setHistoryManager(engine.getHistoryManager());
+                spatialHeatmapPanel.updateCells(engine.getCells());
 
-            // Update cards
-            setCardVal("energyCaptured", String.format("%,.1f", energyCap), energyCap / 100000.0);
-            setCardVal("resourceDepletion", String.format("%.1f", resDep), resDep / 100.0);
-            setCardVal("energyPerCapita", String.format("%.1f", energyPerCap), energyPerCap / 500.0);
-            setCardVal("foodPerCapita", String.format("%.2f", foodPerCap), foodPerCap / 24.0);
-            setCardVal("pibMaterialFlow", String.format("%.1f", resDep * 5.2), resDep / 100.0);
-            setCardVal("biomassNatural", String.format("%,.0f", bio), bio / 5000.0);
-            setCardVal("biomassDomesticated", String.format("%,.1f", bioDom), bioDom / 1000.0);
-            setCardVal("potableWater", String.format("%,.0f", water), water / 50000.0);
-            setCardVal("remainingResources", String.format("%.1f", remRes), remRes / 100.0);
-            setCardVal("entropyPollution", String.format("%.1f", entropy), entropy / 1000.0);
-            setCardVal("occupiedTerritory", String.format("%,.0f", territory), territory / 1000000.0);
+                // Update cards
+                setCardVal("energyCaptured", String.format("%,.1f", energyCap), energyCap / 100000.0);
+                setCardVal("resourceDepletion", String.format("%.1f", resDep), resDep / 100.0);
+                setCardVal("energyPerCapita", String.format("%.1f", energyPerCap), energyPerCap / 500.0);
+                setCardVal("foodPerCapita", String.format("%.2f", foodPerCap), foodPerCap / 24.0);
+                setCardVal("pibMaterialFlow", String.format("%.1f", resDep * 5.2), resDep / 100.0);
+                setCardVal("biomassNatural", String.format("%,.0f", bio), bio / 5000.0);
+                setCardVal("biomassDomesticated", String.format("%,.1f", bioDom), bioDom / 1000.0);
+                setCardVal("potableWater", String.format("%,.0f", water), water / 50000.0);
+                setCardVal("remainingResources", String.format("%.1f", remRes), remRes / 100.0);
+                setCardVal("entropyPollution", String.format("%.1f", entropy), entropy / 1000.0);
+                setCardVal("occupiedTerritory", String.format("%,.0f", territory), territory / 1000000.0);
 
-            setCardVal("population", String.format("%,d", pop), pop / 10000000.0);
-            setCardVal("fertilityRate", String.format("%.1f", fert), fert / 7.0);
-            setCardVal("offspringPct", String.format("%.1f", offspring), offspring / 100.0);
-            setCardVal("ageFirstChild", String.format("%.1f", ageFirstChild), ageFirstChild / 40.0);
-            setCardVal("immigrationRate", String.format("%.1f", immigration), immigration / 50.0);
-            setCardVal("lifeExpectancy", String.format("%.1f", life), life / 100.0);
-            setCardVal("healthIndex", String.format("%.1f", Math.min(100.0, life * 1.1)), life / 100.0);
-            setCardVal("educationLevel", String.format("%.1f", education), education / 100.0);
+                setCardVal("population", String.format("%,d", pop), pop / 10000000.0);
+                setCardVal("fertilityRate", String.format("%.1f", fert), fert / 7.0);
+                setCardVal("offspringPct", String.format("%.1f", offspring), offspring / 100.0);
+                setCardVal("ageFirstChild", String.format("%.1f", ageFirstChild), ageFirstChild / 40.0);
+                setCardVal("immigrationRate", String.format("%.1f", immigration), immigration / 50.0);
+                setCardVal("lifeExpectancy", String.format("%.1f", life), life / 100.0);
+                setCardVal("healthIndex", String.format("%.1f", Math.min(100.0, life * 1.1)), life / 100.0);
+                setCardVal("educationLevel", String.format("%.1f", education), education / 100.0);
 
-            double largestOrgComp = engine.getLargestOrganizationComplexity();
-            double largestOrgEnt = engine.getLargestOrganizationEntropy();
+                double largestOrgComp = engine.getLargestOrganizationComplexity();
+                double largestOrgEnt = engine.getLargestOrganizationEntropy();
 
-            setCardVal("happinessIndex", String.format("%.1f", happiness), happiness / 100.0);
-            setCardVal("conflictLevel", String.format("%.1f", conflict), conflict / 100.0);
-            setCardVal("cityStates", String.format("%d", cityStates), cityStates / 50.0);
-            setCardVal("institutionalMaturity", String.format("%.1f", instMaturity), instMaturity / 100.0);
-            setCardVal("divisionLabor", String.format("%.1f", divLabor), divLabor / 100.0);
-            setCardVal("maxHierarchy", String.format("Niv %d", maxHier), maxHier / 6.0);
-            setCardVal("largestCulture", String.format("%,d", largestCult), largestCult / Math.max(1.0, (double)pop));
-            setCardVal("largestOrgComplexity", String.format("%,.0f", largestOrgComp), largestOrgComp / 100000.0);
-            setCardVal("largestOrgEntropy", String.format("%,.1f", largestOrgEnt), largestOrgEnt / 100000.0);
-            setCardVal("avgTechLevel", String.format("%.2f", tech), tech / 100.0);
-            setCardVal("kardashevScale", String.format("%.2f", kardashev), kardashev / 2.0);
+                setCardVal("happinessIndex", String.format("%.1f", happiness), happiness / 100.0);
+                setCardVal("conflictLevel", String.format("%.1f", conflict), conflict / 100.0);
+                setCardVal("cityStates", String.format("%d", cityStates), cityStates / 50.0);
+                setCardVal("institutionalMaturity", String.format("%.1f", instMaturity), instMaturity / 100.0);
+                setCardVal("divisionLabor", String.format("%.1f", divLabor), divLabor / 100.0);
+                setCardVal("maxHierarchy", String.format("Niv %d", maxHier), maxHier / 6.0);
+                setCardVal("largestCulture", String.format("%,d", largestCult), largestCult / Math.max(1.0, (double)pop));
+                setCardVal("largestOrgComplexity", String.format("%,.0f", largestOrgComp), largestOrgComp / 100000.0);
+                setCardVal("largestOrgEntropy", String.format("%,.1f", largestOrgEnt), largestOrgEnt / 100000.0);
+                setCardVal("avgTechLevel", String.format("%.2f", tech), tech / 100.0);
+                setCardVal("kardashevScale", String.format("%.2f", kardashev), kardashev / 2.0);
 
-            setCardVal("giniIndex", String.format("%.2f", gini), gini);
-            setCardVal("gdpTotal", String.format("%,.0f", gdp), gdp / 1000000.0);
-            setCardVal("builtCapital", String.format("%,.0f", builtCap / Math.max(1, pop)), builtCap / (pop * 5000.0 + 1));
-            setCardVal("eliteFormation", String.format("%.1f", eliteForm), eliteForm / 25.0);
-            setCardVal("elderCapitalShare", String.format("%.1f", elderCap), elderCap / 100.0);
-            setCardVal("landRent", String.format("%.1f", landRent), landRent / 100.0);
-            setCardVal("toolsCount", String.format("%,d", tools), tools / 10000000.0);
-            setCardVal("productsCount", String.format("%,d", products), products / 10000.0);
+                setCardVal("giniIndex", String.format("%.2f", gini), gini);
+                setCardVal("gdpTotal", String.format("%,.0f", gdp), gdp / 1000000.0);
+                setCardVal("builtCapital", String.format("%,.0f", builtCap / Math.max(1, pop)), builtCap / (pop * 5000.0 + 1));
+                setCardVal("eliteFormation", String.format("%.1f", eliteForm), eliteForm / 25.0);
+                setCardVal("elderCapitalShare", String.format("%.1f", elderCap), elderCap / 100.0);
+                setCardVal("landRent", String.format("%.1f", landRent), landRent / 100.0);
+                setCardVal("toolsCount", String.format("%,d", tools), tools / 10000000.0);
+                setCardVal("productsCount", String.format("%,d", products), products / 10000.0);
 
-            setCardVal("shannonBandwidth", String.format("%.1f", shannonBw), shannonBw / 100.0);
-            setCardVal("collectiveMemory", String.format("%,.0f", memoryStock), memoryStock / 10000.0);
-            setCardVal("innovationDiffusion", String.format("%.1f", innovSpeed), innovSpeed / 100.0);
-            setCardVal("knowledgeDecay", String.format("%.1f", knowDecay), knowDecay / 100.0);
+                setCardVal("shannonBandwidth", String.format("%.1f", shannonBw), shannonBw / 100.0);
+                setCardVal("collectiveMemory", String.format("%,.0f", memoryStock), memoryStock / 10000.0);
+                setCardVal("innovationDiffusion", String.format("%.1f", innovSpeed), innovSpeed / 100.0);
+                setCardVal("knowledgeDecay", String.format("%.1f", knowDecay), knowDecay / 100.0);
 
-            setCardVal("soilNPK", String.format("%.1f", soilNPK), soilNPK / 100.0);
-            setCardVal("carbonFootprint", String.format("%.2f", carbonFp), carbonFp / 50.0);
-            setCardVal("wildBiodiversity", String.format("%.1f", wildBio), wildBio / 100.0);
-            setCardVal("wetBulbSafety", String.format("%.1f", wetBulb), wetBulb / 35.0);
+                setCardVal("soilNPK", String.format("%.1f", soilNPK), soilNPK / 100.0);
+                setCardVal("carbonFootprint", String.format("%.2f", carbonFp), carbonFp / 50.0);
+                setCardVal("wildBiodiversity", String.format("%.1f", wildBio), wildBio / 100.0);
+                setCardVal("wetBulbSafety", String.format("%.1f", wetBulb), wetBulb / 35.0);
 
-            setCardVal("eliteOverproduction", String.format("%.2f", eliteOver), eliteOver / 10.0);
-            setCardVal("fiscalStress", String.format("%.1f", fiscalStress), fiscalStress / 100.0);
-            setCardVal("geopoliticalTension", String.format("%.1f", geoTension), geoTension / 100.0);
-            setCardVal("collapseVulnerability", String.format("%.1f", collapseVuln), collapseVuln / 100.0);
+                setCardVal("eliteOverproduction", String.format("%.2f", eliteOver), eliteOver / 10.0);
+                setCardVal("fiscalStress", String.format("%.1f", fiscalStress), fiscalStress / 100.0);
+                setCardVal("geopoliticalTension", String.format("%.1f", geoTension), geoTension / 100.0);
+                setCardVal("collapseVulnerability", String.format("%.1f", collapseVuln), collapseVuln / 100.0);
 
-            setCardVal("systemComplexity", String.format("%.1f", sysComp), sysComp / 100.0);
-            setCardVal("reconstructionCapability", String.format("%.1f", reconCap), reconCap / 100.0);
-            setCardVal("systemInterdependence", String.format("%.1f", sysInter), sysInter / 100.0);
+                setCardVal("systemComplexity", String.format("%.1f", sysComp), sysComp / 100.0);
+                setCardVal("reconstructionCapability", String.format("%.1f", reconCap), reconCap / 100.0);
+                setCardVal("systemInterdependence", String.format("%.1f", sysInter), sysInter / 100.0);
 
-            setCardVal("engineTPS", String.format("%.1f", tps), tps / 60.0);
-            setCardVal("ramMemory", String.format("%d", usedMem), usedMem / 4096.0);
-            setCardVal("cellCount", String.format("%,d", totalCells), totalCells / 50000.0);
+                setCardVal("engineTPS", String.format("%.1f", tps), tps / 60.0);
+                setCardVal("ramMemory", String.format("%d", usedMem), usedMem / 4096.0);
+                setCardVal("cellCount", String.format("%,d", totalCells), totalCells / 50000.0);
 
-            // Update Time Series Chart
-            String selectedMetric = chartMetricCombo.getValue();
-            double yVal = switch (selectedMetric) {
-                // Category 1: Énergie & Matière
-                case "Énergie Captée" -> energyCap;
-                case "Déplétion des Ressources" -> resDep;
-                case "Énergie / Individu" -> energyPerCap;
-                case "Nourriture / Individu" -> foodPerCap;
-                case "PIB Flux de Matière" -> resDep * 5.2;
-                case "Biomasse Naturelle" -> bio;
-                case "Biomasse Domestiquée" -> bioDom;
-                case "Eau Douce & Aquifères" -> water;
-                case "Ressources Restantes" -> remRes;
-                case "Entropie & Pollution" -> entropy;
-                case "Territoire Occupé" -> territory;
+                // Update Time Series Chart
+                String selectedMetric = chartMetricCombo.getValue();
+                double yVal = switch (selectedMetric) {
+                    // Category 1: Énergie & Matière
+                    case "Énergie Captée" -> energyCap;
+                    case "Déplétion des Ressources" -> resDep;
+                    case "Énergie / Individu" -> energyPerCap;
+                    case "Nourriture / Individu" -> foodPerCap;
+                    case "PIB Flux de Matière" -> resDep * 5.2;
+                    case "Biomasse Naturelle" -> bio;
+                    case "Biomasse Domestiquée" -> bioDom;
+                    case "Eau Douce & Aquifères" -> water;
+                    case "Ressources Restantes" -> remRes;
+                    case "Entropie & Pollution" -> entropy;
+                    case "Territoire Occupé" -> territory;
 
-                // Category 2: Démographie & Santé
-                case "Population Humaine" -> pop;
-                case "Survie de la population (%)" -> engine.getPopulationSurvivalRate();
-                case "Cohésion sociale (Asabiyyah %)" -> engine.getAverageAsabiyyah();
-                case "Taux de Fertilité" -> fert;
-                case "Taux avec Descendance" -> offspring;
-                case "Âge au 1er Enfant" -> ageFirstChild;
-                case "Taux d'Immigration" -> immigration;
-                case "Espérance de Vie", "Espérance de Vie (ans)" -> life;
-                case "Niveau de Santé Global" -> Math.min(100.0, life * 1.1);
-                case "Niveau d'Éducation" -> education;
+                    // Category 2: Démographie & Santé
+                    case "Population Humaine" -> pop;
+                    case "Survie de la population (%)" -> engine.getPopulationSurvivalRate();
+                    case "Cohésion sociale (Asabiyyah %)" -> engine.getAverageAsabiyyah();
+                    case "Taux de Fertilité" -> fert;
+                    case "Taux avec Descendance" -> offspring;
+                    case "Âge au 1er Enfant" -> ageFirstChild;
+                    case "Taux d'Immigration" -> immigration;
+                    case "Espérance de Vie", "Espérance de Vie (ans)" -> life;
+                    case "Niveau de Santé Global" -> Math.min(100.0, life * 1.1);
+                    case "Niveau d'Éducation" -> education;
 
-                // Category 3: Société & Institutions
-                case "Indice de Bonheur" -> happiness;
-                case "Taux de Conflits" -> conflict;
-                case "Nombre de Cités-États" -> cityStates;
-                case "Naissance des Institutions" -> instMaturity;
-                case "Division du Travail" -> divLabor;
-                case "Niveau Max Hiérarchique" -> maxHier;
-                case "Plus Grande Unité Culturelle" -> largestCult;
-                case "Complexité Max Organisation" -> largestOrgComp;
-                case "Entropie Max Civilisation" -> largestOrgEnt;
-                case "Niveau Technologique Moyen" -> tech;
-                case "Échelle de Kardashev" -> kardashev;
+                    // Category 3: Société & Institutions
+                    case "Indice de Bonheur" -> happiness;
+                    case "Taux de Conflits" -> conflict;
+                    case "Nombre de Cités-États" -> cityStates;
+                    case "Naissance des Institutions" -> instMaturity;
+                    case "Division du Travail" -> divLabor;
+                    case "Niveau Max Hiérarchique" -> maxHier;
+                    case "Plus Grande Unité Culturelle" -> largestCult;
+                    case "Complexité Max Organisation" -> largestOrgComp;
+                    case "Entropie Max Civilisation" -> largestOrgEnt;
+                    case "Niveau Technologique Moyen" -> tech;
+                    case "Échelle de Kardashev" -> kardashev;
 
-                // Category 4: Économie & Richesse
-                case "Indice de Gini (Inégalité)" -> gini;
-                case "PIB Global (GDP)" -> gdp;
-                case "Capital Bâti & Outillage" -> builtCap / Math.max(1, pop);
-                case "Formation d'Élite" -> eliteForm;
-                case "Possession Capital (Aînés)" -> elderCap;
-                case "Rente Foncière & Immobilière" -> landRent;
-                case "Nombre d'Outils en Service" -> tools;
-                case "Variété de Produits" -> products;
+                    // Category 4: Économie & Richesse
+                    case "Indice de Gini (Inégalité)" -> gini;
+                    case "PIB Global (GDP)" -> gdp;
+                    case "Capital Bâti & Outillage" -> builtCap / Math.max(1, pop);
+                    case "Formation d'Élite" -> eliteForm;
+                    case "Possession Capital (Aînés)" -> elderCap;
+                    case "Rente Foncière & Immobilière" -> landRent;
+                    case "Nombre d'Outils en Service" -> tools;
+                    case "Variété de Produits" -> products;
 
-                // Category 5: Cognition & Information
-                case "Bande Passante Shannon" -> shannonBw;
-                case "Stock Mémoire Collective" -> memoryStock;
-                case "Vitesse de Diffusion Tech" -> innovSpeed;
-                case "Taux d'Amnésie Historique" -> knowDecay;
+                    // Category 5: Cognition & Information
+                    case "Bande Passante Shannon" -> shannonBw;
+                    case "Stock Mémoire Collective" -> memoryStock;
+                    case "Vitesse de Diffusion Tech" -> innovSpeed;
+                    case "Taux d'Amnésie Historique" -> knowDecay;
 
-                // Category 6: Écologie & Frontières Planétaires
-                case "Qualité NPK des Sols" -> soilNPK;
-                case "Empreinte Carbone" -> carbonFp;
-                case "Biodiversité Sauvage" -> wildBio;
-                case "Marge Sécurité Bulbe Humide" -> wetBulb;
+                    // Category 6: Écologie & Frontières Planétaires
+                    case "Qualité NPK des Sols" -> soilNPK;
+                    case "Empreinte Carbone" -> carbonFp;
+                    case "Biodiversité Sauvage" -> wildBio;
+                    case "Marge Sécurité Bulbe Humide" -> wetBulb;
 
-                // Category 7: Cliodynamique & Risques Systémiques
-                case "Surproduction Élitaire (Turchin)" -> eliteOver;
-                case "Pression & Stress Fiscal" -> fiscalStress;
-                case "Tension Géopolitique" -> geoTension;
-                case "Risque d'Effondrement" -> collapseVuln;
+                    // Category 7: Cliodynamique & Risques Systémiques
+                    case "Surproduction Élitaire (Turchin)" -> eliteOver;
+                    case "Pression & Stress Fiscal" -> fiscalStress;
+                    case "Tension Géopolitique" -> geoTension;
+                    case "Risque d'Effondrement" -> collapseVuln;
 
-                // Category 8: Complexité Systémique
-                case "Complexité Systémique" -> sysComp;
-                case "Capacité à Reconstruire" -> reconCap;
-                case "Interdépendance (Rouages)" -> sysInter;
+                    // Category 8: Complexité Systémique
+                    case "Complexité Systémique" -> sysComp;
+                    case "Capacité à Reconstruire" -> reconCap;
+                    case "Interdépendance (Rouages)" -> sysInter;
 
-                // Category 9: Performances
-                case "TPS (Images/s)" -> tps;
-                case "Utilisation Mémoire RAM" -> usedMem;
-                case "Cellules Hexagonales H3" -> totalCells;
+                    // Category 9: Performances
+                    case "TPS (Images/s)" -> tps;
+                    case "Utilisation Mémoire RAM" -> usedMem;
+                    case "Cellules Hexagonales H3" -> totalCells;
 
-                default -> pop;
-            };
+                    default -> pop;
+                };
 
-            double currentTime = year + (engine.getTimeManager().getCurrentMonth() / 12.0);
-            if (chartSeries.getData().isEmpty() || Math.abs(chartSeries.getData().get(chartSeries.getData().size() - 1).getXValue().doubleValue() - currentTime) >= 0.001) {
-                chartSeries.getData().add(new XYChart.Data<>(currentTime, yVal));
-                while (timeWindowSize > 0 && chartSeries.getData().size() > timeWindowSize) {
-                    chartSeries.getData().remove(0);
+                double currentTime = year + (engine.getTimeManager().getCurrentMonth() / 12.0);
+                if (chartSeries.getData().isEmpty() || Math.abs(chartSeries.getData().get(chartSeries.getData().size() - 1).getXValue().doubleValue() - currentTime) >= 0.001) {
+                    chartSeries.getData().add(new XYChart.Data<>(currentTime, yVal));
+                    while (timeWindowSize > 0 && chartSeries.getData().size() > timeWindowSize) {
+                        chartSeries.getData().remove(0);
+                    }
+
+                    // Update Age Pyramid Bar Chart (7 Cohorts)
+                    int[] pyramid = engine.getAgePyramid();
+                    barSeries.getData().clear();
+                    if (pyramid != null && pyramid.length >= 7) {
+                        barSeries.getData().add(new XYChart.Data<>("0-14 ans", pyramid[0]));
+                        barSeries.getData().add(new XYChart.Data<>("15-24 ans", pyramid[1]));
+                        barSeries.getData().add(new XYChart.Data<>("25-39 ans", pyramid[2]));
+                        barSeries.getData().add(new XYChart.Data<>("40-54 ans", pyramid[3]));
+                        barSeries.getData().add(new XYChart.Data<>("55-69 ans", pyramid[4]));
+                        barSeries.getData().add(new XYChart.Data<>("70-84 ans", pyramid[5]));
+                        barSeries.getData().add(new XYChart.Data<>("85+ ans", pyramid[6]));
+                    } else if (pyramid != null && pyramid.length >= 3) {
+                        barSeries.getData().add(new XYChart.Data<>("Jeunes (<15ans)", pyramid[0]));
+                        barSeries.getData().add(new XYChart.Data<>("Adultes (15-60ans)", pyramid[1]));
+                        barSeries.getData().add(new XYChart.Data<>("Aînés (>60ans)", pyramid[2]));
+                    }
+
+                    // Update Variance & Distribution Panel
+                    variancePanel.updateData(engine.getCells());
                 }
-
-                // Update Age Pyramid Bar Chart (7 Cohorts)
-                int[] pyramid = engine.getAgePyramid();
-                barSeries.getData().clear();
-                if (pyramid != null && pyramid.length >= 7) {
-                    barSeries.getData().add(new XYChart.Data<>("0-14 ans", pyramid[0]));
-                    barSeries.getData().add(new XYChart.Data<>("15-24 ans", pyramid[1]));
-                    barSeries.getData().add(new XYChart.Data<>("25-39 ans", pyramid[2]));
-                    barSeries.getData().add(new XYChart.Data<>("40-54 ans", pyramid[3]));
-                    barSeries.getData().add(new XYChart.Data<>("55-69 ans", pyramid[4]));
-                    barSeries.getData().add(new XYChart.Data<>("70-84 ans", pyramid[5]));
-                    barSeries.getData().add(new XYChart.Data<>("85+ ans", pyramid[6]));
-                } else if (pyramid != null && pyramid.length >= 3) {
-                    barSeries.getData().add(new XYChart.Data<>("Jeunes (<15ans)", pyramid[0]));
-                    barSeries.getData().add(new XYChart.Data<>("Adultes (15-60ans)", pyramid[1]));
-                    barSeries.getData().add(new XYChart.Data<>("Aînés (>60ans)", pyramid[2]));
-                }
-
-                // Update Variance & Distribution Panel
-                variancePanel.updateData(engine.getCells());
+            } finally {
+                statsUpdatePending.set(false);
             }
         });
     }

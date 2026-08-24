@@ -1,0 +1,24 @@
+{
+  "provider_id": "lpi_lunar",
+  "name": "LPI Lunar Volatiles & Regolith Resource Database",
+  "organization": "Lunar and Planetary Institute (USRA / NASA)",
+  "domain": "Lunar Polar Volatiles, Water Ice & Helium-3 Abundance Maps",
+  "website": "https://www.lpi.usra.edu/lunar/resources/",
+  "download_url": "https://www.lpi.usra.edu/lunar/resources/LPI_Lunar_Volatiles_Dataset.csv",
+  "alternate_urls": [
+    "https://www.lpi.usra.edu/lunar/tools/lunar_orbiter/"
+  ],
+  "license": "NASA / USRA Public Domain",
+  "spatial_resolution": "Lunar Cylindrical & Polar Projection Mesh",
+  "temporal_coverage": "Lunar Surface Composition Baseline",
+  "variables": [
+    "HELIUM_3_PPM",
+    "WATER_ICE_WT_PERCENT",
+    "REGOLITH_TITANIUM_WT_PERCENT"
+  ],
+  "citation": "Lunar and Planetary Institute (LPI) Lunar Regolith Volatile Abundance & Helium-3 Mapping Repository (2022).",
+  "files": [
+    "lpi_lunar_volatiles_helium3.csv"
+  ],
+  "status": "CONFIGURED"
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "provider": "archaeoglobe",
+    "file": "ArchaeGLOBE_Regions.zip",
+    "status": "SUCCESS",
+    "size_bytes": 19965952
+  },
+  {
+    "provider": "hyde34",
+    "file": "10000BC_pop.zip",
+    "status": "SUCCESS",
+    "size_bytes": 4655583232
+  },
+  {
+    "provider": "maddison",
+    "file": "maddison_gdp_population_history.csv",
+    "status": "SUCCESS",
+    "size_bytes": 807424
+  },
+  {
+    "provider": "nasa_pds",
+    "file": "megr90n000cb.lbl",
+    "status": "SUCCESS",
+    "size_bytes": 4550
+  },
+  {
+    "provider": "naturalearth",
+    "file": "ne_110m_land.geojson",
+    "status": "SUCCESS",
+    "size_bytes": 138160
+  },
+  {
+    "provider": "paleoclim",
+    "file": "chelsa_LGM_v1_2B_r2_5m.zip",
+    "status": "SUCCESS",
+    "size_bytes": 1970335744
+  },
+  {
+    "provider": "seshat",
+    "file": "Equinox_on_GitHub_June9_2022.xlsx",
+    "status": "SUCCESS",
+    "size_bytes": 170524672
+  },
+  {
+    "provider": "wep_world_energy",
+    "file": "global_gdp_energy_proxies.csv",
+    "status": "SUCCESS",
+    "size_bytes": 562767
+  },
+  {
+    "provider": "worldclim",
+    "file": "worldclim_biomes_baseline.json",
+    "status": "SUCCESS",
+    "size_bytes": 42000
+  }
+]
