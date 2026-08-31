@@ -1,9 +1,0 @@
-{
-  "name": "USGS Mineral Resources Data System (MRDS)",
-  "domain": "Global Metallic & Non-Metallic Mineral Ore Deposits & Mines",
-  "url": "https://mrdata.usgs.gov/mrds/output/mrds-mrdata.csv",
-  "datasets": [
-    "mrds_mrdata.csv"
-  ],
-  "citation": "McFaul, E.J., et al., 2000. USGS Mineral Resources Data System (MRDS). U.S. Geological Survey Data Series."
-}

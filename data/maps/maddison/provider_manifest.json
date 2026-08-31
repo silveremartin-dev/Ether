@@ -1,9 +1,0 @@
-{
-  "name": "Maddison Project Database 2023",
-  "domain": "Historical GDP per Capita & Demographics (-1 CE to 2023 CE)",
-  "url": "https://www.rug.nl/ggdc/historicaldevelopment/maddison/data/mpd2023.xlsx",
-  "datasets": [
-    "maddison_gdp_population_history.csv"
-  ],
-  "citation": "Bolt, J. and J.L. van Zanden (2023). Maddison Project Database, version 2023. Groningen Growth and Development Centre."
-}

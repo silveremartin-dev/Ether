@@ -371,15 +371,15 @@ public class ExecutionContextPanel extends BorderPane {
         syncIntervalCombo.setValue(syncIntervalCombo.getItems().get(1));
         syncIntervalCombo.setMaxWidth(Double.MAX_VALUE);
 
-        Label lbl1 = new Label("Rôle du Nœud Local :");
+        Label lbl1 = new Label(I18n.getOrDefault("exec.cluster.local_role", "Local Node Role:"));
         lbl1.getStyleClass().add("control-label");
-        Label lbl2 = new Label("Adresse Master IP / Hôte :");
+        Label lbl2 = new Label(I18n.getOrDefault("exec.cluster.master_ip", "Master IP / Host Address:"));
         lbl2.getStyleClass().add("control-label");
         Label lbl3 = new Label("Port gRPC / TCP :");
         lbl3.getStyleClass().add("control-label");
-        Label lbl4 = new Label("Stratégie de Découpage H3 :");
+        Label lbl4 = new Label(I18n.getOrDefault("exec.cluster.split_strategy", "H3 Splitting Strategy:"));
         lbl4.getStyleClass().add("control-label");
-        Label lbl5 = new Label("Intervalle de Synchro Consensus :");
+        Label lbl5 = new Label(I18n.getOrDefault("exec.cluster.sync_interval", "Consensus Sync Interval:"));
         lbl5.getStyleClass().add("control-label");
 
         GridPane clusterForm = new GridPane();
@@ -444,11 +444,11 @@ public class ExecutionContextPanel extends BorderPane {
         dumpFormatCombo.getItems().addAll("JSON Summary + SQLite History DB", "CSV Data Metrics Dump", "Binary WorldBuffer Snapshot (.bin)");
         dumpFormatCombo.setValue(dumpFormatCombo.getItems().get(0));
 
-        Label hlbl1 = new Label(I18n.getOrDefault("exec.headless.target_ticks", "Nombre de Ticks Cible (0 = Illimité) :"));
+        Label hlbl1 = new Label(I18n.getOrDefault("exec.headless.target_ticks", "Target Ticks (0 = Unlimited):"));
         hlbl1.getStyleClass().add("control-label");
-        Label hlbl2 = new Label(I18n.getOrDefault("exec.headless.snapshot_interval", "Intervalle de Sauvegarde Snapshot (Années) :"));
+        Label hlbl2 = new Label(I18n.getOrDefault("exec.headless.snapshot_interval", "Snapshot Save Interval (Years):"));
         hlbl2.getStyleClass().add("control-label");
-        Label hlbl3 = new Label(I18n.getOrDefault("exec.headless.dump_format", "Format des Rapports de Sortie :"));
+        Label hlbl3 = new Label(I18n.getOrDefault("exec.headless.dump_format", "Output Report Format:"));
         hlbl3.getStyleClass().add("control-label");
 
         GridPane headlessForm = new GridPane();
@@ -487,7 +487,7 @@ public class ExecutionContextPanel extends BorderPane {
         systemInfoLabel.getStyleClass().add("info-badge");
         updateSystemInfoLabel();
 
-        auditResultLabel = new Label("ℹ️ Cliquez sur le bouton ci-dessous pour exécuter une mesure réelle de calcul (10 000 cellules H3).");
+        auditResultLabel = new Label(I18n.getOrDefault("exec.audit.instruction", "ℹ️ Click button below to run actual compute benchmark (10,000 H3 cells)."));
         auditResultLabel.getStyleClass().add("hint-label");
 
         runAuditBtn = new Button();
@@ -570,28 +570,28 @@ public class ExecutionContextPanel extends BorderPane {
         if (hw == HardwareMode.GPU_AUTO) {
             summaryHardwareLabel.setText("• " + I18n.getOrDefault("exec.summary.gpu_auto", "GPU OpenCL / TornadoVM & Prism Auto") + "\n(" + getDetectedGpuName() + ")");
         } else if (hw == HardwareMode.CPU_JIT) {
-            summaryHardwareLabel.setText("• " + I18n.getOrDefault("exec.summary.cpu_jit", "CPU Multi-Thread JIT") + "\n(" + Runtime.getRuntime().availableProcessors() + " " + I18n.getOrDefault("exec.summary.cores_detected", "Cœurs Détectés") + ")");
+            summaryHardwareLabel.setText("• " + I18n.getOrDefault("exec.summary.cpu_jit", "CPU Multi-Thread JIT") + "\n(" + Runtime.getRuntime().availableProcessors() + " " + I18n.getOrDefault("exec.summary.cores_detected", "Cores Detected") + ")");
         } else {
             summaryHardwareLabel.setText("• " + I18n.getOrDefault("exec.summary.gpu_off", "Rendu Monothread SW Safe Fallback"));
         }
 
         ExecutionTopology top = getExecutionTopology();
         if (top == ExecutionTopology.CLUSTER) {
-            String roleStr = isMasterRunning ? I18n.getOrDefault("exec.summary.master_active", "Master Serveur Actif (Port 9090)") : (isConnectedCluster ? I18n.getOrDefault("exec.summary.worker_connected", "Worker Connecté") : I18n.getOrDefault("exec.summary.cluster_configured", "Cluster Configuré (En attente)"));
-            summaryTopologyLabel.setText("• " + I18n.getOrDefault("exec.summary.cluster_mode", "Mode Distribué Cluster gRPC") + "\n(" + roleStr + ")");
+            String roleStr = isMasterRunning ? I18n.getOrDefault("exec.summary.master_active", "Master Serveur Actif (Port 9090)") : (isConnectedCluster ? I18n.getOrDefault("exec.summary.worker_connected", "Worker Connected") : I18n.getOrDefault("exec.summary.cluster_configured", "Cluster Configured (Pending)"));
+            summaryTopologyLabel.setText("• " + I18n.getOrDefault("exec.summary.cluster_mode", "gRPC Distributed Cluster Mode") + "\n(" + roleStr + ")");
         } else {
-            summaryTopologyLabel.setText("• " + I18n.getOrDefault("exec.summary.local_mode", "Mode Monoposte Local") + "\n(" + I18n.getOrDefault("exec.summary.standalone_host", "Machine Hôte Autonome") + ")");
+            summaryTopologyLabel.setText("• " + I18n.getOrDefault("exec.summary.local_mode", "Mode Monoposte Local") + "\n(" + I18n.getOrDefault("exec.summary.standalone_host", "Standalone Host Machine") + ")");
         }
 
         RenderingMode ren = getRenderingMode();
         if (ren == RenderingMode.HEADLESS) {
             summaryRenderingLabel.setText("• " + I18n.getOrDefault("exec.summary.headless_mode", "Mode Headless Batch") + "\n(" + targetTicksSpinner.getValue() + " " + I18n.getOrDefault("exec.summary.target_ticks", "Ticks Cibles") + ")");
         } else {
-            summaryRenderingLabel.setText("• " + I18n.getOrDefault("exec.summary.gui_mode", "Mode GUI Interactif") + "\n(" + I18n.getOrDefault("exec.summary.realtime_2d3d", "Visuel Temps Réel 2D/3D") + ")");
+            summaryRenderingLabel.setText("• " + I18n.getOrDefault("exec.summary.gui_mode", "Mode GUI Interactif") + "\n(" + I18n.getOrDefault("exec.summary.realtime_2d3d", "Real-Time 2D/3D Visual") + ")");
         }
 
         if (nodeList != null && !nodeList.isEmpty()) {
-            summaryClusterNodesLabel.setText("• " + nodeList.size() + " " + I18n.getOrDefault("exec.summary.nodes_registered", "Nœud(s) Enregistré(s)"));
+            summaryClusterNodesLabel.setText("• " + nodeList.size() + " " + I18n.getOrDefault("exec.summary.nodes_registered", "Registered Node(s)"));
         } else {
             summaryClusterNodesLabel.setText("• 1 " + I18n.getOrDefault("exec.summary.single_node", "Nœud Local (Monoposte)"));
         }
@@ -626,13 +626,13 @@ public class ExecutionContextPanel extends BorderPane {
 
         String gpuTypeNotice = isIntegrated ? " (iGPU Intégré - Accélération OpenCL/Prism)" : " (dGPU Dédié)";
 
-        systemInfoLabel.setText(String.format("💻 Système : %s | Cœurs CPU Réels : %d | Mémoire Heap Max : %,d Mo | GPU Détecté : %s%s",
+        systemInfoLabel.setText(String.format(I18n.getOrDefault("exec.summary.system_info", "💻 System: %s | Real CPU Cores: %d | Max Heap Memory: %,d MB | Detected GPU: %s%s"),
                 osName, cpus, maxMemMB, gpuName, gpuTypeNotice));
     }
 
     private void runRealAudit() {
         runAuditBtn.setDisable(true);
-        auditResultLabel.setText(I18n.getOrDefault("exec.audit.running", "⏳ Audit en cours : calcul récursif de 200 itérations climatiques sur 10 000 cellules..."));
+        auditResultLabel.setText(I18n.getOrDefault("exec.audit.running", "⏳ Audit running: recursive calculation of 200 climate iterations on 10,000 cells..."));
         auditResultLabel.setStyle("");
 
         final HardwareMode selectedMode = getHardwareMode();
@@ -761,7 +761,7 @@ public class ExecutionContextPanel extends BorderPane {
                 isMasterRunning = true;
                 logger.info("Master Server successfully started on port {}", port);
 
-                startMasterBtn.setText("⏹ Arrêter Serveur Master");
+                startMasterBtn.setText(I18n.getOrDefault("exec.cluster.stop_master", "⏹ Stop Master Server"));
                 startMasterBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;");
 
                 String msg = String.format("🟢 Serveur Master ACTIF en écoute sur le port %d — Nœuds locaux et distants synchronisés.", port);
@@ -771,8 +771,8 @@ public class ExecutionContextPanel extends BorderPane {
                 populateInitialClusterNodes();
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Démarrage Serveur Master");
-                alert.setHeaderText("Serveur Master gRPC / Cluster Initialisé");
+                alert.setTitle(I18n.getOrDefault("exec.cluster.start_dialog", "Master Server Startup"));
+                alert.setHeaderText(I18n.getOrDefault("exec.cluster.master_init", "gRPC Master Server / Cluster Initialized"));
                 alert.setContentText("Le serveur Master est démarré avec succès sur le port " + port + ".\nIl accepte maintenant les nœuds Workers distants.");
                 alert.show();
             } catch (Exception ex) {
@@ -782,12 +782,12 @@ public class ExecutionContextPanel extends BorderPane {
                     try { clusterManager.stop(); } catch (Exception ignored) {}
                     clusterManager = null;
                 }
-                clusterStatusLabel.setText("❌ Échec Démarrage Master (Port " + pStr + ") : " + ex.getMessage());
+                clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.start_failed_prefix", "❌ Master Startup Failed (Port ") + pStr + ") : " + ex.getMessage());
                 clusterStatusLabel.setStyle("-fx-font-weight: bold;");
 
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Démarrage Serveur Master");
-                alert.setHeaderText("Erreur lors du démarrage du Serveur Master (Port " + pStr + ")");
+                alert.setTitle(I18n.getOrDefault("exec.cluster.start_dialog", "Master Server Startup"));
+                alert.setHeaderText(I18n.getOrDefault("exec.cluster.start_failed_header", "Error starting Master Server (Port ") + pStr + ")");
                 alert.setContentText("Impossible de démarrer le serveur Master sur le port " + pStr + ".\n\nRaison : " + (ex.getMessage() != null ? ex.getMessage() : ex.toString()));
                 alert.show();
             }
@@ -798,10 +798,10 @@ public class ExecutionContextPanel extends BorderPane {
             }
             isMasterRunning = false;
             logger.info("Stopping Master Server...");
-            startMasterBtn.setText(I18n.getOrDefault("exec.cluster.start_master", "👑 Démarrer Serveur Master"));
+            startMasterBtn.setText(I18n.getOrDefault("exec.cluster.start_master", "👑 Start Master Server"));
             startMasterBtn.setStyle("");
 
-            clusterStatusLabel.setText("⚪ Serveur Master Arrêté (Mode Inactif)");
+            clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.master_stopped", "⚪ Master Server Stopped (Inactive Mode)"));
             clusterStatusLabel.setStyle("");
 
             populateInitialClusterNodes();
@@ -823,7 +823,7 @@ public class ExecutionContextPanel extends BorderPane {
             isConnectedCluster = true;
             logger.info("Successfully connected worker to cluster at {}:{}", host, port);
 
-            String msg = String.format(I18n.getOrDefault("exec.cluster.status.joined", "🟢 Connecté au nœud Master du cluster %s:%d."), host, port);
+            String msg = String.format(I18n.getOrDefault("exec.cluster.status.joined", "🟢 Connected to cluster Master node %s:%d."), host, port);
             clusterStatusLabel.setText(msg);
             clusterStatusLabel.setStyle("-fx-font-weight: bold;");
         } catch (Exception ex) {
@@ -837,7 +837,7 @@ public class ExecutionContextPanel extends BorderPane {
             clusterStatusLabel.setStyle("-fx-font-weight: bold;");
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Échec Connexion Cluster");
+            alert.setTitle(I18n.getOrDefault("exec.cluster.conn_failed", "Cluster Connection Failed"));
             alert.setHeaderText("Erreur de connexion au Master (" + host + ":" + pStr + ")");
             alert.setContentText("Impossible de se connecter au nœud Master du cluster.\n\nRaison : " + (ex.getMessage() != null ? ex.getMessage() : ex.toString()));
             alert.show();
@@ -847,7 +847,7 @@ public class ExecutionContextPanel extends BorderPane {
 
     private void testConnection() {
         logger.info("Testing cluster connectivity...");
-        clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.test_ok", "🟢 Connexion au cluster établie — Latence réseau : 1.2 ms | Débit : 10 Gb/s"));
+        clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.test_ok", "🟢 Cluster connection established — Network latency: 1.2 ms | Throughput: 10 Gbps"));
         clusterStatusLabel.setStyle("-fx-font-weight: bold;");
     }
 
@@ -864,16 +864,16 @@ public class ExecutionContextPanel extends BorderPane {
                 String chunks = "Zone Hex " + rec.getAssignedChunkStart() + "-" + rec.getAssignedChunkEnd();
                 nodeList.add(new ClusterNode(id, host, role, status, cap, chunks));
             }
-            clusterStatusLabel.setText("🔄 Nœuds du cluster synchronisés en direct (" + nodeList.size() + " nœuds enregistrés).");
+            clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.nodes_synced_prefix", "🔄 Cluster nodes synchronized live (") + nodeList.size() + I18n.getOrDefault("exec.cluster.nodes_synced_suffix", " registered nodes)."));
         } else {
             populateInitialClusterNodes();
             if (isMasterRunning || isConnectedCluster) {
                 int cores = Runtime.getRuntime().availableProcessors();
                 String randomWorkerId = "node-0" + (nodeList.size() + 1) + "-worker";
                 nodeList.add(new ClusterNode(randomWorkerId, "192.168.1." + (100 + new Random().nextInt(100)) + ":9090", "Worker", "🟢 Connecté", cores + " Cœurs | Sub-Mesh GPU Active", "Zone Hex Dynamique"));
-                clusterStatusLabel.setText("🔄 Nœud worker distant détecté et synchronisé (" + nodeList.size() + " nœuds au total).");
+                clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.remote_worker_prefix", "🔄 Remote worker node detected and synchronized (") + nodeList.size() + I18n.getOrDefault("exec.cluster.remote_worker_suffix", " total nodes)."));
             } else {
-                clusterStatusLabel.setText("ℹ️ Aucun nœud worker distant connecté (Mode Monoposte — 1 Nœud Local).");
+                clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.no_workers", "ℹ️ No remote worker nodes connected (Standalone Mode — 1 Local Node)."));
             }
         }
         updateRightSummary();
@@ -941,60 +941,60 @@ public class ExecutionContextPanel extends BorderPane {
     }
 
     public void updateTexts() {
-        titleHeader.setText(I18n.getOrDefault("exec.title", "⚡ Contexte d'Exécution & Infrastructure de Calcul"));
+        titleHeader.setText(I18n.getOrDefault("exec.title", "⚡ Execution Context & Compute Infrastructure"));
         if (sidebarTitleLabel != null) sidebarTitleLabel.setText(I18n.getOrDefault("exec.sidebar.title", "🚀 RECAPITULATIF & LANCEMENT"));
-        if (hdrEngineLabel != null) hdrEngineLabel.setText(I18n.getOrDefault("exec.sidebar.header.engine", "🖥️ Moteur de Calcul :"));
-        if (hdrTopologyLabel != null) hdrTopologyLabel.setText(I18n.getOrDefault("exec.sidebar.header.topology", "🌐 Topologie Réseau :"));
+        if (hdrEngineLabel != null) hdrEngineLabel.setText(I18n.getOrDefault("exec.sidebar.header.engine", "🖥️ Compute Engine:"));
+        if (hdrTopologyLabel != null) hdrTopologyLabel.setText(I18n.getOrDefault("exec.sidebar.header.topology", "🌐 Network Topology:"));
         if (hdrRenderingLabel != null) hdrRenderingLabel.setText(I18n.getOrDefault("exec.sidebar.header.rendering", "🖼️ Restitution Visuelle :"));
         if (hdrClusterLabel != null) hdrClusterLabel.setText(I18n.getOrDefault("exec.sidebar.header.cluster", "📊 Nœuds du Cluster :"));
 
         // Section Headers
-        hardwareSectionHeader.setText(I18n.getOrDefault("exec.section.hardware", "1. 🖥️ MOTEUR DE CALCUL & ACCÉLÉRATION MATÉRIELLE"));
-        topologySectionHeader.setText(I18n.getOrDefault("exec.section.topology", "2. 🌐 TOPOLOGIE D'EXÉCUTION (LOCAL VS DISTRIBUÉ)"));
+        hardwareSectionHeader.setText(I18n.getOrDefault("exec.section.hardware", "1. 🖥️ COMPUTE ENGINE & HARDWARE ACCELERATION"));
+        topologySectionHeader.setText(I18n.getOrDefault("exec.section.topology", "2. 🌐 EXECUTION TOPOLOGY (LOCAL VS DISTRIBUTED)"));
         renderingSectionHeader.setText(I18n.getOrDefault("exec.section.rendering", "3. 🚀 MODE DE RESTITUTION & RENDU (GUI VS HEADLESS)"));
-        auditSectionHeader.setText(I18n.getOrDefault("exec.section.audit", "4. 📊 AUDIT & DÉTECTION MATÉRIELLE EN DIRECT"));
+        auditSectionHeader.setText(I18n.getOrDefault("exec.section.audit", "4. 📊 HARDWARE PERFORMANCE AUDIT"));
 
         // Section 1: Hardware
-        gpuAutoRadio.setText(I18n.getOrDefault("exec.hardware.auto", "🖥️ GPU / Accélération Matérielle Auto (OpenCL / TornadoVM & Prism)"));
-        gpuAutoDescLabel.setText(I18n.getOrDefault("exec.hardware.auto.desc", "Accélération parallèle sur carte graphique ou iGPU. Optimise le rendu visuel et la vitesse d'exécution des noyaux climatiques et démographiques."));
+        gpuAutoRadio.setText(I18n.getOrDefault("exec.hardware.auto", "🖥️ GPU / Hardware Auto Acceleration (OpenCL / TornadoVM & Prism)"));
+        gpuAutoDescLabel.setText(I18n.getOrDefault("exec.hardware.auto.desc", "Parallel acceleration on graphics card or iGPU. Optimizes visual rendering and execution speed of climate/demographic kernels."));
 
         cpuJitRadio.setText(I18n.getOrDefault("exec.hardware.cpu", "💻 CPU Multi-Thread Standard (Tous les cœurs processeur JVM JIT)"));
-        cpuJitDescLabel.setText(I18n.getOrDefault("exec.hardware.cpu.desc", "Exécution multi-threadée tirant parti de 100% des cœurs de votre processeur principal pour des performances optimales sur CPU."));
+        cpuJitDescLabel.setText(I18n.getOrDefault("exec.hardware.cpu.desc", "Multi-threaded execution leveraging 100% of CPU cores for optimal performance on CPU."));
 
         gpuOffRadio.setText(I18n.getOrDefault("exec.hardware.off", "🛡️ Mode de Secours Logiciel / Safe Fallback (Rendu Monothread SW)"));
-        gpuOffDescLabel.setText(I18n.getOrDefault("exec.hardware.off.desc", "Désactive totalement l'accélération matérielle graphique pour éviter tout artefact ou clignotement d'affichage."));
+        gpuOffDescLabel.setText(I18n.getOrDefault("exec.hardware.off.desc", "Completely disables graphics hardware acceleration to avoid display artifacts or flickering."));
 
         // Section 2: Topology
-        localTopologyRadio.setText(I18n.getOrDefault("exec.topology.local", "🏢 Mode Local Monoposte (Cœurs & Mémoire de la Machine Hôte)"));
-        localTopologyDescLabel.setText(I18n.getOrDefault("exec.topology.local.desc", "La simulation s'exécute intégralement sur l'ordinateur local."));
+        localTopologyRadio.setText(I18n.getOrDefault("exec.topology.local", "🏢 Local Standalone Mode (Host Machine Cores & Memory)"));
+        localTopologyDescLabel.setText(I18n.getOrDefault("exec.topology.local.desc", "Simulation executes entirely on local computer."));
 
-        clusterTopologyRadio.setText(I18n.getOrDefault("exec.topology.cluster", "🌐 Mode Distribué en Cluster (Nœuds Multi-Machines gRPC/TCP)"));
-        clusterTopologyDescLabel.setText(I18n.getOrDefault("exec.topology.cluster.desc", "Répartit la grille H3 et les calculs sur plusieurs machines connectées sur le réseau local ou cloud."));
+        clusterTopologyRadio.setText(I18n.getOrDefault("exec.topology.cluster", "🌐 Distributed Cluster Mode (gRPC/TCP Multi-Machine Nodes)"));
+        clusterTopologyDescLabel.setText(I18n.getOrDefault("exec.topology.cluster.desc", "Distributes H3 grid and computations across multiple machines connected on local network or cloud."));
 
-        clusterHeaderLabel.setText(I18n.getOrDefault("exec.cluster.title", "🌐 Configuration du Réseau & Des Nœuds du Cluster"));
+        clusterHeaderLabel.setText(I18n.getOrDefault("exec.cluster.title", "🌐 Cluster Network & Node Setup"));
 
         if (!isMasterRunning) {
-            startMasterBtn.setText(I18n.getOrDefault("exec.cluster.start_master", "👑 Démarrer Serveur Master"));
+            startMasterBtn.setText(I18n.getOrDefault("exec.cluster.start_master", "👑 Start Master Server"));
         } else {
-            startMasterBtn.setText(I18n.getOrDefault("exec.cluster.stop_master", "⏹ Arrêter Serveur Master"));
+            startMasterBtn.setText(I18n.getOrDefault("exec.cluster.stop_master", "⏹ Stop Master Server"));
         }
         joinClusterBtn.setText(I18n.getOrDefault("exec.cluster.join", "🔗 Rejoindre le Cluster"));
         testConnBtn.setText(I18n.getOrDefault("exec.cluster.test", "📡 Tester la Connexion"));
         refreshNodesBtn.setText(I18n.getOrDefault("exec.cluster.refresh", "🔄 Actualiser Nœuds"));
 
         if (clusterStatusLabel.getText() == null || clusterStatusLabel.getText().isEmpty()) {
-            clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.idle", "ℹ️ Prêt pour la connexion cluster. Sélectionnez le rôle Master ou Worker."));
+            clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.idle", "ℹ️ Ready for cluster connection. Select Master or Worker role."));
         }
 
         // Section 3: Rendering
-        guiRenderingRadio.setText(I18n.getOrDefault("exec.rendering.gui", "🖼️ Mode GUI Interactif (Visuel JavaFX Temps Réel)"));
-        guiRenderingDescLabel.setText(I18n.getOrDefault("exec.rendering.gui.desc", "Rendu cartographique dynamique 2D/3D avec fenêtres de contrôle et graphiques en direct."));
+        guiRenderingRadio.setText(I18n.getOrDefault("exec.rendering.gui", "🖼️ Interactive GUI Mode (Real-Time JavaFX Visual)"));
+        guiRenderingDescLabel.setText(I18n.getOrDefault("exec.rendering.gui.desc", "Dynamic 2D/3D cartographic rendering with live controls and real-time graphs."));
 
-        headlessRenderingRadio.setText(I18n.getOrDefault("exec.rendering.headless", "🚀 Mode Headless (Exécution Asynchrone Background - High Throughput Batch)"));
-        headlessRenderingDescLabel.setText(I18n.getOrDefault("exec.rendering.headless.desc", "Désactive le rendu visuel pour libérer 100% des ressources processeur. Permet des balayages de paramètres et des simulations multi-millénaires très rapides."));
+        headlessRenderingRadio.setText(I18n.getOrDefault("exec.rendering.headless", "🚀 Headless Mode (Async Background - High Throughput Batch)"));
+        headlessRenderingDescLabel.setText(I18n.getOrDefault("exec.rendering.headless.desc", "Disables visual rendering to free 100% CPU resources. Enables fast parameter sweeps and multi-millennial simulations."));
 
         // Section 4: Audit
-        runAuditBtn.setText(I18n.getOrDefault("exec.audit.btn", "⚡ AUDITER LES PERFORMANCES MATÉRIELLES EN DIRECT (10 000 Cellules H3)"));
+        runAuditBtn.setText(I18n.getOrDefault("exec.audit.btn", "⚡ AUDIT HARDWARE PERFORMANCE LIVE (10,000 H3 Cells)"));
 
         // Section 5: Launch Button
         launchBtn.setText(I18n.getOrDefault("exec.btn.launch", "▶ VALIDER ET LANCER"));

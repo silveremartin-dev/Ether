@@ -100,7 +100,7 @@ public class ColorLegend extends VBox {
         this.medianVal = median;
 
         meanBadge.setText(String.format("▲ μ (%s) : %.1f", I18n.getOrDefault("sim.legend.mean", "Moyenne"), meanVal));
-        medianBadge.setText(String.format("▼ M (%s) : %.1f", I18n.getOrDefault("sim.legend.median", "Médiane"), medianVal));
+        medianBadge.setText(String.format("▼ M (%s) : %.1f", I18n.getOrDefault("sim.legend.median", "Median"), medianVal));
 
         drawLegend();
     }
@@ -146,7 +146,7 @@ public class ColorLegend extends VBox {
 
     private void updateTitle() {
         String modeName = currentMode != null ? currentMode.getDisplayName().toUpperCase() : "BIOME";
-        String titlePrefix = I18n.getOrDefault("sim.legend.title", "LÉGENDE — ");
+        String titlePrefix = I18n.getOrDefault("sim.legend.title", "LEGEND — ");
         titleLabel.setText("📊 " + titlePrefix + modeName);
     }
 

@@ -140,6 +140,98 @@ public class ResourceDepositMapReader {
     }
 
     /**
+     * Reads a GeoJSON feature collection file containing deposit hotspots/points and rasterizes it.
+     */
+    public static BufferedImage readGeoJsonDepositFile(File geoJsonFile, int width, int height, Color primaryColor) {
+        if (geoJsonFile == null || !geoJsonFile.exists()) {
+            logger.warn("GeoJSON deposit file not found: {}", geoJsonFile != null ? geoJsonFile.getAbsolutePath() : "null");
+            return null;
+        }
+
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(geoJsonFile);
+            com.fasterxml.jackson.databind.JsonNode features = root.get("features");
+
+            java.util.List<double[]> spots = new java.util.ArrayList<>();
+            if (features != null && features.isArray()) {
+                for (com.fasterxml.jackson.databind.JsonNode feat : features) {
+                    com.fasterxml.jackson.databind.JsonNode geom = feat.get("geometry");
+                    if (geom == null) continue;
+                    String type = geom.has("type") ? geom.get("type").asText() : "";
+                    com.fasterxml.jackson.databind.JsonNode coords = geom.get("coordinates");
+
+                    double intensity = 1.0;
+                    com.fasterxml.jackson.databind.JsonNode props = feat.get("properties");
+                    if (props != null) {
+                        if (props.has("intensity")) intensity = props.get("intensity").asDouble();
+                        else if (props.has("value")) intensity = props.get("value").asDouble();
+                        else if (props.has("grade")) intensity = props.get("grade").asDouble();
+                    }
+
+                    if ("Point".equalsIgnoreCase(type) && coords != null && coords.isArray() && coords.size() >= 2) {
+                        double lon = coords.get(0).asDouble();
+                        double lat = coords.get(1).asDouble();
+                        double radiusDeg = 6.0;
+                        spots.add(new double[]{lon, lat, radiusDeg, intensity});
+                    }
+                }
+            }
+
+            double[][] hotspotArr = spots.toArray(new double[0][]);
+            logger.info("Parsed {} deposit hotspots from GeoJSON '{}'", hotspotArr.length, geoJsonFile.getName());
+            return rasterizeDepositHotspots(hotspotArr, width, height, primaryColor != null ? primaryColor : new Color(245, 158, 11));
+        } catch (Exception e) {
+            logger.error("Failed to parse GeoJSON deposit file '{}': {}", geoJsonFile.getName(), e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Reads a GeoTIFF / TIFF raster file into a BufferedImage tensor map.
+     */
+    public static BufferedImage readGeoTiffFile(File tiffFile) {
+        if (tiffFile == null || !tiffFile.exists()) {
+            logger.warn("GeoTIFF file not found: {}", tiffFile != null ? tiffFile.getAbsolutePath() : "null");
+            return null;
+        }
+        try {
+            BufferedImage bImg = javax.imageio.ImageIO.read(tiffFile);
+            if (bImg != null) {
+                logger.info("Successfully read GeoTIFF file '{}' ({}x{})", tiffFile.getName(), bImg.getWidth(), bImg.getHeight());
+                return bImg;
+            }
+        } catch (Exception e) {
+            logger.error("Failed to read GeoTIFF file '{}': {}", tiffFile.getName(), e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Unified multi-format spatial data ingestion entry point (ESRI ASCII Grid, GeoJSON, GeoTIFF, PNG, JPG).
+     */
+    public static BufferedImage readGeologicalDataset(File file, int width, int height, Color fallbackColor) {
+        if (file == null || !file.exists()) return null;
+        String name = file.getName().toLowerCase();
+
+        if (name.endsWith(".asc")) {
+            double[][] grid = readAsciiGridFile(file);
+            return gridToImageTensor(grid);
+        } else if (name.endsWith(".geojson") || name.endsWith(".json")) {
+            return readGeoJsonDepositFile(file, width, height, fallbackColor);
+        } else if (name.endsWith(".tif") || name.endsWith(".tiff")) {
+            return readGeoTiffFile(file);
+        } else {
+            try {
+                return javax.imageio.ImageIO.read(file);
+            } catch (Exception e) {
+                logger.error("Failed to load image dataset '{}': {}", file.getName(), e.getMessage());
+                return null;
+            }
+        }
+    }
+
+    /**
      * Rasterizes deposit point hotspots (lat, lon, intensity, radius) onto a 2D BufferedImage tensor map.
      */
     public static BufferedImage rasterizeDepositHotspots(double[][] hotspots, int width, int height, Color primaryColor) {

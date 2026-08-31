@@ -90,6 +90,7 @@ public class MainView extends StackPane {
 
     private void initUI() {
         tabPane = new TabPane();
+        tabPane.getStyleClass().add("main-tab-pane");
         // Transparent tab pane for glass effect
         tabPane.setStyle("-fx-tab-min-height: 40px; -fx-tab-max-height: 40px; -fx-background-color: transparent;");
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
@@ -194,7 +195,7 @@ public class MainView extends StackPane {
         planetTab.setText("1. " + org.ether.society.i18n.I18n.get("tab.planet_generator"));
         resourcesTab.setText("2. " + org.ether.society.i18n.I18n.get("tab.resources"));
         setupTab.setText("3. " + org.ether.society.i18n.I18n.get("tab.scenario"));
-        executionContextTab.setText("4. " + org.ether.society.i18n.I18n.getOrDefault("tab.execution_context", "⚡ Contexte d'Exécution"));
+        executionContextTab.setText("4. " + org.ether.society.i18n.I18n.getOrDefault("tab.execution_context", "⚡ Execution Context"));
         simulationTab.setText("5. " + org.ether.society.i18n.I18n.get("tab.simulation"));
         comparativeAnalyticsTab.setText("6. " + org.ether.society.i18n.I18n.getOrDefault("tab.comparative_analytics", "📊 Analyse Comparative"));
         preferencesTab.setText("7. " + org.ether.society.i18n.I18n.get("tab.preferences"));
@@ -320,14 +321,14 @@ public class MainView extends StackPane {
         godScroll.setVbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.AS_NEEDED);
         godScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
-        Tab controlTab = new Tab(I18n.getOrDefault("sim.tab.controls", "🎛️ Rendu 3D & Contrôles"), controlScroll);
+        Tab controlTab = new Tab(I18n.getOrDefault("sim.tab.controls", "🎛️ 3D Render & Controls"), controlScroll);
         Tab statsTab = new Tab(I18n.getOrDefault("sim.tab.stats", "📊 Stats"), statsScroll);
         Tab godModeTab = new Tab(I18n.getOrDefault("sim.tab.godmode", "⚡ Mode Dieu"), godScroll);
         leftSidebar.getTabs().addAll(controlTab, statsTab, godModeTab);
 
         // Collapsible Sidebar Button (Full-Screen Map Mode Toggle)
         Button toggleSidebarBtn = new Button("◀");
-        toggleSidebarBtn.setTooltip(new Tooltip(I18n.getOrDefault("mainview.tooltip.toggle_sidebar", "Masquer / Afficher le panneau de contrôle (Mode Plein Écran)")));
+        toggleSidebarBtn.setTooltip(new Tooltip(I18n.getOrDefault("mainview.tooltip.toggle_sidebar", "Hide / Show control panel (Full Screen Mode)")));
         toggleSidebarBtn.setStyle("-fx-background-color: rgba(15, 23, 42, 0.90); -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8 6; -fx-background-radius: 0 6 6 0; -fx-border-color: #38bdf8; -fx-border-width: 1 1 1 0; -fx-border-radius: 0 6 6 0; -fx-cursor: hand;");
 
         final boolean[] isSidebarVisible = {true};
@@ -342,7 +343,7 @@ public class MainView extends StackPane {
         HBox.setHgrow(leftSidebar, Priority.NEVER);
 
         // Bottom Telemetry Status Bar
-        Label statusBarLabel = new Label(I18n.getOrDefault("mainview.status.coords_hover", "📍 Coordonnées : Survolez une cellule H3 sur la carte..."));
+        Label statusBarLabel = new Label(I18n.getOrDefault("mainview.status.coords_hover", "📍 Coordinates: Hover over an H3 cell on the map..."));
         statusBarLabel.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', sans-serif; -fx-font-weight: bold;");
 
         HBox statusBar = new HBox(statusBarLabel);
@@ -422,7 +423,7 @@ public class MainView extends StackPane {
 
                 timeline.clear();
                 timeline.addEntry((int) meta.getYear(), "REPRISE_SNAPSHOT", I18n.getOrDefault("mainview.timeline.resume_title", "Reprise depuis Snapshot : ") + meta.getName(),
-                    String.format(I18n.getOrDefault("mainview.timeline.resume_details", "Restauré à l'An %,d (Mois %d) - Scénario %s"), meta.getYear(), meta.getMonth(), meta.getScenarioName()), false);
+                    String.format(I18n.getOrDefault("mainview.timeline.resume_details", "Restored at Year %,d (Month %d) - Scenario %s"), meta.getYear(), meta.getMonth(), meta.getScenarioName()), false);
 
                 if (godModePanel != null) {
                     godModePanel.refreshTimelineView();
@@ -435,7 +436,7 @@ public class MainView extends StackPane {
                     if (miniMap != null) miniMap.setCells(restoredCells);
                 }
 
-                controlPanel.updateScenarioName(meta.getScenarioName() + " (" + I18n.getOrDefault("mainview.restored_snapshot", "Snapshot Restauré") + ")");
+                controlPanel.updateScenarioName(meta.getScenarioName() + " (" + I18n.getOrDefault("mainview.restored_snapshot", "Restored Snapshot") + ")");
                 controlPanel.updateYear(String.valueOf(meta.getYear()));
 
                 simulationTab.setDisable(false);
@@ -457,7 +458,7 @@ public class MainView extends StackPane {
         engine.initializeFromScenario(scenario, newCells);
 
         timeline.clear();
-        timeline.addEntry(scenario.getStartDateYear(), "SETUP", I18n.getOrDefault("mainview.timeline.init_title", "Scénario Initial : ") + scenario.getName(),
+        timeline.addEntry(scenario.getStartDateYear(), "SETUP", I18n.getOrDefault("mainview.timeline.init_title", "Initial Scenario: ") + scenario.getName(),
             String.format("Pop: %,d | Tech: %.1f | Motif: %s", scenario.getInitialHumanCount(), scenario.getInitialTechLevel(), scenario.getPopulationDensityType()), false);
 
         for (var evt : setupPanel.getScheduledEvents()) {
@@ -629,19 +630,19 @@ public class MainView extends StackPane {
 
     public void saveSimulation() {
         javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog(I18n.getOrDefault("mainview.save.default_name", "Sauvegarde Scenario"));
-        dialog.setTitle(I18n.getOrDefault("mainview.save.dialog_title", "Sauvegarder la Simulation"));
+        dialog.setTitle(I18n.getOrDefault("mainview.save.dialog_title", "Save Simulation"));
         dialog.setHeaderText(I18n.getOrDefault("mainview.save.dialog_header", "Entrez le nom de la sauvegarde :"));
         dialog.setContentText(I18n.getOrDefault("mainview.save.dialog_label", "Nom :"));
 
         dialog.showAndWait().ifPresent(name -> {
             engine.saveSimulation(name);
-            notificationOverlay.showEvent(I18n.getOrDefault("mainview.save.success", "Simulation Sauvegardée : ") + name);
+            notificationOverlay.showEvent(I18n.getOrDefault("mainview.save.success", "Simulation Saved: ") + name);
         });
     }
 
     public void loadSimulation() {
         engine.loadSimulation(null);
-        notificationOverlay.showEvent(I18n.getOrDefault("mainview.load.success", "Simulation chargée depuis la base de données"));
+        notificationOverlay.showEvent(I18n.getOrDefault("mainview.load.success", "Simulation loaded from database"));
 
         mapCanvas.setCells(engine.getCells());
         if (miniMap != null) miniMap.setCells(engine.getCells());

@@ -1,9 +1,0 @@
-{
-  "name": "PANGAEA Data Publisher for Earth & Environmental Science",
-  "domain": "Ice Core Proxies (EPICA Dome C, GISP2), Marine Sediment Cores & Paleoclimate Reconstructions",
-  "url": "https://doi.pangaea.de/10.1594/PANGAEA.",
-  "datasets": [
-    "pangaea_ice_core_co2_epica.csv"
-  ],
-  "citation": "PANGAEA Open Access Data Publisher for Earth & Environmental Science (Alfred Wegener Institute / MARUM)."
-}

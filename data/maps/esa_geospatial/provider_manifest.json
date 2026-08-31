@@ -1,9 +1,0 @@
-{
-  "name": "ESA Copernicus DEM GLO-30",
-  "domain": "Global Digital Elevation Model (DEM) & Land Cover",
-  "url": "https://copernicus-dem-30m.s3.amazonaws.com/",
-  "datasets": [
-    "Copernicus_DSM_COG_10_N00_00_E000_00_DEM.tif"
-  ],
-  "citation": "European Space Agency (ESA) Copernicus Digital Elevation Model GLO-30 (2023). DOI: 10.5270/ESA-c5d0d65."
-}

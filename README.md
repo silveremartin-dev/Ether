@@ -10,17 +10,19 @@
 
 ---
 
-## 🎨 Interactive Editors & Simulation Showcase
+## 🎨 Application Architecture & 7 Core Interface Panels
 
-![Ether Application Demo](docs/ether_demo.gif)
+Ether features an integrated 7-panel JavaFX studio providing end-to-end control over planetary genesis, resource distribution, scenario parameters, cliodynamic engines, real-time 3D simulation, telemetry, and system options:
 
-| Component View | Description & Visual Preview |
+| Application Panel | Detailed Functionality & Visual Preview |
 | :--- | :--- |
-| **🌐 3D Planetary Simulation Canvas (`H3MapCanvas`)** | **Real-Time 3D/2D H3 Globe Visualizer**<br>Features dynamic rendering of 175,000 hexagonal cells, multi-layer heatmaps (Malthusian Pressure, Biomes, Population, Radiance, Demographics, Asabiyyah), coordinate tracking badge, and interactive Mini-Map viewport.<br><br>![3D H3 Globe Simulation](docs/images/h3_map_simulation_3d.png) |
-| **🗺️ World & Planet Generator Editor (`PlanetGeneratorPanel`)** | **Procedural World Sculptor & Terrarium Editor**<br>Allows custom planet generation with parameters for tectonic noise, sea level ratio, temperature gradients, soil strata, freshwater aquifer capacity, and initial biophysical biomes.<br><br>![Planet Generator Editor](docs/images/planet_generator_editor.png) |
-| **⚡ Cybernetic God Mode Panel (`GodModePanel`)** | **Sovereign AI ("Archon Engine") & Catastrophe Manipulator**<br>Real-time climate and demographic injection interface. Trigger volcanic aerosol shocks, pandemics, orbital solar mirrors, asteroid impacts, and direct Model Predictive Control (MPC) interventions.<br><br>![God Mode Panel](docs/images/god_mode_panel.png) |
-| **📊 Cliodynamics & Analytics Dashboard (`StatsPanel`)** | **Planetary Telemetry & Mathematical Comparison**<br>Comparative telemetry comparing World3 Systems Dynamics vs Kurzweil Technological Singularity trajectory, age pyramids, Gini inequality indices, and EROEI net surplus curves.<br><br>![Analytics Dashboard](docs/images/analytics_dashboard.png) |
-| **🧮 Pluggable Formula & Statistics Editor (`PluggableFormulaEditorDialog`)** | **Custom Mathematical & Statistical Engine**<br>Interactive formula creator evaluating spatial state variables (`population`, `wealth`, `temp`, `food`, `tech`, `giniindex`, etc.) with statistical functions (`GINI`, `STDDEV`, `VAR`, `SUM`, `AVG`, `MEDIAN`), live evaluation, and `.properties` library import/export. |
+| **1. 🪐 Générateur Physico-Planétaire (`PlanetGeneratorPanel`)** | **Procedural World Genesis & Tectonic Modeling**<br>Interactive planet sculptor allowing custom generation of planetary topographies, ocean-to-land ratios, atmospheric pressure, temperature gradients, insolation forcing, mantle heat flux, and soil N-P-K strata.<br><br>![1. Planet Generator Panel](docs/images/real_shots/tab1_planet_generator.png) |
+| **2. ⛏️ Tenseurs Géologiques & Ressources (`ResourceDistributionPanel`)** | **8-Layer Geological Tensor Ingestion & Distribution**<br>Ingests empirical spatial datasets (ESRI ASCII Grid `.asc`, GeoJSON, GeoTIFF, WMS) for 8 energy and mineral resource tensors (Coal, Crude Oil, Natural Gas, Uranium, Helium-3, Iron & Copper, REE/Precious Metals, Aquifers) with procedural fallback toggles.<br><br>![2. Resource Distribution Panel](docs/images/real_shots/tab2_resources.png) |
+| **3. 🎛️ Configuration de Scénario (`ScenarioSetupPanel`)** | **12-Section Historical & Paleoclimate Setup Navigation**<br>Standardized setup hierarchy to configure temporal horizons (from -300,000 BP to future epochs), paleoclimate radiative forcing, cohort demographic matrices, initial technological diffusion, Asabiyyah social cohesion, and pre-flight JIT thermodynamic viability checks.<br><br>![3. Scenario Setup Panel](docs/images/real_shots/tab3_scenario_setup.png) |
+| **4. ⚙️ Contexte d'Exécution (`ExecutionContextPanel`)** | **Simulation Engine Dispatcher & Multi-Core Calibration**<br>Manages simulation loop execution parameters, core physical forcing laws, active Type B cliodynamic plugins, thread pool allocation, and micro/macro tick frequencies.<br><br>![4. Execution Context Panel](docs/images/real_shots/tab4_execution_context.png) |
+| **5. 🌐 Canvas de Simulation Temps Réel (`H3MapCanvas`)** | **Real-Time 3D/2D H3 Hexagonal Globe & Archon Engine**<br>Renders 175,000 hexagonal cells on Uber H3 grid with live multi-layer heatmaps (Malthusian Pressure, Biomes, Population, Radiance, Demographics, Asabiyyah), coordinate tracking, and the Cybernetic God Mode (Archon Engine) for real-time catastrophe injection.<br><br>![5. Simulation Canvas Panel](docs/images/real_shots/tab5_simulation.png) |
+| **6. 📊 Télémesure & Analyse Comparative (`ComparativeAnalyticsPanel`)** | **Planetary Cliodynamics Telemetry & Empirical Fitting**<br>Calculates real-time Root Mean Square Error (RMSE) and $R^2$ historical goodness-of-fit against empirical datasets (Seshat, Maddison, HYDE 3.4), age pyramids, Gini inequality indices, and EROEI net surplus curves.<br><br>![6. Comparative Analytics Panel](docs/images/real_shots/tab6_comparative_analytics.png) |
+| **7. 🔧 Préférences & Configuration Système (`PreferencesPanel`)** | **Theme Management, I18n & Data Provenance**<br>Controls UI themes (Dark/Light mode), dynamic language switching (English/French), auto-save intervals, external spatial data paths, and SHA-256 cryptographic manifest exports (`provenance.json`).<br><br>![7. Preferences Panel](docs/images/real_shots/tab7_preferences.png) |
 
 
 ---

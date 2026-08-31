@@ -74,7 +74,7 @@ public class ProceduralPopulationEngine {
 
         long seedVal = scenario != null ? scenario.getSeed() : 12345L;
         if (isEarthPreset) {
-            distributeEarthHistorical(landCells, totalPopulation, techLevel, capitalPerCapita);
+            distributeEarthHistorical(landCells, totalPopulation, techLevel, capitalPerCapita, startYear, scenario);
         } else {
             distributeProcedural(landCells, totalPopulation, techLevel, pattern, seedVal, capitalPerCapita);
         }
@@ -83,7 +83,7 @@ public class ProceduralPopulationEngine {
     /**
      * Earth pre-generated historical population density mapping based on tech suitability.
      */
-    private static void distributeEarthHistorical(List<H3Cell> landCells, long totalPopulation, double techLevel, double capitalPerCapita) {
+    private static void distributeEarthHistorical(List<H3Cell> landCells, long totalPopulation, double techLevel, double capitalPerCapita, long startYear, Scenario scenario) {
         double[] weights = new double[landCells.size()];
         double totalWeight = 0.0;
 
@@ -94,10 +94,10 @@ public class ProceduralPopulationEngine {
             Biome biome = cell.getBiome();
 
             double baseSuitability = calculateBiomeAndElevSuitability(cell, techLevel);
-            double geoWeight = getEarthHistoricalRegionalWeight(lat, lng, biome, techLevel);
+            double geoWeight = getEarthHistoricalRegionalWeight(lat, lng, biome, techLevel, startYear, scenario);
 
-            double w = baseSuitability * geoWeight;
-            weights[i] = Math.max(0.0001, w);
+            double w = (geoWeight <= 0.0) ? 0.0 : Math.max(0.0001, baseSuitability * geoWeight);
+            weights[i] = w;
             totalWeight += weights[i];
         }
 
@@ -108,7 +108,7 @@ public class ProceduralPopulationEngine {
     /**
      * Regional weighting heuristic for Earth historical geography based on techLevel.
      */
-    private static double getEarthHistoricalRegionalWeight(double lat, double lng, Biome biome, double techLevel) {
+    private static double getEarthHistoricalRegionalWeight(double lat, double lng, Biome biome, double techLevel, long startYear, Scenario scenario) {
         boolean isEastAfrica = (lat >= -15 && lat <= 15) && (lng >= 25 && lng <= 45);
         boolean isFertileCrescent = (lat >= 28 && lat <= 38) && (lng >= 34 && lng <= 48);
         boolean isNileDelta = (lat >= 20 && lat <= 31) && (lng >= 28 && lng <= 34);
@@ -118,71 +118,84 @@ public class ProceduralPopulationEngine {
         boolean isMediterraneanEurope = (lat >= 35 && lat <= 58) && (lng >= -10 && lng <= 30);
         boolean isMesoamerica = (lat >= 14 && lat <= 22) && (lng >= -105 && lng <= -88);
         boolean isAndes = (lat >= -20 && lat <= 0) && (lng >= -80 && lng <= -65);
+        boolean isSahulAustralia = (lat < 10.0 && lng > 95.0) || (lat < -10.0 && lng > 110.0);
+        boolean isAmericas = lng < -25.0;
 
-        if (techLevel <= 0.9) {
-            // Early Paleolithic / Out of Africa (-100,000 BP)
-            // Strictly 0 population in the Americas and Australia/Sahul
-            if (lng < -25.0 || (lat < -10.0 && lng > 110.0)) return 0.0;
+        // 1. Deep Paleolithic / Out of Africa (~100,000 BP to ~50,000 BP)
+        // Homo sapiens core in Africa; Neanderthalensis in W. Eurasia; Denisova in E. Eurasia.
+        // Strictly ZERO population in Sahul/Australia and Americas.
+        if (startYear <= -50000 || (scenario != null && scenario.getName() != null && 
+             (scenario.getName().toLowerCase().contains("africa") || scenario.getName().toLowerCase().contains("out_of_africa")))) {
+            if (isAmericas || isSahulAustralia) return 0.0;
             if (isEastAfrica) return 15.0;
             if (isNileDelta || isFertileCrescent) return 6.0;
-            if (lat >= -35.0 && lat <= 37.0 && lng >= -18.0 && lng <= 51.0) return 3.0; // Rest of Africa
-            if (lat >= 10.0 && lat <= 55.0 && lng >= 35.0 && lng <= 100.0) return 1.5; // Early Southern Eurasia
+            if (lat >= -35.0 && lat <= 37.0 && lng >= -18.0 && lng <= 51.0) return 3.0; // Rest of Africa (Homo Sapiens)
+            if (lat >= 10.0 && lat <= 55.0 && lng >= -10.0 && lng <= 100.0) return 1.5; // Eurasia (Neanderthal & Denisova)
             return 0.0;
-        } else if (techLevel <= 1.0) {
-            // Upper Paleolithic
-            if (isEastAfrica) return 5.0;
-            if (isFertileCrescent || isNileDelta) return 4.0;
+        }
+
+        // 2. Sahul Migration & Upper Paleolithic (~50,000 BP to ~25,000 BP)
+        // Sahul/Australia populated (~50k-45k BP). Americas remain unpopulated.
+        if (startYear <= -25000) {
+            if (isAmericas) return 0.0;
+            if (isSahulAustralia) return 3.0;
+            if (isEastAfrica) return 6.0;
+            if (isFertileCrescent || isNileDelta) return 5.0;
             if (isYellowYangtzeChina || isGangesIndia) return 4.0;
-            if (isMediterraneanEurope) return 3.0;
-            return 0.5;
-        } else if (techLevel <= 1.8) {
-            // Neolithic Revolution
+            if (isMediterraneanEurope) return 4.0;
+            return 1.0;
+        }
+
+        // 3. Late Pleistocene / Beringian Crossing into Americas (~25,000 BP to ~10,000 BP)
+        // Americas populated via Beringian migration.
+        if (startYear <= -10000) {
+            if (isFertileCrescent || isNileDelta) return 10.0;
+            if (isYellowYangtzeChina || isGangesIndia) return 8.0;
+            if (isMediterraneanEurope) return 6.0;
+            if (isSahulAustralia) return 4.0;
+            if (isMesoamerica || isAndes) return 3.0;
+            return 1.0;
+        }
+
+        // 4. Neolithic Revolution & Early Agriculture (-10000 to -3000 BP)
+        if (startYear <= -3000) {
             if (isFertileCrescent) return 15.0;
             if (isYellowYangtzeChina) return 12.0;
             if (isNileDelta) return 10.0;
             if (isIndusValley) return 8.0;
             if (isMesoamerica) return 6.0;
             if (isMediterraneanEurope) return 4.0;
-            return 0.8;
-        } else if (techLevel <= 3.0) {
-            // Bronze Age
-            if (isNileDelta || isFertileCrescent) return 18.0;
-            if (isYellowYangtzeChina) return 16.0;
-            if (isIndusValley) return 14.0;
-            if (isMediterraneanEurope) return 5.0;
-            if (isMesoamerica || isAndes) return 4.0;
+            if (isSahulAustralia) return 2.0;
             return 1.0;
-        } else if (techLevel <= 4.2) {
-            // Classical Antiquity
+        }
+
+        // 5. Bronze Age & Classical Antiquity (-3000 to 500 CE)
+        if (startYear <= 500) {
             if (isYellowYangtzeChina) return 20.0;
             if (isGangesIndia || isIndusValley) return 18.0;
             if (isMediterraneanEurope) return 18.0;
-            if (isFertileCrescent || isNileDelta) return 12.0;
+            if (isFertileCrescent || isNileDelta) return 14.0;
             if (isMesoamerica || isAndes) return 5.0;
             return 1.2;
-        } else if (techLevel <= 5.2) {
-            // Medieval
-            if (isYellowYangtzeChina) return 22.0;
-            if (isGangesIndia) return 20.0;
-            if (isMediterraneanEurope) return 15.0;
-            if (isFertileCrescent || isNileDelta) return 10.0;
-            if (isMesoamerica || isAndes) return 6.0;
-            return 1.5;
-        } else if (techLevel <= 6.2) {
-            // Early Modern
+        }
+
+        // 6. Medieval & Early Modern (500 CE to 1800 CE)
+        if (startYear <= 1800) {
             if (isYellowYangtzeChina) return 22.0;
             if (isGangesIndia) return 20.0;
             if (isMediterraneanEurope) return 18.0;
+            if (isFertileCrescent || isNileDelta) return 10.0;
+            if (isMesoamerica || isAndes) return 6.0;
             if (lat >= 30 && lat <= 50 && lng >= -100 && lng <= -70) return 4.0;
-            return 2.0;
-        } else {
-            // Industrial Revolution
-            if (isMediterraneanEurope) return 25.0;
-            if (isYellowYangtzeChina) return 24.0;
-            if (isGangesIndia) return 22.0;
-            if (lat >= 30 && lat <= 48 && lng >= -90 && lng <= -70) return 12.0;
-            return 2.5;
+            return 1.5;
         }
+
+        // 7. Industrial & Modern (> 1800 CE)
+        if (isMediterraneanEurope) return 25.0;
+        if (isYellowYangtzeChina) return 24.0;
+        if (isGangesIndia) return 22.0;
+        if (lat >= 30 && lat <= 48 && lng >= -90 && lng <= -70) return 12.0;
+        return 2.5;
     }
 
     /**
@@ -293,6 +306,83 @@ public class ProceduralPopulationEngine {
 
         return Math.exp(- (diff * diff) / (2.0 * sigma * sigma));
     }
+
+    /**
+     * Calculates planetary solar insolation (W/m²) dynamically based on celestial mechanics.
+     * For Earth (isEarth = true), uses Earth's Milankovitch orbital cycles at 65°N.
+     * For Mars, Venus, or procedural exoplanets (isEarth = false), computes solar flux from orbital parameters:
+     * F_solar = (S_0 / a²) * (1 - e²)^(-0.5) * cos(lat - declination).
+     */
+    public static double calculatePlanetarySolarInsolation(double lat, double obliquityDeg, double eccentricity, double semiMajorAxisAU, long startYearBP, boolean isEarth) {
+        if (isEarth) {
+            double t = (double) startYearBP;
+            double precession = 35.0 * Math.sin(2.0 * Math.PI * t / 23000.0);
+            double obliquity = 15.0 * Math.sin(2.0 * Math.PI * t / 41000.0);
+            double ecc = 10.0 * Math.cos(2.0 * Math.PI * t / 100000.0);
+            return 480.0 + precession + obliquity + ecc;
+        } else {
+            // Celestial Mechanics General Solar Flux Equilibrium
+            double solarConstant = 1361.0; // Watts/m² at 1 AU
+            double distSq = Math.max(0.1, semiMajorAxisAU * semiMajorAxisAU);
+            double orbitalCorrection = 1.0 / Math.sqrt(Math.max(0.01, 1.0 - eccentricity * eccentricity));
+            double declination = Math.toRadians(obliquityDeg) * Math.sin(2.0 * Math.PI * (startYearBP % 365) / 365.0);
+            double latRad = Math.toRadians(lat);
+            double cosZenith = Math.max(0.0, Math.sin(latRad) * Math.sin(declination) + Math.cos(latRad) * Math.cos(declination));
+            return (solarConstant / distSq) * orbitalCorrection * cosZenith;
+        }
+    }
+
+    /**
+     * Legacy Earth-preset wrapper for Milankovitch summer insolation at 65°N.
+     */
+    public static double calculateMilankovitchSummerInsolation65N(long startYearBP) {
+        return calculatePlanetarySolarInsolation(65.0, 23.44, 0.0167, 1.0, startYearBP, true);
+    }
+
+    /**
+     * Calculates plant Net Primary Productivity (NPP) multiplier based on atmospheric CO2 levels
+     * derived from EPICA Dome C / Vostok ice cores (180 ppm LGM peak to 280 ppm Holocene).
+     */
+    public static double calculateCO2VegetationMultiplier(long startYearBP) {
+        double t = (double) Math.abs(startYearBP);
+        // CO2 concentration interpolation (180 ppm at LGM peak ~20,000 BP up to 280 ppm Holocene)
+        double co2ppm = 280.0 - 100.0 * Math.exp(-Math.pow((t - 20000.0) / 15000.0, 2.0));
+        co2ppm = Math.clamp(co2ppm, 180.0, 280.0);
+        return 1.0 + 0.25 * Math.log(co2ppm / 180.0);
+    }
+
+    /**
+     * Calculates coastal foraging carrying capacity boost (2.5x) for intertidal shellfisheries
+     * and marine omega-3 (DHA) resource exploitation along coastal margins.
+     */
+    public static double calculateCoastalForagingMultiplier(H3Cell cell) {
+        if (cell == null) return 1.0;
+        Biome b = cell.getBiome();
+        double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+        if (b == Biome.BEACH || (elev > 0 && elev <= 25.0 && cell.getWaterResource() != null && cell.getWaterResource() > 0.6)) {
+            return 2.5; // High-density intertidal shellfishery & marine foraging boost
+        }
+        return 1.0;
+    }
+
+    /**
+     * Computes Quaternary Megafauna Extinction (QME) density coupling using Lotka-Volterra dynamics
+     * as a synergistic function of human hunting pressure gamma * rho and climate stress.
+     */
+    public static double calculateMegafaunaAbundanceIndex(long startYearBP, double humanDensity, double climateStress) {
+        double t = (double) Math.abs(startYearBP);
+        double baseMegafauna = 100.0; // Baseline 100% megafauna index
+        if (startYearBP >= -10000) return 5.0; // Post-Holocene remnant megafauna
+
+        // Human hunting pressure coefficient gamma = 0.05, climate stress mu = 0.4
+        double huntingPressure = 0.05 * humanDensity;
+        double totalStress = huntingPressure + (0.4 * climateStress);
+
+        // Exponential decay of megafauna index under synergistic stress
+        double abundance = baseMegafauna * Math.exp(-totalStress * (t / 50000.0));
+        return Math.clamp(abundance, 2.0, 100.0);
+    }
+
 
     /**
      * Freshwater & River / Coastal proximity constraint.

@@ -109,10 +109,10 @@ public class CellTooltip extends VBox {
         elevationLabel.setText(String.format("%-14s %,d m", I18n.getOrDefault("ui.tooltip.elevation", "Altitude :"),
                 cell.getElevation() != null ? cell.getElevation().intValue() : 0));
 
-        temperatureLabel.setText(String.format("%-14s %.1f°C", I18n.getOrDefault("ui.tooltip.temperature", "Température :"),
+        temperatureLabel.setText(String.format("%-14s %.1f°C", I18n.getOrDefault("ui.tooltip.temperature", "Temperature:"),
                 cell.getTemperature() != null ? cell.getTemperature() : 0.0));
 
-        rainfallLabel.setText(String.format("%-14s %,d mm/an", I18n.getOrDefault("ui.tooltip.rainfall", "Précipitations:"),
+        rainfallLabel.setText(String.format("%-14s %,d mm/an", I18n.getOrDefault("ui.tooltip.rainfall", "Precipitation:"),
                 cell.getRainfall() != null ? cell.getRainfall().intValue() : 0));
 
         // Population & Trend Arrow
@@ -137,7 +137,7 @@ public class CellTooltip extends VBox {
 
         double water = cell.getWaterResource() != null ? cell.getWaterResource() : 0.0;
         double aquifer = cell.getFreshwaterAquifer() != null ? cell.getFreshwaterAquifer() : 0.0;
-        waterLabel.setText(String.format("%-14s %.1f m³ (Nappe: %.0f)", "Eau / Aquifère:", water, aquifer));
+        waterLabel.setText(String.format("%-14s %.1f m³ (Aquifer: %.0f)", I18n.getOrDefault("tooltip.water_aquifer", "Water / Aquifer:"), water, aquifer));
 
         // Tech level
         double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
@@ -145,17 +145,17 @@ public class CellTooltip extends VBox {
 
         // Wealth & Individual Variance Indicator
         double wealth = currentPop * tech * 15.0;
-        wealthVarianceLabel.setText(String.format("%-14s G$ %,.0f (Niv. Tech x Pop)", "Richesse Maille:", wealth));
+        wealthVarianceLabel.setText(String.format("%-14s G$ %,.0f (Tech Level x Pop)", I18n.getOrDefault("tooltip.mesh_wealth", "Cell Wealth:"), wealth));
 
         // Carrying Capacity (K) & Malthusian Ratio
         double capK = computeCarryingCapacity(cell);
         double ratio = capK > 0 ? ((double) currentPop / capK) * 100.0 : 0.0;
         String malthusStatus = ratio > 150.0 ? "🚨 SURPOPULATION" : ratio > 100.0 ? "⚠️ TENSION" : "✅ SOUTENABLE";
-        malthusLabel.setText(String.format("%-14s %.0f hab (Charge: %.1f%% %s)", "Capacité K :", capK, ratio, malthusStatus));
+        malthusLabel.setText(String.format("%-14s %.0f hab (Load: %.1f%% %s)", I18n.getOrDefault("tooltip.capacity_k", "Carrying Cap K:"), capK, ratio, malthusStatus));
 
         String latDir = cell.getLatitude() >= 0 ? "N" : "S";
         String lngDir = cell.getLongitude() >= 0 ? "E" : "W";
-        coordLabel.setText(String.format("%-14s %.4f°%s, %.4f°%s", I18n.getOrDefault("ui.tooltip.coords", "Coordonnées :"),
+        coordLabel.setText(String.format("%-14s %.4f°%s, %.4f°%s", I18n.getOrDefault("ui.tooltip.coords", "Coordinates:"),
                 Math.abs(cell.getLatitude()), latDir,
                 Math.abs(cell.getLongitude()), lngDir));
 
@@ -206,10 +206,10 @@ public class CellTooltip extends VBox {
         elevationLabel.setText(String.format("%-14s %,d m", I18n.getOrDefault("ui.tooltip.elevation", "Altitude :"),
                 (int)world.getElevation()[index]));
 
-        temperatureLabel.setText(String.format("%-14s %.1f°C", I18n.getOrDefault("ui.tooltip.temperature", "Température :"),
+        temperatureLabel.setText(String.format("%-14s %.1f°C", I18n.getOrDefault("ui.tooltip.temperature", "Temperature:"),
                 world.getTemperature()[index]));
 
-        rainfallLabel.setText(String.format("%-14s %,d mm/an", I18n.getOrDefault("ui.tooltip.rainfall", "Précipitations:"),
+        rainfallLabel.setText(String.format("%-14s %,d mm/an", I18n.getOrDefault("ui.tooltip.rainfall", "Precipitation:"),
                 (int)world.getRainfall()[index]));
 
         popLabel.setText(String.format("%-14s %,.0f hab", "Population :", world.getBiomassHuman()[index]));

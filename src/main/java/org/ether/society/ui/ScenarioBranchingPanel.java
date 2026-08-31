@@ -66,10 +66,10 @@ public class ScenarioBranchingPanel extends VBox {
     public void updateTexts() {
         headerLabel.setText(I18n.getOrDefault("branching.title", "🔀 MULTIVERS & EMBRANCHEMENTS DE TRAJECTOIRES (BRANCHING)"));
         newBranchNameField.setPromptText(I18n.getOrDefault("branching.prompt.name", "Nom du nouveau brin (ex: Branche Fusion 2040)..."));
-        newBranchNameField.setTooltip(new Tooltip(I18n.getOrDefault("branching.tooltip.name", "Entrez un nom identifiant pour cette trajectoire de scénario bifurquée.")));
+        newBranchNameField.setTooltip(new Tooltip(I18n.getOrDefault("branching.tooltip.name", "Enter an identifying name for this bifurcated scenario trajectory.")));
         createBranchBtn.setText(I18n.getOrDefault("branching.btn.fork", "➕ Forker la Trajectoire Actuelle"));
-        createBranchBtn.setTooltip(new Tooltip(I18n.getOrDefault("branching.tooltip.fork", "Crée un nouvel embranchement indépendant à partir de l'état actuel de la planète.")));
-        infoLabel.setText(I18n.getOrDefault("branching.info.select", "Sélectionnez une branche pour comparer la télémétrie."));
+        createBranchBtn.setTooltip(new Tooltip(I18n.getOrDefault("branching.tooltip.fork", "Creates a new independent branch from current planet state.")));
+        infoLabel.setText(I18n.getOrDefault("branching.info.select", "Select a branch to compare telemetry."));
 
         refreshBranchList();
     }
@@ -93,7 +93,7 @@ public class ScenarioBranchingPanel extends VBox {
         if (branchListView == null) return;
         branchListView.getItems().clear();
         String activeTagText = I18n.getOrDefault("branching.tag.active", " ⭐ [ACTIVE]");
-        String formatPattern = I18n.getOrDefault("branching.format.branch", "%s (Branchement Année %d)%s");
+        String formatPattern = I18n.getOrDefault("branching.format.branch", "%s (Branch Year %d)%s");
 
         for (var b : branchingTree.getBranches().values()) {
             String activeTag = b.getId().equals(branchingTree.getActiveBranchId()) ? activeTagText : "";

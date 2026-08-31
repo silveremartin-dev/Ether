@@ -1,9 +1,0 @@
-{
-  "name": "World Energy Council & EIA Energy Basins",
-  "domain": "Global Fossil Fuel Sedimentary Basins & World Energy Proxies",
-  "url": "https://www.eia.gov/maps/map_data/ShaleGas_Oil_Basins_World_EIA.zip",
-  "datasets": [
-    "global_gdp_energy_proxies.csv"
-  ],
-  "citation": "US Energy Information Administration (EIA) & World Energy Council (WEC) Technically Recoverable Energy Resources (2024)."
-}

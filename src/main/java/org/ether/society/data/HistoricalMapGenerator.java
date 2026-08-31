@@ -43,6 +43,14 @@ public class HistoricalMapGenerator {
         if (scenario == null) return;
 
         try {
+            String safeName = scenario.getName().replaceAll("[^a-zA-Z0-9_\\-]", "_").toLowerCase(java.util.Locale.ROOT);
+            java.nio.file.Path cacheDir = java.nio.file.Paths.get("data", "maps", "cache");
+
+            if (loadFromDiskCache(scenario, cacheDir, safeName)) {
+                logger.info("Successfully loaded scenario '{}' cartographic tensors from disk cache 'data/maps/cache/{}_*.png'.", scenario.getName(), safeName);
+                return;
+            }
+
             String type = scenario.getPopulationDensityType();
             if (type == null) type = "URBAN_CLUSTERS";
 
@@ -196,6 +204,51 @@ public class HistoricalMapGenerator {
         }
     }
 
+    public static boolean loadFromDiskCache(Scenario scenario, java.nio.file.Path cacheDir, String safeName) {
+        java.nio.file.Path densityCache = cacheDir.resolve(safeName + "_density.png");
+        if (!java.nio.file.Files.exists(densityCache)) {
+            return false;
+        }
+        try {
+            BufferedImage imgDensity = ImageIO.read(densityCache.toFile());
+            if (imgDensity == null) return false;
+
+            scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+
+            String[] mapKeys = {
+                "_isogloss.png", "_kinship.png", "_rituals.png", "_sovereignty.png",
+                "_technology.png", "_tradenetwork.png", "_institutional.png", "_ecological.png", "_pathogen.png"
+            };
+            for (int i = 0; i < mapKeys.length; i++) {
+                java.nio.file.Path p = cacheDir.resolve(safeName + mapKeys[i]);
+                if (java.nio.file.Files.exists(p)) {
+                    BufferedImage img = ImageIO.read(p.toFile());
+                    if (img != null) {
+                        scenario.setCustomTensorMapBase64(i, bufferedImageToBase64Png(img));
+                    }
+                }
+            }
+
+            String[] geoKeys = {
+                "_coal.png", "_oil.png", "_gas.png", "_uranium.png",
+                "_he3.png", "_ironcopper.png", "_preciousree.png", "_aquifer.png"
+            };
+            for (int i = 0; i < geoKeys.length; i++) {
+                java.nio.file.Path p = cacheDir.resolve(safeName + geoKeys[i]);
+                if (java.nio.file.Files.exists(p)) {
+                    BufferedImage img = ImageIO.read(p.toFile());
+                    if (img != null) {
+                        scenario.setCustomGeologyTensorMapBase64(i, bufferedImageToBase64Png(img));
+                    }
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            logger.warn("Failed to load scenario '{}' cartographic tensors from disk cache: {}", scenario.getName(), e.getMessage());
+            return false;
+        }
+    }
+
     // --- 1. CLEAN DENSITY MAP ---
 
     public static BufferedImage generateCleanDensityMap(String type, Scenario scenario) {
@@ -297,6 +350,11 @@ public class HistoricalMapGenerator {
                 double lng = (x + 0.5) / WIDTH * 360.0 - 180.0;
                 if (!isLand(lng, lat)) continue;
 
+                if (type != null && type.equalsIgnoreCase("ONE_CONTINENT") && !isInScenarioBounds(type, lng, lat)) {
+                    img.setRGB(x, y, new Color(15, 23, 42).getRGB());
+                    continue;
+                }
+
                 double totalWeight = 0.0;
                 double rSum = 0, gSum = 0, bSum = 0;
 
@@ -394,7 +452,8 @@ public class HistoricalMapGenerator {
 
         switch (type.toUpperCase()) {
             case "ONE_CONTINENT": // Sortie d'Afrique (-100k)
-                return (lat >= -35.0 && lat <= 32.0 && lng >= -18.0 && lng <= 52.0);
+                if (lng < -25.0 || (lat < 10.0 && lng > 95.0) || (lat < -10.0 && lng > 110.0)) return false;
+                return (lat >= -35.0 && lat <= 65.0 && lng >= -18.0 && lng <= 125.0);
 
             case "SAHUL_MIGRATION": // Sahul (-50k)
                 return (lat >= -45.0 && lat <= 10.0 && lng >= 95.0 && lng <= 155.0);
@@ -894,7 +953,7 @@ public class HistoricalMapGenerator {
                     list.add(new LanguageZone("Proto-Sapiens (Afrique)", 36.0, 4.5, new Color(234, 179, 8)));
                     list.add(new LanguageZone("Proto-Néandertalien (Eurasie Ouest)", -3.5, 42.3, new Color(14, 165, 233)));
                     list.add(new LanguageZone("Proto-Denisovien (Asie & Altai)", 84.7, 51.4, new Color(217, 70, 239)));
-                    break;
+                    return list;
             }
         }
         // Global baseline language families to reconstruct worldwide maps

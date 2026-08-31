@@ -99,7 +99,7 @@ public class PresetControlBar<T> extends VBox {
 
         // --- Inline editable name field ---
         nameField = new TextField();
-        nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Nom du préréglage…"));
+        nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Preset name…"));
         nameField.setMaxWidth(Double.MAX_VALUE);
         nameField.setTooltip(new Tooltip(I18n.getOrDefault("preset.name.tooltip",
                 "Nom du préréglage. Modifiez-le librement puis cliquez sur Enregistrer.")));
@@ -115,7 +115,7 @@ public class PresetControlBar<T> extends VBox {
         presetCombo = new ComboBox<>();
         presetCombo.setMaxWidth(Double.MAX_VALUE);
         presetCombo.setPrefWidth(220);
-        presetCombo.setPromptText(I18n.getOrDefault("preset.combo.placeholder", "— Choisir un préréglage —"));
+        presetCombo.setPromptText(I18n.getOrDefault("preset.combo.placeholder", "— Select a preset —"));
         HBox.setHgrow(presetCombo, Priority.ALWAYS);
 
         presetCombo.setConverter(new StringConverter<T>() {
@@ -266,11 +266,11 @@ public class PresetControlBar<T> extends VBox {
             if (presetCombo.getValue() != null) {
                 String presetName = formatPresetItem(presetCombo.getValue());
                 if (!presetName.contains("Personnalisé")) {
-                    presetName = presetName + " (Personnalisé)";
+                    presetName = presetName + I18n.getOrDefault("preset.name.custom_suffix", " (Custom)");
                 }
                 nameField.setText(presetName);
             } else if (!current.contains("Personnalisé") && !current.equalsIgnoreCase("Custom")) {
-                nameField.setText(current.isBlank() ? "Custom (Personnalisé)" : current + " (Personnalisé)");
+                nameField.setText(current.isBlank() ? I18n.getOrDefault("preset.name.custom", "Custom") : current + I18n.getOrDefault("preset.name.custom_suffix", " (Custom)"));
             }
             nameField.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
             trackingChanges = true;
@@ -313,9 +313,9 @@ public class PresetControlBar<T> extends VBox {
         if (name.isBlank()) {
             // Prompt inline if no name
             TextInputDialog dialog = new TextInputDialog(
-                    I18n.getOrDefault("preset.dialog.default_name", "Mon Préréglage"));
-            dialog.setTitle(I18n.getOrDefault("preset.dialog.save_title", "Enregistrer le Préréglage"));
-            dialog.setHeaderText(I18n.getOrDefault("preset.dialog.save_header", "Entrez un nom pour ce préréglage :"));
+                    I18n.getOrDefault("preset.dialog.default_name", "My Preset"));
+            dialog.setTitle(I18n.getOrDefault("preset.dialog.save_title", "Save Preset"));
+            dialog.setHeaderText(I18n.getOrDefault("preset.dialog.save_header", "Enter a name for this preset:"));
             dialog.setContentText(I18n.getOrDefault("preset.dialog.save_label", "Nom :"));
             dialog.showAndWait().ifPresent(enteredName -> {
                 if (!enteredName.isBlank()) {
@@ -335,8 +335,8 @@ public class PresetControlBar<T> extends VBox {
 
         if (exists) {
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle(I18n.getOrDefault("preset.dialog.overwrite_title", "Préréglage Existant"));
-            confirm.setHeaderText(I18n.getOrDefault("preset.dialog.overwrite_header", "Remplacement de préréglage"));
+            confirm.setTitle(I18n.getOrDefault("preset.dialog.overwrite_title", "Preset Exists"));
+            confirm.setHeaderText(I18n.getOrDefault("preset.dialog.overwrite_header", "Replace existing preset"));
             confirm.setContentText(I18n.getOrDefault("preset.dialog.overwrite_content",
                     "Un préréglage nommé '" + name + "' existe déjà. Voulez-vous l'écraser ?"));
             Optional<ButtonType> result = confirm.showAndWait();
@@ -349,14 +349,14 @@ public class PresetControlBar<T> extends VBox {
         if (listener != null) {
             listener.onSavePreset(name);
         }
-        showToast(I18n.getOrDefault("preset.toast.saved", "✅ Préréglage enregistré : ") + name,
+        showToast(I18n.getOrDefault("preset.toast.saved", "✅ Preset saved: ") + name,
                 "-fx-background-color: rgba(16,185,129,0.9);");
     }
 
     private void promptDelete() {
         T selected = presetCombo.getValue();
         if (selected == null) {
-            showToast(I18n.getOrDefault("preset.toast.no_selection", "⚠️ Sélectionnez un préréglage à supprimer."),
+            showToast(I18n.getOrDefault("preset.toast.no_selection", "⚠️ Select a preset to delete."),
                     "-fx-background-color: rgba(234,179,8,0.9);");
             return;
         }
@@ -368,7 +368,7 @@ public class PresetControlBar<T> extends VBox {
         toastLabel.setVisible(true);
         toastLabel.setManaged(true);
 
-        Button confirmBtn = new Button(I18n.getOrDefault("preset.btn.confirm_delete", "Confirmer la suppression"));
+        Button confirmBtn = new Button(I18n.getOrDefault("preset.btn.confirm_delete", "Confirm deletion"));
         confirmBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;");
         confirmBtn.setMaxWidth(Double.MAX_VALUE);
 
@@ -390,7 +390,7 @@ public class PresetControlBar<T> extends VBox {
                 presetCombo.getItems().remove(selected);
                 nameField.clear();
                 trackingChanges = false;
-                showToast(I18n.getOrDefault("preset.toast.deleted", "🗑️ Préréglage supprimé : ") + name,
+                showToast(I18n.getOrDefault("preset.toast.deleted", "🗑️ Preset deleted: ") + name,
                         "-fx-background-color: rgba(239,68,68,0.85);");
             }
         });
@@ -404,7 +404,7 @@ public class PresetControlBar<T> extends VBox {
     private void promptExport() {
         T selected = presetCombo.getValue();
         if (selected == null) {
-            showToast(I18n.getOrDefault("preset.toast.no_selection", "⚠️ Sélectionnez un préréglage à exporter."),
+            showToast(I18n.getOrDefault("preset.toast.no_selection", "⚠️ Select a preset to export."),
                     "-fx-background-color: rgba(234,179,8,0.9);");
             return;
         }
@@ -422,26 +422,26 @@ public class PresetControlBar<T> extends VBox {
         String suggestedFileName = "ether-" + exportCategory + "-" + safeName + ".json";
 
         FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("preset.dialog.export_title", "Exporter le Préréglage (JSON)"));
+        chooser.setTitle(I18n.getOrDefault("preset.dialog.export_title", "Export Preset (JSON)"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers JSON", "*.json"));
         chooser.setInitialFileName(suggestedFileName);
 
         File file = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null && listener != null) {
             listener.onExportPreset(file, selected);
-            showToast(I18n.getOrDefault("preset.toast.exported", "📤 Exporté : ") + file.getName(),
+            showToast(I18n.getOrDefault("preset.toast.exported", "📤 Exported: ") + file.getName(),
                     "-fx-background-color: rgba(16,185,129,0.9);");
         }
     }
 
     private void promptImport() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("preset.dialog.import_title", "Importer un Préréglage (JSON)"));
+        chooser.setTitle(I18n.getOrDefault("preset.dialog.import_title", "Import Preset (JSON)"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers JSON", "*.json"));
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null && listener != null) {
             listener.onImportPreset(file);
-            showToast(I18n.getOrDefault("preset.toast.imported", "📥 Importé : ") + file.getName(),
+            showToast(I18n.getOrDefault("preset.toast.imported", "📥 Imported: ") + file.getName(),
                     "-fx-background-color: rgba(16,185,129,0.9);");
         }
     }
@@ -484,28 +484,28 @@ public class PresetControlBar<T> extends VBox {
         }
         if (saveBtn != null) saveBtn.setText("💾 " + I18n.getOrDefault("preset.save", "Enregistrer"));
         if (deleteBtn != null) deleteBtn.setText("🗑️ " + I18n.getOrDefault("preset.delete", "Supprimer"));
-        if (exportBtn != null) exportBtn.setText("📤 " + I18n.getOrDefault("preset.export", "Exporter"));
-        if (importBtn != null) importBtn.setText("📥 " + I18n.getOrDefault("preset.import", "Importer"));
+        if (exportBtn != null) exportBtn.setText("📤 " + I18n.getOrDefault("preset.export", "Export"));
+        if (importBtn != null) importBtn.setText("📥 " + I18n.getOrDefault("preset.import", "Import"));
         if (presetCombo != null)
-            presetCombo.setPromptText(I18n.getOrDefault("preset.combo.placeholder", "— Choisir un préréglage —"));
+            presetCombo.setPromptText(I18n.getOrDefault("preset.combo.placeholder", "— Select a preset —"));
         if (nameField != null)
-            nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Nom du préréglage…"));
+            nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Preset name…"));
         updateTooltips();
     }
 
     private void updateTooltips() {
         if (presetCombo != null) presetCombo.setTooltip(new Tooltip(
-                I18n.getOrDefault("preset.tooltip.combo", "Sélectionner un préréglage existant")));
+                I18n.getOrDefault("preset.tooltip.combo", "Select an existing preset")));
         if (nameField != null) nameField.setTooltip(new Tooltip(
-                I18n.getOrDefault("preset.name.tooltip", "Nom du préréglage — éditable directement pour nommer ou renommer")));
+                I18n.getOrDefault("preset.name.tooltip", "Preset name — directly editable to name or rename")));
         if (saveBtn != null) saveBtn.setTooltip(new Tooltip(
                 I18n.getOrDefault("planet.tooltip.preset_save", "Enregistrer la configuration actuelle sous ce nom")));
         if (deleteBtn != null) deleteBtn.setTooltip(new Tooltip(
-                I18n.getOrDefault("planet.tooltip.preset_delete", "Supprimer le préréglage sélectionné")));
+                I18n.getOrDefault("planet.tooltip.preset_delete", "Delete selected preset")));
         if (exportBtn != null) exportBtn.setTooltip(new Tooltip(
-                I18n.getOrDefault("planet.tooltip.preset_export", "Exporter le préréglage en JSON (ether-category-name.json)")));
+                I18n.getOrDefault("planet.tooltip.preset_export", "Export preset as JSON (ether-category-name.json)")));
         if (importBtn != null) importBtn.setTooltip(new Tooltip(
-                I18n.getOrDefault("planet.tooltip.preset_import", "Importer un fichier de préréglage JSON")));
+                I18n.getOrDefault("planet.tooltip.preset_import", "Import JSON preset file")));
     }
 
     private String formatPresetItem(T item) {

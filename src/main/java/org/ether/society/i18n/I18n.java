@@ -122,6 +122,31 @@ public class I18n {
     }
 
     /**
+     * Get a localized string for the key with format arguments, or return fallback default value formatted with args if missing.
+     */
+    public static String getOrDefault(String key, String defaultValue, Object... args) {
+        String pattern = defaultValue;
+        try {
+            if (bundle != null && bundle.containsKey(key)) {
+                pattern = bundle.getString(key);
+            }
+        } catch (Exception ignored) {}
+        if (pattern == null) pattern = defaultValue;
+        pattern = sanitize(pattern);
+        try {
+            if (pattern.contains("{0}") || pattern.contains("{1}") || pattern.contains("{2}")) {
+                return MessageFormat.format(pattern, args);
+            } else if (pattern.contains("%")) {
+                return String.format(pattern, args);
+            } else {
+                return MessageFormat.format(pattern, args);
+            }
+        } catch (Exception e) {
+            return pattern;
+        }
+    }
+
+    /**
      * Get a localized and formatted string.
      * 
      * @param key  The resource key
@@ -130,8 +155,15 @@ public class I18n {
      */
     public static String get(String key, Object... args) {
         String pattern = get(key);
+        if (pattern == null) return key;
         try {
-            return MessageFormat.format(pattern, args);
+            if (pattern.contains("{0}") || pattern.contains("{1}") || pattern.contains("{2}")) {
+                return MessageFormat.format(pattern, args);
+            } else if (pattern.contains("%")) {
+                return String.format(pattern, args);
+            } else {
+                return MessageFormat.format(pattern, args);
+            }
         } catch (Exception e) {
             logger.error("Failed to format string key: {}", key, e);
             return pattern;

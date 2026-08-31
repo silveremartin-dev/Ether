@@ -585,6 +585,8 @@ public class Scenario implements Serializable {
         return typeBEngineStates;
     }
 
+
+
     public void setTypeBEngineStates(java.util.Map<String, Boolean> typeBEngineStates) {
         this.typeBEngineStates = typeBEngineStates != null ? typeBEngineStates : new java.util.HashMap<>();
     }
@@ -745,6 +747,31 @@ public class Scenario implements Serializable {
             • Réserves Alimentaires (F₀) : 2 mois de subsistance en chasse-cueillette.
             • Savoir Archivé (I₀) : 2 bits/habitant (traditions orales paléolithiques & langage).
             """);
+        java.util.Map<String, Boolean> s0Engines = s0.getTypeBEngineStates();
+        s0Engines.put("PaleoLanguageDriftEngine", true);
+        s0Engines.put("KarstCaveShelterEngine", true);
+        s0Engines.put("ParietalArtAsabiyyahEngine", true);
+        s0Engines.put("SnowpackMobilityEngine", true);
+        s0Engines.put("MeatCuringReservesEngine", true);
+        s0Engines.put("OsseousIndustryCarvingEngine", true);
+        s0Engines.put("PlantFiberCordageEngine", true);
+        s0Engines.put("CanidDomesticationEngine", true);
+        s0Engines.put("LithicTradeProvenanceEngine", true);
+        s0Engines.put("ExogamousKinshipEngine", true);
+        s0Engines.put("TailoredClothingThermalEngine", true);
+        s0Engines.put("AtlatlArcheryBallisticsEngine", true);
+        s0Engines.put("PassiveSnareSmallGameEngine", true);
+        s0Engines.put("MegafaunaPitfallTrapEngine", true);
+        s0Engines.put("ArchaicIntrogressionEngine", true);
+        s0Engines.put("OchreTanningTechnologyEngine", true);
+        s0Engines.put("CoastalMarineRefugiaEngine", true);
+        s0Engines.put("SeasonalAggregationSanctuaryEngine", true);
+        s0Engines.put("AridWaterStorageStashEngine", true);
+        s0Engines.put("ResinHaftingAdhesivesEngine", true);
+        s0Engines.put("MammothBoneHabitationEngine", true);
+        s0Engines.put("FireHardenedSpearEngine", true);
+        s0Engines.put("VolcanicTephraRefugiaEngine", true);
+        s0Engines.put("ParasiteControlRepellentEngine", true);
         list.add(s0);
 
         // --- SCÉNARIO : SAHUL (-50000) ---
@@ -769,6 +796,16 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Premier franchissement maritime majeur de la ligne de Wallace par les ancêtres des Aborigènes d'Australie. Modélise la colonisation du continent Sahul (Australie, Tasmanie, Nouvelle-Guinée réunies) et l'adaptation aux écosystèmes arides.
             """);
+        java.util.Map<String, Boolean> sSahulEngines = sSahul.getTypeBEngineStates();
+        sSahulEngines.put("PaleoLanguageDriftEngine", true);
+        sSahulEngines.put("KarstCaveShelterEngine", true);
+        sSahulEngines.put("ParietalArtAsabiyyahEngine", true);
+        sSahulEngines.put("ResinHaftingAdhesivesEngine", true);
+        sSahulEngines.put("AridWaterStorageStashEngine", true);
+        sSahulEngines.put("SymbolicBeadNetworkEngine", true);
+        sSahulEngines.put("RiverCanoeTransportEngine", true);
+        sSahulEngines.put("CoastalMarineRefugiaEngine", true);
+        sSahulEngines.put("ExogamousKinshipEngine", true);
         list.add(sSahul);
 
         // --- SCÉNARIO : BÉRINGIE & PEUPLEMENT DES AMÉRIQUES (-25000) ---
@@ -793,6 +830,16 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'isolation des populations paléolithiques sur le pont terrestre de Béringie pendant le Dernier Maximum Glaciaire (LGM), suivie de leur dispersion à travers le corridor libre de glace et la route côtière du Pacifique.
             """);
+        java.util.Map<String, Boolean> sBeringiaEngines = sBeringia.getTypeBEngineStates();
+        sBeringiaEngines.put("SnowpackMobilityEngine", true);
+        sBeringiaEngines.put("TailoredClothingThermalEngine", true);
+        sBeringiaEngines.put("MeatCuringReservesEngine", true);
+        sBeringiaEngines.put("OsseousIndustryCarvingEngine", true);
+        sBeringiaEngines.put("CanidDomesticationEngine", true);
+        sBeringiaEngines.put("MammothBoneHabitationEngine", true);
+        sBeringiaEngines.put("PermafrostColdCacheEngine", true);
+        sBeringiaEngines.put("LithicTradeProvenanceEngine", true);
+        sBeringiaEngines.put("MegafaunaPitfallTrapEngine", true);
         list.add(sBeringia);
 
         // --- SCÉNARIO : RÉCENTS DRYAS (-10900) ---
@@ -814,6 +861,14 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Refroidissement brutal de 5 à 8°C de l'Atlantique Nord déclenché par le déversement d'eau douce du Lac Agassiz. Au Levant, la sécheresse aiguë réduit les céréales sauvages, contraignant les populations Natufiennes à la sédentarisation pré-agricole et au contrôle des graines.
             """);
+        java.util.Map<String, Boolean> sYoungerDryasEngines = sYoungerDryas.getTypeBEngineStates();
+        sYoungerDryasEngines.put("WildCerealGrindingEngine", true);
+        sYoungerDryasEngines.put("TopographicGameDriveEngine", true);
+        sYoungerDryasEngines.put("AtlatlArcheryBallisticsEngine", true);
+        sYoungerDryasEngines.put("PassiveSnareSmallGameEngine", true);
+        sYoungerDryasEngines.put("StoneBoilingThermalEngine", true);
+        sYoungerDryasEngines.put("HaliteSaltCuringEngine", true);
+        sYoungerDryasEngines.put("SeasonalAggregationSanctuaryEngine", true);
         list.add(sYoungerDryas);
 
         Scenario s1 = new Scenario();

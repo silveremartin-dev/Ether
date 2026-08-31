@@ -116,7 +116,6 @@ public class GenerateEarthMaps {
                     } else {
                         gray = (int) (145 + rawHeight * 80);
                         // Latitude climate mapping for land biomes
-                        double absLat = Math.abs(lat);
                         if (absLat > 68) {
                             biomeColor = SNOW;
                         } else if (absLat > 55) {

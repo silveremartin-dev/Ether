@@ -1,9 +1,0 @@
-{
-  "name": "PMIP4 / CMIP6 Paleoclimate Intercomparison",
-  "domain": "Coupled Ocean-Atmosphere General Circulation Models (GCMs) for Paleoclimate Benchmarks",
-  "url": "https://esgf-node.llnl.gov/search/cmip6/?activity_id=PMIP",
-  "datasets": [
-    "pmip4_lgm_tas_mon_ensmean.nc"
-  ],
-  "citation": "Kageyama, M., et al. (2018). The PMIP4 contribution to CMIP6 – Part 1: Overview and strategies. Geoscientific Model Development, 11, 1033–1057."
-}

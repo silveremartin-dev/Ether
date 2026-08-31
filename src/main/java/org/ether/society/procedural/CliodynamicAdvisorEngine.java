@@ -7,6 +7,7 @@
 package org.ether.society.procedural;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.i18n.I18n;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,28 +33,28 @@ public class CliodynamicAdvisorEngine {
         PlanetaryBoundariesEngine.BoundaryStatus boundaries = PlanetaryBoundariesEngine.assessBoundaries(cells);
 
         if (boundaries.climateChangeRisk() > 0.6) {
-            alerts.add(new CliodynamicAlert("CRITICAL", "🔥 ALERTE FORÇAGE CLIMATIQUE MAJEUR",
-                "Le réchauffement moyen dépasse le seuil critique (+3.5°C). Risque de désertification des zones tempérées."));
+            alerts.add(new CliodynamicAlert("CRITICAL", I18n.getOrDefault("advisor.alert.climate_forcing.title", "🔥 MAJOR CLIMATE FORCING ALERT"),
+                I18n.getOrDefault("advisor.alert.climate_forcing.desc", "Average warming exceeds critical threshold (+3.5°C). Risk of desertification in temperate zones.")));
         }
 
         if (boundaries.freshwaterDepletionRisk() > 0.5) {
-            alerts.add(new CliodynamicAlert("WARNING", "💧 ALERTE ÉPUISEMENT DES NAPPES PHREATIQUES",
-                "Les réserves d'eau douce accessibles s'effondrent sous les nœuds urbains majeurs."));
+            alerts.add(new CliodynamicAlert("WARNING", I18n.getOrDefault("advisor.alert.aquifer_depletion.title", "💧 AQUIFER DEPLETION ALERT"),
+                I18n.getOrDefault("advisor.alert.aquifer_depletion.desc", "Accessible freshwater reserves collapsing beneath major urban nodes.")));
         }
 
         if (boundaries.biogeochemicalNPKRisk() > 0.5) {
-            alerts.add(new CliodynamicAlert("WARNING", "🌾 ALERTE DÉPLÉTION DU CARBONE & N-P-K",
-                "La baisse du carbone organique des sols menace la capacité de charge agricole mondiale."));
+            alerts.add(new CliodynamicAlert("WARNING", I18n.getOrDefault("advisor.alert.npk_depletion.title", "🌾 CARBON & N-P-K DEPLETION ALERT"),
+                I18n.getOrDefault("advisor.alert.npk_depletion.desc", "Soil organic carbon decline threatens global agricultural carrying capacity.")));
         }
 
         if (NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() > 0.5) {
-            alerts.add(new CliodynamicAlert("CRITICAL", "❄️ ALERTE HIVER NUCLEAIRE / VOLCANIQUE",
-                "L'épaisseur optique des aérosols stratosphériques provoque un refroidissement brusque et une baisse de photosynthèse."));
+            alerts.add(new CliodynamicAlert("CRITICAL", I18n.getOrDefault("advisor.alert.nuclear_winter.title", "❄️ NUCLEAR / VOLCANIC WINTER ALERT"),
+                I18n.getOrDefault("advisor.alert.nuclear_winter.desc", "Stratospheric aerosol optical depth causing abrupt cooling and photosynthesis reduction.")));
         }
 
         if (alerts.isEmpty()) {
-            alerts.add(new CliodynamicAlert("INFO", "✅ ÉQUILIBRE THERMODYNAMIQUE STABLE",
-                "Les flux d'énergie et les stocks de ressources se maintiennent dans la zone de résilience planétaire."));
+            alerts.add(new CliodynamicAlert("INFO", I18n.getOrDefault("advisor.alert.stable_equilibrium.title", "✅ STABLE THERMODYNAMIC EQUILIBRIUM"),
+                I18n.getOrDefault("advisor.alert.stable_equilibrium.desc", "Energy fluxes and resource stocks remain within planetary resilience boundaries.")));
         }
 
         return alerts;

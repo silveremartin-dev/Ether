@@ -1,9 +1,0 @@
-{
-  "name": "WorldClim Climate Normals v2.1",
-  "domain": "High-Resolution Climate Surface Grids (1970 - 2000 Baseline)",
-  "url": "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_10m_bio.zip",
-  "datasets": [
-    "worldclim_biomes_baseline.json"
-  ],
-  "citation": "Fick, S.E. and R.J. Hijmans, 2017. WorldClim 2: new 1-km spatial resolution climate surfaces for global land areas. International Journal of Climatology 37: 4302-4315."
-}

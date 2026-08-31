@@ -251,6 +251,10 @@ public class H3SimulationEngine implements ISimulationEngine {
         return timeManager;
     }
 
+    public long getCurrentYear() {
+        return timeManager != null ? timeManager.getCurrentYear() : 0;
+    }
+
     @Override
     public boolean isRunning() {
         return running.get();

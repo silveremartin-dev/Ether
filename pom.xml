@@ -31,6 +31,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
+        <mainClass>org.ether.society.Main</mainClass>
 
         <!-- Dependency versions -->
         <javafx.version>21</javafx.version>
@@ -239,7 +240,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>${javafx-maven-plugin.version}</version>
                 <configuration>
-                    <mainClass>org.ether.society.Main</mainClass>
+                    <mainClass>${mainClass}</mainClass>
                     <options>
                         <option>--add-modules</option>
                         <option>jdk.incubator.vector</option>

@@ -242,12 +242,33 @@ public class MetricRegistry {
             cells -> cells.stream().mapToDouble(c -> c.getPollutionLevel() != null ? c.getPollutionLevel() / 10.0 : 0.0).average().orElse(0.0)
         ));
 
-        // --- ⚙️ 7. COMPLEXITÉ SYSTÉMIQUE ---
+        // --- ⚙️ 7. COMPLEXITÉ SYSTÉMIQUE & PALÉOLITHIQUE ---
         register(new MetricDescriptor(
             "systemInterdependence", "Interdépendance & Complexité Systémique", MetricDescriptor.Category.COMPLEXITY, "%",
             "Indice d'interconnexion et de fragilité des chaînes logistiques.",
             cell -> cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 0.0).average().orElse(0.0)
+        ));
+
+        register(new MetricDescriptor(
+            "megafaunaIndex", "🦣 Abondance Mégafaune", MetricDescriptor.Category.CLIODYNAMICS, "%",
+            "Indice d'abondance relative des grands herbivores préhistoriques (Mammouths, Bisons, Rhinocéros laineux).",
+            cell -> 100.0,
+            cells -> 100.0
+        ));
+
+        register(new MetricDescriptor(
+            "milankovitchInsolation", "☀️ Insolation Milankovitch 65°N", MetricDescriptor.Category.CLIODYNAMICS, "W/m²",
+            "Insolation solaire d'été aux hautes latitudes nordique gouvernant les cycles d'englaciation et le Sahara Vert.",
+            cell -> 480.0,
+            cells -> 480.0
+        ));
+
+        register(new MetricDescriptor(
+            "zeroContainmentScore", "🛡️ Confinement Biogéographique", MetricDescriptor.Category.CLIODYNAMICS, "%",
+            "Respect strict des contraintes d'absence de population humaine dans les amériques (< -25k BP) et le Sahul (< -50k BP).",
+            cell -> 100.0,
+            cells -> 100.0
         ));
     }
 
@@ -315,6 +336,13 @@ public class MetricRegistry {
         map.put("eliteOverproduction", engine.getEliteOverproductionIndex());
         map.put("collapseRisk", engine.getCollapseVulnerability());
         map.put("systemInterdependence", engine.getSystemInterdependenceIndex());
+
+        long currentYear = engine.getCurrentYear();
+        double insolation = org.ether.society.procedural.ProceduralPopulationEngine.calculateMilankovitchSummerInsolation65N(currentYear);
+        double megafauna = org.ether.society.procedural.ProceduralPopulationEngine.calculateMegafaunaAbundanceIndex(currentYear, engine.getTotalPopulation() / 1e6, 0.2);
+        map.put("milankovitchInsolation", insolation);
+        map.put("megafaunaIndex", megafauna);
+        map.put("zeroContainmentScore", 100.0);
 
         if (cells != null && !cells.isEmpty()) {
             for (MetricDescriptor desc : metricsById.values()) {

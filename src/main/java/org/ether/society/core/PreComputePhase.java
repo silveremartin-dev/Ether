@@ -160,6 +160,9 @@ public class PreComputePhase {
             }
             cell.setRainfall(Math.max(0, basePrecip + random.nextDouble() * 500));
         }
+
+        double seaOffset = isGlacialMax ? -120.0 : 0.0;
+        org.ether.society.procedural.SeaLevelTransitionEngine.applySeaLevelTransition(cells, seaOffset);
     }
 
     /**

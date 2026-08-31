@@ -125,42 +125,42 @@ public class VarianceDistributionPanel extends VBox {
     public void updateTexts() {
         headerTitle.setText(I18n.getOrDefault("variance.title", "\uD83D\uDCCA STATISTIQUE DE VARIANCE ENTRE INDIVIDUS & DISTRIBUTION"));
         subtitle.setText(I18n.getOrDefault("variance.subtitle", "\u00C9value \u00E0 quel point les individus / mailles s'\u00E9loignent du sch\u00E9ma standard (Moyenne \u03BC \u00B1 \u00C9cart-type \u03C3)"));
-        comboPrompt.setText(I18n.getOrDefault("variance.prompt.variable", "Variable Étudiée :"));
+        comboPrompt.setText(I18n.getOrDefault("variance.prompt.variable", "Studied Variable:"));
 
         int selectedIdx = variableCombo.getSelectionModel().getSelectedIndex();
         variableCombo.getItems().clear();
         variableCombo.getItems().addAll(
-                I18n.getOrDefault("variance.var.wealth", "Richesse & Capital (wealth)"),
+                I18n.getOrDefault("variance.var.wealth", "Wealth & Capital (wealth)"),
                 I18n.getOrDefault("variance.var.food", "Nourriture disponible (food)"),
-                I18n.getOrDefault("variance.var.population", "Densité de Population (population)"),
-                I18n.getOrDefault("variance.var.water", "Ressources en Eau (water)"),
-                I18n.getOrDefault("variance.var.rainfall", "Précipitations (rainfall)"),
-                I18n.getOrDefault("variance.var.temperature", "Température (temperature)"),
+                I18n.getOrDefault("variance.var.population", "Population Density (population)"),
+                I18n.getOrDefault("variance.var.water", "Water Resources (water)"),
+                I18n.getOrDefault("variance.var.rainfall", "Precipitation (rainfall)"),
+                I18n.getOrDefault("variance.var.temperature", "Temperature (temperature)"),
                 I18n.getOrDefault("variance.var.tech", "Niveau Technologique (tech)"),
-                I18n.getOrDefault("variance.var.age", "Âge Approximatif (age)")
+                I18n.getOrDefault("variance.var.age", "Approximate Age (age)")
         );
         variableCombo.getSelectionModel().select(selectedIdx >= 0 ? selectedIdx : 0);
 
         kpiMeanTitle.setText(I18n.getOrDefault("variance.kpi.mean", "Moyenne (μ) :"));
         kpiVarTitle.setText(I18n.getOrDefault("variance.kpi.variance", "Variance (σ²) :"));
-        kpiStdTitle.setText(I18n.getOrDefault("variance.kpi.stddev", "Écart-Type (σ) :"));
+        kpiStdTitle.setText(I18n.getOrDefault("variance.kpi.stddev", "Standard Deviation (σ):"));
         kpiGiniTitle.setText(I18n.getOrDefault("variance.kpi.gini", "Indice Gini :"));
         kpiMinMaxTitle.setText(I18n.getOrDefault("variance.kpi.minmax", "Min / Max :"));
 
         Tooltip.install(meanKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.mean", "Valeur moyenne standard de la population")));
-        Tooltip.install(varKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.variance", "Mesure de la dispersion au carré des individus par rapport à la moyenne")));
-        Tooltip.install(stdKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.stddev", "Écart moyen au schéma standard (μ ± σ)")));
-        Tooltip.install(giniKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.gini", "Mesure d'inégalité (0 = répartition égale, 1 = concentration totale)")));
-        Tooltip.install(minMaxKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.minmax", "Valeurs extrêmes minimale et maximale observées")));
+        Tooltip.install(varKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.variance", "Measure of squared dispersion of individuals relative to mean")));
+        Tooltip.install(stdKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.stddev", "Average deviation from standard schema (μ ± σ)")));
+        Tooltip.install(giniKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.gini", "Inequality measure (0 = equal distribution, 1 = total concentration)")));
+        Tooltip.install(minMaxKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.minmax", "Minimum and maximum extreme values observed")));
 
-        xAxis.setLabel(I18n.getOrDefault("variance.chart.xaxis", "Tranches d'Écart au Schéma Standard (Histogramme 10 Bins)"));
+        xAxis.setLabel(I18n.getOrDefault("variance.chart.xaxis", "Standard Deviation Bracket Bins (10 Bin Histogram)"));
         yAxis.setLabel(I18n.getOrDefault("variance.chart.yaxis", "Nombre d'Individus / Cellules"));
-        histogramChart.setTitle(I18n.getOrDefault("variance.chart.title", "Courbe de Répartition et Variance des Individus"));
+        histogramChart.setTitle(I18n.getOrDefault("variance.chart.title", "Individual Distribution & Variance Curve"));
 
         if (currentCells != null) {
             updateData(currentCells);
         } else {
-            lblSpreadDesc.setText(I18n.getOrDefault("variance.desc.analyzing", "Analyse du schéma d'écart au standard..."));
+            lblSpreadDesc.setText(I18n.getOrDefault("variance.desc.analyzing", "Analyzing deviation pattern from standard..."));
         }
     }
 
@@ -190,7 +190,7 @@ public class VarianceDistributionPanel extends VBox {
             lblStdDev.setText("--");
             lblGini.setText("--");
             lblMinMax.setText("-- / --");
-            lblSpreadDesc.setText(I18n.getOrDefault("variance.desc.no_data", "Aucune donnée disponible pour ") + varKey);
+            lblSpreadDesc.setText(I18n.getOrDefault("variance.desc.no_data", "No data available for ") + varKey);
             histogramSeries.getData().clear();
             return;
         }

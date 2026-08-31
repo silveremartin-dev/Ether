@@ -2373,7 +2373,7 @@ public class H3MapCanvas extends Canvas {
         // Header label
         gc.setFill(Color.rgb(56, 189, 248));
         gc.setFont(javafx.scene.text.Font.font("Segoe UI", javafx.scene.text.FontWeight.BOLD, 11));
-        gc.fillText(org.ether.society.i18n.I18n.getOrDefault("sim.legend.title", "LÉGENDE — ") + displayMode.getDisplayName().toUpperCase(), lx + 12, ly + 18);
+        gc.fillText(org.ether.society.i18n.I18n.getOrDefault("sim.legend.title", "LEGEND — ") + displayMode.getDisplayName().toUpperCase(), lx + 12, ly + 18);
 
         // Compute stats (Min, Max, Mean, Median)
         double minVal = Double.MAX_VALUE;

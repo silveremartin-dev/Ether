@@ -150,7 +150,7 @@ public class StatsPanel extends VBox {
         getStyleClass().add("glass-panel");
 
         // --- TOP HEADER TOOLBAR ---
-        Label headerTitle = new Label("📊 TABLEAU DE BORD DES STATISTIQUES & CLIODYNAMIQUE");
+        Label headerTitle = new Label(I18n.getOrDefault("stats.header", "📊 STATISTICS & CLIODYNAMICS DASHBOARD"));
         headerTitle.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #ffd700;");
 
         Label cpuNoticeLabel = new Label(
@@ -161,13 +161,13 @@ public class StatsPanel extends VBox {
         cpuNoticeLabel.setWrapText(true);
         cpuNoticeLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #93c5fd; -fx-padding: 4 8; -fx-background-color: rgba(30, 58, 138, 0.4); -fx-background-radius: 4; -fx-border-color: rgba(59, 130, 246, 0.4); -fx-border-radius: 4;");
 
-        ToggleButton btnLiveCollection = new ToggleButton("⚡ Collecte Stats : ACTIF");
+        ToggleButton btnLiveCollection = new ToggleButton(I18n.getOrDefault("stats.btn.live_collection_active", "⚡ Collecte Stats : ACTIF"));
         btnLiveCollection.setSelected(true);
-        btnLiveCollection.setTooltip(new Tooltip("Activer/Désactiver le calcul dynamique des statistiques en arrière-plan pour économiser du processeur."));
+        btnLiveCollection.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.live_collection", "Toggle dynamic background statistics calculation to save CPU.")));
         btnLiveCollection.setStyle("-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;");
         btnLiveCollection.setOnAction(e -> {
             isLiveCollectionActive = btnLiveCollection.isSelected();
-            btnLiveCollection.setText(isLiveCollectionActive ? "⚡ Collecte Stats : ACTIF" : "⏸️ Collecte Stats : EN PAUSE");
+            btnLiveCollection.setText(isLiveCollectionActive ? I18n.getOrDefault("stats.btn.live_collection_active", "⚡ Collecte Stats : ACTIF") : I18n.getOrDefault("stats.btn.live_collection_paused", "⏸️ Collecte Stats : EN PAUSE"));
             btnLiveCollection.setStyle(isLiveCollectionActive
                     ? "-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;"
                     : "-fx-background-color: #64748b; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;");
@@ -177,7 +177,7 @@ public class StatsPanel extends VBox {
         samplingCombo.getItems().addAll("1 Tick (Chaque Cycle)", "5 Ticks", "20 Ticks (~1 Secondes)", "100 Ticks (~5 Secondes)");
         samplingCombo.setValue("1 Tick (Chaque Cycle)");
         samplingCombo.setStyle("-fx-font-size: 10px;");
-        samplingCombo.setTooltip(new Tooltip("Cadence d'échantillonnage et d'actualisation des métriques."));
+        samplingCombo.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.sampling", "Sampling rate and metrics refresh frequency.")));
         samplingCombo.setOnAction(e -> {
             int idx = samplingCombo.getSelectionModel().getSelectedIndex();
             samplingIntervalTicks = switch (idx) {
@@ -188,8 +188,8 @@ public class StatsPanel extends VBox {
             };
         });
 
-        Button btnFormulaEditor = new Button("🧮 Éditeur de Formules & Variables");
-        btnFormulaEditor.setTooltip(new Tooltip("Ouvrir l'éditeur interactif de formules pluggables (SUM, AVG, MEDIAN, VAR, STDDEV, GINI, custom expressions)."));
+        Button btnFormulaEditor = new Button(I18n.getOrDefault("stats.btn.formula_editor", "🧮 Formula & Variables Editor"));
+        btnFormulaEditor.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.formula_editor", "Open interactive pluggable formula editor (SUM, AVG, MEDIAN, VAR, STDDEV, GINI, custom expressions).")));
         btnFormulaEditor.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;");
         btnFormulaEditor.setOnAction(e -> {
             PluggableFormulaEditorDialog dlg = new PluggableFormulaEditorDialog(pluggableStatEngine, engine != null ? engine.getCells() : null);
@@ -204,10 +204,10 @@ public class StatsPanel extends VBox {
         topControlsBox.getStyleClass().add("card-section");
 
         // --- SECTION 1: GRAPH SELECTION & TIME SERIES ---
-        Label chartHeaderLabel = new Label("📈 ÉVOLUTION CHRONOLOGIQUE TEMPORELLE (Courbe Glissante)");
+        Label chartHeaderLabel = new Label(I18n.getOrDefault("stats.section.time_evolution", "📈 TIME EVOLUTION CHRONOLOGY (Sliding Curve)"));
         chartHeaderLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
-        Label comboLabel = new Label("Statistique Tracée :");
+        Label comboLabel = new Label(I18n.getOrDefault("stats.label.traced_stat", "Traced Statistic:"));
         comboLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 10px; -fx-font-weight: bold;");
 
         chartMetricCombo = new ComboBox<>();
@@ -235,7 +235,7 @@ public class StatsPanel extends VBox {
         chartMetricCombo.setOnAction(e -> resetChartSeries());
 
         // Sliding Time Window Toggle Buttons
-        Label windowLabel = new Label("Fenêtre :");
+        Label windowLabel = new Label(I18n.getOrDefault("stats.label.window", "Window:"));
         windowLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 10px; -fx-font-weight: bold;");
 
         ToggleGroup windowGroup = new ToggleGroup();
@@ -262,7 +262,7 @@ public class StatsPanel extends VBox {
         windowBox.setAlignment(Pos.CENTER_LEFT);
 
         NumberAxis xAxis = new NumberAxis();
-        xAxis.setLabel("Temps (Année)");
+        xAxis.setLabel(I18n.getOrDefault("stats.chart.time_axis", "Time (Year)"));
         xAxis.setTickLabelFill(Color.GRAY);
         xAxis.setAutoRanging(true);
         xAxis.setForceZeroInRange(false);
@@ -291,7 +291,7 @@ public class StatsPanel extends VBox {
         yAxis.setForceZeroInRange(false);
 
         lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setTitle("Courbe d'Évolution Temporelle (💡 [CTRL] + Molette pour Zoomer | [CTRL] + Glisser pour Naviguer | Double-Clic pour Réinitialiser)");
+        lineChart.setTitle(I18n.getOrDefault("stats.chart.title", "Time Evolution Curve (💡 [CTRL] + Scroll to Zoom | [CTRL] + Drag to Pan | Double-Click to Reset)"));
         lineChart.setCreateSymbols(false);
         lineChart.setAnimated(false);
         lineChart.setLegendVisible(false);
@@ -335,7 +335,7 @@ public class StatsPanel extends VBox {
         chartBox.getStyleClass().add("card-section");
 
         // --- SECTION 2: DEMOGRAPHICS (AGE PYRAMID) ---
-        Label barHeaderLabel = new Label("📊 REPARTITION DEMOGRAPHIQUE (Pyramide des Âges)");
+        Label barHeaderLabel = new Label(I18n.getOrDefault("stats.section.age_pyramid", "📊 DEMOGRAPHIC BREAKDOWN (Age Pyramid)"));
         barHeaderLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
         CategoryAxis barX = new CategoryAxis();
@@ -343,7 +343,7 @@ public class StatsPanel extends VBox {
         NumberAxis barY = new NumberAxis();
         barY.setTickLabelFill(Color.GRAY);
         barChart = new BarChart<>(barX, barY);
-        barChart.setTitle("Pyramide des Âges");
+        barChart.setTitle(I18n.getOrDefault("stats.chart.age_pyramid_title", "Age Pyramid"));
         barChart.setAnimated(false);
         barChart.setLegendVisible(false);
         barChart.setPrefHeight(130);
@@ -353,13 +353,13 @@ public class StatsPanel extends VBox {
         barBox.getStyleClass().add("card-section");
 
         // --- SECTION 3: METRIC CARDS & CATEGORY FILTER ---
-        Label metricsHeaderLabel = new Label("📋 MÉTRIQUES DÉTAILLÉES & INDICATEURS CLIODYNAMIQUES");
+        Label metricsHeaderLabel = new Label(I18n.getOrDefault("stats.section.detailed_metrics", "📋 DETAILED METRICS & CLIODYNAMIC INDICATORS"));
         metricsHeaderLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #ffd700;");
 
         // Interactive Metric Inspector Panel
-        Label metricInspectorTitle = new Label("🔎 Explication de la Métrique Cliodynamique :");
+        Label metricInspectorTitle = new Label(I18n.getOrDefault("stats.label.metric_explanation", "🔎 Cliodynamic Metric Explanation:"));
         metricInspectorTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #ffd700;");
-        Label metricInspectorText = new Label("Survolez ou cliquez sur une carte de statistique ci-dessous pour afficher sa formule mathématique, sa méthode de calcul et sa signification sociétale.");
+        Label metricInspectorText = new Label(I18n.getOrDefault("stats.desc.hover_metric", "Hover over or click a statistic card below to display its mathematical formula, calculation method, and societal meaning."));
         metricInspectorText.setWrapText(true);
         metricInspectorText.setStyle("-fx-font-size: 11px; -fx-text-fill: #cbd5e1;");
 
@@ -373,7 +373,7 @@ public class StatsPanel extends VBox {
             "⚡ Énergie & Matière",
             "👥 Démographie & Santé",
             "🏛️ Société & Institutions",
-            "💎 Économie & Richesse",
+            I18n.getOrDefault("formula_editor.default.category", "💎 Economy & Wealth"),
             "🧠 Cognition & Information",
             "🌍 Écologie & Frontières Planétaires",
             "⏳ Cliodynamique & Risques Systémiques",
@@ -386,13 +386,13 @@ public class StatsPanel extends VBox {
 
         // Search Field
         searchField = new TextField();
-        searchField.setPromptText("🔍 Filtrer une statistique (ex: Kardashev, Gini, Effondrement, NPK)...");
+        searchField.setPromptText(I18n.getOrDefault("stats.prompt.filter", "🔍 Filter a statistic (e.g. Kardashev, Gini, Collapse, NPK)..."));
         searchField.setStyle("-fx-background-color: rgba(30, 41, 59, 0.8); -fx-text-fill: white; -fx-prompt-text-fill: #64748b;");
         searchField.textProperty().addListener((obs, oldV, newV) -> filterMetrics());
 
         // Export Button
-        Button exportBtn = new Button("📥 Exporter Données (CSV)");
-        exportBtn.setTooltip(new Tooltip("Exporter l'historique complet des métriques sociétales, énergétiques et économiques au format CSV."));
+        Button exportBtn = new Button(I18n.getOrDefault("stats.btn.export_csv", "📥 Export Data (CSV)"));
+        exportBtn.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.export_csv", "Export complete history of societal, energy, and economic metrics as CSV.")));
         exportBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 6 12; -fx-background-radius: 6;");
         exportBtn.setMaxWidth(Double.MAX_VALUE);
         exportBtn.setOnAction(e -> exportCsv());
@@ -474,14 +474,14 @@ public class StatsPanel extends VBox {
         addCard("kardashevScale", "Échelle de Kardashev", "🏛️ Société & Institutions", "Type K", "K = (log10(P_watts) - 6) / 10. Niveau de maîtrise énergétique globale (Type 0.0 à 1.0+).", inspectorTitle, inspectorText);
 
         // Category 4: Économie & Richesse
-        addCard("giniIndex", "Indice de Gini (Inégalité)", "💎 Économie & Richesse", "Coeff", "G = A / (A + B). Mesure de concentration des richesses (0 = égalité, 1 = inégalité absolue).", inspectorTitle, inspectorText);
-        addCard("gdpTotal", "PIB Global (GDP)", "💎 Économie & Richesse", "G$", "Produit Intérieur Brut total converti en monnaie constante.", inspectorTitle, inspectorText);
-        addCard("builtCapital", "Capital Bâti & Outillage", "💎 Économie & Richesse", "kg/hab", "Stock total d'infrastructures physiques et de machines.", inspectorTitle, inspectorText);
-        addCard("eliteFormation", "Formation d'Élite", "💎 Économie & Richesse", "%", "Proportion de la population détenant les fonctions de commandement.", inspectorTitle, inspectorText);
-        addCard("elderCapitalShare", "Possession Capital (Aînés)", "💎 Économie & Richesse", "%", "Part de la richesse foncière détenue par la tranche d'âge senior.", inspectorTitle, inspectorText);
-        addCard("landRent", "Rente Foncière & Immobilière", "💎 Économie & Richesse", "Idx", "Valorisation de la rente du sol liée à la densité et aux infrastructures.", inspectorTitle, inspectorText);
-        addCard("toolsCount", "Nombre d'Outils en Service", "💎 Économie & Richesse", "unités", "Quantité totale d'outils et équipements de production.", inspectorTitle, inspectorText);
-        addCard("productsCount", "Variété de Produits", "💎 Économie & Richesse", "types", "Diversité des produits manufacturés au catalogue technique.", inspectorTitle, inspectorText);
+        addCard("giniIndex", "Indice de Gini (Inégalité)", I18n.getOrDefault("formula_editor.default.category", "💎 Economy & Wealth"), "Coeff", "G = A / (A + B). Mesure de concentration des richesses (0 = égalité, 1 = inégalité absolue).", inspectorTitle, inspectorText);
+        addCard("gdpTotal", "PIB Global (GDP)", I18n.getOrDefault("formula_editor.default.category", "💎 Economy & Wealth"), "G$", "Produit Intérieur Brut total converti en monnaie constante.", inspectorTitle, inspectorText);
+        addCard("builtCapital", "Capital Bâti & Outillage", I18n.getOrDefault("formula_editor.default.category", "💎 Economy & Wealth"), "kg/hab", "Stock total d'infrastructures physiques et de machines.", inspectorTitle, inspectorText);
+        addCard("eliteFormation", "Formation d'Élite", I18n.getOrDefault("formula_editor.default.category", "💎 Economy & Wealth"), "%", "Proportion de la population détenant les fonctions de commandement.", inspectorTitle, inspectorText);
+        addCard("elderCapitalShare", "Possession Capital (Aînés)", I18n.getOrDefault("formula_editor.default.category", "💎 Economy & Wealth"), "%", "Part de la richesse foncière détenue par la tranche d'âge senior.", inspectorTitle, inspectorText);
+        addCard("landRent", "Rente Foncière & Immobilière", I18n.getOrDefault("formula_editor.default.category", "💎 Economy & Wealth"), "Idx", "Valorisation de la rente du sol liée à la densité et aux infrastructures.", inspectorTitle, inspectorText);
+        addCard("toolsCount", "Nombre d'Outils en Service", I18n.getOrDefault("formula_editor.default.category", "💎 Economy & Wealth"), "unités", "Quantité totale d'outils et équipements de production.", inspectorTitle, inspectorText);
+        addCard("productsCount", "Variété de Produits", I18n.getOrDefault("formula_editor.default.category", "💎 Economy & Wealth"), "types", "Diversité des produits manufacturés au catalogue technique.", inspectorTitle, inspectorText);
 
         // Category 5: Cognition & Information
         addCard("shannonBandwidth", "Bande Passante Shannon", "🧠 Cognition & Information", "Gbps", "Débit maximal de transmission d'information à travers le réseau civilisationnel.", inspectorTitle, inspectorText);
@@ -858,7 +858,7 @@ public class StatsPanel extends VBox {
         if (engine == null) return;
 
         javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-        fileChooser.setTitle("Exporter les Statistiques Cliodynamiques (CSV / Excel)");
+        fileChooser.setTitle(I18n.getOrDefault("stats.title.export_dialog", "Export Cliodynamic Statistics (CSV / Excel)"));
         fileChooser.setInitialFileName("ether_statistiques_cliodynamiques.csv");
         fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Fichiers CSV (*.csv)", "*.csv"));
 
@@ -877,7 +877,7 @@ public class StatsPanel extends VBox {
                 engine.getDivisionOfLaborIndex(), engine.getSystemComplexityIndex()));
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Exportation Réussie");
+            alert.setTitle(I18n.getOrDefault("stats.title.export_success", "Export Successful"));
             alert.setContentText("Données statistiques exportées avec succès dans :\n" + file.getAbsolutePath());
             alert.showAndWait();
         } catch (Exception ex) {

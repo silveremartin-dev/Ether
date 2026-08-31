@@ -96,11 +96,11 @@ public enum DisplayMode {
         "Probabilité mathématique d'effondrement systémique ou de basculement irréversible de la cellule.");
 
     public enum Category {
-        PHYSICAL("🌍 1. PHYSIQUE & CLIMAT"),
-        DEMOGRAPHICS("👥 2. DÉMOGRAPHIE & SANTÉ"),
-        ECOLOGY("🌱 3. ÉCOLOGIE & PRESSION MALTHUSIENNE"),
-        MINING("⛏️ 4. RESSOURCES MINÉRALES & EXPLOITATION"),
-        SOCIETY_POLITICS("🏛️ 5. ÉCONOMIE, SOCIÉTÉ & CLIODYNAMIQUE");
+        PHYSICAL("🌍 PHYSIQUE & CLIMAT"),
+        DEMOGRAPHICS("👥 DÉMOGRAPHIE & SANTÉ"),
+        ECOLOGY("🌱 ÉCOLOGIE & PRESSION MALTHUSIENNE"),
+        MINING("⛏️ RESSOURCES MINÉRALES & EXPLOITATION"),
+        SOCIETY_POLITICS("🏛️ ÉCONOMIE, SOCIÉTÉ & CLIODYNAMIQUE");
 
         private final String categoryName;
 

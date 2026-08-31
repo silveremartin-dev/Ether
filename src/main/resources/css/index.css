@@ -92,9 +92,10 @@
 }
 
 .label-section-header {
-    -fx-font-size: 12px;
+    -fx-font-family: 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', system-ui, sans-serif;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
-    -fx-text-fill: #94a3b8;
+    -fx-text-fill: #38bdf8;
     -fx-padding: 4 0 2 0;
 }
 
@@ -229,7 +230,7 @@
     -fx-border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* TabPane Styling */
+/* TabPane & Sub-Tab Styling */
 .tab-pane .tab-header-area .tab-header-background {
     -fx-background-color: transparent;
 }
@@ -242,8 +243,10 @@
 
 .tab-pane .tab .tab-label {
     -fx-text-fill: #94a3b8;
+    -fx-font-family: 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', system-ui, sans-serif;
     -fx-font-weight: bold;
     -fx-font-size: 13px;
+    -fx-alignment: center;
 }
 
 .tab-pane .tab:hover .tab-label {
@@ -251,13 +254,16 @@
 }
 
 .tab-pane .tab:selected {
-    -fx-background-color: rgba(56, 189, 248, 0.1);
+    -fx-background-color: rgba(56, 189, 248, 0.12);
     -fx-border-width: 0 0 2 0;
     -fx-border-color: #38bdf8;
 }
 
 .tab-pane .tab:selected .tab-label {
     -fx-text-fill: #ffffff;
+    -fx-font-family: 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', system-ui, sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
 }
 
 /* Tooltips */

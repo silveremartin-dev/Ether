@@ -48,16 +48,27 @@ build_output.txt
 classpath.txt
 saves/
 
-# Generated Javadoc
-javadoc/
-docs/javadoc/
+# Generated Javadoc (Tracked for docs)
+# javadoc/
+# docs/javadoc/
 
-# Raw dataset source archives (HYDE, Natural Earth, GADM, etc.)
+# Raw dataset source archives & heavy raster/vector binaries
 **/source/
 data/maps/**/*.zip
 data/maps/**/*.asc
 data/maps/**/*.geojson
 data/maps/**/*.csv
+data/maps/**/*.tif
+data/maps/**/*.tiff
+data/maps/**/*.png
+data/maps/**/*.img
+data/maps/**/*.lbl
+data/maps/**/*.bin
+data/maps/**/*.dat
+data/maps/**/*.nc
+data/maps/**/*.tab
+data/maps/**/*.xlsx
+data/maps/**/*.xls
 data/maps/cache/
 data/cache/
 data/vault_backups/

@@ -64,7 +64,7 @@ public class PluggableFormulaEditorDialog extends Stage {
         this.currentCells = currentCells;
 
         initModality(Modality.APPLICATION_MODAL);
-        setTitle(I18n.getOrDefault("formula_editor.window_title", "🧮 Éditeur & Gestionnaire de Formules Statistiques Personnalisées"));
+        setTitle(I18n.getOrDefault("formula_editor.window_title", "🧮 Custom Statistical Formula Editor & Manager"));
 
         VBox root = new VBox(12);
         root.setPadding(new Insets(14));
@@ -193,36 +193,36 @@ public class PluggableFormulaEditorDialog extends Stage {
     }
 
     public void updateTexts() {
-        setTitle(I18n.getOrDefault("formula_editor.window_title", "🧮 Éditeur & Gestionnaire de Formules Statistiques Personnalisées"));
+        setTitle(I18n.getOrDefault("formula_editor.window_title", "🧮 Custom Statistical Formula Editor & Manager"));
         headerLabel.setText(I18n.getOrDefault("formula_editor.header", "⚙️ FORMULES & STATISTIQUES PLUGGABLES (Custom Formula Engine)"));
-        lblListTitle.setText(I18n.getOrDefault("formula_editor.list_title", "📋 Formules Enregistrées :"));
+        lblListTitle.setText(I18n.getOrDefault("formula_editor.list_title", "📋 Saved Formulas:"));
 
         btnNew.setText(I18n.getOrDefault("formula_editor.btn.new", "➕ Nouvelle Formule"));
-        btnNew.setTooltip(new Tooltip(I18n.getOrDefault("formula_editor.tooltip.new", "Créer une nouvelle formule personnalisée.")));
+        btnNew.setTooltip(new Tooltip(I18n.getOrDefault("formula_editor.tooltip.new", "Create a new custom formula.")));
         btnDelete.setText(I18n.getOrDefault("formula_editor.btn.delete", "🗑️ Supprimer"));
-        btnDelete.setTooltip(new Tooltip(I18n.getOrDefault("formula_editor.tooltip.delete", "Supprimer la formule sélectionnée.")));
-        btnImport.setText(I18n.getOrDefault("formula_editor.btn.import", "📥 Importer (Properties)"));
-        btnImport.setTooltip(new Tooltip(I18n.getOrDefault("formula_editor.tooltip.import", "Importer un fichier de propriétés de formules.")));
-        btnExport.setText(I18n.getOrDefault("formula_editor.btn.export", "📤 Exporter (Properties)"));
-        btnExport.setTooltip(new Tooltip(I18n.getOrDefault("formula_editor.tooltip.export", "Exporter toutes les formules dans un fichier de propriétés.")));
+        btnDelete.setTooltip(new Tooltip(I18n.getOrDefault("formula_editor.tooltip.delete", "Delete selected formula.")));
+        btnImport.setText(I18n.getOrDefault("formula_editor.btn.import", "📥 Import (.properties)"));
+        btnImport.setTooltip(new Tooltip(I18n.getOrDefault("formula_editor.tooltip.import", "Import a formula properties file.")));
+        btnExport.setText(I18n.getOrDefault("formula_editor.btn.export", "📤 Export (.properties)"));
+        btnExport.setTooltip(new Tooltip(I18n.getOrDefault("formula_editor.tooltip.export", "Export all formulas into a properties file.")));
 
         lblId.setText(I18n.getOrDefault("formula_editor.label.id", "Identifiant Unique (ID) :"));
         lblName.setText(I18n.getOrDefault("formula_editor.label.name", "Nom de la Statistique :"));
-        lblCategory.setText(I18n.getOrDefault("formula_editor.label.category", "Catégorie :"));
-        lblExpression.setText(I18n.getOrDefault("formula_editor.label.expression", "Expression / Formule :"));
-        lblUnit.setText(I18n.getOrDefault("formula_editor.label.unit", "Unité de Mesure :"));
+        lblCategory.setText(I18n.getOrDefault("formula_editor.label.category", "Category:"));
+        lblExpression.setText(I18n.getOrDefault("formula_editor.label.expression", "Expression / Formula:"));
+        lblUnit.setText(I18n.getOrDefault("formula_editor.label.unit", "Unit of Measurement:"));
         lblDescription.setText(I18n.getOrDefault("formula_editor.label.description", "Description / Documentation :"));
 
         txtId.setPromptText(I18n.getOrDefault("formula_editor.prompt.id", "ex: custom_var_wealth"));
-        txtName.setPromptText(I18n.getOrDefault("formula_editor.prompt.name", "ex: Ecart-Type de Richesse"));
+        txtName.setPromptText(I18n.getOrDefault("formula_editor.prompt.name", "e.g. Wealth Standard Deviation"));
         txtExpression.setPromptText(I18n.getOrDefault("formula_editor.prompt.expression", "ex: STDDEV(wealth) / AVG(wealth)"));
         txtUnit.setPromptText(I18n.getOrDefault("formula_editor.prompt.unit", "ex: %, t, Coeff"));
-        txtDescription.setPromptText(I18n.getOrDefault("formula_editor.prompt.description", "Description mathématique et portée de la formule..."));
+        txtDescription.setPromptText(I18n.getOrDefault("formula_editor.prompt.description", "Mathematical description and scope of formula..."));
 
-        btnTest.setText(I18n.getOrDefault("formula_editor.btn.test", "🔬 Évaluer & Tester la Formule"));
-        btnTest.setTooltip(new Tooltip(I18n.getOrDefault("formula_editor.tooltip.test", "Calculer immédiatement l'expression sur les mailles courantes.")));
+        btnTest.setText(I18n.getOrDefault("formula_editor.btn.test", "🔬 Evaluate & Test Formula"));
+        btnTest.setTooltip(new Tooltip(I18n.getOrDefault("formula_editor.tooltip.test", "Immediately evaluate expression on current cells.")));
         if (lblTestResult.getText().isEmpty() || lblTestResult.getText().contains("--")) {
-            lblTestResult.setText(I18n.getOrDefault("formula_editor.result.default", "Résultat du Test : --"));
+            lblTestResult.setText(I18n.getOrDefault("formula_editor.result.default", "Test Result: --"));
         }
 
         docTitle.setText(I18n.getOrDefault("formula_editor.doc.title", "📖 Manuel de Syntaxe & Variables Disponibles :"));
@@ -233,7 +233,7 @@ public class PluggableFormulaEditorDialog extends Stage {
                 "• Exemple : GINI(wealth)  |  STDDEV(food)  |  SUM(food) / COUNT(population)"));
 
         btnSave.setText(I18n.getOrDefault("formula_editor.btn.save", "💾 Enregistrer la Formule"));
-        btnSave.setTooltip(new Tooltip(I18n.getOrDefault("formula_editor.tooltip.save", "Enregistrer la formule dans le moteur statistique actif.")));
+        btnSave.setTooltip(new Tooltip(I18n.getOrDefault("formula_editor.tooltip.save", "Save formula into active statistical engine.")));
         btnClose.setText(I18n.getOrDefault("formula_editor.btn.close", "Fermer"));
 
         refreshFormulaList();
@@ -248,7 +248,7 @@ public class PluggableFormulaEditorDialog extends Stage {
     private void refreshFormulaList() {
         if (formulaListView == null) return;
         formulaListView.getItems().clear();
-        String systemBadge = I18n.getOrDefault("formula_editor.badge.system", " [SYSTÈME]");
+        String systemBadge = I18n.getOrDefault("formula_editor.badge.system", " [SYSTEM]");
         String customBadge = I18n.getOrDefault("formula_editor.badge.custom", " [CUSTOM]");
 
         for (PluggableStatEngine.StatDefinition def : statEngine.getRegisteredStats()) {
@@ -274,29 +274,29 @@ public class PluggableFormulaEditorDialog extends Stage {
         txtExpression.setText(def.getExpression());
         txtUnit.setText(def.getUnit());
         txtDescription.setText(def.getDescription());
-        lblTestResult.setText(I18n.getOrDefault("formula_editor.result.default", "Résultat du Test : --"));
+        lblTestResult.setText(I18n.getOrDefault("formula_editor.result.default", "Test Result: --"));
     }
 
     private void clearForm() {
         txtId.setText("custom_" + System.currentTimeMillis() % 10000);
         txtId.setEditable(true);
         txtName.setText(I18n.getOrDefault("formula_editor.default.new_name", "Nouvelle Formule Statistique"));
-        txtCategory.setText(I18n.getOrDefault("formula_editor.default.category", "💎 Économie & Richesse"));
+        txtCategory.setText(I18n.getOrDefault("formula_editor.default.category", "💎 Economy & Wealth"));
         txtExpression.setText("STDDEV(wealth)");
         txtUnit.setText("Coeff");
-        txtDescription.setText(I18n.getOrDefault("formula_editor.default.description", "Description de la statistique personnalisée..."));
-        lblTestResult.setText(I18n.getOrDefault("formula_editor.result.default", "Résultat du Test : --"));
+        txtDescription.setText(I18n.getOrDefault("formula_editor.default.description", "Custom statistic description..."));
+        lblTestResult.setText(I18n.getOrDefault("formula_editor.result.default", "Test Result: --"));
     }
 
     private void testFormula() {
         String expr = txtExpression.getText();
         if (expr == null || expr.isBlank()) {
-            lblTestResult.setText(I18n.getOrDefault("formula_editor.error.empty", "Résultat : Erreur (Expression vide)"));
+            lblTestResult.setText(I18n.getOrDefault("formula_editor.error.empty", "Result: Error (Empty expression)"));
             return;
         }
         try {
             double res = statEngine.computeValue(expr, currentCells, null);
-            String resultPattern = I18n.getOrDefault("formula_editor.result.success", "Résultat du Test : %.4f %s");
+            String resultPattern = I18n.getOrDefault("formula_editor.result.success", "Test Result: %.4f %s");
             lblTestResult.setText(String.format(resultPattern, res, txtUnit.getText()));
         } catch (Exception ex) {
             lblTestResult.setText(I18n.getOrDefault("formula_editor.error.prefix", "Erreur : ") + ex.getMessage());
@@ -312,7 +312,7 @@ public class PluggableFormulaEditorDialog extends Stage {
         String desc = txtDescription.getText().trim();
 
         if (id.isEmpty() || name.isEmpty() || expr.isEmpty()) {
-            new Alert(Alert.AlertType.WARNING, I18n.getOrDefault("formula_editor.alert.missing_fields", "Veuillez remplir l'ID, le nom et l'expression de la formule.")).show();
+            new Alert(Alert.AlertType.WARNING, I18n.getOrDefault("formula_editor.alert.missing_fields", "Please fill in ID, name, and expression of formula.")).show();
             return;
         }
 
@@ -322,19 +322,19 @@ public class PluggableFormulaEditorDialog extends Stage {
         PluggableStatEngine.StatDefinition def = new PluggableStatEngine.StatDefinition(id, name, cat, expr, unit, desc, isBuiltin);
         statEngine.registerStat(def);
         refreshFormulaList();
-        new Alert(Alert.AlertType.INFORMATION, String.format(I18n.getOrDefault("formula_editor.alert.saved", "Formule '%s' enregistrée avec succès !"), name)).show();
+        new Alert(Alert.AlertType.INFORMATION, String.format(I18n.getOrDefault("formula_editor.alert.saved", "Formula '%s' saved successfully!"), name)).show();
     }
 
     private void importFormulas() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("formula_editor.dialog.import_title", "Importer une bibliothèque de formules (.properties)"));
+        chooser.setTitle(I18n.getOrDefault("formula_editor.dialog.import_title", "Import Formula Library (.properties)"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.getOrDefault("formula_editor.dialog.prop_filter", "Fichiers Properties (*.properties)"), "*.properties"));
         File file = chooser.showOpenDialog(this);
         if (file != null) {
             try {
                 statEngine.importFormulasFromFile(file);
                 refreshFormulaList();
-                new Alert(Alert.AlertType.INFORMATION, I18n.getOrDefault("formula_editor.alert.imported", "Formules importées avec succès !")).show();
+                new Alert(Alert.AlertType.INFORMATION, I18n.getOrDefault("formula_editor.alert.imported", "Formulas imported successfully!")).show();
             } catch (Exception ex) {
                 new Alert(Alert.AlertType.ERROR, I18n.getOrDefault("formula_editor.alert.import_error", "Erreur d'importation : ") + ex.getMessage()).show();
             }
@@ -343,14 +343,14 @@ public class PluggableFormulaEditorDialog extends Stage {
 
     private void exportFormulas() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("formula_editor.dialog.export_title", "Exporter les formules personnalisées (.properties)"));
+        chooser.setTitle(I18n.getOrDefault("formula_editor.dialog.export_title", "Export Custom Formulas (.properties)"));
         chooser.setInitialFileName("ether_custom_formulas.properties");
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.getOrDefault("formula_editor.dialog.prop_filter", "Fichiers Properties (*.properties)"), "*.properties"));
         File file = chooser.showSaveDialog(this);
         if (file != null) {
             try {
                 statEngine.exportFormulasToFile(file);
-                new Alert(Alert.AlertType.INFORMATION, I18n.getOrDefault("formula_editor.alert.exported", "Formules exportées dans : ") + file.getAbsolutePath()).show();
+                new Alert(Alert.AlertType.INFORMATION, I18n.getOrDefault("formula_editor.alert.exported", "Formulas exported to: ") + file.getAbsolutePath()).show();
             } catch (Exception ex) {
                 new Alert(Alert.AlertType.ERROR, I18n.getOrDefault("formula_editor.alert.export_error", "Erreur d'exportation : ") + ex.getMessage()).show();
             }
