@@ -43,9 +43,18 @@ public class I18n {
     }
 
     private static Language loadSavedLanguage() {
-        String code = prefs.get(PREF_LANG_KEY, Language.ENGLISH.getCode());
+        String code = prefs.get(PREF_LANG_KEY, null);
+        if (code != null && !code.isBlank()) {
+            for (Language lang : Language.values()) {
+                if (lang.getCode().equalsIgnoreCase(code)) {
+                    return lang;
+                }
+            }
+        }
+        // Fallback to system default locale if supported, otherwise ENGLISH
+        String sysLang = Locale.getDefault().getLanguage();
         for (Language lang : Language.values()) {
-            if (lang.getCode().equalsIgnoreCase(code)) {
+            if (lang.getCode().equalsIgnoreCase(sysLang)) {
                 return lang;
             }
         }

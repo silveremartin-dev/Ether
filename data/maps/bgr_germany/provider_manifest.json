@@ -1,0 +1,9 @@
+{
+  "name": "BGR Global Energy & Mineral Reserves",
+  "domain": "Global Energy Resources, Mineral Stocks & Fossil Fuel Reserves",
+  "url": "https://www.bgr.bund.de/EN/Themen/Energie/Downloads/BGR_Energiestudie_2023_Data.xlsx?__blob=publicationFile&v=4",
+  "datasets": [
+    "BGR_Energiestudie_2023_Data.xlsx"
+  ],
+  "citation": "BGR (2023). BGR Energy Study 2023: Reserves, Resources and Availability of Energy Resources. Federal Institute for Geosciences and Natural Resources, Hannover."
+}

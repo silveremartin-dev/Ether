@@ -1,0 +1,24 @@
+{
+  "provider_id": "iaea_nfcis",
+  "name": "IAEA UDEPO & ThDEPO Databases",
+  "organization": "International Atomic Energy Agency (IAEA Vienna)",
+  "domain": "World Distribution of Uranium & Thorium Deposits",
+  "website": "https://soln.iaea.org/NFCIS/UDEPO/",
+  "download_url": "https://soln.iaea.org/NFCIS/UDEPO/Deposits/DownloadCSV",
+  "alternate_urls": [
+    "https://soln.iaea.org/NFCIS/ThDEPO/"
+  ],
+  "license": "IAEA Open Data Terms of Use",
+  "spatial_resolution": "Global Point Deposit Coordinates (Latitude / Longitude)",
+  "temporal_coverage": "Global Nuclear Ore Inventory Baseline",
+  "variables": [
+    "URANIUM_ORE_TONNES_U",
+    "THORIUM_ORE_TONNES_TH",
+    "DEPOSIT_TYPE_GEOLOGY"
+  ],
+  "citation": "IAEA (2022). World Distribution of Uranium Deposits (UDEPO) with Uranium Deposit Classification scheme. International Atomic Energy Agency, Vienna.",
+  "files": [
+    "iaea_udepo_deposits.csv"
+  ],
+  "status": "AUTHENTIC"
+}

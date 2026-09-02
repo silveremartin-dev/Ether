@@ -1,0 +1,10 @@
+{
+  "name": "NOAA NCEI ETOPO 2022 Global Relief Model",
+  "domain": "Global Relief, Topography, Ice Surface & Bathymetry (ETOPO 2022 v1)",
+  "url": "https://www.ncei.noaa.gov/pub/data/mgg/global/relief/ETOPO2022/data/60s/60s_bed_elev_gtif/ETOPO_2022_v1_60s_N90W180_bed.tif",
+  "datasets": [
+    "ETOPO_2022_v1_60s_N90W180_bed.tif",
+    "ETOPO_2022_v1_60s_N90W180_surface.tif"
+  ],
+  "citation": "NOAA National Centers for Environmental Information. 2022: ETOPO 2022 15 Arc-Second Global Relief Model. doi:10.25921/fd07-km46"
+}

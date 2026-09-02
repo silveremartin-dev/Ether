@@ -232,7 +232,7 @@ public class GodModePanel extends VBox {
 
         // Injector components
         injectorTitleLabel = new Label();
-        injectorTitleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
+        injectorTitleLabel.getStyleClass().add("label-section-header");
         lblEventType = createLabel();
         lblEventTitle = createLabel();
         lblTargetYear = createLabel();
@@ -523,7 +523,7 @@ public class GodModePanel extends VBox {
 
     private Label createLabel() {
         Label l = new Label();
-        l.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
+        l.getStyleClass().add("control-label");
         return l;
     }
 

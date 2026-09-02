@@ -305,9 +305,25 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label demoCompatibilityLabel;
 
     private static final Map<String, String> DENSITY_LABELS = Map.ofEntries(
-        Map.entry("UNBIASED_NATURAL", "⚖ Équilibre Bio-Climatique Naturel (Sans Biais / Par Défaut)"),
+        Map.entry("UNBIASED_NATURAL", "⚖ Équilibre Bio-Climatique Naturel (Sans Biais)"),
+        Map.entry("ONE_CONTINENT", "🌍 Berceau Africain & Expansion Globale (Out of Africa)"),
+        Map.entry("AUSTRALIA_SAHUL", "🦘 Migration Maritime Sahul & Australasie"),
+        Map.entry("BERINGIA_AMERICAS", "🏔 Pont Terrestre de Béringie & Corridor Américain"),
+        Map.entry("YOUNGER_DRYAS", "❄ Refuges du Récents Dryas & Levant Natufien"),
+        Map.entry("FERTILE_CRESCENT", "🌾 Croissant Fertile & Premiers Foyers Agricoles"),
+        Map.entry("GREEN_SAHARA", "🌴 Période Humide Africaine & Sahara Vert"),
+        Map.entry("EGYPT_NILE", "𓀀 Vallée du Nil & Bassin d'Irrigation Égyptien"),
+        Map.entry("MESOPOTAMIA_ASSYRIA", "🏛 Plaine Alluviale Mésopotamienne (Tigre & Euphrate)"),
+        Map.entry("MESOAMERICA", "🌽 Bassins Mésoaméricains (Mayas & Olmèques)"),
+        Map.entry("INDIA_MAURYA", "☸️ Plaine Gângétique & Empire Maurya"),
+        Map.entry("ROMAN_EMPIRE", "🏛 Bassin Méditerranéen & Pax Romana"),
         Map.entry("COASTAL_MARITIME", "🌊 Focalisation Littorale & Maritime"),
         Map.entry("RIVER_VALLEYS", "🏞 Focalisation Fluviale & Bassins Alluviaux"),
+        Map.entry("WEST_AFRICA_MALI", "🕌 Boucle du Niger & Empire du Mali"),
+        Map.entry("AMERICAS_1491", "🌽 Empires Précolombiens (Tawantinsuyu & Anahuac)"),
+        Map.entry("COLUMBIAN_CONTACT", "⛵ Choc Colombien & Échange Bio-Démographique"),
+        Map.entry("JAPAN_SAKOKU", "🗾 Archipel Japonais & Isolement Edo (Sakoku)"),
+        Map.entry("INDUSTRIAL_1800", "🏭 Centres Industriels & Foyers de Vapeur (1800)"),
         Map.entry("HIGHLAND_MOUNTAIN", "🏔 Refuges d'Altitude & Reliefs Montagnards"),
         Map.entry("INLAND_OASIS", "🌴 Bassins Hydrographiques Intérieurs & Oasis"),
         Map.entry("EQUATORIAL_BELT", "☀️ Bande Équatoriale & Zone Tropicale"),
@@ -318,15 +334,31 @@ public class ScenarioSetupPanel extends BorderPane {
     );
 
     private static final Map<String, String> DENSITY_DESCRIPTIONS = Map.ofEntries(
-        Map.entry("UNBIASED_NATURAL", "⚖ Équilibre Bio-Climatique Naturel : Modèle physique pur. Aucun biais artificiel. La population s'établit strictly selon la viabilité environnementale réelle (biomes, température, cours d'eau, relief)."),
+        Map.entry("UNBIASED_NATURAL", "⚖ Équilibre Bio-Climatique Naturel : Modèle physique pur. Aucun biais artificiel. La population s'établit strictement selon la viabilité environnementale réelle (biomes, température, cours d'eau, relief)."),
+        Map.entry("ONE_CONTINENT", "🌍 Out of Africa (-100 000 BP) : Confinement démographique strict au berceau africain et traversée du Moyen-Orient, avec barrières biogéographiques sur le Sahul et les Amériques."),
+        Map.entry("AUSTRALIA_SAHUL", "🦘 Sahul (-50 000 BP) : Colonisation du continent australo-papou réuni (Sahul) suite au franchissement maritime de la ligne de Wallace."),
+        Map.entry("BERINGIA_AMERICAS", "🏔 Béringie (-25 000 BP) : Occupation du pont terrestre de Béringie et migration à travers le corridor deglacé nord-américain."),
+        Map.entry("YOUNGER_DRYAS", "❄ Récents Dryas (-10 900 BP) : Refuges microclimatiques Natufiens au Levant face au refroidissement brutal."),
+        Map.entry("FERTILE_CRESCENT", "🌾 Croissant Fertile (-8 000 BP) : Noyaux de néolithisation le long du Tigre, de l'Euphrate, du Nil et du Levant."),
+        Map.entry("GREEN_SAHARA", "🌴 Sahara Vert (-6 000 BP) : Savane verdoyante et réseaux lacustres de la Période Humide Africaine (AHP)."),
+        Map.entry("EGYPT_NILE", "𓀀 Égypte Antique (-3 000 BP) : Marge d'irrigation et crues annuelles de la vallée et du delta du Nil."),
+        Map.entry("MESOPOTAMIA_ASSYRIA", "🏛 Mésopotamie (-2 000 BP) : Villes-états et réseaux d'irrigation entre le Tigre et l'Euphrate."),
+        Map.entry("MESOAMERICA", "🌽 Mésoamérique (-1 500 BP) : Centres cérémoniels olmèques et cités-états mayas du bassin de Mexico au Yucatán."),
+        Map.entry("INDIA_MAURYA", "☸️ Empire Maurya (-300 BP) : Agriculture rizicole intensive dans la vallée du Gange et l'Indus."),
+        Map.entry("ROMAN_EMPIRE", "🏛 Empire Romain (An 0) : Densité urbaine et agricole autour du bassin méditerranéen et des axes d'aqueducs."),
         Map.entry("COASTAL_MARITIME", "🌊 Focalisation Littorale & Maritime : Favorise la colonisation des littoraux, deltas et bordures côtières de la planète."),
         Map.entry("RIVER_VALLEYS", "🏞 Focalisation Fluviale & Alluviale : Concentration le long des réseaux hydrographiques et vallées fluviales principales."),
+        Map.entry("WEST_AFRICA_MALI", "🕌 Empire du Mali (1324) : Carrefour marchand trans-saharien et foyers urbains de la boucle du Niger."),
+        Map.entry("AMERICAS_1491", "🌽 Amériques Précolombiennes (1491) : Hautes densités de l'Empire Inca (Andes) et de l'Empire Aztèque."),
+        Map.entry("COLUMBIAN_CONTACT", "⛵ Contact Colombien (1492) : Trajectoire de choc épidémique et réorganisation des foyers côtiers."),
+        Map.entry("JAPAN_SAKOKU", "🗾 Japon Edo (1639) : Concentration rizicole intense dans les plaines de Kanto et Kansai sous fermeture Sakoku."),
+        Map.entry("INDUSTRIAL_1800", "🏭 Révolution Industrielle (1800) : Densification autour des bassins houillers et centres industriels européens et d'Asie de l'Est."),
         Map.entry("HIGHLAND_MOUNTAIN", "🏔 Refuges Montagnards : Densification préférentielle sur les hautes vallées et plateaux d'altitude."),
         Map.entry("INLAND_OASIS", "🌴 Bassins Intérieurs & Oasis : Concentration autour des dépressions intérieures et nappes phréatiques accessibles."),
         Map.entry("EQUATORIAL_BELT", "☀️ Bande Équatoriale : Colonisation prioritaire des latitudes équatoriales et des zones à fort rayonnement solaire."),
         Map.entry("URBAN_CLUSTERS", "🏙 Métropoles & Grappes Urbaines : Émergence procédurale de plusieurs grands foyers d'agrégation à haute densité."),
         Map.entry("SPARSE_NOMADIC", "⛺ Dispersion Nomade : Population pastorale dispersée à très faible densité sur l'ensemble des biomes viables."),
-        Map.entry("UNIFORM", "🟦 Distribution Homogène : Densité strictement constante sur toutes les cellules de la grille H3."),
+        Map.entry("UNIFORM", "🟦 Distribution Homogène : Densité strictly constante sur toutes les cellules de la grille H3."),
         Map.entry("RANDOM", "🎲 Distribution Stochastique : Attribution aléatoire uniforme de la population entre les cellules.")
     );
 
@@ -1139,15 +1171,15 @@ public class ScenarioSetupPanel extends BorderPane {
 
         VBox proceduralDemoPanel = new VBox(8, popGrid, customPhysicalSubPanel, demoBtnBar);
         proceduralDemoPanel.setStyle("-fx-padding: 8 0 0 12; -fx-border-color: rgba(56,189,248,0.25); -fx-border-radius: 6; -fx-border-width: 0 0 0 3;");
-        proceduralDemoPanel.setStyle("-fx-padding: 8 0 0 12; -fx-border-color: rgba(56,189,248,0.25); -fx-border-radius: 6; -fx-border-width: 0 0 0 3;");
 
         // Import Panel
         densityMapFileLabel = new Label(org.ether.society.i18n.I18n.get("planet.map.none"));
         densityMapFileLabel.getStyleClass().add("value-label");
 
-        demoCompatibilityLabel = new Label(I18n.getOrDefault("scenario.status.terrain_no_map", "🪐 Terrain validation: No external map loaded"));
+        demoCompatibilityLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.status.terrain_no_map", "🪐 Terrain validation: No external map loaded"));
+        demoCompatibilityLabel.getStyleClass().add("subcard-status-muted");
         demoCompatibilityLabel.setWrapText(true);
-        demoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        demoCompatibilityLabel.setStyle("-fx-font-size: 11px;");
 
         densityFormatHintLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.format.density_hint",
                 "PNG / JPEG (projection équirectangulaire 2:1) :\n  Noir (0) = 0 hab/km² | Blanc (255) = Densité maximale d'habitation."));
@@ -1277,19 +1309,18 @@ public class ScenarioSetupPanel extends BorderPane {
 
         Label subtitle = new Label(I18n.getOrDefault("scenario.desc.bundle", "Export or import the complete scenario (planetary context, ecology, active engines, cultural layers, and demographic grid) in unified .ether format for archiving or sharing."));
         subtitle.setWrapText(true);
-        subtitle.setStyle("-fx-font-size: 11px; -fx-text-fill: #f1f5f9;");
+        subtitle.getStyleClass().add("card-description-muted");
 
         Button btnExportBundle = new Button(I18n.getOrDefault("scenario.btn.export_bundle", "📦 Export Bundle (.ether)"));
         btnExportBundle.getStyleClass().add("button-secondary");
         btnExportBundle.setMaxWidth(Double.MAX_VALUE);
-        btnExportBundle.setStyle("-fx-text-fill: #38bdf8;");
+        btnExportBundle.getStyleClass().add("button-accent-blue");
         btnExportBundle.setOnAction(e -> exportUnifiedBundle());
         btnExportBundle.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_bundle", "Export complete scenario (physics, ecology, engines, layers, and demographics) to a unified .ether bundle file.")));
 
         Button btnImportBundle = new Button(I18n.getOrDefault("scenario.btn.import_bundle", "📂 Import Bundle (.ether)"));
         btnImportBundle.getStyleClass().add("button-secondary");
         btnImportBundle.setMaxWidth(Double.MAX_VALUE);
-        btnImportBundle.setStyle("-fx-text-fill: #a78bfa;");
         btnImportBundle.setOnAction(e -> importUnifiedBundle());
         btnImportBundle.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.import_bundle", "Import and apply a unified .ether bundle file to instantly restore full scenario state.")));
 
@@ -1337,10 +1368,10 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         });
 
-        snapshotDateLabel = new Label("📅 Horodatage : -");
-        snapshotTimeLabel = new Label("⏳ Moment : -");
+        snapshotDateLabel = new Label(I18n.getOrDefault("scenario.label.timestamp_null", "📅 Timestamp: -"));
+        snapshotTimeLabel = new Label(I18n.getOrDefault("scenario.label.moment_null", "⏳ Time: -"));
         snapshotScenarioLabel = new Label(I18n.getOrDefault("scenario.info.scenario_empty", "📜 Scenario: -"));
-        snapshotPathLabel = new Label("📁 ID Snapshot : -");
+        snapshotPathLabel = new Label(I18n.getOrDefault("scenario.label.snapshot_id_null", "📁 Snapshot ID: -"));
 
         for (Label l : List.of(snapshotDateLabel, snapshotTimeLabel, snapshotScenarioLabel, snapshotPathLabel)) {
             l.setStyle("-fx-font-size: 11px;");
@@ -1356,13 +1387,13 @@ public class ScenarioSetupPanel extends BorderPane {
         snapshotCard.getStyleClass().add("opt-master-box");
         snapshotCard.getChildren().get(0).getStyleClass().add("opt-sub-checkbox");
 
-        snapshotExplainBtn = new Button("ℹ️ Qu'est-ce qu'un Snapshot ? (Explications & Fonctionnement)");
+        snapshotExplainBtn = new Button(I18n.getOrDefault("scenario.btn.snapshot_explain", "ℹ️ What is a Snapshot? (Explanations & Mechanics)"));
         snapshotExplainBtn.getStyleClass().add("button-secondary");
         snapshotExplainBtn.setMaxWidth(Double.MAX_VALUE);
         snapshotExplainBtn.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;");
         snapshotExplainBtn.setOnAction(e -> showSnapshotExplanationDialog());
 
-        snapshotRefreshBtn = new Button("🔄 Rafraîchir");
+        snapshotRefreshBtn = new Button(I18n.getOrDefault("scenario.btn.refresh", "🔄 Refresh"));
         snapshotRefreshBtn.getStyleClass().add("button-secondary");
         snapshotRefreshBtn.setStyle("-fx-font-size: 11px;");
         snapshotRefreshBtn.setOnAction(e -> refreshSnapshotList());
@@ -1670,7 +1701,8 @@ public class ScenarioSetupPanel extends BorderPane {
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
             Button resetSecBtn = new Button("🔄 " + org.ether.society.i18n.I18n.getOrDefault("scenario.btn.reset_section", "Default"));
-            resetSecBtn.setStyle("-fx-font-size: 10px; -fx-padding: 2 6; -fx-background-color: rgba(148, 163, 184, 0.15); -fx-text-fill: #94a3b8; -fx-border-color: rgba(148, 163, 184, 0.3); -fx-border-radius: 4;");
+            resetSecBtn.getStyleClass().add("button-secondary");
+            resetSecBtn.setStyle("-fx-font-size: 10px; -fx-padding: 2 6;");
             resetSecBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.reset_section", "Reset section parameters to canonical default values.")));
             resetSecBtn.setOnAction(e -> {
                 sectionResetAction.run();
@@ -3693,7 +3725,11 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void generateProceduralPopulationDensity() {
-        if (currentPreviewCells != null) {
+        customDensityImage = null;
+        if (radioProcDemo != null) radioProcDemo.setSelected(true);
+        if (currentPreviewCells == null || currentPreviewCells.isEmpty()) {
+            generatePreview();
+        } else {
             java.util.concurrent.CompletableFuture.runAsync(() -> {
                 distributeInitialPopulation(currentPreviewCells);
             }).thenRun(() -> javafx.application.Platform.runLater(this::drawPreview));
@@ -3743,16 +3779,16 @@ public class ScenarioSetupPanel extends BorderPane {
 
     private String getCulturalTensorPreviewName(int index) {
         return switch (index) {
-            case 0 -> "📜 Tenseur 1 : Isoglosses & Continua Linguistiques (Langues)";
-            case 1 -> "🏛 Tenseur 2 : Kinship & Structures de Clans (Parenté)";
-            case 2 -> "🔮 Tenseur 3 : Rituels, Croyances & Sacré (Asabiyyah)";
-            case 3 -> "👑 Tenseur 4 : Souveraineté Politico-Militaire & Capitales";
-            case 4 -> "🏺 Tenseur 5 : Outillage, Matérialité & Technologies (Artefacts)";
-            case 5 -> "🐫 Tenseur 6 : Corridors & Réseaux Commerciaux (Voies Économiques)";
-            case 6 -> "⚖ Tenseur 7 : Complexité Institutionnelle & Normes (Seshat & Droit)";
-            case 7 -> "⚠️ Tenseur 8 : Empreinte Écologique & Tension Malthusienne (Dégradation)";
-            case 8 -> "🧬 Tenseur 9 : Immunité Pathogène & Mémoire Sanitaire (Épidémiologie)";
-            default -> "🧬 Tenseur " + (index + 1) + " : Substrat Culturel " + (index + 1);
+            case 0 -> I18n.getOrDefault("scenario.tensor.1.preview", "📜 Tensor 1: Isoglosses & Linguistic Continua (Languages)");
+            case 1 -> I18n.getOrDefault("scenario.tensor.2.preview", "🏛 Tensor 2: Kinship & Clan Structures (Kinship)");
+            case 2 -> I18n.getOrDefault("scenario.tensor.3.preview", "🔮 Tensor 3: Rituals, Beliefs & Sacred (Asabiyyah)");
+            case 3 -> I18n.getOrDefault("scenario.tensor.4.preview", "👑 Tensor 4: Politico-Military Sovereignty & Capitals");
+            case 4 -> I18n.getOrDefault("scenario.tensor.5.preview", "🏺 Tensor 5: Tooling, Materiality & Technologies (Artifacts)");
+            case 5 -> I18n.getOrDefault("scenario.tensor.6.preview", "🐫 Tensor 6: Corridors & Trade Networks (Economic Routes)");
+            case 6 -> I18n.getOrDefault("scenario.tensor.7.preview", "⚖ Tensor 7: Institutional Complexity & Norms (Seshat & Law)");
+            case 7 -> I18n.getOrDefault("scenario.tensor.8.preview", "⚠️ Tensor 8: Ecological Footprint & Malthusian Tension (Degradation)");
+            case 8 -> I18n.getOrDefault("scenario.tensor.9.preview", "🧬 Tensor 9: Pathogen Immunity & Health Memory (Epidemiology)");
+            default -> I18n.getOrDefault("scenario.tensor.custom.preview_prefix", "🧬 Tensor ") + (index + 1) + I18n.getOrDefault("scenario.tensor.custom.preview_mid", " : Cultural Substrate ") + (index + 1);
         };
     }
 
@@ -3896,7 +3932,8 @@ public class ScenarioSetupPanel extends BorderPane {
             demoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981; -fx-font-weight: bold;");
         } else {
             demoCompatibilityLabel.setText(I18n.getOrDefault("scenario.demo.no_map", "🪐 No external map loaded — Procedural mode active"));
-            demoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+            demoCompatibilityLabel.getStyleClass().add("subcard-status-muted");
+            demoCompatibilityLabel.setStyle("-fx-font-size: 11px;");
         }
     }
 
@@ -4338,15 +4375,20 @@ public class ScenarioSetupPanel extends BorderPane {
                     col = blendColors(col, reliefCol, 0.50);
                 }
                 gc.setFill(col);
-                if (cellSize >= 7.0) {
-                    gc.fillRoundRect(x - cellSize / 2.0, y - cellSize / 2.0, cellSize, cellSize, 3.0, 3.0);
-                    if (cellSize >= 12.0) {
+                double absLat = Math.abs(c.getLatitude());
+                double cosLat = Math.cos(Math.toRadians(Math.min(88.0, absLat)));
+                double cellW = Math.max(cellSize, cellSize / Math.max(0.12, cosLat));
+                double cellH = cellSize;
+
+                if (cellW >= 7.0 && cellH >= 7.0) {
+                    gc.fillRoundRect(x - cellW / 2.0, y - cellH / 2.0, cellW, cellH, 3.0, 3.0);
+                    if (cellW >= 12.0) {
                         gc.setStroke(Color.rgb(0, 0, 0, 0.25));
                         gc.setLineWidth(0.75);
-                        gc.strokeRoundRect(x - cellSize / 2.0, y - cellSize / 2.0, cellSize, cellSize, 3.0, 3.0);
+                        gc.strokeRoundRect(x - cellW / 2.0, y - cellH / 2.0, cellW, cellH, 3.0, 3.0);
                     }
                 } else {
-                    gc.fillRect(x - cellSize / 2.0, y - cellSize / 2.0, cellSize, cellSize);
+                    gc.fillRect(x - cellW / 2.0, y - cellH / 2.0, cellW, cellH);
                 }
             }
         } else {
@@ -5171,7 +5213,7 @@ public class ScenarioSetupPanel extends BorderPane {
             if (scenarioPresetHeader != null) scenarioPresetHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "🎛️ GLOBAL PRESETS & SCENARIO SAVE"));
             if (planetSectionHeader != null) planetSectionHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.inherited", "🪐 INHERITED CONTEXT (TABS 1 & 2)"));
             if (title1 != null) title1.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "🌐 EPOCH & SPATIOTEMPORAL DEFINITION"));
-            if (cultureHeader != null) cultureHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.culture_section", "🧠 DIMENSION DU VECTEUR CULTUREL & CALQUES MULTI-CHAMPS"));
+            if (cultureHeader != null) cultureHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.culture_section", "🧠 CULTURAL VECTOR DIMENSION & MULTI-FIELD LAYERS"));
             if (clippingHeader != null) clippingHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.header", "✂️ BORDERS & HISTORICAL SPATIAL CLIPPING"));
             if (oceanOptHeader != null) oceanOptHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.ocean_opt.header", "⚙️ ENGINE ARCHITECTURE & OPTIMIZATIONS (ETHER CORE & OPTIONAL)"));
             if (title3Events != null) title3Events.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events_section", "🌪️ HISTORICAL PLANETARY EVENTS & CLIMATE DRIFTS"));
@@ -5185,11 +5227,11 @@ public class ScenarioSetupPanel extends BorderPane {
             if (densityPatternLabel != null) densityPatternLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.density_pattern", "Distribution Pattern:"));
             if (h3ResolutionLabel != null) h3ResolutionLabel.setText(org.ether.society.i18n.I18n.getOrDefault("planet.param.resolution", "H3 Resolution:"));
             if (temporalResolutionLabel != null) temporalResolutionLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.label.temporal_resolution", "Time Step Δt (Temporal Resolution):"));
-            if (cohortSizeLabel != null) cohortSizeLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.label.cohort_size", "Taille des Cohortes :"));
+            if (cohortSizeLabel != null) cohortSizeLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.label.cohort_size", "Cohort Size:"));
             if (startBtn != null) startBtn.setText(org.ether.society.i18n.I18n.get("scenario.start_btn"));
             if (generateBtn != null) generateBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.preview_btn", "🔄 Preview Distribution"));
             if (addEventBtn != null) addEventBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.add", "➕ Add Event"));
-            if (removeEventBtn != null) removeEventBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.remove", "🗑️ Supprimer"));
+            if (removeEventBtn != null) removeEventBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.remove", "🗑️ Remove Event"));
             if (loadEarthEventsBtn != null) loadEarthEventsBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.load_earth", "🌍 Load Earth Historical Events"));
 
             if (colType != null) colType.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.type", "Event Type"));
@@ -5197,18 +5239,19 @@ public class ScenarioSetupPanel extends BorderPane {
             if (colYear != null) colYear.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.year", "Year (Yr)"));
             if (colLat != null) colLat.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.lat", "Lat (°)"));
             if (colLon != null) colLon.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.lon", "Lng (°)"));
-            if (colDepth != null) colDepth.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.depth", "Profondeur (km)"));
+            if (colDepth != null) colDepth.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.depth", "Depth (km)"));
             if (colMag != null) colMag.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.mag", "Magnitude / Intensity"));
 
             if (clippingCheckBox != null) clippingCheckBox.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.enable", "Enable Partial Simulation (Truncated Zone)"));
             if (graphicSelectBtn != null) graphicSelectBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.select_mode", "🖱️ Graphic Map Selection Mode"));
             if (resetClippingBtn != null) resetClippingBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.reset", "🔄 Reset Area (Full Planet)"));
-            if (latMaxLabel != null) latMaxLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lat_max", "Lat Max (Haut) :"));
-            if (latMinLabel != null) latMinLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lat_min", "Lat Min (Bas) :"));
-            if (lngMinLabel != null) lngMinLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lng_min", "Lng Min (Gau.) :"));
-            if (lngMaxLabel != null) lngMaxLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lng_max", "Lng Max (Dro.) :"));
+            if (latMaxLabel != null) latMaxLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lat_max", "Lat Max (Top):"));
+            if (latMinLabel != null) latMinLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lat_min", "Lat Min (Bottom):"));
+            if (lngMinLabel != null) lngMinLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lng_min", "Lng Min (Left):"));
+            if (lngMaxLabel != null) lngMaxLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lng_max", "Lng Max (Right):"));
             if (boundaryLabel != null) boundaryLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.boundary_label", "Scientific Border Modeling:"));
-            if (culturalHelpBtn != null) culturalHelpBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.cultural_format_help", "❓ Format Calques"));
+            if (culturalHelpBtn != null) culturalHelpBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.cultural_format_help", "❓ Layer Format"));
+            if (btnReliefOverlay != null) btnReliefOverlay.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.relief_overlay", "⛰️ Relief"));
             if (btnReliefOverlay != null) btnReliefOverlay.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.relief_overlay", "⛰️ Relief"));
             updatePreviewTitleText();
 

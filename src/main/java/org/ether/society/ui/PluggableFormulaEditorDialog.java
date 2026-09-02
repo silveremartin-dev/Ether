@@ -72,7 +72,8 @@ public class PluggableFormulaEditorDialog extends Stage {
 
         // Header Title
         headerLabel = new Label();
-        headerLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        headerLabel.getStyleClass().add("label-title");
+        headerLabel.setStyle("-fx-font-size: 14px;");
 
         // Main Layout: Split into Formula List (Left) and Editor/Documentation (Right)
         HBox mainSplit = new HBox(14);
@@ -83,7 +84,7 @@ public class PluggableFormulaEditorDialog extends Stage {
         leftCol.setPrefWidth(260);
 
         lblListTitle = new Label();
-        lblListTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #94a3b8;");
+        lblListTitle.getStyleClass().add("control-label");
 
         formulaListView.setPrefHeight(320);
         formulaListView.setStyle("-fx-font-size: 11px;");
@@ -241,7 +242,7 @@ public class PluggableFormulaEditorDialog extends Stage {
 
     private Label createLabel() {
         Label l = new Label();
-        l.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
+        l.getStyleClass().add("control-label");
         return l;
     }
 

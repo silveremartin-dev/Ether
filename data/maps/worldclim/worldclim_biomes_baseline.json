@@ -1,0 +1,86 @@
+{
+  "metadata": {
+    "title": "WorldClim 2.1 Paleoclimate & Biome Baseline",
+    "resolution": "5-arc-minute",
+    "variables": [
+      "bio1_mean_temp",
+      "bio12_annual_precip",
+      "solar_radiation",
+      "soil_organic_carbon"
+    ]
+  },
+  "biomes": [
+    {
+      "id": "TROPICAL_RAINFOREST",
+      "temp_C": [
+        22,
+        30
+      ],
+      "precip_mm": [
+        2000,
+        4000
+      ],
+      "npp_gC_m2": 2200
+    },
+    {
+      "id": "SAVANNA_GRASSLAND",
+      "temp_C": [
+        18,
+        28
+      ],
+      "precip_mm": [
+        500,
+        1500
+      ],
+      "npp_gC_m2": 900
+    },
+    {
+      "id": "TEMPERATE_FOREST",
+      "temp_C": [
+        5,
+        20
+      ],
+      "precip_mm": [
+        750,
+        1500
+      ],
+      "npp_gC_m2": 1200
+    },
+    {
+      "id": "BOREAL_TAIGA",
+      "temp_C": [
+        -5,
+        10
+      ],
+      "precip_mm": [
+        300,
+        800
+      ],
+      "npp_gC_m2": 800
+    },
+    {
+      "id": "DESERT_ARID",
+      "temp_C": [
+        10,
+        40
+      ],
+      "precip_mm": [
+        0,
+        250
+      ],
+      "npp_gC_m2": 90
+    },
+    {
+      "id": "TUNDRA_POLAR",
+      "temp_C": [
+        -15,
+        5
+      ],
+      "precip_mm": [
+        100,
+        400
+      ],
+      "npp_gC_m2": 140
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "provider_id": "nasa_pds",
+  "name": "NASA Planetary Data System (PDS)",
+  "organization": "NASA Geosciences Node (Washington University in St. Louis)",
+  "domain": "Planetary Topography (Moon LOLA, Mars MOLA, Venus Magellan GTDR)",
+  "website": "https://pds-geosciences.wustl.edu/",
+  "download_url": "https://pds-geosciences.wustl.edu/mgs/mgs-m-mola-5-megdr-l3-v1/mgsl_300x/meg004/megr90n000cb.lbl",
+  "alternate_urls": [
+    "https://pds-geosciences.wustl.edu/lro/lro-l-lola-4-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/float/ldem_4.lbl",
+    "https://astrogeology.usgs.gov/search/map/Mercury/MESSENGER/Mercury_MESSENGER_USGS_DEM_Global_665m",
+    "https://astrogeology.usgs.gov/search/map/Venus/Magellan/Venus_Magellan_Global_C3-MDIR_Colorized_Topographic_Mosaic_6600m"
+  ],
+  "license": "US Government Public Domain",
+  "spatial_resolution": "0.25 to 1.0 degree Planetary DEMs",
+  "temporal_coverage": "MGS / LRO / MESSENGER / Magellan Orbital Missions",
+  "variables": [
+    "PLANETARY_RADIUS_KM",
+    "SURFACE_ELEVATION_METERS"
+  ],
+  "citation": "Smith, D. E., et al. (2010), Initial observations from LOLA & MOLA; Becker, K., et al. (2016) MESSENGER Global DEM.",
+  "files": [
+    "lunar_lola_dem_downsampled.png",
+    "mercury_messenger_dem_downsampled.png",
+    "Venus_Magellan_C3-MDIR_ClrTopo_Global_Mosaic_6600m.tif",
+    "Venus_Magellan_C3-MDIR_Colorized_Global_Mosaic_4641m.tif",
+    "megr90n000eb.img",
+    "megr90n000cb.img",
+    "ldac_8.img"
+  ],
+  "status": "AUTHENTIC"
+}

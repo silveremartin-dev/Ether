@@ -28,8 +28,9 @@ public class SplashScreen {
     public SplashScreen() {
         stage = new Stage();
         stage.initStyle(StageStyle.UNDECORATED);
+        WindowUtils.applyWindowIcon(stage);
 
-        Label titleLabel = new Label("ETHER 2.0");
+        Label titleLabel = new Label(I18n.getOrDefault("splash.title", "ETHER 2.0"));
         titleLabel.setStyle("-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-effect: dropshadow(three-pass-box, rgba(56,189,248,0.6), 12, 0, 0, 0);");
 
         Label subtitleLabel = new Label(I18n.getOrDefault("splash.subtitle", "Cliodynamic Engine & Planetary Biophysics"));

@@ -18,6 +18,40 @@ public class Scenario implements Serializable {
     private String name;
     private String description;
     private Long id;
+    private String presetKey;
+
+    public String getPresetKey() {
+        return presetKey;
+    }
+
+    public void setPresetKey(String presetKey) {
+        this.presetKey = presetKey;
+    }
+
+    public String getDisplayName() {
+        if (presetKey != null && !presetKey.isBlank()) {
+            String localized = org.ether.society.i18n.I18n.getOrDefault("scenario.preset." + presetKey + ".name", name);
+            if (localized != null && !localized.isBlank()) {
+                return localized;
+            }
+        }
+        return name != null ? name : "Unnamed Scenario";
+    }
+
+    public String getDisplayDescription() {
+        if (presetKey != null && !presetKey.isBlank()) {
+            String localized = org.ether.society.i18n.I18n.getOrDefault("scenario.preset." + presetKey + ".desc", description);
+            if (localized != null && !localized.isBlank()) {
+                return localized;
+            }
+        }
+        return description != null ? description : "";
+    }
+
+    @Override
+    public String toString() {
+        return getDisplayName();
+    }
 
     // Planet Configuration
     private PlanetPreset planetPreset = PlanetPreset.EARTH_LIKE;
@@ -723,6 +757,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIOS DU PASSÉ ---
         Scenario s0 = new Scenario();
+        s0.setPresetKey("out_of_africa");
         s0.setName("Sortie d'Afrique & Expansion Homo Sapiens (-100000)");
         s0.setStartDateYear(-100000);
         s0.setEndDateYear(-20000);
@@ -776,6 +811,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : SAHUL (-50000) ---
         Scenario sSahul = new Scenario();
+        sSahul.setPresetKey("sahul");
         sSahul.setName("Sahul & Premier Peuplement de l'Australie (-50000)");
         sSahul.setStartDateYear(-50000);
         sSahul.setEndDateYear(-10000);
@@ -810,6 +846,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : BÉRINGIE & PEUPLEMENT DES AMÉRIQUES (-25000) ---
         Scenario sBeringia = new Scenario();
+        sBeringia.setPresetKey("beringia");
         sBeringia.setName("Béringie & Peuplement des Amériques (-25000)");
         sBeringia.setStartDateYear(-25000);
         sBeringia.setEndDateYear(-10000);
@@ -844,6 +881,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : RÉCENTS DRYAS (-10900) ---
         Scenario sYoungerDryas = new Scenario();
+        sYoungerDryas.setPresetKey("younger_dryas");
         sYoungerDryas.setName("Le Récents Dryas & Choc Climatique Natufien (-10900)");
         sYoungerDryas.setStartDateYear(-10900);
         sYoungerDryas.setEndDateYear(-9500);
@@ -872,6 +910,7 @@ public class Scenario implements Serializable {
         list.add(sYoungerDryas);
 
         Scenario s1 = new Scenario();
+        s1.setPresetKey("fertile_crescent");
         s1.setName("Croissant Fertile & Néolithique (-8000)");
         s1.setStartDateYear(-8000);
         s1.setEndDateYear(-5000);
@@ -896,6 +935,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : SAHARA VERT (PÉRIODE HUMIDE AFRICAINE -6000) ---
         Scenario sGreenSahara = new Scenario();
+        sGreenSahara.setPresetKey("green_sahara");
         sGreenSahara.setName("Le Sahara Vert & Période Humide Africaine (-6000)");
         sGreenSahara.setStartDateYear(-6000);
         sGreenSahara.setEndDateYear(-3500);
@@ -917,6 +957,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : ÉGYPTE ANTIQUE (-3000) ---
         Scenario sEgypt = new Scenario();
+        sEgypt.setPresetKey("ancient_egypt");
         sEgypt.setName("Égypte Antique & Vallée du Nil (-3000)");
         sEgypt.setStartDateYear(-3000);
         sEgypt.setEndDateYear(-1000);
@@ -940,6 +981,7 @@ public class Scenario implements Serializable {
         list.add(sEgypt);
 
         Scenario s3 = new Scenario();
+        s3.setPresetKey("assyrian_empire");
         s3.setName("Empire Assyrien & Irrigation Mésopotamienne (-2000)");
         s3.setStartDateYear(-2000);
         s3.setEndDateYear(-600);
@@ -964,6 +1006,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : MÉSOAMÉRIQUE (-1500) ---
         Scenario sMeso = new Scenario();
+        sMeso.setPresetKey("mesoamerica");
         sMeso.setName("Civilisations Mésoaméricaines (Olmèques & Mayas) (-1500)");
         sMeso.setStartDateYear(-1500);
         sMeso.setEndDateYear(900);
@@ -988,6 +1031,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : EMPIRE MAURYA & INDE (-300) ---
         Scenario sMaurya = new Scenario();
+        sMaurya.setPresetKey("maurya_empire");
         sMaurya.setName("Empire Maurya & Civilisation de l'Indus-Gange (-300)");
         sMaurya.setStartDateYear(-300);
         sMaurya.setEndDateYear(100);
@@ -1012,6 +1056,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : EMPIRE ROMAIN & PAX ROMANA (AN 0) ---
         Scenario sRoman = new Scenario();
+        sRoman.setPresetKey("roman_empire");
         sRoman.setName("Empire Romain & Pax Romana (An 0)");
         sRoman.setStartDateYear(0);
         sRoman.setEndDateYear(476);
@@ -1037,6 +1082,7 @@ public class Scenario implements Serializable {
         list.add(sRoman);
 
         Scenario s2 = new Scenario();
+        s2.setPresetKey("late_antique_ice_age");
         s2.setName("Le Petit Âge Glaciaire de l'Antiquité Tardive & Peste de Justinien (536)");
         s2.setStartDateYear(536);
         s2.setEndDateYear(650);
@@ -1057,6 +1103,7 @@ public class Scenario implements Serializable {
         list.add(s2);
 
         Scenario s4 = new Scenario();
+        s4.setPresetKey("song_dynasty");
         s4.setName("Dynastie Song & Pré-Industrialisation Hydraulique (1000)");
         s4.setStartDateYear(1000);
         s4.setEndDateYear(1279);
@@ -1078,6 +1125,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : EMPIRE DU MALI (1324) ---
         Scenario sMali = new Scenario();
+        sMali.setPresetKey("mali_empire");
         sMali.setName("Empire du Mali & Commerce Trans-Saharien (1324)");
         sMali.setStartDateYear(1324);
         sMali.setEndDateYear(1591);
@@ -1102,6 +1150,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : AMÉRIQUES PRÉCOLOMBIENNES (1491) ---
         Scenario sAmericas1491 = new Scenario();
+        sAmericas1491.setPresetKey("americas_1491");
         sAmericas1491.setName("Amériques Précolombiennes : Tawantinsuyu & Anahuac (1491)");
         sAmericas1491.setStartDateYear(1491);
         sAmericas1491.setEndDateYear(1650);
@@ -1126,6 +1175,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : CHOC DU CONTACT PRÉCOLOMBIEN (1492) ---
         Scenario sColumbian = new Scenario();
+        sColumbian.setPresetKey("columbian_contact");
         sColumbian.setName("Arrivée des Européens aux Amériques & Choc Microbiens (1492)");
         sColumbian.setStartDateYear(1492);
         sColumbian.setEndDateYear(1650);
@@ -1147,6 +1197,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : JAPON EDO & SAKOKU (1639) ---
         Scenario sSakoku = new Scenario();
+        sSakoku.setPresetKey("tokugawa_japan");
         sSakoku.setName("Japon Tokugawa & Isolement Sakoku (1639)");
         sSakoku.setStartDateYear(1639);
         sSakoku.setEndDateYear(1853);
@@ -1171,6 +1222,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : RÉVOLUTION INDUSTRIELLE (1800) ---
         Scenario sIndustrial1800 = new Scenario();
+        sIndustrial1800.setPresetKey("industrial_1800");
         sIndustrial1800.setName("Révolution Industrielle & Transition Charbonnière (1800)");
         sIndustrial1800.setStartDateYear(1800);
         sIndustrial1800.setEndDateYear(1900);
@@ -1192,6 +1244,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIO : ANTHROPOCÈNE (2000) ---
         Scenario sModern2000 = new Scenario();
+        sModern2000.setPresetKey("anthropocene_2000");
         sModern2000.setName("Anthropocène & Grande Accélération Mondiale (2000)");
         sModern2000.setStartDateYear(2000);
         sModern2000.setEndDateYear(2100);
@@ -1213,6 +1266,7 @@ public class Scenario implements Serializable {
 
         // --- SCÉNARIOS DU FUTUR ---
         Scenario s5 = new Scenario();
+        s5.setPresetKey("ssp5_85");
         s5.setName("Business As Usual : Fossil Fuel Reliance & Warming (SSP5-8.5)");
         s5.setStartDateYear(2026);
         s5.setEndDateYear(2100);
@@ -1233,6 +1287,7 @@ public class Scenario implements Serializable {
         list.add(s5);
 
         Scenario s6 = new Scenario();
+        s6.setPresetKey("singularity_2045");
         s6.setName("Singularité Technologique, ASI & Fusion D-T (2045)");
         s6.setStartDateYear(2045);
         s6.setEndDateYear(2100);
@@ -1253,6 +1308,7 @@ public class Scenario implements Serializable {
         list.add(s6);
 
         Scenario s7 = new Scenario();
+        s7.setPresetKey("nuclear_winter_2035");
         s7.setName("Hiver Nucléaire & Ombre Stratosphérique (2035)");
         s7.setStartDateYear(2035);
         s7.setEndDateYear(2085);
@@ -1273,6 +1329,7 @@ public class Scenario implements Serializable {
         list.add(s7);
 
         Scenario s8 = new Scenario();
+        s8.setPresetKey("peak_phosphate_2050");
         s8.setName("Falaise du Phosphate Minéral & Crise N-P-K (2050)");
         s8.setStartDateYear(2050);
         s8.setEndDateYear(2150);
@@ -1293,6 +1350,7 @@ public class Scenario implements Serializable {
         list.add(s8);
 
         Scenario s9 = new Scenario();
+        s9.setPresetKey("supervolcano_2060");
         s9.setName("Super-Éruption Volcanique Toba/Yellowstone (2060)");
         s9.setStartDateYear(2060);
         s9.setEndDateYear(2110);

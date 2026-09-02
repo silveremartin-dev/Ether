@@ -429,9 +429,8 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         // Resolution info label relative to planet radius
         Label resolutionInfoLabel = new Label();
-        resolutionInfoLabel.getStyleClass().add("value-label");
+        resolutionInfoLabel.getStyleClass().add("card-description-muted");
         resolutionInfoLabel.setWrapText(true);
-        resolutionInfoLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
         radiusSlider.valueProperty().addListener((obs, old, val) -> {
             double r = val.doubleValue();
             double circumference = 2 * Math.PI * r;
@@ -462,8 +461,8 @@ public class PlanetGeneratorPanel extends BorderPane {
         radioProc.setToggleGroup(elevSourceGroup);
         radioImport.setToggleGroup(elevSourceGroup);
         radioProc.setSelected(true);
-        radioProc.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
-        radioImport.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold;");
+        radioProc.getStyleClass().add("radio-proc");
+        radioImport.getStyleClass().add("radio-import");
 
         // Procedural panel (contains seed, noise frequency, noise scale)
         VBox proceduralPanel = new VBox(8,
@@ -590,8 +589,8 @@ public class PlanetGeneratorPanel extends BorderPane {
         radioTempProc   = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
         radioTempImport = new RadioButton(I18n.getOrDefault("planet.radio.import_wms", "📂 External Source (PNG / WMS)"));
         radioTempProc.setToggleGroup(tempToggle); radioTempProc.setSelected(true);
-        radioTempProc.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
-        radioTempImport.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold;");
+        radioTempProc.getStyleClass().add("radio-proc");
+        radioTempImport.getStyleClass().add("radio-import");
         radioTempImport.setToggleGroup(tempToggle);
 
         tempSeedField = new TextField("54321");
@@ -604,7 +603,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         tempHintLabel = new Label(I18n.getOrDefault("planet.climate.temp.hint",
                 "ℹ  The thermal map is derived from the equator-to-pole gradient and the random seed bias."));
         tempHintLabel.setWrapText(true);
-        tempHintLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-font-style: italic;");
+        tempHintLabel.getStyleClass().add("card-description-muted");
 
         Button exportTempBtn = new Button(I18n.getOrDefault("planet.btn.export_climate_temp", "📤 Export Procedural Thermal Map (PNG)"));
         exportTempBtn.setMaxWidth(Double.MAX_VALUE);
@@ -625,7 +624,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         tempFormatHintLabel = new Label(I18n.getOrDefault("planet.climate.temp.format",
                 "Grayscale PNG (equirectangular 2:1):\n  Black (0) = −50°C | White (255) = +50°C"));
         tempFormatHintLabel.setWrapText(true);
-        tempFormatHintLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-font-style: italic; -fx-padding: 4 0 0 0;");
+        tempFormatHintLabel.getStyleClass().add("card-description-muted");
         tempSourceLabel = new Label(I18n.getOrDefault("planet.climate.source_label", "Reference Source:"));
         VBox tempImportPanel = new VBox(6, tempSourceLabel, tempSourceCombo, tempImportBtns, climateFileLabel, tempFormatHintLabel);
         tempImportPanel.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(167,139,250,0.25); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
@@ -650,8 +649,8 @@ public class PlanetGeneratorPanel extends BorderPane {
         radioPrecipProc   = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
         radioPrecipImport = new RadioButton(I18n.getOrDefault("planet.radio.import_wms", "📂 External Source (PNG / WMS)"));
         radioPrecipProc.setToggleGroup(precipToggle); radioPrecipProc.setSelected(true);
-        radioPrecipProc.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
-        radioPrecipImport.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold;");
+        radioPrecipProc.getStyleClass().add("radio-proc");
+        radioPrecipImport.getStyleClass().add("radio-import");
         radioPrecipImport.setToggleGroup(precipToggle);
 
         precipSeedField = new TextField("11111");
@@ -664,7 +663,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         precipHintLabel = new Label(I18n.getOrDefault("planet.climate.precip.hint",
                 "ℹ  The rainfall map is generated from the latitudinal hygrometric bias and seed."));
         precipHintLabel.setWrapText(true);
-        precipHintLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-font-style: italic;");
+        precipHintLabel.getStyleClass().add("card-description-muted");
 
         Button exportPrecipBtn = new Button(I18n.getOrDefault("planet.btn.export_climate_precip", "📤 Export Procedural Rainfall Map (PNG)"));
         exportPrecipBtn.setMaxWidth(Double.MAX_VALUE);
@@ -685,7 +684,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         precipFormatHintLabel = new Label(I18n.getOrDefault("planet.climate.precip.format",
                 "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 mm/yr | White (255) = 3,000 mm/yr"));
         precipFormatHintLabel.setWrapText(true);
-        precipFormatHintLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-font-style: italic; -fx-padding: 4 0 0 0;");
+        precipFormatHintLabel.getStyleClass().add("card-description-muted");
         precipSourceLabel = new Label(I18n.getOrDefault("planet.climate.source_label", "Reference Source:"));
         VBox precipImportPanel = new VBox(6, precipSourceLabel, precipSourceCombo, precipImportBtns, rainfallFileLabel, precipFormatHintLabel);
         precipImportPanel.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(167,139,250,0.25); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
@@ -710,8 +709,8 @@ public class PlanetGeneratorPanel extends BorderPane {
         radioSeasonProc   = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
         radioSeasonImport = new RadioButton(I18n.getOrDefault("planet.radio.import_wms", "📂 External Source (PNG / WMS)"));
         radioSeasonProc.setToggleGroup(seasonToggle); radioSeasonProc.setSelected(true);
-        radioSeasonProc.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
-        radioSeasonImport.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold;");
+        radioSeasonProc.getStyleClass().add("radio-proc");
+        radioSeasonImport.getStyleClass().add("radio-import");
         radioSeasonImport.setToggleGroup(seasonToggle);
 
         seasonSeedField = new TextField("99999");
@@ -724,7 +723,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         seasonHintLabel = new Label(I18n.getOrDefault("planet.climate.season.hint",
                 "ℹ  Seasonality is derived from axial tilt and a random latitudinal bias."));
         seasonHintLabel.setWrapText(true);
-        seasonHintLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-font-style: italic;");
+        seasonHintLabel.getStyleClass().add("card-description-muted");
 
         Button exportSeasonBtn = new Button(I18n.getOrDefault("planet.btn.export_climate_season", "📤 Export Procedural Seasonality Map (PNG)"));
         exportSeasonBtn.setMaxWidth(Double.MAX_VALUE);
@@ -745,7 +744,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         seasonFormatHintLabel = new Label(I18n.getOrDefault("planet.climate.season.format",
                 "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0°C amplitude | White (255) = 50°C annual amplitude"));
         seasonFormatHintLabel.setWrapText(true);
-        seasonFormatHintLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-font-style: italic; -fx-padding: 4 0 0 0;");
+        seasonFormatHintLabel.getStyleClass().add("card-description-muted");
         seasonSourceLabel = new Label(I18n.getOrDefault("planet.climate.source_label", "Reference Source:"));
         VBox seasonImportPanel = new VBox(6, seasonSourceLabel, seasonSourceCombo, seasonImportBtns, seasonalityFileLabel, seasonFormatHintLabel);
         seasonImportPanel.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(167,139,250,0.25); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
@@ -1301,7 +1300,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (elevStream != null) customElevImage = new Image(elevStream);
             if (biomeStream != null) customBiomeImage = new Image(biomeStream);
             if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.status.earth_dem_active", "📷 Active preset: Earth Elevation (USGS DEM 2160x1080)"));
-            if (biomeFileLabel != null) biomeFileLabel.setText("🌿 Preset actif : Biomes & Couvert Terre");
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.status.earth_biome_active", "🌿 Active preset: Earth Biomes & Land Cover"));
             if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.status.no_file_proc", "📄 No file loaded (Procedural active)"));
             if (climateFileLabel != null) climateFileLabel.setText("🌡️ Data Source : ERA5 Reanalysis (Copernicus / ECMWF)");
             if (rainfallFileLabel != null) rainfallFileLabel.setText("🌧️ Data Source : WorldClim v2.1");
@@ -1318,7 +1317,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         customClimateImage = null;
         customRainfallImage = null;
         customSeasonalityImage = null;
-        String procDefault = "📄 Aucun fichier externe (Génération procédurale active)";
+        String procDefault = I18n.getOrDefault("planet.status.no_file_proc", "📄 No external file (Procedural generation active)");
         if (elevFileLabel != null) elevFileLabel.setText(procDefault);
         if (biomeFileLabel != null) biomeFileLabel.setText(procDefault);
         if (resourceFileLabel != null) resourceFileLabel.setText(procDefault);

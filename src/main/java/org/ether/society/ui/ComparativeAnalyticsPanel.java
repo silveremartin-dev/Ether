@@ -552,7 +552,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         // Special Historical Ground Truth Baseline Item
         Scenario histScenario = new Scenario();
-        histScenario.setName("🌍 Réalité Historique (Cliodynamic Ground Truth)");
+        histScenario.setName(I18n.getOrDefault("analytics.scenario.ground_truth", "🌍 Historical Reality (Cliodynamic Ground Truth)"));
         histScenario.setStartDateYear(-100000);
         histScenario.setEndDateYear(2026);
         ScenarioSelectableItem histItem = new ScenarioSelectableItem(histScenario, true, true, "HISTORICAL_GROUND_TRUTH");
@@ -565,11 +565,14 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         List<Scenario> allScenarios = scenarioRepository.getAllScenarios();
 
         for (Scenario sc : allScenarios) {
-            String scName = sc.getName();
+            String scName = sc.getDisplayName();
             if (scName == null || scName.isBlank()) {
                 scName = "Scénario Sans Nom" + (sc.getId() != null ? " (#" + sc.getId() + ")" : "");
             }
-            Optional<SimulationRunRecord> recordOpt = runRepository.getRunByScenarioName(scName);
+            Optional<SimulationRunRecord> recordOpt = runRepository.getRunByScenarioName(sc.getName());
+            if (!recordOpt.isPresent()) {
+                recordOpt = runRepository.getRunByScenarioName(scName);
+            }
             boolean executed = recordOpt.isPresent();
             String runId = recordOpt.map(SimulationRunRecord::getRunId).orElse("N/A");
 

@@ -1,0 +1,27 @@
+{
+  "provider_id": "paleomap",
+  "name": "PALEOMAP Project PaleoDEMs (Scotese & Wright 2018)",
+  "organization": "PALEOMAP Project (C.R. Scotese) / EarthByte Consortium",
+  "domain": "Plate Tectonics, Paleogeography & Digital Elevation Models (540 Ma to Present)",
+  "website": "https://www.earthbyte.org/paleodem-resource-scotese-and-wright-2018/",
+  "download_url": "https://www.earthbyte.org/webdav/ftp/Data_Collections/Scotese_Wright_2018_PaleoDEM/Scotese_Wright_2018_Maps_1-88_1degX1deg_PaleoDEMS_nc.zip",
+  "alternate_urls": [
+    "https://www.earthbyte.org/webdav/ftp/Data_Collections/Scotese_Wright_2018_PaleoDEM/PaleoDEMS_long_lat_elev_csv_v2.zip",
+    "https://www.earthbyte.org/webdav/ftp/Data_Collections/Scotese_Wright_2018_PaleoDEM/PALEOMAP_PaleoAtlases.zip",
+    "https://doi.org/10.5281/zenodo.5460860"
+  ],
+  "license": "CC-BY 4.0 International",
+  "spatial_resolution": "1.0 degree (1deg x 1deg) & 0.1 degree Paleogeographic Mesh",
+  "temporal_coverage": "Phanerozoic Deep Time (88 Geological Stages from 540 Ma to 0 Ma)",
+  "variables": [
+    "PALEO_ELEVATION_METERS",
+    "PALEO_BATHYMETRY_METERS",
+    "CONTINENTAL_POSITIONS"
+  ],
+  "citation": "Scotese, C. R., & Wright, N. (2018). PALEOMAP Paleodigital Elevation Models (PaleoDEMs) for the Phanerozoic. PALEOMAP Project / EarthByte.",
+  "files": [
+    "Scotese_Wright_2018_Maps_1-88_1degX1deg_PaleoDEMS_nc.zip",
+    "PaleoDEMS_long_lat_elev_csv_v2.zip"
+  ],
+  "status": "AUTHENTIC"
+}

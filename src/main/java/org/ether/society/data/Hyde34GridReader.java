@@ -170,8 +170,8 @@ public class Hyde34GridReader {
     public static BufferedImage loadForYear(long year) {
         long requestedYear = year;
         if (year < -10000) {
-            logger.warn("Prehistoric epoch {} BC precedes HYDE 3.4 baseline (-10,000 BC). Clamping to Paleolithic baseline 10,000 BC.", Math.abs(requestedYear));
-            year = -10000;
+            logger.info("Prehistoric epoch {} BC precedes HYDE 3.4 baseline (-10,000 BC). Returning null to enforce procedural biogeographical containment generation.", Math.abs(year));
+            return null;
         }
 
         if (GRID_CACHE.containsKey(year)) {

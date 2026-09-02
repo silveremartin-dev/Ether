@@ -1,0 +1,25 @@
+{
+  "provider_id": "lpi_lunar",
+  "name": "NASA PDS / LPI Lunar Regolith Volatiles & Helium-3",
+  "organization": "NASA Geosciences Node / Lunar and Planetary Institute",
+  "domain": "Lunar Polar Volatiles, Water Ice & Helium-3 Abundance Maps",
+  "website": "https://pds-geosciences.wustl.edu/lunar/lp-l-grs-5-element-maps-v1/lp_5001/",
+  "download_url": "https://pds-geosciences.wustl.edu/lunar/lp-l-grs-5-element-maps-v1/lp_5001/data/element/",
+  "alternate_urls": [
+    "https://zenodo.org/records/3932371",
+    "https://www.lpi.usra.edu/lunar/resources/"
+  ],
+  "license": "NASA / USRA Public Domain",
+  "spatial_resolution": "Lunar Cylindrical 0.5 deg x 0.5 deg Grid Mesh",
+  "temporal_coverage": "Lunar Surface Composition Baseline",
+  "variables": [
+    "HELIUM_3_PPM",
+    "WATER_ICE_WT_PERCENT",
+    "REGOLITH_TITANIUM_WT_PERCENT"
+  ],
+  "citation": "Prettyman, T. H., et al. (2006). Elemental composition of the lunar surface: Analysis of gamma ray spectrometer data from Lunar Prospector. Journal of Geophysical Research: Planets, 111(E12).",
+  "files": [
+    "lunar_prospector_grs_elements.zip"
+  ],
+  "status": "AUTHENTIC"
+}

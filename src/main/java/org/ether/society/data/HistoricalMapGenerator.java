@@ -70,18 +70,16 @@ public class HistoricalMapGenerator {
                 return;
             }
 
-            // 1. Try HYDE 3.4 High-Resolution ASCII Grid Ingestion
-            BufferedImage imgDensity = Hyde34GridReader.loadForYear(scenario.getStartDateYear());
-            if (imgDensity != null) {
-                scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
-                if (scenario.getStartDateYear() < -10000) {
-                    logger.info("Successfully populated scenario '{}' density tensor using HYDE 3.4 10,000 BC baseline grid (clamped for prehistoric epoch year {}).", scenario.getName(), scenario.getStartDateYear());
-                } else {
+            // 1. Try HYDE 3.4 High-Resolution ASCII Grid Ingestion (for dates >= -10,000 BC)
+            if (scenario.getStartDateYear() < -10000) {
+                scenario.setCustomDensityBase64(null);
+                logger.info("Prehistoric epoch {} BC precedes HYDE 3.4 baseline (-10,000 BC). Enforcing procedural density distribution with biogeographical containment.", scenario.getStartDateYear());
+            } else {
+                BufferedImage imgDensity = Hyde34GridReader.loadForYear(scenario.getStartDateYear());
+                if (imgDensity != null) {
+                    scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
                     logger.info("Successfully populated scenario '{}' density tensor using HYDE 3.4 5-arc-minute grid for year {}.", scenario.getName(), scenario.getStartDateYear());
                 }
-            } else {
-                imgDensity = generateCleanDensityMap(type, scenario);
-                scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
             }
 
             // 1. Clean Multi-Channel Isogloss Map (Index 0)
@@ -158,21 +156,28 @@ public class HistoricalMapGenerator {
             BufferedImage imgPreciousREE = generateCleanPreciousMetalsMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(6, bufferedImageToBase64Png(imgPreciousREE));
 
-            // Index 7: Freshwater Aquifers
-            BufferedImage imgAquifer = generateCleanAquiferMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(7, bufferedImageToBase64Png(imgAquifer));
+            // Index 7: Mantle Heat Flux & Tectonics
+            BufferedImage imgMantleHeat = generateCleanMantleHeatMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(7, bufferedImageToBase64Png(imgMantleHeat));
 
-            // Extensible Geology Tensors (Indices 8 to N-1) if N > 8
+            // Index 8: Freshwater Aquifers
+            BufferedImage imgAquifer = generateCleanAquiferMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(8, bufferedImageToBase64Png(imgAquifer));
+
+            // Extensible Geology Tensors (Indices 9 to N-1) if N > 9
             int resDims = scenario.getResourceVectorDimensions();
-            if (resDims > 8) {
-                for (int i = 8; i < resDims; i++) {
+            if (resDims > 9) {
+                for (int i = 9; i < resDims; i++) {
                     BufferedImage imgExtRes = generateCleanExtensibleResourceTensorMap(i, type, scenario);
                     scenario.setCustomGeologyTensorMapBase64(i, bufferedImageToBase64Png(imgExtRes));
                 }
             }
 
-            // Save to disk cache
+            // Save cultural tensor maps to disk cache
             saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
+
+            // Save geological tensor maps to disk cache (indices 0-8: coal, oil, gas, uranium, he3, ironcopper, preciousree, mantleheat, aquifer)
+            saveGeologyTensorsToDiskCache(scenario.getName(), imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousREE, imgMantleHeat, imgAquifer);
 
         } catch (Exception e) {
             logger.error("Failed to generate historical maps for scenario {}", scenario.getName(), e);
@@ -198,9 +203,39 @@ public class HistoricalMapGenerator {
             if (imgEco != null) ImageIO.write(imgEco, "PNG", cacheDir.resolve(safeName + "_ecological.png").toFile());
             if (imgPathogen != null) ImageIO.write(imgPathogen, "PNG", cacheDir.resolve(safeName + "_pathogen.png").toFile());
 
-            logger.info("Persisted cartographic tensor maps to disk cache 'data/maps/cache/{}_*.png'", safeName);
+            logger.info("Persisted cultural tensor maps to disk cache 'data/maps/cache/{}_*.png'", safeName);
         } catch (Exception e) {
-            logger.warn("Failed to write map images to disk cache directory: {}", e.getMessage());
+            logger.warn("Failed to write cultural tensor maps to disk cache directory: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Persists the 9 geological/energy tensor maps to the disk cache.
+     * Canonical filenames: _coal, _oil, _gas, _uranium, _he3, _ironcopper, _preciousree, _mantleheat, _aquifer.
+     */
+    public static void saveGeologyTensorsToDiskCache(String scenarioName,
+            BufferedImage imgCoal, BufferedImage imgOil, BufferedImage imgGas,
+            BufferedImage imgUranium, BufferedImage imgHe3, BufferedImage imgIronCopper,
+            BufferedImage imgPreciousREE, BufferedImage imgMantleHeat, BufferedImage imgAquifer) {
+        if (scenarioName == null || scenarioName.isBlank()) scenarioName = "scenario";
+        try {
+            java.nio.file.Path cacheDir = java.nio.file.Paths.get("data", "maps", "cache");
+            java.nio.file.Files.createDirectories(cacheDir);
+            String safeName = scenarioName.replaceAll("[^a-zA-Z0-9_\\-]", "_").toLowerCase(java.util.Locale.ROOT);
+
+            if (imgCoal != null)       ImageIO.write(imgCoal,       "PNG", cacheDir.resolve(safeName + "_coal.png").toFile());
+            if (imgOil != null)        ImageIO.write(imgOil,        "PNG", cacheDir.resolve(safeName + "_oil.png").toFile());
+            if (imgGas != null)        ImageIO.write(imgGas,        "PNG", cacheDir.resolve(safeName + "_gas.png").toFile());
+            if (imgUranium != null)    ImageIO.write(imgUranium,    "PNG", cacheDir.resolve(safeName + "_uranium.png").toFile());
+            if (imgHe3 != null)        ImageIO.write(imgHe3,        "PNG", cacheDir.resolve(safeName + "_he3.png").toFile());
+            if (imgIronCopper != null) ImageIO.write(imgIronCopper, "PNG", cacheDir.resolve(safeName + "_ironcopper.png").toFile());
+            if (imgPreciousREE != null) ImageIO.write(imgPreciousREE, "PNG", cacheDir.resolve(safeName + "_preciousree.png").toFile());
+            if (imgMantleHeat != null) ImageIO.write(imgMantleHeat, "PNG", cacheDir.resolve(safeName + "_mantleheat.png").toFile());
+            if (imgAquifer != null)    ImageIO.write(imgAquifer,    "PNG", cacheDir.resolve(safeName + "_aquifer.png").toFile());
+
+            logger.info("Persisted 9 geological tensor maps to disk cache 'data/maps/cache/{}_*.png'", safeName);
+        } catch (Exception e) {
+            logger.warn("Failed to write geological tensor maps to disk cache directory: {}", e.getMessage());
         }
     }
 
@@ -213,7 +248,11 @@ public class HistoricalMapGenerator {
             BufferedImage imgDensity = ImageIO.read(densityCache.toFile());
             if (imgDensity == null) return false;
 
-            scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+            if (scenario.getStartDateYear() >= -10000) {
+                scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+            } else {
+                scenario.setCustomDensityBase64(null);
+            }
 
             String[] mapKeys = {
                 "_isogloss.png", "_kinship.png", "_rituals.png", "_sovereignty.png",
@@ -229,9 +268,11 @@ public class HistoricalMapGenerator {
                 }
             }
 
+            // Geology tensor cache keys — indices must match setCustomGeologyTensorMapBase64 order:
+            // 0=Coal, 1=Oil, 2=Gas, 3=Uranium, 4=He3, 5=IronCopper, 6=PreciousREE, 7=MantleHeat, 8=Aquifer
             String[] geoKeys = {
                 "_coal.png", "_oil.png", "_gas.png", "_uranium.png",
-                "_he3.png", "_ironcopper.png", "_preciousree.png", "_aquifer.png"
+                "_he3.png", "_ironcopper.png", "_preciousree.png", "_mantleheat.png", "_aquifer.png"
             };
             for (int i = 0; i < geoKeys.length; i++) {
                 java.nio.file.Path p = cacheDir.resolve(safeName + geoKeys[i]);
@@ -1257,7 +1298,10 @@ public class HistoricalMapGenerator {
             double lat = 90.0 - (y / (double) height) * 180.0;
             for (int x = 0; x < width; x++) {
                 double lon = -180.0 + (x / (double) width) * 360.0;
-                if (!isLand(lon, lat)) continue;
+                if (!isLand(lon, lat)) {
+                    img.setRGB(x, y, 0x0F172A); // Equirectangular ocean basemap (Color 15, 23, 42)
+                    continue;
+                }
 
                 double val = Math.sin(lon * scale + phaseLng) * Math.cos(lat * scale + phaseLat) * 0.5 + 0.5;
                 float sat = 0.6f + (float)(val * 0.35);
@@ -1395,6 +1439,69 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    public static BufferedImage generateCleanMantleHeatMap(String type, Scenario scenario) {
+        java.nio.file.Path csvPath = java.nio.file.Paths.get("data", "maps", "ihfc_davies2013", "heat_flow_2deg.csv");
+        if (!java.nio.file.Files.exists(csvPath)) {
+            csvPath = java.nio.file.Paths.get("data", "maps", "heat_flow_2deg.csv");
+        }
+        if (!java.nio.file.Files.exists(csvPath)) {
+            csvPath = java.nio.file.Paths.get("in", "ggge20271-sup-0003-data_table1_eq_lon_lat_global_hf.csv");
+        }
+
+        if (java.nio.file.Files.exists(csvPath)) {
+            try {
+                int width = 2048, height = 1024;
+                BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                float[][] grid = new float[180][360];
+
+                java.util.List<String> lines = java.nio.file.Files.readAllLines(csvPath);
+                for (int i = 1; i < lines.size(); i++) {
+                    String line = lines.get(i).trim();
+                    if (line.isEmpty()) continue;
+                    String[] parts = line.split(",");
+                    if (parts.length >= 3) {
+                        try {
+                            double lon = Double.parseDouble(parts[0].trim());
+                            double lat = Double.parseDouble(parts[1].trim());
+                            double val = Double.parseDouble(parts[2].trim()); // Mean_HF in mW/m2
+
+                            int gx = (int) Math.clamp(((lon + 180.0) / 360.0) * 360, 0, 359);
+                            int gy = (int) Math.clamp(((90.0 - lat) / 180.0) * 180, 0, 179);
+                            grid[gy][gx] = (float) val;
+                        } catch (NumberFormatException ignored) {}
+                    }
+                }
+
+                for (int y = 0; y < height; y++) {
+                    double lat = 90.0 - (y / (double) height) * 180.0;
+                    int gy = (int) Math.clamp(((90.0 - lat) / 180.0) * 180, 0, 179);
+
+                    for (int x = 0; x < width; x++) {
+                        double lon = -180.0 + (x / (double) width) * 360.0;
+                        int gx = (int) Math.clamp(((lon + 180.0) / 360.0) * 360, 0, 359);
+
+                        float hf = grid[gy][gx]; // mW/m^2 (typical range 30..150+)
+                        double norm = Math.clamp((hf - 30.0) / 120.0, 0.0, 1.0);
+
+                        int r = (int) Math.clamp(30 + norm * 225, 0, 255);
+                        int g = (int) Math.clamp(20 + norm * 100, 0, 255);
+                        int b = (int) Math.clamp(50 + (1.0 - norm) * 120, 0, 255);
+                        img.setRGB(x, y, (r << 16) | (g << 8) | b);
+                    }
+                }
+                logger.info("Successfully generated 9th geology tensor (Mantle Heat Flux) from empirical Davies 2013 CSV dataset.");
+                return img;
+            } catch (Exception e) {
+                logger.warn("Could not parse Davies 2013 heat flow CSV dataset, falling back to procedural baseline: {}", e.getMessage());
+            }
+        }
+
+        BufferedImage img = generateCleanCoastlines(2048, 1024);
+        double[][] spots = {{-155.5, 19.8, 30, 1.2}, {-178.0, -29.0, 45, 1.1}, {-72.0, -15.0, 60, 1.2}, {140.0, 36.0, 50, 1.1}, {43.0, 11.5, 40, 1.2}, {-25.0, 64.8, 45, 1.1}, {14.0, 40.8, 35, 1.0}};
+        drawDepositHotspots(img, spots, new Color(239, 68, 68));
+        return img;
+    }
+
     public static BufferedImage generateCleanAquiferMap(String type, Scenario scenario) {
         BufferedImage img = generateCleanCoastlines(2048, 1024);
         double[][] spots = {{-60.0, -3.0, 80, 1.2}, {-54.0, -25.0, 60, 1.1}, {25.0, 22.0, 75, 1.2}, {-100.0, 38.0, 50, 1.0}, {80.0, 27.0, 65, 1.1}, {138.0, -26.0, 70, 1.1}, {22.0, -1.0, 70, 1.1}};
@@ -1420,7 +1527,10 @@ public class HistoricalMapGenerator {
             double lat = 90.0 - (y / (double) height) * 180.0;
             for (int x = 0; x < width; x++) {
                 double lon = -180.0 + (x / (double) width) * 360.0;
-                if (!isLand(lon, lat)) continue;
+                if (!isLand(lon, lat)) {
+                    img.setRGB(x, y, 0x0F172A); // Equirectangular ocean basemap (Color 15, 23, 42)
+                    continue;
+                }
 
                 double val = Math.sin(lon * scale + phaseLng) * Math.cos(lat * scale + phaseLat) * 0.5 + 0.5;
                 float sat = 0.7f;

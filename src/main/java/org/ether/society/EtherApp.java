@@ -54,6 +54,7 @@ public class EtherApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         try {
             this.primaryStage = primaryStage;
+            org.ether.society.ui.WindowUtils.applyWindowIcon(primaryStage);
             logger.info("Starting Ether Application with Splash Screen...");
 
             org.ether.society.ui.SplashScreen splash = new org.ether.society.ui.SplashScreen();
@@ -62,15 +63,21 @@ public class EtherApp extends Application {
             javafx.concurrent.Task<Void> initTask = new javafx.concurrent.Task<>() {
                 @Override
                 protected Void call() throws Exception {
-                    splash.updateProgress(0.15, "Chargement de la configuration système...", "Lecture des propriétés et paramètres d'exécution");
+                    splash.updateProgress(0.15,
+                            I18n.getOrDefault("splash.step.config.status", "Loading system configuration..."),
+                            I18n.getOrDefault("splash.step.config.substatus", "Reading execution properties and settings"));
                     config = org.ether.society.config.ConfigurationLoader.loadDefault();
                     Thread.sleep(120);
 
-                    splash.updateProgress(0.40, "Initialisation du moteur spatial H3...", "Allocation du maillage géodésique & buffers DOD");
+                    splash.updateProgress(0.40,
+                            I18n.getOrDefault("splash.step.h3.status", "Initializing H3 spatial engine..."),
+                            I18n.getOrDefault("splash.step.h3.substatus", "Allocating geodesic mesh & DOD buffers"));
                     h3Engine = new H3SimulationEngine(config);
                     Thread.sleep(150);
 
-                    splash.updateProgress(0.70, "Construction des composants graphiques JavaFX...", "Initialisation du rendu 2D/3D et des panneaux de contrôle");
+                    splash.updateProgress(0.70,
+                            I18n.getOrDefault("splash.step.ui.status", "Building JavaFX graphical components..."),
+                            I18n.getOrDefault("splash.step.ui.substatus", "Initializing 2D/3D rendering & control panels"));
                     javafx.application.Platform.runLater(() -> {
                         mapCanvas = new H3MapCanvas(1280, 800);
                         miniMap = new MiniMap();
@@ -83,9 +90,13 @@ public class EtherApp extends Application {
                     });
                     Thread.sleep(200);
 
-                    splash.updateProgress(0.95, "Finalisation de l'affichage et thèmes...", "Application des styles visuels");
+                    splash.updateProgress(0.95,
+                            I18n.getOrDefault("splash.step.theme.status", "Finalizing display and themes..."),
+                            I18n.getOrDefault("splash.step.theme.substatus", "Applying visual styles"));
                     Thread.sleep(100);
-                    splash.updateProgress(1.0, "Prêt !", "Ouverture du tableau de bord");
+                    splash.updateProgress(1.0,
+                            I18n.getOrDefault("splash.step.ready.status", "Ready!"),
+                            I18n.getOrDefault("splash.step.ready.substatus", "Opening dashboard"));
                     return null;
                 }
             };

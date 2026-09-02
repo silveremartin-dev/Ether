@@ -1,0 +1,24 @@
+{
+  "provider_id": "wep_world_energy",
+  "name": "World Energy Council & EIA Energy Basins",
+  "organization": "US Energy Information Administration (EIA) & World Energy Council (WEC)",
+  "domain": "Global Fossil Fuel Sedimentary Basins & World Energy Proxies",
+  "website": "https://www.eia.gov/maps/map_data/",
+  "download_url": "https://www.eia.gov/maps/map_data/ShaleGas_Oil_Basins_World_EIA.zip",
+  "alternate_urls": [
+    "https://raw.githubusercontent.com/datasets/gdp/master/data/gdp.csv"
+  ],
+  "license": "US Government Public Domain / Open Data",
+  "spatial_resolution": "Sedimentary Basin Vector Boundaries & Country Indices",
+  "temporal_coverage": "2024 Baseline",
+  "variables": [
+    "SHALE_GAS_BASINS",
+    "SHALE_OIL_BASINS",
+    "GLOBAL_ENERGY_PROXIES"
+  ],
+  "citation": "US Energy Information Administration (EIA) & World Energy Council (WEC) Technically Recoverable Energy Resources (2024).",
+  "files": [
+    "global_gdp_energy_proxies.csv"
+  ],
+  "status": "AUTHENTIC"
+}

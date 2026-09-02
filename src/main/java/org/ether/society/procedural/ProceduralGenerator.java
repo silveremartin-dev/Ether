@@ -110,7 +110,7 @@ public class ProceduralGenerator {
         double scale = preset.noiseScale();
 
         // ── 1. Elevation ───────────────────────────────────────────────────────
-        double e = computeElevationAt(lat, lng, elevNoise, freq, scale);
+        double e = computeElevationAt(lat, lng, elevNoise, freq, scale, preset);
 
         double elevMeters;
         if (e >= 0) {
@@ -121,10 +121,10 @@ public class ProceduralGenerator {
 
         // ── 2. Slope / Declivity ───────────────────────────────────────────────
         double dDeg = 0.3;
-        double eN = computeElevationAt(lat + dDeg, lng,       elevNoise, freq, scale);
-        double eS = computeElevationAt(lat - dDeg, lng,       elevNoise, freq, scale);
-        double eE = computeElevationAt(lat,         lng + dDeg, elevNoise, freq, scale);
-        double eW = computeElevationAt(lat,         lng - dDeg, elevNoise, freq, scale);
+        double eN = computeElevationAt(lat + dDeg, lng,       elevNoise, freq, scale, preset);
+        double eS = computeElevationAt(lat - dDeg, lng,       elevNoise, freq, scale, preset);
+        double eE = computeElevationAt(lat,         lng + dDeg, elevNoise, freq, scale, preset);
+        double eW = computeElevationAt(lat,         lng - dDeg, elevNoise, freq, scale, preset);
 
         double dLat      = (eN - eS) / (2.0 * dDeg);
         double dLng      = (eE - eW) / (2.0 * dDeg);
@@ -229,7 +229,28 @@ public class ProceduralGenerator {
     // -------------------------------------------------------------------------
 
     private double computeElevationAt(double lat, double lng,
-                                       SimplexNoise noise, double freq, double scale) {
+                                       SimplexNoise noise, double freq, double scale, PlanetPreset preset) {
+        String elevSrc = preset != null ? preset.elevationMapSource() : null;
+        String pName = preset != null && preset.name() != null ? preset.name().toLowerCase() : "";
+        boolean isEarth = "earth".equalsIgnoreCase(elevSrc) || pName.contains("terre") || pName.contains("earth") || pName.contains("terran");
+
+        if (isEarth) {
+            boolean land = org.ether.society.data.HistoricalMapGenerator.isLand(lng, lat);
+            double latR = Math.toRadians(lat);
+            double lngR = Math.toRadians(lng);
+            double x = Math.cos(latR) * Math.cos(lngR);
+            double y = Math.cos(latR) * Math.sin(lngR);
+            double z = Math.sin(latR);
+            double n = noise.noise(freq * 2.0 * x, freq * 2.0 * y, freq * 2.0 * z);
+
+            if (land) {
+                double mtn = org.ether.society.data.HistoricalMapGenerator.getTopographicHabitability("EARTH", lng, lat);
+                return Math.max(0.05, Math.min(0.95, 0.12 + 0.35 * Math.abs(n) + (1.0 - mtn) * 0.45));
+            } else {
+                return Math.max(-0.95, Math.min(-0.15, -0.45 - 0.35 * Math.abs(n)));
+            }
+        }
+
         double latR = Math.toRadians(lat);
         double lngR = Math.toRadians(lng);
         double x = Math.cos(latR) * Math.cos(lngR);

@@ -1,0 +1,9 @@
+{
+  "name": "LPI Lunar Volatiles & Regolith Resource Database",
+  "domain": "Lunar Polar Volatiles, Water Ice & Helium-3 Abundance Maps",
+  "url": "https://www.lpi.usra.edu/lunar/resources/LPI_Lunar_Volatiles_Dataset.csv",
+  "datasets": [
+    "lpi_lunar_volatiles_helium3.csv"
+  ],
+  "citation": "Lunar and Planetary Institute (LPI) Lunar Regolith Volatile Abundance & Helium-3 Mapping Repository (2022)."
+}

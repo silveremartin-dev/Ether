@@ -1,0 +1,9 @@
+{
+  "name": "UNESCO / BGR WHYMAP Aquifers",
+  "domain": "World Hydrogeological Map & Global Renewable/Non-Renewable Aquifer Reserves",
+  "url": "https://whymap.org/whymap/EN/Downloads/GW_Resources/gw_resources_gdb.zip",
+  "datasets": [
+    "gw_resources_gdb.zip"
+  ],
+  "citation": "Richts, A., Struckmeier, W., & Zaepke, M. (2011). WHYMAP and the World Map of Hydrogeological Conditions and Groundwater Resources. UNESCO/BGR."
+}

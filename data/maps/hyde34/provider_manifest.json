@@ -1,0 +1,11 @@
+{
+  "name": "HYDE 3.4 Baseline Grid",
+  "domain": "History Database of the Global Environment (Demographics & Land Use)",
+  "url": "https://cdnpbl.nl/hyde/hyde34/",
+  "datasets": [
+    "10000BC_pop.zip",
+    "0AD_pop.zip",
+    "2024AD_pop.zip"
+  ],
+  "citation": "Klein Goldewijk, K., Beusen, A., Doelman, J., & Stehfest, E. (2017). Anthropogenic land use estimates for the Holocene – HYDE 3.2. Earth System Science Data, 9(2), 927-953."
+}

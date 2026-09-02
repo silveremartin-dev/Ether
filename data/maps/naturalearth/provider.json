@@ -1,0 +1,27 @@
+{
+  "provider_id": "naturalearth",
+  "name": "Natural Earth Vector & Raster Data",
+  "organization": "North American Cartographic Information Society (NACIS)",
+  "domain": "Global Coastlines, Rivers, Lakes, Oceans & Political Boundaries",
+  "website": "https://www.naturalearthdata.com/",
+  "download_url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_land.geojson",
+  "alternate_urls": [
+    "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_coastline.zip"
+  ],
+  "license": "Public Domain",
+  "spatial_resolution": "1:10M, 1:50M, 1:110M Scales",
+  "temporal_coverage": "Modern Baseline Cartography",
+  "variables": [
+    "COASTLINES",
+    "RIVERS_CENTERLINES",
+    "LAND_POLYGONS",
+    "OCEAN_POLYGONS"
+  ],
+  "citation": "Kelso, N.V. and Patterson, T. (2010). Natural Earth vector and raster data. World Wide Web.",
+  "files": [
+    "ne_110m_land.geojson",
+    "ne_110m_rivers.geojson",
+    "ne_110m_ocean.geojson"
+  ],
+  "status": "AUTHENTIC"
+}

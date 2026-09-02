@@ -1,0 +1,209 @@
+{
+  "timestamp": "2026-08-24T16:09:52.694Z",
+  "totalProviders": 21,
+  "authenticCount": 21,
+  "configuredCount": 0,
+  "providers": [
+    {
+      "id": "archaeoglobe",
+      "name": "Archaeoglobe Project",
+      "status": "AUTHENTIC",
+      "fileCount": 7,
+      "filesSample": [
+        "ArchaeGLOBE_Regions.zip",
+        "ArchaeGLOBE_Regions_kml.kmz",
+        "ArchaeoGLOBE Regions Attributes.pdf"
+      ]
+    },
+    {
+      "id": "bgr_germany",
+      "name": "BGR Global Energy & Mineral Reserves",
+      "status": "AUTHENTIC",
+      "fileCount": 1,
+      "filesSample": [
+        "energiedaten_2023_en.xlsx"
+      ]
+    },
+    {
+      "id": "chelsa",
+      "name": "CHELSA Climate Data",
+      "status": "AUTHENTIC",
+      "fileCount": 0,
+      "filesSample": []
+    },
+    {
+      "id": "esa_geospatial",
+      "name": "ESA Copernicus DEM GLO-30",
+      "status": "AUTHENTIC",
+      "fileCount": 0,
+      "filesSample": []
+    },
+    {
+      "id": "gebco",
+      "name": "GEBCO Bathymetric Grids",
+      "status": "AUTHENTIC",
+      "fileCount": 0,
+      "filesSample": []
+    },
+    {
+      "id": "hyde34",
+      "name": "HYDE 3.4 Baseline Grid",
+      "status": "AUTHENTIC",
+      "fileCount": 122,
+      "filesSample": [
+        "0AD_lu.zip",
+        "0AD_pop.zip",
+        "10000BC_lu.zip"
+      ]
+    },
+    {
+      "id": "iaea_nfcis",
+      "name": "IAEA UDEPO & ThDEPO Databases",
+      "status": "AUTHENTIC",
+      "fileCount": 1,
+      "filesSample": [
+        "DepositDataList.xlsx"
+      ]
+    },
+    {
+      "id": "lpi_lunar",
+      "name": "NASA PDS / LPI Lunar Regolith Volatiles & Helium-3",
+      "status": "AUTHENTIC",
+      "fileCount": 4,
+      "filesSample": [
+        "lro_lend.zip",
+        "lro_lend_manifest.txt",
+        "ODECartHTMLList.zip"
+      ]
+    },
+    {
+      "id": "maddison",
+      "name": "Maddison Project Database 2023",
+      "status": "AUTHENTIC",
+      "fileCount": 1,
+      "filesSample": [
+        "maddison_gdp_population_history.csv"
+      ]
+    },
+    {
+      "id": "nasa_pds",
+      "name": "NASA Planetary Data System (PDS)",
+      "status": "AUTHENTIC",
+      "fileCount": 10,
+      "filesSample": [
+        "ldem_4.lbl",
+        "LROLOL_1xxx.zip",
+        "LROLOL_1xxx4.zip"
+      ]
+    },
+    {
+      "id": "naturalearth",
+      "name": "Natural Earth Vector & Raster Data",
+      "status": "AUTHENTIC",
+      "fileCount": 11,
+      "filesSample": [
+        "ne_10m_coastline.zip",
+        "ne_10m_lakes.zip",
+        "ne_10m_land.zip"
+      ]
+    },
+    {
+      "id": "paleoclim",
+      "name": "PaleoCLIM High-Res Paleoclimate Surfaces",
+      "status": "AUTHENTIC",
+      "fileCount": 12,
+      "filesSample": [
+        "BA_v1_2_5m.zip",
+        "CHELSA_cur_V1_2B_r2_5m.zip",
+        "chelsa_LGM_v1_2B_r2_5m.zip"
+      ]
+    },
+    {
+      "id": "paleomap",
+      "name": "PALEOMAP Project PaleoDEMs (Scotese & Wright 2018)",
+      "status": "AUTHENTIC",
+      "fileCount": 2,
+      "filesSample": [
+        "Scotese_PaleoAtlas_v3.zip",
+        "Scotese_Wright_2018_Maps_1-88_1degX1deg_PaleoDEMS_nc.zip"
+      ]
+    },
+    {
+      "id": "pangea",
+      "name": "PANGAEA Data Publisher for Earth & Environmental Science",
+      "status": "AUTHENTIC",
+      "fileCount": 2,
+      "filesSample": [
+        "EDC99_CO2_bern.tab",
+        "EDC_dD_temp_estim.tab"
+      ]
+    },
+    {
+      "id": "pmip",
+      "name": "PMIP4 / CMIP6 Paleoclimate Intercomparison",
+      "status": "AUTHENTIC",
+      "fileCount": 0,
+      "filesSample": []
+    },
+    {
+      "id": "seshat",
+      "name": "Seshat: Global History Databank",
+      "status": "AUTHENTIC",
+      "fileCount": 9,
+      "filesSample": [
+        "cliopatria_polities_only.geojson",
+        "Equinox_on_GitHub_June9_2022.xlsx",
+        "seshat_api_capitals.json"
+      ]
+    },
+    {
+      "id": "usgs",
+      "name": "NOAA NCEI ETOPO 2022 Global Relief Model",
+      "status": "AUTHENTIC",
+      "fileCount": 3,
+      "filesSample": [
+        "ETOPO_2022_v1_60s_N90W180_bed.tif",
+        "ETOPO_2022_v1_60s_N90W180_geoid.tif",
+        "ETOPO_2022_v1_60s_N90W180_surface.tif"
+      ]
+    },
+    {
+      "id": "usgs_mrds",
+      "name": "USGS Mineral Resources Data System (MRDS)",
+      "status": "AUTHENTIC",
+      "fileCount": 1,
+      "filesSample": [
+        "mrds-csv.zip"
+      ]
+    },
+    {
+      "id": "wep_world_energy",
+      "name": "World Energy Council & EIA Energy Basins",
+      "status": "AUTHENTIC",
+      "fileCount": 1,
+      "filesSample": [
+        "global_gdp_energy_proxies.csv"
+      ]
+    },
+    {
+      "id": "whymap_groundwater",
+      "name": "UNESCO / BGR WHYMAP Aquifers",
+      "status": "AUTHENTIC",
+      "fileCount": 1,
+      "filesSample": [
+        "WHYMAP_GWR_v1.zip"
+      ]
+    },
+    {
+      "id": "worldclim",
+      "name": "WorldClim Climate Normals v2.1",
+      "status": "AUTHENTIC",
+      "fileCount": 6,
+      "filesSample": [
+        "wc2.1_10m_bio.zip",
+        "wc2.1_2.5m_prec.zip",
+        "wc2.1_2.5m_tavg.zip"
+      ]
+    }
+  ]
+}

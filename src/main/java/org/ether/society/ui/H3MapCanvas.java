@@ -1053,12 +1053,8 @@ public class H3MapCanvas extends Canvas {
             double radiusY = Math.max(1.0, cellSize / 2.0);
             double absLat = Math.abs(cell.getLatitude());
             double cosLat = Math.cos(Math.toRadians(Math.min(88.0, absLat)));
-            double radiusX = (cellSize / 2.0) * cosLat;
-            if (absLat < 70.0) {
-                radiusX = Math.max(radiusY * 0.45, radiusX);
-            } else {
-                radiusX = Math.max(0.75, radiusX);
-            }
+            double radiusX = (cellSize / 2.0) / Math.max(0.12, cosLat);
+            radiusX = Math.max(radiusY * 0.45, radiusX);
 
             // In smooth map mode, slightly dilate polygons to ensure a continuous surface without gaps
             double scaleFactor = smoothMap ? 1.05 : 1.0;

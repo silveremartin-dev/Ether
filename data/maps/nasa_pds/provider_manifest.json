@@ -1,0 +1,10 @@
+{
+  "name": "NASA Planetary Data System (PDS)",
+  "domain": "Planetary Topography (Moon LOLA, Mars MOLA, Venus Magellan GTDR)",
+  "url": "https://pds-geosciences.wustl.edu/mgs/mgs-m-mola-5-megdr-l3-v1/mgsl_300x/meg004/megr90n000cb.lbl",
+  "datasets": [
+    "ldem_4.lbl",
+    "megr90n000cb.lbl"
+  ],
+  "citation": "Smith, D. E., et al. (2010), Initial observations from the Lunar Orbiter Laser Altimeter (LOLA), Geophysical Research Letters, 37, L18204."
+}
