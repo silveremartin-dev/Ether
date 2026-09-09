@@ -305,61 +305,29 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label demoCompatibilityLabel;
 
     private static final Map<String, String> DENSITY_LABELS = Map.ofEntries(
-        Map.entry("UNBIASED_NATURAL", "⚖ Équilibre Bio-Climatique Naturel (Sans Biais)"),
-        Map.entry("ONE_CONTINENT", "🌍 Berceau Africain & Expansion Globale (Out of Africa)"),
-        Map.entry("AUSTRALIA_SAHUL", "🦘 Migration Maritime Sahul & Australasie"),
-        Map.entry("BERINGIA_AMERICAS", "🏔 Pont Terrestre de Béringie & Corridor Américain"),
-        Map.entry("YOUNGER_DRYAS", "❄ Refuges du Récents Dryas & Levant Natufien"),
-        Map.entry("FERTILE_CRESCENT", "🌾 Croissant Fertile & Premiers Foyers Agricoles"),
-        Map.entry("GREEN_SAHARA", "🌴 Période Humide Africaine & Sahara Vert"),
-        Map.entry("EGYPT_NILE", "𓀀 Vallée du Nil & Bassin d'Irrigation Égyptien"),
-        Map.entry("MESOPOTAMIA_ASSYRIA", "🏛 Plaine Alluviale Mésopotamienne (Tigre & Euphrate)"),
-        Map.entry("MESOAMERICA", "🌽 Bassins Mésoaméricains (Mayas & Olmèques)"),
-        Map.entry("INDIA_MAURYA", "☸️ Plaine Gângétique & Empire Maurya"),
-        Map.entry("ROMAN_EMPIRE", "🏛 Bassin Méditerranéen & Pax Romana"),
-        Map.entry("COASTAL_MARITIME", "🌊 Focalisation Littorale & Maritime"),
-        Map.entry("RIVER_VALLEYS", "🏞 Focalisation Fluviale & Bassins Alluviaux"),
-        Map.entry("WEST_AFRICA_MALI", "🕌 Boucle du Niger & Empire du Mali"),
-        Map.entry("AMERICAS_1491", "🌽 Empires Précolombiens (Tawantinsuyu & Anahuac)"),
-        Map.entry("COLUMBIAN_CONTACT", "⛵ Choc Colombien & Échange Bio-Démographique"),
-        Map.entry("JAPAN_SAKOKU", "🗾 Archipel Japonais & Isolement Edo (Sakoku)"),
-        Map.entry("INDUSTRIAL_1800", "🏭 Centres Industriels & Foyers de Vapeur (1800)"),
-        Map.entry("HIGHLAND_MOUNTAIN", "🏔 Refuges d'Altitude & Reliefs Montagnards"),
-        Map.entry("INLAND_OASIS", "🌴 Bassins Hydrographiques Intérieurs & Oasis"),
-        Map.entry("EQUATORIAL_BELT", "☀️ Bande Équatoriale & Zone Tropicale"),
-        Map.entry("URBAN_CLUSTERS", "🏙 Émergence de Métropoles & Grappes Urbaines"),
-        Map.entry("SPARSE_NOMADIC", "⛺ Dispersion Pastoraliste Nomade (Faible Densité)"),
-        Map.entry("UNIFORM", "🟦 Distribution Homogène Absolue"),
-        Map.entry("RANDOM", "🎲 Distribution Stochastique")
+        Map.entry("UNBIASED_NATURAL", "⚖ Natural Bio-Climatic Equilibrium (Unbiased)"),
+        Map.entry("COASTAL_MARITIME", "🌊 Coastal & Maritime Focus"),
+        Map.entry("RIVER_VALLEYS", "🏞 River Valleys & Alluvial Basins"),
+        Map.entry("HIGHLAND_MOUNTAIN", "🏔 Highland Refuges & Mountain Reliefs"),
+        Map.entry("INLAND_OASIS", "🌴 Inland Hydrographic Basins & Oases"),
+        Map.entry("EQUATORIAL_BELT", "☀️ Equatorial Belt & Tropical Zone"),
+        Map.entry("URBAN_CLUSTERS", "🏙 Metropolises & Urban Clusters"),
+        Map.entry("SPARSE_NOMADIC", "⛺ Sparse Nomadic & Pastoralist Dispersion"),
+        Map.entry("UNIFORM", "🟦 Absolute Uniform Distribution"),
+        Map.entry("RANDOM", "🎲 Stochastic Random Distribution")
     );
 
     private static final Map<String, String> DENSITY_DESCRIPTIONS = Map.ofEntries(
-        Map.entry("UNBIASED_NATURAL", "⚖ Équilibre Bio-Climatique Naturel : Modèle physique pur. Aucun biais artificiel. La population s'établit strictement selon la viabilité environnementale réelle (biomes, température, cours d'eau, relief)."),
-        Map.entry("ONE_CONTINENT", "🌍 Out of Africa (-100 000 BP) : Confinement démographique strict au berceau africain et traversée du Moyen-Orient, avec barrières biogéographiques sur le Sahul et les Amériques."),
-        Map.entry("AUSTRALIA_SAHUL", "🦘 Sahul (-50 000 BP) : Colonisation du continent australo-papou réuni (Sahul) suite au franchissement maritime de la ligne de Wallace."),
-        Map.entry("BERINGIA_AMERICAS", "🏔 Béringie (-25 000 BP) : Occupation du pont terrestre de Béringie et migration à travers le corridor deglacé nord-américain."),
-        Map.entry("YOUNGER_DRYAS", "❄ Récents Dryas (-10 900 BP) : Refuges microclimatiques Natufiens au Levant face au refroidissement brutal."),
-        Map.entry("FERTILE_CRESCENT", "🌾 Croissant Fertile (-8 000 BP) : Noyaux de néolithisation le long du Tigre, de l'Euphrate, du Nil et du Levant."),
-        Map.entry("GREEN_SAHARA", "🌴 Sahara Vert (-6 000 BP) : Savane verdoyante et réseaux lacustres de la Période Humide Africaine (AHP)."),
-        Map.entry("EGYPT_NILE", "𓀀 Égypte Antique (-3 000 BP) : Marge d'irrigation et crues annuelles de la vallée et du delta du Nil."),
-        Map.entry("MESOPOTAMIA_ASSYRIA", "🏛 Mésopotamie (-2 000 BP) : Villes-états et réseaux d'irrigation entre le Tigre et l'Euphrate."),
-        Map.entry("MESOAMERICA", "🌽 Mésoamérique (-1 500 BP) : Centres cérémoniels olmèques et cités-états mayas du bassin de Mexico au Yucatán."),
-        Map.entry("INDIA_MAURYA", "☸️ Empire Maurya (-300 BP) : Agriculture rizicole intensive dans la vallée du Gange et l'Indus."),
-        Map.entry("ROMAN_EMPIRE", "🏛 Empire Romain (An 0) : Densité urbaine et agricole autour du bassin méditerranéen et des axes d'aqueducs."),
-        Map.entry("COASTAL_MARITIME", "🌊 Focalisation Littorale & Maritime : Favorise la colonisation des littoraux, deltas et bordures côtières de la planète."),
-        Map.entry("RIVER_VALLEYS", "🏞 Focalisation Fluviale & Alluviale : Concentration le long des réseaux hydrographiques et vallées fluviales principales."),
-        Map.entry("WEST_AFRICA_MALI", "🕌 Empire du Mali (1324) : Carrefour marchand trans-saharien et foyers urbains de la boucle du Niger."),
-        Map.entry("AMERICAS_1491", "🌽 Amériques Précolombiennes (1491) : Hautes densités de l'Empire Inca (Andes) et de l'Empire Aztèque."),
-        Map.entry("COLUMBIAN_CONTACT", "⛵ Contact Colombien (1492) : Trajectoire de choc épidémique et réorganisation des foyers côtiers."),
-        Map.entry("JAPAN_SAKOKU", "🗾 Japon Edo (1639) : Concentration rizicole intense dans les plaines de Kanto et Kansai sous fermeture Sakoku."),
-        Map.entry("INDUSTRIAL_1800", "🏭 Révolution Industrielle (1800) : Densification autour des bassins houillers et centres industriels européens et d'Asie de l'Est."),
-        Map.entry("HIGHLAND_MOUNTAIN", "🏔 Refuges Montagnards : Densification préférentielle sur les hautes vallées et plateaux d'altitude."),
-        Map.entry("INLAND_OASIS", "🌴 Bassins Intérieurs & Oasis : Concentration autour des dépressions intérieures et nappes phréatiques accessibles."),
-        Map.entry("EQUATORIAL_BELT", "☀️ Bande Équatoriale : Colonisation prioritaire des latitudes équatoriales et des zones à fort rayonnement solaire."),
-        Map.entry("URBAN_CLUSTERS", "🏙 Métropoles & Grappes Urbaines : Émergence procédurale de plusieurs grands foyers d'agrégation à haute densité."),
-        Map.entry("SPARSE_NOMADIC", "⛺ Dispersion Nomade : Population pastorale dispersée à très faible densité sur l'ensemble des biomes viables."),
-        Map.entry("UNIFORM", "🟦 Distribution Homogène : Densité strictly constante sur toutes les cellules de la grille H3."),
-        Map.entry("RANDOM", "🎲 Distribution Stochastique : Attribution aléatoire uniforme de la population entre les cellules.")
+        Map.entry("UNBIASED_NATURAL", "⚖ Natural Bio-Climatic Equilibrium: Pure physical model without artificial bias. Population settles strictly according to real environmental suitability (biomes, temperature, waterways, relief)."),
+        Map.entry("COASTAL_MARITIME", "🌊 Coastal & Maritime Focus: Encourages human settlement along ocean coastlines, river deltas, and maritime margins."),
+        Map.entry("RIVER_VALLEYS", "🏞 River Valleys & Alluvial Basins: High population concentration along major hydrographic river networks and fertile alluvial basins."),
+        Map.entry("HIGHLAND_MOUNTAIN", "🏔 Highland Refuges & Mountain Reliefs: Preferential densification in high valleys, mountain plateaus, and defensive elevated reliefs."),
+        Map.entry("INLAND_OASIS", "🌴 Inland Basins & Oases: Settlement around endorheic depressions and accessible groundwater tables."),
+        Map.entry("EQUATORIAL_BELT", "☀️ Equatorial Belt: Primary settlement concentrated around equatorial latitudes and high solar irradiance zones."),
+        Map.entry("URBAN_CLUSTERS", "🏙 Metropolises & Urban Clusters: Procedural emergence of multiple dense urban aggregation hubs."),
+        Map.entry("SPARSE_NOMADIC", "⛺ Sparse Nomadic Dispersion: Low-density pastoral population dispersed broadly across all viable biomes."),
+        Map.entry("UNIFORM", "🟦 Absolute Uniform Distribution: Strictly constant population density across all land cells on the H3 grid."),
+        Map.entry("RANDOM", "🎲 Stochastic Distribution: Uniformly random population allocation across land cells.")
     );
 
     // Clipping & Boundary Label Fields for live i18n
@@ -420,7 +388,7 @@ public class ScenarioSetupPanel extends BorderPane {
         Map<String, Spinner<Double>> spinners = new HashMap<>();
 
         if ("MaritimeHighwayEngine".equals(engineKey)) {
-            Label l1 = new Label("Boost Capital/Tick (α):");
+            Label l1 = new Label(I18n.getOrDefault("scenario.label.capital_boost_rate", "Boost Capital/Tick (α):"));
             l1.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
             Spinner<Double> s1 = new Spinner<>(0.0, 0.50, 0.05, 0.01);
             s1.setEditable(true);
@@ -431,7 +399,7 @@ public class ScenarioSetupPanel extends BorderPane {
             grid.add(s1, 1, 0);
             spinners.put("capitalBoostRate", s1);
 
-            Label l2 = new Label("Mult. Friction Eau (μ):");
+            Label l2 = new Label(I18n.getOrDefault("scenario.label.friction_multiplier", "Mult. Friction Eau (μ):"));
             l2.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
             Spinner<Double> s2 = new Spinner<>(0.05, 1.00, 0.20, 0.05);
             s2.setEditable(true);
@@ -476,7 +444,7 @@ public class ScenarioSetupPanel extends BorderPane {
             grid.add(s3, 1, 1);
             spinners.put("aralRainfallThreshold", s3);
 
-            Label l4 = new Label("Altitude Min Barrage (m):");
+            Label l4 = new Label(I18n.getOrDefault("scenario.label.dam_min_elevation", "Altitude Min Barrage (m):"));
             l4.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
             Spinner<Double> s4 = new Spinner<>(50.0, 2000.0, 300.0, 50.0);
             s4.setEditable(true);
@@ -488,7 +456,7 @@ public class ScenarioSetupPanel extends BorderPane {
             spinners.put("damMinElevation", s4);
 
         } else if ("FertileCrescentSalinizationEngine".equals(engineKey)) {
-            Label l1 = new Label("Taux Salinisation Sol (k_salt):");
+            Label l1 = new Label(I18n.getOrDefault("scenario.label.salinization_rate", "Taux Salinisation Sol (k_salt):"));
             l1.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
             Spinner<Double> s1 = new Spinner<>(0.001, 0.20, 0.02, 0.005);
             s1.setEditable(true);
@@ -1024,7 +992,7 @@ public class ScenarioSetupPanel extends BorderPane {
         });
 
         densityPatternCombo = new ComboBox<>();
-        densityPatternCombo.getItems().addAll("UNBIASED_NATURAL", "ONE_CONTINENT", "AUSTRALIA_SAHUL", "BERINGIA_AMERICAS", "YOUNGER_DRYAS", "FERTILE_CRESCENT", "GREEN_SAHARA", "EGYPT_NILE", "MESOPOTAMIA_ASSYRIA", "MESOAMERICA", "INDIA_MAURYA", "ROMAN_EMPIRE", "RIVER_VALLEYS", "WEST_AFRICA_MALI", "AMERICAS_1491", "COLUMBIAN_CONTACT", "JAPAN_SAKOKU", "INDUSTRIAL_1800", "URBAN_CLUSTERS", "SPARSE_NOMADIC", "UNIFORM", "RANDOM");
+        densityPatternCombo.getItems().addAll("UNBIASED_NATURAL", "COASTAL_MARITIME", "RIVER_VALLEYS", "HIGHLAND_MOUNTAIN", "INLAND_OASIS", "EQUATORIAL_BELT", "URBAN_CLUSTERS", "SPARSE_NOMADIC", "UNIFORM", "RANDOM");
         densityPatternCombo.setValue("UNBIASED_NATURAL");
         densityPatternCombo.setMaxWidth(Double.MAX_VALUE);
         densityPatternCombo.setConverter(new javafx.util.StringConverter<String>() {
@@ -1135,8 +1103,8 @@ public class ScenarioSetupPanel extends BorderPane {
         cgCol4.setPercentWidth(25);
         customGrid.getColumnConstraints().setAll(cgCol1, cgCol2, cgCol3, cgCol4);
 
-        customGrid.addRow(0, new Label("🛠️ K₀ (kg/hab) :"), customCapitalSpinner, new Label("⚡ E₀ (MJ/hab) :"), customEnergySpinner);
-        customGrid.addRow(1, new Label("🌾 F₀ (mois) :"), customFoodSpinner, new Label("🧠 I₀ (bits/hab) :"), customInfoSpinner);
+        customGrid.addRow(0, new Label(I18n.getOrDefault("scenario.label.stock_k0", "🛠️ K₀ (kg/hab) :")), customCapitalSpinner, new Label(I18n.getOrDefault("scenario.label.stock_e0", "⚡ E₀ (MJ/hab) :")), customEnergySpinner);
+        customGrid.addRow(1, new Label(I18n.getOrDefault("scenario.label.stock_f0", "🌾 F₀ (mois) :")), customFoodSpinner, new Label(I18n.getOrDefault("scenario.label.stock_i0", "🧠 I₀ (bits/hab) :")), customInfoSpinner);
 
         Label customTitleLabel = new Label(I18n.getOrDefault("scenario.section.custom_stocks", "⚙️ MANUAL INITIAL PHYSICAL STOCKS SETUP (CUSTOM):"));
         customTitleLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #f59e0b;");
@@ -1197,7 +1165,7 @@ public class ScenarioSetupPanel extends BorderPane {
             loadCustomDensityMap();
         });
 
-        demoHelpBtn = new Button("❓ Format");
+        demoHelpBtn = new Button(I18n.getOrDefault("scenario.btn.format_specs", "❓ Format"));
         demoHelpBtn.getStyleClass().add("button-secondary");
         demoHelpBtn.setStyle("-fx-font-size: 11px;");
         demoHelpBtn.setMinWidth(Region.USE_PREF_SIZE);
@@ -1415,10 +1383,10 @@ public class ScenarioSetupPanel extends BorderPane {
         snapshotCombo.valueProperty().addListener((obs, oldV, newV) -> {
             if (newV != null) {
                 String timeStr = newV.getTimestamp() != null ? newV.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) : "N/A";
-                snapshotDateLabel.setText("📅 Horodatage : " + timeStr);
+                snapshotDateLabel.setText(I18n.getOrDefault("scenario.snapshot.timestamp", "📅 Horodatage : ") + timeStr);
                 snapshotTimeLabel.setText(String.format(I18n.getOrDefault("scenario.snapshot.time_format", "⏳ Moment: Year %,d (Month %d)"), newV.getYear(), newV.getMonth()));
                 snapshotScenarioLabel.setText(I18n.getOrDefault("scenario.snapshot.scenario_prefix", "📜 Scenario: ") + (newV.getScenarioName() != null ? newV.getScenarioName() : I18n.getOrDefault("scenario.unknown", "Unknown")));
-                snapshotPathLabel.setText("📁 ID Snapshot : " + newV.getId());
+                snapshotPathLabel.setText(I18n.getOrDefault("scenario.snapshot.id", "📁 ID Snapshot : ") + newV.getId());
             }
         });
 
@@ -1876,7 +1844,7 @@ public class ScenarioSetupPanel extends BorderPane {
             }
             if (s.getCustomDensityBase64() != null && !s.getCustomDensityBase64().isBlank()) {
                 customDensityImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomDensityBase64());
-                if (densityMapFileLabel != null) densityMapFileLabel.setText("📷 Preset Density Map");
+                if (densityMapFileLabel != null) densityMapFileLabel.setText(I18n.getOrDefault("scenario.preset.density_map", "📷 Preset Density Map"));
                 if (radioImportDemo != null) radioImportDemo.setSelected(true);
                 updateDemoCompatibilityDisplay();
             } else {
@@ -2073,12 +2041,11 @@ public class ScenarioSetupPanel extends BorderPane {
         strictDeterminismCheckBox = new CheckBox(I18n.getOrDefault("scenario.opt.strict_determinism", "🔒 STRICT DETERMINISM MODE (0% Approximation / 100% Bit-to-Bit Reproducibility)"));
         strictDeterminismCheckBox.setSelected(true);
         strictDeterminismCheckBox.getStyleClass().add("radio-proc");
-        strictDeterminismCheckBox.setTooltip(new Tooltip("""
-            🎯 DÉTERMINISME STRICT BIT-À-BIT (MODE RECHERCHE ACADÉMIQUE)
-            • Désactive TOUTES les optimisations et raccourcis algorithmiques.
-            • Garantit des trajectoires de simulation 100% identiques bit-à-bit sur la même graine (seed).
-            • Recommandé pour les tests de validation, benchmarks et audits de convergence.
-            """));
+        strictDeterminismCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.strict_determinism",
+            "🎯 STRICT BIT-TO-BIT DETERMINISM (ACADEMIC RESEARCH MODE)\n" +
+            "• Disables ALL optimizations and algorithmic shortcuts.\n" +
+            "• Guarantees 100% bit-identical simulation trajectories on the same seed.\n" +
+            "• Recommended for validation tests, benchmarks, and convergence audits.")));
         attachDefaultValueHandling(strictDeterminismCheckBox, true, () -> strictDeterminismCheckBox.setSelected(true));
 
         Label determinismNote = new Label(I18n.getOrDefault("scenario.note.strict_determinism", "💡 Note: Checking Strict Determinism disables all heuristic approaches and guarantees bit-identical numerical fidelity."));
@@ -2095,37 +2062,33 @@ public class ScenarioSetupPanel extends BorderPane {
         sparseCellSkippingCheckBox = new CheckBox(I18n.getOrDefault("scenario.opt.sparse_cell_skipping", "🏜 Sparse / Uninhabited Cell Skipping (Deserts & Abysses)"));
         sparseCellSkippingCheckBox.setSelected(false);
         sparseCellSkippingCheckBox.getStyleClass().add("opt-sub-checkbox");
-        sparseCellSkippingCheckBox.setTooltip(new Tooltip("""
-            ⚡ BÉNÉFICE : +40% à +60% de vitesse (TPS) sur la grille globale.
-            ⚠️ IMPACT PHYSIQUE : Interrompt les boucles d'évaluation sur les mailles désertiques/océaniques sans présence humaine ni événement actif.
-            """));
+        sparseCellSkippingCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.sparse_cell_skipping",
+            "⚡ BENEFIT: +40% to +60% TPS speedup across global grid.\n" +
+            "⚠️ PHYSICAL IMPACT: Bypasses evaluation loops on desert/oceanic cells with no human presence or active event.")));
         attachDefaultValueHandling(sparseCellSkippingCheckBox, false, () -> sparseCellSkippingCheckBox.setSelected(false));
 
         oceanMacroAggregationCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.macro_aggregation", "🌊 Abyssal Ocean Macro-Aggregation (Deep Basins z < -200m in Blocks)"));
         oceanMacroAggregationCheckBox.setSelected(false);
         oceanMacroAggregationCheckBox.getStyleClass().add("opt-sub-checkbox");
-        oceanMacroAggregationCheckBox.setTooltip(new Tooltip("""
-            ⚡ BÉNÉFICE : +25% à +35% de TPS en regroupant les cellules d'eau profonde.
-            ⚠️ IMPACT PHYSIQUE : Lissage des micro-courants abyssaux sans impact sur les civilisations terrestres.
-            """));
+        oceanMacroAggregationCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.ocean_macro_aggregation",
+            "⚡ BENEFIT: +25% to +35% TPS speedup by grouping deep water cells.\n" +
+            "⚠️ PHYSICAL IMPACT: Smoothing of abyssal micro-currents without impacting terrestrial civilizations.")));
         attachDefaultValueHandling(oceanMacroAggregationCheckBox, false, () -> oceanMacroAggregationCheckBox.setSelected(false));
 
         coastalNavigationOnlyCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.coastal_nav", "⚓ Exclusive Coastal Navigation (Pathfinding Focused on Coasts & Straits)"));
         coastalNavigationOnlyCheckBox.setSelected(false);
         coastalNavigationOnlyCheckBox.getStyleClass().add("opt-sub-checkbox");
-        coastalNavigationOnlyCheckBox.setTooltip(new Tooltip("""
-            ⚡ BÉNÉFICE : Économie majeure de calculs CPU sur le réseau commercial et naval.
-            ⚠️ IMPACT PHYSIQUE : Les navires empruntent préférentiellement les côtes; traversée hauturière restreinte avant l'ère des découvertes.
-            """));
+        coastalNavigationOnlyCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.coastal_nav",
+            "⚡ BENEFIT: Major CPU savings on naval and commercial trade pathfinding.\n" +
+            "⚠️ PHYSICAL IMPACT: Ships prefer coastal waters; ocean navigation restricted prior to Age of Discovery.")));
         attachDefaultValueHandling(coastalNavigationOnlyCheckBox, false, () -> coastalNavigationOnlyCheckBox.setSelected(false));
 
         oceanMultiRateTickingCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.multi_rate_ticking", "⏱ Oceanic & Multi-Rate Climate Ticking (Updated Every N Ticks)"));
         oceanMultiRateTickingCheckBox.setSelected(false);
         oceanMultiRateTickingCheckBox.getStyleClass().add("opt-sub-checkbox");
-        oceanMultiRateTickingCheckBox.setTooltip(new Tooltip("""
-            ⚡ BÉNÉFICE : +30% de débit en exécutant la circulation thermohaline et l'inertie fluide à sous-fréquence.
-            ⚠️ IMPACT PHYSIQUE : Aliasing temporel potentiel lors d'événements atmosphériques ultra-rapides.
-            """));
+        oceanMultiRateTickingCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.multi_rate_ticking",
+            "⚡ BENEFIT: +30% throughput by executing thermohaline circulation and fluid inertia at sub-frequency.\n" +
+            "⚠️ PHYSICAL IMPACT: Potential temporal aliasing during ultra-fast atmospheric events.")));
         attachDefaultValueHandling(oceanMultiRateTickingCheckBox, false, () -> oceanMultiRateTickingCheckBox.setSelected(false));
 
         climateTickFreqSlider = new Slider(1, 30, 5);
@@ -2163,16 +2126,16 @@ public class ScenarioSetupPanel extends BorderPane {
         threadCountSlider.setShowTickMarks(true);
         threadCountSlider.setStyle("-fx-pref-width: 200px;");
         threadCountSlider.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.thread_count", "Select number of CPU threads assigned to parallel processing")));
-        threadCountValueLabel = new Label("Threads Multi-Thread : Auto (Tous cœurs CPU)");
+        threadCountValueLabel = new Label(I18n.getOrDefault("scenario.label.threads_auto", "Threads Multi-Thread : Auto (Tous cœurs CPU)"));
         threadCountValueLabel.getStyleClass().add("opt-value-highlight");
         threadCountSlider.valueProperty().addListener((obs, oldV, newV) -> {
             int val = newV.intValue();
             if (val == 0) {
-                threadCountValueLabel.setText("Threads Multi-Thread : Auto (Tous cœurs " + Runtime.getRuntime().availableProcessors() + ")");
+                threadCountValueLabel.setText(String.format(I18n.getOrDefault("scenario.label.threads_auto_cores", "Threads Multi-Thread : Auto (Tous cœurs %d)"), Runtime.getRuntime().availableProcessors()));
             } else if (val == 1) {
                 threadCountValueLabel.setText(I18n.getOrDefault("scenario.label.threads_single", "Multi-Thread Threads: 1 (Single-threaded Deterministic)"));
             } else {
-                threadCountValueLabel.setText("Threads Multi-Thread : " + val + " threads");
+                threadCountValueLabel.setText(String.format(I18n.getOrDefault("scenario.label.threads_count", "Threads Multi-Thread : %d threads"), val));
             }
             notifyParamChange();
         });
@@ -2388,15 +2351,15 @@ public class ScenarioSetupPanel extends BorderPane {
             HBox.setHgrow(descLbl, Priority.ALWAYS);
             row.getChildren().addAll(iconTitle, descLbl);
 
-            String eqText = eng.length > 4 ? eng[4] : "📐 Équation d'État : dX/dt = f(X, t) + Σ F_inter-cellulaire";
-            Tooltip tooltip = new Tooltip("🔒 [MOTEUR PERMANENT]\n" + eng[0] + " — " + eng[1] + "\n\n" + eng[2] + "\n\n" + eqText + "\n\n📚 " + eng[3]);
+            String eqText = eng.length > 4 ? eng[4] : I18n.getOrDefault("scenario.engine.state_eq_default", "📐 Équation d'État : dX/dt = f(X, t) + Σ F_inter-cellulaire");
+            Tooltip tooltip = new Tooltip(I18n.getOrDefault("scenario.engine.perm_prefix", "🔒 [MOTEUR PERMANENT]\n") + eng[0] + " — " + eng[1] + "\n\n" + eng[2] + "\n\n" + eqText + "\n\n📚 " + eng[3]);
             tooltip.setStyle("-fx-font-size: 11px; -fx-max-width: 500px;");
             Tooltip.install(row, tooltip);
 
             typeABox.getChildren().add(row);
         }
 
-        TitledPane corePane = new TitledPane("🔒 ARCHITECTURE CŒUR ETHER (24 MOTEURS PERMANENTS)", typeABox);
+        TitledPane corePane = new TitledPane(I18n.getOrDefault("scenario.header.core_engines", "🔒 ARCHITECTURE CŒUR ETHER (24 MOTEURS PERMANENTS)"), typeABox);
         corePane.setExpanded(false);
         corePane.getStyleClass().add("titled-pane-primary");
 
@@ -3045,8 +3008,8 @@ public class ScenarioSetupPanel extends BorderPane {
             cb.setSelected("FrontierAsabiyyahEngine".equals(eng[0]));
             cb.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
-            String eqText = eng.length > 4 ? eng[4] : "📐 Équation d'État : dX/dt = f(X, t) + Σ F_inter-cellulaire";
-            Tooltip tooltip = new Tooltip("⚙️ [MOTEUR OPTIONNEL]\n" + eng[0] + " — " + eng[1] + "\n\n" + eng[2] + "\n\n" + eqText + "\n\n📚 " + eng[3]);
+            String eqText = eng.length > 4 ? eng[4] : I18n.getOrDefault("scenario.engine.state_eq_default", "📐 Équation d'État : dX/dt = f(X, t) + Σ F_inter-cellulaire");
+            Tooltip tooltip = new Tooltip(I18n.getOrDefault("scenario.engine.opt_prefix", "⚙️ [MOTEUR OPTIONNEL]\n") + eng[0] + " — " + eng[1] + "\n\n" + eng[2] + "\n\n" + eqText + "\n\n📚 " + eng[3]);
             tooltip.setStyle("-fx-font-size: 11px; -fx-max-width: 500px;");
             cb.setTooltip(tooltip);
 
@@ -3068,7 +3031,7 @@ public class ScenarioSetupPanel extends BorderPane {
             typeBBoxContainer.getChildren().add(engContainer);
         }
 
-        TitledPane typeBPane = new TitledPane("⚙️ MODULES OPTIONNELS (" + optionalEngines.size() + " MOTEURS EXTENSIBLES & IMPORT/EXPORT)", typeBBoxContainer);
+        TitledPane typeBPane = new TitledPane(String.format(I18n.getOrDefault("scenario.header.opt_engines_format", "⚙️ MODULES OPTIONNELS (%d MOTEURS EXTENSIBLES & IMPORT/EXPORT)"), optionalEngines.size()), typeBBoxContainer);
         typeBPane.setExpanded(true);
         typeBPane.getStyleClass().add("titled-pane-secondary");
 
@@ -3078,9 +3041,13 @@ public class ScenarioSetupPanel extends BorderPane {
 
     private final java.util.Map<Integer, RadioButton> tensorProcRadios = new java.util.HashMap<>();
     private final java.util.Map<Integer, RadioButton> tensorImportRadios = new java.util.HashMap<>();
+    private final java.util.Map<Integer, Label> tensorSubTitles = new java.util.HashMap<>();
     private final java.util.Map<Integer, Label> tensorFileLabels = new java.util.HashMap<>();
+    private final java.util.Map<Integer, Label> tensorSourceLabels = new java.util.HashMap<>();
+    private final java.util.Map<Integer, ComboBox<String>> tensorSourceCombos = new java.util.HashMap<>();
+    private final java.util.Map<Integer, Button> tensorLoadBtns = new java.util.HashMap<>();
+    private final java.util.Map<Integer, Label> tensorFormatLabels = new java.util.HashMap<>();
     private final java.util.Map<Integer, ComboBox<String>> tensorFallbackCombos = new java.util.HashMap<>();
-    private final java.util.Map<Integer, Label> tensorStatusLabels = new java.util.HashMap<>();
 
     private VBox createCulturalVectorAndLayersSection() {
         VBox section = new VBox(10);
@@ -3103,7 +3070,7 @@ public class ScenarioSetupPanel extends BorderPane {
         grid.getColumnConstraints().setAll(cg1, cg2);
 
         // 1. Vector Dimension (M)
-        Label dimLbl = new Label("Taille Tenseur Culturel (M dims) :");
+        Label dimLbl = new Label(I18n.getOrDefault("scenario.label.cultural_dim", "Taille Tenseur Culturel (M dims) :"));
         dimLbl.getStyleClass().add("control-label");
         cultureVectorDimSpinner = new Spinner<>(4, 32, 9, 1);
         cultureVectorDimSpinner.setEditable(true);
@@ -3115,7 +3082,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 updatePreviewModesCombo();
             }
         });
-        Tooltip.install(cultureVectorDimSpinner, new Tooltip("Nombre de composantes N-dimensionnelles du vecteur d'information culturelle (ex: 9D, 16D, 32D)."));
+        Tooltip.install(cultureVectorDimSpinner, new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_dim", "Nombre de composantes N-dimensionnelles du vecteur d'information culturelle (ex: 9D, 16D, 32D).")));
 
         // 2. Cultural Diffusion Rate
         Label diffLbl = new Label(I18n.getOrDefault("scenario.label.cultural_diffusion", "Cultural Diffusion Conductivity (α):"));
@@ -3186,13 +3153,13 @@ public class ScenarioSetupPanel extends BorderPane {
         seedRow.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(btnGenerateProceduralTensorsSection, Priority.ALWAYS);
 
-        Button btnExportGisMultiFormat = new Button("🗺️ Export SIG Multi-Format");
+        Button btnExportGisMultiFormat = new Button(I18n.getOrDefault("scenario.btn.export_gis", "🗺️ Export SIG Multi-Format"));
         btnExportGisMultiFormat.getStyleClass().add("button-secondary");
         btnExportGisMultiFormat.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnExportGisMultiFormat.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_gis", "Export scenario density layers and 9 cultural tensors under professional GIS formats (GeoTIFF, NetCDF-4, GeoJSON).")));
         btnExportGisMultiFormat.setOnAction(e -> exportGisMultiFormat());
 
-        Button btnExportProvenanceManifest = new Button("🔒 Manifeste Provenance SHA-256");
+        Button btnExportProvenanceManifest = new Button(I18n.getOrDefault("scenario.btn.provenance_manifest", "🔒 Manifeste Provenance SHA-256"));
         btnExportProvenanceManifest.getStyleClass().add("button-secondary");
         btnExportProvenanceManifest.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnExportProvenanceManifest.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.gen_provenance", "Generate a cryptographic JSON manifest (provenance.json) containing SHA-256 hashes of datasets and parameters.")));
@@ -3290,32 +3257,141 @@ public class ScenarioSetupPanel extends BorderPane {
 
     private String getCulturalTensorTitle(int index) {
         return switch (index) {
-            case 0 -> "📜 3.2.1 Tenseur 1 : Isoglosses & Continua Linguistiques (Langues)";
-            case 1 -> "🏛 3.2.2 Tenseur 2 : Kinship & Structures de Clans (Parenté)";
-            case 2 -> "🔮 3.2.3 Tenseur 3 : Rituels, Croyances & Sacré (Asabiyyah)";
-            case 3 -> "👑 3.2.4 Tenseur 4 : Souveraineté Politico-Militaire & Capitales";
-            case 4 -> "🏺 3.2.5 Tenseur 5 : Outillage, Matérialité & Technologies (Artefacts)";
-            case 5 -> "🐫 3.2.6 Tenseur 6 : Corridors & Réseaux Commerciaux (Voies Économiques)";
-            case 6 -> "⚖ 3.2.7 Tenseur 7 : Complexité Institutionnelle & Normes (Seshat & Droit)";
-            case 7 -> "⚠️ 3.2.8 Tenseur 8 : Empreinte Écologique & Tension Malthusienne (Dégradation)";
-            case 8 -> "🧬 3.2.9 Tenseur 9 : Immunité Pathogène & Mémoire Sanitaire (Épidémiologie)";
-            default -> "🧬 3.2." + (index + 1) + " Tenseur " + (index + 1) + " : Substrat Culturel Extensible " + (index + 1);
+            case 0 -> I18n.getOrDefault("scenario.tensor.title.0", "📜 3.2.1 Tensor 1: Isoglosses & Linguistic Continua (Languages)");
+            case 1 -> I18n.getOrDefault("scenario.tensor.title.1", "🏛 3.2.2 Tensor 2: Kinship & Clan Structures (Lineage)");
+            case 2 -> I18n.getOrDefault("scenario.tensor.title.2", "🔮 3.2.3 Tensor 3: Rituals, Beliefs & Sacred (Asabiyyah)");
+            case 3 -> I18n.getOrDefault("scenario.tensor.title.3", "👑 3.2.4 Tensor 4: Politico-Military Sovereignty & Capitals");
+            case 4 -> I18n.getOrDefault("scenario.tensor.title.4", "🏺 3.2.5 Tensor 5: Tooling, Materiality & Technologies (Artifacts)");
+            case 5 -> I18n.getOrDefault("scenario.tensor.title.5", "🐫 3.2.6 Tensor 6: Trade Corridors & Networks (Economic Routes)");
+            case 6 -> I18n.getOrDefault("scenario.tensor.title.6", "⚖ 3.2.7 Tensor 7: Institutional Complexity & Norms (Seshat & Law)");
+            case 7 -> I18n.getOrDefault("scenario.tensor.title.7", "⚠️ 3.2.8 Tensor 8: Ecological Footprint & Malthusian Stress (Degradation)");
+            case 8 -> I18n.getOrDefault("scenario.tensor.title.8", "🧬 3.2.9 Tensor 9: Pathogen Immunity & Health Memory (Epidemiology)");
+            default -> I18n.getOrDefault("scenario.tensor.title.ext", "🧬 3.2." + (index + 1) + " Tensor " + (index + 1) + ": Extensible Cultural Substrate " + (index + 1));
         };
     }
 
     private String getCulturalTensorTooltip(int index) {
         return switch (index) {
-            case 0 -> "Composante linguistique : Continua des dialectes, intelligibilité mutuelle et barrières phonétiques.";
-            case 1 -> "Composante organisationnelle : Structures de lignée, exogamie, réseaux claniques et alliances.";
-            case 2 -> "Composante sacrée : Normes religieuses, rites d'intégration, tabous et cohésion sociale d'Asabiyyah.";
-            case 3 -> "Composante géopolitique : Centres administratifs, allégeance aux capitales et frontières d'influence.";
-            case 4 -> "Composante matérielle : Traditions artisanales, outillage domestique, poterie, métallurgie et architecture.";
-            case 5 -> "Composante économique : Corridors commerciaux (Route de la Soie, Trans-Sahara, Océan), nœuds d'échange et foires.";
-            case 6 -> "Composante institutionnelle (Seshat) : Complexité administrative, codification du droit coutumier et bureaucratie.";
-            case 7 -> "Composante écologique : Dégradation des sols, déforestation, salinisation et pression malthusienne sur les ressources.";
-            case 8 -> "Composante sanitaire : Barrières d'immunité acquise, réservoirs zoonotiques et vulnérabilité aux épidémies.";
-            default -> "Composante culturelle extensible N-dimensionnelle (" + (index + 1) + "D).";
+            case 0 -> I18n.getOrDefault("scenario.tensor.tooltip.0", "Linguistic component: Dialect continua, mutual intelligibility, and phonetic barriers.");
+            case 1 -> I18n.getOrDefault("scenario.tensor.tooltip.1", "Organizational component: Lineage structures, exogamy, clan networks, and alliances.");
+            case 2 -> I18n.getOrDefault("scenario.tensor.tooltip.2", "Sacred component: Religious norms, integration rites, taboos, and Asabiyyah social cohesion.");
+            case 3 -> I18n.getOrDefault("scenario.tensor.tooltip.3", "Geopolitical component: Administrative centers, allegiance to capitals, and spheres of influence.");
+            case 4 -> I18n.getOrDefault("scenario.tensor.tooltip.4", "Material component: Craft traditions, domestic tools, pottery, metallurgy, and architecture.");
+            case 5 -> I18n.getOrDefault("scenario.tensor.tooltip.5", "Economic component: Trade corridors (Silk Road, Trans-Sahara, Ocean), trade hubs, and fairs.");
+            case 6 -> I18n.getOrDefault("scenario.tensor.tooltip.6", "Institutional component (Seshat): Administrative complexity, codification of customary law, and bureaucracy.");
+            case 7 -> I18n.getOrDefault("scenario.tensor.tooltip.7", "Ecological component: Soil degradation, deforestation, salinization, and Malthusian pressure.");
+            case 8 -> I18n.getOrDefault("scenario.tensor.tooltip.8", "Sanitary component: Acquired immunity barriers, zoonotic reservoirs, and epidemic vulnerability.");
+            default -> I18n.getOrDefault("scenario.tensor.tooltip.ext", "Extensible N-dimensional cultural component (" + (index + 1) + "D).");
         };
+    }
+
+    private String getCulturalBaselineName(int index) {
+        return switch (index) {
+            case 0 -> I18n.getOrDefault("scenario.tensor.0.source.baseline", "Glottolog 4.8 / WALS Language Families (Earth Baseline)");
+            case 1 -> I18n.getOrDefault("scenario.tensor.1.source.baseline", "Murdock Ethnographic Atlas / Kinship (Earth Baseline)");
+            case 2 -> I18n.getOrDefault("scenario.tensor.2.source.baseline", "Seshat Global History Databank / Rituals (Earth Baseline)");
+            case 3 -> I18n.getOrDefault("scenario.tensor.3.source.baseline", "Centennia Historical Atlas / Sovereignty (Earth Baseline)");
+            case 4 -> I18n.getOrDefault("scenario.tensor.4.source.baseline", "ArchaeoGLOBE Project / Material Culture (Earth Baseline)");
+            case 5 -> I18n.getOrDefault("scenario.tensor.5.source.baseline", "ORBIS / Old World Trade Networks (Earth Baseline)");
+            case 6 -> I18n.getOrDefault("scenario.tensor.6.source.baseline", "Seshat Historical Databank / Law & Norms (Earth Baseline)");
+            case 7 -> I18n.getOrDefault("scenario.tensor.7.source.baseline", "HYDE 3.4 / Historical Land Use & Degradation (Earth Baseline)");
+            case 8 -> I18n.getOrDefault("scenario.tensor.8.source.baseline", "GADM / Historical Pathogen Memory (Earth Baseline)");
+            default -> I18n.getOrDefault("scenario.status.empirical_loaded", "📷 Empirical baseline layer loaded");
+        };
+    }
+
+    private String getCulturalFormatHint(int index) {
+        return switch (index) {
+            case 0 -> I18n.getOrDefault("scenario.tensor.0.format", "Grayscale / Indexed PNG (2:1 equirectangular):\n  Values (0-255) = Language family IDs & dialect distance (Glottolog 4.8 / WALS)");
+            case 1 -> I18n.getOrDefault("scenario.tensor.1.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Exogamous bilateral | White (255) = Patrilineal clan clans (Murdock Atlas)");
+            case 2 -> I18n.getOrDefault("scenario.tensor.2.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Low ritual cohesion | White (255) = High Asabiyyah sacred (Seshat)");
+            case 3 -> I18n.getOrDefault("scenario.tensor.3.format", "Indexed PNG / GeoJSON (2:1 equirectangular):\n  Values = Polity sovereignty & capital allegiance domains (Centennia / CShapes)");
+            case 4 -> I18n.getOrDefault("scenario.tensor.4.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Lithic foraging | White (255) = Advanced metallurgy (ArchaeoGLOBE)");
+            case 5 -> I18n.getOrDefault("scenario.tensor.5.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Isolated | White (255) = Major trade corridor hub (ORBIS / Silk Road)");
+            case 6 -> I18n.getOrDefault("scenario.tensor.6.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Informal customs | White (255) = Codified legal bureaucracy (Seshat)");
+            case 7 -> I18n.getOrDefault("scenario.tensor.7.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Pristine biome | White (255) = Intensive Malthusian degradation (HYDE 3.4)");
+            case 8 -> I18n.getOrDefault("scenario.tensor.8.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Naive population | White (255) = Endemic pathogen immunity (GADM / Epi)");
+            default -> I18n.getOrDefault("scenario.hint.cultural_format", "PNG / GeoJSON in 2:1 equirectangular projection");
+        };
+    }
+
+    private ComboBox<String> buildCulturalSourceCombo(int tensorIdx) {
+        ComboBox<String> combo = new ComboBox<>();
+        combo.setMaxWidth(Double.MAX_VALUE);
+        combo.getItems().add("");
+        switch (tensorIdx) {
+            case 0 -> combo.getItems().addAll(
+                "Glottolog 4.8 / WALS Language Families (Earth)",
+                "Ethnologue World Linguistic Tree (Earth)",
+                "Automated Phonological Distance Model (Earth)"
+            );
+            case 1 -> combo.getItems().addAll(
+                "Murdock Ethnographic Atlas (Kinship Systems — Earth)",
+                "Standard Cross-Cultural Sample (SCCS — Earth)",
+                "Clan & Lineage Structural Matrix (Earth)"
+            );
+            case 2 -> combo.getItems().addAll(
+                "Seshat Global History Databank (Rituals & Sacred — Earth)",
+                "World Religion Database (WRD — Earth)",
+                "Turchin Asabiyyah Cohesion Metric (Earth)"
+            );
+            case 3 -> combo.getItems().addAll(
+                "Centennia Historical Atlas (Sovereignty Boundaries — Earth)",
+                "CShapes 2.0 Historical Polities (Earth)",
+                "GADM Administrative Sovereign Centers (Earth)"
+            );
+            case 4 -> combo.getItems().addAll(
+                "ArchaeoGLOBE Project (Land Use & Material Tools — Earth)",
+                "Archaeological Material Culture Database (Earth)",
+                "Lithic-to-Metallurgy Technology Frontier Model (Earth)"
+            );
+            case 5 -> combo.getItems().addAll(
+                "ORBIS Stanford Geospatial Network (Trade Routes — Earth)",
+                "Silk Road & Maritime Monsoon Corridors (Earth)",
+                "Old World Overland Caravan Network (Earth)"
+            );
+            case 6 -> combo.getItems().addAll(
+                "Seshat Databank (Institutional Complexity & Law — Earth)",
+                "Cross-National Time-Series Data (CNTS — Earth)",
+                "Historical Jurisprudence & Bureaucracy Matrix (Earth)"
+            );
+            case 7 -> combo.getItems().addAll(
+                "HYDE 3.4 Historical Land Use & Anthropogenic Stress (Earth)",
+                "Anthromes 2.0 Global Anthropogenic Biomes (Earth)",
+                "Malthusian Carrying Capacity Model (Earth)"
+            );
+            case 8 -> combo.getItems().addAll(
+                "GADM / Historical Pathogen Memory & Epidemics (Earth)",
+                "Global Infectious Disease Vector Database (Earth)",
+                "Host-Pathogen Coevolution & Immunity Model (Earth)"
+            );
+            default -> combo.getItems().addAll(
+                "Seshat / Global Databank Substrate (Earth)",
+                "Historical Empirical Baseline (Earth)"
+            );
+        }
+        combo.setCellFactory(p -> new ListCell<>() {
+            @Override protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null || item.isEmpty() ? I18n.getOrDefault("planet.combo.prompt_source", "— Select a data source —") : item);
+            }
+        });
+        combo.setButtonCell(combo.getCellFactory().call(null));
+        combo.setValue("");
+        combo.setOnAction(e -> {
+            if (isUpdatingFromPreset) return;
+            String val = combo.getValue();
+            if (val != null && !val.isEmpty()) {
+                if (tensorImportRadios.containsKey(tensorIdx)) {
+                    tensorImportRadios.get(tensorIdx).setSelected(true);
+                }
+                notifyParamChange();
+                drawPreview();
+            }
+        });
+        combo.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.map_source_hint",
+                "Select reference data source. The 'Load Map' button below allows importing your local file.")));
+        return combo;
     }
 
     private void rebuildCulturalTensorSubBlocks(int dimCount) {
@@ -3329,22 +3405,23 @@ public class ScenarioSetupPanel extends BorderPane {
         for (int i = 0; i < dimCount; i++) {
             final int tensorIdx = i;
 
-            VBox subBlock = new VBox(8);
-            subBlock.getStyleClass().add("subcard-section");
+            VBox subBlock = new VBox(6);
+            subBlock.setStyle("-fx-padding: 10; -fx-background-color: rgba(167,139,250,0.04); -fx-background-radius: 6; -fx-border-color: rgba(167,139,250,0.15); -fx-border-radius: 6;");
 
             Label subTitle = new Label(getCulturalTensorTitle(i));
-            subTitle.getStyleClass().add("value-label");
-            subTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
+            subTitle.getStyleClass().add("control-label");
+            subTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;");
             subTitle.setWrapText(true);
             Tooltip.install(subTitle, new Tooltip(getCulturalTensorTooltip(i)));
+            tensorSubTitles.put(tensorIdx, subTitle);
 
             ToggleGroup tg = new ToggleGroup();
             RadioButton radioProc = new RadioButton(I18n.getOrDefault("scenario.mode.procedural_sde", "▶ Procedural Mode (Stochastic SDE)"));
             RadioButton radioImport = new RadioButton(I18n.getOrDefault("scenario.mode.spatial_import", "📂 Map / Spatial Import (PNG/GeoJSON)"));
             radioProc.setToggleGroup(tg);
             radioImport.setToggleGroup(tg);
-            radioProc.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
-            radioImport.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
+            radioProc.getStyleClass().add("radio-proc");
+            radioImport.getStyleClass().add("radio-import");
 
             boolean hasImage = customTensorImages.containsKey(tensorIdx) && customTensorImages.get(tensorIdx) != null;
             if (hasImage) {
@@ -3356,17 +3433,27 @@ public class ScenarioSetupPanel extends BorderPane {
             tensorProcRadios.put(tensorIdx, radioProc);
             tensorImportRadios.put(tensorIdx, radioImport);
 
-            VBox radioBox = new VBox(4, radioProc, radioImport);
-
             Label procStatusLbl = new Label(I18n.getOrDefault("scenario.status.proc_gen_tensor_prefix", "🪄 Procedural generation active for Tensor ") + (tensorIdx + 1) + " (Diffusion α=" + String.format(java.util.Locale.ROOT, "%.2f", culturalDiffusionRateSpinner != null ? culturalDiffusionRateSpinner.getValue() : 0.05) + ")");
             procStatusLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981;");
             VBox procBox = new VBox(4, procStatusLbl);
-            procBox.visibleProperty().bind(radioProc.selectedProperty());
-            procBox.managedProperty().bind(radioProc.selectedProperty());
+            procBox.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(56,189,248,0.2); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
+            procBox.setVisible(!hasImage);
+            procBox.setManaged(!hasImage);
 
-            Button btnLoad = new Button(I18n.getOrDefault("scenario.btn.import_tensor_map_prefix", "📥 Import Tensor Map ") + (tensorIdx + 1) + I18n.getOrDefault("scenario.btn.import_tensor_map_suffix", " (PNG/GeoJSON)"));
+            // --- Import Configuration Sub-Box ---
+            Label sourceLbl = new Label(I18n.getOrDefault("resource.label.reference_source", "Reference Source:"));
+            tensorSourceLabels.put(tensorIdx, sourceLbl);
+
+            ComboBox<String> sourceCombo = buildCulturalSourceCombo(tensorIdx);
+            if (sourceCombo.getItems().size() > 1) {
+                sourceCombo.setValue(sourceCombo.getItems().get(1));
+            }
+            tensorSourceCombos.put(tensorIdx, sourceCombo);
+
+            Button btnLoad = new Button(I18n.getOrDefault("resource.btn.load_map", "Load Map"));
             btnLoad.getStyleClass().add("button-secondary");
             btnLoad.setStyle("-fx-font-size: 11px;");
+            tensorLoadBtns.put(tensorIdx, btnLoad);
 
             Button btnClear = new Button("❌");
             btnClear.getStyleClass().add("button-secondary");
@@ -3375,8 +3462,8 @@ public class ScenarioSetupPanel extends BorderPane {
             HBox btnBox = new HBox(6, btnLoad, btnClear);
             btnBox.setAlignment(Pos.CENTER_LEFT);
 
-            Label fileLbl = new Label(hasImage ? I18n.getOrDefault("scenario.tensor.file.loaded", "📷 Cartographic layer loaded") : I18n.getOrDefault("scenario.tensor.file.none", "— No file loaded —"));
-            fileLbl.getStyleClass().add("card-description-muted");
+            Label fileLbl = new Label(hasImage ? getCulturalBaselineName(tensorIdx) : "—");
+            fileLbl.getStyleClass().add("value-label");
             fileLbl.setStyle("-fx-font-size: 10px;");
             tensorFileLabels.put(tensorIdx, fileLbl);
 
@@ -3413,13 +3500,28 @@ public class ScenarioSetupPanel extends BorderPane {
             HBox fallbackRow = new HBox(6, fallbackLbl, fallbackCombo);
             fallbackRow.setAlignment(Pos.CENTER_LEFT);
 
-            Label statusLbl = new Label(hasImage ? I18n.getOrDefault("scenario.tensor.status.active", "✅ Calque actif") : I18n.getOrDefault("scenario.tensor.status.procedural", "⚠️ No map — Procedural fallback active"));
-            statusLbl.setStyle(hasImage ? "-fx-font-size: 10px; -fx-text-fill: #10b981; -fx-font-weight: bold;" : "-fx-font-size: 10px; -fx-text-fill: #f59e0b;");
-            tensorStatusLabels.put(tensorIdx, statusLbl);
+            Label formatHintLbl = new Label(getCulturalFormatHint(tensorIdx));
+            formatHintLbl.getStyleClass().add("card-description-muted");
+            formatHintLbl.setStyle("-fx-font-size: 9px; -fx-font-style: italic;");
+            formatHintLbl.setWrapText(true);
+            tensorFormatLabels.put(tensorIdx, formatHintLbl);
 
-            VBox importBox = new VBox(6, btnBox, fileLbl, fallbackRow, statusLbl);
-            importBox.visibleProperty().bind(radioImport.selectedProperty());
-            importBox.managedProperty().bind(radioImport.selectedProperty());
+            VBox importBox = new VBox(6, sourceLbl, sourceCombo, btnBox, fileLbl, fallbackRow, formatHintLbl);
+            importBox.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(167,139,250,0.25); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
+            importBox.setVisible(hasImage);
+            importBox.setManaged(hasImage);
+
+            tg.selectedToggleProperty().addListener((obs, oldV, sel) -> {
+                boolean isProc = sel == radioProc;
+                procBox.setVisible(isProc);
+                procBox.setManaged(isProc);
+                importBox.setVisible(!isProc);
+                importBox.setManaged(!isProc);
+                if (!isUpdatingFromPreset) {
+                    notifyParamChange();
+                    drawPreview();
+                }
+            });
 
             btnLoad.setOnAction(e -> loadCustomCultureLayerForTensor(tensorIdx, img -> {
                 customTensorImages.put(tensorIdx, img);
@@ -3429,8 +3531,6 @@ public class ScenarioSetupPanel extends BorderPane {
                 if (tensorIdx == 3) customSovereigntyImage = img;
 
                 fileLbl.setText(I18n.getOrDefault("scenario.status.tensor_image_loaded", "📷 PNG/GeoJSON image loaded (Tensor ") + (tensorIdx + 1) + ")");
-                statusLbl.setText(I18n.getOrDefault("scenario.status.map_synced", "✅ Map loaded and synchronized"));
-                statusLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #10b981; -fx-font-weight: bold;");
                 radioImport.setSelected(true);
                 notifyParamChange();
                 drawPreview();
@@ -3443,22 +3543,14 @@ public class ScenarioSetupPanel extends BorderPane {
                 if (tensorIdx == 2) customRitualsImage = null;
                 if (tensorIdx == 3) customSovereigntyImage = null;
 
-                fileLbl.setText(I18n.getOrDefault("scenario.status.no_file", "— No file loaded —"));
-                statusLbl.setText(I18n.getOrDefault("scenario.status.procedural_active", "⚠️ No map — Procedural fallback active"));
-                statusLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #f59e0b;");
+                fileLbl.setText("—");
                 radioProc.setSelected(true);
                 notifyParamChange();
                 drawPreview();
             });
 
-            subBlock.getChildren().addAll(subTitle, radioBox, procBox, importBox);
+            subBlock.getChildren().addAll(subTitle, radioProc, procBox, radioImport, importBox);
             layersDynamicContainer.getChildren().add(subBlock);
-
-            if (i < dimCount - 1) {
-                Region divider = new Region();
-                divider.setStyle("-fx-background-color: rgba(71, 85, 105, 0.4); -fx-pref-height: 1px; -fx-max-height: 1px; -fx-min-height: 1px; -fx-margin: 4 0;");
-                layersDynamicContainer.getChildren().add(divider);
-            }
         }
     }
 
@@ -3498,7 +3590,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
         typeBCheckBoxMap.put(engineKey, cb);
 
-        Label badge = new Label("[🔌 CUSTOM]");
+        Label badge = new Label(I18n.getOrDefault("scenario.badge.custom", "[🔌 CUSTOM]"));
         badge.getStyleClass().add("custom-engine-badge");
 
         HBox row = new HBox(8, badge, cb);
@@ -3609,7 +3701,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 double mouseY = e.getY();
                 double w = previewCanvas.getWidth();
                 double h = previewCanvas.getHeight();
-                double baseScale = Math.min(w / 360.0, h / 180.0) * 0.9;
+                double baseScale = Math.min(w / 360.0, h / 180.0);
                 double oldScale = baseScale * oldZoom;
                 double newScale = baseScale * newZoom;
 
@@ -3661,7 +3753,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 isSelectionDrag = false;
                 double w = previewCanvas.getWidth();
                 double h = previewCanvas.getHeight();
-                double baseScale = Math.min(w / 360.0, h / 180.0) * 0.9;
+                double baseScale = Math.min(w / 360.0, h / 180.0);
                 double scale = baseScale * zoomFactor;
                 double offX = (w / 2.0) - (180.0) * scale + panX;
                 double offY = (h / 2.0) - (90.0) * scale + panY;
@@ -4348,7 +4440,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
         double scaleX = w / (maxLng - minLng);
         double scaleY = h / (maxLat - minLat);
-        double baseScale = Math.min(scaleX, scaleY) * 0.9;
+        double baseScale = Math.min(scaleX, scaleY);
         double scale = baseScale * zoomFactor;
 
         double offX = (w / 2.0) - (0.0 - minLng) * scale + panX;
@@ -4508,9 +4600,11 @@ public class ScenarioSetupPanel extends BorderPane {
                 // 1) Base planet relief color & land determination
                 double elevVal = 0.0;
                 boolean isLand = false;
-                if (bgReader != null) {
-                    elevVal = bgReader.getColor(px, py).getRed();
-                    isLand = elevVal > 0.16;
+                if (bgReader != null && bgImage != null) {
+                    int bx = (int) Math.clamp(((px / (double) pwWidth) * bgImage.getWidth()), 0, bgImage.getWidth() - 1);
+                    int by = (int) Math.clamp(((py / (double) pwHeight) * bgImage.getHeight()), 0, bgImage.getHeight() - 1);
+                    elevVal = bgReader.getColor(bx, by).getRed();
+                    isLand = elevVal > 0.185;
                 } else {
                     double alt = Math.sin(lat * Math.PI / 180.0) * Math.cos(lon * Math.PI / 180.0);
                     isLand = alt >= 0;
@@ -5255,8 +5349,8 @@ public class ScenarioSetupPanel extends BorderPane {
             if (btnReliefOverlay != null) btnReliefOverlay.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.relief_overlay", "⛰️ Relief"));
             updatePreviewTitleText();
 
-            if (radioProcDemo != null) radioProcDemo.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.demo.procedural", "▶ Procedural Generation"));
-            if (radioImportDemo != null) radioImportDemo.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.demo.import", "📂 External Map Import (PNG)"));
+            if (radioProcDemo != null) radioProcDemo.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.procedural", "▶ Procedural Generation (Perlin / Simplex Noise)"));
+            if (radioImportDemo != null) radioImportDemo.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.import", "📂 External Source / Import (PNG / WMS / GeoTIFF)"));
             if (loadDensityMapBtn != null) loadDensityMapBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.demo.btn_load", "📥 Import External Density Map (PNG)"));
             if (exportDensityMapBtn != null) exportDensityMapBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.demo.btn_export", "📤 Export Generated Density Map (PNG)"));
 
@@ -5317,6 +5411,7 @@ public class ScenarioSetupPanel extends BorderPane {
             if (getLeft() instanceof ScrollPane sp && sp.getContent() instanceof VBox root) {
                 root.lookupAll("#__popHeader").forEach(n -> { if (n instanceof Label l) l.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "👥 2. INITIAL POPULATION IDENTITY CARD")); });
             }
+            rebuildCulturalTensorSubBlocks(cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9);
             updateDemoCompatibilityDisplay();
         } finally {
             isUpdatingFromPreset = oldUpdating;

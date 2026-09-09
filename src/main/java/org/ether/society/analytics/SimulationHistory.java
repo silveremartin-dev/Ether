@@ -13,6 +13,9 @@ public class SimulationHistory {
 
     public void addSnapshot(HistorySnapshot snapshot) {
         synchronized (snapshots) {
+            if (snapshots.size() >= 10000) {
+                snapshots.remove(0);
+            }
             snapshots.add(snapshot);
         }
     }

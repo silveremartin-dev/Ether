@@ -36,7 +36,7 @@ public class DataDownloaderService {
 
     public static final String HYDE_VAULT_ZIP_BASE = "https://geo.public.data.uu.nl/vault-hyde/hyde34_c8_base_mrt2024%5B1747133140%5D/original/zip/";
     public static final File LOCAL_HYDE_DIR = new File("data/maps/hyde34/");
-    public static final File LOCAL_CACHE_DIR = new File("data/maps/cache/");
+    public static final File LOCAL_CACHE_DIR = new File("data/cache/");
     public static final File LOCAL_PALEOCLIM_DIR = new File("data/maps/paleoclim/");
     public static final File LOCAL_CHELSA_DIR = new File("data/maps/chelsa/");
     public static final File LOCAL_WORLDCLIM_DIR = new File("data/maps/worldclim/");

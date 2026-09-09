@@ -242,6 +242,7 @@
                 <configuration>
                     <mainClass>${mainClass}</mainClass>
                     <options>
+                        <option>-Xmx4g</option>
                         <option>--add-modules</option>
                         <option>jdk.incubator.vector</option>
                         <option>--enable-native-access=ALL-UNNAMED</option>

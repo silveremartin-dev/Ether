@@ -79,8 +79,8 @@ public class HistoryManager {
             .map(H3Cell::snapshot)
             .collect(Collectors.toList());
             
-        // Ring buffer: keep max 3600 monthly snapshots in memory (~180MB RAM for long replay)
-        if (worldSnapshots.size() >= 3600) {
+        // Ring buffer: keep max 120 monthly snapshots in memory (~20-40MB RAM for long replay) to prevent OOM
+        if (worldSnapshots.size() >= 120) {
             worldSnapshots.pollFirstEntry();
         }
         worldSnapshots.put(tickIndex, snapshot);

@@ -375,7 +375,7 @@ public class ExecutionContextPanel extends BorderPane {
         lbl1.getStyleClass().add("control-label");
         Label lbl2 = new Label(I18n.getOrDefault("exec.cluster.master_ip", "Master IP / Host Address:"));
         lbl2.getStyleClass().add("control-label");
-        Label lbl3 = new Label("Port gRPC / TCP :");
+        Label lbl3 = new Label(I18n.getOrDefault("exec.cluster.port", "Port gRPC / TCP :"));
         lbl3.getStyleClass().add("control-label");
         Label lbl4 = new Label(I18n.getOrDefault("exec.cluster.split_strategy", "H3 Splitting Strategy:"));
         lbl4.getStyleClass().add("control-label");
@@ -833,13 +833,13 @@ public class ExecutionContextPanel extends BorderPane {
                 try { clusterManager.stop(); } catch (Exception ignored) {}
                 clusterManager = null;
             }
-            clusterStatusLabel.setText("❌ Erreur Connexion Cluster (" + host + ":" + pStr + ") : " + ex.getMessage());
+            clusterStatusLabel.setText(String.format(I18n.getOrDefault("exec.cluster.status.error", "❌ Cluster Connection Error (%s:%s) : %s"), host, pStr, ex.getMessage()));
             clusterStatusLabel.setStyle("-fx-font-weight: bold;");
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(I18n.getOrDefault("exec.cluster.conn_failed", "Cluster Connection Failed"));
-            alert.setHeaderText("Erreur de connexion au Master (" + host + ":" + pStr + ")");
-            alert.setContentText("Impossible de se connecter au nœud Master du cluster.\n\nRaison : " + (ex.getMessage() != null ? ex.getMessage() : ex.toString()));
+            alert.setHeaderText(String.format(I18n.getOrDefault("exec.cluster.master_conn_error", "Erreur de connexion au Master (%s:%s)"), host, pStr));
+            alert.setContentText(String.format(I18n.getOrDefault("exec.cluster.master_conn_error_desc", "Impossible de se connecter au nœud Master du cluster.\n\nRaison : %s"), (ex.getMessage() != null ? ex.getMessage() : ex.toString())));
             alert.show();
         }
         updateRightSummary();

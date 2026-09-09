@@ -118,6 +118,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private TextField searchField;
 
     private TableColumn<ScenarioSelectableItem, Boolean> selectCol;
+    private boolean isUpdatingTexts = false;
     private TableColumn<ScenarioSelectableItem, String> nameCol;
     private TableColumn<ScenarioSelectableItem, String> yearsCol;
     private TableColumn<ScenarioSelectableItem, String> statusCol;
@@ -415,7 +416,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         spatialBox.setPadding(new Insets(8));
 
         // Spatial Channel Selector & Controls
-        channelLabel = new Label("Canal Tensoriel :");
+        channelLabel = new Label(I18n.getOrDefault("analytics.label.channel", "Canal Tensoriel :"));
         channelLabel.getStyleClass().add("control-label");
 
         spatialChannelCombo = new ComboBox<>();
@@ -437,7 +438,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         currentDateLabel = new Label(I18n.getOrDefault("analytics.label.year_ad", "📅 Year: 0 AD"));
         currentDateLabel.getStyleClass().add("value-label");
 
-        playTimelineBtn = new Button("▶️ Lecture Temporelle");
+        playTimelineBtn = new Button(I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Lecture Temporelle"));
         playTimelineBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-cursor: hand;");
         playTimelineBtn.setOnAction(e -> toggleDateAnimation());
 
@@ -492,7 +493,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         VBox.setVgrow(spatialMetricsReportArea, Priority.ALWAYS);
 
         spatialBox.getChildren().addAll(spatialControlBox, mapPairBox, spatialMetricsReportArea);
-        spatialCartoTab = new Tab("🗺️ Cartographie & Tenseurs (2D)", spatialBox);
+        spatialCartoTab = new Tab(I18n.getOrDefault("analytics.tab.carto_tensors", "🗺️ Cartographie & Tenseurs (2D)"), spatialBox);
         spatialCartoTab.setClosable(false);
 
         analyticsTabPane.getTabs().addAll(timeSeriesTab, spatialCartoTab);
@@ -641,7 +642,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             .toList();
 
         executeMissingBtn.setDisable(true);
-        executeMissingBtn.setText("⏳ Execution en cours...");
+        executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.executing", "⏳ Execution en cours..."));
 
         new Thread(() -> {
             logger.info("Starting headless batch execution for {} scenarios...", scenariosToRun.size());
@@ -871,6 +872,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     private void updateChartAndAnalysis() {
+        if (isUpdatingTexts) return;
         chart.getData().clear();
 
         List<ScenarioSelectableItem> selectedExecuted = scenarioList.stream()
@@ -945,6 +947,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     private void update2DSpatialComparison() {
+        if (isUpdatingTexts) return;
         List<ScenarioSelectableItem> selectedItems = scenarioList.stream()
             .filter(ScenarioSelectableItem::isSelected)
             .toList();
@@ -1082,10 +1085,10 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         if (isPlayingAnimation) {
             if (timelineAnimation != null) timelineAnimation.stop();
             isPlayingAnimation = false;
-            if (playTimelineBtn != null) playTimelineBtn.setText("▶️ Lecture Temporelle");
+            if (playTimelineBtn != null) playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Lecture Temporelle"));
         } else {
             isPlayingAnimation = true;
-            if (playTimelineBtn != null) playTimelineBtn.setText("⏸️ Pause");
+            if (playTimelineBtn != null) playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.pause_timeline", "⏸️ Pause"));
             timelineAnimation = new Timeline(new KeyFrame(Duration.millis(250), evt -> {
                 if (dateSlider != null) {
                     double range = dateSlider.getMax() - dateSlider.getMin();
@@ -1171,82 +1174,87 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     public void updateTexts() {
-        if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("analytics.header", "📊 COMPARATIVE ANALYTICS & SCENARIO BATTLE (DEEP ANALYTICS)"));
-        if (metricLabel != null) metricLabel.setText(I18n.getOrDefault("analytics.metric_label", "Visualized Metric:"));
-        if (interpolationLabel != null) interpolationLabel.setText(I18n.getOrDefault("analytics.interp_label", "Interpolation :"));
-        if (channelLabel != null) channelLabel.setText(I18n.getOrDefault("analytics.channel_label", "Canal Tensoriel :"));
-        if (playTimelineBtn != null) playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Lecture Temporelle"));
-        if (analyzeBtn != null) analyzeBtn.setText(I18n.getOrDefault("analytics.btn.analyze", "⚡ Recalculate Divergences"));
-        if (exportMdBtn != null) exportMdBtn.setText(I18n.getOrDefault("analytics.btn.export_md", "📝 Export Report (.md)"));
-        if (exportCsvBtn != null) exportCsvBtn.setText(I18n.getOrDefault("analytics.btn.export_csv", "📥 Export Data (.csv)"));
-        if (tableTitle != null) tableTitle.setText(I18n.getOrDefault("analytics.table_title", "📋 Available Scenarios in Database:"));
-        if (selectCol != null) selectCol.setText(I18n.getOrDefault("analytics.col.compare", "Comparer"));
-        if (nameCol != null) nameCol.setText(I18n.getOrDefault("analytics.col.name", "Scenario Name"));
-        if (yearsCol != null) yearsCol.setText(I18n.getOrDefault("analytics.col.years", "Plage Chronologique"));
-        if (statusCol != null) statusCol.setText(I18n.getOrDefault("analytics.col.status", "DB Execution Status"));
-        if (xAxis != null) xAxis.setLabel(I18n.getOrDefault("analytics.axis.x", "Simulation Years (Ticks)"));
-        if (yAxis != null) yAxis.setLabel(I18n.getOrDefault("analytics.axis.y", "Valeur de l'Indicateur"));
-        if (chart != null) chart.setTitle(I18n.getOrDefault("analytics.chart.title", "Multi-Scenario Chronological Overlay (💡 CTRL + Scroll to Zoom, CTRL + Drag to Pan)"));
-        if (diagHeader != null) diagHeader.setText(I18n.getOrDefault("analytics.diag_header", "🔍 DIVERGENCE ANALYSIS & GAP ANATOMY"));
-        if (synthHeader != null) synthHeader.setText(I18n.getOrDefault("analytics.synth_header", "📄 Auto-Generated Comparative Summary:"));
-        if (searchField != null) searchField.setPromptText(I18n.getOrDefault("analytics.search_prompt", "🔍 Filter scenarios by name, status, or year range..."));
-        if (timeSeriesTab != null) timeSeriesTab.setText(I18n.getOrDefault("analytics.tab.timeseries", "📈 Time Series (1D)"));
-        if (spatialCartoTab != null) spatialCartoTab.setText(I18n.getOrDefault("analytics.tab.spatial", "🗺️ Cartographie & Tenseurs (2D)"));
+        isUpdatingTexts = true;
+        try {
+            if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("analytics.header", "📊 COMPARATIVE ANALYTICS & SCENARIO BATTLE (DEEP ANALYTICS)"));
+            if (metricLabel != null) metricLabel.setText(I18n.getOrDefault("analytics.metric_label", "Visualized Metric:"));
+            if (interpolationLabel != null) interpolationLabel.setText(I18n.getOrDefault("analytics.interp_label", "Interpolation :"));
+            if (channelLabel != null) channelLabel.setText(I18n.getOrDefault("analytics.channel_label", "Canal Tensoriel :"));
+            if (playTimelineBtn != null) playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Lecture Temporelle"));
+            if (analyzeBtn != null) analyzeBtn.setText(I18n.getOrDefault("analytics.btn.analyze", "⚡ Recalculate Divergences"));
+            if (exportMdBtn != null) exportMdBtn.setText(I18n.getOrDefault("analytics.btn.export_md", "📝 Export Report (.md)"));
+            if (exportCsvBtn != null) exportCsvBtn.setText(I18n.getOrDefault("analytics.btn.export_csv", "📥 Export Data (.csv)"));
+            if (tableTitle != null) tableTitle.setText(I18n.getOrDefault("analytics.table_title", "📋 Available Scenarios in Database:"));
+            if (selectCol != null) selectCol.setText(I18n.getOrDefault("analytics.col.compare", "Comparer"));
+            if (nameCol != null) nameCol.setText(I18n.getOrDefault("analytics.col.name", "Scenario Name"));
+            if (yearsCol != null) yearsCol.setText(I18n.getOrDefault("analytics.col.years", "Plage Chronologique"));
+            if (statusCol != null) statusCol.setText(I18n.getOrDefault("analytics.col.status", "DB Execution Status"));
+            if (xAxis != null) xAxis.setLabel(I18n.getOrDefault("analytics.axis.x", "Simulation Years (Ticks)"));
+            if (yAxis != null) yAxis.setLabel(I18n.getOrDefault("analytics.axis.y", "Valeur de l'Indicateur"));
+            if (chart != null) chart.setTitle(I18n.getOrDefault("analytics.chart.title", "Multi-Scenario Chronological Overlay (💡 CTRL + Scroll to Zoom, CTRL + Drag to Pan)"));
+            if (diagHeader != null) diagHeader.setText(I18n.getOrDefault("analytics.diag_header", "🔍 DIVERGENCE ANALYSIS & GAP ANATOMY"));
+            if (synthHeader != null) synthHeader.setText(I18n.getOrDefault("analytics.synth_header", "📄 Auto-Generated Comparative Summary:"));
+            if (searchField != null) searchField.setPromptText(I18n.getOrDefault("analytics.search_prompt", "🔍 Filter scenarios by name, status, or year range..."));
+            if (timeSeriesTab != null) timeSeriesTab.setText(I18n.getOrDefault("analytics.tab.timeseries", "📈 Time Series (1D)"));
+            if (spatialCartoTab != null) spatialCartoTab.setText(I18n.getOrDefault("analytics.tab.spatial", "🗺️ Cartographie & Tenseurs (2D)"));
 
-        if (divergenceLabel != null && (divergenceLabel.getText() == null || divergenceLabel.getText().isBlank() || divergenceLabel.getText().startsWith("Point de rupture") || divergenceLabel.getText().startsWith("Point of divergence") || divergenceLabel.getText().startsWith("Punto de ruptura") || divergenceLabel.getText().startsWith("Bruchpunkt") || divergenceLabel.getText().startsWith("临界断点"))) {
-            divergenceLabel.setText(I18n.getOrDefault("analytics.divergence.select_hint", "Break point: Select at least 2 scenarios"));
-        }
-        if (explanationLabel != null && (explanationLabel.getText() == null || explanationLabel.getText().isBlank() || explanationLabel.getText().startsWith("Cochez les scénarios") || explanationLabel.getText().startsWith("Check scenarios") || explanationLabel.getText().startsWith("Marque los escenarios") || explanationLabel.getText().startsWith("Wählen Sie Szenarien") || explanationLabel.getText().startsWith("勾选上方列表"))) {
-            explanationLabel.setText(I18n.getOrDefault("analytics.divergence.check_hint", "Check scenarios in the list above to start comparison."));
-        }
-
-        if (spatialChannelCombo != null) {
-            int selectedIdx = spatialChannelCombo.getSelectionModel().getSelectedIndex();
-            if (selectedIdx < 0) selectedIdx = 0;
-            spatialChannelCombo.getItems().clear();
-            spatialChannelCombo.getItems().addAll(
-                I18n.getOrDefault("analytics.spatial.density", "👥 Demographic Density"),
-                I18n.getOrDefault("analytics.spatial.sovereignty", "👑 Political Sovereignty"),
-                I18n.getOrDefault("analytics.spatial.linguistic", "🗣️ Isoglosses Linguistiques (Langues)"),
-                I18n.getOrDefault("analytics.spatial.kinship", "🧬 Kinship Structure (Parenté)"),
-                I18n.getOrDefault("analytics.spatial.rituals", "🔮 Sacred Rituals & Beliefs (Rituels)"),
-                I18n.getOrDefault("analytics.spatial.technology", "🏺 Technology & Artefacts (Outillage)"),
-                I18n.getOrDefault("analytics.spatial.trade", "🐫 Trade Corridors & Exchange (Commerce)"),
-                I18n.getOrDefault("analytics.spatial.institutional", "⚖️ Institutional Complexity (Seshat)"),
-                I18n.getOrDefault("analytics.spatial.ecological", "⚠️ Ecological Footprint (Empreinte)"),
-                I18n.getOrDefault("analytics.spatial.pathogen", "🧬 Pathogen & Zoonotic Immunity (Santé)")
-            );
-            spatialChannelCombo.getSelectionModel().select(selectedIdx);
-        }
-
-        if (interpolationCombo != null) {
-            HistoricalValidationKernel.InterpolationMethod currentInterp = interpolationCombo.getValue();
-            interpolationCombo.setConverter(new javafx.util.StringConverter<HistoricalValidationKernel.InterpolationMethod>() {
-                @Override
-                public String toString(HistoricalValidationKernel.InterpolationMethod object) {
-                    if (object == null) return "";
-                    return I18n.getOrDefault("interpolation." + object.name().toLowerCase(), object.name());
-                }
-                @Override
-                public HistoricalValidationKernel.InterpolationMethod fromString(String string) {
-                    return null;
-                }
-            });
-            if (currentInterp != null) interpolationCombo.setValue(currentInterp);
-        }
-
-        if (metricSelectorCombo != null) {
-            String selected = metricSelectorCombo.getValue();
-            metricSelectorCombo.getItems().clear();
-            metricSelectorCombo.getItems().addAll(MetricRegistry.getInstance().getAllMetricNames());
-            if (selected != null && metricSelectorCombo.getItems().contains(selected)) {
-                metricSelectorCombo.setValue(selected);
-            } else if (!metricSelectorCombo.getItems().isEmpty()) {
-                metricSelectorCombo.setValue(metricSelectorCombo.getItems().get(0));
+            if (divergenceLabel != null && (divergenceLabel.getText() == null || divergenceLabel.getText().isBlank() || divergenceLabel.getText().startsWith("Point de rupture") || divergenceLabel.getText().startsWith("Point of divergence") || divergenceLabel.getText().startsWith("Punto de ruptura") || divergenceLabel.getText().startsWith("Bruchpunkt") || divergenceLabel.getText().startsWith("临界断点"))) {
+                divergenceLabel.setText(I18n.getOrDefault("analytics.divergence.select_hint", "Break point: Select at least 2 scenarios"));
             }
-        }
+            if (explanationLabel != null && (explanationLabel.getText() == null || explanationLabel.getText().isBlank() || explanationLabel.getText().startsWith("Cochez les scénarios") || explanationLabel.getText().startsWith("Check scenarios") || explanationLabel.getText().startsWith("Marque los escenarios") || explanationLabel.getText().startsWith("Wählen Sie Szenarien") || explanationLabel.getText().startsWith("勾选上方列表"))) {
+                explanationLabel.setText(I18n.getOrDefault("analytics.divergence.check_hint", "Check scenarios in the list above to start comparison."));
+            }
 
-        if (scenarioTable != null) scenarioTable.refresh();
-        checkExecutionStatus();
+            if (spatialChannelCombo != null) {
+                int selectedIdx = spatialChannelCombo.getSelectionModel().getSelectedIndex();
+                if (selectedIdx < 0) selectedIdx = 0;
+                spatialChannelCombo.getItems().clear();
+                spatialChannelCombo.getItems().addAll(
+                    I18n.getOrDefault("analytics.spatial.density", "👥 Demographic Density"),
+                    I18n.getOrDefault("analytics.spatial.sovereignty", "👑 Political Sovereignty"),
+                    I18n.getOrDefault("analytics.spatial.linguistic", "🗣️ Isoglosses Linguistiques (Langues)"),
+                    I18n.getOrDefault("analytics.spatial.kinship", "🧬 Kinship Structure (Parenté)"),
+                    I18n.getOrDefault("analytics.spatial.rituals", "🔮 Sacred Rituals & Beliefs (Rituels)"),
+                    I18n.getOrDefault("analytics.spatial.technology", "🏺 Technology & Artefacts (Outillage)"),
+                    I18n.getOrDefault("analytics.spatial.trade", "🐫 Trade Corridors & Exchange (Commerce)"),
+                    I18n.getOrDefault("analytics.spatial.institutional", "⚖️ Institutional Complexity (Seshat)"),
+                    I18n.getOrDefault("analytics.spatial.ecological", "⚠️ Ecological Footprint (Empreinte)"),
+                    I18n.getOrDefault("analytics.spatial.pathogen", "🧬 Pathogen & Zoonotic Immunity (Santé)")
+                );
+                spatialChannelCombo.getSelectionModel().select(selectedIdx);
+            }
+
+            if (interpolationCombo != null) {
+                HistoricalValidationKernel.InterpolationMethod currentInterp = interpolationCombo.getValue();
+                interpolationCombo.setConverter(new javafx.util.StringConverter<HistoricalValidationKernel.InterpolationMethod>() {
+                    @Override
+                    public String toString(HistoricalValidationKernel.InterpolationMethod object) {
+                        if (object == null) return "";
+                        return I18n.getOrDefault("interpolation." + object.name().toLowerCase(), object.name());
+                    }
+                    @Override
+                    public HistoricalValidationKernel.InterpolationMethod fromString(String string) {
+                        return null;
+                    }
+                });
+                if (currentInterp != null) interpolationCombo.setValue(currentInterp);
+            }
+
+            if (metricSelectorCombo != null) {
+                String selected = metricSelectorCombo.getValue();
+                metricSelectorCombo.getItems().clear();
+                metricSelectorCombo.getItems().addAll(MetricRegistry.getInstance().getAllMetricNames());
+                if (selected != null && metricSelectorCombo.getItems().contains(selected)) {
+                    metricSelectorCombo.setValue(selected);
+                } else if (!metricSelectorCombo.getItems().isEmpty()) {
+                    metricSelectorCombo.setValue(metricSelectorCombo.getItems().get(0));
+                }
+            }
+
+            if (scenarioTable != null) scenarioTable.refresh();
+            checkExecutionStatus();
+        } finally {
+            isUpdatingTexts = false;
+        }
     }
 }

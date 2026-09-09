@@ -333,8 +333,8 @@ public class H3SimulationEngine implements ISimulationEngine {
             return t;
         });
         if (speedMultiplier >= 999) {
-            // MAX speed: continuous non-accumulating loop with fixed delay 0
-            executorService.scheduleWithFixedDelay(this::tick, 0, 0, TimeUnit.MILLISECONDS);
+            // MAX speed: continuous non-accumulating loop with minimum fixed delay (1 ms)
+            executorService.scheduleWithFixedDelay(this::tick, 0, 1, TimeUnit.MILLISECONDS);
         } else {
             long delay = Math.max(1, config.simulation().tickRateMs() / Math.max(1, speedMultiplier));
             executorService.scheduleWithFixedDelay(this::tick, 0, delay, TimeUnit.MILLISECONDS);

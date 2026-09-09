@@ -169,7 +169,7 @@ public class ControlPanel extends VBox {
             updatePlayPauseVisuals(true);
         });
 
-        pauseBtn = new Button("⏸ EN PAUSE");
+        pauseBtn = new Button(I18n.getOrDefault("sim.btn.paused", "⏸ EN PAUSE"));
         pauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause", "Mettre en pause")));
         pauseBtn.setOnAction(e -> {
             engine.pause();
@@ -376,7 +376,7 @@ public class ControlPanel extends VBox {
         mode3dCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
 
         reliefLabel = new Label(I18n.getOrDefault("sim.layer.relief3d", "⛰️ Relief 3D") + " : 25x");
-        reliefLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px;");
+        reliefLabel.getStyleClass().add("control-label");
         reliefLabel.setDisable(true);
 
         reliefSlider = new Slider(0.0, 50.0, 25.0);
@@ -397,7 +397,7 @@ public class ControlPanel extends VBox {
 
         autoRotateCheck = new CheckBox(I18n.getOrDefault("sim.layer.autorotate", "🔄 Auto-rotation Globe"));
         autoRotateCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.autorotate", "Auto-rotates 3D spherical globe")));
-        autoRotateCheck.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        autoRotateCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         autoRotateCheck.setDisable(true);
         autoRotateCheck.setOnAction(e -> {
             if (mapCanvas != null) {
@@ -418,7 +418,7 @@ public class ControlPanel extends VBox {
         hexGridCheck = new CheckBox(I18n.getOrDefault("sim.layer.hexgrid", "⬡ H3 Hexagon Borders"));
         hexGridCheck.setSelected(true);
         hexGridCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hexgrid", "Shows or hides H3 hexagon grid (smooth view without borders vs grid view)")));
-        hexGridCheck.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        hexGridCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         hexGridCheck.setOnAction(e -> {
             if (mapCanvas != null) {
                 mapCanvas.setShowHexGrid(hexGridCheck.isSelected());
@@ -428,15 +428,15 @@ public class ControlPanel extends VBox {
         CheckBox smoothMapCheck = new CheckBox(I18n.getOrDefault("sim.layer.smoothmap", "🎨 Smooth Map (Continuous Heatmap)"));
         smoothMapCheck.setSelected(true);
         smoothMapCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.smoothmap", "Displays continuous map with smooth gradients instead of individual hexagons")));
-        smoothMapCheck.setStyle("-fx-text-fill: #34d399; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        smoothMapCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         smoothMapCheck.setOnAction(e -> {
             if (mapCanvas != null) {
                 mapCanvas.setSmoothMap(smoothMapCheck.isSelected());
             }
         });
 
-        Label paletteLabel = new Label("🎨 Palette Scientifique :");
-        paletteLabel.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11px; -fx-font-weight: bold;");
+        Label paletteLabel = new Label(I18n.getOrDefault("sim.render.palette", "🎨 Palette Scientifique :"));
+        paletteLabel.getStyleClass().add("control-label");
 
         ComboBox<ScientificColorMap> paletteCombo = new ComboBox<>();
         paletteCombo.getItems().addAll(ScientificColorMap.values());
@@ -452,7 +452,7 @@ public class ControlPanel extends VBox {
         CheckBox hillshadingCheck = new CheckBox(I18n.getOrDefault("sim.layer.hillshading", "⛰️ Hillshading Relief Topographique"));
         hillshadingCheck.setSelected(false);
         hillshadingCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hillshading", "Applique un ombrage topographique lambertien selon la pente du relief")));
-        hillshadingCheck.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        hillshadingCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         hillshadingCheck.setOnAction(e -> {
             if (mapCanvas != null) {
                 mapCanvas.setShowHillshading(hillshadingCheck.isSelected());
@@ -462,7 +462,7 @@ public class ControlPanel extends VBox {
         CheckBox solarTerminatorCheck = new CheckBox(I18n.getOrDefault("sim.layer.solarterminator", "☀️ Terminateur Solaire Jour/Nuit"));
         solarTerminatorCheck.setSelected(false);
         solarTerminatorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.solarterminator", "Displays night and twilight shadow overlay")));
-        solarTerminatorCheck.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        solarTerminatorCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         solarTerminatorCheck.setOnAction(e -> {
             if (mapCanvas != null) {
                 mapCanvas.setShowSolarTerminator(solarTerminatorCheck.isSelected());
@@ -472,7 +472,7 @@ public class ControlPanel extends VBox {
         CheckBox lodCheck = new CheckBox(I18n.getOrDefault("sim.layer.lod", "📐 H3 LOD Pyramid Aggregation"));
         lodCheck.setSelected(true);
         lodCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.lod", "Automatically aggregates cells to H3 parents when zooming out")));
-        lodCheck.setStyle("-fx-text-fill: #a855f7; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        lodCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         lodCheck.setOnAction(e -> {
             if (mapCanvas != null) {
                 mapCanvas.setEnableHierarchicalLOD(lodCheck.isSelected());
@@ -486,7 +486,7 @@ public class ControlPanel extends VBox {
         Label exportTitle = createCardTitle(I18n.getOrDefault("sim.card.telemetry", "📊 4. TELEMETRY, SCREENSHOTS & EXPORTS"));
 
         dbStatusLabel = new Label(I18n.getOrDefault("sim.status.dbcheck", "DB: Checking..."));
-        dbStatusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        dbStatusLabel.getStyleClass().add("control-label");
 
         eventLabel = new Label("");
         eventLabel.setStyle("-fx-text-fill: #f43f5e; -fx-font-size: 11px;");
@@ -500,9 +500,9 @@ public class ControlPanel extends VBox {
         foodStatValue = new Label();
         cellStatValue = new Label();
         ageLabel = new Label(I18n.getOrDefault("sim.age.stone_age", "Age: Stone Age"));
-        ageLabel.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+        ageLabel.getStyleClass().add("control-label");
         seasonLabel = new Label(I18n.getOrDefault("sim.season.spring", "Season: Spring"));
-        seasonLabel.setStyle("-fx-text-fill: #4ade80; -fx-font-weight: bold;");
+        seasonLabel.setStyle("-fx-text-fill: #16a34a; -fx-font-weight: bold;");
 
         // Combine cards cleanly into 4 modular accordion-style sections
         getChildren().addAll(timeCard, layersCard, renderCard, exportCard);
@@ -514,14 +514,14 @@ public class ControlPanel extends VBox {
     public void updatePlayPauseVisuals(boolean isRunning) {
         if (startBtn == null || pauseBtn == null) return;
         if (isRunning) {
-            startBtn.setText("▶ EN COURS");
+            startBtn.setText(I18n.getOrDefault("sim.btn.running", "▶ EN COURS"));
             startBtn.setStyle("-fx-background-color: #059669; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-border-color: #34d399; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.7), 8, 0, 0, 0);");
             pauseBtn.setText("⏸");
             pauseBtn.setStyle("-fx-background-color: #334155; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 6; -fx-effect: none;");
         } else {
             startBtn.setText("▶");
             startBtn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 6; -fx-effect: none;");
-            pauseBtn.setText("⏸ EN PAUSE");
+            pauseBtn.setText(I18n.getOrDefault("sim.btn.paused", "⏸ EN PAUSE"));
             pauseBtn.setStyle("-fx-background-color: #d97706; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-border-color: #fbbf24; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(245,158,11,0.7), 8, 0, 0, 0);");
         }
     }
@@ -719,12 +719,12 @@ public class ControlPanel extends VBox {
     }
 
     public void updateYear(String year) {
-        dateHeaderLabel.setText("📅 Date & Heure : " + year);
+        dateHeaderLabel.setText(I18n.getOrDefault("sim.status.date_time", "📅 Date & Heure : ") + year);
     }
 
     public void updateStats(long population, double food, long populatedCells, double tps) {
-        popStatValue.setText(String.format("Pop. Totale : %s", formatNumber(population)));
-        foodStatValue.setText(String.format("Stocks Alim. : %s", formatNumber((long) food)));
+        popStatValue.setText(String.format(I18n.getOrDefault("sim.status.pop_total", "Pop. Totale : %s"), formatNumber(population)));
+        foodStatValue.setText(String.format(I18n.getOrDefault("sim.status.food_stocks", "Stocks Alim. : %s"), formatNumber((long) food)));
         cellStatValue.setText(String.format(I18n.getOrDefault("sim.status.populated_cells", "Populated Cells: %,d"), populatedCells));
         double monthsPerSec = tps / 30.0;
         tpsLabel.setText(String.format(java.util.Locale.FRANCE, I18n.getOrDefault("sim.status.tps_detail", "⏱️ Real Speed: %.1f iter/sec (%.1f months/sec | 30 ticks = 1 month)"), tps, monthsPerSec));
@@ -742,7 +742,12 @@ public class ControlPanel extends VBox {
     }
 
     public void updateSeason(int month) {
-        String[] seasonNames = { "Hiver ❄️", "Printemps 🌿", "Été ☀️", "Automne 🍂" };
+        String[] seasonNames = {
+            I18n.getOrDefault("sim.season.winter", "Hiver ❄️"),
+            I18n.getOrDefault("sim.season.spring", "Printemps 🌿"),
+            I18n.getOrDefault("sim.season.summer", "Été ☀️"),
+            I18n.getOrDefault("sim.season.autumn", "Automne 🍂")
+        };
         String[] seasonColors = { "#64b5f6", "#4ade80", "#facc15", "#fb923c" };
 
         int seasonIndex;
@@ -760,7 +765,7 @@ public class ControlPanel extends VBox {
         eventHistory.addAll(events);
         String lastEvent = events.get(events.size() - 1);
         eventLabel.setText(lastEvent);
-        eventLabel.setTooltip(new Tooltip("🎯 Cliquer pour centrer la vue sur les coordonnées de cet événement.\n\n" + lastEvent));
+        eventLabel.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.center_event", "🎯 Cliquer pour centrer la vue sur les coordonnées de cet événement.\n\n") + lastEvent));
         eventLabel.setCursor(javafx.scene.Cursor.HAND);
     }
 

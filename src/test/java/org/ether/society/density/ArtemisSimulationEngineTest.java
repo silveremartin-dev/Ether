@@ -55,6 +55,16 @@ class ArtemisSimulationEngineTest {
     }
 
     @Test
+    @DisplayName("Engine handles MAX speed (999) without IllegalArgumentException")
+    void testMaxSpeed() {
+        engine.start();
+        assertDoesNotThrow(() -> engine.setSpeed(999), "Setting MAX speed should not throw IllegalArgumentException");
+        assertTrue(engine.isRunning());
+        assertEquals(999, engine.getSpeed());
+        engine.pause();
+    }
+
+    @Test
     @DisplayName("Set cells updates world buffer and cell list")
     void testSetCells() {
         List<H3Cell> customCells = new ArrayList<>();

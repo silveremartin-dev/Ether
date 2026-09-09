@@ -29,6 +29,7 @@ public class I18n {
 
     private static final ObjectProperty<Language> currentLanguage = new SimpleObjectProperty<>();
     private static ResourceBundle bundle;
+    private static ResourceBundle defaultBundle;
 
     private static final ResourceBundle.Control NO_DEFAULT_LOCALE_CONTROL = new ResourceBundle.Control() {
         @Override
@@ -38,6 +39,9 @@ public class I18n {
     };
 
     static {
+        try {
+            defaultBundle = ResourceBundle.getBundle(BUNDLE_NAME, Locale.ENGLISH, NO_DEFAULT_LOCALE_CONTROL);
+        } catch (Exception ignored) {}
         // Load saved language preference or fallback to ENGLISH
         setLanguage(loadSavedLanguage());
     }
@@ -107,8 +111,10 @@ public class I18n {
      */
     public static String get(String key) {
         try {
-            if (bundle.containsKey(key)) {
+            if (bundle != null && bundle.containsKey(key)) {
                 return sanitize(bundle.getString(key));
+            } else if (defaultBundle != null && defaultBundle.containsKey(key)) {
+                return sanitize(defaultBundle.getString(key));
             } else {
                 logger.warn("Missing translation key: {}", key);
                 return sanitize(key);
@@ -125,6 +131,8 @@ public class I18n {
         try {
             if (bundle != null && bundle.containsKey(key)) {
                 return sanitize(bundle.getString(key));
+            } else if (defaultBundle != null && defaultBundle.containsKey(key)) {
+                return sanitize(defaultBundle.getString(key));
             }
         } catch (Exception ignored) {}
         return sanitize(defaultValue);
@@ -138,6 +146,8 @@ public class I18n {
         try {
             if (bundle != null && bundle.containsKey(key)) {
                 pattern = bundle.getString(key);
+            } else if (defaultBundle != null && defaultBundle.containsKey(key)) {
+                pattern = defaultBundle.getString(key);
             }
         } catch (Exception ignored) {}
         if (pattern == null) pattern = defaultValue;
