@@ -1292,13 +1292,30 @@ public class HistoricalMapGenerator {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, width, height);
 
-        long seed = scenario != null ? scenario.getCulturalSeed() : 54321L;
-        if (seed == 0) seed = 54321L;
-        java.util.Random rnd = new java.util.Random(seed ^ (tensorIndex * 0x9E3779B97F4A7C15L));
+        long seed = 11235L + tensorIndex * 11111L;
+        if (scenario != null && scenario.getTensorSeeds() != null && scenario.getTensorSeeds().containsKey(tensorIndex)) {
+            seed = scenario.getTensorSeeds().get(tensorIndex);
+        } else if (scenario != null && scenario.getCulturalSeed() != 0) {
+            seed = scenario.getCulturalSeed() ^ (tensorIndex * 0x9E3779B97F4A7C15L);
+        }
+
+        double pFreq = 0.020;
+        double pAmp = 1.00;
+        double pDiff = 0.25;
+        if (scenario != null && scenario.getTensorProceduralParameters() != null && scenario.getTensorProceduralParameters().containsKey(tensorIndex)) {
+            java.util.Map<String, Double> pMap = scenario.getTensorProceduralParameters().get(tensorIndex);
+            if (pMap != null) {
+                pFreq = pMap.getOrDefault("scenario.tensor.ext.p1.label", 0.020);
+                pAmp = pMap.getOrDefault("scenario.tensor.ext.p2.label", 1.00);
+                pDiff = pMap.getOrDefault("scenario.tensor.ext.p3.label", 0.25);
+            }
+        }
+
+        java.util.Random rnd = new java.util.Random(seed);
         double phaseLng = rnd.nextDouble() * Math.PI * 2.0;
         double phaseLat = rnd.nextDouble() * Math.PI * 2.0;
-        double scale = 0.005 + (tensorIndex % 5) * 0.002 + (rnd.nextDouble() - 0.5) * 0.001;
-        float hueBase = (float) ((tensorIndex * 0.137 + rnd.nextDouble() * 0.2) % 1.0);
+        double scale = Math.clamp(pFreq, 0.001, 0.20);
+        float hueBase = (float) ((tensorIndex * 0.137 + (rnd.nextDouble() * 0.2)) % 1.0);
 
         for (int y = 0; y < height; y++) {
             double lat = 90.0 - (y / (double) height) * 180.0;
@@ -1309,9 +1326,10 @@ public class HistoricalMapGenerator {
                     continue;
                 }
 
-                double val = Math.sin(lon * scale + phaseLng) * Math.cos(lat * scale + phaseLat) * 0.5 + 0.5;
-                float sat = 0.6f + (float)(val * 0.35);
-                float bright = 0.2f + (float)(val * 0.75);
+                double val = (Math.sin(lon * scale + phaseLng) * Math.cos(lat * scale + phaseLat) * 0.5 + 0.5) * pAmp;
+                val = Math.clamp(val, 0.0, 1.0);
+                float sat = (float) Math.clamp(0.5f + val * 0.45f * (1.0 - pDiff * 0.5), 0.0, 1.0);
+                float bright = (float) Math.clamp(0.2f + val * 0.75f, 0.0, 1.0);
                 int rgb = Color.HSBtoRGB(hueBase, sat, bright);
                 img.setRGB(x, y, rgb);
             }

@@ -1,208 +1,209 @@
-# Modèles de Simulation Systémique Globale : Comparatif d'Ether v4.0 avec T21/iSDG, IFs, IMAGE, GAINS et les Modèles Post-World3
+# Global Systemic Simulation Models: Comparative Analysis of Ether v4.0 vs. T21/iSDG, IFs, IMAGE, GAINS, and Post-World3 Models
 
-> **Document de Référence et d'Analyse Comparative**  
-> *Rédigé pour le projet Ether — Simulation Cliodynamique et Thermodynamique Humano-Planétaire*  
-> **Statut** : Officiel | **Version Target** : Ether v4.0.0
-
----
-
-## 1. Résumé Exécutif & Vision Positionnelle
-
-La modélisation des systèmes humains et écologiques à l'échelle planétaire est dominée par plusieurs grandes traditions d'ingénierie prospective :
-- La **Dynamique des Systèmes agrégée à l'échelle nationale** (Threshold 21 / iSDG),
-- Les **modèles macro-structurels multi-pays à haute densité empirique** (International Futures - IFs),
-- Les **modèles d'évaluation intégrée bio-géo-physiques** pour les politiques environnementales et climatiques (IMAGE, GAINS),
-- Les **extensions macro-financières et physiques post-World3** (World-Dynamo, Earth4All).
-
-**Ether (v4.0)** s'inscrit dans cette lignée tout en introduisant une rupture paradigmatique majeure : l'abandon des agrégations géopolitiques abstraites (pays, continents ou planète entière à 1 seule boîte) au profit d'une **modélisation physicaliste, thermodynamique et cliodynamique distribuée sur une grille spatiale hexagonale planétaire (Uber H3)**. 
-
-Le présent document analyse en profondeur les objectifs, forces et faiblesses d'Ether au regard des piliers mondiaux de la simulation macro-systémique.
+> **Reference & Comparative Analysis Document**  
+> *Prepared for the Ether Project — Human-Planetary Cliodynamic and Thermodynamic Simulation*  
+> **Status**: Official | **Target Version**: Ether v4.0.0
 
 ---
 
-## 2. Analyse Détaillée par Modèle
+## 1. Executive Summary & Positional Vision
 
-### A. Ether (v4.0) — La Simulation Cliodynamique & Thermodynamique Spatiale
+Planetary-scale human and ecological systems modeling has historically been dominated by several major engineering and forecasting traditions:
+- **National-scale aggregated System Dynamics** (Threshold 21 / iSDG),
+- **High-density empirical multi-country macro-structural models** (International Futures - IFs),
+- **Bio-geophysical Integrated Assessment Models (IAMs)** for environmental and climate policies (IMAGE, GAINS),
+- **Post-World3 physical and macro-financial extensions** (World-Dynamo, Earth4All).
+
+**Ether (v4.0)** builds upon this heritage while introducing a fundamental paradigm shift: abandoning abstract geopolitical aggregations (countries, continents, or single-box "world" models) in favor of **a physicalist, thermodynamic, and cliodynamic simulation distributed across a planetary hexagonal spatial grid (Uber H3)**.
+
+This document presents an in-depth analysis of Ether's objectives, strengths, and limitations alongside the global pillars of macro-systemic simulation.
+
+---
+
+## 2. Detailed Model-by-Model Analysis
+
+### A. Ether (v4.0) — Spatial Cliodynamic & Thermodynamic Simulation
 
 > [!NOTE]
-> **Positionnement d'Ether** : Moteur de simulation physico-centré couvrant une échelle temporelle allant de -100 000 avant J.-C. aux horizons prospectifs futurs (2100+). Il combine la rigueur du premier principe de la thermodynamique (Joules, Carnot, EROEI net, SOC, N-P-K, aquifères) et 30 moteurs cliodynamiques pluggables.
+> **Ether Positioning**: A physical-first simulation engine spanning a continuous temporal horizon from 100,000 BCE to future prospective epochs (2100+). It couples the first law of thermodynamics (Joules, Carnot limits, Net EROEI, SOC, N-P-K stoichiometry, aquifer replenishment) with 30 pluggable cliodynamic engines.
 
-#### 1. Objectifs
-- Simuler la co-évolution déterministe et stochastique de la civilisation humaine et de la biosphère sans "court-circuit" heuristique ou financier fictif.
-- Proposer une résolution spatiale fine continue (grille Uber H3 de 175 000 à 10 000 000 de cellules hexagonales) couplant biomes locaux, frottement géographique, routes maritimes et dynamiques de frontière.
-- Valider empiriquement les équations sur la longue durée historique (-10 000 à 2026 apr. J.-C.) via des métriques statistiques ($R^2$, RMSE) adossées aux bases Seshat, Maddison, HYDE 3.4 et COW.
-- Offrir un régulateur cybernétique planétaire autonome à contrôle prédictif (Moteur Archon / MPC).
+#### 1. Objectives
+- Simulate the deterministic and stochastic co-evolution of human civilization and the biosphere without artificial heuristic shortcuts or abstract financial proxies.
+- Provide continuous fine-grained spatial resolution (Uber H3 grid from 175,000 to 10,000,000 hexagonal cells) coupling local biomes, topographic friction, maritime trade corridors, and frontier dynamics.
+- Empirically validate equations across deep historical time (10,000 BCE to 2026 CE) via automated statistical metrics ($R^2$, RMSE) calibrated against Seshat, Maddison, HYDE 3.4, and COW datasets.
+- Provide an autonomous planetary cybernetic regulator with Model Predictive Control (Archon Engine / MPC).
 
-#### 2. Forces
-- **Résolution Spatiale Globale & Continue (Grille Uber H3)** : Permet de modéliser l'émergence des villes, les routes commerciales, les points de passage stratégiques (chokepoints) et la diffusion spatiale de l'innovation et des épidémies.
-- **Rigueur Thermodynamique Strictement Ancrée** : Pas de variables financières abstraites arbitraires ; calcul direct des bilans en Joules, rendement EROEI net, limites de Carnot ($\eta_{\text{Carnot}} = 1 - T_C/T_H$), dissipation entropique du recyclage des métaux et épuisement réel du sol (N-P-K/SOC) et des nappes phréatiques.
-- **Profondeur Temporelle Inégalée (-100k BP à 2100+)** : Modélise les transitions paléoclimatiques, le passage des chasseurs-cueilleurs à l'agriculture, l'essor et l'effondrement des empires, jusqu'à la Singularité technologique.
-- **Catalogue de 30 Moteurs Cliodynamiques (Registry Type B)** : Intégration de modèles fondamentaux (Turchin Asabiyyah, Ostrom Communs, Smil Inertie, Henrich Perte Tasmanienne, Scott Fragilité Agrarienne, HANDY Collapse, World3, etc.).
-- **Haute Performance & Accélération Matérielle (DOD, CPU JIT, GPU OpenCL/TornadoVM)** : Traitement de plus de 1,19 million de mises à jour de cellules par seconde.
+#### 2. Strengths
+- **Continuous Global Spatial Resolution (Uber H3 Grid)**: Enables emergent city formation, realistic trade networks, strategic maritime chokepoints, and spatial diffusion of innovations and epidemics.
+- **Strict Thermodynamic Grounding**: Avoids arbitrary monetary proxies; directly calculates energy balances in Joules, net EROEI yields, Carnot efficiency ceilings ($\eta_{\text{Carnot}} = 1 - T_C/T_H$), entropic dissipation of recycled metals, and real depletion of soil nutrients (N-P-K/SOC) and groundwater aquifers.
+- **Unrivaled Temporal Depth (100k BP to 2100+)**: Seamlessly simulates paleoclimatic transitions, the hunter-gatherer to agriculture transition, imperial rise and collapse cycles, up through post-industrial and technological singularity trajectories.
+- **Catalog of 30 Cliodynamic Engines (Type B Registry)**: Native integration of foundational models (Turchin Asabiyyah & Elite Overproduction, Ostrom Commons, Smil Material Inertia, Henrich Tasmanian Loss, Scott Agrarian Fragility, HANDY Collapse, World3, etc.).
+- **High Computational Performance & Hardware Acceleration (DOD, CPU JIT, GPU OpenCL/TornadoVM)**: Achieves over 1.19 million cell-updates per second on planetary grids.
 
-#### 3. Faiblesses & Limites
-- **Complexité Politico-Administrative Nationale Réduite** : Contrairement à IFs ou T21, Ether ne modélise pas la comptabilité publique détaillée d'un ministère spécifique (ex. budget précis de l'éducation nationale ou système de retraite par répartition d'un État moderne).
-- **Abstraction de la Sphère Monétaire et Bancaire Moderniste** : Le choix délibéré du physicalisme priorise les flux énergétiques et matériels (Joules, stocks de capital physique) au détriment de la création monétaire fiduciaire, des taux d'intérêt des banques centrales ou du marché des devises.
-- **Empreinte Calculatoire Élevée** : La simulation spatiale distribuée exige des capacités CPU/GPU significativement plus importantes qu'un système d'équations différentielles ordinaires (EDO) 0D/1D agrégé par pays.
+#### 3. Limitations & Trade-Offs
+- **Reduced National Administrative Complexity**: Unlike IFs or T21, Ether does not model the fine-grained public accounting of specific modern government ministries (e.g., precise national education budgets or pay-as-you-go pension schedules).
+- **Abstraction of the Modernist Monetary and Banking Sphere**: Physicalism deliberately prioritizes energy and material flows (Joules, physical capital stocks) over fiat money creation, central bank benchmark interest rates, and foreign exchange currency markets.
+- **High Computational Footprint**: Distributed spatial simulation requires significantly higher CPU/GPU resources than 0D/1D ordinary differential equation (ODE) systems aggregated at the country level.
 
 ---
 
 ### B. Threshold 21 (T21) & iSDG (Millennium Institute)
 
-#### 1. Statut et Trajectoire
-Développé à l'origine sous la direction de Gerald O. Barney au **Millennium Institute**, T21 a quitté le format de logiciel grand public dans les années 2000. Il a évolué vers une offre d'expertise institutionnelle sur mesure. Son incarnation moderne, **iSDG (Integrated Sustainable Development Goals)**, est spécifiquement conçue pour évaluer les 17 Objectifs de Développement Durable (ODD) de l'ONU à l'échelle des gouvernements nationaux.
+#### 1. Status & Trajectory
+Originally developed under the leadership of Gerald O. Barney at the **Millennium Institute**, T21 transitioned from a public software product in the 2000s into a customized institutional advisory framework. Its modern incarnation, **iSDG (Integrated Sustainable Development Goals)**, is specifically tailored to assess the UN's 17 Sustainable Development Goals (SDGs) for national governments.
 
 #### 2. Architecture
-- **Modèle Macro-Systémique National** (agrégé à l'échelle d'un pays).
-- S'articule autour de plus de **1 000 équations endogènes** en Dynamique des Systèmes (System Dynamics).
-- Couplage tri-sphérique : **Économie**, **Société**, **Environnement**.
+- **National Macro-Systemic Model** (aggregated at the individual country scale).
+- Built around more than **1,000 endogenous System Dynamics equations**.
+- Tri-spherical coupling: **Economy**, **Society**, **Environment**.
 
-#### 3. Modèle de Mutation (iSDG)
-L'outil simule les interdépendances complexes entre les 17 ODD (ex. impact d'une hausse des investissements dans l'éducation des filles sur la santé maternelle, le PIB à 30 ans, et les émissions de carbone nationales).
+#### 3. Dynamic Model (iSDG)
+Simulates complex interdependencies across the 17 SDGs (e.g., the downstream impact of increased investment in female education on maternal health, 30-year GDP growth, and national carbon emissions).
 
-#### 4. Forces
-- **Alignement Institutionnel Parfait (ODD ONU)** : Outil de décision directement exploitable par les ministères de la planification et les agences de l'ONU.
-- **Richesse des Leviers Politiques Nationaux** : Intègre des arbitrages budgétaires et sectoriels très concrets.
-- **Structure Tri-Sphérique Équilibrée** : Évite le réductionnisme purement économique ou purement environnemental.
+#### 4. Strengths
+- **Direct Institutional Alignment (UN SDGs)**: Decision-support tool immediately actionable for planning ministries and UN agencies.
+- **Rich National Policy Levers**: Integrates concrete budgetary and sectoral policy trade-offs.
+- **Balanced Tri-Spherical Structure**: Avoids purely economic or purely environmental reductionism.
 
-#### 5. Faiblesses
-- **Absence de Granularité Spatiale (Agrégat 0D Pays)** : Incapable de représenter la répartition géographique interne (villes, bassins versants, gradients climatiques locaux, infrastructures de transport).
-- **Modèle Propriétaire et Fermé** : Accessible quasi-exclusivement via des missions de conseil institutionnel du Millennium Institute (pas d'écosystème open-source exécutable).
-- **Ancrage Temporel Moderniste Uniquement** : Conçu pour des projections à 15-50 ans (inadapté aux échelles paléoclimatiques, à la cliodynamique historique ou aux horizons post-2100).
-
----
-
-### C. International Futures (IFs) (Pardee Center, Université de Denver)
-
-#### 1. Présentation & Statut
-Développé sous la direction de **Barry Hughes** au Frederick S. Pardee Center for International Futures, IFs est aujourd'hui l'un des systèmes de simulation prospective globale les plus vastes, pérennes et documentés au monde. Il sert de moteur analytique pour les rapports *Global Trends* du US National Intelligence Council (NIC) et du PNUE (*Global Environmental Outlook*).
-
-#### 2. Périmètre et Couplage
-- **Couverture Multi-Pays** : Plus de **180 pays** individuellement modélisés et interconnectés par des matrices de commerce international, de migrations et d'échanges financiers.
-- **12 Sous-Systèmes Endogènes Interconnectés** : Démographie, Économie, Agriculture, Éducation, Santé, Énergie, Environnement, Technologie, Infrastructure, Governance, Politique Internationale, Protection Sociale.
-- **Base Empirique Masssource** : Intègre une base de données historique colossale de plus de **5 000 séries chronologiques mondiales** depuis les années 1960.
-
-#### 3. Forces
-- **Couverture Empirique Moderne Exceptionnelle** : Base historique et étalonnage statistique inégalés sur la période 1960-présent pour 180+ pays.
-- **Finesse des Sous-Systèmes Sociaux et Humains** : Modèles extrêmement détaillés de cohortes éducatives (alphabétisation, accomplissement scolaire par genre), de santé (mortalité par cause spécifique, fardeau de la maladie DALY) et de finances publiques.
-- **Utilisabilité Prospective Éprouvée** : Outil interactif riche permettant de manipuler des centaines de leviers de politiques publiques jusqu'en 2100.
-
-#### 4. Faiblesses
-- **Frontières Politiques Rigides (Modèle Centré sur l'État-Nation)** : Incapable de capturer la dynamique bio-physique sous-nationale (ex. déforestation d'un bassin hydrologique spécifique, stress hydrique d'une nappe locale, étalement urbain hexagonal).
-- **Profondeur Historique Restreinte (post-1960)** : Conçu uniquement pour le monde contemporain ; totalement incapable de simuler les dynamiques historiques pré-industrielles, l'émergence des civilisations ou la cliodynamique de longue durée.
-- **Formulation Économétrique & Régressions** : S'appuie fortement sur des régressions statistiques historiques qui peuvent s'effondrer en cas de ruptures thermodynamiques systémiques non linéaires hors-champ (ex. effondrement d'EROEI ou emballement climatique extrême).
+#### 5. Limitations
+- **Lack of Spatial Granularity (0D Country Aggregation)**: Unable to represent subnational geographic distributions (cities, river basins, local climate gradients, transport friction).
+- **Proprietary & Closed Ecosystem**: Accessible almost exclusively through institutional consulting engagements with the Millennium Institute (lacks an open-source executable codebase).
+- **Modernist-Only Time Horizon**: Designed for 15–50 year projections (unsuited for paleoclimatic scales, deep historical cliodynamics, or post-2100 long-range trajectories).
 
 ---
 
-### D. Autres Modèles Macro-Systémiques Notables
+### C. International Futures (IFs) (Pardee Center, University of Denver)
+
+#### 1. Overview & Status
+Developed under the leadership of **Barry Hughes** at the Frederick S. Pardee Center for International Futures, IFs is one of the most comprehensive, mature, and thoroughly documented global forecasting systems in existence. It serves as an analytical engine for the US National Intelligence Council (NIC) *Global Trends* reports and UNEP's *Global Environmental Outlook*.
+
+#### 2. Scope & Coupling
+- **Multi-Country Coverage**: Over **180 individually modeled countries** interconnected through bilateral trade matrices, migration flows, and financial transfers.
+- **12 Interconnected Endogenous Subsystems**: Demographics, Economy, Agriculture, Education, Health, Energy, Environment, Technology, Infrastructure, Governance, International Politics, Social Protection.
+- **Massive Empirical Foundation**: Integrates an extensive historical database of over **5,000 global time series** from 1960 to the present.
+
+#### 3. Strengths
+- **Exceptional Modern Empirical Coverage**: Unmatched historical database and statistical calibration for 180+ countries over the 1960–present period.
+- **Detailed Human and Social Subsystems**: Highly sophisticated cohort models for education (literacy, attainment by gender), healthcare (cause-specific mortality, DALY disease burdens), and public finance.
+- **Proven Prospective Usability**: Rich interactive desktop/web interface allowing exploration of hundreds of policy levers through 2100.
+
+#### 4. Limitations
+- **Rigid Political Boundaries (Nation-State Centric)**: Cannot capture subnational bio-physical dynamics (e.g., local watershed deforestation, local aquifer stress, hexagonal urban sprawl).
+- **Constrained Historical Depth (Post-1960)**: Tailored exclusively to the contemporary world; entirely unable to simulate pre-industrial historical dynamics, civilizational genesis, or deep cliodynamics.
+- **Econometric & Statistical Regression Reliance**: Heavily dependent on historical statistical correlations, which may break down under non-linear thermodynamic regime shifts (e.g., steep EROEI degradation or extreme climate tipping points).
+
+---
+
+### D. Other Notable Macro-Systemic Models
 
 ```mermaid
 graph TD
-    subgraph "Modèles d'Évaluation Intégrée & Systémiques"
-        IMAGE["IMAGE (PBL)<br/>Focus: Climat, Sols & SSPs"]
-        GAINS["GAINS (IIASA)<br/>Focus: Pollution & Coûts Abattement"]
-        IFS["IFs (Pardee Center)<br/>Focus: 180+ Pays & Développement Humain"]
-        ISDG["T21 / iSDG (Millennium Inst.)<br/>Focus: 17 ODD & Politiques Nationales"]
-        WD["World-Dynamo / Earth4All<br/>Focus: System Dynamics Globales & Finance"]
-        ETHER["Ether v4.0 (Notre Modèle)<br/>Focus: Thermodynamique Spatiale H3 & Cliodynamique"]
+    subgraph "Integrated Assessment & Systemic Models"
+        IMAGE["IMAGE (PBL)<br/>Focus: Climate, Land Use & SSPs"]
+        GAINS["GAINS (IIASA)<br/>Focus: Air Pollution & Abatement Costs"]
+        IFS["IFs (Pardee Center)<br/>Focus: 180+ Countries & Human Development"]
+        ISDG["T21 / iSDG (Millennium Inst.)<br/>Focus: 17 SDGs & National Policies"]
+        WD["World-Dynamo / Earth4All<br/>Focus: Global System Dynamics & Finance"]
+        ETHER["Ether v4.0 (Our Model)<br/>Focus: H3 Spatial Thermodynamics & Cliodynamics"]
     end
 ```
 
-#### 1. IMAGE (Integrated Model to Assess the Global Environment - PBL Néerlandais)
-- **Objectifs & Champ** : Cadre de modélisation intégrée environnement-société référent pour le GIEC, particulièrement axé sur l'utilisation des sols, le cycle du carbone, la biodiversité (GLOBIO) et les scénarios SSP (*Shared Socioeconomic Pathways*).
-- **Forces** : Excellence du couplage bio-géo-physique spatialisé (grille géographique pour la végétation, l'agriculture et le climat) combiné avec des modèles énergétiques (TIMER) et économiques (MAGNET).
-- **Faiblesses vis-à-vis d'Ether** : Absence de modules cliodynamiques (pas d'Asabiyyah, pas de dynamique des élites, pas de mécanismes d'effondrement sociétal de Tainter), absence de gouvernance IA cybernétique et incapacité à exécuter des simulations sur la longue durée historique.
+#### 1. IMAGE (Integrated Model to Assess the Global Environment - PBL Netherlands)
+- **Objectives & Scope**: Reference environmental-societal integrated assessment framework for the IPCC, focusing on land use, the carbon cycle, biodiversity (GLOBIO), and Shared Socioeconomic Pathways (SSPs).
+- **Strengths**: Outstanding spatial bio-geophysical coupling (geographic grid for vegetation, agriculture, and climate) combined with energy (TIMER) and economic (MAGNET) models.
+- **Limitations Relative to Ether**: Absence of cliodynamic modules (no Asabiyyah, elite dynamics, or Tainter collapse mechanisms), lack of autonomous cybernetic AI governance, and inability to run across deep historical timescales.
 
 #### 2. GAINS (Greenhouse Gas and Air Pollution Interactions and Synergies - IIASA)
-- **Objectifs & Champ** : Modèle d'optimisation techno-économique centré sur la pollution atmosphérique, les gaz à effet de serre et les coûts des politiques de réduction d'émissions.
-- **Forces** : Précision inégalée des courbes de coûts d'abattement technologique et des impacts sanitaires de la qualité de l'air à l'échelle régionale et mondiale.
-- **Faiblesses vis-à-vis d'Ether** : Modèle thématique spécialisé (pas de simulation démographique endogène complète, pas de cliodynamique, pas de représentation des structures de pouvoir ou de l'énergie nette EROEI globale).
+- **Objectives & Scope**: Techno-economic optimization model focusing on atmospheric pollutants, greenhouse gases, and emission abatement cost curves.
+- **Strengths**: Unmatched precision in technological abatement cost curves and air quality health impact evaluations at regional and global levels.
+- **Limitations Relative to Ether**: Specialized thematic focus (no full endogenous demographic simulation, no cliodynamics, no representation of power structures or net global EROEI).
 
-#### 3. WORLD-DYNAMO & Modèles Post-World3 (Earth4All, LowGrow)
-- **Objectifs & Champ** : Initiatives académiques prolongeant les équations originelles de World3 (Meadows 1972) en y injectant de la dynamique des systèmes moderne, des boucles financières (Stock-Flow Consistent / SFC) et des rétroactions socio-économiques actualisées.
-- **Forces** : Grande clarté conceptuelle des boucles de rétroaction globales ; intégration réussie de la dette, du capital financier et des inégalités (ex. *Earth4All* du Club de Rome, 2022).
-- **Faiblesses vis-à-vis d'Ether** : Modèles agrégés à l'échelle mondiale (0D ou 10 régions au mieux), totalement dépourvus de résolution spatiale géographique (pas de carte, pas de géométrie H3, pas de transport matériel physique), et sans architecture de compilation JIT GPU.
+#### 3. WORLD-DYNAMO & Post-World3 Models (Earth4All, LowGrow)
+- **Objectives & Scope**: Academic initiatives extending the original World3 equations (Meadows et al., 1972) by integrating modern system dynamics, Stock-Flow Consistent (SFC) financial loops, and updated socio-economic feedbacks.
+- **Strengths**: High conceptual clarity of global feedback loops; successful integration of debt, financial capital, and economic inequality (e.g., Club of Rome's *Earth4All*, 2022).
+- **Limitations Relative to Ether**: Aggregated globally (0D single-box or ~10 regions at best), entirely lacking spatial geographic resolution (no map, no H3 grid, no physical transport logistics), and without JIT/GPU compilation architecture.
 
 ---
 
-## 3. Matrice Comparative Synthétique
+## 3. Synthetic Comparative Matrix
 
-Le tableau ci-dessous résume les caractéristiques architecturales et fonctionnelles d'Ether par rapport à ses homologues majeurs.
+The matrix below summarizes the architectural and functional characteristics of Ether in comparison to its major peers.
 
-| Dimension d'Analyse | **Ether (v4.0)** | **T21 / iSDG** | **International Futures (IFs)** | **IMAGE (PBL)** | **Earth4All / Post-World3** |
+| Dimension | **Ether (v4.0)** | **T21 / iSDG** | **International Futures (IFs)** | **IMAGE (PBL)** | **Earth4All / Post-World3** |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Résolution Spatiale** | **Grille Hexagonale Uber H3** (175k-10M cellules) | Agrégat National (0D par pays) | **180+ Pays** (Matrices multi-pays) | Grille Géo (Sols/Biomes) + Régions Eco | Agrégat Global (0D) ou 10 Régions |
-| **Échelle Temporelle** | **-100 000 BP à 2100+** (Deep History & Futur) | 2000 – 2050 (Prospective ODD) | 1960 – 2100 (Prospective Moderne) | 1970 – 2100 (Scénarios GIEC / SSP) | 1970 – 2100 (Scénarios Transition) |
-| **Ancrage Physique & Thermodynamique** | **Strict (Joules, EROEI, Carnot, SOC, NPK)** | Partiel (Ressources physiques & énergie) | Intermédiaire (Besoins/Stocks énergétiques) | **Très Élevé (Carbone, Biomasse, Climat)** | Modéré (Stocks physiques & limites) |
-| **Cliodynamique & Instabilité Politique** | **30 Moteurs Type B** (Turchin, Scott, Ostrom...) | Limité (Variables sociales de base) | Intégré (Index de gouvernance & prédiction) | Aucun (Focus environnement/économie) | Limité (Index de tension sociale) |
-| **Sphère Économique & Financière** | **Physico-Centrée** (Capital, Énergie, Offre/Demande) | Macro-économique nationale (PIB, Secteurs) | **Très Détaillée** (SAM, Économétrie, Commerce) | Modèle MAGNET/TIMER (Macro/Énergie) | Macro-Financière SFC (Dette, Investissement) |
-| **Gouvernance & Archon Engine (IA)** | **Closed-Loop MPC** (Contrôle Cybernétique) | Leviers politiques manuels | Scénarios de leviers politiques avancés | Scénarios SSP prédéfinis | Scénarios d'interventions politiques |
-| **Validation Empirique Historique** | **Automatisée** ($R^2$, RMSE sur -10k à 2026) | Étalonnage ponctuel pays | **Massive (5 000+ séries 1960-2026)** | Étalonnage historique environnemental | Étalonnage World3/Earth4All (1970-2020) |
-| **Accélération Matérielle / JIT Compiler** | **Oui** (DOD SoA, CPU JIT, OpenCL/GPU) | Non (System Dynamics standard) | Non (Exécution séquentielle CPU) | Non (Modèles couplés complexes) | Non (System Dynamics 0D) |
-| **Accessibilité & Modèle Logiciel** | **Open Source / Local / Client JavaFX** | Propriétaire / Mission de Conseil | Gratuit / Desktop & Web (Pardee Inst) | Académique / Recherche Institutionnelle | Open Source / Modèles Vensim/Stella |
+| **Spatial Resolution** | **Uber H3 Hex Grid** (175k–10M cells) | National Aggregate (0D per country) | **180+ Countries** (Multi-country matrices) | Geo Grid (Land/Biomes) + Eco Regions | Global Aggregate (0D) or ~10 Regions |
+| **Temporal Horizon** | **-100,000 BP to 2100+** (Deep History & Future) | 2000 – 2050 (SDG Horizons) | 1960 – 2100 (Modern Horizons) | 1970 – 2100 (IPCC / SSP Scenarios) | 1970 – 2100 (Transition Scenarios) |
+| **Physical & Thermodynamic Grounding** | **Strict (Joules, EROEI, Carnot, SOC, NPK)** | Partial (Physical resources & energy) | Intermediate (Energy demands & stocks) | **Very High (Carbon, Biomass, Climate)** | Moderate (Physical stocks & boundaries) |
+| **Cliodynamics & Political Instability** | **30 Type B Engines** (Turchin, Scott, Ostrom...) | Limited (Basic social variables) | Integrated (Governance indices & forecasts) | None (Environmental/economic focus) | Limited (Social tension index) |
+| **Economic & Financial Sphere** | **Physicalist** (Capital, Energy, Supply/Demand) | National Macro (GDP, Sectors) | **Highly Detailed** (SAM, Econometrics, Trade) | MAGNET/TIMER Models (Macro/Energy) | Macro-Financial SFC (Debt, Capital) |
+| **Governance & Archon Engine (AI)** | **Closed-Loop MPC** (Cybernetic Regulation) | Manual policy levers | Advanced policy scenario sliders | Predefined SSP scenario pathways | Policy intervention scenario runs |
+| **Historical Empirical Validation** | **Automated** ($R^2$, RMSE on -10k to 2026) | Ad-hoc country calibration | **Massive (5,000+ series 1960–2026)** | Historical environmental calibration | World3/Earth4All fit (1970–2020) |
+| **Hardware Acceleration / JIT Compiler** | **Yes** (DOD SoA, CPU JIT, OpenCL/GPU) | No (Standard System Dynamics) | No (Sequential CPU execution) | No (Complex coupled codebases) | No (0D System Dynamics) |
+| **Accessibility & Software Model** | **Open Source / Local / JavaFX Desktop** | Proprietary / Consulting Engagements | Free / Desktop & Web (Pardee Center) | Academic / Institutional Research | Open Source / Vensim & Stella Models |
 
 ---
 
-## 4. Analyse Transversale : Quels sont les Atouts Distinctions d'Ether ?
+## 4. Cross-Cutting Analysis: What are Ether's Key Distinctions?
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                      MATRICE DES PARADIGMES DE SIMULATION                   │
+│                       SIMULATION PARADIGM MATRIX                            │
 │                                                                             │
-│   Résolution Spatiale                                                       │
+│   Spatial Resolution                                                        │
 │        ▲                                                                    │
 │        │                                                                    │
-│   HAUTE│                                 ✦ ETHER (v4.0)                     │
-│        │                                 (H3 Hexagons, Phys/Cliodynamique)  │
+│   HIGH │                                 ✦ ETHER (v4.0)                     │
+│        │                                 (H3 Hexagons, Phys/Cliodynamics)   │
 │        │                                                                    │
 │        │                                    IMAGE                           │
-│        │                                    (Grille Climat/Sols)            │
+│        │                                    (Climate/Soil Grid)             │
 │        │                                                                    │
-│  MOYENNE                                        IFs                         │
-│        │                                        (180+ Pays, Économétrie)    │
+│ MEDIUM │                                        IFs                         │
+│        │                                        (180+ Countries, Econometric)│
 │        │                                                                    │
-│   BASSE│    T21 / iSDG             Earth4All / World3                       │
+│    LOW │    T21 / iSDG             Earth4All / World3                       │
 │        │    (National 0D)          (Global 0D)                              │
 │        └──────────────────────────────────────────────────────────────►     │
-│             Courte (20-50 ans)     Moyenne (100 ans)      Profonde (-100k BP) │
-│                                  Profondeur Temporelle                      │
+│             Short (20-50 yrs)      Medium (100 yrs)       Deep (-100k BP)   │
+│                                   Temporal Horizon                          │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 1. La Fin des "Boîtes Noires" Géopolitiques : L'Apport de la Grille Uber H3
-Les modèles comme IFs, T21 ou les IAMs traditionnels découpent le monde en entités administratives fixes (ex. "France", "Chine", "Afrique subsaharienne"). Or, la biosphère, le climat, les aquifères et les écosystèmes ne connaissent pas les frontières politiques. 
-Ether résout cette contradiction en posant **la cellule H3 comme unité fondamentale d'état**. Les frontières politiques, les réseaux urbains et les territoires impériaux émergent endogènement de la densité humaine, du frottement du relief et de la cohésion sociale (*Asabiyyah*).
+### 1. The End of Geopolitical "Black Boxes": The Contribution of the Uber H3 Grid
+Models like IFs, T21, or traditional IAMs partition the world into fixed administrative boundaries (e.g., "France", "China", "Sub-Saharan Africa"). However, the biosphere, climate, aquifers, and ecosystems do not follow political borders.  
+Ether resolves this limitation by defining **the H3 hexagonal cell as the fundamental state unit**. Political borders, urban networks, and imperial realms emerge endogenously from human density, terrain friction, and social cohesion (*Asabiyyah*).
 
-### 2. Du Réductionnisme Économétrique au Premier Principe Thermodynamique
-La majorité des modèles prospectifs institutionnels (IFs, T21) s'appuient sur des équations de production de type Cobb-Douglas ou des Régressions Économétriques calibrées sur les Trente Glorieuses et la mondialisation (1960-2020). Ces régressions supposent implicitement la continuité de l'abondance énergétique. 
-Ether prend le problème à l'inverse : **l'activité humaine est contrainte par les lois de la thermodynamique (Joules, Carnot, EROEI net, entropie des matériaux)**. Si l'EROEI s'effondre ou si le sol perd son N-P-K, la production s'effondre indépendamment des signaux monétaires.
+### 2. From Econometric Reductionism to First-Principles Thermodynamics
+The majority of institutional forecasting models (IFs, T21) rely on Cobb-Douglas production functions or econometric regressions calibrated during the post-WWII era of sustained economic expansion (1960–2020). These regressions implicitly assume continuous energetic abundance.  
+Ether reverses this approach: **human activity is strictly bounded by thermodynamic laws (Joules, Carnot limits, Net EROEI, material entropy)**. If net EROEI declines or soil loses N-P-K fertility, physical output contracts regardless of monetary or price signals.
 
-### 3. Profondeur Temporelle et CLIODYNAMIQUE (Le Pont Passé-Futur)
-IFs et T21 sont incapables de tester leurs équations sur la chute de l'Empire Romain, l'expansion de l'Islam, la crise du XIVe siècle ou l'effondrement des Mayas. 
-Ether est le seul moteur capable de dérouler un même jeu d'équations physiques et sociologiques **de -100 000 BP à 2100+**, validé empiriquement par un noyau de calibration statistique contre les bases de données historiques mondiales (Seshat, Maddison, HYDE 3.4).
+### 3. Temporal Depth and CLIODYNAMICS (Bridging Past and Future)
+IFs and T21 cannot test their mathematical formulations against the fall of the Western Roman Empire, the expansion of Islam, the 14th-century crisis, or the Maya collapse.  
+Ether is the only simulation platform capable of executing the exact same set of physical and sociological equations **from 100,000 BCE to 2100+**, empirically validated by an automated statistical calibration engine against global historical datasets (Seshat, Maddison, HYDE 3.4).
 
-### 4. Pluralisme Modulaire via le Registry de 30 Moteurs (Type B)
-Là où IFs ou iSDG imposent une structure mathématique monolithique fermée, Ether propose une architecture pluggable. Un chercheur peut activer ou désactiver à la volée le modèle de collapse **HANDY**, les lois de **Turchin**, le principe de **White**, la trappe de **Scott** ou la perte culturelle d'**Henrich**, en mode analytique pur ou en mode hybride spatialisé.
+### 4. Modular Pluralism via the 30-Engine Registry (Type B)
+Where IFs or iSDG impose a monolithic mathematical structure, Ether provides a fully pluggable architecture. Researchers can dynamically activate or deactivate the **HANDY** collapse model, **Turchin's** structural-demographic equations, **White's** energy law, **Scott's** agrarian fragility trap, or **Henrich's** cultural loss theorem in pure analytical mode or spatial hybrid mode.
 
 ---
 
-## 5. Perspectives & Opportunités d'Hybridation pour Ether
+## 5. Perspectives & Hybridization Opportunities for Ether
 
-Bien qu'Ether possède une supériorité architecturale sur le plan de la physique spatiale et de la cliodynamique, il peut s'inspirer des forces de ses prédécesseurs pour enrichir ses futures versions :
+While Ether offers an advanced architecture for spatial physics and cliodynamics, it can incorporate strengths from its predecessors to enrich future releases:
 
 > [!TIP]
-> **Pistes d'Amélioration Incluses dans la Feuille de Route d'Ether** :
-> 1. **Comptabilité des Leviers de Politiques Publiques (Inspiration IFs / iSDG)** : Enrichir le moteur `Archon` et le `GodModePanel` avec des séries de leviers d'intervention sous forme d'ODD (ex. taux de scolarisation, investissement ciblé en santé publique ou infrastructures de dessalement).
-> 2. **Couplage d'Économie Sectorielle (Inspiration IMAGE / TIMER)** : Ajouter une couche optionnelle de matrice d'échanges intersectoriels (Input-Output physicalisé) pour mieux simuler les dépendances entre métallurgie, chimie minérale et énergie.
-> 3. **Précision des Métriques Sanitaires & Épidémiologiques (Inspiration IFs / GAINS)** : Étendre le moteur épidémiologique (`BioMolecularEpidemiologyEngine`) d'Ether pour intégrer les fardeaux de morbidité (DALY) liés à la pollution de l'air.
+> **Enhancement Opportunities in the Ether Roadmap**:
+> 1. **Public Policy Indicator Accounting (Inspired by IFs / iSDG)**: Enrich the `Archon` engine and `GodModePanel` with SDG-style policy levers (e.g., targeted public health investments, educational attainment goals, or desalination infrastructure deployments).
+> 2. **Sectoral Input-Output Coupling (Inspired by IMAGE / TIMER)**: Add an optional physicalized inter-sectoral exchange matrix layer (physical input-output) to model precise supply dependencies between metallurgy, industrial chemistry, and energy systems.
+> 3. **Epidemiological & Health Precision (Inspired by IFs / GAINS)**: Expand Ether's `BioMolecularEpidemiologyEngine` to incorporate disability-adjusted life year (DALY) morbidity burdens from air pollution and particulate exposure.
 
 ---
 
 ## 6. Conclusion
 
-Ether ne cherche pas à remplacer T21/iSDG ou International Futures sur leur terrain d'élection — à savoir le conseil en prospective ministérielle à court/moyen terme ou la comptabilité des finances publiques nationales. 
+Ether does not aim to replace T21/iSDG or International Futures on their specialized domains — namely near-term ministerial policy advisory or granular national public finance budgeting.
 
-En revanche, **Ether s'impose comme le cadre de simulation de référence pour la prospective globale de rupture, la cliodynamique spatiale et l'étude des limites physiques fondamentales de la civilisation**. Par son couplage unique entre la géométrie planétaire Uber H3, le premier principe de la thermodynamique, 30 moteurs sociologiques et l'accélération matérielle JIT/GPU, Ether offre une plateforme d'expérimentation d'une puissance et d'une rigueur sans équivalent dans le paysage de la modélisation systémique mondiale.
+Instead, **Ether stands as the reference simulation framework for disruptive global foresight, spatial cliodynamics, and the exploration of fundamental physical boundaries governing civilization**. Through its unique coupling of the Uber H3 planetary grid, the first law of thermodynamics, 30 sociological engines, and JIT/GPU hardware acceleration, Ether provides an experimental platform of unparalleled analytical power and rigor in the field of systemic planetary modeling.
 
 ---
-*Document produit et validé pour le projet Ether.*
+*Document produced and validated for the Ether project.*
+

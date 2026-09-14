@@ -57,6 +57,7 @@ import java.util.function.Consumer;
  */
 public class ScenarioSetupPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioSetupPanel.class);
+    private final java.util.Map<String, WritableImage> proceduralImageCache = new java.util.HashMap<>();
 
     // Inherited Presets Header
     private Label planetSectionHeader;
@@ -1189,10 +1190,13 @@ public class ScenarioSetupPanel extends BorderPane {
             if (isProc) {
                 customDensityImage = null;
             }
+            if (previewModeCombo != null && previewModeCombo.getSelectionModel().getSelectedIndex() != 0) {
+                previewModeCombo.getSelectionModel().select(0);
+            }
             if (currentPreviewCells != null) {
                 distributeInitialPopulation(currentPreviewCells);
-                drawPreview();
             }
+            drawPreview();
         });
 
         // Live preview listeners
@@ -1499,8 +1503,10 @@ public class ScenarioSetupPanel extends BorderPane {
                 EcologyPreset eco = ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : EcologyPreset.EARTH_STANDARD;
                 Scenario scenario = getScenario();
 
-                org.ether.society.model.EtherScenarioBundle bundle =
+                org.ether.society.model.EtherScenarioBundle rawBundle =
                         new org.ether.society.model.EtherScenarioBundle("2.0.0", planet, eco, scenario);
+                org.ether.society.model.EtherScenarioBundle bundle = 
+                        org.ether.society.security.EtherBundleSigner.signBundle(rawBundle, "Ether Lead Planner");
 
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
@@ -1510,13 +1516,13 @@ public class ScenarioSetupPanel extends BorderPane {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(I18n.getOrDefault("scenario.title.export_success", "Export Successful"));
                 alert.setHeaderText(I18n.getOrDefault("scenario.header.export_success", "Simulation Bundle Exported Successfully"));
-                alert.setContentText("Le bundle unifié contenant la physique, l'écologie et la démographie a été enregistré sous :\n" + file.getAbsolutePath());
+                alert.setContentText(I18n.getOrDefault("scenario.alert.export_bundle_desc", "Unified simulation bundle signed & saved to:\n") + file.getAbsolutePath());
                 alert.showAndWait();
             } catch (Exception ex) {
                 logger.error("Failed to export unified bundle", ex);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erreur d'Exportation");
-                alert.setContentText("Impossible d'enregistrer le bundle : " + ex.getMessage());
+                alert.setTitle(I18n.getOrDefault("scenario.title.export_error", "Export Error"));
+                alert.setContentText(I18n.getOrDefault("scenario.alert.export_failed", "Cannot save bundle: ") + ex.getMessage());
                 alert.showAndWait();
             }
         }
@@ -1525,7 +1531,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private void importUnifiedBundle() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("scenario.title.import_bundle_dialog", "Import Unified Scenario Bundle (.ether)"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers Ether (*.ether, *.json)", "*.ether", "*.json"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Ether Files (*.ether, *.json)", "*.ether", "*.json"));
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
             try {
@@ -1537,6 +1543,15 @@ public class ScenarioSetupPanel extends BorderPane {
                         mapper.readValue(file, org.ether.society.model.EtherScenarioBundle.class);
 
                 if (bundle != null) {
+                    boolean isValid = org.ether.society.security.EtherBundleSigner.verifyBundle(bundle);
+                    if (!isValid) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Integrity Warning");
+                        alert.setHeaderText("Altered Bundle Detected");
+                        alert.setContentText("The signature on this bundle does not match its contents. Loading may produce unexpected simulation dynamics.");
+                        alert.showAndWait();
+                    }
+
                     if (bundle.planetPreset() != null) {
                         this.activePlanetPreset = bundle.planetPreset();
                         if (planetPresetCombo != null) planetPresetCombo.setValue(bundle.planetPreset());
@@ -1551,14 +1566,14 @@ public class ScenarioSetupPanel extends BorderPane {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle(I18n.getOrDefault("scenario.title.import_success", "Import Successful"));
                     alert.setHeaderText(I18n.getOrDefault("scenario.header.import_success", "Unified Bundle Applied"));
-                    alert.setContentText("Les paramètres physiques, écologiques et démographiques du bundle ont été rechargés avec succès.");
+                    alert.setContentText(I18n.getOrDefault("scenario.alert.import_bundle_success", "Physical, ecological, and demographic parameters loaded successfully from bundle."));
                     alert.showAndWait();
                 }
             } catch (Exception ex) {
                 logger.error("Failed to import unified bundle", ex);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erreur d'Importation");
-                alert.setContentText("Le fichier bundle sélectionné n'est pas valide : " + ex.getMessage());
+                alert.setTitle(I18n.getOrDefault("scenario.title.import_error", "Import Error"));
+                alert.setContentText(I18n.getOrDefault("scenario.alert.import_bundle_invalid", "Invalid bundle file: ") + ex.getMessage());
                 alert.showAndWait();
             }
         }
@@ -1879,6 +1894,46 @@ public class ScenarioSetupPanel extends BorderPane {
                 }
             }
             rebuildCulturalTensorSubBlocks(dims);
+
+            if (s.getTensorSeeds() != null) {
+                for (java.util.Map.Entry<Integer, Long> entry : s.getTensorSeeds().entrySet()) {
+                    int tIdx = entry.getKey();
+                    if (tensorSeedFields.containsKey(tIdx) && tensorSeedFields.get(tIdx) != null) {
+                        tensorSeedFields.get(tIdx).setText(String.valueOf(entry.getValue()));
+                    }
+                }
+            }
+            if (s.getTensorProceduralParameters() != null) {
+                for (java.util.Map.Entry<Integer, java.util.Map<String, Double>> entry : s.getTensorProceduralParameters().entrySet()) {
+                    int tIdx = entry.getKey();
+                    java.util.Map<String, Double> pMap = entry.getValue();
+                    if (pMap != null) {
+                        TensorParamDescriptor d1 = getTensorParam1Descriptor(tIdx);
+                        TensorParamDescriptor d2 = getTensorParam2Descriptor(tIdx);
+                        TensorParamDescriptor d3 = getTensorParam3Descriptor(tIdx);
+                        if (pMap.containsKey(d1.labelKey) && tensorParam1Sliders.containsKey(tIdx) && tensorParam1Sliders.get(tIdx) != null) {
+                            tensorParam1Sliders.get(tIdx).setValue(pMap.get(d1.labelKey));
+                        }
+                        if (pMap.containsKey(d2.labelKey) && tensorParam2Sliders.containsKey(tIdx) && tensorParam2Sliders.get(tIdx) != null) {
+                            tensorParam2Sliders.get(tIdx).setValue(pMap.get(d2.labelKey));
+                        }
+                        if (pMap.containsKey(d3.labelKey) && tensorParam3Sliders.containsKey(tIdx) && tensorParam3Sliders.get(tIdx) != null) {
+                            tensorParam3Sliders.get(tIdx).setValue(pMap.get(d3.labelKey));
+                        }
+                    }
+                }
+            }
+            if (s.getTensorProceduralModes() != null) {
+                for (int i = 0; i < dims && i < s.getTensorProceduralModes().size(); i++) {
+                    boolean isProc = s.getTensorProceduralModes().get(i);
+                    if (isProc && tensorProcRadios.containsKey(i)) {
+                        tensorProcRadios.get(i).setSelected(true);
+                    } else if (!isProc && tensorImportRadios.containsKey(i)) {
+                        tensorImportRadios.get(i).setSelected(true);
+                    }
+                }
+            }
+
             updatePreviewModesCombo();
             if (currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
                 distributeInitialPopulation(currentPreviewCells);
@@ -3047,7 +3102,14 @@ public class ScenarioSetupPanel extends BorderPane {
     private final java.util.Map<Integer, ComboBox<String>> tensorSourceCombos = new java.util.HashMap<>();
     private final java.util.Map<Integer, Button> tensorLoadBtns = new java.util.HashMap<>();
     private final java.util.Map<Integer, Label> tensorFormatLabels = new java.util.HashMap<>();
-    private final java.util.Map<Integer, ComboBox<String>> tensorFallbackCombos = new java.util.HashMap<>();
+    private final java.util.Map<Integer, TextField> tensorSeedFields = new java.util.HashMap<>();
+    private final java.util.Map<Integer, Slider> tensorParam1Sliders = new java.util.HashMap<>();
+    private final java.util.Map<Integer, Slider> tensorParam2Sliders = new java.util.HashMap<>();
+    private final java.util.Map<Integer, Slider> tensorParam3Sliders = new java.util.HashMap<>();
+    private final java.util.Map<Integer, Label> tensorParam1ValueLabels = new java.util.HashMap<>();
+    private final java.util.Map<Integer, Label> tensorParam2ValueLabels = new java.util.HashMap<>();
+    private final java.util.Map<Integer, Label> tensorParam3ValueLabels = new java.util.HashMap<>();
+    private final java.util.Map<Integer, Button> tensorGenSingleBtns = new java.util.HashMap<>();
 
     private VBox createCulturalVectorAndLayersSection() {
         VBox section = new VBox(10);
@@ -3172,7 +3234,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
         VBox layerHeaderBox = new VBox(6, layerTitle, seedAndActionBox);
 
-        Label culturalFormatHintLabel = new Label(I18n.getOrDefault("scenario.desc.tensor_formats", "PNG / JPEG (2:1 equirectangular projection):\n  Each sub-block below allows individual choice of procedural generation or map import. In case of missing layers, automatic stochastic fallback applies."));
+        Label culturalFormatHintLabel = new Label(I18n.getOrDefault("scenario.desc.tensor_formats", "PNG / JPEG (2:1 equirectangular projection):\n  Each sub-block below allows individual choice of parameterized procedural generation or map import. In map import mode, a valid map file must be loaded."));
         culturalFormatHintLabel.setWrapText(true);
         culturalFormatHintLabel.getStyleClass().add("hint-label");
 
@@ -3266,7 +3328,7 @@ public class ScenarioSetupPanel extends BorderPane {
             case 6 -> I18n.getOrDefault("scenario.tensor.title.6", "⚖ 3.2.7 Tensor 7: Institutional Complexity & Norms (Seshat & Law)");
             case 7 -> I18n.getOrDefault("scenario.tensor.title.7", "⚠️ 3.2.8 Tensor 8: Ecological Footprint & Malthusian Stress (Degradation)");
             case 8 -> I18n.getOrDefault("scenario.tensor.title.8", "🧬 3.2.9 Tensor 9: Pathogen Immunity & Health Memory (Epidemiology)");
-            default -> I18n.getOrDefault("scenario.tensor.title.ext", "🧬 3.2." + (index + 1) + " Tensor " + (index + 1) + ": Extensible Cultural Substrate " + (index + 1));
+            default -> String.format(I18n.getOrDefault("scenario.tensor.title.ext", "🧬 3.2.%d Tenseur %d : Substrat Multichamp N°%d"), (index + 1), (index + 1), (index + 1));
         };
     }
 
@@ -3281,7 +3343,7 @@ public class ScenarioSetupPanel extends BorderPane {
             case 6 -> I18n.getOrDefault("scenario.tensor.tooltip.6", "Institutional component (Seshat): Administrative complexity, codification of customary law, and bureaucracy.");
             case 7 -> I18n.getOrDefault("scenario.tensor.tooltip.7", "Ecological component: Soil degradation, deforestation, salinization, and Malthusian pressure.");
             case 8 -> I18n.getOrDefault("scenario.tensor.tooltip.8", "Sanitary component: Acquired immunity barriers, zoonotic reservoirs, and epidemic vulnerability.");
-            default -> I18n.getOrDefault("scenario.tensor.tooltip.ext", "Extensible N-dimensional cultural component (" + (index + 1) + "D).");
+            default -> String.format(I18n.getOrDefault("scenario.tensor.tooltip.ext", "Composante culturelle multichamp extensible %dD."), (index + 1));
         };
     }
 
@@ -3394,6 +3456,167 @@ public class ScenarioSetupPanel extends BorderPane {
         return combo;
     }
 
+    private static class TensorParamDescriptor {
+        final String labelKey;
+        final String defaultLabel;
+        final String tooltipKey;
+        final String defaultTooltip;
+        final double min;
+        final double max;
+        final double defVal;
+        final double step;
+        final String format;
+
+        TensorParamDescriptor(String labelKey, String defaultLabel, String tooltipKey, String defaultTooltip,
+                              double min, double max, double defVal, double step, String format) {
+            this.labelKey = labelKey;
+            this.defaultLabel = defaultLabel;
+            this.tooltipKey = tooltipKey;
+            this.defaultTooltip = defaultTooltip;
+            this.min = min;
+            this.max = max;
+            this.defVal = defVal;
+            this.step = step;
+            this.format = format;
+        }
+    }
+
+    private TensorParamDescriptor getTensorParam1Descriptor(int tensorIdx) {
+        return switch (tensorIdx) {
+            case 0 -> new TensorParamDescriptor("scenario.tensor.0.p1.label", "Dispersion dialectale (α) :", "scenario.tensor.0.p1.tooltip", "Échelle spatiale de diffusion des variantes phonétiques et lexicales.", 0.01, 0.25, 0.05, 0.01, "%.2f");
+            case 1 -> new TensorParamDescriptor("scenario.tensor.1.p1.label", "Rayon clanique :", "scenario.tensor.1.p1.tooltip", "Rayon spatial d'influence et de solidarité des lignages et clans.", 10.0, 500.0, 120.0, 10.0, "%.0f km");
+            case 2 -> new TensorParamDescriptor("scenario.tensor.2.p1.label", "Force Asabiyyah :", "scenario.tensor.2.p1.tooltip", "Niveau de cohésion sociale et de solidarité sacrée (Asabiyyah d'Ibn Khaldoun).", 0.10, 1.00, 0.70, 0.05, "%.2f");
+            case 3 -> new TensorParamDescriptor("scenario.tensor.3.p1.label", "Portée des capitales :", "scenario.tensor.3.p1.tooltip", "Rayon d'action direct de l'autorité politico-militaire centrale.", 50.0, 2500.0, 600.0, 50.0, "%.0f km");
+            case 4 -> new TensorParamDescriptor("scenario.tensor.4.p1.label", "Foyers d'innovation :", "scenario.tensor.4.p1.tooltip", "Nombre de centres artisanaux et métallurgiques initiaux.", 1.0, 20.0, 5.0, 1.0, "%.0f");
+            case 5 -> new TensorParamDescriptor("scenario.tensor.5.p1.label", "Comptoirs & carrefours :", "scenario.tensor.5.p1.tooltip", "Nombre de carrefours marchands et comptoirs d'échange.", 2.0, 30.0, 8.0, 1.0, "%.0f");
+            case 6 -> new TensorParamDescriptor("scenario.tensor.6.p1.label", "Niveaux bureaucratiques :", "scenario.tensor.6.p1.tooltip", "Profondeur de la hiérarchie administrative (Seshat Databank).", 1.0, 8.0, 3.0, 1.0, "%.0f niv.");
+            case 7 -> new TensorParamDescriptor("scenario.tensor.7.p1.label", "Surexploitation des sols :", "scenario.tensor.7.p1.tooltip", "Intensité du forçage anthropique et de la déforestation.", 0.0, 1.00, 0.40, 0.05, "%.2f");
+            case 8 -> new TensorParamDescriptor("scenario.tensor.8.p1.label", "Pression pathogène :", "scenario.tensor.8.p1.tooltip", "Pression endémique virale et bactérienne régionale.", 0.0, 1.00, 0.35, 0.05, "%.2f");
+            default -> new TensorParamDescriptor("scenario.tensor.ext.p1.label", "Fréquence spatiale :", "scenario.tensor.ext.p1.tooltip", "Échelle d'ondulation du substrat procédural.", 0.001, 0.05, 0.01, 0.001, "%.3f");
+        };
+    }
+
+    private TensorParamDescriptor getTensorParam2Descriptor(int tensorIdx) {
+        return switch (tensorIdx) {
+            case 0 -> new TensorParamDescriptor("scenario.tensor.0.p2.label", "Foyers linguistiques :", "scenario.tensor.0.p2.tooltip", "Nombre de foyers indépendants et familles linguistiques initiales.", 1.0, 16.0, 4.0, 1.0, "%.0f");
+            case 1 -> new TensorParamDescriptor("scenario.tensor.1.p2.label", "Perméabilité exogamique :", "scenario.tensor.1.p2.tooltip", "Taux d'alliances matrimoniales inter-clans et exogamie.", 0.0, 1.00, 0.35, 0.05, "%.2f");
+            case 2 -> new TensorParamDescriptor("scenario.tensor.2.p2.label", "Sanctuaires sacrés :", "scenario.tensor.2.p2.tooltip", "Nombre de hauts lieux rituels et sanctuaires émergents.", 1.0, 25.0, 6.0, 1.0, "%.0f");
+            case 3 -> new TensorParamDescriptor("scenario.tensor.3.p2.label", "Centralisation régalienne :", "scenario.tensor.3.p2.tooltip", "Degré de concentration du pouvoir politique et fiscal.", 0.0, 1.00, 0.75, 0.05, "%.2f");
+            case 4 -> new TensorParamDescriptor("scenario.tensor.4.p2.label", "Technicité matérielle :", "scenario.tensor.4.p2.tooltip", "Niveau initial de complexité des artéfacts et outillages.", 0.0, 10.0, 2.5, 0.5, "%.1f");
+            case 5 -> new TensorParamDescriptor("scenario.tensor.5.p2.label", "Portée des routes :", "scenario.tensor.5.p2.tooltip", "Longueur maximale des routes commerciales et caravanes.", 100.0, 4000.0, 1200.0, 100.0, "%.0f km");
+            case 6 -> new TensorParamDescriptor("scenario.tensor.6.p2.label", "Codification juridique :", "scenario.tensor.6.p2.tooltip", "Niveau de formalisation et de codification des lois écrites.", 0.0, 1.00, 0.45, 0.05, "%.2f");
+            case 7 -> new TensorParamDescriptor("scenario.tensor.7.p2.label", "Taux d'épuisement :", "scenario.tensor.7.p2.tooltip", "Vitesse d'érosion des sols et d'amenuisement des ressources.", 0.001, 0.10, 0.02, 0.005, "%.3f");
+            case 8 -> new TensorParamDescriptor("scenario.tensor.8.p2.label", "Réservoirs zoonotiques :", "scenario.tensor.8.p2.tooltip", "Rayon d'influence des foyers sauvages et réservoirs animaux.", 20.0, 600.0, 180.0, 20.0, "%.0f km");
+            default -> new TensorParamDescriptor("scenario.tensor.ext.p2.label", "Amplitude du signal :", "scenario.tensor.ext.p2.tooltip", "Intensité relative du tenseur extensible.", 0.10, 1.00, 0.80, 0.05, "%.2f");
+        };
+    }
+
+    private TensorParamDescriptor getTensorParam3Descriptor(int tensorIdx) {
+        return switch (tensorIdx) {
+            case 0 -> new TensorParamDescriptor("scenario.tensor.0.p3.label", "Barrière de relief :", "scenario.tensor.0.p3.tooltip", "Impact du relief et des chaînes de montagnes sur l'isolation linguistique.", 0.0, 1.00, 0.60, 0.05, "%.2f");
+            case 1 -> new TensorParamDescriptor("scenario.tensor.1.p3.label", "Hiérarchie lignagère :", "scenario.tensor.1.p3.tooltip", "Degré de structuration et de segmentation patriarcale/matriarcale.", 0.0, 1.00, 0.50, 0.05, "%.2f");
+            case 2 -> new TensorParamDescriptor("scenario.tensor.2.p3.label", "Diffusion théologique :", "scenario.tensor.2.p3.tooltip", "Portée spatiale d'expansion des doctrines et rites sacrés.", 50.0, 2000.0, 400.0, 50.0, "%.0f km");
+            case 3 -> new TensorParamDescriptor("scenario.tensor.3.p3.label", "Friction frontalière :", "scenario.tensor.3.p3.tooltip", "Tension militaire et friction aux marches de l'empire.", 0.0, 1.00, 0.40, 0.05, "%.2f");
+            case 4 -> new TensorParamDescriptor("scenario.tensor.4.p3.label", "Diffusion technique :", "scenario.tensor.4.p3.tooltip", "Conductance de propagation des savoirs artisanaux.", 0.01, 0.30, 0.08, 0.01, "%.2f");
+            case 5 -> new TensorParamDescriptor("scenario.tensor.5.p3.label", "Pondération maritime :", "scenario.tensor.5.p3.tooltip", "Attractivité des voies navigables, côtières et maritimes.", 0.0, 1.00, 0.65, 0.05, "%.2f");
+            case 6 -> new TensorParamDescriptor("scenario.tensor.6.p3.label", "Seuil d'intégration :", "scenario.tensor.6.p3.tooltip", "Taille de population déclenchant l'émergence des institutions.", 100.0, 10000.0, 1500.0, 100.0, "%.0f hab.");
+            case 7 -> new TensorParamDescriptor("scenario.tensor.7.p3.label", "Résilience biocapacité :", "scenario.tensor.7.p3.tooltip", "Capacité de régénération naturelle du biome.", 0.10, 2.00, 1.00, 0.10, "%.2f");
+            case 8 -> new TensorParamDescriptor("scenario.tensor.8.p3.label", "Mémoire immunitaire :", "scenario.tensor.8.p3.tooltip", "Vitesse d'acquisition et persistance de l'immunité de groupe.", 0.01, 0.25, 0.06, 0.01, "%.2f");
+            default -> new TensorParamDescriptor("scenario.tensor.ext.p3.label", "Taux de diffusion :", "scenario.tensor.ext.p3.tooltip", "Conductance de diffusion spatiale.", 0.01, 0.20, 0.05, 0.01, "%.2f");
+        };
+    }
+
+    private String getDefaultTensorSeed(int tensorIdx) {
+        return String.valueOf(11235L + tensorIdx * 11111L);
+    }
+
+    private void updateTensorFileLabel(int tensorIdx) {
+        Label fileLbl = tensorFileLabels.get(tensorIdx);
+        Button loadBtn = tensorLoadBtns.get(tensorIdx);
+        if (fileLbl == null) return;
+        boolean isProc = tensorProcRadios.containsKey(tensorIdx) && tensorProcRadios.get(tensorIdx).isSelected();
+        Image img = customTensorImages.get(tensorIdx);
+
+        if (isProc) {
+            fileLbl.setText(I18n.getOrDefault("scenario.tensor.status.procedural", "✅ Mode procédural actif"));
+            fileLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
+            if (loadBtn != null) loadBtn.setStyle("");
+            return;
+        }
+
+        if (img == null) {
+            fileLbl.setText(I18n.getOrDefault("scenario.tensor.file.none", "⚠️ Aucune carte chargée — Fichier requis en mode import"));
+            fileLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #f59e0b;");
+            if (loadBtn != null) loadBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+            return;
+        }
+
+        org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(img);
+        if (!val.valid()) {
+            fileLbl.setText(String.format(I18n.getOrDefault("scenario.tensor.file.invalid", "⚠️ Carte incompatible : %s"), val.message()));
+            fileLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #ef4444; -fx-font-weight: bold;");
+            if (loadBtn != null) loadBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+        } else {
+            fileLbl.setText(String.format(I18n.getOrDefault("scenario.tensor.file.loaded_res", "📷 Carte chargée : %s (%dx%d)"), getCulturalBaselineName(tensorIdx), val.width(), val.height()));
+            fileLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #38bdf8;");
+            if (loadBtn != null) loadBtn.setStyle("");
+        }
+    }
+
+    private void generateProceduralSingleCulturalTensor(int tensorIdx) {
+        Scenario s = getScenario();
+        if (s == null) return;
+        Button btn = tensorGenSingleBtns.get(tensorIdx);
+        if (btn != null) btn.setDisable(true);
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            org.ether.society.data.HistoricalMapGenerator.generateProceduralMapsForScenario(s);
+        }).thenRun(() -> javafx.application.Platform.runLater(() -> {
+            if (btn != null) btn.setDisable(false);
+            drawPreview();
+        }));
+    }
+
+    private HBox createTensorParamRow(TensorParamDescriptor desc, Slider slider, Label valueLabel, Runnable onChange) {
+        Label label = new Label(I18n.getOrDefault(desc.labelKey, desc.defaultLabel));
+        label.getStyleClass().add("control-label");
+        label.setStyle("-fx-font-size: 10px;");
+        label.setMinWidth(140);
+        label.setMaxWidth(140);
+        label.setWrapText(true);
+
+        slider.setMin(desc.min);
+        slider.setMax(desc.max);
+        slider.setValue(desc.defVal);
+        slider.setBlockIncrement(desc.step);
+        slider.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(slider, Priority.ALWAYS);
+
+        valueLabel.setText(String.format(java.util.Locale.ROOT, desc.format, desc.defVal));
+        valueLabel.getStyleClass().add("value-label");
+        valueLabel.setStyle("-fx-font-size: 10px;");
+        valueLabel.setMinWidth(65);
+        valueLabel.setAlignment(Pos.CENTER_RIGHT);
+
+        slider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            valueLabel.setText(String.format(java.util.Locale.ROOT, desc.format, newVal.doubleValue()));
+            if (!isUpdatingFromPreset) {
+                onChange.run();
+            }
+        });
+
+        String tip = I18n.getOrDefault(desc.tooltipKey, desc.defaultTooltip);
+        if (tip != null && !tip.isEmpty()) {
+            Tooltip.install(label, new Tooltip(tip));
+            Tooltip.install(slider, new Tooltip(tip));
+        }
+
+        attachDefaultValueHandling(slider, desc.defVal, () -> slider.setValue(desc.defVal));
+
+        HBox row = new HBox(6, label, slider, valueLabel);
+        row.setAlignment(Pos.CENTER_LEFT);
+        return row;
+    }
+
     private void rebuildCulturalTensorSubBlocks(int dimCount) {
         if (btnGenerateProceduralTensorsSection != null) {
             btnGenerateProceduralTensorsSection.setText(I18n.getOrDefault("scenario.btn.gen_tensors_prefix", "🪄 Generate Tensor Suite (T₁-T") + dimCount + ")");
@@ -3416,8 +3639,8 @@ public class ScenarioSetupPanel extends BorderPane {
             tensorSubTitles.put(tensorIdx, subTitle);
 
             ToggleGroup tg = new ToggleGroup();
-            RadioButton radioProc = new RadioButton(I18n.getOrDefault("scenario.mode.procedural_sde", "▶ Procedural Mode (Stochastic SDE)"));
-            RadioButton radioImport = new RadioButton(I18n.getOrDefault("scenario.mode.spatial_import", "📂 Map / Spatial Import (PNG/GeoJSON)"));
+            RadioButton radioProc = new RadioButton(I18n.getOrDefault("scenario.mode.procedural_sde", "▶ Mode Procédural (Paramètres adaptatifs & Graine)"));
+            RadioButton radioImport = new RadioButton(I18n.getOrDefault("scenario.mode.spatial_import", "📂 Importation Carte Spatiale (PNG / GeoJSON)"));
             radioProc.setToggleGroup(tg);
             radioImport.setToggleGroup(tg);
             radioProc.getStyleClass().add("radio-proc");
@@ -3433,14 +3656,62 @@ public class ScenarioSetupPanel extends BorderPane {
             tensorProcRadios.put(tensorIdx, radioProc);
             tensorImportRadios.put(tensorIdx, radioImport);
 
-            Label procStatusLbl = new Label(I18n.getOrDefault("scenario.status.proc_gen_tensor_prefix", "🪄 Procedural generation active for Tensor ") + (tensorIdx + 1) + " (Diffusion α=" + String.format(java.util.Locale.ROOT, "%.2f", culturalDiffusionRateSpinner != null ? culturalDiffusionRateSpinner.getValue() : 0.05) + ")");
-            procStatusLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981;");
-            VBox procBox = new VBox(4, procStatusLbl);
-            procBox.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(56,189,248,0.2); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
+            // --- 1. Procedural Configuration Sub-Box ---
+            Label seedLbl = new Label(I18n.getOrDefault("scenario.tensor.seed.label", "Graine :"));
+            seedLbl.getStyleClass().add("control-label");
+            seedLbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
+            seedLbl.setMinWidth(60);
+
+            TextField seedField = tensorSeedFields.computeIfAbsent(tensorIdx, k -> new TextField(getDefaultTensorSeed(tensorIdx)));
+            seedField.setStyle("-fx-font-size: 10px; -fx-pref-width: 80px;");
+            seedField.textProperty().addListener((obs, o, n) -> {
+                if (!isUpdatingFromPreset) {
+                    notifyParamChange();
+                    drawPreview();
+                }
+            });
+
+            Button randBtn = new Button("🎲");
+            randBtn.getStyleClass().add("button-secondary");
+            randBtn.setStyle("-fx-font-size: 10px; -fx-padding: 2 6;");
+            randBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.random_tensor_seed", "Tirer une nouvelle graine aléatoire pour ce tenseur.")));
+            randBtn.setOnAction(e -> {
+                seedField.setText(String.valueOf(new java.util.Random().nextLong(1000000)));
+                notifyParamChange();
+                drawPreview();
+            });
+
+            Button genSingleBtn = new Button(I18n.getOrDefault("scenario.tensor.btn.gen_single", "🪄 Générer"));
+            genSingleBtn.getStyleClass().add("button-secondary");
+            genSingleBtn.setStyle("-fx-font-size: 10px; -fx-padding: 2 8; -fx-font-weight: bold;");
+            genSingleBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tensor.btn.gen_single_tooltip", "Générer la carte procédurale pour ce tenseur spécifique à partir de sa graine et de ses paramètres.")));
+            tensorGenSingleBtns.put(tensorIdx, genSingleBtn);
+            genSingleBtn.setOnAction(e -> generateProceduralSingleCulturalTensor(tensorIdx));
+
+            HBox seedRow = new HBox(6, seedLbl, seedField, randBtn, genSingleBtn);
+            seedRow.setAlignment(Pos.CENTER_LEFT);
+
+            Slider p1Slider = tensorParam1Sliders.computeIfAbsent(tensorIdx, k -> new Slider());
+            Label p1Val = tensorParam1ValueLabels.computeIfAbsent(tensorIdx, k -> new Label());
+            HBox p1Row = createTensorParamRow(getTensorParam1Descriptor(tensorIdx), p1Slider, p1Val, () -> { notifyParamChange(); drawPreview(); });
+
+            Slider p2Slider = tensorParam2Sliders.computeIfAbsent(tensorIdx, k -> new Slider());
+            Label p2Val = tensorParam2ValueLabels.computeIfAbsent(tensorIdx, k -> new Label());
+            HBox p2Row = createTensorParamRow(getTensorParam2Descriptor(tensorIdx), p2Slider, p2Val, () -> { notifyParamChange(); drawPreview(); });
+
+            Slider p3Slider = tensorParam3Sliders.computeIfAbsent(tensorIdx, k -> new Slider());
+            Label p3Val = tensorParam3ValueLabels.computeIfAbsent(tensorIdx, k -> new Label());
+            HBox p3Row = createTensorParamRow(getTensorParam3Descriptor(tensorIdx), p3Slider, p3Val, () -> { notifyParamChange(); drawPreview(); });
+
+            Label procStatusLbl = new Label(I18n.getOrDefault("scenario.status.proc_gen_tensor_prefix", "🪄 Modélisation procédurale dynamique active (Tenseur ") + (tensorIdx + 1) + ")");
+            procStatusLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #10b981;");
+
+            VBox procBox = new VBox(5, seedRow, p1Row, p2Row, p3Row, procStatusLbl);
+            procBox.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(56,189,248,0.25); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
             procBox.setVisible(!hasImage);
             procBox.setManaged(!hasImage);
 
-            // --- Import Configuration Sub-Box ---
+            // --- 2. Import Configuration Sub-Box ---
             Label sourceLbl = new Label(I18n.getOrDefault("resource.label.reference_source", "Reference Source:"));
             tensorSourceLabels.put(tensorIdx, sourceLbl);
 
@@ -3462,43 +3733,11 @@ public class ScenarioSetupPanel extends BorderPane {
             HBox btnBox = new HBox(6, btnLoad, btnClear);
             btnBox.setAlignment(Pos.CENTER_LEFT);
 
-            Label fileLbl = new Label(hasImage ? getCulturalBaselineName(tensorIdx) : "—");
+            Label fileLbl = new Label();
             fileLbl.getStyleClass().add("value-label");
             fileLbl.setStyle("-fx-font-size: 10px;");
             tensorFileLabels.put(tensorIdx, fileLbl);
-
-            Label fallbackLbl = new Label(I18n.getOrDefault("scenario.tensor.fallback.lbl", "If map missing:"));
-            fallbackLbl.getStyleClass().add("control-label");
-            fallbackLbl.setStyle("-fx-font-size: 10px;");
-
-            ComboBox<String> fallbackCombo = new ComboBox<>();
-            fallbackCombo.getItems().addAll(
-                "AUTO",
-                "NEUTRAL",
-                "NEIGHBOR"
-            );
-            fallbackCombo.setValue("AUTO");
-            fallbackCombo.setStyle("-fx-font-size: 10px;");
-            fallbackCombo.setConverter(new javafx.util.StringConverter<String>() {
-                @Override
-                public String toString(String item) {
-                    if (item == null) return "";
-                    return switch (item) {
-                        case "AUTO" -> I18n.getOrDefault("scenario.tensor.fallback.auto", "🔹 Auto Procedural Fallback");
-                        case "NEUTRAL" -> I18n.getOrDefault("scenario.tensor.fallback.neutral", "🔹 Valeur Neutre Constant (0.5)");
-                        case "NEIGHBOR" -> I18n.getOrDefault("scenario.tensor.fallback.neighbor", "🔹 Copie / Interpolation Tenseur Voisin");
-                        default -> item;
-                    };
-                }
-                @Override
-                public String fromString(String string) {
-                    return null;
-                }
-            });
-            tensorFallbackCombos.put(tensorIdx, fallbackCombo);
-
-            HBox fallbackRow = new HBox(6, fallbackLbl, fallbackCombo);
-            fallbackRow.setAlignment(Pos.CENTER_LEFT);
+            updateTensorFileLabel(tensorIdx);
 
             Label formatHintLbl = new Label(getCulturalFormatHint(tensorIdx));
             formatHintLbl.getStyleClass().add("card-description-muted");
@@ -3506,7 +3745,7 @@ public class ScenarioSetupPanel extends BorderPane {
             formatHintLbl.setWrapText(true);
             tensorFormatLabels.put(tensorIdx, formatHintLbl);
 
-            VBox importBox = new VBox(6, sourceLbl, sourceCombo, btnBox, fileLbl, fallbackRow, formatHintLbl);
+            VBox importBox = new VBox(6, sourceLbl, sourceCombo, btnBox, fileLbl, formatHintLbl);
             importBox.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(167,139,250,0.25); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
             importBox.setVisible(hasImage);
             importBox.setManaged(hasImage);
@@ -3517,6 +3756,10 @@ public class ScenarioSetupPanel extends BorderPane {
                 procBox.setManaged(isProc);
                 importBox.setVisible(!isProc);
                 importBox.setManaged(!isProc);
+                updateTensorFileLabel(tensorIdx);
+                if (previewModeCombo != null && previewModeCombo.getSelectionModel().getSelectedIndex() != (tensorIdx + 1)) {
+                    previewModeCombo.getSelectionModel().select(tensorIdx + 1);
+                }
                 if (!isUpdatingFromPreset) {
                     notifyParamChange();
                     drawPreview();
@@ -3530,7 +3773,10 @@ public class ScenarioSetupPanel extends BorderPane {
                 if (tensorIdx == 2) customRitualsImage = img;
                 if (tensorIdx == 3) customSovereigntyImage = img;
 
-                fileLbl.setText(I18n.getOrDefault("scenario.status.tensor_image_loaded", "📷 PNG/GeoJSON image loaded (Tensor ") + (tensorIdx + 1) + ")");
+                updateTensorFileLabel(tensorIdx);
+                if (previewModeCombo != null && previewModeCombo.getSelectionModel().getSelectedIndex() != (tensorIdx + 1)) {
+                    previewModeCombo.getSelectionModel().select(tensorIdx + 1);
+                }
                 radioImport.setSelected(true);
                 notifyParamChange();
                 drawPreview();
@@ -3543,7 +3789,10 @@ public class ScenarioSetupPanel extends BorderPane {
                 if (tensorIdx == 2) customRitualsImage = null;
                 if (tensorIdx == 3) customSovereigntyImage = null;
 
-                fileLbl.setText("—");
+                updateTensorFileLabel(tensorIdx);
+                if (previewModeCombo != null && previewModeCombo.getSelectionModel().getSelectedIndex() != (tensorIdx + 1)) {
+                    previewModeCombo.getSelectionModel().select(tensorIdx + 1);
+                }
                 radioProc.setSelected(true);
                 notifyParamChange();
                 drawPreview();
@@ -3569,9 +3818,20 @@ public class ScenarioSetupPanel extends BorderPane {
         if (file != null) {
             try {
                 Image img = new Image(new FileInputStream(file));
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(img);
+                if (!val.valid()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(I18n.getOrDefault("scenario.dialog.invalid_map_title", "Carte Incompatible ou Invalide"));
+                    alert.setHeaderText(I18n.getOrDefault("scenario.dialog.invalid_map_header", "Fichier de carte non supporté ou illisible"));
+                    alert.setContentText(file.getName() + " :\n" + val.message() + "\n\n" + I18n.getOrDefault("scenario.dialog.invalid_map_hint", "Veuillez fournir une image raster valide (PNG/JPG) en projection équirectangulaire (2:1)."));
+                    alert.showAndWait();
+                    return;
+                }
                 onLoaded.accept(img);
             } catch (Exception ex) {
                 logger.error("Failed to load culture layer {}", layerName, ex);
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Erreur de chargement: " + ex.getMessage());
+                alert.showAndWait();
             }
         }
     }
@@ -4001,8 +4261,18 @@ public class ScenarioSetupPanel extends BorderPane {
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
             try {
-                customDensityImage = new Image(new FileInputStream(file));
-                densityMapFileLabel.setText("📷 " + file.getName());
+                Image img = new Image(new FileInputStream(file));
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(img);
+                if (!val.valid()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(I18n.getOrDefault("scenario.dialog.invalid_map_title", "Carte Incompatible ou Invalide"));
+                    alert.setHeaderText(I18n.getOrDefault("scenario.dialog.invalid_map_header", "Fichier de carte non supporté ou illisible"));
+                    alert.setContentText(file.getName() + " :\n" + val.message() + "\n\n" + I18n.getOrDefault("scenario.dialog.invalid_map_hint", "Veuillez fournir une image raster valide (PNG/JPG) en projection équirectangulaire (2:1)."));
+                    alert.showAndWait();
+                    return;
+                }
+                customDensityImage = img;
+                densityMapFileLabel.setText(String.format("📷 %s (%dx%d)", file.getName(), val.width(), val.height()));
                 if (radioImportDemo != null) radioImportDemo.setSelected(true);
                 updateDemoCompatibilityDisplay();
                 if (currentPreviewCells != null) {
@@ -4011,6 +4281,8 @@ public class ScenarioSetupPanel extends BorderPane {
                 }
             } catch (Exception ex) {
                 logger.error("Failed to load custom density map", ex);
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Erreur de chargement: " + ex.getMessage());
+                alert.showAndWait();
             }
         }
     }
@@ -4020,8 +4292,14 @@ public class ScenarioSetupPanel extends BorderPane {
         PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
         String planetName = p != null ? p.name() : "Standard";
         if (customDensityImage != null) {
-            demoCompatibilityLabel.setText(String.format(I18n.getOrDefault("scenario.demo.map_loaded", "✅ Map loaded and compatible with selected Tab 1 world (%s)"), planetName));
-            demoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981; -fx-font-weight: bold;");
+            org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customDensityImage);
+            if (!val.valid()) {
+                demoCompatibilityLabel.setText(String.format(I18n.getOrDefault("scenario.demo.map_invalid", "⚠️ Carte démographique incompatible : %s"), val.message()));
+                demoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #ef4444; -fx-font-weight: bold;");
+            } else {
+                demoCompatibilityLabel.setText(String.format(I18n.getOrDefault("scenario.demo.map_loaded", "✅ Map loaded and compatible with selected Tab 1 world (%s)"), planetName));
+                demoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981; -fx-font-weight: bold;");
+            }
         } else {
             demoCompatibilityLabel.setText(I18n.getOrDefault("scenario.demo.no_map", "🪐 No external map loaded — Procedural mode active"));
             demoCompatibilityLabel.getStyleClass().add("subcard-status-muted");
@@ -4298,17 +4576,7 @@ public class ScenarioSetupPanel extends BorderPane {
             heatCol = Color.rgb(239, 68, 68);  // Métropole (> 2500 hab/km²) - Red
         }
 
-        boolean showRelief = btnReliefOverlay != null && btnReliefOverlay.isSelected();
-        if (!showRelief) {
-            return heatCol;
-        }
-
-        // Blend heat with terrain relief (70% heat, 30% relief) so physical land topography shines through
-        double alpha = 0.70;
-        int blendedR = (int) (baseTerrainCol.getRed() * 255 * (1.0 - alpha) + heatCol.getRed() * 255 * alpha);
-        int blendedG = (int) (baseTerrainCol.getGreen() * 255 * (1.0 - alpha) + heatCol.getGreen() * 255 * alpha);
-        int blendedB = (int) (baseTerrainCol.getBlue() * 255 * (1.0 - alpha) + heatCol.getBlue() * 255 * alpha);
-        return Color.rgb(Math.clamp(blendedR, 0, 255), Math.clamp(blendedG, 0, 255), Math.clamp(blendedB, 0, 255));
+        return heatCol;
     }
 
     private double computeCellCarryingCapacity(H3Cell c) {
@@ -4568,8 +4836,6 @@ public class ScenarioSetupPanel extends BorderPane {
     private void drawInstant2DDensityPreview(GraphicsContext gc, double w, double h, double scale, double offX, double offY) {
         int pwWidth = 320;
         int pwHeight = 160;
-        WritableImage img = new WritableImage(pwWidth, pwHeight);
-        PixelWriter writer = img.getPixelWriter();
 
         PlanetPreset planet = activePlanetPreset != null ? activePlanetPreset : PlanetPreset.EARTH_LIKE;
         boolean isEarth = planet == PlanetPreset.EARTH_LIKE || "earth".equalsIgnoreCase(planet.elevationMapSource()) ||
@@ -4592,84 +4858,123 @@ public class ScenarioSetupPanel extends BorderPane {
         boolean isFootprintMode = idx == 6 || mode.contains("empreinte");
         boolean isReliefOverlay = btnReliefOverlay != null && btnReliefOverlay.isSelected();
 
-        for (int py = 0; py < pwHeight; py++) {
-            for (int px = 0; px < pwWidth; px++) {
-                double lat = 90.0 - (py / (double) pwHeight) * 180.0;
-                double lon = -180.0 + (px / (double) pwWidth) * 360.0;
+        String cacheKey = "sc_mode=" + idx + "_w=" + pwWidth + "_h=" + pwHeight + "_relief=" + isReliefOverlay
+                + "_pName=" + (planet != null ? planet.name() : "")
+                + "_startYear=" + (startYearSpinner != null ? startYearSpinner.getValue() : -8000)
+                + "_pop=" + (initialHumanCountSpinner != null ? initialHumanCountSpinner.getValue() : 1000000)
+                + "_pattern=" + (densityPatternCombo != null ? densityPatternCombo.getValue() : "")
+                + "_demoSeed=" + (demoSeedField != null ? demoSeedField.getText() : "")
+                + "_cultSeed=" + (cultSeedField != null ? cultSeedField.getText() : "")
+                + "_hasCustomDensity=" + (customDensityImage != null)
+                + "_tensorCount=" + customTensorImages.size();
 
-                // 1) Base planet relief color & land determination
-                double elevVal = 0.0;
-                boolean isLand = false;
-                if (bgReader != null && bgImage != null) {
-                    int bx = (int) Math.clamp(((px / (double) pwWidth) * bgImage.getWidth()), 0, bgImage.getWidth() - 1);
-                    int by = (int) Math.clamp(((py / (double) pwHeight) * bgImage.getHeight()), 0, bgImage.getHeight() - 1);
-                    elevVal = bgReader.getColor(bx, by).getRed();
-                    isLand = elevVal > 0.185;
-                } else {
-                    double alt = Math.sin(lat * Math.PI / 180.0) * Math.cos(lon * Math.PI / 180.0);
-                    isLand = alt >= 0;
-                    elevVal = isLand ? 0.4 : 0.0;
-                }
+        WritableImage img = proceduralImageCache.get(cacheKey);
+        if (img == null) {
+            img = new WritableImage(pwWidth, pwHeight);
+            PixelWriter writer = img.getPixelWriter();
+            ProceduralGenerator generator = new ProceduralGenerator();
 
-                Color baseReliefColor;
-                if (!isLand) {
-                    baseReliefColor = Color.rgb(15, 23, 42); // Sea / Deep ocean navy
-                } else {
-                    int r = Math.clamp((int) (55 + elevVal * 120), 0, 255);
-                    int g = Math.clamp((int) (125 + elevVal * 80), 0, 255);
-                    int bCol = Math.clamp((int) (50 + elevVal * 60), 0, 255);
-                    baseReliefColor = Color.rgb(r, g, bCol);
-                }
+            for (int py = 0; py < pwHeight; py++) {
+                for (int px = 0; px < pwWidth; px++) {
+                    double lat = 90.0 - (py / (double) pwHeight) * 180.0;
+                    double lon = -180.0 + (px / (double) pwWidth) * 360.0;
 
-                // 2) Main layer color (custom uploaded image OR procedural density overlay)
-                Color pxColor;
-                if (customReader != null && activeCustomImage.getWidth() > 0 && activeCustomImage.getHeight() > 0) {
-                    int imgX = (int) Math.clamp(((px / (double) pwWidth) * activeCustomImage.getWidth()), 0, activeCustomImage.getWidth() - 1);
-                    int imgY = (int) Math.clamp(((py / (double) pwHeight) * activeCustomImage.getHeight()), 0, activeCustomImage.getHeight() - 1);
-                    pxColor = customReader.getColor(imgX, imgY);
-                    if (isReliefOverlay && isLand) {
-                        pxColor = blendColors(pxColor, baseReliefColor, 0.45);
-                    }
-                } else if (!isLand) {
-                    pxColor = baseReliefColor; // Ocean Navy
-                } else {
-                    // Density mode default preview on land
-                    long startYear = startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -8000;
-                    boolean isAmericas = lon < -25.0;
-                    boolean isSahul = (lat < 10.0 && lon > 95.0) || (lat < -10.0 && lon > 110.0);
+                    // 1) Accurate elevation, water level and coastlines (z = 0)
+                    double elevVal;
+                    double wLevel = planet.waterLevel();
+                    boolean isLand;
+                    boolean isCoast;
+                    double declivity = 0.0;
 
-                    // Prehistoric geographic human presence checks
-                    boolean isHumanSettled = true;
-                    if (startYear <= -50000 && (isAmericas || isSahul)) {
-                        isHumanSettled = false;
-                    } else if (startYear <= -25000 && isAmericas) {
-                        isHumanSettled = false;
-                    }
+                    if (bgReader != null && bgImage != null) {
+                        double bgW = bgImage.getWidth();
+                        double bgH = bgImage.getHeight();
+                        int bx = (int) Math.clamp(((px / (double) pwWidth) * bgW), 0, bgW - 1);
+                        int by = (int) Math.clamp(((py / (double) pwHeight) * bgH), 0, bgH - 1);
+                        elevVal = bgReader.getColor(bx, by).getRed();
+                        isLand = elevVal > 0.185;
 
-                    Color heatCol;
-                    if (!isHumanSettled) {
-                        heatCol = Color.rgb(30, 95, 165); // Inhabité (0 hab/km²) - Blue from legend
+                        int bxE = Math.min((int) bgW - 1, bx + 1);
+                        int byN = Math.max(0, by - 1);
+                        boolean isLandE = bgReader.getColor(bxE, by).getRed() > 0.185;
+                        boolean isLandN = bgReader.getColor(bx, byN).getRed() > 0.185;
+                        isCoast = (isLand != isLandE) || (isLand != isLandN);
                     } else {
-                        boolean isEastAfrica = (lat >= -15 && lat <= 15) && (lon >= 25 && lon <= 45);
-                        boolean isFertileCrescent = (lat >= 20 && lat <= 38) && (lon >= 25 && lon <= 90);
-                        boolean isChinaIndus = (lat >= 10 && lat <= 42) && (lon >= 65 && lon <= 125);
+                        var pt = generator.getPlanetPoint(lat, lon, planet);
+                        elevVal = pt.elevation();
+                        declivity = pt.declivity();
+                        isLand = elevVal >= wLevel;
 
-                        if (isEastAfrica || isFertileCrescent || isChinaIndus) {
-                            heatCol = isFootprintMode ? Color.rgb(239, 68, 68) : Color.rgb(249, 115, 22); // High / Orange
+                        var ptE = generator.getPlanetPoint(lat, lon + 1.0, planet);
+                        var ptN = generator.getPlanetPoint(lat + 1.0, lon, planet);
+                        boolean isLandE = ptE.elevation() >= wLevel;
+                        boolean isLandN = ptN.elevation() >= wLevel;
+                        isCoast = (isLand != isLandE) || (isLand != isLandN);
+                    }
+
+                    Color baseReliefColor;
+                    if (!isLand) {
+                        baseReliefColor = Color.rgb(15, 23, 42); // Sea / Deep ocean navy
+                    } else {
+                        int r = Math.clamp((int) (55 + elevVal * 120), 0, 255);
+                        int g = Math.clamp((int) (125 + elevVal * 80), 0, 255);
+                        int bCol = Math.clamp((int) (50 + elevVal * 60), 0, 255);
+                        baseReliefColor = Color.rgb(r, g, bCol);
+                    }
+
+                    // 2) Main layer color (custom uploaded image OR procedural density overlay)
+                    Color pxColor;
+                    if (customReader != null && activeCustomImage.getWidth() > 0 && activeCustomImage.getHeight() > 0) {
+                        int imgX = (int) Math.clamp(((px / (double) pwWidth) * activeCustomImage.getWidth()), 0, activeCustomImage.getWidth() - 1);
+                        int imgY = (int) Math.clamp(((py / (double) pwHeight) * activeCustomImage.getHeight()), 0, activeCustomImage.getHeight() - 1);
+                        pxColor = customReader.getColor(imgX, imgY);
+                    } else if (!isLand) {
+                        pxColor = baseReliefColor; // Ocean Navy
+                    } else {
+                        // Density mode default preview on land
+                        long startYear = startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -8000;
+                        boolean isAmericas = lon < -25.0;
+                        boolean isSahul = (lat < 10.0 && lon > 95.0) || (lat < -10.0 && lon > 110.0);
+
+                        // Prehistoric geographic human presence checks
+                        boolean isHumanSettled = true;
+                        if (startYear <= -50000 && (isAmericas || isSahul)) {
+                            isHumanSettled = false;
+                        } else if (startYear <= -25000 && isAmericas) {
+                            isHumanSettled = false;
+                        }
+
+                        Color heatCol;
+                        if (!isHumanSettled) {
+                            heatCol = Color.rgb(30, 95, 165); // Inhabité (0 hab/km²) - Blue from legend
                         } else {
-                            heatCol = Color.rgb(16, 185, 129); // Faible / Green
+                            boolean isEastAfrica = (lat >= -15 && lat <= 15) && (lon >= 25 && lon <= 45);
+                            boolean isFertileCrescent = (lat >= 20 && lat <= 38) && (lon >= 25 && lon <= 90);
+                            boolean isChinaIndus = (lat >= 10 && lat <= 42) && (lon >= 65 && lon <= 125);
+
+                            if (isEastAfrica || isFertileCrescent || isChinaIndus) {
+                                heatCol = isFootprintMode ? Color.rgb(239, 68, 68) : Color.rgb(249, 115, 22); // High / Orange
+                            } else {
+                                heatCol = Color.rgb(16, 185, 129); // Faible / Green
+                            }
+                        }
+                        pxColor = heatCol;
+                    }
+
+                    // 3) Relief overlay and coastline outlines
+                    if (isReliefOverlay) {
+                        if (isCoast) {
+                            pxColor = Color.rgb(224, 242, 254); // Crisp white-cyan coastline outline at z = 0
+                        } else {
+                            Color reliefCol = getReliefShadeColor(elevVal, wLevel, declivity);
+                            pxColor = blendColors(pxColor, reliefCol, 0.50); // 50% opacity relief overlay
                         }
                     }
 
-                    if (isReliefOverlay) {
-                        pxColor = blendColors(baseReliefColor, heatCol, 0.65);
-                    } else {
-                        pxColor = heatCol;
-                    }
+                    writer.setColor(px, py, pxColor != null ? pxColor : Color.BLACK);
                 }
-
-                writer.setColor(px, py, pxColor != null ? pxColor : Color.BLACK);
             }
+            proceduralImageCache.put(cacheKey, img);
         }
 
         double drawW = 360.0 * scale;
@@ -4679,6 +4984,19 @@ public class ScenarioSetupPanel extends BorderPane {
         gc.setFill(Color.rgb(56, 189, 248, 0.95));
         gc.setFont(javafx.scene.text.Font.font("System", javafx.scene.text.FontWeight.BOLD, 12));
         gc.fillText("⚡ Aperçu 2D dynamique instantané (" + (mode.isEmpty() ? "Relief/Densité" : mode.toUpperCase()) + ")...", 20, h - 15);
+    }
+
+    public boolean isDirty() {
+        return scenarioPresetBar != null && scenarioPresetBar.isDirty();
+    }
+
+    public boolean promptSaveIfDirty(javafx.stage.Window owner) {
+        if (scenarioPresetBar == null) return true;
+        return scenarioPresetBar.promptSavePresetIfDirty(owner);
+    }
+
+    public PresetControlBar<Scenario> getPresetBar() {
+        return scenarioPresetBar;
     }
 
     private static Image cachedEarthElevationImage = null;
@@ -5388,15 +5706,6 @@ public class ScenarioSetupPanel extends BorderPane {
                 h3ResolutionCombo.setValue(val);
             }
 
-            if (tensorFallbackCombos != null) {
-                tensorFallbackCombos.values().forEach(cb -> {
-                    if (cb != null) {
-                        String val = cb.getValue();
-                        cb.setValue(null);
-                        cb.setValue(val);
-                    }
-                });
-            }
 
             updatePreviewModesCombo();
 
@@ -5517,6 +5826,9 @@ public class ScenarioSetupPanel extends BorderPane {
         if (culturalMutationRateSpinner != null) {
             s.setCulturalMutationRate(culturalMutationRateSpinner.getValue());
         }
+        java.util.Map<Integer, Long> tSeeds = new java.util.HashMap<>();
+        java.util.Map<Integer, java.util.Map<String, Double>> tProcParams = new java.util.HashMap<>();
+
         for (int i = 0; i < dims; i++) {
             if (customTensorImages.get(i) != null) {
                 s.setCustomTensorMapBase64(i, org.ether.society.data.ImageMapLoader.imageToBase64Png(customTensorImages.get(i)));
@@ -5526,7 +5838,44 @@ public class ScenarioSetupPanel extends BorderPane {
                 s.getTensorProceduralModes().add(true);
             }
             s.getTensorProceduralModes().set(i, isProc);
+
+            // Tensor Seeds
+            if (tensorSeedFields.containsKey(i) && tensorSeedFields.get(i) != null) {
+                try {
+                    tSeeds.put(i, Long.parseLong(tensorSeedFields.get(i).getText().trim()));
+                } catch (NumberFormatException ignored) {
+                    try {
+                        tSeeds.put(i, Long.parseLong(getDefaultTensorSeed(i)));
+                    } catch (Exception e) {
+                        tSeeds.put(i, 12345L);
+                    }
+                }
+            } else {
+                try {
+                    tSeeds.put(i, Long.parseLong(getDefaultTensorSeed(i)));
+                } catch (Exception e) {
+                    tSeeds.put(i, 12345L);
+                }
+            }
+
+            // Tensor Procedural Parameters
+            java.util.Map<String, Double> pMap = new java.util.HashMap<>();
+            TensorParamDescriptor d1 = getTensorParam1Descriptor(i);
+            TensorParamDescriptor d2 = getTensorParam2Descriptor(i);
+            TensorParamDescriptor d3 = getTensorParam3Descriptor(i);
+            if (tensorParam1Sliders.containsKey(i) && tensorParam1Sliders.get(i) != null) {
+                pMap.put(d1.labelKey, tensorParam1Sliders.get(i).getValue());
+            }
+            if (tensorParam2Sliders.containsKey(i) && tensorParam2Sliders.get(i) != null) {
+                pMap.put(d2.labelKey, tensorParam2Sliders.get(i).getValue());
+            }
+            if (tensorParam3Sliders.containsKey(i) && tensorParam3Sliders.get(i) != null) {
+                pMap.put(d3.labelKey, tensorParam3Sliders.get(i).getValue());
+            }
+            tProcParams.put(i, pMap);
         }
+        s.setTensorSeeds(tSeeds);
+        s.setTensorProceduralParameters(tProcParams);
 
         // Save Type B engine checkbox states
         java.util.Map<String, Boolean> typeBStates = new java.util.HashMap<>();
@@ -5618,52 +5967,47 @@ public class ScenarioSetupPanel extends BorderPane {
             javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
             fileChooser.setTitle(I18n.getOrDefault("scenario.title.export_engine_dialog", "Export Custom Ether Engine Template (.java)"));
             fileChooser.setInitialFileName("MyCustomOptionalEngine.java");
-            fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Fichiers Source Java (*.java)", "*.java"));
+            fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Java Source (*.java)", "*.java"));
             java.io.File file = fileChooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
             if (file != null) {
-                String template = """
-                    package org.ether.society.procedural;
-
-                    import org.ether.society.core.H3SimulationEngine;
-                    import org.ether.society.model.H3Cell;
-
-                    /**
-                     * Template Moteur Dynamic Optional Ether.
-                     */
-                    public class MyCustomOptionalEngine {
-                        private final String name = "MyCustomOptionalEngine";
-
-                        public void update(H3SimulationEngine engine, H3Cell cell, double deltaTime) {
-                            // Implémentation personnalisée des équations cliodynamiques
-                        }
-                    }
-                    """;
+                String template = org.ether.society.procedural.jit.DynamicEngineCompiler.generateEngineTemplateCode("MyCustomOptionalEngine");
                 java.nio.file.Files.writeString(file.toPath(), template);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Template de moteur personnalisé exporté avec succès :\n" + file.getAbsolutePath());
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, 
+                        I18n.getOrDefault("scenario.alert.export_template_success", "Custom engine template exported successfully:\n") + file.getAbsolutePath());
                 alert.show();
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("Error exporting custom engine template", ex);
         }
     }
 
     private void importCustomEngineFile() {
         try {
             javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-            fileChooser.setTitle(I18n.getOrDefault("scenario.title.import_engine_dialog", "Import Custom Engine (.java / .class)"));
+            fileChooser.setTitle(I18n.getOrDefault("scenario.title.import_engine_dialog", "Import Custom Engine (.java)"));
             fileChooser.getExtensionFilters().addAll(
-                new javafx.stage.FileChooser.ExtensionFilter("Moteurs Java (*.java, *.class)", "*.java", "*.class")
+                new javafx.stage.FileChooser.ExtensionFilter("Java Source (*.java)", "*.java")
             );
             java.io.File file = fileChooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
             if (file != null) {
-                String fileName = file.getName();
-                String engineKey = fileName.substring(0, fileName.lastIndexOf('.'));
-                addCustomEngineCheckBoxToUI(engineKey, "🔌 " + engineKey + " (Moteur Custom Importé)", "Moteur dynamique personnalisé importé depuis " + file.getName(), true);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Moteur personnalisé importé et enregistré dans le scénario :\n" + file.getName());
-                alert.show();
+                org.ether.society.procedural.jit.DynamicEngineCompiler.CompilationResult result =
+                        org.ether.society.procedural.jit.DynamicEngineCompiler.compileAndLoadEngine(file);
+
+                if (result.success()) {
+                    String engineKey = result.engineName();
+                    addCustomEngineCheckBoxToUI(engineKey, "🔌 " + engineKey + " (" + I18n.getOrDefault("scenario.engine.custom_badge", "Custom Engine") + ")", 
+                            result.message(), true);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, result.message());
+                    alert.show();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, result.message());
+                    alert.show();
+                }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("Error importing custom engine file", ex);
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Import error: " + ex.getMessage());
+            alert.show();
         }
     }
 
@@ -5793,9 +6137,19 @@ public class ScenarioSetupPanel extends BorderPane {
         }
 
         // 4. Demographic Density Map Import
-        if (radioImportDemo != null && radioImportDemo.isSelected() && customDensityImage == null) {
-            errors.add(I18n.getOrDefault("scenario.validation.missing_density_map", "Missing demographic density map in import mode (Tab 3)."));
-            if (loadDensityMapBtn != null) loadDensityMapBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+        if (radioImportDemo != null && radioImportDemo.isSelected()) {
+            if (customDensityImage == null) {
+                errors.add(I18n.getOrDefault("scenario.validation.missing_density_map", "Missing demographic density map in import mode (Tab 3)."));
+                if (loadDensityMapBtn != null) loadDensityMapBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+            } else {
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customDensityImage);
+                if (!val.valid()) {
+                    errors.add(String.format(I18n.getOrDefault("scenario.validation.invalid_density_map", "Incompatible demographic density map (Tab 3): %s"), val.message()));
+                    if (loadDensityMapBtn != null) loadDensityMapBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+                } else if (loadDensityMapBtn != null) {
+                    loadDensityMapBtn.setStyle("");
+                }
+            }
         } else if (loadDensityMapBtn != null) {
             loadDensityMapBtn.setStyle("");
         }
@@ -5808,6 +6162,36 @@ public class ScenarioSetupPanel extends BorderPane {
                 cultureVectorDimSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
             } else {
                 cultureVectorDimSpinner.setStyle("");
+            }
+        }
+
+        // 6. Cultural Tensors in Import Mode Validation
+        int dimsCount = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 8;
+        for (int i = 0; i < dimsCount; i++) {
+            RadioButton importRadio = tensorImportRadios.get(i);
+            Button loadBtn = tensorLoadBtns.get(i);
+            if (importRadio != null && importRadio.isSelected()) {
+                Image img = customTensorImages.get(i);
+                if (img == null) {
+                    String tensorName = getCulturalTensorTitle(i);
+                    errors.add(String.format(I18n.getOrDefault("scenario.validation.missing_tensor_map", "Missing external map for %s in import mode (Tab 3)."), tensorName));
+                    if (loadBtn != null) {
+                        loadBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+                    }
+                } else {
+                    org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(img);
+                    if (!val.valid()) {
+                        String tensorName = getCulturalTensorTitle(i);
+                        errors.add(String.format(I18n.getOrDefault("scenario.validation.invalid_tensor_map", "Incompatible or unreadable map for %s (Tab 3): %s"), tensorName, val.message()));
+                        if (loadBtn != null) {
+                            loadBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+                        }
+                    } else if (loadBtn != null) {
+                        loadBtn.setStyle("");
+                    }
+                }
+            } else if (loadBtn != null) {
+                loadBtn.setStyle("");
             }
         }
 

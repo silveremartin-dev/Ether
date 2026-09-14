@@ -151,6 +151,9 @@ mvn javafx:run
 - 🏗️ [Core System Architecture & DOD](docs/ARCHITECTURE.md) (H3 Grid, `WorldBuffer`, 30 Type B Engines, Ocean Optimizations, GPU JIT Spec, Archon Engine, Cluster Scaling)
 - 🛠️ [Setup & Operational Guide](docs/SETUP.md) (Quickstart, Standalone & Docker DB, Cluster Setup, OpenCL, TornadoVM, Troubleshooting)
 - 📐 [Differential Equations & State Variables](docs/SIMULATION_EQUATIONS_AND_VARIABLES.md) (State Variables, ODEs/PDEs, Pluggable Formula Engine, Historical Benchmarks & Validation)
+- 🌍 [Deep Paleolithic & Palaeoclimate Tensor Specification](docs/DEEP_PALEOLITHIC_TENSOR_SPECIFICATION.md) (-300,000 BP to Present, MIS Stages, Milankovitch Forcing, Sea Level Dynamics)
+- 📊 [Global Systemic Models Comparative Analysis](docs/MODEL_COMPARISON.md) (Ether vs T21/iSDG, IFs, IMAGE, GAINS, and Post-World3 System Dynamics)
+- 🗺️ [Planetary GIS Repatriation & Ingestion Architecture](docs/REPATRIATION_PLAN.md) (Cartographic Ingestion Pipeline, H3 Normalization, Standards & Deduplication)
 - 🔒 [Security & System Integrity Audit](docs/SECURITY.md) (Deserialization, Threat Matrix, Concurrency & Memory Safety)
 - 📜 [Academic Data Credits & Citations](docs/CREDITS.md) (Seshat, Maddison, COW, HYDE 3.4, ETOPO1, USGS, ORBIS)
 

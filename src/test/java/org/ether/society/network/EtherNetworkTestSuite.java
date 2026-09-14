@@ -40,7 +40,7 @@ public class EtherNetworkTestSuite {
 
     @Test
     public void testServerClientConnection() throws IOException, InterruptedException {
-        EtherNetworkClient client = new EtherNetworkClient("localhost", TEST_PORT);
+        EtherNetworkClient client = new EtherNetworkClient("localhost", TEST_PORT, server.getSecurityManager());
         client.connect();
         assertTrue(client.isConnected(), "Client should successfully connect to local Ether server.");
 

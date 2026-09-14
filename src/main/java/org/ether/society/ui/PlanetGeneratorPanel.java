@@ -2452,17 +2452,45 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     public List<String> getValidationErrors() {
         List<String> errors = new ArrayList<>();
-        if (radioImport != null && radioImport.isSelected() && isCustomFileRequired(mapSourceCombo) && customElevImage == null) {
-            errors.add(I18n.getOrDefault("planet.validation.missing_elev_map", "Image heightmap d'altitude manquante en mode d'importation (Onglet 1)."));
+        if (radioImport != null && radioImport.isSelected()) {
+            if (customElevImage == null) {
+                errors.add(I18n.getOrDefault("planet.validation.missing_elev_map", "Image heightmap d'altitude manquante en mode d'importation (Onglet 1)."));
+            } else {
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customElevImage);
+                if (!val.valid()) {
+                    errors.add(I18n.getOrDefault("planet.validation.invalid_elev_map", "Image heightmap d'altitude incompatible (Onglet 1) : ") + val.message());
+                }
+            }
         }
-        if (radioTempImport != null && radioTempImport.isSelected() && isCustomFileRequired(tempSourceCombo) && customClimateImage == null) {
-            errors.add(I18n.getOrDefault("planet.validation.missing_temp_map", "Missing thermal map in import mode (Tab 1)."));
+        if (radioTempImport != null && radioTempImport.isSelected()) {
+            if (customClimateImage == null) {
+                errors.add(I18n.getOrDefault("planet.validation.missing_temp_map", "Missing thermal map in import mode (Tab 1)."));
+            } else {
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customClimateImage);
+                if (!val.valid()) {
+                    errors.add(I18n.getOrDefault("planet.validation.invalid_temp_map", "Thermal map incompatible (Tab 1): ") + val.message());
+                }
+            }
         }
-        if (radioPrecipImport != null && radioPrecipImport.isSelected() && isCustomFileRequired(precipSourceCombo) && customRainfallImage == null) {
-            errors.add(I18n.getOrDefault("planet.validation.missing_precip_map", "Missing rainfall map in import mode (Tab 1)."));
+        if (radioPrecipImport != null && radioPrecipImport.isSelected()) {
+            if (customRainfallImage == null) {
+                errors.add(I18n.getOrDefault("planet.validation.missing_precip_map", "Missing rainfall map in import mode (Tab 1)."));
+            } else {
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customRainfallImage);
+                if (!val.valid()) {
+                    errors.add(I18n.getOrDefault("planet.validation.invalid_precip_map", "Rainfall map incompatible (Tab 1): ") + val.message());
+                }
+            }
         }
-        if (radioSeasonImport != null && radioSeasonImport.isSelected() && isCustomFileRequired(seasonSourceCombo) && customSeasonalityImage == null) {
-            errors.add(I18n.getOrDefault("planet.validation.missing_season_map", "Missing seasonality map in import mode (Tab 1)."));
+        if (radioSeasonImport != null && radioSeasonImport.isSelected()) {
+            if (customSeasonalityImage == null) {
+                errors.add(I18n.getOrDefault("planet.validation.missing_season_map", "Missing seasonality map in import mode (Tab 1)."));
+            } else {
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customSeasonalityImage);
+                if (!val.valid()) {
+                    errors.add(I18n.getOrDefault("planet.validation.invalid_season_map", "Seasonality map incompatible (Tab 1): ") + val.message());
+                }
+            }
         }
         if (minAltSlider != null && maxAltSlider != null && minAltSlider.getValue() >= maxAltSlider.getValue()) {
             errors.add(I18n.getOrDefault("planet.validation.invalid_alt_range", "Minimum altitude must be strictly lower than maximum altitude (Tab 1)."));
@@ -2474,29 +2502,17 @@ public class PlanetGeneratorPanel extends BorderPane {
         List<String> errors = getValidationErrors();
         boolean isValid = errors.isEmpty();
 
-        if (radioImport != null && radioImport.isSelected() && customElevImage == null) {
-            if (loadElevBtn != null) loadElevBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-        } else if (loadElevBtn != null) {
-            loadElevBtn.setStyle("");
-        }
+        boolean elevBad = radioImport != null && radioImport.isSelected() && (customElevImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customElevImage).valid());
+        if (loadElevBtn != null) loadElevBtn.setStyle(elevBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
 
-        if (radioTempImport != null && radioTempImport.isSelected() && customClimateImage == null) {
-            if (loadClimateBtn != null) loadClimateBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-        } else if (loadClimateBtn != null) {
-            loadClimateBtn.setStyle("");
-        }
+        boolean tempBad = radioTempImport != null && radioTempImport.isSelected() && (customClimateImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customClimateImage).valid());
+        if (loadClimateBtn != null) loadClimateBtn.setStyle(tempBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
 
-        if (radioPrecipImport != null && radioPrecipImport.isSelected() && customRainfallImage == null) {
-            if (loadRainfallBtn != null) loadRainfallBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-        } else if (loadRainfallBtn != null) {
-            loadRainfallBtn.setStyle("");
-        }
+        boolean precipBad = radioPrecipImport != null && radioPrecipImport.isSelected() && (customRainfallImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customRainfallImage).valid());
+        if (loadRainfallBtn != null) loadRainfallBtn.setStyle(precipBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
 
-        if (radioSeasonImport != null && radioSeasonImport.isSelected() && customSeasonalityImage == null) {
-            if (loadSeasonalityBtn != null) loadSeasonalityBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-        } else if (loadSeasonalityBtn != null) {
-            loadSeasonalityBtn.setStyle("");
-        }
+        boolean seasonBad = radioSeasonImport != null && radioSeasonImport.isSelected() && (customSeasonalityImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customSeasonalityImage).valid());
+        if (loadSeasonalityBtn != null) loadSeasonalityBtn.setStyle(seasonBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
 
         if (!isValid && showDialog) {
             StringBuilder errorMsg = new StringBuilder();
@@ -2513,4 +2529,16 @@ public class PlanetGeneratorPanel extends BorderPane {
         return isValid;
     }
 
+    public boolean isDirty() {
+        return presetBar != null && presetBar.isDirty();
+    }
+
+    public boolean promptSaveIfDirty(javafx.stage.Window owner) {
+        if (presetBar == null) return true;
+        return presetBar.promptSavePresetIfDirty(owner);
+    }
+
+    public PresetControlBar<PlanetPreset> getPresetBar() {
+        return presetBar;
+    }
 }

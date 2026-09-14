@@ -42,7 +42,9 @@ public class ExtractLocalSourceRastersTest {
             Assertions.assertEquals(1024, img.getWidth());
             Assertions.assertEquals(512, img.getHeight());
 
-            File outFile = new File(ARTIFACT_DIR, "raster_hyde_" + tag.toLowerCase() + ".png");
+            File outDir = new File("target/test-output/hyde-rasters");
+            outDir.mkdirs();
+            File outFile = new File(outDir, "raster_hyde_" + tag.toLowerCase() + ".png");
             ImageIO.write(img, "PNG", outFile);
             logger.info("Successfully rendered empirical raster for year {} ({}): {} ({} bytes)",
                     year, tag, outFile.getAbsolutePath(), outFile.length());

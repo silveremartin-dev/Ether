@@ -128,6 +128,8 @@ public class Scenario implements Serializable {
     private double culturalMutationRate = 0.01; // Mutation & innovation noise rate
     private java.util.List<String> customTensorMapsBase64 = new java.util.ArrayList<>();
     private java.util.List<Boolean> tensorProceduralModes = new java.util.ArrayList<>();
+    private java.util.Map<Integer, Long> tensorSeeds = new java.util.HashMap<>();
+    private java.util.Map<Integer, java.util.Map<String, Double>> tensorProceduralParameters = new java.util.HashMap<>();
 
     // Geological & Mineral Energy Extensible Tensor Layers (Persisted per Scenario)
     private int resourceVectorDimensions = 8; // Extensible resource dimensions (COAL, OIL, GAS, URANIUM, HELIUM_3, IRON_COPPER, PRECIOUS_REE, AQUIFERS...)
@@ -696,6 +698,28 @@ public class Scenario implements Serializable {
             list.add(null);
         }
         list.set(index, base64);
+    }
+
+    public java.util.Map<Integer, Long> getTensorSeeds() {
+        if (tensorSeeds == null) {
+            tensorSeeds = new java.util.HashMap<>();
+        }
+        return tensorSeeds;
+    }
+
+    public void setTensorSeeds(java.util.Map<Integer, Long> tensorSeeds) {
+        this.tensorSeeds = tensorSeeds != null ? tensorSeeds : new java.util.HashMap<>();
+    }
+
+    public java.util.Map<Integer, java.util.Map<String, Double>> getTensorProceduralParameters() {
+        if (tensorProceduralParameters == null) {
+            tensorProceduralParameters = new java.util.HashMap<>();
+        }
+        return tensorProceduralParameters;
+    }
+
+    public void setTensorProceduralParameters(java.util.Map<Integer, java.util.Map<String, Double>> tensorProceduralParameters) {
+        this.tensorProceduralParameters = tensorProceduralParameters != null ? tensorProceduralParameters : new java.util.HashMap<>();
     }
 
     public int getResourceVectorDimensions() {

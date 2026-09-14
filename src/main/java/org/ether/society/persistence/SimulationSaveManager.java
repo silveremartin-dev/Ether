@@ -78,10 +78,14 @@ public class SimulationSaveManager {
                 objectMapper.writeValue(savePath.resolve("scenario.json").toFile(), engine.getCurrentScenario());
             }
 
-            // 3. Save World State (Database)
-            logger.info("Persisting {} cells to database...", engine.getCells().size());
-            cellRepository.deleteAll(); 
-            cellRepository.saveAll(engine.getCells());
+            // 3. Save World State (Self-contained JSON snapshot & DB)
+            File cellsFile = savePath.resolve("cells.json").toFile();
+            objectMapper.writeValue(cellsFile, engine.getCells());
+
+            if (DatabaseConfig.isDatabaseAvailable()) {
+                logger.info("Persisting {} cells to database...", engine.getCells().size());
+                cellRepository.saveAll(engine.getCells());
+            }
             
             logger.info("Simulation saved successfully: {} ({})", saveName, saveId);
 
@@ -94,21 +98,36 @@ public class SimulationSaveManager {
     /**
      * Loads a simulation state.
      * 
-     * @param saveId The ID of the save to load (not used in single-db MVP but reserved)
+     * @param saveId The ID of the save to load
      * @param engine The engine to populate
      */
     public void loadSimulation(String saveId, H3SimulationEngine engine) {
         try {
+            Path savePath = Paths.get(SAVE_DIR).resolve(saveId).normalize();
+            File cellsFile = savePath.resolve("cells.json").toFile();
+
+            if (cellsFile.exists()) {
+                logger.info("Loading cells from save snapshot: {}", cellsFile.getAbsolutePath());
+                List<H3Cell> cells = objectMapper.readValue(cellsFile, 
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, H3Cell.class));
+                if (cells != null && !cells.isEmpty()) {
+                    engine.setCells(cells);
+                    logger.info("World loaded from snapshot: {} cells.", cells.size());
+                    return;
+                }
+            }
+
+            // Fallback to database
             logger.info("Loading world from database...");
             List<H3Cell> cells = cellRepository.findAll();
             
             if (cells.isEmpty()) {
-                logger.warn("No saved world found in database.");
+                logger.warn("No saved world found in database or snapshot.");
                 return;
             }
 
             engine.setCells(cells);
-            logger.info("World loaded: {} cells.", cells.size());
+            logger.info("World loaded from database: {} cells.", cells.size());
 
         } catch (Exception e) {
             logger.error("Failed to load simulation", e);

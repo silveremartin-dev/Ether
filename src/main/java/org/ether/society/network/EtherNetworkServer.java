@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.network;
@@ -23,15 +23,17 @@ import java.util.concurrent.Executors;
 /**
  * Multi-Planner Co-Governance Network Server.
  * Allows multiple network nodes to sync global planetary state, broadcast God Mode events,
- * and vote on atmospheric carbon quotas in real time over TCP/IP.
+ * and vote on atmospheric carbon quotas in real time over TCP/IP with AES-256 GCM encryption.
  *
  * @author Silvere Martin-Michiellot
  * @version 4.0.0
  */
 public class EtherNetworkServer {
     private static final Logger logger = LoggerFactory.getLogger(EtherNetworkServer.class);
+    private static final int MAX_CLIENTS = 100;
 
     private final int port;
+    private final EtherSecurityManager securityManager;
     private ServerSocket serverSocket;
     private boolean running = false;
     private final Set<ClientHandler> clients = Collections.synchronizedSet(new HashSet<>());
@@ -42,18 +44,32 @@ public class EtherNetworkServer {
     });
 
     public EtherNetworkServer(int port) {
+        this(port, new EtherSecurityManager());
+    }
+
+    public EtherNetworkServer(int port, EtherSecurityManager securityManager) {
         this.port = port;
+        this.securityManager = securityManager;
+    }
+
+    public EtherSecurityManager getSecurityManager() {
+        return securityManager;
     }
 
     public void start() throws IOException {
         serverSocket = new ServerSocket(port);
         running = true;
-        logger.info("⚡ Ether Co-Governance Network Server started on port {}", port);
+        logger.info("⚡ Ether Co-Governance Network Server started on port {} (AES-256 GCM Active)", port);
 
         threadPool.execute(() -> {
             while (running && !serverSocket.isClosed()) {
                 try {
                     Socket clientSocket = serverSocket.accept();
+                    if (clients.size() >= MAX_CLIENTS) {
+                        logger.warn("Max client capacity ({}) reached. Rejecting client from {}", MAX_CLIENTS, clientSocket.getRemoteSocketAddress());
+                        clientSocket.close();
+                        continue;
+                    }
                     ClientHandler handler = new ClientHandler(clientSocket);
                     clients.add(handler);
                     threadPool.execute(handler);
@@ -67,9 +83,15 @@ public class EtherNetworkServer {
     }
 
     public void broadcastStateUpdate(String stateJson) {
+        broadcastStateUpdate(stateJson, null);
+    }
+
+    public void broadcastStateUpdate(String stateJson, ClientHandler sender) {
         synchronized (clients) {
             for (ClientHandler client : clients) {
-                client.sendMessage(stateJson);
+                if (client != sender) {
+                    client.sendMessage(stateJson);
+                }
             }
         }
     }
@@ -89,7 +111,7 @@ public class EtherNetworkServer {
         return clients.size();
     }
 
-    private class ClientHandler implements Runnable {
+    public class ClientHandler implements Runnable {
         private final Socket socket;
         private DataOutputStream out;
 
@@ -104,13 +126,32 @@ public class EtherNetworkServer {
 
             try (DataInputStream in = new DataInputStream(socket.getInputStream())) {
                 out = new DataOutputStream(socket.getOutputStream());
-                out.writeUTF("CONNECTED_TO_ETHER_SECURE_SERVER");
+                
+                String handshake = "CONNECTED_TO_ETHER_SECURE_SERVER";
+                if (securityManager != null) {
+                    try {
+                        handshake = securityManager.encrypt(handshake);
+                    } catch (Exception e) {
+                        logger.warn("Encryption failed on handshake", e);
+                    }
+                }
+                out.writeUTF(handshake);
 
                 while (running && !socket.isClosed()) {
-                    String msg = in.readUTF();
-                    EtherSecurityAuditLogger.logAuditEvent("PAYLOAD_RECEIVED", clientIp, "Payload length: " + msg.length());
-                    // Relay policy injection to all other connected planners
-                    broadcastStateUpdate("POLICY_EVENT:" + msg);
+                    String rawMsg = in.readUTF();
+                    String decryptedMsg = rawMsg;
+                    if (securityManager != null) {
+                        try {
+                            decryptedMsg = securityManager.decrypt(rawMsg);
+                        } catch (Exception e) {
+                            // Fallback if client sent plaintext or decryption error
+                            decryptedMsg = rawMsg;
+                        }
+                    }
+
+                    EtherSecurityAuditLogger.logAuditEvent("PAYLOAD_RECEIVED", clientIp, "Payload length: " + decryptedMsg.length());
+                    // Relay policy injection to all OTHER connected planners (preventing echo)
+                    broadcastStateUpdate("POLICY_EVENT:" + decryptedMsg, this);
                 }
             } catch (IOException e) {
                 EtherSecurityAuditLogger.logAuditEvent("DISCONNECT", clientIp, "Planner disconnected: " + e.getMessage());
@@ -122,7 +163,15 @@ public class EtherNetworkServer {
         public void sendMessage(String msg) {
             try {
                 if (out != null) {
-                    out.writeUTF(msg);
+                    String toSend = msg;
+                    if (securityManager != null) {
+                        try {
+                            toSend = securityManager.encrypt(msg);
+                        } catch (Exception e) {
+                            logger.warn("Failed to encrypt message for client", e);
+                        }
+                    }
+                    out.writeUTF(toSend);
                     out.flush();
                 }
             } catch (IOException e) {

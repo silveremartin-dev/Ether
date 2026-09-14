@@ -133,10 +133,21 @@ public class HeadlessRunner {
             if (clusterManager != null) {
                 clusterManager.setTotalGridCellCount(cells.size());
                 clusterManager.dispatchScenarioToCluster(scenario);
+                engine.setClusterManager(clusterManager);
             }
 
             System.out.printf("Initializing grid with %d cells...\n", cells.size());
             engine.initializeFromScenario(scenario, cells);
+
+            if (isClusterMode && clusterRole == org.ether.society.network.ClusterManager.ClusterRole.WORKER) {
+                org.ether.society.flux.FluxEngine workerFluxEngine = new org.ether.society.flux.FluxEngine();
+                clusterManager.setWorkerComputeDelegate(buf -> workerFluxEngine.tick(buf, 86400f));
+                System.out.println("🟢 Worker node listening for remote compute tasks from Master... (Press Ctrl+C to terminate)");
+                // Stay alive while worker is active
+                while (true) {
+                    Thread.sleep(5000);
+                }
+            }
 
             SimulationProfiler profiler = engine.getProfiler();
             profiler.reset();

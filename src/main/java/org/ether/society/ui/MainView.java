@@ -65,6 +65,7 @@ public class MainView extends StackPane {
     private PreferencesPanel preferencesPanel;
     private NotificationOverlay notificationOverlay;
     private ColorLegend colorLegend;
+    private boolean isSwitchingTabs = false;
 
     public MainView(H3SimulationEngine engine, ControlPanel controlPanel, H3MapCanvas mapCanvas, MiniMap miniMap,
             PerformanceHUD hud) {
@@ -155,10 +156,38 @@ public class MainView extends StackPane {
         preferencesTab.setContent(preferencesPanel);
         preferencesTab.setClosable(false);
 
-        tabPane.getTabs().addAll(planetTab, resourcesTab, setupTab, executionContextTab, simulationTab, comparativeAnalyticsTab, preferencesTab);
-
         // Tab selection change listener
         tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+            if (isSwitchingTabs) return;
+
+            if (oldTab != null && oldTab != newTab) {
+                boolean cancelled = false;
+                javafx.stage.Window window = getScene() != null ? getScene().getWindow() : null;
+                if (oldTab == planetTab && planetGeneratorPanel != null && planetGeneratorPanel.isDirty()) {
+                    if (!planetGeneratorPanel.promptSaveIfDirty(window)) {
+                        cancelled = true;
+                    }
+                } else if (oldTab == resourcesTab && resourcePanel != null && resourcePanel.isDirty()) {
+                    if (!resourcePanel.promptSaveIfDirty(window)) {
+                        cancelled = true;
+                    }
+                } else if (oldTab == setupTab && setupPanel != null && setupPanel.isDirty()) {
+                    if (!setupPanel.promptSaveIfDirty(window)) {
+                        cancelled = true;
+                    }
+                }
+
+                if (cancelled) {
+                    isSwitchingTabs = true;
+                    try {
+                        tabPane.getSelectionModel().select(oldTab);
+                    } finally {
+                        isSwitchingTabs = false;
+                    }
+                    return;
+                }
+            }
+
             boolean isSim = (newTab == simulationTab);
             if (mapCanvas != null) {
                 mapCanvas.setTabVisible(isSim);

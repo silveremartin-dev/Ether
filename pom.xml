@@ -228,9 +228,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <argLine>
-                        @{argLine} --add-modules=jdk.incubator.vector
-                    </argLine>
+                    <argLine>--add-modules=jdk.incubator.vector</argLine>
                 </configuration>
             </plugin>
 

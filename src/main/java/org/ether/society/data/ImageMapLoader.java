@@ -328,6 +328,33 @@ public class ImageMapLoader {
     }
 
     /**
+     * Loads a map image prioritizing data/maps/ directory first (read-only GIS filesystem repository),
+     * then falling back to classpath /maps/ resource if not present.
+     */
+    public static Image loadMapImage(String mapFileName) {
+        if (mapFileName == null || mapFileName.isBlank()) return null;
+        String cleanName = mapFileName.startsWith("/") ? mapFileName.substring(1) : mapFileName;
+        if (cleanName.startsWith("maps/")) cleanName = cleanName.substring(5);
+
+        // 1. Prioritize data/maps/ (read-only reference repository)
+        File localFile = new File("data/maps/" + cleanName);
+        if (localFile.exists() && localFile.isFile()) {
+            try {
+                return new Image(new java.io.FileInputStream(localFile));
+            } catch (Exception e) {
+                logger.warn("Failed to load map from {}", localFile.getAbsolutePath(), e);
+            }
+        }
+
+        // 2. Fallback to classpath /maps/
+        var stream = ImageMapLoader.class.getResourceAsStream("/maps/" + cleanName);
+        if (stream != null) {
+            return new Image(stream);
+        }
+        return null;
+    }
+
+    /**
      * Convert a Base64 PNG string back into a JavaFX Image.
      */
     public static Image base64PngToImage(String base64) {
@@ -340,4 +367,42 @@ public class ImageMapLoader {
             return null;
         }
     }
+
+    /**
+     * Validation result for map images.
+     */
+    public record ImageValidationResult(boolean valid, String message, int width, int height, double aspectRatio) {}
+
+    /**
+     * Checks effective raster image loading and verifies dimensions, pixel reader accessibility, and sanity.
+     */
+    public static ImageValidationResult validateMapImage(Image image) {
+        if (image == null) {
+            return new ImageValidationResult(false, "Image non fournie (null)", 0, 0, 0.0);
+        }
+        if (image.isError()) {
+            String err = image.getException() != null ? image.getException().getMessage() : "Format ou fichier illisible";
+            return new ImageValidationResult(false, "Fichier corrompu ou illisible: " + err, 0, 0, 0.0);
+        }
+        int w = (int) image.getWidth();
+        int h = (int) image.getHeight();
+        if (w <= 0 || h <= 0) {
+            return new ImageValidationResult(false, "Dimensions d'image invalides (0x0)", w, h, 0.0);
+        }
+        PixelReader reader = image.getPixelReader();
+        if (reader == null) {
+            return new ImageValidationResult(false, "Impossible de lire la matrice de pixels (PixelReader null)", w, h, 0.0);
+        }
+        try {
+            // Sample test pixels
+            reader.getColor(0, 0);
+            reader.getColor(w / 2, h / 2);
+            reader.getColor(w - 1, h - 1);
+        } catch (Exception ex) {
+            return new ImageValidationResult(false, "Échec de lecture des pixels raster: " + ex.getMessage(), w, h, 0.0);
+        }
+        double ratio = (double) w / (double) h;
+        return new ImageValidationResult(true, String.format("Valide (%dx%d, ratio %.2f)", w, h, ratio), w, h, ratio);
+    }
 }
+

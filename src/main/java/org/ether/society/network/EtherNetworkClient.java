@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.network;
@@ -17,7 +17,7 @@ import java.net.Socket;
 /**
  * Multi-Planner Co-Governance Network Client.
  * Connects to a remote Ether Network Server to receive live planetary updates
- * and send God Mode interventions or policy votes.
+ * and send God Mode interventions or policy votes with AES-256 GCM encryption.
  *
  * @author Silvere Martin-Michiellot
  * @version 4.0.0
@@ -27,14 +27,20 @@ public class EtherNetworkClient {
 
     private final String host;
     private final int port;
+    private final EtherSecurityManager securityManager;
     private Socket socket;
     private DataOutputStream out;
     private DataInputStream in;
     private boolean connected = false;
 
     public EtherNetworkClient(String host, int port) {
+        this(host, port, null);
+    }
+
+    public EtherNetworkClient(String host, int port, EtherSecurityManager securityManager) {
         this.host = host;
         this.port = port;
+        this.securityManager = securityManager;
     }
 
     public void connect() throws IOException {
@@ -44,12 +50,25 @@ public class EtherNetworkClient {
         connected = true;
 
         String welcome = in.readUTF();
+        if (securityManager != null) {
+            try {
+                welcome = securityManager.decrypt(welcome);
+            } catch (Exception ignored) {}
+        }
         EtherSecurityAuditLogger.logAuditEvent("CLIENT_CONNECT", host + ":" + port, "Handshake: " + welcome);
     }
 
     public void sendPolicyInjection(String policyPayload) throws IOException {
         if (!connected || out == null) throw new IllegalStateException("Client is not connected.");
-        out.writeUTF(policyPayload);
+        String toSend = policyPayload;
+        if (securityManager != null) {
+            try {
+                toSend = securityManager.encrypt(policyPayload);
+            } catch (Exception e) {
+                logger.warn("Encryption failed on client send", e);
+            }
+        }
+        out.writeUTF(toSend);
         out.flush();
     }
 

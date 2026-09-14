@@ -3102,17 +3102,46 @@ public class ResourceDistributionPanel extends BorderPane {
 
     public List<String> getValidationErrors() {
         List<String> errors = new ArrayList<>();
-        if (radioImportEco != null && radioImportEco.isSelected() && isCustomFileRequired(biomeSourceCombo, mapSourceCombo) && customBiomeImage == null) {
-            errors.add(I18n.getOrDefault("resource.validation.missing_biome_map", "Missing biome distribution map in import mode (Tab 2)."));
+        boolean isBiomeImport = (radioImportBiome != null && radioImportBiome.isSelected()) || (radioImportEco != null && radioImportEco.isSelected());
+        if (isBiomeImport) {
+            if (customBiomeImage == null) {
+                errors.add(I18n.getOrDefault("resource.validation.missing_biome_map", "Missing biome distribution map in import mode (Tab 2)."));
+            } else {
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customBiomeImage);
+                if (!val.valid()) {
+                    errors.add(I18n.getOrDefault("resource.validation.invalid_biome_map", "Biome map incompatible (Tab 2): ") + val.message());
+                }
+            }
         }
-        if (radioImportHydro != null && radioImportHydro.isSelected() && isCustomFileRequired(hydroSourceCombo, mapSourceCombo) && customHydroImage == null) {
-            errors.add(I18n.getOrDefault("resource.validation.missing_hydro_map", "Missing hydrographic map in import mode (Tab 2)."));
+        if (radioImportHydro != null && radioImportHydro.isSelected()) {
+            if (customHydroImage == null) {
+                errors.add(I18n.getOrDefault("resource.validation.missing_hydro_map", "Missing hydrographic map in import mode (Tab 2)."));
+            } else {
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customHydroImage);
+                if (!val.valid()) {
+                    errors.add(I18n.getOrDefault("resource.validation.invalid_hydro_map", "Hydrographic map incompatible (Tab 2): ") + val.message());
+                }
+            }
         }
-        if (radioImportGeology != null && radioImportGeology.isSelected() && isCustomFileRequired(geologySourceCombo, mapSourceCombo) && (customGeologyLayerImages == null || customGeologyLayerImages.isEmpty())) {
-            errors.add(I18n.getOrDefault("resource.validation.missing_geology_map", "Missing geological & deposit map in import mode (Tab 2)."));
+        if (radioImportGeology != null && radioImportGeology.isSelected()) {
+            if (customResourceImage == null && (customGeologyLayerImages == null || customGeologyLayerImages.isEmpty())) {
+                errors.add(I18n.getOrDefault("resource.validation.missing_geology_map", "Missing geological & deposit map in import mode (Tab 2)."));
+            } else if (customResourceImage != null) {
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customResourceImage);
+                if (!val.valid()) {
+                    errors.add(I18n.getOrDefault("resource.validation.invalid_geology_map", "Geological map incompatible (Tab 2): ") + val.message());
+                }
+            }
         }
-        if (radioImportClimate != null && radioImportClimate.isSelected() && isCustomFileRequired(climateSourceCombo, null) && customClimateImage == null) {
-            errors.add(I18n.getOrDefault("resource.validation.missing_climate_map", "Missing macro-climate map in import mode (Tab 2)."));
+        if (radioImportClimate != null && radioImportClimate.isSelected()) {
+            if (customClimateImage == null) {
+                errors.add(I18n.getOrDefault("resource.validation.missing_climate_map", "Missing macro-climate map in import mode (Tab 2)."));
+            } else {
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customClimateImage);
+                if (!val.valid()) {
+                    errors.add(I18n.getOrDefault("resource.validation.invalid_climate_map", "Macro-climate map incompatible (Tab 2): ") + val.message());
+                }
+            }
         }
         return errors;
     }
@@ -3121,29 +3150,18 @@ public class ResourceDistributionPanel extends BorderPane {
         List<String> errors = getValidationErrors();
         boolean isValid = errors.isEmpty();
 
-        if (radioImportEco != null && radioImportEco.isSelected() && isCustomFileRequired(biomeSourceCombo, mapSourceCombo) && customBiomeImage == null) {
-            if (loadBiomeBtn != null) loadBiomeBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-        } else if (loadBiomeBtn != null) {
-            loadBiomeBtn.setStyle("");
-        }
+        boolean isBiomeImport = (radioImportBiome != null && radioImportBiome.isSelected()) || (radioImportEco != null && radioImportEco.isSelected());
+        boolean biomeBad = isBiomeImport && (customBiomeImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customBiomeImage).valid());
+        if (loadBiomeBtn != null) loadBiomeBtn.setStyle(biomeBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
 
-        if (radioImportHydro != null && radioImportHydro.isSelected() && isCustomFileRequired(hydroSourceCombo, mapSourceCombo) && customHydroImage == null) {
-            if (loadHydroBtn != null) loadHydroBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-        } else if (loadHydroBtn != null) {
-            loadHydroBtn.setStyle("");
-        }
+        boolean hydroBad = radioImportHydro != null && radioImportHydro.isSelected() && (customHydroImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customHydroImage).valid());
+        if (loadHydroBtn != null) loadHydroBtn.setStyle(hydroBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
 
-        if (radioImportGeology != null && radioImportGeology.isSelected() && isCustomFileRequired(geologySourceCombo, mapSourceCombo) && (customGeologyLayerImages == null || customGeologyLayerImages.isEmpty())) {
-            if (loadResourceBtn != null) loadResourceBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-        } else if (loadResourceBtn != null) {
-            loadResourceBtn.setStyle("");
-        }
+        boolean geoBad = radioImportGeology != null && radioImportGeology.isSelected() && (customResourceImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customResourceImage).valid()) && (customGeologyLayerImages == null || customGeologyLayerImages.isEmpty());
+        if (loadResourceBtn != null) loadResourceBtn.setStyle(geoBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
 
-        if (radioImportClimate != null && radioImportClimate.isSelected() && isCustomFileRequired(climateSourceCombo, null) && customClimateImage == null) {
-            if (loadClimateBtn != null) loadClimateBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-        } else if (loadClimateBtn != null) {
-            loadClimateBtn.setStyle("");
-        }
+        boolean climateBad = radioImportClimate != null && radioImportClimate.isSelected() && (customClimateImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customClimateImage).valid());
+        if (loadClimateBtn != null) loadClimateBtn.setStyle(climateBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
 
         if (!isValid && showDialog) {
             StringBuilder errorMsg = new StringBuilder();
@@ -3731,5 +3749,18 @@ public class ResourceDistributionPanel extends BorderPane {
             case 6 -> new java.awt.Color(234, 179, 8);   // Precious Metals & REE
             default -> new java.awt.Color(14, 165, 233); // Aquifers
         };
+    }
+
+    public boolean isDirty() {
+        return ecologyPresetBar != null && ecologyPresetBar.isDirty();
+    }
+
+    public boolean promptSaveIfDirty(javafx.stage.Window owner) {
+        if (ecologyPresetBar == null) return true;
+        return ecologyPresetBar.promptSavePresetIfDirty(owner);
+    }
+
+    public PresetControlBar<EcologyPreset> getPresetBar() {
+        return ecologyPresetBar;
     }
 }
