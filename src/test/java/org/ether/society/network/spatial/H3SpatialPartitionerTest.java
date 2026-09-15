@@ -91,4 +91,20 @@ public class H3SpatialPartitionerTest {
         assertFalse(partition.getBoundaryIndices().contains(0));
         assertTrue(partition.getBoundaryIndices().contains(10), "Cell 10 should be recognized as boundary cell");
     }
+
+    @Test
+    public void testComputationalWeightPartitioning() {
+        float[] weights = new float[100];
+        // Cells 0..9 are high density mega-city (weight 10.0 each -> 100 total)
+        for (int i = 0; i < 10; i++) weights[i] = 10.0f;
+        // Cells 10..99 are empty ocean (weight 1.0 each -> 90 total)
+        for (int i = 10; i < 100; i++) weights[i] = 1.0f;
+
+        List<SpatialPartition> partitions = H3SpatialPartitioner.partitionByComputationalWeights(weights, 2);
+        assertEquals(2, partitions.size());
+
+        // Partition 0 should have fewer cells (dense area)
+        assertTrue(partitions.get(0).getCellCount() < partitions.get(1).getCellCount(),
+                "High-density partition should have fewer cells to balance computational weight");
+    }
 }

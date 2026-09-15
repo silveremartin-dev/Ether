@@ -120,6 +120,71 @@ public class H3SpatialPartitioner {
     }
 
     /**
+     * Calculates the computational weight per cell based on human population density,
+     * trade/migration flux pressure, and institutional complexity.
+     */
+    public static float[] calculateWeights(org.ether.society.core.dod.WorldBuffer buffer) {
+        if (buffer == null) return new float[0];
+        int cap = buffer.getCapacity();
+        float[] weights = new float[cap];
+
+        float[] pop = buffer.getBiomassHuman();
+        float[] flux = buffer.getFluxPressure();
+        float[] complexity = buffer.getInstitutionalComplexity();
+
+        for (int i = 0; i < cap; i++) {
+            float p = (pop != null && i < pop.length) ? pop[i] : 0f;
+            float f = (flux != null && i < flux.length) ? flux[i] : 0f;
+            float c = (complexity != null && i < complexity.length) ? complexity[i] : 0f;
+
+            // Baseline weight 1.0 + population scale + flux + institutional complexity
+            weights[i] = 1.0f + (p * 0.0001f) + (f * 2.0f) + (c * 0.5f);
+        }
+        return weights;
+    }
+
+    /**
+     * Generates N spatial partitions balanced by cumulative computational weight.
+     */
+    public static List<SpatialPartition> partitionByComputationalWeights(float[] weights, int numPartitions) {
+        List<SpatialPartition> partitions = new ArrayList<>();
+        if (weights == null || weights.length == 0 || numPartitions <= 0) return partitions;
+
+        int totalCells = weights.length;
+        if (numPartitions == 1) {
+            partitions.add(new SpatialPartition(0, 0, totalCells - 1));
+            return partitions;
+        }
+
+        double totalWeight = 0;
+        for (float w : weights) totalWeight += Math.max(0.1f, w);
+
+        double targetWeightPerPartition = totalWeight / numPartitions;
+
+        int currentStart = 0;
+        double currentWeight = 0;
+        int partitionIdx = 0;
+
+        for (int i = 0; i < totalCells; i++) {
+            currentWeight += Math.max(0.1f, weights[i]);
+
+            // When reaching target weight or last partition
+            if (currentWeight >= targetWeightPerPartition && partitionIdx < numPartitions - 1) {
+                partitions.add(new SpatialPartition(partitionIdx++, currentStart, i));
+                currentStart = i + 1;
+                currentWeight = 0;
+            }
+        }
+
+        // Add remaining cells to final partition
+        if (currentStart < totalCells) {
+            partitions.add(new SpatialPartition(partitionIdx, currentStart, totalCells - 1));
+        }
+
+        return partitions;
+    }
+
+    /**
      * Standard Hilbert Curve mapping from (x,y) to 1D distance 'd'.
      */
     private static long xy2d(int n, int x, int y) {

@@ -3194,60 +3194,23 @@ public class ResourceDistributionPanel extends BorderPane {
 
     public void prepopulateEarthGeologyTensors() {
         try {
-            java.nio.file.Path cacheDir = java.nio.file.Paths.get("data", "maps", "cache");
-            if (!java.nio.file.Files.exists(cacheDir)) {
-                java.nio.file.Files.createDirectories(cacheDir);
-            }
-
-            String[] cacheKeys = {
+            String[] mapFileNames = {
                 "earth_coal.png",
                 "earth_oil.png",
                 "earth_gas.png",
                 "earth_uranium.png",
-                "earth_he3.png",
-                "earth_ironcopper.png",
-                "earth_preciousree.png",
-                "earth_mantleheat.png",
-                "earth_aquifer.png"
+                "earth_helium3.png",
+                "earth_iron_copper.png",
+                "earth_precious_metals.png",
+                "earth_geothermal.png",
+                "earth_aquifers.png"
             };
 
-            String[] resourceKeys = {
-                "/maps/earth_coal.png",
-                "/maps/earth_oil.png",
-                "/maps/earth_gas.png",
-                "/maps/earth_uranium.png",
-                "/maps/earth_helium3.png",
-                "/maps/earth_iron_copper.png",
-                "/maps/earth_precious_metals.png",
-                "/maps/earth_geothermal.png",
-                "/maps/earth_aquifers.png"
-            };
-
-            for (int i = 0; i < cacheKeys.length; i++) {
-                java.nio.file.Path fileCachePath = cacheDir.resolve(cacheKeys[i]);
-                if (java.nio.file.Files.exists(fileCachePath)) {
-                    try {
-                        Image img = new Image(fileCachePath.toUri().toString());
-                        if (img.getWidth() > 0) {
-                            customGeologyLayerImages.put(i, img);
-                        }
-                    } catch (Exception ex) {
-                        logger.warn("Could not load cached map {}", fileCachePath, ex);
-                    }
-                }
-
-                if (!customGeologyLayerImages.containsKey(i) || customGeologyLayerImages.get(i) == null) {
-                    try (var is = getClass().getResourceAsStream(resourceKeys[i])) {
-                        if (is != null) {
-                            Image img = new Image(is);
-                            if (img.getWidth() > 0) {
-                                customGeologyLayerImages.put(i, img);
-                            }
-                        }
-                    } catch (Exception ignored) {}
-                }
-
-                if (!customGeologyLayerImages.containsKey(i) || customGeologyLayerImages.get(i) == null) {
+            for (int i = 0; i < mapFileNames.length; i++) {
+                Image img = ImageMapLoader.loadMapImage(mapFileNames[i]);
+                if (img != null && img.getWidth() > 0) {
+                    customGeologyLayerImages.put(i, img);
+                } else {
                     BufferedImage bImg = switch (i) {
                         case 0 -> HistoricalMapGenerator.generateCleanCoalMap("EARTH", null);
                         case 1 -> HistoricalMapGenerator.generateCleanOilMap("EARTH", null);
@@ -3260,9 +3223,6 @@ public class ResourceDistributionPanel extends BorderPane {
                         default -> HistoricalMapGenerator.generateCleanAquiferMap("EARTH", null);
                     };
                     if (bImg != null) {
-                        try {
-                            javax.imageio.ImageIO.write(bImg, "PNG", fileCachePath.toFile());
-                        } catch (Exception ignored) {}
                         customGeologyLayerImages.put(i, bufferedImageToFXImage(bImg));
                     }
                 }

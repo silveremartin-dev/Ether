@@ -65,14 +65,19 @@ When browsing reference maps in **Tab 1 (Planet Generator)**, **Tab 2 (Resources
 
 ---
 
-## 5. Auxiliary & Planetary Datasets
+## 5. Planetary Presets & Subdirectory Structure
 
-| Body | Directory | Dataset / Sensor | Primary File / Product |
+In addition to Earth, Ether includes complete, authentic reference maps for other celestial bodies organized into dedicated preset directories under `data/maps/`:
+
+### Planetary Presets Catalog
+
+| Preset Subfolder | Body | Available Reference Layers | Authentic Primary Source Sensor / Dataset |
 |---|---|---|---|
-| **Moon** | `data/maps/nasa_pds/` | NASA LRO Lunar Orbiter Laser Altimeter (LOLA) | `moon_lola_dem.tif` (118m/px) |
-| **Mars** | `data/maps/nasa_pds/` | NASA MGS Mars Orbiter Laser Altimeter (MOLA) | `mars_mola_megdr.tif` (463m/px) |
-| **Venus** | `data/maps/nasa_pds/` | NASA Magellan Radar Altimetry (GXDR) | `venus_magellan_topo.tif` (4.6km/px) |
-| **Mercury** | `data/maps/nasa_pds/` | NASA MESSENGER Mercury Laser Altimeter (MLA) | `mercury_mla_dem.tif` (500m/px) |
+| `terre/` (alias `earth/`) | **Earth** | Elevation, Temperature, Precipitation, Seasonality, Biomes, Coal, Oil, Gas, Uranium, Helium-3, Iron/Copper, Precious Metals/REE, Geothermal, Aquifers | NOAA ETOPO 2022, WorldClim 2.1, MODIS MCD12C1, USGS MRDS (300k+), WEP/BGR, IAEA UDEPO, IHFC Davies 2013, UNESCO WHYMAP |
+| `lune/` (alias `moon/`) | **Moon** | Elevation, Biomes (Regolith/Maria), Temperature, Helium-3 (Solar wind implantation), Iron/Copper (Ilmenite FeTiO3), Aquifers (Polar PSR ice) | NASA LRO LOLA DEM (118m/px), LEND neutron spectrometer, Lunar Prospector gamma ray, Apollo landing sites |
+| `mars/` | **Mars** | Elevation, Biomes (Areography/Basins), Temperature, Iron/Copper (Hematite/Ferric dust), Aquifers (Utopia Planitia/Polar ice), Geothermal (Mantle hotspots) | NASA MGS MOLA MEGDR DEM (463m/px), Mars Global Surveyor TES, Mars Express OMEGA, InSight heat flux |
+| `venus/` | **Venus** | Elevation, Biomes (Volcanic plains/Coronae), Temperature, Geothermal (Coronae mantle upwelling) | NASA Magellan Radar Altimetry GXDR (4.6km/px), Venus Express VIRTIS |
+| `mercure/` (alias `mercury/`) | **Mercury** | Elevation, Biomes (Smooth plains/Caloris), Temperature, Aquifers (Permanently shadowed polar ice) | NASA MESSENGER MLA DEM (500m/px), MDIS multispectral |
 
 ---
 
@@ -84,36 +89,63 @@ data/maps/
 ├── repatriation_audit.json            # Automated checksum and integrity audit
 ├── download_status.json               # Remote GIS asset sync status
 │
-├── earth_elevation.png                # Tab 1: Topography Reference Raster
-├── earth_temperature.png              # Tab 1: Annual Mean Temperature
-├── earth_precipitation.png            # Tab 1: Total Annual Precipitation
-├── earth_seasonality.png              # Tab 1: Thermal Seasonality
-├── earth_biomes.png                   # Tab 2: MODIS Land Cover & Biomes
-├── earth_coal.png                     # Tab 2: Coal Deposits
-├── earth_oil.png                      # Tab 2: Petroleum Basins
-├── earth_gas.png                      # Tab 2: Natural Gas Fields
-├── earth_uranium.png                  # Tab 2: Uranium Occurrences
-├── earth_helium3.png                  # Tab 2: Helium-3 / Volatiles
-├── earth_iron_copper.png              # Tab 2: Iron & Copper Formations
-├── earth_precious_metals.png          # Tab 2: Gold & Rare Earth Minerals
-├── earth_geothermal.png               # Tab 2: Davies (2013) Heat Flow
-├── earth_aquifers.png                 # Tab 2: WHYMAP Groundwater Aquifers
+├── terre/ (alias: earth/)             # Complete Earth preset layers
+│   ├── earth_elevation.png            # Tab 1: Topography (ETOPO 2022)
+│   ├── earth_temperature.png          # Tab 1: Annual Mean Temperature (WorldClim 2.1)
+│   ├── earth_precipitation.png        # Tab 1: Annual Precipitation (WorldClim 2.1)
+│   ├── earth_seasonality.png          # Tab 1: Thermal Seasonality (WorldClim 2.1)
+│   ├── earth_biomes.png               # Tab 2: Land Cover (MODIS MCD12C1)
+│   ├── earth_coal.png                 # Tab 2: Coal Deposits (USGS MRDS / BGR)
+│   ├── earth_oil.png                  # Tab 2: Petroleum Basins (WEP / BGR)
+│   ├── earth_gas.png                  # Tab 2: Natural Gas Fields (WEP / BGR)
+│   ├── earth_uranium.png              # Tab 2: Uranium (IAEA UDEPO / USGS MRDS)
+│   ├── earth_helium3.png              # Tab 2: Helium-3 Baseline
+│   ├── earth_iron_copper.png          # Tab 2: Iron & Copper Porphyry (USGS MRDS)
+│   ├── earth_precious_metals.png      # Tab 2: Gold, Platinum, REE, Li (USGS MRDS)
+│   ├── earth_geothermal.png           # Tab 2: Heat Flow (IHFC Davies 2013)
+│   └── earth_aquifers.png             # Tab 2: Groundwater Systems (UNESCO WHYMAP)
+│
+├── lune/ (alias: moon/)               # Complete Moon preset layers
+│   ├── moon_elevation.png             # LOLA Altimetry DEM
+│   ├── moon_biomes.png                # Lunar maria / highlands classification
+│   ├── moon_temperature.png           # Surface thermal equilibrium model
+│   ├── moon_helium3.png               # Lunar Prospector / LEND He-3 concentration
+│   ├── moon_iron_copper.png           # Ilmenite / Ti-Fe rich mare deposits
+│   └── moon_aquifers.png              # Polar cold trap water ice volatiles
+│
+├── mars/                              # Complete Mars preset layers
+│   ├── mars_elevation.png             # MOLA MEGDR Topography
+│   ├── mars_biomes.png                # Areological classification
+│   ├── mars_temperature.png           # Thermal distribution model
+│   ├── mars_iron_copper.png           # Ferric iron / hematite deposits
+│   ├── mars_aquifers.png              # Subsurface ice sheets / Utopia Planitia
+│   └── mars_geothermal.png            # Volcanic thermal anomaly provinces
+│
+├── venus/                             # Complete Venus preset layers
+│   ├── venus_elevation.png            # Magellan Radar Topography
+│   ├── venus_biomes.png               # Volcanic plains & Tesserae
+│   ├── venus_temperature.png          # Supercritical CO2 greenhouse thermal model
+│   └── venus_geothermal.png           # Mantle plumes & Coronae thermal activity
+│
+├── mercure/ (alias: mercury/)         # Complete Mercury preset layers
+│   ├── mercury_elevation.png          # MESSENGER MLA DEM
+│   ├── mercury_biomes.png             # Intercrater & smooth plains classification
+│   ├── mercury_temperature.png        # Extreme solar flux / nocturnal cold model
+│   └── mercury_aquifers.png           # Polar PSR ice deposits
 │
 ├── archaeoglobe/                      # Land Use Archaeological Survey
 ├── bgr_germany/                       # Federal Institute for Geosciences (Germany)
-├── chelsa/                            # High-Resolution Climatology
 ├── gebco/                             # General Bathymetric Chart of the Oceans
 ├── hyde34/                            # HYDE 3.4 Historical Demographics
 ├── iaea_nfcis/                        # IAEA Uranium & Thorium Database
 ├── ihfc_davies2013/                   # International Heat Flow Commission
 ├── lpi_lunar/                         # Lunar and Planetary Institute
 ├── maddison/                          # Maddison Historical Economic Statistics
-├── nasa_pds/                          # NASA Planetary Data System (Moon, Mars, Venus)
+├── nasa_pds/                          # NASA Planetary Data System (Moon, Mars, Venus, Mercury)
 ├── naturalearth/                      # Natural Earth Vectors
 ├── paleoclim/                         # CHELSA-Trace21k Climatology
 ├── paleomap/                          # C.R. Scotese Paleogeographic Reconstructions
 ├── pangea/                            # PANGAEA Earth Science Archives
-├── pmip/                              # Paleoclimate Modelling Intercomparison Project
 ├── seshat/                            # Seshat Global History Databank
 ├── usgs/                              # ETOPO / SRTM Topography
 ├── usgs_mrds/                         # USGS Mineral Resources Data System

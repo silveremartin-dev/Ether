@@ -328,7 +328,7 @@ public class ImageMapLoader {
     }
 
     /**
-     * Loads a map image prioritizing data/maps/ directory first (read-only GIS filesystem repository),
+     * Loads a map image prioritizing data/maps/ directory and preset subdirectories (read-only GIS filesystem repository),
      * then falling back to classpath /maps/ resource if not present.
      */
     public static Image loadMapImage(String mapFileName) {
@@ -336,20 +336,39 @@ public class ImageMapLoader {
         String cleanName = mapFileName.startsWith("/") ? mapFileName.substring(1) : mapFileName;
         if (cleanName.startsWith("maps/")) cleanName = cleanName.substring(5);
 
-        // 1. Prioritize data/maps/ (read-only reference repository)
-        File localFile = new File("data/maps/" + cleanName);
-        if (localFile.exists() && localFile.isFile()) {
+        // 1. Prioritize direct path in data/maps/
+        File directFile = new File("data/maps/" + cleanName);
+        if (directFile.exists() && directFile.isFile()) {
             try {
-                return new Image(new java.io.FileInputStream(localFile));
+                return new Image(new java.io.FileInputStream(directFile));
             } catch (Exception e) {
-                logger.warn("Failed to load map from {}", localFile.getAbsolutePath(), e);
+                logger.warn("Failed to load map from {}", directFile.getAbsolutePath(), e);
             }
         }
 
-        // 2. Fallback to classpath /maps/
+        // 2. Check preset subdirectories in data/maps/
+        String[] subDirs = {"terre", "earth", "lune", "moon", "mars", "venus", "mercure", "mercury"};
+        for (String sub : subDirs) {
+            File subFile = new File("data/maps/" + sub + "/" + cleanName);
+            if (subFile.exists() && subFile.isFile()) {
+                try {
+                    return new Image(new java.io.FileInputStream(subFile));
+                } catch (Exception e) {
+                    logger.warn("Failed to load map from {}", subFile.getAbsolutePath(), e);
+                }
+            }
+        }
+
+        // 3. Fallback to classpath /maps/
         var stream = ImageMapLoader.class.getResourceAsStream("/maps/" + cleanName);
         if (stream != null) {
             return new Image(stream);
+        }
+        for (String sub : subDirs) {
+            var subStream = ImageMapLoader.class.getResourceAsStream("/maps/" + sub + "/" + cleanName);
+            if (subStream != null) {
+                return new Image(subStream);
+            }
         }
         return null;
     }

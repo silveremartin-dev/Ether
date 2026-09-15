@@ -1567,57 +1567,48 @@ public class HistoricalMapGenerator {
         }
     }
 
+    private static BufferedImage loadDirectBufferedImage(String filename) {
+        try {
+            java.io.File file = new java.io.File("data/maps/" + filename);
+            if (file.exists()) {
+                return javax.imageio.ImageIO.read(file);
+            }
+            java.io.InputStream is = HistoricalMapGenerator.class.getResourceAsStream("/maps/" + filename);
+            if (is != null) {
+                try (is) {
+                    return javax.imageio.ImageIO.read(is);
+                }
+            }
+        } catch (Exception ignored) {}
+        return null;
+    }
+
     public static BufferedImage generateCleanCoalMap(String type, Scenario scenario) {
+        BufferedImage loaded = loadDirectBufferedImage("earth_coal.png");
+        if (loaded != null) return loaded;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         var spots = loadMRDSDeposits("coal", "lignite", "anthracite", "bituminous");
-        // Major worldwide coal basins (USGS / BGR / World Energy Council)
-        double[][] majorBasins = {
-            {-78.0, 40.5, 38, 1.4}, {-89.0, 38.5, 32, 1.3}, {-105.5, 44.5, 45, 1.5}, {-108.0, 37.0, 28, 1.2},
-            {7.2, 51.5, 32, 1.3}, {19.0, 50.3, 34, 1.3}, {38.0, 48.0, 38, 1.4}, {86.0, 54.0, 44, 1.5},
-            {93.0, 56.0, 40, 1.3}, {112.5, 37.8, 48, 1.6}, {108.0, 39.5, 42, 1.4}, {117.0, 35.0, 35, 1.3},
-            {148.0, -23.5, 38, 1.3}, {150.0, -32.5, 32, 1.2}, {29.2, -25.9, 35, 1.3}, {86.0, 23.5, 36, 1.3},
-            {82.0, 21.5, 30, 1.2}, {73.0, 49.8, 38, 1.3}, {116.0, -2.0, 30, 1.2}, {-42.5, -7.0, 28, 1.1},
-            {-68.0, -51.5, 25, 1.1}, {105.0, 52.0, 35, 1.2}, {130.0, 62.0, 35, 1.2}
-        };
-        for (double[] b : majorBasins) spots.add(b);
         rasterizeSpotListToAlpha(img, spots, new Color(245, 158, 11), 8.0);
         return img;
     }
 
     public static BufferedImage generateCleanOilMap(String type, Scenario scenario) {
+        BufferedImage loaded = loadDirectBufferedImage("earth_oil.png");
+        if (loaded != null) return loaded;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         var spots = loadMRDSDeposits("petroleum", "oil", "hydrocarbon");
-        // Comprehensive global oil sedimentary basins (USGS / WEP / IEA)
-        double[][] majorOilBasins = {
-            {49.0, 26.0, 58, 1.6}, {48.0, 29.5, 50, 1.5}, {51.5, 25.3, 45, 1.4}, {45.0, 33.0, 48, 1.4},
-            {76.0, 61.0, 55, 1.5}, {68.0, 60.5, 45, 1.4}, {52.0, 54.5, 48, 1.4}, {-102.0, 31.8, 50, 1.5},
-            {-98.5, 28.5, 42, 1.3}, {-103.5, 48.0, 42, 1.3}, {-92.0, 28.0, 45, 1.4}, {-92.0, 19.5, 45, 1.4},
-            {2.5, 56.5, 44, 1.3}, {3.5, 60.5, 40, 1.3}, {-71.5, 10.2, 40, 1.4}, {-64.0, 8.5, 45, 1.4},
-            {-148.5, 70.2, 38, 1.3}, {6.0, 4.5, 42, 1.4}, {12.0, -6.0, 38, 1.3}, {49.8, 40.4, 44, 1.3},
-            {51.5, 43.5, 42, 1.3}, {125.0, 46.5, 40, 1.3}, {118.5, 38.0, 38, 1.2}, {-40.5, -22.5, 42, 1.3},
-            {-111.0, 56.5, 48, 1.5}, {9.0, 32.0, 38, 1.2}, {114.0, 4.5, 35, 1.2}, {72.0, 19.0, 35, 1.2}
-        };
-        for (double[] b : majorOilBasins) spots.add(b);
         rasterizeSpotListToAlpha(img, spots, new Color(220, 38, 38), 12.0);
         return img;
     }
 
     public static BufferedImage generateCleanGasMap(String type, Scenario scenario) {
+        BufferedImage loaded = loadDirectBufferedImage("earth_gas.png");
+        if (loaded != null) return loaded;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         var spots = loadMRDSDeposits("natural gas", "gas", "methane");
-        // Major global natural gas basins (WEP / BGR / Cedigaz)
-        double[][] majorGasBasins = {
-            {77.0, 66.0, 60, 1.6}, {73.0, 68.0, 52, 1.5}, {68.0, 71.0, 48, 1.4}, {52.0, 26.5, 60, 1.6},
-            {51.0, 25.0, 55, 1.5}, {-77.5, 41.5, 48, 1.4}, {-93.5, 32.0, 44, 1.3}, {-98.0, 27.5, 40, 1.2},
-            {6.8, 53.2, 35, 1.2}, {2.0, 54.0, 38, 1.3}, {3.3, 32.9, 40, 1.3}, {8.5, 30.0, 35, 1.2},
-            {62.2, 37.3, 48, 1.4}, {59.0, 41.0, 42, 1.3}, {105.0, 30.5, 40, 1.3}, {108.0, 38.0, 38, 1.2},
-            {115.0, -20.0, 42, 1.3}, {123.0, -14.0, 38, 1.2}, {32.0, 32.5, 38, 1.3}, {34.5, 33.0, 35, 1.2},
-            {10.0, 65.0, 40, 1.3}, {-120.0, 56.0, 42, 1.3}, {82.0, 16.5, 35, 1.2}
-        };
-        for (double[] b : majorGasBasins) spots.add(b);
         rasterizeSpotListToAlpha(img, spots, new Color(6, 182, 212), 12.0);
         return img;
     }

@@ -36,6 +36,10 @@ public enum DisplayMode {
         "Teneur en nutriments organiques NPK (Azote, Phosphore, Potassium) et fertilité des sols agricoles."),
     BIODIVERSITY("🌿 Biodiversité Sauvage Conservée", Category.PHYSICAL,
         "Proportion de biodiversité sauvage préservée et intégrité des réseaux trophiques floristiques et fauniques."),
+    OCEAN_PH("🌊 Acidité Océanique & pH Marin", Category.PHYSICAL,
+        "Niveau de pH des eaux océaniques de surface et impact de la dissolution du CO2 atmosphérique."),
+    PERMAFROST("🧊 Pergélisol & Déstabilisation Méthane", Category.PHYSICAL,
+        "Vulnérabilité et dégel du pergélisol boréal avec potentiel de dégazage de méthane."),
 
     // --- 👥 2. DÉMOGRAPHIE & SANTÉ ---
     POPULATION("👥 Densité de Population Active", Category.DEMOGRAPHICS,
@@ -161,6 +165,8 @@ public enum DisplayMode {
             case ELITE_DENSITY: return "eliteOverproduction";
             case COLLECTIVE_MEMORY: return "collectiveMemory";
             case COLLAPSE_RISK: return "collapseRisk";
+            case OCEAN_PH: return "oceanPh";
+            case PERMAFROST: return "permafrost";
             default: return "population";
         }
     }

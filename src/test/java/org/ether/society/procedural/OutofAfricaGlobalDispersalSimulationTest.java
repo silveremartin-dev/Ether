@@ -207,55 +207,57 @@ public class OutofAfricaGlobalDispersalSimulationTest {
      */
     private void processPlanetary2DH3Migration(List<H3Cell> cells, Map<Long, H3Cell> cellLookup, H3Service service) {
         List<H3Cell> populated = cells.stream()
-                .filter(c -> c.getPopulation() != null && c.getPopulation() > 100)
+                .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
                 .toList();
 
-        Map<H3Cell, Integer> outboundMigrants = new HashMap<>();
+        Map<H3Cell, Integer> netDeltas = new HashMap<>();
 
         for (H3Cell source : populated) {
             int pop = source.getPopulation();
-            double food = source.getFoodResource() != null ? source.getFoodResource() : 500.0;
-            double carryingCapacity = 50.0 + food * 0.5;
+            if (pop <= 0) continue;
 
-            // Trigger migration when density exceeds carrying capacity or gradient exists
-            if (pop > 10) {
-                List<Long> neighborIndexes = service.getNeighbors(source.getH3Index());
-                List<H3Cell> landNeighbors = neighborIndexes.stream()
+            // Local demographic reproduction (Fisher-KPP growth)
+            double carryingCapacity = 5000.0;
+            if (pop < carryingCapacity) {
+                int growth = Math.max(1, (int) (pop * 0.04 * (1.0 - (double) pop / carryingCapacity)));
+                netDeltas.put(source, netDeltas.getOrDefault(source, 0) + growth);
+            }
+
+            List<Long> neighborIndexes = service.getNeighbors(source.getH3Index());
+            List<H3Cell> landNeighbors = neighborIndexes.stream()
+                    .map(cellLookup::get)
+                    .filter(Objects::nonNull)
+                    .filter(n -> n.getBiome() != Biome.OCEAN && n.getBiome() != Biome.DEEP_OCEAN)
+                    .toList();
+
+            if (landNeighbors.isEmpty()) {
+                landNeighbors = neighborIndexes.stream()
                         .map(cellLookup::get)
                         .filter(Objects::nonNull)
-                        .filter(n -> n.getElevation() != null && n.getElevation() > 0.35) // Above water level 0.35
+                        .filter(n -> n.getElevation() != null && n.getElevation() > 0)
                         .toList();
+            }
 
-                if (landNeighbors.isEmpty()) {
-                    // Fallback to any land neighbor with elevation > 0
-                    landNeighbors = neighborIndexes.stream()
-                            .map(cellLookup::get)
-                            .filter(Objects::nonNull)
-                            .filter(n -> n.getElevation() != null && n.getElevation() > 0)
-                            .toList();
-                }
-
-                if (!landNeighbors.isEmpty()) {
-                    int totalMigrants = (int) (pop * 0.15); // 15% expansion shift per tick
-                    int perNeighbor = totalMigrants / landNeighbors.size();
-
-                    if (perNeighbor > 0) {
-                        outboundMigrants.put(source, totalMigrants);
-                        for (H3Cell target : landNeighbors) {
-                            int targetPop = target.getPopulation() != null ? target.getPopulation() : 0;
-                            target.setPopulation(targetPop + perNeighbor);
-                            if (target.getFoodResource() == null || target.getFoodResource() < 400.0) {
-                                target.setFoodResource(600.0);
-                            }
+            for (H3Cell target : landNeighbors) {
+                int targetPop = target.getPopulation() != null ? target.getPopulation() : 0;
+                // Fisher-KPP gradient flux from high density to low density
+                if (pop > targetPop + 10) {
+                    int flux = (int) ((pop - targetPop) * 0.08); // 8% gradient flux
+                    if (flux > 0) {
+                        netDeltas.put(source, netDeltas.getOrDefault(source, 0) - flux);
+                        netDeltas.put(target, netDeltas.getOrDefault(target, 0) + flux);
+                        if (target.getFoodResource() == null || target.getFoodResource() < 400.0) {
+                            target.setFoodResource(800.0);
                         }
                     }
                 }
             }
         }
 
-        // Subtract outbound migrants from origin cells
-        outboundMigrants.forEach((source, migrants) -> {
-            source.setPopulation(Math.max(0, source.getPopulation() - migrants));
+        // Apply net demographic deltas
+        netDeltas.forEach((cell, delta) -> {
+            int current = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            cell.setPopulation(Math.max(0, current + delta));
         });
     }
 

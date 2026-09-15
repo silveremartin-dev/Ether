@@ -89,7 +89,7 @@ public class SimulationSaveManager {
             
             logger.info("Simulation saved successfully: {} ({})", saveName, saveId);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Failed to save simulation", e);
             throw new RuntimeException("Save failed", e);
         }
@@ -108,7 +108,11 @@ public class SimulationSaveManager {
 
             if (cellsFile.exists()) {
                 logger.info("Loading cells from save snapshot: {}", cellsFile.getAbsolutePath());
-                List<H3Cell> cells = objectMapper.readValue(cellsFile, 
+                byte[] rawBytes = Files.readAllBytes(cellsFile.toPath());
+                byte[] jsonBytes = org.ether.society.security.SaveEncryptionVault.isEncrypted(rawBytes)
+                        ? org.ether.society.security.SaveEncryptionVault.decrypt(rawBytes)
+                        : rawBytes;
+                List<H3Cell> cells = objectMapper.readValue(jsonBytes, 
                         objectMapper.getTypeFactory().constructCollectionType(List.class, H3Cell.class));
                 if (cells != null && !cells.isEmpty()) {
                     engine.setCells(cells);

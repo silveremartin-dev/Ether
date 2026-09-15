@@ -101,116 +101,168 @@ public class GenerateAuthenticPlanetaryMaps {
         return list;
     }
 
-    private static void rasterizeAlphaDensity(BufferedImage img, List<double[]> spots, Color themeColor, double defaultRadius) {
+    public static class GeologicalBasin {
+        public final double centerLon;
+        public final double centerLat;
+        public final double majorDeg;
+        public final double minorDeg;
+        public final double strikeDeg;
+        public final double intensity;
+        public final String name;
+
+        public GeologicalBasin(double centerLon, double centerLat, double majorDeg, double minorDeg, double strikeDeg, double intensity, String name) {
+            this.centerLon = centerLon;
+            this.centerLat = centerLat;
+            this.majorDeg = majorDeg;
+            this.minorDeg = minorDeg;
+            this.strikeDeg = strikeDeg;
+            this.intensity = intensity;
+            this.name = name;
+        }
+    }
+
+    private static void rasterizeBasinsAndSpots(BufferedImage img, List<GeologicalBasin> basins, List<double[]> discreteSpots, Color[] palette, double spotDefaultRadius) {
         int w = img.getWidth();
         int h = img.getHeight();
         float[][] grid = new float[h][w];
 
-        for (double[] spot : spots) {
-            double lon = spot[0];
-            double lat = spot[1];
-            double radius = spot.length > 2 ? spot[2] : defaultRadius;
-            double intensity = spot.length > 3 ? spot[3] : 1.0;
+        // 1. Accumulate Oriented Sedimentary Basins
+        if (basins != null) {
+            for (GeologicalBasin basin : basins) {
+                double cLon = basin.centerLon;
+                double cLat = basin.centerLat;
+                double a = basin.majorDeg;
+                double b = basin.minorDeg;
+                double strikeRad = Math.toRadians(basin.strikeDeg);
+                double cosTheta = Math.cos(strikeRad);
+                double sinTheta = Math.sin(strikeRad);
+                double intensity = basin.intensity;
 
-            int cx = (int) Math.round(((lon + 180.0) / 360.0) * (w - 1));
-            int cy = (int) Math.round(((90.0 - lat) / 180.0) * (h - 1));
-            int r = (int) Math.ceil(radius);
+                double cosLat = Math.max(0.15, Math.cos(Math.toRadians(cLat)));
+                double maxDeg = Math.max(a, b);
+                double dLonDeg = maxDeg / cosLat;
+                double dLatDeg = maxDeg;
 
-            int minY = Math.max(0, cy - r);
-            int maxY = Math.min(h - 1, cy + r);
-            int minX = cx - r;
-            int maxX = cx + r;
+                int cx = (int) Math.round(((cLon + 180.0) / 360.0) * (w - 1));
+                int cy = (int) Math.round(((90.0 - cLat) / 180.0) * (h - 1));
+                int rx = (int) Math.ceil((dLonDeg / 360.0) * (w - 1));
+                int ry = (int) Math.ceil((dLatDeg / 180.0) * (h - 1));
 
-            for (int py = minY; py <= maxY; py++) {
-                double dy = py - cy;
-                for (int px = minX; px <= maxX; px++) {
-                    int wrapX = (px % w + w) % w;
-                    double dx = px - cx;
-                    double d = Math.sqrt(dx * dx + dy * dy);
-                    if (d <= radius) {
-                        double norm = 1.0 - (d / radius);
-                        grid[py][wrapX] += (float) (Math.pow(norm, 1.4) * intensity);
+                int minY = Math.max(0, cy - ry);
+                int maxY = Math.min(h - 1, cy + ry);
+
+                for (int py = minY; py <= maxY; py++) {
+                    double lat = 90.0 - (py / (double) (h - 1)) * 180.0;
+                    double dyDeg = lat - cLat;
+
+                    for (int px = cx - rx; px <= cx + rx; px++) {
+                        int wrapX = (px % w + w) % w;
+                        double lon = -180.0 + (wrapX / (double) (w - 1)) * 360.0;
+                        double dLon = lon - cLon;
+                        if (dLon > 180.0) dLon -= 360.0;
+                        else if (dLon < -180.0) dLon += 360.0;
+
+                        double dxDeg = dLon * cosLat;
+
+                        // Rotate by -strikeRad
+                        double u = dxDeg * cosTheta + dyDeg * sinTheta;
+                        double v = -dxDeg * sinTheta + dyDeg * cosTheta;
+
+                        double q = (u * u) / (a * a) + (v * v) / (b * b);
+                        if (q <= 1.0) {
+                            double d = Math.sqrt(q);
+                            double falloff = Math.pow(1.0 - d, 1.4);
+                            grid[py][wrapX] += (float) (falloff * intensity);
+                        }
                     }
                 }
             }
         }
 
-        int rC = themeColor.getRed();
-        int gC = themeColor.getGreen();
-        int bC = themeColor.getBlue();
+        // 2. Accumulate Discrete Fields & MRDS Occurrences
+        if (discreteSpots != null) {
+            for (double[] spot : discreteSpots) {
+                double lon = spot[0];
+                double lat = spot[1];
+                double radius = spot.length > 2 ? spot[2] : spotDefaultRadius;
+                double intensity = spot.length > 3 ? spot[3] : 1.0;
 
+                int cx = (int) Math.round(((lon + 180.0) / 360.0) * (w - 1));
+                int cy = (int) Math.round(((90.0 - lat) / 180.0) * (h - 1));
+                int r = (int) Math.ceil(radius);
+
+                int minY = Math.max(0, cy - r);
+                int maxY = Math.min(h - 1, cy + r);
+                int minX = cx - r;
+                int maxX = cx + r;
+
+                for (int py = minY; py <= maxY; py++) {
+                    double dy = py - cy;
+                    for (int px = minX; px <= maxX; px++) {
+                        int wrapX = (px % w + w) % w;
+                        double dx = px - cx;
+                        double d = Math.sqrt(dx * dx + dy * dy);
+                        if (d <= radius) {
+                            double norm = 1.0 - (d / radius);
+                            grid[py][wrapX] += (float) (Math.pow(norm, 1.4) * intensity * 0.75);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Render Multi-Tiered Color Ramp
         for (int py = 0; py < h; py++) {
             for (int px = 0; px < w; px++) {
                 float v = grid[py][px];
-                if (v > 0.01f) {
-                    double norm = Math.clamp(1.0 - Math.exp(-v * 0.70), 0.0, 1.0);
-                    int alpha = (int) Math.clamp(70 + norm * 185.0, 70.0, 255.0);
-                    img.setRGB(px, py, (alpha << 24) | (rC << 16) | (gC << 8) | bC);
+                if (v > 0.012f) {
+                    double norm = Math.clamp(1.0 - Math.exp(-v * 0.45), 0.0, 1.0);
+                    Color chosen;
+                    if (palette.length == 1) {
+                        chosen = palette[0];
+                    } else if (palette.length == 3) {
+                        if (norm < 0.45) {
+                            double t = norm / 0.45;
+                            chosen = lerpColor(palette[0], palette[1], t);
+                        } else {
+                            double t = (norm - 0.45) / 0.55;
+                            chosen = lerpColor(palette[1], palette[2], t);
+                        }
+                    } else if (palette.length >= 4) {
+                        if (norm < 0.30) {
+                            double t = norm / 0.30;
+                            chosen = lerpColor(palette[0], palette[1], t);
+                        } else if (norm < 0.70) {
+                            double t = (norm - 0.30) / 0.40;
+                            chosen = lerpColor(palette[1], palette[2], t);
+                        } else {
+                            double t = (norm - 0.70) / 0.30;
+                            chosen = lerpColor(palette[2], palette[3], t);
+                        }
+                    } else {
+                        chosen = palette[0];
+                    }
+
+                    int alpha = (int) Math.clamp(85 + norm * 170.0, 85.0, 255.0);
+                    img.setRGB(px, py, (alpha << 24) | (chosen.getRed() << 16) | (chosen.getGreen() << 8) | chosen.getBlue());
                 }
             }
         }
     }
 
+    private static Color lerpColor(Color c1, Color c2, double t) {
+        int r = (int) Math.clamp(c1.getRed() + t * (c2.getRed() - c1.getRed()), 0, 255);
+        int g = (int) Math.clamp(c1.getGreen() + t * (c2.getGreen() - c1.getGreen()), 0, 255);
+        int b = (int) Math.clamp(c1.getBlue() + t * (c2.getBlue() - c1.getBlue()), 0, 255);
+        return new Color(r, g, b);
+    }
+
+    private static void rasterizeAlphaDensity(BufferedImage img, List<double[]> spots, Color themeColor, double defaultRadius) {
+        rasterizeBasinsAndSpots(img, null, spots, new Color[]{themeColor}, defaultRadius);
+    }
+
     private static void rasterizeTieredDensity(BufferedImage img, List<double[]> spots, Color lowC, Color medC, Color highC, double defaultRadius) {
-        int w = img.getWidth();
-        int h = img.getHeight();
-        float[][] grid = new float[h][w];
-
-        for (double[] spot : spots) {
-            double lon = spot[0];
-            double lat = spot[1];
-            double radius = spot.length > 2 ? spot[2] : defaultRadius;
-            double intensity = spot.length > 3 ? spot[3] : 1.0;
-
-            int cx = (int) Math.round(((lon + 180.0) / 360.0) * (w - 1));
-            int cy = (int) Math.round(((90.0 - lat) / 180.0) * (h - 1));
-            int r = (int) Math.ceil(radius);
-
-            int minY = Math.max(0, cy - r);
-            int maxY = Math.min(h - 1, cy + r);
-            int minX = cx - r;
-            int maxX = cx + r;
-
-            for (int py = minY; py <= maxY; py++) {
-                double dy = py - cy;
-                for (int px = minX; px <= maxX; px++) {
-                    int wrapX = (px % w + w) % w;
-                    double dx = px - cx;
-                    double d = Math.sqrt(dx * dx + dy * dy);
-                    if (d <= radius) {
-                        double norm = 1.0 - (d / radius);
-                        grid[py][wrapX] += (float) (Math.pow(norm, 1.4) * intensity);
-                    }
-                }
-            }
-        }
-
-        for (int py = 0; py < h; py++) {
-            for (int px = 0; px < w; px++) {
-                float v = grid[py][px];
-                if (v > 0.01f) {
-                    double norm = Math.clamp(1.0 - Math.exp(-v * 0.65), 0.0, 1.0);
-                    Color chosen;
-                    if (norm < 0.35) {
-                        chosen = lowC;
-                    } else if (norm < 0.70) {
-                        double t = (norm - 0.35) / 0.35;
-                        int red = (int) (lowC.getRed() + t * (medC.getRed() - lowC.getRed()));
-                        int green = (int) (lowC.getGreen() + t * (medC.getGreen() - lowC.getGreen()));
-                        int blue = (int) (lowC.getBlue() + t * (medC.getBlue() - lowC.getBlue()));
-                        chosen = new Color(Math.clamp(red, 0, 255), Math.clamp(green, 0, 255), Math.clamp(blue, 0, 255));
-                    } else {
-                        double t = (norm - 0.70) / 0.30;
-                        int red = (int) (medC.getRed() + t * (highC.getRed() - medC.getRed()));
-                        int green = (int) (medC.getGreen() + t * (highC.getGreen() - medC.getGreen()));
-                        int blue = (int) (medC.getBlue() + t * (highC.getBlue() - medC.getBlue()));
-                        chosen = new Color(Math.clamp(red, 0, 255), Math.clamp(green, 0, 255), Math.clamp(blue, 0, 255));
-                    }
-                    int alpha = (int) Math.clamp(80 + norm * 175.0, 80.0, 255.0);
-                    img.setRGB(px, py, (alpha << 24) | (chosen.getRed() << 16) | (chosen.getGreen() << 8) | chosen.getBlue());
-                }
-            }
-        }
+        rasterizeBasinsAndSpots(img, null, spots, new Color[]{lowC, medC, highC}, defaultRadius);
     }
 
     private static void saveImageToAllLocations(BufferedImage img, String baseName, String... subDirs) {
@@ -262,50 +314,303 @@ public class GenerateAuthenticPlanetaryMaps {
     private void generateEarthResources() {
         logger.info("Generating Earth Geological & Mineral Tensors...");
 
-        // 1. Coal Deposits (USGS MRDS + Major Global Basins)
+        // -------------------------------------------------------------
+        // 1. COAL BASINS & MEASURES (USGS MRDS + BGR + WEC + GEM Database)
+        // -------------------------------------------------------------
         BufferedImage imgCoal = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        List<GeologicalBasin> coalBasins = new ArrayList<>();
+        // North America
+        coalBasins.add(new GeologicalBasin(-80.0, 38.5, 6.5, 2.2, 45.0, 3.8, "Appalachian Basin"));
+        coalBasins.add(new GeologicalBasin(-89.0, 38.5, 3.5, 2.8, 0.0, 3.2, "Illinois Basin"));
+        coalBasins.add(new GeologicalBasin(-105.8, 44.5, 3.2, 2.0, 115.0, 4.2, "Powder River Basin"));
+        coalBasins.add(new GeologicalBasin(-102.5, 47.5, 3.0, 2.2, 0.0, 2.8, "Williston Fort Union Lignite"));
+        coalBasins.add(new GeologicalBasin(-95.0, 36.0, 3.5, 2.0, 40.0, 2.6, "Western Interior / Arkoma"));
+        coalBasins.add(new GeologicalBasin(-95.5, 31.5, 5.5, 1.2, 60.0, 2.4, "Gulf Coast Wilcox Lignite"));
+        coalBasins.add(new GeologicalBasin(-107.5, 41.5, 2.5, 1.8, 0.0, 2.8, "Green River / Hanna Basin"));
+        coalBasins.add(new GeologicalBasin(-109.5, 39.5, 2.8, 1.8, 120.0, 2.8, "Uinta-Piceance Coal"));
+        coalBasins.add(new GeologicalBasin(-108.0, 36.5, 2.2, 1.8, 0.0, 3.0, "San Juan Fruitland Coal"));
+        coalBasins.add(new GeologicalBasin(-116.5, 53.0, 6.0, 2.0, 135.0, 3.4, "Alberta Foothills Coal"));
+        coalBasins.add(new GeologicalBasin(-60.2, 46.2, 1.5, 1.0, 60.0, 2.4, "Sydney Basin Nova Scotia"));
+        coalBasins.add(new GeologicalBasin(-151.0, 61.5, 2.5, 1.2, 30.0, 2.4, "Cook Inlet Beluga Alaska"));
+        coalBasins.add(new GeologicalBasin(-101.5, 27.8, 2.0, 1.2, 130.0, 2.4, "Sabinas Basin Mexico"));
+        // South America
+        coalBasins.add(new GeologicalBasin(-72.7, 11.1, 2.2, 1.0, 45.0, 3.8, "Cerrejon Colombia"));
+        coalBasins.add(new GeologicalBasin(-73.5, 5.5, 2.0, 1.0, 35.0, 2.8, "Boyaca-Cundinamarca Colombia"));
+        coalBasins.add(new GeologicalBasin(-72.3, 10.9, 1.5, 0.8, 40.0, 2.8, "Guasare Basin Venezuela"));
+        coalBasins.add(new GeologicalBasin(-51.5, -29.5, 4.5, 2.0, 90.0, 3.0, "Parana Basin Brazil (Candiota)"));
+        coalBasins.add(new GeologicalBasin(-72.3, -51.5, 1.8, 1.0, 0.0, 2.4, "Rio Turbio Argentina"));
+        coalBasins.add(new GeologicalBasin(-77.0, -10.5, 1.5, 0.8, 140.0, 2.2, "Oyon Basin Peru"));
+        // Europe
+        coalBasins.add(new GeologicalBasin(19.0, 50.2, 2.2, 1.6, 120.0, 4.0, "Upper Silesian Basin Poland/Czechia"));
+        coalBasins.add(new GeologicalBasin(23.0, 51.3, 1.8, 1.0, 135.0, 2.8, "Lublin Coal Basin Poland"));
+        coalBasins.add(new GeologicalBasin(7.3, 51.5, 2.0, 1.2, 70.0, 3.8, "Ruhr Basin Germany"));
+        coalBasins.add(new GeologicalBasin(6.8, 49.3, 1.5, 0.8, 60.0, 2.8, "Saar-Lorraine Basin"));
+        coalBasins.add(new GeologicalBasin(6.5, 50.9, 1.2, 0.8, 135.0, 3.5, "Rhineland Lignite District"));
+        coalBasins.add(new GeologicalBasin(13.5, 51.6, 2.5, 1.5, 0.0, 3.2, "Lusatian / Central German Lignite"));
+        coalBasins.add(new GeologicalBasin(3.0, 50.4, 2.5, 0.6, 80.0, 2.8, "Nord-Pas-de-Calais France/Belgium"));
+        coalBasins.add(new GeologicalBasin(-1.3, 53.5, 2.0, 1.2, 0.0, 3.0, "Yorkshire / East Midlands UK"));
+        coalBasins.add(new GeologicalBasin(-3.6, 51.7, 1.5, 0.8, 90.0, 2.8, "South Wales Coalfield"));
+        coalBasins.add(new GeologicalBasin(-3.8, 55.9, 1.2, 0.6, 70.0, 2.4, "Scottish Central Coalfield"));
+        coalBasins.add(new GeologicalBasin(-5.8, 43.3, 1.5, 0.8, 90.0, 2.6, "Asturias Basin Spain"));
+        coalBasins.add(new GeologicalBasin(23.3, 45.4, 1.0, 0.5, 90.0, 2.6, "Jiu Valley Romania"));
+        coalBasins.add(new GeologicalBasin(26.0, 42.2, 1.5, 1.0, 90.0, 2.8, "Maritsa Iztok Lignite Bulgaria"));
+        coalBasins.add(new GeologicalBasin(21.7, 40.5, 1.5, 0.8, 140.0, 2.6, "Ptolemaida-Florina Greece"));
+        coalBasins.add(new GeologicalBasin(20.3, 44.4, 1.8, 1.0, 120.0, 2.8, "Kolubara-Kostolac Serbia"));
+        coalBasins.add(new GeologicalBasin(31.8, 41.4, 1.5, 0.8, 75.0, 2.8, "Zonguldak Basin Turkey"));
+        coalBasins.add(new GeologicalBasin(27.6, 39.2, 1.2, 0.8, 45.0, 2.6, "Soma Lignite Basin Turkey"));
+        coalBasins.add(new GeologicalBasin(15.6, 78.2, 1.2, 0.6, 0.0, 2.2, "Spitsbergen Svalbard"));
+        // Russia & Eurasia
+        coalBasins.add(new GeologicalBasin(38.2, 48.2, 4.5, 1.8, 110.0, 4.2, "Donbas (Donets Basin)"));
+        coalBasins.add(new GeologicalBasin(87.0, 54.5, 3.8, 2.2, 160.0, 4.8, "Kuzbass (Kuznetsk Basin)"));
+        coalBasins.add(new GeologicalBasin(93.5, 56.0, 6.5, 2.0, 80.0, 4.4, "Kansk-Achinsk Lignite Basin"));
+        coalBasins.add(new GeologicalBasin(98.0, 64.0, 8.0, 6.0, 0.0, 3.8, "Tunguska Supergiant Coal Basin"));
+        coalBasins.add(new GeologicalBasin(126.0, 65.0, 7.0, 4.5, 0.0, 3.6, "Lena Coal Basin Yakutia"));
+        coalBasins.add(new GeologicalBasin(60.5, 66.5, 3.5, 2.0, 45.0, 3.8, "Pechora Basin Vorkuta"));
+        coalBasins.add(new GeologicalBasin(125.0, 56.8, 3.0, 1.5, 90.0, 3.5, "South Yakutsk Basin Neryungri"));
+        coalBasins.add(new GeologicalBasin(103.0, 53.2, 3.0, 1.5, 120.0, 3.0, "Irkutsk / Cheremkhovo"));
+        coalBasins.add(new GeologicalBasin(91.5, 53.7, 2.0, 1.5, 0.0, 2.8, "Minusinsk Basin Russia"));
+        coalBasins.add(new GeologicalBasin(73.1, 49.8, 2.5, 1.5, 90.0, 3.8, "Karaganda Basin Kazakhstan"));
+        coalBasins.add(new GeologicalBasin(75.3, 51.7, 1.8, 1.2, 45.0, 4.0, "Ekibastuz Basin Kazakhstan"));
+        coalBasins.add(new GeologicalBasin(65.0, 50.0, 3.5, 2.0, 0.0, 2.8, "Turgay Basin Kazakhstan"));
+        // East Asia & China
+        coalBasins.add(new GeologicalBasin(112.5, 37.8, 5.5, 2.5, 25.0, 5.0, "Shanxi Province (Datong/Qinshui)"));
+        coalBasins.add(new GeologicalBasin(109.5, 39.0, 4.5, 3.5, 0.0, 5.0, "Ordos Basin (Shenfu-Dongsheng)"));
+        coalBasins.add(new GeologicalBasin(119.5, 46.5, 4.0, 2.0, 45.0, 3.6, "Hailar & Holingol Inner Mongolia"));
+        coalBasins.add(new GeologicalBasin(117.0, 33.0, 3.0, 1.5, 120.0, 3.8, "Huainan-Huaibei Anhui"));
+        coalBasins.add(new GeologicalBasin(116.8, 35.5, 2.5, 1.5, 30.0, 3.5, "Yanzhou Shandong"));
+        coalBasins.add(new GeologicalBasin(105.0, 26.5, 3.5, 2.0, 45.0, 3.6, "Guizhou Liupanshui Basin"));
+        coalBasins.add(new GeologicalBasin(87.5, 44.0, 5.5, 2.5, 90.0, 4.2, "Junggar & Hami Xinjiang"));
+        coalBasins.add(new GeologicalBasin(130.5, 46.0, 3.0, 1.8, 45.0, 3.4, "Hegang-Jixi Heilongjiang"));
+        coalBasins.add(new GeologicalBasin(105.5, 43.6, 3.0, 1.5, 90.0, 3.8, "Tavan Tolgoi South Gobi Mongolia"));
+        coalBasins.add(new GeologicalBasin(142.0, 43.3, 2.2, 1.2, 0.0, 2.6, "Ishikari Hokkaido Japan"));
+        coalBasins.add(new GeologicalBasin(130.6, 33.6, 1.5, 0.8, 0.0, 2.6, "Chikuho Kyushu Japan"));
+        coalBasins.add(new GeologicalBasin(127.0, 38.0, 2.5, 1.5, 30.0, 2.8, "Taebaek & Anju Korea"));
+        // South & Southeast Asia
+        coalBasins.add(new GeologicalBasin(86.2, 23.7, 3.5, 1.2, 90.0, 4.5, "Damodar Valley (Jharia/Raniganj) India"));
+        coalBasins.add(new GeologicalBasin(80.0, 18.0, 3.0, 1.0, 135.0, 3.5, "Godavari Valley (Singareni) India"));
+        coalBasins.add(new GeologicalBasin(85.0, 21.0, 3.0, 1.2, 120.0, 3.8, "Mahanadi Valley (Talcher) India"));
+        coalBasins.add(new GeologicalBasin(82.6, 23.0, 3.5, 1.5, 90.0, 4.0, "Singrauli & Korba India"));
+        coalBasins.add(new GeologicalBasin(79.5, 11.5, 1.5, 1.0, 0.0, 3.0, "Neyveli Lignite Tamil Nadu India"));
+        coalBasins.add(new GeologicalBasin(70.2, 24.8, 2.0, 1.2, 0.0, 3.2, "Thar Coalfield Pakistan"));
+        coalBasins.add(new GeologicalBasin(103.8, -3.7, 3.5, 1.8, 135.0, 3.8, "South Sumatra (Muara Enim) Indonesia"));
+        coalBasins.add(new GeologicalBasin(116.8, -1.0, 4.0, 2.0, 0.0, 4.4, "East Kalimantan (Kutai/Pasir) Indonesia"));
+        coalBasins.add(new GeologicalBasin(107.2, 21.0, 2.0, 0.8, 70.0, 3.0, "Quang Ninh Basin Vietnam"));
+        coalBasins.add(new GeologicalBasin(99.7, 18.3, 1.2, 0.8, 0.0, 2.6, "Mae Moh Lignite Thailand"));
+        // Africa
+        coalBasins.add(new GeologicalBasin(29.2, -26.0, 2.8, 1.8, 90.0, 4.4, "Witbank & Highveld South Africa"));
+        coalBasins.add(new GeologicalBasin(27.5, -23.7, 2.0, 1.2, 90.0, 3.8, "Waterberg Coalfield South Africa"));
+        coalBasins.add(new GeologicalBasin(33.7, -16.1, 2.5, 1.2, 120.0, 3.8, "Moatize Basin Mozambique"));
+        coalBasins.add(new GeologicalBasin(26.0, -18.3, 2.2, 1.2, 60.0, 3.0, "Hwange Zimbabwe"));
+        coalBasins.add(new GeologicalBasin(26.8, -22.7, 2.5, 1.5, 0.0, 3.0, "Mmamabula / Morupule Botswana"));
+        coalBasins.add(new GeologicalBasin(7.5, 6.4, 1.8, 1.0, 0.0, 2.4, "Enugu Coalfield Nigeria"));
+        // Oceania
+        coalBasins.add(new GeologicalBasin(148.5, -22.5, 6.0, 2.0, 160.0, 4.8, "Bowen Basin Queensland Australia"));
+        coalBasins.add(new GeologicalBasin(150.8, -32.8, 3.5, 1.8, 90.0, 4.2, "Sydney Basin Hunter Valley Australia"));
+        coalBasins.add(new GeologicalBasin(150.0, -27.5, 4.0, 2.2, 160.0, 3.6, "Surat & Clarence-Moreton Australia"));
+        coalBasins.add(new GeologicalBasin(145.5, -23.0, 4.5, 2.2, 150.0, 3.6, "Galilee Basin Queensland"));
+        coalBasins.add(new GeologicalBasin(146.5, -38.2, 2.0, 1.0, 90.0, 3.5, "Latrobe Valley Victoria Australia"));
+        coalBasins.add(new GeologicalBasin(116.2, -33.4, 1.2, 0.8, 135.0, 2.6, "Collie Basin Western Australia"));
+        coalBasins.add(new GeologicalBasin(172.0, -41.0, 2.5, 1.0, 45.0, 2.4, "Buller & Waikato New Zealand"));
+
         List<double[]> coalSpots = extractMrdsDeposits("coal", "lignite", "anthracite", "bituminous");
-        double[][] majorCoalBasins = {
-            {-78.0, 40.5, 45, 2.5}, {-89.0, 38.5, 40, 2.2}, {-105.5, 44.5, 50, 2.6}, {-108.0, 37.0, 35, 1.8},
-            {7.2, 51.5, 38, 2.2}, {19.0, 50.3, 40, 2.2}, {38.0, 48.0, 45, 2.4}, {86.0, 54.0, 50, 2.5},
-            {93.0, 56.0, 45, 2.2}, {112.5, 37.8, 55, 2.8}, {108.0, 39.5, 48, 2.4}, {117.0, 35.0, 42, 2.0},
-            {148.0, -23.5, 45, 2.2}, {150.0, -32.5, 38, 2.0}, {29.2, -25.9, 42, 2.2}, {86.0, 23.5, 42, 2.2},
-            {82.0, 21.5, 36, 1.8}, {73.0, 49.8, 45, 2.2}, {116.0, -2.0, 38, 1.8}, {-42.5, -7.0, 35, 1.6},
-            {-68.0, -51.5, 32, 1.6}, {105.0, 52.0, 42, 2.0}, {130.0, 62.0, 42, 2.0}
+        Color[] coalPalette = {
+            new Color(146, 64, 14),   // #92400E Dark Amber Brown
+            new Color(217, 119, 6),   // #D97706 Rich Amber
+            new Color(251, 191, 36),  // #FBBF24 Golden Yellow
+            new Color(254, 240, 138)  // #FEF08A Bright Core
         };
-        for (double[] b : majorCoalBasins) coalSpots.add(b);
-        rasterizeAlphaDensity(imgCoal, coalSpots, new Color(245, 158, 11), 8.0);
+        rasterizeBasinsAndSpots(imgCoal, coalBasins, coalSpots, coalPalette, 8.0);
         saveImageToAllLocations(imgCoal, "earth_coal.png", "terre", "earth");
 
-        // 2. Crude Oil (USGS / WEP / BGR Global Petroleum Basins)
+        // -------------------------------------------------------------
+        // 2. CRUDE OIL BASINS & SUPERGIANT FIELDS (EIA / BGR / USGS TPS)
+        // -------------------------------------------------------------
         BufferedImage imgOil = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        List<double[]> oilSpots = extractMrdsDeposits("petroleum", "oil", "hydrocarbon");
-        double[][] majorOilBasins = {
-            {49.0, 26.0, 65, 3.0}, {48.0, 29.5, 58, 2.8}, {51.5, 25.3, 52, 2.5}, {45.0, 33.0, 55, 2.6},
-            {76.0, 61.0, 62, 2.8}, {68.0, 60.5, 52, 2.5}, {52.0, 54.5, 55, 2.5}, {-102.0, 31.8, 58, 2.8},
-            {-98.5, 28.5, 48, 2.4}, {-103.5, 48.0, 48, 2.4}, {-92.0, 28.0, 52, 2.5}, {-92.0, 19.5, 52, 2.5},
-            {2.5, 56.5, 50, 2.4}, {3.5, 60.5, 48, 2.4}, {-71.5, 10.2, 48, 2.5}, {-64.0, 8.5, 52, 2.5},
-            {-148.5, 70.2, 45, 2.4}, {6.0, 4.5, 48, 2.5}, {12.0, -6.0, 45, 2.4}, {49.8, 40.4, 50, 2.4},
-            {51.5, 43.5, 48, 2.4}, {125.0, 46.5, 46, 2.4}, {118.5, 38.0, 45, 2.2}, {-40.5, -22.5, 48, 2.4},
-            {-111.0, 56.5, 55, 2.8}, {9.0, 32.0, 45, 2.2}, {114.0, 4.5, 42, 2.2}, {72.0, 19.0, 42, 2.2}
+        List<GeologicalBasin> oilBasins = new ArrayList<>();
+        // Middle East & Persian Gulf Super-Basin
+        oilBasins.add(new GeologicalBasin(49.3, 25.5, 6.5, 3.0, 15.0, 5.0, "Ghawar/Arabian Platform Saudi Arabia"));
+        oilBasins.add(new GeologicalBasin(53.5, 22.5, 4.5, 2.5, 60.0, 4.4, "Rub al-Khali / Shaybah"));
+        oilBasins.add(new GeologicalBasin(48.0, 29.1, 2.8, 2.0, 0.0, 4.8, "Greater Burgan / Kuwait"));
+        oilBasins.add(new GeologicalBasin(47.2, 30.5, 6.5, 2.5, 135.0, 4.8, "Mesopotamian Basin Rumaila/Kirkuk Iraq"));
+        oilBasins.add(new GeologicalBasin(49.8, 31.3, 5.5, 2.0, 135.0, 4.8, "Zagros Oil Belt Ahwaz/Marun Iran"));
+        oilBasins.add(new GeologicalBasin(53.8, 24.3, 3.2, 2.2, 45.0, 4.6, "Upper Zakum / Abu Dhabi UAE"));
+        oilBasins.add(new GeologicalBasin(51.6, 26.5, 1.8, 1.5, 0.0, 4.2, "Al-Shaheen Qatar Offshore"));
+        oilBasins.add(new GeologicalBasin(56.5, 21.0, 4.5, 2.0, 30.0, 4.0, "Oman Salt Basin Fahud/Nimr"));
+        oilBasins.add(new GeologicalBasin(33.3, 28.2, 3.0, 0.8, 140.0, 3.8, "Gulf of Suez Rift Egypt"));
+        oilBasins.add(new GeologicalBasin(49.0, 15.5, 2.5, 1.2, 90.0, 3.4, "Masila Basin Yemen"));
+        // Russia, Eurasia & Caspian
+        oilBasins.add(new GeologicalBasin(76.5, 61.2, 7.5, 5.0, 0.0, 5.0, "West Siberia Samotlor/Priobskoye"));
+        oilBasins.add(new GeologicalBasin(52.5, 54.8, 6.0, 4.0, 0.0, 4.5, "Volga-Ural Romashkino Russia"));
+        oilBasins.add(new GeologicalBasin(51.8, 46.5, 5.0, 3.5, 0.0, 5.0, "Pre-Caspian Tengiz/Kashagan Kazakhstan"));
+        oilBasins.add(new GeologicalBasin(53.0, 43.5, 3.0, 1.8, 120.0, 4.0, "Mangyshlak Uzen Kazakhstan"));
+        oilBasins.add(new GeologicalBasin(50.5, 40.0, 4.0, 2.5, 135.0, 4.6, "South Caspian ACG Azerbaijan"));
+        oilBasins.add(new GeologicalBasin(57.5, 66.0, 4.5, 2.8, 45.0, 4.0, "Timan-Pechora Usinsk Russia"));
+        oilBasins.add(new GeologicalBasin(88.0, 67.8, 5.5, 3.5, 0.0, 4.2, "Vankor East Siberia"));
+        oilBasins.add(new GeologicalBasin(143.2, 52.5, 4.0, 1.5, 0.0, 4.2, "Sakhalin Shelf Russia"));
+        oilBasins.add(new GeologicalBasin(45.0, 43.5, 3.5, 1.2, 90.0, 3.4, "North Caucasus Grozny"));
+        // North America
+        oilBasins.add(new GeologicalBasin(-102.5, 31.8, 4.5, 3.2, 140.0, 5.0, "Permian Basin Midland/Delaware TX/NM"));
+        oilBasins.add(new GeologicalBasin(-98.0, 28.5, 5.5, 2.0, 55.0, 4.6, "Eagle Ford Shale & Wilcox TX"));
+        oilBasins.add(new GeologicalBasin(-90.5, 27.5, 5.0, 2.5, 90.0, 4.8, "Deepwater Gulf of Mexico"));
+        oilBasins.add(new GeologicalBasin(-103.5, 48.0, 3.5, 3.0, 0.0, 4.5, "Bakken / Williston Basin ND/MT"));
+        oilBasins.add(new GeologicalBasin(-148.5, 70.2, 5.0, 1.8, 90.0, 4.8, "Prudhoe Bay / North Slope Alaska"));
+        oilBasins.add(new GeologicalBasin(-111.5, 56.8, 6.5, 3.5, 135.0, 5.0, "Athabasca Oil Sands Alberta"));
+        oilBasins.add(new GeologicalBasin(-115.0, 54.5, 4.5, 2.5, 135.0, 4.4, "WCSB Peace River & Cold Lake"));
+        oilBasins.add(new GeologicalBasin(-98.5, 35.5, 3.0, 2.0, 120.0, 4.0, "Anadarko Basin Oklahoma"));
+        oilBasins.add(new GeologicalBasin(-104.5, 40.5, 2.5, 2.0, 0.0, 3.8, "DJ Basin Niobrara Colorado"));
+        oilBasins.add(new GeologicalBasin(-119.5, 35.3, 3.0, 1.0, 135.0, 4.2, "San Joaquin Basin Midway-Sunset CA"));
+        oilBasins.add(new GeologicalBasin(-118.2, 33.8, 1.5, 0.8, 120.0, 3.8, "Los Angeles Basin Wilmington CA"));
+        oilBasins.add(new GeologicalBasin(-92.2, 19.5, 4.5, 2.5, 0.0, 4.8, "Sureste / Cantarell / KMZ Mexico"));
+        oilBasins.add(new GeologicalBasin(-97.5, 21.5, 3.0, 1.5, 140.0, 3.8, "Tampico-Misantla / Chicontepec"));
+        oilBasins.add(new GeologicalBasin(-48.8, 46.8, 2.2, 1.5, 45.0, 4.0, "Hibernia / Grand Banks Newfoundland"));
+        // South America
+        oilBasins.add(new GeologicalBasin(-71.5, 10.0, 3.0, 2.0, 0.0, 4.8, "Maracaibo Basin Bolivar Coastal Venezuela"));
+        oilBasins.add(new GeologicalBasin(-64.0, 8.5, 6.5, 1.5, 90.0, 5.0, "Faja del Orinoco Heavy Oil Venezuela"));
+        oilBasins.add(new GeologicalBasin(-43.0, -24.5, 6.0, 3.0, 45.0, 5.0, "Santos Pre-Salt Tupi/Buzios Brazil"));
+        oilBasins.add(new GeologicalBasin(-40.5, -22.5, 4.5, 2.2, 45.0, 4.6, "Campos Basin Marlim/Roncador Brazil"));
+        oilBasins.add(new GeologicalBasin(-37.0, -11.0, 3.5, 1.5, 40.0, 3.8, "Sergipe-Alagoas & Espirito Santo"));
+        oilBasins.add(new GeologicalBasin(-71.5, 4.5, 4.5, 2.0, 45.0, 4.2, "Llanos Foreland Rubiales Colombia"));
+        oilBasins.add(new GeologicalBasin(-76.5, -1.5, 5.0, 2.0, 0.0, 4.2, "Oriente / Maranon Ecuador/Peru"));
+        oilBasins.add(new GeologicalBasin(-69.0, -38.0, 3.5, 2.5, 0.0, 4.6, "Vaca Muerta / Neuquen Argentina"));
+        oilBasins.add(new GeologicalBasin(-68.0, -46.0, 3.0, 2.0, 90.0, 4.0, "Golfo San Jorge Comodoro Rivadavia"));
+        oilBasins.add(new GeologicalBasin(-57.0, 8.0, 3.5, 1.8, 125.0, 4.8, "Guyana Stabroek Block Liza"));
+        // Africa
+        oilBasins.add(new GeologicalBasin(6.0, 4.8, 5.0, 3.5, 0.0, 5.0, "Niger Delta Super-Basin Nigeria"));
+        oilBasins.add(new GeologicalBasin(11.8, -6.5, 5.0, 2.5, 140.0, 4.8, "Lower Congo Deepwater Block 15/17 Angola"));
+        oilBasins.add(new GeologicalBasin(13.0, -9.5, 3.5, 1.8, 140.0, 4.0, "Kwanza Basin Angola"));
+        oilBasins.add(new GeologicalBasin(19.5, 29.0, 4.5, 3.5, 0.0, 4.6, "Sirte Basin Waha/Zelten Libya"));
+        oilBasins.add(new GeologicalBasin(6.0, 31.5, 4.0, 3.0, 0.0, 4.6, "Hassi Messaoud / Berkine Algeria"));
+        oilBasins.add(new GeologicalBasin(29.5, 9.5, 4.5, 1.8, 135.0, 4.0, "Muglad-Melut Heglig/Palogue Sudan"));
+        oilBasins.add(new GeologicalBasin(9.5, -1.5, 4.0, 2.0, 150.0, 4.2, "Gabon Coastal Rabi-Kounga"));
+        oilBasins.add(new GeologicalBasin(31.0, 1.8, 2.5, 0.8, 30.0, 3.8, "Lake Albert Albertine Graben Uganda"));
+        oilBasins.add(new GeologicalBasin(17.0, 8.5, 2.0, 1.2, 0.0, 3.6, "Doba Basin Chad"));
+        oilBasins.add(new GeologicalBasin(9.0, 4.5, 2.5, 1.2, 135.0, 3.6, "Rio del Rey & Douala Cameroon"));
+        // Europe & North Sea
+        oilBasins.add(new GeologicalBasin(2.5, 57.5, 6.0, 3.0, 0.0, 4.8, "Central & Viking Grabens Ekofisk/Sverdrup"));
+        oilBasins.add(new GeologicalBasin(7.5, 65.0, 4.0, 2.0, 30.0, 4.0, "Norwegian Sea Haltenbanken"));
+        oilBasins.add(new GeologicalBasin(22.0, 72.0, 3.5, 2.0, 0.0, 4.0, "Barents Sea Johan Castberg"));
+        oilBasins.add(new GeologicalBasin(-3.5, 60.5, 2.5, 1.2, 45.0, 3.8, "West of Shetland Clair/Schiehallion"));
+        oilBasins.add(new GeologicalBasin(26.0, 45.0, 3.0, 1.5, 75.0, 3.8, "Carpathian Foredeep Ploiesti Romania"));
+        oilBasins.add(new GeologicalBasin(16.8, 48.3, 2.5, 1.8, 45.0, 3.2, "Vienna & Pannonian Basins"));
+        oilBasins.add(new GeologicalBasin(14.0, 36.8, 2.5, 1.2, 120.0, 3.2, "Sicily Channel & Po Valley"));
+        // Asia-Pacific & Australia
+        oilBasins.add(new GeologicalBasin(125.0, 46.5, 4.5, 2.5, 25.0, 4.8, "Songliao Basin Daqing China"));
+        oilBasins.add(new GeologicalBasin(118.5, 38.0, 4.0, 3.0, 40.0, 4.6, "Bohai Bay Shengli/Dagang China"));
+        oilBasins.add(new GeologicalBasin(83.5, 40.5, 5.5, 3.0, 90.0, 4.2, "Tarim Basin Tahe/Fuman China"));
+        oilBasins.add(new GeologicalBasin(85.5, 45.5, 4.0, 2.5, 0.0, 4.0, "Junggar Basin Karamay China"));
+        oilBasins.add(new GeologicalBasin(108.5, 37.0, 4.0, 3.0, 0.0, 4.4, "Ordos Basin Changqing Oil China"));
+        oilBasins.add(new GeologicalBasin(115.5, 21.0, 3.5, 2.0, 65.0, 4.0, "Pearl River Mouth South China Sea"));
+        oilBasins.add(new GeologicalBasin(101.5, 0.8, 4.5, 2.0, 135.0, 4.6, "Central Sumatra Minas/Duri Indonesia"));
+        oilBasins.add(new GeologicalBasin(104.0, -3.0, 3.5, 2.0, 135.0, 4.0, "South Sumatra Basin Indonesia"));
+        oilBasins.add(new GeologicalBasin(117.5, -0.5, 3.0, 2.0, 0.0, 4.2, "Kutei Mahakam Delta Kalimantan"));
+        oilBasins.add(new GeologicalBasin(112.0, -7.0, 3.0, 1.5, 90.0, 4.2, "East Java Cepu/Banyu Urip"));
+        oilBasins.add(new GeologicalBasin(104.5, 5.5, 4.5, 2.5, 140.0, 4.4, "Malay Basin Dulang Malaysia"));
+        oilBasins.add(new GeologicalBasin(114.5, 5.5, 4.0, 2.0, 45.0, 4.4, "Brunei & Sabah Kikeh/Gumusut"));
+        oilBasins.add(new GeologicalBasin(108.0, 9.8, 3.0, 1.5, 45.0, 4.2, "Cuu Long Bach Ho Vietnam"));
+        oilBasins.add(new GeologicalBasin(72.0, 19.3, 3.5, 2.0, 0.0, 4.4, "Mumbai High / Cambay India"));
+        oilBasins.add(new GeologicalBasin(71.5, 26.0, 2.5, 1.5, 0.0, 4.0, "Barmer Basin Mangala Rajasthan India"));
+        oilBasins.add(new GeologicalBasin(95.0, 27.5, 3.0, 1.2, 45.0, 3.6, "Assam Basin Digboi India"));
+        oilBasins.add(new GeologicalBasin(148.5, -38.5, 2.5, 1.2, 90.0, 4.2, "Gippsland Basin Kingfish Australia"));
+        oilBasins.add(new GeologicalBasin(115.0, -21.0, 4.0, 2.0, 45.0, 4.0, "Carnarvon Basin Barrow WA Australia"));
+        oilBasins.add(new GeologicalBasin(141.0, -27.5, 3.5, 2.5, 0.0, 3.6, "Cooper-Eromanga Basin Australia"));
+        oilBasins.add(new GeologicalBasin(173.5, -39.5, 2.5, 1.2, 0.0, 3.6, "Taranaki Basin Maui New Zealand"));
+
+        Color[] oilPalette = {
+            new Color(153, 27, 27),   // #991B1B Deep Ruby
+            new Color(220, 38, 38),   // #DC2626 Crimson Red
+            new Color(248, 113, 113), // #F87171 Coral Red
+            new Color(254, 202, 202)  // #FECACA Intense Core
         };
-        for (double[] b : majorOilBasins) oilSpots.add(b);
-        rasterizeAlphaDensity(imgOil, oilSpots, new Color(220, 38, 38), 12.0);
+        rasterizeBasinsAndSpots(imgOil, oilBasins, null, oilPalette, 12.0);
         saveImageToAllLocations(imgOil, "earth_oil.png", "terre", "earth");
 
-        // 3. Natural Gas Fields
+        // -------------------------------------------------------------
+        // 3. NATURAL GAS BASINS & LNG HUBS (Cedigaz / BGR / WEP)
+        // -------------------------------------------------------------
         BufferedImage imgGas = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        List<double[]> gasSpots = extractMrdsDeposits("natural gas", "gas", "methane");
-        double[][] majorGasBasins = {
-            {77.0, 66.0, 68, 3.0}, {73.0, 68.0, 60, 2.8}, {68.0, 71.0, 55, 2.6}, {52.0, 26.5, 68, 3.0},
-            {51.0, 25.0, 62, 2.8}, {-77.5, 41.5, 55, 2.6}, {-93.5, 32.0, 50, 2.4}, {-98.0, 27.5, 48, 2.2},
-            {6.8, 53.2, 42, 2.2}, {2.0, 54.0, 45, 2.4}, {3.3, 32.9, 48, 2.4}, {8.5, 30.0, 42, 2.2},
-            {62.2, 37.3, 55, 2.6}, {59.0, 41.0, 48, 2.4}, {105.0, 30.5, 48, 2.4}, {108.0, 38.0, 45, 2.2},
-            {115.0, -20.0, 48, 2.4}, {123.0, -14.0, 45, 2.2}, {32.0, 32.5, 45, 2.4}, {34.5, 33.0, 42, 2.2},
-            {10.0, 65.0, 48, 2.4}, {-120.0, 56.0, 48, 2.4}, {82.0, 16.5, 42, 2.2}
+        List<GeologicalBasin> gasBasins = new ArrayList<>();
+        // Middle East
+        gasBasins.add(new GeologicalBasin(51.8, 26.5, 4.0, 3.0, 150.0, 5.0, "North Field / South Pars Qatar/Iran"));
+        gasBasins.add(new GeologicalBasin(52.5, 27.8, 5.0, 2.2, 135.0, 5.0, "Coastal Fars Gas Kangan/Kish Iran"));
+        gasBasins.add(new GeologicalBasin(49.5, 25.0, 4.5, 2.5, 15.0, 4.6, "Saudi Khuff & Jafurah Gas"));
+        gasBasins.add(new GeologicalBasin(53.5, 23.8, 3.0, 2.0, 45.0, 4.5, "Abu Dhabi Sour Gas Shah/Ghasha UAE"));
+        gasBasins.add(new GeologicalBasin(56.0, 22.0, 2.8, 1.8, 30.0, 4.4, "Khazzan Tight Gas Oman"));
+        gasBasins.add(new GeologicalBasin(33.0, 32.5, 4.0, 2.0, 0.0, 4.8, "Levantine Deepwater Zohr/Leviathan"));
+        gasBasins.add(new GeologicalBasin(31.5, 31.8, 3.5, 2.0, 90.0, 4.5, "Nile Delta Offshore Egypt"));
+        // Russia, Yamal & Central Asia
+        gasBasins.add(new GeologicalBasin(69.5, 70.5, 5.5, 3.5, 0.0, 5.0, "Yamal Supergiant Bovanenkovo/Tambey"));
+        gasBasins.add(new GeologicalBasin(77.5, 66.0, 6.0, 4.0, 0.0, 5.0, "Nadym-Pur-Taz Urengoy/Yamburg Russia"));
+        gasBasins.add(new GeologicalBasin(75.5, 71.0, 4.5, 2.5, 0.0, 4.8, "Gydan Peninsula Arctic LNG 2"));
+        gasBasins.add(new GeologicalBasin(62.2, 37.3, 4.5, 3.0, 135.0, 5.0, "Galkynysh / Dauletabad Turkmenistan"));
+        gasBasins.add(new GeologicalBasin(64.0, 39.5, 4.5, 2.5, 135.0, 4.6, "Amu Darya Gazli/Shurtan"));
+        gasBasins.add(new GeologicalBasin(53.2, 51.3, 2.5, 2.0, 0.0, 4.5, "Karachaganak Kazakhstan"));
+        gasBasins.add(new GeologicalBasin(48.0, 46.8, 4.0, 2.2, 90.0, 4.5, "Astrakhan & Orenburg Deep Gas"));
+        gasBasins.add(new GeologicalBasin(111.0, 58.5, 5.5, 3.5, 60.0, 4.6, "Chayandinskoye & Kovykta East Siberia"));
+        gasBasins.add(new GeologicalBasin(43.5, 73.0, 3.5, 2.5, 0.0, 4.8, "Shtokman Supergiant Barents Sea"));
+        // North America
+        gasBasins.add(new GeologicalBasin(-78.5, 40.5, 6.5, 3.0, 45.0, 5.0, "Appalachian Marcellus/Utica Shales"));
+        gasBasins.add(new GeologicalBasin(-93.8, 32.2, 3.0, 2.2, 120.0, 4.6, "Haynesville-Bossier Shale LA/TX"));
+        gasBasins.add(new GeologicalBasin(-102.5, 31.8, 4.5, 3.2, 140.0, 4.8, "Permian Associated Gas TX/NM"));
+        gasBasins.add(new GeologicalBasin(-97.5, 33.0, 2.2, 1.8, 0.0, 4.4, "Barnett Shale Fort Worth TX"));
+        gasBasins.add(new GeologicalBasin(-94.5, 35.5, 3.0, 1.8, 90.0, 4.4, "Arkoma Fayetteville/Woodford OK/AR"));
+        gasBasins.add(new GeologicalBasin(-120.0, 56.0, 6.0, 3.0, 135.0, 4.8, "WCSB Montney & Duvernay Canada"));
+        gasBasins.add(new GeologicalBasin(-122.5, 59.5, 3.0, 2.0, 0.0, 4.2, "Horn River & Liard Shales BC"));
+        gasBasins.add(new GeologicalBasin(-108.5, 39.8, 3.0, 2.2, 120.0, 4.2, "Piceance & Uinta Tight Gas CO/UT"));
+        gasBasins.add(new GeologicalBasin(-107.8, 36.8, 2.5, 2.0, 0.0, 4.4, "San Juan Coalbed Methane NM/CO"));
+        gasBasins.add(new GeologicalBasin(-109.8, 42.5, 2.5, 1.5, 140.0, 4.4, "Green River Jonah/Pinedale WY"));
+        gasBasins.add(new GeologicalBasin(-147.0, 70.2, 4.0, 1.5, 90.0, 4.6, "Alaska North Slope Point Thomson"));
+        gasBasins.add(new GeologicalBasin(-87.5, 28.8, 4.5, 2.2, 90.0, 4.4, "Deepwater Norphlet Gas Play"));
+        gasBasins.add(new GeologicalBasin(-99.0, 26.5, 3.0, 1.8, 140.0, 4.2, "Burgos Basin Mexico"));
+        // Europe & North Sea
+        gasBasins.add(new GeologicalBasin(6.8, 53.3, 4.5, 2.0, 90.0, 4.8, "Groningen / Rotliegend Gas"));
+        gasBasins.add(new GeologicalBasin(3.5, 60.6, 5.0, 2.5, 0.0, 5.0, "Troll & Oseberg Norwegian North Sea"));
+        gasBasins.add(new GeologicalBasin(6.0, 63.5, 4.0, 2.0, 30.0, 4.6, "Ormen Lange & Asgard Norwegian Sea"));
+        gasBasins.add(new GeologicalBasin(21.0, 71.5, 3.0, 1.8, 0.0, 4.4, "Snohvit LNG Barents Sea"));
+        gasBasins.add(new GeologicalBasin(2.2, 53.5, 3.0, 1.5, 120.0, 4.2, "UK Southern Gas Basin Leman"));
+        gasBasins.add(new GeologicalBasin(36.5, 49.5, 4.0, 1.8, 115.0, 4.2, "Dnieper-Donets Shebelynka Ukraine"));
+        gasBasins.add(new GeologicalBasin(24.5, 46.5, 2.2, 1.5, 0.0, 3.8, "Transylvanian Basin Gas Romania"));
+        gasBasins.add(new GeologicalBasin(10.5, 45.0, 2.8, 1.0, 90.0, 3.6, "Po Valley Gas Italy"));
+        // Africa
+        gasBasins.add(new GeologicalBasin(3.3, 32.9, 3.5, 2.5, 0.0, 5.0, "Hassi R'Mel Supergiant Algeria"));
+        gasBasins.add(new GeologicalBasin(2.5, 27.5, 4.0, 2.5, 135.0, 4.5, "In Salah & Ahnet Basins Algeria"));
+        gasBasins.add(new GeologicalBasin(40.8, -11.0, 3.5, 1.5, 0.0, 5.0, "Rovuma Supergiant LNG Mozambique"));
+        gasBasins.add(new GeologicalBasin(40.0, -9.0, 3.0, 1.2, 0.0, 4.4, "Tanzania Songo Songo Deep"));
+        gasBasins.add(new GeologicalBasin(6.5, 4.5, 4.5, 3.0, 0.0, 4.6, "Niger Delta Gas Nigeria"));
+        gasBasins.add(new GeologicalBasin(-17.2, 16.0, 3.5, 1.5, 0.0, 4.5, "Greater Tortue Ahmeyim Senegal/Mauritania"));
+        // Asia-Pacific & Australia
+        gasBasins.add(new GeologicalBasin(106.0, 30.5, 4.5, 3.0, 40.0, 5.0, "Sichuan Gas Super-Basin (Anyue/Fuling)"));
+        gasBasins.add(new GeologicalBasin(82.5, 41.8, 5.0, 2.5, 90.0, 4.6, "Tarim Kuqa Depression Keshen/Kela"));
+        gasBasins.add(new GeologicalBasin(108.5, 38.5, 4.5, 3.5, 0.0, 4.8, "Ordos Sulige Tight Gas China"));
+        gasBasins.add(new GeologicalBasin(110.5, 17.5, 3.5, 2.0, 135.0, 4.5, "Deep Sea No.1 Qiongdongnan China"));
+        gasBasins.add(new GeologicalBasin(115.5, -19.5, 5.0, 2.2, 50.0, 5.0, "Gorgon / Jansz-Io / North Rankin NW Shelf"));
+        gasBasins.add(new GeologicalBasin(123.5, -14.0, 4.5, 2.5, 45.0, 4.8, "Browse Basin Ichthys/Prelude FLNG"));
+        gasBasins.add(new GeologicalBasin(127.5, -11.0, 3.5, 2.0, 45.0, 4.5, "Bonaparte Basin Bayu-Undan/Barossa"));
+        gasBasins.add(new GeologicalBasin(149.5, -26.5, 4.5, 2.5, 160.0, 4.5, "Queensland CSG-LNG Surat/Bowen"));
+        gasBasins.add(new GeologicalBasin(143.0, -6.0, 4.0, 1.5, 125.0, 4.5, "Papua Fold Belt Hides PNG LNG"));
+        gasBasins.add(new GeologicalBasin(133.0, -2.5, 3.0, 1.8, 120.0, 4.5, "Tangguh Bintuni LNG West Papua"));
+        gasBasins.add(new GeologicalBasin(109.0, 4.5, 3.0, 2.0, 0.0, 4.4, "East Natuna Gas Field Indonesia"));
+        gasBasins.add(new GeologicalBasin(112.5, 4.5, 3.5, 2.2, 45.0, 4.5, "Central Luconia Sarawak Malaysia"));
+        gasBasins.add(new GeologicalBasin(101.5, 9.0, 4.0, 1.8, 0.0, 4.4, "Gulf of Thailand Bongkot/Erawan"));
+        gasBasins.add(new GeologicalBasin(95.5, 14.5, 3.0, 1.2, 0.0, 4.2, "Yadana & Yetagun Myanmar"));
+        gasBasins.add(new GeologicalBasin(82.5, 16.5, 3.0, 1.8, 45.0, 4.4, "Krishna-Godavari KG-D6 India"));
+        gasBasins.add(new GeologicalBasin(69.0, 28.5, 3.5, 2.0, 0.0, 4.4, "Indus Basin Sui/Mari Pakistan"));
+        gasBasins.add(new GeologicalBasin(91.5, 24.5, 2.5, 1.2, 30.0, 4.4, "Surma Basin Bibiyana Bangladesh"));
+        // South America
+        gasBasins.add(new GeologicalBasin(-72.8, -11.8, 2.5, 1.5, 135.0, 4.8, "Camisea Supergiant Gas Peru"));
+        gasBasins.add(new GeologicalBasin(-63.8, -21.5, 3.5, 1.8, 0.0, 4.5, "Tarija Basin San Alberto Bolivia"));
+        gasBasins.add(new GeologicalBasin(-69.0, -38.0, 3.5, 2.5, 0.0, 4.6, "Vaca Muerta Gas Fortin de Piedra"));
+        gasBasins.add(new GeologicalBasin(-67.5, -53.5, 3.0, 2.0, 90.0, 4.2, "Austral Basin Carina-Aries"));
+        gasBasins.add(new GeologicalBasin(-43.0, -24.5, 6.0, 3.0, 45.0, 4.5, "Santos Pre-Salt Associated Gas"));
+        gasBasins.add(new GeologicalBasin(-65.5, 9.2, 3.0, 1.8, 90.0, 4.2, "Yucal-Placer / Manapire Venezuela"));
+        gasBasins.add(new GeologicalBasin(-72.8, 11.8, 2.0, 1.2, 70.0, 4.0, "Chuchupa / Guajira Colombia"));
+
+        Color[] gasPalette = {
+            new Color(14, 116, 144),  // #0E7490 Deep Cyan
+            new Color(6, 182, 212),   // #06B6D4 Bright Cyan
+            new Color(56, 189, 248),  // #38BDF8 Sky Blue
+            new Color(207, 250, 254)  // #CFFAFE Electric Core
         };
-        for (double[] b : majorGasBasins) gasSpots.add(b);
-        rasterizeAlphaDensity(imgGas, gasSpots, new Color(6, 182, 212), 12.0);
+        rasterizeBasinsAndSpots(imgGas, gasBasins, null, gasPalette, 12.0);
         saveImageToAllLocations(imgGas, "earth_gas.png", "terre", "earth");
 
         // 4. Uranium Deposits (IAEA UDEPO + USGS MRDS)

@@ -114,9 +114,18 @@ public class EtherNetworkServer {
     public class ClientHandler implements Runnable {
         private final Socket socket;
         private DataOutputStream out;
+        private AuthToken authToken = null;
 
         public ClientHandler(Socket socket) {
             this.socket = socket;
+        }
+
+        public AuthToken getAuthToken() {
+            return authToken;
+        }
+
+        public void setAuthToken(AuthToken token) {
+            this.authToken = token;
         }
 
         @Override
@@ -147,6 +156,25 @@ public class EtherNetworkServer {
                             // Fallback if client sent plaintext or decryption error
                             decryptedMsg = rawMsg;
                         }
+                    }
+
+                    if (decryptedMsg.startsWith("AUTH:")) {
+                        // Format: AUTH:<username>:<role>:<signature>
+                        String[] parts = decryptedMsg.split(":", 4);
+                        if (parts.length >= 3) {
+                            AuthToken.Role role = AuthToken.Role.valueOf(parts[2].toUpperCase());
+                            this.authToken = new AuthToken(parts[1], role, "CoGovSecretKey");
+                            EtherSecurityAuditLogger.logAuditEvent("AUTH_SUCCESS", clientIp, "Authenticated as " + role + " (" + parts[1] + ")");
+                            sendMessage("AUTH_OK:" + role.name());
+                        }
+                        continue;
+                    }
+
+                    // Check RBAC permissions for state mutation
+                    if (authToken != null && !authToken.hasPermission(AuthToken.Role.PLANNER)) {
+                        EtherSecurityAuditLogger.logAuditEvent("AUTH_DENIED", clientIp, "Observer role attempted policy modification");
+                        sendMessage("ERROR:Permission denied (requires PLANNER role)");
+                        continue;
                     }
 
                     EtherSecurityAuditLogger.logAuditEvent("PAYLOAD_RECEIVED", clientIp, "Payload length: " + decryptedMsg.length());

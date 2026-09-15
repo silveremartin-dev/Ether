@@ -1470,7 +1470,34 @@ public class H3MapCanvas extends Canvas {
             case ELITE_DENSITY -> getEliteDensityColor(cell);
             case COLLECTIVE_MEMORY -> getCollectiveMemoryColor(cell);
             case COLLAPSE_RISK -> getCollapseRiskColor(cell);
+            case OCEAN_PH -> getOceanPhColor(cell);
+            case PERMAFROST -> getPermafrostColor(cell);
         };
+    }
+
+    private Color getOceanPhColor(H3Cell cell) {
+        if (cell == null) return Color.rgb(20, 30, 60);
+        if (cell.getBiome() != Biome.OCEAN && cell.getBiome() != Biome.DEEP_OCEAN && cell.getBiome() != Biome.BEACH) {
+            return Color.rgb(40, 45, 55); // Terres grisées
+        }
+        double temp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+        // pH gradient: 8.2 (bleu océan sain) -> 7.6 (jaune/orange) -> 7.2 (rouge acide critique)
+        double ph = org.ether.society.procedural.OceanAcidificationEngine.calculateHenrySolubility(temp);
+        double norm = Math.clamp((ph - 0.03) / 0.05, 0.0, 1.0);
+        int r = (int) (30 + norm * 200);
+        int g = (int) (140 - norm * 60);
+        int b = (int) (220 - norm * 150);
+        return Color.rgb(Math.clamp(r, 0, 255), Math.clamp(g, 0, 255), Math.clamp(b, 0, 255));
+    }
+
+    private Color getPermafrostColor(H3Cell cell) {
+        if (cell == null) return Color.rgb(30, 40, 50);
+        double lat = Math.abs(cell.getLatitude() != null ? cell.getLatitude() : 0.0);
+        if (lat < 50.0) return Color.rgb(50, 60, 70); // Hors zone boréale
+        double temp = cell.getTemperature() != null ? cell.getTemperature() : -5.0;
+        if (temp < -2.0) return Color.rgb(180, 220, 255); // Pergélisol stable (cyan glacé)
+        if (temp < 3.0) return Color.rgb(240, 180, 60); // Dégel actif (ambre/orange)
+        return Color.rgb(220, 50, 50); // Effondrement thermique & dégazage méthane (rouge vif)
     }
 
     private Color getMalthusianPressureColor(H3Cell cell) {

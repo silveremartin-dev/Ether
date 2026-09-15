@@ -1309,23 +1309,19 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private void loadEarthPresetMaps() {
-        try (var elevStream  = getClass().getResourceAsStream("/maps/earth_elevation.png");
-             var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png");
-             var tempStream  = getClass().getResourceAsStream("/maps/earth_temperature.png");
-             var rainStream  = getClass().getResourceAsStream("/maps/earth_precipitation.png");
-             var seasStream  = getClass().getResourceAsStream("/maps/earth_seasonality.png")) {
-            if (elevStream  != null) customElevImage  = new Image(elevStream);
-            if (biomeStream != null) customBiomeImage = new Image(biomeStream);
-            if (tempStream  != null) customClimateImage = new Image(tempStream);
-            if (rainStream  != null) customRainfallImage = new Image(rainStream);
-            if (seasStream  != null) customSeasonalityImage = new Image(seasStream);
+        try {
+            customElevImage        = ImageMapLoader.loadMapImage("earth_elevation.png");
+            customBiomeImage       = ImageMapLoader.loadMapImage("earth_biomes.png");
+            customClimateImage     = ImageMapLoader.loadMapImage("earth_temperature.png");
+            customRainfallImage    = ImageMapLoader.loadMapImage("earth_precipitation.png");
+            customSeasonalityImage = ImageMapLoader.loadMapImage("earth_seasonality.png");
 
-            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.status.earth_dem_active", "📷 Active preset: Earth Elevation (USGS DEM 2160x1080)"));
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.status.earth_biome_active", "🌿 Active preset: Earth Biomes & Land Cover"));
+            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.status.earth_dem_active", "📷 Active preset: Earth Elevation (NOAA/NASA DEM)"));
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.status.earth_biome_active", "🌿 Active preset: Earth Biomes & Land Cover (MODIS)"));
             if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.status.no_file_proc", "📄 No file loaded (Procedural active)"));
-            if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.datasource.era5_temp", "🌡️ Data Source : ERA5 Reanalysis (Copernicus / ECMWF — 1024x512 PNG)"));
-            if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.datasource.worldclim_rain", "🌧️ Data Source : WorldClim v2.1 (Hijmans et al. — 1024x512 PNG)"));
-            if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.datasource.era5_seas", "❄️ Data Source : ERA5 Seasonal Variance (1024x512 PNG)"));
+            if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.datasource.era5_temp", "🌡️ Data Source : WorldClim v2.1 Mean Temp (10 arc-min)"));
+            if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.datasource.worldclim_rain", "🌧️ Data Source : WorldClim v2.1 Precipitation (10 arc-min)"));
+            if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.datasource.era5_seas", "❄️ Data Source : WorldClim v2.1 Seasonality (10 arc-min)"));
         } catch (Exception e) {
             logger.warn("Could not load internal Earth maps", e);
         }
@@ -1401,8 +1397,12 @@ public class PlanetGeneratorPanel extends BorderPane {
             maxAltSlider.setValue(21229); // Olympus Mons
             waterSlider.setValue(-0.5); // No ocean
 
+            customElevImage = ImageMapLoader.loadMapImage("mars_elevation.png");
+            customBiomeImage = ImageMapLoader.loadMapImage("mars_biomes.png");
+            customClimateImage = ImageMapLoader.loadMapImage("mars_temperature.png");
+
             if (radioImport != null) radioImport.setSelected(true);
-            if (radioTempProc != null) radioTempProc.setSelected(true);
+            if (radioTempImport != null) radioTempImport.setSelected(true);
             if (radioPrecipProc != null) radioPrecipProc.setSelected(true);
             if (radioSeasonProc != null) radioSeasonProc.setSelected(true);
 
@@ -1410,10 +1410,10 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (precipSourceCombo != null) precipSourceCombo.setValue("");
             if (seasonSourceCombo != null) seasonSourceCombo.setValue("");
 
-            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.mars_dem", "📷 Mars MOLA Heightmap (USGS WMS)"));
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.get("planet.map.none"));
+            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.mars_dem", "📷 Mars MOLA Topography (NASA PDS)"));
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.mars_biome", "🌿 Mars Planetary Terrains & Volcanic Plains"));
             if (resourceFileLabel != null) resourceFileLabel.setText(I18n.get("planet.map.none"));
-            if (climateFileLabel != null) climateFileLabel.setText(I18n.get("planet.map.none"));
+            if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.source.mars_temp", "🌡️ Mars TES Surface Temperature"));
             if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.get("planet.map.none"));
             if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.get("planet.map.none"));
             updatePreview();
@@ -1434,8 +1434,12 @@ public class PlanetGeneratorPanel extends BorderPane {
             maxAltSlider.setValue(11000); // Maxwell Montes
             waterSlider.setValue(-0.5);
 
+            customElevImage = ImageMapLoader.loadMapImage("venus_elevation.png");
+            customBiomeImage = ImageMapLoader.loadMapImage("venus_biomes.png");
+            customClimateImage = ImageMapLoader.loadMapImage("venus_temperature.png");
+
             if (radioImport != null) radioImport.setSelected(true);
-            if (radioTempProc != null) radioTempProc.setSelected(true);
+            if (radioTempImport != null) radioTempImport.setSelected(true);
             if (radioPrecipProc != null) radioPrecipProc.setSelected(true);
             if (radioSeasonProc != null) radioSeasonProc.setSelected(true);
 
@@ -1443,10 +1447,10 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (precipSourceCombo != null) precipSourceCombo.setValue("");
             if (seasonSourceCombo != null) seasonSourceCombo.setValue("");
 
-            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.venus_dem", "📷 Venus Magellan Topography (USGS WMS)"));
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.get("planet.map.none"));
+            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.venus_dem", "📷 Venus Magellan Topography (NASA PDS)"));
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.venus_biome", "🌿 Venus Volcanic Plains & Tesserae"));
             if (resourceFileLabel != null) resourceFileLabel.setText(I18n.get("planet.map.none"));
-            if (climateFileLabel != null) climateFileLabel.setText(I18n.get("planet.map.none"));
+            if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.source.venus_temp", "🌡️ Venus Greenhouse Profile (464°C)"));
             if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.get("planet.map.none"));
             if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.get("planet.map.none"));
             updatePreview();
@@ -1467,8 +1471,12 @@ public class PlanetGeneratorPanel extends BorderPane {
             maxAltSlider.setValue(10700);
             waterSlider.setValue(-0.5);
 
+            customElevImage = ImageMapLoader.loadMapImage("moon_elevation.png");
+            customBiomeImage = ImageMapLoader.loadMapImage("moon_biomes.png");
+            customClimateImage = ImageMapLoader.loadMapImage("moon_temperature.png");
+
             if (radioImport != null) radioImport.setSelected(true);
-            if (radioTempProc != null) radioTempProc.setSelected(true);
+            if (radioTempImport != null) radioTempImport.setSelected(true);
             if (radioPrecipProc != null) radioPrecipProc.setSelected(true);
             if (radioSeasonProc != null) radioSeasonProc.setSelected(true);
 
@@ -1476,13 +1484,14 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (precipSourceCombo != null) precipSourceCombo.setValue("");
             if (seasonSourceCombo != null) seasonSourceCombo.setValue("");
 
-            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.moon_dem", "📷 Moon LRO Topography (USGS WMS)"));
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.get("planet.map.none"));
+            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.moon_dem", "📷 Moon LRO LOLA Topography (NASA PDS)"));
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.moon_biome", "🌿 Moon Lunar Maria & Anorthosite Highlands"));
             if (resourceFileLabel != null) resourceFileLabel.setText(I18n.get("planet.map.none"));
-            if (climateFileLabel != null) climateFileLabel.setText(I18n.get("planet.map.none"));
+            if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.source.moon_temp", "🌡️ Moon Diviner Surface Thermal Map"));
             if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.get("planet.map.none"));
             if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.get("planet.map.none"));
             updatePreview();
+            return;
         }
     }
 
