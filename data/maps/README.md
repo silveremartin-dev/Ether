@@ -81,7 +81,7 @@ In addition to Earth, Ether includes complete, authentic reference maps for othe
 
 ---
 
-## 6. Provider Index & Directory Structure
+## 6. Directory Structure & Ether Hierarchical Layout
 
 ```
 data/maps/
@@ -89,49 +89,18 @@ data/maps/
 ├── repatriation_audit.json            # Automated checksum and integrity audit
 ├── download_status.json               # Remote GIS asset sync status
 │
-├── terre/ (alias: earth/)             # Complete Earth preset layers
-│   ├── earth_elevation.png            # Tab 1: Topography (ETOPO 2022)
-│   ├── earth_temperature.png          # Tab 1: Annual Mean Temperature (WorldClim 2.1)
-│   ├── earth_precipitation.png        # Tab 1: Annual Precipitation (WorldClim 2.1)
-│   ├── earth_seasonality.png          # Tab 1: Thermal Seasonality (WorldClim 2.1)
-│   ├── earth_biomes.png               # Tab 2: Land Cover (MODIS MCD12C1)
-│   ├── earth_coal.png                 # Tab 2: Coal Deposits (USGS MRDS / BGR)
-│   ├── earth_oil.png                  # Tab 2: Petroleum Basins (WEP / BGR)
-│   ├── earth_gas.png                  # Tab 2: Natural Gas Fields (WEP / BGR)
-│   ├── earth_uranium.png              # Tab 2: Uranium (IAEA UDEPO / USGS MRDS)
-│   ├── earth_helium3.png              # Tab 2: Helium-3 Baseline
-│   ├── earth_iron_copper.png          # Tab 2: Iron & Copper Porphyry (USGS MRDS)
-│   ├── earth_precious_metals.png      # Tab 2: Gold, Platinum, REE, Li (USGS MRDS)
-│   ├── earth_geothermal.png           # Tab 2: Heat Flow (IHFC Davies 2013)
-│   └── earth_aquifers.png             # Tab 2: Groundwater Systems (UNESCO WHYMAP)
+├── ether/                             # Primary Engine Data Directory
+│   ├── terre/ (alias: earth/)         # Earth full raster layers (Tab 1, Tab 2)
+│   ├── lune/ (alias: moon/)           # Moon reference layers
+│   ├── mars/                          # Mars reference layers
+│   ├── venus/                         # Venus reference layers
+│   └── mercure/ (alias: mercury/)     # Mercury reference layers
 │
-├── lune/ (alias: moon/)               # Complete Moon preset layers
-│   ├── moon_elevation.png             # LOLA Altimetry DEM
-│   ├── moon_biomes.png                # Lunar maria / highlands classification
-│   ├── moon_temperature.png           # Surface thermal equilibrium model
-│   ├── moon_helium3.png               # Lunar Prospector / LEND He-3 concentration
-│   ├── moon_iron_copper.png           # Ilmenite / Ti-Fe rich mare deposits
-│   └── moon_aquifers.png              # Polar cold trap water ice volatiles
-│
-├── mars/                              # Complete Mars preset layers
-│   ├── mars_elevation.png             # MOLA MEGDR Topography
-│   ├── mars_biomes.png                # Areological classification
-│   ├── mars_temperature.png           # Thermal distribution model
-│   ├── mars_iron_copper.png           # Ferric iron / hematite deposits
-│   ├── mars_aquifers.png              # Subsurface ice sheets / Utopia Planitia
-│   └── mars_geothermal.png            # Volcanic thermal anomaly provinces
-│
-├── venus/                             # Complete Venus preset layers
-│   ├── venus_elevation.png            # Magellan Radar Topography
-│   ├── venus_biomes.png               # Volcanic plains & Tesserae
-│   ├── venus_temperature.png          # Supercritical CO2 greenhouse thermal model
-│   └── venus_geothermal.png           # Mantle plumes & Coronae thermal activity
-│
-├── mercure/ (alias: mercury/)         # Complete Mercury preset layers
-│   ├── mercury_elevation.png          # MESSENGER MLA DEM
-│   ├── mercury_biomes.png             # Intercrater & smooth plains classification
-│   ├── mercury_temperature.png        # Extreme solar flux / nocturnal cold model
-│   └── mercury_aquifers.png           # Polar PSR ice deposits
+├── terre/ (alias: earth/)             # Root preset fallback mirrors
+├── lune/ (alias: moon/)               # Root preset fallback mirrors
+├── mars/                              # Root preset fallback mirrors
+├── venus/                             # Root preset fallback mirrors
+├── mercure/ (alias: mercury/)         # Root preset fallback mirrors
 │
 ├── archaeoglobe/                      # Land Use Archaeological Survey
 ├── bgr_germany/                       # Federal Institute for Geosciences (Germany)
@@ -153,4 +122,40 @@ data/maps/
 ├── whymap_groundwater/                # UNESCO WHYMAP Groundwater
 └── worldclim/                         # WorldClim v2.1 GeoTIFF Climatology
 ```
+
+---
+
+## 7. Raw GIS Datasets Acquisition & Provenance Catalog
+
+For academic simulation fidelity at the highest standard, the exact external GIS shapefiles, GeoTIFFs, and geodatabases can be downloaded from accredited public repositories and placed into `data/maps/`:
+
+### 1. Fossil Energy & Petroleum Basins (Coal, Oil, Gas)
+- **EIA World Shale & Conventional Basins Shapefile**
+  - **Provider**: U.S. Energy Information Administration (EIA) / Advanced Resources International
+  - **Data Content**: Full GIS polygon boundaries for 137 worldwide sedimentary shale and conventional hydrocarbon basins.
+  - **Direct Download URL**: `https://www.eia.gov/maps/map_data/ShaleGas_Oil_Basins_World_EIA.zip`
+  - **Target Location**: `data/maps/wep_world_energy/ShaleGas_Oil_Basins_World_EIA.zip`
+- **USGS World Petroleum Assessment TPS (Total Petroleum Systems)**
+  - **Provider**: United States Geological Survey (USGS) World Energy Project
+  - **Data Content**: Spatial boundaries and quantitative assessment of world petroleum systems and assessment units.
+  - **Direct Download URL**: `https://pubs.usgs.gov/dds/dds-060/` (ESRI Shapefiles / Geodatabase)
+  - **Target Location**: `data/maps/wep_world_energy/usgs_world_petroleum/`
+- **Global Energy Monitor (GEM) Trackers**
+  - **Global Coal Mine Tracker**: `https://globalenergymonitor.org/projects/global-coal-mine-tracker/` (4,300+ operational/proposed coal mines with exact lat/lon and annual metric tonnage)
+  - **Global Oil & Gas Extraction Tracker**: `https://globalenergymonitor.org/projects/global-oil-gas-extraction-tracker/` (Global upstream oil and gas extraction units)
+  - **Target Location**: `data/maps/wep_world_energy/gem_trackers/`
+
+### 2. Nuclear Energy & Uranium Deposits
+- **IAEA UDEPO (World Distribution of Uranium Deposits)**
+  - **Provider**: International Atomic Energy Agency (IAEA) NFCIS
+  - **Data Content**: 7,200+ geocoded deposits with deposit class (Unconformity-related, Sandstone, Proterozoic quartz-pebble conglomerate, Breccia complex/Olympic Dam), resource category (RAR, IR), and mined out tonnage.
+  - **Direct Download URL**: `https://infcis.iaea.org/UDEPO/Deposits` (CSV / KML / Shapefile export)
+  - **Target Location**: `data/maps/iaea_nfcis/iaea_udepo_deposits.csv`
+
+### 3. Planetary Topography & Remote Sensing (NASA PDS)
+- **Moon (LOLA DEM & Water Ice)**: NASA PDS Geosciences Node (`https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/`)
+- **Mars (MOLA MEGDR Topography)**: NASA PDS Geosciences Node (`https://pds-geosciences.wustl.edu/mgs/mgs-m-mola-5-megdr-l3-v1/mgsl_300x/`)
+- **Venus (Magellan Radar Altimetry GXDR / C3-MDIR)**: USGS Astrogeology Venus GIS Portal (`https://astrogeology.usgs.gov/search/map/Venus/Magellan/`)
+- **Mercury (MESSENGER MLA DEM)**: NASA PDS MESSENGER Node (`https://pds-geosciences.wustl.edu/messenger/`)
+
 

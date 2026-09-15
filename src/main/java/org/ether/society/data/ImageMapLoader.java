@@ -336,7 +336,29 @@ public class ImageMapLoader {
         String cleanName = mapFileName.startsWith("/") ? mapFileName.substring(1) : mapFileName;
         if (cleanName.startsWith("maps/")) cleanName = cleanName.substring(5);
 
-        // 1. Prioritize direct path in data/maps/
+        // 1. Prioritize data/maps/ether/ directory and its preset subdirectories
+        File etherDirect = new File("data/maps/ether/" + cleanName);
+        if (etherDirect.exists() && etherDirect.isFile()) {
+            try {
+                return new Image(new java.io.FileInputStream(etherDirect));
+            } catch (Exception e) {
+                logger.warn("Failed to load map from {}", etherDirect.getAbsolutePath(), e);
+            }
+        }
+
+        String[] subDirs = {"terre", "earth", "lune", "moon", "mars", "venus", "mercure", "mercury"};
+        for (String sub : subDirs) {
+            File etherSubFile = new File("data/maps/ether/" + sub + "/" + cleanName);
+            if (etherSubFile.exists() && etherSubFile.isFile()) {
+                try {
+                    return new Image(new java.io.FileInputStream(etherSubFile));
+                } catch (Exception e) {
+                    logger.warn("Failed to load map from {}", etherSubFile.getAbsolutePath(), e);
+                }
+            }
+        }
+
+        // 2. Direct path in data/maps/
         File directFile = new File("data/maps/" + cleanName);
         if (directFile.exists() && directFile.isFile()) {
             try {
@@ -346,8 +368,7 @@ public class ImageMapLoader {
             }
         }
 
-        // 2. Check preset subdirectories in data/maps/
-        String[] subDirs = {"terre", "earth", "lune", "moon", "mars", "venus", "mercure", "mercury"};
+        // 3. Preset subdirectories in data/maps/
         for (String sub : subDirs) {
             File subFile = new File("data/maps/" + sub + "/" + cleanName);
             if (subFile.exists() && subFile.isFile()) {
@@ -359,7 +380,14 @@ public class ImageMapLoader {
             }
         }
 
-        // 3. Fallback to classpath /maps/
+        // 4. Fallback to classpath /maps/ether/ and /maps/
+        var streamEther = ImageMapLoader.class.getResourceAsStream("/maps/ether/" + cleanName);
+        if (streamEther != null) return new Image(streamEther);
+        for (String sub : subDirs) {
+            var subStream = ImageMapLoader.class.getResourceAsStream("/maps/ether/" + sub + "/" + cleanName);
+            if (subStream != null) return new Image(subStream);
+        }
+
         var stream = ImageMapLoader.class.getResourceAsStream("/maps/" + cleanName);
         if (stream != null) {
             return new Image(stream);

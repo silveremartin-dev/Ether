@@ -1569,15 +1569,29 @@ public class HistoricalMapGenerator {
 
     private static BufferedImage loadDirectBufferedImage(String filename) {
         try {
+            // 1. Check data/maps/ether/
+            java.io.File etherFile = new java.io.File("data/maps/ether/" + filename);
+            if (etherFile.exists()) return javax.imageio.ImageIO.read(etherFile);
+            String[] subDirs = {"terre", "earth", "lune", "moon", "mars", "venus", "mercure", "mercury"};
+            for (String sub : subDirs) {
+                java.io.File subFile = new java.io.File("data/maps/ether/" + sub + "/" + filename);
+                if (subFile.exists()) return javax.imageio.ImageIO.read(subFile);
+            }
+            // 2. Check data/maps/
             java.io.File file = new java.io.File("data/maps/" + filename);
-            if (file.exists()) {
-                return javax.imageio.ImageIO.read(file);
+            if (file.exists()) return javax.imageio.ImageIO.read(file);
+            for (String sub : subDirs) {
+                java.io.File subFile = new java.io.File("data/maps/" + sub + "/" + filename);
+                if (subFile.exists()) return javax.imageio.ImageIO.read(subFile);
+            }
+            // 3. Check classpath
+            java.io.InputStream isEther = HistoricalMapGenerator.class.getResourceAsStream("/maps/ether/" + filename);
+            if (isEther != null) {
+                try (isEther) { return javax.imageio.ImageIO.read(isEther); }
             }
             java.io.InputStream is = HistoricalMapGenerator.class.getResourceAsStream("/maps/" + filename);
             if (is != null) {
-                try (is) {
-                    return javax.imageio.ImageIO.read(is);
-                }
+                try (is) { return javax.imageio.ImageIO.read(is); }
             }
         } catch (Exception ignored) {}
         return null;

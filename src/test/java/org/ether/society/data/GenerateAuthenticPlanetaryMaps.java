@@ -276,12 +276,23 @@ public class GenerateAuthenticPlanetaryMaps {
             fRes.getParentFile().mkdirs();
             ImageIO.write(img, "PNG", fRes);
 
-            // 3. Subdirectories under data/maps/
+            // 3. Root data/maps/ether
+            File dirEther = new File("data/maps/ether");
+            dirEther.mkdirs();
+            File fEtherRoot = new File(dirEther, baseName);
+            ImageIO.write(img, "PNG", fEtherRoot);
+
+            // 4. Subdirectories under data/maps/ and data/maps/ether/
             for (String sub : subDirs) {
                 File dir = new File("data/maps/" + sub);
                 dir.mkdirs();
                 File fSub = new File(dir, baseName);
                 ImageIO.write(img, "PNG", fSub);
+
+                File etherSubDir = new File("data/maps/ether/" + sub);
+                etherSubDir.mkdirs();
+                File fEtherSub = new File(etherSubDir, baseName);
+                ImageIO.write(img, "PNG", fEtherSub);
             }
             logger.info("Saved {}", baseName);
         } catch (Exception e) {

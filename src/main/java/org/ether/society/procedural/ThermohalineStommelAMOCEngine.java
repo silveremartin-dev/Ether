@@ -51,7 +51,7 @@ public class ThermohalineStommelAMOCEngine {
     public static final double BASELINE_AMOC_SV = 18.0;
 
     /** Stommel coupling constant */
-    public static final double STOMMEL_COUPLING_C = 900.0;
+    public static final double STOMMEL_COUPLING_C = 5000.0;
 
     public record StommelState(double amocFlowSv, double northAtlanticCoolingShiftC, boolean isCollapsed) {}
 
