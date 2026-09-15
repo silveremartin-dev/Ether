@@ -25,6 +25,12 @@ public class TradeNetworkEngine {
 
     public record TradeRoute(H3Cell origin, H3Cell destination, List<H3Cell> pathCells, double totalFrictionCost) {}
 
+    private static final List<TradeRoute> latestRoutes = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    public static List<TradeRoute> getLatestRoutes() {
+        return Collections.unmodifiableList(latestRoutes);
+    }
+
     /**
      * Simulates and computes primary trade routes between high-density population nodes.
      * Enhances capital stock, labor efficiency, and technological diffusion along trade paths.
@@ -61,6 +67,9 @@ public class TradeNetworkEngine {
                 }
             }
         }
+
+        latestRoutes.clear();
+        latestRoutes.addAll(activeRoutes);
 
         logger.info("Generated {} active trade corridors across {} population hubs.", activeRoutes.size(), hubs.size());
         return activeRoutes;
@@ -125,6 +134,13 @@ public class TradeNetworkEngine {
         if (route == null || route.pathCells().isEmpty()) return;
 
         double routeValue = 50.0 * (1.0 + techLevel * 0.5) / Math.max(1.0, route.totalFrictionCost() * 0.1);
+
+        // Marine & Ocean Acidification Coupling: depleted marine biomass diminishes route value
+        double marineFactor = 1.0;
+        if (route.origin() != null && route.origin().getBiomassFish() != null) {
+            marineFactor = Math.clamp(route.origin().getBiomassFish() / 500.0, 0.2, 1.0);
+        }
+        routeValue *= marineFactor;
 
         for (H3Cell cell : route.pathCells()) {
             // Capital accumulation along trade route

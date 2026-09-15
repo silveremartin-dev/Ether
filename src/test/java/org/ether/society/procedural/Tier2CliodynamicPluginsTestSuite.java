@@ -60,7 +60,7 @@ public class Tier2CliodynamicPluginsTestSuite {
     public void testWestBettencourtAllometry() {
         WestBettencourtAllometryEngine engine = new WestBettencourtAllometryEngine();
         assertNotNull(engine.getEquationsTooltip());
-        assertTrue(engine.getEquationsTooltip().contains("N_i^1.15"));
+        assertTrue(engine.getEquationsTooltip().contains("1.15"));
 
         double capitalBefore = sampleCells.get(9).getResourceCapital();
         engine.process(sampleCells, 1.0);

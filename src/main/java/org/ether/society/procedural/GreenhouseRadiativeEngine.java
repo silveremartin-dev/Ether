@@ -45,6 +45,8 @@ public class GreenhouseRadiativeEngine {
     private double currentCh4Ppb = 720.0;
     private double seaLevelDeltaMeters = 0.0;
 
+    private double technologicalMitigationEfficiency = 0.0;
+
     public GreenhouseRadiativeEngine() {
         this(280.0, 720.0);
     }
@@ -55,14 +57,32 @@ public class GreenhouseRadiativeEngine {
     }
 
     /**
-     * Calculates radiative forcing in W/m² based on greenhouse gas concentrations.
+     * Updates technological mitigation factor based on planetary tech level
+     * (Carbon Capture & Storage, Fusion, Geoengineering).
+     */
+    public void applyTechnologicalMitigation(double avgTechLevel) {
+        if (avgTechLevel > 5.0) {
+            this.technologicalMitigationEfficiency = Math.clamp((avgTechLevel - 5.0) * 0.10, 0.0, 0.60);
+        } else {
+            this.technologicalMitigationEfficiency = 0.0;
+        }
+    }
+
+    public double getTechnologicalMitigationEfficiency() {
+        return technologicalMitigationEfficiency;
+    }
+
+    /**
+     * Calculates radiative forcing in W/m² based on greenhouse gas concentrations
+     * modulated by technological carbon capture and solar geoengineering mitigation.
      */
     public double computeRadiativeForcingWpm2() {
         double co2Ratio = Math.max(1.0, currentCo2Ppm) / BASELINE_CO2_PPM;
         double co2Forcing = 5.35 * Math.log(co2Ratio);
 
         double ch4Forcing = 0.036 * (Math.sqrt(Math.max(0.0, currentCh4Ppb)) - Math.sqrt(BASELINE_CH4_PPB));
-        return Math.max(0.0, co2Forcing + ch4Forcing);
+        double rawForcing = Math.max(0.0, co2Forcing + ch4Forcing);
+        return rawForcing * (1.0 - technologicalMitigationEfficiency);
     }
 
     /**
