@@ -21,7 +21,7 @@ public class SimulationRunRepository {
     private final Map<String, SimulationRunRecord> repository = new ConcurrentHashMap<>();
 
     private SimulationRunRepository() {
-        seedPreRecordedHistoricalBenchmarks();
+        // Starts clean without hardcoded fake runs
     }
 
     public static synchronized SimulationRunRepository getInstance() {
@@ -61,9 +61,9 @@ public class SimulationRunRepository {
 
     /**
      * Seeds the repository with rich pre-recorded historical benchmark runs (e.g., Empire Romain variations)
-     * so that offline comparative analysis can be tested immediately out-of-the-box.
+     * for testing purposes.
      */
-    private void seedPreRecordedHistoricalBenchmarks() {
+    public void seedPreRecordedHistoricalBenchmarks() {
         // Run A: Empire Romain An 0 (Baseline Reference)
         Map<String, String> paramsA = new LinkedHashMap<>();
         paramsA.put("Capitale", "Rome (Lat 41.9°, Lng 12.5°)");

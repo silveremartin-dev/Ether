@@ -38,10 +38,8 @@ public class DataDownloaderService {
     public static final File LOCAL_HYDE_DIR = new File("data/maps/hyde34/");
     public static final File LOCAL_CACHE_DIR = new File("data/cache/");
     public static final File LOCAL_PALEOCLIM_DIR = new File("data/maps/paleoclim/");
-    public static final File LOCAL_CHELSA_DIR = new File("data/maps/chelsa/");
     public static final File LOCAL_WORLDCLIM_DIR = new File("data/maps/worldclim/");
     public static final File LOCAL_PALEOMAP_DIR = new File("data/maps/paleomap/");
-    public static final File LOCAL_PMIP_DIR = new File("data/maps/pmip/");
     public static final File LOCAL_PANGEA_DIR = new File("data/maps/pangea/");
 
     static {
@@ -49,7 +47,7 @@ public class DataDownloaderService {
     }
 
     private static void ensureDirectoriesExist() {
-        File[] dirs = {LOCAL_HYDE_DIR, LOCAL_CACHE_DIR, LOCAL_PALEOCLIM_DIR, LOCAL_CHELSA_DIR, LOCAL_WORLDCLIM_DIR, LOCAL_PALEOMAP_DIR, LOCAL_PMIP_DIR, LOCAL_PANGEA_DIR};
+        File[] dirs = {LOCAL_HYDE_DIR, LOCAL_CACHE_DIR, LOCAL_PALEOCLIM_DIR, LOCAL_WORLDCLIM_DIR, LOCAL_PALEOMAP_DIR, LOCAL_PANGEA_DIR};
         for (File dir : dirs) {
             if (!dir.exists()) {
                 dir.mkdirs();

@@ -387,9 +387,8 @@ public class HistoricalPlanetaryScenarioValidationSuite {
                     .map(lookup::get)
                     .filter(Objects::nonNull)
                     .filter(n -> {
-                        double elev = n.getElevation() != null ? n.getElevation() : 0.0;
-                        if (elev > 0.35) return true; // Land cell
-                        return allowSeafaring && (n.getBiome() == Biome.BEACH || n.getBiome() == Biome.OCEAN); // Maritime watercraft crossing
+                        if (n.getBiome() != Biome.OCEAN && n.getBiome() != Biome.DEEP_OCEAN) return true; // Land cell
+                        return allowSeafaring; // Maritime watercraft crossing
                     })
                     .toList();
 

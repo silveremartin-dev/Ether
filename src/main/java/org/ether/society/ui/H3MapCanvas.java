@@ -15,6 +15,7 @@ import org.ether.society.model.Biome;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -106,6 +107,14 @@ public class H3MapCanvas extends Canvas {
         draw();
     }
 
+    private boolean showCornerOverlays = true;
+
+    public boolean isShowCornerOverlays() { return showCornerOverlays; }
+    public void setShowCornerOverlays(boolean show) {
+        this.showCornerOverlays = show;
+        draw();
+    }
+
     public boolean isShowLegendOverlay() { return showLegendOverlay; }
     public void setShowLegendOverlay(boolean show) { 
         this.showLegendOverlay = show; 
@@ -117,11 +126,13 @@ public class H3MapCanvas extends Canvas {
     private ScientificColorMap scientificColorMap = ScientificColorMap.TURBO;
     private boolean showHillshading = false;
     private boolean showSolarTerminator = false;
-    private boolean enableHierarchicalLOD = true;
+    private WritableImage cachedSmoothImage = null;
+    private boolean smoothImageDirty = true;
 
     public ScientificColorMap getScientificColorMap() { return scientificColorMap; }
     public void setScientificColorMap(ScientificColorMap cmap) {
         this.scientificColorMap = cmap;
+        this.smoothImageDirty = true;
         draw();
     }
 
@@ -137,10 +148,8 @@ public class H3MapCanvas extends Canvas {
         draw();
     }
 
-    public boolean isEnableHierarchicalLOD() { return enableHierarchicalLOD; }
-    public void setEnableHierarchicalLOD(boolean enable) {
-        this.enableHierarchicalLOD = enable;
-        draw();
+    public void invalidateSmoothCache() {
+        this.smoothImageDirty = true;
     }
 
     // Zero-allocation primitive rendering buffers for 3D globe mode (60 FPS optimization)
@@ -160,6 +169,7 @@ public class H3MapCanvas extends Canvas {
     public boolean isSmoothMap() { return smoothMap; }
     public void setSmoothMap(boolean smoothMap) {
         this.smoothMap = smoothMap;
+        this.smoothImageDirty = true;
         draw();
     }
 
@@ -235,6 +245,8 @@ public class H3MapCanvas extends Canvas {
     public void setTooltipContainer(Pane container) {
         this.tooltipContainer = container;
         this.tooltip = new CellTooltip();
+        this.tooltip.setMouseTransparent(true);
+        javafx.scene.layout.StackPane.setAlignment(tooltip, javafx.geometry.Pos.TOP_LEFT);
         container.getChildren().add(tooltip);
     }
 
@@ -405,6 +417,16 @@ public class H3MapCanvas extends Canvas {
 
         // Mouse move for tooltip - disabled when showMouseOverInfo is false
         setOnMouseMoved(event -> {
+            double mouseX = event.getX();
+            double mouseY = event.getY();
+
+            // Real-time status bar coordinates update
+            double[] latLng = getLatLngAt(mouseX, mouseY);
+            if (latLng != null && onHoverCallback != null) {
+                H3Cell quickCell = findCellAt(mouseX, mouseY);
+                onHoverCallback.accept(quickCell, latLng);
+            }
+
             if (!showMouseOverInfo) {
                 if (tooltip != null) {
                     tooltip.hide();
@@ -412,7 +434,7 @@ public class H3MapCanvas extends Canvas {
                 }
                 return;
             }
-            H3Cell cell = findCellAt(event.getX(), event.getY());
+            H3Cell cell = findCellAt(mouseX, mouseY);
             if (cell == null || cell != pendingHoverCell) {
                 if (tooltip != null) {
                     tooltip.hide();
@@ -420,8 +442,8 @@ public class H3MapCanvas extends Canvas {
                 }
                 hoverTimer.stop();
                 pendingHoverCell = cell;
-                pendingCanvasX = event.getX();
-                pendingCanvasY = event.getY();
+                pendingCanvasX = mouseX;
+                pendingCanvasY = mouseY;
                 pendingSceneX = event.getSceneX();
                 pendingSceneY = event.getSceneY();
 
@@ -429,8 +451,8 @@ public class H3MapCanvas extends Canvas {
                     hoverTimer.playFromStart();
                 }
             } else {
-                pendingCanvasX = event.getX();
-                pendingCanvasY = event.getY();
+                pendingCanvasX = mouseX;
+                pendingCanvasY = mouseY;
                 pendingSceneX = event.getSceneX();
                 pendingSceneY = event.getSceneY();
             }
@@ -460,6 +482,7 @@ public class H3MapCanvas extends Canvas {
 
     public void setDisplayMode(DisplayMode mode) {
         this.displayMode = mode;
+        this.smoothImageDirty = true;
         draw();
         logger.info("Display mode changed to: {}", mode);
     }
@@ -483,6 +506,7 @@ public class H3MapCanvas extends Canvas {
         if (globe3DSubScene != null) {
             globe3DSubScene.resetCamera();
         }
+        this.smoothImageDirty = true;
         draw();
         notifyMiniMap();
     }
@@ -528,12 +552,22 @@ public class H3MapCanvas extends Canvas {
             cellMap.put(c.getH3Index(), c);
         }
 
+        if (!cells.isEmpty() && h3Service != null) {
+            try {
+                int detectedRes = h3Service.getResolution(cells.get(0).getH3Index());
+                if (detectedRes != h3Service.getResolution()) {
+                    this.h3Service = new H3Service(detectedRes);
+                }
+            } catch (Exception ignored) {}
+        }
+
         // Compute lat/lng bounds
         minLat = cells.stream().mapToDouble(H3Cell::getLatitude).min().orElse(0);
         maxLat = cells.stream().mapToDouble(H3Cell::getLatitude).max().orElse(0);
         minLng = cells.stream().mapToDouble(H3Cell::getLongitude).min().orElse(0);
         maxLng = cells.stream().mapToDouble(H3Cell::getLongitude).max().orElse(0);
 
+        this.smoothImageDirty = true;
         resetView();
 
         if (globe3DSubScene != null) {
@@ -563,6 +597,7 @@ public class H3MapCanvas extends Canvas {
                 }
             }
         }
+        this.smoothImageDirty = true;
         draw();
     }
 
@@ -623,55 +658,59 @@ public class H3MapCanvas extends Canvas {
         }
 
         drawEventBeacons(gc);
-        drawCornerOverlays(gc);
+        if (showCornerOverlays) {
+            drawCornerOverlays(gc);
+        }
 
         logger.debug("Drew {} cells in {} mode", cells.size(), viewMode);
     }
 
     private void drawCornerOverlays(GraphicsContext gc) {
+        if (!showCornerOverlays) return;
         double h = getHeight();
         double w = getWidth();
         if (h < 60 || w < 220) return;
 
-        // Bottom-Left: Scenario Name
+        // Top-Left: Scenario Name Badge
         String scenText = "🎬 " + (scenarioName != null ? scenarioName : "Scénario Ether");
         gc.setFont(javafx.scene.text.Font.font("Consolas", javafx.scene.text.FontWeight.BOLD, 12));
         double scenWidth = Math.max(170, scenText.length() * 8.0 + 24);
 
         gc.setFill(Color.rgb(15, 23, 42, 0.88));
-        gc.fillRoundRect(14, h - 42, scenWidth, 28, 8, 8);
+        gc.fillRoundRect(14, 14, scenWidth, 28, 8, 8);
         gc.setStroke(Color.rgb(56, 189, 248, 0.85));
         gc.setLineWidth(1.2);
-        gc.strokeRoundRect(14, h - 42, scenWidth, 28, 8, 8);
+        gc.strokeRoundRect(14, 14, scenWidth, 28, 8, 8);
 
         gc.setFill(Color.rgb(241, 245, 249));
-        gc.fillText(scenText, 22, h - 23);
+        gc.fillText(scenText, 22, 33);
 
-        // Bottom-Right: Scrolling Date
+        // Top-Right: Date & Time Badge
         String dateText = "📅 " + (currentDateStr != null ? currentDateStr : "An --");
         double dateWidth = Math.max(150, dateText.length() * 8.5 + 24);
         double dateX = w - dateWidth - 14;
 
         gc.setFill(Color.rgb(15, 23, 42, 0.88));
-        gc.fillRoundRect(dateX, h - 42, dateWidth, 28, 8, 8);
+        gc.fillRoundRect(dateX, 14, dateWidth, 28, 8, 8);
         gc.setStroke(isRecordingVideo ? Color.rgb(239, 68, 68, 0.9) : Color.rgb(74, 222, 128, 0.85));
         gc.setLineWidth(1.2);
-        gc.strokeRoundRect(dateX, h - 42, dateWidth, 28, 8, 8);
+        gc.strokeRoundRect(dateX, 14, dateWidth, 28, 8, 8);
 
         gc.setFill(isRecordingVideo ? Color.rgb(254, 202, 202) : Color.rgb(241, 245, 249));
-        gc.fillText(dateText, dateX + 12, h - 23);
+        gc.fillText(dateText, dateX + 12, 33);
 
-        // REC Indicator on Top-Right when video recording is active
+        // REC Indicator on Top-Right (next to Date) when video recording is active
         if (isRecordingVideo) {
+            double recX = dateX - 90;
             long now = System.currentTimeMillis();
             boolean blink = (now % 1000) < 500;
             if (blink) {
                 gc.setFill(Color.rgb(239, 68, 68));
-                gc.fillOval(w - 85, 14, 11, 11);
+                gc.fillOval(recX, 22, 11, 11);
             }
             gc.setFill(Color.rgb(248, 113, 113));
             gc.setFont(javafx.scene.text.Font.font("Consolas", javafx.scene.text.FontWeight.BOLD, 12));
-            gc.fillText("REC 1:1", w - 68, 24);
+            gc.fillText("REC 1:1", recX + 16, 32);
         }
     }
 
@@ -913,12 +952,6 @@ public class H3MapCanvas extends Canvas {
     private void updateTooltip(double canvasX, double canvasY, double sceneX, double sceneY) {
         H3Cell cell = findCellAt(canvasX, canvasY);
 
-        if (onHoverCallback != null) {
-            double lat = cell != null ? cell.getLatitude() : 0.0;
-            double lng = cell != null ? cell.getLongitude() : 0.0;
-            onHoverCallback.accept(cell, new double[]{lat, lng});
-        }
-
         if (cell != null) {
             if (cell != hoveredCell) {
                 // Save previous pop state if missing
@@ -930,17 +963,21 @@ public class H3MapCanvas extends Canvas {
 
             Integer prevPop = previousPopMap.get(cell.getH3Index());
 
-            if (worldBuffer != null) {
-                int index = cells.indexOf(cell); 
-                tooltip.updateFromBuffer(worldBuffer, index);
+            if (worldBuffer != null && !h3ToBufferIndexMap.isEmpty()) {
+                Integer idx = h3ToBufferIndexMap.get(cell.getH3Index());
+                if (idx != null) {
+                    tooltip.updateFromBuffer(worldBuffer, idx);
+                } else {
+                    tooltip.updateCell(cell, prevPop);
+                }
             } else {
                 tooltip.updateCell(cell, prevPop);
             }
-            tooltip.position(sceneX, sceneY,
-                    tooltipContainer.getWidth(),
-                    tooltipContainer.getHeight());
+            double contW = tooltipContainer != null ? tooltipContainer.getWidth() : getWidth();
+            double contH = tooltipContainer != null ? tooltipContainer.getHeight() : getHeight();
+            tooltip.position(canvasX, canvasY, contW, contH);
         } else {
-            tooltip.hide();
+            if (tooltip != null) tooltip.hide();
             hoveredCell = null;
         }
     }
@@ -997,19 +1034,121 @@ public class H3MapCanvas extends Canvas {
             }
         }
 
-        // Get H3 index at this location
-        long h3Index = h3Service.latLngToCell(lat, lng);
-
-        // Fast lookup via cellMap
-        if (cellMap != null && !cellMap.isEmpty()) {
-            return cellMap.get(h3Index);
+        // 1. Direct H3 lookup via cellMap
+        if (h3Service != null) {
+            long h3Index = h3Service.latLngToCell(lat, lng);
+            if (cellMap != null && cellMap.containsKey(h3Index)) {
+                return cellMap.get(h3Index);
+            }
         }
 
-        // Fallback search in dataset
-        return cells.stream()
-                .filter(c -> c.getH3Index() == h3Index)
-                .findFirst()
-                .orElse(null);
+        // 2. Spatial proximity fallback: find closest cell within reasonable radius
+        H3Cell closest = null;
+        double minDistSq = Double.MAX_VALUE;
+        double maxDistThreshold = (maxLat - minLat + 1.0) / Math.max(10, Math.sqrt(cells.size())) * 3.5;
+        double threshSq = maxDistThreshold * maxDistThreshold;
+
+        for (H3Cell c : cells) {
+            double dLat = c.getLatitude() - lat;
+            double dLng = c.getLongitude() - lng;
+            double distSq = dLat * dLat + dLng * dLng;
+            if (distSq < minDistSq) {
+                minDistSq = distSq;
+                closest = c;
+            }
+        }
+        if (minDistSq <= threshSq) {
+            return closest;
+        }
+        return null;
+    }
+
+    private WritableImage getOrUpdateSmoothMapImage(double minLat, double maxLat, double minLng, double maxLng) {
+        if (cells == null || cells.isEmpty()) return null;
+        if (cachedSmoothImage != null && !smoothImageDirty) {
+            return cachedSmoothImage;
+        }
+
+        int width = 720;
+        int height = 360;
+        WritableImage img = new WritableImage(width, height);
+        PixelWriter pw = img.getPixelWriter();
+
+        float[][] rGrid = new float[height][width];
+        float[][] gGrid = new float[height][width];
+        float[][] bGrid = new float[height][width];
+        float[][] wGrid = new float[height][width];
+
+        double spanLng = maxLng - minLng;
+        double spanLat = maxLat - minLat;
+        if (spanLng <= 0) spanLng = 360.0;
+        if (spanLat <= 0) spanLat = 180.0;
+
+        double kernelRadiusPx = Math.max(3.0, ((double) width / Math.sqrt(cells.size())) * 1.6);
+        int rInt = (int) Math.ceil(kernelRadiusPx);
+
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell cell = cells.get(i);
+            double lng = cell.getLongitude();
+            double lat = cell.getLatitude();
+            if (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng) continue;
+
+            int cx = (int) Math.clamp(Math.floor(((lng - minLng) / spanLng) * width), 0, width - 1);
+            int cy = (int) Math.clamp(Math.floor(((maxLat - lat) / spanLat) * height), 0, height - 1);
+
+            Color col = getBufferOrCellColor(cell);
+            if (showHillshading || showSolarTerminator) {
+                double f = computeHillshadeFactor(cell) * computeSolarTerminatorFactor(cell);
+                col = Color.color(
+                        Math.clamp(col.getRed() * f, 0.0, 1.0),
+                        Math.clamp(col.getGreen() * f, 0.0, 1.0),
+                        Math.clamp(col.getBlue() * f, 0.0, 1.0),
+                        col.getOpacity()
+                );
+            }
+
+            float r = (float) col.getRed();
+            float g = (float) col.getGreen();
+            float b = (float) col.getBlue();
+
+            int minX = Math.max(0, cx - rInt);
+            int maxX = Math.min(width - 1, cx + rInt);
+            int minY = Math.max(0, cy - rInt);
+            int maxY = Math.min(height - 1, cy + rInt);
+
+            for (int py = minY; py <= maxY; py++) {
+                double dy = py - cy;
+                for (int px = minX; px <= maxX; px++) {
+                    double dx = px - cx;
+                    double dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist <= kernelRadiusPx) {
+                        float w = (float) Math.pow(1.0 - (dist / kernelRadiusPx), 2.0);
+                        rGrid[py][px] += r * w;
+                        gGrid[py][px] += g * w;
+                        bGrid[py][px] += b * w;
+                        wGrid[py][px] += w;
+                    }
+                }
+            }
+        }
+
+        for (int py = 0; py < height; py++) {
+            for (int px = 0; px < width; px++) {
+                float w = wGrid[py][px];
+                if (w > 0.0001f) {
+                    float r = Math.min(1.0f, Math.max(0.0f, rGrid[py][px] / w));
+                    float g = Math.min(1.0f, Math.max(0.0f, gGrid[py][px] / w));
+                    float b = Math.min(1.0f, Math.max(0.0f, bGrid[py][px] / w));
+                    pw.setColor(px, py, Color.color(r, g, b, 1.0));
+                } else {
+                    pw.setColor(px, py, Color.rgb(15, 23, 42)); // Ocean baseline
+                }
+            }
+        }
+
+        this.cachedSmoothImage = img;
+        this.smoothImageDirty = false;
+        return img;
     }
 
     private void draw2D(GraphicsContext gc, double minLat, double maxLat, double minLng, double maxLng) {
@@ -1024,8 +1163,46 @@ public class H3MapCanvas extends Canvas {
         double lngSpan = Math.max(1.0, maxLng - minLng);
         double cellSpacing = (lngSpan / Math.sqrt(Math.max(1, cells.size()))) * scale;
         double cellSize = Math.max(5.0, cellSpacing * 1.45);
-        boolean renderHexBorders = showHexGrid && !smoothMap && cellSpacing > 3.0;
 
+        if (smoothMap) {
+            double worldX = (minLng - minLng) * scale + offsetX;
+            double worldY = (maxLat - maxLat) * scale + offsetY;
+            double worldW = (maxLng - minLng) * scale;
+            double worldH = (maxLat - minLat) * scale;
+
+            WritableImage smoothImg = getOrUpdateSmoothMapImage(minLat, maxLat, minLng, maxLng);
+            if (smoothImg != null) {
+                gc.drawImage(smoothImg, worldX, worldY, worldW, worldH);
+            }
+
+            if (showHexGrid) {
+                for (int i = startIndex; i < cells.size(); i++) {
+                    H3Cell cell = cells.get(i);
+                    if (cell.getLatitude() > cullMaxLat) break;
+
+                    double x = (cell.getLongitude() - minLng) * scale + offsetX;
+                    double y = (maxLat - cell.getLatitude()) * scale + offsetY;
+
+                    if (x < -cellSize * 2 || x > getWidth() + cellSize * 2 || y < -cellSize * 2 || y > getHeight() + cellSize * 2) {
+                        continue;
+                    }
+
+                    double radiusY = Math.max(1.0, cellSize / 2.0);
+                    double absLat = Math.abs(cell.getLatitude());
+                    double cosLat = Math.cos(Math.toRadians(Math.min(88.0, absLat)));
+                    double radiusX = Math.max(radiusY * 0.45, (cellSize / 2.0) / Math.max(0.12, cosLat));
+
+                    if (absLat < 78.0) {
+                        gc.setStroke(Color.rgb(15, 23, 42, 0.35));
+                        gc.setLineWidth(0.8);
+                        strokeHexCell2D(gc, x, y, radiusX, radiusY);
+                    }
+                }
+            }
+            return;
+        }
+
+        // Discrete Hexagonal Polygon Rendering (when smoothMap == false)
         for (int i = startIndex; i < cells.size(); i++) {
             H3Cell cell = cells.get(i);
             if (cell.getLatitude() > cullMaxLat)
@@ -1038,7 +1215,7 @@ public class H3MapCanvas extends Canvas {
                 continue;
             }
 
-            Color color = smoothMap ? getIdwInterpolatedColor(cell, i) : getBufferOrCellColor(cell);
+            Color color = getBufferOrCellColor(cell);
             if (showHillshading || showSolarTerminator) {
                 double f = computeHillshadeFactor(cell) * computeSolarTerminatorFactor(cell);
                 color = Color.color(
@@ -1056,11 +1233,9 @@ public class H3MapCanvas extends Canvas {
             double radiusX = (cellSize / 2.0) / Math.max(0.12, cosLat);
             radiusX = Math.max(radiusY * 0.45, radiusX);
 
-            // In smooth map mode, slightly dilate polygons to ensure a continuous surface without gaps
-            double scaleFactor = smoothMap ? 1.05 : 1.0;
-            drawHexCell2D(gc, x, y, radiusX * scaleFactor, radiusY * scaleFactor);
+            drawHexCell2D(gc, x, y, radiusX, radiusY);
 
-            if (renderHexBorders && absLat < 78.0) {
+            if (showHexGrid && absLat < 78.0) {
                 gc.setStroke(Color.rgb(15, 23, 42, 0.35));
                 gc.setLineWidth(0.8);
                 strokeHexCell2D(gc, x, y, radiusX, radiusY);

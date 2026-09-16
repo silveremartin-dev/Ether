@@ -73,6 +73,7 @@ public class ResourceDistributionPanel extends BorderPane {
     private Image customClimateImage;     // Temperature / Combined RGB
     private Image customRainfallImage;    // Precipitation
     private Image customSeasonalityImage; // Seasonality
+    private String activeLoadedBodyKey = null;
 
     // Geological & Energy Tensor Maps (Tab 2 Parity with Tab 1 & Tab 3)
     private final java.util.Map<Integer, Image> customGeologyLayerImages = new java.util.HashMap<>();
@@ -298,13 +299,27 @@ public class ResourceDistributionPanel extends BorderPane {
                     planetPresetCombo.setValue(planetPreset);
                 }
             }
-            // Auto-load maps for known celestial bodies (mirrors Tab 1 behaviour)
-            autoApplyMapsForPreset(planetPreset);
+            String bodyKey = detectBodyKey(planetPreset);
+            if (!bodyKey.equalsIgnoreCase(activeLoadedBodyKey) || customBiomeImage == null) {
+                activeLoadedBodyKey = bodyKey;
+                autoApplyMapsForPreset(planetPreset);
+            }
             updatePlanetContextDisplay();
             updatePreviewCanvas();
         } finally {
             isUpdatingFromPreset = oldState;
         }
+    }
+
+    private String detectBodyKey(PlanetPreset p) {
+        if (p == null) return "earth";
+        String lower = p.name() != null ? p.name().toLowerCase() : "";
+        if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) return "earth";
+        if (lower.contains("mars") || lower.contains("ares")) return "mars";
+        if (lower.contains("lune") || lower.contains("moon") || lower.contains("selene")) return "moon";
+        if (lower.contains("vénus") || lower.contains("venus") || lower.contains("hesperos")) return "venus";
+        if (lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes")) return "mercury";
+        return "none";
     }
 
     public void setActiveCells(List<H3Cell> cells) {
@@ -522,7 +537,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
         mapSourceRowLabel = new Label(I18n.getOrDefault("resource.param.map_source", "Celestial Body Model / Satellite:"));
         mapSourceCombo = new ComboBox<>();
-        mapSourceCombo.getItems().addAll("none", "earth", "mars", "venus", "moon");
+        mapSourceCombo.getItems().addAll("none", "earth", "mars", "venus", "moon", "mercury");
         mapSourceCombo.setValue("none");
         mapSourceCombo.setCellFactory(p -> new ListCell<>() {
             @Override
@@ -832,7 +847,7 @@ public class ResourceDistributionPanel extends BorderPane {
         biomeProcBox.getStyleClass().add("subcard-procedural-box");
 
         biomeSourceCombo = new ComboBox<>();
-        biomeSourceCombo.getItems().addAll("none", "earth", "mars", "venus", "moon");
+        biomeSourceCombo.getItems().addAll("none", "earth", "mars", "venus", "moon", "mercury");
         biomeSourceCombo.setValue("none");
         biomeSourceCombo.setCellFactory(p -> new ListCell<>() {
             @Override protected void updateItem(String item, boolean empty) {
@@ -848,6 +863,9 @@ public class ResourceDistributionPanel extends BorderPane {
             if (val != null && !"none".equals(val)) {
                 radioImportBiome.setSelected(true);
                 applyPresetMapSource(val);
+                if (viewModeCombo != null) {
+                    viewModeCombo.getSelectionModel().select(1);
+                }
             }
         });
 
@@ -915,7 +933,7 @@ public class ResourceDistributionPanel extends BorderPane {
         hydroProcBox.getStyleClass().add("subcard-procedural-box");
 
         hydroSourceCombo = new ComboBox<>();
-        hydroSourceCombo.getItems().addAll("none", "earth", "mars");
+        hydroSourceCombo.getItems().addAll("none", "earth", "mars", "venus", "moon", "mercury");
         hydroSourceCombo.setValue("none");
         hydroSourceCombo.setCellFactory(p -> new ListCell<>() {
             @Override protected void updateItem(String item, boolean empty) {
@@ -931,6 +949,9 @@ public class ResourceDistributionPanel extends BorderPane {
             if (val != null && !"none".equals(val)) {
                 radioImportHydro.setSelected(true);
                 fetchOnlineHydroData();
+                if (viewModeCombo != null) {
+                    viewModeCombo.getSelectionModel().select(2);
+                }
             }
         });
 
@@ -992,10 +1013,11 @@ public class ResourceDistributionPanel extends BorderPane {
         climateSourceCombo = new ComboBox<>();
         climateSourceCombo.getItems().addAll(
                 "none",
-                "NASA MODIS LST (WMS — températures)",
-                "NASA GPM IMERG (WMS — précipitations)",
-                "ERA5 Reanalysis (Copernicus)",
-                "Koppen-Geiger Classification (PNG)"
+                "Earth (ERA5 Reanalysis / MODIS Thermal & IMERG Precip)",
+                "Mars (Viking / MGS Thermal & Subsurface MARSIS H₂O)",
+                "Moon (Diviner Radiometer & LCROSS Polar Traps)",
+                "Venus (Magellan Radar & VIRTIS Thermal Model)",
+                "Mercury (MESSENGER Thermal & Polar Ice)"
         );
         climateSourceCombo.setValue("none");
         climateSourceCombo.setCellFactory(p -> new ListCell<>() {
@@ -1092,7 +1114,7 @@ public class ResourceDistributionPanel extends BorderPane {
         geologyProcBox.getStyleClass().add("subcard-procedural-box");
 
         geologySourceCombo = new ComboBox<>();
-        geologySourceCombo.getItems().addAll("none", "earth", "mars", "venus");
+        geologySourceCombo.getItems().addAll("none", "earth", "mars", "venus", "moon", "mercury");
         geologySourceCombo.setValue("none");
         geologySourceCombo.setCellFactory(p -> new ListCell<>() {
             @Override protected void updateItem(String item, boolean empty) {
@@ -1215,8 +1237,9 @@ public class ResourceDistributionPanel extends BorderPane {
         });
 
         btnReliefOverlay = new ToggleButton(I18n.getOrDefault("resource.btn.relief_overlay", "⛰️ Relief"));
+        btnReliefOverlay.setSelected(true);
         btnReliefOverlay.getStyleClass().add("button-secondary");
-        btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.relief_overlay", "Overlay relief & slope map at 50% opacity for geographical reference")));
+        btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec délimitation du trait de côte.")));
         btnReliefOverlay.setOnAction(e -> updatePreviewCanvas());
 
         HBox viewModeControlBar = new HBox(8, viewModeCombo, btnReliefOverlay);
@@ -1523,24 +1546,28 @@ public class ResourceDistributionPanel extends BorderPane {
             seedField.setText(String.valueOf(p.seed()));
         }
 
-        boolean isEarthBased = p == EcologyPreset.EARTH_STANDARD
-                || "Earth Standard Baseline".equalsIgnoreCase(p.name())
-                || (p.planetPresetName() != null && (p.planetPresetName().toLowerCase().contains("earth") || p.planetPresetName().toLowerCase().contains("terre")));
+        String lower = p.name() != null ? p.name().toLowerCase() : "";
+        String planetKey = null;
+        if (p == EcologyPreset.EARTH_STANDARD || lower.contains("earth") || lower.contains("terre") || lower.contains("standard")) {
+            planetKey = "earth";
+        } else if (lower.contains("mars") || lower.contains("ares")) {
+            planetKey = "mars";
+        } else if (lower.contains("lune") || lower.contains("moon") || lower.contains("selene")) {
+            planetKey = "moon";
+        } else if (lower.contains("vénus") || lower.contains("venus") || lower.contains("hesperos")) {
+            planetKey = "venus";
+        } else if (lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes")) {
+            planetKey = "mercury";
+        }
 
         if (p.customBiomeBase64() != null) {
             customBiomeImage = ImageMapLoader.base64PngToImage(p.customBiomeBase64());
             if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.preset.biomes", "🌿 Preset Biomes"));
             if (radioImportBiome != null) radioImportBiome.setSelected(true);
-        } else if (isEarthBased) {
-            if (biomeSourceCombo != null) biomeSourceCombo.setValue("earth");
-            try (var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png")) {
-                if (biomeStream != null) {
-                    customBiomeImage = new Image(biomeStream);
-                    if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.earth_modis_biomes", "🌿 Earth MODIS Biomes"));
-                }
-            } catch (Exception ex) {
-                logger.warn("Could not load default earth biome map", ex);
-            }
+        } else if (planetKey != null) {
+            if (biomeSourceCombo != null) biomeSourceCombo.setValue(planetKey);
+            customBiomeImage = ImageMapLoader.loadMapImage(planetKey + "_biomes.png");
+            if (biomeFileLabel != null) biomeFileLabel.setText(getBiomeSourceDisplayName(planetKey));
             if (radioImportBiome != null) radioImportBiome.setSelected(true);
         } else {
             customBiomeImage = null;
@@ -1553,9 +1580,11 @@ public class ResourceDistributionPanel extends BorderPane {
             customResourceImage = ImageMapLoader.base64PngToImage(p.customResourceBase64());
             if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.preset.resources", "🪨 Preset Resources"));
             if (radioImportGeology != null) radioImportGeology.setSelected(true);
-        } else if (isEarthBased) {
-            if (geologySourceCombo != null) geologySourceCombo.setValue("earth");
+        } else if (planetKey != null) {
+            if (geologySourceCombo != null) geologySourceCombo.setValue(planetKey);
+            if (resourceFileLabel != null) resourceFileLabel.setText(getGeologySourceDisplayName(planetKey));
             if (radioImportGeology != null) radioImportGeology.setSelected(true);
+            prepopulateGeologyTensors(planetKey);
         } else {
             customResourceImage = null;
             if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
@@ -1567,9 +1596,10 @@ public class ResourceDistributionPanel extends BorderPane {
             customHydroImage = ImageMapLoader.base64PngToImage(p.customHydroBase64());
             if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.preset.hydro", "💧 Preset Hydro"));
             if (radioImportHydro != null) radioImportHydro.setSelected(true);
-        } else if (isEarthBased) {
-            if (hydroSourceCombo != null) hydroSourceCombo.setValue("earth");
-            fetchOnlineHydroData();
+        } else if (planetKey != null) {
+            if (hydroSourceCombo != null) hydroSourceCombo.setValue(planetKey);
+            customHydroImage = ImageMapLoader.loadMapImage(planetKey + "_aquifers.png");
+            if (hydroFileLabel != null) hydroFileLabel.setText(getHydroSourceDisplayName(planetKey));
             if (radioImportHydro != null) radioImportHydro.setSelected(true);
         } else {
             customHydroImage = null;
@@ -1582,15 +1612,27 @@ public class ResourceDistributionPanel extends BorderPane {
             customClimateImage = ImageMapLoader.base64PngToImage(p.customClimateBase64());
             if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.preset.climate", "🌡️ Preset Climate"));
             if (radioImportClimate != null) radioImportClimate.setSelected(true);
+        } else if (planetKey != null) {
+            customClimateImage = ImageMapLoader.loadMapImage(planetKey + "_temperature.png");
+            if (climateFileLabel != null) climateFileLabel.setText(getClimateSourceDisplayName(planetKey));
+            if (radioImportClimate != null) radioImportClimate.setSelected(true);
         }
         if (p.customRainfallBase64() != null) {
             customRainfallImage = ImageMapLoader.base64PngToImage(p.customRainfallBase64());
             if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.preset.rainfall", "🌧️ Preset Rainfall"));
             if (radioImportClimate != null) radioImportClimate.setSelected(true);
+        } else if (planetKey != null) {
+            customRainfallImage = ImageMapLoader.loadMapImage(planetKey + "_precipitation.png");
+            if (rainfallFileLabel != null) rainfallFileLabel.setText(getRainfallSourceDisplayName(planetKey));
+            if (radioImportClimate != null) radioImportClimate.setSelected(true);
         }
         if (p.customSeasonalityBase64() != null) {
             customSeasonalityImage = ImageMapLoader.base64PngToImage(p.customSeasonalityBase64());
             if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.preset.seasonality", "☀️ Preset Seasonality"));
+            if (radioImportClimate != null) radioImportClimate.setSelected(true);
+        } else if (planetKey != null) {
+            customSeasonalityImage = ImageMapLoader.loadMapImage(planetKey + "_seasonality.png");
+            if (seasonalityFileLabel != null) seasonalityFileLabel.setText(getSeasonalitySourceDisplayName(planetKey));
             if (radioImportClimate != null) radioImportClimate.setSelected(true);
         }
 
@@ -1611,6 +1653,9 @@ public class ResourceDistributionPanel extends BorderPane {
             try {
                 customBiomeImage = new Image(new FileInputStream(file));
                 biomeFileLabel.setText("📷 " + file.getName());
+                if (viewModeCombo != null) {
+                    viewModeCombo.getSelectionModel().select(1);
+                }
                 updateSummary();
                 updatePreviewCanvas();
             } catch (Exception ex) {
@@ -1766,6 +1811,12 @@ public class ResourceDistributionPanel extends BorderPane {
             } else if (!planetName.contains("lune") && !planetName.contains("moon") && !planetName.contains("selene") && !planetName.contains("titan") && !planetName.contains("cryo") && (activePreset == null || !activePreset.isSatellite())) {
                 isCompatible = false;
             }
+        } else if ("mercury".equalsIgnoreCase(sourceKey)) {
+            if ("mercury".equalsIgnoreCase(elevSrc)) {
+                isCompatible = true;
+            } else if (!planetName.contains("mercury") && !planetName.contains("mercure") && !planetName.contains("hermes")) {
+                isCompatible = false;
+            }
         }
 
         if (!isCompatible) {
@@ -1796,7 +1847,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
     /**
      * Detects the type of celestial body from the given PlanetPreset and automatically
-     * selects the correct map source (earth / mars / moon / venus / none), which triggers
+     * selects the correct map source (earth / mars / moon / venus / mercury / none), which triggers
      * radio button switching and satellite data loading for biomes, hydro and geology.
      * This mirrors the automatic behaviour of Tab 1 when a planet preset is changed.
      */
@@ -1812,6 +1863,8 @@ public class ResourceDistributionPanel extends BorderPane {
             sourceKey = "moon";
         } else if (lower.contains("vénus") || lower.contains("venus") || lower.contains("hesperos")) {
             sourceKey = "venus";
+        } else if (lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes")) {
+            sourceKey = "mercury";
         } else {
             // Unknown body → stay procedural, do nothing
             return;
@@ -1862,52 +1915,39 @@ public class ResourceDistributionPanel extends BorderPane {
         if (radioImportBiome != null) radioImportBiome.setSelected(true);
         if (radioImportHydro != null) radioImportHydro.setSelected(true);
         if (radioImportGeology != null) radioImportGeology.setSelected(true);
+        if (radioImportClimate != null) radioImportClimate.setSelected(true);
         isUpdatingFromPreset = false;
 
-        if ("earth".equals(sourceKey)) {
-            try (var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png")) {
-                if (biomeStream != null) {
-                    customBiomeImage = new Image(biomeStream);
-                    if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.earth_modis_biomes", "🌿 Earth MODIS Biomes"));
-                    if (radioImportBiome != null) radioImportBiome.setSelected(true);
-                }
-            } catch (Exception ex) {
-                logger.warn("Could not load default earth biome resource map", ex);
-            }
-            if (biomeSourceCombo != null) biomeSourceCombo.setValue("earth");
-            if (geologySourceCombo != null) geologySourceCombo.setValue("earth");
-            if (hydroSourceCombo != null) hydroSourceCombo.setValue("earth");
-            if (climateSourceCombo != null && climateSourceCombo.getItems().size() > 1) climateSourceCombo.setValue(climateSourceCombo.getItems().get(1));
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.earth_geology", "🪨 Earth USGS Geology"));
-            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("resource.source.earth_hydro", "🌊 Earth SWBD Hydrography"));
-            fetchOnlineHydroData();
-            prepopulateEarthGeologyTensors();
-            if (ecoCompatibilityLabel != null) {
-                ecoCompatibilityLabel.setText(I18n.getOrDefault("resource.status.earth_loaded", "🌍 Earth maps loaded (MODIS Biomes + USGS Geology + SWBD Hydrography)"));
-                ecoCompatibilityLabel.getStyleClass().setAll("compatibility-success");
-            }
-        } else if ("mars".equals(sourceKey)) {
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("resource.status.mars_biomes", "🌿 Mars Biomes (Procedural)"));
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.mars_geology", "🪨 Mars MOLA Geology"));
-            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("resource.source.mars_hydro", "⚡ Hydrographie (Aride)"));
-            if (geologySourceCombo != null) geologySourceCombo.setValue("mars");
-            if (mapStatusLabel != null) mapStatusLabel.setText(I18n.getOrDefault("resource.status.mars_geology", "🔴 Source: Mars — MOLA Geology (procedural for hydro & biomes)"));
-            if (radioProcHydro != null) radioProcHydro.setSelected(true);
-        } else if ("moon".equals(sourceKey)) {
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("resource.source.moon_biomes", "🌿 Lune (Sans Biomes)"));
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.moon_geology", "🪨 Lune Topographie & Regolithe"));
-            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("resource.source.moon_hydro", "⚡ Hydrographie (Nulle)"));
-            if (mapStatusLabel != null) mapStatusLabel.setText(I18n.getOrDefault("resource.status.moon_topo", "🌕 Source: Moon — Procedural topography"));
-            if (radioProcHydro != null) radioProcHydro.setSelected(true);
-            if (radioProcBiome != null) radioProcBiome.setSelected(true);
-        } else if ("venus".equals(sourceKey)) {
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("resource.status.venus_atmo", "🌿 Venus (Extreme atmosphere)"));
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.status.venus_radar", "🪨 Venus Magellan Radar"));
-            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("resource.status.venus_hydro", "⚡ Hydrography (Sublimated)"));
-            if (mapStatusLabel != null) mapStatusLabel.setText(I18n.getOrDefault("resource.status.venus_source", "♀ Source: Venus — Magellan Radar"));
-            if (radioProcHydro != null) radioProcHydro.setSelected(true);
-            if (radioProcBiome != null) radioProcBiome.setSelected(true);
+        String body = sourceKey.toLowerCase();
+        if (biomeSourceCombo != null) biomeSourceCombo.setValue(body);
+        if (geologySourceCombo != null) geologySourceCombo.setValue(body);
+        if (hydroSourceCombo != null) hydroSourceCombo.setValue(body);
+
+        // Load Biomes
+        customBiomeImage = ImageMapLoader.loadMapImage(body + "_biomes.png");
+        if (biomeFileLabel != null) biomeFileLabel.setText(getBiomeSourceDisplayName(body));
+
+        // Load Hydro
+        customHydroImage = ImageMapLoader.loadMapImage(body + "_aquifers.png");
+        if (hydroFileLabel != null) hydroFileLabel.setText(getHydroSourceDisplayName(body));
+
+        // Load Climate
+        customClimateImage = ImageMapLoader.loadMapImage(body + "_temperature.png");
+        customRainfallImage = ImageMapLoader.loadMapImage(body + "_precipitation.png");
+        customSeasonalityImage = ImageMapLoader.loadMapImage(body + "_seasonality.png");
+        if (climateFileLabel != null) climateFileLabel.setText(getClimateSourceDisplayName(body));
+        if (rainfallFileLabel != null) rainfallFileLabel.setText(getRainfallSourceDisplayName(body));
+        if (seasonalityFileLabel != null) seasonalityFileLabel.setText(getSeasonalitySourceDisplayName(body));
+
+        // Load Geology Tensors
+        if (resourceFileLabel != null) resourceFileLabel.setText(getGeologySourceDisplayName(body));
+        prepopulateGeologyTensors(body);
+
+        if (ecoCompatibilityLabel != null) {
+            ecoCompatibilityLabel.setText(String.format("🪐 %s authentic maps loaded (Biomes, Hydro, Climate & 9 Geology Tensors)", body.toUpperCase()));
+            ecoCompatibilityLabel.getStyleClass().setAll("compatibility-success");
         }
+
         updatePreviewCanvas();
         updateSummary();
     }
@@ -1921,6 +1961,9 @@ public class ResourceDistributionPanel extends BorderPane {
             try {
                 customHydroImage = new Image(new FileInputStream(file));
                 if (hydroFileLabel != null) hydroFileLabel.setText("🌊 " + file.getName());
+                if (viewModeCombo != null) {
+                    viewModeCombo.getSelectionModel().select(2);
+                }
                 updateSummary();
                 updatePreviewCanvas();
             } catch (Exception ex) {
@@ -2129,32 +2172,38 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    private int getGeologyViewComboIndex(int layerIdx) {
+        return switch (layerIdx) {
+            case 0 -> 5;  // COAL
+            case 1 -> 6;  // OIL
+            case 2 -> 7;  // GAS
+            case 3 -> 8;  // URANIUM
+            case 4 -> 9;  // HELIUM_3
+            case 5 -> 10; // IRON_COPPER
+            case 6 -> 11; // PRECIOUS_REE
+            case 7 -> 3;  // GEOTHERMAL (Heat Flux)
+            case 8 -> 12; // FRESHWATER_AQUIFERS
+            default -> 1;
+        };
+    }
+
     private int getViewModeIndex() {
         if (viewModeCombo == null) return 0;
         int selected = viewModeCombo.getSelectionModel().getSelectedIndex();
-        if (selected >= 1 && selected <= 11) {
-            return selected - 1;
-        } else if (selected >= 13 && selected <= 15) {
-            return selected - 2;
-        }
-
-        if (viewModeCombo.getValue() == null) return 0;
-        String lower = viewModeCombo.getValue().toLowerCase();
-        if (lower.contains("14. ") || lower.contains("aridité") || lower.contains("salinis") || lower.contains("aridity")) return 13;
-        if (lower.contains("13. ") || lower.contains("sismique") || lower.contains("tectonique") || lower.contains("seismic")) return 12;
-        if (lower.contains("12. ") || lower.contains("température") || lower.contains("microclimat") || lower.contains("temp")) return 11;
-        if (lower.contains("11. ") || lower.contains("aquifère") || lower.contains("aquifer") || lower.contains("4.9")) return 10;
-        if (lower.contains("10. ") || lower.contains("mantle") || lower.contains("thermique") || lower.contains("4.8")) return 9;
-        if (lower.contains("9. ") || lower.contains("précieux") || lower.contains("precious") || lower.contains("4.7")) return 8;
-        if (lower.contains("8. ") || lower.contains("fer") || lower.contains("copper") || lower.contains("iron") || lower.contains("4.6")) return 7;
-        if (lower.contains("7. ") || lower.contains("hélium") || lower.contains("helium") || lower.contains("4.5")) return 6;
-        if (lower.contains("6. ") || lower.contains("uranium") || lower.contains("4.4")) return 5;
-        if (lower.contains("5. ") || lower.contains("gaz") || lower.contains("gas") || lower.contains("4.3")) return 4;
-        if (lower.contains("4. ") || lower.contains("pétrole") || lower.contains("oil") || lower.contains("4.2")) return 3;
-        if (lower.contains("3. ") || lower.contains("charbon") || lower.contains("coal") || lower.contains("4.1")) return 2;
-        if (lower.contains("2. ") || lower.contains("hydrographie") || lower.contains("hydro")) return 1;
-        if (lower.contains("1. ") || lower.contains("biome")) return 0;
-        return 0;
+        return switch (selected) {
+            case 1 -> 0;  // Biomes
+            case 2 -> 1;  // Hydro
+            case 3 -> 9;  // Mantle Heat Flux (Geology layer 7)
+            case 5 -> 2;  // Coal (Geology layer 0)
+            case 6 -> 3;  // Oil (Geology layer 1)
+            case 7 -> 4;  // Gas (Geology layer 2)
+            case 8 -> 5;  // Uranium (Geology layer 3)
+            case 9 -> 6;  // Helium-3 (Geology layer 4)
+            case 10 -> 7; // Iron & Copper (Geology layer 5)
+            case 11 -> 8; // Precious metals & REE (Geology layer 6)
+            case 12 -> 10; // Aquifers (Geology layer 8)
+            default -> 0;
+        };
     }
 
     private void updateLegend() {
@@ -2258,8 +2307,8 @@ public class ResourceDistributionPanel extends BorderPane {
             double vVal = volcanicActivitySlider != null ? volcanicActivitySlider.getValue() : planet.volcanicActivityLevel();
             planet = planet.withSeismicAndVolcanic(sVal, vVal);
         }
-        int w = 960;
-        int h = 480;
+        int w = 320;
+        int h = 160;
 
         WritableImage buffer = new WritableImage(w, h);
         PixelWriter pw = buffer.getPixelWriter();
@@ -2349,220 +2398,21 @@ public class ResourceDistributionPanel extends BorderPane {
                             }
                         }
                     }
-                } else if (mode == 2) { // COAL (Layer 0 / 4.1)
-                    var point = generator.getPlanetPoint(lat, lon, planet);
-                    if (point.elevation() < planet.waterLevel()) {
-                        pxColor = Color.rgb(15, 23, 42);
-                    } else {
-                        double val;
-                        boolean useImport = geologyImportRadios.get(0) != null && geologyImportRadios.get(0).isSelected();
-                        Image gImg = customGeologyLayerImages.get(0);
-                        if (useImport && gImg != null && gImg.getPixelReader() != null) {
-                            int gx = (int) Math.min((x_base / (double) w) * gImg.getWidth(), gImg.getWidth() - 1);
-                            int gy = (int) Math.min((y_base / (double) h) * gImg.getHeight(), gImg.getHeight() - 1);
-                            Color c = gImg.getPixelReader().getColor(gx, gy);
-                            val = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
-                        } else {
-                            val = sampleProceduralGeologyTensor(0, lon, lat, planet);
-                        }
-                        if (val > 0.05) {
-                            int r = (int) Math.min(255, 60 + val * 195);
-                            int g = (int) Math.min(255, 30 + val * 110);
-                            int b = (int) Math.min(255, 10);
-                            pxColor = Color.rgb(r, g, b);
-                        } else {
-                            pxColor = Color.rgb(30, 41, 59);
-                        }
-                    }
-                } else if (mode == 3) { // CRUDE OIL (Layer 1 / 4.2)
-                    var point = generator.getPlanetPoint(lat, lon, planet);
-                    if (point.elevation() < planet.waterLevel()) {
-                        pxColor = Color.rgb(15, 23, 42);
-                    } else {
-                        double val;
-                        boolean useImport = geologyImportRadios.get(1) != null && geologyImportRadios.get(1).isSelected();
-                        Image gImg = customGeologyLayerImages.get(1);
-                        if (useImport && gImg != null && gImg.getPixelReader() != null) {
-                            int gx = (int) Math.min((x_base / (double) w) * gImg.getWidth(), gImg.getWidth() - 1);
-                            int gy = (int) Math.min((y_base / (double) h) * gImg.getHeight(), gImg.getHeight() - 1);
-                            Color c = gImg.getPixelReader().getColor(gx, gy);
-                            val = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
-                        } else {
-                            val = sampleProceduralGeologyTensor(1, lon, lat, planet);
-                        }
-                        if (val > 0.05) {
-                            int r = (int) Math.min(255, 80 + val * 175);
-                            int g = (int) Math.min(255, 15 + val * 35);
-                            int b = (int) Math.min(255, 15 + val * 35);
-                            pxColor = Color.rgb(r, g, b);
-                        } else {
-                            pxColor = Color.rgb(30, 41, 59);
-                        }
-                    }
-                } else if (mode == 4) { // NATURAL GAS (Layer 2 / 4.3)
-                    var point = generator.getPlanetPoint(lat, lon, planet);
-                    if (point.elevation() < planet.waterLevel()) {
-                        pxColor = Color.rgb(15, 23, 42);
-                    } else {
-                        double val;
-                        boolean useImport = geologyImportRadios.get(2) != null && geologyImportRadios.get(2).isSelected();
-                        Image gImg = customGeologyLayerImages.get(2);
-                        if (useImport && gImg != null && gImg.getPixelReader() != null) {
-                            int gx = (int) Math.min((x_base / (double) w) * gImg.getWidth(), gImg.getWidth() - 1);
-                            int gy = (int) Math.min((y_base / (double) h) * gImg.getHeight(), gImg.getHeight() - 1);
-                            Color c = gImg.getPixelReader().getColor(gx, gy);
-                            val = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
-                        } else {
-                            val = sampleProceduralGeologyTensor(2, lon, lat, planet);
-                        }
-                        if (val > 0.05) {
-                            int r = (int) Math.min(255, 6 + val * 20);
-                            int g = (int) Math.min(255, 100 + val * 120);
-                            int b = (int) Math.min(255, 140 + val * 115);
-                            pxColor = Color.rgb(r, g, b);
-                        } else {
-                            pxColor = Color.rgb(30, 41, 59);
-                        }
-                    }
-                } else if (mode == 5) { // URANIUM (Layer 3 / 4.4)
-                    var point = generator.getPlanetPoint(lat, lon, planet);
-                    if (point.elevation() < planet.waterLevel()) {
-                        pxColor = Color.rgb(15, 23, 42);
-                    } else {
-                        double val;
-                        boolean useImport = geologyImportRadios.get(3) != null && geologyImportRadios.get(3).isSelected();
-                        Image gImg = customGeologyLayerImages.get(3);
-                        if (useImport && gImg != null && gImg.getPixelReader() != null) {
-                            int gx = (int) Math.min((x_base / (double) w) * gImg.getWidth(), gImg.getWidth() - 1);
-                            int gy = (int) Math.min((y_base / (double) h) * gImg.getHeight(), gImg.getHeight() - 1);
-                            Color c = gImg.getPixelReader().getColor(gx, gy);
-                            val = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
-                        } else {
-                            val = sampleProceduralGeologyTensor(3, lon, lat, planet);
-                        }
-                        if (val > 0.05) {
-                            int r = (int) Math.min(255, 10 + val * 30);
-                            int g = (int) Math.min(255, 120 + val * 135);
-                            int b = (int) Math.min(255, 30 + val * 70);
-                            pxColor = Color.rgb(r, g, b);
-                        } else {
-                            pxColor = Color.rgb(30, 41, 59);
-                        }
-                    }
-                } else if (mode == 6) { // HELIUM-3 (Layer 4 / 4.5)
+                } else if (mode >= 2 && mode <= 10) { // GEOLOGICAL & ENERGY TENSORS (Authentic Grayscale Modes 2..10)
+                    int layerIdx = mode - 2;
                     double val;
-                    boolean useImport = geologyImportRadios.get(4) != null && geologyImportRadios.get(4).isSelected();
-                    Image gImg = customGeologyLayerImages.get(4);
+                    boolean useImport = geologyImportRadios.get(layerIdx) != null && geologyImportRadios.get(layerIdx).isSelected();
+                    Image gImg = customGeologyLayerImages.get(layerIdx);
                     if (useImport && gImg != null && gImg.getPixelReader() != null) {
                         int gx = (int) Math.min((x_base / (double) w) * gImg.getWidth(), gImg.getWidth() - 1);
                         int gy = (int) Math.min((y_base / (double) h) * gImg.getHeight(), gImg.getHeight() - 1);
                         Color c = gImg.getPixelReader().getColor(gx, gy);
                         val = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
                     } else {
-                        val = sampleProceduralGeologyTensor(4, lon, lat, planet);
+                        val = sampleProceduralGeologyTensor(layerIdx, lon, lat, planet);
                     }
-                    if (val > 0.05) {
-                        int r = (int) Math.min(255, 120 + val * 135);
-                        int g = (int) Math.min(255, 20 + val * 60);
-                        int b = (int) Math.min(255, 120 + val * 135);
-                        pxColor = Color.rgb(r, g, b);
-                    } else {
-                        pxColor = Color.rgb(30, 41, 59);
-                    }
-                } else if (mode == 7) { // IRON & COPPER (Layer 5 / 4.6)
-                    var point = generator.getPlanetPoint(lat, lon, planet);
-                    if (point.elevation() < planet.waterLevel()) {
-                        pxColor = Color.rgb(15, 23, 42);
-                    } else {
-                        double val;
-                        boolean useImport = geologyImportRadios.get(5) != null && geologyImportRadios.get(5).isSelected();
-                        Image gImg = customGeologyLayerImages.get(5);
-                        if (useImport && gImg != null && gImg.getPixelReader() != null) {
-                            int gx = (int) Math.min((x_base / (double) w) * gImg.getWidth(), gImg.getWidth() - 1);
-                            int gy = (int) Math.min((y_base / (double) h) * gImg.getHeight(), gImg.getHeight() - 1);
-                            Color c = gImg.getPixelReader().getColor(gx, gy);
-                            val = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
-                        } else {
-                            val = sampleProceduralGeologyTensor(5, lon, lat, planet);
-                        }
-                        if (val > 0.05) {
-                            if (val < 0.35) {
-                                pxColor = Color.rgb(139, 69, 19); // Low Grade (Rust brown)
-                            } else if (val < 0.70) {
-                                pxColor = Color.rgb(217, 119, 6);  // Banded Iron Formation (Amber)
-                            } else {
-                                pxColor = Color.rgb(249, 115, 22); // Massive Iron & Copper (Flame orange)
-                            }
-                        } else {
-                            pxColor = Color.rgb(30, 41, 59);
-                        }
-                    }
-                } else if (mode == 8) { // PRECIOUS METALS & REE (Layer 6 / 4.7)
-                    var point = generator.getPlanetPoint(lat, lon, planet);
-                    if (point.elevation() < planet.waterLevel()) {
-                        pxColor = Color.rgb(15, 23, 42);
-                    } else {
-                        double val;
-                        boolean useImport = geologyImportRadios.get(6) != null && geologyImportRadios.get(6).isSelected();
-                        Image gImg = customGeologyLayerImages.get(6);
-                        if (useImport && gImg != null && gImg.getPixelReader() != null) {
-                            int gx = (int) Math.min((x_base / (double) w) * gImg.getWidth(), gImg.getWidth() - 1);
-                            int gy = (int) Math.min((y_base / (double) h) * gImg.getHeight(), gImg.getHeight() - 1);
-                            Color c = gImg.getPixelReader().getColor(gx, gy);
-                            val = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
-                        } else {
-                            val = sampleProceduralGeologyTensor(6, lon, lat, planet);
-                        }
-                        if (val > 0.05) {
-                            int r = (int) Math.min(255, 150 + val * 105);
-                            int g = (int) Math.min(255, 110 + val * 100);
-                            int b = (int) Math.min(255, 10 + val * 20);
-                            pxColor = Color.rgb(r, g, b);
-                        } else {
-                            pxColor = Color.rgb(30, 41, 59);
-                        }
-                    }
-                } else if (mode == 9) { // MANTLE HEAT FLUX & TECTONICS (Layer 7 / 4.8)
-                    double val;
-                    boolean useImport = geologyImportRadios.get(7) != null && geologyImportRadios.get(7).isSelected();
-                    Image gImg = customGeologyLayerImages.get(7);
-                    if (useImport && gImg != null && gImg.getPixelReader() != null) {
-                        int gx = (int) Math.min((x_base / (double) w) * gImg.getWidth(), gImg.getWidth() - 1);
-                        int gy = (int) Math.min((y_base / (double) h) * gImg.getHeight(), gImg.getHeight() - 1);
-                        Color c = gImg.getPixelReader().getColor(gx, gy);
-                        val = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
-                    } else {
-                        val = sampleProceduralGeologyTensor(7, lon, lat, planet);
-                    }
-                    int r = (int) Math.min(255, 30 + val * 220);
-                    int g = (int) Math.min(255, 20 + val * 90);
-                    int b = (int) Math.min(255, 40 + (1.0 - val) * 100);
-                    pxColor = Color.rgb(r, g, b);
-                } else if (mode == 10) { // AQUIFERS & FRESHWATER (Layer 8 / 4.9)
-                    var point = generator.getPlanetPoint(lat, lon, planet);
-                    if (point.elevation() < planet.waterLevel()) {
-                        pxColor = Color.rgb(15, 23, 42);
-                    } else {
-                        double val;
-                        boolean useImport = geologyImportRadios.get(8) != null && geologyImportRadios.get(8).isSelected();
-                        Image gImg = customGeologyLayerImages.get(8);
-                        if (useImport && gImg != null && gImg.getPixelReader() != null) {
-                            int gx = (int) Math.min((x_base / (double) w) * gImg.getWidth(), gImg.getWidth() - 1);
-                            int gy = (int) Math.min((y_base / (double) h) * gImg.getHeight(), gImg.getHeight() - 1);
-                            Color c = gImg.getPixelReader().getColor(gx, gy);
-                            val = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
-                        } else {
-                            val = sampleProceduralGeologyTensor(8, lon, lat, planet);
-                        }
-                        if (val > 0.05) {
-                            int r = (int) Math.min(255, 10 + val * 30);
-                            int g = (int) Math.min(255, 100 + val * 120);
-                            int b = (int) Math.min(255, 160 + val * 95);
-                            pxColor = Color.rgb(r, g, b);
-                        } else {
-                            pxColor = Color.rgb(30, 41, 59);
-                        }
-                    }
+                    val = Math.clamp(val, 0.0, 1.0);
+                    pxColor = Color.color(val, val, val);
                 } else if (mode == 11) { // SURFACE TEMPERATURE & MICROCLIMATES
                     var point = generator.getPlanetPoint(lat, lon, planet);
                     double tempC = point.temperature();
@@ -2624,17 +2474,38 @@ public class ResourceDistributionPanel extends BorderPane {
                     double wLevel = planet.waterLevel();
                     boolean isLandHere = elev >= wLevel;
 
-                    var ptE = generator.getPlanetPoint(lat, lon + 0.5, planet);
-                    var ptN = generator.getPlanetPoint(lat + 0.5, lon, planet);
+                    double dDeg = 0.5;
+                    var ptE = generator.getPlanetPoint(lat, lon + dDeg, planet);
+                    var ptW = generator.getPlanetPoint(lat, lon - dDeg, planet);
+                    var ptN = generator.getPlanetPoint(lat + dDeg, lon, planet);
+                    var ptS = generator.getPlanetPoint(lat - dDeg, lon, planet);
+
                     boolean isLandEast = ptE.elevation() >= wLevel;
+                    boolean isLandWest = ptW.elevation() >= wLevel;
                     boolean isLandNorth = ptN.elevation() >= wLevel;
-                    boolean isCoast = (isLandHere != isLandEast) || (isLandHere != isLandNorth);
+                    boolean isLandSouth = ptS.elevation() >= wLevel;
+                    boolean isCoast = (isLandHere != isLandEast) || (isLandHere != isLandWest) || (isLandHere != isLandNorth) || (isLandHere != isLandSouth);
 
                     if (isCoast) {
                         pxColor = Color.rgb(224, 242, 254); // Crisp white-cyan coastline outline
+                    } else if (isLandHere) {
+                        double dLng = ((ptE.elevation() - ptW.elevation()) / 1200.0);
+                        double dLat = ((ptN.elevation() - ptS.elevation()) / 1200.0);
+                        double hillshade = (0.5 * dLng + 0.5 * dLat + 0.707) / Math.sqrt(dLng * dLng + dLat * dLat + 1.0);
+                        double normElev = Math.clamp((elev - wLevel) / Math.max(1000.0, planet.maxAltitudeMeters() - wLevel), 0.0, 1.0);
+                        double mult = (0.55 + 0.65 * hillshade) * (1.0 + 0.20 * normElev);
+                        pxColor = Color.color(
+                            Math.clamp(pxColor.getRed() * mult, 0.0, 1.0),
+                            Math.clamp(pxColor.getGreen() * mult, 0.0, 1.0),
+                            Math.clamp(pxColor.getBlue() * mult, 0.0, 1.0)
+                        );
                     } else {
-                        Color reliefCol = getReliefShadeColor(elev, wLevel, pt.declivity());
-                        pxColor = blendColors(pxColor, reliefCol, 0.50); // 50% opacity relief overlay
+                        // Ocean bathymetry depth gradient
+                        double depthNorm = Math.clamp((wLevel - elev) / 4000.0, 0.0, 1.0);
+                        int r = (int) (8 + (1.0 - depthNorm) * 15);
+                        int g = (int) (18 + (1.0 - depthNorm) * 35);
+                        int b = (int) (38 + (1.0 - depthNorm) * 55);
+                        pxColor = Color.rgb(r, g, b);
                     }
                 }
 
@@ -3192,35 +3063,40 @@ public class ResourceDistributionPanel extends BorderPane {
         return fxImg;
     }
 
-    public void prepopulateEarthGeologyTensors() {
+    public void prepopulateGeologyTensors(String planetKey) {
+        if (planetKey == null || planetKey.isBlank() || "none".equalsIgnoreCase(planetKey)) {
+            planetKey = "earth";
+        }
+        String body = planetKey.toLowerCase();
         try {
-            String[] mapFileNames = {
-                "earth_coal.png",
-                "earth_oil.png",
-                "earth_gas.png",
-                "earth_uranium.png",
-                "earth_helium3.png",
-                "earth_iron_copper.png",
-                "earth_precious_metals.png",
-                "earth_geothermal.png",
-                "earth_aquifers.png"
+            String[] layerNames = {
+                "coal",
+                "oil",
+                "gas",
+                "uranium",
+                "helium3",
+                "iron_copper",
+                "precious_metals",
+                "geothermal",
+                "aquifers"
             };
 
-            for (int i = 0; i < mapFileNames.length; i++) {
-                Image img = ImageMapLoader.loadMapImage(mapFileNames[i]);
+            for (int i = 0; i < layerNames.length; i++) {
+                String fileName = body + "_" + layerNames[i] + ".png";
+                Image img = ImageMapLoader.loadMapImage(fileName);
                 if (img != null && img.getWidth() > 0) {
                     customGeologyLayerImages.put(i, img);
                 } else {
                     BufferedImage bImg = switch (i) {
-                        case 0 -> HistoricalMapGenerator.generateCleanCoalMap("EARTH", null);
-                        case 1 -> HistoricalMapGenerator.generateCleanOilMap("EARTH", null);
-                        case 2 -> HistoricalMapGenerator.generateCleanGasMap("EARTH", null);
-                        case 3 -> HistoricalMapGenerator.generateCleanUraniumMap("EARTH", null);
-                        case 4 -> HistoricalMapGenerator.generateCleanHelium3Map("EARTH", null);
-                        case 5 -> HistoricalMapGenerator.generateCleanIronCopperMap("EARTH", null);
-                        case 6 -> HistoricalMapGenerator.generateCleanPreciousMetalsMap("EARTH", null);
-                        case 7 -> HistoricalMapGenerator.generateCleanMantleHeatMap("EARTH", null);
-                        default -> HistoricalMapGenerator.generateCleanAquiferMap("EARTH", null);
+                        case 0 -> HistoricalMapGenerator.generateCleanCoalMap(body.toUpperCase(), null);
+                        case 1 -> HistoricalMapGenerator.generateCleanOilMap(body.toUpperCase(), null);
+                        case 2 -> HistoricalMapGenerator.generateCleanGasMap(body.toUpperCase(), null);
+                        case 3 -> HistoricalMapGenerator.generateCleanUraniumMap(body.toUpperCase(), null);
+                        case 4 -> HistoricalMapGenerator.generateCleanHelium3Map(body.toUpperCase(), null);
+                        case 5 -> HistoricalMapGenerator.generateCleanIronCopperMap(body.toUpperCase(), null);
+                        case 6 -> HistoricalMapGenerator.generateCleanPreciousMetalsMap(body.toUpperCase(), null);
+                        case 7 -> HistoricalMapGenerator.generateCleanMantleHeatMap(body.toUpperCase(), null);
+                        default -> HistoricalMapGenerator.generateCleanAquiferMap(body.toUpperCase(), null);
                     };
                     if (bImg != null) {
                         customGeologyLayerImages.put(i, bufferedImageToFXImage(bImg));
@@ -3230,21 +3106,103 @@ public class ResourceDistributionPanel extends BorderPane {
 
             for (int i = 0; i < 9; i++) {
                 if (geologyFileLabels.containsKey(i)) {
-                    geologyFileLabels.get(i).setText(getGeologyBaselineName(i));
+                    geologyFileLabels.get(i).setText(getGeologyBaselineName(i, body));
                 }
                 if (geologyImportRadios.containsKey(i)) {
                     geologyImportRadios.get(i).setSelected(true);
                 }
                 if (geologySourceCombos.containsKey(i)) {
                     ComboBox<String> cb = geologySourceCombos.get(i);
-                    if (cb != null && cb.getItems().size() > 1) {
-                        cb.setValue(cb.getItems().get(1));
+                    if (cb != null) {
+                        boolean matched = false;
+                        for (String item : cb.getItems()) {
+                            if (item.toLowerCase().contains(body) ||
+                               (body.equals("earth") && item.toLowerCase().contains("earth")) ||
+                               (body.equals("moon") && (item.toLowerCase().contains("moon") || item.toLowerCase().contains("lunar")))) {
+                                cb.setValue(item);
+                                matched = true;
+                                break;
+                            }
+                        }
+                        if (!matched && cb.getItems().size() > 1) {
+                            cb.setValue(cb.getItems().get(1));
+                        }
                     }
                 }
             }
         } catch (Exception e) {
-            logger.error("Failed to pre-populate Earth geology tensors", e);
+            logger.error("Failed to pre-populate geology tensors for {}", body, e);
         }
+    }
+
+    public void prepopulateEarthGeologyTensors() {
+        prepopulateGeologyTensors("earth");
+    }
+
+    private String getBiomeSourceDisplayName(String planetKey) {
+        if (planetKey == null) planetKey = "earth";
+        return switch (planetKey.toLowerCase()) {
+            case "mars" -> "🌿 Mars MOLA & Biomes Reconstitution";
+            case "moon" -> "🌿 Moon Clementine Regolith (Barren Biome)";
+            case "venus" -> "🌿 Venus Magellan Radar (Supercritical Biome)";
+            case "mercury" -> "🌿 Mercury MESSENGER Surface (Airless Biome)";
+            default -> I18n.getOrDefault("planet.source.earth_modis_biomes", "🌿 Earth MODIS Biomes");
+        };
+    }
+
+    private String getHydroSourceDisplayName(String planetKey) {
+        if (planetKey == null) planetKey = "earth";
+        return switch (planetKey.toLowerCase()) {
+            case "mars" -> "🌊 Mars MARSIS / Ancient Paleochannels Hydrography";
+            case "moon" -> "🌊 Moon Polar Traps (Dry Crust Hydrography)";
+            case "venus" -> "🌊 Venus Volcanic Channels (Anhydrous Hydrography)";
+            case "mercury" -> "🌊 Mercury Polar Cold Traps Hydrography";
+            default -> I18n.getOrDefault("resource.source.earth_hydro", "🌊 Earth SWBD Hydrography");
+        };
+    }
+
+    private String getGeologySourceDisplayName(String planetKey) {
+        if (planetKey == null) planetKey = "earth";
+        return switch (planetKey.toLowerCase()) {
+            case "mars" -> "🪨 Mars MOLA & GRS Geology Tensors";
+            case "moon" -> "🪨 Moon Clementine & KREEP Geology Tensors";
+            case "venus" -> "🪨 Venus Magellan Radar Geology Tensors";
+            case "mercury" -> "🪨 Mercury MESSENGER GRS/XRS Geology Tensors";
+            default -> I18n.getOrDefault("resource.source.earth_geology", "🪨 Earth USGS Geology");
+        };
+    }
+
+    private String getClimateSourceDisplayName(String planetKey) {
+        if (planetKey == null) planetKey = "earth";
+        return switch (planetKey.toLowerCase()) {
+            case "mars" -> "🌡️ Mars Viking/MGS Thermal Inertia Model";
+            case "moon" -> "🌡️ Moon Diviner Lunar Radiometer Experiment";
+            case "venus" -> "🌡️ Venus Venera/VIRTIS Thermal Greenhouse Model";
+            case "mercury" -> "🌡️ Mercury MESSENGER Thermal Radiometry";
+            default -> "🌡️ Earth ERA5 / MODIS Land Surface Temp";
+        };
+    }
+
+    private String getRainfallSourceDisplayName(String planetKey) {
+        if (planetKey == null) planetKey = "earth";
+        return switch (planetKey.toLowerCase()) {
+            case "mars" -> "🌧️ Mars Atmospheric Water Vapor & Sublimation";
+            case "moon" -> "🌧️ Moon Vacuum Exosphere (0 mm/yr Precipitation)";
+            case "venus" -> "🌧️ Venus Sulfuric Acid Cloud Condensation & Virga";
+            case "mercury" -> "🌧️ Mercury Exospheric Zero Precipitation";
+            default -> "🌧️ Earth NASA GPM IMERG Precipitation";
+        };
+    }
+
+    private String getSeasonalitySourceDisplayName(String planetKey) {
+        if (planetKey == null) planetKey = "earth";
+        return switch (planetKey.toLowerCase()) {
+            case "mars" -> "☀️ Mars Obliquity (25.2°) Thermal Seasonality";
+            case "moon" -> "☀️ Moon Diurnal Day/Night Extreme Seasonality";
+            case "venus" -> "☀️ Venus Low-Obliquity (3°) Isothermal Seasonality";
+            case "mercury" -> "☀️ Mercury 3:2 Spin-Orbit Resonance Seasonality";
+            default -> "☀️ Earth Obliquity (23.4°) Annual Seasonality";
+        };
     }
 
     private String getGeologyTensorTitle(int index) {
@@ -3278,17 +3236,77 @@ public class ResourceDistributionPanel extends BorderPane {
     }
 
     private String getGeologyBaselineName(int index) {
+        return getGeologyBaselineName(index, "earth");
+    }
+
+    private String getGeologyBaselineName(int index, String planetKey) {
+        if (planetKey == null) planetKey = "earth";
+        String body = planetKey.toLowerCase();
         return switch (index) {
-            case 0 -> I18n.getOrDefault("resource.tensor.1.source.baseline", "USGS MRDS / BGR Coal Deposits (Earth Baseline)");
-            case 1 -> I18n.getOrDefault("resource.tensor.2.source.baseline", "World Energy Projection / BGR Oil Reserves (Earth Baseline)");
-            case 2 -> I18n.getOrDefault("resource.tensor.3.source.baseline", "WEP / BGR Natural Gas Fields (Earth Baseline)");
-            case 3 -> I18n.getOrDefault("resource.tensor.4.source.baseline", "IAEA UDEPO / NFCIS Uranium Database (Earth Baseline)");
-            case 4 -> I18n.getOrDefault("resource.tensor.5.source.baseline", "NASA PDS / LPI Lunar Regolith (Planetary Baseline)");
-            case 5 -> I18n.getOrDefault("resource.tensor.6.source.baseline", "USGS Mineral Resources BIF Iron & Copper (Earth Baseline)");
-            case 6 -> I18n.getOrDefault("resource.tensor.7.source.baseline", "USGS REE & Lithium Salars (Earth Baseline)");
-            case 7 -> I18n.getOrDefault("resource.tensor.8.source.baseline", "IHFC / Davies 2013 Global Heat Flow (Earth Baseline)");
-            case 8 -> I18n.getOrDefault("resource.tensor.9.source.baseline", "UNESCO / WHYMAP Global Groundwater (Earth Baseline)");
-            default -> I18n.getOrDefault("resource.status.earth_preset_loaded", "📷 Earth preset map loaded");
+            case 0 -> switch (body) {
+                case "mars" -> "Mars Sterile Regolith (No Paleo-Biomass)";
+                case "moon" -> "Lunar Regolith (Sterile Vacuum)";
+                case "venus" -> "Venus Pyrolyzed Crust (Sterile)";
+                case "mercury" -> "Mercury Airless Surface (Sterile)";
+                default -> "USGS MRDS / BGR Coal Deposits (Earth Baseline)";
+            };
+            case 1 -> switch (body) {
+                case "mars" -> "Mars Lacustrine Bedrocks (Abiotic Traces)";
+                case "moon" -> "Lunar Sterile Regolith (Void)";
+                case "venus" -> "Venus Supercritical Crust (Void)";
+                case "mercury" -> "Mercury Airless Crust (Void)";
+                default -> "World Energy Projection / BGR Oil Reserves (Earth Baseline)";
+            };
+            case 2 -> switch (body) {
+                case "mars" -> "Mars Subsurface Methane & Clathrates (Mars Odyssey)";
+                case "moon" -> "Lunar Solar-Wind Entrapped Gas (Moon Trace)";
+                case "venus" -> "Venus Supercritical High-Pressure CO₂ Reservoir";
+                case "mercury" -> "Mercury Exospheric Outgassing (Void)";
+                default -> "WEP / BGR Natural Gas Fields (Earth Baseline)";
+            };
+            case 3 -> switch (body) {
+                case "mars" -> "Mars Odyssey GRS Thorium/Uranium (Mars Baseline)";
+                case "moon" -> "Lunar Prospector KREEP GRS Thorium (Moon Baseline)";
+                case "venus" -> "Venera 8/9/10 Gamma-Ray Spectrometry (Venus Baseline)";
+                case "mercury" -> "MESSENGER GRS / XRS Thorium (Mercury Baseline)";
+                default -> "IAEA UDEPO / NFCIS Uranium Database (Earth Baseline)";
+            };
+            case 4 -> switch (body) {
+                case "mars" -> "Mars Arid Regolith Solar Wind Infiltration (Mars)";
+                case "moon" -> "NASA PDS / Lunar Prospector Helium-3 (Moon Baseline)";
+                case "venus" -> "Venus Upper Ionosphere Solar Traps (Venus)";
+                case "mercury" -> "MESSENGER Magnetosphere He-3 Trap (Mercury Baseline)";
+                default -> "Earth Atmosphere Shield (Sterile / Negligible He-3)";
+            };
+            case 5 -> switch (body) {
+                case "mars" -> "Mars OMEGA / CRISM Hematite & Basalt (Mars Baseline)";
+                case "moon" -> "Lunar Mare Basalts FeO & Ilmenite (Moon Baseline)";
+                case "venus" -> "Venus Magellan Basaltic Volcanism (Venus Baseline)";
+                case "mercury" -> "MESSENGER High-Iron Surface Crust (Mercury Baseline)";
+                default -> "USGS Mineral Resources BIF Iron & Copper (Earth Baseline)";
+            };
+            case 6 -> switch (body) {
+                case "mars" -> "Mars Hydrothermal REE & Heavy Minerals (Mars Baseline)";
+                case "moon" -> "Lunar KREEP Basalts & Rare Earths (Moon Baseline)";
+                case "venus" -> "Venus Heavy Metal Radar-Reflective Frosts (Venus Baseline)";
+                case "mercury" -> "MESSENGER Magmatic Sulfides & REE (Mercury Baseline)";
+                default -> "USGS REE & Lithium Salars (Earth Baseline)";
+            };
+            case 7 -> switch (body) {
+                case "mars" -> "Mars InSight Seismic & Crustal Heat Flow (Mars Baseline)";
+                case "moon" -> "Apollo 15/17 Lunar Heat Flow Experiment (Moon Baseline)";
+                case "venus" -> "Venus Magellan Coronae & Mantle Plumes (Venus Baseline)";
+                case "mercury" -> "MESSENGER Core Conduction & Residual Heat (Mercury Baseline)";
+                default -> "IHFC / Davies 2013 Global Heat Flow (Earth Baseline)";
+            };
+            case 8 -> switch (body) {
+                case "mars" -> "Mars Express / MARSIS Radar Subsurface Ice (Mars Baseline)";
+                case "moon" -> "LRO / LCROSS Polar Cold Trap Ice (Moon Baseline)";
+                case "venus" -> "Venus Desiccated Subsurface (Trace Vapor)";
+                case "mercury" -> "MESSENGER Polar Crater Water Ice (Mercury Baseline)";
+                default -> "UNESCO / WHYMAP Global Groundwater (Earth Baseline)";
+            };
+            default -> "Scientific Planetary Dataset (" + body + ")";
         };
     }
 
@@ -3315,60 +3333,76 @@ public class ResourceDistributionPanel extends BorderPane {
             case 0 -> combo.getItems().addAll(
                 "USGS MRDS Coal Basins (Earth)",
                 "BGR Germany Coal & Lignite (Earth)",
-                "World Energy Council Coal Deposits (Earth)",
-                "Paleo-Carboniferous Wetland Model (Earth)"
+                "Mars Regolith (No Paleo-Biomass / Barren)",
+                "Moon Regolith (Sterile Vacuum / Barren)",
+                "Venus Pyrolyzed Crust (Barren / No Biomass)",
+                "Mercury Silicate Crust (Sterile / Barren)"
             );
             case 1 -> combo.getItems().addAll(
                 "World Energy Projection (WEP / BGR — Earth)",
                 "USGS World Petroleum Assessment (Earth)",
-                "BP Statistical Review of World Energy (Earth)",
-                "Marine Anoxic Source Rock Model (Earth)"
+                "Mars Lacustrine Bedrocks (Abiotic Traces)",
+                "Moon Sterile Regolith (Barren / Void)",
+                "Venus Supercritical CO₂ Crust (Pyrolyzed / Void)",
+                "Mercury Airless Crust (Void)"
             );
             case 2 -> combo.getItems().addAll(
                 "WEP / BGR Natural Gas & Shale (Earth)",
                 "USGS Global Conventional Gas Fields (Earth)",
-                "IEA World Energy Outlook Gas (Earth)",
-                "Deep Thermogenic Cracking Model (Earth)"
+                "Mars Subsurface Methane & Clathrates (Trace Model)",
+                "Moon Solar Wind Entrapped Gases (Low Trace)",
+                "Venus Supercritical CO₂/N₂ Trapped Reservoir",
+                "Mercury Exospheric Outgassing (Sterile / Void)"
             );
             case 3 -> combo.getItems().addAll(
                 "IAEA UDEPO Uranium Database (Earth)",
                 "NEA / IAEA Red Book Uranium Reserves (Earth)",
-                "World Nuclear Association Database (Earth)",
-                "Proterozoic Unconformity Ore Model (Earth)"
+                "Mars Odyssey GRS Thorium & Uranium (Mars)",
+                "Lunar Prospector / KREEP GRS Thorium (Moon)",
+                "Venera 8/9/10 Gamma-Ray Spectrometry (Venus)",
+                "MESSENGER GRS / XRS Thorium & Uranium (Mercury)"
             );
             case 4 -> combo.getItems().addAll(
-                "NASA PDS / LPI Lunar Prospector (Lunar Baseline)",
-                "NASA Clementine UV-VIS Regolith (Lunar)",
-                "Solar Wind Ion Implantation Model (Planetary)",
-                "Mare Basalt Titanium-Ilmenite Trap (Lunar)"
+                "NASA Lunar Prospector / LPI Ilmenite Basins (Moon)",
+                "Apollo / Clementine High-Titanium Mare Basalts (Moon)",
+                "MESSENGER Magnetosphere Solar Wind Trap (Mercury)",
+                "Mars Low-Magnetism Regolith Infiltration (Mars)",
+                "Venus Upper Ionosphere Solar Traps (Venus)",
+                "Earth Atmosphere Shield (Sterile / Negligible He-3)"
             );
             case 5 -> combo.getItems().addAll(
                 "USGS Mineral Resources Program — Iron & Copper (Earth)",
                 "Banded Iron Formations (BIF) Global Atlas (Earth)",
-                "Giant Porphyry Copper Metallogeny (Earth)",
-                "Archean Great Oxidation Event Model (Earth)"
+                "Mars OMEGA / CRISM Hematite & Basalt (Mars)",
+                "Lunar Mare Basalts FeO & Ilmenite (Moon)",
+                "Venus Magellan Basaltic Volcanism & Pyrite (Venus)",
+                "MESSENGER High-Iron Crust & Core Regolith (Mercury)"
             );
             case 6 -> combo.getItems().addAll(
                 "USGS Rare Earth Elements & Lithium Salars (Earth)",
                 "USGS Global Gold & Platinum Deposits (Earth)",
-                "Global Carbonatite & Alkaline Complex Atlas (Earth)",
-                "Continental Salar Brine Evaporation Model (Earth)"
+                "Lunar KREEP Basalts & Rare Earths (Moon)",
+                "Mars Acid Fog Hydrothermal REE (Mars)",
+                "Venus Heavy Metal Radar-Reflective Frosts (Bi/Pb - Venus)",
+                "MESSENGER Magmatic Sulfide & REE (Mercury)"
             );
             case 7 -> combo.getItems().addAll(
                 "IHFC / Davies 2013 Global Heat Flow (mW/m² — Earth)",
-                "Pollack et al. Continental Heat Flow (Earth)",
-                "CRUST1.0 Lithospheric Heat Flux (Earth)",
-                "Mantle Plume & Rift Dynamic Model (Earth)"
+                "Mars InSight Seismic & Crustal Heat Flow (Mars)",
+                "Apollo 15 & 17 Lunar Heat Flow Experiment (Moon)",
+                "Venus Magellan Coronae & Upwelling Plumes (Venus)",
+                "MESSENGER Core Conduction & Residual Heat (Mercury)"
             );
             case 8 -> combo.getItems().addAll(
                 "UNESCO / WHYMAP Global Groundwater Aquifers (Earth)",
-                "BGR World Aquifer Resources Map (Earth)",
-                "NASA GRACE Groundwater Depletion (Earth)",
-                "Deep Hydrogeological Basin Permeability Model (Earth)"
+                "Mars Express / MARSIS Radar Subsurface Ice & Hydrated Minerals (Mars)",
+                "LRO / LCROSS Polar Cold Trap Ice (Moon)",
+                "MESSENGER Polar Crater Water Ice (Mercury)",
+                "Venus Atmospheric Vapor Dissociation (Desiccated Subsurface)"
             );
             default -> combo.getItems().addAll(
                 "USGS Scientific Dataset (Earth)",
-                "Global Planetary Survey (Earth)"
+                "Global Planetary Survey"
             );
         }
         combo.setCellFactory(p -> new ListCell<>() {
@@ -3378,14 +3412,33 @@ public class ResourceDistributionPanel extends BorderPane {
             }
         });
         combo.setButtonCell(combo.getCellFactory().call(null));
-        combo.setValue("");
         combo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
             String val = combo.getValue();
             if (val != null && !val.isEmpty()) {
+                String valLow = val.toLowerCase();
+                String body = "earth";
+                if (valLow.contains("mars")) body = "mars";
+                else if (valLow.contains("moon") || valLow.contains("lunar")) body = "moon";
+                else if (valLow.contains("venus")) body = "venus";
+                else if (valLow.contains("mercury") || valLow.contains("messenger")) body = "mercury";
+
+                String[] layerNames = {"coal", "oil", "gas", "uranium", "helium3", "iron_copper", "precious_metals", "geothermal", "aquifers"};
+                String fileName = body + "_" + layerNames[index] + ".png";
+                Image img = ImageMapLoader.loadMapImage(fileName);
+                if (img != null) {
+                    customGeologyLayerImages.put(index, img);
+                }
+                if (geologyFileLabels.containsKey(index)) {
+                    geologyFileLabels.get(index).setText("📷 " + val);
+                }
                 if (geologyImportRadios.containsKey(index)) {
                     geologyImportRadios.get(index).setSelected(true);
                 }
+                if (viewModeCombo != null) {
+                    viewModeCombo.getSelectionModel().select(getGeologyViewComboIndex(index));
+                }
+                if (ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
                 updatePreviewCanvas();
             }
         });
@@ -3660,6 +3713,9 @@ public class ResourceDistributionPanel extends BorderPane {
                 customGeologyLayerImages.put(layerIdx, img);
                 fileLbl.setText(I18n.getOrDefault("resource.status.geo_loaded", "📷 Custom geological layer loaded"));
                 radioImport.setSelected(true);
+                if (viewModeCombo != null) {
+                    viewModeCombo.getSelectionModel().select(getGeologyViewComboIndex(layerIdx));
+                }
                 updatePreviewCanvas();
             }));
 

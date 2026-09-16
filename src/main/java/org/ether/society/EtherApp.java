@@ -181,12 +181,24 @@ public class EtherApp extends Application {
                         h3Engine.getCurrentTPS()
                     );
 
-                    controlPanel.updateYear(
-                        String.format("An %d, Mois %d, Jour %d",
-                            h3Engine.getTimeManager().getCurrentYear(),
-                            h3Engine.getTimeManager().getCurrentMonth() + 1,
-                            h3Engine.getTimeManager().getCurrentDay())
-                    );
+                    double resDays = (h3Engine.getCurrentScenario() != null && h3Engine.getCurrentScenario().getTemporalResolutionDays() > 0)
+                            ? h3Engine.getCurrentScenario().getTemporalResolutionDays() : 30.0;
+                    String formattedDate;
+                    int year = h3Engine.getTimeManager().getCurrentYear();
+                    int month = h3Engine.getTimeManager().getCurrentMonth() + 1;
+                    int day = h3Engine.getTimeManager().getCurrentDay();
+                    if (resDays >= 365.0) {
+                        formattedDate = String.format("An %d", year);
+                    } else if (resDays >= 28.0) {
+                        formattedDate = String.format("An %d, Mois %d", year, month);
+                    } else {
+                        formattedDate = String.format("An %d, Mois %d, Jour %d", year, month, day);
+                    }
+
+                    controlPanel.updateYear(formattedDate);
+                    if (mapCanvas != null) {
+                        mapCanvas.setCurrentDateStr(formattedDate);
+                    }
                 }
 
                 // Periodic map redraw when needed

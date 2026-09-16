@@ -22,10 +22,8 @@ public class PaleoDataIngestionTest {
     @DisplayName("Verify existence of paleoclimate dataset subdirectories")
     void testPaleoclimateDirectoriesExist() {
         assertTrue(DataDownloaderService.LOCAL_PALEOCLIM_DIR.exists(), "data/maps/paleoclim/ directory must exist");
-        assertTrue(DataDownloaderService.LOCAL_CHELSA_DIR.exists(), "data/maps/chelsa/ directory must exist");
         assertTrue(DataDownloaderService.LOCAL_WORLDCLIM_DIR.exists(), "data/maps/worldclim/ directory must exist");
         assertTrue(DataDownloaderService.LOCAL_PALEOMAP_DIR.exists(), "data/maps/paleomap/ directory must exist");
-        assertTrue(DataDownloaderService.LOCAL_PMIP_DIR.exists(), "data/maps/pmip/ directory must exist");
         assertTrue(DataDownloaderService.LOCAL_PANGEA_DIR.exists(), "data/maps/pangea/ directory must exist");
     }
 

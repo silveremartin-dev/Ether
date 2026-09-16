@@ -40,7 +40,7 @@ public class ControlPanel extends VBox {
     // Temporal Labels
     private final Label scenarioHeaderLabel;
     private final Label dateHeaderLabel;
-    private final Label tpsLabel;
+    private final Label tickRateLabel;
     private final Label ageLabel;
     private final Label seasonLabel;
 
@@ -79,11 +79,18 @@ public class ControlPanel extends VBox {
     private final CheckBox autoRotateCheck;
     private final Label reliefLabel;
     private final Slider reliefSlider;
+    private final CheckBox hillshadingCheck;
+    private final CheckBox solarTerminatorCheck;
+    private final CheckBox smoothMapCheck;
     private final CheckBox contourCheck;
     private final CheckBox fluxVectorCheck;
     private final CheckBox resourceOverlayCheck;
+    private final CheckBox legendCheck;
+    private final CheckBox dateOverlayCheck;
+    private final CheckBox cellInfoCheck;
     private final CheckBox hexGridCheck;
     private final ComboBox<DisplayMode> displayModeCombo;
+    private final Button fullScreenBtn;
 
     // Callbacks
     private Runnable onSave;
@@ -92,6 +99,7 @@ public class ControlPanel extends VBox {
     private Runnable onTimelapseRecord;
     private Consumer<Integer> onTimelapseSeek;
     private Consumer<Boolean> onStatsToggle;
+    private Runnable onFullScreen;
 
     public ControlPanel(ISimulationEngine engine) {
         this.engine = engine;
@@ -106,51 +114,43 @@ public class ControlPanel extends VBox {
         scenarioHeaderLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
         scenarioHeaderLabel.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.scenario_name", "Name of current historical or procedural scenario")));
 
-        dateHeaderLabel = new Label("📅 " + I18n.getOrDefault("sim.header.date", "Date & Heure : ") + "An -20000, Mois 1, Jour 1");
+        dateHeaderLabel = new Label("📅 " + I18n.getOrDefault("sim.header.date", "Date : ") + "An -20000, Mois 1");
         dateHeaderLabel.getStyleClass().add("sidebar-title");
         dateHeaderLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         dateHeaderLabel.setTooltip(new Tooltip(
-            I18n.getOrDefault("sim.tooltip.date_header",
-            "⏱️ Horloge et Pas de Simulation (Temporal Resolution) :\n" +
-            "• An, Mois, Jour : Horloge courante de la simulation.\n" +
-            "• Échelle Rapide (Daily Tick) : Avance d'1 jour à chaque itération (dt = 86,400s).\n" +
-            "• Échelle Lente (Monthly Cycle) : Réconciliation physique & économique tous les 30 jours.")
+            I18n.getOrDefault("sim.tooltip.date_header", "⏱️ Horloge courante de la simulation selon le pas temporel configuré.")
         ));
 
-        tpsLabel = new Label("⏱️ " + I18n.getOrDefault("sim.header.tps", "Speed: 0.0 iter/sec (Fast scale 1d / slow 30d)"));
-        tpsLabel.getStyleClass().add("card-description-muted");
-        tpsLabel.setStyle("-fx-font-size: 11px;");
-        tpsLabel.setTooltip(new Tooltip(
-            I18n.getOrDefault("sim.tooltip.tps_header",
-            "⚙️ Comparatif des Échelles Temporelles (Fast vs Slow Scale) :\n\n" +
-            "• Échelle Rapide (1 tick = 1 jour) :\n" +
-            "  Calcule les flux matériels, transports physiques et extensions politiques (O(1)).\n\n" +
-            "• Échelle Lente (1 cycle = 30 jours) :\n" +
-            "  Calcule le climat, la démographie, les nutriments NPK, l'inertie d'infrastructures et l'entropie.\n\n" +
-            "💡 Passage de l'Échelle Lente à 1 Jour (Équivalence Rapide/Lente) :\n" +
-            "  - Avantage : Précision numérique maximale, élimination des dérives d'intégration (comme l'overflow de capital à 88%).\n" +
-            "  - Inconvénient : Charge CPU multipliée par 30.")
+        tickRateLabel = new Label("⚡ " + I18n.getOrDefault("sim.header.tick_rate", "Fréquence : 0.0 ticks/sec"));
+        tickRateLabel.getStyleClass().add("card-description-muted");
+        tickRateLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        tickRateLabel.setTooltip(new Tooltip(
+            I18n.getOrDefault("sim.tooltip.tps_header", "⚡ Nombre d'itérations de calcul (ticks) traitées par seconde par le moteur CPU.")
         ));
 
-        VBox dateHeaderBox = new VBox(4, scenarioHeaderLabel, dateHeaderLabel, tpsLabel);
+        dbStatusLabel = new Label(I18n.getOrDefault("sim.status.dbcheck", "DB: Checking..."));
+        dbStatusLabel.getStyleClass().add("control-label");
+        dbStatusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-padding: 2 0 0 0;");
+
+        VBox dateHeaderBox = new VBox(4, scenarioHeaderLabel, dateHeaderLabel, tickRateLabel, dbStatusLabel);
         styleCard(dateHeaderBox);
 
         // --- 2. TEMPORAL & PLAYBACK CONTROLS CARD ---
         Label timeTitle = createCardTitle("⏱️ " + I18n.getOrDefault("sim.card.time", "TIME & PLAYBACK CONTROLS"));
 
-        rewindBtn = new Button("|<<");
-        rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Reset T=0")));
+        rewindBtn = new Button("⏮");
+        rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Réinitialiser T=0")));
         rewindBtn.setOnAction(e -> {
             engine.pause();
             if (onTimelapseSeek != null) onTimelapseSeek.accept(0);
         });
 
-        fastRewindBtn = new Button("<<");
-        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Reculer d'un an (-12 mois)")));
+        fastRewindBtn = new Button("⏪");
+        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Reculer (-12 pas)")));
         fastRewindBtn.setOnAction(e -> engine.stepBackward(12));
 
-        stepBackBtn = new Button("|<");
-        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Reculer d'une frame / tick (-1 mois)")));
+        stepBackBtn = new Button("⏴");
+        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Reculer d'un pas (-1 tick)")));
         stepBackBtn.setOnAction(e -> engine.stepBackward(1));
 
         // Auto Record Checkbox (initialized early for button handlers)
@@ -169,7 +169,7 @@ public class ControlPanel extends VBox {
             updatePlayPauseVisuals(true);
         });
 
-        pauseBtn = new Button(I18n.getOrDefault("sim.btn.paused", "⏸ EN PAUSE"));
+        pauseBtn = new Button("⏸");
         pauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause", "Mettre en pause")));
         pauseBtn.setOnAction(e -> {
             engine.pause();
@@ -180,8 +180,7 @@ public class ControlPanel extends VBox {
         });
 
         stopBtn = new Button("⏹");
-        stopBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stop", "Stop")));
-        stopBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;");
+        stopBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stop", "Arrêter")));
         stopBtn.setOnAction(e -> {
             engine.pause();
             if (autoRecordCheck != null && autoRecordCheck.isSelected() && isRecordingVideo) {
@@ -190,15 +189,25 @@ public class ControlPanel extends VBox {
             updatePlayPauseVisuals(false);
         });
 
-        updatePlayPauseVisuals(engine.isRunning());
-
-        stepForwardBtn = new Button(">|");
-        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer d'une frame / tick (+1 mois)")));
+        stepForwardBtn = new Button("⏵");
+        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer d'un pas (+1 tick)")));
         stepForwardBtn.setOnAction(e -> engine.stepForward(1));
 
-        fastForwardBtn = new Button(">>");
-        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Avancer d'un an (+12 mois)")));
+        fastForwardBtn = new Button("⏩");
+        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Avancer (+12 pas)")));
         fastForwardBtn.setOnAction(e -> engine.stepForward(12));
+
+        Button[] playButtons = { rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stopBtn, stepForwardBtn, fastForwardBtn };
+        for (Button btn : playButtons) {
+            btn.setMinWidth(36);
+            btn.setPrefWidth(38);
+            btn.setMaxWidth(44);
+            btn.setMinHeight(30);
+            btn.setPrefHeight(30);
+            btn.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 2 4; -fx-background-radius: 6; -fx-cursor: hand;");
+        }
+
+        updatePlayPauseVisuals(engine.isRunning());
 
         CheckBox pauseOnEventCheck = new CheckBox(I18n.getOrDefault("sim.option.pause_on_event", "⏸️ Auto-pause on event"));
         pauseOnEventCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause_on_event", "Automatically pauses simulation when a new planetary or regional event occurs")));
@@ -209,17 +218,6 @@ public class ControlPanel extends VBox {
         HBox playBar = new HBox(4, rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stopBtn, stepForwardBtn, fastForwardBtn);
         playBar.setAlignment(Pos.CENTER);
 
-        ComboBox<org.ether.society.core.H3SimulationEngine.TemporalScale> temporalScaleCombo = new ComboBox<>();
-        temporalScaleCombo.getItems().addAll(org.ether.society.core.H3SimulationEngine.TemporalScale.values());
-        temporalScaleCombo.setValue(engine.getTemporalScale());
-        temporalScaleCombo.setMaxWidth(Double.MAX_VALUE);
-        temporalScaleCombo.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.temporal_scale", "Select temporal resolution: 1 tick/day (flux accuracy) vs 1 tick/month (macro speed x30)")));
-        temporalScaleCombo.setOnAction(e -> {
-            if (temporalScaleCombo.getValue() != null) {
-                engine.setTemporalScale(temporalScaleCombo.getValue());
-            }
-        });
-
         speedSlider = new Slider(1, 100, 1);
         speedSlider.setBlockIncrement(5);
         speedSlider.setMajorTickUnit(25);
@@ -227,17 +225,17 @@ public class ControlPanel extends VBox {
         speedSlider.setShowTickMarks(true);
         speedSlider.setShowTickLabels(true);
         speedSlider.setSnapToTicks(true);
-        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "Vitesse de simulation CPU (Gauche = 1 tick/sec soit 1 jour/sec | Droite = Mode Rapide)")));
+        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "Vitesse de simulation CPU (Gauche = 1 tick/sec | Droite = Mode Rapide)")));
         HBox.setHgrow(speedSlider, Priority.ALWAYS);
 
-        Label speedValueLabel = new Label("⏱️ " + I18n.getOrDefault("sim.speed.label", "Vitesse : 1 tick/sec (1 jour/sec)"));
+        Label speedValueLabel = new Label("⏱️ " + I18n.getOrDefault("sim.speed.label", "Vitesse : 1 tick/sec"));
         speedValueLabel.getStyleClass().add("value-label");
         speedValueLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
 
         speedSlider.valueProperty().addListener((obs, oldV, newV) -> {
             int spd = newV.intValue();
             engine.setSpeed(spd);
-            speedValueLabel.setText(String.format("⏱️ " + I18n.getOrDefault("sim.speed.target_fmt", "Vitesse Cible : %d ticks/sec (%d jours/sec)"), spd, spd));
+            speedValueLabel.setText(String.format("⏱️ " + I18n.getOrDefault("sim.speed.target_fmt", "Vitesse Cible : %d ticks/sec"), spd));
         });
 
         speedMax = new Button("MAX 🚀");
@@ -250,7 +248,7 @@ public class ControlPanel extends VBox {
 
         HBox sliderRow = new HBox(8, speedSlider, speedMax);
         // --- 1. HORLOGE & CONTRÔLE TEMPOREL CARD ---
-        VBox timeCard = new VBox(8, scenarioHeaderLabel, dateHeaderLabel, tpsLabel, timeTitle, playBar, temporalScaleCombo, pauseOnEventCheck, speedValueLabel, sliderRow);
+        VBox timeCard = new VBox(8, scenarioHeaderLabel, dateHeaderLabel, tickRateLabel, timeTitle, playBar, pauseOnEventCheck, speedValueLabel, sliderRow);
         styleCard(timeCard);
 
         // --- 3. MEDIA & EXPORT MP4 CARD ---
@@ -357,11 +355,45 @@ public class ControlPanel extends VBox {
             if (mapCanvas != null) mapCanvas.setShowResourceOverlay(resourceOverlayCheck.isSelected());
         });
 
+        legendCheck = new CheckBox(I18n.getOrDefault("sim.layer.legend", "🗺️ Légende des Couleurs (Overlay)"));
+        legendCheck.setSelected(true);
+        legendCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.legend", "Affiche ou masque le panneau de légende des couleurs")));
+        legendCheck.getStyleClass().add("opt-sub-checkbox");
+        legendCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        legendCheck.setOnAction(e -> {
+            if (colorLegend != null) {
+                colorLegend.setVisible(legendCheck.isSelected());
+                colorLegend.setManaged(legendCheck.isSelected());
+            }
+        });
+
+        dateOverlayCheck = new CheckBox(I18n.getOrDefault("sim.layer.date_overlay", "📅 Incrustation Date & Scénario"));
+        dateOverlayCheck.setSelected(true);
+        dateOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.date_overlay", "Affiche ou masque les badges d'incrustation temporelle sur la carte")));
+        dateOverlayCheck.getStyleClass().add("opt-sub-checkbox");
+        dateOverlayCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        dateOverlayCheck.setOnAction(e -> {
+            if (mapCanvas != null) {
+                mapCanvas.setShowCornerOverlays(dateOverlayCheck.isSelected());
+            }
+        });
+
+        cellInfoCheck = new CheckBox(I18n.getOrDefault("sim.layer.cell_info", "ℹ️ Infos Cellule au Survol (Infobulle)"));
+        cellInfoCheck.setSelected(true);
+        cellInfoCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.cell_info", "Active ou désactive l'infobulle d'inspection au survol des hexagones")));
+        cellInfoCheck.getStyleClass().add("opt-sub-checkbox");
+        cellInfoCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        cellInfoCheck.setOnAction(e -> {
+            if (mapCanvas != null) {
+                mapCanvas.setShowMouseOverInfo(cellInfoCheck.isSelected());
+            }
+        });
+
         Label stackTitleLabel = new Label(I18n.getOrDefault("sim.layer.overlaystack", "Layer Stack (Multi-Select):"));
         stackTitleLabel.getStyleClass().add("opt-subheader");
         stackTitleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
-        VBox overlayStackBox = new VBox(4, stackTitleLabel, contourCheck, fluxVectorCheck, resourceOverlayCheck);
+        VBox overlayStackBox = new VBox(4, stackTitleLabel, contourCheck, fluxVectorCheck, resourceOverlayCheck, legendCheck, dateOverlayCheck, cellInfoCheck);
         overlayStackBox.getStyleClass().add("subcard-section");
 
         VBox layersCard = new VBox(8, layersTitle, presetBox, layerComboLabel, displayModeCombo, overlayStackBox);
@@ -405,6 +437,28 @@ public class ControlPanel extends VBox {
             }
         });
 
+        hillshadingCheck = new CheckBox(I18n.getOrDefault("sim.layer.hillshading", "⛰️ Ombrage Relief Topographique"));
+        hillshadingCheck.setSelected(false);
+        hillshadingCheck.setDisable(true);
+        hillshadingCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hillshading", "Applique un ombrage topographique lambertien selon la pente du relief")));
+        hillshadingCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        hillshadingCheck.setOnAction(e -> {
+            if (mapCanvas != null) {
+                mapCanvas.setShowHillshading(hillshadingCheck.isSelected());
+            }
+        });
+
+        solarTerminatorCheck = new CheckBox(I18n.getOrDefault("sim.layer.solarterminator", "☀️ Terminateur Solaire Jour/Nuit"));
+        solarTerminatorCheck.setSelected(false);
+        solarTerminatorCheck.setDisable(true);
+        solarTerminatorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.solarterminator", "Displays night and twilight shadow overlay")));
+        solarTerminatorCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        solarTerminatorCheck.setOnAction(e -> {
+            if (mapCanvas != null) {
+                mapCanvas.setShowSolarTerminator(solarTerminatorCheck.isSelected());
+            }
+        });
+
         mode3dCheck.setOnAction(e -> {
             boolean is3D = mode3dCheck.isSelected();
             if (mapCanvas != null) {
@@ -413,25 +467,31 @@ public class ControlPanel extends VBox {
             reliefSlider.setDisable(!is3D);
             reliefLabel.setDisable(!is3D);
             autoRotateCheck.setDisable(!is3D);
+            hillshadingCheck.setDisable(!is3D);
+            solarTerminatorCheck.setDisable(!is3D);
         });
 
-        hexGridCheck = new CheckBox(I18n.getOrDefault("sim.layer.hexgrid", "⬡ H3 Hexagon Borders"));
-        hexGridCheck.setSelected(true);
-        hexGridCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hexgrid", "Shows or hides H3 hexagon grid (smooth view without borders vs grid view)")));
-        hexGridCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        hexGridCheck.setOnAction(e -> {
-            if (mapCanvas != null) {
-                mapCanvas.setShowHexGrid(hexGridCheck.isSelected());
-            }
-        });
+        VBox globe3dSubBox = new VBox(6, reliefLabel, reliefSlider, autoRotateCheck, hillshadingCheck, solarTerminatorCheck);
+        globe3dSubBox.setStyle("-fx-padding: 4 0 4 12; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-width: 0 0 0 2;");
 
-        CheckBox smoothMapCheck = new CheckBox(I18n.getOrDefault("sim.layer.smoothmap", "🎨 Smooth Map (Continuous Heatmap)"));
+        // 2D & General Map Parameters
+        smoothMapCheck = new CheckBox(I18n.getOrDefault("sim.layer.smoothmap", "🎨 Smooth Map (Continuous Heatmap)"));
         smoothMapCheck.setSelected(true);
         smoothMapCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.smoothmap", "Displays continuous map with smooth gradients instead of individual hexagons")));
         smoothMapCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         smoothMapCheck.setOnAction(e -> {
             if (mapCanvas != null) {
                 mapCanvas.setSmoothMap(smoothMapCheck.isSelected());
+            }
+        });
+
+        hexGridCheck = new CheckBox(I18n.getOrDefault("sim.layer.hexgrid", "⬡ H3 Hexagon Borders"));
+        hexGridCheck.setSelected(false);
+        hexGridCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hexgrid", "Shows or hides H3 hexagon grid (smooth view without borders vs grid view)")));
+        hexGridCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        hexGridCheck.setOnAction(e -> {
+            if (mapCanvas != null) {
+                mapCanvas.setShowHexGrid(hexGridCheck.isSelected());
             }
         });
 
@@ -443,56 +503,34 @@ public class ControlPanel extends VBox {
         paletteCombo.setValue(ScientificColorMap.TURBO);
         paletteCombo.setMaxWidth(Double.MAX_VALUE);
         paletteCombo.setStyle("-fx-font-size: 11px;");
+        paletteCombo.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.palette", "Choisit la palette de couleurs perceptuellement uniforme")));
         paletteCombo.setOnAction(e -> {
             if (mapCanvas != null && paletteCombo.getValue() != null) {
                 mapCanvas.setScientificColorMap(paletteCombo.getValue());
             }
         });
 
-        CheckBox hillshadingCheck = new CheckBox(I18n.getOrDefault("sim.layer.hillshading", "⛰️ Hillshading Relief Topographique"));
-        hillshadingCheck.setSelected(false);
-        hillshadingCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hillshading", "Applique un ombrage topographique lambertien selon la pente du relief")));
-        hillshadingCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        hillshadingCheck.setOnAction(e -> {
-            if (mapCanvas != null) {
-                mapCanvas.setShowHillshading(hillshadingCheck.isSelected());
+        fullScreenBtn = new Button(I18n.getOrDefault("sim.btn.fullscreen", "🖥️ Plein Écran (Carte)"));
+        fullScreenBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fullscreen", "Affiche la carte en plein écran sans aucun autre élément (Touche Échap pour quitter)")));
+        fullScreenBtn.setMaxWidth(Double.MAX_VALUE);
+        fullScreenBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-padding: 7 12; -fx-background-radius: 6; -fx-cursor: hand;");
+        fullScreenBtn.setOnAction(e -> {
+            if (onFullScreen != null) {
+                onFullScreen.run();
             }
         });
 
-        CheckBox solarTerminatorCheck = new CheckBox(I18n.getOrDefault("sim.layer.solarterminator", "☀️ Terminateur Solaire Jour/Nuit"));
-        solarTerminatorCheck.setSelected(false);
-        solarTerminatorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.solarterminator", "Displays night and twilight shadow overlay")));
-        solarTerminatorCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        solarTerminatorCheck.setOnAction(e -> {
-            if (mapCanvas != null) {
-                mapCanvas.setShowSolarTerminator(solarTerminatorCheck.isSelected());
-            }
-        });
-
-        CheckBox lodCheck = new CheckBox(I18n.getOrDefault("sim.layer.lod", "📐 H3 LOD Pyramid Aggregation"));
-        lodCheck.setSelected(true);
-        lodCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.lod", "Automatically aggregates cells to H3 parents when zooming out")));
-        lodCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        lodCheck.setOnAction(e -> {
-            if (mapCanvas != null) {
-                mapCanvas.setEnableHierarchicalLOD(lodCheck.isSelected());
-            }
-        });
-
-        VBox renderCard = new VBox(8, renderTitle, mode3dCheck, reliefLabel, reliefSlider, autoRotateCheck, smoothMapCheck, hexGridCheck, lodCheck, paletteLabel, paletteCombo, hillshadingCheck, solarTerminatorCheck);
+        VBox renderCard = new VBox(8, renderTitle, mode3dCheck, globe3dSubBox, paletteLabel, paletteCombo, smoothMapCheck, hexGridCheck, fullScreenBtn);
         styleCard(renderCard);
 
         // --- 4. TÉLÉMÉTRIE, CAPTURES & EXPORT CARD ---
         Label exportTitle = createCardTitle(I18n.getOrDefault("sim.card.telemetry", "📊 4. TELEMETRY, SCREENSHOTS & EXPORTS"));
 
-        dbStatusLabel = new Label(I18n.getOrDefault("sim.status.dbcheck", "DB: Checking..."));
-        dbStatusLabel.getStyleClass().add("control-label");
-
         eventLabel = new Label("");
         eventLabel.setStyle("-fx-text-fill: #f43f5e; -fx-font-size: 11px;");
         eventLabel.setOnMouseClicked(e -> parseAndCenterEvent(eventLabel.getText()));
 
-        VBox exportCard = new VBox(8, exportTitle, hdScreenshotBtn, recordVideoBtn, autoRecordCheck, dbStatusLabel, eventLabel);
+        VBox exportCard = new VBox(8, exportTitle, hdScreenshotBtn, recordVideoBtn, autoRecordCheck, eventLabel);
         styleCard(exportCard);
 
         // Keep age and season labels initialized for dateHeaderBox updates
@@ -512,17 +550,19 @@ public class ControlPanel extends VBox {
     }
 
     public void updatePlayPauseVisuals(boolean isRunning) {
-        if (startBtn == null || pauseBtn == null) return;
+        if (startBtn == null || pauseBtn == null || stopBtn == null) return;
+        startBtn.setText("▶");
+        pauseBtn.setText("⏸");
+        stopBtn.setText("⏹");
+
         if (isRunning) {
-            startBtn.setText(I18n.getOrDefault("sim.btn.running", "▶ EN COURS"));
-            startBtn.setStyle("-fx-background-color: #059669; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-border-color: #34d399; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.7), 8, 0, 0, 0);");
-            pauseBtn.setText("⏸");
-            pauseBtn.setStyle("-fx-background-color: #334155; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 6; -fx-effect: none;");
+            startBtn.setStyle("-fx-background-color: #059669; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-border-color: #34d399; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.7), 6, 0, 0, 0);");
+            pauseBtn.setStyle("-fx-background-color: #334155; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-background-radius: 6; -fx-effect: none;");
+            stopBtn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-background-radius: 6;");
         } else {
-            startBtn.setText("▶");
-            startBtn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 6; -fx-effect: none;");
-            pauseBtn.setText(I18n.getOrDefault("sim.btn.paused", "⏸ EN PAUSE"));
-            pauseBtn.setStyle("-fx-background-color: #d97706; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-border-color: #fbbf24; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(245,158,11,0.7), 8, 0, 0, 0);");
+            startBtn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-background-radius: 6; -fx-effect: none;");
+            pauseBtn.setStyle("-fx-background-color: #d97706; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-border-color: #fbbf24; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(245,158,11,0.7), 6, 0, 0, 0);");
+            stopBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-background-radius: 6;");
         }
     }
 
@@ -693,6 +733,7 @@ public class ControlPanel extends VBox {
     public void setOnTimelapseRecord(Runnable onTimelapseRecord) { this.onTimelapseRecord = onTimelapseRecord; }
     public void setOnTimelapseSeek(Consumer<Integer> onTimelapseSeek) { this.onTimelapseSeek = onTimelapseSeek; }
     public void setOnStatsToggle(Consumer<Boolean> onStatsToggle) { this.onStatsToggle = onStatsToggle; }
+    public void setOnFullScreen(Runnable onFullScreen) { this.onFullScreen = onFullScreen; }
 
     public void updateTimelapseSlider(int minYear, int maxYear, int currentYear) {
         dateHeaderLabel.setText(String.format("📅 Date & Heure : An %d", currentYear));
@@ -706,11 +747,18 @@ public class ControlPanel extends VBox {
             if (contourCheck != null) contourCheck.setSelected(mapCanvas.isShowContours());
             if (fluxVectorCheck != null) fluxVectorCheck.setSelected(mapCanvas.isShowFlowVectors());
             if (resourceOverlayCheck != null) resourceOverlayCheck.setSelected(mapCanvas.isShowResourceOverlay());
+            if (dateOverlayCheck != null) dateOverlayCheck.setSelected(mapCanvas.isShowCornerOverlays());
+            if (cellInfoCheck != null) cellInfoCheck.setSelected(mapCanvas.isShowMouseOverInfo());
         }
     }
 
     public void setMiniMap(MiniMap miniMap) { this.miniMap = miniMap; }
-    public void setColorLegend(ColorLegend legend) { this.colorLegend = legend; }
+    public void setColorLegend(ColorLegend legend) { 
+        this.colorLegend = legend; 
+        if (legendCheck != null && colorLegend != null) {
+            legendCheck.setSelected(colorLegend.isVisible());
+        }
+    }
 
     public void updateScenarioName(String scenarioName) {
         if (scenarioName != null && !scenarioName.isBlank()) {
@@ -719,15 +767,14 @@ public class ControlPanel extends VBox {
     }
 
     public void updateYear(String year) {
-        dateHeaderLabel.setText(I18n.getOrDefault("sim.status.date_time", "📅 Date & Heure : ") + year);
+        dateHeaderLabel.setText("📅 " + I18n.getOrDefault("sim.header.date", "Date : ") + year);
     }
 
     public void updateStats(long population, double food, long populatedCells, double tps) {
         popStatValue.setText(String.format(I18n.getOrDefault("sim.status.pop_total", "Pop. Totale : %s"), formatNumber(population)));
         foodStatValue.setText(String.format(I18n.getOrDefault("sim.status.food_stocks", "Stocks Alim. : %s"), formatNumber((long) food)));
         cellStatValue.setText(String.format(I18n.getOrDefault("sim.status.populated_cells", "Populated Cells: %,d"), populatedCells));
-        double monthsPerSec = tps / 30.0;
-        tpsLabel.setText(String.format(java.util.Locale.FRANCE, I18n.getOrDefault("sim.status.tps_detail", "⏱️ Real Speed: %.1f iter/sec (%.1f months/sec | 30 ticks = 1 month)"), tps, monthsPerSec));
+        tickRateLabel.setText(String.format(java.util.Locale.FRANCE, "⚡ " + I18n.getOrDefault("sim.status.tick_rate", "Fréquence : %.1f ticks/sec"), tps));
     }
 
     private String formatNumber(long num) {
@@ -824,14 +871,48 @@ public class ControlPanel extends VBox {
         reliefSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.relief3d", "Ajuste la hauteur du relief topographique en mode Globe 3D")));
         autoRotateCheck.setText(I18n.getOrDefault("sim.layer.autorotate", "🔄 Auto-rotation Globe"));
         autoRotateCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.autorotate", "Auto-rotates 3D spherical globe")));
+        if (hillshadingCheck != null) {
+            hillshadingCheck.setText(I18n.getOrDefault("sim.layer.hillshading", "⛰️ Ombrage Relief Topographique"));
+            hillshadingCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hillshading", "Applique un ombrage topographique lambertien selon la pente du relief")));
+        }
+        if (solarTerminatorCheck != null) {
+            solarTerminatorCheck.setText(I18n.getOrDefault("sim.layer.solarterminator", "☀️ Terminateur Solaire Jour/Nuit"));
+            solarTerminatorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.solarterminator", "Displays night and twilight shadow overlay")));
+        }
+        if (smoothMapCheck != null) {
+            smoothMapCheck.setText(I18n.getOrDefault("sim.layer.smoothmap", "🎨 Smooth Map (Continu / Sans Pavage)"));
+            smoothMapCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.smoothmap", "Affiche une carte continue fondue sans démarcations hexagonales")));
+        }
         contourCheck.setText(I18n.getOrDefault("sim.layer.contours", "📈 Courbes de Niveau (Isolines)"));
         contourCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.contours", "Displays elevation contour lines on H3 cells")));
         fluxVectorCheck.setText(I18n.getOrDefault("sim.layer.fluxvectors", "🌊 Flux & Transports (Vecteurs)"));
         fluxVectorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fluxvectors", "Overlays material flux and population transport vectors")));
         resourceOverlayCheck.setText(I18n.getOrDefault("sim.layer.resources", "💎 Deposits & Capital (Overlays)"));
         resourceOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.resources", "Displays metal, aquifer, and infrastructure markers")));
+        legendCheck.setText(I18n.getOrDefault("sim.layer.legend", "🗺️ Légende des Couleurs (Overlay)"));
+        legendCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.legend", "Affiche ou masque le panneau de légende des couleurs")));
+        dateOverlayCheck.setText(I18n.getOrDefault("sim.layer.date_overlay", "📅 Incrustation Date & Scénario"));
+        dateOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.date_overlay", "Affiche ou masque les badges d'incrustation temporelle sur la carte")));
+        cellInfoCheck.setText(I18n.getOrDefault("sim.layer.cell_info", "ℹ️ Infos Cellule au Survol (Infobulle)"));
+        cellInfoCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.cell_info", "Active ou désactive l'infobulle d'inspection au survol des hexagones")));
         hexGridCheck.setText(I18n.getOrDefault("sim.layer.hexgrid", "⬡ H3 Hexagon Borders"));
         hexGridCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hexgrid", "Shows or hides H3 hexagon grid (smooth view without borders vs grid view)")));
+        if (fullScreenBtn != null) {
+            fullScreenBtn.setText(I18n.getOrDefault("sim.btn.fullscreen", "🖥️ Plein Écran (Carte)"));
+            fullScreenBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fullscreen", "Affiche la carte en plein écran sans aucun autre élément (Touche Échap pour quitter)")));
+        }
+        if (hdScreenshotBtn != null) {
+            hdScreenshotBtn.setText("📸 " + I18n.getOrDefault("sim.btn.screenshot", "Capture Photo HD"));
+            hdScreenshotBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.screenshot", "Exporte un instantané PNG haute définition dans saves/screenshots/")));
+        }
+        if (recordVideoBtn != null) {
+            recordVideoBtn.setText("🎥 " + I18n.getOrDefault("sim.btn.video", "Enregistrer Vidéo MP4"));
+            recordVideoBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.video", "Démarre l'export vidéo MP4 (1:1 tick) dans saves/timelapse/")));
+        }
+        if (autoRecordCheck != null) {
+            autoRecordCheck.setText(I18n.getOrDefault("sim.option.auto_record", "🎬 Synchronisation Vidéo Auto (Start & Pause)"));
+            autoRecordCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.auto_record", "Démarre et suspend automatiquement la capture vidéo en synchronisation avec la simulation")));
+        }
         updateViewToggleButton();
         updateDisplayToggleButton();
     }
@@ -843,7 +924,10 @@ public class ControlPanel extends VBox {
             if (reliefSlider != null) reliefSlider.setDisable(!is3D);
             if (reliefLabel != null) reliefLabel.setDisable(!is3D);
             if (autoRotateCheck != null) autoRotateCheck.setDisable(!is3D);
+            if (hillshadingCheck != null) hillshadingCheck.setDisable(!is3D);
+            if (solarTerminatorCheck != null) solarTerminatorCheck.setDisable(!is3D);
             if (hexGridCheck != null) hexGridCheck.setSelected(mapCanvas.isShowHexGrid());
+            if (smoothMapCheck != null) smoothMapCheck.setSelected(mapCanvas.isSmoothMap());
         }
     }
 

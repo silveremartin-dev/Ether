@@ -24,6 +24,7 @@ class ComparativeAnalyticsIntegrationTest {
     @BeforeEach
     void setUp() {
         runRepository = SimulationRunRepository.getInstance();
+        runRepository.seedPreRecordedHistoricalBenchmarks();
         scenarioRepository = new ScenarioRepository();
         analyzer = new RootCauseAnalyzer();
     }

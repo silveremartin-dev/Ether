@@ -97,23 +97,41 @@ public record PlanetPreset(
 
     /** Mars-like settings */
     public static final PlanetPreset MARS_LIKE = new PlanetPreset(
-            "Mars (Ares)", 6, 3389.0, 24.6, 25.2, 687.0, 1.52, 1.0, -8000.0, 21229.0, -60.0, 98765L, 1.2, 1.2, -0.4, 50.0, 0.13, 0.25, 0.006,
+            "Mars (Ares)", 6, 3389.5, 24.6, 25.2, 687.0, 1.52, 1.0, -8000.0, 21229.0, -60.0, 98765L, 1.2, 1.2, -0.4, 50.0, 0.13, 0.25, 0.006,
             false, 1.0, 0.0, 950000.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "mars",
-            false, "", 98865L,
-            false, "", 99765L,
-            false, "", 100765L);
+            true, "MGS TES Thermal Emission Spectrometer (NASA PDS — Mars)", 98865L,
+            true, "Mars Polar Frost & H2O Sublimation (NASA — Mars)", 99765L,
+            true, "Mars Orbital Eccentricity Insolation (NASA — Mars)", 100765L);
 
     public static final PlanetPreset DESERT_WORLD = MARS_LIKE;
 
     /** Venusian settings */
     public static final PlanetPreset VENUS_LIKE = new PlanetPreset(
-            "Vénus (Hesperos)", 6, 6051.0, 2802.0, 177.3, 224.7, 0.72, 1.0, -3000.0, 11000.0, 464.0, 55555L, 0.6, 0.7, -0.5, 20.0, 0.0, 0.75, 92.0,
+            "Vénus (Hesperos)", 6, 6051.8, 2802.0, 177.3, 224.7, 0.72, 1.0, -3000.0, 11000.0, 464.0, 55555L, 0.6, 0.7, -0.5, 20.0, 0.0, 0.75, 92.0,
             false, 1.0, 0.0, 965000.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "venus",
-            false, "", 55655L,
-            false, "", 56555L,
-            false, "", 57555L);
+            true, "Venus Greenhouse Hypsometric Profile (NASA PDS — Vénus)", 55655L,
+            true, "Venus H2SO4 Upper Cloud Virga Cycle (NASA — Vénus)", 56555L,
+            true, "Venus Super-Rotation Low Thermal Variance (Vénus)", 57555L);
+
+    /** Moon-like satellite settings */
+    public static final PlanetPreset MOON_LIKE = new PlanetPreset(
+            "Lune (Selene)", 6, 1737.4, 708.0, 1.5, 365.25, 1.0, 1.0, -9000.0, 10700.0, -20.0, 88888L, 0.9, 1.1, -0.5, 60.0, 0.0, 0.12, 0.0,
+            true, 1.0, 384400.0, 0.0, 2.5, 1.5, null, null, null, null, null, null,
+            true, "moon",
+            true, "LRO Diviner Thermal Radiometer (NASA PDS — Lune)", 88988L,
+            true, "LRO LEND Vacuum Exosphere (NASA PDS — Lune)", 89888L,
+            true, "LRO Diviner Diurnal Insolation Amplitude (Lune)", 90888L);
+
+    /** Mercury settings */
+    public static final PlanetPreset MERCURY_LIKE = new PlanetPreset(
+            "Mercure (Hermes)", 6, 2439.7, 4222.6, 0.034, 87.97, 0.387, 1.0, -5000.0, 4480.0, 167.0, 66666L, 0.9, 1.0, -0.5, 90.0, 0.0, 0.14, 0.0,
+            false, 1.0, 0.0, 0.0, 2.5, 1.5, null, null, null, null, null, null,
+            true, "mercury",
+            true, "MESSENGER Extreme Thermal Model (NASA PDS — Mercure)", 66766L,
+            true, "MESSENGER Exosphere & Vacuum (NASA PDS — Mercure)", 67666L,
+            true, "MESSENGER 3:2 Spin-Orbit Thermal Variance (Mercure)", 68666L);
 
     /** Titan-like moon settings */
     public static final PlanetPreset TITAN_LIKE = new PlanetPreset(
@@ -123,15 +141,6 @@ public record PlanetPreset(
             false, "", 77811L,
             false, "", 78711L,
             false, "", 79711L);
-
-    /** Moon-like satellite settings */
-    public static final PlanetPreset MOON_LIKE = new PlanetPreset(
-            "Lune (Selene)", 6, 1737.0, 708.0, 1.5, 365.25, 1.0, 1.0, -9000.0, 10700.0, -20.0, 88888L, 0.9, 1.1, -0.5, 60.0, 0.0, 0.12, 0.0,
-            true, 1.0, 384400.0, 0.0, 2.5, 1.5, null, null, null, null, null, null,
-            true, "moon",
-            false, "", 88988L,
-            false, "", 89888L,
-            false, "", 90888L);
 
     /** Super-Earth settings */
     public static final PlanetPreset SUPER_EARTH = new PlanetPreset(
@@ -205,7 +214,7 @@ public record PlanetPreset(
     }
 
     public static List<PlanetPreset> getPresets() {
-        return List.of(EARTH_LIKE, MARS_LIKE, VENUS_LIKE, MOON_LIKE, TITAN_LIKE, SUPER_EARTH, EYEBALL_WORLD, WATER_WORLD, ICE_WORLD, ARCHIPELAGO);
+        return List.of(EARTH_LIKE, MARS_LIKE, VENUS_LIKE, MOON_LIKE, MERCURY_LIKE, TITAN_LIKE, SUPER_EARTH, EYEBALL_WORLD, WATER_WORLD, ICE_WORLD, ARCHIPELAGO);
     }
 
     public boolean isTidalLocked() {

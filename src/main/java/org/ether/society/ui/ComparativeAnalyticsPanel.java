@@ -586,12 +586,9 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             scenarioList.add(item);
         }
 
-        // Auto-select Historical Ground Truth + first scenario by default if available
-        if (scenarioList.size() >= 1) scenarioList.get(0).setSelected(true);
-        if (scenarioList.size() >= 2) scenarioList.get(1).setSelected(true);
-
+        // Do not auto-select scenarios by default so charts start clean and virgin
         checkExecutionStatus();
-        runAnalysis();
+        updateChartAndAnalysis();
     }
 
     private void checkExecutionStatus() {

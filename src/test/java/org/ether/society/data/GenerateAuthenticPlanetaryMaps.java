@@ -265,38 +265,15 @@ public class GenerateAuthenticPlanetaryMaps {
         rasterizeBasinsAndSpots(img, null, spots, new Color[]{lowC, medC, highC}, defaultRadius);
     }
 
-    private static void saveImageToAllLocations(BufferedImage img, String baseName, String... subDirs) {
+    private static void saveMapImage(BufferedImage img, String baseName, String canonicalPreset) {
         try {
-            // 1. Root data/maps
-            File fRoot = new File("data/maps/" + baseName);
-            ImageIO.write(img, "PNG", fRoot);
-
-            // 2. Classpath src/main/resources/maps
-            File fRes = new File("src/main/resources/maps/" + baseName);
-            fRes.getParentFile().mkdirs();
-            ImageIO.write(img, "PNG", fRes);
-
-            // 3. Root data/maps/ether
-            File dirEther = new File("data/maps/ether");
-            dirEther.mkdirs();
-            File fEtherRoot = new File(dirEther, baseName);
-            ImageIO.write(img, "PNG", fEtherRoot);
-
-            // 4. Subdirectories under data/maps/ and data/maps/ether/
-            for (String sub : subDirs) {
-                File dir = new File("data/maps/" + sub);
-                dir.mkdirs();
-                File fSub = new File(dir, baseName);
-                ImageIO.write(img, "PNG", fSub);
-
-                File etherSubDir = new File("data/maps/ether/" + sub);
-                etherSubDir.mkdirs();
-                File fEtherSub = new File(etherSubDir, baseName);
-                ImageIO.write(img, "PNG", fEtherSub);
-            }
-            logger.info("Saved {}", baseName);
+            File etherSubDir = new File("data/maps/ether/" + canonicalPreset);
+            etherSubDir.mkdirs();
+            File fEtherSub = new File(etherSubDir, baseName);
+            ImageIO.write(img, "PNG", fEtherSub);
+            logger.info("Saved {} into data/maps/ether/{}/", baseName, canonicalPreset);
         } catch (Exception e) {
-            logger.error("Failed saving {}: {}", baseName, e.getMessage());
+            logger.error("Failed saving {} to {}: {}", baseName, canonicalPreset, e.getMessage());
         }
     }
 
@@ -431,7 +408,7 @@ public class GenerateAuthenticPlanetaryMaps {
             new Color(254, 240, 138)  // #FEF08A Bright Core
         };
         rasterizeBasinsAndSpots(imgCoal, coalBasins, coalSpots, coalPalette, 8.0);
-        saveImageToAllLocations(imgCoal, "earth_coal.png", "terre", "earth");
+        saveMapImage(imgCoal, "earth_coal.png", "earth");
 
         // -------------------------------------------------------------
         // 2. CRUDE OIL BASINS & SUPERGIANT FIELDS (EIA / BGR / USGS TPS)
@@ -533,7 +510,7 @@ public class GenerateAuthenticPlanetaryMaps {
             new Color(254, 202, 202)  // #FECACA Intense Core
         };
         rasterizeBasinsAndSpots(imgOil, oilBasins, null, oilPalette, 12.0);
-        saveImageToAllLocations(imgOil, "earth_oil.png", "terre", "earth");
+        saveMapImage(imgOil, "earth_oil.png", "earth");
 
         // -------------------------------------------------------------
         // 3. NATURAL GAS BASINS & LNG HUBS (Cedigaz / BGR / WEP)
@@ -622,7 +599,7 @@ public class GenerateAuthenticPlanetaryMaps {
             new Color(207, 250, 254)  // #CFFAFE Electric Core
         };
         rasterizeBasinsAndSpots(imgGas, gasBasins, null, gasPalette, 12.0);
-        saveImageToAllLocations(imgGas, "earth_gas.png", "terre", "earth");
+        saveMapImage(imgGas, "earth_gas.png", "earth");
 
         // 4. Uranium Deposits (IAEA UDEPO + USGS MRDS)
         BufferedImage imgUranium = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -634,11 +611,11 @@ public class GenerateAuthenticPlanetaryMaps {
         };
         for (double[] b : uBasins) uSpots.add(b);
         rasterizeAlphaDensity(imgUranium, uSpots, new Color(34, 197, 94), 8.0);
-        saveImageToAllLocations(imgUranium, "earth_uranium.png", "terre", "earth");
+        saveMapImage(imgUranium, "earth_uranium.png", "earth");
 
         // 5. Helium-3 (Transparent on Earth)
         BufferedImage imgHe3 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        saveImageToAllLocations(imgHe3, "earth_helium3.png", "terre", "earth");
+        saveMapImage(imgHe3, "earth_helium3.png", "earth");
 
         // 6. Iron & Copper Formations (USGS MRDS + Tiered Gradient)
         BufferedImage imgIronCopper = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -652,7 +629,7 @@ public class GenerateAuthenticPlanetaryMaps {
         };
         for (double[] b : majorFeCu) feCuSpots.add(b);
         rasterizeTieredDensity(imgIronCopper, feCuSpots, new Color(139, 69, 19), new Color(217, 119, 6), new Color(249, 115, 22), 8.0);
-        saveImageToAllLocations(imgIronCopper, "earth_iron_copper.png", "terre", "earth");
+        saveMapImage(imgIronCopper, "earth_iron_copper.png", "earth");
 
         // 7. Precious Metals, REE & Lithium (USGS MRDS)
         BufferedImage imgPrecious = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -664,12 +641,12 @@ public class GenerateAuthenticPlanetaryMaps {
         };
         for (double[] b : majorPrecious) preciousSpots.add(b);
         rasterizeAlphaDensity(imgPrecious, preciousSpots, new Color(234, 179, 8), 7.0);
-        saveImageToAllLocations(imgPrecious, "earth_precious_metals.png", "terre", "earth");
+        saveMapImage(imgPrecious, "earth_precious_metals.png", "earth");
 
         // 8. Geothermal / Mantle Heat (IHFC Davies 2013 2° Grid)
         BufferedImage imgGeothermal = HistoricalMapGenerator.generateCleanMantleHeatMap("EARTH", null);
         if (imgGeothermal != null) {
-            saveImageToAllLocations(imgGeothermal, "earth_geothermal.png", "terre", "earth");
+            saveMapImage(imgGeothermal, "earth_geothermal.png", "earth");
         }
 
         // 9. Freshwater Aquifers (WHYMAP & Global Sedimentary Aquifer Systems)
@@ -694,7 +671,7 @@ public class GenerateAuthenticPlanetaryMaps {
         List<double[]> aqSpots = new ArrayList<>();
         for (double[] a : majorAquifers) aqSpots.add(a);
         rasterizeAlphaDensity(imgAquifers, aqSpots, new Color(59, 130, 246), 30.0);
-        saveImageToAllLocations(imgAquifers, "earth_aquifers.png", "terre", "earth");
+        saveMapImage(imgAquifers, "earth_aquifers.png", "earth");
     }
 
     private void generateMoonMaps() {
@@ -717,7 +694,7 @@ public class GenerateAuthenticPlanetaryMaps {
                 }
             }
         }
-        saveImageToAllLocations(imgElev, "moon_elevation.png", "lune", "moon");
+        saveMapImage(imgElev, "moon_elevation.png", "moon");
 
         // 2. Helium-3 (NASA LPI / Lunar Prospector Mare Basalts Volatile Concentration)
         BufferedImage imgHe3 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -734,7 +711,7 @@ public class GenerateAuthenticPlanetaryMaps {
         List<double[]> he3List = new ArrayList<>();
         for (double[] s : mareHelium3Spots) he3List.add(s);
         rasterizeAlphaDensity(imgHe3, he3List, new Color(168, 85, 247), 35.0);
-        saveImageToAllLocations(imgHe3, "moon_helium3.png", "lune", "moon");
+        saveMapImage(imgHe3, "moon_helium3.png", "moon");
 
         // 3. Water Ice in Permanently Shadowed Regions (LEND Neutron Spectrometer)
         BufferedImage imgIce = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -745,12 +722,12 @@ public class GenerateAuthenticPlanetaryMaps {
         List<double[]> iceList = new ArrayList<>();
         for (double[] s : polarIceSpots) iceList.add(s);
         rasterizeAlphaDensity(imgIce, iceList, new Color(56, 189, 248), 20.0);
-        saveImageToAllLocations(imgIce, "moon_aquifers.png", "lune", "moon");
+        saveMapImage(imgIce, "moon_aquifers.png", "moon");
 
         // 4. Iron & Titanium Ores (Ilmenite FeTiO3 Mare beds)
         BufferedImage imgIron = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         rasterizeTieredDensity(imgIron, he3List, new Color(139, 69, 19), new Color(217, 119, 6), new Color(249, 115, 22), 30.0);
-        saveImageToAllLocations(imgIron, "moon_iron_copper.png", "lune", "moon");
+        saveMapImage(imgIron, "moon_iron_copper.png", "moon");
 
         // 5. Biomes (Maria Basalt vs Anorthositic Highlands)
         BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -761,7 +738,7 @@ public class GenerateAuthenticPlanetaryMaps {
                 imgBiomes.setRGB(x, y, rgb);
             }
         }
-        saveImageToAllLocations(imgBiomes, "moon_biomes.png", "lune", "moon");
+        saveMapImage(imgBiomes, "moon_biomes.png", "moon");
 
         // 6. Surface Temperature (Diviner Thermal Map)
         BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -774,7 +751,7 @@ public class GenerateAuthenticPlanetaryMaps {
                 imgTemp.setRGB(x, y, rgb);
             }
         }
-        saveImageToAllLocations(imgTemp, "moon_temperature.png", "lune", "moon");
+        saveMapImage(imgTemp, "moon_temperature.png", "moon");
     }
 
     private void generateMarsMaps() {
@@ -797,7 +774,7 @@ public class GenerateAuthenticPlanetaryMaps {
                 }
             }
         }
-        saveImageToAllLocations(imgElev, "mars_elevation.png", "mars");
+        saveMapImage(imgElev, "mars_elevation.png", "mars");
 
         // 2. Iron / Ferric Oxide (Hematite deposits)
         BufferedImage imgIron = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -814,7 +791,7 @@ public class GenerateAuthenticPlanetaryMaps {
         List<double[]> ironList = new ArrayList<>();
         for (double[] s : marsIronSpots) ironList.add(s);
         rasterizeTieredDensity(imgIron, ironList, new Color(153, 27, 27), new Color(217, 119, 6), new Color(249, 115, 22), 35.0);
-        saveImageToAllLocations(imgIron, "mars_iron_copper.png", "mars");
+        saveMapImage(imgIron, "mars_iron_copper.png", "mars");
 
         // 3. Water Ice / Permafrost (Polar Caps & Subsurface Glaciers)
         BufferedImage imgIce = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -828,12 +805,12 @@ public class GenerateAuthenticPlanetaryMaps {
         List<double[]> marsIceList = new ArrayList<>();
         for (double[] s : marsIceSpots) marsIceList.add(s);
         rasterizeAlphaDensity(imgIce, marsIceList, new Color(56, 189, 248), 35.0);
-        saveImageToAllLocations(imgIce, "mars_aquifers.png", "mars");
+        saveMapImage(imgIce, "mars_aquifers.png", "mars");
 
         // 4. Geothermal / Volcanic Hotspots
         BufferedImage imgGeo = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         rasterizeAlphaDensity(imgGeo, ironList, new Color(239, 68, 68), 35.0);
-        saveImageToAllLocations(imgGeo, "mars_geothermal.png", "mars");
+        saveMapImage(imgGeo, "mars_geothermal.png", "mars");
 
         // 5. Surface Temperature
         BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -846,7 +823,7 @@ public class GenerateAuthenticPlanetaryMaps {
                 imgTemp.setRGB(x, y, rgb);
             }
         }
-        saveImageToAllLocations(imgTemp, "mars_temperature.png", "mars");
+        saveMapImage(imgTemp, "mars_temperature.png", "mars");
 
         // 6. Biomes / Terrains
         BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -863,7 +840,7 @@ public class GenerateAuthenticPlanetaryMaps {
                 }
             }
         }
-        saveImageToAllLocations(imgBiomes, "mars_biomes.png", "mars");
+        saveMapImage(imgBiomes, "mars_biomes.png", "mars");
     }
 
     private void generateVenusMaps() {
@@ -886,7 +863,7 @@ public class GenerateAuthenticPlanetaryMaps {
                 }
             }
         }
-        saveImageToAllLocations(imgElev, "venus_elevation.png", "venus");
+        saveMapImage(imgElev, "venus_elevation.png", "venus");
 
         // 2. Temperature (Venusian Dense Greenhouse Profile: 440°C to 480°C)
         BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -895,7 +872,7 @@ public class GenerateAuthenticPlanetaryMaps {
                 imgTemp.setRGB(x, y, 0xDC2626);
             }
         }
-        saveImageToAllLocations(imgTemp, "venus_temperature.png", "venus");
+        saveMapImage(imgTemp, "venus_temperature.png", "venus");
 
         // 3. Biomes (Volcanic Plains & Tesserae Uplands)
         BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -904,7 +881,7 @@ public class GenerateAuthenticPlanetaryMaps {
                 imgBiomes.setRGB(x, y, 0x78350F);
             }
         }
-        saveImageToAllLocations(imgBiomes, "venus_biomes.png", "venus");
+        saveMapImage(imgBiomes, "venus_biomes.png", "venus");
 
         // 4. Geothermal Hotspots (Maat Mons, Sapas Mons, Beta Regio)
         BufferedImage imgGeo = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -916,7 +893,7 @@ public class GenerateAuthenticPlanetaryMaps {
         List<double[]> vList = new ArrayList<>();
         for (double[] s : venusSpots) vList.add(s);
         rasterizeAlphaDensity(imgGeo, vList, new Color(239, 68, 68), 40.0);
-        saveImageToAllLocations(imgGeo, "venus_geothermal.png", "venus");
+        saveMapImage(imgGeo, "venus_geothermal.png", "venus");
     }
 
     private void generateMercuryMaps() {
@@ -938,7 +915,7 @@ public class GenerateAuthenticPlanetaryMaps {
                 }
             }
         }
-        saveImageToAllLocations(imgElev, "mercury_elevation.png", "mercure", "mercury");
+        saveMapImage(imgElev, "mercury_elevation.png", "mercury");
 
         // Temperature (Diurnal extreme)
         BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -947,7 +924,7 @@ public class GenerateAuthenticPlanetaryMaps {
                 imgTemp.setRGB(x, y, 0xEA580C);
             }
         }
-        saveImageToAllLocations(imgTemp, "mercury_temperature.png", "mercure", "mercury");
+        saveMapImage(imgTemp, "mercury_temperature.png", "mercury");
 
         // Biomes (Intercrater plains & Caloris Basin)
         BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -956,7 +933,7 @@ public class GenerateAuthenticPlanetaryMaps {
                 imgBiomes.setRGB(x, y, 0x52525B);
             }
         }
-        saveImageToAllLocations(imgBiomes, "mercury_biomes.png", "mercure", "mercury");
+        saveMapImage(imgBiomes, "mercury_biomes.png", "mercury");
 
         // Polar Shadowed Water Ice
         BufferedImage imgIce = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -964,7 +941,7 @@ public class GenerateAuthenticPlanetaryMaps {
         List<double[]> mIceList = new ArrayList<>();
         for (double[] s : mercIce) mIceList.add(s);
         rasterizeAlphaDensity(imgIce, mIceList, new Color(56, 189, 248), 15.0);
-        saveImageToAllLocations(imgIce, "mercury_aquifers.png", "mercure", "mercury");
+        saveMapImage(imgIce, "mercury_aquifers.png", "mercury");
     }
 }
 

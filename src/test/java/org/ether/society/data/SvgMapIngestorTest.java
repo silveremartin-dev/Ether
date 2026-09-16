@@ -19,6 +19,7 @@ public class SvgMapIngestorTest {
         Scenario scenario = new Scenario();
         scenario.setName("Test Roman Empire");
         scenario.setPopulationDensityType("ROMAN_EMPIRE");
+        scenario.setStartDateYear(0);
 
         HistoricalMapGenerator.populateScenarioHistoricalMaps(scenario);
 

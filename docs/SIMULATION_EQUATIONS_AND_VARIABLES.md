@@ -1,7 +1,7 @@
 # Ether Simulation — Differential Equations & State Variable Specification
 
 > **Master Technical, Physical & Mathematical Specification**  
-> *Version 4.4.0 — Strict Separation between Core Model Physics (Tier 1) and Optional Cliodynamic / Phenomenological Modules (Tier 2)*
+> *Version 4.5.0 — Strict Separation between Core Model Physics (Tier 1) and Optional Cliodynamic / Phenomenological Modules (Tier 2)*
 
 ---
 
@@ -16,8 +16,8 @@ The **Ether Engine** strictly partitions its computational mathematical models i
 │    • Mécanique céleste & Forçages orbitaux (Cycles de Milankovitch 100k/41k/23k)       │
 │    • Thermodynamique, Rayonnement & Glaces (Stefan-Boltzmann, Clausius, Fonte PDD)     │
 │    • Dynamique des fluides géophysiques (Coriolis, Cellules de Hadley/Ferrel/Polaires) │
-│    • Hydrogéologie poreuse (Darcy 2D), Chimie des solutions (Loi de Henry)             │
-│    • Géophysique solide & Isostasie (Ajustement Isostatique Glaciaire GIA)             │
+│    • Hydrogéologie poreuse (Darcy 2D), Hydraulique à surface libre (Manning-Strickler) │
+│    • Géophysique solide & Isostasie (Ajustement Isostatique Glaciaire GIA, Airy)       │
 │    • Pédologie hydraulique (van Genuchten AWC) & Sédimentation alluviale (Stokes)     │
 │    • Transfert radiatif végétal (Beer-Lambert LAI) & Photosynthèse (Farquhar FvCB)     │
 │    • Biophysique métabolique (Kleiber 3/4, Gompertz-Makeham, Stull Wet-Bulb)          │
@@ -35,8 +35,10 @@ The **Ether Engine** strictly partitions its computational mathematical models i
 │    • Évolution technologique combinatoire (Modèle de W. Brian Arthur)                 │
 │    • Rente d'épuisement des ressources non-renouvelables (Règle de Hotelling)         │
 │    • Dynamique institutionnelle & effondrement de complexité (Tainter)                │
-│    • Modèles socio-écologiques prédateur-proie (NASA HANDY)                           │
-│    • Cohésion sociale & frontière impériale (Turchin Asabiyyah)                       │
+│    • Modèles socio-écologiques prédateur-proie (NASA HANDY, Limits to Growth World3)  │
+│    • Théorie structurale-démographique SDT & Cohésion de frontière (Turchin)         │
+│    • Institutions inclusives vs extractives (Acemoglu-Robinson)                       │
+│    • Cascades de seuil d'émeute et de mobilisation (Granovetter)                      │
 │    • Épidémiologie compartimentale métapopulationnelle (SEIR-V Spatial)               │
 │    • Nouvelle économie géographique centre-périphérie (Krugman NEG)                  │
 │    • Ségrégation culturelle et homophilie spatiale (Schelling-Axelrod)                │
@@ -46,24 +48,36 @@ The **Ether Engine** strictly partitions its computational mathematical models i
 
 ---
 
-## 2. Multi-Scale Temporal Decoupling
+## 2. 3-Tier Multi-Scale Temporal Decoupling
 
-Ether decouples numerical integration across two discrete time scales on the Uber H3 hexagonal grid ($175,000+$ cells at Resolution 6–8):
+Ether decouples numerical integration across three discrete physical time scales on the Uber H3 hexagonal grid ($175,000+$ cells at Resolution 6–8) via the `MultiScaleSymplecticIntegrator`:
 
-- **Fast Tick Scale ($\Delta t_{\text{fast}} = 1 \text{ day} = 86,400 \text{ s}$)**:
-  - Resolves symmetric finite-volume mass fluxes under Courant-Friedrichs-Lewy (CFL) limits (`FluxEngine`).
+- **Tier 1 — Fast Daily Scale ($\Delta t_{\text{daily}} = 1 \text{ day} = 86,400 \text{ s}$)**:
+  - Resolves symmetric finite-volume mass and logistics fluxes under Courant-Friedrichs-Lewy (CFL) limits (`FluxEngine`).
   - Evaluates instantaneous wet-bulb temperature and hyperthermia thresholds (`WetBulbTemperatureEngine`).
   - Computes zonal wind vectors under Coriolis parameter $f = 2\Omega \sin\phi$ (`AtmosphericCirculationHadleyEngine`).
   - Resolves active localized epidemiological transmissions via sparse active sets (`SpatialMetapopulationSEIREngine`).
+  - Updates tactical political borders, legitimacy pressure, and military maneuvers (`PoliticalSimulationEngine`).
 
-- **Slow Tick Scale ($\Delta t_{\text{slow}} = 30 \text{ days} \approx 2.592 \times 10^6 \text{ s} = \Delta t / 31,557,600 \text{ yr}$)**:
-  - Updates Milankovitch astronomical orbital parameters ($e$, $\varepsilon$, $\varpi$) and TOA solar insolation.
-  - Integrates Viscoelastic Glacial Isostatic Adjustment (GIA, $\tau \approx 4000\text{ yr}$).
-  - Solves 2D lateral piezometric aquifer diffusion (Darcy flux).
-  - Integrates cryospheric thermodynamic melt ($L_f = 333.55\text{ kJ/kg}$) and eustatic sea level adjustments.
-  - Resolves van Genuchten soil water retention, Radiocarbon $^{14}\text{C}$ decay, and Stokes siltation kinetics.
+- **Tier 2 — Monthly Biophysical Sub-Step Scale ($\Delta t_{\text{monthly}} = 30 \text{ days} \approx 2.592 \times 10^6 \text{ s}$)**:
+  - Updates Milankovitch astronomical orbital parameters ($e$, $\varepsilon$, $\varpi$) and TOA solar insolation (`MilankovitchOrbitalEngine`).
+  - Solves 2D lateral piezometric aquifer diffusion (Darcy flux in `AquiferDepletionEngine`).
+  - Integrates cryospheric thermodynamic melt ($L_f = 333.55\text{ kJ/kg}$) and eustatic sea level adjustments (`GlacialThermodynamicMeltEngine`).
+  - Resolves van Genuchten soil water retention, N-P-K soil nutrient depletion, and Stokes siltation kinetics.
   - Integrates Farquhar FvCB photosynthesis, Beer-Lambert light interception, and soil organic carbon decay.
-  - Updates cohort aging, Gompertz-Makeham senescence, and Kimura genetic drift.
+  - Updates cohort demographic aging, Gompertz-Makeham senescence, and Kimura genetic drift.
+  - Evaluates registered Type B cliodynamic plugins (`ProceduralEngineRegistry`).
+
+- **Tier 3 — Annual Macro Physics Scale ($\Delta t_{\text{annual}} = 365 \text{ days} \approx 31.5576 \times 10^6 \text{ s}$)**:
+  - Deep mineral ore grade degradation and Hotelling depletion dynamics (`OreGradeThermodynamicsEngine`).
+  - Vaclav Smil primary energy transition inertia (35-year turnover time for physical infrastructure).
+  - Integrates Viscoelastic Glacial Isostatic Adjustment (GIA, $\tau \approx 4000\text{ yr}$).
+  - Radiocarbon $^{14}\text{C}$ decay calibration and geochemical $\delta^{13}\text{C}$ fractionation.
+  - Tainter organizational complexity maintenance drag & diminishing marginal returns.
+  - Long-term historical telemetry validation (RMSE & $R^2$ against Seshat, Maddison, HYDE 3.4).
+
+> [!NOTE]
+> **Strict Determinism Principle**: Monthly ($\Delta t=30\text{d}$) and Annual ($\Delta t=365\text{d}$) equations are **strictly never evaluated on a daily basis**. Setting `strictDeterminism = true` ensures exact bit-identical IEEE 754 floating-point reproducibility across runs without altering the physical time-stepping hierarchy.
 
 ---
 
@@ -104,6 +118,10 @@ $$f = 2\Omega \sin\phi \quad (\Omega = 7.2921159 \times 10^{-5}\text{ rad/s})$$
 - **Cellule Polaire ($60^\circ - 90^\circ$)** : Vents d'Est polaires froids ($u_z < 0$).
 - **Puissance éolienne de Betz** : $P_{\text{wind}} = \frac{1}{2} \rho_{\text{air}} v^3 C_p$ ($C_p \le 0.593$).
 
+#### 3. Température au Thermomètre Mouillé (Stull Wet-Bulb) & Hyperthermie
+$$T_w = T \arctan(0.151977\sqrt{RH + 8.313659}) + \arctan(T + RH) - \arctan(RH - 1.676331) + 0.00391838 (RH)^{3/2} \arctan(0.023101 RH) - 4.686035$$
+- Seuil létal physiologique humain : $T_w \ge 35.0^\circ\text{C}$ (arrêt du refroidissement évaporatif).
+
 ---
 
 ### C. Géophysique Solide, Hydrogéologie & Isostasie
@@ -125,8 +143,9 @@ $$v_s = \frac{2}{9} \frac{(\rho_p - \rho_f) \, g}{\mu(T)} r^2 \quad [\text{m/s}]
 
 ### D. Biophysique, Métabolisme & Traçage Isotopique
 
-#### 1. Atténuation Lumineuse de Beer-Lambert dans la Canopée
+#### 1. Atténuation Lumineuse de Beer-Lambert dans la Canopée & Farquhar FvCB
 $$I(z) = I_0 \cdot \exp(-k_{\text{ext}} \cdot \text{LAI}) \quad (k_{\text{ext}} \approx 0.6)$$
+$$A_{\text{net}} = \min(W_c, W_j, W_p) - R_d$$
 
 #### 2. Décroissance Radioactive du Carbone 14 ($^{14}\text{C}$) & Fractionnement $\delta^{13}\text{C}$
 $$N(t) = N_0 \exp(-\lambda_{14} \cdot t), \quad \lambda_{14} = \frac{\ln 2}{5730\text{ ans}} \approx 1.2097 \times 10^{-4}\text{ an}^{-1}$$
@@ -178,21 +197,32 @@ $$U_i = \mathbb{I}\left(\frac{\sum_{j \in \mathcal{N}(i)} \mathbb{I}(C_j = C_i)}
 ### J. Complexité Institutionnelle & Rendements Décroissants de Tainter
 $$C_i = \ln(1 + 0.05 K_i), \quad \Sigma_{\text{maint}} = C_i^{1.20} \times 10\text{ Joules}$$
 
+### K. Théorie Structurale-Démographique SDT de Turchin-Goldstone
+$$\Psi(t) = \frac{w(t)^{-1} \cdot (E(t)/N(t)) \cdot \text{FiscalStress}(t)}{\text{StateLegitimacy}(t)}$$
+- Indice d'instabilité politique $\Psi(t)$ prédisant les cycles séculaires de révoltes et d'effondrement étatique.
+
+### L. Institutions Inclusives vs Extractives d'Acemoglu-Robinson
+$$\frac{dK_{\text{public}}}{dt} = \mu_{\text{inst}} \cdot (1 - \text{ExtractiveRate}) \cdot Y - \delta K_{\text{public}}$$
+
 ---
 
 ## 5. Performance & Numerical Optimization Strategy
 
-| Modèle | Tier | Stratégie d'Optimisation | Coût d'Exécution (175k cellules) |
-| :--- | :--- | :--- | :--- |
-| **Milankovitch & Insolation** | Tier 1 | Calcul analytique orbital au pas mensuel | $< 0.01\text{ ms}$ |
-| **Coriolis & Circulation Hadley** | Tier 1 | Formule zonale vectorisée 1D | $< 0.03\text{ ms}$ |
-| **GIA Isostasie & Décroissance C-14**| Tier 1 | Décroissance exponentielle vectorielle | $< 0.02\text{ ms}$ |
-| **Stefan-Boltzmann / Clausius** | Tier 1 | Vectorisation SIMD (`VectorAPI` AVX-512) | $< 0.05\text{ ms}$ |
-| **Darcy 2D Aquifères** | Tier 1 | Découplage au pas mensuel ($\Delta t_{\text{slow}} = 30\text{ j}$) | $\approx 0.04\text{ ms/tick}$ |
-| **Fonte PDD Cryosphère** | Tier 1 | Filtrage sur cellules gelées actives | $< 0.02\text{ ms}$ |
-| **van Genuchten / Stokes** | Tier 1 | Calcul algébrique direct / Forme fermée | $< 0.03\text{ ms}$ |
-| **Beer-Lambert & Farquhar** | Tier 1 | Look-Up Table (LUT) 2D / Exponentielle SIMD | $< 0.08\text{ ms}$ |
-| **Équation de Price & Boserup** | Tier 2 | Opérations arithmétiques locales $O(1)$ | $< 0.03\text{ ms}$ |
-| **SEIR Métapopulationnel** | Tier 2 | *Sparse Active Set* ($I_i > 0 + \text{1-Ring}$) | $0.00\text{ ms}$ (hors crise), $< 0.3\text{ ms}$ (crise) |
-| **West-Bettencourt / Kümmel** | Tier 2 | Opérations arithmétiques locales $O(1)$ | $< 0.03\text{ ms}$ |
-| **Krugman NEG** | Tier 2 | Calcul matriciel clairsemé sur routes commerciales | $< 0.20\text{ ms}$ |
+| Modèle | Tier | Échelle Temporelle | Stratégie d'Optimisation | Coût d'Exécution (175k cellules) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Flux & Conservation** | Tier 1 | Quotidien ($\Delta t=1\text{d}$) | Vectorisation SIMD (`VectorAPI` AVX-512) | $\approx 0.12\text{ ms}$ |
+| **Coriolis & Circulation Hadley** | Tier 1 | Quotidien ($\Delta t=1\text{d}$) | Formule zonale vectorisée 1D | $< 0.03\text{ ms}$ |
+| **Wet-Bulb (Stull)** | Tier 1 | Quotidien ($\Delta t=1\text{d}$) | Polynôme analytique vectorisé | $< 0.04\text{ ms}$ |
+| **Milankovitch & Insolation** | Tier 1 | Mensuel ($\Delta t=30\text{d}$) | Calcul analytique orbital au pas mensuel | $< 0.01\text{ ms}$ |
+| **GIA Isostasie & Décroissance C-14**| Tier 1 | Annuel ($\Delta t=365\text{d}$) | Décroissance exponentielle vectorielle | $< 0.02\text{ ms}$ |
+| **Stefan-Boltzmann / Clausius** | Tier 1 | Mensuel ($\Delta t=30\text{d}$) | Vectorisation SIMD (`VectorAPI` AVX-512) | $< 0.05\text{ ms}$ |
+| **Darcy 2D Aquifères** | Tier 1 | Mensuel ($\Delta t=30\text{d}$) | Découplage au pas mensuel ($\Delta t = 30\text{ j}$) | $\approx 0.04\text{ ms/tick}$ |
+| **Fonte PDD Cryosphère** | Tier 1 | Mensuel ($\Delta t=30\text{d}$) | Filtrage sur cellules gelées actives | $< 0.02\text{ ms}$ |
+| **van Genuchten / Stokes** | Tier 1 | Mensuel ($\Delta t=30\text{d}$) | Calcul algébrique direct / Forme fermée | $< 0.03\text{ ms}$ |
+| **Beer-Lambert & Farquhar** | Tier 1 | Mensuel ($\Delta t=30\text{d}$) | Look-Up Table (LUT) 2D / Exponentielle SIMD | $< 0.08\text{ ms}$ |
+| **Équation de Price & Boserup** | Tier 2 | Mensuel ($\Delta t=30\text{d}$) | Opérations arithmétiques locales $O(1)$ | $< 0.03\text{ ms}$ |
+| **SEIR Métapopulationnel** | Tier 2 | Quotidien ($\Delta t=1\text{d}$) | *Sparse Active Set* ($I_i > 0 + \text{1-Ring}$) | $0.00\text{ ms}$ (hors crise), $< 0.3\text{ ms}$ (crise) |
+| **West-Bettencourt / Kümmel** | Tier 2 | Mensuel ($\Delta t=30\text{d}$) | Opérations arithmétiques locales $O(1)$ | $< 0.03\text{ ms}$ |
+| **Krugman NEG** | Tier 2 | Mensuel ($\Delta t=30\text{d}$) | Calcul matriciel clairsemé sur routes commerciales | $< 0.20\text{ ms}$ |
+| **Smil Inertia & Ore Depletion** | Tier 2 | Annuel ($\Delta t=365\text{d}$) | Évaluation macroscopique annuelle | $< 0.02\text{ ms}$ |
+

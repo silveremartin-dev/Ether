@@ -80,6 +80,11 @@ public class HistoricalMapGenerator {
                 if (imgDensity != null) {
                     scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
                     logger.info("Successfully populated scenario '{}' density tensor using HYDE 3.4 5-arc-minute grid for year {}.", scenario.getName(), scenario.getStartDateYear());
+                } else {
+                    imgDensity = generateCleanDensityMap(type, scenario);
+                    if (imgDensity != null) {
+                        scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+                    }
                 }
             }
 

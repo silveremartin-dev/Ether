@@ -7,6 +7,7 @@ import org.ether.society.model.ScenarioTimeline;
 import org.ether.society.procedural.NuclearWarfareClimateEngine;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class GodModePanel extends VBox {
     private final ScenarioTimeline timeline;
 
     private final Label headerLabel;
+    private final Label pauseNoticeLabel;
     private final ListView<String> timelineListView;
     private final Label timelineHeaderLabel;
 
@@ -79,7 +81,11 @@ public class GodModePanel extends VBox {
         headerLabel = new Label();
         headerLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #38bdf8;");
 
-        // Form fields initialization
+        // Explanatory Pause Banner
+        pauseNoticeLabel = new Label();
+        pauseNoticeLabel.setWrapText(true);
+        pauseNoticeLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #fcd34d; -fx-padding: 8 10; -fx-background-color: rgba(245, 158, 11, 0.12); -fx-background-radius: 6; -fx-border-color: rgba(245, 158, 11, 0.4); -fx-border-radius: 6; -fx-line-spacing: 2px;");
+
         // Form fields initialization
         eventTypeCombo = new ComboBox<>();
         eventTypeCombo.getItems().addAll(
@@ -102,13 +108,16 @@ public class GodModePanel extends VBox {
             "ALIEN_CONTACT"
         );
         eventTypeCombo.setValue("VOLCANO");
-        eventTypeCombo.setMaxWidth(Double.MAX_VALUE);
+        eventTypeCombo.setPrefWidth(210);
+        eventTypeCombo.setMaxWidth(260);
 
         eventDescriptionLabel = new Label();
         eventDescriptionLabel.setWrapText(true);
         eventDescriptionLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #cbd5e1; -fx-padding: 4 6; -fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 4; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 4;");
 
         eventNameField = new TextField(I18n.getOrDefault("godmode.event.volcano", "Stratospheric SO₂ Eruption"));
+        eventNameField.setPrefWidth(210);
+        eventNameField.setMaxWidth(260);
 
         int currentYr = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
         int minYr = engine != null && engine.getCurrentScenario() != null ? (int) engine.getCurrentScenario().getStartDateYear() : -100000;
@@ -120,14 +129,16 @@ public class GodModePanel extends VBox {
 
         targetYearSpinner = new Spinner<>(minYr, maxYr, Math.max(minYr, Math.min(maxYr, currentYr)), 1);
         targetYearSpinner.setEditable(true);
-        targetYearSpinner.setMaxWidth(Double.MAX_VALUE);
+        targetYearSpinner.setPrefWidth(95);
+        targetYearSpinner.setMaxWidth(110);
 
         targetYearSlider = new Slider(minYr, maxYr, Math.max(minYr, Math.min(maxYr, currentYr)));
         targetYearSlider.setBlockIncrement(1);
         targetYearSlider.setMajorTickUnit(Math.max(1, (maxYr - minYr) / 5.0));
         targetYearSlider.setMinorTickCount(4);
         targetYearSlider.setShowTickMarks(false);
-        targetYearSlider.setMaxWidth(Double.MAX_VALUE);
+        targetYearSlider.setPrefWidth(120);
+        targetYearSlider.setMaxWidth(150);
 
         // Synchronize Spinner & Slider
         targetYearSlider.valueProperty().addListener((obs, oldV, newV) -> {
@@ -143,15 +154,18 @@ public class GodModePanel extends VBox {
 
         latSpinner = new Spinner<>(-90.0, 90.0, 0.0, 1.0);
         latSpinner.setEditable(true);
-        latSpinner.setMaxWidth(Double.MAX_VALUE);
+        latSpinner.setPrefWidth(95);
+        latSpinner.setMaxWidth(110);
 
         lngSpinner = new Spinner<>(-180.0, 180.0, 0.0, 1.0);
         lngSpinner.setEditable(true);
-        lngSpinner.setMaxWidth(Double.MAX_VALUE);
+        lngSpinner.setPrefWidth(95);
+        lngSpinner.setMaxWidth(110);
 
         magnitudeSpinner = new Spinner<>(0.1, 10.0, 1.5, 0.5);
         magnitudeSpinner.setEditable(true);
-        magnitudeSpinner.setMaxWidth(Double.MAX_VALUE);
+        magnitudeSpinner.setPrefWidth(95);
+        magnitudeSpinner.setMaxWidth(110);
 
         // Update default event name and description when type changes
         eventTypeCombo.valueProperty().addListener((obs, oldV, newV) -> {
@@ -297,7 +311,8 @@ public class GodModePanel extends VBox {
         terraformTitleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
         brushModeCombo = new ComboBox<>();
-        brushModeCombo.setMaxWidth(Double.MAX_VALUE);
+        brushModeCombo.setPrefWidth(210);
+        brushModeCombo.setMaxWidth(260);
 
         applyBrushBtn = new Button();
         applyBrushBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 12; -fx-background-radius: 6;");
@@ -395,7 +410,7 @@ public class GodModePanel extends VBox {
         VBox timelineBox = new VBox(6, timelineHeaderLabel, timelineListView);
         timelineBox.getStyleClass().add("card-section");
 
-        getChildren().addAll(headerLabel, injectorBox, spawnerBox, terraformBox, resetBox, timelineBox);
+        getChildren().addAll(headerLabel, pauseNoticeLabel, injectorBox, spawnerBox, terraformBox, resetBox, timelineBox);
 
         updateTexts();
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
@@ -403,6 +418,7 @@ public class GodModePanel extends VBox {
 
     public void updateTexts() {
         headerLabel.setText(I18n.getOrDefault("godmode.title", "⚡ 5. MODE DIEU & CHRONOLOGIE"));
+        pauseNoticeLabel.setText(I18n.getOrDefault("godmode.pause_notice", "⏸️ La simulation est automatiquement mise en pause sur cet onglet pour vous permettre de configurer et programmer sereinement vos événements climatiques et interventions sans décalage temporel."));
 
         eventTypeCombo.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.event_type", "Type of physical or climate disturbance to inject into ecosystem.")));
         eventNameField.setPromptText(I18n.getOrDefault("godmode.prompt.event_title", "Event Title or Name..."));
@@ -480,11 +496,23 @@ public class GodModePanel extends VBox {
         grid.setHgap(8);
         grid.setVgap(6);
 
+        ColumnConstraints col0 = new ColumnConstraints();
+        col0.setMinWidth(140);
+        col0.setPrefWidth(150);
+        col0.setHgrow(Priority.NEVER);
+
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setHgrow(Priority.ALWAYS);
+
+        grid.getColumnConstraints().addAll(col0, col1);
+
         grid.addRow(0, lblEventType, eventTypeCombo);
         grid.add(eventDescriptionLabel, 1, 1);
         grid.addRow(2, lblEventTitle, eventNameField);
         
-        VBox yearBox = new VBox(4, targetYearSpinner, targetYearSlider, dateRangeLabel);
+        HBox yearRow = new HBox(8, targetYearSpinner, targetYearSlider);
+        yearRow.setAlignment(Pos.CENTER_LEFT);
+        VBox yearBox = new VBox(3, yearRow, dateRangeLabel);
         grid.addRow(3, lblTargetYear, yearBox);
 
         grid.addRow(4, lblLat, latSpinner);
@@ -524,6 +552,8 @@ public class GodModePanel extends VBox {
     private Label createLabel() {
         Label l = new Label();
         l.getStyleClass().add("control-label");
+        l.setMinWidth(Region.USE_PREF_SIZE);
+        l.setWrapText(false);
         return l;
     }
 

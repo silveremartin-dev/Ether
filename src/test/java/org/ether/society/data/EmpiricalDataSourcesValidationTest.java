@@ -30,7 +30,11 @@ import java.util.List;
 public class EmpiricalDataSourcesValidationTest {
     private static final Logger logger = LoggerFactory.getLogger(EmpiricalDataSourcesValidationTest.class);
 
-    private static final File ARTIFACT_DIR = new File("C:/Users/silve/.gemini/antigravity/brain/5d6049c2-b4bf-48cc-b896-c6a673043b13");
+    private static final File ARTIFACT_DIR = new File("target/test-output");
+
+    static {
+        ARTIFACT_DIR.mkdirs();
+    }
 
     @Test
     @DisplayName("1. Validate HYDE 3.4 5-Arc-Minute Empirical Grid Ingestion (Zero Fallback)")

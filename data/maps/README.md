@@ -71,36 +71,32 @@ In addition to Earth, Ether includes complete, authentic reference maps for othe
 
 ### Planetary Presets Catalog
 
-| Preset Subfolder | Body | Available Reference Layers | Authentic Primary Source Sensor / Dataset |
+| Preset Canonical Directory | Body | Available Reference Layers | Authentic Primary Source Sensor / Dataset |
 |---|---|---|---|
-| `terre/` (alias `earth/`) | **Earth** | Elevation, Temperature, Precipitation, Seasonality, Biomes, Coal, Oil, Gas, Uranium, Helium-3, Iron/Copper, Precious Metals/REE, Geothermal, Aquifers | NOAA ETOPO 2022, WorldClim 2.1, MODIS MCD12C1, USGS MRDS (300k+), WEP/BGR, IAEA UDEPO, IHFC Davies 2013, UNESCO WHYMAP |
-| `lune/` (alias `moon/`) | **Moon** | Elevation, Biomes (Regolith/Maria), Temperature, Helium-3 (Solar wind implantation), Iron/Copper (Ilmenite FeTiO3), Aquifers (Polar PSR ice) | NASA LRO LOLA DEM (118m/px), LEND neutron spectrometer, Lunar Prospector gamma ray, Apollo landing sites |
-| `mars/` | **Mars** | Elevation, Biomes (Areography/Basins), Temperature, Iron/Copper (Hematite/Ferric dust), Aquifers (Utopia Planitia/Polar ice), Geothermal (Mantle hotspots) | NASA MGS MOLA MEGDR DEM (463m/px), Mars Global Surveyor TES, Mars Express OMEGA, InSight heat flux |
-| `venus/` | **Venus** | Elevation, Biomes (Volcanic plains/Coronae), Temperature, Geothermal (Coronae mantle upwelling) | NASA Magellan Radar Altimetry GXDR (4.6km/px), Venus Express VIRTIS |
-| `mercure/` (alias `mercury/`) | **Mercury** | Elevation, Biomes (Smooth plains/Caloris), Temperature, Aquifers (Permanently shadowed polar ice) | NASA MESSENGER MLA DEM (500m/px), MDIS multispectral |
+| `data/maps/ether/earth/` | **Earth** (Terre) | Elevation, Temperature, Precipitation, Seasonality, Biomes, Coal, Oil, Gas, Uranium, Helium-3, Iron/Copper, Precious Metals/REE, Geothermal, Aquifers | NOAA ETOPO 2022, WorldClim 2.1, MODIS MCD12C1, USGS MRDS (300k+), WEP/BGR, IAEA UDEPO, IHFC Davies 2013, UNESCO WHYMAP |
+| `data/maps/ether/moon/` | **Moon** (Lune) | Elevation, Biomes (Regolith/Maria), Temperature, Helium-3 (Solar wind implantation), Iron/Copper (Ilmenite FeTiO3), Aquifers (Polar PSR ice) | NASA LRO LOLA DEM (118m/px), LEND neutron spectrometer, Lunar Prospector gamma ray, Apollo landing sites |
+| `data/maps/ether/mars/` | **Mars** | Elevation, Biomes (Areography/Basins), Temperature, Iron/Copper (Hematite/Ferric dust), Aquifers (Utopia Planitia/Polar ice), Geothermal (Mantle hotspots) | NASA MGS MOLA MEGDR DEM (463m/px), Mars Global Surveyor TES, Mars Express OMEGA, InSight heat flux |
+| `data/maps/ether/venus/` | **Venus** | Elevation, Biomes (Volcanic plains/Coronae), Temperature, Geothermal (Coronae mantle upwelling) | NASA Magellan Radar Altimetry GXDR (4.6km/px), Venus Express VIRTIS |
+| `data/maps/ether/mercury/` | **Mercury** (Mercure) | Elevation, Biomes (Smooth plains/Caloris), Temperature, Aquifers (Permanently shadowed polar ice) | NASA MESSENGER MLA DEM (500m/px), MDIS multispectral |
 
 ---
 
-## 6. Directory Structure & Ether Hierarchical Layout
+## 6. Directory Structure & Single-Copy Canonical Architecture
 
 ```
 data/maps/
 ├── README.md                          # Authoritative Data Catalog (This Document)
-├── repatriation_audit.json            # Automated checksum and integrity audit
-├── download_status.json               # Remote GIS asset sync status
+├── repatriation_audit.json            # Automated Checksum & Integrity Audit
+├── download_status.json               # Remote GIS Asset Sync Status
 │
-├── ether/                             # Primary Engine Data Directory
-│   ├── terre/ (alias: earth/)         # Earth full raster layers (Tab 1, Tab 2)
-│   ├── lune/ (alias: moon/)           # Moon reference layers
-│   ├── mars/                          # Mars reference layers
-│   ├── venus/                         # Venus reference layers
-│   └── mercure/ (alias: mercury/)     # Mercury reference layers
+├── ether/                             # Clean Authoritative Spatial Map Repository
+│   ├── earth/                         # Earth (Terre) Reference Layers (14 uncompressed rasters)
+│   ├── moon/                          # Moon (Lune) Reference Layers (6 uncompressed rasters)
+│   ├── mars/                          # Mars Reference Layers (6 uncompressed rasters)
+│   ├── venus/                         # Venus Reference Layers (4 uncompressed rasters)
+│   └── mercury/                       # Mercury (Mercure) Reference Layers (4 uncompressed rasters)
 │
-├── terre/ (alias: earth/)             # Root preset fallback mirrors
-├── lune/ (alias: moon/)               # Root preset fallback mirrors
-├── mars/                              # Root preset fallback mirrors
-├── venus/                             # Root preset fallback mirrors
-├── mercure/ (alias: mercury/)         # Root preset fallback mirrors
+├── cache/                             # Deterministic runtime scenario raster cache
 │
 ├── archaeoglobe/                      # Land Use Archaeological Survey
 ├── bgr_germany/                       # Federal Institute for Geosciences (Germany)

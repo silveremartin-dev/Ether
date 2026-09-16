@@ -53,11 +53,15 @@ public class H3SpatialPartitioner {
     public static void sortCellsByHilbertCurve(List<H3Cell> cells) {
         if (cells == null || cells.size() <= 1) return;
 
-        cells.sort(Comparator.comparingLong(c -> {
-            double lat = c.getLatitude() != null ? c.getLatitude() : 0.0;
-            double lng = c.getLongitude() != null ? c.getLongitude() : 0.0;
-            return computeHilbertKey(lat, lng);
-        }));
+        try {
+            cells.sort(Comparator.comparingLong(c -> {
+                double lat = c.getLatitude() != null ? c.getLatitude() : 0.0;
+                double lng = c.getLongitude() != null ? c.getLongitude() : 0.0;
+                return computeHilbertKey(lat, lng);
+            }));
+        } catch (UnsupportedOperationException e) {
+            // List is unmodifiable (e.g. List.of), ignore in-place sort
+        }
     }
 
     /**

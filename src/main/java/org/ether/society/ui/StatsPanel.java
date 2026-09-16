@@ -570,6 +570,12 @@ public class StatsPanel extends VBox {
         }
     }
 
+    public void reset() {
+        chartSeries.getData().clear();
+        barSeries.getData().clear();
+        tickCounter = 0;
+    }
+
     private void resetChartSeries() {
         chartSeries.getData().clear();
         update();

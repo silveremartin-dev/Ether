@@ -328,49 +328,43 @@ public class ImageMapLoader {
     }
 
     /**
-     * Loads a map image prioritizing data/maps/ directory and preset subdirectories (read-only GIS filesystem repository),
-     * then falling back to classpath /maps/ resource if not present.
+     * Loads a map image prioritizing the single canonical location data/maps/ether/<planet>/
+     * (e.g. data/maps/ether/earth/earth_elevation.png), with transparent alias resolution
+     * (terre->earth, lune->moon, mercure->mercury) without duplicating files on disk.
      */
     public static Image loadMapImage(String mapFileName) {
         if (mapFileName == null || mapFileName.isBlank()) return null;
-        String cleanName = mapFileName.startsWith("/") ? mapFileName.substring(1) : mapFileName;
-        if (cleanName.startsWith("maps/")) cleanName = cleanName.substring(5);
+        String clean = mapFileName.startsWith("/") ? mapFileName.substring(1) : mapFileName;
+        if (clean.startsWith("maps/")) clean = clean.substring(5);
+        if (clean.startsWith("ether/")) clean = clean.substring(6);
 
-        // 1. Prioritize data/maps/ether/ directory and its preset subdirectories
-        File etherDirect = new File("data/maps/ether/" + cleanName);
-        if (etherDirect.exists() && etherDirect.isFile()) {
-            try {
-                return new Image(new java.io.FileInputStream(etherDirect));
-            } catch (Exception e) {
-                logger.warn("Failed to load map from {}", etherDirect.getAbsolutePath(), e);
-            }
+        String subDir = null;
+        String baseName = clean;
+        int slashIdx = clean.lastIndexOf('/');
+        if (slashIdx >= 0) {
+            subDir = clean.substring(0, slashIdx);
+            baseName = clean.substring(slashIdx + 1);
         }
 
-        String[] subDirs = {"terre", "earth", "lune", "moon", "mars", "venus", "mercure", "mercury"};
-        for (String sub : subDirs) {
-            File etherSubFile = new File("data/maps/ether/" + sub + "/" + cleanName);
-            if (etherSubFile.exists() && etherSubFile.isFile()) {
+        // Canonical preset mapping
+        String canonicalSub = normalizePresetDir(subDir != null ? subDir : deducePresetFromFileName(baseName));
+
+        // 1. Check primary canonical path: data/maps/ether/<canonicalSub>/<baseName>
+        if (canonicalSub != null) {
+            File targetFile = new File("data/maps/ether/" + canonicalSub + "/" + baseName);
+            if (targetFile.exists() && targetFile.isFile()) {
                 try {
-                    return new Image(new java.io.FileInputStream(etherSubFile));
+                    return new Image(new java.io.FileInputStream(targetFile));
                 } catch (Exception e) {
-                    logger.warn("Failed to load map from {}", etherSubFile.getAbsolutePath(), e);
+                    logger.warn("Failed to load map from {}", targetFile.getAbsolutePath(), e);
                 }
             }
         }
 
-        // 2. Direct path in data/maps/
-        File directFile = new File("data/maps/" + cleanName);
-        if (directFile.exists() && directFile.isFile()) {
-            try {
-                return new Image(new java.io.FileInputStream(directFile));
-            } catch (Exception e) {
-                logger.warn("Failed to load map from {}", directFile.getAbsolutePath(), e);
-            }
-        }
-
-        // 3. Preset subdirectories in data/maps/
-        for (String sub : subDirs) {
-            File subFile = new File("data/maps/" + sub + "/" + cleanName);
+        // 2. Scan standard canonical planetary subdirectories under data/maps/ether/
+        String[] canonicalDirs = {"earth", "moon", "mars", "venus", "mercury"};
+        for (String cDir : canonicalDirs) {
+            File subFile = new File("data/maps/ether/" + cDir + "/" + baseName);
             if (subFile.exists() && subFile.isFile()) {
                 try {
                     return new Image(new java.io.FileInputStream(subFile));
@@ -380,24 +374,49 @@ public class ImageMapLoader {
             }
         }
 
-        // 4. Fallback to classpath /maps/ether/ and /maps/
-        var streamEther = ImageMapLoader.class.getResourceAsStream("/maps/ether/" + cleanName);
-        if (streamEther != null) return new Image(streamEther);
-        for (String sub : subDirs) {
-            var subStream = ImageMapLoader.class.getResourceAsStream("/maps/ether/" + sub + "/" + cleanName);
-            if (subStream != null) return new Image(subStream);
+        // 3. Fallback to direct path in data/maps/
+        File directFile = new File("data/maps/" + clean);
+        if (directFile.exists() && directFile.isFile()) {
+            try {
+                return new Image(new java.io.FileInputStream(directFile));
+            } catch (Exception e) {
+                logger.warn("Failed to load map from {}", directFile.getAbsolutePath(), e);
+            }
         }
 
-        var stream = ImageMapLoader.class.getResourceAsStream("/maps/" + cleanName);
+        // 4. Fallback to classpath /maps/
+        var stream = ImageMapLoader.class.getResourceAsStream("/maps/" + clean);
         if (stream != null) {
             return new Image(stream);
         }
-        for (String sub : subDirs) {
-            var subStream = ImageMapLoader.class.getResourceAsStream("/maps/" + sub + "/" + cleanName);
-            if (subStream != null) {
-                return new Image(subStream);
-            }
+        for (String cDir : canonicalDirs) {
+            var subStream = ImageMapLoader.class.getResourceAsStream("/maps/" + cDir + "/" + baseName);
+            if (subStream != null) return new Image(subStream);
         }
+        return null;
+    }
+
+    private static String normalizePresetDir(String dir) {
+        if (dir == null) return null;
+        String lower = dir.toLowerCase().trim();
+        return switch (lower) {
+            case "terre", "earth" -> "earth";
+            case "lune", "moon" -> "moon";
+            case "mars", "ares" -> "mars";
+            case "venus", "hesperos" -> "venus";
+            case "mercure", "mercury", "hermes" -> "mercury";
+            default -> lower;
+        };
+    }
+
+    private static String deducePresetFromFileName(String fileName) {
+        if (fileName == null) return null;
+        String lower = fileName.toLowerCase();
+        if (lower.startsWith("earth_") || lower.startsWith("terre_")) return "earth";
+        if (lower.startsWith("moon_") || lower.startsWith("lune_")) return "moon";
+        if (lower.startsWith("mars_")) return "mars";
+        if (lower.startsWith("venus_")) return "venus";
+        if (lower.startsWith("mercury_") || lower.startsWith("mercure_")) return "mercury";
         return null;
     }
 

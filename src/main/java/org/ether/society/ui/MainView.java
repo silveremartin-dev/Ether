@@ -67,6 +67,12 @@ public class MainView extends StackPane {
     private ColorLegend colorLegend;
     private boolean isSwitchingTabs = false;
 
+    // Full-Screen Map Mode
+    private BorderPane simulationRoot;
+    private StackPane mapStack;
+    private boolean isFullScreen = false;
+    private javafx.event.EventHandler<javafx.scene.input.KeyEvent> escapeKeyFilter;
+
     public MainView(H3SimulationEngine engine, ControlPanel controlPanel, H3MapCanvas mapCanvas, MiniMap miniMap,
             PerformanceHUD hud) {
         this.engine = engine;
@@ -217,6 +223,8 @@ public class MainView extends StackPane {
             }
         });
 
+        tabPane.getTabs().addAll(planetTab, resourcesTab, setupTab, executionContextTab, simulationTab, comparativeAnalyticsTab, preferencesTab);
+
         getChildren().add(tabPane);
     }
 
@@ -262,9 +270,11 @@ public class MainView extends StackPane {
     private BorderPane createSimulationView() {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("glass-panel"); // Apply glass effect base
+        this.simulationRoot = root;
 
         // Map Container (Layered)
         StackPane mapStack = new StackPane();
+        this.mapStack = mapStack;
 
         // 1. Direct Map Canvas (Bound to container dimensions to eliminate scrollbars and fill 100% of space)
         mapCanvas.widthProperty().bind(mapStack.widthProperty());
@@ -325,6 +335,7 @@ public class MainView extends StackPane {
         controlPanel.setOnContourToggle(show -> mapCanvas.toggleContours(show));
         controlPanel.setOnTimelapseRecord(this::toggleTimelapseRecording);
         controlPanel.setOnTimelapseSeek(this::seekTimelapse);
+        controlPanel.setOnFullScreen(this::toggleFullScreen);
 
         TabPane leftSidebar = new TabPane();
         leftSidebar.setPrefWidth(480);
@@ -355,21 +366,17 @@ public class MainView extends StackPane {
         Tab godModeTab = new Tab(I18n.getOrDefault("sim.tab.godmode", "⚡ Mode Dieu"), godScroll);
         leftSidebar.getTabs().addAll(controlTab, statsTab, godModeTab);
 
-        // Collapsible Sidebar Button (Full-Screen Map Mode Toggle)
-        Button toggleSidebarBtn = new Button("◀");
-        toggleSidebarBtn.setTooltip(new Tooltip(I18n.getOrDefault("mainview.tooltip.toggle_sidebar", "Hide / Show control panel (Full Screen Mode)")));
-        toggleSidebarBtn.setStyle("-fx-background-color: rgba(15, 23, 42, 0.90); -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8 6; -fx-background-radius: 0 6 6 0; -fx-border-color: #38bdf8; -fx-border-width: 1 1 1 0; -fx-border-radius: 0 6 6 0; -fx-cursor: hand;");
-
-        final boolean[] isSidebarVisible = {true};
-        toggleSidebarBtn.setOnAction(e -> {
-            isSidebarVisible[0] = !isSidebarVisible[0];
-            leftSidebar.setVisible(isSidebarVisible[0]);
-            leftSidebar.setManaged(isSidebarVisible[0]);
-            toggleSidebarBtn.setText(isSidebarVisible[0] ? "◀" : "▶");
+        leftSidebar.getSelectionModel().selectedItemProperty().addListener((obs, oldSubTab, newSubTab) -> {
+            if (newSubTab == godModeTab) {
+                logger.info("Auto-pausing simulation due to switching to God Mode / Climate Event tab");
+                if (engine != null && engine.isRunning()) {
+                    engine.pause();
+                    if (controlPanel != null) {
+                        controlPanel.updatePlayPauseVisuals(false);
+                    }
+                }
+            }
         });
-
-        HBox sidebarContainer = new HBox(leftSidebar, toggleSidebarBtn);
-        HBox.setHgrow(leftSidebar, Priority.NEVER);
 
         // Bottom Telemetry Status Bar
         Label statusBarLabel = new Label(I18n.getOrDefault("mainview.status.coords_hover", "📍 Coordinates: Hover over an H3 cell on the map..."));
@@ -405,7 +412,7 @@ public class MainView extends StackPane {
             }
         });
 
-        root.setLeft(sidebarContainer);
+        root.setLeft(leftSidebar);
         root.setCenter(mapStack);
 
         return root;
@@ -466,7 +473,7 @@ public class MainView extends StackPane {
                 }
 
                 controlPanel.updateScenarioName(meta.getScenarioName() + " (" + I18n.getOrDefault("mainview.restored_snapshot", "Restored Snapshot") + ")");
-                controlPanel.updateYear(String.valueOf(meta.getYear()));
+                controlPanel.updateYear(String.format("An %d", meta.getYear()));
 
                 simulationTab.setDisable(false);
                 tabPane.getSelectionModel().select(simulationTab);
@@ -498,15 +505,19 @@ public class MainView extends StackPane {
         if (godModePanel != null) {
             godModePanel.refreshTimelineView();
         }
+        if (statsPanel != null) {
+            statsPanel.reset();
+        }
 
         mapCanvas.setWorldBuffer(engine.getWorldBuffer());
         mapCanvas.setCells(newCells);
         if (miniMap != null) miniMap.setCells(newCells);
 
         controlPanel.updateScenarioName(scenario.getName());
-        controlPanel.updateYear(String.valueOf(scenario.getStartDateYear()));
+        controlPanel.updateYear(String.format("An %d", scenario.getStartDateYear()));
         if (mapCanvas != null) {
             mapCanvas.setScenarioName(scenario.getName());
+            mapCanvas.setCurrentDateStr(String.format("An %d", scenario.getStartDateYear()));
         }
 
         executionContextTab.setDisable(false);
@@ -531,26 +542,125 @@ public class MainView extends StackPane {
                     mapCanvas.setCells(cells);
                     if (miniMap != null) miniMap.setCells(cells);
                     controlPanel.updateScenarioName(currentScenario.getName());
-                    controlPanel.updateYear(String.valueOf(currentScenario.getStartDateYear()));
+                    controlPanel.updateYear(String.format("An %d", currentScenario.getStartDateYear()));
+                    if (mapCanvas != null) {
+                        mapCanvas.setCurrentDateStr(String.format("An %d", currentScenario.getStartDateYear()));
+                    }
                 }
             }
         }
         simulationTab.setDisable(false);
         tabPane.getSelectionModel().select(simulationTab);
+        if (statsPanel != null) {
+            statsPanel.reset();
+        }
         if (mapCanvas != null) {
             mapCanvas.resetView();
         }
         logger.info("Simulation tab enabled and activated from Execution Context Panel");
     }
 
-    public void addLegend(javafx.scene.Node legend) {
-        if (simulationTab != null && simulationTab.getContent() instanceof BorderPane bp) {
-            if (bp.getCenter() instanceof StackPane sp) {
-                StackPane.setAlignment(legend, Pos.BOTTOM_RIGHT);
-                StackPane.setMargin(legend, new javafx.geometry.Insets(0, 20, 50, 0));
-                if (!sp.getChildren().contains(legend)) {
-                    sp.getChildren().add(legend);
+    public void toggleFullScreen() {
+        if (isFullScreen) {
+            exitFullScreen();
+        } else {
+            enterFullScreen();
+        }
+    }
+
+    public void enterFullScreen() {
+        if (isFullScreen || mapStack == null || simulationRoot == null) return;
+        isFullScreen = true;
+
+        // 1. Detach mapStack from simulationRoot
+        simulationRoot.setCenter(null);
+
+        // 2. Hide main TabPane so nothing else is visible on screen
+        tabPane.setVisible(false);
+        tabPane.setManaged(false);
+
+        // 3. Add mapStack directly to MainView StackPane to fill 100% of the window
+        if (!getChildren().contains(mapStack)) {
+            getChildren().add(mapStack);
+        }
+
+        // 4. Set JavaFX Stage to FullScreen if scene is attached
+        if (getScene() != null && getScene().getWindow() instanceof javafx.stage.Stage stage) {
+            stage.setFullScreen(true);
+
+            // Listen to OS-level fullscreen exit (e.g. default Escape handling by JavaFX)
+            stage.fullScreenProperty().addListener(new javafx.beans.value.ChangeListener<Boolean>() {
+                @Override
+                public void changed(javafx.beans.value.ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal) {
+                    if (!newVal && isFullScreen) {
+                        stage.fullScreenProperty().removeListener(this);
+                        exitFullScreen();
+                    }
                 }
+            });
+        }
+
+        // 5. Add key event filter for Escape key
+        if (escapeKeyFilter == null) {
+            escapeKeyFilter = event -> {
+                if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    exitFullScreen();
+                    event.consume();
+                }
+            };
+        }
+        if (getScene() != null) {
+            getScene().addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, escapeKeyFilter);
+        }
+
+        if (mapCanvas != null) {
+            mapCanvas.draw();
+        }
+        logger.info("Entered Full Screen map view mode");
+    }
+
+    public void exitFullScreen() {
+        if (!isFullScreen || mapStack == null || simulationRoot == null) return;
+        isFullScreen = false;
+
+        // 1. Remove Escape key filter
+        if (escapeKeyFilter != null && getScene() != null) {
+            getScene().removeEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, escapeKeyFilter);
+        }
+
+        // 2. Exit OS stage fullscreen if still active
+        if (getScene() != null && getScene().getWindow() instanceof javafx.stage.Stage stage) {
+            if (stage.isFullScreen()) {
+                stage.setFullScreen(false);
+            }
+        }
+
+        // 3. Remove mapStack from MainView StackPane root
+        getChildren().remove(mapStack);
+
+        // 4. Restore tabPane visibility
+        tabPane.setManaged(true);
+        tabPane.setVisible(true);
+
+        // 5. Restore mapStack to simulationRoot center
+        simulationRoot.setCenter(mapStack);
+
+        if (mapCanvas != null) {
+            mapCanvas.draw();
+        }
+        logger.info("Exited Full Screen map view mode");
+    }
+
+    public boolean isFullScreen() {
+        return isFullScreen;
+    }
+
+    public void addLegend(javafx.scene.Node legend) {
+        if (mapStack != null) {
+            StackPane.setAlignment(legend, Pos.BOTTOM_RIGHT);
+            StackPane.setMargin(legend, new javafx.geometry.Insets(0, 20, 50, 0));
+            if (!mapStack.getChildren().contains(legend)) {
+                mapStack.getChildren().add(legend);
             }
         }
     }

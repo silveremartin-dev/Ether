@@ -1,0 +1,18 @@
+﻿<svg viewBox=0 0 1024 512 width=1024 height=512 xmlns=http://www.w3.org/2000/svg>
+  <g data-layer=SOVEREIGNTY id=layer_sovereignty>
+    <path id=IMPERIUM_ROMANUM d=M 460 140 L 580 140 L 620 200 L 590 260 L 480 250 L 440 200 Z fill=#DC2626 />
+  </g>
+  <g data-layer=ISOGLOSS id=layer_isogloss>
+    <path id=LATIN_ISOGLOSS d=M 460 140 L 540 140 L 550 220 L 470 230 Z fill=#F87171 />
+    <path id=GREEK_KOINE_ISOGLOSS d=M 540 150 L 620 150 L 620 250 L 550 240 Z fill=#60A5FA />
+  </g>
+  <g data-layer=KINSHIP id=layer_kinship>
+    <path id=PATRILINEAL_PATRICIAN d=M 460 140 L 620 140 L 620 260 L 460 260 Z fill=#3B82F6 />
+  </g>
+  <g data-layer=RITUALS id=layer_rituals>
+    <path id=GRECO_ROMAN_PANTHEON d=M 460 140 L 620 140 L 620 260 L 460 260 Z fill=#F59E0B />
+  </g>
+  <g data-layer=DENSITY id=layer_density>
+    <path id=MEDITERRANEAN_BASIN_DENSITY d=M 460 140 L 600 140 L 610 240 L 470 240 Z fill=#FFFFFF data-density=0.8 />
+  </g>
+</svg>

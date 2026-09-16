@@ -3176,12 +3176,11 @@ public class ScenarioSetupPanel extends BorderPane {
         layerTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
         layerTitle.setWrapText(true);
 
-        int initDims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
-        btnGenerateProceduralTensorsSection = new Button(I18n.getOrDefault("scenario.btn.gen_tensors_prefix", "🪄 Generate Tensor Suite (T₁-T") + initDims + ")");
+        btnGenerateProceduralTensorsSection = new Button(I18n.getOrDefault("scenario.btn.regen_tensors", "🪄 Régénérer les Tenseurs"));
         btnGenerateProceduralTensorsSection.getStyleClass().add("button");
         btnGenerateProceduralTensorsSection.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnGenerateProceduralTensorsSection.setMinWidth(Region.USE_PREF_SIZE);
-        btnGenerateProceduralTensorsSection.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.gen_tensors_prefix", "Procedurally generate all ") + initDims + I18n.getOrDefault("scenario.tooltip.gen_tensors_suffix", " maps of cultural suite according to scenario and stochastic seed.")));
+        btnGenerateProceduralTensorsSection.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.regen_tensors", "Bascule tous les tenseurs en mode procédural et régénère les cartes selon les paramètres et la graine stochastique.")));
         btnGenerateProceduralTensorsSection.setOnAction(e -> generateProceduralCulturalTensors());
 
         cultSeedField = new TextField("54321");
@@ -3192,7 +3191,7 @@ public class ScenarioSetupPanel extends BorderPane {
         Button cultRandSeedBtn = new Button("🎲");
         cultRandSeedBtn.getStyleClass().add("button-secondary");
         cultRandSeedBtn.setStyle("-fx-font-size: 11px;");
-        cultRandSeedBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.random_tensor_seed", "Draw a new random stochastic seed for cultural tensors (does not affect population density).")));
+        cultRandSeedBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.random_tensor_seed", "Tirer une nouvelle graine stochastique aléatoire pour les tenseurs culturels (sans affecter la densité de population).")));
 
         cultRandSeedBtn.setOnAction(e -> {
             notifyParamChange();
@@ -3208,7 +3207,7 @@ public class ScenarioSetupPanel extends BorderPane {
         culturalHelpBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_specs", "Specifications of image formats and cartographic data for cultural and geopolitical layer import.")));
         culturalHelpBtn.setOnAction(e -> showCulturalImportFormatHelp());
 
-        HBox cultSeedBox = new HBox(4, new Label("🎲"), cultSeedField, cultRandSeedBtn);
+        HBox cultSeedBox = new HBox(4, new Label(I18n.getOrDefault("scenario.label.cultural_seed", "Graine :")), new Label("🎲"), cultSeedField, cultRandSeedBtn);
         cultSeedBox.setAlignment(Pos.CENTER_LEFT);
 
         HBox seedRow = new HBox(8, cultSeedBox, btnGenerateProceduralTensorsSection);
@@ -3910,18 +3909,13 @@ public class ScenarioSetupPanel extends BorderPane {
             drawPreview();
         });
 
-        Button btnProceduralGeneratePreview = new Button(I18n.getOrDefault("scenario.btn.regen_t0_maps", "🪄 Regenerate T₀ Maps"));
-        btnProceduralGeneratePreview.getStyleClass().add("button-secondary");
-        btnProceduralGeneratePreview.setMinWidth(Region.USE_PREF_SIZE);
-        btnProceduralGeneratePreview.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.regen_t0_maps", "Procedurally regenerate Tab 3 maps and layers based on scenario population and parameters.")));
-        btnProceduralGeneratePreview.setOnAction(e -> generateProceduralCulturalTensors());
-
-        btnReliefOverlay = new ToggleButton(org.ether.society.i18n.I18n.getOrDefault("resource.btn.relief_overlay", "⛰️ Relief"));
+        btnReliefOverlay = new ToggleButton(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.relief_overlay", "⛰️ Relief"));
+        btnReliefOverlay.setSelected(true);
         btnReliefOverlay.getStyleClass().add("button-secondary");
-        btnReliefOverlay.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("resource.tooltip.relief_overlay", "Overlay relief & slope map at 50% opacity for geographical reference")));
+        btnReliefOverlay.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec délimitation du trait de côte.")));
         btnReliefOverlay.setOnAction(e -> drawPreview());
 
-        HBox controlBar = new HBox(8, previewModeCombo, btnReliefOverlay, btnProceduralGeneratePreview);
+        HBox controlBar = new HBox(8, previewModeCombo, btnReliefOverlay);
         controlBar.setAlignment(Pos.CENTER);
 
         StackPane canvasContainer = new StackPane();
@@ -4089,6 +4083,21 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void generateProceduralCulturalTensors() {
+        if (tensorProcRadios != null) {
+            for (var entry : tensorProcRadios.entrySet()) {
+                if (entry.getValue() != null) {
+                    entry.getValue().setSelected(true);
+                }
+            }
+        }
+        customTensorImages.clear();
+        if (tensorFileLabels != null) {
+            for (Integer idx : tensorFileLabels.keySet()) {
+                updateTensorFileLabel(idx);
+            }
+        }
+        notifyParamChange();
+
         Scenario s = getScenario();
         if (s == null) return;
         if (btnGenerateProceduralTensorsSection != null) btnGenerateProceduralTensorsSection.setDisable(true);
@@ -4730,9 +4739,19 @@ public class ScenarioSetupPanel extends BorderPane {
                 Color col = getPreviewColorForCell(c);
                 if (btnReliefOverlay != null && btnReliefOverlay.isSelected()) {
                     double elev = c.getElevation() != null ? c.getElevation() : 0.0;
-                    double decl = c.getMovementFriction() != null ? Math.max(0.0, c.getMovementFriction() - 1.0) : 0.0;
-                    Color reliefCol = getReliefShadeColor(elev, 0.0, decl);
-                    col = blendColors(col, reliefCol, 0.50);
+                    if (elev <= 0) {
+                        col = Color.rgb(15, 23, 42);
+                    } else {
+                        double decl = c.getMovementFriction() != null ? Math.max(0.0, c.getMovementFriction() - 1.0) : 0.0;
+                        double normElev = Math.clamp(elev / 4000.0, 0.0, 1.0);
+                        double hillFactor = Math.clamp(0.70 + 0.30 * Math.sin(Math.toRadians(c.getLongitude() * 4.0 + c.getLatitude() * 2.0)) * (1.0 + decl), 0.50, 1.45);
+                        double mult = hillFactor * (1.0 + 0.20 * normElev);
+                        col = Color.color(
+                            Math.clamp(col.getRed() * mult, 0.0, 1.0),
+                            Math.clamp(col.getGreen() * mult, 0.0, 1.0),
+                            Math.clamp(col.getBlue() * mult, 0.0, 1.0)
+                        );
+                    }
                 }
                 gc.setFill(col);
                 double absLat = Math.abs(c.getLatitude());
@@ -4884,7 +4903,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     double wLevel = planet.waterLevel();
                     boolean isLand;
                     boolean isCoast;
-                    double declivity = 0.0;
+                    double hillshade;
 
                     if (bgReader != null && bgImage != null) {
                         double bgW = bgImage.getWidth();
@@ -4894,31 +4913,55 @@ public class ScenarioSetupPanel extends BorderPane {
                         elevVal = bgReader.getColor(bx, by).getRed();
                         isLand = elevVal > 0.185;
 
-                        int bxE = Math.min((int) bgW - 1, bx + 1);
+                        int bxE = (bx + 1) % (int) bgW;
+                        int bxW = (bx - 1 + (int) bgW) % (int) bgW;
                         int byN = Math.max(0, by - 1);
-                        boolean isLandE = bgReader.getColor(bxE, by).getRed() > 0.185;
-                        boolean isLandN = bgReader.getColor(bx, byN).getRed() > 0.185;
-                        isCoast = (isLand != isLandE) || (isLand != isLandN);
+                        int byS = Math.min((int) bgH - 1, by + 1);
+
+                        double eE = bgReader.getColor(bxE, by).getRed();
+                        double eW = bgReader.getColor(bxW, by).getRed();
+                        double eN = bgReader.getColor(bx, byN).getRed();
+                        double eS = bgReader.getColor(bx, byS).getRed();
+
+                        boolean isLandE = eE > 0.185;
+                        boolean isLandW = eW > 0.185;
+                        boolean isLandN = eN > 0.185;
+                        boolean isLandS = eS > 0.185;
+                        isCoast = (isLand != isLandE) || (isLand != isLandW) || (isLand != isLandN) || (isLand != isLandS);
+
+                        double dLng = (eE - eW) * 16.0;
+                        double dLat = (eN - eS) * 16.0;
+                        hillshade = (0.5 * dLng + 0.5 * dLat + 0.707) / Math.sqrt(dLng * dLng + dLat * dLat + 1.0);
                     } else {
                         var pt = generator.getPlanetPoint(lat, lon, planet);
                         elevVal = pt.elevation();
-                        declivity = pt.declivity();
                         isLand = elevVal >= wLevel;
 
-                        var ptE = generator.getPlanetPoint(lat, lon + 1.0, planet);
-                        var ptN = generator.getPlanetPoint(lat + 1.0, lon, planet);
+                        double dDeg = 0.5;
+                        var ptE = generator.getPlanetPoint(lat, lon + dDeg, planet);
+                        var ptW = generator.getPlanetPoint(lat, lon - dDeg, planet);
+                        var ptN = generator.getPlanetPoint(lat + dDeg, lon, planet);
+                        var ptS = generator.getPlanetPoint(lat - dDeg, lon, planet);
+
                         boolean isLandE = ptE.elevation() >= wLevel;
+                        boolean isLandW = ptW.elevation() >= wLevel;
                         boolean isLandN = ptN.elevation() >= wLevel;
-                        isCoast = (isLand != isLandE) || (isLand != isLandN);
+                        boolean isLandS = ptS.elevation() >= wLevel;
+                        isCoast = (isLand != isLandE) || (isLand != isLandW) || (isLand != isLandN) || (isLand != isLandS);
+
+                        double dLng = ((ptE.elevation() - ptW.elevation()) / 1200.0);
+                        double dLat = ((ptN.elevation() - ptS.elevation()) / 1200.0);
+                        hillshade = (0.5 * dLng + 0.5 * dLat + 0.707) / Math.sqrt(dLng * dLng + dLat * dLat + 1.0);
                     }
 
                     Color baseReliefColor;
                     if (!isLand) {
                         baseReliefColor = Color.rgb(15, 23, 42); // Sea / Deep ocean navy
                     } else {
-                        int r = Math.clamp((int) (55 + elevVal * 120), 0, 255);
-                        int g = Math.clamp((int) (125 + elevVal * 80), 0, 255);
-                        int bCol = Math.clamp((int) (50 + elevVal * 60), 0, 255);
+                        double landNorm = bgReader != null ? Math.clamp((elevVal - 0.185) / 0.815, 0.0, 1.0) : Math.clamp((elevVal - wLevel) / Math.max(1000.0, planet.maxAltitudeMeters() - wLevel), 0.0, 1.0);
+                        int r = Math.clamp((int) (55 + landNorm * 120), 0, 255);
+                        int g = Math.clamp((int) (125 + landNorm * 80), 0, 255);
+                        int bCol = Math.clamp((int) (50 + landNorm * 60), 0, 255);
                         baseReliefColor = Color.rgb(r, g, bCol);
                     }
 
@@ -4965,9 +5008,21 @@ public class ScenarioSetupPanel extends BorderPane {
                     if (isReliefOverlay) {
                         if (isCoast) {
                             pxColor = Color.rgb(224, 242, 254); // Crisp white-cyan coastline outline at z = 0
+                        } else if (isLand) {
+                            double normElev = bgReader != null ? Math.clamp((elevVal - 0.185) / 0.815, 0.0, 1.0) : Math.clamp((elevVal - wLevel) / Math.max(1000.0, planet.maxAltitudeMeters() - wLevel), 0.0, 1.0);
+                            double mult = (0.55 + 0.65 * hillshade) * (1.0 + 0.20 * normElev);
+                            pxColor = Color.color(
+                                Math.clamp(pxColor.getRed() * mult, 0.0, 1.0),
+                                Math.clamp(pxColor.getGreen() * mult, 0.0, 1.0),
+                                Math.clamp(pxColor.getBlue() * mult, 0.0, 1.0)
+                            );
                         } else {
-                            Color reliefCol = getReliefShadeColor(elevVal, wLevel, declivity);
-                            pxColor = blendColors(pxColor, reliefCol, 0.50); // 50% opacity relief overlay
+                            // Ocean bathymetry depth gradient
+                            double depthNorm = bgReader != null ? Math.clamp((0.185 - elevVal) / 0.185, 0.0, 1.0) : Math.clamp((wLevel - elevVal) / 4000.0, 0.0, 1.0);
+                            int r = (int) (8 + (1.0 - depthNorm) * 15);
+                            int g = (int) (18 + (1.0 - depthNorm) * 35);
+                            int b = (int) (38 + (1.0 - depthNorm) * 55);
+                            pxColor = Color.rgb(r, g, b);
                         }
                     }
 
@@ -5662,9 +5717,16 @@ public class ScenarioSetupPanel extends BorderPane {
             if (lngMinLabel != null) lngMinLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lng_min", "Lng Min (Left):"));
             if (lngMaxLabel != null) lngMaxLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lng_max", "Lng Max (Right):"));
             if (boundaryLabel != null) boundaryLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.boundary_label", "Scientific Border Modeling:"));
-            if (culturalHelpBtn != null) culturalHelpBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.cultural_format_help", "❓ Layer Format"));
-            if (btnReliefOverlay != null) btnReliefOverlay.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.relief_overlay", "⛰️ Relief"));
-            if (btnReliefOverlay != null) btnReliefOverlay.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.relief_overlay", "⛰️ Relief"));
+            if (culturalHelpBtn != null) culturalHelpBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.cultural_format_help", "❓ Format des Calques"));
+            if (btnGenerateProceduralTensorsSection != null) {
+                btnGenerateProceduralTensorsSection.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.regen_tensors", "🪄 Régénérer les Tenseurs"));
+                btnGenerateProceduralTensorsSection.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.regen_tensors", "Bascule tous les tenseurs en mode procédural et régénère les cartes selon les paramètres et la graine stochastique.")));
+            }
+            if (btnReliefOverlay != null) {
+                btnReliefOverlay.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.relief_overlay", "⛰️ Relief"));
+                btnReliefOverlay.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec délimitation du trait de côte.")));
+            }
+            updatePreviewModesCombo();
             updatePreviewTitleText();
 
             if (radioProcDemo != null) radioProcDemo.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.procedural", "▶ Procedural Generation (Perlin / Simplex Noise)"));

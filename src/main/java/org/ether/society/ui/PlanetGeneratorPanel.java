@@ -485,7 +485,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         // Import panel
         mapSourceRowLabel = new Label();
         mapSourceCombo = new ComboBox<>();
-        mapSourceCombo.getItems().addAll("earth", "mars", "venus", "moon");
+        mapSourceCombo.getItems().addAll("earth", "mars", "venus", "moon", "mercury");
         mapSourceCombo.setValue("earth");
         mapSourceCombo.setCellFactory(p -> new ListCell<>() {
             @Override
@@ -499,6 +499,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         mapSourceCombo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
             applyMapSourcePreset(mapSourceCombo.getValue());
+            if (presetBar != null) presetBar.notifyParametersChanged();
             updatePreview();
         });
 
@@ -519,6 +520,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         clearElevBtn.setOnAction(e -> {
             customElevImage = null;
             elevFileLabel.setText(I18n.get("planet.map.none"));
+            if (presetBar != null) presetBar.notifyParametersChanged();
             updatePreview();
         });
         HBox elevBox = new HBox(5, loadElevBtn, clearElevBtn);
@@ -953,21 +955,28 @@ public class PlanetGeneratorPanel extends BorderPane {
         combo.getItems().add(""); // Empty default option
         switch (mapType) {
             case "temp" -> combo.getItems().addAll(
-                    "NASA MERRA-2 (WMS — températures, terrestres)",
-                    "ERA5 Reanalysis (Copernicus / ECMWF — terrestres)",
-                    "Koppen-Geiger Classification (PNG — terrestres)",
-                    "MODIS LST (NASA EarthData — terrestres)"
+                    "WorldClim v2.1 Bio1 / ERA5 (Terre)",
+                    "MGS TES Thermal Emission Spectrometer (Mars)",
+                    "Venus Greenhouse Hypsometric Profile (Vénus)",
+                    "LRO Diviner Thermal Radiometer (Lune)",
+                    "MESSENGER Extreme Thermal Model (Mercure)",
+                    "NASA MERRA-2 (WMS Satellite)"
             );
             case "precip" -> combo.getItems().addAll(
-                    "NASA GPM IMERG (WMS — précipitations, terrestres)",
-                    "WorldClim v2.1 (Hijmans et al. — terrestres)",
-                    "CHIRPS v2.0 (UC Santa Barbara — terrestres)",
-                    "ERA5 Precipitation (Copernicus — terrestres)"
+                    "WorldClim v2.1 / GPCP v2.3 (Terre)",
+                    "Mars Polar Frost & H2O Sublimation (Mars)",
+                    "Venus H2SO4 Upper Cloud Virga Cycle (Vénus)",
+                    "LRO LEND Vacuum Exosphere (Lune)",
+                    "MESSENGER Exosphere & Vacuum (Mercure)",
+                    "NASA GPM IMERG (WMS Satellite)"
             );
             default -> combo.getItems().addAll(
-                    "NASA MODIS LST Amplitude (EarthData — terrestres)",
-                    "ERA5 Seasonal Variance (Copernicus — terrestres)",
-                    "CHELSA Climate v2.1 (terrestres)"
+                    "WorldClim v2.1 Bio4 / ERA5 (Terre)",
+                    "Mars Orbital Eccentricity Insolation (Mars)",
+                    "Venus Super-Rotation Low Thermal Variance (Vénus)",
+                    "LRO Diviner Diurnal Insolation Amplitude (Lune)",
+                    "MESSENGER 3:2 Spin-Orbit Thermal Variance (Mercure)",
+                    "NASA MODIS LST Amplitude (WMS Satellite)"
             );
         }
         combo.setCellFactory(p -> new ListCell<>() {
@@ -982,20 +991,77 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (isUpdatingFromPreset) return;
             String val = combo.getValue();
             if (val != null && !val.isEmpty()) {
-                if ("temp".equals(mapType) && radioTempImport != null) radioTempImport.setSelected(true);
-                else if ("precip".equals(mapType) && radioPrecipImport != null) radioPrecipImport.setSelected(true);
-                else if ("season".equals(mapType) && radioSeasonImport != null) radioSeasonImport.setSelected(true);
-
-                if (val.contains("WMS") || val.contains("NASA") || val.contains("ERA5")) {
+                if (val.contains("WMS")) {
                     fetchOnlineClimateData();
                 } else {
-                    updatePreview();
+                    applyClimateSourceSelection(mapType, val);
                 }
             }
         });
         combo.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.map_source_hint",
                 "Sélectionnez la source de données de référence.\nLe bouton '📂 Charger…' ci-dessous permet d'importer votre fichier PNG local.")));
         return combo;
+    }
+
+    private void applyClimateSourceSelection(String mapType, String selectedSource) {
+        if (selectedSource == null || selectedSource.isBlank() || isUpdatingFromPreset) return;
+        String key = selectedSource.toLowerCase();
+        String file;
+        if (key.contains("mars") || key.contains("tes") || key.contains("mgs")) {
+            file = switch (mapType) {
+                case "temp" -> "mars_temperature.png";
+                case "precip" -> "mars_precipitation.png";
+                default -> "mars_seasonality.png";
+            };
+        } else if (key.contains("vénus") || key.contains("venus") || key.contains("magellan")) {
+            file = switch (mapType) {
+                case "temp" -> "venus_temperature.png";
+                case "precip" -> "venus_precipitation.png";
+                default -> "venus_seasonality.png";
+            };
+        } else if (key.contains("lune") || key.contains("moon") || key.contains("lro") || key.contains("diviner")) {
+            file = switch (mapType) {
+                case "temp" -> "moon_temperature.png";
+                case "precip" -> "moon_precipitation.png";
+                default -> "moon_seasonality.png";
+            };
+        } else if (key.contains("mercure") || key.contains("mercury") || key.contains("messenger")) {
+            file = switch (mapType) {
+                case "temp" -> "mercury_temperature.png";
+                case "precip" -> "mercury_precipitation.png";
+                default -> "mercury_seasonality.png";
+            };
+        } else {
+            file = switch (mapType) {
+                case "temp" -> "earth_temperature.png";
+                case "precip" -> "earth_precipitation.png";
+                default -> "earth_seasonality.png";
+            };
+        }
+
+        Image img = ImageMapLoader.loadMapImage(file);
+        switch (mapType) {
+            case "temp" -> {
+                customClimateImage = img;
+                if (radioTempImport != null) radioTempImport.setSelected(true);
+                if (climateFileLabel != null) climateFileLabel.setText("🌡️ " + selectedSource);
+                if (viewModeCombo != null) viewModeCombo.getSelectionModel().select(1);
+            }
+            case "precip" -> {
+                customRainfallImage = img;
+                if (radioPrecipImport != null) radioPrecipImport.setSelected(true);
+                if (rainfallFileLabel != null) rainfallFileLabel.setText("🌧️ " + selectedSource);
+                if (viewModeCombo != null) viewModeCombo.getSelectionModel().select(2);
+            }
+            default -> {
+                customSeasonalityImage = img;
+                if (radioSeasonImport != null) radioSeasonImport.setSelected(true);
+                if (seasonalityFileLabel != null) seasonalityFileLabel.setText("☀️ " + selectedSource);
+                if (viewModeCombo != null) viewModeCombo.getSelectionModel().select(3);
+            }
+        }
+        if (presetBar != null) presetBar.notifyParametersChanged();
+        updatePreview();
     }
 
     /**
@@ -1080,6 +1146,8 @@ public class PlanetGeneratorPanel extends BorderPane {
             try {
                 customElevImage = new Image(new FileInputStream(file));
                 elevFileLabel.setText("📷 " + file.getName());
+                if (viewModeCombo != null) viewModeCombo.getSelectionModel().select(0);
+                if (presetBar != null) presetBar.notifyParametersChanged();
                 // Update the source combo to reflect the loaded local file
                 String prefix = "📁 Fichier local : ";
                 mapSourceCombo.getItems().removeIf(item -> item != null && item.startsWith(prefix));
@@ -1247,6 +1315,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                 customClimateImage = new Image(new FileInputStream(file));
                 climateFileLabel.setText("🌡️ " + file.getName());
                 setLocalFileInCombo(tempSourceCombo, file.getName());
+                if (viewModeCombo != null) viewModeCombo.getSelectionModel().select(1);
                 updatePreview();
             } catch (Exception ex) {
                 logger.error("Failed to load climate map image", ex);
@@ -1264,6 +1333,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                 customRainfallImage = new Image(new FileInputStream(file));
                 rainfallFileLabel.setText("🌧️ " + file.getName());
                 setLocalFileInCombo(precipSourceCombo, file.getName());
+                if (viewModeCombo != null) viewModeCombo.getSelectionModel().select(2);
                 updatePreview();
             } catch (Exception ex) {
                 logger.error("Failed to load rainfall map image", ex);
@@ -1281,6 +1351,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                 customSeasonalityImage = new Image(new FileInputStream(file));
                 seasonalityFileLabel.setText("🍂 " + file.getName());
                 setLocalFileInCombo(seasonSourceCombo, file.getName());
+                if (viewModeCombo != null) viewModeCombo.getSelectionModel().select(3);
                 updatePreview();
             } catch (Exception ex) {
                 logger.error("Failed to load seasonality map image", ex);
@@ -1350,149 +1421,197 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private void applyMapSourcePreset(String sourceKey) {
-        if ("none".equals(sourceKey)) {
-            clearCustomMaps();
-            if (radioProc != null) radioProc.setSelected(true);
-            if (radioTempProc != null) radioTempProc.setSelected(true);
-            if (radioPrecipProc != null) radioPrecipProc.setSelected(true);
-            if (radioSeasonProc != null) radioSeasonProc.setSelected(true);
-            updatePreview();
-            return;
-        }
-
-        if ("earth".equals(sourceKey)) {
-            loadEarthPresetMaps();
-            if (radioImport != null) radioImport.setSelected(true);
-            if (radioTempImport != null) radioTempImport.setSelected(true);
-            if (radioPrecipImport != null) radioPrecipImport.setSelected(true);
-            if (radioSeasonImport != null) radioSeasonImport.setSelected(true);
-
-            if (tempSourceCombo != null && (tempSourceCombo.getValue() == null || tempSourceCombo.getValue().isEmpty())) {
-                tempSourceCombo.setValue("ERA5 Reanalysis (Copernicus / ECMWF — terrestres)");
-            }
-            if (precipSourceCombo != null && (precipSourceCombo.getValue() == null || precipSourceCombo.getValue().isEmpty())) {
-                precipSourceCombo.setValue("WorldClim v2.1 (Hijmans et al. — terrestres)");
-            }
-            if (seasonSourceCombo != null && (seasonSourceCombo.getValue() == null || seasonSourceCombo.getValue().isEmpty())) {
-                seasonSourceCombo.setValue("ERA5 Seasonal Variance (Copernicus — terrestres)");
+        boolean oldUpdating = isUpdatingFromPreset;
+        isUpdatingFromPreset = true;
+        try {
+            if ("none".equals(sourceKey)) {
+                clearCustomMaps();
+                if (radioProc != null) radioProc.setSelected(true);
+                if (radioTempProc != null) radioTempProc.setSelected(true);
+                if (radioPrecipProc != null) radioPrecipProc.setSelected(true);
+                if (radioSeasonProc != null) radioSeasonProc.setSelected(true);
+                return;
             }
 
-            if (!isUpdatingFromPreset) {
-                applyPreset(PlanetPreset.EARTH_LIKE);
+            if ("earth".equals(sourceKey)) {
+                loadEarthPresetMaps();
+                if (radioImport != null) radioImport.setSelected(true);
+                if (radioTempImport != null) radioTempImport.setSelected(true);
+                if (radioPrecipImport != null) radioPrecipImport.setSelected(true);
+                if (radioSeasonImport != null) radioSeasonImport.setSelected(true);
+
+                if (tempSourceCombo != null) {
+                    tempSourceCombo.setValue("WorldClim v2.1 Bio1 / ERA5 (Terre)");
+                }
+                if (precipSourceCombo != null) {
+                    precipSourceCombo.setValue("WorldClim v2.1 / GPCP v2.3 (Terre)");
+                }
+                if (seasonSourceCombo != null) {
+                    seasonSourceCombo.setValue("WorldClim v2.1 Bio4 / ERA5 (Terre)");
+                }
+
+                if (!oldUpdating) {
+                    applyPreset(PlanetPreset.EARTH_LIKE);
+                }
+                return;
             }
-            return;
+
+            if ("mars".equals(sourceKey)) {
+                clearCustomMaps();
+                bodyTypeCombo.setValue("planet");
+                radiusSlider.setValue(3389.5);
+                dayLengthSlider.setValue(24.6);
+                axialTiltSlider.setValue(25.2);
+                yearLengthSlider.setValue(687);
+                distanceSunSlider.setValue(1.52);
+                solarLumSlider.setValue(1.0);
+                avgTempSlider.setValue(-60);
+                minAltSlider.setValue(-8000);
+                maxAltSlider.setValue(21229); // Olympus Mons
+                waterSlider.setValue(-0.4);
+
+                customElevImage = ImageMapLoader.loadMapImage("mars_elevation.png");
+                customBiomeImage = ImageMapLoader.loadMapImage("mars_biomes.png");
+                customClimateImage = ImageMapLoader.loadMapImage("mars_temperature.png");
+                customRainfallImage = ImageMapLoader.loadMapImage("mars_precipitation.png");
+                customSeasonalityImage = ImageMapLoader.loadMapImage("mars_seasonality.png");
+
+                if (radioImport != null) radioImport.setSelected(true);
+                if (radioTempImport != null) radioTempImport.setSelected(true);
+                if (radioPrecipImport != null) radioPrecipImport.setSelected(true);
+                if (radioSeasonImport != null) radioSeasonImport.setSelected(true);
+
+                if (tempSourceCombo != null) tempSourceCombo.setValue("MGS TES Thermal Emission Spectrometer (Mars)");
+                if (precipSourceCombo != null) precipSourceCombo.setValue("Mars Polar Frost & H2O Sublimation (Mars)");
+                if (seasonSourceCombo != null) seasonSourceCombo.setValue("Mars Orbital Eccentricity Insolation (Mars)");
+
+                if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.mars_dem", "📷 Mars MOLA Topography (NASA PDS)"));
+                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.mars_biome", "🌿 Mars Planetary Terrains & Volcanic Plains"));
+                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.mars_geology", "🪨 Mars Multi-mineral Deposits"));
+                if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.source.mars_temp", "🌡️ Mars TES Surface Temperature"));
+                if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.source.mars_precip", "🌧️ Mars Polar Frost / H2O Sublimation"));
+                if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.source.mars_season", "☀️ Mars Orbital Eccentricity Variance"));
+                return;
+            }
+
+            if ("venus".equals(sourceKey)) {
+                clearCustomMaps();
+                bodyTypeCombo.setValue("planet");
+                radiusSlider.setValue(6051.8);
+                dayLengthSlider.setValue(2802);
+                axialTiltSlider.setValue(177.3);
+                yearLengthSlider.setValue(225);
+                distanceSunSlider.setValue(0.72);
+                solarLumSlider.setValue(1.0);
+                avgTempSlider.setValue(464);
+                minAltSlider.setValue(-3000);
+                maxAltSlider.setValue(11000); // Maxwell Montes
+                waterSlider.setValue(-0.5);
+
+                customElevImage = ImageMapLoader.loadMapImage("venus_elevation.png");
+                customBiomeImage = ImageMapLoader.loadMapImage("venus_biomes.png");
+                customClimateImage = ImageMapLoader.loadMapImage("venus_temperature.png");
+                customRainfallImage = ImageMapLoader.loadMapImage("venus_precipitation.png");
+                customSeasonalityImage = ImageMapLoader.loadMapImage("venus_seasonality.png");
+
+                if (radioImport != null) radioImport.setSelected(true);
+                if (radioTempImport != null) radioTempImport.setSelected(true);
+                if (radioPrecipImport != null) radioPrecipImport.setSelected(true);
+                if (radioSeasonImport != null) radioSeasonImport.setSelected(true);
+
+                if (tempSourceCombo != null) tempSourceCombo.setValue("Venus Greenhouse Hypsometric Profile (Vénus)");
+                if (precipSourceCombo != null) precipSourceCombo.setValue("Venus H2SO4 Upper Cloud Virga Cycle (Vénus)");
+                if (seasonSourceCombo != null) seasonSourceCombo.setValue("Venus Super-Rotation Low Thermal Variance (Vénus)");
+
+                if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.venus_dem", "📷 Venus Magellan Topography (NASA PDS)"));
+                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.venus_biome", "🌿 Venus Volcanic Plains & Tesserae"));
+                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.venus_geology", "🪨 Venus Magellan Pyrite / Radar Minerals"));
+                if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.source.venus_temp", "🌡️ Venus Greenhouse Profile (464°C)"));
+                if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.source.venus_precip", "🌧️ Venus H2SO4 Virga Cycle"));
+                if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.source.venus_season", "☀️ Venus Low Thermal Variance"));
+                return;
+            }
+
+            if ("moon".equals(sourceKey)) {
+                clearCustomMaps();
+                bodyTypeCombo.setValue("satellite");
+                radiusSlider.setValue(1737.4);
+                dayLengthSlider.setValue(708);
+                axialTiltSlider.setValue(1.5);
+                yearLengthSlider.setValue(365);
+                distanceSunSlider.setValue(1.0);
+                solarLumSlider.setValue(1.0);
+                avgTempSlider.setValue(-20);
+                minAltSlider.setValue(-9000);
+                maxAltSlider.setValue(10700);
+                waterSlider.setValue(-0.5);
+
+                customElevImage = ImageMapLoader.loadMapImage("moon_elevation.png");
+                customBiomeImage = ImageMapLoader.loadMapImage("moon_biomes.png");
+                customClimateImage = ImageMapLoader.loadMapImage("moon_temperature.png");
+                customRainfallImage = ImageMapLoader.loadMapImage("moon_precipitation.png");
+                customSeasonalityImage = ImageMapLoader.loadMapImage("moon_seasonality.png");
+
+                if (radioImport != null) radioImport.setSelected(true);
+                if (radioTempImport != null) radioTempImport.setSelected(true);
+                if (radioPrecipImport != null) radioPrecipImport.setSelected(true);
+                if (radioSeasonImport != null) radioSeasonImport.setSelected(true);
+
+                if (tempSourceCombo != null) tempSourceCombo.setValue("LRO Diviner Thermal Radiometer (Lune)");
+                if (precipSourceCombo != null) precipSourceCombo.setValue("LRO LEND Vacuum Exosphere (Lune)");
+                if (seasonSourceCombo != null) seasonSourceCombo.setValue("LRO Diurnal Insolation Amplitude (Lune)");
+
+                if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.moon_dem", "📷 Moon LRO LOLA Topography (NASA PDS)"));
+                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.moon_biome", "🌿 Moon Lunar Maria & Anorthosite Highlands"));
+                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.moon_geology", "🪨 Moon KREEP & Ilmenite Deposits"));
+                if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.source.moon_temp", "🌡️ Moon Diviner Surface Thermal Map"));
+                if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.source.moon_precip", "🌧️ Moon Vacuum Exosphere"));
+                if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.source.moon_season", "☀️ Moon Diurnal Insolation Amplitude"));
+                return;
+            }
+
+            if ("mercury".equals(sourceKey)) {
+                clearCustomMaps();
+                bodyTypeCombo.setValue("planet");
+                radiusSlider.setValue(2439.7);
+                dayLengthSlider.setValue(4222.6);
+                axialTiltSlider.setValue(0.034);
+                yearLengthSlider.setValue(87.97);
+                distanceSunSlider.setValue(0.387);
+                solarLumSlider.setValue(1.0);
+                avgTempSlider.setValue(167);
+                minAltSlider.setValue(-5000);
+                maxAltSlider.setValue(4480);
+                waterSlider.setValue(-0.5);
+
+                customElevImage = ImageMapLoader.loadMapImage("mercury_elevation.png");
+                customBiomeImage = ImageMapLoader.loadMapImage("mercury_biomes.png");
+                customClimateImage = ImageMapLoader.loadMapImage("mercury_temperature.png");
+                customRainfallImage = ImageMapLoader.loadMapImage("mercury_precipitation.png");
+                customSeasonalityImage = ImageMapLoader.loadMapImage("mercury_seasonality.png");
+
+                if (radioImport != null) radioImport.setSelected(true);
+                if (radioTempImport != null) radioTempImport.setSelected(true);
+                if (radioPrecipImport != null) radioPrecipImport.setSelected(true);
+                if (radioSeasonImport != null) radioSeasonImport.setSelected(true);
+
+                if (tempSourceCombo != null) tempSourceCombo.setValue("MESSENGER Extreme Thermal Model (Mercure)");
+                if (precipSourceCombo != null) precipSourceCombo.setValue("MESSENGER Exosphere & Vacuum (Mercure)");
+                if (seasonSourceCombo != null) seasonSourceCombo.setValue("MESSENGER 3:2 Spin-Orbit Thermal Variance (Mercure)");
+
+                if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.mercury_dem", "📷 Mercury MESSENGER MLA DEM (NASA PDS)"));
+                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.mercury_biome", "🌿 Mercury Smooth & Intercrater Plains"));
+                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.mercury_geology", "🪨 Mercury High-Iron & PSR Ice Deposits"));
+                if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.source.mercury_temp", "🌡️ Mercury Diurnal Thermal Field"));
+                if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.source.mercury_precip", "🌧️ Mercury Exosphere / Vacuum"));
+                if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.source.mercury_season", "☀️ Mercury 3:2 Spin-Orbit Thermal Variance"));
+                return;
+            }
+        } finally {
+            isUpdatingFromPreset = oldUpdating;
         }
-
-        if ("mars".equals(sourceKey)) {
-            clearCustomMaps();
-            bodyTypeCombo.setValue("planet");
-            radiusSlider.setValue(3389);
-            dayLengthSlider.setValue(24.6);
-            axialTiltSlider.setValue(25.2);
-            yearLengthSlider.setValue(687);
-            distanceSunSlider.setValue(1.52);
-            solarLumSlider.setValue(1.0);
-            avgTempSlider.setValue(-63);
-            minAltSlider.setValue(-8000);
-            maxAltSlider.setValue(21229); // Olympus Mons
-            waterSlider.setValue(-0.5); // No ocean
-
-            customElevImage = ImageMapLoader.loadMapImage("mars_elevation.png");
-            customBiomeImage = ImageMapLoader.loadMapImage("mars_biomes.png");
-            customClimateImage = ImageMapLoader.loadMapImage("mars_temperature.png");
-
-            if (radioImport != null) radioImport.setSelected(true);
-            if (radioTempImport != null) radioTempImport.setSelected(true);
-            if (radioPrecipProc != null) radioPrecipProc.setSelected(true);
-            if (radioSeasonProc != null) radioSeasonProc.setSelected(true);
-
-            if (tempSourceCombo != null) tempSourceCombo.setValue("");
-            if (precipSourceCombo != null) precipSourceCombo.setValue("");
-            if (seasonSourceCombo != null) seasonSourceCombo.setValue("");
-
-            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.mars_dem", "📷 Mars MOLA Topography (NASA PDS)"));
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.mars_biome", "🌿 Mars Planetary Terrains & Volcanic Plains"));
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.get("planet.map.none"));
-            if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.source.mars_temp", "🌡️ Mars TES Surface Temperature"));
-            if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.get("planet.map.none"));
-            if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.get("planet.map.none"));
-            updatePreview();
-            return;
-        }
-
-        if ("venus".equals(sourceKey)) {
-            clearCustomMaps();
-            bodyTypeCombo.setValue("planet");
-            radiusSlider.setValue(6051);
-            dayLengthSlider.setValue(2802);
-            axialTiltSlider.setValue(177.3);
-            yearLengthSlider.setValue(225);
-            distanceSunSlider.setValue(0.72);
-            solarLumSlider.setValue(1.0);
-            avgTempSlider.setValue(464);
-            minAltSlider.setValue(-3000);
-            maxAltSlider.setValue(11000); // Maxwell Montes
-            waterSlider.setValue(-0.5);
-
-            customElevImage = ImageMapLoader.loadMapImage("venus_elevation.png");
-            customBiomeImage = ImageMapLoader.loadMapImage("venus_biomes.png");
-            customClimateImage = ImageMapLoader.loadMapImage("venus_temperature.png");
-
-            if (radioImport != null) radioImport.setSelected(true);
-            if (radioTempImport != null) radioTempImport.setSelected(true);
-            if (radioPrecipProc != null) radioPrecipProc.setSelected(true);
-            if (radioSeasonProc != null) radioSeasonProc.setSelected(true);
-
-            if (tempSourceCombo != null) tempSourceCombo.setValue("");
-            if (precipSourceCombo != null) precipSourceCombo.setValue("");
-            if (seasonSourceCombo != null) seasonSourceCombo.setValue("");
-
-            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.venus_dem", "📷 Venus Magellan Topography (NASA PDS)"));
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.venus_biome", "🌿 Venus Volcanic Plains & Tesserae"));
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.get("planet.map.none"));
-            if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.source.venus_temp", "🌡️ Venus Greenhouse Profile (464°C)"));
-            if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.get("planet.map.none"));
-            if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.get("planet.map.none"));
-            updatePreview();
-            return;
-        }
-
-        if ("moon".equals(sourceKey)) {
-            clearCustomMaps();
-            bodyTypeCombo.setValue("satellite");
-            radiusSlider.setValue(1737);
-            dayLengthSlider.setValue(708);
-            axialTiltSlider.setValue(1.5);
-            yearLengthSlider.setValue(365);
-            distanceSunSlider.setValue(1.0);
-            solarLumSlider.setValue(1.0);
-            avgTempSlider.setValue(-20);
-            minAltSlider.setValue(-9000);
-            maxAltSlider.setValue(10700);
-            waterSlider.setValue(-0.5);
-
-            customElevImage = ImageMapLoader.loadMapImage("moon_elevation.png");
-            customBiomeImage = ImageMapLoader.loadMapImage("moon_biomes.png");
-            customClimateImage = ImageMapLoader.loadMapImage("moon_temperature.png");
-
-            if (radioImport != null) radioImport.setSelected(true);
-            if (radioTempImport != null) radioTempImport.setSelected(true);
-            if (radioPrecipProc != null) radioPrecipProc.setSelected(true);
-            if (radioSeasonProc != null) radioSeasonProc.setSelected(true);
-
-            if (tempSourceCombo != null) tempSourceCombo.setValue("");
-            if (precipSourceCombo != null) precipSourceCombo.setValue("");
-            if (seasonSourceCombo != null) seasonSourceCombo.setValue("");
-
-            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.moon_dem", "📷 Moon LRO LOLA Topography (NASA PDS)"));
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.moon_biome", "🌿 Moon Lunar Maria & Anorthosite Highlands"));
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.get("planet.map.none"));
-            if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.source.moon_temp", "🌡️ Moon Diviner Surface Thermal Map"));
-            if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.get("planet.map.none"));
-            if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.get("planet.map.none"));
-            updatePreview();
-            return;
-        }
+        if (viewModeCombo != null) viewModeCombo.getSelectionModel().select(0);
+        updatePreview();
     }
 
     private void fetchOnlineSatelliteData() {
@@ -1692,6 +1811,8 @@ public class PlanetGeneratorPanel extends BorderPane {
                 elevSrc = "venus";
             } else if (lowerName.contains("lune") || lowerName.contains("moon") || lowerName.contains("selene")) {
                 elevSrc = "moon";
+            } else if (lowerName.contains("mercure") || lowerName.contains("mercury") || lowerName.contains("hermes")) {
+                elevSrc = "mercury";
             } else {
                 elevSrc = "none";
             }
@@ -1700,10 +1821,8 @@ public class PlanetGeneratorPanel extends BorderPane {
             mapSourceCombo.setValue(elevSrc);
         }
 
-        if ("earth".equals(elevSrc)) {
-            if (p.customElevBase64() == null) loadEarthPresetMaps();
-        } else if ("mars".equals(elevSrc) || "venus".equals(elevSrc) || "moon".equals(elevSrc)) {
-            if (p.customElevBase64() == null) clearCustomMaps();
+        if ("earth".equals(elevSrc) || "mars".equals(elevSrc) || "venus".equals(elevSrc) || "moon".equals(elevSrc) || "mercury".equals(elevSrc)) {
+            if (p.customElevBase64() == null) applyMapSourcePreset(elevSrc);
         } else {
             if (p.customElevBase64() == null) clearCustomMaps();
         }
@@ -1899,13 +2018,21 @@ public class PlanetGeneratorPanel extends BorderPane {
             minLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
             legendBar.getChildren().add(minLabel);
-            addLegendItem("DEEP_OCEAN", Color.rgb(12, 35, 64), I18n.getOrDefault("planet.legend.abyss", "Abysses (-11 km)"));
-            addLegendItem("OCEAN", Color.rgb(30, 120, 180), I18n.getOrDefault("planet.legend.trench", "Oceanic Trench"));
-            addLegendItem("SEA_LEVEL", Color.rgb(56, 189, 248), I18n.getOrDefault("planet.legend.sea_level", "Niveau de la mer (0 m)"));
-            addLegendItem("PLAINS", Color.rgb(46, 125, 50), I18n.getOrDefault("planet.legend.lowlands", "Basses Terres"));
-            addLegendItem("HILLS", Color.rgb(194, 166, 73), I18n.getOrDefault("planet.legend.hills", "Moyen Relief"));
-            addLegendItem("MOUNTAINS", Color.rgb(141, 110, 99), I18n.getOrDefault("planet.legend.mountains", "Montagnes"));
-            addLegendItem("SNOW", Color.rgb(245, 247, 250), I18n.getOrDefault("planet.legend.peaks", "Sommets (+8.8 km)"));
+            if (preset.waterLevel() > -0.4) {
+                addLegendItem("DEEP_OCEAN", Color.rgb(12, 35, 64), I18n.getOrDefault("planet.legend.abyss", "Abysses (-11 km)"));
+                addLegendItem("OCEAN", Color.rgb(30, 120, 180), I18n.getOrDefault("planet.legend.trench", "Oceanic Trench"));
+                addLegendItem("SEA_LEVEL", Color.rgb(56, 189, 248), I18n.getOrDefault("planet.legend.sea_level", "Niveau de la mer (0 m)"));
+                addLegendItem("PLAINS", Color.rgb(46, 125, 50), I18n.getOrDefault("planet.legend.lowlands", "Basses Terres"));
+                addLegendItem("HILLS", Color.rgb(194, 166, 73), I18n.getOrDefault("planet.legend.hills", "Moyen Relief"));
+                addLegendItem("MOUNTAINS", Color.rgb(141, 110, 99), I18n.getOrDefault("planet.legend.mountains", "Montagnes"));
+                addLegendItem("SNOW", Color.rgb(245, 247, 250), I18n.getOrDefault("planet.legend.peaks", "Sommets (+8.8 km)"));
+            } else {
+                addLegendItem("LOWLANDS", Color.rgb(96, 96, 96), I18n.getOrDefault("planet.legend.depressions", "Dépressions"));
+                addLegendItem("PLAINS", Color.rgb(135, 135, 135), I18n.getOrDefault("planet.legend.plains", "Plaines"));
+                addLegendItem("PLATEAUS", Color.rgb(175, 175, 175), I18n.getOrDefault("planet.legend.plateaus", "Plateaux"));
+                addLegendItem("HIGHLANDS", Color.rgb(215, 215, 215), I18n.getOrDefault("planet.legend.highlands", "Reliefs"));
+                addLegendItem("PEAKS", Color.rgb(255, 255, 255), I18n.getOrDefault("planet.legend.peaks_dry", "Sommets"));
+            }
 
             Label maxLabel = new Label(String.format("Max: %,.0f m", maxAlt));
             maxLabel.getStyleClass().add("control-label");
@@ -2041,7 +2168,9 @@ public class PlanetGeneratorPanel extends BorderPane {
 
                 double normElev;
                 boolean isOcean;
-                double waterNorm = (elevReader != null) ? 0.186 : (preset.waterLevel() + 1.0) / 2.0;
+                double waterNorm = (preset.waterLevel() <= -0.4) ? 0.0 : ((preset.maxAltitudeMeters() > preset.minAltitudeMeters())
+                        ? Math.clamp((0.0 - preset.minAltitudeMeters()) / (preset.maxAltitudeMeters() - preset.minAltitudeMeters()), 0.0, 1.0)
+                        : (preset.waterLevel() + 1.0) / 2.0);
 
                 if (elevReader != null) {
                     double u = (lng + 180.0) / 360.0;
@@ -2050,7 +2179,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                     int ey = (int) Math.min(v * hElev, hElev - 1);
                     int argb = elevReader.getArgb(ex, ey);
                     normElev = (((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / (3.0 * 255.0);
-                    isOcean = normElev < waterNorm;
+                    isOcean = preset.waterLevel() > -0.4 && normElev < waterNorm;
                 } else {
                     PlanetPoint p = generator.getPlanetPoint(lat, lng, preset);
                     // p.elevation() is normalised [-1.0, 1.0]
@@ -2181,7 +2310,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         // Global planetary ocean/land area ratio calculation with cosine latitude weighting
         double totalAreaWeight = 0.0;
         double oceanAreaWeight = 0.0;
-        double globalWaterNorm = (elevReader != null) ? 0.186 : (preset.waterLevel() + 1.0) / 2.0;
+        double globalWaterNorm = (preset.waterLevel() <= -0.4) ? 0.0 : ((elevReader != null) ? 0.186 : (preset.waterLevel() + 1.0) / 2.0);
 
         for (int gy = 0; gy < 90; gy++) {
             double gLat = 90.0 - (gy + 0.5) * 2.0;
@@ -2189,7 +2318,9 @@ public class PlanetGeneratorPanel extends BorderPane {
             for (int gx = 0; gx < 180; gx++) {
                 double gLng = -180.0 + (gx + 0.5) * 2.0;
                 boolean isGlobOcean;
-                if (elevReader != null) {
+                if (preset.waterLevel() <= -0.4) {
+                    isGlobOcean = false;
+                } else if (elevReader != null) {
                     double u = (gLng + 180.0) / 360.0;
                     double v = (90.0 - gLat) / 180.0;
                     int ex = (int) Math.min(u * wElev, wElev - 1);

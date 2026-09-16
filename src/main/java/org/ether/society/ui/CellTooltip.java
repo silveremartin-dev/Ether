@@ -75,9 +75,10 @@ public class CellTooltip extends VBox {
                 coordLabel,
                 h3Label);
 
-        // Initially hidden
+        // Initially hidden and non-blocking for mouse events
         setVisible(false);
         setManaged(false); // Don't affect parent layout
+        setMouseTransparent(true);
     }
 
     /**
@@ -235,40 +236,40 @@ public class CellTooltip extends VBox {
     }
 
     /**
-     * Position the tooltip at screen coordinates, ensuring it stays within bounds.
+     * Position the tooltip at canvas coordinates, ensuring it stays within bounds.
      * 
-     * @param sceneX X coordinate in scene
-     * @param sceneY Y coordinate in scene
+     * @param canvasX X coordinate in canvas / container
+     * @param canvasY Y coordinate in canvas / container
      * @param maxX   Maximum X (container width)
      * @param maxY   Maximum Y (container height)
      */
-    public void position(double sceneX, double sceneY, double maxX, double maxY) {
+     public void position(double canvasX, double canvasY, double maxX, double maxY) {
         // Offset from cursor
-        double offsetX = 15;
-        double offsetY = 15;
+        double offsetX = 16;
+        double offsetY = 16;
+
+        // Get tooltip dimensions
+        double width = getWidth() > 0 ? getWidth() : 260;
+        double height = getHeight() > 0 ? getHeight() : 200;
 
         // Calculate position
-        double x = sceneX + offsetX;
-        double y = sceneY + offsetY;
-
-        // Get tooltip dimensions (may not be accurate until rendered once)
-        double width = getWidth() > 0 ? getWidth() : 250; // Estimated width
-        double height = getHeight() > 0 ? getHeight() : 150; // Estimated height
+        double x = canvasX + offsetX;
+        double y = canvasY + offsetY;
 
         // Keep within bounds
-        if (x + width > maxX) {
-            x = sceneX - width - 5; // Show on left of cursor
+        if (x + width > maxX - 10) {
+            x = canvasX - width - offsetX; // Show on left of cursor
         }
-        if (y + height > maxY) {
-            y = sceneY - height - 5; // Show above cursor
+        if (y + height > maxY - 10) {
+            y = canvasY - height - offsetY; // Show above cursor
         }
 
-        // Ensure not negative
-        x = Math.max(0, x);
-        y = Math.max(0, y);
+        // Clamp to container bounds
+        x = Math.max(10, Math.min(x, Math.max(10, maxX - width - 10)));
+        y = Math.max(10, Math.min(y, Math.max(10, maxY - height - 10)));
 
-        setLayoutX(x);
-        setLayoutY(y);
+        relocate(x, y);
+        setVisible(true);
     }
 
     /**

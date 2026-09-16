@@ -59,6 +59,18 @@ public class H3Service {
         return h3.latLngToCell(lat, lng, resolution);
     }
 
+    public int getResolution(long h3Index) {
+        return h3.getResolution(h3Index);
+    }
+
+    public int getResolution() {
+        return resolution;
+    }
+
+    public H3Core getH3() {
+        return h3;
+    }
+
     public long latLngToH3(double lat, double lng, int res) {
         return h3.latLngToCell(lat, lng, res);
     }
