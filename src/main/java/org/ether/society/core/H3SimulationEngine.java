@@ -611,31 +611,67 @@ public class H3SimulationEngine implements ISimulationEngine {
         if (historyManager == null || cells == null || cells.isEmpty()) return;
         long currentTicks = timeManager.getTotalTicks();
         long targetTicks = Math.max(0, currentTicks - ticks);
+        seekToTick(targetTicks);
+    }
+
+    public void seekToTick(long targetTicks) {
+        pause();
+        if (historyManager == null || cells == null || cells.isEmpty()) return;
 
         java.util.NavigableMap<Long, List<H3Cell>> snapshots = historyManager.getWorldSnapshots();
-        if (snapshots.isEmpty()) return;
+        if (!snapshots.isEmpty()) {
+            java.util.Map.Entry<Long, List<H3Cell>> entry = snapshots.floorEntry(targetTicks);
+            if (entry == null) {
+                entry = snapshots.firstEntry();
+            }
 
-        java.util.Map.Entry<Long, List<H3Cell>> entry = snapshots.floorEntry(targetTicks);
-        if (entry == null) {
-            entry = snapshots.firstEntry();
-        }
-
-        if (entry != null && entry.getValue() != null) {
-            List<H3Cell> snapshot = entry.getValue();
-            java.util.Map<Long, H3Cell> map = snapshot.stream().collect(java.util.stream.Collectors.toMap(H3Cell::getH3Index, c -> c));
-            for (H3Cell c : cells) {
-                H3Cell snap = map.get(c.getH3Index());
-                if (snap != null) {
-                    c.setPopulation(snap.getPopulation());
-                    c.setTemperature(snap.getTemperature());
-                    c.setFoodResource(snap.getFoodResource());
-                    c.setWaterResource(snap.getWaterResource());
-                    c.setFreshwaterAquifer(snap.getFreshwaterAquifer());
-                    c.setTechnologyLevel(snap.getTechnologyLevel());
+            if (entry != null && entry.getValue() != null) {
+                List<H3Cell> snapshot = entry.getValue();
+                java.util.Map<Long, H3Cell> map = snapshot.stream().collect(java.util.stream.Collectors.toMap(H3Cell::getH3Index, c -> c));
+                for (H3Cell c : cells) {
+                    H3Cell snap = map.get(c.getH3Index());
+                    if (snap != null) {
+                        c.setPopulation(snap.getPopulation());
+                        c.setTemperature(snap.getTemperature());
+                        c.setFoodResource(snap.getFoodResource());
+                        c.setWaterResource(snap.getWaterResource());
+                        c.setFreshwaterAquifer(snap.getFreshwaterAquifer());
+                        c.setTechnologyLevel(snap.getTechnologyLevel());
+                        c.setBiomassHuman(snap.getBiomassHuman());
+                        c.setBiomassNatural(snap.getBiomassNatural());
+                        c.setBiomassLivestock(snap.getBiomassLivestock());
+                        c.setBiomassAgriculture(snap.getBiomassAgriculture());
+                        c.setResourceCapital(snap.getResourceCapital());
+                        c.setPollutionLevel(snap.getPollutionLevel());
+                    }
+                }
+                if (worldBuffer != null) {
+                    org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
                 }
             }
-            if (worldBuffer != null) {
-                org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
+        }
+
+        // Compute new year, month, and day based on targetTicks
+        long initialYear = currentScenario != null ? currentScenario.getStartDateYear() : -20000;
+        int stepDaysVal = (currentScenario != null && currentScenario.getTemporalResolutionDays() > 0)
+                ? (int) Math.round(currentScenario.getTemporalResolutionDays()) : 1;
+        long totalDays = targetTicks * stepDaysVal;
+        long totalMonths = totalDays / 30;
+        int targetYear = (int) (initialYear + (totalMonths / 12));
+        int targetMonth = (int) (totalMonths % 12);
+        int targetDay = (int) ((totalDays % 30) + 1);
+
+        timeManager.setTime(targetYear, targetMonth, targetDay, targetTicks);
+        this.tickCounter = (int) targetTicks;
+
+        // Recalculate metrics for the current time
+        if (worldBuffer != null && statisticsKernel != null) {
+            currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
+            densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
+            currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital());
+            if (agentBuffer != null) {
+                currentLifeExpectancy = statisticsKernel.calculateLifeExpectancy(agentBuffer.getAge(), agentBuffer.getHexIds());
+                currentFertility = statisticsKernel.calculateFertilityRate(agentBuffer.getBirths(), agentBuffer.getMass());
             }
         }
     }

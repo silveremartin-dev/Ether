@@ -82,6 +82,12 @@ public class SimulationSaveManager {
             File cellsFile = savePath.resolve("cells.json").toFile();
             objectMapper.writeValue(cellsFile, engine.getCells());
 
+            // 4. Save Historical Telemetry & Analytics (JSON)
+            if (engine.getHistoryManager() != null && engine.getHistoryManager().getHistory() != null) {
+                File historyFile = savePath.resolve("history.json").toFile();
+                objectMapper.writeValue(historyFile, engine.getHistoryManager().getHistory().getSnapshots());
+            }
+
             if (DatabaseConfig.isDatabaseAvailable()) {
                 logger.info("Persisting {} cells to database...", engine.getCells().size());
                 cellRepository.saveAll(engine.getCells());
@@ -104,6 +110,38 @@ public class SimulationSaveManager {
     public void loadSimulation(String saveId, H3SimulationEngine engine) {
         try {
             Path savePath = Paths.get(SAVE_DIR).resolve(saveId).normalize();
+            
+            // Restore Metadata & Time
+            File metaFile = savePath.resolve(METADATA_FILE).toFile();
+            if (metaFile.exists()) {
+                SaveMetadata metadata = objectMapper.readValue(metaFile, SaveMetadata.class);
+                if (metadata != null && engine.getTimeManager() != null) {
+                    long totalTicks = 0;
+                    if (engine.getCurrentScenario() != null) {
+                        long startYear = engine.getCurrentScenario().getStartDateYear();
+                        totalTicks = Math.max(0, (metadata.getYear() - startYear) * 12 + metadata.getMonth());
+                    }
+                    engine.getTimeManager().setTime((int) metadata.getYear(), metadata.getMonth(), 1, totalTicks);
+                }
+            }
+
+            // Restore Historical Telemetry
+            File historyFile = savePath.resolve("history.json").toFile();
+            if (historyFile.exists() && engine.getHistoryManager() != null) {
+                try {
+                    List<org.ether.society.analytics.HistorySnapshot> loadedSnapshots = objectMapper.readValue(historyFile,
+                            objectMapper.getTypeFactory().constructCollectionType(List.class, org.ether.society.analytics.HistorySnapshot.class));
+                    if (loadedSnapshots != null) {
+                        engine.getHistoryManager().getHistory().clear();
+                        for (org.ether.society.analytics.HistorySnapshot snap : loadedSnapshots) {
+                            engine.getHistoryManager().getHistory().addSnapshot(snap);
+                        }
+                    }
+                } catch (Exception ex) {
+                    logger.warn("Failed to deserialize history.json from save", ex);
+                }
+            }
+
             File cellsFile = savePath.resolve("cells.json").toFile();
 
             if (cellsFile.exists()) {
@@ -116,6 +154,9 @@ public class SimulationSaveManager {
                         objectMapper.getTypeFactory().constructCollectionType(List.class, H3Cell.class));
                 if (cells != null && !cells.isEmpty()) {
                     engine.setCells(cells);
+                    if (engine.getWorldBuffer() != null) {
+                        org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, engine.getWorldBuffer());
+                    }
                     logger.info("World loaded from snapshot: {} cells.", cells.size());
                     return;
                 }
@@ -131,6 +172,9 @@ public class SimulationSaveManager {
             }
 
             engine.setCells(cells);
+            if (engine.getWorldBuffer() != null) {
+                org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, engine.getWorldBuffer());
+            }
             logger.info("World loaded from database: {} cells.", cells.size());
 
         } catch (Exception e) {

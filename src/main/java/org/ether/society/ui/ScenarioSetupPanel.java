@@ -3618,8 +3618,8 @@ public class ScenarioSetupPanel extends BorderPane {
 
     private void rebuildCulturalTensorSubBlocks(int dimCount) {
         if (btnGenerateProceduralTensorsSection != null) {
-            btnGenerateProceduralTensorsSection.setText(I18n.getOrDefault("scenario.btn.gen_tensors_prefix", "🪄 Generate Tensor Suite (T₁-T") + dimCount + ")");
-            btnGenerateProceduralTensorsSection.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.gen_tensors_prefix", "Procedurally generate all ") + dimCount + I18n.getOrDefault("scenario.tooltip.gen_tensors_suffix", " maps of cultural suite according to scenario and stochastic seed.")));
+            btnGenerateProceduralTensorsSection.setText(I18n.getOrDefault("scenario.btn.regen_tensors", "🪄 Régénérer les Tenseurs"));
+            btnGenerateProceduralTensorsSection.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.regen_tensors", "Bascule tous les tenseurs en mode procédural et régénère les cartes selon les paramètres et la graine stochastique.")));
         }
         if (layersDynamicContainer == null) return;
         layersDynamicContainer.getChildren().clear();

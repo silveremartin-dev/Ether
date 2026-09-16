@@ -438,13 +438,24 @@ public class MainView extends StackPane {
     }
 
     private void seekTimelapse(int year) {
-        var snapshot = engine.getHistoryManager().getWorldSnapshot(year);
-        if (snapshot != null) {
-            mapCanvas.setCells(snapshot);
-            if (miniMap != null) miniMap.setCells(snapshot);
-            controlPanel.updateYear(String.valueOf(year));
-            logger.info("Timelapse seek to year: {}", year);
+        long startYear = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getStartDateYear() : -20000;
+        long targetTicks = Math.max(0, (year - startYear) * 12);
+        engine.seekToTick(targetTicks);
+        if (mapCanvas != null) {
+            mapCanvas.setWorldBuffer(engine.getWorldBuffer());
+            mapCanvas.setCells(engine.getCells());
+            mapCanvas.draw();
         }
+        if (miniMap != null && engine.getCells() != null) {
+            miniMap.setCells(engine.getCells());
+        }
+        if (controlPanel != null) {
+            controlPanel.updateYear(engine.getTimeManager().getFormattedDate());
+        }
+        if (statsPanel != null) {
+            statsPanel.update();
+        }
+        logger.info("Timelapse seek to year: {} (tick {})", year, targetTicks);
     }
 
     private void onStartSimulation(Scenario scenario) {
@@ -474,6 +485,10 @@ public class MainView extends StackPane {
 
                 controlPanel.updateScenarioName(meta.getScenarioName() + " (" + I18n.getOrDefault("mainview.restored_snapshot", "Restored Snapshot") + ")");
                 controlPanel.updateYear(String.format("An %d", meta.getYear()));
+
+                if (statsPanel != null) {
+                    statsPanel.resetChartSeries();
+                }
 
                 simulationTab.setDisable(false);
                 tabPane.getSelectionModel().select(simulationTab);
@@ -783,7 +798,15 @@ public class MainView extends StackPane {
         engine.loadSimulation(null);
         notificationOverlay.showEvent(I18n.getOrDefault("mainview.load.success", "Simulation loaded from database"));
 
+        mapCanvas.setWorldBuffer(engine.getWorldBuffer());
         mapCanvas.setCells(engine.getCells());
+        mapCanvas.draw();
         if (miniMap != null) miniMap.setCells(engine.getCells());
+        if (statsPanel != null) {
+            statsPanel.resetChartSeries();
+        }
+        if (controlPanel != null) {
+            controlPanel.updateYear(engine.getTimeManager().getFormattedDate());
+        }
     }
 }

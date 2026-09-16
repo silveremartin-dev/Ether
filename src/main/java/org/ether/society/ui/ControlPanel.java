@@ -40,7 +40,6 @@ public class ControlPanel extends VBox {
     // Temporal Labels
     private final Label scenarioHeaderLabel;
     private final Label dateHeaderLabel;
-    private final Label tickRateLabel;
     private final Label ageLabel;
     private final Label seasonLabel;
 
@@ -121,19 +120,9 @@ public class ControlPanel extends VBox {
             I18n.getOrDefault("sim.tooltip.date_header", "⏱️ Horloge courante de la simulation selon le pas temporel configuré.")
         ));
 
-        tickRateLabel = new Label("⚡ " + I18n.getOrDefault("sim.header.tick_rate", "Fréquence : 0.0 ticks/sec"));
-        tickRateLabel.getStyleClass().add("card-description-muted");
-        tickRateLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
-        tickRateLabel.setTooltip(new Tooltip(
-            I18n.getOrDefault("sim.tooltip.tps_header", "⚡ Nombre d'itérations de calcul (ticks) traitées par seconde par le moteur CPU.")
-        ));
-
         dbStatusLabel = new Label(I18n.getOrDefault("sim.status.dbcheck", "DB: Checking..."));
         dbStatusLabel.getStyleClass().add("control-label");
         dbStatusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-padding: 2 0 0 0;");
-
-        VBox dateHeaderBox = new VBox(4, scenarioHeaderLabel, dateHeaderLabel, tickRateLabel, dbStatusLabel);
-        styleCard(dateHeaderBox);
 
         // --- 2. TEMPORAL & PLAYBACK CONTROLS CARD ---
         Label timeTitle = createCardTitle("⏱️ " + I18n.getOrDefault("sim.card.time", "TIME & PLAYBACK CONTROLS"));
@@ -146,12 +135,12 @@ public class ControlPanel extends VBox {
         });
 
         fastRewindBtn = new Button("⏪");
-        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Reculer (-12 pas)")));
-        fastRewindBtn.setOnAction(e -> engine.stepBackward(12));
+        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Recul rapide (-1000 pas) [Maintenir appuyé]")));
+        setupRepeatAction(fastRewindBtn, () -> engine.stepBackward(1000));
 
         stepBackBtn = new Button("⏴");
-        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Reculer d'un pas (-1 tick)")));
-        stepBackBtn.setOnAction(e -> engine.stepBackward(1));
+        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Reculer (-10 pas) [Maintenir appuyé]")));
+        setupRepeatAction(stepBackBtn, () -> engine.stepBackward(10));
 
         // Auto Record Checkbox (initialized early for button handlers)
         autoRecordCheck = new CheckBox(I18n.getOrDefault("sim.option.auto_record", "🎬 Auto Sync Video (Start & Pause)"));
@@ -190,12 +179,12 @@ public class ControlPanel extends VBox {
         });
 
         stepForwardBtn = new Button("⏵");
-        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer d'un pas (+1 tick)")));
-        stepForwardBtn.setOnAction(e -> engine.stepForward(1));
+        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer (+10 pas) [Maintenir appuyé]")));
+        setupRepeatAction(stepForwardBtn, () -> engine.stepForward(10));
 
         fastForwardBtn = new Button("⏩");
-        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Avancer (+12 pas)")));
-        fastForwardBtn.setOnAction(e -> engine.stepForward(12));
+        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Avance rapide (+1000 pas) [Maintenir appuyé]")));
+        setupRepeatAction(fastForwardBtn, () -> engine.stepForward(1000));
 
         Button[] playButtons = { rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stopBtn, stepForwardBtn, fastForwardBtn };
         for (Button btn : playButtons) {
@@ -240,15 +229,17 @@ public class ControlPanel extends VBox {
 
         speedMax = new Button("MAX 🚀");
         speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Calculates ticks at maximum CPU speed without limits (Uncapped CPU ticks/sec)")));
-        speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4;");
+        speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4; -fx-cursor: hand;");
         speedMax.setOnAction(e -> {
             engine.setSpeed(999);
             speedValueLabel.setText("⏱️ " + I18n.getOrDefault("sim.speed.max_label", "Target Speed: MAX 🚀 (Unlimited - As many CPU ticks/sec as possible)"));
         });
 
         HBox sliderRow = new HBox(8, speedSlider, speedMax);
+        sliderRow.setAlignment(Pos.CENTER_LEFT);
+
         // --- 1. HORLOGE & CONTRÔLE TEMPOREL CARD ---
-        VBox timeCard = new VBox(8, scenarioHeaderLabel, dateHeaderLabel, tickRateLabel, timeTitle, playBar, pauseOnEventCheck, speedValueLabel, sliderRow);
+        VBox timeCard = new VBox(8, scenarioHeaderLabel, dateHeaderLabel, dbStatusLabel, timeTitle, playBar, pauseOnEventCheck, speedValueLabel, sliderRow);
         styleCard(timeCard);
 
         // --- 3. MEDIA & EXPORT MP4 CARD ---
@@ -760,6 +751,31 @@ public class ControlPanel extends VBox {
         }
     }
 
+    private void setupRepeatAction(Button btn, Runnable action) {
+        javafx.animation.Timeline repeatTimeline = new javafx.animation.Timeline(
+            new javafx.animation.KeyFrame(javafx.util.Duration.millis(80), e -> action.run())
+        );
+        repeatTimeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
+
+        javafx.animation.PauseTransition initialDelay = new javafx.animation.PauseTransition(javafx.util.Duration.millis(350));
+        initialDelay.setOnFinished(e -> repeatTimeline.playFromStart());
+
+        btn.setOnMousePressed(e -> {
+            if (e.isPrimaryButtonDown()) {
+                action.run();
+                initialDelay.playFromStart();
+            }
+        });
+
+        Runnable stopRepeat = () -> {
+            initialDelay.stop();
+            repeatTimeline.stop();
+        };
+
+        btn.setOnMouseReleased(e -> stopRepeat.run());
+        btn.setOnMouseExited(e -> stopRepeat.run());
+    }
+
     public void updateScenarioName(String scenarioName) {
         if (scenarioName != null && !scenarioName.isBlank()) {
             scenarioHeaderLabel.setText(I18n.getOrDefault("sim.header.scenario", "🎬 Scenario: ") + scenarioName);
@@ -774,7 +790,6 @@ public class ControlPanel extends VBox {
         popStatValue.setText(String.format(I18n.getOrDefault("sim.status.pop_total", "Pop. Totale : %s"), formatNumber(population)));
         foodStatValue.setText(String.format(I18n.getOrDefault("sim.status.food_stocks", "Stocks Alim. : %s"), formatNumber((long) food)));
         cellStatValue.setText(String.format(I18n.getOrDefault("sim.status.populated_cells", "Populated Cells: %,d"), populatedCells));
-        tickRateLabel.setText(String.format(java.util.Locale.FRANCE, "⚡ " + I18n.getOrDefault("sim.status.tick_rate", "Fréquence : %.1f ticks/sec"), tps));
     }
 
     private String formatNumber(long num) {

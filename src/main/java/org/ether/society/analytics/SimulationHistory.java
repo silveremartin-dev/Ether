@@ -31,4 +31,10 @@ public class SimulationHistory {
             snapshots.clear();
         }
     }
+
+    public void truncateAfter(int year, int month) {
+        synchronized (snapshots) {
+            snapshots.removeIf(s -> s.year() > year || (s.year() == year && s.month() > month));
+        }
+    }
 }

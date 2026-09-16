@@ -671,47 +671,23 @@ public class H3MapCanvas extends Canvas {
         double w = getWidth();
         if (h < 60 || w < 220) return;
 
-        // Top-Left: Scenario Name Badge
-        String scenText = "🎬 " + (scenarioName != null ? scenarioName : "Scénario Ether");
+        // Unified Top-Right Badge: Scenario & Date
+        String scen = (scenarioName != null && !scenarioName.isBlank()) ? scenarioName : "Scénario Ether";
+        String date = (currentDateStr != null && !currentDateStr.isBlank()) ? currentDateStr : "An --";
+        String unifiedText = "🎬 " + scen + "  •  " + date;
+
         gc.setFont(javafx.scene.text.Font.font("Consolas", javafx.scene.text.FontWeight.BOLD, 12));
-        double scenWidth = Math.max(170, scenText.length() * 8.0 + 24);
+        double badgeWidth = Math.max(200, unifiedText.length() * 8.0 + 24);
+        double badgeX = w - badgeWidth - 14;
 
         gc.setFill(Color.rgb(15, 23, 42, 0.88));
-        gc.fillRoundRect(14, 14, scenWidth, 28, 8, 8);
+        gc.fillRoundRect(badgeX, 14, badgeWidth, 28, 8, 8);
         gc.setStroke(Color.rgb(56, 189, 248, 0.85));
         gc.setLineWidth(1.2);
-        gc.strokeRoundRect(14, 14, scenWidth, 28, 8, 8);
+        gc.strokeRoundRect(badgeX, 14, badgeWidth, 28, 8, 8);
 
         gc.setFill(Color.rgb(241, 245, 249));
-        gc.fillText(scenText, 22, 33);
-
-        // Top-Right: Date & Time Badge
-        String dateText = "📅 " + (currentDateStr != null ? currentDateStr : "An --");
-        double dateWidth = Math.max(150, dateText.length() * 8.5 + 24);
-        double dateX = w - dateWidth - 14;
-
-        gc.setFill(Color.rgb(15, 23, 42, 0.88));
-        gc.fillRoundRect(dateX, 14, dateWidth, 28, 8, 8);
-        gc.setStroke(isRecordingVideo ? Color.rgb(239, 68, 68, 0.9) : Color.rgb(74, 222, 128, 0.85));
-        gc.setLineWidth(1.2);
-        gc.strokeRoundRect(dateX, 14, dateWidth, 28, 8, 8);
-
-        gc.setFill(isRecordingVideo ? Color.rgb(254, 202, 202) : Color.rgb(241, 245, 249));
-        gc.fillText(dateText, dateX + 12, 33);
-
-        // REC Indicator on Top-Right (next to Date) when video recording is active
-        if (isRecordingVideo) {
-            double recX = dateX - 90;
-            long now = System.currentTimeMillis();
-            boolean blink = (now % 1000) < 500;
-            if (blink) {
-                gc.setFill(Color.rgb(239, 68, 68));
-                gc.fillOval(recX, 22, 11, 11);
-            }
-            gc.setFill(Color.rgb(248, 113, 113));
-            gc.setFont(javafx.scene.text.Font.font("Consolas", javafx.scene.text.FontWeight.BOLD, 12));
-            gc.fillText("REC 1:1", recX + 16, 32);
-        }
+        gc.fillText(unifiedText, badgeX + 12, 33);
     }
 
     private static class EventBeaconTarget {

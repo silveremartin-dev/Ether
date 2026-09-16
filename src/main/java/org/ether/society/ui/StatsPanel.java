@@ -507,7 +507,7 @@ public class StatsPanel extends VBox {
         addCard("systemInterdependence", "Interdépendance (Rouages)", "⚙️ Complexité Systémique", "%", "Fragilité systémique liée à l'interdépendance des chaînes logistiques.", inspectorTitle, inspectorText);
 
         // Category 9: Performances Engine
-        addCard("engineTPS", "TPS (Images/s)", "💻 Performances Techniques", "TPS", "Taux de rafraîchissement des cycles de simulation par seconde.", inspectorTitle, inspectorText);
+        addCard("engineTPS", "Fréquence de Calcul (Ticks/s)", "💻 Performances Techniques", "ticks/s", "Fréquence réelle de calcul du moteur de simulation (ticks par seconde).", inspectorTitle, inspectorText);
         addCard("ramMemory", "Utilisation Mémoire RAM", "💻 Performances Techniques", "MB", "Consommation mémoire vive du moteur.", inspectorTitle, inspectorText);
         addCard("cellCount", "Cellules Hexagonales H3", "💻 Performances Techniques", "hex", "Nombre total de mailles hexagonales chargées en mémoire.", inspectorTitle, inspectorText);
     }
@@ -576,8 +576,23 @@ public class StatsPanel extends VBox {
         tickCounter = 0;
     }
 
-    private void resetChartSeries() {
+    public void resetChartSeries() {
         chartSeries.getData().clear();
+        if (engine != null && engine.getHistoryManager() != null && engine.getHistoryManager().getHistory() != null) {
+            String selectedMetric = chartMetricCombo != null ? chartMetricCombo.getValue() : "Population Humaine";
+            double currentTime = engine.getTimeManager().getCurrentYear() + (engine.getTimeManager().getCurrentMonth() / 12.0);
+            List<org.ether.society.analytics.HistorySnapshot> snapshots = engine.getHistoryManager().getHistory().getSnapshots();
+            for (org.ether.society.analytics.HistorySnapshot snap : snapshots) {
+                double snapTime = snap.year() + (snap.month() / 12.0);
+                if (snapTime <= currentTime + 0.0001) {
+                    double val = snap.getMetricValue(selectedMetric);
+                    chartSeries.getData().add(new XYChart.Data<>(snapTime, val));
+                }
+            }
+            while (timeWindowSize > 0 && chartSeries.getData().size() > timeWindowSize) {
+                chartSeries.getData().remove(0);
+            }
+        }
         update();
     }
 
@@ -813,7 +828,7 @@ public class StatsPanel extends VBox {
                     case "Interdépendance (Rouages)" -> sysInter;
 
                     // Category 9: Performances
-                    case "TPS (Images/s)" -> tps;
+                    case "Fréquence de Calcul (Ticks/s)", "Fréquence de Calcul (ticks/sec)", "TPS (Images/s)", "TPS", "tps" -> tps;
                     case "Utilisation Mémoire RAM" -> usedMem;
                     case "Cellules Hexagonales H3" -> totalCells;
 
@@ -821,6 +836,24 @@ public class StatsPanel extends VBox {
                 };
 
                 double currentTime = year + (engine.getTimeManager().getCurrentMonth() / 12.0);
+
+                // If user rewound/stepped back in time, prune future data points from the active chart
+                if (!chartSeries.getData().isEmpty()) {
+                    chartSeries.getData().removeIf(data -> data.getXValue().doubleValue() > currentTime + 0.0001);
+                }
+
+                // If chart is empty but history snapshots exist (e.g. loaded game / initial metric selection), preload past snapshots
+                if (chartSeries.getData().isEmpty() && engine.getHistoryManager() != null && engine.getHistoryManager().getHistory() != null) {
+                    List<org.ether.society.analytics.HistorySnapshot> snapshots = engine.getHistoryManager().getHistory().getSnapshots();
+                    for (org.ether.society.analytics.HistorySnapshot snap : snapshots) {
+                        double snapTime = snap.year() + (snap.month() / 12.0);
+                        if (snapTime < currentTime - 0.0001) {
+                            double val = snap.getMetricValue(selectedMetric);
+                            chartSeries.getData().add(new XYChart.Data<>(snapTime, val));
+                        }
+                    }
+                }
+
                 if (chartSeries.getData().isEmpty() || Math.abs(chartSeries.getData().get(chartSeries.getData().size() - 1).getXValue().doubleValue() - currentTime) >= 0.001) {
                     chartSeries.getData().add(new XYChart.Data<>(currentTime, yVal));
                     while (timeWindowSize > 0 && chartSeries.getData().size() > timeWindowSize) {

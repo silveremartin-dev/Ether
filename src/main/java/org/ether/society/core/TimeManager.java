@@ -164,6 +164,30 @@ public class TimeManager {
     }
 
     /**
+     * Sets the simulation time and total ticks directly (used during rewind, seek, or snapshot restore).
+     *
+     * @param year Current year (negative for BC)
+     * @param month Current month (0-11)
+     * @param day Current day (1-30)
+     * @param totalTicks Total ticks counter
+     */
+    public void setTime(int year, int month, int day, long totalTicks) {
+        this.currentYear = year;
+        this.currentMonth = Math.max(0, Math.min(11, month));
+        this.currentDay = Math.max(1, Math.min(30, day));
+        this.totalTicks = Math.max(0, totalTicks);
+    }
+
+    /**
+     * Sets the total ticks counter directly.
+     *
+     * @param totalTicks Total ticks counter
+     */
+    public void setTotalTicks(long totalTicks) {
+        this.totalTicks = Math.max(0, totalTicks);
+    }
+
+    /**
      * Resets time to the initial starting year.
      *
      * @param startYear The year to reset to

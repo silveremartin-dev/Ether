@@ -26,47 +26,45 @@ public class HistoryManager {
     /**
      * Capture a snapshot of the current engine state.
      */
-    public void captureSnapshot(H3SimulationEngine engine) {
-        int year = engine.getTimeManager().getCurrentYear();
-        int month = engine.getTimeManager().getCurrentMonth();
-        org.ether.society.core.dod.WorldBuffer world = engine.getWorldBuffer();
+     public void captureSnapshot(H3SimulationEngine engine) {
+         if (engine == null) return;
+         int year = engine.getTimeManager().getCurrentYear();
+         int month = engine.getTimeManager().getCurrentMonth();
 
-        if (world == null) return;
+         long totalPop = engine.getTotalPopulation();
+         double totalFood = engine.getTotalFood();
+         double totalWealth = engine.getBuiltCapitalTotal();
+         double avgLifespan = engine.getCurrentLifeExpectancy();
+         double globalGini = engine.getCurrentGini();
+         double avgTech = engine.getAverageTechnology();
 
-        long totalPop = 0;
-        double totalFood = 0;
-        double totalCapital = 0;
-        double sumLifespan = 0;
-        double sumTech = 0;
-        long populatedCount = 0;
+         double energyCaptured = engine.getEnergyCaptured();
+         double kardashevScale = engine.getKardashevScale();
+         double happinessIndex = engine.getHappinessIndex();
+         double conflictLevel = engine.getConflictLevel();
+         double gdpTotal = engine.getCurrentGDP();
+         double divisionLabor = engine.getDivisionOfLaborIndex();
+         double systemComplexity = engine.getSystemComplexityIndex();
+         double collectiveMemory = engine.getCollectiveMemoryStock();
+         double carbonFootprint = engine.getCarbonFootprint();
+         double collapseVulnerability = engine.getCollapseVulnerability();
+         double tps = engine.getCurrentTPS();
+         double resourceDepletion = engine.getResourceDepletionRate();
+         double naturalBiomass = engine.getTotalBiomassNatural();
+         double potableWater = engine.getPotableWaterTotal();
+         double fertilityRate = engine.getCurrentFertility();
+         int cityStates = engine.getCityStatesCount();
+         double eliteOverproduction = engine.getEliteOverproductionIndex();
 
-        float[] pop = world.getBiomassHuman();
-        float[] food = world.getFoodResource();
-        float[] capital = world.getResourceCapital();
-        float[] lifespan = world.getLifespan();
-        float[] tech = world.getTechnologyLevel();
+         HistorySnapshot snapshot = new HistorySnapshot(
+                 year, month, totalPop, totalFood, totalWealth, avgLifespan, globalGini, avgTech,
+                 energyCaptured, kardashevScale, happinessIndex, conflictLevel, gdpTotal, divisionLabor,
+                 systemComplexity, collectiveMemory, carbonFootprint, collapseVulnerability, tps,
+                 resourceDepletion, naturalBiomass, potableWater, fertilityRate, cityStates, eliteOverproduction
+         );
 
-        for (int i = 0; i < world.getCapacity(); i++) {
-            totalPop += (long)pop[i];
-            totalFood += food[i];
-            totalCapital += capital[i];
-
-            if (pop[i] > 0.1f) {
-                sumLifespan += lifespan[i];
-                sumTech += tech[i];
-                populatedCount++;
-            }
-        }
-
-        double avgLifespan = (populatedCount > 0) ? sumLifespan / populatedCount : 0;
-        double avgTech = (populatedCount > 0) ? sumTech / populatedCount : 0;
-        double dummyGini = 0.0;
-
-        HistorySnapshot snapshot = new HistorySnapshot(
-                year, month, totalPop, totalFood, totalCapital, avgLifespan, dummyGini, avgTech);
-
-        history.addSnapshot(snapshot);
-    }
+         history.addSnapshot(snapshot);
+     }
 
     /**
      * Capture a full world state snapshot for replay (bounded ring buffer).
@@ -92,6 +90,11 @@ public class HistoryManager {
     
     public NavigableMap<Long, List<H3Cell>> getWorldSnapshots() {
         return worldSnapshots;
+    }
+
+    public void truncateAfter(int year, int month, long tick) {
+        history.truncateAfter(year, month);
+        worldSnapshots.tailMap(tick, false).clear();
     }
 
     public void reset() {

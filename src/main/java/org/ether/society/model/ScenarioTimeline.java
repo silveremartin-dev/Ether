@@ -40,4 +40,8 @@ public class ScenarioTimeline implements Serializable {
     public void clear() {
         entries.clear();
     }
+
+    public void truncateAfter(long year) {
+        entries.removeIf(e -> e.year() > year);
+    }
 }

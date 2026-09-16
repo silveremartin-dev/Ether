@@ -275,6 +275,25 @@ public class GodModePanel extends VBox {
         injectPopBtn.setStyle("-fx-background-color: #059669; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 10; -fx-background-radius: 4;");
         injectPopBtn.setMaxWidth(Double.MAX_VALUE);
         injectPopBtn.setOnAction(e -> {
+            if (engine != null && engine.getCells() != null) {
+                double targetLat = latSpinner.getValue();
+                double targetLng = lngSpinner.getValue();
+                H3Cell nearest = null;
+                double minDist = Double.MAX_VALUE;
+                for (H3Cell c : engine.getCells()) {
+                    double dist = Math.hypot(c.getLatitude() - targetLat, c.getLongitude() - targetLng);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        nearest = c;
+                    }
+                }
+                if (nearest != null) {
+                    nearest.setPopulation(nearest.getPopulation() + 100_000);
+                    if (engine.getWorldBuffer() != null) {
+                        org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
+                    }
+                }
+            }
             recordIntervention("POP_INJECT", I18n.getOrDefault("godmode.spawner.pop_title", "Demographic Injection"),
                     I18n.getOrDefault("godmode.spawner.pop_details", "Addition of +100,000 inhabitants at coordinates (Lat: ") + latSpinner.getValue() + ", Lng: " + lngSpinner.getValue() + ")");
         });
@@ -283,6 +302,14 @@ public class GodModePanel extends VBox {
         injectFoodBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 10; -fx-background-radius: 4;");
         injectFoodBtn.setMaxWidth(Double.MAX_VALUE);
         injectFoodBtn.setOnAction(e -> {
+            if (engine != null && engine.getCells() != null) {
+                for (H3Cell c : engine.getCells()) {
+                    c.setFoodResource((c.getFoodResource() != null ? c.getFoodResource() : 0.0) + 1000.0);
+                }
+                if (engine.getWorldBuffer() != null) {
+                    org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
+                }
+            }
             recordIntervention("FOOD_INJECT", I18n.getOrDefault("godmode.spawner.food_title", "Injection Alimentaire"),
                     I18n.getOrDefault("godmode.spawner.food_details", "Refilling global grain stocks (+12 months)"));
         });
@@ -297,6 +324,14 @@ public class GodModePanel extends VBox {
             alert.setContentText(I18n.getOrDefault("godmode.dialog.extinction_desc", "Are you sure you want to eliminate 50% of world population? This action will be logged irreversibly in the audit trail."));
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
+                    if (engine != null && engine.getCells() != null) {
+                        for (H3Cell c : engine.getCells()) {
+                            c.setPopulation((int) (c.getPopulation() * 0.5));
+                        }
+                        if (engine.getWorldBuffer() != null) {
+                            org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
+                        }
+                    }
                     recordIntervention("MASS_EXTINCTION", I18n.getOrDefault("godmode.spawner.extinction_title", "Extinction Cataclysmique"),
                             I18n.getOrDefault("godmode.spawner.extinction_details", "Immediate 50% reduction in global human biomass"));
                 }
@@ -565,6 +600,7 @@ public class GodModePanel extends VBox {
         int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
         int currentMonth = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() : 0;
         int currentDay = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentDay() : 1;
+        long currentTicks = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getTotalTicks() : 0;
         int targetYear = immediate ? currentYear : targetYearSpinner.getValue();
 
         double lat = latSpinner.getValue();
@@ -572,6 +608,13 @@ public class GodModePanel extends VBox {
         double mag = magnitudeSpinner.getValue();
 
         String details = String.format(java.util.Locale.US, "Lat: %.2f°, Lng: %.2f°, Mag: %.1f", lat, lng, mag);
+
+        if (immediate || targetYear <= currentYear) {
+            if (engine != null && engine.getHistoryManager() != null) {
+                engine.getHistoryManager().truncateAfter(currentYear, currentMonth, currentTicks);
+            }
+            timeline.truncateAfter(currentYear);
+        }
 
         timeline.addEntry(targetYear, type, name, details, true);
         refreshTimelineView();
@@ -587,6 +630,13 @@ public class GodModePanel extends VBox {
 
         if (immediate || targetYear <= currentYear) {
             executePhysicalForcing(type, mag, lat, lng);
+            if (engine != null && engine.getWorldBuffer() != null && engine.getCells() != null) {
+                org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
+                if (engine.getHistoryManager() != null) {
+                    engine.getHistoryManager().captureSnapshot(engine);
+                    engine.getHistoryManager().captureWorldSnapshot(engine);
+                }
+            }
             logger.info("God Mode intervention EXECUTED immediately (Year {}): {} - {}", currentYear, name, details);
         } else {
             logger.info("God Mode intervention SCHEDULED for Year {}: {} - {}", targetYear, name, details);
@@ -654,6 +704,18 @@ public class GodModePanel extends VBox {
         int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
         int currentMonth = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() : 0;
         int currentDay = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentDay() : 1;
+        long currentTicks = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getTotalTicks() : 0;
+
+        if (engine != null && engine.getHistoryManager() != null) {
+            engine.getHistoryManager().truncateAfter(currentYear, currentMonth, currentTicks);
+            if (engine.getWorldBuffer() != null && engine.getCells() != null) {
+                org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
+            }
+            engine.getHistoryManager().captureSnapshot(engine);
+            engine.getHistoryManager().captureWorldSnapshot(engine);
+        }
+
+        timeline.truncateAfter(currentYear);
         timeline.addEntry(currentYear, type, title, details, true);
         refreshTimelineView();
 
