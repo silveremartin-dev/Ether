@@ -17,9 +17,9 @@ echo "[OK] Java detected:"
 java -version
 echo ""
 
-if [ -f "target/society-simulation-2.0.0-SNAPSHOT-executable.jar" ]; then
+if [ -f "target/society-simulation-1.0.0-beta.1-executable.jar" ]; then
     echo "[INFO] Launching standalone executable JAR..."
-    java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar target/society-simulation-2.0.0-SNAPSHOT-executable.jar "$@"
+    java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar target/society-simulation-1.0.0-beta.1-executable.jar "$@"
 elif command -v mvn &> /dev/null; then
     echo "[INFO] Starting Ether via Maven..."
     mvn javafx:run

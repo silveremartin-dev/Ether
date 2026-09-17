@@ -1,0 +1,134 @@
+name: Release Packaging & Publishing
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 2.0.0)'
+        required: true
+        default: '1.0.0-beta.1'
+      draft:
+        description: 'Create as Draft Release'
+        type: boolean
+        default: false
+      prerelease:
+        description: 'Mark as Pre-release'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build Standalone Packages & Create GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 21 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Extract Version Tag
+        id: vars
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_NAME="v${{ github.event.inputs.version }}"
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+            VERSION="${TAG_NAME#v}"
+          fi
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build Executable Shaded Fat JAR
+        run: mvn clean package -DskipTests -B
+
+      - name: Package Standalone Distribution
+        run: |
+          VERSION="${{ steps.vars.outputs.version }}"
+          DIST_DIR="dist/Ether-v${VERSION}-standalone"
+          mkdir -p "$DIST_DIR/bin" "$DIST_DIR/data" "$DIST_DIR/docs" "$DIST_DIR/saves" "$DIST_DIR/logs"
+          
+          # Copy Shaded Fat JAR
+          cp target/*executable.jar "$DIST_DIR/bin/ether.jar" || cp target/*.jar "$DIST_DIR/bin/ether.jar"
+          
+          # Copy essential caches and metadata
+          if [ -d "data/cache" ]; then
+            cp -r data/cache "$DIST_DIR/data/"
+          fi
+          mkdir -p "$DIST_DIR/data/maps"
+          if [ -f "data/maps/README.md" ]; then
+            cp data/maps/README.md "$DIST_DIR/data/maps/"
+          fi
+          
+          # Copy docs and license
+          cp README.md LICENSE AGENT.md "$DIST_DIR/" 2>/dev/null || true
+          cp -r docs "$DIST_DIR/" 2>/dev/null || true
+          
+          # Copy 1-Click Launchers
+          cp install.bat install.sh run.bat run.sh run.ps1 "$DIST_DIR/" 2>/dev/null || true
+          
+          # Create Friendly 1-Click Root Windows Launcher
+          cat << 'EOF' > "$DIST_DIR/Ether_Windows.bat"
+          @echo off
+          setlocal
+          cd /d "%~dp0"
+          title Ether Planetary Simulation
+          call run.bat %*
+          EOF
+          
+          # Create Friendly 1-Click Root Linux/Mac Launcher
+          cat << 'EOF' > "$DIST_DIR/Ether_Linux_Mac.sh"
+          #!/usr/bin/env bash
+          set -e
+          DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+          cd "$DIR"
+          chmod +x run.sh install.sh
+          ./run.sh "$@"
+          EOF
+          chmod +x "$DIST_DIR/Ether_Linux_Mac.sh" "$DIST_DIR/run.sh" "$DIST_DIR/install.sh"
+          
+          # Create ZIP and TAR.GZ archives
+          cd dist
+          zip -r "Ether-v${VERSION}-standalone.zip" "Ether-v${VERSION}-standalone"
+          tar -czf "Ether-v${VERSION}-standalone.tar.gz" "Ether-v${VERSION}-standalone"
+          
+          # Also package standalone fat jar as direct asset
+          cp "Ether-v${VERSION}-standalone/bin/ether.jar" "Ether-v${VERSION}-executable.jar"
+
+      - name: Generate Release Notes
+        id: release_notes
+        run: |
+          if [ -f "docs/posts/RELEASE_ANNOUNCEMENT.md" ]; then
+            cat docs/posts/RELEASE_ANNOUNCEMENT.md > RELEASE_NOTES.md
+          else
+            echo "# Ether ${{ steps.vars.outputs.tag }}" > RELEASE_NOTES.md
+            echo "Official Standalone Release of Ether Planetary Cliodynamics Engine." >> RELEASE_NOTES.md
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: "Ether ${{ steps.vars.outputs.tag }} — Standalone Planetary Engine"
+          body_path: RELEASE_NOTES.md
+          draft: ${{ github.event.inputs.draft || false }}
+          prerelease: ${{ github.event.inputs.prerelease || false }}
+          files: |
+            dist/Ether-v${{ steps.vars.outputs.version }}-standalone.zip
+            dist/Ether-v${{ steps.vars.outputs.version }}-standalone.tar.gz
+            dist/Ether-v${{ steps.vars.outputs.version }}-executable.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

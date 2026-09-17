@@ -1,6 +1,6 @@
 # Ether Simulation Platform — Security & Integrity Review
 
-> **Security & System Integrity Specification**: Audit report on memory safety, scenario deserialization, multithreading concurrency, deterministic execution integrity, and dependency vulnerability management for the Ether 2.0 simulation engine.
+> **Security & System Integrity Specification**: Audit report on memory safety, scenario deserialization, multithreading concurrency, deterministic execution integrity, and dependency vulnerability management for the Ether simulation engine.
 
 ---
 

@@ -6,7 +6,7 @@
 
 ## LinkedIn Post Content
 
-Excited to announce the public release of **Ether 2.0**: an open-source, physicalist **Planetary Cliodynamics Simulation Engine** designed to model human civilizational history, resource thermodynamics, and institutional collapse from 20,000 BC to the 22nd century.
+Excited to announce the public release of **Ether**: an open-source, physicalist **Planetary Cliodynamics Simulation Engine** designed to model human civilizational history, resource thermodynamics, and institutional collapse from 20,000 BC to the 22nd century.
 
 ### 🌐 The Vision: Grounding Social Dynamics in First-Principle Physics
 Human history cannot be understood in isolation from thermodynamics, geography, soil chemistry, and paleoclimatic shifts. Ether bridges the gap between planetary physical models (GCMs, hydrogeology, orbital mechanics) and macro-historical sociology (cliodynamics, demographic structural theory, economic growth).

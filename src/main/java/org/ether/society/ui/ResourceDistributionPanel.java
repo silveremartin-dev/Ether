@@ -1254,7 +1254,7 @@ public class ResourceDistributionPanel extends BorderPane {
         // View Mode Selector
         viewModeCombo = new ComboBox<>();
         viewModeCombo.getItems().addAll(
-                I18n.getOrDefault("resource.view.section_base", "────────── 11 CARTES CANONIQUES DE BASE ──────────"),
+                I18n.getOrDefault("resource.view.section_base", "────────── 12 CARTES CANONIQUES DE BASE ──────────"),
                 I18n.getOrDefault("resource.view.biomes", "🌿 1. Biomes & Couverture Végétale"),
                 I18n.getOrDefault("resource.view.hydro", "🌊 2. Hydrographie & Réseau Fluvial"),
                 I18n.getOrDefault("resource.view.coal", "⛏️ 3. Gisements de Charbon"),
@@ -1263,13 +1263,14 @@ public class ResourceDistributionPanel extends BorderPane {
                 I18n.getOrDefault("resource.view.uranium", "⚛️ 6. Minerais d'Uranium & Fission"),
                 I18n.getOrDefault("resource.view.helium3", "🌌 7. Hélium-3 & Fusion Lunaires"),
                 I18n.getOrDefault("resource.view.iron_copper", "⛓️ 8. Métaux Fer BIF & Cuivre"),
-                I18n.getOrDefault("resource.view.precious", "💎 9. Terres Rares & Métaux Précieux"),
-                I18n.getOrDefault("resource.view.heat", "🌋 10. Flux Thermique du Manteau"),
-                I18n.getOrDefault("resource.view.aquifer", "💧 11. Aquifères & Eau Douce"),
+                I18n.getOrDefault("resource.view.precious_metals", "💎 9. Métaux Précieux (Or, Argent, PGM)"),
+                I18n.getOrDefault("resource.view.rare_earths", "🔋 10. Terres Rares & Minéraux Critiques"),
+                I18n.getOrDefault("resource.view.heat", "🌋 11. Flux Thermique du Manteau"),
+                I18n.getOrDefault("resource.view.aquifer", "💧 12. Aquifères & Eau Douce"),
                 I18n.getOrDefault("resource.view.section_derived", "────────── CARTES DÉDUITES / ANOMALIES ──────────"),
-                I18n.getOrDefault("resource.view.temp", "🌡️ 12. Températures Surface & Microclimats"),
-                I18n.getOrDefault("resource.view.seismic", "🌋 13. Tectonique & Aléa Sismique/Volcanique"),
-                I18n.getOrDefault("resource.view.aridity", "🏜️ 14. Aridité & Salinisation des Sols")
+                I18n.getOrDefault("resource.view.temp", "🌡️ 13. Températures Surface & Microclimats"),
+                I18n.getOrDefault("resource.view.seismic", "🌋 14. Tectonique & Aléa Sismique/Volcanique"),
+                I18n.getOrDefault("resource.view.aridity", "🏜️ 15. Aridité & Salinisation des Sols")
         );
         viewModeCombo.setValue(viewModeCombo.getItems().get(1));
         viewModeCombo.setMaxWidth(380);
@@ -2257,11 +2258,35 @@ public class ResourceDistributionPanel extends BorderPane {
         {28.0, -12.5, 65, 1.5}, {75.0, 47.0, 65, 1.3}, {60.0, 56.0, 50, 1.2},
         {137.1, -4.0, 55, 1.4}, {106.8, 43.0, 55, 1.3}, {145.0, -32.0, 45, 1.1}
     };
-    private static final double[][] PRECIOUS_REE_SPOTS = {
-        {27.5, -25.5, 60, 1.5}, {109.9, 41.8, 65, 1.6}, {-67.5, -21.0, 65, 1.4},
-        {27.0, -26.5, 55, 1.3}, {-116.0, 40.8, 50, 1.3}, {122.5, -28.7, 50, 1.3},
-        {116.0, -33.8, 45, 1.2}, {64.6, 41.5, 50, 1.3}, {88.2, 69.3, 55, 1.4},
-        {-115.5, 35.5, 45, 1.2}, {-68.0, -23.5, 55, 1.4}
+    private static final double[][] PRECIOUS_METAL_SPOTS = {
+        {27.0, -26.5, 55, 1.8},  // Witwatersrand (South Africa - Giant Gold)
+        {29.0, -24.5, 50, 1.6},  // Bushveld Complex (South Africa - Platinum)
+        {-116.0, 40.8, 50, 1.5}, // Carlin Trend Nevada (USA - Gold)
+        {-65.7, -19.6, 55, 1.6}, // Potosí Cerro Rico (Bolivia - Silver)
+        {121.5, -30.7, 50, 1.4}, // Kalgoorlie Super Pit (Australia - Gold)
+        {64.6, 41.5, 50, 1.5},   // Muruntau Gold (Uzbekistan)
+        {88.2, 69.3, 55, 1.6},   // Norilsk-Talnakh PGMs (Russia)
+        {-81.0, 46.5, 45, 1.4},  // Sudbury Basin (Canada - PGMs/Au)
+        {-78.5, -7.0, 45, 1.4},  // Yanacocha (Peru - Gold)
+        {137.1, -4.0, 45, 1.5}   // Grasberg (Indonesia - Gold/Copper)
+    };
+    private static final double[][] RARE_EARTH_SPOTS = {
+        {109.9, 41.8, 65, 2.0},  // Bayan Obo (Inner Mongolia, China - Giant REE)
+        {-115.5, 35.5, 50, 1.5}, // Mountain Pass (California, USA - Bastnäsite)
+        {122.5, -28.7, 55, 1.6}, // Mount Weld (Western Australia - Carbonatite REE)
+        {-46.0, 60.9, 50, 1.5},  // Kvanefjeld / Ilímaussaq (Greenland - REE/U)
+        {116.5, 71.0, 50, 1.5},  // Tomtor (Yakutia, Russia - Carbonatite Nb/REE)
+        {34.6, 67.8, 45, 1.4},   // Lovozero (Kola Peninsula, Russia - Loparite REE)
+        {115.0, 25.5, 55, 1.7},  // Ganzhou / Jiangxi (South China - Heavy Ionic Clays)
+        {103.5, 22.4, 45, 1.3},  // Dong Pao (Vietnam - Bastnäsite)
+        {-46.9, -19.6, 48, 1.4}, // Araxá (Minas Gerais, Brazil - Carbonatite Nb/REE)
+        {-67.5, -21.0, 60, 1.6}, // Salar de Atacama (Chile - Lithium Brines)
+        {-68.0, -23.5, 55, 1.5}, // Salar de Uyuni (Bolivia - Lithium Brines)
+        {116.0, -33.8, 48, 1.4}, // Greenbushes (Australia - Spodumene Lithium)
+        {14.6, 58.1, 40, 1.2},   // Norra Kärr (Sweden - Heavy REE)
+        {20.2, 67.8, 42, 1.3},   // Kiruna / Per Geijer (Sweden - Apatite REE)
+        {-64.2, 56.3, 42, 1.3},  // Strange Lake (Quebec/Labrador, Canada)
+        {-112.6, 62.1, 42, 1.3}  // Nechalacho (NWT, Canada - REE/Zr)
     };
     private static final double[][] MANTLE_HEAT_SPOTS = {
         {-155.5, 19.8, 45, 1.4}, {-178.0, -29.0, 55, 1.3}, {-72.0, -15.0, 65, 1.4},
@@ -2300,8 +2325,9 @@ public class ResourceDistributionPanel extends BorderPane {
             case 3 -> lerpColorFx(Color.rgb(20, 83, 45), Color.rgb(74, 222, 128), val);   // Uranium (Emerald)
             case 4 -> lerpColorFx(Color.rgb(76, 29, 149), Color.rgb(192, 132, 252), val); // Helium-3 (Violet/Purple)
             case 5 -> lerpColorFx(Color.rgb(139, 69, 19), Color.rgb(249, 115, 22), val);  // Iron & Copper (Terracotta/Orange)
-            case 6 -> lerpColorFx(Color.rgb(161, 98, 7), Color.rgb(250, 204, 21), val);   // Precious Metals & REE (Gold)
-            case 7 -> lerpColorFx(Color.rgb(185, 28, 28), Color.rgb(253, 224, 71), val);  // Mantle Heat Flow (Red/Yellow)
+            case 6 -> lerpColorFx(Color.rgb(161, 98, 7), Color.rgb(250, 204, 21), val);   // Precious Metals (Radiant Gold)
+            case 7 -> lerpColorFx(Color.rgb(13, 148, 136), Color.rgb(45, 212, 191), val); // Rare Earths & Critical Minerals (Teal/Turquoise)
+            case 8 -> lerpColorFx(Color.rgb(185, 28, 28), Color.rgb(253, 224, 71), val);  // Mantle Heat Flow (Red/Yellow)
             default -> lerpColorFx(Color.rgb(30, 58, 138), Color.rgb(96, 165, 250), val); // Freshwater Aquifers (Azure/Sky)
         };
     }
@@ -2356,9 +2382,10 @@ public class ResourceDistributionPanel extends BorderPane {
             case 3 -> 6;  // URANIUM
             case 4 -> 7;  // HELIUM_3
             case 5 -> 8;  // IRON_COPPER
-            case 6 -> 9;  // PRECIOUS_REE
-            case 7 -> 10; // GEOTHERMAL (Heat Flux)
-            case 8 -> 11; // FRESHWATER_AQUIFERS
+            case 6 -> 9;  // PRECIOUS_METALS
+            case 7 -> 10; // CRITICAL_REE
+            case 8 -> 11; // GEOTHERMAL (Heat Flux)
+            case 9 -> 12; // FRESHWATER_AQUIFERS
             default -> 1;
         };
     }
@@ -2367,20 +2394,21 @@ public class ResourceDistributionPanel extends BorderPane {
         if (viewModeCombo == null) return 0;
         int selected = viewModeCombo.getSelectionModel().getSelectedIndex();
         return switch (selected) {
-            case 1 -> 0;  // 1. Biomes
-            case 2 -> 1;  // 2. Hydrography
-            case 3 -> 2;  // 3. Coal (Geology layer 0)
-            case 4 -> 3;  // 4. Oil (Geology layer 1)
-            case 5 -> 4;  // 5. Gas (Geology layer 2)
-            case 6 -> 5;  // 6. Uranium (Geology layer 3)
-            case 7 -> 6;  // 7. Helium-3 (Geology layer 4)
-            case 8 -> 7;  // 8. Iron & Copper (Geology layer 5)
-            case 9 -> 8;  // 9. Precious metals & REE (Geology layer 6)
-            case 10 -> 9; // 10. Mantle Heat Flux (Geology layer 7)
-            case 11 -> 10;// 11. Aquifers (Geology layer 8)
-            case 13 -> 11;// 12. Surface Temp & Microclimates
-            case 14 -> 12;// 13. Seismic & Volcanic Tectonism
-            case 15 -> 13;// 14. Aridity & Soil Salinization
+            case 1 -> 0;   // 1. Biomes
+            case 2 -> 1;   // 2. Hydrography
+            case 3 -> 2;   // 3. Coal (Geology layer 0)
+            case 4 -> 3;   // 4. Oil (Geology layer 1)
+            case 5 -> 4;   // 5. Gas (Geology layer 2)
+            case 6 -> 5;   // 6. Uranium (Geology layer 3)
+            case 7 -> 6;   // 7. Helium-3 (Geology layer 4)
+            case 8 -> 7;   // 8. Iron & Copper (Geology layer 5)
+            case 9 -> 8;   // 9. Precious metals (Geology layer 6)
+            case 10 -> 9;  // 10. Rare Earths & Critical Minerals (Geology layer 7)
+            case 11 -> 10; // 11. Mantle Heat Flux (Geology layer 8)
+            case 12 -> 11; // 12. Aquifers (Geology layer 9)
+            case 14 -> 12; // 13. Surface Temp & Microclimates
+            case 15 -> 13; // 14. Seismic & Volcanic Tectonism
+            case 16 -> 14; // 15. Aridity & Soil Salinization
             default -> 0;
         };
     }
@@ -2428,28 +2456,32 @@ public class ResourceDistributionPanel extends BorderPane {
             addLegendItem("LOW", Color.rgb(40, 30, 20), I18n.getOrDefault("resource.legend.iron_low", "Low Grade"));
             addLegendItem("MED", Color.rgb(180, 90, 20), I18n.getOrDefault("resource.legend.iron_med", "Banded Iron Formation"));
             addLegendItem("HIGH", Color.rgb(249, 115, 22), I18n.getOrDefault("resource.legend.iron_high", "Massive Iron & Copper Deposit"));
-        } else if (selectedIdx == 8) { // PRECIOUS METALS & REE (Mode 8)
-            addLegendItem("LOW", Color.rgb(40, 35, 10), I18n.getOrDefault("resource.legend.precious_low", "Gold/REE Traces"));
+        } else if (selectedIdx == 8) { // PRECIOUS METALS (Mode 8)
+            addLegendItem("LOW", Color.rgb(40, 35, 10), I18n.getOrDefault("resource.legend.precious_low", "Gold/Silver Traces"));
             addLegendItem("MED", Color.rgb(170, 130, 20), I18n.getOrDefault("resource.legend.precious_med", "Placer & Gold Vein"));
-            addLegendItem("HIGH", Color.rgb(234, 179, 8), I18n.getOrDefault("resource.legend.precious_high", "Major Rare Earth Basin"));
-        } else if (selectedIdx == 9) { // MANTLE HEAT FLUX (Mode 9)
+            addLegendItem("HIGH", Color.rgb(234, 179, 8), I18n.getOrDefault("resource.legend.precious_high", "Giant Gold/Silver Deposit"));
+        } else if (selectedIdx == 9) { // RARE EARTHS & CRITICAL MINERALS (Mode 9)
+            addLegendItem("LOW", Color.rgb(10, 35, 35), I18n.getOrDefault("resource.legend.ree_low", "REE/Li Traces"));
+            addLegendItem("MED", Color.rgb(20, 120, 110), I18n.getOrDefault("resource.legend.ree_med", "Carbonatite / Salar"));
+            addLegendItem("HIGH", Color.rgb(45, 212, 191), I18n.getOrDefault("resource.legend.ree_high", "Major Rare Earth Basin (Bayan Obo)"));
+        } else if (selectedIdx == 10) { // MANTLE HEAT FLUX (Mode 10)
             addLegendItem("LOW", Color.rgb(40, 40, 60), I18n.getOrDefault("resource.legend.heat_low", "Inert / Stable Craton"));
             addLegendItem("MED", Color.rgb(180, 80, 30), I18n.getOrDefault("resource.legend.heat_med", "Mean Geothermal Flux"));
             addLegendItem("HIGH", Color.rgb(240, 20, 20), I18n.getOrDefault("resource.legend.heat_high", "High Magmatism & Tectonic Rifts"));
-        } else if (selectedIdx == 10) { // AQUIFERS & FRESHWATER (Mode 10)
+        } else if (selectedIdx == 11) { // AQUIFERS & FRESHWATER (Mode 11)
             addLegendItem("LOW", Color.rgb(20, 40, 80), I18n.getOrDefault("resource.legend.aquifer_low", "Arid / Dry"));
             addLegendItem("MED", Color.rgb(40, 120, 200), I18n.getOrDefault("resource.legend.aquifer_med", "Moderate Aquifer"));
             addLegendItem("HIGH", Color.rgb(0, 220, 255), I18n.getOrDefault("resource.legend.aquifer_high", "Giant Basin Aquifer"));
-        } else if (selectedIdx == 11) { // SURFACE TEMPERATURE & MICROCLIMATES
+        } else if (selectedIdx == 12) { // SURFACE TEMPERATURE & MICROCLIMATES
             addLegendItem("POLAR", Color.rgb(35, 120, 230), I18n.getOrDefault("resource.legend.temp_polar", "Polar / Glacial (< 0°C)"));
             addLegendItem("TEMPERATE", Color.rgb(80, 200, 120), I18n.getOrDefault("resource.legend.temp_temperate", "Temperate (10°C - 22°C)"));
             addLegendItem("TROPICAL", Color.rgb(250, 130, 20), I18n.getOrDefault("resource.legend.temp_tropical", "Tropical / Warm (22°C - 34°C)"));
             addLegendItem("TORRID", Color.rgb(245, 20, 40), I18n.getOrDefault("resource.legend.temp_torrid", "Torrid Extreme (> 34°C)"));
-        } else if (selectedIdx == 12) { // SEISMIC & VOLCANIC TECTONISM
+        } else if (selectedIdx == 13) { // SEISMIC & VOLCANIC TECTONISM
             addLegendItem("QUIET", Color.rgb(40, 45, 55), I18n.getOrDefault("resource.legend.seismic_quiet", "Stable Shield / Craton"));
             addLegendItem("MODERATE", Color.rgb(200, 100, 30), I18n.getOrDefault("resource.legend.seismic_med", "Active Fault / Orogeny"));
             addLegendItem("HIGH", Color.rgb(245, 30, 30), I18n.getOrDefault("resource.legend.seismic_high", "Subduction & Volcanic Arc"));
-        } else if (selectedIdx == 13) { // ARIDITY & SOIL SALINIZATION
+        } else if (selectedIdx == 14) { // ARIDITY & SOIL SALINIZATION
             addLegendItem("HUMID", Color.rgb(30, 140, 160), I18n.getOrDefault("resource.legend.aridity_humid", "Humid / Fertile Soils"));
             addLegendItem("SEMI_ARID", Color.rgb(210, 150, 50), I18n.getOrDefault("resource.legend.aridity_semi", "Semi-Arid Steppe"));
             addLegendItem("HYPER_ARID", Color.rgb(230, 60, 20), I18n.getOrDefault("resource.legend.aridity_hyper", "Hyper-Arid Salt Desert"));
@@ -2659,7 +2691,7 @@ public class ResourceDistributionPanel extends BorderPane {
                             pxColor = Color.rgb(r, g, b);
                         }
                     }
-                } else if (mode >= 2 && mode <= 10) { // GEOLOGICAL & ENERGY TENSORS (Modes 2..10)
+                } else if (mode >= 2 && mode <= 11) { // GEOLOGICAL & ENERGY TENSORS (Modes 2..11 for Layers 0..9)
                     int layerIdx = mode - 2;
                     boolean useImport = (geologyImportRadios.get(layerIdx) != null && geologyImportRadios.get(layerIdx).isSelected())
                             || (customGeologyLayerImages.containsKey(layerIdx) && customGeologyLayerImages.get(layerIdx) != null);
@@ -2689,7 +2721,7 @@ public class ResourceDistributionPanel extends BorderPane {
                             pxColor = baseBackground;
                         }
                     }
-                } else if (mode == 11) { // SURFACE TEMPERATURE & MICROCLIMATES
+                } else if (mode == 12) { // SURFACE TEMPERATURE & MICROCLIMATES
                     var point = generator.getPlanetPoint(lat, lon, planet);
                     double tempC = point.temperature();
                     double tNorm = Math.clamp((tempC + 25.0) / 70.0, 0.0, 1.0);
@@ -2713,8 +2745,8 @@ public class ResourceDistributionPanel extends BorderPane {
                     } else {
                         pxColor = tColor;
                     }
-                } else if (mode == 12) { // SEISMIC & VOLCANIC TECTONISM
-                    double heatVal = sampleProceduralGeologyTensor(7, lon, lat, planet);
+                } else if (mode == 13) { // SEISMIC & VOLCANIC TECTONISM
+                    double heatVal = sampleProceduralGeologyTensor(8, lon, lat, planet);
                     double sLevel = planet.seismicActivityLevel() / 10.0;
                     double vLevel = planet.volcanicActivityLevel() / 8.0;
 
@@ -2730,7 +2762,7 @@ public class ResourceDistributionPanel extends BorderPane {
                         int b = (int) (55 + (1.0 - risk) * 20);
                         pxColor = Color.rgb(r, g, b);
                     }
-                } else { // Mode 13: ARIDITY & SOIL SALINIZATION
+                } else { // Mode 14: ARIDITY & SOIL SALINIZATION
                     if (!isLandHere) {
                         pxColor = Color.rgb(15, 23, 42); // Clean ocean basemap (No aridity/salinity at sea)
                     } else {
@@ -2781,8 +2813,9 @@ public class ResourceDistributionPanel extends BorderPane {
             case 3 -> URANIUM_SPOTS;
             case 4 -> HE3_SPOTS;
             case 5 -> IRON_COPPER_SPOTS;
-            case 6 -> PRECIOUS_REE_SPOTS;
-            case 7 -> MANTLE_HEAT_SPOTS;
+            case 6 -> PRECIOUS_METAL_SPOTS;
+            case 7 -> RARE_EARTH_SPOTS;
+            case 8 -> MANTLE_HEAT_SPOTS;
             default -> AQUIFER_SPOTS;
         };
 
@@ -2850,20 +2883,26 @@ public class ResourceDistributionPanel extends BorderPane {
                 double magmaticPorphyry = p2 * 1.2 * n2 * (p4 / 0.8);
                 combined = (baseVal * 0.4 + bifLayer * 0.3 + magmaticPorphyry * 0.3) * p1;
             }
-            case 6 -> { // PRECIOUS_REE
-                double salarLi = p2 * 1.2 * (n1 > 0.5 ? 1.0 : 0.1);
-                double carbonatite = p3 * 1.5 * (n2 > 0.7 ? 1.5 : 0.2);
-                double spodumene = (p4 / 1.5) * 0.5;
-                combined = (baseVal * 0.4 + salarLi * 0.2 + carbonatite * 0.2 + spodumene * 0.2) * p1;
+            case 6 -> { // PRECIOUS_METALS (Au, Ag, Pt)
+                double placer = p2 * 1.2 * (n1 > 0.4 ? 1.2 : 0.2);
+                double epithermal = p3 * 1.4 * (n2 > 0.5 ? 1.5 : 0.3);
+                double porphyryAu = (p4 / 2.0) * 0.6;
+                combined = (baseVal * 0.45 + placer * 0.25 + epithermal * 0.2 + porphyryAu * 0.1) * p1;
             }
-            case 7 -> { // MANTLE_HEAT
+            case 7 -> { // CRITICAL_REE (Terres Rares, Bastnasite, Li)
+                double carbonatite = p2 * 1.5 * (n1 > 0.6 ? 1.6 : 0.2);
+                double salarLi = p3 * 1.3 * (n2 > 0.5 ? 1.2 : 0.1);
+                double spodumene = (p4 / 1.5) * 0.5;
+                combined = (baseVal * 0.4 + carbonatite * 0.25 + salarLi * 0.2 + spodumene * 0.15) * p1;
+            }
+            case 8 -> { // MANTLE_HEAT
                 double heatNorm = p1 / 65.0;
                 double plumeAnomalies = 1.0 + p2 * 1.5 * n1;
                 double cratonInsulation = Math.clamp(1.0 - (p3 - 150.0) / 300.0, 0.3, 1.5);
                 double radiogenicCrust = 0.8 + (p4 / 1.2) * 0.4 * n2;
                 combined = (baseVal * 0.4 + n1 * 0.6) * heatNorm * plumeAnomalies * cratonInsulation * radiogenicCrust;
             }
-            default -> { // FRESHWATER_AQUIFERS (8)
+            default -> { // FRESHWATER_AQUIFERS (9)
                 double capNorm = p1 / 1.0;
                 double hydraulicCond = 0.5 + p2 * 0.8;
                 double porosityFactor = p3 / 18.0;
@@ -3335,6 +3374,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 "helium3",
                 "iron_copper",
                 "precious_metals",
+                "rare_earths",
                 "geothermal",
                 "aquifers"
             };
@@ -3353,7 +3393,8 @@ public class ResourceDistributionPanel extends BorderPane {
                         case 4 -> HistoricalMapGenerator.generateCleanHelium3Map(body.toUpperCase(), null);
                         case 5 -> HistoricalMapGenerator.generateCleanIronCopperMap(body.toUpperCase(), null);
                         case 6 -> HistoricalMapGenerator.generateCleanPreciousMetalsMap(body.toUpperCase(), null);
-                        case 7 -> HistoricalMapGenerator.generateCleanMantleHeatMap(body.toUpperCase(), null);
+                        case 7 -> HistoricalMapGenerator.generateCleanRareEarthsMap(body.toUpperCase(), null);
+                        case 8 -> HistoricalMapGenerator.generateCleanMantleHeatMap(body.toUpperCase(), null);
                         default -> HistoricalMapGenerator.generateCleanAquiferMap(body.toUpperCase(), null);
                     };
                     if (bImg != null) {
@@ -3362,7 +3403,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 }
             }
 
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < 10; i++) {
                 if (geologyFileLabels.containsKey(i)) {
                     geologyFileLabels.get(i).setText(getGeologyBaselineName(i, body));
                 }
@@ -3485,9 +3526,10 @@ public class ResourceDistributionPanel extends BorderPane {
             case 3 -> I18n.getOrDefault("resource.tensor.4.title", "⚛️ 4.4 Uranium & Fission Ores (URANIUM — IAEA UDEPO)");
             case 4 -> I18n.getOrDefault("resource.tensor.5.title", "🌌 4.5 Lunar Helium-3 & Fusion (HELIUM_3 — NASA / LPI)");
             case 5 -> I18n.getOrDefault("resource.tensor.6.title", "⛓️ 4.6 Industrial Metals BIF Iron & Copper (IRON_COPPER)");
-            case 6 -> I18n.getOrDefault("resource.tensor.7.title", "💎 4.7 Rare Earths, Lithium Brines & Spodumene (PRECIOUS_REE / Li)");
-            case 7 -> I18n.getOrDefault("resource.tensor.8.title", "🌋 4.8 Mantle Heat Flow & Geothermal (MANTLE_HEAT — IHFC / Davies 2013)");
-            case 8 -> I18n.getOrDefault("resource.tensor.9.title", "💧 4.9 Deep Aquifers & Groundwater (FRESHWATER_AQUIFERS — WHYMAP)");
+            case 6 -> I18n.getOrDefault("resource.tensor.7.title", "💎 4.7 Precious Metals & Bullion (PRECIOUS_METALS — USGS MRDS)");
+            case 7 -> I18n.getOrDefault("resource.tensor.8.title", "🔋 4.8 Rare Earths & Critical Minerals (CRITICAL_REE — USGS REE/Salars)");
+            case 8 -> I18n.getOrDefault("resource.tensor.9.title", "🌋 4.9 Mantle Heat Flow & Geothermal (MANTLE_HEAT — IHFC / Davies 2013)");
+            case 9 -> I18n.getOrDefault("resource.tensor.10.title", "💧 4.10 Deep Aquifers & Groundwater (FRESHWATER_AQUIFERS — WHYMAP)");
             default -> I18n.getOrDefault("resource.tensor.custom.title_prefix", "⛏️ 4.") + (index + 1) + I18n.getOrDefault("resource.tensor.custom.title_mid", " Tenseur Géologique ") + (index + 1);
         };
     }
@@ -3500,9 +3542,10 @@ public class ResourceDistributionPanel extends BorderPane {
             case 3 -> I18n.getOrDefault("resource.tensor.4.desc", "Pitchblende concentration and uranium/thorium deposits. Source: IAEA UDEPO / NFCIS.");
             case 4 -> I18n.getOrDefault("resource.tensor.5.desc", "Regolith enriched in Helium-3 (lunar basin & planetary deposits). Source: NASA PDS / LPI.");
             case 5 -> I18n.getOrDefault("resource.tensor.6.desc", "Banded iron formations (BIF) and porphyry copper deposits. Source: USGS Mineral Resources Program.");
-            case 6 -> I18n.getOrDefault("resource.tensor.7.desc", "Gold, platinum, rare earth element (REE) deposits, and lithium salars. Source: USGS REE / Salars.");
-            case 7 -> I18n.getOrDefault("resource.tensor.8.desc", "Geothermal mantle heat flux (mW/m²). Source: IHFC / Davies 2013 Global Heat Flow.");
-            case 8 -> I18n.getOrDefault("resource.tensor.9.desc", "Deep groundwater tables and large fossil aquifers. Source: UNESCO WHYMAP.");
+            case 6 -> I18n.getOrDefault("resource.tensor.7.desc", "Gold (Au), Silver (Ag), Platinum (Pt), and Palladium (Pd) deposits. Source: USGS MRDS.");
+            case 7 -> I18n.getOrDefault("resource.tensor.8.desc", "Rare Earth Elements (REE, Neodymium, Dysprosium), Bastnäsite, Monazite, and Lithium brines/spodumene. Source: USGS REE.");
+            case 8 -> I18n.getOrDefault("resource.tensor.9.desc", "Geothermal mantle heat flux (mW/m²). Source: IHFC / Davies 2013 Global Heat Flow.");
+            case 9 -> I18n.getOrDefault("resource.tensor.10.desc", "Deep groundwater tables and large fossil aquifers. Source: UNESCO WHYMAP.");
             default -> I18n.getOrDefault("resource.tensor.custom.desc", "Extensible geological layer.");
         };
     }
@@ -3558,20 +3601,27 @@ public class ResourceDistributionPanel extends BorderPane {
                 default -> "USGS Mineral Resources BIF Iron & Copper (Earth Baseline)";
             };
             case 6 -> switch (body) {
+                case "mars" -> "Mars Hydrothermal Quartz & Precious Metals (Mars)";
+                case "moon" -> "Lunar Impact Siderophile & Native Platinum (Moon)";
+                case "venus" -> "Venus Metallic Telluride Frosts (Venus Baseline)";
+                case "mercury" -> "Mercury Core-Mantle Precious Metals (Mercury Baseline)";
+                default -> "USGS MRDS Precious Metals Au/Ag/Pt (Earth Baseline)";
+            };
+            case 7 -> switch (body) {
                 case "mars" -> "Mars Hydrothermal REE & Heavy Minerals (Mars Baseline)";
                 case "moon" -> "Lunar KREEP Basalts & Rare Earths (Moon Baseline)";
-                case "venus" -> "Venus Heavy Metal Radar-Reflective Frosts (Venus Baseline)";
+                case "venus" -> "Venus Alkaline Magmatic REE Frosts (Venus Baseline)";
                 case "mercury" -> "MESSENGER Magmatic Sulfides & REE (Mercury Baseline)";
                 default -> "USGS REE & Lithium Salars (Earth Baseline)";
             };
-            case 7 -> switch (body) {
+            case 8 -> switch (body) {
                 case "mars" -> "Mars InSight Seismic & Crustal Heat Flow (Mars Baseline)";
                 case "moon" -> "Apollo 15/17 Lunar Heat Flow Experiment (Moon Baseline)";
                 case "venus" -> "Venus Magellan Coronae & Mantle Plumes (Venus Baseline)";
                 case "mercury" -> "MESSENGER Core Conduction & Residual Heat (Mercury Baseline)";
                 default -> "IHFC / Davies 2013 Global Heat Flow (Earth Baseline)";
             };
-            case 8 -> switch (body) {
+            case 9 -> switch (body) {
                 case "mars" -> "Mars Express / MARSIS Radar Subsurface Ice (Mars Baseline)";
                 case "moon" -> "LRO / LCROSS Polar Cold Trap Ice (Moon Baseline)";
                 case "venus" -> "Venus Desiccated Subsurface (Trace Vapor)";
@@ -3590,9 +3640,10 @@ public class ResourceDistributionPanel extends BorderPane {
             case 3 -> I18n.getOrDefault("resource.tensor.4.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 ppm | White (255) = 1,000 ppm U (IAEA UDEPO / NFCIS)");
             case 4 -> I18n.getOrDefault("resource.tensor.5.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 ppb | White (255) = 100 ppb He-3 (NASA PDS / Lunar Prospector)");
             case 5 -> I18n.getOrDefault("resource.tensor.6.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 Gt | White (255) = 5.0 Gt (USGS Mineral Resources / BIF)");
-            case 6 -> I18n.getOrDefault("resource.tensor.7.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 Mt | White (255) = 5.0 Mt (USGS REE / Salars & Carbonatites)");
-            case 7 -> I18n.getOrDefault("resource.tensor.8.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 20 mW/m² | White (255) = 250 mW/m² (IHFC / Davies 2013)");
-            case 8 -> I18n.getOrDefault("resource.tensor.9.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 10³ km³ | White (255) = 5.0 10³ km³ (UNESCO / WHYMAP)");
+            case 6 -> I18n.getOrDefault("resource.tensor.7.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 kt | White (255) = 1,000 kt Au/Ag/Pt (USGS MRDS)");
+            case 7 -> I18n.getOrDefault("resource.tensor.8.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 Mt | White (255) = 5.0 Mt REE/Li (USGS REE & Salars)");
+            case 8 -> I18n.getOrDefault("resource.tensor.9.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 20 mW/m² | White (255) = 250 mW/m² (IHFC / Davies 2013)");
+            case 9 -> I18n.getOrDefault("resource.tensor.10.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 10³ km³ | White (255) = 5.0 10³ km³ (UNESCO / WHYMAP)");
             default -> I18n.getOrDefault("resource.hint.geo_format", "PNG / GeoTIFF image in 2:1 equirectangular projection");
         };
     }
@@ -3645,20 +3696,27 @@ public class ResourceDistributionPanel extends BorderPane {
                 "⚪ Mercure — MESSENGER High-Iron Crust & Regolith (NASA)"
             );
             case 6 -> combo.getItems().addAll(
+                "🌍 Terre — USGS MRDS Precious Metals Au/Ag/PGM (Composite)",
+                "🔴 Mars — Hydrothermal Quartz & Native Gold Model (NASA)",
+                "🟡 Vénus — Heavy Metallic Pyrite & Telluride Frosts (NASA)",
+                "⚪ Lune — Impact Siderophile & Native Platinum Traces (NASA)",
+                "⚪ Mercure — Core-Mantle Precious Metals & Sulfides (NASA)"
+            );
+            case 7 -> combo.getItems().addAll(
                 "🌍 Terre — USGS Rare Earth Elements & Salars (Composite)",
                 "🔴 Mars — Acid Fog & Hydrothermal REE Model (NASA)",
-                "🟡 Vénus — Magellan Radar Heavy Metal Frosts (Bi/Pb - NASA)",
+                "🟡 Vénus — Alkaline Carbonatites & REE Model (NASA)",
                 "⚪ Lune — KREEP Basalts & Rare Earth Elements (NASA)",
                 "⚪ Mercure — Magmatic Sulfide & REE Model (NASA)"
             );
-            case 7 -> combo.getItems().addAll(
+            case 8 -> combo.getItems().addAll(
                 "🌍 Terre — IHFC / Davies Global Crustal Heat Flow (Composite)",
                 "🔴 Mars — InSight Crustal Heat Flow & Volcanic Plumes (NASA)",
                 "🟡 Vénus — Magellan Coronae & Mantle Plumes (NASA)",
                 "⚪ Lune — Apollo 15/17 Lunar Heat Flow Experiment (NASA)",
                 "⚪ Mercure — MESSENGER Core Conduction & Residual Heat (NASA)"
             );
-            case 8 -> combo.getItems().addAll(
+            case 9 -> combo.getItems().addAll(
                 "🌍 Terre — UNESCO / WHYMAP Global Groundwater Aquifers (Composite)",
                 "🔴 Mars — Mars Express MARSIS Subsurface Ice (ESA)",
                 "🟡 Vénus — Atmospheric Supercritical Vapor (Desiccated Crust)",
@@ -3688,7 +3746,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 else if (valLow.contains("venus")) body = "venus";
                 else if (valLow.contains("mercury") || valLow.contains("messenger")) body = "mercury";
 
-                String[] layerNames = {"coal", "oil", "gas", "uranium", "helium3", "iron_copper", "precious_metals", "geothermal", "aquifers"};
+                String[] layerNames = {"coal", "oil", "gas", "uranium", "helium3", "iron_copper", "precious_metals", "rare_earths", "geothermal", "aquifers"};
                 String fileName = body + "_" + layerNames[index] + ".png";
                 Image img = ImageMapLoader.loadMapImage(fileName);
                 if (img != null) {
@@ -3790,26 +3848,33 @@ public class ResourceDistributionPanel extends BorderPane {
             new TensorSliderMeta("resource.tensor.6.param3", "Précipitation Archéenne BIF (O₂ Indice)", "resource.tensor.6.param3.tt", "Événement de Grande Oxydation (GOE) précipitant le fer dissous océanique sous forme d'hématite.", 0.0, 1.0, 0.60, "Indice O₂", "%.2f"),
             new TensorSliderMeta("resource.tensor.6.param4", "Teneur Cuivre Porphyrique", "resource.tensor.6.param4.tt", "Teneur moyenne en cuivre du minerai brut (% massique de Cu). Porphyres géants: 0.4%-2.5% Cu.", 0.1, 3.0, 0.8, "% Cu", "%.1f %% Cu")
         },
-        // Tensor 4.7: PRECIOUS_REE
+        // Tensor 4.7: PRECIOUS_METALS
         {
-            new TensorSliderMeta("resource.tensor.7.param1", "Abondance Terres Rares & Précieux", "resource.tensor.7.param1.tt", "Volume de Terres Rares (Nd, Dy, Y), Lithium, Or et Platine en Megatonnes d'oxydes et métaux (Mt).", 0.1, 5.0, 1.0, "Mt", "%.2f Mt"),
-            new TensorSliderMeta("resource.tensor.7.param2", "Concentration Salars Lithium", "resource.tensor.7.param2.tt", "Enrichissement évaporitique des saumures de Lithium (Li⁺) dans les salars continentaux.", 0.0, 1.0, 0.40, "%", "%.0f %%"),
-            new TensorSliderMeta("resource.tensor.7.param3", "Intrusions Carbonatites & Alcalines", "resource.tensor.7.param3.tt", "Fréquence des dykes de carbonatite et roches alcalines concentrant la monazite et bastnäsite.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
-            new TensorSliderMeta("resource.tensor.7.param4", "Pegmatites Spodumène", "resource.tensor.7.param4.tt", "Concentration de Lithium roche-dur dans les filons pegmatitiques à spodumène (% Li₂O).", 0.1, 5.0, 1.5, "% Li₂O", "%.1f %% Li₂O")
+            new TensorSliderMeta("resource.tensor.7.param1", "Abondance Métaux Précieux (Au, Ag, Pt)", "resource.tensor.7.param1.tt", "Masse totale d'Or, Argent et métaux du groupe du platine (PGM) exploitables (kt).", 0.1, 5.0, 1.0, "kt", "%.2f kt"),
+            new TensorSliderMeta("resource.tensor.7.param2", "Placers Alluvionnaires & Paléoplacers", "resource.tensor.7.param2.tt", "Concentration mécanique par érosion fluviatile et paléoconglomérats aurifères (type Witwatersrand).", 0.0, 1.0, 0.45, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.7.param3", "Filons Épithermaux & Orogéniques", "resource.tensor.7.param3.tt", "Densité des filons hydrothermaux de quartz aurifère liés aux orogenèses et zones de cisaillement.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.7.param4", "Complexes Ignés Stratifiés (PGM)", "resource.tensor.7.param4.tt", "Intrusions mafiques et ultramafiques différenciées riches en platine et palladium (type Bushveld).", 0.0, 1.0, 0.40, "Indice", "%.2f")
         },
-        // Tensor 4.8: MANTLE_HEAT
+        // Tensor 4.8: CRITICAL_REE
         {
-            new TensorSliderMeta("resource.tensor.8.param1", "Flux Thermique Manteau", "resource.tensor.8.param1.tt", "Dissipation thermique conductive moyenne à travers la croûte planétaire en mW/m².", 20.0, 250.0, 65.0, "mW/m²", "%.0f mW/m²"),
-            new TensorSliderMeta("resource.tensor.8.param2", "Intensité Plumes & Rifts Tectoniques", "resource.tensor.8.param2.tt", "Multiplicateur d'anomalie thermique aux limites de plaques divergentes et plumes mantelliques.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
-            new TensorSliderMeta("resource.tensor.8.param3", "Épaisseur Cratons Lithosphériques", "resource.tensor.8.param3.tt", "Épaisseur de la racine cratonique continentale isolant le flux thermique de surface.", 30.0, 300.0, 150.0, "km", "%.0f km"),
-            new TensorSliderMeta("resource.tensor.8.param4", "Chaleur Radiogénique Crustale", "resource.tensor.8.param4.tt", "Production de chaleur par désintégration radioactive de K, U, Th dans la croûte supérieure.", 0.1, 5.0, 1.2, "µW/m³", "%.1f µW/m³")
+            new TensorSliderMeta("resource.tensor.8.param1", "Abondance Terres Rares & Lithium", "resource.tensor.8.param1.tt", "Volume total d'oxydes de terres rares (TREO) et de carbonate de lithium équivalent (LCE) (Mt).", 0.1, 5.0, 1.0, "Mt", "%.2f Mt"),
+            new TensorSliderMeta("resource.tensor.8.param2", "Concentration Salars & Saumures Li", "resource.tensor.8.param2.tt", "Enrichissement évaporitique des saumures de Lithium (Li⁺) dans les dépressions endoréiques et salars.", 0.0, 1.0, 0.40, "%", "%.0f %%"),
+            new TensorSliderMeta("resource.tensor.8.param3", "Carbonatites & Roches Alcalines (REE)", "resource.tensor.8.param3.tt", "Fréquence des complexes de carbonatite concentrant bastnäsite, monazite et néodyme/praséodyme.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.8.param4", "Pegmatites à Spodumène & Clays", "resource.tensor.8.param4.tt", "Filons pegmatitiques LCT (Lithium-Césium-Tantale) et argiles ioniques d'altération latéritique.", 0.1, 5.0, 1.5, "% Li₂O", "%.1f %% Li₂O")
         },
-        // Tensor 4.9: FRESHWATER_AQUIFERS
+        // Tensor 4.9: MANTLE_HEAT
         {
-            new TensorSliderMeta("resource.tensor.9.param1", "Capacité Aquifères Subsurface", "resource.tensor.9.param1.tt", "Volume total d'eau douce souterraine emmagasinée dans les nappes phréatiques et bassins fossiles (10³ km³).", 0.1, 5.0, 1.0, "10³ km³", "%.2f 10³ km³"),
-            new TensorSliderMeta("resource.tensor.9.param2", "Conductivité Hydraulique / Perméabilité", "resource.tensor.9.param2.tt", "Perméabilité de la roche aquifère permettant la vitesse de recharge et d'écoulement sous gravité.", 0.0, 1.0, 0.40, "Indice", "%.2f"),
-            new TensorSliderMeta("resource.tensor.9.param3", "Porosité Roches Réservoirs", "resource.tensor.9.param3.tt", "Pourcentage de vides interstitiels dans les grès et calcaires retenant l'eau sous pression.", 5.0, 35.0, 18.0, "%", "%.1f %%"),
-            new TensorSliderMeta("resource.tensor.9.param4", "Profondeur Permafrost / Cryosphère", "resource.tensor.9.param4.tt", "Épaisseur du sol gelé en permanence (permafrost) scellant les aquifères liquides sous-jacents.", 0.0, 2000.0, 300.0, "m", "%.0f m")
+            new TensorSliderMeta("resource.tensor.9.param1", "Flux Thermique Manteau", "resource.tensor.9.param1.tt", "Dissipation thermique conductive moyenne à travers la croûte planétaire en mW/m².", 20.0, 250.0, 65.0, "mW/m²", "%.0f mW/m²"),
+            new TensorSliderMeta("resource.tensor.9.param2", "Intensité Plumes & Rifts Tectoniques", "resource.tensor.9.param2.tt", "Multiplicateur d'anomalie thermique aux limites de plaques divergentes et plumes mantelliques.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.9.param3", "Épaisseur Cratons Lithosphériques", "resource.tensor.9.param3.tt", "Épaisseur de la racine cratonique continentale isolant le flux thermique de surface.", 30.0, 300.0, 150.0, "km", "%.0f km"),
+            new TensorSliderMeta("resource.tensor.9.param4", "Chaleur Radiogénique Crustale", "resource.tensor.9.param4.tt", "Production de chaleur par désintégration radioactive de K, U, Th dans la croûte supérieure.", 0.1, 5.0, 1.2, "µW/m³", "%.1f µW/m³")
+        },
+        // Tensor 4.10: FRESHWATER_AQUIFERS
+        {
+            new TensorSliderMeta("resource.tensor.10.param1", "Capacité Aquifères Subsurface", "resource.tensor.10.param1.tt", "Volume total d'eau douce souterraine emmagasinée dans les nappes phréatiques et bassins fossiles (10³ km³).", 0.1, 5.0, 1.0, "10³ km³", "%.2f 10³ km³"),
+            new TensorSliderMeta("resource.tensor.10.param2", "Conductivité Hydraulique / Perméabilité", "resource.tensor.10.param2.tt", "Perméabilité de la roche aquifère permettant la vitesse de recharge et d'écoulement sous gravité.", 0.0, 1.0, 0.40, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.10.param3", "Porosité Roches Réservoirs", "resource.tensor.10.param3.tt", "Pourcentage de vides interstitiels dans les grès et calcaires retenant l'eau sous pression.", 5.0, 35.0, 18.0, "%", "%.1f %%"),
+            new TensorSliderMeta("resource.tensor.10.param4", "Profondeur Permafrost / Cryosphère", "resource.tensor.10.param4.tt", "Épaisseur du sol gelé en permanence (permafrost) scellant les aquifères liquides sous-jacents.", 0.0, 2000.0, 300.0, "m", "%.0f m")
         }
     };
 
@@ -3817,7 +3882,7 @@ public class ResourceDistributionPanel extends BorderPane {
         if (geologyLayersDynamicContainer == null) return;
         geologyLayersDynamicContainer.getChildren().clear();
 
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < GEOLOGY_SLIDER_SPECS.length; i++) {
             final int layerIdx = i;
 
             VBox subBlock = new VBox(6);
@@ -4038,7 +4103,9 @@ public class ResourceDistributionPanel extends BorderPane {
             case 3 -> new java.awt.Color(34, 197, 94);   // Uranium
             case 4 -> new java.awt.Color(168, 85, 247);  // Helium-3
             case 5 -> new java.awt.Color(217, 119, 6);   // Iron & Copper
-            case 6 -> new java.awt.Color(234, 179, 8);   // Precious Metals & REE
+            case 6 -> new java.awt.Color(234, 179, 8);   // Precious Metals (Gold)
+            case 7 -> new java.awt.Color(20, 184, 166);  // Rare Earths & Lithium (Teal)
+            case 8 -> new java.awt.Color(225, 29, 72);   // Mantle Heat Flow (Red-Pink)
             default -> new java.awt.Color(14, 165, 233); // Aquifers
         };
     }

@@ -1,8 +1,8 @@
-# Global Systemic Simulation Models: Comparative Analysis of Ether v4.0 vs. T21/iSDG, IFs, IMAGE, GAINS, and Post-World3 Models
+# Global Systemic Simulation Models: Comparative Analysis of Ether vs. T21/iSDG, IFs, IMAGE, GAINS, and Post-World3 Models
 
 > **Reference & Comparative Analysis Document**  
 > *Prepared for the Ether Project — Human-Planetary Cliodynamic and Thermodynamic Simulation*  
-> **Status**: Official | **Target Version**: Ether v4.0.0
+> **Status**: Official | **Target Version**: Ether.0
 
 ---
 
@@ -14,7 +14,7 @@ Planetary-scale human and ecological systems modeling has historically been domi
 - **Bio-geophysical Integrated Assessment Models (IAMs)** for environmental and climate policies (IMAGE, GAINS),
 - **Post-World3 physical and macro-financial extensions** (World-Dynamo, Earth4All).
 
-**Ether (v4.0)** builds upon this heritage while introducing a fundamental paradigm shift: abandoning abstract geopolitical aggregations (countries, continents, or single-box "world" models) in favor of **a physicalist, thermodynamic, and cliodynamic simulation distributed across a planetary hexagonal spatial grid (Uber H3)**.
+**Ether** builds upon this heritage while introducing a fundamental paradigm shift: abandoning abstract geopolitical aggregations (countries, continents, or single-box "world" models) in favor of **a physicalist, thermodynamic, and cliodynamic simulation distributed across a planetary hexagonal spatial grid (Uber H3)**.
 
 This document presents an in-depth analysis of Ether's objectives, strengths, and limitations alongside the global pillars of macro-systemic simulation.
 
@@ -22,7 +22,7 @@ This document presents an in-depth analysis of Ether's objectives, strengths, an
 
 ## 2. Detailed Model-by-Model Analysis
 
-### A. Ether (v4.0) — Spatial Cliodynamic & Thermodynamic Simulation
+### A. Ether — Spatial Cliodynamic & Thermodynamic Simulation
 
 > [!NOTE]
 > **Ether Positioning**: A physical-first simulation engine spanning a continuous temporal horizon from 100,000 BCE to future prospective epochs (2100+). It couples the first law of thermodynamics (Joules, Carnot limits, Net EROEI, SOC, N-P-K stoichiometry, aquifer replenishment) with 30 pluggable cliodynamic engines.
@@ -104,7 +104,7 @@ graph TD
         IFS["IFs (Pardee Center)<br/>Focus: 180+ Countries & Human Development"]
         ISDG["T21 / iSDG (Millennium Inst.)<br/>Focus: 17 SDGs & National Policies"]
         WD["World-Dynamo / Earth4All<br/>Focus: Global System Dynamics & Finance"]
-        ETHER["Ether v4.0 (Our Model)<br/>Focus: H3 Spatial Thermodynamics & Cliodynamics"]
+        ETHER["Ether (Our Model)<br/>Focus: H3 Spatial Thermodynamics & Cliodynamics"]
     end
 ```
 
@@ -129,7 +129,7 @@ graph TD
 
 The matrix below summarizes the architectural and functional characteristics of Ether in comparison to its major peers.
 
-| Dimension | **Ether (v4.0)** | **T21 / iSDG** | **International Futures (IFs)** | **IMAGE (PBL)** | **Earth4All / Post-World3** |
+| Dimension | **Ether** | **T21 / iSDG** | **International Futures (IFs)** | **IMAGE (PBL)** | **Earth4All / Post-World3** |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Spatial Resolution** | **Uber H3 Hex Grid** (175k–10M cells) | National Aggregate (0D per country) | **180+ Countries** (Multi-country matrices) | Geo Grid (Land/Biomes) + Eco Regions | Global Aggregate (0D) or ~10 Regions |
 | **Temporal Horizon** | **-100,000 BP to 2100+** (Deep History & Future) | 2000 – 2050 (SDG Horizons) | 1960 – 2100 (Modern Horizons) | 1970 – 2100 (IPCC / SSP Scenarios) | 1970 – 2100 (Transition Scenarios) |
@@ -152,7 +152,7 @@ The matrix below summarizes the architectural and functional characteristics of 
 │   Spatial Resolution                                                        │
 │        ▲                                                                    │
 │        │                                                                    │
-│   HIGH │                                 ✦ ETHER (v4.0)                     │
+│   HIGH │                                 ✦ ETHER ()                     │
 │        │                                 (H3 Hexagons, Phys/Cliodynamics)   │
 │        │                                                                    │
 │        │                                    IMAGE                           │

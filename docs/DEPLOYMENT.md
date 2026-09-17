@@ -55,17 +55,17 @@ To generate a fully self-contained distribution archive for end-user distributio
 
 ### On Windows:
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\package_release.ps1 -Version 2.0.0
+powershell -ExecutionPolicy Bypass -File scripts\package_release.ps1 -Version 1.0.0-beta.1
 ```
 
 ### On Linux / macOS:
 ```bash
-bash scripts/package_release.sh 2.0.0
+bash scripts/package_release.sh 1.0.0-beta.1
 ```
 
 This generates:
-* `dist/Ether-v2.0.0-standalone/` — Unpacked ready-to-run folder
-* `dist/Ether-v2.0.0-standalone.zip` (and `.tar.gz`) — Portable compressed archive with executable fat JAR, all documentation, GIS presets, and launcher scripts.
+* `dist/Ether-v1.0.0-beta.1-standalone/` — Unpacked ready-to-run folder
+* `dist/Ether-v1.0.0-beta.1-standalone.zip` (and `.tar.gz`) — Portable compressed archive with executable fat JAR, all documentation, GIS presets, and launcher scripts.
 
 ---
 

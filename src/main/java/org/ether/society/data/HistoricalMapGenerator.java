@@ -229,35 +229,39 @@ public class HistoricalMapGenerator {
             BufferedImage imgIronCopper = generateCleanIronCopperMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(5, bufferedImageToBase64Png(imgIronCopper));
 
-            // Index 6: Precious Metals & Rare Earths
-            BufferedImage imgPreciousREE = generateCleanPreciousMetalsMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(6, bufferedImageToBase64Png(imgPreciousREE));
+            // Index 6: Precious Metals (Au / Ag / Pt)
+            BufferedImage imgPreciousMetals = generateCleanPreciousMetalsMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(6, bufferedImageToBase64Png(imgPreciousMetals));
 
-            // Index 7: Mantle Heat Flux & Tectonics
+            // Index 7: Rare Earths & Critical Minerals (REE / Li)
+            BufferedImage imgRareEarths = generateCleanRareEarthsMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(7, bufferedImageToBase64Png(imgRareEarths));
+
+            // Index 8: Mantle Heat Flux & Tectonics
             BufferedImage imgMantleHeat = generateCleanMantleHeatMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(7, bufferedImageToBase64Png(imgMantleHeat));
+            scenario.setCustomGeologyTensorMapBase64(8, bufferedImageToBase64Png(imgMantleHeat));
 
-            // Index 8: Freshwater Aquifers
+            // Index 9: Freshwater Aquifers
             BufferedImage imgAquifer = generateCleanAquiferMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(8, bufferedImageToBase64Png(imgAquifer));
+            scenario.setCustomGeologyTensorMapBase64(9, bufferedImageToBase64Png(imgAquifer));
 
-            // Extensible Geology Tensors (Indices 9 to N-1) if N > 9
+            // Extensible Geology Tensors (Indices 10 to N-1) if N > 10
             int resDims = scenario.getResourceVectorDimensions();
-            if (resDims > 9) {
-                for (int i = 9; i < resDims; i++) {
+            if (resDims > 10) {
+                for (int i = 10; i < resDims; i++) {
                     BufferedImage imgExtRes = generateCleanExtensibleResourceTensorMap(i, type, scenario);
                     scenario.setCustomGeologyTensorMapBase64(i, bufferedImageToBase64Png(imgExtRes));
                 }
             }
 
             // Save to standardized data/maps/Earth/<year>/ directory
-            saveImagesToYearDirectory(scenario.getStartDateYear(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousREE, imgMantleHeat, imgAquifer);
+            saveImagesToYearDirectory(scenario.getStartDateYear(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
 
             // Save cultural tensor maps to disk cache
             saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
 
             // Save geological tensor maps to disk cache
-            saveGeologyTensorsToDiskCache(scenario.getName(), imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousREE, imgMantleHeat, imgAquifer);
+            saveGeologyTensorsToDiskCache(scenario.getName(), imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
 
         } catch (Exception e) {
             logger.error("Failed to generate historical maps for scenario {}", scenario.getName(), e);
@@ -308,10 +312,16 @@ public class HistoricalMapGenerator {
 
             String[] geoKeys = {
                 "coal.png", "oil.png", "gas.png", "uranium.png",
-                "he3.png", "ironcopper.png", "preciousree.png", "mantleheat.png", "aquifer.png"
+                "he3.png", "ironcopper.png", "preciousmetals.png", "rareearths.png", "mantleheat.png", "aquifer.png"
             };
             for (int i = 0; i < geoKeys.length; i++) {
                 java.nio.file.Path p = earthDir.resolve(geoKeys[i]);
+                if (!java.nio.file.Files.exists(p) && i == 6) {
+                    p = earthDir.resolve("preciousree.png");
+                }
+                if (!java.nio.file.Files.exists(p) && i == 7) {
+                    p = earthDir.resolve("rareearths.png");
+                }
                 if (java.nio.file.Files.exists(p)) {
                     BufferedImage img = ImageIO.read(p.toFile());
                     if (img != null) {
@@ -335,7 +345,7 @@ public class HistoricalMapGenerator {
             BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech,
             BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen,
             BufferedImage imgCoal, BufferedImage imgOil, BufferedImage imgGas, BufferedImage imgUranium,
-            BufferedImage imgHe3, BufferedImage imgIronCopper, BufferedImage imgPreciousREE, BufferedImage imgMantleHeat, BufferedImage imgAquifer) {
+            BufferedImage imgHe3, BufferedImage imgIronCopper, BufferedImage imgPreciousMetals, BufferedImage imgRareEarths, BufferedImage imgMantleHeat, BufferedImage imgAquifer) {
         try {
             java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
             java.nio.file.Files.createDirectories(earthDir);
@@ -351,15 +361,16 @@ public class HistoricalMapGenerator {
             if (imgEco != null)         ImageIO.write(imgEco,         "PNG", earthDir.resolve("ecological.png").toFile());
             if (imgPathogen != null)    ImageIO.write(imgPathogen,    "PNG", earthDir.resolve("pathogen.png").toFile());
 
-            if (imgCoal != null)        ImageIO.write(imgCoal,        "PNG", earthDir.resolve("coal.png").toFile());
-            if (imgOil != null)         ImageIO.write(imgOil,         "PNG", earthDir.resolve("oil.png").toFile());
-            if (imgGas != null)         ImageIO.write(imgGas,         "PNG", earthDir.resolve("gas.png").toFile());
-            if (imgUranium != null)     ImageIO.write(imgUranium,     "PNG", earthDir.resolve("uranium.png").toFile());
-            if (imgHe3 != null)         ImageIO.write(imgHe3,         "PNG", earthDir.resolve("he3.png").toFile());
-            if (imgIronCopper != null)  ImageIO.write(imgIronCopper,  "PNG", earthDir.resolve("ironcopper.png").toFile());
-            if (imgPreciousREE != null) ImageIO.write(imgPreciousREE, "PNG", earthDir.resolve("preciousree.png").toFile());
-            if (imgMantleHeat != null)  ImageIO.write(imgMantleHeat,  "PNG", earthDir.resolve("mantleheat.png").toFile());
-            if (imgAquifer != null)     ImageIO.write(imgAquifer,     "PNG", earthDir.resolve("aquifer.png").toFile());
+            if (imgCoal != null)           ImageIO.write(imgCoal,           "PNG", earthDir.resolve("coal.png").toFile());
+            if (imgOil != null)            ImageIO.write(imgOil,            "PNG", earthDir.resolve("oil.png").toFile());
+            if (imgGas != null)            ImageIO.write(imgGas,            "PNG", earthDir.resolve("gas.png").toFile());
+            if (imgUranium != null)        ImageIO.write(imgUranium,        "PNG", earthDir.resolve("uranium.png").toFile());
+            if (imgHe3 != null)            ImageIO.write(imgHe3,            "PNG", earthDir.resolve("he3.png").toFile());
+            if (imgIronCopper != null)     ImageIO.write(imgIronCopper,     "PNG", earthDir.resolve("ironcopper.png").toFile());
+            if (imgPreciousMetals != null) ImageIO.write(imgPreciousMetals, "PNG", earthDir.resolve("preciousmetals.png").toFile());
+            if (imgRareEarths != null)     ImageIO.write(imgRareEarths,     "PNG", earthDir.resolve("rareearths.png").toFile());
+            if (imgMantleHeat != null)     ImageIO.write(imgMantleHeat,     "PNG", earthDir.resolve("mantleheat.png").toFile());
+            if (imgAquifer != null)        ImageIO.write(imgAquifer,        "PNG", earthDir.resolve("aquifer.png").toFile());
 
             logger.info("Persisted scenario cartographic maps into 'data/maps/Earth/{}/'", year);
         } catch (Exception e) {
@@ -493,24 +504,25 @@ public class HistoricalMapGenerator {
     public static void saveGeologyTensorsToDiskCache(String scenarioName,
             BufferedImage imgCoal, BufferedImage imgOil, BufferedImage imgGas,
             BufferedImage imgUranium, BufferedImage imgHe3, BufferedImage imgIronCopper,
-            BufferedImage imgPreciousREE, BufferedImage imgMantleHeat, BufferedImage imgAquifer) {
+            BufferedImage imgPreciousMetals, BufferedImage imgRareEarths, BufferedImage imgMantleHeat, BufferedImage imgAquifer) {
         if (scenarioName == null || scenarioName.isBlank()) scenarioName = "scenario";
         try {
             java.nio.file.Path cacheDir = java.nio.file.Paths.get("data", "cache");
             java.nio.file.Files.createDirectories(cacheDir);
             String safeName = scenarioName.replaceAll("[^a-zA-Z0-9_\\-]", "_").toLowerCase(java.util.Locale.ROOT);
 
-            if (imgCoal != null)       ImageIO.write(imgCoal,       "PNG", cacheDir.resolve(safeName + "_coal.png").toFile());
-            if (imgOil != null)        ImageIO.write(imgOil,        "PNG", cacheDir.resolve(safeName + "_oil.png").toFile());
-            if (imgGas != null)        ImageIO.write(imgGas,        "PNG", cacheDir.resolve(safeName + "_gas.png").toFile());
-            if (imgUranium != null)    ImageIO.write(imgUranium,    "PNG", cacheDir.resolve(safeName + "_uranium.png").toFile());
-            if (imgHe3 != null)        ImageIO.write(imgHe3,        "PNG", cacheDir.resolve(safeName + "_he3.png").toFile());
-            if (imgIronCopper != null) ImageIO.write(imgIronCopper, "PNG", cacheDir.resolve(safeName + "_ironcopper.png").toFile());
-            if (imgPreciousREE != null) ImageIO.write(imgPreciousREE, "PNG", cacheDir.resolve(safeName + "_preciousree.png").toFile());
-            if (imgMantleHeat != null) ImageIO.write(imgMantleHeat, "PNG", cacheDir.resolve(safeName + "_mantleheat.png").toFile());
-            if (imgAquifer != null)    ImageIO.write(imgAquifer,    "PNG", cacheDir.resolve(safeName + "_aquifer.png").toFile());
+            if (imgCoal != null)           ImageIO.write(imgCoal,           "PNG", cacheDir.resolve(safeName + "_coal.png").toFile());
+            if (imgOil != null)            ImageIO.write(imgOil,            "PNG", cacheDir.resolve(safeName + "_oil.png").toFile());
+            if (imgGas != null)            ImageIO.write(imgGas,            "PNG", cacheDir.resolve(safeName + "_gas.png").toFile());
+            if (imgUranium != null)        ImageIO.write(imgUranium,        "PNG", cacheDir.resolve(safeName + "_uranium.png").toFile());
+            if (imgHe3 != null)            ImageIO.write(imgHe3,            "PNG", cacheDir.resolve(safeName + "_he3.png").toFile());
+            if (imgIronCopper != null)     ImageIO.write(imgIronCopper,     "PNG", cacheDir.resolve(safeName + "_ironcopper.png").toFile());
+            if (imgPreciousMetals != null) ImageIO.write(imgPreciousMetals, "PNG", cacheDir.resolve(safeName + "_preciousmetals.png").toFile());
+            if (imgRareEarths != null)     ImageIO.write(imgRareEarths,     "PNG", cacheDir.resolve(safeName + "_rareearths.png").toFile());
+            if (imgMantleHeat != null)     ImageIO.write(imgMantleHeat,     "PNG", cacheDir.resolve(safeName + "_mantleheat.png").toFile());
+            if (imgAquifer != null)        ImageIO.write(imgAquifer,        "PNG", cacheDir.resolve(safeName + "_aquifer.png").toFile());
 
-            logger.info("Persisted 9 geological tensor maps to disk cache 'data/cache/{}_*.png'", safeName);
+            logger.info("Persisted 10 geological tensor maps to disk cache 'data/cache/{}_*.png'", safeName);
         } catch (Exception e) {
             logger.warn("Failed to write geological tensor maps to disk cache directory: {}", e.getMessage());
         }
@@ -542,13 +554,19 @@ public class HistoricalMapGenerator {
             }
 
             // Geology tensor cache keys — indices must match setCustomGeologyTensorMapBase64 order:
-            // 0=Coal, 1=Oil, 2=Gas, 3=Uranium, 4=He3, 5=IronCopper, 6=PreciousREE, 7=MantleHeat, 8=Aquifer
+            // 0=Coal, 1=Oil, 2=Gas, 3=Uranium, 4=He3, 5=IronCopper, 6=PreciousMetals, 7=RareEarths, 8=MantleHeat, 9=Aquifer
             String[] geoKeys = {
                 "_coal.png", "_oil.png", "_gas.png", "_uranium.png",
-                "_he3.png", "_ironcopper.png", "_preciousree.png", "_mantleheat.png", "_aquifer.png"
+                "_he3.png", "_ironcopper.png", "_preciousmetals.png", "_rareearths.png", "_mantleheat.png", "_aquifer.png"
             };
             for (int i = 0; i < geoKeys.length; i++) {
                 java.nio.file.Path p = cacheDir.resolve(safeName + geoKeys[i]);
+                if (!java.nio.file.Files.exists(p) && i == 6) {
+                    p = cacheDir.resolve(safeName + "_preciousree.png");
+                }
+                if (!java.nio.file.Files.exists(p) && i == 7) {
+                    p = cacheDir.resolve(safeName + "_rareearths.png");
+                }
                 if (java.nio.file.Files.exists(p)) {
                     BufferedImage img = ImageIO.read(p.toFile());
                     if (img != null) {
@@ -576,10 +594,13 @@ public class HistoricalMapGenerator {
                 }
                 String[] targetGeoFiles = {
                     "coal.png", "oil.png", "gas.png", "uranium.png",
-                    "he3.png", "ironcopper.png", "preciousree.png", "mantleheat.png", "aquifer.png"
+                    "he3.png", "ironcopper.png", "preciousmetals.png", "rareearths.png", "mantleheat.png", "aquifer.png"
                 };
                 for (int i = 0; i < geoKeys.length; i++) {
                     java.nio.file.Path src = cacheDir.resolve(safeName + geoKeys[i]);
+                    if (!java.nio.file.Files.exists(src) && i == 6) {
+                        src = cacheDir.resolve(safeName + "_preciousree.png");
+                    }
                     if (java.nio.file.Files.exists(src)) {
                         java.nio.file.Files.copy(src, earthDir.resolve(targetGeoFiles[i]), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                     }
@@ -2084,7 +2105,47 @@ public class HistoricalMapGenerator {
     public static BufferedImage generateCleanPreciousMetalsMap(String type, Scenario scenario) {
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        var spots = loadMRDSDeposits("gold", "silver", "platinum", "lithium", "rare earth");
+        var spots = loadMRDSDeposits("gold", "silver", "platinum", "palladium", "electrum");
+        double[][] majorPrecious = {
+            {27.0, -26.5, 48, 2.8},   // Witwatersrand (South Africa - Giant Gold)
+            {29.0, -24.5, 45, 2.6},   // Bushveld Complex Platinum (South Africa)
+            {-116.0, 40.8, 42, 2.5},  // Carlin Trend Nevada (USA - Gold)
+            {-65.7, -19.6, 45, 2.7},  // Potosí Cerro Rico (Bolivia - Silver)
+            {121.5, -30.7, 40, 2.4},  // Kalgoorlie Super Pit (Australia - Gold)
+            {64.6, 41.5, 42, 2.5},    // Muruntau Gold (Uzbekistan)
+            {88.2, 69.3, 45, 2.6},    // Norilsk-Talnakh PGMs (Russia)
+            {-81.0, 46.5, 38, 2.3},   // Sudbury Basin (Canada - PGMs/Au)
+            {-78.5, -7.0, 40, 2.4},   // Yanacocha (Peru - Gold)
+            {137.1, -4.0, 42, 2.5}    // Grasberg (Indonesia - Gold/Copper)
+        };
+        for (double[] p : majorPrecious) spots.add(p);
+        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 5.0);
+        return img;
+    }
+
+    public static BufferedImage generateCleanRareEarthsMap(String type, Scenario scenario) {
+        int width = 2048, height = 1024;
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        var spots = loadMRDSDeposits("rare earth", "bastnasite", "monazite", "xenotime", "neodymium", "dysprosium", "yttrium", "lanthanum", "cerium", "lithium", "spodumene", "carbonatite", "loparite", "allanite");
+        double[][] majorREE = {
+            {109.9, 41.8, 55, 3.0},   // Bayan Obo (Inner Mongolia, China - Giant REE/Fe)
+            {-115.5, 35.5, 42, 2.6},  // Mountain Pass (California, USA - Bastnäsite)
+            {122.5, -28.7, 45, 2.7},  // Mount Weld (Western Australia - Carbonatite REE)
+            {-46.0, 60.9, 45, 2.6},   // Kvanefjeld / Ilímaussaq (Greenland - REE/U)
+            {116.5, 71.0, 45, 2.6},   // Tomtor (Yakutia, Russia - Carbonatite Nb/REE)
+            {34.6, 67.8, 40, 2.4},    // Lovozero (Kola Peninsula, Russia - Loparite REE)
+            {115.0, 25.5, 50, 2.8},   // Ganzhou / Jiangxi (South China - Heavy Ionic Clays)
+            {103.5, 22.4, 38, 2.3},   // Dong Pao (Vietnam - Bastnäsite)
+            {-46.9, -19.6, 42, 2.5},  // Araxá (Minas Gerais, Brazil - Carbonatite Nb/REE)
+            {-67.5, -21.0, 52, 2.8},  // Salar de Atacama (Chile - Lithium Brines)
+            {-68.0, -23.5, 50, 2.7},  // Salar de Uyuni (Bolivia - Lithium Brines)
+            {116.0, -33.8, 42, 2.5},  // Greenbushes (Australia - Spodumene Lithium)
+            {14.6, 58.1, 35, 2.2},    // Norra Kärr (Sweden - Heavy REE)
+            {20.2, 67.8, 38, 2.3},    // Kiruna / Per Geijer (Sweden - Apatite REE)
+            {-64.2, 56.3, 40, 2.4},   // Strange Lake (Quebec/Labrador, Canada)
+            {-112.6, 62.1, 38, 2.3}   // Nechalacho (NWT, Canada - REE/Zr)
+        };
+        for (double[] r : majorREE) spots.add(r);
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 5.0);
         return img;
     }

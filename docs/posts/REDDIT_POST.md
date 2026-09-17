@@ -6,7 +6,7 @@
 
 ## Post Title Ideas
 1. **[OC] I spent months building Ether: an open-source, physical-first planetary cliodynamics simulator (Uber H3 grid, 80+ scientific engines, 20k BC to future)**
-2. **Ether 2.0: A massive open-source planetary simulation engine coupling climate physics, thermodynamics, and civilizational collapse**
+2. **Ether: A massive open-source planetary simulation engine coupling climate physics, thermodynamics, and civilizational collapse**
 3. **Simulating 22,000 years of human history from first physical principles — Open Source Java 21 / H3 Grid Engine**
 
 ---

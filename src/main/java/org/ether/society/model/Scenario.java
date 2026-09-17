@@ -132,7 +132,7 @@ public class Scenario implements Serializable {
     private java.util.Map<Integer, java.util.Map<String, Double>> tensorProceduralParameters = new java.util.HashMap<>();
 
     // Geological & Mineral Energy Extensible Tensor Layers (Persisted per Scenario)
-    private int resourceVectorDimensions = 8; // Extensible resource dimensions (COAL, OIL, GAS, URANIUM, HELIUM_3, IRON_COPPER, PRECIOUS_REE, AQUIFERS...)
+    private int resourceVectorDimensions = 10; // Extensible resource dimensions (COAL, OIL, GAS, URANIUM, HELIUM_3, IRON_COPPER, PRECIOUS_METALS, CRITICAL_REE, MANTLE_HEAT, AQUIFERS...)
     private java.util.List<String> customGeologyTensorMapsBase64 = new java.util.ArrayList<>();
     private java.util.List<Boolean> geologyTensorProceduralModes = new java.util.ArrayList<>();
 

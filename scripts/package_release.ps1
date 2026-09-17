@@ -9,19 +9,20 @@
 
 [CmdletBinding()]
 param(
-    [string]$Version = "2.0.0",
-    [switch]$SkipBuild
+    [string]$Version = "1.0.0-beta.1",
+    [switch]$SkipBuild,
+    [switch]$IncludeRawGIS
 )
 
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RootDir = Split-Path -Parent $ScriptDir
 $DistDir = Join-Path $RootDir "dist"
-$PackageName = "Ether-v$Version-standalone"
+$PackageName = if ($IncludeRawGIS) { "Ether-v$Version-full-gis" } else { "Ether-v$Version-standalone" }
 $TargetDir = Join-Path $DistDir $PackageName
 
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host " 🚀 Packaging Ether Planetary Simulation v$Version" -ForegroundColor Cyan
+Write-Host " Packaging Ether Planetary Simulation v$Version" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
 # 1. Build Fat JAR if not skipped
@@ -54,7 +55,7 @@ New-Item -ItemType Directory -Path (Join-Path $TargetDir "logs") -Force | Out-Nu
 
 # 3. Copy Executable JAR
 Write-Host "[3/5] Copying application binaries and resources..." -ForegroundColor Yellow
-$JarSource = Join-Path $RootDir "target\society-simulation-2.0.0-SNAPSHOT-executable.jar"
+$JarSource = Join-Path $RootDir "target\society-simulation-1.0.0-beta.1-executable.jar"
 if (-not (Test-Path $JarSource)) {
     # Fallback to any executable jar in target
     $JarSource = Get-ChildItem (Join-Path $RootDir "target") -Filter "*executable.jar" | Select-Object -First 1 -ExpandProperty FullName
@@ -64,9 +65,21 @@ if (-not $JarSource -or -not (Test-Path $JarSource)) {
 }
 Copy-Item $JarSource (Join-Path $TargetDir "bin\ether.jar")
 
-# Copy Data & Maps
+# Copy Data Assets
 if (Test-Path (Join-Path $RootDir "data")) {
-    Copy-Item -Recurse (Join-Path $RootDir "data\*") (Join-Path $TargetDir "data\") -ErrorAction SilentlyContinue
+    if ($IncludeRawGIS) {
+        Write-Host "      Copying full 13GB raw GIS dataset..." -ForegroundColor Gray
+        Copy-Item -Recurse (Join-Path $RootDir "data\*") (Join-Path $TargetDir "data\") -ErrorAction SilentlyContinue
+    } else {
+        Write-Host "      Copying essential simulation caches & presets..." -ForegroundColor Gray
+        if (Test-Path (Join-Path $RootDir "data\cache")) {
+            Copy-Item -Recurse (Join-Path $RootDir "data\cache") (Join-Path $TargetDir "data\")
+        }
+        New-Item -ItemType Directory -Path (Join-Path $TargetDir "data\maps") -Force | Out-Null
+        if (Test-Path (Join-Path $RootDir "data\maps\README.md")) {
+            Copy-Item (Join-Path $RootDir "data\maps\README.md") (Join-Path $TargetDir "data\maps\")
+        }
+    }
 }
 
 # Copy Documentation
@@ -76,7 +89,8 @@ $DocFiles = @(
     "AGENT.md",
     "docs\SIMULATION_EQUATIONS_AND_VARIABLES.md",
     "docs\ARCHITECTURE.md",
-    "docs\CREDITS.md",
+    "docs\PALEOCLIMATE_AND_PREHISTORY.md",
+    "docs\DATA_SOURCES_AND_INGESTION.md",
     "docs\SETUP.md",
     "docs\DEPLOYMENT.md"
 )
@@ -197,7 +211,7 @@ if %ERRORLEVEL% NEQ 0 (
     echo Opening OpenJDK download page in browser...
     start https://adoptium.net/
     echo.
-    echo Please install JDK 21+, then double-click 'run.bat' to launch Ether.
+    echo Please install JDK 21+, then double-click 'Ether_Windows.bat' to launch Ether.
     echo.
     pause
     exit /b 1
@@ -212,6 +226,27 @@ echo.
 call run.bat
 "@
 Set-Content -Path (Join-Path $TargetDir "install.bat") -Value $InstallBatContent -Encoding ASCII
+
+# 1-Click Root Windows Launcher
+$EtherWinBatContent = @"
+@echo off
+setlocal
+cd /d "%~dp0"
+title Ether Planetary Simulation
+call run.bat %*
+"@
+Set-Content -Path (Join-Path $TargetDir "Ether_Windows.bat") -Value $EtherWinBatContent -Encoding ASCII
+
+# 1-Click Root Linux/Mac Launcher
+$EtherLinuxContent = @"
+#!/usr/bin/env bash
+set -e
+DIR="`$( cd "`$( dirname "`${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+cd "`$DIR"
+chmod +x run.sh install.sh
+./run.sh "`$@"
+"@
+Set-Content -Path (Join-Path $TargetDir "Ether_Linux_Mac.sh") -Value ($EtherLinuxContent -replace "`r`n", "`n") -Encoding UTF8
 
 # 5. Create Standalone ZIP Archive
 Write-Host "[5/5] Creating portable distribution archive ($PackageName.zip)..." -ForegroundColor Yellow

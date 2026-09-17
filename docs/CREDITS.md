@@ -93,10 +93,3 @@
 | **TornadoVM** | 1.0.9-SNAPSHOT | Apache 2.0 / GPLv2+CE | Dynamic JIT compilation of Java bytecode to OpenCL / NVIDIA PTX GPU kernels |
 | **Spotless Plugin** | 2.41.0 | Apache 2.0 | Automated Java code formatting enforcing AOSP / Google Java Style |
 | **JaCoCo** | 0.8.12 | EPL 2.0 | Automated code coverage analysis for physical and numerical routines |
-
----
-
-## 5. Trademarks & Attribution Notice
-* **Uber H3** is a registered trademark of Uber Technologies, Inc.
-* **Java** is a registered trademark of Oracle Corporation and/or its affiliates.
-* **NASA**, **NOAA**, **USGS**, **IAEA**, and **WWF** logos and dataset names are trademarks of their respective organizations and are used here under fair academic attribution.

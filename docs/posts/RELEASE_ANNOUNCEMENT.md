@@ -1,13 +1,13 @@
-# Ether 2.0.0 — Official Release Announcement & Changelog
+# Ether 1.0.0-beta.1 — Official Release Announcement & Changelog
 
-> **Release Version**: 2.0.0-LTS  
+> **Release Version**: 1.0.0-beta.1  
 > **Release Date**: September 2026  
 > **Repository**: [https://github.com/silveremartin-dev/Ether](https://github.com/silveremartin-dev/Ether)  
 > **License**: MIT License  
 
 ---
 
-## 🌟 Major Highlights of Ether 2.0
+## 🌟 Major Highlights of Ether
 
 ### 1. 1-Click Autonomous Standalone Deployment
 * **Zero-Database Requirement**: Run Ether immediately on any machine with Java 21+ using `install.bat` / `run.bat` (Windows) or `install.sh` / `run.sh` (Linux/macOS).
@@ -41,7 +41,7 @@
 ### 4. Publication-Grade Documentation & Empirical Calibrations
 * Complete Differential Equations & State Variables specification in `docs/SIMULATION_EQUATIONS_AND_VARIABLES.md`.
 * Validated against Seshat Global History Databank, HYDE 3.4, and Maddison Historical Statistics.
-* Complete bibliography and dataset provenance catalog in `docs/CREDITS.md`.
+* Complete bibliography and dataset provenance catalog in `docs/DATA_SOURCES_AND_INGESTION.md`.
 
 ---
 

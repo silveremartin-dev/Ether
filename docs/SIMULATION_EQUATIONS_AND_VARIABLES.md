@@ -1,7 +1,7 @@
 # Ether Simulation — Differential Equations & State Variable Specification
 
 > **Master Technical, Physical & Mathematical Specification**  
-> *Version 4.5.0 — Strict Separation between Core Model Physics (Tier 1) and Optional Cliodynamic / Phenomenological Modules (Tier 2)*
+> *Strict Separation between Core Model Physics (Tier 1) and Optional Cliodynamic / Phenomenological Modules (Tier 2)*
 
 ---
 

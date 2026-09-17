@@ -393,6 +393,23 @@ public class AuthenticEmpiricalDatasetIngestion {
     }
 
     /**
+     * Extracts strictly Precious Metals occurrences (Gold, Silver, Platinum, Palladium, Electrum)
+     * excluding Rare Earth Elements and Lithium.
+     */
+    public static List<double[]> extractPreciousMetalsDeposits() {
+        return extractMrdsDeposits("gold", "silver", "platinum", "palladium", "electrum");
+    }
+
+    /**
+     * Extracts strictly Rare Earth Elements & Critical Minerals occurrences (REE, Bastnasite, Monazite,
+     * Xenotime, Neodymium, Dysprosium, Yttrium, Lithium, Spodumene, Carbonatite, Loparite).
+     */
+    public static List<double[]> extractRareEarthDeposits() {
+        return extractMrdsDeposits("rare earth", "bastnasite", "monazite", "xenotime", "neodymium",
+                "dysprosium", "yttrium", "lanthanum", "cerium", "lithium", "spodumene", "carbonatite", "loparite", "allanite");
+    }
+
+    /**
      * Fast parsing of MRDS CSV archive for mineral/fuel keywords.
      */
     public static List<double[]> extractMrdsDeposits(String... keywords) {

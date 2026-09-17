@@ -1,5 +1,5 @@
-# Deep Paleolithic Population, Palaeoclimate & Tensor Infrastructure (-300,000 BP to Present)
-**Ether Simulation Engine - Academic & Technical Reference Specification**
+# Prehistoric Simulation, Palaeoclimate & Hominin Biogeography (-300,000 BP to Present)
+**Ether Simulation Engine — Academic & Technical Reference Specification**
 *Authors: Silvere Martin-Michiellot, Gemini AI Assistant (Google DeepMind)*
 *Version: 2.0.0-SNAPSHOT | Date: August 2026*
 
@@ -1114,7 +1114,7 @@ Once calculated for an epoch or custom year $T_0$, density maps and tensor layer
 ## 6. Repository Integration & Knowledge Item Binding
 
 To ensure project-wide persistence across development sessions:
-1. **Repository Document**: Saved directly at `docs/DEEP_PALEOLITHIC_TENSOR_SPECIFICATION.md` within the `Ether` codebase.
+1. **Repository Document**: Saved directly at `docs/PALEOCLIMATE_AND_PREHISTORY.md` within the `Ether` codebase.
 2. **Local Knowledge Item**: Bound in `<appDataDir>/knowledge/deep_prehistoric_population_tensor_infrastructure/metadata.json` to ensure automated AI assistant contextual loading.
 
 

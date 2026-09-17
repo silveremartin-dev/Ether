@@ -25,9 +25,9 @@ java -version
 echo.
 
 :: 2. Check if shaded JAR is built; if not, build or run via Maven
-if exist "target\society-simulation-2.0.0-SNAPSHOT-executable.jar" (
+if exist "target\society-simulation-1.0.0-beta.1-executable.jar" (
     echo [INFO] Launching standalone executable JAR...
-    java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar target\society-simulation-2.0.0-SNAPSHOT-executable.jar %*
+    java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar target\society-simulation-1.0.0-beta.1-executable.jar %*
 ) else (
     where mvn >nul 2>&1
     if %ERRORLEVEL% EQU 0 (

@@ -2,7 +2,7 @@
 # Package Ether into a self-contained standalone distribution archive (.tar.gz / .zip)
 set -e
 
-VERSION="${1:-2.0.0}"
+VERSION="${1:-1.0.0-beta.1}"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ROOT_DIR="$( dirname "$SCRIPT_DIR" )"
 DIST_DIR="$ROOT_DIR/dist"
@@ -25,7 +25,7 @@ mkdir -p "$TARGET_DIR/bin" "$TARGET_DIR/data" "$TARGET_DIR/docs" "$TARGET_DIR/sa
 
 # 3. Copy Binaries and Assets
 echo "[3/4] Copying artifacts and resources..."
-cp "$ROOT_DIR/target/society-simulation-2.0.0-SNAPSHOT-executable.jar" "$TARGET_DIR/bin/ether.jar" || \
+cp "$ROOT_DIR/target/society-simulation-1.0.0-beta.1-executable.jar" "$TARGET_DIR/bin/ether.jar" || \
 cp "$ROOT_DIR/target/"*executable.jar "$TARGET_DIR/bin/ether.jar"
 
 if [ -d "$ROOT_DIR/data" ]; then

@@ -732,25 +732,57 @@ public class GenerateAuthenticPlanetaryMaps {
         rasterizeTieredDensity(imgIronCopper, feCuSpots, 8.0);
         saveMapImage(imgIronCopper, "earth_iron_copper.png", "earth", epoch);
 
-        // 7. Precious Metals, REE & Lithium
+        // 7. Precious Metals (strictly Gold, Silver, Platinum, Palladium, Electrum)
         BufferedImage imgPrecious = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        List<double[]> preciousSpots = extractMrdsDeposits("gold", "silver", "platinum", "palladium", "lithium", "rare earth", "spodumene", "bastnasite");
+        List<double[]> preciousSpots = extractMrdsDeposits("gold", "silver", "platinum", "palladium", "electrum");
         double[][] majorPrecious = {
-            {27.0, -26.0, 45, 2.8}, {-116.0, 40.8, 42, 2.6}, {121.5, -30.7, 40, 2.5}, {63.5, 41.5, 42, 2.6},
-            {29.0, -24.5, 48, 2.8}, {88.2, 69.3, 45, 2.6}, {-81.0, 46.5, 40, 2.4}, {-68.0, -23.5, 45, 2.8},
-            {-67.5, -20.2, 48, 2.8}, {116.0, -33.8, 42, 2.6}, {109.8, 41.8, 48, 2.8}, {-115.5, 35.5, 40, 2.5}
+            {27.0, -26.5, 48, 2.8},   // Witwatersrand (South Africa - Giant Gold)
+            {29.0, -24.5, 45, 2.6},   // Bushveld Complex Platinum (South Africa)
+            {-116.0, 40.8, 42, 2.5},  // Carlin Trend Nevada (USA - Gold)
+            {-65.7, -19.6, 45, 2.7},  // Potosí Cerro Rico (Bolivia - Silver)
+            {121.5, -30.7, 40, 2.4},  // Kalgoorlie Super Pit (Australia - Gold)
+            {64.6, 41.5, 42, 2.5},    // Muruntau Gold (Uzbekistan)
+            {88.2, 69.3, 45, 2.6},    // Norilsk-Talnakh PGMs (Russia)
+            {-81.0, 46.5, 38, 2.3},   // Sudbury Basin (Canada - PGMs/Au)
+            {-78.5, -7.0, 40, 2.4},   // Yanacocha (Peru - Gold)
+            {137.1, -4.0, 42, 2.5}    // Grasberg (Indonesia - Gold/Copper)
         };
         for (double[] b : majorPrecious) preciousSpots.add(b);
         rasterizeAlphaDensity(imgPrecious, preciousSpots, 7.0);
         saveMapImage(imgPrecious, "earth_precious_metals.png", "earth", epoch);
 
-        // 8. Geothermal / Mantle Heat (Davies 2013 in Grayscale [0..255] on Black Background)
+        // 8. Rare Earths & Critical Minerals (REE, Bastnasite, Monazite, Lithium Salars & Spodumene)
+        BufferedImage imgRareEarths = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        List<double[]> reeSpots = extractMrdsDeposits("rare earth", "bastnasite", "monazite", "xenotime", "neodymium", "dysprosium", "yttrium", "lanthanum", "cerium", "lithium", "spodumene", "carbonatite", "loparite", "allanite");
+        double[][] majorREE = {
+            {109.9, 41.8, 55, 3.0},   // Bayan Obo (Inner Mongolia, China - Giant REE/Fe)
+            {-115.5, 35.5, 42, 2.6},  // Mountain Pass (California, USA - Bastnäsite)
+            {122.5, -28.7, 45, 2.7},  // Mount Weld (Western Australia - Carbonatite REE)
+            {-46.0, 60.9, 45, 2.6},   // Kvanefjeld / Ilímaussaq (Greenland - REE/U)
+            {116.5, 71.0, 45, 2.6},   // Tomtor (Yakutia, Russia - Carbonatite Nb/REE)
+            {34.6, 67.8, 40, 2.4},    // Lovozero (Kola Peninsula, Russia - Loparite REE)
+            {115.0, 25.5, 50, 2.8},   // Ganzhou / Jiangxi (South China - Heavy Ionic Clays)
+            {103.5, 22.4, 38, 2.3},   // Dong Pao (Vietnam - Bastnäsite)
+            {-46.9, -19.6, 42, 2.5},  // Araxá (Minas Gerais, Brazil - Carbonatite Nb/REE)
+            {-67.5, -21.0, 52, 2.8},  // Salar de Atacama (Chile - Lithium Brines)
+            {-68.0, -23.5, 50, 2.7},  // Salar de Uyuni (Bolivia - Lithium Brines)
+            {116.0, -33.8, 42, 2.5},  // Greenbushes (Australia - Spodumene Lithium)
+            {14.6, 58.1, 35, 2.2},    // Norra Kärr (Sweden - Heavy REE)
+            {20.2, 67.8, 38, 2.3},    // Kiruna / Per Geijer (Sweden - Apatite REE)
+            {-64.2, 56.3, 40, 2.4},   // Strange Lake (Quebec/Labrador, Canada)
+            {-112.6, 62.1, 38, 2.3}   // Nechalacho (NWT, Canada - REE/Zr)
+        };
+        for (double[] r : majorREE) reeSpots.add(r);
+        rasterizeAlphaDensity(imgRareEarths, reeSpots, 7.0);
+        saveMapImage(imgRareEarths, "earth_rare_earths.png", "earth", epoch);
+
+        // 9. Geothermal / Mantle Heat (Davies 2013 in Grayscale [0..255] on Black Background)
         BufferedImage imgGeothermal = HistoricalMapGenerator.generateCleanMantleHeatMap("EARTH", null);
         if (imgGeothermal != null) {
             saveMapImage(imgGeothermal, "earth_geothermal.png", "earth", epoch);
         }
 
-        // 9. Freshwater Aquifers & Groundwater Systems
+        // 10. Freshwater Aquifers & Groundwater Systems
         BufferedImage imgAquifers = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         List<double[]> aqSpots = AuthenticEmpiricalDatasetIngestion.getEmpiricalAquiferOccurrences();
         double[][] majorAquifers = {

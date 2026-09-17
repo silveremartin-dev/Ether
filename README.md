@@ -1,4 +1,4 @@
-# Ether - Human Society & Cliodynamic Thermodynamic Simulation (v2.0 / v4.0)
+# Ether - Human Society & Cliodynamic Thermodynamic Simulation
 
 ![Java](https://img.shields.io/badge/Java-21-orange.svg)
 ![Build](https://img.shields.io/badge/Build-Maven-blue.svg)
@@ -123,15 +123,14 @@ Ether includes an empirical validation engine computing **Root Mean Square Error
 - 🚀 [Instant Deployment & Standalone Guide](docs/DEPLOYMENT.md)
 - 📐 [Differential Equations & State Variables Specification](docs/SIMULATION_EQUATIONS_AND_VARIABLES.md)
 - 🏗️ [Core System Architecture & Data-Oriented Design](docs/ARCHITECTURE.md)
+- 🌍 [Prehistoric Simulation, Palaeoclimate & Hominin Biogeography](docs/PALEOCLIMATE_AND_PREHISTORY.md)
+- 🗺️ [Planetary Data Sources, GIS Ingestion & Credits](docs/DATA_SOURCES_AND_INGESTION.md)
 - 🛠️ [Setup & Operational Operations Guide](docs/SETUP.md)
-- 📜 [Data Sources, Scientific Citations & Credits](docs/CREDITS.md)
-- 🌍 [Deep Paleolithic & Palaeoclimate Tensor Specification](docs/DEEP_PALEOLITHIC_TENSOR_SPECIFICATION.md)
 - 📊 [Comparative Analysis vs. Global Systemic Models](docs/MODEL_COMPARISON.md)
-- 🗺️ [Planetary GIS Repatriation & Ingestion Architecture](docs/REPATRIATION_PLAN.md)
 - 🔒 [Security & System Integrity Audit](docs/SECURITY.md)
 - 📢 [Reddit Launch Post](docs/posts/REDDIT_POST.md)
 - 💼 [LinkedIn Announcement Post](docs/posts/LINKEDIN_POST.md)
-- 📦 [Version 2.0 Release Notes](docs/posts/RELEASE_ANNOUNCEMENT_V2.md)
+- 📦 [Version 1.0.0-beta.1 Release Notes](docs/posts/RELEASE_ANNOUNCEMENT.md)
 
 ---
 
