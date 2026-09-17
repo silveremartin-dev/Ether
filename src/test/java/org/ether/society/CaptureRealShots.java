@@ -3,6 +3,7 @@ package org.ether.society;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -10,10 +11,13 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.ether.society.config.Configuration;
 import org.ether.society.config.ConfigurationLoader;
 import org.ether.society.core.H3SimulationEngine;
+import org.ether.society.i18n.I18n;
+import org.ether.society.i18n.Language;
 import org.ether.society.ui.*;
 
 import javax.imageio.ImageIO;
@@ -24,11 +28,14 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Headless/Automated JavaFX screenshot generator for Ether simulation engine.
- * Captures real UI screenshots for all 7 tabs and saves them into docs/images/real_shots.
+ * Captures real UI screenshots for all 7 tabs in English.
  */
 public class CaptureRealShots extends Application {
 
@@ -38,15 +45,25 @@ public class CaptureRealShots extends Application {
     private TabPane mainTabPane;
     private ScenarioSetupPanel setupPanel;
 
+    private static final List<String> TARGET_DIRS = List.of(
+            "docs/images/screenshots"
+    );
+
     public static void main(String[] args) {
+        Locale.setDefault(Locale.ENGLISH);
+        I18n.setLanguage(Language.ENGLISH);
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Locale.setDefault(Locale.ENGLISH);
+        I18n.setLanguage(Language.ENGLISH);
+
         this.stage = primaryStage;
-        Path outDir = Paths.get("docs/images/real_shots");
-        Files.createDirectories(outDir);
+        for (String dirPath : TARGET_DIRS) {
+            Files.createDirectories(Paths.get(dirPath));
+        }
 
         Configuration config = ConfigurationLoader.loadDefault();
         h3Engine = new H3SimulationEngine(config);
@@ -86,12 +103,12 @@ public class CaptureRealShots extends Application {
 
     private void runCaptureWorkflow() {
         try {
-            System.out.println("=== Starting Ether Real UI Screenshots Capture Workflow ===");
+            System.out.println("=== Starting Ether Real UI Screenshots Capture Workflow (Language: EN) ===");
 
             // 1. Tab 1: Planet Generator
             System.out.println("Capturing Tab 1: Planet Generator...");
             runOnFx(() -> mainTabPane.getSelectionModel().select(0));
-            sleep(600);
+            sleep(1200);
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab1_planet_generator.png");
                 saveNodeSnapshot(mainView, "planet_generator_editor.png");
@@ -100,13 +117,13 @@ public class CaptureRealShots extends Application {
             // 2. Tab 2: Resources & Ecology
             System.out.println("Capturing Tab 2: Resources & Ecology...");
             runOnFx(() -> mainTabPane.getSelectionModel().select(1));
-            sleep(600);
+            sleep(1200);
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab2_resources.png");
                 saveNodeSnapshot(mainView, "resources_editor.png");
             });
 
-            // 3. Tab 3: Scenario Setup (Set Resolution to Level 3)
+            // 3. Tab 3: Scenario Setup
             System.out.println("Capturing Tab 3: Scenario Setup with Resolution 3...");
             runOnFx(() -> {
                 mainTabPane.getSelectionModel().select(2);
@@ -123,7 +140,7 @@ public class CaptureRealShots extends Application {
                     System.err.println("Failed to set H3 resolution: " + e.getMessage());
                 }
             });
-            sleep(600);
+            sleep(1200);
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab3_scenario_setup.png");
                 saveNodeSnapshot(mainView, "scenario_setup_editor.png");
@@ -153,7 +170,8 @@ public class CaptureRealShots extends Application {
                     break;
                 }
                 if (System.currentTimeMillis() - startWait > 45000) {
-                    System.err.println("Timed out waiting for Tab 4 transition!");
+                    System.err.println("Timed out waiting for Tab 4 transition, forcing Tab 4 selection.");
+                    runOnFx(() -> mainTabPane.getSelectionModel().select(3));
                     break;
                 }
                 sleep(300);
@@ -161,7 +179,7 @@ public class CaptureRealShots extends Application {
 
             // 4. Tab 4: Execution Context
             System.out.println("Capturing Tab 4: Execution Context...");
-            sleep(800);
+            sleep(1200);
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab4_execution_context.png");
                 saveNodeSnapshot(mainView, "execution_context_panel.png");
@@ -189,6 +207,7 @@ public class CaptureRealShots extends Application {
                     break;
                 }
                 if (System.currentTimeMillis() - startWait > 15000) {
+                    runOnFx(() -> mainTabPane.getSelectionModel().select(4));
                     break;
                 }
                 sleep(200);
@@ -196,7 +215,7 @@ public class CaptureRealShots extends Application {
 
             // 5. Tab 5: Simulation View (Main Map View)
             System.out.println("Capturing Tab 5: Simulation (Main 3D/2D H3 Globe Canvas)...");
-            sleep(1800); // Allow render pass
+            sleep(2500); // Allow render pass
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab5_simulation.png");
                 saveNodeSnapshot(mainView, "h3_map_simulation_3d.png");
@@ -215,13 +234,13 @@ public class CaptureRealShots extends Application {
                     System.err.println("Could not select God Mode sub-tab: " + e.getMessage());
                 }
             });
-            sleep(600);
+            sleep(1200);
             runOnFx(() -> saveNodeSnapshot(mainView, "god_mode_panel.png"));
 
             // 6. Tab 6: Comparative Analytics
             System.out.println("Capturing Tab 6: Comparative Analytics...");
             runOnFx(() -> mainTabPane.getSelectionModel().select(5));
-            sleep(800);
+            sleep(1200);
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab6_comparative_analytics.png");
                 saveNodeSnapshot(mainView, "analytics_dashboard.png");
@@ -230,7 +249,7 @@ public class CaptureRealShots extends Application {
             // 7. Tab 7: Preferences
             System.out.println("Capturing Tab 7: Preferences...");
             runOnFx(() -> mainTabPane.getSelectionModel().select(6));
-            sleep(600);
+            sleep(1200);
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab7_preferences.png");
                 saveNodeSnapshot(mainView, "preferences_panel.png");
@@ -263,7 +282,7 @@ public class CaptureRealShots extends Application {
             }
         });
         try {
-            latch.await();
+            latch.await(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -278,7 +297,9 @@ public class CaptureRealShots extends Application {
     }
 
     private void saveNodeSnapshot(javafx.scene.Node node, String filename) {
-        WritableImage fxImage = node.snapshot(null, null);
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.valueOf("#1e293b"));
+        WritableImage fxImage = node.snapshot(params, null);
         int w = (int) fxImage.getWidth();
         int h = (int) fxImage.getHeight();
         BufferedImage bImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -288,12 +309,19 @@ public class CaptureRealShots extends Application {
                 bImg.setRGB(x, y, reader.getArgb(x, y));
             }
         }
-        File outFile = new File("docs/images/real_shots/" + filename);
-        try {
-            ImageIO.write(bImg, "png", outFile);
-            System.out.println(" Saved: " + outFile.getAbsolutePath() + " (" + w + "x" + h + ")");
-        } catch (Exception e) {
-            System.err.println("Failed to write PNG file " + filename + ": " + e.getMessage());
+
+        for (String dir : TARGET_DIRS) {
+            File dirFile = new File(dir);
+            if (!dirFile.exists()) {
+                dirFile.mkdirs();
+            }
+            File outFile = new File(dirFile, filename);
+            try {
+                ImageIO.write(bImg, "png", outFile);
+                System.out.println(" Saved: " + outFile.getAbsolutePath() + " (" + w + "x" + h + ")");
+            } catch (Exception e) {
+                System.err.println("Failed to write PNG file " + filename + " to " + dir + ": " + e.getMessage());
+            }
         }
     }
 }

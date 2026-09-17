@@ -164,21 +164,58 @@ public class Hyde34GridReader {
         }
     }
 
+    private static final long[] KNOWN_HYDE_YEARS = {
+        -10000, -9000, -8000, -7000, -6000, -5000, -4000, -3000, -2000, -1000,
+        0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700,
+        1710, 1720, 1730, 1740, 1750, 1760, 1770, 1780, 1790, 1800, 1810, 1820, 1830, 1840, 1850, 1860, 1870, 1880, 1890,
+        1900, 1910, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, 2024
+    };
+
+    public static long findNearestHydeYear(long year) {
+        if (year <= -10000) return -10000;
+        if (year >= 2024) return 2024;
+        long closest = KNOWN_HYDE_YEARS[0];
+        long minDiff = Math.abs(year - closest);
+        for (long y : KNOWN_HYDE_YEARS) {
+            long diff = Math.abs(year - y);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closest = y;
+            }
+        }
+        return closest;
+    }
+
     /**
      * Reads a local HYDE 3.4 ASCII grid file for a specific scenario year.
      */
     public static BufferedImage loadForYear(long year) {
         long requestedYear = year;
-        if (year < -10000) {
-            logger.info("Prehistoric epoch {} BC precedes HYDE 3.4 baseline (-10,000 BC). Clamping to 10,000 BC baseline.", Math.abs(year));
-            year = -10000;
+        long effectiveYear = findNearestHydeYear(year);
+        if (effectiveYear != requestedYear) {
+            logger.info("HYDE 3.4 baseline mapped from requested year {} to nearest empirical epoch {}.", requestedYear, effectiveYear);
         }
 
-        if (GRID_CACHE.containsKey(year)) {
-            logger.info("Using cached HYDE 3.4 baseline grid for year {} (clamped from {}).", year, requestedYear);
-            return GRID_CACHE.get(year);
+        if (GRID_CACHE.containsKey(requestedYear)) {
+            return GRID_CACHE.get(requestedYear);
+        }
+        if (GRID_CACHE.containsKey(effectiveYear)) {
+            BufferedImage cached = GRID_CACHE.get(effectiveYear);
+            GRID_CACHE.put(requestedYear, cached);
+            return cached;
         }
 
+        BufferedImage img = tryLoadGridForYear(effectiveYear, requestedYear);
+        if (img != null) {
+            GRID_CACHE.put(requestedYear, img);
+            GRID_CACHE.put(effectiveYear, img);
+            return img;
+        }
+
+        throw new IllegalStateException("ZERO FALLBACK VIOLATION: Failed to stream empirical HYDE 3.4 raster grid for year " + requestedYear);
+    }
+
+    private static BufferedImage tryLoadGridForYear(long year, long requestedYear) {
         BufferedImage img = null;
         String yearTag = DataDownloaderService.getHydeYearTag(year);
         String zipName = yearTag + "_pop.zip";
@@ -237,11 +274,6 @@ public class Hyde34GridReader {
             }
         }
 
-        if (img != null) {
-            GRID_CACHE.put(year, img);
-            return img;
-        }
-
-        throw new IllegalStateException("ZERO FALLBACK VIOLATION: Failed to stream empirical HYDE 3.4 raster grid for year " + requestedYear + " from ZIP archive " + zipName);
+        return img;
     }
 }

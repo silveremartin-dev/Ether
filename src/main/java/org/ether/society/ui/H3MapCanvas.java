@@ -8,8 +8,6 @@ package org.ether.society.ui;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.h3.H3Service;
-import org.ether.society.culture.CultureEngine;
-import org.ether.society.culture.CultureVector;
 import org.ether.society.flux.FluxEngine;
 import org.ether.society.model.Biome;
 import javafx.scene.SnapshotParameters;
@@ -27,9 +25,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.HashMap;
@@ -43,6 +46,7 @@ import com.uber.h3core.util.LatLng;
  * - Left Click + Drag: Pan
  * - Right Click + Drag: Rotate (3D only)
  * - Mouse Wheel: Zoom
+ * - Double Click: Focus on clicked cell
  */
 public class H3MapCanvas extends Canvas {
     private static final Logger logger = LoggerFactory.getLogger(H3MapCanvas.class);
@@ -51,7 +55,8 @@ public class H3MapCanvas extends Canvas {
     private org.ether.society.core.dod.WorldBuffer worldBuffer;
     private Map<Long, H3Cell> cellMap; // Fast lookup for neighbors
     private ViewMode viewMode = ViewMode.VIEW_2D;
-    private DisplayMode displayMode = DisplayMode.BIOME;
+    private final Set<DisplayMode> activeDisplayModes = new LinkedHashSet<>(List.of(DisplayMode.BIOME, DisplayMode.POPULATION));
+    private DisplayMode displayMode = DisplayMode.POPULATION;
     private boolean showContours = false; // Toggle for contour lines
     private boolean showFlowVectors = false; // Toggle for flux & movement vectors
     private boolean showResourceOverlay = false; // Toggle for resource deposits & capital overlay
@@ -139,12 +144,14 @@ public class H3MapCanvas extends Canvas {
     public boolean isShowHillshading() { return showHillshading; }
     public void setShowHillshading(boolean show) {
         this.showHillshading = show;
+        this.smoothImageDirty = true;
         draw();
     }
 
     public boolean isShowSolarTerminator() { return showSolarTerminator; }
     public void setShowSolarTerminator(boolean show) {
         this.showSolarTerminator = show;
+        this.smoothImageDirty = true;
         draw();
     }
 
@@ -163,6 +170,7 @@ public class H3MapCanvas extends Canvas {
     public boolean isTabVisible() { return tabVisible; }
     public void setTabVisible(boolean tabVisible) {
         this.tabVisible = tabVisible;
+        updateAutoRotateTimerState();
         draw();
     }
 
@@ -179,12 +187,22 @@ public class H3MapCanvas extends Canvas {
         draw();
     }
 
+    private boolean showFloatingLayers = true;
+
+    public boolean isShowFloatingLayers() { return showFloatingLayers; }
+    public void setShowFloatingLayers(boolean show) {
+        this.showFloatingLayers = show;
+        this.smoothImageDirty = true;
+        draw();
+    }
+
     // 3D isometric parameters
     // private static final double ISO_ANGLE = Math.toRadians(30);
     private static final double ELEVATION_SCALE = 0.05; // px per meter
     private double verticalExaggeration = 25.0; // 25x exaggeration for 3D terrain relief
     private boolean autoRotating = false;
-    private double autoRotationSpeed = 0.3; // degrees per frame tick
+    private double autoRotationSpeed = 0.4; // degrees per frame tick (~24 deg/sec at 60fps)
+    private javafx.animation.AnimationTimer autoRotateTimer;
 
     public double getVerticalExaggeration() { return verticalExaggeration; }
     public void setVerticalExaggeration(double verticalExaggeration) { 
@@ -203,7 +221,46 @@ public class H3MapCanvas extends Canvas {
         if (globe3DSubScene != null) {
             globe3DSubScene.setAutoRotating(autoRotating);
         }
+        updateAutoRotateTimerState();
         draw();
+    }
+
+    private void updateAutoRotateTimerState() {
+        if (autoRotating && viewMode == ViewMode.VIEW_3D && tabVisible) {
+            if (autoRotateTimer == null) {
+                autoRotateTimer = new javafx.animation.AnimationTimer() {
+                    private long lastNow = 0;
+
+                    @Override
+                    public void handle(long now) {
+                        if (!autoRotating || viewMode != ViewMode.VIEW_3D || !tabVisible) {
+                            return;
+                        }
+                        if (activeFlyTimer != null) {
+                            lastNow = now;
+                            return;
+                        }
+                        if (lastNow == 0) {
+                            lastNow = now;
+                            return;
+                        }
+                        double deltaSeconds = (now - lastNow) / 1_000_000_000.0;
+                        lastNow = now;
+                        if (deltaSeconds > 0.1) deltaSeconds = 0.1;
+
+                        double deg = autoRotationSpeed * 60.0 * deltaSeconds;
+                        centerLng = (centerLng + deg + 180.0) % 360.0 - 180.0;
+                        draw();
+                        notifyMiniMap();
+                    }
+                };
+            }
+            autoRotateTimer.start();
+        } else {
+            if (autoRotateTimer != null) {
+                autoRotateTimer.stop();
+            }
+        }
     }
 
     public double getAutoRotationSpeed() { return autoRotationSpeed; }
@@ -226,17 +283,47 @@ public class H3MapCanvas extends Canvas {
     // Mini-map reference (for updates)
     private MiniMap miniMap;
 
-    // Engines for visualization
-
-    private CultureEngine cultureEngine;
-    private org.ether.society.agents.AgentManager agentManager;
-
     public H3MapCanvas(double width, double height) {
         super(width, height);
         this.h3Service = new H3Service(8); // Resolution 8
         setupMouseHandlers();
         widthProperty().addListener((obs, oldW, newW) -> draw());
         heightProperty().addListener((obs, oldH, newH) -> draw());
+    }
+
+    @Override
+    public boolean isResizable() {
+        return true;
+    }
+
+    @Override
+    public double prefWidth(double height) {
+        return getWidth();
+    }
+
+    @Override
+    public double prefHeight(double width) {
+        return getHeight();
+    }
+
+    @Override
+    public double minWidth(double height) {
+        return 1.0;
+    }
+
+    @Override
+    public double minHeight(double width) {
+        return 1.0;
+    }
+
+    @Override
+    public double maxWidth(double height) {
+        return Double.MAX_VALUE;
+    }
+
+    @Override
+    public double maxHeight(double width) {
+        return Double.MAX_VALUE;
     }
 
     /**
@@ -248,13 +335,6 @@ public class H3MapCanvas extends Canvas {
         this.tooltip.setMouseTransparent(true);
         javafx.scene.layout.StackPane.setAlignment(tooltip, javafx.geometry.Pos.TOP_LEFT);
         container.getChildren().add(tooltip);
-    }
-
-    public void setEngines(FluxEngine fluxEngine, CultureEngine cultureEngine,
-            org.ether.society.agents.AgentManager agentManager) {
-
-        this.cultureEngine = cultureEngine;
-        this.agentManager = agentManager;
     }
 
     // Hover timer for 2-second cell tooltip delay
@@ -362,7 +442,7 @@ public class H3MapCanvas extends Canvas {
             if (viewMode == ViewMode.VIEW_3D) {
                 double sensitivity = 0.35 / zoomFactor;
                 centerLng -= dx * sensitivity;
-                centerLat += dy * sensitivity;
+                centerLat -= dy * sensitivity;
                 centerLat = Math.max(-89.0, Math.min(89.0, centerLat));
                 centerLng = Math.max(-180.0, Math.min(180.0, centerLng));
 
@@ -401,11 +481,7 @@ public class H3MapCanvas extends Canvas {
                 }
             }
             if (event.getClickCount() == 2) {
-                zoomFactor = 1.0;
-                centerLat = (minLat + maxLat) / 2.0;
-                centerLng = (minLng + maxLng) / 2.0;
-                draw();
-                notifyMiniMap();
+                resetView();
                 logger.info("Double-click: reset H3 map view to full centered perspective.");
             } else if (event.getClickCount() == 1) {
                 double[] latLng = getLatLngAt(event.getX(), event.getY());
@@ -471,7 +547,7 @@ public class H3MapCanvas extends Canvas {
 
     public void setViewMode(ViewMode mode) {
         this.viewMode = mode;
-        this.showLegendOverlay = true; // Ensure rainbow spectrum legend box is always displayed
+        updateAutoRotateTimerState();
         draw();
         logger.info("View mode changed to: {}", mode);
     }
@@ -481,14 +557,71 @@ public class H3MapCanvas extends Canvas {
     }
 
     public void setDisplayMode(DisplayMode mode) {
+        if (mode == null) return;
+        this.activeDisplayModes.clear();
+        if (mode == DisplayMode.BIOME) {
+            this.activeDisplayModes.add(DisplayMode.BIOME);
+        } else {
+            // Keep BIOME as underlying geography so relief and world location remain visible
+            this.activeDisplayModes.add(DisplayMode.BIOME);
+            this.activeDisplayModes.add(mode);
+        }
         this.displayMode = mode;
         this.smoothImageDirty = true;
         draw();
-        logger.info("Display mode changed to: {}", mode);
+        logger.info("Display modes updated to: {}", this.activeDisplayModes);
     }
 
     public DisplayMode getDisplayMode() {
-        return displayMode;
+        return getPrimaryDisplayMode();
+    }
+
+    public Set<DisplayMode> getActiveDisplayModes() {
+        return Collections.unmodifiableSet(activeDisplayModes);
+    }
+
+    public void setActiveDisplayModes(Collection<DisplayMode> modes) {
+        this.activeDisplayModes.clear();
+        if (modes != null && !modes.isEmpty()) {
+            this.activeDisplayModes.addAll(modes);
+        } else {
+            this.activeDisplayModes.add(DisplayMode.BIOME);
+        }
+        this.displayMode = getPrimaryDisplayMode();
+        this.smoothImageDirty = true;
+        draw();
+        logger.info("Active display modes set to: {}", this.activeDisplayModes);
+    }
+
+    public void setDisplayModeActive(DisplayMode mode, boolean active) {
+        if (mode == null) return;
+        if (active) {
+            activeDisplayModes.add(mode);
+        } else {
+            activeDisplayModes.remove(mode);
+            if (activeDisplayModes.isEmpty()) {
+                activeDisplayModes.add(DisplayMode.BIOME);
+            }
+        }
+        this.displayMode = getPrimaryDisplayMode();
+        this.smoothImageDirty = true;
+        draw();
+        logger.info("Active display modes toggled: {} -> {}", mode, activeDisplayModes);
+    }
+
+    public boolean isDisplayModeActive(DisplayMode mode) {
+        return activeDisplayModes.contains(mode);
+    }
+
+    public DisplayMode getPrimaryDisplayMode() {
+        for (DisplayMode dm : activeDisplayModes) {
+            if (dm != DisplayMode.BIOME) return dm;
+        }
+        return activeDisplayModes.isEmpty() ? DisplayMode.BIOME : activeDisplayModes.iterator().next();
+    }
+
+    public boolean isOnlyStaticBiome() {
+        return activeDisplayModes.size() == 1 && activeDisplayModes.contains(DisplayMode.BIOME);
     }
 
     // Toggle for contours
@@ -500,8 +633,17 @@ public class H3MapCanvas extends Canvas {
     public void resetView() {
         this.zoomFactor = 1.0;
         if (cells != null && !cells.isEmpty()) {
+            if (minLat == 0 && maxLat == 0 && minLng == 0 && maxLng == 0) {
+                minLat = cells.stream().mapToDouble(H3Cell::getLatitude).min().orElse(-90.0);
+                maxLat = cells.stream().mapToDouble(H3Cell::getLatitude).max().orElse(90.0);
+                minLng = cells.stream().mapToDouble(H3Cell::getLongitude).min().orElse(-180.0);
+                maxLng = cells.stream().mapToDouble(H3Cell::getLongitude).max().orElse(180.0);
+            }
             this.centerLat = (minLat + maxLat) / 2.0;
             this.centerLng = (minLng + maxLng) / 2.0;
+        } else {
+            this.centerLat = 0.0;
+            this.centerLng = 0.0;
         }
         if (globe3DSubScene != null) {
             globe3DSubScene.resetCamera();
@@ -542,14 +684,21 @@ public class H3MapCanvas extends Canvas {
     public List<H3Cell> getCells() { return cells; }
 
     public void setCells(List<H3Cell> cells) {
+        if (cells == null) {
+            this.cells = new ArrayList<>();
+            this.cellMap = new HashMap<>();
+            return;
+        }
         // Sort by latitude for faster culling
         this.cells = new ArrayList<>(cells); // Copy to allow sorting
-        this.cells.sort(Comparator.comparingDouble(H3Cell::getLatitude));
+        this.cells.sort(Comparator.comparingDouble(c -> c != null ? c.getLatitude() : 0.0));
         
         // Build map for fast lookup
         this.cellMap = new HashMap<>(); // Standard mapping in O(N)
-        for (H3Cell c : cells) {
-            cellMap.put(c.getH3Index(), c);
+        for (H3Cell c : this.cells) {
+            if (c != null) {
+                cellMap.put(c.getH3Index(), c);
+            }
         }
 
         if (!cells.isEmpty() && h3Service != null) {
@@ -635,10 +784,6 @@ public class H3MapCanvas extends Canvas {
         } else {
             draw2D(gc, minLat, maxLat, minLng, maxLng);
         }
-
-        if (agentManager != null) {
-            drawAgents(gc);
-        }
         
         if (showContours) {
             drawContours(gc);
@@ -652,14 +797,14 @@ public class H3MapCanvas extends Canvas {
             drawResourceOverlay(gc);
         }
 
-        // Draw legend overlay box with rainbow spectrum, min/max, mean (μ) and median (M) indicators
-        if (showLegendOverlay) {
-            drawLegendOverlay(gc);
-        }
-
         drawEventBeacons(gc);
         if (showCornerOverlays) {
             drawCornerOverlays(gc);
+        }
+
+        // Live real-time update of cell tooltip while simulation ticks forward
+        if (showMouseOverInfo && tooltip != null && tooltip.isVisible() && hoveredCell != null) {
+            updateTooltip(pendingCanvasX, pendingCanvasY, pendingSceneX, pendingSceneY);
         }
 
         logger.debug("Drew {} cells in {} mode", cells.size(), viewMode);
@@ -676,18 +821,26 @@ public class H3MapCanvas extends Canvas {
         String date = (currentDateStr != null && !currentDateStr.isBlank()) ? currentDateStr : "An --";
         String unifiedText = "🎬 " + scen + "  •  " + date;
 
-        gc.setFont(javafx.scene.text.Font.font("Consolas", javafx.scene.text.FontWeight.BOLD, 12));
-        double badgeWidth = Math.max(200, unifiedText.length() * 8.0 + 24);
-        double badgeX = w - badgeWidth - 14;
+        javafx.scene.text.Font font = javafx.scene.text.Font.font("Segoe UI", javafx.scene.text.FontWeight.BOLD, 12);
+        gc.setFont(font);
 
-        gc.setFill(Color.rgb(15, 23, 42, 0.88));
-        gc.fillRoundRect(badgeX, 14, badgeWidth, 28, 8, 8);
-        gc.setStroke(Color.rgb(56, 189, 248, 0.85));
+        javafx.scene.text.Text textNode = new javafx.scene.text.Text(unifiedText);
+        textNode.setFont(font);
+        double textWidth = textNode.getLayoutBounds().getWidth();
+        double badgeWidth = Math.max(180, textWidth + 24);
+        double badgeHeight = 28;
+        double badgeX = w - badgeWidth - 16;
+        double badgeY = 14;
+
+        // Translucent frosted glass card
+        gc.setFill(Color.rgb(15, 23, 42, 0.82));
+        gc.fillRoundRect(badgeX, badgeY, badgeWidth, badgeHeight, 8, 8);
+        gc.setStroke(Color.rgb(56, 189, 248, 0.60));
         gc.setLineWidth(1.2);
-        gc.strokeRoundRect(badgeX, 14, badgeWidth, 28, 8, 8);
+        gc.strokeRoundRect(badgeX, badgeY, badgeWidth, badgeHeight, 8, 8);
 
         gc.setFill(Color.rgb(241, 245, 249));
-        gc.fillText(unifiedText, badgeX + 12, 33);
+        gc.fillText(unifiedText, badgeX + 12, badgeY + 19);
     }
 
     private static class EventBeaconTarget {
@@ -699,12 +852,23 @@ public class H3MapCanvas extends Canvas {
     private javafx.animation.AnimationTimer activeFlyTimer;
 
     public void flyTo(double targetLat, double targetLng) {
+        double comfortableZoom = (viewMode == ViewMode.VIEW_3D) ? this.zoomFactor : Math.max(2.8, this.zoomFactor);
+        flyTo(targetLat, targetLng, comfortableZoom);
+    }
+
+    public void flyTo(double targetLat, double targetLng, double targetZoom) {
         if (activeFlyTimer != null) {
             activeFlyTimer.stop();
         }
 
+        if (globe3DSubScene != null) {
+            globe3DSubScene.flyTo(targetLat, targetLng);
+        }
+
         final double startLat = this.centerLat;
         final double startLng = this.centerLng;
+        final double startZoom = this.zoomFactor;
+        final double finalTargetZoom = (targetZoom > 0.1 && targetZoom < 50.0) ? targetZoom : startZoom;
 
         double dLng = targetLng - startLng;
         while (dLng > 180.0) dLng -= 360.0;
@@ -721,6 +885,7 @@ public class H3MapCanvas extends Canvas {
                 if (elapsed >= 1.0) {
                     centerLat = targetLat;
                     centerLng = ((finalTargetLng + 180.0) % 360.0) - 180.0;
+                    zoomFactor = finalTargetZoom;
                     draw();
                     notifyMiniMap();
                     stop();
@@ -730,13 +895,14 @@ public class H3MapCanvas extends Canvas {
                     centerLat = startLat + t * (targetLat - startLat);
                     double currentLng = startLng + t * (finalTargetLng - startLng);
                     centerLng = ((currentLng + 180.0) % 360.0) - 180.0;
+                    zoomFactor = startZoom + t * (finalTargetZoom - startZoom);
                     draw();
                     notifyMiniMap();
                 }
             }
         };
         activeFlyTimer.start();
-        logger.info("Flying camera to lat={}, lng={}", String.format("%.2f", targetLat), String.format("%.2f", targetLng));
+        logger.info("Flying camera to lat={}, lng={}, zoom={}", String.format("%.2f", targetLat), String.format("%.2f", targetLng), String.format("%.2f", finalTargetZoom));
     }
 
     private void drawEventBeacons(GraphicsContext gc) {
@@ -920,6 +1086,10 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
+    public Integer getBufferIndex(long h3Index) {
+        return h3ToBufferIndexMap.get(h3Index);
+    }
+
     private final Map<Long, Integer> previousPopMap = new HashMap<>();
 
     /**
@@ -938,17 +1108,11 @@ public class H3MapCanvas extends Canvas {
             }
 
             Integer prevPop = previousPopMap.get(cell.getH3Index());
+            Integer idx = (!h3ToBufferIndexMap.isEmpty()) ? h3ToBufferIndexMap.get(cell.getH3Index()) : null;
+            var activeEvents = (eventSystem != null) ? eventSystem.getActiveEvents() : null;
 
-            if (worldBuffer != null && !h3ToBufferIndexMap.isEmpty()) {
-                Integer idx = h3ToBufferIndexMap.get(cell.getH3Index());
-                if (idx != null) {
-                    tooltip.updateFromBuffer(worldBuffer, idx);
-                } else {
-                    tooltip.updateCell(cell, prevPop);
-                }
-            } else {
-                tooltip.updateCell(cell, prevPop);
-            }
+            tooltip.updateCell(cell, worldBuffer, idx, prevPop, activeEvents);
+
             double contW = tooltipContainer != null ? tooltipContainer.getWidth() : getWidth();
             double contH = tooltipContainer != null ? tooltipContainer.getHeight() : getHeight();
             tooltip.position(canvasX, canvasY, contW, contH);
@@ -1201,7 +1365,6 @@ public class H3MapCanvas extends Canvas {
                         color.getOpacity()
                 );
             }
-            gc.setFill(color);
 
             double radiusY = Math.max(1.0, cellSize / 2.0);
             double absLat = Math.abs(cell.getLatitude());
@@ -1209,9 +1372,38 @@ public class H3MapCanvas extends Canvas {
             double radiusX = (cellSize / 2.0) / Math.max(0.12, cosLat);
             radiusX = Math.max(radiusY * 0.45, radiusX);
 
-            drawHexCell2D(gc, x, y, radiusX, radiusY);
+            boolean floating = showFloatingLayers && hasThematicOverlay(cell);
+            if (floating) {
+                // 1. Base terrain biome polygon on the ground plane
+                Color baseBiomeColor = getBiomeColor(cell.getBiome());
+                if (showHillshading || showSolarTerminator) {
+                    double f = computeHillshadeFactor(cell) * computeSolarTerminatorFactor(cell);
+                    baseBiomeColor = Color.color(
+                            Math.clamp(baseBiomeColor.getRed() * f, 0.0, 1.0),
+                            Math.clamp(baseBiomeColor.getGreen() * f, 0.0, 1.0),
+                            Math.clamp(baseBiomeColor.getBlue() * f, 0.0, 1.0),
+                            1.0
+                    );
+                }
+                gc.setFill(baseBiomeColor);
+                drawHexCell2D(gc, x, y, radiusX, radiusY);
 
-            if (showHexGrid && absLat < 78.0) {
+                // 2. Soft ambient drop shadow cast by floating layer
+                gc.setFill(Color.rgb(0, 0, 0, 0.32));
+                drawHexCell2D(gc, x + 1.8, y + 1.8, radiusX * 0.94, radiusY * 0.94);
+
+                // 3. Elevated floating data polygon with luminous edge
+                gc.setFill(color);
+                drawHexCell2D(gc, x - 0.9, y - 0.9, radiusX * 0.96, radiusY * 0.96);
+                gc.setStroke(Color.rgb(255, 255, 255, 0.35));
+                gc.setLineWidth(0.8);
+                strokeHexCell2D(gc, x - 0.9, y - 0.9, radiusX * 0.96, radiusY * 0.96);
+            } else {
+                gc.setFill(color);
+                drawHexCell2D(gc, x, y, radiusX, radiusY);
+            }
+
+            if (showHexGrid && absLat < 78.0 && !floating) {
                 gc.setStroke(Color.rgb(15, 23, 42, 0.35));
                 gc.setLineWidth(0.8);
                 strokeHexCell2D(gc, x, y, radiusX, radiusY);
@@ -1328,6 +1520,102 @@ public class H3MapCanvas extends Canvas {
         double viewWidth = getWidth();
         double viewHeight = getHeight();
 
+        if (smoothMap) {
+            WritableImage smoothImg = getOrUpdateSmoothMapImage(minLat, maxLat, minLng, maxLng);
+            drawSmoothGlobeSurface(gc, cx, cy, radius, radRotationY, radTilt, smoothImg);
+
+            if (showHexGrid) {
+                for (int i = 0; i < cellCount; i++) {
+                    H3Cell cell = cells.get(i);
+                    double lat = cell.getLatitude();
+                    double lng = cell.getLongitude();
+
+                    double radLat1 = Math.toRadians(lat);
+                    double radLngDiff = Math.toRadians(lng - centerLng);
+                    double dotProd = Math.sin(radLat1) * Math.sin(radCamLat) + Math.cos(radLat1) * Math.cos(radCamLat) * Math.cos(radLngDiff);
+                    if (dotProd < -0.05) continue;
+
+                    double latRad = Math.toRadians(lat);
+                    double lngRad = Math.toRadians(lng);
+                    double nx = Math.cos(latRad) * Math.sin(lngRad);
+                    double ny = Math.sin(latRad);
+                    double nz = Math.cos(latRad) * Math.cos(lngRad);
+
+                    double xr = nx * cosR + nz * sinR;
+                    double zr = -nx * sinR + nz * cosR;
+                    double yrt = ny * cosT - zr * sinT;
+                    double zrt = ny * sinT + zr * cosT;
+
+                    if (zrt <= 0.02) continue;
+
+                    double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+                    double elevationRatio = (elev / 6371000.0) * verticalExaggeration;
+                    double r = radius * (1.0 + elevationRatio);
+
+                    double cxCenter = cx + xr * r;
+                    double cyCenter = cy - yrt * r;
+
+                    if (cxCenter < -40 || cxCenter > viewWidth + 40 || cyCenter < -40 || cyCenter > viewHeight + 40) {
+                        continue;
+                    }
+
+                    double[] px = new double[6];
+                    double[] py = new double[6];
+
+                    double ux, uy, uz;
+                    if (Math.abs(ny) < 0.99) {
+                        double uLen = Math.hypot(nz, nx);
+                        ux = -nz / uLen; uy = 0.0; uz = nx / uLen;
+                    } else {
+                        double uLen = Math.hypot(nz, ny);
+                        ux = 0.0; uy = -nz / uLen; uz = ny / uLen;
+                    }
+                    double vx = ny * uz - nz * uy;
+                    double vy = nz * ux - nx * uz;
+                    double vz = nx * uy - ny * ux;
+
+                    for (int k = 0; k < 6; k++) {
+                        double angleRad = (Math.PI / 3.0) * k - (Math.PI / 6.0);
+                        double cosA = Math.cos(angleRad);
+                        double sinA = Math.sin(angleRad);
+
+                        double dx = tanHexRad * (cosA * ux + sinA * vx);
+                        double dy = tanHexRad * (cosA * uy + sinA * vy);
+                        double dz = tanHexRad * (cosA * uz + sinA * vz);
+
+                        double vx3 = nx + dx;
+                        double vy3 = ny + dy;
+                        double vz3 = nz + dz;
+                        double vLen = Math.sqrt(vx3 * vx3 + vy3 * vy3 + vz3 * vz3);
+                        vx3 /= vLen; vy3 /= vLen; vz3 /= vLen;
+
+                        double vxr = vx3 * cosR + vz3 * sinR;
+                        double vzr = -vx3 * sinR + vz3 * cosR;
+                        double vyrt = vy3 * cosT - vzr * sinT;
+
+                        px[k] = cx + vxr * r;
+                        py[k] = cy - vyrt * r;
+                    }
+
+                    gc.setStroke(Color.rgb(15, 23, 42, 0.35));
+                    gc.setLineWidth(0.6);
+                    gc.strokePolygon(px, py, 6);
+                }
+            }
+
+            // Soft limb shadow edge overlay
+            RadialGradient limbGradient = new RadialGradient(
+                    0, 0, cx, cy, radius, false,
+                    CycleMethod.NO_CYCLE,
+                    new Stop(0.0, Color.rgb(0, 0, 0, 0.0)),
+                    new Stop(0.85, Color.rgb(0, 0, 0, 0.05)),
+                    new Stop(0.98, Color.rgb(0, 0, 0, 0.45)),
+                    new Stop(1.0, Color.rgb(0, 0, 0, 0.70))
+            );
+            gc.setFill(limbGradient);
+            gc.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
+            return;
+        }
         int visibleCount = 0;
 
         for (int i = 0; i < cellCount; i++) {
@@ -1356,6 +1644,9 @@ public class H3MapCanvas extends Canvas {
 
             double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
             double elevationRatio = (elev / 6371000.0) * verticalExaggeration;
+            if (showFloatingLayers && hasThematicOverlay(cell)) {
+                elevationRatio += 0.015;
+            }
             double r = radius * (1.0 + elevationRatio);
 
             double cxCenter = cx + xr * r;
@@ -1405,7 +1696,7 @@ public class H3MapCanvas extends Canvas {
                 py[k] = cy - vyrt * r;
             }
 
-            Color baseColor = smoothMap ? getIdwInterpolatedColor(cell, i) : getBufferOrCellColor(cell);
+            Color baseColor = getBufferOrCellColor(cell);
             double lightFactor = 0.45 + 0.55 * Math.max(0.0, zrt);
             if (showHillshading) {
                 lightFactor *= computeHillshadeFactor(cell);
@@ -1465,6 +1756,90 @@ public class H3MapCanvas extends Canvas {
         gc.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
     }
 
+    private void drawSmoothGlobeSurface(GraphicsContext gc, double cx, double cy, double radius, double radRotationY, double radTilt, WritableImage smoothImg) {
+        if (smoothImg == null || radius < 5) return;
+
+        int rInt = (int) Math.ceil(radius);
+        int diam = rInt * 2;
+        int imgW = (int) smoothImg.getWidth();
+        int imgH = (int) smoothImg.getHeight();
+
+        javafx.scene.image.PixelReader pr = smoothImg.getPixelReader();
+        if (pr == null) return;
+
+        int[] srcPixels = new int[imgW * imgH];
+        pr.getPixels(0, 0, imgW, imgH, javafx.scene.image.PixelFormat.getIntArgbInstance(), srcPixels, 0, imgW);
+
+        WritableImage globeImg = new WritableImage(diam, diam);
+        PixelWriter pw = globeImg.getPixelWriter();
+        int[] globePixels = new int[diam * diam];
+
+        double cosR = Math.cos(radRotationY);
+        double sinR = Math.sin(radRotationY);
+        double cosT = Math.cos(radTilt);
+        double sinT = Math.sin(radTilt);
+        double solarLngRad = Math.toRadians(-centerLng);
+
+        double spanLng = maxLng - minLng;
+        double spanLat = maxLat - minLat;
+        if (spanLng <= 0) spanLng = 360.0;
+        if (spanLat <= 0) spanLat = 180.0;
+
+        for (int py = 0; py < diam; py++) {
+            double dy = (rInt - py) / radius;
+            double dy2 = dy * dy;
+            if (dy2 >= 1.0) continue;
+            double dxMax = Math.sqrt(1.0 - dy2);
+            int minPx = Math.max(0, (int) Math.floor(rInt - dxMax * radius));
+            int maxPx = Math.min(diam - 1, (int) Math.ceil(rInt + dxMax * radius));
+
+            for (int px = minPx; px <= maxPx; px++) {
+                double dx = (px - rInt) / radius;
+                double r2 = dx * dx + dy2;
+                if (r2 >= 1.0) continue;
+
+                double zr = Math.sqrt(1.0 - r2);
+
+                // Un-tilt and un-rotate view ray to spherical planetary coords
+                double yrt = dy * cosT - zr * sinT;
+                double zrt = dy * sinT + zr * cosT;
+                double xr = dx * cosR - zrt * sinR;
+                double zr_orig = dx * sinR + zrt * cosR;
+
+                double latDeg = Math.toDegrees(Math.asin(Math.clamp(yrt, -1.0, 1.0)));
+                double lngDeg = Math.toDegrees(Math.atan2(xr, zr_orig));
+
+                int texX = (int) Math.clamp(Math.floor(((lngDeg - minLng) / spanLng) * imgW), 0, imgW - 1);
+                int texY = (int) Math.clamp(Math.floor(((maxLat - latDeg) / spanLat) * imgH), 0, imgH - 1);
+
+                int srcColor = srcPixels[texY * imgW + texX];
+                int a = (srcColor >> 24) & 0xff;
+                int r = (srcColor >> 16) & 0xff;
+                int g = (srcColor >> 8) & 0xff;
+                int b = srcColor & 0xff;
+
+                // Spherical diffuse lighting + limb darkening
+                double light = 0.40 + 0.60 * zr;
+                if (showSolarTerminator) {
+                    double latRad = Math.toRadians(latDeg);
+                    double lngRad = Math.toRadians(lngDeg);
+                    double cosZenith = Math.cos(latRad) * Math.cos(lngRad - solarLngRad);
+                    double termFactor = (cosZenith < -0.08) ? 0.35 : (cosZenith > 0.08 ? 1.0 : (0.35 + (cosZenith + 0.08) / 0.16 * 0.65));
+                    light *= termFactor;
+                }
+
+                int nr = (int) Math.clamp(r * light, 0, 255);
+                int ng = (int) Math.clamp(g * light, 0, 255);
+                int nb = (int) Math.clamp(b * light, 0, 255);
+
+                globePixels[py * diam + px] = (a << 24) | (nr << 16) | (ng << 8) | nb;
+            }
+        }
+
+        pw.setPixels(0, 0, diam, diam, javafx.scene.image.PixelFormat.getIntArgbInstance(), globePixels, 0, diam);
+        gc.drawImage(globeImg, cx - rInt, cy - rInt);
+    }
+
     /**
      * Compute Inverse Distance Weighting (IDW) spatial continuous color interpolation.
      * Blends a cell's color with its immediate spatial neighbors to create a mathematically smooth scalar field.
@@ -1515,13 +1890,62 @@ public class H3MapCanvas extends Canvas {
         double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
         if (elev <= 0) return 1.0;
 
-        double latRad = Math.toRadians(cell.getLatitude());
-        double lngRad = Math.toRadians(cell.getLongitude());
+        double dzDx = 0.0;
+        double dzDy = 0.0;
 
-        double slopeX = Math.sin(lngRad * 4.0) * (elev / 8848.0) * 0.40;
-        double slopeY = Math.cos(latRad * 4.0) * (elev / 8848.0) * 0.40;
-        double light = (-0.5 * slopeX + 0.5 * slopeY + 0.707) / Math.sqrt(slopeX * slopeX + slopeY * slopeY + 1.0);
-        return Math.clamp(0.70 + light * 0.45, 0.55, 1.45);
+        if (h3Service != null && cellMap != null) {
+            try {
+                List<Long> neighbors = h3Service.getNeighbors(cell.getH3Index());
+                if (neighbors != null && !neighbors.isEmpty()) {
+                    double cLat = cell.getLatitude();
+                    double cLng = cell.getLongitude();
+                    double cosLat = Math.cos(Math.toRadians(cLat));
+                    int validNeighbors = 0;
+                    for (Long nIdx : neighbors) {
+                        H3Cell neighbor = cellMap.get(nIdx);
+                        if (neighbor != null) {
+                            double nElev = neighbor.getElevation() != null ? neighbor.getElevation() : 0.0;
+                            double dLng = (neighbor.getLongitude() - cLng) * cosLat;
+                            double dLat = neighbor.getLatitude() - cLat;
+                            double dist = Math.hypot(dLng, dLat);
+                            if (dist > 1e-4) {
+                                double slope = (nElev - elev) / (dist * 111320.0);
+                                dzDx += slope * (dLng / dist);
+                                dzDy += slope * (dLat / dist);
+                                validNeighbors++;
+                            }
+                        }
+                    }
+                    if (validNeighbors > 0) {
+                        dzDx /= validNeighbors;
+                        dzDy /= validNeighbors;
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        // Standard Cartographic Hillshading: Azimuth 315° (North-West), Altitude 45°
+        double sunAzimuthRad = Math.toRadians(315.0);
+        double sunAltitudeRad = Math.toRadians(45.0);
+
+        double exag = Math.max(1.0, verticalExaggeration * 0.8);
+        double nx = -dzDx * exag;
+        double ny = -dzDy * exag;
+        double nz = 1.0;
+        double nLen = Math.hypot(Math.hypot(nx, ny), nz);
+        nx /= nLen;
+        ny /= nLen;
+        nz /= nLen;
+
+        double sx = Math.sin(sunAzimuthRad) * Math.cos(sunAltitudeRad);
+        double sy = Math.cos(sunAzimuthRad) * Math.cos(sunAltitudeRad);
+        double sz = Math.sin(sunAltitudeRad);
+
+        double dot = nx * sx + ny * sy + nz * sz;
+        double hillshade = Math.clamp(dot, 0.0, 1.0);
+
+        return Math.clamp(0.55 + hillshade * 0.80, 0.45, 1.50);
     }
 
     private double computeSolarTerminatorFactor(H3Cell cell) {
@@ -1536,56 +1960,39 @@ public class H3MapCanvas extends Canvas {
         return 0.35 + (cosZenith + 0.08) / 0.16 * 0.65;
     }
 
-    private void drawAgents(GraphicsContext gc) {
-        if (agentManager == null || agentManager.getAgents() == null) return;
+    public Color blendColors(Color base, Color overlay, double alpha) {
+        if (alpha <= 0.0 || overlay == null) return base;
+        if (alpha >= 1.0 || base == null) return overlay;
+        double inv = 1.0 - alpha;
+        double r = base.getRed() * inv + overlay.getRed() * alpha;
+        double g = base.getGreen() * inv + overlay.getGreen() * alpha;
+        double b = base.getBlue() * inv + overlay.getBlue() * alpha;
+        return Color.color(Math.clamp(r, 0.0, 1.0), Math.clamp(g, 0.0, 1.0), Math.clamp(b, 0.0, 1.0));
+    }
 
-        double radius = Math.min(getWidth(), getHeight()) * 0.45 * zoomFactor;
-        double cx = getWidth() / 2.0;
-        double cy = getHeight() / 2.0;
-        double radRotationY = Math.toRadians(-centerLng);
-        double radTilt = Math.toRadians(centerLat);
-
-        for (org.ether.society.agents.Agent agent : agentManager.getAgents()) {
-            H3Cell cell = cellMap != null ? cellMap.get(agent.getH3Index()) : cells.stream()
-                    .filter(c -> c.getH3Index() == agent.getH3Index())
-                    .findFirst()
-                    .orElse(null);
-
-            if (cell == null)
-                continue;
-
-            double x, y;
-            if (viewMode == ViewMode.VIEW_3D) {
-                double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
-                ProjectedPoint pp = project3D(cell.getLatitude(), cell.getLongitude(), elev, radRotationY, radTilt, radius, cx, cy);
-                if (pp == null || pp.z <= 0.02) continue; // Behind sphere limb
-                x = pp.screenX;
-                y = pp.screenY;
-            } else {
-                x = (cell.getLongitude() - minLng) * scale + offsetX;
-                y = (maxLat - cell.getLatitude()) * scale + offsetY;
-            }
-
-            // Draw Agent
-            gc.setFill(getAgentColor(agent.getType()));
-            gc.fillOval(x - 3, y - 3, 6, 6);
-            gc.setStroke(Color.WHITE);
-            gc.setLineWidth(1);
-            gc.strokeOval(x - 3, y - 3, 6, 6);
+    private Color getSingleModeColor(DisplayMode mode, H3Cell cell, Integer bufferIndex, Biome cellBiome, boolean isWater) {
+        if (bufferIndex != null && worldBuffer != null && bufferIndex >= 0 && bufferIndex < worldBuffer.getCapacity()) {
+            int index = bufferIndex;
+            return switch (mode) {
+                case BIOME -> getBiomeColor(cellBiome);
+                case POPULATION -> getPopulationColor((int) worldBuffer.getBiomassHuman()[index], isWater);
+                case FOOD -> isWater ? Color.rgb(10, 20, 50) : getFoodColor(worldBuffer.getFoodResource()[index]);
+                case TEMPERATURE -> getTemperatureColor(worldBuffer.getTemperature()[index]);
+                case PRECIPITATION -> getPrecipitationColor(worldBuffer.getRainfall()[index]);
+                case TECHNOLOGY -> isWater ? Color.rgb(10, 20, 50) : getTechColor((double) worldBuffer.getTechnologyLevel()[index]);
+                case WATER -> getWaterColor((double) worldBuffer.getWaterResource()[index]);
+                case WOOD -> isWater ? Color.rgb(10, 20, 50) : getWoodColor((double) worldBuffer.getWoodResource()[index]);
+                case INEQUALITY -> isWater ? Color.rgb(10, 20, 50) : getGiniColor((double) worldBuffer.getGiniIndex()[index]);
+                case FLUX -> isWater ? Color.rgb(10, 20, 50) : getPriceColor(worldBuffer.getLocalPrice()[index]);
+                default -> getCellColorForMode(mode, cell, isWater);
+            };
         }
+        return getCellColorForMode(mode, cell, isWater);
     }
 
-    private Color getAgentColor(org.ether.society.agents.AgentType type) {
-        return switch (type) {
-            case SCOUT -> Color.YELLOW;
-            case TRADER -> Color.ORANGE;
-            case SETTLER -> Color.MAGENTA;
-        };
-    }
-
-    private Color getCellColor(H3Cell cell) {
-        boolean isWater = cell != null && (cell.getBiome() == Biome.OCEAN || cell.getBiome() == Biome.DEEP_OCEAN || (cell.getElevation() != null && cell.getElevation() <= 0));
-        return switch (displayMode) {
+    private Color getCellColorForMode(DisplayMode mode, H3Cell cell, boolean isWater) {
+        if (cell == null) return Color.BLACK;
+        return switch (mode) {
             case MALTHUSIAN_PRESSURE -> getMalthusianPressureColor(cell);
             case MINERAL_RESOURCES -> getMineralResourcesColor(cell);
             case MINING_EXPLOITATION -> getMiningExploitationColor(cell);
@@ -1624,6 +2031,10 @@ public class H3MapCanvas extends Canvas {
             case OCEAN_PH -> getOceanPhColor(cell);
             case PERMAFROST -> getPermafrostColor(cell);
         };
+    }
+
+    private Color getCellColor(H3Cell cell) {
+        return getBufferOrCellColor(cell);
     }
 
     private Color getOceanPhColor(H3Cell cell) {
@@ -1856,42 +2267,101 @@ public class H3MapCanvas extends Canvas {
 
     private Color getBufferOrCellColor(H3Cell cell) {
         if (cell == null) return Color.BLACK;
-        if (worldBuffer != null && !h3ToBufferIndexMap.isEmpty()) {
-            Integer idx = h3ToBufferIndexMap.get(cell.getH3Index());
-            if (idx != null && idx >= 0 && idx < worldBuffer.getCapacity()) {
-                int index = idx;
-                Biome cellBiome = org.ether.society.model.Biome.values()[worldBuffer.getBiomes()[index]];
-                boolean isWater = (cellBiome == Biome.OCEAN || cellBiome == Biome.DEEP_OCEAN || worldBuffer.getElevation()[index] <= 0);
-
-                return switch (displayMode) {
-                    case BIOME -> getBiomeColor(cellBiome);
-                    case POPULATION -> getPopulationColor((int)worldBuffer.getBiomassHuman()[index], isWater);
-                    case FOOD -> isWater ? Color.rgb(10, 20, 50) : getFoodColor(worldBuffer.getFoodResource()[index]);
-                    case TEMPERATURE -> getTemperatureColor(worldBuffer.getTemperature()[index]);
-                    case PRECIPITATION -> getPrecipitationColor(worldBuffer.getRainfall()[index]);
-                    case TECHNOLOGY -> isWater ? Color.rgb(10, 20, 50) : getTechColor((double)worldBuffer.getTechnologyLevel()[index]);
-                    case WATER -> getWaterColor((double)worldBuffer.getWaterResource()[index]);
-                    case WOOD -> isWater ? Color.rgb(10, 20, 50) : getWoodColor((double)worldBuffer.getWoodResource()[index]);
-                    case INEQUALITY -> isWater ? Color.rgb(10, 20, 50) : getGiniColor((double)worldBuffer.getGiniIndex()[index]);
-                    case FLUX -> isWater ? Color.rgb(10, 20, 50) : getPriceColor(worldBuffer.getLocalPrice()[index]);
-                    default -> getCellColor(cell);
-                };
-            }
+        Integer idx = (worldBuffer != null && !h3ToBufferIndexMap.isEmpty()) ? h3ToBufferIndexMap.get(cell.getH3Index()) : null;
+        Biome cellBiome;
+        boolean isWater;
+        if (idx != null && idx >= 0 && idx < worldBuffer.getCapacity()) {
+            int index = idx;
+            cellBiome = org.ether.society.model.Biome.values()[worldBuffer.getBiomes()[index]];
+            isWater = (cellBiome == Biome.OCEAN || cellBiome == Biome.DEEP_OCEAN || worldBuffer.getElevation()[index] <= 0);
+        } else {
+            cellBiome = cell.getBiome() != null ? cell.getBiome() : Biome.PLAINS;
+            isWater = (cell.getBiome() == Biome.OCEAN || cell.getBiome() == Biome.DEEP_OCEAN || (cell.getElevation() != null && cell.getElevation() <= 0));
         }
-        return getCellColor(cell);
+
+        if (activeDisplayModes.isEmpty()) {
+            return getBiomeColor(cellBiome);
+        }
+
+        // If BIOME is one of the active layers, use it as the geographic base layer
+        if (activeDisplayModes.contains(DisplayMode.BIOME)) {
+            Color baseColor = getBiomeColor(cellBiome);
+            if (isWater) {
+                // For water cells, if water-specific modes are active (like OCEAN_PH), blend them
+                for (DisplayMode mode : activeDisplayModes) {
+                    if (mode == DisplayMode.OCEAN_PH || mode == DisplayMode.WATER) {
+                        Color wCol = getSingleModeColor(mode, cell, idx, cellBiome, isWater);
+                        baseColor = blendColors(baseColor, wCol, 0.65);
+                    }
+                }
+                return baseColor;
+            }
+
+            // On land: overlay each non-BIOME active layer on top of the terrain
+            for (DisplayMode mode : activeDisplayModes) {
+                if (mode == DisplayMode.BIOME) continue;
+
+                if (mode == DisplayMode.POPULATION) {
+                    int pop = 0;
+                    if (idx != null && idx >= 0 && idx < worldBuffer.getCapacity()) {
+                        pop = (int) worldBuffer.getBiomassHuman()[idx];
+                    } else if (cell.getPopulation() != null) {
+                        pop = cell.getPopulation();
+                    }
+                    if (pop > 0) {
+                        double norm = Math.clamp(Math.log1p(pop) / Math.log1p(500), 0.0, 1.0);
+                        Color popColor = getPopulationColor(pop, false);
+                        double alpha = 0.40 + 0.55 * norm;
+                        baseColor = blendColors(baseColor, popColor, alpha);
+                    }
+                } else if (mode == DisplayMode.EPIDEMIC) {
+                    int infected = cell.getEpidemicInfected() != null ? cell.getEpidemicInfected() : 0;
+                    if (infected > 0) {
+                        Color epiColor = getEpidemicColor(cell);
+                        baseColor = blendColors(baseColor, epiColor, 0.70);
+                    }
+                } else if (mode == DisplayMode.POLITICAL) {
+                    if (cell.getOwner() != null) {
+                        Color polColor = cell.getOwner().getColor();
+                        baseColor = blendColors(baseColor, polColor, 0.60);
+                    }
+                } else {
+                    Color overlayCol = getSingleModeColor(mode, cell, idx, cellBiome, isWater);
+                    baseColor = blendColors(baseColor, overlayCol, 0.55);
+                }
+            }
+            return baseColor;
+        }
+
+        // If BIOME is not active:
+        if (activeDisplayModes.size() == 1) {
+            DisplayMode single = activeDisplayModes.iterator().next();
+            return getSingleModeColor(single, cell, idx, cellBiome, isWater);
+        }
+
+        // Multiple non-BIOME layers: start with the first and blend subsequent ones
+        Iterator<DisplayMode> it = activeDisplayModes.iterator();
+        DisplayMode first = it.next();
+        Color composite = getSingleModeColor(first, cell, idx, cellBiome, isWater);
+        while (it.hasNext()) {
+            DisplayMode next = it.next();
+            Color nextCol = getSingleModeColor(next, cell, idx, cellBiome, isWater);
+            composite = blendColors(composite, nextCol, 0.50);
+        }
+        return composite;
     }
 
     private Color getPriceColor(float price) {
-        // Higher price = more red
-        float normalized = Math.min(1.0f, price / 10.0f);
+        float normalized = Math.clamp(price / 10.0f, 0.0f, 1.0f);
+        if (scientificColorMap != null) {
+            return scientificColorMap.getColor(normalized);
+        }
         return Color.color(normalized, 1.0f - normalized, 0);
     }
 
     private Color getPoliticalColor(H3Cell cell) {
         if (cell.getOwner() == null) {
-            // Unclaimed territory - just biome but dimmer or specific color
             return getBiomeColor(cell.getBiome()).desaturate().darker();
-            // Or Color.GRAY for neutral? Let's use darker biome to show it's 'wild'.
         }
         return cell.getOwner().getColor();
     }
@@ -1899,6 +2369,11 @@ public class H3MapCanvas extends Canvas {
     private Color getBiomeColor(Biome biome) {
         if (biome == null)
             return Color.GRAY;
+
+        if (scientificColorMap != null && scientificColorMap != ScientificColorMap.TURBO && scientificColorMap != ScientificColorMap.TERRAIN) {
+            double norm = (double) biome.ordinal() / Math.max(1.0, Biome.values().length - 1);
+            return scientificColorMap.getColor(norm);
+        }
 
         return switch (biome) {
             case OCEAN -> Color.rgb(25, 50, 150);
@@ -1934,8 +2409,10 @@ public class H3MapCanvas extends Canvas {
         }
 
         // Log scale for better visualization (most populations < 100)
-        double normalized = Math.log1p(population) / Math.log1p(500); // 500 as max expected
-        normalized = Math.min(1.0, Math.max(0.0, normalized));
+        double normalized = Math.clamp(Math.log1p(population) / Math.log1p(500), 0.0, 1.0);
+        if (scientificColorMap != null) {
+            return scientificColorMap.getColor(normalized);
+        }
 
         // Vibrant Heat map: Deep Blue -> Cyan -> Green -> Yellow -> Bright Red
         if (normalized < 0.25) {
@@ -1957,19 +2434,21 @@ public class H3MapCanvas extends Canvas {
      * Get food resource color (brown -> yellow -> green).
      */
     private Color getFoodColor(double food) {
-        if (food < 10) {
+        if (food < 10 && scientificColorMap == ScientificColorMap.TERRAIN) {
             return Color.rgb(60, 40, 20); // Dark brown for no food
         }
 
-        double normalized = Math.min(1.0, food / 800.0); // 800 as high food level
+        double normalized = Math.clamp(food / 800.0, 0.0, 1.0); // 800 as high food level
+        if (scientificColorMap != null && scientificColorMap != ScientificColorMap.TERRAIN) {
+            return scientificColorMap.getColor(normalized);
+        }
 
         if (normalized < 0.5) {
             double t = normalized / 0.5;
             return Color.rgb((int) (139 - t * 100), (int) (69 + t * 186), 19); // Brown to Yellow-green
         } else {
             double t = (normalized - 0.5) / 0.5;
-            return Color.rgb((int) (39 * (1 - t)), (int) (139 + t * 116), (int) (34 * (1 - t))); // Yellow-green to
-                                                                                                 // Bright green
+            return Color.rgb((int) (39 * (1 - t)), (int) (139 + t * 116), (int) (34 * (1 - t)));
         }
     }
 
@@ -1977,9 +2456,11 @@ public class H3MapCanvas extends Canvas {
      * Get temperature color (cool blue -> warm red).
      */
     private Color getTemperatureColor(double temp) {
-        // Normalize -30 to +45Â°C to 0-1 range
-        double normalized = (temp + 30) / 75.0;
-        normalized = Math.max(0, Math.min(1.0, normalized));
+        // Normalize -30 to +45°C to 0-1 range
+        double normalized = Math.clamp((temp + 30.0) / 75.0, 0.0, 1.0);
+        if (scientificColorMap != null) {
+            return scientificColorMap.getColor(normalized);
+        }
 
         if (normalized < 0.25) {
             return Color.rgb(0, 0, (int) (128 + normalized * 4 * 127)); // Dark blue to bright blue
@@ -2000,22 +2481,21 @@ public class H3MapCanvas extends Canvas {
      */
     private Color getPrecipitationColor(double precipMm) {
         // Normalize 0 to 2500 mm/year to 0-1 range
-        double normalized = Math.max(0.0, Math.min(1.0, precipMm / 2500.0));
+        double normalized = Math.clamp(precipMm / 2500.0, 0.0, 1.0);
+        if (scientificColorMap != null) {
+            return scientificColorMap.getColor(normalized);
+        }
 
         if (normalized < 0.2) {
-            // Arid desert (< 500mm): Sand / Light Yellow-Brown to Pale Green
             double t = normalized / 0.2;
             return Color.rgb((int)(235 - t * 55), (int)(215 - t * 5), (int)(160 - t * 20));
         } else if (normalized < 0.5) {
-            // Temperate (500-1250mm): Pale Green to Bright Cyan
             double t = (normalized - 0.2) / 0.3;
             return Color.rgb((int)(180 - t * 120), (int)(210 - t * 20), (int)(140 + t * 20));
         } else if (normalized < 0.8) {
-            // Humid pluvial (1250-2000mm): Bright Cyan to Ocean Blue
             double t = (normalized - 0.5) / 0.3;
             return Color.rgb((int)(60 - t * 30), (int)(190 - t * 60), (int)(160 + t * 60));
         } else {
-            // Extreme Monsoon (> 2000mm): Ocean Blue to Deep Indigo
             double t = (normalized - 0.8) / 0.2;
             return Color.rgb((int)(30 - t * 20), (int)(130 - t * 80), (int)(220 - t * 60));
         }
@@ -2026,17 +2506,17 @@ public class H3MapCanvas extends Canvas {
      */
     private Color getTechColor(Double techLevel) {
         if (techLevel == null || techLevel <= 0) {
-            return Color.rgb(30, 30, 30); // Dark for no tech
+            return Color.rgb(30, 30, 30);
         }
 
-        // Tech levels 0-10 mapped to color gradient
-        double normalized = Math.min(1.0, techLevel / 10.0);
+        double normalized = Math.clamp(techLevel / 10.0, 0.0, 1.0);
+        if (scientificColorMap != null && scientificColorMap != ScientificColorMap.TERRAIN) {
+            return scientificColorMap.getColor(normalized);
+        }
 
-        // Dark purple -> bright cyan progression
         int r = (int) (80 + normalized * 100);
         int g = (int) (20 + normalized * 235);
         int b = (int) (150 + normalized * 105);
-
         return Color.rgb(Math.min(255, r), Math.min(255, g), Math.min(255, b));
     }
 
@@ -2048,13 +2528,14 @@ public class H3MapCanvas extends Canvas {
             return Color.rgb(139, 90, 43); // Dry brown
         }
 
-        double normalized = Math.min(1.0, water / 1000.0);
+        double normalized = Math.clamp(water / 1000.0, 0.0, 1.0);
+        if (scientificColorMap != null) {
+            return scientificColorMap.getColor(normalized);
+        }
 
-        // Brown -> Light blue -> Deep blue
         int r = (int) (139 - normalized * 119);
         int g = (int) (90 + normalized * 100);
         int b = (int) (43 + normalized * 172);
-
         return Color.rgb(Math.max(0, r), Math.min(255, g), Math.min(255, b));
     }
 
@@ -2066,13 +2547,14 @@ public class H3MapCanvas extends Canvas {
             return Color.rgb(100, 80, 60); // Barren brown
         }
 
-        double normalized = Math.min(1.0, wood / 1000.0);
+        double normalized = Math.clamp(wood / 1000.0, 0.0, 1.0);
+        if (scientificColorMap != null && scientificColorMap != ScientificColorMap.TERRAIN) {
+            return scientificColorMap.getColor(normalized);
+        }
 
-        // Light brown -> Green -> Dark green
         int r = (int) (100 - normalized * 80);
         int g = (int) (80 + normalized * 100);
         int b = (int) (60 - normalized * 40);
-
         return Color.rgb(Math.max(0, r), Math.min(180, g), Math.max(0, b));
     }
 
@@ -2084,13 +2566,14 @@ public class H3MapCanvas extends Canvas {
             return Color.rgb(50, 50, 50); // No data
         }
 
-        // Gini 0 (perfect equality) = green, Gini 1 (maximum inequality) = red
-        double normalized = Math.min(1.0, gini);
+        double normalized = Math.clamp(gini, 0.0, 1.0);
+        if (scientificColorMap != null && scientificColorMap != ScientificColorMap.TERRAIN) {
+            return scientificColorMap.getColor(normalized);
+        }
 
         int r = (int) (normalized * 255);
         int g = (int) ((1 - normalized) * 200);
         int b = 50;
-
         return Color.rgb(r, g, b);
     }
 
@@ -2187,17 +2670,10 @@ public class H3MapCanvas extends Canvas {
     }
 
     /**
-     * Get cultural identity color (RGB vector).
+     * Get cultural identity color.
      */
     private Color getCultureColor(H3Cell cell) {
-        if (cultureEngine == null)
-            return Color.GRAY;
-
-        CultureVector vec = cultureEngine.getCulture(cell.getH3Index());
-        if (vec == null)
-            return Color.GRAY;
-
-        return Color.color(vec.getRed(), vec.getGreen(), vec.getBlue());
+        return Color.GRAY;
     }
 
     public double getZoomFactor() {
@@ -2275,10 +2751,10 @@ public class H3MapCanvas extends Canvas {
     }
 
     private void drawContours(GraphicsContext gc) {
-        if (!showContours || cells == null || cellMap == null || zoomFactor < 0.85) return;
+        if (!showContours || cells == null || cellMap == null) return;
         
         gc.setStroke(Color.rgb(56, 189, 248, 0.75));
-        gc.setLineWidth(Math.max(1.0, 1.2 * Math.sqrt(zoomFactor)));
+        gc.setLineWidth(Math.max(1.0, 1.2 * Math.sqrt(Math.max(0.5, zoomFactor))));
         
         double maxElev = 0;
         for (H3Cell c : cells) {
@@ -2431,13 +2907,21 @@ public class H3MapCanvas extends Canvas {
 
         double markerSize = Math.max(3.0, 6.0 * zoomFactor);
 
-        for (H3Cell cell : cells) {
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell cell = cells.get(i);
             double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0;
             double precious = cell.getResourcePreciousMetal() != null ? cell.getResourcePreciousMetal() : 0;
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0;
             double aquifer = cell.getFreshwaterAquifer() != null ? cell.getFreshwaterAquifer() : 0;
 
-            if (metal <= 0 && precious <= 0 && capital <= 0 && aquifer <= 0) continue;
+            if (worldBuffer != null && !h3ToBufferIndexMap.isEmpty()) {
+                Integer idx = h3ToBufferIndexMap.get(cell.getH3Index());
+                if (idx != null && idx >= 0 && idx < worldBuffer.getCapacity()) {
+                    if (worldBuffer.getWaterResource() != null) aquifer = Math.max(aquifer, worldBuffer.getWaterResource()[idx]);
+                }
+            }
+
+            if (metal <= 5.0 && precious <= 0.0 && capital <= 5.0 && aquifer <= 10.0) continue;
 
             double cx = 0, cy = 0;
             boolean visible = false;
@@ -2467,17 +2951,17 @@ public class H3MapCanvas extends Canvas {
 
             if (!visible) continue;
 
-            if (precious > 0 || metal > 20) {
+            if (precious > 0 || metal > 10.0) {
                 // Gold / Metal glyph (diamond marker)
                 gc.setFill(precious > 0 ? Color.rgb(234, 179, 8, 0.85) : Color.rgb(148, 163, 184, 0.85));
                 double[] xPoints = {cx, cx + markerSize, cx, cx - markerSize};
                 double[] yPoints = {cy - markerSize, cy, cy + markerSize, cy};
                 gc.fillPolygon(xPoints, yPoints, 4);
-            } else if (aquifer > 50) {
+            } else if (aquifer > 30.0) {
                 // Aquifer glyph (cyan dot)
                 gc.setFill(Color.rgb(6, 182, 212, 0.80));
                 gc.fillOval(cx - markerSize * 0.7, cy - markerSize * 0.7, markerSize * 1.4, markerSize * 1.4);
-            } else if (capital > 50) {
+            } else if (capital > 10.0) {
                 // Capital / Infrastructure glyph (purple square)
                 gc.setFill(Color.rgb(168, 85, 247, 0.80));
                 gc.fillRect(cx - markerSize * 0.6, cy - markerSize * 0.6, markerSize * 1.2, markerSize * 1.2);
@@ -2485,8 +2969,14 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
-    private static class ProjectedPoint {
-        double screenX, screenY, z;
+    public static class ProjectedPoint {
+        public double screenX, screenY, z;
+        public ProjectedPoint() {}
+        public ProjectedPoint(double screenX, double screenY, double z) {
+            this.screenX = screenX;
+            this.screenY = screenY;
+            this.z = z;
+        }
     }
 
     private ProjectedPoint project3D(double lat, double lng, double elevation, double radRotationY, double radTilt, double radius, double cx, double cy) {
@@ -2545,9 +3035,10 @@ public class H3MapCanvas extends Canvas {
         gc.strokeRoundRect(lx, ly, legendWidth, legendHeight, 10, 10);
 
         // Header label
+        DisplayMode primaryMode = getPrimaryDisplayMode();
         gc.setFill(Color.rgb(56, 189, 248));
         gc.setFont(javafx.scene.text.Font.font("Segoe UI", javafx.scene.text.FontWeight.BOLD, 11));
-        gc.fillText(org.ether.society.i18n.I18n.getOrDefault("sim.legend.title", "LEGEND — ") + displayMode.getDisplayName().toUpperCase(), lx + 12, ly + 18);
+        gc.fillText(org.ether.society.i18n.I18n.getOrDefault("sim.legend.title", "LEGEND — ") + primaryMode.getDisplayName().toUpperCase(), lx + 12, ly + 18);
 
         // Compute stats (Min, Max, Mean, Median)
         double minVal = Double.MAX_VALUE;
@@ -2650,12 +3141,30 @@ public class H3MapCanvas extends Canvas {
         gc.fillText(maxStr, barX + barWidth - (maxStr.length() * 5.8), ly + 88);
     }
 
+    public boolean hasThematicOverlay(H3Cell cell) {
+        if (cell == null || activeDisplayModes == null) return false;
+        if (!activeDisplayModes.contains(DisplayMode.BIOME) || activeDisplayModes.size() <= 1) {
+            return false;
+        }
+        for (DisplayMode mode : activeDisplayModes) {
+            if (mode == DisplayMode.BIOME) continue;
+            double v = getCellDisplayValue(cell, mode, 0);
+            if (v > 0.05) return true;
+        }
+        return false;
+    }
+
     public double getCellDisplayValue(H3Cell cell, int unusedIndex) {
+        return getCellDisplayValue(cell, getPrimaryDisplayMode(), unusedIndex);
+    }
+
+    public double getCellDisplayValue(H3Cell cell, DisplayMode mode, int unusedIndex) {
+        if (mode == null) mode = getPrimaryDisplayMode();
         if (worldBuffer != null && cell != null && !h3ToBufferIndexMap.isEmpty()) {
             Integer idx = h3ToBufferIndexMap.get(cell.getH3Index());
             if (idx != null && idx >= 0 && idx < worldBuffer.getCapacity()) {
                 int index = idx;
-                return switch (displayMode) {
+                return switch (mode) {
                     case POPULATION -> worldBuffer.getBiomassHuman()[index];
                     case FOOD -> worldBuffer.getFoodResource()[index];
                     case TEMPERATURE -> worldBuffer.getTemperature()[index];
@@ -2670,7 +3179,7 @@ public class H3MapCanvas extends Canvas {
             }
         }
         if (cell == null) return 0.0;
-        return switch (displayMode) {
+        return switch (mode) {
             case POPULATION -> cell.getPopulation() != null ? cell.getPopulation().doubleValue() : 0.0;
             case FOOD -> cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
             case TEMPERATURE -> cell.getTemperature() != null ? cell.getTemperature() : 15.0;

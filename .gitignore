@@ -76,6 +76,5 @@ scenario_map_*.png
 user_data/
 .gemini/
 input/
-
-
-
+dist/
+**/extracted/

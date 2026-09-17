@@ -25,12 +25,18 @@ public interface ISimulationEngine {
 
     void stepBackward(int ticks);
 
+    default void seekToEnd() {}
+
     default void setPauseAtNextEvent(boolean pause) {}
 
     default boolean isPauseAtNextEvent() { return false; }
 
     default H3SimulationEngine.TemporalScale getTemporalScale() { return H3SimulationEngine.TemporalScale.DAILY; }
 
-    default void setTemporalScale(H3SimulationEngine.TemporalScale scale) {}
+    default org.ether.society.model.Scenario getCurrentScenario() { return null; }
+
+    default long getTickCounter() { return 0L; }
+
+    default org.ether.society.events.EventSystem getEventSystem() { return null; }
 }
 

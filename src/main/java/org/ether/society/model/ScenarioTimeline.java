@@ -22,14 +22,33 @@ import java.util.List;
 public class ScenarioTimeline implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public record TimelineEntry(long year, String eventType, String title, String details, boolean isGodModeIntervention) implements Serializable {}
+    public record TimelineEntry(
+        long year,
+        String eventType,
+        String title,
+        String details,
+        boolean isGodModeIntervention,
+        double latitude,
+        double longitude,
+        double magnitude,
+        int durationDays
+    ) implements Serializable {
+        public TimelineEntry(long year, String eventType, String title, String details, boolean isGodModeIntervention) {
+            this(year, eventType, title, details, isGodModeIntervention, 0.0, 0.0, 1.0, 30);
+        }
+    }
 
     private final List<TimelineEntry> entries = new ArrayList<>();
 
     public ScenarioTimeline() {}
 
     public void addEntry(long year, String eventType, String title, String details, boolean isGodModeIntervention) {
-        entries.add(new TimelineEntry(year, eventType, title, details, isGodModeIntervention));
+        addEntry(year, eventType, title, details, isGodModeIntervention, 0.0, 0.0, 1.0, 30);
+    }
+
+    public void addEntry(long year, String eventType, String title, String details, boolean isGodModeIntervention,
+                         double latitude, double longitude, double magnitude, int durationDays) {
+        entries.add(new TimelineEntry(year, eventType, title, details, isGodModeIntervention, latitude, longitude, magnitude, durationDays));
         Collections.sort(entries, (a, b) -> Long.compare(a.year(), b.year()));
     }
 

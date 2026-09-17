@@ -20,10 +20,12 @@ import javafx.embed.swing.SwingFXUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.ether.society.events.ActiveEvent;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -53,20 +55,25 @@ public class ControlPanel extends VBox {
     private MiniMap miniMap;
     private ColorLegend colorLegend;
     private final Label dbStatusLabel;
-    private final Label eventLabel;
     private final List<String> eventHistory = new ArrayList<>();
+
+    // Section 5: Recent Events UI
+    private final Label eventsTitleLabel;
+    private final Label eventsHintLabel;
+    private final Label noEventsLabel;
+    private final VBox eventsListBox;
 
     // Controls
     private final Button startBtn;
     private final Button pauseBtn;
-    private final Button stopBtn;
     private final Button rewindBtn;
     private final Button fastRewindBtn;
     private final Button stepBackBtn;
     private final Button stepForwardBtn;
     private final Button fastForwardBtn;
+    private final Button endBtn;
 
-    private final Button speedMax;
+    private final ToggleButton speedMax;
     private final Slider speedSlider;
 
     private final Button hdScreenshotBtn;
@@ -84,11 +91,14 @@ public class ControlPanel extends VBox {
     private final CheckBox contourCheck;
     private final CheckBox fluxVectorCheck;
     private final CheckBox resourceOverlayCheck;
+    private final CheckBox floatingLayerCheck;
     private final CheckBox legendCheck;
     private final CheckBox dateOverlayCheck;
     private final CheckBox cellInfoCheck;
     private final CheckBox hexGridCheck;
-    private final ComboBox<DisplayMode> displayModeCombo;
+    private final MenuButton activeLayersMenuBtn;
+    private final java.util.Map<DisplayMode, CheckBox> layerCheckBoxMap = new java.util.EnumMap<>(DisplayMode.class);
+    private final FlowPane activeLayersChipsBox;
     private final Button fullScreenBtn;
 
     // Callbacks
@@ -97,6 +107,7 @@ public class ControlPanel extends VBox {
     private Consumer<Boolean> onContourToggle;
     private Runnable onTimelapseRecord;
     private Consumer<Integer> onTimelapseSeek;
+    private Runnable onTimelapseSeekToEnd;
     private Consumer<Boolean> onStatsToggle;
     private Runnable onFullScreen;
 
@@ -131,15 +142,18 @@ public class ControlPanel extends VBox {
         rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Réinitialiser T=0")));
         rewindBtn.setOnAction(e -> {
             engine.pause();
-            if (onTimelapseSeek != null) onTimelapseSeek.accept(0);
+            if (onTimelapseSeek != null) {
+                int startYear = engine.getCurrentScenario() != null ? (int) engine.getCurrentScenario().getStartDateYear() : -20000;
+                onTimelapseSeek.accept(startYear);
+            }
         });
 
         fastRewindBtn = new Button("⏪");
-        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Recul rapide (-1000 pas) [Maintenir appuyé]")));
+        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Reculer de 1000 pas [Maintenir appuyé]")));
         setupRepeatAction(fastRewindBtn, () -> engine.stepBackward(1000));
 
         stepBackBtn = new Button("⏴");
-        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Reculer (-10 pas) [Maintenir appuyé]")));
+        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Reculer de 10 pas [Maintenir appuyé]")));
         setupRepeatAction(stepBackBtn, () -> engine.stepBackward(10));
 
         // Auto Record Checkbox (initialized early for button handlers)
@@ -168,25 +182,26 @@ public class ControlPanel extends VBox {
             updatePlayPauseVisuals(false);
         });
 
-        stopBtn = new Button("⏹");
-        stopBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stop", "Arrêter")));
-        stopBtn.setOnAction(e -> {
-            engine.pause();
-            if (autoRecordCheck != null && autoRecordCheck.isSelected() && isRecordingVideo) {
-                toggleVideoRecording();
-            }
-            updatePlayPauseVisuals(false);
-        });
-
         stepForwardBtn = new Button("⏵");
-        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer (+10 pas) [Maintenir appuyé]")));
+        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer de 10 pas [Maintenir appuyé]")));
         setupRepeatAction(stepForwardBtn, () -> engine.stepForward(10));
 
         fastForwardBtn = new Button("⏩");
-        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Avance rapide (+1000 pas) [Maintenir appuyé]")));
+        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Avancer de 1000 pas [Maintenir appuyé]")));
         setupRepeatAction(fastForwardBtn, () -> engine.stepForward(1000));
 
-        Button[] playButtons = { rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stopBtn, stepForwardBtn, fastForwardBtn };
+        endBtn = new Button("⏭");
+        endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Aller à la fin de la simulation (Dernier checkpoint / Fin)")));
+        endBtn.setOnAction(e -> {
+            engine.pause();
+            if (onTimelapseSeekToEnd != null) {
+                onTimelapseSeekToEnd.run();
+            } else {
+                engine.seekToEnd();
+            }
+        });
+
+        Button[] playButtons = { rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stepForwardBtn, fastForwardBtn, endBtn };
         for (Button btn : playButtons) {
             btn.setMinWidth(36);
             btn.setPrefWidth(38);
@@ -204,7 +219,7 @@ public class ControlPanel extends VBox {
         pauseOnEventCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         pauseOnEventCheck.setOnAction(e -> engine.setPauseAtNextEvent(pauseOnEventCheck.isSelected()));
 
-        HBox playBar = new HBox(4, rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stopBtn, stepForwardBtn, fastForwardBtn);
+        HBox playBar = new HBox(4, rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stepForwardBtn, fastForwardBtn, endBtn);
         playBar.setAlignment(Pos.CENTER);
 
         speedSlider = new Slider(1, 100, 1);
@@ -221,22 +236,36 @@ public class ControlPanel extends VBox {
         speedValueLabel.getStyleClass().add("value-label");
         speedValueLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
 
+        speedMax = new ToggleButton("MAX 🚀");
+        speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Calcule les itérations à la vitesse maximale du processeur")));
+        speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4; -fx-cursor: hand;");
+
         speedSlider.valueProperty().addListener((obs, oldV, newV) -> {
             int spd = newV.intValue();
+            if (speedMax.isSelected()) {
+                speedMax.setSelected(false);
+                speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4; -fx-cursor: hand;");
+            }
             engine.setSpeed(spd);
             speedValueLabel.setText(String.format("⏱️ " + I18n.getOrDefault("sim.speed.target_fmt", "Vitesse Cible : %d ticks/sec"), spd));
         });
 
-        speedMax = new Button("MAX 🚀");
-        speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Calculates ticks at maximum CPU speed without limits (Uncapped CPU ticks/sec)")));
-        speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4; -fx-cursor: hand;");
         speedMax.setOnAction(e -> {
-            engine.setSpeed(999);
-            speedValueLabel.setText("⏱️ " + I18n.getOrDefault("sim.speed.max_label", "Target Speed: MAX 🚀 (Unlimited - As many CPU ticks/sec as possible)"));
+            if (speedMax.isSelected()) {
+                engine.setSpeed(999);
+                speedValueLabel.setText("⏱️ " + I18n.getOrDefault("sim.speed.max_label", "Vitesse Cible : MAX 🚀 (Illimité)"));
+                speedMax.setStyle("-fx-background-color: #7c3aed; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4; -fx-cursor: hand; -fx-border-color: #c4b5fd; -fx-border-width: 1.5; -fx-border-radius: 4;");
+            } else {
+                int spd = (int) speedSlider.getValue();
+                engine.setSpeed(spd);
+                speedValueLabel.setText(String.format("⏱️ " + I18n.getOrDefault("sim.speed.target_fmt", "Vitesse Cible : %d ticks/sec"), spd));
+                speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4; -fx-cursor: hand;");
+            }
         });
 
         HBox sliderRow = new HBox(8, speedSlider, speedMax);
-        sliderRow.setAlignment(Pos.CENTER_LEFT);
+        sliderRow.setAlignment(Pos.TOP_LEFT);
+        HBox.setMargin(speedMax, new Insets(2, 0, 0, 0));
 
         // --- 1. HORLOGE & CONTRÔLE TEMPOREL CARD ---
         VBox timeCard = new VBox(8, scenarioHeaderLabel, dateHeaderLabel, dbStatusLabel, timeTitle, playBar, pauseOnEventCheck, speedValueLabel, sliderRow);
@@ -284,42 +313,40 @@ public class ControlPanel extends VBox {
         VBox presetBox = new VBox(4, presetsTitle, presetGrid);
         presetBox.getStyleClass().add("subcard-section");
 
-        Label layerComboLabel = new Label(I18n.getOrDefault("sim.layer.datacategory", "Active Data Layer:"));
+        Label layerComboLabel = new Label(I18n.getOrDefault("sim.layer.datacategory", "Active Data Layers (Multi-Select):"));
         layerComboLabel.getStyleClass().add("card-description-muted");
         layerComboLabel.setStyle("-fx-font-size: 11px;");
 
-        displayModeCombo = new ComboBox<>();
-        List<DisplayMode> sortedModes = java.util.Arrays.stream(DisplayMode.values())
-                .sorted(java.util.Comparator.comparing(DisplayMode::getCategory).thenComparing(DisplayMode::ordinal))
-                .toList();
-        displayModeCombo.getItems().addAll(sortedModes);
-        displayModeCombo.setValue(DisplayMode.BIOME);
-        displayModeCombo.setMaxWidth(Double.MAX_VALUE);
-        displayModeCombo.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.datacategory", "Toggles main color layer on map")));
+        activeLayersMenuBtn = new MenuButton();
+        activeLayersMenuBtn.setMaxWidth(Double.MAX_VALUE);
+        activeLayersMenuBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.datacategory", "Cochez une ou plusieurs couches pour les superposer sur la carte")));
+        activeLayersMenuBtn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-border-color: #38bdf8; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand;");
 
-        displayModeCombo.setCellFactory(p -> new ListCell<>() {
-            @Override
-            protected void updateItem(DisplayMode item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    String catName = item.getCategory().getCategoryName();
-                    String catPrefix = catName.contains(" ") ? catName.split(" ")[1] : catName;
-                    setText("[" + catPrefix + "] " + item.getDisplayName());
+        activeLayersChipsBox = new FlowPane(4, 4);
+        activeLayersChipsBox.setStyle("-fx-padding: 2 0;");
+
+        for (DisplayMode.Category cat : DisplayMode.Category.values()) {
+            Label catHeader = new Label("─── " + cat.getCategoryName() + " ───");
+            catHeader.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 4 8 2 8;");
+            CustomMenuItem catItem = new CustomMenuItem(catHeader, false);
+            activeLayersMenuBtn.getItems().add(catItem);
+
+            for (DisplayMode dm : DisplayMode.values()) {
+                if (dm.getCategory() == cat) {
+                    CheckBox cb = new CheckBox(dm.getDisplayName());
+                    cb.setTooltip(new Tooltip(dm.getDescription()));
+                    cb.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px; -fx-padding: 2 8; -fx-cursor: hand;");
+                    cb.setSelected(dm == DisplayMode.BIOME || dm == DisplayMode.POPULATION);
+                    cb.setOnAction(e -> onLayerToggled(dm, cb.isSelected()));
+                    layerCheckBoxMap.put(dm, cb);
+                    CustomMenuItem mi = new CustomMenuItem(cb, false);
+                    activeLayersMenuBtn.getItems().add(mi);
                 }
             }
-        });
-        if (displayModeCombo.getCellFactory() != null) {
-            displayModeCombo.setButtonCell(displayModeCombo.getCellFactory().call(null));
+            activeLayersMenuBtn.getItems().add(new SeparatorMenuItem());
         }
 
-        displayModeCombo.setOnAction(e -> {
-            if (mapCanvas != null && displayModeCombo.getValue() != null) {
-                mapCanvas.setDisplayMode(displayModeCombo.getValue());
-                if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
-            }
-        });
+        updateActiveLayerUI();
 
         contourCheck = new CheckBox(I18n.getOrDefault("sim.layer.contours", "📈 Courbes de Niveau (Isolines)"));
         contourCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.contours", "Displays elevation contour lines on H3 cells")));
@@ -344,6 +371,15 @@ public class ControlPanel extends VBox {
         resourceOverlayCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         resourceOverlayCheck.setOnAction(e -> {
             if (mapCanvas != null) mapCanvas.setShowResourceOverlay(resourceOverlayCheck.isSelected());
+        });
+
+        floatingLayerCheck = new CheckBox(I18n.getOrDefault("sim.layer.floating", "☁️ Calques Flottants 2.5D (Altitude)"));
+        floatingLayerCheck.setSelected(true);
+        floatingLayerCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.floating", "Projette les couches thématiques en élévation 2.5D flottant au-dessus du relief des biomes")));
+        floatingLayerCheck.getStyleClass().add("opt-sub-checkbox");
+        floatingLayerCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        floatingLayerCheck.setOnAction(e -> {
+            if (mapCanvas != null) mapCanvas.setShowFloatingLayers(floatingLayerCheck.isSelected());
         });
 
         legendCheck = new CheckBox(I18n.getOrDefault("sim.layer.legend", "🗺️ Légende des Couleurs (Overlay)"));
@@ -380,14 +416,19 @@ public class ControlPanel extends VBox {
             }
         });
 
-        Label stackTitleLabel = new Label(I18n.getOrDefault("sim.layer.overlaystack", "Layer Stack (Multi-Select):"));
-        stackTitleLabel.getStyleClass().add("opt-subheader");
-        stackTitleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
+        Label dataLayersTitle = new Label(I18n.getOrDefault("sim.layer.datalayers", "📊 Calques de Données & Vecteurs :"));
+        dataLayersTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8;");
 
-        VBox overlayStackBox = new VBox(4, stackTitleLabel, contourCheck, fluxVectorCheck, resourceOverlayCheck, legendCheck, dateOverlayCheck, cellInfoCheck);
-        overlayStackBox.getStyleClass().add("subcard-section");
+        VBox dataLayersBox = new VBox(4, dataLayersTitle, contourCheck, fluxVectorCheck, resourceOverlayCheck, floatingLayerCheck);
+        dataLayersBox.getStyleClass().add("subcard-section");
 
-        VBox layersCard = new VBox(8, layersTitle, presetBox, layerComboLabel, displayModeCombo, overlayStackBox);
+        Label uiOverlaysTitle = new Label(I18n.getOrDefault("sim.layer.uioverlays", "🖥️ Affichage & Surimpressions UI :"));
+        uiOverlaysTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8;");
+
+        VBox uiOverlaysBox = new VBox(4, uiOverlaysTitle, legendCheck, dateOverlayCheck, cellInfoCheck);
+        uiOverlaysBox.getStyleClass().add("subcard-section");
+
+        VBox layersCard = new VBox(8, layersTitle, presetBox, layerComboLabel, activeLayersMenuBtn, activeLayersChipsBox, dataLayersBox, uiOverlaysBox);
         styleCard(layersCard);
 
         // --- 3. PROJECTION & PARAMÈTRES DE RENDU CARD ---
@@ -516,13 +557,23 @@ public class ControlPanel extends VBox {
 
         // --- 4. TÉLÉMÉTRIE, CAPTURES & EXPORT CARD ---
         Label exportTitle = createCardTitle(I18n.getOrDefault("sim.card.telemetry", "📊 4. TELEMETRY, SCREENSHOTS & EXPORTS"));
-
-        eventLabel = new Label("");
-        eventLabel.setStyle("-fx-text-fill: #f43f5e; -fx-font-size: 11px;");
-        eventLabel.setOnMouseClicked(e -> parseAndCenterEvent(eventLabel.getText()));
-
-        VBox exportCard = new VBox(8, exportTitle, hdScreenshotBtn, recordVideoBtn, autoRecordCheck, eventLabel);
+        VBox exportCard = new VBox(8, exportTitle, hdScreenshotBtn, recordVideoBtn, autoRecordCheck);
         styleCard(exportCard);
+
+        // --- 5. ÉVÉNEMENTS RÉCENTS (CHRONOLOGIE) CARD ---
+        eventsTitleLabel = createCardTitle(I18n.getOrDefault("sim.card.recent_events", "📜 5. ÉVÉNEMENTS RÉCENTS (CHRONOLOGIE)"));
+        eventsHintLabel = new Label(I18n.getOrDefault("sim.events.double_click_hint", "💡 Double-cliquer sur un événement pour voler vers sa position"));
+        eventsHintLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8; -fx-font-style: italic;");
+        eventsHintLabel.setWrapText(true);
+
+        noEventsLabel = new Label(I18n.getOrDefault("sim.events.no_events", "Aucun événement enregistré pour le moment."));
+        noEventsLabel.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-style: italic; -fx-padding: 4 0;");
+
+        eventsListBox = new VBox(6);
+        eventsListBox.getChildren().add(noEventsLabel);
+
+        VBox eventsCard = new VBox(8, eventsTitleLabel, eventsHintLabel, eventsListBox);
+        styleCard(eventsCard);
 
         // Keep age and season labels initialized for dateHeaderBox updates
         popStatValue = new Label();
@@ -533,27 +584,74 @@ public class ControlPanel extends VBox {
         seasonLabel = new Label(I18n.getOrDefault("sim.season.spring", "Season: Spring"));
         seasonLabel.setStyle("-fx-text-fill: #16a34a; -fx-font-weight: bold;");
 
-        // Combine cards cleanly into 4 modular accordion-style sections
-        getChildren().addAll(timeCard, layersCard, renderCard, exportCard);
+        // Combine cards cleanly into 5 modular accordion-style sections
+        getChildren().addAll(timeCard, layersCard, renderCard, exportCard, eventsCard);
 
         updateTexts();
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
     public void updatePlayPauseVisuals(boolean isRunning) {
-        if (startBtn == null || pauseBtn == null || stopBtn == null) return;
+        if (startBtn == null || pauseBtn == null) return;
         startBtn.setText("▶");
         pauseBtn.setText("⏸");
-        stopBtn.setText("⏹");
 
         if (isRunning) {
             startBtn.setStyle("-fx-background-color: #059669; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-border-color: #34d399; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.7), 6, 0, 0, 0);");
             pauseBtn.setStyle("-fx-background-color: #334155; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-background-radius: 6; -fx-effect: none;");
-            stopBtn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-background-radius: 6;");
         } else {
             startBtn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-background-radius: 6; -fx-effect: none;");
             pauseBtn.setStyle("-fx-background-color: #d97706; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-border-color: #fbbf24; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(245,158,11,0.7), 6, 0, 0, 0);");
-            stopBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-background-radius: 6;");
+        }
+    }
+
+    private void onLayerToggled(DisplayMode mode, boolean selected) {
+        if (mapCanvas != null) {
+            mapCanvas.setDisplayModeActive(mode, selected);
+            if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
+            updateActiveLayerUI();
+        }
+    }
+
+    public void updateActiveLayerUI() {
+        if (activeLayersMenuBtn == null) return;
+
+        if (mapCanvas == null) {
+            for (java.util.Map.Entry<DisplayMode, CheckBox> entry : layerCheckBoxMap.entrySet()) {
+                DisplayMode dm = entry.getKey();
+                entry.getValue().setSelected(dm == DisplayMode.BIOME || dm == DisplayMode.POPULATION);
+            }
+            activeLayersMenuBtn.setText("📊 " + I18n.getOrDefault("sim.layer.datacategory", "Couches Actives") + " (2)");
+            return;
+        }
+
+        java.util.Set<DisplayMode> active = mapCanvas.getActiveDisplayModes();
+        for (java.util.Map.Entry<DisplayMode, CheckBox> entry : layerCheckBoxMap.entrySet()) {
+            entry.getValue().setSelected(active.contains(entry.getKey()));
+        }
+
+        int count = active.size();
+        if (count == 0) {
+            activeLayersMenuBtn.setText("📊 " + I18n.getOrDefault("sim.layer.none", "Aucun calque"));
+        } else if (count == 1) {
+            activeLayersMenuBtn.setText("📊 " + active.iterator().next().getDisplayName());
+        } else {
+            activeLayersMenuBtn.setText(String.format(java.util.Locale.ROOT, "📊 %s (%d %s)",
+                    I18n.getOrDefault("sim.layer.datacategory", "Couches Actives"), count, I18n.getOrDefault("sim.layer.checked", "cochées")));
+        }
+
+        if (activeLayersChipsBox != null) {
+            activeLayersChipsBox.getChildren().clear();
+            for (DisplayMode dm : active) {
+                Button chip = new Button(dm.getDisplayName() + " ✕");
+                chip.setStyle("-fx-background-color: rgba(14, 165, 233, 0.18); -fx-text-fill: #38bdf8; -fx-border-color: #38bdf8; -fx-border-radius: 10; -fx-background-radius: 10; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 2 6; -fx-cursor: hand;");
+                chip.setOnAction(e -> {
+                    mapCanvas.setDisplayModeActive(dm, false);
+                    if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
+                    updateActiveLayerUI();
+                });
+                activeLayersChipsBox.getChildren().add(chip);
+            }
         }
     }
 
@@ -570,62 +668,61 @@ public class ControlPanel extends VBox {
     private void applyPresetSynthesis(CheckBox pauseOnEventCheck) {
         mode3dCheck.setSelected(true);
         reliefSlider.setDisable(false); reliefLabel.setDisable(false); autoRotateCheck.setDisable(false);
-        displayModeCombo.setValue(DisplayMode.BIOME);
         contourCheck.setSelected(true);
         fluxVectorCheck.setSelected(false);
         resourceOverlayCheck.setSelected(false);
 
         if (mapCanvas != null) {
             mapCanvas.setViewMode(ViewMode.VIEW_3D);
-            mapCanvas.setDisplayMode(DisplayMode.BIOME);
+            mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME));
             mapCanvas.setShowContours(true);
             mapCanvas.setShowFlowVectors(false);
             mapCanvas.setShowResourceOverlay(false);
             mapCanvas.setSmoothMap(true);
             if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
+            updateActiveLayerUI();
         }
     }
 
     private void applyPresetEcon() {
         mode3dCheck.setSelected(false);
         reliefSlider.setDisable(true); reliefLabel.setDisable(true); autoRotateCheck.setDisable(true);
-        displayModeCombo.setValue(DisplayMode.FLUX);
         contourCheck.setSelected(false);
         fluxVectorCheck.setSelected(true);
         resourceOverlayCheck.setSelected(true);
 
         if (mapCanvas != null) {
             mapCanvas.setViewMode(ViewMode.VIEW_2D);
-            mapCanvas.setDisplayMode(DisplayMode.FLUX);
+            mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME, DisplayMode.FLUX));
             mapCanvas.setShowContours(false);
             mapCanvas.setShowFlowVectors(true);
             mapCanvas.setShowResourceOverlay(true);
             if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
+            updateActiveLayerUI();
         }
     }
 
     private void applyPresetClimate() {
         mode3dCheck.setSelected(false);
         reliefSlider.setDisable(true); reliefLabel.setDisable(true); autoRotateCheck.setDisable(true);
-        displayModeCombo.setValue(DisplayMode.TEMPERATURE);
         contourCheck.setSelected(true);
         fluxVectorCheck.setSelected(false);
         resourceOverlayCheck.setSelected(true);
 
         if (mapCanvas != null) {
             mapCanvas.setViewMode(ViewMode.VIEW_2D);
-            mapCanvas.setDisplayMode(DisplayMode.TEMPERATURE);
+            mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME, DisplayMode.TEMPERATURE));
             mapCanvas.setShowContours(true);
             mapCanvas.setShowFlowVectors(false);
             mapCanvas.setShowResourceOverlay(true);
             if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
+            updateActiveLayerUI();
         }
     }
 
     private void applyPresetCliodynamics(CheckBox pauseOnEventCheck) {
         mode3dCheck.setSelected(false);
         reliefSlider.setDisable(true); reliefLabel.setDisable(true); autoRotateCheck.setDisable(true);
-        displayModeCombo.setValue(DisplayMode.POPULATION);
         contourCheck.setSelected(false);
         fluxVectorCheck.setSelected(false);
         resourceOverlayCheck.setSelected(false);
@@ -635,12 +732,13 @@ public class ControlPanel extends VBox {
 
         if (mapCanvas != null) {
             mapCanvas.setViewMode(ViewMode.VIEW_2D);
-            mapCanvas.setDisplayMode(DisplayMode.POPULATION);
+            mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME, DisplayMode.POPULATION));
             mapCanvas.setShowContours(false);
             mapCanvas.setShowFlowVectors(false);
             mapCanvas.setShowResourceOverlay(false);
             mapCanvas.setShowHexGrid(true);
             if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
+            updateActiveLayerUI();
         }
     }
 
@@ -723,6 +821,7 @@ public class ControlPanel extends VBox {
     public void setOnContourToggle(Consumer<Boolean> onContourToggle) { this.onContourToggle = onContourToggle; }
     public void setOnTimelapseRecord(Runnable onTimelapseRecord) { this.onTimelapseRecord = onTimelapseRecord; }
     public void setOnTimelapseSeek(Consumer<Integer> onTimelapseSeek) { this.onTimelapseSeek = onTimelapseSeek; }
+    public void setOnTimelapseSeekToEnd(Runnable onTimelapseSeekToEnd) { this.onTimelapseSeekToEnd = onTimelapseSeekToEnd; }
     public void setOnStatsToggle(Consumer<Boolean> onStatsToggle) { this.onStatsToggle = onStatsToggle; }
     public void setOnFullScreen(Runnable onFullScreen) { this.onFullScreen = onFullScreen; }
 
@@ -738,6 +837,7 @@ public class ControlPanel extends VBox {
             if (contourCheck != null) contourCheck.setSelected(mapCanvas.isShowContours());
             if (fluxVectorCheck != null) fluxVectorCheck.setSelected(mapCanvas.isShowFlowVectors());
             if (resourceOverlayCheck != null) resourceOverlayCheck.setSelected(mapCanvas.isShowResourceOverlay());
+            if (floatingLayerCheck != null) floatingLayerCheck.setSelected(mapCanvas.isShowFloatingLayers());
             if (dateOverlayCheck != null) dateOverlayCheck.setSelected(mapCanvas.isShowCornerOverlays());
             if (cellInfoCheck != null) cellInfoCheck.setSelected(mapCanvas.isShowMouseOverInfo());
         }
@@ -825,27 +925,92 @@ public class ControlPanel extends VBox {
     public void logEvents(List<String> events) {
         if (events == null || events.isEmpty()) return;
         eventHistory.addAll(events);
-        String lastEvent = events.get(events.size() - 1);
-        eventLabel.setText(lastEvent);
-        eventLabel.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.center_event", "🎯 Cliquer pour centrer la vue sur les coordonnées de cet événement.\n\n") + lastEvent));
-        eventLabel.setCursor(javafx.scene.Cursor.HAND);
     }
 
-    private void parseAndCenterEvent(String eventText) {
-        if (eventText == null || mapCanvas == null) return;
-        try {
-            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("Lat:\\s*(-?\\d+(?:\\.\\d+)?)(?:°)?([NS])?,\\s*Lng:\\s*(-?\\d+(?:\\.\\d+)?)(?:°)?([EW])?");
-            java.util.regex.Matcher matcher = pattern.matcher(eventText);
-            if (matcher.find()) {
-                double lat = Double.parseDouble(matcher.group(1));
-                if ("S".equalsIgnoreCase(matcher.group(2))) lat = -Math.abs(lat);
-                double lng = Double.parseDouble(matcher.group(3));
-                if ("W".equalsIgnoreCase(matcher.group(4))) lng = -Math.abs(lng);
-                mapCanvas.centerOnCoordinates(lat, lng);
-            }
-        } catch (Exception ex) {
-            logger.debug("Could not parse coordinates from event text: {}", eventText);
+    public void updateRecentEvents(List<ActiveEvent> events) {
+        if (events == null || eventsListBox == null) return;
+
+        // Filter and get last 10 events sorted chronologically (by year, then month, then day)
+        List<ActiveEvent> sortedList = new ArrayList<>(events);
+        sortedList.sort(Comparator.comparingInt(ActiveEvent::getYear)
+                .thenComparingInt(ActiveEvent::getMonth)
+                .thenComparingInt(ActiveEvent::getDay));
+
+        if (sortedList.size() > 10) {
+            sortedList = sortedList.subList(sortedList.size() - 10, sortedList.size());
         }
+
+        eventsListBox.getChildren().clear();
+        if (sortedList.isEmpty()) {
+            eventsListBox.getChildren().add(noEventsLabel);
+            return;
+        }
+
+        for (ActiveEvent evt : sortedList) {
+            VBox itemCard = createEventItemNode(evt);
+            eventsListBox.getChildren().add(itemCard);
+        }
+    }
+
+    private VBox createEventItemNode(ActiveEvent evt) {
+        VBox card = new VBox(4);
+        String normalStyle = "-fx-background-color: rgba(30, 41, 59, 0.75); -fx-border-color: rgba(56, 189, 248, 0.25); -fx-border-width: 1; -fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 6 8; -fx-cursor: hand;";
+        String hoverStyle = "-fx-background-color: rgba(51, 65, 85, 0.90); -fx-border-color: #38bdf8; -fx-border-width: 1; -fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 6 8; -fx-cursor: hand;";
+        card.setStyle(normalStyle);
+
+        card.setOnMouseEntered(e -> card.setStyle(hoverStyle));
+        card.setOnMouseExited(e -> card.setStyle(normalStyle));
+
+        // Header row: Title (left) + Date (right)
+        Label titleLabel = new Label(evt.getTitle());
+        titleLabel.setStyle("-fx-text-fill: #f8fafc; -fx-font-weight: bold; -fx-font-size: 11px;");
+        titleLabel.setMaxWidth(260);
+        titleLabel.setEllipsisString("...");
+
+        Label dateLabel = new Label(evt.getFormattedDate());
+        dateLabel.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 10px;");
+
+        Region spacerTop = new Region();
+        HBox.setHgrow(spacerTop, Priority.ALWAYS);
+        HBox topRow = new HBox(6, titleLabel, spacerTop, dateLabel);
+        topRow.setAlignment(Pos.CENTER_LEFT);
+
+        // Details row: Magnitude/Intensity (left) + Coordinates (right)
+        String magColor = evt.getIntensityBadgeColor();
+        Label magLabel = new Label(String.format(java.util.Locale.ROOT, "⚡ Mag: %.1f (%s)", evt.getMagnitude(), evt.getIntensityLabel()));
+        magLabel.setStyle("-fx-text-fill: " + magColor + "; -fx-font-weight: bold; -fx-font-size: 10px;");
+
+        Label coordLabel = new Label("📍 " + evt.getFormattedCoordinates());
+        coordLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 10px;");
+
+        Region spacerBottom = new Region();
+        HBox.setHgrow(spacerBottom, Priority.ALWAYS);
+        HBox bottomRow = new HBox(6, magLabel, spacerBottom, coordLabel);
+        bottomRow.setAlignment(Pos.CENTER_LEFT);
+
+        card.getChildren().addAll(topRow, bottomRow);
+
+        // Tooltip with complete event details
+        Tooltip tooltip = new Tooltip(String.format(
+            "%s\n\n📅 Date : %s\n⚡ Magnitude : %.1f (%s)\n📍 Coordonnées : %s\n\n💡 Double-cliquer pour centrer la vue 3D / 2D sur cet événement.",
+            evt.getTitle(), evt.getFormattedDate(), evt.getMagnitude(), evt.getIntensityLabel(), evt.getFormattedCoordinates()
+        ));
+        tooltip.setShowDelay(javafx.util.Duration.millis(150));
+        Tooltip.install(card, tooltip);
+
+        // Double click navigates / flies camera to this event's coordinates
+        card.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                if (mapCanvas != null) {
+                    mapCanvas.flyTo(evt.getLatitude(), evt.getLongitude());
+                    if (notificationOverlay != null) {
+                        notificationOverlay.showNotification("🎯 Centrage sur l'événement :\n" + evt.getTitle(), "#38bdf8");
+                    }
+                }
+            }
+        });
+
+        return card;
     }
 
     public void updateAge(String ageName) {
@@ -878,8 +1043,16 @@ public class ControlPanel extends VBox {
 
     private void updateTexts() {
         startBtn.setText("▶");
+        startBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
         pauseBtn.setText("⏸");
-        stopBtn.setText("⏹");
+        pauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause", "Mettre en pause")));
+        rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Réinitialiser T=0")));
+        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Reculer de 1000 pas [Maintenir appuyé]")));
+        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Reculer de 10 pas [Maintenir appuyé]")));
+        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer de 10 pas [Maintenir appuyé]")));
+        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Avancer de 1000 pas [Maintenir appuyé]")));
+        endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Aller à la fin de la simulation (Dernier checkpoint / Fin)")));
+        speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Calcule les itérations à la vitesse maximale du processeur")));
         mode3dCheck.setText(I18n.getOrDefault("sim.layer.mode3d", "🌐 Globe 3D H3"));
         mode3dCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.mode3d", "Toggles between 3D spherical globe and 2D flat map")));
         reliefLabel.setText(String.format(java.util.Locale.ROOT, "%s : %.0fx", I18n.getOrDefault("sim.layer.relief3d", "⛰️ Relief 3D"), reliefSlider != null ? reliefSlider.getValue() : 25.0));
@@ -904,6 +1077,10 @@ public class ControlPanel extends VBox {
         fluxVectorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fluxvectors", "Overlays material flux and population transport vectors")));
         resourceOverlayCheck.setText(I18n.getOrDefault("sim.layer.resources", "💎 Deposits & Capital (Overlays)"));
         resourceOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.resources", "Displays metal, aquifer, and infrastructure markers")));
+        if (floatingLayerCheck != null) {
+            floatingLayerCheck.setText(I18n.getOrDefault("sim.layer.floating", "☁️ Calques Flottants 2.5D (Altitude)"));
+            floatingLayerCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.floating", "Projette les couches thématiques en élévation 2.5D flottant au-dessus du relief naturel des biomes")));
+        }
         legendCheck.setText(I18n.getOrDefault("sim.layer.legend", "🗺️ Légende des Couleurs (Overlay)"));
         legendCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.legend", "Affiche ou masque le panneau de légende des couleurs")));
         dateOverlayCheck.setText(I18n.getOrDefault("sim.layer.date_overlay", "📅 Incrustation Date & Scénario"));
@@ -928,6 +1105,15 @@ public class ControlPanel extends VBox {
             autoRecordCheck.setText(I18n.getOrDefault("sim.option.auto_record", "🎬 Synchronisation Vidéo Auto (Start & Pause)"));
             autoRecordCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.auto_record", "Démarre et suspend automatiquement la capture vidéo en synchronisation avec la simulation")));
         }
+        if (eventsTitleLabel != null) {
+            eventsTitleLabel.setText(I18n.getOrDefault("sim.card.recent_events", "📜 5. ÉVÉNEMENTS RÉCENTS (CHRONOLOGIE)"));
+        }
+        if (eventsHintLabel != null) {
+            eventsHintLabel.setText(I18n.getOrDefault("sim.events.double_click_hint", "💡 Double-cliquer sur un événement pour voler vers sa position"));
+        }
+        if (noEventsLabel != null) {
+            noEventsLabel.setText(I18n.getOrDefault("sim.events.no_events", "Aucun événement enregistré pour le moment."));
+        }
         updateViewToggleButton();
         updateDisplayToggleButton();
     }
@@ -947,8 +1133,6 @@ public class ControlPanel extends VBox {
     }
 
     private void updateDisplayToggleButton() {
-        if (mapCanvas != null && displayModeCombo != null) {
-            displayModeCombo.setValue(mapCanvas.getDisplayMode());
-        }
+        updateActiveLayerUI();
     }
 }

@@ -46,4 +46,25 @@ class EventSystemTest {
 
         assertTrue(events.stream().anyMatch(e -> e.contains("1 million")));
     }
+
+    @Test
+    @DisplayName("Spatial events are properly recorded in recentEventsHistory")
+    void testRecentEventsHistory() {
+        ActiveEvent event1 = new ActiveEvent("EVT_1", "Test Event 1", "VOLCANO", 12.5, 45.0, 100, 2, 15, 20.0, 7.5);
+        ActiveEvent event2 = new ActiveEvent("EVT_2", "Test Event 2", "EARTHQUAKE", -8.2, -60.1, 105, 5, 1, 20.0, 4.2);
+
+        eventSystem.recordSpatialEvent(event1);
+        eventSystem.recordSpatialEvent(event2);
+
+        List<ActiveEvent> history = eventSystem.getRecentEventsHistory();
+        assertEquals(2, history.size());
+        assertEquals("Test Event 1", history.get(0).getTitle());
+        assertEquals(7.5, history.get(0).getMagnitude());
+        assertEquals("Élevée", history.get(0).getIntensityLabel());
+        assertTrue(history.get(0).getFormattedCoordinates().contains("12.50°N"));
+
+        assertEquals("Faible", history.get(1).getIntensityLabel());
+        assertTrue(history.get(1).getFormattedCoordinates().contains("8.20°S"));
+    }
 }
+

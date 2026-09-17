@@ -137,6 +137,7 @@ public class Scenario implements Serializable {
     private java.util.List<Boolean> geologyTensorProceduralModes = new java.util.ArrayList<>();
 
     // Engine Optimization & Determinism Controls (Persisted at Scenario Level for Physical Conformance)
+    private int h3Resolution = 3; // H3 spatial grid resolution (1 to 8, default: 3)
     private boolean strictDeterminism = true;
     private boolean sparseCellSkippingEnabled = false;
     private boolean oceanMacroAggregationEnabled = false;
@@ -248,6 +249,14 @@ public class Scenario implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public int getH3Resolution() {
+        return h3Resolution > 0 ? h3Resolution : 3;
+    }
+
+    public void setH3Resolution(int h3Resolution) {
+        this.h3Resolution = h3Resolution;
     }
 
     public PlanetPreset getPlanetPreset() {
@@ -809,28 +818,19 @@ public class Scenario implements Serializable {
         java.util.Map<String, Boolean> s0Engines = s0.getTypeBEngineStates();
         s0Engines.put("PaleoLanguageDriftEngine", true);
         s0Engines.put("KarstCaveShelterEngine", true);
-        s0Engines.put("ParietalArtAsabiyyahEngine", true);
-        s0Engines.put("SnowpackMobilityEngine", true);
-        s0Engines.put("MeatCuringReservesEngine", true);
-        s0Engines.put("OsseousIndustryCarvingEngine", true);
-        s0Engines.put("PlantFiberCordageEngine", true);
-        s0Engines.put("CanidDomesticationEngine", true);
         s0Engines.put("LithicTradeProvenanceEngine", true);
-        s0Engines.put("ExogamousKinshipEngine", true);
-        s0Engines.put("TailoredClothingThermalEngine", true);
-        s0Engines.put("AtlatlArcheryBallisticsEngine", true);
-        s0Engines.put("PassiveSnareSmallGameEngine", true);
-        s0Engines.put("MegafaunaPitfallTrapEngine", true);
-        s0Engines.put("ArchaicIntrogressionEngine", true);
         s0Engines.put("OchreTanningTechnologyEngine", true);
         s0Engines.put("CoastalMarineRefugiaEngine", true);
-        s0Engines.put("SeasonalAggregationSanctuaryEngine", true);
-        s0Engines.put("AridWaterStorageStashEngine", true);
         s0Engines.put("ResinHaftingAdhesivesEngine", true);
-        s0Engines.put("MammothBoneHabitationEngine", true);
         s0Engines.put("FireHardenedSpearEngine", true);
-        s0Engines.put("VolcanicTephraRefugiaEngine", true);
-        s0Engines.put("ParasiteControlRepellentEngine", true);
+        s0Engines.put("GeophyteDiggingStickEngine", true);
+        s0Engines.put("LevalloisPreparedCoreEngine", true);
+        s0Engines.put("AcheuleanBifaceSymmetryEngine", true);
+        s0Engines.put("OldowanMarrowPercussionEngine", true);
+        s0Engines.put("HomininCompetitiveExclusionEngine", true);
+        s0Engines.put("DemographicLifeTableEngine", true);
+        s0Engines.put("ToolKitMaintenanceEngine", true);
+        s0Engines.put("SelfDomesticationEngine", true);
         list.add(s0);
 
         // --- SCÉNARIO : SAHUL (-50000) ---
@@ -859,13 +859,14 @@ public class Scenario implements Serializable {
         java.util.Map<String, Boolean> sSahulEngines = sSahul.getTypeBEngineStates();
         sSahulEngines.put("PaleoLanguageDriftEngine", true);
         sSahulEngines.put("KarstCaveShelterEngine", true);
-        sSahulEngines.put("ParietalArtAsabiyyahEngine", true);
         sSahulEngines.put("ResinHaftingAdhesivesEngine", true);
-        sSahulEngines.put("AridWaterStorageStashEngine", true);
-        sSahulEngines.put("SymbolicBeadNetworkEngine", true);
-        sSahulEngines.put("RiverCanoeTransportEngine", true);
         sSahulEngines.put("CoastalMarineRefugiaEngine", true);
-        sSahulEngines.put("ExogamousKinshipEngine", true);
+        sSahulEngines.put("RiverCanoeTransportEngine", true);
+        sSahulEngines.put("AridOasisWellDiggingEngine", true);
+        sSahulEngines.put("FireStickFarmingEngine", true);
+        sSahulEngines.put("AridWaterStorageStashEngine", true);
+        sSahulEngines.put("OchreTradeAllianceEngine", true);
+        sSahulEngines.put("ArchaicIntrogressionEngine", true);
         list.add(sSahul);
 
         // --- SCÉNARIO : BÉRINGIE & PEUPLEMENT DES AMÉRIQUES (-25000) ---
@@ -892,15 +893,17 @@ public class Scenario implements Serializable {
             Modélise l'isolation des populations paléolithiques sur le pont terrestre de Béringie pendant le Dernier Maximum Glaciaire (LGM), suivie de leur dispersion à travers le corridor libre de glace et la route côtière du Pacifique.
             """);
         java.util.Map<String, Boolean> sBeringiaEngines = sBeringia.getTypeBEngineStates();
-        sBeringiaEngines.put("SnowpackMobilityEngine", true);
         sBeringiaEngines.put("TailoredClothingThermalEngine", true);
+        sBeringiaEngines.put("EyedNeedleSewingEngine", true);
         sBeringiaEngines.put("MeatCuringReservesEngine", true);
         sBeringiaEngines.put("OsseousIndustryCarvingEngine", true);
-        sBeringiaEngines.put("CanidDomesticationEngine", true);
         sBeringiaEngines.put("MammothBoneHabitationEngine", true);
         sBeringiaEngines.put("PermafrostColdCacheEngine", true);
         sBeringiaEngines.put("LithicTradeProvenanceEngine", true);
-        sBeringiaEngines.put("MegafaunaPitfallTrapEngine", true);
+        sBeringiaEngines.put("BeringianStandstillIsolationEngine", true);
+        sBeringiaEngines.put("PressureFlakerPointEngine", true);
+        sBeringiaEngines.put("IvoryHotWaterStraighteningEngine", true);
+        sBeringiaEngines.put("PeriglacialLoessDustEngine", true);
         list.add(sBeringia);
 
         // --- SCÉNARIO : RÉCENTS DRYAS (-10900) ---
@@ -928,9 +931,10 @@ public class Scenario implements Serializable {
         sYoungerDryasEngines.put("TopographicGameDriveEngine", true);
         sYoungerDryasEngines.put("AtlatlArcheryBallisticsEngine", true);
         sYoungerDryasEngines.put("PassiveSnareSmallGameEngine", true);
-        sYoungerDryasEngines.put("StoneBoilingThermalEngine", true);
-        sYoungerDryasEngines.put("HaliteSaltCuringEngine", true);
+        sYoungerDryasEngines.put("EpipaleolithicStorageHamletEngine", true);
         sYoungerDryasEngines.put("SeasonalAggregationSanctuaryEngine", true);
+        sYoungerDryasEngines.put("BisonCliffJumpDriveEngine", true);
+        sYoungerDryasEngines.put("CanidDomesticationEngine", true);
         list.add(sYoungerDryas);
 
         Scenario s1 = new Scenario();
@@ -955,6 +959,13 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Ce scénario modélise la transition majeure du Néolithique entre l'économie de subsistance des chasseurs-cueilleurs et l'émergence des premières communautés agricoles sédentaires le long du Tigre, de l'Euphrate, du Nil et de la côte Levantine.
             """);
+        java.util.Map<String, Boolean> s1Engines = s1.getTypeBEngineStates();
+        s1Engines.put("WildCerealGrindingEngine", true);
+        s1Engines.put("EpipaleolithicStorageHamletEngine", true);
+        s1Engines.put("BasaltGrindingSlabEngine", true);
+        s1Engines.put("CanidDomesticationEngine", true);
+        s1Engines.put("ScottAgainstTheGrainPureEngine", true);
+        s1Engines.put("DeforestationErosionEngine", true);
         list.add(s1);
 
         // --- SCÉNARIO : SAHARA VERT (PÉRIODE HUMIDE AFRICAINE -6000) ---
@@ -977,6 +988,11 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise la Période Humide Africaine (AHP) où l'insolation printanière amplifiée par l'orbite terrestre a intensifié la mousson africaine. Le désert du Sahara était alors une savane verdoyante parsemée de lac majeurs (Lac Méga-Tchad), peuplée d'éleveurs néolithiques et de chasseurs-cueilleurs.
             """);
+        java.util.Map<String, Boolean> sGreenSaharaEngines = sGreenSahara.getTypeBEngineStates();
+        sGreenSaharaEngines.put("LakeChadWadiMigrationEngine", true);
+        sGreenSaharaEngines.put("AridWaterStorageStashEngine", true);
+        sGreenSaharaEngines.put("PelagicFishingHookEngine", true);
+        sGreenSaharaEngines.put("OstromCommonsPureEngine", true);
         list.add(sGreenSahara);
 
         // --- SCÉNARIO : ÉGYPTE ANTIQUE (-3000) ---
@@ -1002,6 +1018,11 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'émergence de la première civilisation pharaonique unifiée. Dépendance absolue vis-à-vis du rythme annuel du Nil, de la gestion du bassin d'irrigation et de l'administration hiéroglyphique.
             """);
+        java.util.Map<String, Boolean> sEgyptEngines = sEgypt.getTypeBEngineStates();
+        sEgyptEngines.put("FertileCrescentSalinizationEngine", true);
+        sEgyptEngines.put("ScottAgainstTheGrainPureEngine", true);
+        sEgyptEngines.put("HydrologicalEngineeringEngine", true);
+        sEgyptEngines.put("MaritimeHighwayEngine", true);
         list.add(sEgypt);
 
         Scenario s3 = new Scenario();
@@ -1026,6 +1047,11 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'apogée et les vulnérabilités de la civilisation mésopotamienne et de l'Empire Assyrien basés sur l'irrigation intensive à partir du Tigre et de l'Euphrate.
             """);
+        java.util.Map<String, Boolean> s3Engines = s3.getTypeBEngineStates();
+        s3Engines.put("FertileCrescentSalinizationEngine", true);
+        s3Engines.put("ScottAgainstTheGrainPureEngine", true);
+        s3Engines.put("FrontierAsabiyyahEngine", true);
+        s3Engines.put("HydrologicalEngineeringEngine", true);
         list.add(s3);
 
         // --- SCÉNARIO : MÉSOAMÉRIQUE (-1500) ---
@@ -1051,6 +1077,10 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Émergence des centres cérémoniels de San Lorenzo et La Venta, puis essor de la civilisation maya classique. Modélise la maïsiculture intensive, les réservoirs d'eau pluviale et l'astronomie de précision.
             """);
+        java.util.Map<String, Boolean> sMesoEngines = sMeso.getTypeBEngineStates();
+        sMesoEngines.put("AmerindianEcosystemEngine", true);
+        sMesoEngines.put("HydrologicalEngineeringEngine", true);
+        sMesoEngines.put("SpatialCityFractalEngine", true);
         list.add(sMeso);
 
         // --- SCÉNARIO : EMPIRE MAURYA & INDE (-300) ---
@@ -1076,6 +1106,10 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Unification du sous-continent indien sous Chandragupta et Ashoka. Modélise l'agriculture rizicole de la plaine gângétique, les routes commerciales de la Soie et le réseau urbain autour de Pataliputra et Taxila.
             """);
+        java.util.Map<String, Boolean> sMauryaEngines = sMaurya.getTypeBEngineStates();
+        sMauryaEngines.put("FrontierAsabiyyahEngine", true);
+        sMauryaEngines.put("SpatialCityFractalEngine", true);
+        sMauryaEngines.put("PinkerViolenceDeclinePureEngine", true);
         list.add(sMaurya);
 
         // --- SCÉNARIO : EMPIRE ROMAIN & PAX ROMANA (AN 0) ---
@@ -1097,6 +1131,8 @@ public class Scenario implements Serializable {
         sRoman.setBoundaryMode("DYNAMIC_RESERVOIR");
         sRoman.getTypeBEngineStates().put("RomanImperialCliodynamicEngine", true);
         sRoman.getTypeBEngineStates().put("FrontierAsabiyyahEngine", true);
+        sRoman.getTypeBEngineStates().put("MaritimeHighwayEngine", true);
+        sRoman.getTypeBEngineStates().put("SpatialCityFractalEngine", true);
         sRoman.setDescription("""
             🏛️ SCÉNARIO HISTORIQUE : L'Empire Romain à son Apogée (Pax Romana, An 0)
             
@@ -1124,6 +1160,10 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             L'année 536 est considérée par les historiens du climat comme "la pire année de l'histoire humaine". Deux éruptions volcaniques super-massives consécutives ont injecté un voile d'aérosols stratosphériques occultant le Soleil pendant 18 mois.
             """);
+        java.util.Map<String, Boolean> s2Engines = s2.getTypeBEngineStates();
+        s2Engines.put("BioMolecularEpidemiologyEngine", true);
+        s2Engines.put("FrontierAsabiyyahEngine", true);
+        s2Engines.put("MonasticDemographicBufferEngine", true);
         list.add(s2);
 
         Scenario s4 = new Scenario();
@@ -1145,6 +1185,11 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             La Chine des Song a connu la première pré-industrialisation de l'histoire, avec une utilisation massive du charbon de terre pour la fonte du fer et des réseaux de transport fluviaux ultra-efficaces.
             """);
+        java.util.Map<String, Boolean> s4Engines = s4.getTypeBEngineStates();
+        s4Engines.put("MilitaryTechShockEngine", true);
+        s4Engines.put("DynamicMaritimeRoutingGraph", true);
+        s4Engines.put("MaritimeHighwayEngine", true);
+        s4Engines.put("SpatialCityFractalEngine", true);
         list.add(s4);
 
         // --- SCÉNARIO : EMPIRE DU MALI (1324) ---
@@ -1170,6 +1215,10 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise le réseau urbain et marchand trans-saharien de la boucle du Niger (Tombouctou, Gao, Djenné). Contrôle des mines d'or de Bambouk/Boure et des salines de Teghaza.
             """);
+        java.util.Map<String, Boolean> sMaliEngines = sMali.getTypeBEngineStates();
+        sMaliEngines.put("FrontierAsabiyyahEngine", true);
+        sMaliEngines.put("AsymmetricColonialTradeEngine", true);
+        sMaliEngines.put("SpatialCityFractalEngine", true);
         list.add(sMali);
 
         // --- SCÉNARIO : AMÉRIQUES PRÉCOLOMBIENNES (1491) ---
@@ -1195,6 +1244,10 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise les grands empires précolombiens (Empire Inca du Tawantinsuyu, Empire Aztèque de la Triple Alliance) et les sociétés Mississippiennes avant la rupture épidémique.
             """);
+        java.util.Map<String, Boolean> sAmericas1491Engines = sAmericas1491.getTypeBEngineStates();
+        sAmericas1491Engines.put("AmerindianEcosystemEngine", true);
+        sAmericas1491Engines.put("HydrologicalEngineeringEngine", true);
+        sAmericas1491Engines.put("SpatialCityFractalEngine", true);
         list.add(sAmericas1491);
 
         // --- SCÉNARIO : CHOC DU CONTACT PRÉCOLOMBIEN (1492) ---
@@ -1217,6 +1270,10 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'impact bio-démographique mondial de la rencontre entre l'Ancien et le Nouveau Monde. Trajectoire de choc microbiologique (chute démographique de 80-90% du continent américain) et réorganisation commerciale transatlantique.
             """);
+        java.util.Map<String, Boolean> sColumbianEngines = sColumbian.getTypeBEngineStates();
+        sColumbianEngines.put("BioMolecularEpidemiologyEngine", true);
+        sColumbianEngines.put("AsymmetricColonialTradeEngine", true);
+        sColumbianEngines.put("DynamicMaritimeRoutingGraph", true);
         list.add(sColumbian);
 
         // --- SCÉNARIO : JAPON EDO & SAKOKU (1639) ---
@@ -1242,6 +1299,9 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Fermeture des frontières de l'archipel japonais décrétée par le Shogunat Tokugawa. Modélise une économie circulaire hautement autarcique, l'urbanisation géante d'Edo (Tokyo, 1 million d'habitants) et l'absence d'intrants extérieurs jusqu'à l'arrivée des bateaux noirs du Commandant Perry en 1853.
             """);
+        java.util.Map<String, Boolean> sSakokuEngines = sSakoku.getTypeBEngineStates();
+        sSakokuEngines.put("EdoJapanIsolationEngine", true);
+        sSakokuEngines.put("OstromCommonsPureEngine", true);
         list.add(sSakoku);
 
         // --- SCÉNARIO : RÉVOLUTION INDUSTRIELLE (1800) ---
@@ -1264,6 +1324,12 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Basculement énergétique mondial du régime organique vers le régime minéral fossile (charbon de terre, machine à vapeur de Watt).
             """);
+        java.util.Map<String, Boolean> sIndustrial1800Engines = sIndustrial1800.getTypeBEngineStates();
+        sIndustrial1800Engines.put("JevonsParadoxEngine", true);
+        sIndustrial1800Engines.put("EntropicMetalDissipationEngine", true);
+        sIndustrial1800Engines.put("SmilMaterialTransitionsPureEngine", true);
+        sIndustrial1800Engines.put("ProtestantWorkEthicEngine", true);
+        sIndustrial1800Engines.put("UrbanThermodynamicsEngine", true);
         list.add(sIndustrial1800);
 
         // --- SCÉNARIO : ANTHROPOCÈNE (2000) ---
@@ -1286,6 +1352,12 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Consolidation du système économique mondial interconnecté, essor des microprocesseurs en silicium, de l'Internet mondial et de l'urbanisation globale.
             """);
+        java.util.Map<String, Boolean> sModern2000Engines = sModern2000.getTypeBEngineStates();
+        sModern2000Engines.put("World3HybridEngine", true);
+        sModern2000Engines.put("NordhausDiceHybridEngine", true);
+        sModern2000Engines.put("EcotoxicologyFertilityEngine", true);
+        sModern2000Engines.put("UrbanThermodynamicsEngine", true);
+        sModern2000Engines.put("KurzweilAcceleratingReturnsEngine", true);
         list.add(sModern2000);
 
         // --- SCÉNARIOS DU FUTUR ---
@@ -1308,6 +1380,11 @@ public class Scenario implements Serializable {
             [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
             Poursuite de l'extraction des combustibles fossiles traditionnels sans déploiement massif de la fusion ni captage du carbone.
             """);
+        java.util.Map<String, Boolean> s5Engines = s5.getTypeBEngineStates();
+        s5Engines.put("NordhausDiceHybridEngine", true);
+        s5Engines.put("World3HybridEngine", true);
+        s5Engines.put("MarineSubmersionEngine", true);
+        s5Engines.put("GeoengineeringAlbedoFeedbackEngine", true);
         list.add(s5);
 
         Scenario s6 = new Scenario();
@@ -1329,6 +1406,11 @@ public class Scenario implements Serializable {
             [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
             Franchissement du seuil d'émergence d'une Super-Intelligence Artificielle (ASI) et maîtrise industrielle de la fusion nucléaire deutérium-tritium.
             """);
+        java.util.Map<String, Boolean> s6Engines = s6.getTypeBEngineStates();
+        s6Engines.put("TechnologicalSingularityEngine", true);
+        s6Engines.put("AiAutonomousRegulationPureEngine", true);
+        s6Engines.put("KurzweilAcceleratingReturnsEngine", true);
+        s6Engines.put("KardashevPureEngine", true);
         list.add(s6);
 
         Scenario s7 = new Scenario();
@@ -1350,6 +1432,9 @@ public class Scenario implements Serializable {
             [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
             Conflit nucléaire à haute intensité déclenchant d'immenses tempêtes de feu urbaines et l'injection massive de carbone suie dans la stratosphère.
             """);
+        java.util.Map<String, Boolean> s7Engines = s7.getTypeBEngineStates();
+        s7Engines.put("NuclearWarfareClimateEngine", true);
+        s7Engines.put("NuclearSafetyRadiotoxicityEngine", true);
         list.add(s7);
 
         Scenario s8 = new Scenario();
@@ -1371,6 +1456,10 @@ public class Scenario implements Serializable {
             [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
             Épuisement géologique complet des gisements de phosphate de roche bon marché sans transition vers un recyclage circulaire intégral.
             """);
+        java.util.Map<String, Boolean> s8Engines = s8.getTypeBEngineStates();
+        s8Engines.put("World3PureEngine", true);
+        s8Engines.put("EcotoxicologyFertilityEngine", true);
+        s8Engines.put("SmilMaterialTransitionsPureEngine", true);
         list.add(s8);
 
         Scenario s9 = new Scenario();
@@ -1398,7 +1487,22 @@ public class Scenario implements Serializable {
             • Réserves Alimentaires (F₀) : 3.0 mois (destructions agricoles par cendres).
             • Savoir Archivé (I₀) : 5 000 000 bits/habitant (savoir automatisé & archives).
             """);
+        java.util.Map<String, Boolean> s9Engines = s9.getTypeBEngineStates();
+        s9Engines.put("VolcanicTephraRefugiaEngine", true);
+        s9Engines.put("BifurcationChaosEngine", true);
         list.add(s9);
+
+        // Enforce precalculated map import mode for all canonical built-in scenarios
+        for (Scenario sc : list) {
+            if (sc.getTensorProceduralModes() == null || sc.getTensorProceduralModes().isEmpty()) {
+                java.util.List<Boolean> modes = new java.util.ArrayList<>();
+                int dims = sc.getCultureVectorDimensions() > 0 ? sc.getCultureVectorDimensions() : 9;
+                for (int i = 0; i < dims; i++) {
+                    modes.add(false); // false = Import of precalculated map
+                }
+                sc.setTensorProceduralModes(modes);
+            }
+        }
 
         return list;
     }

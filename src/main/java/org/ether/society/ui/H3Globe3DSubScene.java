@@ -187,7 +187,7 @@ public class H3Globe3DSubScene {
             double deltaY = e.getSceneY() - lastMouseY;
 
             rotateY.setAngle(rotateY.getAngle() + deltaX * 0.4);
-            rotateX.setAngle(Math.clamp(rotateX.getAngle() - deltaY * 0.4, -85.0, 85.0));
+            rotateX.setAngle(Math.clamp(rotateX.getAngle() + deltaY * 0.4, -85.0, 85.0));
 
             lastMouseX = e.getSceneX();
             lastMouseY = e.getSceneY();
@@ -335,35 +335,15 @@ public class H3Globe3DSubScene {
         }
         textureMap = smoothedTextureMap;
 
-        mesh.getPoints().setAll(points);
-        mesh.getTexCoords().setAll(texCoords);
-
-        // 2. Generate Triangles (Delaunay/Grid Connectivity Proxy)
-        int numFaces = Math.max(0, cellCount - 2);
-        int[] faces = new int[numFaces * 6];
-
-        for (int i = 0; i < numFaces; i++) {
-            faces[i * 6] = i;
-            faces[i * 6 + 1] = i;
-
-            faces[i * 6 + 2] = i + 1;
-            faces[i * 6 + 3] = i + 1;
-
-            faces[i * 6 + 4] = i + 2;
-            faces[i * 6 + 5] = i + 2;
-        }
-
-        mesh.getFaces().setAll(faces);
-
-        // 3. Apply PhongMaterial with generated texture map
+        // Apply PhongMaterial with generated planetary texture map directly to the 3D globe sphere
         PhongMaterial terrainMaterial = new PhongMaterial();
         terrainMaterial.setDiffuseMap(textureMap);
         terrainMaterial.setSpecularColor(Color.rgb(120, 140, 160));
-        terrainMaterial.setSpecularPower(16.0);
+        terrainMaterial.setSpecularPower(32.0);
 
-        terrainMeshView.setMesh(mesh);
-        terrainMeshView.setMaterial(terrainMaterial);
-        logger.info("Updated JavaFX 3D Hardware Globe mesh with {} vertices", cellCount);
+        oceanSphere.setMaterial(terrainMaterial);
+        terrainMeshView.setVisible(false);
+        logger.info("Updated JavaFX 3D Hardware Globe texture map ({}x{}) from {} cells", texWidth, texHeight, cellCount);
     }
 
     private Color getBiomeColor(H3Cell cell) {

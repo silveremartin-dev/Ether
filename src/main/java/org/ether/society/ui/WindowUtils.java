@@ -131,5 +131,67 @@ public class WindowUtils {
             }
         }
     }
+
+    /**
+     * Displays a scrollable information dialog with styled scroll pane and pinned OK button.
+     * Prevents tall dialogs from overflowing the screen and hiding action buttons.
+     */
+    public static void showScrollableInfoDialog(String title, String header, String contentText) {
+        javafx.scene.control.Alert dialog = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+
+        javafx.scene.control.Label textLabel = new javafx.scene.control.Label(contentText);
+        textLabel.setWrapText(true);
+        textLabel.setStyle("-fx-font-size: 13px; -fx-line-spacing: 3px; -fx-padding: 10px;");
+
+        javafx.scene.control.ScrollPane scrollPane = new javafx.scene.control.ScrollPane(textLabel);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportWidth(660);
+        scrollPane.setPrefViewportHeight(420);
+        scrollPane.setMaxHeight(520);
+        scrollPane.setVbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
+
+        dialog.getDialogPane().setContent(scrollPane);
+        dialog.setResizable(true);
+        applyWindowIcon(dialog);
+        dialog.showAndWait();
+    }
+
+    /**
+     * Sets or resets the busy / wait cursor on a JavaFX Node or its containing Scene.
+     *
+     * @param node target node
+     * @param busy true to display WAIT cursor, false for DEFAULT
+     */
+    public static void setBusyCursor(javafx.scene.Node node, boolean busy) {
+        if (node == null) return;
+        javafx.application.Platform.runLater(() -> {
+            try {
+                javafx.scene.Scene scene = node.getScene();
+                if (scene != null) {
+                    scene.setCursor(busy ? javafx.scene.Cursor.WAIT : javafx.scene.Cursor.DEFAULT);
+                } else {
+                    node.setCursor(busy ? javafx.scene.Cursor.WAIT : javafx.scene.Cursor.DEFAULT);
+                }
+            } catch (Exception ignored) {}
+        });
+    }
+
+    /**
+     * Sets or resets the busy / wait cursor on a JavaFX Scene.
+     *
+     * @param scene target scene
+     * @param busy true to display WAIT cursor, false for DEFAULT
+     */
+    public static void setBusyCursor(javafx.scene.Scene scene, boolean busy) {
+        if (scene == null) return;
+        javafx.application.Platform.runLater(() -> {
+            try {
+                scene.setCursor(busy ? javafx.scene.Cursor.WAIT : javafx.scene.Cursor.DEFAULT);
+            } catch (Exception ignored) {}
+        });
+    }
 }
 

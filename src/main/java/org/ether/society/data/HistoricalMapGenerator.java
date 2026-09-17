@@ -43,16 +43,84 @@ public class HistoricalMapGenerator {
         if (scenario == null) return;
 
         try {
+            // 1. Try loading from standardized data/maps/Earth/<year>/ directory
+            if (loadFromYearDirectory(scenario)) {
+                return;
+            }
+
             String safeName = scenario.getName().replaceAll("[^a-zA-Z0-9_\\-]", "_").toLowerCase(java.util.Locale.ROOT);
             java.nio.file.Path cacheDir = java.nio.file.Paths.get("data", "cache");
 
+            // 2. Try loading from data/cache/<safeName>_*.png
             if (loadFromDiskCache(scenario, cacheDir, safeName)) {
                 logger.info("Successfully loaded scenario '{}' cartographic tensors from disk cache 'data/cache/{}_*.png'.", scenario.getName(), safeName);
                 return;
             }
 
+            // 2b. Fallback: try the presetKey as cache prefix (legacy cache files may use the short preset key)
+            String presetKey = scenario.getPresetKey();
+            if (presetKey != null && !presetKey.isEmpty() && !presetKey.equals(safeName)) {
+                if (loadFromDiskCache(scenario, cacheDir, presetKey)) {
+                    logger.info("Successfully loaded scenario '{}' cartographic tensors from disk cache using presetKey 'data/cache/{}_*.png'.", scenario.getName(), presetKey);
+                    return;
+                }
+                // 2c. Glob scan: find any 'data/cache/<presetKey>*_density.png' (e.g. song_dynasty_1000_density.png)
+                if (java.nio.file.Files.isDirectory(cacheDir)) {
+                    try (java.util.stream.Stream<java.nio.file.Path> stream = java.nio.file.Files.list(cacheDir)) {
+                        java.util.Optional<java.nio.file.Path> found = stream
+                            .filter(p -> {
+                                String n = p.getFileName().toString();
+                                return n.startsWith(presetKey) && n.endsWith("_density.png");
+                            })
+                            .findFirst();
+                        if (found.isPresent()) {
+                            String fileName = found.get().getFileName().toString();
+                            // Strip trailing '_density.png' to get the actual prefix used for all sibling files
+                            String derivedPrefix = fileName.substring(0, fileName.length() - "_density.png".length());
+                            if (loadFromDiskCache(scenario, cacheDir, derivedPrefix)) {
+                                logger.info("Successfully loaded scenario '{}' cartographic tensors from disk cache using derived prefix 'data/cache/{}_*.png'.", scenario.getName(), derivedPrefix);
+                                return;
+                            }
+                        }
+                    } catch (Exception scanEx) {
+                        logger.debug("Cache dir scan failed for scenario '{}': {}", scenario.getName(), scanEx.getMessage());
+                    }
+                }
+            }
+
+            // 2d. Fallback: try populationDensityType lowercased as cache prefix (e.g. INDIA_MAURYA -> india_maurya)
             String type = scenario.getPopulationDensityType();
             if (type == null) type = "URBAN_CLUSTERS";
+            String densityTypeLower = type.toLowerCase(java.util.Locale.ROOT);
+            if (!densityTypeLower.equals(safeName) && !densityTypeLower.equals(presetKey)) {
+                if (loadFromDiskCache(scenario, cacheDir, densityTypeLower)) {
+                    logger.info("Successfully loaded scenario '{}' cartographic tensors from disk cache using density type prefix 'data/cache/{}_*.png'.", scenario.getName(), densityTypeLower);
+                    return;
+                }
+                // Also try glob scan with densityType prefix (e.g. sakoku_japan_ from JAPAN_SAKOKU)
+                if (java.nio.file.Files.isDirectory(cacheDir)) {
+                    try (java.util.stream.Stream<java.nio.file.Path> stream2 = java.nio.file.Files.list(cacheDir)) {
+                        java.util.Optional<java.nio.file.Path> found2 = stream2
+                            .filter(p -> {
+                                String n = p.getFileName().toString();
+                                return n.endsWith("_density.png") && java.util.Arrays.stream(densityTypeLower.split("_"))
+                                    .filter(word -> word.length() > 3)
+                                    .allMatch(n::contains);
+                            })
+                            .findFirst();
+                        if (found2.isPresent()) {
+                            String fileName2 = found2.get().getFileName().toString();
+                            String derivedPrefix2 = fileName2.substring(0, fileName2.length() - "_density.png".length());
+                            if (loadFromDiskCache(scenario, cacheDir, derivedPrefix2)) {
+                                logger.info("Successfully loaded scenario '{}' cartographic tensors from disk cache using density-type derived prefix 'data/cache/{}_*.png'.", scenario.getName(), derivedPrefix2);
+                                return;
+                            }
+                        }
+                    } catch (Exception scanEx2) {
+                        logger.debug("Density-type cache dir scan failed for '{}': {}", scenario.getName(), scanEx2.getMessage());
+                    }
+                }
+            }
 
             // 0. Try High-Precision Natural Earth & SVG Vector Cartography Ingestion Pipeline First
             SvgMapIngestor.SvgIngestionResult neResult = NaturalEarthVectorIngestor.loadNaturalEarthMap(type);
@@ -63,45 +131,48 @@ public class HistoricalMapGenerator {
                 neResult = HgisAtlasIngestor.loadHistoricalPolityMap(scenario.getStartDateYear(), type);
             }
 
-            if (neResult != null) {
-                SvgMapIngestor.applyToScenario(scenario, neResult);
-                saveImagesToDiskCache(scenario.getName(), neResult.densityImage, neResult.sovereigntyImage, neResult.isoglossImage, neResult.kinshipImage, neResult.ritualsImage, null, null, null, null, null);
-                logger.info("Successfully populated scenario '{}' using high-precision GIS vector cartography (Natural Earth / SVG / HGIS) and cached to data/maps/cache/.", scenario.getName());
-                return;
-            }
-
-            // 1. Try HYDE 3.4 High-Resolution ASCII Grid Ingestion (for dates >= -10,000 BC)
-            BufferedImage imgDensity = null;
-            if (scenario.getStartDateYear() < -10000) {
-                scenario.setCustomDensityBase64(null);
-                logger.info("Prehistoric epoch {} BC precedes HYDE 3.4 baseline (-10,000 BC). Enforcing procedural density distribution with biogeographical containment.", scenario.getStartDateYear());
-            } else {
-                imgDensity = Hyde34GridReader.loadForYear(scenario.getStartDateYear());
-                if (imgDensity != null) {
+            // 1. Demographic Density Map
+            BufferedImage imgDensity = (neResult != null && neResult.densityImage != null) ? neResult.densityImage : null;
+            if (imgDensity == null) {
+                if (scenario.getStartDateYear() < -10000) {
+                    BufferedImage baseHyde = Hyde34GridReader.loadForYear(-10000);
+                    if (baseHyde != null) {
+                        imgDensity = applyPrehistoricGeographicMask(scenario.getPresetKey() != null ? scenario.getPresetKey() : safeName, scenario.getStartDateYear(), baseHyde);
+                    } else {
+                        imgDensity = generatePrehistoricSyntheticDensityMap(scenario.getStartDateYear(), type);
+                    }
                     scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
-                    logger.info("Successfully populated scenario '{}' density tensor using HYDE 3.4 5-arc-minute grid for year {}.", scenario.getName(), scenario.getStartDateYear());
+                    logger.info("Generated precalculated density map for prehistoric epoch year {} (Out of Africa / Sahul / Beringia).", scenario.getStartDateYear());
                 } else {
-                    imgDensity = generateCleanDensityMap(type, scenario);
+                    imgDensity = Hyde34GridReader.loadForYear(scenario.getStartDateYear());
                     if (imgDensity != null) {
                         scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+                        logger.info("Successfully populated scenario '{}' density tensor using HYDE 3.4 5-arc-minute grid for year {}.", scenario.getName(), scenario.getStartDateYear());
+                    } else {
+                        imgDensity = generateCleanDensityMap(type, scenario);
+                        if (imgDensity != null) {
+                            scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+                        }
                     }
                 }
+            } else {
+                scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
             }
 
             // 1. Clean Multi-Channel Isogloss Map (Index 0)
-            BufferedImage imgIsogloss = generateCleanIsoglossMap(type, scenario);
+            BufferedImage imgIsogloss = (neResult != null && neResult.isoglossImage != null) ? neResult.isoglossImage : generateCleanIsoglossMap(type, scenario);
             scenario.setCustomTensorMapBase64(0, bufferedImageToBase64Png(imgIsogloss));
 
             // 2. Clean Multi-Channel Kinship Map (Index 1)
-            BufferedImage imgKinship = generateCleanKinshipMap(type, scenario);
+            BufferedImage imgKinship = (neResult != null && neResult.kinshipImage != null) ? neResult.kinshipImage : generateCleanKinshipMap(type, scenario);
             scenario.setCustomTensorMapBase64(1, bufferedImageToBase64Png(imgKinship));
 
             // 3. Clean Multi-Channel Rituals Map (Index 2)
-            BufferedImage imgRituals = generateCleanRitualsMap(type, scenario);
+            BufferedImage imgRituals = (neResult != null && neResult.ritualsImage != null) ? neResult.ritualsImage : generateCleanRitualsMap(type, scenario);
             scenario.setCustomTensorMapBase64(2, bufferedImageToBase64Png(imgRituals));
 
             // 4. Clean Multi-Channel Sovereignty Map (Index 3)
-            BufferedImage imgSovereignty = generateCleanSovereigntyMap(type, scenario);
+            BufferedImage imgSovereignty = (neResult != null && neResult.sovereigntyImage != null) ? neResult.sovereigntyImage : generateCleanSovereigntyMap(type, scenario);
             scenario.setCustomTensorMapBase64(3, bufferedImageToBase64Png(imgSovereignty));
 
             // 5. Clean Multi-Channel Technology Mode Map (Index 4)
@@ -179,15 +250,219 @@ public class HistoricalMapGenerator {
                 }
             }
 
+            // Save to standardized data/maps/Earth/<year>/ directory
+            saveImagesToYearDirectory(scenario.getStartDateYear(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousREE, imgMantleHeat, imgAquifer);
+
             // Save cultural tensor maps to disk cache
             saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
 
-            // Save geological tensor maps to disk cache (indices 0-8: coal, oil, gas, uranium, he3, ironcopper, preciousree, mantleheat, aquifer)
+            // Save geological tensor maps to disk cache
             saveGeologyTensorsToDiskCache(scenario.getName(), imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousREE, imgMantleHeat, imgAquifer);
 
         } catch (Exception e) {
             logger.error("Failed to generate historical maps for scenario {}", scenario.getName(), e);
         }
+    }
+
+    public static boolean loadFromYearDirectory(Scenario scenario) {
+        if (scenario == null) return false;
+        long year = scenario.getStartDateYear();
+        // Primary: data/maps/ether/earth/<year>/
+        java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
+        // Legacy fallbacks for backward compatibility
+        if (!java.nio.file.Files.isDirectory(earthDir)) {
+            earthDir = java.nio.file.Paths.get("data", "maps", "Earth", String.valueOf(year));
+        }
+        if (!java.nio.file.Files.isDirectory(earthDir)) {
+            earthDir = java.nio.file.Paths.get("data", "maps", "earth", String.valueOf(year));
+        }
+        if (!java.nio.file.Files.isDirectory(earthDir)) {
+            return false;
+        }
+
+        try {
+            java.nio.file.Path densityFile = earthDir.resolve("density.png");
+            if (java.nio.file.Files.exists(densityFile)) {
+                BufferedImage img = ImageIO.read(densityFile.toFile());
+                if (img != null) {
+                    scenario.setCustomDensityBase64(bufferedImageToBase64Png(img));
+                }
+            }
+
+            String[] mapKeys = {
+                "isogloss.png", "kinship.png", "rituals.png", "sovereignty.png",
+                "technology.png", "tradenetwork.png", "institutional.png", "ecological.png", "pathogen.png"
+            };
+            for (int i = 0; i < mapKeys.length; i++) {
+                java.nio.file.Path p = earthDir.resolve(mapKeys[i]);
+                if (!java.nio.file.Files.exists(p) && i == 5) {
+                    p = earthDir.resolve("trade.png");
+                }
+                if (java.nio.file.Files.exists(p)) {
+                    BufferedImage img = ImageIO.read(p.toFile());
+                    if (img != null) {
+                        scenario.setCustomTensorMapBase64(i, bufferedImageToBase64Png(img));
+                    }
+                }
+            }
+
+            String[] geoKeys = {
+                "coal.png", "oil.png", "gas.png", "uranium.png",
+                "he3.png", "ironcopper.png", "preciousree.png", "mantleheat.png", "aquifer.png"
+            };
+            for (int i = 0; i < geoKeys.length; i++) {
+                java.nio.file.Path p = earthDir.resolve(geoKeys[i]);
+                if (java.nio.file.Files.exists(p)) {
+                    BufferedImage img = ImageIO.read(p.toFile());
+                    if (img != null) {
+                        scenario.setCustomGeologyTensorMapBase64(i, bufferedImageToBase64Png(img));
+                    }
+                }
+            }
+
+            boolean loaded = scenario.getCustomDensityBase64() != null;
+            if (loaded) {
+                logger.info("Successfully loaded scenario '{}' (Year {}) maps from standardized directory '{}'.", scenario.getName(), year, earthDir);
+            }
+            return loaded;
+        } catch (Exception e) {
+            logger.warn("Failed to load scenario '{}' maps from year directory '{}': {}", scenario.getName(), earthDir, e.getMessage());
+            return false;
+        }
+    }
+
+    public static void saveImagesToYearDirectory(long year, BufferedImage imgDensity, BufferedImage imgSovereignty,
+            BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech,
+            BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen,
+            BufferedImage imgCoal, BufferedImage imgOil, BufferedImage imgGas, BufferedImage imgUranium,
+            BufferedImage imgHe3, BufferedImage imgIronCopper, BufferedImage imgPreciousREE, BufferedImage imgMantleHeat, BufferedImage imgAquifer) {
+        try {
+            java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
+            java.nio.file.Files.createDirectories(earthDir);
+
+            if (imgDensity != null)     ImageIO.write(imgDensity,     "PNG", earthDir.resolve("density.png").toFile());
+            if (imgIsogloss != null)    ImageIO.write(imgIsogloss,    "PNG", earthDir.resolve("isogloss.png").toFile());
+            if (imgKinship != null)     ImageIO.write(imgKinship,     "PNG", earthDir.resolve("kinship.png").toFile());
+            if (imgRituals != null)     ImageIO.write(imgRituals,     "PNG", earthDir.resolve("rituals.png").toFile());
+            if (imgSovereignty != null) ImageIO.write(imgSovereignty, "PNG", earthDir.resolve("sovereignty.png").toFile());
+            if (imgTech != null)        ImageIO.write(imgTech,        "PNG", earthDir.resolve("technology.png").toFile());
+            if (imgTrade != null)       ImageIO.write(imgTrade,       "PNG", earthDir.resolve("tradenetwork.png").toFile());
+            if (imgInst != null)        ImageIO.write(imgInst,        "PNG", earthDir.resolve("institutional.png").toFile());
+            if (imgEco != null)         ImageIO.write(imgEco,         "PNG", earthDir.resolve("ecological.png").toFile());
+            if (imgPathogen != null)    ImageIO.write(imgPathogen,    "PNG", earthDir.resolve("pathogen.png").toFile());
+
+            if (imgCoal != null)        ImageIO.write(imgCoal,        "PNG", earthDir.resolve("coal.png").toFile());
+            if (imgOil != null)         ImageIO.write(imgOil,         "PNG", earthDir.resolve("oil.png").toFile());
+            if (imgGas != null)         ImageIO.write(imgGas,         "PNG", earthDir.resolve("gas.png").toFile());
+            if (imgUranium != null)     ImageIO.write(imgUranium,     "PNG", earthDir.resolve("uranium.png").toFile());
+            if (imgHe3 != null)         ImageIO.write(imgHe3,         "PNG", earthDir.resolve("he3.png").toFile());
+            if (imgIronCopper != null)  ImageIO.write(imgIronCopper,  "PNG", earthDir.resolve("ironcopper.png").toFile());
+            if (imgPreciousREE != null) ImageIO.write(imgPreciousREE, "PNG", earthDir.resolve("preciousree.png").toFile());
+            if (imgMantleHeat != null)  ImageIO.write(imgMantleHeat,  "PNG", earthDir.resolve("mantleheat.png").toFile());
+            if (imgAquifer != null)     ImageIO.write(imgAquifer,     "PNG", earthDir.resolve("aquifer.png").toFile());
+
+            logger.info("Persisted scenario cartographic maps into 'data/maps/Earth/{}/'", year);
+        } catch (Exception e) {
+            logger.warn("Failed to persist scenario maps to year directory 'data/maps/Earth/{}/': {}", year, e.getMessage());
+        }
+    }
+
+    public static BufferedImage applyPrehistoricGeographicMask(String scenarioKey, long year, BufferedImage src) {
+        if (src == null) return null;
+        if (year >= -10000) return src;
+
+        int w = src.getWidth();
+        int h = src.getHeight();
+        BufferedImage masked = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        String key = scenarioKey != null ? scenarioKey.toLowerCase(java.util.Locale.ROOT) : "";
+
+        for (int y = 0; y < h; y++) {
+            double lat = 90.0 - (y + 0.5) * 180.0 / h;
+            for (int x = 0; x < w; x++) {
+                double lon = -180.0 + (x + 0.5) * 360.0 / w;
+                int rgb = src.getRGB(x, y);
+
+                boolean keep = true;
+                if (year <= -70000 || key.contains("africa") || key.contains("100000")) {
+                    // Out of Africa (-100,000 to -70,000 BC): Sapiens cradle strictly in Africa & Near East/Southern Arabia.
+                    // Americas, Europe, Asia, Australia/Sahul uninhabited by modern humans.
+                    boolean inAfrica = (lon >= -20.0 && lon <= 52.0 && lat >= -35.0 && lat <= 38.0);
+                    boolean inNearEastArabia = (lon >= 34.0 && lon <= 60.0 && lat >= 12.0 && lat <= 35.0);
+                    if (!inAfrica && !inNearEastArabia) {
+                        keep = false;
+                    }
+                } else if (year <= -40000 || key.contains("sahul") || key.contains("50000")) {
+                    // Sahul era (-50,000 BC): Africa, Eurasia, Sahul (Australia/NG) populated. Americas and Northern Glaciers empty.
+                    if ((lon < -20.0 || lon > 175.0) || lat > 55.0) {
+                        keep = false;
+                    }
+                } else if (year <= -20000 || key.contains("beringia") || key.contains("25000") || key.contains("23000")) {
+                    // Beringia era (-25,000 BC): Africa, Eurasia, Sahul, Beringia & NW North America. South America empty.
+                    if ((lat < 15.0 && lon < -25.0 && lon > -120.0) || (lon < -60.0 && lat < 50.0)) {
+                        keep = false;
+                    }
+                } else if (year < -10000 || key.contains("dryas") || key.contains("10900")) {
+                    // Younger Dryas / LGM (-10,900 BC): Glacial ice sheets uninhabited in North
+                    if (lat > 62.0 && lon > -140.0 && lon < 50.0) {
+                        keep = false;
+                    }
+                }
+
+                if (keep) {
+                    masked.setRGB(x, y, rgb);
+                } else {
+                    masked.setRGB(x, y, 0xFF050811); // Deep dark oceanic/unpopulated background
+                }
+            }
+        }
+        return masked;
+    }
+
+    public static BufferedImage generatePrehistoricSyntheticDensityMap(long year, String type) {
+        BufferedImage img = createPureTransparentCanvas();
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                double lng = (x + 0.5) / WIDTH * 360.0 - 180.0;
+                boolean isLand = isLand(lng, lat);
+                if (!isLand) continue;
+
+                double dens = 0.0;
+                if (year <= -70000) {
+                    // East African cradle & Nile corridor
+                    double dAfrica = distSq(lng, lat, 36.0, 0.0);
+                    if (dAfrica < 1600.0) {
+                        dens = Math.exp(-dAfrica / 400.0) * 8.0;
+                    }
+                    double dLevant = distSq(lng, lat, 35.0, 31.0);
+                    if (dLevant < 900.0) {
+                        dens = Math.max(dens, Math.exp(-dLevant / 250.0) * 5.0);
+                    }
+                } else if (year <= -40000) {
+                    // Sahul & Sunda entry
+                    double dSahul = distSq(lng, lat, 130.0, -20.0);
+                    if (dSahul < 2500.0) {
+                        dens = Math.exp(-dSahul / 600.0) * 4.0;
+                    }
+                    double dOldWorld = distSq(lng, lat, 40.0, 20.0);
+                    if (dOldWorld < 4000.0) {
+                        dens = Math.max(dens, Math.exp(-dOldWorld / 1000.0) * 6.0);
+                    }
+                } else if (year <= -20000) {
+                    // Beringia & Old World
+                    double dBeringia = distSq(lng, lat, -165.0, 65.0);
+                    if (dBeringia < 1600.0) {
+                        dens = Math.exp(-dBeringia / 400.0) * 3.0;
+                    }
+                }
+
+                if (dens > 0.05) {
+                    int col = Hyde34GridReader.getHydeColor((float) dens, true);
+                    img.setRGB(x, y, (220 << 24) | (col & 0xFFFFFF));
+                }
+            }
+        }
+        return img;
     }
 
     public static void saveImagesToDiskCache(String scenarioName, BufferedImage imgDensity, BufferedImage imgSovereignty, BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech, BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen) {
@@ -215,10 +490,6 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /**
-     * Persists the 9 geological/energy tensor maps to the disk cache.
-     * Canonical filenames: _coal, _oil, _gas, _uranium, _he3, _ironcopper, _preciousree, _mantleheat, _aquifer.
-     */
     public static void saveGeologyTensorsToDiskCache(String scenarioName,
             BufferedImage imgCoal, BufferedImage imgOil, BufferedImage imgGas,
             BufferedImage imgUranium, BufferedImage imgHe3, BufferedImage imgIronCopper,
@@ -254,11 +525,7 @@ public class HistoricalMapGenerator {
             BufferedImage imgDensity = ImageIO.read(densityCache.toFile());
             if (imgDensity == null) return false;
 
-            if (scenario.getStartDateYear() >= -10000) {
-                scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
-            } else {
-                scenario.setCustomDensityBase64(null);
-            }
+            scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
 
             String[] mapKeys = {
                 "_isogloss.png", "_kinship.png", "_rituals.png", "_sovereignty.png",
@@ -289,11 +556,60 @@ public class HistoricalMapGenerator {
                     }
                 }
             }
+
+            // Also synchronize cache files to data/maps/ether/earth/<year>/ if not present
+            java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(scenario.getStartDateYear()));
+            if (!java.nio.file.Files.exists(earthDir.resolve("density.png"))) {
+                java.nio.file.Files.createDirectories(earthDir);
+                if (java.nio.file.Files.exists(densityCache)) {
+                    java.nio.file.Files.copy(densityCache, earthDir.resolve("density.png"), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                }
+                String[] targetMapFiles = {
+                    "isogloss.png", "kinship.png", "rituals.png", "sovereignty.png",
+                    "technology.png", "tradenetwork.png", "institutional.png", "ecological.png", "pathogen.png"
+                };
+                for (int i = 0; i < mapKeys.length; i++) {
+                    java.nio.file.Path src = cacheDir.resolve(safeName + mapKeys[i]);
+                    if (java.nio.file.Files.exists(src)) {
+                        java.nio.file.Files.copy(src, earthDir.resolve(targetMapFiles[i]), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+                String[] targetGeoFiles = {
+                    "coal.png", "oil.png", "gas.png", "uranium.png",
+                    "he3.png", "ironcopper.png", "preciousree.png", "mantleheat.png", "aquifer.png"
+                };
+                for (int i = 0; i < geoKeys.length; i++) {
+                    java.nio.file.Path src = cacheDir.resolve(safeName + geoKeys[i]);
+                    if (java.nio.file.Files.exists(src)) {
+                        java.nio.file.Files.copy(src, earthDir.resolve(targetGeoFiles[i]), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+                logger.info("Synchronized disk cache for '{}' into standardized year directory '{}'.", scenario.getName(), earthDir);
+            }
+
             return true;
         } catch (Exception e) {
             logger.warn("Failed to load scenario '{}' cartographic tensors from disk cache: {}", scenario.getName(), e.getMessage());
             return false;
         }
+    }
+
+    public static void ensureAllScenarioMapsGenerated() {
+        List<Scenario> builtIns = Scenario.getBuiltInScenarios();
+        logger.info("Verifying and ensuring cartographic maps for all {} built-in scenarios in 'data/maps/ether/earth/<year>/'...", builtIns.size());
+        int generated = 0;
+        for (Scenario sc : builtIns) {
+            long year = sc.getStartDateYear();
+            java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
+            boolean exists = java.nio.file.Files.exists(earthDir.resolve("density.png")) &&
+                             java.nio.file.Files.exists(earthDir.resolve("isogloss.png")) &&
+                             java.nio.file.Files.exists(earthDir.resolve("sovereignty.png"));
+            if (!exists) {
+                populateScenarioHistoricalMaps(sc);
+                generated++;
+            }
+        }
+        logger.info("Batch generation check complete. Generated/updated {} scenarios in data/maps/ether/earth/.", generated);
     }
 
     // --- 1. CLEAN DENSITY MAP ---
@@ -304,17 +620,113 @@ public class HistoricalMapGenerator {
 
     public static BufferedImage generateCleanDensityMapForYear(String type, Scenario scenario, long targetYear) {
         if (targetYear < -10000) {
-            throw new IllegalStateException("DATA INGESTION ERROR: Target year " + targetYear + " precedes empirical HYDE 3.4 baseline (-10,000 BC)! Zero-fallback policy active: synthetic approximations are disabled.");
+            BufferedImage baseHyde = Hyde34GridReader.loadForYear(-10000);
+            if (baseHyde != null) {
+                BufferedImage masked = applyPrehistoricGeographicMask(scenario != null ? scenario.getPresetKey() : null, targetYear, baseHyde);
+                return applyAltimetryCoastlineMask(masked);
+            }
+            return applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(targetYear, type));
         }
         BufferedImage realHydeImg = Hyde34GridReader.loadForYear(targetYear);
         if (realHydeImg != null) {
             logger.info("Ingested authentic HYDE 3.4 5-arc-minute Esri ASCII raster grid for year {}", targetYear);
-            return realHydeImg;
+            return applyAltimetryCoastlineMask(realHydeImg);
         }
 
-        // ZERO FALLBACK POLICY: Abort rather than generating synthetic approximations
-        throw new IllegalStateException("DATA INGESTION ERROR: Empirical HYDE 3.4 raster grid missing for year " + targetYear + "! Zero-fallback policy active: synthetic approximations are disabled.");
+        // Fallback for futuristic or zero-fallback scenarios
+        return applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(targetYear, type));
     }
+
+    /** Cached elevation mask (1=land, 0=ocean) derived from earth_elevation.png at elevation cut 0m. */
+    private static volatile BufferedImage cachedElevationMask = null;
+    private static final Object ELEV_LOCK = new Object();
+
+    /**
+     * Loads the altimetry-derived land/ocean mask from earth_elevation.png.
+     * Pixels with luminance ≤ threshold (corresponding to ≤ 0m elevation) are ocean.
+     * The threshold 38 corresponds roughly to sea level in the ETOPO 2022 / Blue Marble encoding
+     * where ocean depths are dark (0–40) and land starts around 40–50.
+     */
+    public static BufferedImage loadElevationMask() {
+        if (cachedElevationMask != null) return cachedElevationMask;
+        synchronized (ELEV_LOCK) {
+            if (cachedElevationMask != null) return cachedElevationMask;
+            try {
+                // Try classpath first, then filesystem
+                java.io.InputStream is = HistoricalMapGenerator.class.getResourceAsStream("/maps/earth_elevation.png");
+                BufferedImage elev = null;
+                if (is != null) {
+                    elev = ImageIO.read(is);
+                }
+                if (elev == null) {
+                    java.nio.file.Path p = java.nio.file.Paths.get("data", "maps", "ether", "earth", "2026", "earth_elevation.png");
+                    if (java.nio.file.Files.exists(p)) elev = ImageIO.read(p.toFile());
+                }
+                if (elev == null) {
+                    java.nio.file.Path p = java.nio.file.Paths.get("data", "maps", "ether", "earth", "0", "earth_elevation.png");
+                    if (java.nio.file.Files.exists(p)) elev = ImageIO.read(p.toFile());
+                }
+                if (elev == null) {
+                    logger.warn("earth_elevation.png not found — altimetry coastline mask disabled.");
+                    return null;
+                }
+                // Build 1-bit land mask at target resolution (1024x512)
+                int tw = 1024, th = 512;
+                BufferedImage mask = new BufferedImage(tw, th, BufferedImage.TYPE_BYTE_GRAY);
+                java.awt.Graphics2D g = mask.createGraphics();
+                g.drawImage(elev, 0, 0, tw, th, null);
+                g.dispose();
+                // Threshold: luminance > 38 → land (255), else ocean (0)
+                for (int y = 0; y < th; y++) {
+                    for (int x = 0; x < tw; x++) {
+                        int gray = mask.getRGB(x, y) & 0xFF;
+                        mask.getRaster().setSample(x, y, 0, gray > 38 ? 255 : 0);
+                    }
+                }
+                cachedElevationMask = mask;
+                logger.info("Altimetry coastline mask loaded from earth_elevation.png ({}x{} → {}x{}).",
+                        elev.getWidth(), elev.getHeight(), tw, th);
+                return cachedElevationMask;
+            } catch (Exception e) {
+                logger.warn("Failed to load altimetry coastline mask: {}", e.getMessage());
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Applies the altimetry-derived coastline mask to a density image.
+     * Ocean pixels (mask=0) are forced to the ocean background colour 0xFF050811.
+     * This ensures coastlines are derived from real elevation data, not vectorized outlines.
+     */
+    public static BufferedImage applyAltimetryCoastlineMask(BufferedImage src) {
+        if (src == null) return null;
+        BufferedImage mask = loadElevationMask();
+        if (mask == null) return src; // graceful no-op if mask unavailable
+
+        int w = src.getWidth(), h = src.getHeight();
+        BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        java.awt.Graphics2D g = out.createGraphics();
+        g.drawImage(src, 0, 0, w, h, null);
+        g.dispose();
+
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                // Sample mask at same relative position (bilinear-nearest)
+                int mx = (int) ((x + 0.5) * mask.getWidth() / w);
+                int my = (int) ((y + 0.5) * mask.getHeight() / h);
+                mx = Math.max(0, Math.min(mx, mask.getWidth() - 1));
+                my = Math.max(0, Math.min(my, mask.getHeight() - 1));
+                int land = mask.getRaster().getSample(mx, my, 0);
+                if (land == 0) {
+                    // Ocean pixel — apply deep ocean colour
+                    out.setRGB(x, y, 0xFF050811);
+                }
+            }
+        }
+        return out;
+    }
+
 
     public static double getTopographicHabitability(String scenarioType, double lng, double lat) {
         // Relief/elevation penalties for high mountain ranges
@@ -885,13 +1297,28 @@ public class HistoricalMapGenerator {
         Path2D p = new Path2D.Double();
         if (points.length == 0) return p;
 
-        int startX = (int) ((points[0][0] + 180.0) / 360.0 * WIDTH);
-        int startY = (int) ((90.0 - points[0][1]) / 180.0 * HEIGHT);
+        List<double[]> densified = new ArrayList<>();
+        int n = points.length;
+        for (int i = 0; i < n; i++) {
+            double[] p1 = points[i];
+            double[] p2 = points[(i + 1) % n];
+            densified.add(p1);
+            int subSteps = 10;
+            for (int s = 1; s < subSteps; s++) {
+                double t = s / (double) subSteps;
+                double lng = p1[0] + t * (p2[0] - p1[0]);
+                double lat = p1[1] + t * (p2[1] - p1[1]);
+                densified.add(new double[]{lng, lat});
+            }
+        }
+
+        int startX = (int) ((densified.get(0)[0] + 180.0) / 360.0 * WIDTH);
+        int startY = (int) ((90.0 - densified.get(0)[1]) / 180.0 * HEIGHT);
         p.moveTo(startX, startY);
 
-        for (int i = 1; i < points.length; i++) {
-            int px = (int) ((points[i][0] + 180.0) / 360.0 * WIDTH);
-            int py = (int) ((90.0 - points[i][1]) / 180.0 * HEIGHT);
+        for (int i = 1; i < densified.size(); i++) {
+            int px = (int) ((densified.get(i)[0] + 180.0) / 360.0 * WIDTH);
+            int py = (int) ((90.0 - densified.get(i)[1]) / 180.0 * HEIGHT);
             p.lineTo(px, py);
         }
         p.closePath();
@@ -1488,17 +1915,15 @@ public class HistoricalMapGenerator {
             }
         }
 
-        int r = themeColor.getRed();
-        int g = themeColor.getGreen();
-        int b = themeColor.getBlue();
-
         for (int py = 0; py < height; py++) {
             for (int px = 0; px < width; px++) {
                 float v = grid[py][px];
                 if (v > 0) {
                     double norm = 1.0 - Math.exp(-v * 0.85);
-                    int alpha = (int) Math.clamp(norm * 255.0, 100.0, 255.0);
-                    img.setRGB(px, py, (alpha << 24) | (r << 16) | (g << 8) | b);
+                    int gray = (int) Math.clamp(norm * 255.0, 0.0, 255.0);
+                    img.setRGB(px, py, (gray << 16) | (gray << 8) | gray);
+                } else {
+                    img.setRGB(px, py, 0x000000);
                 }
             }
         }
@@ -1547,26 +1972,12 @@ public class HistoricalMapGenerator {
         for (int py = 0; py < height; py++) {
             for (int px = 0; px < width; px++) {
                 float v = grid[py][px];
-                if (v > 0.02f) {
+                if (v > 0.005f) {
                     double norm = Math.clamp(1.0 - Math.exp(-v * 0.75), 0.0, 1.0);
-                    Color chosen;
-                    if (norm < 0.35) {
-                        chosen = lowColor;
-                    } else if (norm < 0.70) {
-                        double t = (norm - 0.35) / 0.35;
-                        int rC = (int) (lowColor.getRed() + t * (medColor.getRed() - lowColor.getRed()));
-                        int gC = (int) (lowColor.getGreen() + t * (medColor.getGreen() - lowColor.getGreen()));
-                        int bC = (int) (lowColor.getBlue() + t * (medColor.getBlue() - lowColor.getBlue()));
-                        chosen = new Color(Math.clamp(rC, 0, 255), Math.clamp(gC, 0, 255), Math.clamp(bC, 0, 255));
-                    } else {
-                        double t = (norm - 0.70) / 0.30;
-                        int rC = (int) (medColor.getRed() + t * (highColor.getRed() - medColor.getRed()));
-                        int gC = (int) (medColor.getGreen() + t * (highColor.getGreen() - medColor.getGreen()));
-                        int bC = (int) (medColor.getBlue() + t * (highColor.getBlue() - medColor.getBlue()));
-                        chosen = new Color(Math.clamp(rC, 0, 255), Math.clamp(gC, 0, 255), Math.clamp(bC, 0, 255));
-                    }
-                    int alpha = (int) Math.clamp(120 + norm * 135.0, 120.0, 255.0);
-                    img.setRGB(px, py, (alpha << 24) | (chosen.getRed() << 16) | (chosen.getGreen() << 8) | chosen.getBlue());
+                    int gray = (int) Math.clamp(norm * 255.0, 0.0, 255.0);
+                    img.setRGB(px, py, (gray << 16) | (gray << 8) | gray);
+                } else {
+                    img.setRGB(px, py, 0x000000);
                 }
             }
         }
@@ -1603,58 +2014,61 @@ public class HistoricalMapGenerator {
     }
 
     public static BufferedImage generateCleanCoalMap(String type, Scenario scenario) {
-        BufferedImage loaded = loadDirectBufferedImage("earth_coal.png");
-        if (loaded != null) return loaded;
         int width = 2048, height = 1024;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        var spots = loadMRDSDeposits("coal", "lignite", "anthracite", "bituminous");
-        rasterizeSpotListToAlpha(img, spots, new Color(245, 158, 11), 8.0);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        var spots = AuthenticEmpiricalDatasetIngestion.getEmpiricalCoalOccurrences();
+        if (spots.isEmpty()) {
+            spots = loadMRDSDeposits("coal", "lignite", "anthracite", "bituminous");
+        }
+        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 8.0);
         return img;
     }
 
     public static BufferedImage generateCleanOilMap(String type, Scenario scenario) {
-        BufferedImage loaded = loadDirectBufferedImage("earth_oil.png");
-        if (loaded != null) return loaded;
         int width = 2048, height = 1024;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        var spots = loadMRDSDeposits("petroleum", "oil", "hydrocarbon");
-        rasterizeSpotListToAlpha(img, spots, new Color(220, 38, 38), 12.0);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        var spots = AuthenticEmpiricalDatasetIngestion.getEmpiricalOilOccurrences();
+        if (spots.isEmpty()) {
+            spots = loadMRDSDeposits("petroleum", "oil", "hydrocarbon");
+        }
+        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 10.0);
         return img;
     }
 
     public static BufferedImage generateCleanGasMap(String type, Scenario scenario) {
-        BufferedImage loaded = loadDirectBufferedImage("earth_gas.png");
-        if (loaded != null) return loaded;
         int width = 2048, height = 1024;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        var spots = loadMRDSDeposits("natural gas", "gas", "methane");
-        rasterizeSpotListToAlpha(img, spots, new Color(6, 182, 212), 12.0);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        var spots = AuthenticEmpiricalDatasetIngestion.getEmpiricalGasOccurrences();
+        if (spots.isEmpty()) {
+            spots = loadMRDSDeposits("natural gas", "gas", "methane");
+        }
+        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 10.0);
         return img;
     }
 
     public static BufferedImage generateCleanUraniumMap(String type, Scenario scenario) {
         int width = 2048, height = 1024;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         var spots = loadMRDSDeposits("uranium", "thorium");
         double[][] iaeaMajorDeposits = {
             {-105.0, 58.0, 35, 1.4}, {136.9, -30.4, 30, 1.4}, {68.0, 44.0, 40, 1.5},
             {7.4, 18.7, 30, 1.2}, {27.5, -26.2, 30, 1.2}, {118.0, 50.0, 30, 1.2}
         };
         for (double[] b : iaeaMajorDeposits) spots.add(b);
-        rasterizeSpotListToAlpha(img, spots, new Color(34, 197, 94), 6.0);
+        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 6.0);
         return img;
     }
 
     public static BufferedImage generateCleanHelium3Map(String type, Scenario scenario) {
-        // Pure transparent ARGB map: Helium-3 is exclusively a lunar resource
-        return new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_ARGB);
+        // Pure black grayscale map: Helium-3 is exclusively a lunar resource
+        return new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
     }
 
     public static BufferedImage generateCleanIronCopperMap(String type, Scenario scenario) {
         int width = 2048, height = 1024;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         var spots = loadMRDSDeposits("iron", "copper", "magnetite", "hematite", "chalcopyrite");
-        // Major global Iron & Copper deposits with 3 tiered densities
+        // Major global Iron & Copper deposits with 3 tiered densities in grayscale
         double[][] majorMetals = {
             {118.0, -22.5, 35, 1.5}, {120.5, -23.0, 32, 1.4}, {-50.0, -6.0, 38, 1.6}, {-43.5, -20.0, 32, 1.3},
             {37.0, 51.5, 38, 1.5}, {33.5, 48.0, 34, 1.4}, {-91.5, 47.5, 32, 1.3}, {-66.5, 54.0, 35, 1.3},
@@ -1663,16 +2077,15 @@ public class HistoricalMapGenerator {
             {102.0, 25.0, 30, 1.2}, {88.0, 38.0, 25, 1.1}, {-108.0, 32.5, 25, 1.1}
         };
         for (double[] m : majorMetals) spots.add(m);
-        // Multi-tier gradient matching legend: Low Grade (#8B4513), Banded Iron (#D97706), Massive Iron & Copper (#F97316)
-        rasterizeTieredSpotList(img, spots, new Color(139, 69, 19), new Color(217, 119, 6), new Color(249, 115, 22), 6.0);
+        rasterizeTieredSpotList(img, spots, new Color(80, 80, 80), new Color(160, 160, 160), new Color(240, 240, 240), 6.0);
         return img;
     }
 
     public static BufferedImage generateCleanPreciousMetalsMap(String type, Scenario scenario) {
         int width = 2048, height = 1024;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         var spots = loadMRDSDeposits("gold", "silver", "platinum", "lithium", "rare earth");
-        rasterizeSpotListToAlpha(img, spots, new Color(234, 179, 8), 5.0);
+        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 5.0);
         return img;
     }
 
@@ -1685,7 +2098,7 @@ public class HistoricalMapGenerator {
         if (java.nio.file.Files.exists(csvPath)) {
             try {
                 int width = 2048, height = 1024;
-                BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
                 // 2-degree resolution dataset has 90 latitude rows x 180 longitude columns
                 float[][] grid = new float[90][180];
                 boolean[][] filled = new boolean[90][180];
@@ -1743,12 +2156,8 @@ public class HistoricalMapGenerator {
                         if (hfInterp <= 0) hfInterp = 65.0f;
 
                         double norm = Math.clamp((hfInterp - 35.0) / 110.0, 0.0, 1.0);
-                        int alphaVal = (int) (110 + norm * 145);
-                        int r = (int) Math.clamp(239, 0, 255);
-                        int g = (int) Math.clamp(40 + (1.0 - norm) * 140, 0, 255);
-                        int b = (int) Math.clamp(50 + (1.0 - norm) * 60, 0, 255);
-
-                        img.setRGB(x, y, (alphaVal << 24) | (r << 16) | (g << 8) | b);
+                        int gray = (int) Math.clamp(norm * 255.0, 0, 255);
+                        img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
                     }
                 }
                 logger.info("Successfully generated 9th geology tensor (Mantle Heat Flux) with seamless 2D Bilinear Interpolation from Davies 2013 CSV.");
@@ -1759,38 +2168,44 @@ public class HistoricalMapGenerator {
         }
 
         int width = 2048, height = 1024;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         double[][] spots = {{-155.5, 19.8, 30, 1.2}, {-178.0, -29.0, 45, 1.1}, {-72.0, -15.0, 60, 1.2}, {140.0, 36.0, 50, 1.1}, {43.0, 11.5, 40, 1.2}, {-25.0, 64.8, 45, 1.1}, {14.0, 40.8, 35, 1.0}};
         var list = new java.util.ArrayList<double[]>();
         for (double[] s : spots) list.add(s);
-        rasterizeSpotListToAlpha(img, list, new Color(239, 68, 68), 15.0);
+        rasterizeSpotListToAlpha(img, list, Color.WHITE, 15.0);
         return img;
     }
 
     public static BufferedImage generateCleanAquiferMap(String type, Scenario scenario) {
         int width = 2048, height = 1024;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        // Major global sedimentary aquifer systems (UNESCO WHYMAP GWR)
-        double[][] majorAquifers = {
-            {25.0, 22.0, 60, 1.5},   // Nubian Sandstone Aquifer System (2.2M km2)
-            {-100.0, 38.0, 45, 1.3}, // Ogallala Aquifer USA
-            {-54.0, -25.0, 55, 1.4}, // Guaraní Aquifer South America (1.2M km2)
-            {138.0, -26.0, 60, 1.4}, // Great Artesian Basin Australia (1.7M km2)
-            {10.0, 30.0, 50, 1.3},   // Northern Sahara Aquifer System
-            {80.0, 27.0, 50, 1.3},   // Indo-Gangetic Basin
-            {2.0, 47.0, 35, 1.1},    // Paris / Aquitaine Basins Europe
-            {-60.0, -3.0, 65, 1.5},  // Amazon Basin Aquifers
-            {22.0, -1.0, 55, 1.3},   // Congo Basin Aquifer
-            {75.0, 60.0, 60, 1.4},   // West Siberian Basin Aquifer
-            {122.0, -18.0, 45, 1.2}, // Canning Basin Australia
-            {82.0, 39.0, 40, 1.1},   // Tarim Basin Aquifer
-            {-48.0, -1.5, 35, 1.1},  // Marajó Aquifer System
-            {-118.0, 36.0, 30, 1.1}, // California Central Valley Aquifer
-            {45.0, 25.0, 40, 1.2}    // Arabian Aquifer System
-        };
-        var list = new java.util.ArrayList<double[]>();
-        for (double[] a : majorAquifers) list.add(a);
-        rasterizeSpotListToAlpha(img, list, new Color(59, 130, 246), 25.0);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        var spots = AuthenticEmpiricalDatasetIngestion.getEmpiricalAquiferOccurrences();
+        if (spots.isEmpty()) {
+            // Fallback to major global sedimentary aquifer systems (UNESCO WHYMAP GWR)
+            double[][] majorAquifers = {
+                {25.0, 22.0, 85, 1.5},   // Nubian Sandstone Aquifer System (2.2M km2)
+                {-100.0, 38.0, 65, 1.3}, // Ogallala Aquifer USA
+                {-54.0, -25.0, 80, 1.5}, // Guaraní Aquifer South America (1.2M km2)
+                {138.0, -26.0, 85, 1.4}, // Great Artesian Basin Australia (1.7M km2)
+                {10.0, 30.0, 70, 1.3},   // Northern Sahara Aquifer System
+                {80.0, 27.0, 75, 1.4},   // Indo-Gangetic Basin
+                {2.0, 47.0, 55, 1.2},    // Paris / Aquitaine Basins Europe
+                {-60.0, -3.0, 90, 1.5},  // Amazon Basin Aquifers
+                {22.0, -1.0, 75, 1.3},   // Congo Basin Aquifer
+                {75.0, 60.0, 85, 1.4},   // West Siberian Basin Aquifer
+                {122.0, -18.0, 60, 1.2}, // Canning Basin Australia
+                {82.0, 39.0, 55, 1.2},   // Tarim Basin Aquifer
+                {-48.0, -1.5, 50, 1.2},  // Marajó Aquifer System
+                {-118.0, 36.0, 45, 1.2}, // California Central Valley Aquifer
+                {45.0, 25.0, 60, 1.3},   // Arabian Aquifer System
+                {16.0, 14.0, 65, 1.3},   // Chad Basin Aquifer
+                {23.0, -22.0, 60, 1.2},  // Kalahari / Karoo Aquifer
+                {116.0, 37.0, 65, 1.3},  // North China Plain Aquifer
+                {70.0, 30.0, 65, 1.3}    // Indus Basin Aquifer
+            };
+            for (double[] a : majorAquifers) spots.add(a);
+        }
+        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 12.0);
         return img;
     }
 

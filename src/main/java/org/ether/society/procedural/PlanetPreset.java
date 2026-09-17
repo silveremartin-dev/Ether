@@ -73,10 +73,13 @@ public record PlanetPreset(
     public PlanetPreset {
         if (elevationMapSource == null) {
             String lower = name != null ? name.toLowerCase() : "";
-            elevationMapSource = (customElevBase64 != null || lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) ? "earth"
+            boolean isSuperEarth = lower.contains("super-terre") || lower.contains("super-earth") || lower.contains("gaia");
+            elevationMapSource = isSuperEarth ? "none"
+                    : (customElevBase64 != null || lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) ? "earth"
                     : lower.contains("mars") || lower.contains("ares") ? "mars"
                     : lower.contains("vénus") || lower.contains("venus") || lower.contains("hesperos") ? "venus"
-                    : lower.contains("lune") || lower.contains("moon") || lower.contains("selene") ? "moon" : "none";
+                    : lower.contains("lune") || lower.contains("moon") || lower.contains("selene") ? "moon"
+                    : lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes") ? "mercury" : "none";
         }
         if (tempSource == null) tempSource = "";
         if (precipSource == null) precipSource = "";
@@ -88,54 +91,54 @@ public record PlanetPreset(
 
     /** Default Terran / Earth-like settings */
     public static final PlanetPreset EARTH_LIKE = new PlanetPreset(
-            "Terre (Terran)", 6, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.38, 40.0, 21.0, 0.30, 1.0,
+            "Terre (Terran)", 3, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.38, 40.0, 21.0, 0.30, 1.0,
             false, 1.0, 0.0, 420.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
-            true, "ERA5 Reanalysis (Copernicus / ECMWF — terrestres)", 12445L,
-            true, "WorldClim v2.1 (Hijmans et al. — terrestres)", 13345L,
-            true, "ERA5 Seasonal Variance (Copernicus — terrestres)", 14345L);
+            true, "🌍 Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)", 12445L,
+            true, "🌍 Terre — WorldClim v2.1 & GPCP v2.3 (Composite)", 13345L,
+            true, "🌍 Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)", 14345L);
 
     /** Mars-like settings */
     public static final PlanetPreset MARS_LIKE = new PlanetPreset(
-            "Mars (Ares)", 6, 3389.5, 24.6, 25.2, 687.0, 1.52, 1.0, -8000.0, 21229.0, -60.0, 98765L, 1.2, 1.2, -0.4, 50.0, 0.13, 0.25, 0.006,
+            "Mars (Ares)", 3, 3389.5, 24.6, 25.2, 687.0, 1.52, 1.0, -8000.0, 21229.0, -60.0, 98765L, 1.2, 1.2, -0.4, 50.0, 0.13, 0.25, 0.006,
             false, 1.0, 0.0, 950000.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "mars",
-            true, "MGS TES Thermal Emission Spectrometer (NASA PDS — Mars)", 98865L,
-            true, "Mars Polar Frost & H2O Sublimation (NASA — Mars)", 99765L,
-            true, "Mars Orbital Eccentricity Insolation (NASA — Mars)", 100765L);
+            true, "🔴 Mars — MGS TES Thermal Radiometry", 98865L,
+            true, "🔴 Mars — Frost & Sublimation Model", 99765L,
+            true, "🔴 Mars — Orbital Eccentricity Insolation Model", 100765L);
 
     public static final PlanetPreset DESERT_WORLD = MARS_LIKE;
 
     /** Venusian settings */
     public static final PlanetPreset VENUS_LIKE = new PlanetPreset(
-            "Vénus (Hesperos)", 6, 6051.8, 2802.0, 177.3, 224.7, 0.72, 1.0, -3000.0, 11000.0, 464.0, 55555L, 0.6, 0.7, -0.5, 20.0, 0.0, 0.75, 92.0,
+            "Vénus (Hesperos)", 3, 6051.8, 2802.0, 177.3, 224.7, 0.72, 1.0, -3000.0, 11000.0, 464.0, 55555L, 0.6, 0.7, -0.5, 20.0, 0.0, 0.75, 92.0,
             false, 1.0, 0.0, 965000.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "venus",
-            true, "Venus Greenhouse Hypsometric Profile (NASA PDS — Vénus)", 55655L,
-            true, "Venus H2SO4 Upper Cloud Virga Cycle (NASA — Vénus)", 56555L,
-            true, "Venus Super-Rotation Low Thermal Variance (Vénus)", 57555L);
+            true, "🟡 Vénus — Magellan SAR & Hypsometric Model", 55655L,
+            true, "🟡 Vénus — H2SO4 Virga Cycle Model", 56555L,
+            true, "🟡 Vénus — Super-Rotation Low Variance Model", 57555L);
 
     /** Moon-like satellite settings */
     public static final PlanetPreset MOON_LIKE = new PlanetPreset(
-            "Lune (Selene)", 6, 1737.4, 708.0, 1.5, 365.25, 1.0, 1.0, -9000.0, 10700.0, -20.0, 88888L, 0.9, 1.1, -0.5, 60.0, 0.0, 0.12, 0.0,
+            "Lune (Selene)", 3, 1737.4, 708.0, 1.5, 365.25, 1.0, 1.0, -9000.0, 10700.0, -20.0, 88888L, 0.9, 1.1, -0.5, 60.0, 0.0, 0.12, 0.0,
             true, 1.0, 384400.0, 0.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "moon",
-            true, "LRO Diviner Thermal Radiometer (NASA PDS — Lune)", 88988L,
-            true, "LRO LEND Vacuum Exosphere (NASA PDS — Lune)", 89888L,
-            true, "LRO Diviner Diurnal Insolation Amplitude (Lune)", 90888L);
+            true, "⚪ Lune — LRO Diviner Thermal Radiometer", 88988L,
+            true, "⚪ Lune — LRO LEND Vacuum Exosphere", 89888L,
+            true, "⚪ Lune — Diurnal Insolation Amplitude Model", 90888L);
 
     /** Mercury settings */
     public static final PlanetPreset MERCURY_LIKE = new PlanetPreset(
-            "Mercure (Hermes)", 6, 2439.7, 4222.6, 0.034, 87.97, 0.387, 1.0, -5000.0, 4480.0, 167.0, 66666L, 0.9, 1.0, -0.5, 90.0, 0.0, 0.14, 0.0,
+            "Mercure (Hermes)", 3, 2439.7, 4222.6, 0.034, 87.97, 0.387, 1.0, -5000.0, 4480.0, 167.0, 66666L, 0.9, 1.0, -0.5, 90.0, 0.0, 0.14, 0.0,
             false, 1.0, 0.0, 0.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "mercury",
-            true, "MESSENGER Extreme Thermal Model (NASA PDS — Mercure)", 66766L,
-            true, "MESSENGER Exosphere & Vacuum (NASA PDS — Mercure)", 67666L,
-            true, "MESSENGER 3:2 Spin-Orbit Thermal Variance (Mercure)", 68666L);
+            true, "⚪ Mercure — MESSENGER MLA Extreme Thermal Model", 66766L,
+            true, "⚪ Mercure — MESSENGER Exospheric Vacuum Model", 67666L,
+            true, "⚪ Mercure — 3:2 Spin-Orbit Thermal Variance Model", 68666L);
 
     /** Titan-like moon settings */
     public static final PlanetPreset TITAN_LIKE = new PlanetPreset(
-            "Titan (Cryo-Lune)", 6, 2574.0, 382.0, 26.7, 10759.0, 9.5, 1.0, -2000.0, 5000.0, -179.0, 77711L, 0.8, 1.0, 0.2, 25.0, 0.0, 0.22, 1.45,
+            "Titan (Cryo-Lune)", 3, 2574.0, 382.0, 26.7, 10759.0, 9.5, 1.0, -2000.0, 5000.0, -179.0, 77711L, 0.8, 1.0, 0.2, 25.0, 0.0, 0.22, 1.45,
             true, 317.8, 1221870.0, 5000.0, 2.5, 1.5, null, null, null, null, null, null,
             false, "none",
             false, "", 77811L,
@@ -144,7 +147,7 @@ public record PlanetPreset(
 
     /** Super-Earth settings */
     public static final PlanetPreset SUPER_EARTH = new PlanetPreset(
-            "Super-Terre (Gaia Prime)", 7, 11000.0, 16.0, 12.0, 480.0, 1.0, 1.2, -14000.0, 12000.0, 22.0, 44444L, 1.3, 1.2, 0.1, 45.0, 25.0, 0.28, 1.5,
+            "Super-Terre (Gaia Prime)", 3, 11000.0, 16.0, 12.0, 480.0, 1.0, 1.2, -14000.0, 12000.0, 22.0, 44444L, 1.3, 1.2, 0.1, 45.0, 25.0, 0.28, 1.5,
             false, 1.0, 0.0, 600.0, 2.5, 1.5, null, null, null, null, null, null,
             false, "none",
             false, "", 44544L,
@@ -153,7 +156,7 @@ public record PlanetPreset(
 
     /** Tidally locked Eyeball world */
     public static final PlanetPreset EYEBALL_WORLD = new PlanetPreset(
-            "Monde Synchrone (Eyeball)", 6, 5500.0, 720.0, 0.0, 30.0, 0.15, 0.05, -10000.0, 9000.0, 20.0, 33333L, 1.0, 1.0, 0.0, 90.0, 18.0, 0.35, 0.8,
+            "Monde Synchrone (Eyeball)", 3, 5500.0, 720.0, 0.0, 30.0, 0.15, 0.05, -10000.0, 9000.0, 20.0, 33333L, 1.0, 1.0, 0.0, 90.0, 18.0, 0.35, 0.8,
             false, 1.0, 0.0, 1200.0, 2.5, 1.5, null, null, null, null, null, null,
             false, "none",
             false, "", 33433L,
@@ -162,7 +165,7 @@ public record PlanetPreset(
 
     /** Water world settings */
     public static final PlanetPreset WATER_WORLD = new PlanetPreset(
-            "Monde Océan (Oceania)", 6, 7000.0, 21.0, 18.0, 410.0, 1.0, 1.1, -12000.0, 3000.0, 25.0, 54321L, 0.8, 0.8, 0.35, 30.0, 23.0, 0.25, 1.2,
+            "Monde Océan (Oceania)", 3, 7000.0, 21.0, 18.0, 410.0, 1.0, 1.1, -12000.0, 3000.0, 25.0, 54321L, 0.8, 0.8, 0.35, 30.0, 23.0, 0.25, 1.2,
             false, 1.0, 0.0, 500.0, 2.5, 1.5, null, null, null, null, null, null,
             false, "none",
             false, "", 54421L,
@@ -171,7 +174,7 @@ public record PlanetPreset(
 
     /** Ice world settings */
     public static final PlanetPreset ICE_WORLD = new PlanetPreset(
-            "Monde Glaciaire (Boreas)", 6, 4800.0, 32.0, 45.0, 520.0, 2.5, 0.9, -6000.0, 7000.0, -45.0, 11111L, 0.5, 1.5, 0.1, 70.0, 15.0, 0.60, 0.7,
+            "Monde Glaciaire (Boreas)", 3, 4800.0, 32.0, 45.0, 520.0, 2.5, 0.9, -6000.0, 7000.0, -45.0, 11111L, 0.5, 1.5, 0.1, 70.0, 15.0, 0.60, 0.7,
             false, 1.0, 0.0, 300.0, 2.5, 1.5, null, null, null, null, null, null,
             false, "none",
             false, "", 11211L,
@@ -179,7 +182,7 @@ public record PlanetPreset(
             false, "", 13111L);
 
     public static final PlanetPreset ARCHIPELAGO = new PlanetPreset(
-            "Archipel", 6, 6371.0, 24.0, 23.5, 365.0, 1.0, 1.0, -11000.0, 8848.0, 18.0, 77777L, 1.5, 1.5, 0.6, 45.0, 21.0, 0.30, 1.0,
+            "Archipel", 3, 6371.0, 24.0, 23.5, 365.0, 1.0, 1.0, -11000.0, 8848.0, 18.0, 77777L, 1.5, 1.5, 0.6, 45.0, 21.0, 0.30, 1.0,
             false, 1.0, 0.0, 420.0, 2.5, 1.5, null, null, null, null, null, null,
             false, "none",
             false, "", 77877L,

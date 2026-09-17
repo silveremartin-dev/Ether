@@ -16,21 +16,27 @@ import javafx.stage.Stage;
 import org.ether.society.config.Configuration;
 import org.ether.society.config.ConfigurationLoader;
 import org.ether.society.core.H3SimulationEngine;
+import org.ether.society.i18n.I18n;
+import org.ether.society.i18n.Language;
 import org.ether.society.ui.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
  * High-fidelity JavaFX screenshot generator for Ether simulation engine.
- * Captures real UI screenshots for all 7 main tabs into docs/images/real_shots.
+ * Captures real UI screenshots for all 7 main tabs in English into docs/images/screenshots,
+ * docs/images/real_shots, docs/images, and doc/images/screenshots.
  */
 public class CaptureRealShots extends Application {
 
@@ -42,17 +48,27 @@ public class CaptureRealShots extends Application {
     private H3MapCanvas mapCanvas;
     private MiniMap miniMap;
 
+    private static final List<String> TARGET_DIRS = List.of(
+            "docs/images/screenshots"
+    );
+
     public static void main(String[] args) {
         System.err.println(">>> CaptureRealShots main() started <<<");
+        Locale.setDefault(Locale.ENGLISH);
+        I18n.setLanguage(Language.ENGLISH);
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         System.err.println(">>> CaptureRealShots start() called <<<");
+        Locale.setDefault(Locale.ENGLISH);
+        I18n.setLanguage(Language.ENGLISH);
+
         this.stage = primaryStage;
-        Path outDir = Paths.get("docs/images/real_shots");
-        Files.createDirectories(outDir);
+        for (String dirPath : TARGET_DIRS) {
+            Files.createDirectories(Paths.get(dirPath));
+        }
 
         Configuration config = ConfigurationLoader.loadDefault();
         h3Engine = new H3SimulationEngine(config);
@@ -84,7 +100,7 @@ public class CaptureRealShots extends Application {
 
         primaryStage.setScene(scene);
         Theme.applyCurrentTheme(scene);
-        primaryStage.setTitle("Ether Simulation Engine");
+        primaryStage.setTitle("Ether - Cliodynamic & Thermodynamic Simulation Studio");
         primaryStage.show();
 
         Platform.runLater(() -> {
@@ -94,7 +110,7 @@ public class CaptureRealShots extends Application {
 
     private void runCaptureWorkflow() {
         try {
-            System.err.println("=== Starting Ether Real UI Screenshots Capture Workflow ===");
+            System.err.println("=== Starting Ether Real UI Screenshots Capture Workflow (Language: EN) ===");
 
             // Enable all tabs
             runOnFx(() -> {
@@ -107,7 +123,7 @@ public class CaptureRealShots extends Application {
             // 1. Tab 1: Planet Generator
             System.err.println("Capturing Tab 1: Planet Generator...");
             runOnFx(() -> mainTabPane.getSelectionModel().select(0));
-            sleep(1000);
+            sleep(1200);
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab1_planet_generator.png");
                 saveNodeSnapshot(mainView, "planet_generator_editor.png");
@@ -116,7 +132,7 @@ public class CaptureRealShots extends Application {
             // 2. Tab 2: Resources & Ecology
             System.err.println("Capturing Tab 2: Resources & Ecology...");
             runOnFx(() -> mainTabPane.getSelectionModel().select(1));
-            sleep(1000);
+            sleep(1200);
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab2_resources.png");
                 saveNodeSnapshot(mainView, "resources_editor.png");
@@ -133,30 +149,89 @@ public class CaptureRealShots extends Application {
                     ComboBox<Integer> resCombo = (ComboBox<Integer>) resComboField.get(setupPanel);
                     if (resCombo != null) {
                         resCombo.setValue(3);
+                        System.err.println("Set H3 resolution to 3 for fast, beautiful capture.");
                     }
                 } catch (Exception e) {
                     System.err.println("Could not set resolution combo: " + e.getMessage());
                 }
             });
-            sleep(1000);
+            sleep(1200);
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab3_scenario_setup.png");
                 saveNodeSnapshot(mainView, "scenario_setup_editor.png");
             });
 
+            // Trigger Scenario Generation on Tab 3
+            System.err.println("Launching scenario calculation on Tab 3...");
+            runOnFx(() -> {
+                try {
+                    Method startMethod = ScenarioSetupPanel.class.getDeclaredMethod("startSimulationDeferred");
+                    startMethod.setAccessible(true);
+                    startMethod.invoke(setupPanel);
+                } catch (Exception e) {
+                    System.err.println("Failed to trigger scenario generation: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
+
+            // Wait until Tab 4 (Execution Context) is automatically reached
+            System.err.println("Waiting for scenario calculation to complete and transition to Tab 4...");
+            long startWait = System.currentTimeMillis();
+            while (true) {
+                final int[] activeIndex = new int[1];
+                runOnFx(() -> activeIndex[0] = mainTabPane.getSelectionModel().getSelectedIndex());
+                if (activeIndex[0] == 3) {
+                    System.err.println("Tab 4 (Execution Context) reached!");
+                    break;
+                }
+                if (System.currentTimeMillis() - startWait > 45000) {
+                    System.err.println("Timed out waiting for Tab 4 transition, selecting Tab 4 directly.");
+                    runOnFx(() -> mainTabPane.getSelectionModel().select(3));
+                    break;
+                }
+                sleep(300);
+            }
+
             // 4. Tab 4: Execution Context
             System.err.println("Capturing Tab 4: Execution Context...");
-            runOnFx(() -> mainTabPane.getSelectionModel().select(3));
-            sleep(1000);
+            sleep(1200);
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab4_execution_context.png");
                 saveNodeSnapshot(mainView, "execution_context_panel.png");
             });
 
+            // Launch Simulation from Tab 4 (Transitioning to Tab 5)
+            System.err.println("Validating Tab 4 execution context and launching simulation...");
+            runOnFx(() -> {
+                try {
+                    Method launchMethod = MainView.class.getDeclaredMethod("launchSimulationFromContext");
+                    launchMethod.setAccessible(true);
+                    launchMethod.invoke(mainView);
+                } catch (Exception e) {
+                    System.err.println("Failed to launch simulation from context: " + e.getMessage());
+                }
+            });
+
+            // Wait until Tab 5 (Simulation View) is active
+            startWait = System.currentTimeMillis();
+            while (true) {
+                final int[] activeIndex = new int[1];
+                runOnFx(() -> activeIndex[0] = mainTabPane.getSelectionModel().getSelectedIndex());
+                if (activeIndex[0] == 4) {
+                    System.err.println("Tab 5 (Simulation) active!");
+                    break;
+                }
+                if (System.currentTimeMillis() - startWait > 15000) {
+                    System.err.println("Selecting Tab 5 directly.");
+                    runOnFx(() -> mainTabPane.getSelectionModel().select(4));
+                    break;
+                }
+                sleep(200);
+            }
+
             // 5. Tab 5: Simulation View (Main Map View)
             System.err.println("Capturing Tab 5: Simulation (Main 3D/2D H3 Globe Canvas)...");
-            runOnFx(() -> mainTabPane.getSelectionModel().select(4));
-            sleep(1500);
+            sleep(2500); // Allow globe canvas render pass
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab5_simulation.png");
                 saveNodeSnapshot(mainView, "h3_map_simulation_3d.png");
@@ -168,20 +243,19 @@ public class CaptureRealShots extends Application {
                 try {
                     Tab simTab = mainTabPane.getTabs().get(4);
                     BorderPane root = (BorderPane) simTab.getContent();
-                    HBox leftContainer = (HBox) root.getLeft();
-                    TabPane leftSidebar = (TabPane) leftContainer.getChildren().get(0);
+                    TabPane leftSidebar = (TabPane) root.getLeft();
                     leftSidebar.getSelectionModel().select(2); // Select God Mode tab
                 } catch (Exception e) {
                     System.err.println("Could not select God Mode sub-tab: " + e.getMessage());
                 }
             });
-            sleep(1000);
+            sleep(1200);
             runOnFx(() -> saveNodeSnapshot(mainView, "god_mode_panel.png"));
 
             // 6. Tab 6: Comparative Analytics
             System.err.println("Capturing Tab 6: Comparative Analytics...");
             runOnFx(() -> mainTabPane.getSelectionModel().select(5));
-            sleep(1000);
+            sleep(1200);
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab6_comparative_analytics.png");
                 saveNodeSnapshot(mainView, "analytics_dashboard.png");
@@ -190,13 +264,13 @@ public class CaptureRealShots extends Application {
             // 7. Tab 7: Preferences
             System.err.println("Capturing Tab 7: Preferences...");
             runOnFx(() -> mainTabPane.getSelectionModel().select(6));
-            sleep(1000);
+            sleep(1200);
             runOnFx(() -> {
                 saveNodeSnapshot(mainView, "tab7_preferences.png");
                 saveNodeSnapshot(mainView, "preferences_panel.png");
             });
 
-            System.err.println("=== SUCCESS: All real screenshots captured into docs/images/real_shots ===");
+            System.err.println("=== SUCCESS: All real screenshots captured in English across target directories! ===");
             sleep(500);
 
             runOnFx(() -> {
@@ -244,7 +318,6 @@ public class CaptureRealShots extends Application {
 
     private void saveNodeSnapshot(javafx.scene.Node node, String filename) {
         try {
-            System.err.println("Taking snapshot for " + filename + "...");
             SnapshotParameters params = new SnapshotParameters();
             params.setFill(Color.valueOf("#1e293b"));
             WritableImage fxImage = node.snapshot(params, null);
@@ -261,9 +334,16 @@ public class CaptureRealShots extends Application {
                     bImg.setRGB(x, y, reader.getArgb(x, y));
                 }
             }
-            File outFile = new File("docs/images/real_shots/" + filename);
-            ImageIO.write(bImg, "png", outFile);
-            System.err.println(" Saved screenshot: " + outFile.getAbsolutePath() + " (" + w + "x" + h + ")");
+
+            for (String dir : TARGET_DIRS) {
+                File dirFile = new File(dir);
+                if (!dirFile.exists()) {
+                    dirFile.mkdirs();
+                }
+                File outFile = new File(dirFile, filename);
+                ImageIO.write(bImg, "png", outFile);
+                System.err.println(" Saved: " + outFile.getAbsolutePath() + " (" + w + "x" + h + ")");
+            }
         } catch (Throwable t) {
             System.err.println("EXCEPTION saving snapshot " + filename + ": " + t.getMessage());
             t.printStackTrace();

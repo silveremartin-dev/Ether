@@ -10,30 +10,83 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.util.StringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Locale;
 
 /**
  * God Mode & Interactive Timeline Controller.
  * Allows pausing live simulation, injecting real physical events (volcanoes, EMP, heatwaves),
- * and viewing the chronological scenario timeline audit trail.
+ * selecting duration, and viewing/navigating the chronological scenario timeline audit trail.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 4.1.0
  */
 public class GodModePanel extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(GodModePanel.class);
 
+    public record EventTypeItem(
+        String id,
+        String typeI18nKey,
+        String nameI18nKey,
+        String descI18nKey,
+        int defaultDurationDays,
+        double defaultMagnitude
+    ) {
+        public String getDisplayName() {
+            return I18n.getOrDefault(typeI18nKey, id);
+        }
+
+        public String getDefaultTitle() {
+            return I18n.getOrDefault(nameI18nKey, id);
+        }
+
+        public String getDescription() {
+            return I18n.getOrDefault(descI18nKey, "");
+        }
+
+        @Override
+        public String toString() {
+            return getDisplayName();
+        }
+    }
+
+    private static final List<EventTypeItem> EVENT_TYPES = List.of(
+        new EventTypeItem("VOLCANO", "godmode.type.volcano", "godmode.event.volcano", "godmode.event.volcano.desc", 365, 7.0),
+        new EventTypeItem("HEATWAVE", "godmode.type.heatwave", "godmode.event.heatwave", "godmode.event.heatwave.desc", 30, 5.0),
+        new EventTypeItem("SOLAR_EMP", "godmode.type.solar_emp", "godmode.event.solar_emp", "godmode.event.solar_emp.desc", 30, 8.5),
+        new EventTypeItem("PANDEMIC", "godmode.type.pandemic", "godmode.event.pandemic", "godmode.event.pandemic.desc", 730, 8.0),
+        new EventTypeItem("METEOR", "godmode.type.meteor", "godmode.event.meteor", "godmode.event.meteor.desc", 7, 9.0),
+        new EventTypeItem("NUCLEAR_WINTER", "godmode.type.nuclear_winter", "godmode.event.nuclear_winter", "godmode.event.nuclear_winter.desc", 3650, 7.5),
+        new EventTypeItem("FAMINE", "godmode.type.famine", "godmode.event.famine", "godmode.event.famine.desc", 180, 6.0),
+        new EventTypeItem("TSUNAMI", "godmode.type.tsunami", "godmode.event.tsunami", "godmode.event.tsunami.desc", 1, 8.5),
+        new EventTypeItem("EARTHQUAKE", "godmode.type.earthquake", "godmode.event.earthquake", "godmode.event.earthquake.desc", 3, 8.0),
+        new EventTypeItem("ICE_AGE", "godmode.type.ice_age", "godmode.event.ice_age", "godmode.event.ice_age.desc", 18250, 5.0),
+        new EventTypeItem("CYBER_ATTACK", "godmode.type.cyber_attack", "godmode.event.cyber_attack", "godmode.event.cyber_attack.desc", 14, 6.5),
+        new EventTypeItem("ECONOMIC_CRASH", "godmode.type.economic_crash", "godmode.event.economic_crash", "godmode.event.economic_crash.desc", 365, 7.0),
+        new EventTypeItem("BIODIVERSITY_COLLAPSE", "godmode.type.biodiversity_collapse", "godmode.event.biodiversity_collapse", "godmode.event.biodiversity_collapse.desc", 3650, 6.0),
+        new EventTypeItem("GEOENGINEERING", "godmode.type.geoengineering", "godmode.event.geoengineering", "godmode.event.geoengineering.desc", 730, 4.0),
+        new EventTypeItem("RENAISSANCE_BOOM", "godmode.type.renaissance_boom", "godmode.event.renaissance_boom", "godmode.event.renaissance_boom.desc", 7300, 8.0),
+        new EventTypeItem("TECH_SINGULARITY", "godmode.type.tech_singularity", "godmode.event.tech_singularity", "godmode.event.tech_singularity.desc", 3650, 9.5),
+        new EventTypeItem("ALIEN_CONTACT", "godmode.type.alien_contact", "godmode.event.alien_contact", "godmode.event.alien_contact.desc", 1825, 10.0)
+    );
+
     private final H3SimulationEngine engine;
     private final ScenarioTimeline timeline;
+    private H3MapCanvas mapCanvas;
+    private NotificationOverlay notificationOverlay;
 
     private final Label headerLabel;
     private final Label pauseNoticeLabel;
     private final ListView<String> timelineListView;
     private final Label timelineHeaderLabel;
+    private final Label timelineHintLabel;
 
     // Configurable Form Controls
-    private final ComboBox<String> eventTypeCombo;
+    private final ComboBox<EventTypeItem> eventTypeCombo;
     private final Label eventDescriptionLabel;
     private final TextField eventNameField;
     private final Label dateRangeLabel;
@@ -42,8 +95,9 @@ public class GodModePanel extends VBox {
     private final Spinner<Double> latSpinner;
     private final Spinner<Double> lngSpinner;
     private final Spinner<Double> magnitudeSpinner;
+    private final Spinner<Integer> durationDaysSpinner;
 
-    // Injector section
+    // Injector section labels & buttons
     private final Label injectorTitleLabel;
     private final Label lblEventType;
     private final Label lblEventTitle;
@@ -51,6 +105,7 @@ public class GodModePanel extends VBox {
     private final Label lblLat;
     private final Label lblLng;
     private final Label lblMag;
+    private final Label lblDurationDays;
     private final Button scheduleBtn;
     private final Button triggerNowBtn;
 
@@ -73,7 +128,7 @@ public class GodModePanel extends VBox {
         this.engine = engine;
         this.timeline = timeline != null ? timeline : new ScenarioTimeline();
 
-        setPadding(new Insets(12));
+        setPadding(new Insets(12, 12, 35, 12));
         setSpacing(10);
         getStyleClass().add("glass-panel");
 
@@ -88,36 +143,49 @@ public class GodModePanel extends VBox {
 
         // Form fields initialization
         eventTypeCombo = new ComboBox<>();
-        eventTypeCombo.getItems().addAll(
-            "VOLCANO",
-            "HEATWAVE",
-            "SOLAR_EMP",
-            "PANDEMIC",
-            "METEOR",
-            "NUCLEAR_WINTER",
-            "FAMINE",
-            "TSUNAMI",
-            "EARTHQUAKE",
-            "ICE_AGE",
-            "CYBER_ATTACK",
-            "ECONOMIC_CRASH",
-            "BIODIVERSITY_COLLAPSE",
-            "GEOENGINEERING",
-            "RENAISSANCE_BOOM",
-            "TECH_SINGULARITY",
-            "ALIEN_CONTACT"
-        );
-        eventTypeCombo.setValue("VOLCANO");
-        eventTypeCombo.setPrefWidth(210);
-        eventTypeCombo.setMaxWidth(260);
+        eventTypeCombo.getItems().addAll(EVENT_TYPES);
+        eventTypeCombo.setPrefWidth(220);
+        eventTypeCombo.setMaxWidth(280);
+
+        eventTypeCombo.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(EventTypeItem item) {
+                return item != null ? item.getDisplayName() : "";
+            }
+            @Override
+            public EventTypeItem fromString(String string) {
+                if (string == null) return null;
+                for (EventTypeItem item : EVENT_TYPES) {
+                    if (item.getDisplayName().equalsIgnoreCase(string) || item.id().equalsIgnoreCase(string)) {
+                        return item;
+                    }
+                }
+                return null;
+            }
+        });
+
+        eventTypeCombo.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(EventTypeItem item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.getDisplayName());
+            }
+        });
+        eventTypeCombo.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(EventTypeItem item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.getDisplayName());
+            }
+        });
 
         eventDescriptionLabel = new Label();
         eventDescriptionLabel.setWrapText(true);
-        eventDescriptionLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #cbd5e1; -fx-padding: 4 6; -fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 4; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 4;");
+        eventDescriptionLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #cbd5e1; -fx-padding: 6 8; -fx-background-color: rgba(15, 23, 42, 0.7); -fx-background-radius: 4; -fx-border-color: rgba(56, 189, 248, 0.35); -fx-border-radius: 4;");
 
-        eventNameField = new TextField(I18n.getOrDefault("godmode.event.volcano", "Stratospheric SO₂ Eruption"));
-        eventNameField.setPrefWidth(210);
-        eventNameField.setMaxWidth(260);
+        eventNameField = new TextField();
+        eventNameField.setPrefWidth(220);
+        eventNameField.setMaxWidth(280);
 
         int currentYr = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
         int minYr = engine != null && engine.getCurrentScenario() != null ? (int) engine.getCurrentScenario().getStartDateYear() : -100000;
@@ -162,89 +230,31 @@ public class GodModePanel extends VBox {
         lngSpinner.setPrefWidth(95);
         lngSpinner.setMaxWidth(110);
 
-        magnitudeSpinner = new Spinner<>(0.1, 10.0, 1.5, 0.5);
+        magnitudeSpinner = new Spinner<>(0.1, 10.0, 7.0, 0.5);
         magnitudeSpinner.setEditable(true);
         magnitudeSpinner.setPrefWidth(95);
         magnitudeSpinner.setMaxWidth(110);
 
-        // Update default event name and description when type changes
+        durationDaysSpinner = new Spinner<>(1, 36500, 365, 1);
+        durationDaysSpinner.setEditable(true);
+        durationDaysSpinner.setPrefWidth(95);
+        durationDaysSpinner.setMaxWidth(110);
+
+        // Update defaults when event type selection changes
         eventTypeCombo.valueProperty().addListener((obs, oldV, newV) -> {
             if (newV == null) return;
-            switch (newV) {
-                case "VOLCANO" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.volcano", "Stratospheric SO₂ Eruption"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.volcano.desc", "🌋 Major volcanic eruption injecting sulfur dioxide into stratosphere, causing temporary global cooling."));
-                }
-                case "HEATWAVE" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.heatwave", "Global Heatwave & Radiative Forcing"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.heatwave.desc", "☀️ Extreme heatwave increasing regional temperature, causing water stress and wet-bulb mortality."));
-                }
-                case "SOLAR_EMP" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.solar_emp", "Carrington Solar Storm (EMP)"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.solar_emp.desc", "⚡ Coronal mass ejection destroying power grids and reducing collective memory & Shannon bandwidth."));
-                }
-                case "PANDEMIC" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.pandemic", "Bio-Molecular Zoonotic Epidemic"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.pandemic.desc", "🦠 Highly contagious infectious disease reducing population and disrupting life expectancy."));
-                }
-                case "METEOR" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.meteor", "Major Asteroid Impact"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.meteor.desc", "☄️ Asteroid collision ejecting opaque dust, destroying biomass, and cooling climate."));
-                }
-                case "NUCLEAR_WINTER" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.nuclear_winter", "Nuclear Winter / Glaciation"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.nuclear_winter.desc", "☢️ Massive fires and stratospheric soot blocking solar radiation for several decades."));
-                }
-                case "FAMINE" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.famine", "Drought & Widespread Famine"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.famine.desc", "🌾 Crop yield collapse and soil NPK degradation triggering food crisis."));
-                }
-                case "TSUNAMI" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.tsunami", "Megatsunami & Coastal Submersion"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.tsunami.desc", "🌊 Giant wave devastating coastal areas and port infrastructure."));
-                }
-                case "EARTHQUAKE" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.earthquake", "Major Tectonic Earthquake"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.earthquake.desc", "🏚️ Earthquake destroying built capital and disrupting local economy."));
-                }
-                case "ICE_AGE" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.ice_age", "Glaciation Abrupte Younger Dryas"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.ice_age.desc", "❄️ Sudden cooling of planetary climate reducing arable land."));
-                }
-                case "CYBER_ATTACK" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.cyber_attack", "Digital Outage & Network Collapse"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.cyber_attack.desc", "💻 Attaque informatique globale paralysant la division du travail et les chaînes logistiques."));
-                }
-                case "ECONOMIC_CRASH" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.economic_crash", "Stock Crash & Currency Panic"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.economic_crash.desc", "📉 Systemic financial crisis increasing Gini inequality and fiscal stress."));
-                }
-                case "BIODIVERSITY_COLLAPSE" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.biodiversity_collapse", "Trophic Chain Collapse"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.biodiversity_collapse.desc", "🦋 Disappearance of pollinators and drastic drop in wild biodiversity."));
-                }
-                case "GEOENGINEERING" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.geoengineering", "Stratospheric Aerosol Injection"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.geoengineering.desc", "🌍 Direct human intervention injecting aerosols to counter global warming."));
-                }
-                case "RENAISSANCE_BOOM" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.renaissance_boom", "Industrial & Technological Revolution"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.renaissance_boom.desc", "🚀 Outburst of scientific innovations accelerating technology level and productivity."));
-                }
-                case "TECH_SINGULARITY" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.tech_singularity", "Emergence of Artificial Superintelligence"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.tech_singularity.desc", "🤖 Technological singularity multiplying knowledge and Shannon bandwidth."));
-                }
-                case "ALIEN_CONTACT" -> {
-                    eventNameField.setText(I18n.getOrDefault("godmode.event.alien_contact", "Exogenous Extraterrestrial Signal"));
-                    eventDescriptionLabel.setText(I18n.getOrDefault("godmode.event.alien_contact.desc", "🛸 Discovery of intelligent exogenous signal unifying humanity and boosting research."));
-                }
+            eventNameField.setText(newV.getDefaultTitle());
+            eventDescriptionLabel.setText(newV.getDescription());
+            if (magnitudeSpinner.getValueFactory() != null) {
+                magnitudeSpinner.getValueFactory().setValue(newV.defaultMagnitude());
+            }
+            if (durationDaysSpinner.getValueFactory() != null) {
+                durationDaysSpinner.getValueFactory().setValue(newV.defaultDurationDays());
             }
         });
-        // Trigger initial text
-        eventTypeCombo.setValue("VOLCANO");
+        eventTypeCombo.getSelectionModel().select(0);
 
-        // Injector components
+        // Injector section labels
         injectorTitleLabel = new Label();
         injectorTitleLabel.getStyleClass().add("label-section-header");
         lblEventType = createLabel();
@@ -253,14 +263,15 @@ public class GodModePanel extends VBox {
         lblLat = createLabel();
         lblLng = createLabel();
         lblMag = createLabel();
+        lblDurationDays = createLabel();
 
         scheduleBtn = new Button();
-        scheduleBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 12; -fx-background-radius: 6;");
+        scheduleBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 7 12; -fx-background-radius: 6;");
         scheduleBtn.setMaxWidth(Double.MAX_VALUE);
         scheduleBtn.setOnAction(e -> scheduleEvent(false));
 
         triggerNowBtn = new Button();
-        triggerNowBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 12; -fx-background-radius: 6;");
+        triggerNowBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 7 12; -fx-background-radius: 6;");
         triggerNowBtn.setMaxWidth(Double.MAX_VALUE);
         triggerNowBtn.setOnAction(e -> scheduleEvent(true));
 
@@ -379,7 +390,7 @@ public class GodModePanel extends VBox {
                 }
 
                 recordIntervention("TERRAFORM_BRUSH", I18n.getOrDefault("godmode.brush.title", "Pinceau Spatial"),
-                        I18n.getOrDefault("godmode.brush.details", "Brush action applied on mesh Lat ") + String.format("%.2f", nearest.getLatitude()) + "°, Lng " + String.format("%.2f", nearest.getLongitude()) + "°");
+                        I18n.getOrDefault("godmode.brush.details", "Brush action applied on mesh Lat ") + String.format(Locale.ROOT, "%.2f", nearest.getLatitude()) + "°, Lng " + String.format(Locale.ROOT, "%.2f", nearest.getLongitude()) + "°");
             }
         });
 
@@ -406,8 +417,13 @@ public class GodModePanel extends VBox {
         timelineHeaderLabel = new Label();
         timelineHeaderLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #a78bfa; -fx-font-size: 12px;");
 
+        timelineHintLabel = new Label();
+        timelineHintLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8; -fx-font-style: italic;");
+        timelineHintLabel.setWrapText(true);
+
         timelineListView = new ListView<>();
-        timelineListView.setPrefHeight(160);
+        timelineListView.setPrefHeight(180);
+        timelineListView.setMinHeight(140);
 
         timelineListView.setCellFactory(lv -> new ListCell<>() {
             @Override
@@ -431,24 +447,74 @@ public class GodModePanel extends VBox {
                     } catch (Exception ignored) {}
 
                     if (eventYear < currentYear) {
-                        setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 11px;");
+                        setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 11px; -fx-cursor: hand;");
                     } else if (eventYear == currentYear) {
-                        setStyle("-fx-text-fill: #4ade80; -fx-font-weight: bold; -fx-font-size: 11px;");
+                        setStyle("-fx-text-fill: #4ade80; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
                     } else {
-                        setStyle("-fx-text-fill: #f59e0b; -fx-font-style: italic; -fx-font-size: 11px;");
+                        setStyle("-fx-text-fill: #f59e0b; -fx-font-style: italic; -fx-font-size: 11px; -fx-cursor: hand;");
                     }
                 }
             }
         });
+
+        // Click on timeline event recenters 2D/3D camera on the event
+        timelineListView.getSelectionModel().selectedIndexProperty().addListener((obs, oldIdx, newIdx) -> {
+            if (newIdx == null || newIdx.intValue() < 0) return;
+            List<ScenarioTimeline.TimelineEntry> entries = timeline.getEntries();
+            if (newIdx.intValue() < entries.size()) {
+                ScenarioTimeline.TimelineEntry entry = entries.get(newIdx.intValue());
+                double lat = entry.latitude();
+                double lng = entry.longitude();
+
+                // If coordinates were 0, try parsing from details
+                if (lat == 0.0 && lng == 0.0 && entry.details() != null) {
+                    try {
+                        if (entry.details().contains("Lat:") && entry.details().contains("Lng:")) {
+                            String d = entry.details();
+                            int latStart = d.indexOf("Lat:") + 4;
+                            int latEnd = d.indexOf("°", latStart);
+                            int lngStart = d.indexOf("Lng:") + 4;
+                            int lngEnd = d.indexOf("°", lngStart);
+                            if (latStart > 3 && latEnd > latStart && lngStart > 3 && lngEnd > lngStart) {
+                                lat = Double.parseDouble(d.substring(latStart, latEnd).trim());
+                                lng = Double.parseDouble(d.substring(lngStart, lngEnd).trim());
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                }
+
+                updateCoordinates(lat, lng);
+
+                if (mapCanvas != null) {
+                    mapCanvas.flyTo(lat, lng);
+                }
+
+                if (notificationOverlay != null) {
+                    notificationOverlay.showNotification(
+                        "🎯 " + entry.title() + "\n" + String.format(Locale.ROOT, "📍 Lat: %.2f°, Lng: %.2f°", lat, lng),
+                        "#38bdf8"
+                    );
+                }
+            }
+        });
+
         refreshTimelineView();
 
-        VBox timelineBox = new VBox(6, timelineHeaderLabel, timelineListView);
+        VBox timelineBox = new VBox(6, timelineHeaderLabel, timelineHintLabel, timelineListView);
         timelineBox.getStyleClass().add("card-section");
 
         getChildren().addAll(headerLabel, pauseNoticeLabel, injectorBox, spawnerBox, terraformBox, resetBox, timelineBox);
 
         updateTexts();
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
+    }
+
+    public void setMapCanvas(H3MapCanvas mapCanvas) {
+        this.mapCanvas = mapCanvas;
+    }
+
+    public void setNotificationOverlay(NotificationOverlay notificationOverlay) {
+        this.notificationOverlay = notificationOverlay;
     }
 
     public void updateTexts() {
@@ -463,27 +529,29 @@ public class GodModePanel extends VBox {
         latSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.lat", "Latitude of physical phenomenon epicenter (-90° South to +90° North).")));
         lngSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.lng", "Longitude of physical phenomenon epicenter (-180° West to +180° East).")));
         magnitudeSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.magnitude", "Shock intensity / magnitude (determines depth and spatial impact of perturbation).")));
+        durationDaysSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.duration_days", "Active duration of the physical phenomenon in simulation days.")));
 
-        injectorTitleLabel.setText(I18n.getOrDefault("godmode.injector.title", "🛠️ CLIMATE EVENT EDITING & PROGRAMMING:"));
-        lblEventType.setText(I18n.getOrDefault("godmode.label.event_type", "Event Type:"));
-        lblEventTitle.setText(I18n.getOrDefault("godmode.label.event_title", "Name / Title:"));
-        lblTargetYear.setText(I18n.getOrDefault("godmode.label.target_year", "Target Year (Date):"));
-        lblLat.setText(I18n.getOrDefault("godmode.label.lat", "Latitude (-90 to +90°):"));
-        lblLng.setText(I18n.getOrDefault("godmode.label.lng", "Longitude (-180 to +180°):"));
-        lblMag.setText(I18n.getOrDefault("godmode.label.magnitude", "Intensity / Magnitude:"));
+        injectorTitleLabel.setText(I18n.getOrDefault("godmode.injector.title", "🛠️ ÉDITION & PROGRAMMATION D'ÉVÉNEMENTS CLIMATIQUES :"));
+        lblEventType.setText(I18n.getOrDefault("godmode.label.event_type", "Type d'Événement :"));
+        lblEventTitle.setText(I18n.getOrDefault("godmode.label.event_title", "Nom / Titre :"));
+        lblTargetYear.setText(I18n.getOrDefault("godmode.label.target_year", "Année Cible (Date) :"));
+        lblLat.setText(I18n.getOrDefault("godmode.label.lat", "Latitude (-90 à +90°) :"));
+        lblLng.setText(I18n.getOrDefault("godmode.label.lng", "Longitude (-180 à +180°) :"));
+        lblMag.setText(I18n.getOrDefault("godmode.label.magnitude", "Intensité / Magnitude :"));
+        lblDurationDays.setText(I18n.getOrDefault("godmode.label.duration_days", "Durée (en jours) :"));
 
-        scheduleBtn.setText(I18n.getOrDefault("godmode.btn.schedule", "📅 Schedule in Timeline"));
-        scheduleBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.schedule", "Schedules event in scenario calendar for automatic triggering at specified target year.")));
-        triggerNowBtn.setText(I18n.getOrDefault("godmode.btn.trigger_now", "⚡ Trigger Immediately"));
-        triggerNowBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.trigger_now", "Instantly applies climate and physical perturbations to current world in real time.")));
+        scheduleBtn.setText(I18n.getOrDefault("godmode.btn.schedule", "📅 Programmer dans la Chronologie"));
+        scheduleBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.schedule", "Planifie l'événement dans le calendrier du scénario pour un déclenchement automatique.")));
+        triggerNowBtn.setText(I18n.getOrDefault("godmode.btn.trigger_now", "⚡ Déclencher Immédiatement"));
+        triggerNowBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.trigger_now", "Applique instantanément les perturbations physiques et climatiques au monde actuel en temps réel.")));
 
-        spawnerTitleLabel.setText(I18n.getOrDefault("godmode.spawner.header", "🌱 DIRECT POPULATION & RESOURCE INJECTION:"));
-        injectPopBtn.setText(I18n.getOrDefault("godmode.btn.inject_pop", "👥 Inject 100,000 Inhabitants (Epicenter)"));
-        injectPopBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.inject_pop", "Injects cohort of 100,000 inhabitants at geographical position specified by Lat/Lng spinners.")));
+        spawnerTitleLabel.setText(I18n.getOrDefault("godmode.spawner.header", "🌱 INJECTION DIRECTE DE POPULATION & RESSOURCES :"));
+        injectPopBtn.setText(I18n.getOrDefault("godmode.btn.inject_pop", "👥 Injecter 100 000 Habitants (Épicentre)"));
+        injectPopBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.inject_pop", "Injecte une cohorte de 100 000 habitants à la position géographique spécifiée.")));
         injectFoodBtn.setText(I18n.getOrDefault("godmode.btn.inject_food", "🌾 Injecter Stock Alimentaire (Silos)"));
-        injectFoodBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.inject_food", "Fills food stocks to 100% to prevent immediate famines.")));
-        massExtinctionBtn.setText(I18n.getOrDefault("godmode.btn.mass_extinction", "💀 Trigger Mass Extinction (50% Extinction)"));
-        massExtinctionBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.mass_extinction", "Instantly reduces active world population by 50% (Cataclysm Shock).")));
+        injectFoodBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.inject_food", "Remplit les silos céréaliers à 100% pour prévenir les famines immédiates.")));
+        massExtinctionBtn.setText(I18n.getOrDefault("godmode.btn.mass_extinction", "💀 Déclencher Extinction Massive (-50% Population)"));
+        massExtinctionBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.mass_extinction", "Réduit instantanément de 50% la population mondiale active (Choc Cataclysmique).")));
 
         terraformTitleLabel.setText(I18n.getOrDefault("godmode.terraform.header", "🖌️ PINCEAU SPATIAL & DYNAMIQUES LOCALES :"));
         int selIdx = brushModeCombo.getSelectionModel().getSelectedIndex();
@@ -491,20 +559,20 @@ public class GodModePanel extends VBox {
         brushModeCombo.getItems().addAll(
             I18n.getOrDefault("godmode.brush.pop", "👥 Boost Population (+50 000 hab)"),
             I18n.getOrDefault("godmode.brush.agri", "🌾 Injection Agricole & Silos (+500 t)"),
-            I18n.getOrDefault("godmode.brush.water", "🚰 Recharge Aquifer (+2,000 m³)"),
-            I18n.getOrDefault("godmode.brush.heat", "🔥 Vague de Chaleur Locale (+10.0°C)"),
-            I18n.getOrDefault("godmode.brush.cold", "❄️ Refroidissement Local (-10.0°C)"),
-            I18n.getOrDefault("godmode.brush.clean", "🧼 Total Ecological Cleanup (0.0)")
+            I18n.getOrDefault("godmode.brush.water", "🚰 Recharge Aquifère (+2 000 m³)"),
+            I18n.getOrDefault("godmode.brush.heat", "🔥 Vague de Chaleur Locale (+10,0°C)"),
+            I18n.getOrDefault("godmode.brush.cold", "❄️ Refroidissement Local (-10,0°C)"),
+            I18n.getOrDefault("godmode.brush.clean", "🧼 Nettoyage Écologique Intégral (0.0)")
         );
         brushModeCombo.getSelectionModel().select(selIdx >= 0 ? selIdx : 0);
-        brushModeCombo.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.brush_mode", "Select local effect to apply (demographics, agriculture, water, temperature, or cleanup).")));
+        brushModeCombo.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.brush_mode", "Sélectionnez l'effet local à appliquer.")));
 
-        applyBrushBtn.setText(I18n.getOrDefault("godmode.btn.apply_brush", "🖌️ Apply to Epicenter Coordinates"));
-        applyBrushBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.apply_brush", "Applies selected action directly onto targeted H3 mesh by epicenter coordinates (Latitude / Longitude).")));
+        applyBrushBtn.setText(I18n.getOrDefault("godmode.btn.apply_brush", "🖌️ Appliquer aux Coordonnées de l'Épicentre"));
+        applyBrushBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.apply_brush", "Applique l'action sélectionnée directement sur la maille H3 ciblée.")));
 
-        resetTitleLabel.setText(I18n.getOrDefault("godmode.reset.header", "🛑 NORMALIZATION & PHYSICAL RESET:"));
-        resetDisastersBtn.setText(I18n.getOrDefault("godmode.btn.reset_disasters", "🛑 Stop All Disasters & Dissipate Stratospheric Soot"));
-        resetDisastersBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.reset_disasters", "Resets stratospheric soot optical depth (τ = 0.0) and cancels active heatwave/volcanic perturbations.")));
+        resetTitleLabel.setText(I18n.getOrDefault("godmode.reset.header", "🛑 NORMALISATION & RÉINITIALISATION PHYSIQUE :"));
+        resetDisastersBtn.setText(I18n.getOrDefault("godmode.btn.reset_disasters", "🛑 Stopper Tous les Désastres & Dissiper les Suies"));
+        resetDisastersBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.reset_disasters", "Réinitialise la profondeur optique des suies (τ = 0.0) et annule les perturbations actives.")));
 
         int minYr = engine != null && engine.getCurrentScenario() != null ? (int) engine.getCurrentScenario().getStartDateYear() : -100000;
         int maxYr = engine != null && engine.getCurrentScenario() != null ? (int) engine.getCurrentScenario().getEndDateYear() : 2100;
@@ -513,14 +581,16 @@ public class GodModePanel extends VBox {
             dateRangeLabel.setText(String.format(I18n.getOrDefault("godmode.label.date_range", "📅 Allowed Range: [Year %,d ➔ Year %,d]"), minYr, maxYr));
         }
 
-        if (eventTypeCombo != null && eventTypeCombo.getValue() != null) {
-            String currentType = eventTypeCombo.getValue();
-            eventTypeCombo.setValue(null);
-            eventTypeCombo.setValue(currentType);
+        // Refresh event type display
+        EventTypeItem currentType = eventTypeCombo.getValue();
+        if (currentType != null) {
+            eventNameField.setText(currentType.getDefaultTitle());
+            eventDescriptionLabel.setText(currentType.getDescription());
         }
 
-        timelineHeaderLabel.setText(I18n.getOrDefault("godmode.timeline.title", "📜 SCENARIO TIMELINE & LIVE AUDIT LOG:"));
-        timelineListView.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.timeline", "Temporal audit trail: Chronological list of all scenario forcings and events.")));
+        timelineHeaderLabel.setText(I18n.getOrDefault("godmode.timeline.title", "📜 CHRONOLOGIE DU SCÉNARIO & AUDIT TRAIL :"));
+        timelineHintLabel.setText(I18n.getOrDefault("godmode.timeline.click_hint", "💡 Cliquez sur un événement de la chronologie pour recentrer la vue 2D / 3D sur ses coordonnées."));
+        timelineListView.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.timeline", "Piste d'audit temporel : Liste chronologique de tous les forçages et événements du scénario.")));
 
         refreshTimelineView();
     }
@@ -544,7 +614,7 @@ public class GodModePanel extends VBox {
         grid.addRow(0, lblEventType, eventTypeCombo);
         grid.add(eventDescriptionLabel, 1, 1);
         grid.addRow(2, lblEventTitle, eventNameField);
-        
+
         HBox yearRow = new HBox(8, targetYearSpinner, targetYearSlider);
         yearRow.setAlignment(Pos.CENTER_LEFT);
         VBox yearBox = new VBox(3, yearRow, dateRangeLabel);
@@ -553,6 +623,7 @@ public class GodModePanel extends VBox {
         grid.addRow(4, lblLat, latSpinner);
         grid.addRow(5, lblLng, lngSpinner);
         grid.addRow(6, lblMag, magnitudeSpinner);
+        grid.addRow(7, lblDurationDays, durationDaysSpinner);
 
         HBox btnBox = new HBox(8, scheduleBtn, triggerNowBtn);
         HBox.setHgrow(scheduleBtn, Priority.ALWAYS);
@@ -593,9 +664,10 @@ public class GodModePanel extends VBox {
     }
 
     private void scheduleEvent(boolean immediate) {
-        String type = eventTypeCombo.getValue();
+        EventTypeItem item = eventTypeCombo.getValue();
+        String type = item != null ? item.id() : "VOLCANO";
         String name = eventNameField.getText();
-        if (name == null || name.isBlank()) name = type;
+        if (name == null || name.isBlank()) name = item != null ? item.getDefaultTitle() : type;
 
         int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
         int currentMonth = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() : 0;
@@ -606,8 +678,10 @@ public class GodModePanel extends VBox {
         double lat = latSpinner.getValue();
         double lng = lngSpinner.getValue();
         double mag = magnitudeSpinner.getValue();
+        int durationDays = durationDaysSpinner.getValue();
 
-        String details = String.format(java.util.Locale.US, "Lat: %.2f°, Lng: %.2f°, Mag: %.1f", lat, lng, mag);
+        String daysUnit = durationDays > 1 ? "jours" : "jour";
+        String details = String.format(Locale.ROOT, "Lat: %.2f°, Lng: %.2f°, Mag: %.1f, Durée: %d %s", lat, lng, mag, durationDays, daysUnit);
 
         if (immediate || targetYear <= currentYear) {
             if (engine != null && engine.getHistoryManager() != null) {
@@ -616,14 +690,14 @@ public class GodModePanel extends VBox {
             timeline.truncateAfter(currentYear);
         }
 
-        timeline.addEntry(targetYear, type, name, details, true);
+        timeline.addEntry(targetYear, type, name, details, true, lat, lng, mag, durationDays);
         refreshTimelineView();
 
         if (engine != null && engine.getEventSystem() != null) {
             org.ether.society.events.ActiveEvent ae = new org.ether.society.events.ActiveEvent(
                 "GM_" + System.currentTimeMillis(),
                 "⚡ GOD MODE: " + name,
-                type, lat, lng, targetYear, currentMonth, currentDay, 30.0
+                type, lat, lng, targetYear, currentMonth, currentDay, Math.max(15.0, durationDays * 0.5), mag, durationDays
             );
             engine.getEventSystem().recordSpatialEvent(ae);
         }
@@ -638,6 +712,9 @@ public class GodModePanel extends VBox {
                 }
             }
             logger.info("God Mode intervention EXECUTED immediately (Year {}): {} - {}", currentYear, name, details);
+            if (mapCanvas != null) {
+                mapCanvas.flyTo(lat, lng);
+            }
         } else {
             logger.info("God Mode intervention SCHEDULED for Year {}: {} - {}", targetYear, name, details);
         }
@@ -715,17 +792,20 @@ public class GodModePanel extends VBox {
             engine.getHistoryManager().captureWorldSnapshot(engine);
         }
 
+        double lat = latSpinner != null ? latSpinner.getValue() : 0.0;
+        double lng = lngSpinner != null ? lngSpinner.getValue() : 0.0;
+        double mag = magnitudeSpinner != null ? magnitudeSpinner.getValue() : 5.0;
+        int durationDays = durationDaysSpinner != null ? durationDaysSpinner.getValue() : 30;
+
         timeline.truncateAfter(currentYear);
-        timeline.addEntry(currentYear, type, title, details, true);
+        timeline.addEntry(currentYear, type, title, details, true, lat, lng, mag, durationDays);
         refreshTimelineView();
 
         if (engine != null && engine.getEventSystem() != null) {
-            double lat = latSpinner != null ? latSpinner.getValue() : 0.0;
-            double lng = lngSpinner != null ? lngSpinner.getValue() : 0.0;
             org.ether.society.events.ActiveEvent ae = new org.ether.society.events.ActiveEvent(
                 "GM_" + System.currentTimeMillis(),
                 "⚡ GOD MODE: " + title,
-                "GOD_MODE", lat, lng, (int) currentYear, currentMonth, currentDay, 30.0
+                "GOD_MODE", lat, lng, currentYear, currentMonth, currentDay, Math.max(15.0, durationDays * 0.5), mag, durationDays
             );
             engine.getEventSystem().recordSpatialEvent(ae);
         }
@@ -735,11 +815,15 @@ public class GodModePanel extends VBox {
 
     public void refreshTimelineView() {
         if (timelineListView == null) return;
+        int selected = timelineListView.getSelectionModel().getSelectedIndex();
         timelineListView.getItems().clear();
         String yearPrefix = I18n.getOrDefault("godmode.timeline.year_prefix", "Year");
         for (ScenarioTimeline.TimelineEntry entry : timeline.getEntries()) {
             String badge = entry.isGodModeIntervention() ? "⚡ [GOD MODE]" : "📜 [HISTORIQUE]";
             timelineListView.getItems().add(String.format("%s %5d | %s %s : %s", yearPrefix, entry.year(), badge, entry.title(), entry.details()));
+        }
+        if (selected >= 0 && selected < timelineListView.getItems().size()) {
+            timelineListView.getSelectionModel().select(selected);
         }
     }
 

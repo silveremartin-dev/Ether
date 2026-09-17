@@ -39,18 +39,21 @@ public class VarianceDistributionPanel extends VBox {
     private final Label kpiStdTitle = new Label();
     private final Label kpiGiniTitle = new Label();
     private final Label kpiMinMaxTitle = new Label();
+    private final Label kpiCvTitle = new Label();
 
     private final HBox meanKpiBox;
     private final HBox varKpiBox;
     private final HBox stdKpiBox;
     private final HBox giniKpiBox;
     private final HBox minMaxKpiBox;
+    private final HBox cvKpiBox;
 
     private final Label lblMean = new Label("--");
     private final Label lblVariance = new Label("--");
     private final Label lblStdDev = new Label("--");
     private final Label lblGini = new Label("--");
     private final Label lblMinMax = new Label("-- / --");
+    private final Label lblCv = new Label("-- %");
     private final Label lblSpreadDesc = new Label();
 
     private final CategoryAxis xAxis;
@@ -70,6 +73,7 @@ public class VarianceDistributionPanel extends VBox {
         // Header
         headerTitle = new Label();
         headerTitle.getStyleClass().add("label-title");
+        headerTitle.setWrapText(true);
 
         subtitle = new Label();
         subtitle.getStyleClass().add("hint-label");
@@ -85,30 +89,49 @@ public class VarianceDistributionPanel extends VBox {
         variableCombo.setMaxWidth(Double.MAX_VALUE);
         variableCombo.setOnAction(e -> updateData(currentCells));
 
-        // KPI Summary Cards
+        // KPI Summary Cards: Exactly 3 rows of 2 columns
         GridPane kpiGrid = new GridPane();
-        kpiGrid.setHgap(10);
+        kpiGrid.setHgap(8);
         kpiGrid.setVgap(6);
+        kpiGrid.setMaxWidth(Double.MAX_VALUE);
+
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(50);
+        col1.setHgrow(Priority.ALWAYS);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPercentWidth(50);
+        col2.setHgrow(Priority.ALWAYS);
+        kpiGrid.getColumnConstraints().addAll(col1, col2);
 
         meanKpiBox = createMiniKpi(kpiMeanTitle, lblMean);
         varKpiBox = createMiniKpi(kpiVarTitle, lblVariance);
         stdKpiBox = createMiniKpi(kpiStdTitle, lblStdDev);
         giniKpiBox = createMiniKpi(kpiGiniTitle, lblGini);
         minMaxKpiBox = createMiniKpi(kpiMinMaxTitle, lblMinMax);
+        cvKpiBox = createMiniKpi(kpiCvTitle, lblCv);
 
+        // Row 0: Moyenne & Variance
         kpiGrid.add(meanKpiBox, 0, 0);
         kpiGrid.add(varKpiBox, 1, 0);
-        kpiGrid.add(stdKpiBox, 2, 0);
-        kpiGrid.add(giniKpiBox, 0, 1);
-        kpiGrid.add(minMaxKpiBox, 1, 1, 2, 1);
+
+        // Row 1: Écart-Type & Gini
+        kpiGrid.add(stdKpiBox, 0, 1);
+        kpiGrid.add(giniKpiBox, 1, 1);
+
+        // Row 2: Min/Max & Coeff de Variation
+        kpiGrid.add(minMaxKpiBox, 0, 2);
+        kpiGrid.add(cvKpiBox, 1, 2);
 
         lblSpreadDesc.getStyleClass().add("hint-label");
+        lblSpreadDesc.setWrapText(true);
         VBox descCard = new VBox(lblSpreadDesc);
         descCard.getStyleClass().add("hint-card");
 
         // Histogram BarChart
         xAxis = new CategoryAxis();
+        xAxis.setAnimated(false);
         yAxis = new NumberAxis();
+        yAxis.setAnimated(false);
 
         histogramChart = new BarChart<>(xAxis, yAxis);
         histogramChart.setAnimated(false);
@@ -123,54 +146,63 @@ public class VarianceDistributionPanel extends VBox {
     }
 
     public void updateTexts() {
-        headerTitle.setText(I18n.getOrDefault("variance.title", "\uD83D\uDCCA STATISTIQUE DE VARIANCE ENTRE INDIVIDUS & DISTRIBUTION"));
-        subtitle.setText(I18n.getOrDefault("variance.subtitle", "\u00C9value \u00E0 quel point les individus / mailles s'\u00E9loignent du sch\u00E9ma standard (Moyenne \u03BC \u00B1 \u00C9cart-type \u03C3)"));
-        comboPrompt.setText(I18n.getOrDefault("variance.prompt.variable", "Studied Variable:"));
+        headerTitle.setText(I18n.getOrDefault("variance.title", "📊 STATISTIQUES DE VARIANCE ENTRE INDIVIDUS & DISTRIBUTION"));
+        subtitle.setText(I18n.getOrDefault("variance.subtitle", "Évalue à quel point les individus / mailles s'éloignent du schéma standard (Moyenne μ ± Écart-type σ)"));
+        comboPrompt.setText(I18n.getOrDefault("variance.prompt.variable", "Variable analysée :"));
 
         int selectedIdx = variableCombo.getSelectionModel().getSelectedIndex();
         variableCombo.getItems().clear();
         variableCombo.getItems().addAll(
-                I18n.getOrDefault("variance.var.wealth", "Wealth & Capital (wealth)"),
-                I18n.getOrDefault("variance.var.food", "Nourriture disponible (food)"),
-                I18n.getOrDefault("variance.var.population", "Population Density (population)"),
-                I18n.getOrDefault("variance.var.water", "Water Resources (water)"),
-                I18n.getOrDefault("variance.var.rainfall", "Precipitation (rainfall)"),
-                I18n.getOrDefault("variance.var.temperature", "Temperature (temperature)"),
-                I18n.getOrDefault("variance.var.tech", "Niveau Technologique (tech)"),
-                I18n.getOrDefault("variance.var.age", "Approximate Age (age)")
+                I18n.getOrDefault("variance.var.wealth", "💎 Richesse & Capital (wealth)"),
+                I18n.getOrDefault("variance.var.food", "🍞 Nourriture disponible (food)"),
+                I18n.getOrDefault("variance.var.population", "👥 Densité de Population (population)"),
+                I18n.getOrDefault("variance.var.water", "💧 Ressources en Eau (water)"),
+                I18n.getOrDefault("variance.var.rainfall", "🌧️ Précipitations (rainfall)"),
+                I18n.getOrDefault("variance.var.temperature", "🌡️ Température (temperature)"),
+                I18n.getOrDefault("variance.var.tech", "⚙️ Niveau Technologique (tech)"),
+                I18n.getOrDefault("variance.var.age", "👴 Âge Approximatif (age)")
         );
         variableCombo.getSelectionModel().select(selectedIdx >= 0 ? selectedIdx : 0);
 
         kpiMeanTitle.setText(I18n.getOrDefault("variance.kpi.mean", "Moyenne (μ) :"));
         kpiVarTitle.setText(I18n.getOrDefault("variance.kpi.variance", "Variance (σ²) :"));
-        kpiStdTitle.setText(I18n.getOrDefault("variance.kpi.stddev", "Standard Deviation (σ):"));
+        kpiStdTitle.setText(I18n.getOrDefault("variance.kpi.stddev", "Écart-Type (σ) :"));
         kpiGiniTitle.setText(I18n.getOrDefault("variance.kpi.gini", "Indice Gini :"));
         kpiMinMaxTitle.setText(I18n.getOrDefault("variance.kpi.minmax", "Min / Max :"));
+        kpiCvTitle.setText(I18n.getOrDefault("variance.kpi.cv", "Coeff. Var. (CV) :"));
 
         Tooltip.install(meanKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.mean", "Valeur moyenne standard de la population")));
-        Tooltip.install(varKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.variance", "Measure of squared dispersion of individuals relative to mean")));
-        Tooltip.install(stdKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.stddev", "Average deviation from standard schema (μ ± σ)")));
-        Tooltip.install(giniKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.gini", "Inequality measure (0 = equal distribution, 1 = total concentration)")));
-        Tooltip.install(minMaxKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.minmax", "Minimum and maximum extreme values observed")));
+        Tooltip.install(varKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.variance", "Mesure de la dispersion quadratique (σ²) des individus par rapport à la moyenne")));
+        Tooltip.install(stdKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.stddev", "Écart moyen par rapport au schéma standard (μ ± σ)")));
+        Tooltip.install(giniKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.gini", "Mesure d'inégalité (0 = distribution parfaitement égale, 1 = concentration totale)")));
+        Tooltip.install(minMaxKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.minmax", "Valeurs extrêmes minimale et maximale enregistrées")));
+        Tooltip.install(cvKpiBox, new Tooltip(I18n.getOrDefault("variance.tooltip.cv", "Coefficient de variation (Écart-type / Moyenne × 100). Hétérogénéité relative normalisée")));
 
-        xAxis.setLabel(I18n.getOrDefault("variance.chart.xaxis", "Standard Deviation Bracket Bins (10 Bin Histogram)"));
+        xAxis.setLabel(I18n.getOrDefault("variance.chart.xaxis", "Tranches de valeurs (Intervalles de dispersion)"));
         yAxis.setLabel(I18n.getOrDefault("variance.chart.yaxis", "Nombre d'Individus / Cellules"));
-        histogramChart.setTitle(I18n.getOrDefault("variance.chart.title", "Individual Distribution & Variance Curve"));
+        histogramChart.setTitle(I18n.getOrDefault("variance.chart.title", "Courbe de distribution et variance (Histogramme 10 classes)"));
 
         if (currentCells != null) {
             updateData(currentCells);
         } else {
-            lblSpreadDesc.setText(I18n.getOrDefault("variance.desc.analyzing", "Analyzing deviation pattern from standard..."));
+            lblSpreadDesc.setText(I18n.getOrDefault("variance.desc.analyzing", "Analyse du schéma de dispersion par rapport à la moyenne standard..."));
         }
     }
 
     private HBox createMiniKpi(Label titleLabel, Label valLabel) {
-        HBox box = new HBox(6);
+        HBox box = new HBox(4);
         box.setAlignment(Pos.CENTER_LEFT);
+        box.setPadding(new Insets(4, 6, 4, 6));
         box.getStyleClass().add("info-badge");
+        HBox.setHgrow(box, Priority.ALWAYS);
 
         titleLabel.getStyleClass().add("control-label");
+        titleLabel.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #94a3b8;");
+        titleLabel.setMinWidth(Region.USE_PREF_SIZE);
+
         valLabel.getStyleClass().add("value-label");
+        valLabel.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        HBox.setHgrow(valLabel, Priority.ALWAYS);
 
         box.getChildren().addAll(titleLabel, valLabel);
         return box;
@@ -190,7 +222,8 @@ public class VarianceDistributionPanel extends VBox {
             lblStdDev.setText("--");
             lblGini.setText("--");
             lblMinMax.setText("-- / --");
-            lblSpreadDesc.setText(I18n.getOrDefault("variance.desc.no_data", "No data available for ") + varKey);
+            lblCv.setText("-- %");
+            lblSpreadDesc.setText(I18n.getOrDefault("variance.desc.no_data", "Aucune donnée disponible pour ") + varKey);
             histogramSeries.getData().clear();
             return;
         }
@@ -202,34 +235,57 @@ public class VarianceDistributionPanel extends VBox {
         float stdDev = aggs[3];
         float variance = stdDev * stdDev;
         float gini = statisticsKernel.calculateGini(values);
+        double cv = (avg > 0) ? (stdDev / avg) * 100.0 : 0.0;
 
-        lblMean.setText(String.format("%.2f", avg));
-        lblVariance.setText(String.format("%.2f", variance));
-        lblStdDev.setText(String.format("%.2f", stdDev));
-        lblGini.setText(String.format("%.3f", gini));
-        lblMinMax.setText(String.format("%.1f / %.1f", min, max));
+        lblMean.setText(formatAdaptive(avg));
+        lblVariance.setText(formatAdaptive(variance));
+        lblStdDev.setText(formatAdaptive(stdDev));
+        lblGini.setText(String.format(java.util.Locale.US, "%.3f", gini));
+        lblMinMax.setText(formatAdaptive(min) + " / " + formatAdaptive(max));
+        lblCv.setText(String.format(java.util.Locale.US, "%.1f %%", cv));
 
-        double cv = avg > 0 ? (stdDev / avg) * 100.0 : 0.0;
         String spreadText;
-        if (cv > 80.0 || gini > 0.5) {
-            spreadText = String.format(I18n.getOrDefault("variance.desc.high", "\uD83D\uDEA8 Forte dispersion : Les individus s'\u00E9loignent tr\u00E8s fortement du sch\u00E9ma standard (\u00C9cart-Type \u03C3 = %.2f, Gini = %.3f). In\u00E9galit\u00E9 tr\u00E8s prononc\u00E9e."), stdDev, gini);
-        } else if (cv > 35.0 || gini > 0.25) {
-            spreadText = String.format(I18n.getOrDefault("variance.desc.moderate", "\u26A0\uFE0F Dispersion mod\u00E9r\u00E9e : \u00C9cart significatif de la population par rapport au sch\u00E9ma standard (68%% des individus entre %.2f et %.2f)."), Math.max(0, avg - stdDev), avg + stdDev);
-        } else {
-            spreadText = String.format(I18n.getOrDefault("variance.desc.low", "\u2705 Dispersion faible : Population homog\u00E8ne et tr\u00E8s proche de la moyenne standard (\u03BC = %.2f \u00B1 %.2f)."), avg, stdDev);
+        try {
+            if (cv > 80.0 || gini > 0.5) {
+                spreadText = String.format(I18n.getOrDefault("variance.desc.high", "🚨 Forte dispersion : Les individus s'éloignent très fortement du schéma standard (Écart-Type σ = %s, Gini = %.3f). Inégalité très prononcée."), formatAdaptive(stdDev), gini);
+            } else if (cv > 35.0 || gini > 0.25) {
+                spreadText = String.format(I18n.getOrDefault("variance.desc.moderate", "⚠️ Dispersion modérée : Écart significatif de la population par rapport au schéma standard (68%% des individus entre %s et %s)."), formatAdaptive(Math.max(0, avg - stdDev)), formatAdaptive(avg + stdDev));
+            } else {
+                spreadText = String.format(I18n.getOrDefault("variance.desc.low", "✅ Dispersion faible : Population homogène et très proche de la moyenne standard (μ = %s ± %s)."), formatAdaptive(avg), formatAdaptive(stdDev));
+            }
+        } catch (Exception e) {
+            spreadText = String.format(java.util.Locale.ROOT, "μ = %s, σ = %s, Gini = %.3f", formatAdaptive(avg), formatAdaptive(stdDev), gini);
         }
         lblSpreadDesc.setText(spreadText);
 
         histogramSeries.getData().clear();
         int bins = 10;
-        int[] dist = statisticsKernel.calculateDistribution(values, bins, max);
+        float binMin = (min < 0) ? min : 0.0f;
+        float binMax = max;
+        if (binMax <= binMin) {
+            binMax = binMin + 1.0f;
+        }
 
-        float binWidth = max > 0 ? max / bins : 1.0f;
+        int[] dist = statisticsKernel.calculateDistribution(values, bins, binMin, binMax);
+        float binWidth = (binMax - binMin) / bins;
+
         for (int i = 0; i < bins; i++) {
-            float rangeStart = i * binWidth;
-            float rangeEnd = (i + 1) * binWidth;
-            String binLabel = String.format("%.0f-%.0f", rangeStart, rangeEnd);
+            float rangeStart = binMin + i * binWidth;
+            float rangeEnd = binMin + (i + 1) * binWidth;
+            String binLabel = formatAdaptive(rangeStart) + "-" + formatAdaptive(rangeEnd);
             histogramSeries.getData().add(new XYChart.Data<>(binLabel, dist[i]));
+        }
+    }
+
+    private String formatAdaptive(double val) {
+        if (Double.isNaN(val) || Double.isInfinite(val)) return "--";
+        double abs = Math.abs(val);
+        if (abs >= 1_000_000.0 || (abs < 0.001 && abs > 0.0)) {
+            return String.format(java.util.Locale.US, "%.2e", val);
+        } else if (abs >= 100.0) {
+            return String.format(java.util.Locale.US, "%,.1f", val);
+        } else {
+            return String.format(java.util.Locale.US, "%.2f", val);
         }
     }
 

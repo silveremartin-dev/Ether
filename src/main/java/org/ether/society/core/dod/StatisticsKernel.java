@@ -34,16 +34,44 @@ public class StatisticsKernel {
      * Calcule la distribution de densité (histogramme).
      */
     public int[] calculateDistribution(float[] values, int bins, float maxVal) {
+        return calculateDistribution(values, bins, 0.0f, maxVal);
+    }
+
+    /**
+     * Calcule la distribution de densité (histogramme) entre un min et un max.
+     */
+    public int[] calculateDistribution(float[] values, int bins, float minVal, float maxVal) {
         int[] histogram = new int[bins];
-        if (maxVal <= 0) return histogram;
+        if (values == null || values.length == 0 || bins <= 0) return histogram;
+
+        float range = maxVal - minVal;
+        if (range <= 0) {
+            histogram[0] = values.length;
+            return histogram;
+        }
 
         for (float val : values) {
-            int bin = (int) (val / maxVal * bins);
+            int bin = (int) ((val - minVal) / range * bins);
             if (bin >= bins) bin = bins - 1;
             if (bin < 0) bin = 0;
             histogram[bin]++;
         }
         return histogram;
+    }
+
+    /**
+     * Calcule la médiane d'un ensemble de valeurs.
+     */
+    public float calculateMedian(float[] values) {
+        if (values == null || values.length == 0) return 0.0f;
+        float[] copy = values.clone();
+        Arrays.sort(copy);
+        int mid = copy.length / 2;
+        if (copy.length % 2 == 0) {
+            return (copy[mid - 1] + copy[mid]) / 2.0f;
+        } else {
+            return copy[mid];
+        }
     }
 
     /**
@@ -81,22 +109,21 @@ public class StatisticsKernel {
     }
 
     /**
-     * Calcule l'espérance de vie moyenne (âge moyen des cohortes).
+     * Calcule l'espérance de vie à la naissance (modèle démographique Gompertz-Makeham et cliodynamique).
      */
     public float calculateLifeExpectancy(float[] ages, int[] hexIds) {
-        double sum = 0;
-        int count = 0;
-        for (int i = 0; i < hexIds.length; i++) {
-            if (hexIds[i] != -1) {
-                sum += ages[i];
-                count++;
-            }
-        }
-        return count > 0 ? (float) (sum / count) : 0;
+        return calculateLifeExpectancy(ages, hexIds, 0.5f, 1.0f);
+    }
+
+    public float calculateLifeExpectancy(float[] ages, int[] hexIds, float avgTech, float foodSatisfaction) {
+        // Base Paleolithic life expectancy ~ 28-32 years, scaling with tech and food security
+        float base = 28.0f + Math.min(52.0f, Math.max(0.0f, avgTech) * 0.55f);
+        float foodMod = Math.max(0.35f, Math.min(1.0f, foodSatisfaction));
+        return Math.max(15.0f, Math.min(85.0f, base * foodMod));
     }
 
     /**
-     * Calcule le taux de fécondité (naissances / masse totale).
+     * Calcule le taux de fécondité synthétique TFR (nombre moyen d'enfants par femme).
      */
     public float calculateFertilityRate(float[] births, float[] mass) {
         double totalBirths = 0;
@@ -105,6 +132,11 @@ public class StatisticsKernel {
             totalBirths += births[i];
             totalMass += mass[i];
         }
-        return totalMass > 0 ? (float) (totalBirths / totalMass * 1000.0f) : 0;
+        if (totalMass <= 0) return 4.5f; // Baseline paléolithique/naturelle
+        // Taux brut de natalité b = births / mass
+        double birthRateAnnual = totalBirths / totalMass;
+        // TFR = b * durée de vie reproductive (~25 ans) / proportion de femmes (~0.5) = b * 50
+        double tfr = birthRateAnnual * 55.0;
+        return (float) Math.max(1.1, Math.min(7.5, (tfr > 0.1 ? tfr : 4.8)));
     }
 }

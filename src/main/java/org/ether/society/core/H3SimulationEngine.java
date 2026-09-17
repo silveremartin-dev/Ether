@@ -34,7 +34,6 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     // Density-based simulation systems
     private final H3ClimateSystem climateSystem;
-    private final org.ether.society.agents.AgentManager agentManager;
     private final org.ether.society.gpu.GPUManager gpuManager;
 
     private final org.ether.society.analytics.HistoryManager historyManager;
@@ -79,7 +78,6 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.timeManager = new TimeManager(config.simulation().startYear());
         this.eventSystem = new org.ether.society.events.EventSystem();
         this.climateSystem = new H3ClimateSystem();
-        this.agentManager = new org.ether.society.agents.AgentManager(org.ether.society.h3.H3Service.getInstance());
 
         // Initialize GPU Manager
         this.gpuManager = new org.ether.society.gpu.GPUManager();
@@ -167,6 +165,8 @@ public class H3SimulationEngine implements ISimulationEngine {
 
         if (historyManager != null) {
             historyManager.reset();
+            historyManager.captureSnapshot(this);
+            historyManager.captureWorldSnapshot(this);
         }
     }
 
@@ -484,11 +484,16 @@ public class H3SimulationEngine implements ISimulationEngine {
                 currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
                 densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
                 currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital());
-                currentLifeExpectancy = statisticsKernel.calculateLifeExpectancy(agentBuffer.getAge(), agentBuffer.getHexIds());
+                float foodPerCapVal = (float) getFoodPerCapita();
+                float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
+                currentLifeExpectancy = statisticsKernel.calculateLifeExpectancy(agentBuffer.getAge(), agentBuffer.getHexIds(), getAverageTechnology(), foodSatVal);
                 currentFertility = statisticsKernel.calculateFertilityRate(agentBuffer.getBirths(), agentBuffer.getMass());
 
                 historyManager.captureSnapshot(this);
-                historyManager.captureWorldSnapshot(this);
+                // Bounded snapshot of full 3D spatial map once per year (Month 0) or at launch to prevent excessive RAM allocation
+                if (timeManager.getCurrentMonth() == 0 || tickCounter == 0) {
+                    historyManager.captureWorldSnapshot(this);
+                }
                 
                 int eventCountBefore = eventSystem.peekEvents().size();
                 checkScenarioClimateEvents();
@@ -497,7 +502,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                 int eventCountAfter = eventSystem.peekEvents().size();
 
                 if (pauseAtNextEvent.get() && eventCountAfter > eventCountBefore) {
-                    logger.info("Auto-pausing simulation tick due to event trigger (pauseAtNextEvent=true)");
+                    logger.info("⏸️ [Pas {}] Pause automatique de la simulation sur événement (pauseAtNextEvent=true)", tickCounter);
                     pause();
                 }
                 profiler.endPhase("5_StatisticsAndHistory");
@@ -505,6 +510,14 @@ public class H3SimulationEngine implements ISimulationEngine {
                 profiler.beginPhase("6_BufferSync");
                 syncBufferToCells();
                 profiler.endPhase("6_BufferSync");
+
+                if (tickCounter % Math.max(1, 12 / stepDays) == 0) {
+                    logger.info("⚙️ [Pas {}] An {} M.{} | Pop: {} hab | TPS: {} it/s",
+                            tickCounter, timeManager.getCurrentYear(),
+                            String.format("%02d", timeManager.getCurrentMonth() + 1),
+                            String.format("%,d", getTotalPopulation()),
+                            String.format("%.1f", currentTPS));
+                }
             }
 
             // Every 60 Ticks: trigger rolling checkpoint auto-save
@@ -512,7 +525,6 @@ public class H3SimulationEngine implements ISimulationEngine {
                 autoSaveCheckpoint();
             }
 
-            agentManager.update();
             tickCounter++;
 
             long tickDuration = System.nanoTime() - tickStartNanos;
@@ -545,10 +557,10 @@ public class H3SimulationEngine implements ISimulationEngine {
                         "🌋 SCÉNARIO : " + evt.getName() + " (" + evt.getType() + " - Mag: " + evt.getMagnitude() + ")",
                         evt.getType().toUpperCase(),
                         evt.getLatitude(), evt.getLongitude(),
-                        currentYear, timeManager.getCurrentMonth(), 1, 25.0
+                        currentYear, timeManager.getCurrentMonth(), 1, 25.0, evt.getMagnitude()
                     );
                     eventSystem.recordSpatialEvent(ae);
-                    logger.info("Triggered scheduled scenario climate event: {} at year {}", evt.getName(), currentYear);
+                    logger.info("🌋 [Pas {}] Événement scénario : {} (Année {})", tickCounter, evt.getName(), currentYear);
 
                     applyClimateEventImpact(evt);
                 }
@@ -612,6 +624,23 @@ public class H3SimulationEngine implements ISimulationEngine {
         long currentTicks = timeManager.getTotalTicks();
         long targetTicks = Math.max(0, currentTicks - ticks);
         seekToTick(targetTicks);
+    }
+
+    @Override
+    public void seekToEnd() {
+        pause();
+        if (historyManager != null && !historyManager.getWorldSnapshots().isEmpty()) {
+            long lastTick = historyManager.getWorldSnapshots().lastKey();
+            seekToTick(lastTick);
+        } else if (currentScenario != null) {
+            long initialYear = currentScenario.getStartDateYear();
+            long endYear = currentScenario.getEndDateYear();
+            int stepDaysVal = (currentScenario.getTemporalResolutionDays() > 0)
+                    ? (int) Math.round(currentScenario.getTemporalResolutionDays()) : 1;
+            long totalDays = Math.max(0, (endYear - initialYear) * 365L);
+            long maxTicks = totalDays / stepDaysVal;
+            seekToTick(maxTicks);
+        }
     }
 
     public void seekToTick(long targetTicks) {
@@ -779,10 +808,6 @@ public class H3SimulationEngine implements ISimulationEngine {
                 });
     }
 
-    public org.ether.society.agents.AgentManager getAgentManager() {
-        return agentManager;
-    }
-
     public org.ether.society.analytics.HistoryManager getHistoryManager() {
         return historyManager;
     }
@@ -822,14 +847,15 @@ public class H3SimulationEngine implements ISimulationEngine {
     // --- EXTENDED CLIODYNAMIC & PHYSICAL METRICS ---
 
     public double getEnergyCaptured() {
-        if (worldBuffer == null) return 0;
-        double energy = 0;
-        float[] tech = worldBuffer.getTechnologyLevel();
-        float[] pop = worldBuffer.getBiomassHuman();
-        for (int i = 0; i < worldBuffer.getCapacity(); i++) {
-            energy += (100.0 + tech[i] * 15.0) * (pop[i] > 0 ? 1 : 0);
-        }
-        return energy;
+        long pop = getTotalPopulation();
+        if (pop <= 0) return 0.0;
+        float tech = getAverageTechnology();
+        // Leslie White Energy Law: P_tot = N_pop * P_capita
+        // Baseline 300 W per capita (human metabolic work ~120W + fire energy ~180W)
+        // Technology scales energy extraction: animal, water, steam, electrical
+        double wattsPerCapita = 300.0 + Math.pow(Math.max(0.0, tech), 2.2) * 35.0;
+        double totalWatts = pop * wattsPerCapita;
+        return totalWatts / 1e6; // Energy returned in Megawatts (MW)
     }
 
     public double getResourceDepletionRate() {
@@ -843,7 +869,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     public double getEnergyPerCapita() {
         long pop = getTotalPopulation();
-        return pop > 0 ? getEnergyCaptured() / pop : 0;
+        return pop > 0 ? (getEnergyCaptured() * 1e6) / pop : 300.0; // in Joules/sec (Watts)
     }
 
     public double getFoodPerCapita() {
@@ -870,7 +896,7 @@ public class H3SimulationEngine implements ISimulationEngine {
     public double getSystemicEntropy() {
         float tech = getAverageTechnology();
         long pop = getTotalPopulation();
-        return (pop * 0.05 + tech * 2.5) % 1000.0;
+        return (pop * 0.005 + tech * 2.5) % 1000.0;
     }
 
     public double getPollutionLevel() {
@@ -885,7 +911,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     public double getOffspringPercentage() {
         float fert = getCurrentFertility();
-        return Math.min(95.0, Math.max(20.0, 40.0 + fert * 12.0));
+        return Math.min(95.0, Math.max(20.0, 40.0 + fert * 7.5));
     }
 
     public double getAgeAtFirstChild() {
@@ -907,19 +933,28 @@ public class H3SimulationEngine implements ISimulationEngine {
         float gini = getCurrentGini();
         float life = getCurrentLifeExpectancy();
         double foodPerCap = getFoodPerCapita();
-        double base = (life / 80.0) * 50.0 + Math.min(50.0, foodPerCap * 10.0) - (gini * 30.0);
-        return Math.max(0.0, Math.min(100.0, base));
+        double foodSat = Math.min(1.0, foodPerCap > 0 ? foodPerCap / 2.0 : 0.5);
+        double base = 40.0 + (life / 80.0) * 30.0 + (foodSat * 30.0) - (gini * 20.0);
+        return Math.max(10.0, Math.min(100.0, base));
     }
 
     public double getConflictLevel() {
         float gini = getCurrentGini();
         double happiness = getHappinessIndex();
-        return Math.max(0.0, Math.min(100.0, (gini * 60.0) + (100.0 - happiness) * 0.4));
+        double foodPerCap = getFoodPerCapita();
+        double scarcity = (foodPerCap > 0 && foodPerCap < 1.0) ? (1.0 - foodPerCap) * 25.0 : 0.0;
+        return Math.max(0.0, Math.min(100.0, (gini * 35.0) + (100.0 - happiness) * 0.25 + scarcity));
     }
 
     public int getCityStatesCount() {
+        float tech = getAverageTechnology();
+        long year = getCurrentYear();
+        // City-states and urban hubs strictly appear in the Bronze/Agricultural Revolution era (post -4000 BC, Tech >= 15)
+        if (tech < 15.0f || year < -4000) {
+            return 0;
+        }
         long popCells = getPopulatedCellCount();
-        return (int) Math.max(1, popCells / 5);
+        return (int) Math.max(0, popCells / 12);
     }
 
     public double getInstitutionalMaturity() {
@@ -979,9 +1014,9 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     public double getKardashevScale() {
-        double energy = getEnergyCaptured();
-        if (energy <= 0) return 0.0;
-        double watts = energy * 1e6;
+        double energyMW = getEnergyCaptured();
+        if (energyMW <= 0) return 0.0;
+        double watts = energyMW * 1e6;
         double k = (Math.log10(Math.max(1.0, watts)) - 6.0) / 10.0;
         return Math.max(0.0, Math.min(3.0, k));
     }
@@ -989,7 +1024,8 @@ public class H3SimulationEngine implements ISimulationEngine {
     public double getBuiltCapitalTotal() {
         float tech = getAverageTechnology();
         long pop = getTotalPopulation();
-        return pop * (5.0 + tech * 12.0);
+        // Proportional to physical tools, structures and technology level
+        return pop * (0.5 + Math.pow(Math.max(0.0, tech), 1.8) * 8.0);
     }
 
     public double getEliteFormationRatio() {
@@ -1012,12 +1048,12 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     public long getToolsCount() {
         float tech = getAverageTechnology();
-        return (long) (getTotalPopulation() * (1.2 + tech * 0.5));
+        return (long) (getTotalPopulation() * (0.5 + tech * 0.2));
     }
 
     public long getProductsCount() {
         float tech = getAverageTechnology();
-        return (long) (10.0 + Math.pow(tech, 1.8));
+        return (long) Math.max(3, 5 + Math.pow(tech, 1.6));
     }
 
     public double getSystemComplexityIndex() {

@@ -197,10 +197,14 @@ public class ProceduralGenerator {
 
         int total = cells.size();
         java.util.concurrent.atomic.AtomicInteger counter = new java.util.concurrent.atomic.AtomicInteger(0);
+        int progressInterval = Math.max(100, total / 30);
 
         cells.parallelStream().forEach(cell -> {
             if (cancelSupplier != null && cancelSupplier.getAsBoolean()) {
                 throw new java.util.concurrent.CancellationException("Planet generation cancelled by user");
+            }
+            if (Thread.currentThread().isInterrupted()) {
+                throw new java.util.concurrent.CancellationException("Planet generation thread interrupted");
             }
             PlanetPoint p = getPlanetPoint(cell.getLatitude(), cell.getLongitude(), preset);
             cell.setElevation(p.elevation());
@@ -210,7 +214,7 @@ public class ProceduralGenerator {
             populateResources(cell, p, preset);
 
             int done = counter.incrementAndGet();
-            if (progressCallback != null && (done % 50 == 0 || done == total)) {
+            if (progressCallback != null && (done % progressInterval == 0 || done == total)) {
                 progressCallback.accept(done, total);
             }
         });
@@ -230,27 +234,6 @@ public class ProceduralGenerator {
 
     private double computeElevationAt(double lat, double lng,
                                        SimplexNoise noise, double freq, double scale, PlanetPreset preset) {
-        String elevSrc = preset != null ? preset.elevationMapSource() : null;
-        String pName = preset != null && preset.name() != null ? preset.name().toLowerCase() : "";
-        boolean isEarth = "earth".equalsIgnoreCase(elevSrc) || pName.contains("terre") || pName.contains("earth") || pName.contains("terran");
-
-        if (isEarth) {
-            boolean land = org.ether.society.data.HistoricalMapGenerator.isLand(lng, lat);
-            double latR = Math.toRadians(lat);
-            double lngR = Math.toRadians(lng);
-            double x = Math.cos(latR) * Math.cos(lngR);
-            double y = Math.cos(latR) * Math.sin(lngR);
-            double z = Math.sin(latR);
-            double n = noise.noise(freq * 2.0 * x, freq * 2.0 * y, freq * 2.0 * z);
-
-            if (land) {
-                double mtn = org.ether.society.data.HistoricalMapGenerator.getTopographicHabitability("EARTH", lng, lat);
-                return Math.max(0.05, Math.min(0.95, 0.12 + 0.35 * Math.abs(n) + (1.0 - mtn) * 0.45));
-            } else {
-                return Math.max(-0.95, Math.min(-0.15, -0.45 - 0.35 * Math.abs(n)));
-            }
-        }
-
         double latR = Math.toRadians(lat);
         double lngR = Math.toRadians(lng);
         double x = Math.cos(latR) * Math.cos(lngR);
@@ -498,7 +481,7 @@ public class ProceduralGenerator {
 
         int step = 0;
         for (H3Cell c : landCells) {
-            if (cancelSupplier != null && step++ % 100 == 0 && cancelSupplier.getAsBoolean()) {
+            if ((cancelSupplier != null && (step++ % 20 == 0) && cancelSupplier.getAsBoolean()) || Thread.currentThread().isInterrupted()) {
                 throw new java.util.concurrent.CancellationException("Hydrography flow calculation cancelled by user");
             }
             double curElev = c.getElevation();

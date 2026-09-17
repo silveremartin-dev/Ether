@@ -121,18 +121,56 @@ public record EcologyPreset(
                 customRainfallBase64, customSeasonalityBase64, null);
     }
 
-    /** Default Earth Standard Baseline preset (used as initial selection in the UI). */
-    public static final EcologyPreset EARTH_STANDARD = new EcologyPreset(
-            "Earth Standard Baseline", org.ether.society.procedural.PlanetPreset.EARTH_LIKE.name(), 450.0, 1500.0, 2.0, 6.0, 80.0, 1200.0, 87.0, 15000.0, 12345L, null, null, null, null, null, null);
+    /** 11 Built-in presets corresponding to all 11 planet types */
+    public static final EcologyPreset EARTH_LIKE = new EcologyPreset(
+            PlanetPreset.EARTH_LIKE.name(), PlanetPreset.EARTH_LIKE.name(), 450.0, 1500.0, 2.0, 6.0, 80.0, 1200.0, 87.0, 15000.0, 12345L, null, null, null, null, null, null);
+
+    public static final EcologyPreset EARTH_STANDARD = EARTH_LIKE;
+
+    public static final EcologyPreset MARS_LIKE = new EcologyPreset(
+            PlanetPreset.MARS_LIKE.name(), PlanetPreset.MARS_LIKE.name(), 0.0, 0.0, 0.0, 0.0, 140.0, 1800.0, 30.0, 500.0, 98765L, null, null, null, null, null, null);
+
+    public static final EcologyPreset VENUS_LIKE = new EcologyPreset(
+            PlanetPreset.VENUS_LIKE.name(), PlanetPreset.VENUS_LIKE.name(), 0.0, 0.0, 0.0, 0.0, 95.0, 1400.0, 120.0, 0.0, 55555L, null, null, null, null, null, null);
+
+    public static final EcologyPreset MOON_LIKE = new EcologyPreset(
+            PlanetPreset.MOON_LIKE.name(), PlanetPreset.MOON_LIKE.name(), 0.0, 0.0, 0.0, 0.0, 45.0, 600.0, 18.0, 10.0, 88888L, null, null, null, null, null, null);
+
+    public static final EcologyPreset MERCURY_LIKE = new EcologyPreset(
+            PlanetPreset.MERCURY_LIKE.name(), PlanetPreset.MERCURY_LIKE.name(), 0.0, 0.0, 0.0, 0.0, 280.0, 3500.0, 40.0, 2.0, 66666L, null, null, null, null, null, null);
+
+    public static final EcologyPreset TITAN_LIKE = new EcologyPreset(
+            PlanetPreset.TITAN_LIKE.name(), PlanetPreset.TITAN_LIKE.name(), 0.0, 200.0, 0.0, 0.0, 30.0, 400.0, 25.0, 8000.0, 77711L, null, null, null, null, null, null);
+
+    public static final EcologyPreset SUPER_EARTH = new EcologyPreset(
+            PlanetPreset.SUPER_EARTH.name(), PlanetPreset.SUPER_EARTH.name(), 950.0, 2800.0, 5.0, 15.0, 220.0, 3200.0, 140.0, 35000.0, 44444L, null, null, null, null, null, null);
+
+    public static final EcologyPreset EYEBALL_WORLD = new EcologyPreset(
+            PlanetPreset.EYEBALL_WORLD.name(), PlanetPreset.EYEBALL_WORLD.name(), 180.0, 600.0, 0.8, 4.0, 110.0, 1600.0, 90.0, 12000.0, 33333L, null, null, null, null, null, null);
+
+    public static final EcologyPreset WATER_WORLD = new EcologyPreset(
+            PlanetPreset.WATER_WORLD.name(), PlanetPreset.WATER_WORLD.name(), 80.0, 300.0, 0.4, 30.0, 50.0, 900.0, 75.0, 60000.0, 54321L, null, null, null, null, null, null);
+
+    public static final EcologyPreset ICE_WORLD = new EcologyPreset(
+            PlanetPreset.ICE_WORLD.name(), PlanetPreset.ICE_WORLD.name(), 30.0, 150.0, 0.2, 1.5, 130.0, 2100.0, 60.0, 4000.0, 11111L, null, null, null, null, null, null);
+
+    public static final EcologyPreset ARCHIPELAGO = new EcologyPreset(
+            PlanetPreset.ARCHIPELAGO.name(), PlanetPreset.ARCHIPELAGO.name(), 550.0, 1800.0, 3.0, 18.0, 90.0, 1400.0, 110.0, 20000.0, 77777L, null, null, null, null, null, null);
 
     public static List<EcologyPreset> getBuiltInPresets() {
-        List<EcologyPreset> list = new ArrayList<>();
-        list.add(new EcologyPreset("Earth Standard Baseline", org.ether.society.procedural.PlanetPreset.EARTH_LIKE.name(), 450.0, 1500.0, 2.0, 6.0, 80.0, 1200.0, 87.0, 15000.0, 12345L, null, null, null, null, null, null));
-        list.add(new EcologyPreset("Rich Mineral & Tectonic World", org.ether.society.procedural.PlanetPreset.SUPER_EARTH.name(), 200.0, 800.0, 1.0, 3.0, 350.0, 6500.0, 180.0, 8000.0, 12345L, null, null, null, null, null, null));
-        list.add(new EcologyPreset("Primeval Carboniferous Jungle World", org.ether.society.procedural.PlanetPreset.SUPER_EARTH.name(), 1200.0, 3500.0, 8.0, 12.0, 60.0, 800.0, 95.0, 25000.0, 12345L, null, null, null, null, null, null));
-        list.add(new EcologyPreset("Oceanic Aquifer Paradise", org.ether.society.procedural.PlanetPreset.WATER_WORLD.name(), 150.0, 500.0, 0.8, 25.0, 40.0, 900.0, 70.0, 45000.0, 12345L, null, null, null, null, null, null));
-        list.add(new EcologyPreset("Arid Glacial Wasteland", org.ether.society.procedural.PlanetPreset.MARS_LIKE.name(), 25.0, 100.0, 0.1, 0.5, 120.0, 2200.0, 45.0, 1200.0, 12345L, null, null, null, null, null, null));
-        return list;
+        return List.of(
+                EARTH_LIKE,
+                MARS_LIKE,
+                VENUS_LIKE,
+                MOON_LIKE,
+                MERCURY_LIKE,
+                TITAN_LIKE,
+                SUPER_EARTH,
+                EYEBALL_WORLD,
+                WATER_WORLD,
+                ICE_WORLD,
+                ARCHIPELAGO
+        );
     }
 
     @Override

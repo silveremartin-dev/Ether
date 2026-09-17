@@ -9,9 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -121,7 +124,11 @@ public class GenerateAuthenticPlanetaryMaps {
         }
     }
 
-    private static void rasterizeBasinsAndSpots(BufferedImage img, List<GeologicalBasin> basins, List<double[]> discreteSpots, Color[] palette, double spotDefaultRadius) {
+    /**
+     * Rasterizes oriented basins and discrete point spots into a normalized 8-bit grayscale tensor [0..255]
+     * with an absolute black background (value 0).
+     */
+    private static void rasterizeBasinsAndSpots(BufferedImage img, List<GeologicalBasin> basins, List<double[]> discreteSpots, double spotDefaultRadius) {
         int w = img.getWidth();
         int h = img.getHeight();
         float[][] grid = new float[h][w];
@@ -211,40 +218,21 @@ public class GenerateAuthenticPlanetaryMaps {
             }
         }
 
-        // 3. Render Multi-Tiered Color Ramp
+        // 3. Render Pure Grayscale [0..255] on Black Background (0,0,0)
+        Graphics2D g2fill = img.createGraphics();
+        g2fill.setColor(Color.BLACK);
+        g2fill.fillRect(0, 0, w, h);
+        g2fill.dispose();
+
         for (int py = 0; py < h; py++) {
             for (int px = 0; px < w; px++) {
                 float v = grid[py][px];
-                if (v > 0.012f) {
+                if (v > 0.005f) {
                     double norm = Math.clamp(1.0 - Math.exp(-v * 0.45), 0.0, 1.0);
-                    Color chosen;
-                    if (palette.length == 1) {
-                        chosen = palette[0];
-                    } else if (palette.length == 3) {
-                        if (norm < 0.45) {
-                            double t = norm / 0.45;
-                            chosen = lerpColor(palette[0], palette[1], t);
-                        } else {
-                            double t = (norm - 0.45) / 0.55;
-                            chosen = lerpColor(palette[1], palette[2], t);
-                        }
-                    } else if (palette.length >= 4) {
-                        if (norm < 0.30) {
-                            double t = norm / 0.30;
-                            chosen = lerpColor(palette[0], palette[1], t);
-                        } else if (norm < 0.70) {
-                            double t = (norm - 0.30) / 0.40;
-                            chosen = lerpColor(palette[1], palette[2], t);
-                        } else {
-                            double t = (norm - 0.70) / 0.30;
-                            chosen = lerpColor(palette[2], palette[3], t);
-                        }
-                    } else {
-                        chosen = palette[0];
-                    }
-
-                    int alpha = (int) Math.clamp(85 + norm * 170.0, 85.0, 255.0);
-                    img.setRGB(px, py, (alpha << 24) | (chosen.getRed() << 16) | (chosen.getGreen() << 8) | chosen.getBlue());
+                    int gray = (int) Math.clamp(norm * 255.0, 0.0, 255.0);
+                    img.setRGB(px, py, (gray << 16) | (gray << 8) | gray);
+                } else {
+                    img.setRGB(px, py, 0x000000);
                 }
             }
         }
@@ -257,32 +245,80 @@ public class GenerateAuthenticPlanetaryMaps {
         return new Color(r, g, b);
     }
 
-    private static void rasterizeAlphaDensity(BufferedImage img, List<double[]> spots, Color themeColor, double defaultRadius) {
-        rasterizeBasinsAndSpots(img, null, spots, new Color[]{themeColor}, defaultRadius);
+    private static final int BIOME_DEEP_OCEAN = 0x000064; // RGB(0, 0, 100)
+    private static final int BIOME_OCEAN      = 0x0032C8; // RGB(0, 50, 200)
+    private static final int BIOME_BEACH      = 0xF0DC96; // RGB(240, 220, 150)
+    private static final int BIOME_PLAINS     = 0x64C832; // RGB(100, 200, 50)
+    private static final int BIOME_FOREST     = 0x147814; // RGB(20, 120, 20)
+    private static final int BIOME_JUNGLE     = 0x005000; // RGB(0, 80, 0)
+    private static final int BIOME_DESERT     = 0xFFC832; // RGB(255, 200, 50)
+    private static final int BIOME_HILLS      = 0x969664; // RGB(150, 150, 100)
+    private static final int BIOME_MOUNTAINS  = 0x646464; // RGB(100, 100, 100)
+    private static final int BIOME_TUNDRA     = 0x96C8DC; // RGB(150, 200, 220)
+    private static final int BIOME_SNOW       = 0xFFFFFF; // RGB(255, 255, 255)
+    private static final int BIOME_GLACIER    = 0xDCF0FF; // RGB(220, 240, 255)
+
+    /**
+     * Standardized False-Color Hypsometric & Bathymetric Color Ramp for Elevation Visualization.
+     */
+    public static Color elevationToHypsometricColor(double norm) {
+        norm = Math.clamp(norm, 0.0, 1.0);
+        if (norm < 0.20) {
+            return lerpColor(new Color(11, 19, 43), new Color(28, 61, 122), norm / 0.20);
+        } else if (norm < 0.38) {
+            return lerpColor(new Color(28, 61, 122), new Color(13, 148, 136), (norm - 0.20) / 0.18);
+        } else if (norm < 0.48) {
+            return lerpColor(new Color(13, 148, 136), new Color(34, 197, 94), (norm - 0.38) / 0.10);
+        } else if (norm < 0.60) {
+            return lerpColor(new Color(34, 197, 94), new Color(132, 204, 22), (norm - 0.48) / 0.12);
+        } else if (norm < 0.72) {
+            return lerpColor(new Color(132, 204, 22), new Color(234, 179, 8), (norm - 0.60) / 0.12);
+        } else if (norm < 0.82) {
+            return lerpColor(new Color(234, 179, 8), new Color(217, 119, 6), (norm - 0.72) / 0.10);
+        } else if (norm < 0.92) {
+            return lerpColor(new Color(217, 119, 6), new Color(220, 38, 38), (norm - 0.82) / 0.10);
+        } else {
+            return lerpColor(new Color(220, 38, 38), new Color(248, 250, 252), (norm - 0.92) / 0.08);
+        }
     }
 
-    private static void rasterizeTieredDensity(BufferedImage img, List<double[]> spots, Color lowC, Color medC, Color highC, double defaultRadius) {
-        rasterizeBasinsAndSpots(img, null, spots, new Color[]{lowC, medC, highC}, defaultRadius);
+    private static void rasterizeAlphaDensity(BufferedImage img, List<double[]> spots, double defaultRadius) {
+        rasterizeBasinsAndSpots(img, null, spots, defaultRadius);
     }
 
-    private static void saveMapImage(BufferedImage img, String baseName, String canonicalPreset) {
+    private static void rasterizeTieredDensity(BufferedImage img, List<double[]> spots, double defaultRadius) {
+        rasterizeBasinsAndSpots(img, null, spots, defaultRadius);
+    }
+
+    private static void saveMapImage(BufferedImage img, String baseName, String canonicalPreset, long year) {
         try {
-            File etherSubDir = new File("data/maps/ether/" + canonicalPreset);
+            File etherSubDir = new File("data/maps/ether/" + canonicalPreset + "/" + year);
             etherSubDir.mkdirs();
             File fEtherSub = new File(etherSubDir, baseName);
             ImageIO.write(img, "PNG", fEtherSub);
-            logger.info("Saved {} into data/maps/ether/{}/", baseName, canonicalPreset);
+
+            // Also keep an unversioned default in data/maps/ether/<canonicalPreset>/ for fallback
+            File fDefault = new File("data/maps/ether/" + canonicalPreset, baseName);
+            if (year == 2026L || !fDefault.exists()) {
+                ImageIO.write(img, "PNG", fDefault);
+            }
+
+            logger.info("Saved {} into data/maps/ether/{}/{}/", baseName, canonicalPreset, year);
         } catch (Exception e) {
-            logger.error("Failed saving {} to {}: {}", baseName, canonicalPreset, e.getMessage());
+            logger.error("Failed saving {} to {}/{}: {}", baseName, canonicalPreset, year, e.getMessage());
         }
+    }
+
+    private static void saveMapImage(BufferedImage img, String baseName, String canonicalPreset) {
+        saveMapImage(img, baseName, canonicalPreset, 2026L);
     }
 
     @Test
     public void generateAllPresetMaps() throws Exception {
-        logger.info("--- GENERATING AUTHENTIC PLANETARY MAPS FOR ALL PRESETS ---");
+        logger.info("--- GENERATING AUTHENTIC PLANETARY MAPS FOR ALL DATED EPOCHS IN GRAYSCALE [0..255] ---");
 
-        // 1. EARTH / TERRE
-        generateEarthResources();
+        // 1. EARTH / TERRE ALL EPOCHS (-100000, -20000, -10000, -6000, -3000, 0, 1000, 1800, 1900, 1950, 2026)
+        generateAllEarthEpochs();
 
         // 2. MOON / LUNE
         generateMoonMaps();
@@ -296,313 +332,378 @@ public class GenerateAuthenticPlanetaryMaps {
         // 5. MERCURY / HERMES
         generateMercuryMaps();
 
-        logger.info("--- ALL PLANETARY CARTOGRAPHIC TENSORS SUCCESSFULLY GENERATED ---");
+        logger.info("--- ALL PLANETARY CARTOGRAPHIC DATED TENSORS SUCCESSFULLY GENERATED ---");
     }
 
-    private void generateEarthResources() {
-        logger.info("Generating Earth Geological & Mineral Tensors...");
+    private void generateAllEarthEpochs() {
+        for (long epoch : TemporalMapTensorManager.STANDARD_EARTH_EPOCHS) {
+            logger.info(">>> Generating Earth Cartographic Tensors for Epoch: {} AD/BC <<<", epoch);
+            generateEarthMapsForEpoch(epoch);
+            generateEarthResourcesForEpoch(epoch);
+        }
+    }
 
-        // -------------------------------------------------------------
-        // 1. COAL BASINS & MEASURES (USGS MRDS + BGR + WEC + GEM Database)
-        // -------------------------------------------------------------
-        BufferedImage imgCoal = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+    private void generateEarthMapsForEpoch(long epoch) {
+        logger.info("Generating Earth Elevation, Biomes, and Climate Tensors for epoch {}...", epoch);
+
+        // 1. Elevation with Paleotopography & Glacial Sea Level / Ice Sheets
+        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        File existingElev = new File("data/maps/ether/earth/earth_elevation.png");
+        if (!existingElev.exists()) {
+            existingElev = new File("src/main/resources/maps/earth_elevation.png");
+        }
+        BufferedImage srcElev = null;
+        if (existingElev.exists()) {
+            try { srcElev = ImageIO.read(existingElev); } catch (Exception ignored) {}
+        }
+
+        double seaLevelDeltaNorm = 0.0;
+        if (epoch <= -20000 && epoch >= -30000) {
+            seaLevelDeltaNorm = 0.035; // LGM: -120m sea level -> shallow continental shelves emerge
+        } else if (epoch <= -100000) {
+            seaLevelDeltaNorm = 0.015; // Out of Africa: -40m sea level
+        } else if (epoch <= -10000 && epoch > -20000) {
+            seaLevelDeltaNorm = 0.020; // -50m
+        }
+
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x / (double) WIDTH) * 360.0;
+                double norm = 0.5;
+                if (srcElev != null) {
+                    int sx = (int) ((x / (double) WIDTH) * srcElev.getWidth());
+                    int sy = (int) ((y / (double) HEIGHT) * srcElev.getHeight());
+                    sx = Math.clamp(sx, 0, srcElev.getWidth() - 1);
+                    sy = Math.clamp(sy, 0, srcElev.getHeight() - 1);
+                    Color c = new Color(srcElev.getRGB(sx, sy));
+                    norm = (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114) / 255.0;
+                }
+
+                // Shift shelf topography
+                if (norm < 0.48 && norm > 0.44) {
+                    norm += seaLevelDeltaNorm;
+                }
+
+                // Add Laurentide & Fennoscandian Ice Sheets at LGM
+                if (epoch == -20000L) {
+                    // Laurentide Ice Sheet (North America)
+                    if (lat >= 42.0 && lat <= 72.0 && lon >= -130.0 && lon <= -60.0) {
+                        double dLat = (lat - 57.0) / 15.0;
+                        double dLon = (lon - (-95.0)) / 35.0;
+                        double iceDome = Math.max(0.0, 1.0 - (dLat * dLat + dLon * dLon));
+                        norm = Math.min(1.0, norm + iceDome * 0.25);
+                    }
+                    // Fennoscandian Ice Sheet (North Europe)
+                    if (lat >= 54.0 && lat <= 72.0 && lon >= -5.0 && lon <= 45.0) {
+                        double dLat = (lat - 63.0) / 9.0;
+                        double dLon = (lon - 20.0) / 25.0;
+                        double iceDome = Math.max(0.0, 1.0 - (dLat * dLat + dLon * dLon));
+                        norm = Math.min(1.0, norm + iceDome * 0.20);
+                    }
+                }
+
+                Color hyp = elevationToHypsometricColor(norm);
+                imgElev.setRGB(x, y, hyp.getRGB());
+            }
+        }
+        saveMapImage(imgElev, "earth_elevation.png", "earth", epoch);
+
+        // 2. Temperature (-50°C to +50°C -> [0..255]) with Paleoclimatic Anomaly
+        BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        File existingTemp = new File("data/maps/worldclim/bio_10m/wc2.1_10m_bio_1.tif");
+        BufferedImage srcTemp = null;
+        if (existingTemp.exists()) {
+            try { srcTemp = ImageIO.read(existingTemp); } catch (Exception ignored) {}
+        }
+
+        double tempAnomalyC = switch ((int) epoch) {
+            case -20000 -> -6.0;
+            case -100000 -> -2.5;
+            case -10000 -> -1.5;
+            case -6000 -> +0.8;
+            case 0 -> +0.2;
+            case 1000 -> +0.3;
+            case 1800 -> -0.5;
+            case 1900 -> -0.4;
+            case 1950 -> -0.2;
+            default -> 0.0;
+        };
+
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                double tempC;
+                if (srcTemp != null) {
+                    int sx = (int) ((x / (double) WIDTH) * srcTemp.getWidth());
+                    int sy = (int) ((y / (double) HEIGHT) * srcTemp.getHeight());
+                    sx = Math.clamp(sx, 0, srcTemp.getWidth() - 1);
+                    sy = Math.clamp(sy, 0, srcTemp.getHeight() - 1);
+                    float tv = srcTemp.getRaster().getSampleFloat(sx, sy, 0);
+                    if (tv < -100 || tv > 100) {
+                        double latNorm = Math.abs(lat) / 90.0;
+                        tempC = 28.0 - latNorm * 32.0;
+                    } else {
+                        tempC = tv;
+                    }
+                } else {
+                    tempC = 28.0 - 55.0 * Math.sin(Math.toRadians(Math.abs(lat)));
+                }
+
+                tempC += tempAnomalyC;
+                int tGray = (int) (Math.clamp((tempC + 50.0) / 100.0, 0.0, 1.0) * 255.0);
+                imgTemp.setRGB(x, y, (tGray << 16) | (tGray << 8) | tGray);
+            }
+        }
+        saveMapImage(imgTemp, "earth_temperature.png", "earth", epoch);
+
+        // 3. Precipitation (0 to 3000 mm/yr) with Monsoon / Glacial Multiplier
+        BufferedImage imgPrecip = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        File existingPrecip = new File("data/maps/worldclim/bio_10m/wc2.1_10m_bio_12.tif");
+        BufferedImage srcPrecip = null;
+        if (existingPrecip.exists()) {
+            try { srcPrecip = ImageIO.read(existingPrecip); } catch (Exception ignored) {}
+        }
+
+        double globalPrecipMult = (epoch == -20000L) ? 0.65 : (epoch == -6000L ? 1.15 : 1.0);
+
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x / (double) WIDTH) * 360.0;
+                double pv;
+                if (srcPrecip != null) {
+                    int sx = (int) ((x / (double) WIDTH) * srcPrecip.getWidth());
+                    int sy = (int) ((y / (double) HEIGHT) * srcPrecip.getHeight());
+                    sx = Math.clamp(sx, 0, srcPrecip.getWidth() - 1);
+                    sy = Math.clamp(sy, 0, srcPrecip.getHeight() - 1);
+                    float sample = srcPrecip.getRaster().getSampleFloat(sx, sy, 0);
+                    pv = (sample < 0 || sample > 30000) ? Math.exp(-Math.pow(lat / 15.0, 2)) * 2000.0 : sample;
+                } else {
+                    pv = Math.exp(-Math.pow(lat / 15.0, 2)) * 2000.0;
+                }
+
+                pv *= globalPrecipMult;
+
+                // Holocene Climate Optimum Green Sahara Monsoon boost
+                if (epoch == -6000L && lat >= 14.0 && lat <= 28.0 && lon >= -15.0 && lon <= 35.0) {
+                    pv = Math.max(pv, 550.0 + 350.0 * Math.sin(Math.toRadians(lat * 4.0)));
+                }
+
+                int pGray = (int) (Math.clamp(pv / 3000.0, 0.0, 1.0) * 255.0);
+                imgPrecip.setRGB(x, y, (pGray << 16) | (pGray << 8) | pGray);
+            }
+        }
+        saveMapImage(imgPrecip, "earth_precipitation.png", "earth", epoch);
+
+        // 4. Seasonality
+        BufferedImage imgSeason = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        File existingSeason = new File("data/maps/worldclim/bio_10m/wc2.1_10m_bio_4.tif");
+        BufferedImage srcSeason = null;
+        if (existingSeason.exists()) {
+            try { srcSeason = ImageIO.read(existingSeason); } catch (Exception ignored) {}
+        }
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                int sGray;
+                if (srcSeason != null) {
+                    int sx = (int) ((x / (double) WIDTH) * srcSeason.getWidth());
+                    int sy = (int) ((y / (double) HEIGHT) * srcSeason.getHeight());
+                    sx = Math.clamp(sx, 0, srcSeason.getWidth() - 1);
+                    sy = Math.clamp(sy, 0, srcSeason.getHeight() - 1);
+                    float sv = srcSeason.getRaster().getSampleFloat(sx, sy, 0);
+                    if (sv < 0 || sv > 50000) {
+                        double oceanAmp = (Math.abs(lat) / 90.0) * 12.0;
+                        sGray = (int) (Math.clamp(oceanAmp / 50.0, 0.0, 1.0) * 255.0);
+                    } else {
+                        double norm = Math.clamp((sv / 100.0) / 50.0, 0.0, 1.0);
+                        sGray = (int) (norm * 255.0);
+                    }
+                } else {
+                    double oceanAmp = (Math.abs(lat) / 90.0) * 25.0;
+                    sGray = (int) (Math.clamp(oceanAmp / 50.0, 0.0, 1.0) * 255.0);
+                }
+                imgSeason.setRGB(x, y, (sGray << 16) | (sGray << 8) | sGray);
+            }
+        }
+        saveMapImage(imgSeason, "earth_seasonality.png", "earth", epoch);
+
+        // 5. Biomes Mapping with Epoch Vegetative Evolution
+        BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        File existingBiomes = new File("data/maps/ether/earth/earth_biomes.png");
+        if (!existingBiomes.exists()) {
+            existingBiomes = new File("src/main/resources/maps/earth_biomes.png");
+        }
+        BufferedImage srcBiomes = null;
+        if (existingBiomes.exists()) {
+            try { srcBiomes = ImageIO.read(existingBiomes); } catch (Exception ignored) {}
+        }
+
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x / (double) WIDTH) * 360.0;
+                int bColor = BIOME_OCEAN;
+                if (srcBiomes != null) {
+                    int sx = (int) ((x / (double) WIDTH) * srcBiomes.getWidth());
+                    int sy = (int) ((y / (double) HEIGHT) * srcBiomes.getHeight());
+                    sx = Math.clamp(sx, 0, srcBiomes.getWidth() - 1);
+                    sy = Math.clamp(sy, 0, srcBiomes.getHeight() - 1);
+                    bColor = srcBiomes.getRGB(sx, sy);
+                }
+
+                // LGM Glaciers & Mammoth Steppe
+                if (epoch == -20000L) {
+                    if ((lat >= 42.0 && lat <= 72.0 && lon >= -130.0 && lon <= -60.0) ||
+                        (lat >= 54.0 && lat <= 72.0 && lon >= -5.0 && lon <= 45.0) || Math.abs(lat) > 70.0) {
+                        bColor = BIOME_GLACIER;
+                    } else if (lat >= 45.0 && lat <= 65.0 && bColor != BIOME_OCEAN && bColor != BIOME_DEEP_OCEAN) {
+                        bColor = BIOME_TUNDRA; // Mammoth Steppe
+                    }
+                }
+
+                // Green Sahara & Lake Mega-Chad at -6000 BP
+                if (epoch == -6000L) {
+                    if (lat >= 12.0 && lat <= 18.0 && lon >= 13.0 && lon <= 19.0) {
+                        bColor = 0x1E78DC; // BIOME_LAKE (Lake Mega-Chad ~350,000 km2)
+                    } else if (lat >= 15.0 && lat <= 27.0 && lon >= -14.0 && lon <= 33.0 && bColor == BIOME_DESERT) {
+                        bColor = 0xB4C846; // BIOME_SAVANNAH / PLAINS
+                    }
+                }
+
+                imgBiomes.setRGB(x, y, bColor);
+            }
+        }
+        saveMapImage(imgBiomes, "earth_biomes.png", "earth", epoch);
+    }
+
+    private void generateEarthResourcesForEpoch(long epoch) {
+        logger.info("Generating Earth Geological & Mineral Tensors for epoch {}...", epoch);
+
+        double depletionMultiplier = 1.0;
+        if (epoch > 1800L) {
+            double progress = (epoch - 1800.0) / (2026.0 - 1800.0);
+            depletionMultiplier = Math.clamp(1.0 - progress * 0.35, 0.65, 1.0);
+        }
+
+        // 1. COAL BASINS & DEPOSITS
+        BufferedImage imgCoal = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         List<GeologicalBasin> coalBasins = new ArrayList<>();
-        // North America
-        coalBasins.add(new GeologicalBasin(-80.0, 38.5, 6.5, 2.2, 45.0, 3.8, "Appalachian Basin"));
-        coalBasins.add(new GeologicalBasin(-89.0, 38.5, 3.5, 2.8, 0.0, 3.2, "Illinois Basin"));
-        coalBasins.add(new GeologicalBasin(-105.8, 44.5, 3.2, 2.0, 115.0, 4.2, "Powder River Basin"));
-        coalBasins.add(new GeologicalBasin(-102.5, 47.5, 3.0, 2.2, 0.0, 2.8, "Williston Fort Union Lignite"));
-        coalBasins.add(new GeologicalBasin(-95.0, 36.0, 3.5, 2.0, 40.0, 2.6, "Western Interior / Arkoma"));
-        coalBasins.add(new GeologicalBasin(-95.5, 31.5, 5.5, 1.2, 60.0, 2.4, "Gulf Coast Wilcox Lignite"));
-        coalBasins.add(new GeologicalBasin(-107.5, 41.5, 2.5, 1.8, 0.0, 2.8, "Green River / Hanna Basin"));
-        coalBasins.add(new GeologicalBasin(-109.5, 39.5, 2.8, 1.8, 120.0, 2.8, "Uinta-Piceance Coal"));
-        coalBasins.add(new GeologicalBasin(-108.0, 36.5, 2.2, 1.8, 0.0, 3.0, "San Juan Fruitland Coal"));
-        coalBasins.add(new GeologicalBasin(-116.5, 53.0, 6.0, 2.0, 135.0, 3.4, "Alberta Foothills Coal"));
-        coalBasins.add(new GeologicalBasin(-60.2, 46.2, 1.5, 1.0, 60.0, 2.4, "Sydney Basin Nova Scotia"));
-        coalBasins.add(new GeologicalBasin(-151.0, 61.5, 2.5, 1.2, 30.0, 2.4, "Cook Inlet Beluga Alaska"));
-        coalBasins.add(new GeologicalBasin(-101.5, 27.8, 2.0, 1.2, 130.0, 2.4, "Sabinas Basin Mexico"));
-        // South America
-        coalBasins.add(new GeologicalBasin(-72.7, 11.1, 2.2, 1.0, 45.0, 3.8, "Cerrejon Colombia"));
-        coalBasins.add(new GeologicalBasin(-73.5, 5.5, 2.0, 1.0, 35.0, 2.8, "Boyaca-Cundinamarca Colombia"));
-        coalBasins.add(new GeologicalBasin(-72.3, 10.9, 1.5, 0.8, 40.0, 2.8, "Guasare Basin Venezuela"));
-        coalBasins.add(new GeologicalBasin(-51.5, -29.5, 4.5, 2.0, 90.0, 3.0, "Parana Basin Brazil (Candiota)"));
-        coalBasins.add(new GeologicalBasin(-72.3, -51.5, 1.8, 1.0, 0.0, 2.4, "Rio Turbio Argentina"));
-        coalBasins.add(new GeologicalBasin(-77.0, -10.5, 1.5, 0.8, 140.0, 2.2, "Oyon Basin Peru"));
-        // Europe
-        coalBasins.add(new GeologicalBasin(19.0, 50.2, 2.2, 1.6, 120.0, 4.0, "Upper Silesian Basin Poland/Czechia"));
-        coalBasins.add(new GeologicalBasin(23.0, 51.3, 1.8, 1.0, 135.0, 2.8, "Lublin Coal Basin Poland"));
-        coalBasins.add(new GeologicalBasin(7.3, 51.5, 2.0, 1.2, 70.0, 3.8, "Ruhr Basin Germany"));
-        coalBasins.add(new GeologicalBasin(6.8, 49.3, 1.5, 0.8, 60.0, 2.8, "Saar-Lorraine Basin"));
-        coalBasins.add(new GeologicalBasin(6.5, 50.9, 1.2, 0.8, 135.0, 3.5, "Rhineland Lignite District"));
-        coalBasins.add(new GeologicalBasin(13.5, 51.6, 2.5, 1.5, 0.0, 3.2, "Lusatian / Central German Lignite"));
-        coalBasins.add(new GeologicalBasin(3.0, 50.4, 2.5, 0.6, 80.0, 2.8, "Nord-Pas-de-Calais France/Belgium"));
-        coalBasins.add(new GeologicalBasin(-1.3, 53.5, 2.0, 1.2, 0.0, 3.0, "Yorkshire / East Midlands UK"));
-        coalBasins.add(new GeologicalBasin(-3.6, 51.7, 1.5, 0.8, 90.0, 2.8, "South Wales Coalfield"));
-        coalBasins.add(new GeologicalBasin(-3.8, 55.9, 1.2, 0.6, 70.0, 2.4, "Scottish Central Coalfield"));
-        coalBasins.add(new GeologicalBasin(-5.8, 43.3, 1.5, 0.8, 90.0, 2.6, "Asturias Basin Spain"));
-        coalBasins.add(new GeologicalBasin(23.3, 45.4, 1.0, 0.5, 90.0, 2.6, "Jiu Valley Romania"));
-        coalBasins.add(new GeologicalBasin(26.0, 42.2, 1.5, 1.0, 90.0, 2.8, "Maritsa Iztok Lignite Bulgaria"));
-        coalBasins.add(new GeologicalBasin(21.7, 40.5, 1.5, 0.8, 140.0, 2.6, "Ptolemaida-Florina Greece"));
-        coalBasins.add(new GeologicalBasin(20.3, 44.4, 1.8, 1.0, 120.0, 2.8, "Kolubara-Kostolac Serbia"));
-        coalBasins.add(new GeologicalBasin(31.8, 41.4, 1.5, 0.8, 75.0, 2.8, "Zonguldak Basin Turkey"));
-        coalBasins.add(new GeologicalBasin(27.6, 39.2, 1.2, 0.8, 45.0, 2.6, "Soma Lignite Basin Turkey"));
-        coalBasins.add(new GeologicalBasin(15.6, 78.2, 1.2, 0.6, 0.0, 2.2, "Spitsbergen Svalbard"));
-        // Russia & Eurasia
-        coalBasins.add(new GeologicalBasin(38.2, 48.2, 4.5, 1.8, 110.0, 4.2, "Donbas (Donets Basin)"));
-        coalBasins.add(new GeologicalBasin(87.0, 54.5, 3.8, 2.2, 160.0, 4.8, "Kuzbass (Kuznetsk Basin)"));
-        coalBasins.add(new GeologicalBasin(93.5, 56.0, 6.5, 2.0, 80.0, 4.4, "Kansk-Achinsk Lignite Basin"));
-        coalBasins.add(new GeologicalBasin(98.0, 64.0, 8.0, 6.0, 0.0, 3.8, "Tunguska Supergiant Coal Basin"));
-        coalBasins.add(new GeologicalBasin(126.0, 65.0, 7.0, 4.5, 0.0, 3.6, "Lena Coal Basin Yakutia"));
-        coalBasins.add(new GeologicalBasin(60.5, 66.5, 3.5, 2.0, 45.0, 3.8, "Pechora Basin Vorkuta"));
-        coalBasins.add(new GeologicalBasin(125.0, 56.8, 3.0, 1.5, 90.0, 3.5, "South Yakutsk Basin Neryungri"));
-        coalBasins.add(new GeologicalBasin(103.0, 53.2, 3.0, 1.5, 120.0, 3.0, "Irkutsk / Cheremkhovo"));
-        coalBasins.add(new GeologicalBasin(91.5, 53.7, 2.0, 1.5, 0.0, 2.8, "Minusinsk Basin Russia"));
-        coalBasins.add(new GeologicalBasin(73.1, 49.8, 2.5, 1.5, 90.0, 3.8, "Karaganda Basin Kazakhstan"));
-        coalBasins.add(new GeologicalBasin(75.3, 51.7, 1.8, 1.2, 45.0, 4.0, "Ekibastuz Basin Kazakhstan"));
-        coalBasins.add(new GeologicalBasin(65.0, 50.0, 3.5, 2.0, 0.0, 2.8, "Turgay Basin Kazakhstan"));
-        // East Asia & China
-        coalBasins.add(new GeologicalBasin(112.5, 37.8, 5.5, 2.5, 25.0, 5.0, "Shanxi Province (Datong/Qinshui)"));
-        coalBasins.add(new GeologicalBasin(109.5, 39.0, 4.5, 3.5, 0.0, 5.0, "Ordos Basin (Shenfu-Dongsheng)"));
-        coalBasins.add(new GeologicalBasin(119.5, 46.5, 4.0, 2.0, 45.0, 3.6, "Hailar & Holingol Inner Mongolia"));
-        coalBasins.add(new GeologicalBasin(117.0, 33.0, 3.0, 1.5, 120.0, 3.8, "Huainan-Huaibei Anhui"));
-        coalBasins.add(new GeologicalBasin(116.8, 35.5, 2.5, 1.5, 30.0, 3.5, "Yanzhou Shandong"));
-        coalBasins.add(new GeologicalBasin(105.0, 26.5, 3.5, 2.0, 45.0, 3.6, "Guizhou Liupanshui Basin"));
-        coalBasins.add(new GeologicalBasin(87.5, 44.0, 5.5, 2.5, 90.0, 4.2, "Junggar & Hami Xinjiang"));
-        coalBasins.add(new GeologicalBasin(130.5, 46.0, 3.0, 1.8, 45.0, 3.4, "Hegang-Jixi Heilongjiang"));
-        coalBasins.add(new GeologicalBasin(105.5, 43.6, 3.0, 1.5, 90.0, 3.8, "Tavan Tolgoi South Gobi Mongolia"));
-        coalBasins.add(new GeologicalBasin(142.0, 43.3, 2.2, 1.2, 0.0, 2.6, "Ishikari Hokkaido Japan"));
-        coalBasins.add(new GeologicalBasin(130.6, 33.6, 1.5, 0.8, 0.0, 2.6, "Chikuho Kyushu Japan"));
-        coalBasins.add(new GeologicalBasin(127.0, 38.0, 2.5, 1.5, 30.0, 2.8, "Taebaek & Anju Korea"));
-        // South & Southeast Asia
-        coalBasins.add(new GeologicalBasin(86.2, 23.7, 3.5, 1.2, 90.0, 4.5, "Damodar Valley (Jharia/Raniganj) India"));
-        coalBasins.add(new GeologicalBasin(80.0, 18.0, 3.0, 1.0, 135.0, 3.5, "Godavari Valley (Singareni) India"));
-        coalBasins.add(new GeologicalBasin(85.0, 21.0, 3.0, 1.2, 120.0, 3.8, "Mahanadi Valley (Talcher) India"));
-        coalBasins.add(new GeologicalBasin(82.6, 23.0, 3.5, 1.5, 90.0, 4.0, "Singrauli & Korba India"));
-        coalBasins.add(new GeologicalBasin(79.5, 11.5, 1.5, 1.0, 0.0, 3.0, "Neyveli Lignite Tamil Nadu India"));
-        coalBasins.add(new GeologicalBasin(70.2, 24.8, 2.0, 1.2, 0.0, 3.2, "Thar Coalfield Pakistan"));
-        coalBasins.add(new GeologicalBasin(103.8, -3.7, 3.5, 1.8, 135.0, 3.8, "South Sumatra (Muara Enim) Indonesia"));
-        coalBasins.add(new GeologicalBasin(116.8, -1.0, 4.0, 2.0, 0.0, 4.4, "East Kalimantan (Kutai/Pasir) Indonesia"));
-        coalBasins.add(new GeologicalBasin(107.2, 21.0, 2.0, 0.8, 70.0, 3.0, "Quang Ninh Basin Vietnam"));
-        coalBasins.add(new GeologicalBasin(99.7, 18.3, 1.2, 0.8, 0.0, 2.6, "Mae Moh Lignite Thailand"));
-        // Africa
-        coalBasins.add(new GeologicalBasin(29.2, -26.0, 2.8, 1.8, 90.0, 4.4, "Witbank & Highveld South Africa"));
-        coalBasins.add(new GeologicalBasin(27.5, -23.7, 2.0, 1.2, 90.0, 3.8, "Waterberg Coalfield South Africa"));
-        coalBasins.add(new GeologicalBasin(33.7, -16.1, 2.5, 1.2, 120.0, 3.8, "Moatize Basin Mozambique"));
-        coalBasins.add(new GeologicalBasin(26.0, -18.3, 2.2, 1.2, 60.0, 3.0, "Hwange Zimbabwe"));
-        coalBasins.add(new GeologicalBasin(26.8, -22.7, 2.5, 1.5, 0.0, 3.0, "Mmamabula / Morupule Botswana"));
-        coalBasins.add(new GeologicalBasin(7.5, 6.4, 1.8, 1.0, 0.0, 2.4, "Enugu Coalfield Nigeria"));
-        // Oceania
-        coalBasins.add(new GeologicalBasin(148.5, -22.5, 6.0, 2.0, 160.0, 4.8, "Bowen Basin Queensland Australia"));
-        coalBasins.add(new GeologicalBasin(150.8, -32.8, 3.5, 1.8, 90.0, 4.2, "Sydney Basin Hunter Valley Australia"));
-        coalBasins.add(new GeologicalBasin(150.0, -27.5, 4.0, 2.2, 160.0, 3.6, "Surat & Clarence-Moreton Australia"));
-        coalBasins.add(new GeologicalBasin(145.5, -23.0, 4.5, 2.2, 150.0, 3.6, "Galilee Basin Queensland"));
-        coalBasins.add(new GeologicalBasin(146.5, -38.2, 2.0, 1.0, 90.0, 3.5, "Latrobe Valley Victoria Australia"));
-        coalBasins.add(new GeologicalBasin(116.2, -33.4, 1.2, 0.8, 135.0, 2.6, "Collie Basin Western Australia"));
-        coalBasins.add(new GeologicalBasin(172.0, -41.0, 2.5, 1.0, 45.0, 2.4, "Buller & Waikato New Zealand"));
+        coalBasins.add(new GeologicalBasin(-80.0, 38.5, 6.5, 2.2, 45.0, 3.8 * depletionMultiplier, "Appalachian Basin"));
+        coalBasins.add(new GeologicalBasin(-89.0, 38.5, 3.5, 2.8, 0.0, 3.2 * depletionMultiplier, "Illinois Basin"));
+        coalBasins.add(new GeologicalBasin(-105.8, 44.5, 3.2, 2.0, 115.0, 4.2 * depletionMultiplier, "Powder River Basin"));
+        coalBasins.add(new GeologicalBasin(-102.5, 47.5, 3.0, 2.2, 0.0, 2.8 * depletionMultiplier, "Williston Fort Union Lignite"));
+        coalBasins.add(new GeologicalBasin(-95.0, 36.0, 3.5, 2.0, 40.0, 2.6 * depletionMultiplier, "Western Interior / Arkoma"));
+        coalBasins.add(new GeologicalBasin(-95.5, 31.5, 5.5, 1.2, 60.0, 2.4 * depletionMultiplier, "Gulf Coast Wilcox Lignite"));
+        coalBasins.add(new GeologicalBasin(-107.5, 41.5, 2.5, 1.8, 0.0, 2.8 * depletionMultiplier, "Green River / Hanna Basin"));
+        coalBasins.add(new GeologicalBasin(-109.5, 39.5, 2.8, 1.8, 120.0, 2.8 * depletionMultiplier, "Uinta-Piceance Coal"));
+        coalBasins.add(new GeologicalBasin(-108.0, 36.5, 2.2, 1.8, 0.0, 3.0 * depletionMultiplier, "San Juan Fruitland Coal"));
+        coalBasins.add(new GeologicalBasin(-116.5, 53.0, 6.0, 2.0, 135.0, 3.4 * depletionMultiplier, "Alberta Foothills Coal"));
+        coalBasins.add(new GeologicalBasin(-60.2, 46.2, 1.5, 1.0, 60.0, 2.4 * depletionMultiplier, "Sydney Basin Nova Scotia"));
+        coalBasins.add(new GeologicalBasin(-151.0, 61.5, 2.5, 1.2, 30.0, 2.4 * depletionMultiplier, "Cook Inlet Beluga Alaska"));
+        coalBasins.add(new GeologicalBasin(-101.5, 27.8, 2.0, 1.2, 130.0, 2.4 * depletionMultiplier, "Sabinas Basin Mexico"));
+        coalBasins.add(new GeologicalBasin(-72.7, 11.1, 2.2, 1.0, 45.0, 3.8 * depletionMultiplier, "Cerrejon Colombia"));
+        coalBasins.add(new GeologicalBasin(-73.5, 5.5, 2.0, 1.0, 35.0, 2.8 * depletionMultiplier, "Boyaca-Cundinamarca Colombia"));
+        coalBasins.add(new GeologicalBasin(-72.3, 10.9, 1.5, 0.8, 40.0, 2.8 * depletionMultiplier, "Guasare Basin Venezuela"));
+        coalBasins.add(new GeologicalBasin(-51.5, -29.5, 4.5, 2.0, 90.0, 3.0 * depletionMultiplier, "Parana Basin Brazil"));
+        coalBasins.add(new GeologicalBasin(-72.3, -51.5, 1.8, 1.0, 0.0, 2.4 * depletionMultiplier, "Rio Turbio Argentina"));
+        coalBasins.add(new GeologicalBasin(-77.0, -10.5, 1.5, 0.8, 140.0, 2.2 * depletionMultiplier, "Oyon Basin Peru"));
+        coalBasins.add(new GeologicalBasin(19.0, 50.2, 2.2, 1.6, 120.0, 4.0 * depletionMultiplier, "Upper Silesian Basin Poland/Czechia"));
+        coalBasins.add(new GeologicalBasin(23.0, 51.3, 1.8, 1.0, 135.0, 2.8 * depletionMultiplier, "Lublin Coal Basin Poland"));
+        coalBasins.add(new GeologicalBasin(7.3, 51.5, 2.0, 1.2, 70.0, 3.8 * depletionMultiplier, "Ruhr Basin Germany"));
+        coalBasins.add(new GeologicalBasin(6.8, 49.3, 1.5, 0.8, 60.0, 2.8 * depletionMultiplier, "Saar-Lorraine Basin"));
+        coalBasins.add(new GeologicalBasin(6.5, 50.9, 1.2, 0.8, 135.0, 3.5 * depletionMultiplier, "Rhineland Lignite District"));
+        coalBasins.add(new GeologicalBasin(13.5, 51.6, 2.5, 1.5, 0.0, 3.2 * depletionMultiplier, "Lusatian / Central German Lignite"));
+        coalBasins.add(new GeologicalBasin(3.0, 50.4, 2.5, 0.6, 80.0, 2.8 * depletionMultiplier, "Nord-Pas-de-Calais France/Belgium"));
+        coalBasins.add(new GeologicalBasin(-1.3, 53.5, 2.0, 1.2, 0.0, 3.0 * depletionMultiplier, "Yorkshire / East Midlands UK"));
+        coalBasins.add(new GeologicalBasin(-3.6, 51.7, 1.5, 0.8, 90.0, 2.8 * depletionMultiplier, "South Wales Coalfield"));
+        coalBasins.add(new GeologicalBasin(-3.8, 55.9, 1.2, 0.6, 70.0, 2.4 * depletionMultiplier, "Scottish Central Coalfield"));
+        coalBasins.add(new GeologicalBasin(-5.8, 43.3, 1.5, 0.8, 90.0, 2.6 * depletionMultiplier, "Asturias Basin Spain"));
+        coalBasins.add(new GeologicalBasin(23.3, 45.4, 1.0, 0.5, 90.0, 2.6 * depletionMultiplier, "Jiu Valley Romania"));
+        coalBasins.add(new GeologicalBasin(26.0, 42.2, 1.5, 1.0, 90.0, 2.8 * depletionMultiplier, "Maritsa Iztok Lignite Bulgaria"));
+        coalBasins.add(new GeologicalBasin(21.7, 40.5, 1.5, 0.8, 140.0, 2.6 * depletionMultiplier, "Ptolemaida-Florina Greece"));
+        coalBasins.add(new GeologicalBasin(20.3, 44.4, 1.8, 1.0, 120.0, 2.8 * depletionMultiplier, "Kolubara-Kostolac Serbia"));
+        coalBasins.add(new GeologicalBasin(31.8, 41.4, 1.5, 0.8, 75.0, 2.8 * depletionMultiplier, "Zonguldak Basin Turkey"));
+        coalBasins.add(new GeologicalBasin(27.6, 39.2, 1.2, 0.8, 45.0, 2.6 * depletionMultiplier, "Soma Lignite Basin Turkey"));
+        coalBasins.add(new GeologicalBasin(38.2, 48.2, 4.5, 1.8, 110.0, 4.2 * depletionMultiplier, "Donbas"));
+        coalBasins.add(new GeologicalBasin(87.0, 54.5, 3.8, 2.2, 160.0, 4.8 * depletionMultiplier, "Kuzbass"));
+        coalBasins.add(new GeologicalBasin(93.5, 56.0, 6.5, 2.0, 80.0, 4.4 * depletionMultiplier, "Kansk-Achinsk"));
+        coalBasins.add(new GeologicalBasin(98.0, 64.0, 8.0, 6.0, 0.0, 3.8 * depletionMultiplier, "Tunguska Basin"));
+        coalBasins.add(new GeologicalBasin(126.0, 65.0, 7.0, 4.5, 0.0, 3.6 * depletionMultiplier, "Lena Basin"));
+        coalBasins.add(new GeologicalBasin(60.5, 66.5, 3.5, 2.0, 45.0, 3.8 * depletionMultiplier, "Pechora Basin"));
+        coalBasins.add(new GeologicalBasin(73.1, 49.8, 2.5, 1.5, 90.0, 3.8 * depletionMultiplier, "Karaganda"));
+        coalBasins.add(new GeologicalBasin(75.3, 51.7, 1.8, 1.2, 45.0, 4.0 * depletionMultiplier, "Ekibastuz"));
+        coalBasins.add(new GeologicalBasin(112.5, 37.8, 5.5, 2.5, 25.0, 5.0 * depletionMultiplier, "Shanxi Datong"));
+        coalBasins.add(new GeologicalBasin(109.5, 39.0, 4.5, 3.5, 0.0, 5.0 * depletionMultiplier, "Ordos Shenfu"));
+        coalBasins.add(new GeologicalBasin(86.2, 23.7, 3.5, 1.2, 90.0, 4.5 * depletionMultiplier, "Damodar Valley"));
+        coalBasins.add(new GeologicalBasin(103.8, -3.7, 3.5, 1.8, 135.0, 3.8 * depletionMultiplier, "South Sumatra"));
+        coalBasins.add(new GeologicalBasin(116.8, -1.0, 4.0, 2.0, 0.0, 4.4 * depletionMultiplier, "East Kalimantan"));
+        coalBasins.add(new GeologicalBasin(29.2, -26.0, 2.8, 1.8, 90.0, 4.4 * depletionMultiplier, "Witbank South Africa"));
+        coalBasins.add(new GeologicalBasin(148.5, -22.5, 6.0, 2.0, 160.0, 4.8 * depletionMultiplier, "Bowen Basin Australia"));
+        coalBasins.add(new GeologicalBasin(150.8, -32.8, 3.5, 1.8, 90.0, 4.2 * depletionMultiplier, "Sydney Basin Australia"));
 
-        List<double[]> coalSpots = extractMrdsDeposits("coal", "lignite", "anthracite", "bituminous");
-        Color[] coalPalette = {
-            new Color(146, 64, 14),   // #92400E Dark Amber Brown
-            new Color(217, 119, 6),   // #D97706 Rich Amber
-            new Color(251, 191, 36),  // #FBBF24 Golden Yellow
-            new Color(254, 240, 138)  // #FEF08A Bright Core
-        };
-        rasterizeBasinsAndSpots(imgCoal, coalBasins, coalSpots, coalPalette, 8.0);
-        saveMapImage(imgCoal, "earth_coal.png", "earth");
+        List<double[]> coalSpots = AuthenticEmpiricalDatasetIngestion.getEmpiricalCoalOccurrences();
+        rasterizeBasinsAndSpots(imgCoal, coalBasins, coalSpots, 6.0);
+        saveMapImage(imgCoal, "earth_coal.png", "earth", epoch);
 
-        // -------------------------------------------------------------
-        // 2. CRUDE OIL BASINS & SUPERGIANT FIELDS (EIA / BGR / USGS TPS)
-        // -------------------------------------------------------------
-        BufferedImage imgOil = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // 2. CRUDE OIL BASINS & WELLS
+        BufferedImage imgOil = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         List<GeologicalBasin> oilBasins = new ArrayList<>();
-        // Middle East & Persian Gulf Super-Basin
-        oilBasins.add(new GeologicalBasin(49.3, 25.5, 6.5, 3.0, 15.0, 5.0, "Ghawar/Arabian Platform Saudi Arabia"));
-        oilBasins.add(new GeologicalBasin(53.5, 22.5, 4.5, 2.5, 60.0, 4.4, "Rub al-Khali / Shaybah"));
-        oilBasins.add(new GeologicalBasin(48.0, 29.1, 2.8, 2.0, 0.0, 4.8, "Greater Burgan / Kuwait"));
-        oilBasins.add(new GeologicalBasin(47.2, 30.5, 6.5, 2.5, 135.0, 4.8, "Mesopotamian Basin Rumaila/Kirkuk Iraq"));
-        oilBasins.add(new GeologicalBasin(49.8, 31.3, 5.5, 2.0, 135.0, 4.8, "Zagros Oil Belt Ahwaz/Marun Iran"));
-        oilBasins.add(new GeologicalBasin(53.8, 24.3, 3.2, 2.2, 45.0, 4.6, "Upper Zakum / Abu Dhabi UAE"));
-        oilBasins.add(new GeologicalBasin(51.6, 26.5, 1.8, 1.5, 0.0, 4.2, "Al-Shaheen Qatar Offshore"));
-        oilBasins.add(new GeologicalBasin(56.5, 21.0, 4.5, 2.0, 30.0, 4.0, "Oman Salt Basin Fahud/Nimr"));
-        oilBasins.add(new GeologicalBasin(33.3, 28.2, 3.0, 0.8, 140.0, 3.8, "Gulf of Suez Rift Egypt"));
-        oilBasins.add(new GeologicalBasin(49.0, 15.5, 2.5, 1.2, 90.0, 3.4, "Masila Basin Yemen"));
-        // Russia, Eurasia & Caspian
-        oilBasins.add(new GeologicalBasin(76.5, 61.2, 7.5, 5.0, 0.0, 5.0, "West Siberia Samotlor/Priobskoye"));
-        oilBasins.add(new GeologicalBasin(52.5, 54.8, 6.0, 4.0, 0.0, 4.5, "Volga-Ural Romashkino Russia"));
-        oilBasins.add(new GeologicalBasin(51.8, 46.5, 5.0, 3.5, 0.0, 5.0, "Pre-Caspian Tengiz/Kashagan Kazakhstan"));
-        oilBasins.add(new GeologicalBasin(53.0, 43.5, 3.0, 1.8, 120.0, 4.0, "Mangyshlak Uzen Kazakhstan"));
-        oilBasins.add(new GeologicalBasin(50.5, 40.0, 4.0, 2.5, 135.0, 4.6, "South Caspian ACG Azerbaijan"));
-        oilBasins.add(new GeologicalBasin(57.5, 66.0, 4.5, 2.8, 45.0, 4.0, "Timan-Pechora Usinsk Russia"));
-        oilBasins.add(new GeologicalBasin(88.0, 67.8, 5.5, 3.5, 0.0, 4.2, "Vankor East Siberia"));
-        oilBasins.add(new GeologicalBasin(143.2, 52.5, 4.0, 1.5, 0.0, 4.2, "Sakhalin Shelf Russia"));
-        oilBasins.add(new GeologicalBasin(45.0, 43.5, 3.5, 1.2, 90.0, 3.4, "North Caucasus Grozny"));
-        // North America
-        oilBasins.add(new GeologicalBasin(-102.5, 31.8, 4.5, 3.2, 140.0, 5.0, "Permian Basin Midland/Delaware TX/NM"));
-        oilBasins.add(new GeologicalBasin(-98.0, 28.5, 5.5, 2.0, 55.0, 4.6, "Eagle Ford Shale & Wilcox TX"));
-        oilBasins.add(new GeologicalBasin(-90.5, 27.5, 5.0, 2.5, 90.0, 4.8, "Deepwater Gulf of Mexico"));
-        oilBasins.add(new GeologicalBasin(-103.5, 48.0, 3.5, 3.0, 0.0, 4.5, "Bakken / Williston Basin ND/MT"));
-        oilBasins.add(new GeologicalBasin(-148.5, 70.2, 5.0, 1.8, 90.0, 4.8, "Prudhoe Bay / North Slope Alaska"));
-        oilBasins.add(new GeologicalBasin(-111.5, 56.8, 6.5, 3.5, 135.0, 5.0, "Athabasca Oil Sands Alberta"));
-        oilBasins.add(new GeologicalBasin(-115.0, 54.5, 4.5, 2.5, 135.0, 4.4, "WCSB Peace River & Cold Lake"));
-        oilBasins.add(new GeologicalBasin(-98.5, 35.5, 3.0, 2.0, 120.0, 4.0, "Anadarko Basin Oklahoma"));
-        oilBasins.add(new GeologicalBasin(-104.5, 40.5, 2.5, 2.0, 0.0, 3.8, "DJ Basin Niobrara Colorado"));
-        oilBasins.add(new GeologicalBasin(-119.5, 35.3, 3.0, 1.0, 135.0, 4.2, "San Joaquin Basin Midway-Sunset CA"));
-        oilBasins.add(new GeologicalBasin(-118.2, 33.8, 1.5, 0.8, 120.0, 3.8, "Los Angeles Basin Wilmington CA"));
-        oilBasins.add(new GeologicalBasin(-92.2, 19.5, 4.5, 2.5, 0.0, 4.8, "Sureste / Cantarell / KMZ Mexico"));
-        oilBasins.add(new GeologicalBasin(-97.5, 21.5, 3.0, 1.5, 140.0, 3.8, "Tampico-Misantla / Chicontepec"));
-        oilBasins.add(new GeologicalBasin(-48.8, 46.8, 2.2, 1.5, 45.0, 4.0, "Hibernia / Grand Banks Newfoundland"));
-        // South America
-        oilBasins.add(new GeologicalBasin(-71.5, 10.0, 3.0, 2.0, 0.0, 4.8, "Maracaibo Basin Bolivar Coastal Venezuela"));
-        oilBasins.add(new GeologicalBasin(-64.0, 8.5, 6.5, 1.5, 90.0, 5.0, "Faja del Orinoco Heavy Oil Venezuela"));
-        oilBasins.add(new GeologicalBasin(-43.0, -24.5, 6.0, 3.0, 45.0, 5.0, "Santos Pre-Salt Tupi/Buzios Brazil"));
-        oilBasins.add(new GeologicalBasin(-40.5, -22.5, 4.5, 2.2, 45.0, 4.6, "Campos Basin Marlim/Roncador Brazil"));
-        oilBasins.add(new GeologicalBasin(-37.0, -11.0, 3.5, 1.5, 40.0, 3.8, "Sergipe-Alagoas & Espirito Santo"));
-        oilBasins.add(new GeologicalBasin(-71.5, 4.5, 4.5, 2.0, 45.0, 4.2, "Llanos Foreland Rubiales Colombia"));
-        oilBasins.add(new GeologicalBasin(-76.5, -1.5, 5.0, 2.0, 0.0, 4.2, "Oriente / Maranon Ecuador/Peru"));
-        oilBasins.add(new GeologicalBasin(-69.0, -38.0, 3.5, 2.5, 0.0, 4.6, "Vaca Muerta / Neuquen Argentina"));
-        oilBasins.add(new GeologicalBasin(-68.0, -46.0, 3.0, 2.0, 90.0, 4.0, "Golfo San Jorge Comodoro Rivadavia"));
-        oilBasins.add(new GeologicalBasin(-57.0, 8.0, 3.5, 1.8, 125.0, 4.8, "Guyana Stabroek Block Liza"));
-        // Africa
-        oilBasins.add(new GeologicalBasin(6.0, 4.8, 5.0, 3.5, 0.0, 5.0, "Niger Delta Super-Basin Nigeria"));
-        oilBasins.add(new GeologicalBasin(11.8, -6.5, 5.0, 2.5, 140.0, 4.8, "Lower Congo Deepwater Block 15/17 Angola"));
-        oilBasins.add(new GeologicalBasin(13.0, -9.5, 3.5, 1.8, 140.0, 4.0, "Kwanza Basin Angola"));
-        oilBasins.add(new GeologicalBasin(19.5, 29.0, 4.5, 3.5, 0.0, 4.6, "Sirte Basin Waha/Zelten Libya"));
-        oilBasins.add(new GeologicalBasin(6.0, 31.5, 4.0, 3.0, 0.0, 4.6, "Hassi Messaoud / Berkine Algeria"));
-        oilBasins.add(new GeologicalBasin(29.5, 9.5, 4.5, 1.8, 135.0, 4.0, "Muglad-Melut Heglig/Palogue Sudan"));
-        oilBasins.add(new GeologicalBasin(9.5, -1.5, 4.0, 2.0, 150.0, 4.2, "Gabon Coastal Rabi-Kounga"));
-        oilBasins.add(new GeologicalBasin(31.0, 1.8, 2.5, 0.8, 30.0, 3.8, "Lake Albert Albertine Graben Uganda"));
-        oilBasins.add(new GeologicalBasin(17.0, 8.5, 2.0, 1.2, 0.0, 3.6, "Doba Basin Chad"));
-        oilBasins.add(new GeologicalBasin(9.0, 4.5, 2.5, 1.2, 135.0, 3.6, "Rio del Rey & Douala Cameroon"));
-        // Europe & North Sea
-        oilBasins.add(new GeologicalBasin(2.5, 57.5, 6.0, 3.0, 0.0, 4.8, "Central & Viking Grabens Ekofisk/Sverdrup"));
-        oilBasins.add(new GeologicalBasin(7.5, 65.0, 4.0, 2.0, 30.0, 4.0, "Norwegian Sea Haltenbanken"));
-        oilBasins.add(new GeologicalBasin(22.0, 72.0, 3.5, 2.0, 0.0, 4.0, "Barents Sea Johan Castberg"));
-        oilBasins.add(new GeologicalBasin(-3.5, 60.5, 2.5, 1.2, 45.0, 3.8, "West of Shetland Clair/Schiehallion"));
-        oilBasins.add(new GeologicalBasin(26.0, 45.0, 3.0, 1.5, 75.0, 3.8, "Carpathian Foredeep Ploiesti Romania"));
-        oilBasins.add(new GeologicalBasin(16.8, 48.3, 2.5, 1.8, 45.0, 3.2, "Vienna & Pannonian Basins"));
-        oilBasins.add(new GeologicalBasin(14.0, 36.8, 2.5, 1.2, 120.0, 3.2, "Sicily Channel & Po Valley"));
-        // Asia-Pacific & Australia
-        oilBasins.add(new GeologicalBasin(125.0, 46.5, 4.5, 2.5, 25.0, 4.8, "Songliao Basin Daqing China"));
-        oilBasins.add(new GeologicalBasin(118.5, 38.0, 4.0, 3.0, 40.0, 4.6, "Bohai Bay Shengli/Dagang China"));
-        oilBasins.add(new GeologicalBasin(83.5, 40.5, 5.5, 3.0, 90.0, 4.2, "Tarim Basin Tahe/Fuman China"));
-        oilBasins.add(new GeologicalBasin(85.5, 45.5, 4.0, 2.5, 0.0, 4.0, "Junggar Basin Karamay China"));
-        oilBasins.add(new GeologicalBasin(108.5, 37.0, 4.0, 3.0, 0.0, 4.4, "Ordos Basin Changqing Oil China"));
-        oilBasins.add(new GeologicalBasin(115.5, 21.0, 3.5, 2.0, 65.0, 4.0, "Pearl River Mouth South China Sea"));
-        oilBasins.add(new GeologicalBasin(101.5, 0.8, 4.5, 2.0, 135.0, 4.6, "Central Sumatra Minas/Duri Indonesia"));
-        oilBasins.add(new GeologicalBasin(104.0, -3.0, 3.5, 2.0, 135.0, 4.0, "South Sumatra Basin Indonesia"));
-        oilBasins.add(new GeologicalBasin(117.5, -0.5, 3.0, 2.0, 0.0, 4.2, "Kutei Mahakam Delta Kalimantan"));
-        oilBasins.add(new GeologicalBasin(112.0, -7.0, 3.0, 1.5, 90.0, 4.2, "East Java Cepu/Banyu Urip"));
-        oilBasins.add(new GeologicalBasin(104.5, 5.5, 4.5, 2.5, 140.0, 4.4, "Malay Basin Dulang Malaysia"));
-        oilBasins.add(new GeologicalBasin(114.5, 5.5, 4.0, 2.0, 45.0, 4.4, "Brunei & Sabah Kikeh/Gumusut"));
-        oilBasins.add(new GeologicalBasin(108.0, 9.8, 3.0, 1.5, 45.0, 4.2, "Cuu Long Bach Ho Vietnam"));
-        oilBasins.add(new GeologicalBasin(72.0, 19.3, 3.5, 2.0, 0.0, 4.4, "Mumbai High / Cambay India"));
-        oilBasins.add(new GeologicalBasin(71.5, 26.0, 2.5, 1.5, 0.0, 4.0, "Barmer Basin Mangala Rajasthan India"));
-        oilBasins.add(new GeologicalBasin(95.0, 27.5, 3.0, 1.2, 45.0, 3.6, "Assam Basin Digboi India"));
-        oilBasins.add(new GeologicalBasin(148.5, -38.5, 2.5, 1.2, 90.0, 4.2, "Gippsland Basin Kingfish Australia"));
-        oilBasins.add(new GeologicalBasin(115.0, -21.0, 4.0, 2.0, 45.0, 4.0, "Carnarvon Basin Barrow WA Australia"));
-        oilBasins.add(new GeologicalBasin(141.0, -27.5, 3.5, 2.5, 0.0, 3.6, "Cooper-Eromanga Basin Australia"));
-        oilBasins.add(new GeologicalBasin(173.5, -39.5, 2.5, 1.2, 0.0, 3.6, "Taranaki Basin Maui New Zealand"));
+        oilBasins.add(new GeologicalBasin(49.3, 25.5, 6.5, 3.0, 15.0, 5.0 * depletionMultiplier, "Ghawar Saudi Arabia"));
+        oilBasins.add(new GeologicalBasin(48.0, 29.1, 2.8, 2.0, 0.0, 4.8 * depletionMultiplier, "Burgan Kuwait"));
+        oilBasins.add(new GeologicalBasin(47.2, 30.5, 6.5, 2.5, 135.0, 4.8 * depletionMultiplier, "Rumaila Iraq"));
+        oilBasins.add(new GeologicalBasin(49.8, 31.3, 5.5, 2.0, 135.0, 4.8 * depletionMultiplier, "Zagros Oil Belt"));
+        oilBasins.add(new GeologicalBasin(76.5, 61.2, 7.5, 5.0, 0.0, 5.0 * depletionMultiplier, "West Siberia Samotlor"));
+        oilBasins.add(new GeologicalBasin(52.5, 54.8, 6.0, 4.0, 0.0, 4.5 * depletionMultiplier, "Volga-Ural Romashkino"));
+        oilBasins.add(new GeologicalBasin(51.8, 46.5, 5.0, 3.5, 0.0, 5.0 * depletionMultiplier, "Tengiz/Kashagan Kazakhstan"));
+        oilBasins.add(new GeologicalBasin(50.5, 40.0, 4.0, 2.5, 135.0, 4.6 * depletionMultiplier, "South Caspian Baku"));
+        oilBasins.add(new GeologicalBasin(-102.5, 31.8, 4.5, 3.2, 140.0, 5.0 * depletionMultiplier, "Permian Basin TX/NM"));
+        oilBasins.add(new GeologicalBasin(-90.5, 27.5, 5.0, 2.5, 90.0, 4.8 * depletionMultiplier, "Deepwater Gulf of Mexico"));
+        oilBasins.add(new GeologicalBasin(-148.5, 70.2, 5.0, 1.8, 90.0, 4.8 * depletionMultiplier, "Prudhoe Bay Alaska"));
+        oilBasins.add(new GeologicalBasin(-111.5, 56.8, 6.5, 3.5, 135.0, 5.0 * depletionMultiplier, "Athabasca Oil Sands"));
+        oilBasins.add(new GeologicalBasin(-71.5, 10.0, 3.0, 2.0, 0.0, 4.8 * depletionMultiplier, "Maracaibo Basin"));
+        oilBasins.add(new GeologicalBasin(-64.0, 8.5, 6.5, 1.5, 90.0, 5.0 * depletionMultiplier, "Faja del Orinoco"));
+        oilBasins.add(new GeologicalBasin(-43.0, -24.5, 6.0, 3.0, 45.0, 5.0 * depletionMultiplier, "Santos Pre-Salt Brazil"));
+        oilBasins.add(new GeologicalBasin(6.0, 4.8, 5.0, 3.5, 0.0, 5.0 * depletionMultiplier, "Niger Delta"));
+        oilBasins.add(new GeologicalBasin(11.8, -6.5, 5.0, 2.5, 140.0, 4.8 * depletionMultiplier, "Lower Congo Deepwater"));
+        oilBasins.add(new GeologicalBasin(19.5, 29.0, 4.5, 3.5, 0.0, 4.6 * depletionMultiplier, "Sirte Basin Libya"));
+        oilBasins.add(new GeologicalBasin(6.0, 31.5, 4.0, 3.0, 0.0, 4.6 * depletionMultiplier, "Hassi Messaoud Algeria"));
+        oilBasins.add(new GeologicalBasin(2.5, 57.5, 6.0, 3.0, 0.0, 4.8 * depletionMultiplier, "North Sea Ekofisk"));
+        oilBasins.add(new GeologicalBasin(125.0, 46.5, 4.5, 2.5, 25.0, 4.8 * depletionMultiplier, "Daqing Songliao"));
+        oilBasins.add(new GeologicalBasin(118.5, 38.0, 4.0, 3.0, 40.0, 4.6 * depletionMultiplier, "Bohai Bay Shengli"));
+        oilBasins.add(new GeologicalBasin(101.5, 0.8, 4.5, 2.0, 135.0, 4.6 * depletionMultiplier, "Central Sumatra Minas"));
+        oilBasins.add(new GeologicalBasin(72.0, 19.3, 3.5, 2.0, 0.0, 4.4 * depletionMultiplier, "Mumbai High"));
+        oilBasins.add(new GeologicalBasin(148.5, -38.5, 2.5, 1.2, 90.0, 4.2 * depletionMultiplier, "Gippsland Basin Australia"));
 
-        Color[] oilPalette = {
-            new Color(153, 27, 27),   // #991B1B Deep Ruby
-            new Color(220, 38, 38),   // #DC2626 Crimson Red
-            new Color(248, 113, 113), // #F87171 Coral Red
-            new Color(254, 202, 202)  // #FECACA Intense Core
-        };
-        rasterizeBasinsAndSpots(imgOil, oilBasins, null, oilPalette, 12.0);
-        saveMapImage(imgOil, "earth_oil.png", "earth");
+        List<double[]> oilSpots = AuthenticEmpiricalDatasetIngestion.getEmpiricalOilOccurrences();
+        rasterizeBasinsAndSpots(imgOil, oilBasins, oilSpots, 6.0);
+        saveMapImage(imgOil, "earth_oil.png", "earth", epoch);
 
-        // -------------------------------------------------------------
-        // 3. NATURAL GAS BASINS & LNG HUBS (Cedigaz / BGR / WEP)
-        // -------------------------------------------------------------
-        BufferedImage imgGas = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // 3. NATURAL GAS BASINS & FIELDS
+        BufferedImage imgGas = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         List<GeologicalBasin> gasBasins = new ArrayList<>();
-        // Middle East
-        gasBasins.add(new GeologicalBasin(51.8, 26.5, 4.0, 3.0, 150.0, 5.0, "North Field / South Pars Qatar/Iran"));
-        gasBasins.add(new GeologicalBasin(52.5, 27.8, 5.0, 2.2, 135.0, 5.0, "Coastal Fars Gas Kangan/Kish Iran"));
-        gasBasins.add(new GeologicalBasin(49.5, 25.0, 4.5, 2.5, 15.0, 4.6, "Saudi Khuff & Jafurah Gas"));
-        gasBasins.add(new GeologicalBasin(53.5, 23.8, 3.0, 2.0, 45.0, 4.5, "Abu Dhabi Sour Gas Shah/Ghasha UAE"));
-        gasBasins.add(new GeologicalBasin(56.0, 22.0, 2.8, 1.8, 30.0, 4.4, "Khazzan Tight Gas Oman"));
-        gasBasins.add(new GeologicalBasin(33.0, 32.5, 4.0, 2.0, 0.0, 4.8, "Levantine Deepwater Zohr/Leviathan"));
-        gasBasins.add(new GeologicalBasin(31.5, 31.8, 3.5, 2.0, 90.0, 4.5, "Nile Delta Offshore Egypt"));
-        // Russia, Yamal & Central Asia
-        gasBasins.add(new GeologicalBasin(69.5, 70.5, 5.5, 3.5, 0.0, 5.0, "Yamal Supergiant Bovanenkovo/Tambey"));
-        gasBasins.add(new GeologicalBasin(77.5, 66.0, 6.0, 4.0, 0.0, 5.0, "Nadym-Pur-Taz Urengoy/Yamburg Russia"));
-        gasBasins.add(new GeologicalBasin(75.5, 71.0, 4.5, 2.5, 0.0, 4.8, "Gydan Peninsula Arctic LNG 2"));
-        gasBasins.add(new GeologicalBasin(62.2, 37.3, 4.5, 3.0, 135.0, 5.0, "Galkynysh / Dauletabad Turkmenistan"));
-        gasBasins.add(new GeologicalBasin(64.0, 39.5, 4.5, 2.5, 135.0, 4.6, "Amu Darya Gazli/Shurtan"));
-        gasBasins.add(new GeologicalBasin(53.2, 51.3, 2.5, 2.0, 0.0, 4.5, "Karachaganak Kazakhstan"));
-        gasBasins.add(new GeologicalBasin(48.0, 46.8, 4.0, 2.2, 90.0, 4.5, "Astrakhan & Orenburg Deep Gas"));
-        gasBasins.add(new GeologicalBasin(111.0, 58.5, 5.5, 3.5, 60.0, 4.6, "Chayandinskoye & Kovykta East Siberia"));
-        gasBasins.add(new GeologicalBasin(43.5, 73.0, 3.5, 2.5, 0.0, 4.8, "Shtokman Supergiant Barents Sea"));
-        // North America
-        gasBasins.add(new GeologicalBasin(-78.5, 40.5, 6.5, 3.0, 45.0, 5.0, "Appalachian Marcellus/Utica Shales"));
-        gasBasins.add(new GeologicalBasin(-93.8, 32.2, 3.0, 2.2, 120.0, 4.6, "Haynesville-Bossier Shale LA/TX"));
-        gasBasins.add(new GeologicalBasin(-102.5, 31.8, 4.5, 3.2, 140.0, 4.8, "Permian Associated Gas TX/NM"));
-        gasBasins.add(new GeologicalBasin(-97.5, 33.0, 2.2, 1.8, 0.0, 4.4, "Barnett Shale Fort Worth TX"));
-        gasBasins.add(new GeologicalBasin(-94.5, 35.5, 3.0, 1.8, 90.0, 4.4, "Arkoma Fayetteville/Woodford OK/AR"));
-        gasBasins.add(new GeologicalBasin(-120.0, 56.0, 6.0, 3.0, 135.0, 4.8, "WCSB Montney & Duvernay Canada"));
-        gasBasins.add(new GeologicalBasin(-122.5, 59.5, 3.0, 2.0, 0.0, 4.2, "Horn River & Liard Shales BC"));
-        gasBasins.add(new GeologicalBasin(-108.5, 39.8, 3.0, 2.2, 120.0, 4.2, "Piceance & Uinta Tight Gas CO/UT"));
-        gasBasins.add(new GeologicalBasin(-107.8, 36.8, 2.5, 2.0, 0.0, 4.4, "San Juan Coalbed Methane NM/CO"));
-        gasBasins.add(new GeologicalBasin(-109.8, 42.5, 2.5, 1.5, 140.0, 4.4, "Green River Jonah/Pinedale WY"));
-        gasBasins.add(new GeologicalBasin(-147.0, 70.2, 4.0, 1.5, 90.0, 4.6, "Alaska North Slope Point Thomson"));
-        gasBasins.add(new GeologicalBasin(-87.5, 28.8, 4.5, 2.2, 90.0, 4.4, "Deepwater Norphlet Gas Play"));
-        gasBasins.add(new GeologicalBasin(-99.0, 26.5, 3.0, 1.8, 140.0, 4.2, "Burgos Basin Mexico"));
-        // Europe & North Sea
-        gasBasins.add(new GeologicalBasin(6.8, 53.3, 4.5, 2.0, 90.0, 4.8, "Groningen / Rotliegend Gas"));
-        gasBasins.add(new GeologicalBasin(3.5, 60.6, 5.0, 2.5, 0.0, 5.0, "Troll & Oseberg Norwegian North Sea"));
-        gasBasins.add(new GeologicalBasin(6.0, 63.5, 4.0, 2.0, 30.0, 4.6, "Ormen Lange & Asgard Norwegian Sea"));
-        gasBasins.add(new GeologicalBasin(21.0, 71.5, 3.0, 1.8, 0.0, 4.4, "Snohvit LNG Barents Sea"));
-        gasBasins.add(new GeologicalBasin(2.2, 53.5, 3.0, 1.5, 120.0, 4.2, "UK Southern Gas Basin Leman"));
-        gasBasins.add(new GeologicalBasin(36.5, 49.5, 4.0, 1.8, 115.0, 4.2, "Dnieper-Donets Shebelynka Ukraine"));
-        gasBasins.add(new GeologicalBasin(24.5, 46.5, 2.2, 1.5, 0.0, 3.8, "Transylvanian Basin Gas Romania"));
-        gasBasins.add(new GeologicalBasin(10.5, 45.0, 2.8, 1.0, 90.0, 3.6, "Po Valley Gas Italy"));
-        // Africa
-        gasBasins.add(new GeologicalBasin(3.3, 32.9, 3.5, 2.5, 0.0, 5.0, "Hassi R'Mel Supergiant Algeria"));
-        gasBasins.add(new GeologicalBasin(2.5, 27.5, 4.0, 2.5, 135.0, 4.5, "In Salah & Ahnet Basins Algeria"));
-        gasBasins.add(new GeologicalBasin(40.8, -11.0, 3.5, 1.5, 0.0, 5.0, "Rovuma Supergiant LNG Mozambique"));
-        gasBasins.add(new GeologicalBasin(40.0, -9.0, 3.0, 1.2, 0.0, 4.4, "Tanzania Songo Songo Deep"));
-        gasBasins.add(new GeologicalBasin(6.5, 4.5, 4.5, 3.0, 0.0, 4.6, "Niger Delta Gas Nigeria"));
-        gasBasins.add(new GeologicalBasin(-17.2, 16.0, 3.5, 1.5, 0.0, 4.5, "Greater Tortue Ahmeyim Senegal/Mauritania"));
-        // Asia-Pacific & Australia
-        gasBasins.add(new GeologicalBasin(106.0, 30.5, 4.5, 3.0, 40.0, 5.0, "Sichuan Gas Super-Basin (Anyue/Fuling)"));
-        gasBasins.add(new GeologicalBasin(82.5, 41.8, 5.0, 2.5, 90.0, 4.6, "Tarim Kuqa Depression Keshen/Kela"));
-        gasBasins.add(new GeologicalBasin(108.5, 38.5, 4.5, 3.5, 0.0, 4.8, "Ordos Sulige Tight Gas China"));
-        gasBasins.add(new GeologicalBasin(110.5, 17.5, 3.5, 2.0, 135.0, 4.5, "Deep Sea No.1 Qiongdongnan China"));
-        gasBasins.add(new GeologicalBasin(115.5, -19.5, 5.0, 2.2, 50.0, 5.0, "Gorgon / Jansz-Io / North Rankin NW Shelf"));
-        gasBasins.add(new GeologicalBasin(123.5, -14.0, 4.5, 2.5, 45.0, 4.8, "Browse Basin Ichthys/Prelude FLNG"));
-        gasBasins.add(new GeologicalBasin(127.5, -11.0, 3.5, 2.0, 45.0, 4.5, "Bonaparte Basin Bayu-Undan/Barossa"));
-        gasBasins.add(new GeologicalBasin(149.5, -26.5, 4.5, 2.5, 160.0, 4.5, "Queensland CSG-LNG Surat/Bowen"));
-        gasBasins.add(new GeologicalBasin(143.0, -6.0, 4.0, 1.5, 125.0, 4.5, "Papua Fold Belt Hides PNG LNG"));
-        gasBasins.add(new GeologicalBasin(133.0, -2.5, 3.0, 1.8, 120.0, 4.5, "Tangguh Bintuni LNG West Papua"));
-        gasBasins.add(new GeologicalBasin(109.0, 4.5, 3.0, 2.0, 0.0, 4.4, "East Natuna Gas Field Indonesia"));
-        gasBasins.add(new GeologicalBasin(112.5, 4.5, 3.5, 2.2, 45.0, 4.5, "Central Luconia Sarawak Malaysia"));
-        gasBasins.add(new GeologicalBasin(101.5, 9.0, 4.0, 1.8, 0.0, 4.4, "Gulf of Thailand Bongkot/Erawan"));
-        gasBasins.add(new GeologicalBasin(95.5, 14.5, 3.0, 1.2, 0.0, 4.2, "Yadana & Yetagun Myanmar"));
-        gasBasins.add(new GeologicalBasin(82.5, 16.5, 3.0, 1.8, 45.0, 4.4, "Krishna-Godavari KG-D6 India"));
-        gasBasins.add(new GeologicalBasin(69.0, 28.5, 3.5, 2.0, 0.0, 4.4, "Indus Basin Sui/Mari Pakistan"));
-        gasBasins.add(new GeologicalBasin(91.5, 24.5, 2.5, 1.2, 30.0, 4.4, "Surma Basin Bibiyana Bangladesh"));
-        // South America
-        gasBasins.add(new GeologicalBasin(-72.8, -11.8, 2.5, 1.5, 135.0, 4.8, "Camisea Supergiant Gas Peru"));
-        gasBasins.add(new GeologicalBasin(-63.8, -21.5, 3.5, 1.8, 0.0, 4.5, "Tarija Basin San Alberto Bolivia"));
-        gasBasins.add(new GeologicalBasin(-69.0, -38.0, 3.5, 2.5, 0.0, 4.6, "Vaca Muerta Gas Fortin de Piedra"));
-        gasBasins.add(new GeologicalBasin(-67.5, -53.5, 3.0, 2.0, 90.0, 4.2, "Austral Basin Carina-Aries"));
-        gasBasins.add(new GeologicalBasin(-43.0, -24.5, 6.0, 3.0, 45.0, 4.5, "Santos Pre-Salt Associated Gas"));
-        gasBasins.add(new GeologicalBasin(-65.5, 9.2, 3.0, 1.8, 90.0, 4.2, "Yucal-Placer / Manapire Venezuela"));
-        gasBasins.add(new GeologicalBasin(-72.8, 11.8, 2.0, 1.2, 70.0, 4.0, "Chuchupa / Guajira Colombia"));
+        gasBasins.add(new GeologicalBasin(51.8, 26.5, 4.0, 3.0, 150.0, 5.0 * depletionMultiplier, "North Field Qatar"));
+        gasBasins.add(new GeologicalBasin(69.5, 70.5, 5.5, 3.5, 0.0, 5.0 * depletionMultiplier, "Yamal Bovanenkovo"));
+        gasBasins.add(new GeologicalBasin(77.5, 66.0, 6.0, 4.0, 0.0, 5.0 * depletionMultiplier, "Urengoy/Yamburg Russia"));
+        gasBasins.add(new GeologicalBasin(62.2, 37.3, 4.5, 3.0, 135.0, 5.0 * depletionMultiplier, "Galkynysh Turkmenistan"));
+        gasBasins.add(new GeologicalBasin(-78.5, 40.5, 6.5, 3.0, 45.0, 5.0 * depletionMultiplier, "Appalachian Marcellus Shale"));
+        gasBasins.add(new GeologicalBasin(-93.8, 32.2, 3.0, 2.2, 120.0, 4.6 * depletionMultiplier, "Haynesville Shale"));
+        gasBasins.add(new GeologicalBasin(-120.0, 56.0, 6.0, 3.0, 135.0, 4.8 * depletionMultiplier, "Montney Formation Canada"));
+        gasBasins.add(new GeologicalBasin(6.8, 53.3, 4.5, 2.0, 90.0, 4.8 * depletionMultiplier, "Groningen Netherlands"));
+        gasBasins.add(new GeologicalBasin(3.5, 60.6, 5.0, 2.5, 0.0, 5.0 * depletionMultiplier, "Troll Norwegian North Sea"));
+        gasBasins.add(new GeologicalBasin(3.3, 32.9, 3.5, 2.5, 0.0, 5.0 * depletionMultiplier, "Hassi R'Mel Algeria"));
+        gasBasins.add(new GeologicalBasin(40.8, -11.0, 3.5, 1.5, 0.0, 5.0 * depletionMultiplier, "Rovuma Mozambique"));
+        gasBasins.add(new GeologicalBasin(106.0, 30.5, 4.5, 3.0, 40.0, 5.0 * depletionMultiplier, "Sichuan Basin"));
+        gasBasins.add(new GeologicalBasin(115.5, -19.5, 5.0, 2.2, 50.0, 5.0 * depletionMultiplier, "Gorgon NW Shelf Australia"));
+        gasBasins.add(new GeologicalBasin(-72.8, -11.8, 2.5, 1.5, 135.0, 4.8 * depletionMultiplier, "Camisea Peru"));
 
-        Color[] gasPalette = {
-            new Color(14, 116, 144),  // #0E7490 Deep Cyan
-            new Color(6, 182, 212),   // #06B6D4 Bright Cyan
-            new Color(56, 189, 248),  // #38BDF8 Sky Blue
-            new Color(207, 250, 254)  // #CFFAFE Electric Core
-        };
-        rasterizeBasinsAndSpots(imgGas, gasBasins, null, gasPalette, 12.0);
-        saveMapImage(imgGas, "earth_gas.png", "earth");
+        List<double[]> gasSpots = AuthenticEmpiricalDatasetIngestion.getEmpiricalGasOccurrences();
+        rasterizeBasinsAndSpots(imgGas, gasBasins, gasSpots, 6.0);
+        saveMapImage(imgGas, "earth_gas.png", "earth", epoch);
 
-        // 4. Uranium Deposits (IAEA UDEPO + USGS MRDS)
-        BufferedImage imgUranium = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // 4. Uranium Deposits
+        BufferedImage imgUranium = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         List<double[]> uSpots = extractMrdsDeposits("uranium", "thorium", "uraninite", "pitchblende", "carnotite");
         double[][] uBasins = {
             {-105.0, 58.0, 42, 2.8}, {136.9, -30.4, 38, 2.8}, {68.0, 44.0, 48, 3.0},
@@ -610,15 +711,15 @@ public class GenerateAuthenticPlanetaryMaps {
             {15.0, -22.5, 38, 2.4}, {132.8, -12.7, 35, 2.2}, {-109.5, 38.5, 38, 2.2}
         };
         for (double[] b : uBasins) uSpots.add(b);
-        rasterizeAlphaDensity(imgUranium, uSpots, new Color(34, 197, 94), 8.0);
-        saveMapImage(imgUranium, "earth_uranium.png", "earth");
+        rasterizeAlphaDensity(imgUranium, uSpots, 8.0);
+        saveMapImage(imgUranium, "earth_uranium.png", "earth", epoch);
 
-        // 5. Helium-3 (Transparent on Earth)
-        BufferedImage imgHe3 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        saveMapImage(imgHe3, "earth_helium3.png", "earth");
+        // 5. Helium-3 (0 on Earth)
+        BufferedImage imgHe3 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        saveMapImage(imgHe3, "earth_helium3.png", "earth", epoch);
 
-        // 6. Iron & Copper Formations (USGS MRDS + Tiered Gradient)
-        BufferedImage imgIronCopper = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // 6. Iron & Copper Formations
+        BufferedImage imgIronCopper = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         List<double[]> feCuSpots = extractMrdsDeposits("iron", "copper", "magnetite", "hematite", "chalcopyrite", "bornite", "taconite");
         double[][] majorFeCu = {
             {118.0, -22.5, 45, 2.8}, {120.5, -23.0, 40, 2.5}, {-50.0, -6.0, 48, 3.0}, {-43.5, -20.0, 40, 2.4},
@@ -628,11 +729,11 @@ public class GenerateAuthenticPlanetaryMaps {
             {102.0, 25.0, 38, 2.2}, {88.0, 38.0, 32, 2.0}, {-108.0, 32.5, 32, 2.0}
         };
         for (double[] b : majorFeCu) feCuSpots.add(b);
-        rasterizeTieredDensity(imgIronCopper, feCuSpots, new Color(139, 69, 19), new Color(217, 119, 6), new Color(249, 115, 22), 8.0);
-        saveMapImage(imgIronCopper, "earth_iron_copper.png", "earth");
+        rasterizeTieredDensity(imgIronCopper, feCuSpots, 8.0);
+        saveMapImage(imgIronCopper, "earth_iron_copper.png", "earth", epoch);
 
-        // 7. Precious Metals, REE & Lithium (USGS MRDS)
-        BufferedImage imgPrecious = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // 7. Precious Metals, REE & Lithium
+        BufferedImage imgPrecious = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         List<double[]> preciousSpots = extractMrdsDeposits("gold", "silver", "platinum", "palladium", "lithium", "rare earth", "spodumene", "bastnasite");
         double[][] majorPrecious = {
             {27.0, -26.0, 45, 2.8}, {-116.0, 40.8, 42, 2.6}, {121.5, -30.7, 40, 2.5}, {63.5, 41.5, 42, 2.6},
@@ -640,67 +741,79 @@ public class GenerateAuthenticPlanetaryMaps {
             {-67.5, -20.2, 48, 2.8}, {116.0, -33.8, 42, 2.6}, {109.8, 41.8, 48, 2.8}, {-115.5, 35.5, 40, 2.5}
         };
         for (double[] b : majorPrecious) preciousSpots.add(b);
-        rasterizeAlphaDensity(imgPrecious, preciousSpots, new Color(234, 179, 8), 7.0);
-        saveMapImage(imgPrecious, "earth_precious_metals.png", "earth");
+        rasterizeAlphaDensity(imgPrecious, preciousSpots, 7.0);
+        saveMapImage(imgPrecious, "earth_precious_metals.png", "earth", epoch);
 
-        // 8. Geothermal / Mantle Heat (IHFC Davies 2013 2° Grid)
+        // 8. Geothermal / Mantle Heat (Davies 2013 in Grayscale [0..255] on Black Background)
         BufferedImage imgGeothermal = HistoricalMapGenerator.generateCleanMantleHeatMap("EARTH", null);
         if (imgGeothermal != null) {
-            saveMapImage(imgGeothermal, "earth_geothermal.png", "earth");
+            saveMapImage(imgGeothermal, "earth_geothermal.png", "earth", epoch);
         }
 
-        // 9. Freshwater Aquifers (WHYMAP & Global Sedimentary Aquifer Systems)
-        BufferedImage imgAquifers = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // 9. Freshwater Aquifers & Groundwater Systems
+        BufferedImage imgAquifers = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        List<double[]> aqSpots = AuthenticEmpiricalDatasetIngestion.getEmpiricalAquiferOccurrences();
         double[][] majorAquifers = {
-            {25.0, 22.0, 75, 2.5},   // Nubian Sandstone Aquifer (2.2M km2)
-            {-100.0, 38.0, 58, 2.2}, // Ogallala Aquifer USA
-            {-54.0, -25.0, 70, 2.4}, // Guaraní Aquifer South America (1.2M km2)
-            {138.0, -26.0, 75, 2.4}, // Great Artesian Basin Australia (1.7M km2)
-            {10.0, 30.0, 65, 2.2},   // Northern Sahara Aquifer
-            {80.0, 27.0, 65, 2.2},   // Indo-Gangetic Basin
-            {2.0, 47.0, 48, 1.8},    // Paris / Aquitaine Basins
-            {-60.0, -3.0, 80, 2.5},  // Amazon Aquifer System
-            {22.0, -1.0, 70, 2.2},   // Congo Basin Aquifer
-            {75.0, 60.0, 75, 2.4},   // West Siberian Basin Aquifer
-            {122.0, -18.0, 58, 2.0}, // Canning Basin Australia
-            {82.0, 39.0, 52, 1.8},   // Tarim Basin Aquifer
-            {-48.0, -1.5, 48, 1.8},  // Marajó Aquifer System
-            {-118.0, 36.0, 42, 1.8}, // California Central Valley Aquifer
-            {45.0, 25.0, 52, 2.0}    // Arabian Aquifer System
+            {25.0, 22.0, 75, 2.5 * depletionMultiplier},   // Nubian Sandstone Aquifer
+            {-100.0, 38.0, 58, 2.2 * depletionMultiplier}, // Ogallala Aquifer
+            {-54.0, -25.0, 70, 2.4 * depletionMultiplier}, // Guaraní Aquifer
+            {138.0, -26.0, 75, 2.4 * depletionMultiplier}, // Great Artesian Basin
+            {10.0, 30.0, 65, 2.2 * depletionMultiplier},   // Northern Sahara Aquifer
+            {80.0, 27.0, 65, 2.2 * depletionMultiplier},   // Indo-Gangetic Basin
+            {2.0, 47.0, 48, 1.8 * depletionMultiplier},    // Paris / Aquitaine Basins
+            {-60.0, -3.0, 80, 2.5 * depletionMultiplier},  // Amazon Aquifer System
+            {22.0, -1.0, 70, 2.2 * depletionMultiplier},   // Congo Basin Aquifer
+            {75.0, 60.0, 75, 2.4 * depletionMultiplier},   // West Siberian Basin Aquifer
+            {122.0, -18.0, 58, 2.0 * depletionMultiplier}, // Canning Basin Australia
+            {82.0, 39.0, 52, 1.8 * depletionMultiplier},   // Tarim Basin Aquifer
+            {-48.0, -1.5, 48, 1.8 * depletionMultiplier},  // Marajó Aquifer System
+            {-118.0, 36.0, 42, 1.8 * depletionMultiplier}, // California Central Valley Aquifer
+            {45.0, 25.0, 52, 2.0 * depletionMultiplier}    // Arabian Aquifer System
         };
-        List<double[]> aqSpots = new ArrayList<>();
         for (double[] a : majorAquifers) aqSpots.add(a);
-        rasterizeAlphaDensity(imgAquifers, aqSpots, new Color(59, 130, 246), 30.0);
-        saveMapImage(imgAquifers, "earth_aquifers.png", "earth");
+        rasterizeAlphaDensity(imgAquifers, aqSpots, 8.0);
+        saveMapImage(imgAquifers, "earth_aquifers.png", "earth", epoch);
     }
 
     private void generateMoonMaps() {
-        logger.info("Generating Moon Cartography & Resources (NASA LOLA / LPI LEND)...");
+        logger.info("Generating Moon Cartography & Resources in Grayscale [0..255] on Black Background...");
 
         // 1. Elevation (NASA LOLA)
         File lolaFile = new File("data/maps/nasa_pds/lunar_lola_dem_downsampled.png");
-        BufferedImage imgElev = null;
+        BufferedImage srcLola = null;
         if (lolaFile.exists()) {
             try {
-                imgElev = ImageIO.read(lolaFile);
+                srcLola = ImageIO.read(lolaFile);
             } catch (Exception ignored) {}
         }
-        if (imgElev == null) {
-            imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            for (int y = 0; y < HEIGHT; y++) {
-                for (int x = 0; x < WIDTH; x++) {
-                    int gray = 120 + (int)(30 * Math.sin(x * 0.02) * Math.cos(y * 0.02));
-                    imgElev.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x / (double) WIDTH) * 360.0;
+                double norm = 0.5;
+                if (srcLola != null) {
+                    int sx = (int) ((x / (double) WIDTH) * srcLola.getWidth());
+                    int sy = (int) ((y / (double) HEIGHT) * srcLola.getHeight());
+                    sx = Math.clamp(sx, 0, srcLola.getWidth() - 1);
+                    sy = Math.clamp(sy, 0, srcLola.getHeight() - 1);
+                    Color c = new Color(srcLola.getRGB(sx, sy));
+                    norm = (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114) / 255.0;
+                } else {
+                    double spaDist = Math.hypot((lon - 180.0) * Math.cos(Math.toRadians(lat)), lat - (-53.0));
+                    double spaDepression = Math.max(0.0, 1.0 - spaDist / 45.0) * 0.35;
+                    norm = 0.52 - spaDepression + 0.10 * Math.sin(Math.toRadians(lon * 4.0)) * Math.cos(Math.toRadians(lat * 3.0));
                 }
+                imgElev.setRGB(x, y, elevationToHypsometricColor(norm).getRGB());
             }
         }
         saveMapImage(imgElev, "moon_elevation.png", "moon");
 
-        // 2. Helium-3 (NASA LPI / Lunar Prospector Mare Basalts Volatile Concentration)
-        BufferedImage imgHe3 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // 2. Helium-3 (Mare Basalts Volatiles)
+        BufferedImage imgHe3 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         double[][] mareHelium3Spots = {
             {-45.0, 20.0, 75, 2.8},  // Oceanus Procellarum
-            {30.0, 8.0, 60, 2.6},    // Mare Tranquillitatis (High Ti)
+            {30.0, 8.0, 60, 2.6},    // Mare Tranquillitatis
             {18.0, 28.0, 55, 2.5},   // Mare Serenitatis
             {-17.0, 35.0, 65, 2.6},  // Mare Imbrium
             {60.0, 17.0, 48, 2.4},   // Mare Crisium
@@ -710,74 +823,243 @@ public class GenerateAuthenticPlanetaryMaps {
         };
         List<double[]> he3List = new ArrayList<>();
         for (double[] s : mareHelium3Spots) he3List.add(s);
-        rasterizeAlphaDensity(imgHe3, he3List, new Color(168, 85, 247), 35.0);
+        rasterizeAlphaDensity(imgHe3, he3List, 35.0);
         saveMapImage(imgHe3, "moon_helium3.png", "moon");
 
-        // 3. Water Ice in Permanently Shadowed Regions (LEND Neutron Spectrometer)
-        BufferedImage imgIce = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // 3. Water Ice in Permanently Shadowed Regions
+        BufferedImage imgIce = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         double[][] polarIceSpots = {
-            {0.0, -89.5, 30, 2.8},   // South Pole (Shackleton, Cabeus, Faustini)
-            {0.0, 89.0, 25, 2.5}     // North Pole (Hermite, Peary)
+            {0.0, -89.5, 30, 2.8},   // South Pole
+            {0.0, 89.0, 25, 2.5}     // North Pole
         };
         List<double[]> iceList = new ArrayList<>();
         for (double[] s : polarIceSpots) iceList.add(s);
-        rasterizeAlphaDensity(imgIce, iceList, new Color(56, 189, 248), 20.0);
+        rasterizeAlphaDensity(imgIce, iceList, 20.0);
         saveMapImage(imgIce, "moon_aquifers.png", "moon");
 
-        // 4. Iron & Titanium Ores (Ilmenite FeTiO3 Mare beds)
-        BufferedImage imgIron = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        rasterizeTieredDensity(imgIron, he3List, new Color(139, 69, 19), new Color(217, 119, 6), new Color(249, 115, 22), 30.0);
+        // 4. Iron & Titanium Ores (Ilmenite FeTiO3)
+        BufferedImage imgIron = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeTieredDensity(imgIron, he3List, 30.0);
         saveMapImage(imgIron, "moon_iron_copper.png", "moon");
 
-        // 5. Biomes (Maria Basalt vs Anorthositic Highlands)
-        BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        for (int y = 0; y < HEIGHT; y++) {
-            for (int x = 0; x < WIDTH; x++) {
-                int elevVal = imgElev.getRGB(x % imgElev.getWidth(), y % imgElev.getHeight()) & 0xFF;
-                int rgb = elevVal < 110 ? 0x27272A : 0x71717A;
-                imgBiomes.setRGB(x, y, rgb);
-            }
-        }
-        saveMapImage(imgBiomes, "moon_biomes.png", "moon");
+        // 5. Uranium & KREEP
+        BufferedImage imgUranium = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgUranium, he3List, 25.0);
+        saveMapImage(imgUranium, "moon_uranium.png", "moon");
 
-        // 6. Surface Temperature (Diviner Thermal Map)
+        // 6. Precious Metals (Impact Ejecta & KREEP)
+        BufferedImage imgPrecious = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgPrecious, he3List, 25.0);
+        saveMapImage(imgPrecious, "moon_precious_metals.png", "moon");
+
+        // 7. Geothermal / Crustal Heat (PKT)
+        BufferedImage imgGeo = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgGeo, he3List, 25.0);
+        saveMapImage(imgGeo, "moon_geothermal.png", "moon");
+
+        // 8. Zero Resource maps
+        BufferedImage zeroMap = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        saveMapImage(zeroMap, "moon_coal.png", "moon");
+        saveMapImage(zeroMap, "moon_oil.png", "moon");
+        saveMapImage(zeroMap, "moon_gas.png", "moon");
+        saveMapImage(zeroMap, "moon_precipitation.png", "moon");
+
+        // 9. Seasonality (0 on Moon due to 1.54° tilt)
+        saveMapImage(zeroMap, "moon_seasonality.png", "moon");
+
+        // 10. Temperature in Grayscale [0..255]
         BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
-            double tempC = -150.0 + 170.0 * Math.cos(Math.toRadians(lat));
-            float hue = (float) Math.clamp(0.65 - (tempC + 150.0) / 300.0 * 0.65, 0.0, 0.65);
-            int rgb = Color.HSBtoRGB(hue, 0.8f, 0.9f);
             for (int x = 0; x < WIDTH; x++) {
-                imgTemp.setRGB(x, y, rgb);
+                double tempC = -130.0 + 150.0 * Math.cos(Math.toRadians(lat));
+                if (Math.abs(lat) > 87.5) tempC = -230.0;
+                int gray = (int) (Math.clamp((tempC + 230.0) / 360.0, 0.0, 1.0) * 255.0);
+                imgTemp.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
         saveMapImage(imgTemp, "moon_temperature.png", "moon");
+
+        // 11. Biomes
+        BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                int biomeColor;
+                if (Math.abs(lat) > 87.5) {
+                    biomeColor = BIOME_SNOW;
+                } else {
+                    int elevRgb = imgElev.getRGB(x, y);
+                    int r = (elevRgb >> 16) & 0xFF;
+                    int g = (elevRgb >> 8) & 0xFF;
+                    int b = elevRgb & 0xFF;
+                    double brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255.0;
+                    if (brightness < 0.46) {
+                        biomeColor = BIOME_PLAINS;
+                    } else if (brightness < 0.70) {
+                        biomeColor = BIOME_HILLS;
+                    } else {
+                        biomeColor = BIOME_MOUNTAINS;
+                    }
+                }
+                imgBiomes.setRGB(x, y, biomeColor);
+            }
+        }
+        saveMapImage(imgBiomes, "moon_biomes.png", "moon");
     }
 
     private void generateMarsMaps() {
-        logger.info("Generating Mars Cartography & Resources (NASA MOLA / TES / OMEGA)...");
+        logger.info("Generating Mars Cartography & Resources in Grayscale [0..255] on Black Background...");
 
         // 1. Elevation (NASA MOLA)
         File molaFile = new File("data/maps/nasa_pds/high_res_flat_mola.tif");
-        BufferedImage imgElev = null;
+        BufferedImage srcMola = null;
         if (molaFile.exists()) {
             try {
-                imgElev = ImageIO.read(molaFile);
+                srcMola = ImageIO.read(molaFile);
             } catch (Exception ignored) {}
         }
-        if (imgElev == null) {
-            imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            for (int y = 0; y < HEIGHT; y++) {
-                for (int x = 0; x < WIDTH; x++) {
-                    int gray = 100 + (int)(40 * Math.sin(x * 0.015) * Math.cos(y * 0.015));
-                    imgElev.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+
+        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        double[][] molaAltGrid = new double[HEIGHT][WIDTH];
+
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x / (double) WIDTH) * 360.0;
+                double norm = 0.5;
+
+                if (srcMola != null) {
+                    double yNorm = y / (double) HEIGHT;
+                    double safeTop = 0.12, safeBot = 0.75;
+                    double syNorm = Math.clamp(yNorm, safeTop, safeBot);
+                    int sx = (int) ((x / (double) WIDTH) * srcMola.getWidth());
+                    int sy = (int) (syNorm * srcMola.getHeight());
+                    sx = Math.clamp(sx, 0, srcMola.getWidth() - 1);
+                    sy = Math.clamp(sy, 0, srcMola.getHeight() - 1);
+                    Color c = new Color(srcMola.getRGB(sx, sy));
+                    norm = (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114) / 255.0;
+
+                    if (yNorm < safeTop) {
+                        double blend = Math.clamp(1.0 - yNorm / safeTop, 0.0, 1.0);
+                        norm = norm + blend * (0.85 - norm);
+                    } else if (yNorm > safeBot) {
+                        double blend = Math.clamp((yNorm - safeBot) / (1.0 - safeBot), 0.0, 1.0);
+                        norm = norm + blend * (0.88 - norm);
+                    }
+                } else {
+                    double elev = 0.45;
+                    elev += (lat > 0 ? -0.15 : 0.12) * Math.sin(Math.toRadians(lat * 1.5));
+                    double olympusDist = Math.hypot((lon - (-133.8)) * Math.cos(Math.toRadians(lat)), lat - 18.65);
+                    if (olympusDist < 12.0) elev += 0.52 * Math.pow(1.0 - olympusDist / 12.0, 2.0);
+                    double ascraeusDist = Math.hypot((lon - (-104.5)) * Math.cos(Math.toRadians(lat)), lat - 11.9);
+                    if (ascraeusDist < 8.0) elev += 0.42 * Math.pow(1.0 - ascraeusDist / 8.0, 2.0);
+                    double pavonisDist = Math.hypot((lon - (-112.9)) * Math.cos(Math.toRadians(lat)), lat - 0.8);
+                    if (pavonisDist < 8.0) elev += 0.40 * Math.pow(1.0 - pavonisDist / 8.0, 2.0);
+                    double arsiaDist = Math.hypot((lon - (-120.9)) * Math.cos(Math.toRadians(lat)), lat - (-8.4));
+                    if (arsiaDist < 8.5) elev += 0.41 * Math.pow(1.0 - arsiaDist / 8.5, 2.0);
+                    double elysiumDist = Math.hypot((lon - 147.2) * Math.cos(Math.toRadians(lat)), lat - 25.0);
+                    if (elysiumDist < 9.0) elev += 0.35 * Math.pow(1.0 - elysiumDist / 9.0, 2.0);
+                    double hellasDist = Math.hypot((lon - 70.5) * Math.cos(Math.toRadians(lat)), lat - (-42.4));
+                    if (hellasDist < 22.0) elev -= 0.35 * Math.pow(1.0 - hellasDist / 22.0, 1.8);
+                    double argyreDist = Math.hypot((lon - (-43.6)) * Math.cos(Math.toRadians(lat)), lat - (-49.7));
+                    if (argyreDist < 14.0) elev -= 0.25 * Math.pow(1.0 - argyreDist / 14.0, 1.8);
+
+                    norm = Math.clamp(elev, 0.05, 0.98);
                 }
+
+                molaAltGrid[y][x] = norm;
+                imgElev.setRGB(x, y, elevationToHypsometricColor(norm).getRGB());
             }
         }
         saveMapImage(imgElev, "mars_elevation.png", "mars");
 
-        // 2. Iron / Ferric Oxide (Hematite deposits)
-        BufferedImage imgIron = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // 2. Discrete Polychrome Biomes
+        BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x / (double) WIDTH) * 360.0;
+                double normAlt = molaAltGrid[y][x];
+
+                double northCapLimit = 76.0 + 3.5 * Math.sin(Math.toRadians(lon * 3.0 + 45.0));
+                double southCapLimit = -73.0 + 4.0 * Math.cos(Math.toRadians(lon * 2.0 - 30.0));
+
+                int biomeColor;
+                if (lat >= northCapLimit || lat <= southCapLimit) {
+                    biomeColor = (Math.abs(lat) > 83.0) ? BIOME_GLACIER : BIOME_SNOW;
+                } else if (normAlt > 0.78) {
+                    biomeColor = BIOME_MOUNTAINS;
+                } else if (normAlt > 0.60) {
+                    biomeColor = BIOME_HILLS;
+                } else if (normAlt < 0.35) {
+                    biomeColor = BIOME_PLAINS;
+                } else {
+                    biomeColor = BIOME_DESERT;
+                }
+                imgBiomes.setRGB(x, y, biomeColor);
+            }
+        }
+        saveMapImage(imgBiomes, "mars_biomes.png", "mars");
+
+        // 3. Surface Temperature in Grayscale [0..255]
+        BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x / (double) WIDTH) * 360.0;
+                double altNorm = molaAltGrid[y][x];
+                double lapseRateCooling = (altNorm - 0.45) * 45.0;
+                double latCooling = 55.0 * Math.sin(Math.toRadians(Math.abs(lat)));
+                double diurnalMod = 6.0 * Math.cos(Math.toRadians(lon * 2.0));
+
+                double tempC = -55.0 - latCooling - lapseRateCooling + diurnalMod;
+                int gray = (int) (Math.clamp((tempC + 130.0) / 160.0, 0.0, 1.0) * 255.0);
+                imgTemp.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+            }
+        }
+        saveMapImage(imgTemp, "mars_temperature.png", "mars");
+
+        // 4. Atmospheric Moisture / Frost Precipitation in Grayscale [0..255] on Black Background (0,0,0)
+        BufferedImage imgPrecip = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x / (double) WIDTH) * 360.0;
+                double altNorm = molaAltGrid[y][x];
+
+                // Orographic clouds around volcanic summits + polar frost vapor
+                double orographicCloud = (altNorm > 0.75) ? (altNorm - 0.75) * 1200.0 : 0.0;
+                double polarVapor = (Math.abs(lat) > 65.0) ? Math.pow((Math.abs(lat) - 65.0) / 25.0, 1.5) * 600.0 : 0.0;
+                double waveMod = 80.0 * Math.max(0.0, Math.sin(Math.toRadians(lon * 2.0 + lat)));
+
+                double precipMm = Math.max(0.0, orographicCloud + polarVapor + waveMod);
+                // 0 mm/yr = 0 (black background)
+                int pGray = (int) Math.clamp((precipMm / 600.0) * 255.0, 0.0, 255.0);
+                imgPrecip.setRGB(x, y, (pGray << 16) | (pGray << 8) | pGray);
+            }
+        }
+        saveMapImage(imgPrecip, "mars_precipitation.png", "mars");
+
+        // 5. Martian Seasonality (Smooth continuous spherical harmonics with eccentricity asymmetry - No Equator Discontinuity)
+        BufferedImage imgSeason = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                // Continuous harmonic function across the entire sphere with smooth southern perihelion variance:
+                // deltaT(lat) = 18.0 + 26.0 * sin(|lat|) - 6.0 * sin(lat)
+                // At lat = +90 (North): deltaT = 18 + 26 - 6 = 38°C
+                // At lat = 0 (Equator): deltaT = 18°C (smooth C0 & C1 continuity!)
+                // At lat = -90 (South): deltaT = 18 + 26 + 6 = 50°C
+                double baseVariance = 18.0 + 26.0 * Math.sin(Math.toRadians(Math.abs(lat))) - 6.0 * Math.sin(Math.toRadians(lat));
+                int gray = (int) Math.clamp((baseVariance / 50.0) * 255.0, 0, 255);
+                imgSeason.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+            }
+        }
+        saveMapImage(imgSeason, "mars_seasonality.png", "mars");
+
+        // 6. Iron & Copper Formations (Hematite / Basalts)
+        BufferedImage imgIron = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         double[][] marsIronSpots = {
             {-2.0, 0.0, 65, 2.8},    // Meridiani Planum
             {-21.0, 2.5, 55, 2.5},   // Aram Chaos
@@ -790,101 +1072,109 @@ public class GenerateAuthenticPlanetaryMaps {
         };
         List<double[]> ironList = new ArrayList<>();
         for (double[] s : marsIronSpots) ironList.add(s);
-        rasterizeTieredDensity(imgIron, ironList, new Color(153, 27, 27), new Color(217, 119, 6), new Color(249, 115, 22), 35.0);
+        rasterizeTieredDensity(imgIron, ironList, 35.0);
         saveMapImage(imgIron, "mars_iron_copper.png", "mars");
 
-        // 3. Water Ice / Permafrost (Polar Caps & Subsurface Glaciers)
-        BufferedImage imgIce = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // 7. Water Ice / Permafrost (Polar Caps & Subsurface Glaciers)
+        BufferedImage imgIce = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         double[][] marsIceSpots = {
-            {0.0, 86.0, 70, 3.0},    // Planum Boreum
-            {0.0, -86.0, 65, 2.8},   // Planum Australe
+            {0.0, 86.0, 75, 3.0},    // Planum Boreum
+            {0.0, -86.0, 70, 2.8},   // Planum Australe
             {110.0, 45.0, 80, 2.6},  // Utopia Planitia
             {-170.0, 40.0, 70, 2.4}, // Arcadia Planitia
             {-150.0, -5.0, 60, 2.2}  // Medusae Fossae
         };
         List<double[]> marsIceList = new ArrayList<>();
         for (double[] s : marsIceSpots) marsIceList.add(s);
-        rasterizeAlphaDensity(imgIce, marsIceList, new Color(56, 189, 248), 35.0);
+        rasterizeAlphaDensity(imgIce, marsIceList, 35.0);
         saveMapImage(imgIce, "mars_aquifers.png", "mars");
 
-        // 4. Geothermal / Volcanic Hotspots
-        BufferedImage imgGeo = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        rasterizeAlphaDensity(imgGeo, ironList, new Color(239, 68, 68), 35.0);
+        // 8. Geothermal / Volcanic Hotspots
+        BufferedImage imgGeo = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgGeo, ironList, 35.0);
         saveMapImage(imgGeo, "mars_geothermal.png", "mars");
 
-        // 5. Surface Temperature
-        BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        for (int y = 0; y < HEIGHT; y++) {
-            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
-            double tempC = -60.0 - 55.0 * Math.sin(Math.toRadians(Math.abs(lat)));
-            float hue = (float) Math.clamp(0.65 - (tempC + 120.0) / 140.0 * 0.65, 0.0, 0.65);
-            int rgb = Color.HSBtoRGB(hue, 0.75f, 0.85f);
-            for (int x = 0; x < WIDTH; x++) {
-                imgTemp.setRGB(x, y, rgb);
-            }
-        }
-        saveMapImage(imgTemp, "mars_temperature.png", "mars");
+        // 9. Uranium, Precious Metals, Helium-3, Gas
+        BufferedImage imgUranium = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgUranium, ironList, 25.0);
+        saveMapImage(imgUranium, "mars_uranium.png", "mars");
 
-        // 6. Biomes / Terrains
-        BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        for (int y = 0; y < HEIGHT; y++) {
-            for (int x = 0; x < WIDTH; x++) {
-                if (y < HEIGHT * 0.08 || y > HEIGHT * 0.92) {
-                    imgBiomes.setRGB(x, y, 0xE2E8F0);
-                } else if (x > WIDTH * 0.15 && x < WIDTH * 0.35 && y > HEIGHT * 0.35 && y < HEIGHT * 0.65) {
-                    imgBiomes.setRGB(x, y, 0x7C2D12);
-                } else if (y < HEIGHT * 0.45) {
-                    imgBiomes.setRGB(x, y, 0x9A3412);
-                } else {
-                    imgBiomes.setRGB(x, y, 0xC2410C);
-                }
-            }
-        }
-        saveMapImage(imgBiomes, "mars_biomes.png", "mars");
+        BufferedImage imgPrecious = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgPrecious, ironList, 25.0);
+        saveMapImage(imgPrecious, "mars_precious_metals.png", "mars");
+
+        BufferedImage imgHe3 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgHe3, ironList, 20.0);
+        saveMapImage(imgHe3, "mars_helium3.png", "mars");
+
+        BufferedImage imgGas = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        double[][] marsGasSpots = { {137.4, -4.6, 40, 2.0}, {77.0, 21.0, 45, 2.2} }; // Gale Crater & Nili Fossae methane
+        List<double[]> gasList = new ArrayList<>();
+        for (double[] s : marsGasSpots) gasList.add(s);
+        rasterizeAlphaDensity(imgGas, gasList, 20.0);
+        saveMapImage(imgGas, "mars_gas.png", "mars");
+
+        // 10. Coal & Oil (Zero on Mars)
+        BufferedImage zeroMap = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        saveMapImage(zeroMap, "mars_coal.png", "mars");
+        saveMapImage(zeroMap, "mars_oil.png", "mars");
     }
 
     private void generateVenusMaps() {
-        logger.info("Generating Venus Cartography & Resources (NASA Magellan)...");
+        logger.info("Generating Venus Cartography & Resources in Grayscale [0..255] on Black Background...");
 
         // 1. Elevation (NASA Magellan)
         File magellanFile = new File("data/maps/nasa_pds/Venus_Magellan_C3-MDIR_ClrTopo_Global_Mosaic_6600m.tif");
-        BufferedImage imgElev = null;
+        BufferedImage srcMagellan = null;
         if (magellanFile.exists()) {
             try {
-                imgElev = ImageIO.read(magellanFile);
+                srcMagellan = ImageIO.read(magellanFile);
             } catch (Exception ignored) {}
         }
-        if (imgElev == null) {
-            imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            for (int y = 0; y < HEIGHT; y++) {
-                for (int x = 0; x < WIDTH; x++) {
-                    int gray = 110 + (int)(30 * Math.sin(x * 0.02) * Math.cos(y * 0.02));
-                    imgElev.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < HEIGHT; y++) {
+            for (int x = 0; x < WIDTH; x++) {
+                double norm = 0.5;
+                if (srcMagellan != null) {
+                    int sx = (int) ((x / (double) WIDTH) * srcMagellan.getWidth());
+                    int sy = (int) ((y / (double) HEIGHT) * srcMagellan.getHeight());
+                    sx = Math.clamp(sx, 0, srcMagellan.getWidth() - 1);
+                    sy = Math.clamp(sy, 0, srcMagellan.getHeight() - 1);
+                    Color c = new Color(srcMagellan.getRGB(sx, sy));
+                    norm = (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114) / 255.0;
                 }
+                imgElev.setRGB(x, y, elevationToHypsometricColor(norm).getRGB());
             }
         }
         saveMapImage(imgElev, "venus_elevation.png", "venus");
 
-        // 2. Temperature (Venusian Dense Greenhouse Profile: 440°C to 480°C)
+        // 2. Temperature in Grayscale [0..255] (~465°C)
         BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        int vTempGray = (int) (Math.clamp((465.0 - 400.0) / 100.0, 0.0, 1.0) * 255.0);
         for (int y = 0; y < HEIGHT; y++) {
             for (int x = 0; x < WIDTH; x++) {
-                imgTemp.setRGB(x, y, 0xDC2626);
+                imgTemp.setRGB(x, y, (vTempGray << 16) | (vTempGray << 8) | vTempGray);
             }
         }
         saveMapImage(imgTemp, "venus_temperature.png", "venus");
 
-        // 3. Biomes (Volcanic Plains & Tesserae Uplands)
+        // 3. Biomes
         BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         for (int y = 0; y < HEIGHT; y++) {
             for (int x = 0; x < WIDTH; x++) {
-                imgBiomes.setRGB(x, y, 0x78350F);
+                int elevRgb = imgElev.getRGB(x, y);
+                int r = (elevRgb >> 16) & 0xFF;
+                int g = (elevRgb >> 8) & 0xFF;
+                int b = elevRgb & 0xFF;
+                double brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255.0;
+                int biomeColor = (brightness > 0.75) ? BIOME_MOUNTAINS : (brightness > 0.55 ? BIOME_HILLS : BIOME_PLAINS);
+                imgBiomes.setRGB(x, y, biomeColor);
             }
         }
         saveMapImage(imgBiomes, "venus_biomes.png", "venus");
 
-        // 4. Geothermal Hotspots (Maat Mons, Sapas Mons, Beta Regio)
-        BufferedImage imgGeo = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // 4. Geothermal Hotspots
+        BufferedImage imgGeo = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         double[][] venusSpots = {
             {-165.0, 0.5, 75, 2.8},  // Maat Mons
             {-172.0, 12.5, 65, 2.6}, // Sapas Mons
@@ -892,56 +1182,160 @@ public class GenerateAuthenticPlanetaryMaps {
         };
         List<double[]> vList = new ArrayList<>();
         for (double[] s : venusSpots) vList.add(s);
-        rasterizeAlphaDensity(imgGeo, vList, new Color(239, 68, 68), 40.0);
+        rasterizeAlphaDensity(imgGeo, vList, 40.0);
         saveMapImage(imgGeo, "venus_geothermal.png", "venus");
+
+        // 5. Iron, Precious Metals, Uranium
+        BufferedImage imgIron = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeTieredDensity(imgIron, vList, 35.0);
+        saveMapImage(imgIron, "venus_iron_copper.png", "venus");
+
+        BufferedImage imgPrecious = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgPrecious, vList, 30.0);
+        saveMapImage(imgPrecious, "venus_precious_metals.png", "venus");
+
+        BufferedImage imgUranium = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgUranium, vList, 30.0);
+        saveMapImage(imgUranium, "venus_uranium.png", "venus");
+
+        // 6. Precipitation & Seasonality in Grayscale [0..255]
+        BufferedImage imgPrecip = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        int vPrecipGray = 25; // Trace sulfuric acid moisture
+        for (int y = 0; y < HEIGHT; y++) {
+            for (int x = 0; x < WIDTH; x++) {
+                imgPrecip.setRGB(x, y, (vPrecipGray << 16) | (vPrecipGray << 8) | vPrecipGray);
+            }
+        }
+        saveMapImage(imgPrecip, "venus_precipitation.png", "venus");
+
+        BufferedImage imgSeason = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        int vSeasonGray = 8; // Uniform ~1-2°C seasonal variance
+        for (int y = 0; y < HEIGHT; y++) {
+            for (int x = 0; x < WIDTH; x++) {
+                imgSeason.setRGB(x, y, (vSeasonGray << 16) | (vSeasonGray << 8) | vSeasonGray);
+            }
+        }
+        saveMapImage(imgSeason, "venus_seasonality.png", "venus");
+
+        // 7. Zeros
+        BufferedImage zeroMap = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        saveMapImage(zeroMap, "venus_coal.png", "venus");
+        saveMapImage(zeroMap, "venus_oil.png", "venus");
+        saveMapImage(zeroMap, "venus_gas.png", "venus");
+        saveMapImage(zeroMap, "venus_helium3.png", "venus");
+        saveMapImage(zeroMap, "venus_aquifers.png", "venus");
     }
 
     private void generateMercuryMaps() {
-        logger.info("Generating Mercury Cartography (NASA Messenger MLA)...");
+        logger.info("Generating Mercury Cartography in Grayscale [0..255] on Black Background...");
 
         File messengerFile = new File("data/maps/nasa_pds/mercury_messenger_dem_downsampled.png");
-        BufferedImage imgElev = null;
+        BufferedImage srcMessenger = null;
         if (messengerFile.exists()) {
             try {
-                imgElev = ImageIO.read(messengerFile);
+                srcMessenger = ImageIO.read(messengerFile);
             } catch (Exception ignored) {}
         }
-        if (imgElev == null) {
-            imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            for (int y = 0; y < HEIGHT; y++) {
-                for (int x = 0; x < WIDTH; x++) {
-                    int gray = 115 + (int)(35 * Math.sin(x * 0.02) * Math.cos(y * 0.02));
-                    imgElev.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < HEIGHT; y++) {
+            for (int x = 0; x < WIDTH; x++) {
+                double norm = 0.5;
+                if (srcMessenger != null) {
+                    int sx = (int) ((x / (double) WIDTH) * srcMessenger.getWidth());
+                    int sy = (int) ((y / (double) HEIGHT) * srcMessenger.getHeight());
+                    sx = Math.clamp(sx, 0, srcMessenger.getWidth() - 1);
+                    sy = Math.clamp(sy, 0, srcMessenger.getHeight() - 1);
+                    Color c = new Color(srcMessenger.getRGB(sx, sy));
+                    norm = (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114) / 255.0;
                 }
+                imgElev.setRGB(x, y, elevationToHypsometricColor(norm).getRGB());
             }
         }
         saveMapImage(imgElev, "mercury_elevation.png", "mercury");
 
-        // Temperature (Diurnal extreme)
+        // Temperature in Grayscale [0..255]
         BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
             for (int x = 0; x < WIDTH; x++) {
-                imgTemp.setRGB(x, y, 0xEA580C);
+                double lon = -180.0 + (x / (double) WIDTH) * 360.0;
+                double tempC = 100.0 + 330.0 * Math.max(0.0, Math.cos(Math.toRadians(lon)) * Math.cos(Math.toRadians(lat)));
+                if (Math.abs(lat) > 85.0) tempC = -180.0;
+                int gray = (int) (Math.clamp((tempC + 180.0) / 610.0, 0.0, 1.0) * 255.0);
+                imgTemp.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
         saveMapImage(imgTemp, "mercury_temperature.png", "mercury");
 
-        // Biomes (Intercrater plains & Caloris Basin)
+        // Biomes
         BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
             for (int x = 0; x < WIDTH; x++) {
-                imgBiomes.setRGB(x, y, 0x52525B);
+                int biomeColor;
+                if (Math.abs(lat) > 86.0) {
+                    biomeColor = BIOME_SNOW;
+                } else {
+                    int elevRgb = imgElev.getRGB(x, y);
+                    int r = (elevRgb >> 16) & 0xFF;
+                    int g = (elevRgb >> 8) & 0xFF;
+                    int b = elevRgb & 0xFF;
+                    double brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255.0;
+                    biomeColor = (brightness > 0.70) ? BIOME_MOUNTAINS : (brightness > 0.50 ? BIOME_HILLS : BIOME_PLAINS);
+                }
+                imgBiomes.setRGB(x, y, biomeColor);
             }
         }
         saveMapImage(imgBiomes, "mercury_biomes.png", "mercury");
 
         // Polar Shadowed Water Ice
-        BufferedImage imgIce = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage imgIce = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         double[][] mercIce = { {0.0, 89.0, 20, 2.5}, {0.0, -89.0, 20, 2.5} };
         List<double[]> mIceList = new ArrayList<>();
         for (double[] s : mercIce) mIceList.add(s);
-        rasterizeAlphaDensity(imgIce, mIceList, new Color(56, 189, 248), 15.0);
+        rasterizeAlphaDensity(imgIce, mIceList, 15.0);
         saveMapImage(imgIce, "mercury_aquifers.png", "mercury");
+
+        // Helium-3, Iron, Precious Metals, Uranium, Geothermal
+        BufferedImage imgHe3 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgHe3, mIceList, 25.0);
+        saveMapImage(imgHe3, "mercury_helium3.png", "mercury");
+
+        BufferedImage imgIron = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeTieredDensity(imgIron, mIceList, 30.0);
+        saveMapImage(imgIron, "mercury_iron_copper.png", "mercury");
+
+        BufferedImage imgPrecious = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgPrecious, mIceList, 25.0);
+        saveMapImage(imgPrecious, "mercury_precious_metals.png", "mercury");
+
+        BufferedImage imgUranium = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgUranium, mIceList, 25.0);
+        saveMapImage(imgUranium, "mercury_uranium.png", "mercury");
+
+        BufferedImage imgGeo = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        rasterizeAlphaDensity(imgGeo, mIceList, 25.0);
+        saveMapImage(imgGeo, "mercury_geothermal.png", "mercury");
+
+        // Seasonality (3:2 spin-orbit resonance diurnal variance)
+        BufferedImage imgSeason = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x / (double) WIDTH) * 360.0;
+                double var = Math.abs(Math.cos(Math.toRadians(lon * 2.0))) * Math.cos(Math.toRadians(lat));
+                int gray = (int) (var * 255.0);
+                imgSeason.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+            }
+        }
+        saveMapImage(imgSeason, "mercury_seasonality.png", "mercury");
+
+        // Zeros
+        BufferedImage zeroMap = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        saveMapImage(zeroMap, "mercury_coal.png", "mercury");
+        saveMapImage(zeroMap, "mercury_oil.png", "mercury");
+        saveMapImage(zeroMap, "mercury_gas.png", "mercury");
+        saveMapImage(zeroMap, "mercury_precipitation.png", "mercury");
     }
 }
 

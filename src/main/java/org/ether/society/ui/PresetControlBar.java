@@ -132,9 +132,32 @@ public class PresetControlBar<T> extends VBox {
             }
         });
 
+        final boolean[] reverting = {false};
         presetCombo.setOnAction(e -> {
+            if (reverting[0]) return; // ignore synthetic event from revert
             T selected = presetCombo.getValue();
             if (selected != null) {
+                // If there are unsaved changes, prompt to save/discard/cancel before switching
+                if (dirty) {
+                    javafx.stage.Window owner = getScene() != null ? getScene().getWindow() : null;
+                    boolean canProceed = promptSavePresetIfDirty(owner);
+                    if (!canProceed) {
+                        // Revert combo to the preset matching current nameField text
+                        String baseName = nameField.getText() != null
+                                ? nameField.getText().trim().replace(I18n.getOrDefault("preset.name.custom_suffix", " (Custom)"), "").trim()
+                                : "";
+                        T previous = presetCombo.getItems().stream()
+                                .filter(it -> it != null && formatPresetItem(it).equalsIgnoreCase(baseName))
+                                .findFirst().orElse(null);
+                        reverting[0] = true;
+                        try {
+                            presetCombo.setValue(previous); // revert without triggering the block again
+                        } finally {
+                            reverting[0] = false;
+                        }
+                        return;
+                    }
+                }
                 // Populate name field with selected preset name
                 String name = formatPresetItem(selected);
                 nameField.setText(name);
@@ -323,9 +346,12 @@ public class PresetControlBar<T> extends VBox {
         }
 
         alert.setTitle(I18n.getOrDefault("preset.dialog.unsaved_title", "Modifications non enregistrées"));
-        alert.setHeaderText(I18n.getOrDefault("preset.dialog.unsaved_header", "Le préréglage a été modifié"));
-        alert.setContentText(I18n.getOrDefault("preset.dialog.unsaved_content",
-                "Des paramètres ou calques ont été modifiés. Voulez-vous enregistrer ce préréglage avant de quitter l'onglet ?"));
+        String rawName = (presetCombo.getValue() != null) ? formatPresetItem(presetCombo.getValue()) : (nameField.getText() != null ? nameField.getText() : "");
+        String cleanName = rawName.replace("(Custom)", "").replace("(Personnalisé)", "").trim();
+        if (cleanName.isBlank()) {
+            cleanName = I18n.getOrDefault("preset.name.custom", "Personnalisé");
+        }
+        alert.setContentText(I18n.get("preset.dialog.unsaved_content", cleanName));
 
         ButtonType btnSave = new ButtonType("💾 " + I18n.getOrDefault("preset.save", "Enregistrer"), ButtonBar.ButtonData.YES);
         ButtonType btnDiscard = new ButtonType(I18n.getOrDefault("preset.dialog.discard", "Ignorer"), ButtonBar.ButtonData.NO);
@@ -342,7 +368,10 @@ public class PresetControlBar<T> extends VBox {
             markClean();
             return true;
         } else if (res.isPresent() && res.get() == btnDiscard) {
-            markClean();
+            // Maintain visual dirty indication that the preset was modified but not saved
+            if (nameField != null) {
+                nameField.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
+            }
             return true;
         } else {
             return false; // Cancel tab switch

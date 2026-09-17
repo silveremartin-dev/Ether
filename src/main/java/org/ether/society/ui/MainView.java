@@ -57,6 +57,9 @@ public class MainView extends StackPane {
     private Tab simulationTab;
     private Tab comparativeAnalyticsTab;
     private Tab preferencesTab;
+    private Tab controlTab;
+    private Tab statsTab;
+    private Tab godModeTab;
     private PlanetGeneratorPanel planetGeneratorPanel;
     private ResourceDistributionPanel resourcePanel;
     private ScenarioSetupPanel setupPanel;
@@ -120,6 +123,7 @@ public class MainView extends StackPane {
 
         // 3. Setup Tab
         setupPanel = new ScenarioSetupPanel(this::onStartSimulation);
+        setupPanel.setIsSimulationRunningSupplier(() -> engine != null && engine.isRunning());
         if (planetGeneratorPanel != null) {
             setupPanel.setPlanetPanelSupplier(() -> planetGeneratorPanel);
         }
@@ -184,12 +188,14 @@ public class MainView extends StackPane {
                 }
 
                 if (cancelled) {
-                    isSwitchingTabs = true;
-                    try {
-                        tabPane.getSelectionModel().select(oldTab);
-                    } finally {
-                        isSwitchingTabs = false;
-                    }
+                    javafx.application.Platform.runLater(() -> {
+                        isSwitchingTabs = true;
+                        try {
+                            tabPane.getSelectionModel().select(oldTab);
+                        } finally {
+                            isSwitchingTabs = false;
+                        }
+                    });
                     return;
                 }
             }
@@ -197,10 +203,6 @@ public class MainView extends StackPane {
             boolean isSim = (newTab == simulationTab);
             if (mapCanvas != null) {
                 mapCanvas.setTabVisible(isSim);
-            }
-            if (oldTab == simulationTab && !isSim) {
-                logger.info("Auto-pausing simulation and halting 2D/3D map rendering due to tab switch");
-                engine.pause();
             }
             if (isSim) {
                 if (mapCanvas != null) {
@@ -236,6 +238,15 @@ public class MainView extends StackPane {
         simulationTab.setText("5. " + org.ether.society.i18n.I18n.get("tab.simulation"));
         comparativeAnalyticsTab.setText("6. " + org.ether.society.i18n.I18n.getOrDefault("tab.comparative_analytics", "📊 Analyse Comparative"));
         preferencesTab.setText("7. " + org.ether.society.i18n.I18n.get("tab.preferences"));
+        if (controlTab != null) {
+            controlTab.setText(org.ether.society.i18n.I18n.getOrDefault("sim.tab.controls", "🎛️ 3D Render & Controls"));
+        }
+        if (statsTab != null) {
+            statsTab.setText(org.ether.society.i18n.I18n.getOrDefault("sim.tab.stats", "📊 Stats"));
+        }
+        if (godModeTab != null) {
+            godModeTab.setText(org.ether.society.i18n.I18n.getOrDefault("sim.tab.godmode", "⚡ Mode Dieu"));
+        }
     }
 
     private void onPlanetGenerated(List<H3Cell> cells) {
@@ -320,9 +331,10 @@ public class MainView extends StackPane {
         colorLegend.updateFromCanvas(mapCanvas);
         if (controlPanel != null) {
             controlPanel.setColorLegend(colorLegend);
+            controlPanel.setMapCanvas(mapCanvas);
         }
         StackPane.setAlignment(colorLegend, Pos.BOTTOM_RIGHT);
-        StackPane.setMargin(colorLegend, new javafx.geometry.Insets(0, 20, 50, 0));
+        StackPane.setMargin(colorLegend, new javafx.geometry.Insets(0, 16, 40, 0));
         mapStack.getChildren().add(colorLegend);
 
         startEventPolling();
@@ -335,7 +347,13 @@ public class MainView extends StackPane {
         controlPanel.setOnContourToggle(show -> mapCanvas.toggleContours(show));
         controlPanel.setOnTimelapseRecord(this::toggleTimelapseRecording);
         controlPanel.setOnTimelapseSeek(this::seekTimelapse);
+        controlPanel.setOnTimelapseSeekToEnd(this::seekToEnd);
         controlPanel.setOnFullScreen(this::toggleFullScreen);
+
+        if (godModePanel != null) {
+            godModePanel.setMapCanvas(mapCanvas);
+            godModePanel.setNotificationOverlay(notificationOverlay);
+        }
 
         TabPane leftSidebar = new TabPane();
         leftSidebar.setPrefWidth(480);
@@ -345,25 +363,28 @@ public class MainView extends StackPane {
 
         javafx.scene.control.ScrollPane controlScroll = new javafx.scene.control.ScrollPane(controlPanel);
         controlScroll.setFitToWidth(true);
+        controlScroll.setPannable(true);
         controlScroll.setHbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
         controlScroll.setVbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.AS_NEEDED);
         controlScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
         javafx.scene.control.ScrollPane statsScroll = new javafx.scene.control.ScrollPane(statsPanel);
         statsScroll.setFitToWidth(true);
+        statsScroll.setPannable(true);
         statsScroll.setHbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
         statsScroll.setVbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.AS_NEEDED);
         statsScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
         javafx.scene.control.ScrollPane godScroll = new javafx.scene.control.ScrollPane(godModePanel);
         godScroll.setFitToWidth(true);
+        godScroll.setPannable(true);
         godScroll.setHbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
         godScroll.setVbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.AS_NEEDED);
         godScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
-        Tab controlTab = new Tab(I18n.getOrDefault("sim.tab.controls", "🎛️ 3D Render & Controls"), controlScroll);
-        Tab statsTab = new Tab(I18n.getOrDefault("sim.tab.stats", "📊 Stats"), statsScroll);
-        Tab godModeTab = new Tab(I18n.getOrDefault("sim.tab.godmode", "⚡ Mode Dieu"), godScroll);
+        this.controlTab = new Tab(I18n.getOrDefault("sim.tab.controls", "🎛️ 3D Render & Controls"), controlScroll);
+        this.statsTab = new Tab(I18n.getOrDefault("sim.tab.stats", "📊 Stats"), statsScroll);
+        this.godModeTab = new Tab(I18n.getOrDefault("sim.tab.godmode", "⚡ Mode Dieu"), godScroll);
         leftSidebar.getTabs().addAll(controlTab, statsTab, godModeTab);
 
         leftSidebar.getSelectionModel().selectedItemProperty().addListener((obs, oldSubTab, newSubTab) -> {
@@ -375,34 +396,6 @@ public class MainView extends StackPane {
                         controlPanel.updatePlayPauseVisuals(false);
                     }
                 }
-            }
-        });
-
-        // Bottom Telemetry Status Bar
-        Label statusBarLabel = new Label(I18n.getOrDefault("mainview.status.coords_hover", "📍 Coordinates: Hover over an H3 cell on the map..."));
-        statusBarLabel.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', sans-serif; -fx-font-weight: bold;");
-
-        HBox statusBar = new HBox(statusBarLabel);
-        statusBar.setAlignment(Pos.CENTER_LEFT);
-        statusBar.setStyle("-fx-background-color: rgba(15, 23, 42, 0.90); -fx-padding: 5 14; -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 6;");
-        statusBar.setMaxSize(600, javafx.scene.layout.Region.USE_PREF_SIZE);
-        StackPane.setAlignment(statusBar, Pos.BOTTOM_LEFT);
-        StackPane.setMargin(statusBar, new javafx.geometry.Insets(0, 0, 10, 20));
-        mapStack.getChildren().add(statusBar);
-
-        mapCanvas.setOnHoverCallback((cell, coords) -> {
-            if (cell != null) {
-                String biome = cell.getBiome() != null ? cell.getBiome().name() : "N/A";
-                int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
-                double temp = cell.getTemperature() != null ? cell.getTemperature() : 0.0;
-                statusBarLabel.setText(String.format(java.util.Locale.ROOT,
-                    "📍 Lat: %.2f° | Lng: %.2f° | H3: %s | Biome: %s | Pop: %,d | T°: %.1f°C",
-                    coords[0], coords[1], Long.toHexString(cell.getH3Index()), biome, pop, temp
-                ));
-            } else {
-                statusBarLabel.setText(String.format(java.util.Locale.ROOT,
-                    "📍 Lat: %.2f° | Lng: %.2f° | " + I18n.getOrDefault("mainview.status.hover_hex", "Survolez un hexagone H3..."), coords[0], coords[1]
-                ));
             }
         });
 
@@ -456,6 +449,33 @@ public class MainView extends StackPane {
             statsPanel.update();
         }
         logger.info("Timelapse seek to year: {} (tick {})", year, targetTicks);
+    }
+
+    private void seekToEnd() {
+        var snapshots = engine.getHistoryManager() != null ? engine.getHistoryManager().getWorldSnapshots() : null;
+        if (snapshots != null && !snapshots.isEmpty()) {
+            long lastTick = snapshots.lastKey();
+            engine.seekToTick(lastTick);
+        } else {
+            long endYear = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getEndDateYear() : 2100;
+            seekTimelapse((int) endYear);
+            return;
+        }
+        if (mapCanvas != null) {
+            mapCanvas.setWorldBuffer(engine.getWorldBuffer());
+            mapCanvas.setCells(engine.getCells());
+            mapCanvas.draw();
+        }
+        if (miniMap != null && engine.getCells() != null) {
+            miniMap.setCells(engine.getCells());
+        }
+        if (controlPanel != null) {
+            controlPanel.updateYear(engine.getTimeManager().getFormattedDate());
+        }
+        if (statsPanel != null) {
+            statsPanel.update();
+        }
+        logger.info("Seek to end completed");
     }
 
     private void onStartSimulation(Scenario scenario) {
@@ -535,15 +555,10 @@ public class MainView extends StackPane {
             mapCanvas.setCurrentDateStr(String.format("An %d", scenario.getStartDateYear()));
         }
 
+        // Move systematically from Tab 3 to Tab 4 (Execution Context)
         executionContextTab.setDisable(false);
-        if (tabPane.getSelectionModel().getSelectedItem() == setupTab) {
-            tabPane.getSelectionModel().select(executionContextTab);
-            logger.info("Execution Context tab enabled and selected after scenario setup validation");
-        } else {
-            simulationTab.setDisable(false);
-            tabPane.getSelectionModel().select(simulationTab);
-            logger.info("Simulation tab activated with {} cells", newCells.size());
-        }
+        tabPane.getSelectionModel().select(executionContextTab);
+        logger.info("Transitioned to Execution Context Tab (4) for review before launch with {} cells", newCells.size());
     }
 
     private void launchSimulationFromContext() {
@@ -564,6 +579,9 @@ public class MainView extends StackPane {
                 }
             }
         }
+        
+        // Disable execution context tab once running to prevent illegal state mutation
+        executionContextTab.setDisable(true);
         simulationTab.setDisable(false);
         tabPane.getSelectionModel().select(simulationTab);
         if (statsPanel != null) {
@@ -572,7 +590,14 @@ public class MainView extends StackPane {
         if (mapCanvas != null) {
             mapCanvas.resetView();
         }
-        logger.info("Simulation tab enabled and activated from Execution Context Panel");
+        // Do NOT auto-start the simulation engine: remain in ready/paused mode waiting for user click on Play
+        if (engine != null && engine.isRunning()) {
+            engine.pause();
+        }
+        if (controlPanel != null) {
+            controlPanel.updatePlayPauseVisuals(false);
+        }
+        logger.info("Simulation initialized from Execution Context Panel and switched to Simulation Tab (5) in ready/paused mode");
     }
 
     public void toggleFullScreen() {
@@ -661,8 +686,15 @@ public class MainView extends StackPane {
         simulationRoot.setCenter(mapStack);
 
         if (mapCanvas != null) {
-            mapCanvas.draw();
+            mapCanvas.resetView();
         }
+
+        javafx.application.Platform.runLater(() -> {
+            if (mapCanvas != null) {
+                mapCanvas.draw();
+            }
+        });
+
         logger.info("Exited Full Screen map view mode");
     }
 
@@ -714,10 +746,14 @@ public class MainView extends StackPane {
                             try {
                                 if (mapCanvas != null) {
                                     mapCanvas.setCurrentDateStr(dateStr);
+                                    mapCanvas.invalidateSmoothCache();
                                     mapCanvas.draw();
                                 }
                                 if (colorLegend != null && mapCanvas != null) {
                                     colorLegend.updateFromCanvas(mapCanvas);
+                                }
+                                if (controlPanel != null) {
+                                    controlPanel.updateYear(dateStr);
                                 }
                             } finally {
                                 renderPending.set(false);
@@ -736,13 +772,15 @@ public class MainView extends StackPane {
                 if (now - lastUpdate >= 250_000_000) {
                     List<String> events = engine.getEventSystem().flushEvents();
                     if (!events.isEmpty()) {
+                        long curPas = engine.getTickCounter();
                         for (String event : events) {
                             notificationOverlay.showEvent(event);
-                            logger.info("Event triggered: {}", event);
+                            logger.info("📢 [Pas {}] {}", curPas, event);
                         }
-                        if (controlPanel != null) {
-                            controlPanel.logEvents(events);
-                        }
+                    }
+
+                    if (controlPanel != null) {
+                        controlPanel.updateRecentEvents(engine.getEventSystem().getRecentEventsHistory());
                     }
 
                     if (mapCanvas != null && mapCanvas.getEventSystem() != null && !mapCanvas.getEventSystem().getActiveEvents().isEmpty()) {

@@ -204,8 +204,7 @@ public class EtherApp extends Application {
                 // Periodic map redraw when needed
                 if (now - lastMapRedraw >= 500_000_000L) { // every 0.5s
                     if (mapCanvas != null) {
-                        DisplayMode mode = mapCanvas.getDisplayMode();
-                        if (mode != DisplayMode.BIOME) {
+                        if (!mapCanvas.isOnlyStaticBiome()) {
                             mapCanvas.draw();
                         }
                     }

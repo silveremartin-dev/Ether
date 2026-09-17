@@ -195,7 +195,9 @@ public class I18n {
     public static String getPlanetPresetDisplayName(String name) {
         if (name == null || name.isBlank()) return getOrDefault("planet.preset.earth", "Terre (Terran)");
         String lower = name.toLowerCase();
-        if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) {
+        if (lower.contains("super-terre") || lower.contains("super-earth") || lower.contains("gaia")) {
+            return getOrDefault("planet.preset.super_earth", "Super-Terre (Gaia Prime)");
+        } else if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) {
             return getOrDefault("planet.preset.earth", "Terre (Terran)");
         } else if (lower.contains("mars") || lower.contains("ares")) {
             return getOrDefault("planet.preset.mars", "Mars (Ares)");
@@ -205,8 +207,6 @@ public class I18n {
             return getOrDefault("planet.preset.titan", "Titan (Cryo-Lune)");
         } else if (lower.contains("lune") || lower.contains("moon") || lower.contains("selene")) {
             return getOrDefault("planet.preset.moon", "Lune (Selene)");
-        } else if (lower.contains("super-terre") || lower.contains("super-earth") || lower.contains("gaia")) {
-            return getOrDefault("planet.preset.super_earth", "Super-Terre (Gaia Prime)");
         } else if (lower.contains("synchrone") || lower.contains("eyeball")) {
             return getOrDefault("planet.preset.eyeball", "Monde Synchrone (Eyeball)");
         } else if (lower.contains("océan") || lower.contains("ocean") || lower.contains("oceania")) {

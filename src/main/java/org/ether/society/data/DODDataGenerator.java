@@ -55,14 +55,14 @@ public class DODDataGenerator {
             buffer.getTechnologyLevel()[i] = cell.getTechnologyLevel().floatValue();
         }
         
-        // Populate neighbors
+        // Populate neighbors in parallel for instant initialization
         org.ether.society.h3.H3Service h3 = org.ether.society.h3.H3Service.getInstance();
-        java.util.Map<Long, Integer> indexMap = new java.util.HashMap<>();
-        for (int i = 0; i < cells.size(); i++) {
+        java.util.concurrent.ConcurrentHashMap<Long, Integer> indexMap = new java.util.concurrent.ConcurrentHashMap<>(cells.size());
+        java.util.stream.IntStream.range(0, cells.size()).parallel().forEach(i -> {
             indexMap.put(cells.get(i).getH3Index(), i);
-        }
+        });
         
-        for (int i = 0; i < cells.size(); i++) {
+        java.util.stream.IntStream.range(0, cells.size()).parallel().forEach(i -> {
             List<Long> neighbors = h3.getNeighbors(cells.get(i).getH3Index());
             for (int j = 0; j < 6; j++) {
                 if (j < neighbors.size()) {
@@ -71,7 +71,7 @@ public class DODDataGenerator {
                     buffer.getNeighborIndexes()[i][j] = -1;
                 }
             }
-        }
+        });
         
         logger.info("WorldBuffer population complete.");
     }

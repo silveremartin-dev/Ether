@@ -328,85 +328,23 @@ public class ImageMapLoader {
     }
 
     /**
-     * Loads a map image prioritizing the single canonical location data/maps/ether/<planet>/
-     * (e.g. data/maps/ether/earth/earth_elevation.png), with transparent alias resolution
-     * (terre->earth, lune->moon, mercure->mercury) without duplicating files on disk.
+     * Loads a map image prioritizing the single canonical location data/maps/ether/<planet>/<year>/
+     * using TemporalMapTensorManager with automatic epoch fallback and continuous interpolation.
      */
     public static Image loadMapImage(String mapFileName) {
+        return loadMapImage("earth", 2026L, mapFileName);
+    }
+
+    /**
+     * Loads a map image for a specific planet, epoch year, and layer.
+     */
+    public static Image loadMapImage(String planet, long year, String mapFileName) {
         if (mapFileName == null || mapFileName.isBlank()) return null;
-        String clean = mapFileName.startsWith("/") ? mapFileName.substring(1) : mapFileName;
-        if (clean.startsWith("maps/")) clean = clean.substring(5);
-        if (clean.startsWith("ether/")) clean = clean.substring(6);
-
-        String subDir = null;
-        String baseName = clean;
-        int slashIdx = clean.lastIndexOf('/');
-        if (slashIdx >= 0) {
-            subDir = clean.substring(0, slashIdx);
-            baseName = clean.substring(slashIdx + 1);
-        }
-
-        // Canonical preset mapping
-        String canonicalSub = normalizePresetDir(subDir != null ? subDir : deducePresetFromFileName(baseName));
-
-        // 1. Check primary canonical path: data/maps/ether/<canonicalSub>/<baseName>
-        if (canonicalSub != null) {
-            File targetFile = new File("data/maps/ether/" + canonicalSub + "/" + baseName);
-            if (targetFile.exists() && targetFile.isFile()) {
-                try {
-                    return new Image(new java.io.FileInputStream(targetFile));
-                } catch (Exception e) {
-                    logger.warn("Failed to load map from {}", targetFile.getAbsolutePath(), e);
-                }
-            }
-        }
-
-        // 2. Scan standard canonical planetary subdirectories under data/maps/ether/
-        String[] canonicalDirs = {"earth", "moon", "mars", "venus", "mercury"};
-        for (String cDir : canonicalDirs) {
-            File subFile = new File("data/maps/ether/" + cDir + "/" + baseName);
-            if (subFile.exists() && subFile.isFile()) {
-                try {
-                    return new Image(new java.io.FileInputStream(subFile));
-                } catch (Exception e) {
-                    logger.warn("Failed to load map from {}", subFile.getAbsolutePath(), e);
-                }
-            }
-        }
-
-        // 3. Fallback to direct path in data/maps/
-        File directFile = new File("data/maps/" + clean);
-        if (directFile.exists() && directFile.isFile()) {
-            try {
-                return new Image(new java.io.FileInputStream(directFile));
-            } catch (Exception e) {
-                logger.warn("Failed to load map from {}", directFile.getAbsolutePath(), e);
-            }
-        }
-
-        // 4. Fallback to classpath /maps/
-        var stream = ImageMapLoader.class.getResourceAsStream("/maps/" + clean);
-        if (stream != null) {
-            return new Image(stream);
-        }
-        for (String cDir : canonicalDirs) {
-            var subStream = ImageMapLoader.class.getResourceAsStream("/maps/" + cDir + "/" + baseName);
-            if (subStream != null) return new Image(subStream);
-        }
-        return null;
+        return TemporalMapTensorManager.loadTemporalMapImage(planet, year, mapFileName);
     }
 
     private static String normalizePresetDir(String dir) {
-        if (dir == null) return null;
-        String lower = dir.toLowerCase().trim();
-        return switch (lower) {
-            case "terre", "earth" -> "earth";
-            case "lune", "moon" -> "moon";
-            case "mars", "ares" -> "mars";
-            case "venus", "hesperos" -> "venus";
-            case "mercure", "mercury", "hermes" -> "mercury";
-            default -> lower;
-        };
+        return TemporalMapTensorManager.normalizePlanet(dir);
     }
 
     private static String deducePresetFromFileName(String fileName) {

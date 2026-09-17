@@ -961,15 +961,27 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         Scenario scA = selectedItems.get(0).getScenario();
         Scenario scB = (selectedItems.size() > 1) ? selectedItems.get(1).getScenario() : scA;
 
+        if (scA == null) return;
+        if (scB == null) scB = scA;
+
         if (mapLabelA != null) mapLabelA.setText(I18n.getOrDefault("analytics.label.scenario_a_prefix", "Scenario A: ") + scA.getName());
         if (mapLabelB != null) mapLabelB.setText(I18n.getOrDefault("analytics.label.scenario_b_prefix", "Scenario B: ") + scB.getName());
 
-        int minYear = (int) Math.min(scA.getStartDateYear(), scB.getStartDateYear());
-        int maxYear = (int) Math.max(scA.getEndDateYear(), scB.getEndDateYear());
+        int startA = (int) scA.getStartDateYear();
+        int endA = (int) scA.getEndDateYear();
+        int startB = (int) scB.getStartDateYear();
+        int endB = (int) scB.getEndDateYear();
+
+        int minYear = Math.max(-10000, Math.min(startA, startB));
+        int maxYear = Math.min(2026, Math.max(endA, endB));
+        if (maxYear <= minYear) maxYear = minYear + 100;
+
         if (dateSlider != null) {
             if (minYear != (int) dateSlider.getMin() || maxYear != (int) dateSlider.getMax()) {
                 dateSlider.setMin(minYear);
                 dateSlider.setMax(maxYear);
+                double tickUnit = Math.max(10.0, (maxYear - minYear) / 5.0);
+                dateSlider.setMajorTickUnit(tickUnit);
                 if (dateSlider.getValue() < minYear || dateSlider.getValue() > maxYear) {
                     dateSlider.setValue(minYear);
                 }
@@ -984,14 +996,18 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         java.awt.image.BufferedImage bufA = null;
         java.awt.image.BufferedImage bufB = null;
 
-        if (channel.contains("Densité")) {
-            bufA = HistoricalMapGenerator.generateCleanDensityMapForYear(scA.getPopulationDensityType(), scA, targetYear);
-            bufB = HistoricalMapGenerator.generateCleanDensityMapForYear(scB.getPopulationDensityType(), scB, targetYear);
-        } else {
-            HistoricalMapGenerator.populateScenarioHistoricalMaps(scA);
-            HistoricalMapGenerator.populateScenarioHistoricalMaps(scB);
-            bufA = base64ToBufferedImage(extractChannelBase64(scA, channel));
-            bufB = base64ToBufferedImage(extractChannelBase64(scB, channel));
+        try {
+            if (channel.contains("Densité") || channel.contains("Demographic") || channel.contains("Density")) {
+                bufA = HistoricalMapGenerator.generateCleanDensityMapForYear(scA.getPopulationDensityType(), scA, targetYear);
+                bufB = HistoricalMapGenerator.generateCleanDensityMapForYear(scB.getPopulationDensityType(), scB, targetYear);
+            } else {
+                HistoricalMapGenerator.populateScenarioHistoricalMaps(scA);
+                HistoricalMapGenerator.populateScenarioHistoricalMaps(scB);
+                bufA = base64ToBufferedImage(extractChannelBase64(scA, channel));
+                bufB = base64ToBufferedImage(extractChannelBase64(scB, channel));
+            }
+        } catch (Exception ex) {
+            logger.warn("Could not generate 2D comparison maps for target year {}: {}", targetYear, ex.getMessage());
         }
 
         Image imgFxA = bufferedImageToFxImage(bufA);
