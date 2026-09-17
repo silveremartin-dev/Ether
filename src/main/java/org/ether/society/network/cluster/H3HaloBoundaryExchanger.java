@@ -18,7 +18,7 @@ import java.util.*;
  * across worker domain borders before each computational sub-step.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class H3HaloBoundaryExchanger {
 
@@ -117,3 +117,4 @@ public class H3HaloBoundaryExchanger {
         }
     }
 }
+

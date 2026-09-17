@@ -21,7 +21,7 @@ import java.util.List;
  *    causing topsoil loss, overgrazing, and accelerated desertification.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.9.0
+ * @version 1.0.0-beta.1
  */
 public class BiodiversityTrophicEngine {
     private static final Logger logger = LoggerFactory.getLogger(BiodiversityTrophicEngine.class);
@@ -60,3 +60,4 @@ public class BiodiversityTrophicEngine {
         }
     }
 }
+

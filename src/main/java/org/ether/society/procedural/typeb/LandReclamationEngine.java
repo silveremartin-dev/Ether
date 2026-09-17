@@ -21,7 +21,7 @@ import java.util.List;
  *    when local technology level >= 8.5 and capital investment >= 500.0.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.1.0
+ * @version 1.0.0-beta.1
  */
 public class LandReclamationEngine {
     private static final Logger logger = LoggerFactory.getLogger(LandReclamationEngine.class);
@@ -71,3 +71,4 @@ public class LandReclamationEngine {
         }
     }
 }
+

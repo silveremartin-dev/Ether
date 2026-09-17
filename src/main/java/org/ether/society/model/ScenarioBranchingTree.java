@@ -17,7 +17,7 @@ import java.util.*;
  * for side-by-side comparative telemetry analysis.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class ScenarioBranchingTree implements Serializable {
 
@@ -68,3 +68,4 @@ public class ScenarioBranchingTree implements Serializable {
     public String getActiveBranchId() { return activeBranchId; }
     public void setActiveBranchId(String id) { if (branches.containsKey(id)) this.activeBranchId = id; }
 }
+

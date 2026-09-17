@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * under full physical, thermodynamic, and cliodynamic simulation models over max 10 seconds.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class EarthFullResolution175kBenchmarkTest {
     private static final Logger logger = LoggerFactory.getLogger(EarthFullResolution175kBenchmarkTest.class);
@@ -165,3 +165,4 @@ public class EarthFullResolution175kBenchmarkTest {
         assertTrue(completedTicks > 0, "Should complete at least 1 tick within 10 seconds.");
     }
 }
+

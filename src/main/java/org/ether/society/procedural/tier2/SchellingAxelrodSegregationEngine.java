@@ -23,7 +23,7 @@ import java.util.List;
  * </pre>
  *
  * @author Silvere Martin-Michiellot
- * @version 4.3.0
+ * @version 1.0.0-beta.1
  */
 public class SchellingAxelrodSegregationEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(SchellingAxelrodSegregationEngine.class);
@@ -74,3 +74,4 @@ public class SchellingAxelrodSegregationEngine implements ProceduralEnginePlugin
         }
     }
 }
+

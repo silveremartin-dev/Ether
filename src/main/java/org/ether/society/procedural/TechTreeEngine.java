@@ -20,7 +20,7 @@ import java.util.List;
  * 3. <b>Embodied Energy Capital (E_embodied in MJ)</b>.
  *
  * @author Silvere Martin-Michiellot
- * @version 3.7.0
+ * @version 1.0.0-beta.1
  */
 public class TechTreeEngine {
     private static final Logger logger = LoggerFactory.getLogger(TechTreeEngine.class);
@@ -71,3 +71,4 @@ public class TechTreeEngine {
         }
     }
 }
+

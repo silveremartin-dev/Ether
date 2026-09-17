@@ -20,14 +20,14 @@ param (
 )
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "     ETHER 2.0 -- HEADLESS ENGINE BATCH RUNNER             " -ForegroundColor Green
+Write-Host "     ETHER -- HEADLESS ENGINE BATCH RUNNER (v1.0 b1)      " -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "  Scenario Preset : $Scenario" -ForegroundColor Yellow
 Write-Host "  Target Ticks    : $Ticks" -ForegroundColor Yellow
 Write-Host "  H3 Grid Cells   : $Cells" -ForegroundColor Yellow
 Write-Host "----------------------------------------------------------"
 
-$JAR_PATH = "target/society-simulation-2.0.0-SNAPSHOT-executable.jar"
+$JAR_PATH = "target/society-simulation-1.0.0-beta.1-executable.jar"
 
 if (-not (Test-Path -Path $JAR_PATH)) {
     Write-Host "Building executable JAR..." -ForegroundColor Yellow

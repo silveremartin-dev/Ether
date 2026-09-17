@@ -18,7 +18,7 @@ import java.util.List;
  * absorbing Malthusian demographic overpressure without triggering war.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class MonasticDemographicBufferEngine {
     private static final Logger logger = LoggerFactory.getLogger(MonasticDemographicBufferEngine.class);
@@ -46,3 +46,4 @@ public class MonasticDemographicBufferEngine {
     public static double getMonasticFraction() { return monasticFraction; }
     public static void setMonasticFraction(double fraction) { monasticFraction = Math.max(0.0, Math.min(0.20, fraction)); }
 }
+

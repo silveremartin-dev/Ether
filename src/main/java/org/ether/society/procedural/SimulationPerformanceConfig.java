@@ -18,7 +18,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 2.9.5
+ * @version 1.0.0-beta.1
  */
 public class SimulationPerformanceConfig implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -126,3 +126,4 @@ public class SimulationPerformanceConfig implements Serializable {
         this.parallelThreadCount = Math.max(0, parallelThreadCount);
     }
 }
+

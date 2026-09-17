@@ -21,7 +21,7 @@ import java.util.List;
  * 4. Ended by external military tech shock (Perry Black Ships 1853).
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class EdoJapanIsolationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EdoJapanIsolationEngine.class);
@@ -64,3 +64,4 @@ public class EdoJapanIsolationEngine {
     public static double getSustainableEquilibriumCap() { return sustainableEquilibriumCap; }
     public static void setSustainableEquilibriumCap(double cap) { sustainableEquilibriumCap = Math.max(1.0, cap); }
 }
+

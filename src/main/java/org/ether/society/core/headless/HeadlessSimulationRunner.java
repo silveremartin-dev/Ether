@@ -21,7 +21,7 @@ import java.util.List;
  * Completely decoupled from JavaFX or graphical dependencies.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class HeadlessSimulationRunner {
     private static final Logger logger = LoggerFactory.getLogger(HeadlessSimulationRunner.class);

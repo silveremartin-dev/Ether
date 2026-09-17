@@ -47,8 +47,8 @@ import java.util.List;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 2.0.0
- * @since 2.0.0
+ * @version 1.0.0-beta.1-beta.1
+ * @since 1.0.0
  */
 public class H3GridInitializer {
     private static final Logger logger = LoggerFactory.getLogger(H3GridInitializer.class);
@@ -145,3 +145,4 @@ public class H3GridInitializer {
         logger.info("4. Run data ingestion pipeline");
     }
 }
+

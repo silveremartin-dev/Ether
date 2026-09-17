@@ -20,7 +20,7 @@ import java.util.List;
  * imminent cliodynamic or ecological collapses across the H3 planetary grid.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 4.1.0
+ * @version 1.0.0-beta.1
  */
 public class BifurcationChaosEngine {
     private static final Logger logger = LoggerFactory.getLogger(BifurcationChaosEngine.class);
@@ -112,3 +112,4 @@ public class BifurcationChaosEngine {
         return tippingPointWarning;
     }
 }
+

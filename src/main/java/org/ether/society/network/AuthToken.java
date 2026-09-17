@@ -13,7 +13,7 @@ import java.util.UUID;
  * Role-Based Access Control (RBAC) Token for Co-Governance Network Clients.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class AuthToken implements Serializable {
     private static final long serialVersionUID = 1L;

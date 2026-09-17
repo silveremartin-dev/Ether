@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit Test Suite for Physical Laws, Cultural Sociology, Co-Governance, and Chronicles.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class AdvancedSociologyAndLawsTest {
 
@@ -76,3 +76,4 @@ public class AdvancedSociologyAndLawsTest {
         assertTrue(prose.get(0).contains("1080"));
     }
 }
+

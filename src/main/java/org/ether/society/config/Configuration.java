@@ -34,8 +34,8 @@ import java.util.Map;
  * Configuration POJO for simulation parameters, loaded from JSON.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.0.0
- * @since 2.0.0
+ * @version 1.0.0-beta.1-beta.1
+ * @since 1.0.0
  */
 public record Configuration(
         @JsonProperty("world") WorldConfig world,
@@ -81,4 +81,5 @@ public record Configuration(
             @JsonProperty("harvestEfficiency") double harvestEfficiency) {
     }
 }
+
 

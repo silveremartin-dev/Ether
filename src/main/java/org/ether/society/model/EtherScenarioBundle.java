@@ -22,6 +22,6 @@ public record EtherScenarioBundle(
     }
 
     public EtherScenarioBundle {
-        if (version == null) version = "2.0.0";
+        if (version == null) version = "1.0.0-beta.1";
     }
 }

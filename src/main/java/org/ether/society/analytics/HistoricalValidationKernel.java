@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * from the standardized JSON resource ({@code historical_cliodynamic_benchmarks.json}).
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class HistoricalValidationKernel {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalValidationKernel.class);
@@ -411,3 +411,4 @@ public class HistoricalValidationKernel {
     public static Map<Integer, Double> getHistoricalLiteracyRate() { return getBenchmarkDataset("literacyRate"); }
     public static Map<Integer, Double> getHistoricalCurrencyDebasement() { return getBenchmarkDataset("currencyDebasement"); }
 }
+

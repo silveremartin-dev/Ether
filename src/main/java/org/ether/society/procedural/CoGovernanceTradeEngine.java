@@ -18,7 +18,7 @@ import java.util.List;
  * and thermodynamic exchange networks between planetary regions.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class CoGovernanceTradeEngine {
     private static final Logger logger = LoggerFactory.getLogger(CoGovernanceTradeEngine.class);
@@ -47,3 +47,4 @@ public class CoGovernanceTradeEngine {
     public static double getInternationalResourceTradeVolume() { return internationalResourceTradeVolume; }
     public static void setInternationalResourceTradeVolume(double vol) { internationalResourceTradeVolume = Math.max(0.0, vol); }
 }
+

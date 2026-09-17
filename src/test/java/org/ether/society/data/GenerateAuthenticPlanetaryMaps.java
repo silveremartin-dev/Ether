@@ -294,16 +294,16 @@ public class GenerateAuthenticPlanetaryMaps {
         try {
             File etherSubDir = new File("data/maps/ether/" + canonicalPreset + "/" + year);
             etherSubDir.mkdirs();
-            File fEtherSub = new File(etherSubDir, baseName);
+            String stdFileName = TemporalMapTensorManager.buildStandardFilename(canonicalPreset, year, baseName);
+            File fEtherSub = new File(etherSubDir, stdFileName);
             ImageIO.write(img, "PNG", fEtherSub);
 
-            // Also keep an unversioned default in data/maps/ether/<canonicalPreset>/ for fallback
-            File fDefault = new File("data/maps/ether/" + canonicalPreset, baseName);
-            if (year == 2026L || !fDefault.exists()) {
-                ImageIO.write(img, "PNG", fDefault);
-            }
+            // Also keep short raw tag file for fallback
+            String rawTag = TemporalMapTensorManager.canonicalLayerTag(baseName);
+            File fRaw = new File(etherSubDir, rawTag + ".png");
+            ImageIO.write(img, "PNG", fRaw);
 
-            logger.info("Saved {} into data/maps/ether/{}/{}/", baseName, canonicalPreset, year);
+            logger.info("Saved {} into data/maps/ether/{}/{}/", stdFileName, canonicalPreset, year);
         } catch (Exception e) {
             logger.error("Failed saving {} to {}/{}: {}", baseName, canonicalPreset, year, e.getMessage());
         }

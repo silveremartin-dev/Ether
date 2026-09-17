@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * dispatching sub-matrix domain calculations to GPU VRAM with fallback to CPU SIMD vector units.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class WorkerGPUOffloader {
     private static final Logger logger = LoggerFactory.getLogger(WorkerGPUOffloader.class);
@@ -68,3 +68,4 @@ public class WorkerGPUOffloader {
         return totalTicksComputed;
     }
 }
+

@@ -19,7 +19,7 @@ import java.util.List;
  * Analyzes current cell telemetry to produce real-time physical warnings and advice.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class CliodynamicAdvisorEngine {
     private static final Logger logger = LoggerFactory.getLogger(CliodynamicAdvisorEngine.class);
@@ -60,3 +60,4 @@ public class CliodynamicAdvisorEngine {
         return alerts;
     }
 }
+

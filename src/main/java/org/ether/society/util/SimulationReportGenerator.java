@@ -20,7 +20,7 @@ import java.io.IOException;
  * Compiles planetary telemetry, thermodynamic boundaries, and event logs into a Markdown/HTML report.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class SimulationReportGenerator {
 
@@ -61,3 +61,4 @@ public class SimulationReportGenerator {
         return outputFile;
     }
 }
+

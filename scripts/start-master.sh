@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Ether 2.0 — Start Cluster Master Server
+# Ether 1.0 — Start Cluster Master Server
 # Launches Ether in Cluster Master mode to orchestrate worker nodes.
 # ==============================================================================
 
@@ -11,7 +11,7 @@ TICKS="${4:-500}"
 CELLS="${5:-10000}"
 
 echo "=========================================================="
-echo "     ETHER 2.0 — STARTING CLUSTER MASTER SERVER           "
+echo "     ETHER — STARTING CLUSTER MASTER SERVER (v1.0 b1)     "
 echo "=========================================================="
 echo "  Scenario Preset : ${SCENARIO}"
 echo "  Port            : ${PORT}"
@@ -19,7 +19,7 @@ echo "  Target Ticks    : ${TICKS}"
 echo "  H3 Grid Cells   : ${CELLS}"
 echo "----------------------------------------------------------"
 
-JAR_PATH="target/society-simulation-2.0.0-SNAPSHOT-executable.jar"
+JAR_PATH="target/society-simulation-1.0.0-beta.1-executable.jar"
 
 if [ ! -f "$JAR_PATH" ]; then
     echo "🔨 Building executable JAR..."

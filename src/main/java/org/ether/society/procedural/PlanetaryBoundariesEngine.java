@@ -14,7 +14,7 @@ import java.util.List;
  * Evaluates the 9 Planetary Boundaries status (0.0 Safe -> 1.0 High Risk Boundary Exceeded).
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class PlanetaryBoundariesEngine {
 
@@ -65,3 +65,4 @@ public class PlanetaryBoundariesEngine {
         );
     }
 }
+

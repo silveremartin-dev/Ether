@@ -27,7 +27,7 @@ import java.util.HashMap;
  *    while human life is prioritized through technological foresight and emergency response.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.2.0
+ * @version 1.0.0-beta.1
  */
 public class MarineSubmersionEngine {
     private static final Logger logger = LoggerFactory.getLogger(MarineSubmersionEngine.class);
@@ -129,3 +129,4 @@ public class MarineSubmersionEngine {
         }
     }
 }
+

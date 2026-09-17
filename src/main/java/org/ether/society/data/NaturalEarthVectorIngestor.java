@@ -26,7 +26,7 @@ import java.util.List;
  * Rasterizes high-definition vector features into 1024x512 multi-channel spatial tensors.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class NaturalEarthVectorIngestor {
     private static final Logger logger = LoggerFactory.getLogger(NaturalEarthVectorIngestor.class);
@@ -99,3 +99,4 @@ public class NaturalEarthVectorIngestor {
         return null;
     }
 }
+

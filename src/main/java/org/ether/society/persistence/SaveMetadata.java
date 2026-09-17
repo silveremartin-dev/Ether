@@ -24,7 +24,7 @@ public class SaveMetadata {
         this.year = year;
         this.month = month;
         this.scenarioName = scenarioName;
-        this.version = "2.0.0";
+        this.version = "1.0.0-beta.1";
     }
 
     public String getId() { return id; }

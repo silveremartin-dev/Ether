@@ -51,8 +51,8 @@ package org.ether.society.gpu;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 2.0.0
- * @since 2.0.0
+ * @version 1.0.0-beta.1-beta.1
+ * @since 1.0.0
  */
 public class ClimateKernel {
 
@@ -132,4 +132,5 @@ public class ClimateKernel {
         updateClimate(cellCount, latitudes, elevations, temperatures, month, globalOffset);
     }
 }
+
 

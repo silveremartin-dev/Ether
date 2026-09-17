@@ -20,7 +20,7 @@ import java.util.List;
  * 2. Methane gas (CH₄) release into atmosphere, accelerating global greenhouse warming.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.8.0
+ * @version 1.0.0-beta.1
  */
 public class PermafrostThawEngine {
     private static final Logger logger = LoggerFactory.getLogger(PermafrostThawEngine.class);
@@ -60,3 +60,4 @@ public class PermafrostThawEngine {
         return totalMethaneOutgassing;
     }
 }
+

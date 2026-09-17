@@ -21,7 +21,7 @@ import java.util.List;
  * 3. <b>Religious Friction & Holy Conflict Triggers</b>: Inter-ideological friction when neighboring cells adhere to opposing belief systems.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.9.0
+ * @version 1.0.0-beta.1
  */
 public class ReligionIdeologyEngine {
     private static final Logger logger = LoggerFactory.getLogger(ReligionIdeologyEngine.class);
@@ -68,3 +68,4 @@ public class ReligionIdeologyEngine {
         }
     }
 }
+

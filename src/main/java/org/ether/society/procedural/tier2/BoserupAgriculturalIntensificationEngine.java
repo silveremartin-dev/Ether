@@ -24,7 +24,7 @@ import java.util.List;
  * </pre>
  *
  * @author Silvere Martin-Michiellot
- * @version 4.4.0
+ * @version 1.0.0-beta.1
  */
 public class BoserupAgriculturalIntensificationEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(BoserupAgriculturalIntensificationEngine.class);
@@ -82,3 +82,4 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
         }
     }
 }
+

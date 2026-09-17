@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 7. <b>Celibate Monastic Clergy</b>: Non-reproducing religious elites buffering Malthusian pressure.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class HistoricalBehaviorsTestSuite {
 
@@ -146,3 +146,4 @@ public class HistoricalBehaviorsTestSuite {
             "Celibate Clergy engine: Monastic vocation under Malthusian stress should absorb demographic surplus.");
     }
 }
+

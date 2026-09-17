@@ -20,7 +20,7 @@ import java.util.List;
  *    Fertility_eff = Fertility_base * e^(-k * Pollution).
  *
  * @author Silvere Martin-Michiellot
- * @version 3.5.0
+ * @version 1.0.0-beta.1
  */
 public class EcotoxicologyFertilityEngine {
     private static final Logger logger = LoggerFactory.getLogger(EcotoxicologyFertilityEngine.class);
@@ -67,3 +67,4 @@ public class EcotoxicologyFertilityEngine {
         }
     }
 }
+

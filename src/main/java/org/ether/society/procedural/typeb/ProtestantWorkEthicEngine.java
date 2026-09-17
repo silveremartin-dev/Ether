@@ -19,7 +19,7 @@ import java.util.List;
  * Increases capital savings rate and tech research rate while dampening fertility (demographic transition).
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class ProtestantWorkEthicEngine {
     private static final Logger logger = LoggerFactory.getLogger(ProtestantWorkEthicEngine.class);
@@ -63,3 +63,4 @@ public class ProtestantWorkEthicEngine {
     public static double getLiteracyRateMultiplier() { return literacyRateMultiplier; }
     public static void setLiteracyRateMultiplier(double v) { literacyRateMultiplier = Math.max(1.0, v); }
 }
+

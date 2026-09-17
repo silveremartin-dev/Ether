@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Ether 2.0 — Start Headless Engine Batch Runner
+# Ether 1.0 — Start Headless Engine Batch Runner
 # Executes high-speed batch simulation without JavaFX UI overhead.
 # ==============================================================================
 
@@ -9,14 +9,14 @@ TICKS="${2:-300}"
 CELLS="${3:-3000}"
 
 echo "=========================================================="
-echo "     ETHER 2.0 — HEADLESS ENGINE BATCH RUNNER             "
+echo "     ETHER — HEADLESS ENGINE BATCH RUNNER (v1.0 b1)       "
 echo "=========================================================="
 echo "  Scenario Preset : ${SCENARIO}"
 echo "  Target Ticks    : ${TICKS}"
 echo "  H3 Grid Cells   : ${CELLS}"
 echo "----------------------------------------------------------"
 
-JAR_PATH="target/society-simulation-2.0.0-SNAPSHOT-executable.jar"
+JAR_PATH="target/society-simulation-1.0.0-beta.1-executable.jar"
 
 if [ ! -f "$JAR_PATH" ]; then
     echo "🔨 Building executable JAR..."

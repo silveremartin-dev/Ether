@@ -35,7 +35,7 @@ import java.util.List;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 4.5.0
+ * @version 1.0.0-beta.1
  */
 public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(TurchinGoldstoneSDTEngine.class);
@@ -104,3 +104,4 @@ public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
         }
     }
 }
+

@@ -25,7 +25,7 @@ import java.util.List;
  * </pre>
  *
  * @author Silvere Martin-Michiellot
- * @version 4.3.0
+ * @version 1.0.0-beta.1
  */
 public class TainterComplexityCollapseEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(TainterComplexityCollapseEngine.class);
@@ -82,3 +82,4 @@ public class TainterComplexityCollapseEngine implements ProceduralEnginePlugin {
         }
     }
 }
+

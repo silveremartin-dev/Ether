@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 4. Radiocarbon (C-14) Radioactive Decay & Delta-13C Isotope Geochemistry
  *
  * @author Silvere Martin-Michiellot
- * @version 4.4.0
+ * @version 1.0.0-beta.1
  */
 public class Tier1AdvancedPhysicsTest {
 
@@ -117,3 +117,4 @@ public class Tier1AdvancedPhysicsTest {
         assertTrue(d13CSavannah > d13CForest, "C4 savannah grasses must be less negative (-12 ‰) than C3 forest (-28 ‰)");
     }
 }
+

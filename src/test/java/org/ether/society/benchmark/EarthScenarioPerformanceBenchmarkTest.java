@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * with active Type B physicalist & cliodynamic plugins.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class EarthScenarioPerformanceBenchmarkTest {
     private static final Logger logger = LoggerFactory.getLogger(EarthScenarioPerformanceBenchmarkTest.class);
@@ -127,3 +127,4 @@ public class EarthScenarioPerformanceBenchmarkTest {
         assertTrue(totalDurationMs < 10000, "10 Earth simulation cycles should execute in under 10 seconds.");
     }
 }
+

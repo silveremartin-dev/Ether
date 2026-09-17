@@ -17,7 +17,7 @@ import java.util.List;
  * with deterministic CPU Vector API fallback.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class GPUComputeShaderPipeline {
     private static final Logger logger = LoggerFactory.getLogger(GPUComputeShaderPipeline.class);

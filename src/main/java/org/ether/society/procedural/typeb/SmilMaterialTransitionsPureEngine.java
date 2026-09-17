@@ -18,7 +18,7 @@ import java.util.List;
  * are physically bounded by the 50-70 year turnover inertia of the 4 material pillars (Steel, Cement, Plastics, Ammonia).
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class SmilMaterialTransitionsPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(SmilMaterialTransitionsPureEngine.class);
@@ -41,3 +41,4 @@ public class SmilMaterialTransitionsPureEngine {
 
     public static double getTransitionInertiaYears() { return transitionInertiaYears; }
 }
+

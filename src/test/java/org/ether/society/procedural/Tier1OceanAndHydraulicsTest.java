@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 3. Airy-Heiskanen Tectonic Isostasy & Crustal Root Engine
  *
  * @author Silvere Martin-Michiellot
- * @version 4.5.0
+ * @version 1.0.0-beta.1
  */
 public class Tier1OceanAndHydraulicsTest {
 
@@ -93,3 +93,4 @@ public class Tier1OceanAndHydraulicsTest {
         assertTrue(himalayas.getResourceMetal() > 100.0, "Orogenic roots must concentrate hydrothermal metal ores");
     }
 }
+

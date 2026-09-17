@@ -18,7 +18,7 @@ import java.util.List;
  * with textbook fidelity.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class World3PureEngine {
     private static final Logger logger = LoggerFactory.getLogger(World3PureEngine.class);
@@ -64,3 +64,4 @@ public class World3PureEngine {
     public double getNonRenewableResources() { return nonRenewableResources; }
     public double getPersistentPollution() { return persistentPollution; }
 }
+

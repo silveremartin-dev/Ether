@@ -17,7 +17,7 @@ import java.util.List;
  * Models circular material re-use with continuous physical functions based on capital density and technology era.
  *
  * @author Silvere Martin-Michiellot
- * @version 3.6.0
+ * @version 1.0.0-beta.1
  */
 public class ResourceRecyclingEngine {
     private static final Logger logger = LoggerFactory.getLogger(ResourceRecyclingEngine.class);
@@ -54,3 +54,4 @@ public class ResourceRecyclingEngine {
         }
     }
 }
+

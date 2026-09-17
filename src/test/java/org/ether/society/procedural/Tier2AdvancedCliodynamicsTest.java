@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 3. Arthur Combinatorial Technology Evolution Engine
  *
  * @author Silvere Martin-Michiellot
- * @version 4.4.0
+ * @version 1.0.0-beta.1
  */
 public class Tier2AdvancedCliodynamicsTest {
 
@@ -93,3 +93,4 @@ public class Tier2AdvancedCliodynamicsTest {
         assertTrue(techAfter > techBefore, "Combinatorial tech space must accelerate technological progress");
     }
 }
+

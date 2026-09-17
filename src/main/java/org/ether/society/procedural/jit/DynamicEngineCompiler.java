@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  * and integrates them into the ScenarioEngineJITCompiler execution pipeline.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class DynamicEngineCompiler {
     private static final Logger logger = LoggerFactory.getLogger(DynamicEngineCompiler.class);
@@ -203,3 +203,4 @@ public class DynamicEngineCompiler {
             """, engineName);
     }
 }
+

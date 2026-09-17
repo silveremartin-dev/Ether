@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit Test Suite validating the Pluggable Engine Architecture (ProceduralEngineRegistry & ProceduralEnginePlugin).
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class PluggableEngineTestSuite {
 
@@ -57,3 +57,4 @@ public class PluggableEngineTestSuite {
         assertEquals(0, ProceduralEngineRegistry.getPluginCount(), "Registry should be empty after unregistering.");
     }
 }
+

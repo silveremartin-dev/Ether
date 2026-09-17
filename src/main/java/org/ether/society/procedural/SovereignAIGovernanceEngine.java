@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Supports both Monolithic Leviathan mode and Multi-Agent Competitive Geo-AI mode.
  *
  * @author Silvere Martin-Michiellot & Antigravity AI
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(SovereignAIGovernanceEngine.class);
@@ -200,3 +200,4 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
     public double getTargetGiniCeiling() { return targetGiniCeiling; }
     public void setTargetGiniCeiling(double ceiling) { this.targetGiniCeiling = ceiling; }
 }
+

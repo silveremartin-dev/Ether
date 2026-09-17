@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  * It never alters the physical timescale separation: monthly equations are NEVER executed daily.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class MultiScaleSymplecticIntegrator {
     private static final Logger logger = LoggerFactory.getLogger(MultiScaleSymplecticIntegrator.class);
@@ -138,3 +138,4 @@ public class MultiScaleSymplecticIntegrator {
         public boolean isAnnualExecuted() { return annualExecuted; }
     }
 }
+

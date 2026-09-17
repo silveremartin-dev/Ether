@@ -15,7 +15,7 @@ import java.util.List;
  * or socio-economic cliodynamic simulation logic into the H3 tick loop.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.3.0
+ * @version 1.0.0-beta.1
  */
 @FunctionalInterface
 public interface ProceduralEnginePlugin {
@@ -56,3 +56,4 @@ public interface ProceduralEnginePlugin {
         return "Tier 2: Cliodynamics";
     }
 }
+

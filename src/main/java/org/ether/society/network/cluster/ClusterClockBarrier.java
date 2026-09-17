@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * and zero temporal drift.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class ClusterClockBarrier {
     private static final Logger logger = LoggerFactory.getLogger(ClusterClockBarrier.class);
@@ -72,3 +72,4 @@ public class ClusterClockBarrier {
         return expectedWorkersCount;
     }
 }
+

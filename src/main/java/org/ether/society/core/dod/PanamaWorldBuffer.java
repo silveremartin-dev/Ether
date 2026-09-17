@@ -20,7 +20,7 @@ import java.util.List;
  * to eliminate JVM Garbage Collector pauses during high-frequency simulation ticks.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class PanamaWorldBuffer implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(PanamaWorldBuffer.class);

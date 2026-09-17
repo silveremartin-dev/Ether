@@ -24,7 +24,7 @@ import java.util.List;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 4.2.0
+ * @version 1.0.0-beta.1
  */
 public class GreenhouseRadiativeEngine {
     private static final Logger logger = LoggerFactory.getLogger(GreenhouseRadiativeEngine.class);
@@ -159,3 +159,4 @@ public class GreenhouseRadiativeEngine {
     public double getCurrentCh4Ppb() { return currentCh4Ppb; }
     public double getSeaLevelDeltaMeters() { return seaLevelDeltaMeters; }
 }
+

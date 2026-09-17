@@ -36,7 +36,7 @@ import java.util.Locale;
  * Starts at 20,000 BC by default.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.0.0
+ * @version 1.0.0-beta.1-beta.1
  * @since 1.0.0
  */
 public class TimeManager {
@@ -199,4 +199,5 @@ public class TimeManager {
         this.totalTicks = 0;
     }
 }
+
 

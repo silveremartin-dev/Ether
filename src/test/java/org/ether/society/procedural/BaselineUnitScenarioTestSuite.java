@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 3. Thermodynamic energy & food balance conservation.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class BaselineUnitScenarioTestSuite {
 
@@ -73,3 +73,4 @@ public class BaselineUnitScenarioTestSuite {
         assertEquals(0, ProceduralEngineRegistry.getPluginCount(), "Registry should be clean at baseline start.");
     }
 }
+

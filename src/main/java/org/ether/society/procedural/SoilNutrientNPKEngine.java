@@ -20,7 +20,7 @@ import java.util.List;
  * 3. <b>Haber-Bosch Nitrogen (N) Synthesis</b>: High-pressure ammonia synthesis from atmospheric N2 requiring thermal power (P_capita >= 5000W).
  *
  * @author Silvere Martin-Michiellot
- * @version 3.8.0
+ * @version 1.0.0-beta.1
  */
 public class SoilNutrientNPKEngine {
     private static final Logger logger = LoggerFactory.getLogger(SoilNutrientNPKEngine.class);
@@ -68,3 +68,4 @@ public class SoilNutrientNPKEngine {
         }
     }
 }
+

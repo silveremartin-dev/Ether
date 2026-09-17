@@ -25,7 +25,7 @@ import java.util.List;
  * Validates HYDE 3.4, Natural Earth, Archaeoglobe, Seshat, and HGIS datasets under strict Zero-Fallback policy.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 4.1.0
+ * @version 1.0.0-beta.1
  */
 public class EmpiricalDataSourcesValidationTest {
     private static final Logger logger = LoggerFactory.getLogger(EmpiricalDataSourcesValidationTest.class);
@@ -114,3 +114,4 @@ public class EmpiricalDataSourcesValidationTest {
         logger.info("Zero Fallback Policy Constraint Validated Successfully.");
     }
 }
+

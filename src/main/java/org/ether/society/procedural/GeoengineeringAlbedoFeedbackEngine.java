@@ -20,7 +20,7 @@ import java.util.List;
  * regional precipitation disruption, and crop yield impacts on agricultural biomass.</p>
 
  * @author Silvere Martin-Michiellot
- * @version 4.1.0
+ * @version 1.0.0-beta.1
  */
 public class GeoengineeringAlbedoFeedbackEngine {
     private static final Logger logger = LoggerFactory.getLogger(GeoengineeringAlbedoFeedbackEngine.class);
@@ -82,3 +82,4 @@ public class GeoengineeringAlbedoFeedbackEngine {
         return globalCoolingEffectCelsius;
     }
 }
+

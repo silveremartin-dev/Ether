@@ -19,7 +19,7 @@ import java.util.List;
  * 2. <b>Friction Reduction (μ_land: 0.25 -> 0.05)</b>: Built infrastructure reduces overland mechanical transport friction.
  *
  * @author Silvere Martin-Michiellot
- * @version 3.4.0
+ * @version 1.0.0-beta.1
  */
 public class InfrastructureEnergyEngine {
     private static final Logger logger = LoggerFactory.getLogger(InfrastructureEnergyEngine.class);
@@ -50,3 +50,4 @@ public class InfrastructureEnergyEngine {
         }
     }
 }
+

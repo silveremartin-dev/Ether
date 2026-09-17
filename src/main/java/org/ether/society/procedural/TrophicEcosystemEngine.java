@@ -19,7 +19,7 @@ import java.util.List;
  * and species hybridization vs extinction dynamics.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class TrophicEcosystemEngine {
     private static final Logger logger = LoggerFactory.getLogger(TrophicEcosystemEngine.class);
@@ -64,3 +64,4 @@ public class TrophicEcosystemEngine {
     public static double getGlobalBiodiversityIndex() { return globalBiodiversityIndex; }
     public static void setGlobalBiodiversityIndex(double index) { globalBiodiversityIndex = Math.max(0.0, Math.min(1.0, index)); }
 }
+

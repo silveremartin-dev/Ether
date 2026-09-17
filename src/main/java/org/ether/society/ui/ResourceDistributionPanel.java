@@ -53,7 +53,7 @@ import java.util.function.Consumer;
  * custom biome/geology map imports (PNG / WMS / ESRI World Files), and real-time 2D visualization.
  * 
  * @author Silvere Martin-Michiellot
- * @version 2.5.0
+ * @version 1.0.0-beta.1
  */
 public class ResourceDistributionPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ResourceDistributionPanel.class);
@@ -4123,3 +4123,4 @@ public class ResourceDistributionPanel extends BorderPane {
         return ecologyPresetBar;
     }
 }
+

@@ -22,7 +22,7 @@ import java.util.List;
  *    causing an 8.0°C cooling shock across mid-to-high latitude cells.
  *
  * @author Silvere Martin-Michiellot
- * @version 3.2.0
+ * @version 1.0.0-beta.1
  */
 public class ThermohalineOceanEngine {
     private static final Logger logger = LoggerFactory.getLogger(ThermohalineOceanEngine.class);
@@ -59,3 +59,4 @@ public class ThermohalineOceanEngine {
         }
     }
 }
+

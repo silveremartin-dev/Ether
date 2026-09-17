@@ -21,7 +21,7 @@ import java.util.List;
  * 3. <b>Arid Biome Degradation</b>: Severe SOC loss converts fertile forest/hills into barren desert terrain.
  *
  * @author Silvere Martin-Michiellot
- * @version 3.4.0
+ * @version 1.0.0-beta.1
  */
 public class DeforestationErosionEngine {
     private static final Logger logger = LoggerFactory.getLogger(DeforestationErosionEngine.class);
@@ -58,3 +58,4 @@ public class DeforestationErosionEngine {
         }
     }
 }
+

@@ -37,7 +37,7 @@ import java.util.stream.IntStream;
  * (Local vs Distributed Cluster), and rendering mode (GUI vs Headless Batch).
  *
  * @author Silvere Martin-Michiellot
- * @version 2.2.0
+ * @version 1.0.0-beta.1
  */
 public class ExecutionContextPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ExecutionContextPanel.class);
@@ -1003,3 +1003,4 @@ public class ExecutionContextPanel extends BorderPane {
         updateRightSummary();
     }
 }
+

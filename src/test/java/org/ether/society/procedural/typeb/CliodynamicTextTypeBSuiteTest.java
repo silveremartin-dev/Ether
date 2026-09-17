@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Spatial City Fractals, Self-Domestication, Monastic Buffer, Military Tech Shock, and Asymmetric Colonial Trade.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class CliodynamicTextTypeBSuiteTest {
 
@@ -98,3 +98,4 @@ public class CliodynamicTextTypeBSuiteTest {
         }, "Cumulative execution of all 5 Cliodynamic text plugins should complete without errors.");
     }
 }
+

@@ -18,7 +18,7 @@ import java.util.List;
  * and supply chain cascade disruptions at maritime chokepoints.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class PhysicalSupplyChainEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicalSupplyChainEngine.class);
@@ -53,3 +53,4 @@ public class PhysicalSupplyChainEngine {
     public static double getLandTransportFrictionCoeff() { return landTransportFrictionCoeff; }
     public static void setLandTransportFrictionCoeff(double coeff) { landTransportFrictionCoeff = Math.max(0.001, coeff); }
 }
+

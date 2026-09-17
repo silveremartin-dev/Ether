@@ -59,26 +59,58 @@ public class TemporalMapTensorManager {
     }
 
     /**
-     * Standardizes layer filenames (e.g. "elevation" -> "earth_elevation.png").
+     * Standardizes layer name into short canonical tag (e.g. "density", "pathogen", "elevation", "coal").
      */
-    public static String normalizeLayerFilename(String planet, String layerName) {
-        String p = normalizePlanet(planet);
-        if (layerName == null || layerName.isBlank()) return p + "_elevation.png";
-        String base = layerName.trim().toLowerCase();
+    public static String canonicalLayerTag(String layerName) {
+        if (layerName == null || layerName.isBlank()) return "elevation";
+        String base = layerName.trim().toLowerCase(Locale.ROOT);
         if (base.startsWith("/")) base = base.substring(1);
         if (base.contains("/")) base = base.substring(base.lastIndexOf('/') + 1);
-        if (!base.endsWith(".png")) base = base + ".png";
-        if (!base.startsWith(p + "_")) {
-            // Remove previous planet prefix if any
-            for (String prefix : List.of("earth_", "mars_", "moon_", "venus_", "mercury_", "terre_", "lune_", "mercure_")) {
-                if (base.startsWith(prefix)) {
-                    base = base.substring(prefix.length());
-                    break;
-                }
+        if (base.endsWith(".png")) base = base.substring(0, base.length() - 4);
+        // Strip planet prefix if present
+        for (String prefix : List.of("earth_", "mars_", "moon_", "venus_", "mercury_", "terre_", "lune_", "mercure_")) {
+            if (base.startsWith(prefix)) {
+                base = base.substring(prefix.length());
+                break;
             }
-            base = p + "_" + base;
         }
-        return base;
+        // Strip any leading year digits if present (e.g. 1000_density -> density)
+        if (base.matches("^-?\\d+_.+")) {
+            base = base.substring(base.indexOf('_') + 1);
+        }
+        // Canonical aliases
+        return switch (base) {
+            case "geothermal", "mantleheat", "mantle_heat" -> "geothermal";
+            case "trade", "tradenetwork", "trade_network" -> "tradenetwork";
+            case "ironcopper", "iron_copper" -> "iron_copper";
+            case "preciousmetals", "precious_metals", "preciousree", "precious_ree" -> "precious_metals";
+            case "rareearths", "rare_earths" -> "rare_earths";
+            case "aquifer", "aquifers" -> "aquifers";
+            case "he3", "helium3", "helium_3" -> "helium3";
+            case "temp", "temperature" -> "temperature";
+            case "rain", "rainfall", "precipitation" -> "precipitation";
+            case "elev", "elevation", "dem" -> "elevation";
+            case "biome", "biomes" -> "biomes";
+            case "pop", "density", "population" -> "density";
+            case "sovereignty", "borders", "empire", "polity" -> "sovereignty";
+            case "language", "isogloss", "dialects" -> "isogloss";
+            case "kinship", "clans", "family" -> "kinship";
+            case "religion", "rituals", "sacred" -> "rituals";
+            case "tech", "technology" -> "technology";
+            case "inst", "institutional", "complexity" -> "institutional";
+            case "eco", "ecological", "footprint" -> "ecological";
+            case "pathogen", "disease", "immunity" -> "pathogen";
+            default -> base;
+        };
+    }
+
+    /**
+     * Standardizes full dated layer filename (e.g. "earth_1000_density.png").
+     */
+    public static String buildStandardFilename(String planet, long epoch, String layerTag) {
+        String p = normalizePlanet(planet);
+        String tag = canonicalLayerTag(layerTag);
+        return p + "_" + epoch + "_" + tag + ".png";
     }
 
     /**
@@ -106,12 +138,13 @@ public class TemporalMapTensorManager {
 
     /**
      * Loads a temporal map image for a given planet, requested year, and layer.
-     * Performs automatic temporal fallback or continuous bilinear cross-epoch interpolation.
+     * Performs automatic temporal fallback, causal forward step transitions for historical/epidemiological events,
+     * or continuous bilinear cross-epoch interpolation for physical fields.
      */
     public static Image loadTemporalMapImage(String planet, long requestedYear, String layerName) {
         String p = normalizePlanet(planet);
-        String baseFilename = normalizeLayerFilename(p, layerName);
-        String cacheKey = p + ":" + requestedYear + ":" + baseFilename;
+        String tag = canonicalLayerTag(layerName);
+        String cacheKey = p + ":" + requestedYear + ":" + tag;
 
         synchronized (memoryCache) {
             if (memoryCache.containsKey(cacheKey)) {
@@ -119,53 +152,33 @@ public class TemporalMapTensorManager {
             }
         }
 
-        // 1. Direct hit on exact year folder
-        File exactFile = new File("data/maps/ether/" + p + "/" + requestedYear + "/" + baseFilename);
-        if (exactFile.exists() && exactFile.isFile()) {
-            try (InputStream is = new FileInputStream(exactFile)) {
-                Image img = new Image(is);
-                synchronized (memoryCache) {
-                    memoryCache.put(cacheKey, img);
-                }
-                return img;
-            } catch (Exception e) {
-                logger.warn("Failed to load map from {}", exactFile.getAbsolutePath(), e);
-            }
-        }
-
-        // 2. Discover available epochs for this planet
+        // 1. Discover available epochs for this planet
         List<Long> epochs = getAvailableEpochYears(p);
         if (epochs.isEmpty()) {
-            // Check unversioned fallback
-            File unversioned = new File("data/maps/ether/" + p + "/" + baseFilename);
-            if (unversioned.exists()) {
-                try (InputStream is = new FileInputStream(unversioned)) {
-                    Image img = new Image(is);
-                    synchronized (memoryCache) {
-                        memoryCache.put(cacheKey, img);
-                    }
-                    return img;
-                } catch (Exception ignored) {}
-            }
             return null;
         }
 
-        // 3. For prehistoric resources (coal, oil, gas, aquifers) before 1800, clamp to 1800 (virgin stock)
-        boolean isDepletableResource = baseFilename.contains("coal") || baseFilename.contains("oil") ||
-                                       baseFilename.contains("gas") || baseFilename.contains("aquifers");
+        // 2. Depletable resources prior to 1800 clamp to 1800 (virgin stock)
+        boolean isDepletableResource = tag.equals("coal") || tag.equals("oil") || tag.equals("gas") || tag.equals("aquifers");
         if (isDepletableResource && requestedYear < 1800L) {
             requestedYear = 1800L;
         }
 
-        // 4. Find bounding epochs [Y0, Y1]
+        // 3. Check for exact match in epoch folder
+        if (epochs.contains(requestedYear)) {
+            Image direct = loadExactEpochImage(p, requestedYear, tag, cacheKey);
+            if (direct != null) return direct;
+        }
+
+        // 4. Find bounding epochs [prevYear, nextYear]
         long y0 = epochs.get(0);
         long y1 = epochs.get(epochs.size() - 1);
 
         if (requestedYear <= y0) {
-            return loadExactEpochImage(p, y0, baseFilename, cacheKey);
+            return loadExactEpochImage(p, y0, tag, cacheKey);
         }
         if (requestedYear >= y1) {
-            return loadExactEpochImage(p, y1, baseFilename, cacheKey);
+            return loadExactEpochImage(p, y1, tag, cacheKey);
         }
 
         long prevYear = y0;
@@ -180,15 +193,38 @@ public class TemporalMapTensorManager {
             }
         }
 
-        if (prevYear == nextYear || baseFilename.contains("biomes")) {
-            // Categorical biomes snap to nearest epoch to avoid blended invalid color IDs
-            long nearest = Math.abs(requestedYear - prevYear) <= Math.abs(requestedYear - nextYear) ? prevYear : nextYear;
-            return loadExactEpochImage(p, nearest, baseFilename, cacheKey);
+        if (prevYear == nextYear) {
+            return loadExactEpochImage(p, prevYear, tag, cacheKey);
         }
 
-        // 5. Continuous Temporal Interpolation for Grayscale Scalar Tensors
-        Image img0 = loadExactEpochImage(p, prevYear, baseFilename, null);
-        Image img1 = loadExactEpochImage(p, nextYear, baseFilename, null);
+        // 5. Layer-Specific Interpolation Dynamics:
+        // A. Categorical biomes: snap to nearest epoch
+        if (tag.equals("biomes")) {
+            long nearest = Math.abs(requestedYear - prevYear) <= Math.abs(requestedYear - nextYear) ? prevYear : nextYear;
+            return loadExactEpochImage(p, nearest, tag, cacheKey);
+        }
+
+        // B. Causal Historical / Epidemiological / Cultural Tensors:
+        // For discontinuous events (e.g. 1492 contact), do NOT leak future events backward.
+        // Before 1492, the Americas were in isolation; smallpox or European sovereignty must not appear in 1450.
+        boolean isCausalHistorical = tag.equals("pathogen") || tag.equals("sovereignty") ||
+                                    tag.equals("technology") || tag.equals("isogloss") ||
+                                    tag.equals("kinship") || tag.equals("rituals") ||
+                                    tag.equals("institutional");
+        if (isCausalHistorical) {
+            // Check for key historical shock boundaries: e.g. 1492 (Columbian Contact), 1800 (Industrialization)
+            if (prevYear <= 1491L && nextYear >= 1492L && requestedYear < 1492L) {
+                // Strictly stay on the pre-contact baseline (1491 or earlier) without backward contamination
+                return loadExactEpochImage(p, prevYear, tag, cacheKey);
+            }
+            if (prevYear <= 1800L && nextYear > 1800L && requestedYear < 1800L) {
+                return loadExactEpochImage(p, prevYear, tag, cacheKey);
+            }
+        }
+
+        // C. Continuous Linear Bilinear Cross-Fade Interpolation
+        Image img0 = loadExactEpochImage(p, prevYear, tag, null);
+        Image img1 = loadExactEpochImage(p, nextYear, tag, null);
 
         if (img0 == null && img1 == null) return null;
         if (img0 == null) return img1;
@@ -204,22 +240,38 @@ public class TemporalMapTensorManager {
         return interpolated;
     }
 
-    private static Image loadExactEpochImage(String planet, long epoch, String filename, String cacheKey) {
-        File f = new File("data/maps/ether/" + planet + "/" + epoch + "/" + filename);
-        if (!f.exists()) {
-            f = new File("data/maps/ether/" + planet + "/" + filename);
-        }
-        if (f.exists() && f.isFile()) {
-            try (InputStream is = new FileInputStream(f)) {
-                Image img = new Image(is);
-                if (cacheKey != null) {
-                    synchronized (memoryCache) {
-                        memoryCache.put(cacheKey, img);
+    /**
+     * Loads an exact epoch image with multi-pattern fallback.
+     */
+    public static Image loadExactEpochImage(String planet, long epoch, String layerTag, String cacheKey) {
+        String p = normalizePlanet(planet);
+        String tag = canonicalLayerTag(layerTag);
+        String dirPath = "data/maps/ether/" + p + "/" + epoch + "/";
+
+        // Candidate file names in priority order:
+        // 1. Standard: earth_1000_density.png
+        // 2. Short prefix: earth_density.png
+        // 3. Raw tag: density.png
+        String[] candidateNames = {
+            p + "_" + epoch + "_" + tag + ".png",
+            p + "_" + tag + ".png",
+            tag + ".png"
+        };
+
+        for (String cName : candidateNames) {
+            File f = new File(dirPath + cName);
+            if (f.exists() && f.isFile()) {
+                try (InputStream is = new FileInputStream(f)) {
+                    Image img = new Image(is);
+                    if (cacheKey != null) {
+                        synchronized (memoryCache) {
+                            memoryCache.put(cacheKey, img);
+                        }
                     }
+                    return img;
+                } catch (Exception e) {
+                    logger.warn("Could not read epoch file: {}", f.getAbsolutePath());
                 }
-                return img;
-            } catch (Exception e) {
-                logger.warn("Could not read epoch file: {}", f.getAbsolutePath());
             }
         }
         return null;
@@ -258,6 +310,7 @@ public class TemporalMapTensorManager {
         }
         return result;
     }
+
 
     /**
      * Clears all cached in-memory raster textures.

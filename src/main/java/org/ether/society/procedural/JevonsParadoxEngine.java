@@ -17,7 +17,7 @@ import java.util.List;
  * Models how technological efficiency gains increase total aggregate resource consumption.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class JevonsParadoxEngine {
     private static final Logger logger = LoggerFactory.getLogger(JevonsParadoxEngine.class);
@@ -44,3 +44,4 @@ public class JevonsParadoxEngine {
     public static double getReboundCoefficient() { return reboundCoefficient; }
     public static void setReboundCoefficient(double coeff) { reboundCoefficient = Math.max(0.0, Math.min(2.0, coeff)); }
 }
+

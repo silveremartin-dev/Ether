@@ -29,7 +29,7 @@ import java.util.*;
  * search filtering, age pyramid visualization, and CSV export.
  *
  * @author Silvere Martin-Michiellot
- * @version 3.0.0
+ * @version 1.0.0-beta.1
  */
 public class StatsPanel extends VBox {
     private final H3SimulationEngine engine;
@@ -1184,4 +1184,5 @@ public class StatsPanel extends VBox {
         }
     }
 }
+
 

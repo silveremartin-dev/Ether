@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 3. Bounded Epoch Window Scenarios (500-Year, Classical/Medieval, Modern Industrial, Deep Horizon).
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class HistoricalAutoCalibrationTest {
 
@@ -136,3 +136,4 @@ public class HistoricalAutoCalibrationTest {
         assertTrue(baseline.rmse >= 0.0, "Baseline should return valid RMSE score.");
     }
 }
+

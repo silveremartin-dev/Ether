@@ -28,7 +28,7 @@ import java.util.List;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 4.5.0
+ * @version 1.0.0-beta.1
  */
 public class GranovetterThresholdCascadeEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(GranovetterThresholdCascadeEngine.class);
@@ -81,3 +81,4 @@ public class GranovetterThresholdCascadeEngine implements ProceduralEnginePlugin
         }
     }
 }
+

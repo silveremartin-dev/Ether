@@ -20,7 +20,7 @@ import java.util.List;
  * 2. Downwind particulate dispersion reducing solar energy, air quality, and crop yields in neighboring cells.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.8.0
+ * @version 1.0.0-beta.1
  */
 public class DustStormEngine {
     private static final Logger logger = LoggerFactory.getLogger(DustStormEngine.class);
@@ -66,3 +66,4 @@ public class DustStormEngine {
         }
     }
 }
+

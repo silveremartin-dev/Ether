@@ -19,7 +19,7 @@ import java.util.List;
  * and off-world asteroid mining EROEI logistics.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class TerraformingEngine {
     private static final Logger logger = LoggerFactory.getLogger(TerraformingEngine.class);
@@ -69,3 +69,4 @@ public class TerraformingEngine {
     public static double getOffWorldEroeiRatio() { return offWorldEroeiRatio; }
     public static void setOffWorldEroeiRatio(double eroei) { offWorldEroeiRatio = Math.max(0.1, eroei); }
 }
+

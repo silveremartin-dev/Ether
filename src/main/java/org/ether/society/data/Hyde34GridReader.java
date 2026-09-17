@@ -25,7 +25,7 @@ import java.util.zip.ZipInputStream;
  * Supports 5-arc-minute global grids (4320x2160) from -10,000 BC to 2023 AD.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class Hyde34GridReader {
     private static final Logger logger = LoggerFactory.getLogger(Hyde34GridReader.class);
@@ -277,3 +277,4 @@ public class Hyde34GridReader {
         return img;
     }
 }
+

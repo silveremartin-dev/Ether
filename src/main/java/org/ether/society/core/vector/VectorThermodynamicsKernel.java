@@ -18,7 +18,7 @@ import java.util.List;
  * floating point execution order.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class VectorThermodynamicsKernel {
     private static final Logger logger = LoggerFactory.getLogger(VectorThermodynamicsKernel.class);

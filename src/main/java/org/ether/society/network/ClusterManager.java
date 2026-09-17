@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * resilience against node failures, and real-time remote tick computation offloading.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class ClusterManager {
     private static final Logger logger = LoggerFactory.getLogger(ClusterManager.class);
@@ -474,3 +474,4 @@ public class ClusterManager {
         logger.info("Cluster Manager stopped cleanly.");
     }
 }
+

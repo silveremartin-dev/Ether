@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * UI Panel for Scenario Multiverse Branching & Comparative Trajectory Analysis.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class ScenarioBranchingPanel extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioBranchingPanel.class);
@@ -101,3 +101,4 @@ public class ScenarioBranchingPanel extends VBox {
         }
     }
 }
+

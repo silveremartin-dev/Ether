@@ -24,7 +24,7 @@ import java.util.zip.GZIPOutputStream;
  * allowing recovering nodes or late-joining compute workers to restore simulation state instantly.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class ClusterSnapshotManager {
     private static final Logger logger = LoggerFactory.getLogger(ClusterSnapshotManager.class);
@@ -126,3 +126,4 @@ public class ClusterSnapshotManager {
         } catch (Exception ignored) {}
     }
 }
+

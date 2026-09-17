@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  * Calculates animal biomass and hunting capacity during Pleistocene/Holocene transitions.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class MegafaunaIngestor {
     private static final Logger logger = LoggerFactory.getLogger(MegafaunaIngestor.class);
@@ -34,3 +34,4 @@ public class MegafaunaIngestor {
         return 1.0; // Modern baseline
     }
 }
+

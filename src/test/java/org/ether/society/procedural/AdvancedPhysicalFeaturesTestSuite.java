@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Urban Thermodynamics, and Scenario Multiverse Branching.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class AdvancedPhysicalFeaturesTestSuite {
 
@@ -96,3 +96,4 @@ public class AdvancedPhysicalFeaturesTestSuite {
         assertEquals("Branche Fusion 2040", newBranch.getName());
     }
 }
+

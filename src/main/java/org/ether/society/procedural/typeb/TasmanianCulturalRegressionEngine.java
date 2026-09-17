@@ -18,7 +18,7 @@ import java.util.List;
  * Isolated populations below critical threshold (N < 5000) lose complex technological skills over generations.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class TasmanianCulturalRegressionEngine {
     private static final Logger logger = LoggerFactory.getLogger(TasmanianCulturalRegressionEngine.class);
@@ -44,3 +44,4 @@ public class TasmanianCulturalRegressionEngine {
 
     public static double getIsolationPopulationThreshold() { return isolationPopulationThreshold; }
 }
+

@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 4.2.0
+ * @version 1.0.0-beta.1
  */
 public class GeneticAdaptationEngine {
     private static final Logger logger = LoggerFactory.getLogger(GeneticAdaptationEngine.class);
@@ -110,4 +110,5 @@ public class GeneticAdaptationEngine {
         }
     }
 }
+
 

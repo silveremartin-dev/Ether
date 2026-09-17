@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit Test Suite validating Ore Grade Depletion, Infrastructure Inertia, Entropic Metal Dissipation, and Jevons Paradox.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class JancoviciBihouixPhysicalSuiteTest {
 
@@ -72,3 +72,4 @@ public class JancoviciBihouixPhysicalSuiteTest {
         assertTrue(testCells.get(0).getEnergyFoodConsumed() > initialEnergy, "Jevons paradox should increase total energy consumption when tech level is high.");
     }
 }
+

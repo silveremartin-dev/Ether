@@ -17,7 +17,7 @@ import java.util.List;
  * Postulates deterministic causal cascade: Infrastructure (Energy/Environment) -> Structure (Economy/Polity) -> Superstructure (Ideology).
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class CulturalMaterialismPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(CulturalMaterialismPureEngine.class);
@@ -39,3 +39,4 @@ public class CulturalMaterialismPureEngine {
         }
     }
 }
+

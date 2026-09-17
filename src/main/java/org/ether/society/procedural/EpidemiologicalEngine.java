@@ -23,7 +23,7 @@ import java.util.List;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 2.6.0
+ * @version 1.0.0-beta.1
  */
 public class EpidemiologicalEngine {
     private static final Logger logger = LoggerFactory.getLogger(EpidemiologicalEngine.class);
@@ -140,3 +140,4 @@ public class EpidemiologicalEngine {
         }
     }
 }
+

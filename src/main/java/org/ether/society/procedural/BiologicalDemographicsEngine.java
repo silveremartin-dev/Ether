@@ -20,7 +20,7 @@ import java.util.List;
  * 2. <b>γ</b>: Environmental baseline hazard rate (famine, disease, trauma).
  *
  * @author Silvere Martin-Michiellot
- * @version 3.1.0
+ * @version 1.0.0-beta.1
  */
 public class BiologicalDemographicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(BiologicalDemographicsEngine.class);
@@ -78,3 +78,4 @@ public class BiologicalDemographicsEngine {
         processBiologicalDemographics(cells, 30.0 / 365.25);
     }
 }
+

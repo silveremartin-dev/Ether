@@ -21,7 +21,7 @@ import java.util.List;
  *    reducing agricultural biomass yields and soil carbon fertility.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.8.0
+ * @version 1.0.0-beta.1
  */
 public class SalinizationEngine {
     private static final Logger logger = LoggerFactory.getLogger(SalinizationEngine.class);
@@ -64,3 +64,4 @@ public class SalinizationEngine {
         }
     }
 }
+

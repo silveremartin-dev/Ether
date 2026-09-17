@@ -23,7 +23,7 @@ import java.io.FileReader;
  * GeoJSON deposit point distributions (USGS MRDS, WHYMAP, IAEA UDEPO), and raster maps.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 4.2.0
+ * @version 1.0.0-beta.1
  */
 public class ResourceDepositMapReader {
     private static final Logger logger = LoggerFactory.getLogger(ResourceDepositMapReader.class);
@@ -268,3 +268,4 @@ public class ResourceDepositMapReader {
         return img;
     }
 }
+

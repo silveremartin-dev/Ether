@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit Test Suite validating Meadows World3 Coupled Equations & Kurzweil LOAR.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class World3AndKurzweilTestSuite {
 
@@ -56,3 +56,4 @@ public class World3AndKurzweilTestSuite {
         assertTrue(testCells.get(0).getTechnologyLevel() > initialTech, "Kurzweil LOAR double-exponential knowledge growth should increase tech level.");
     }
 }
+

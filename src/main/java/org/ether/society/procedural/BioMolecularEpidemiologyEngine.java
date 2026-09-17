@@ -20,7 +20,7 @@ import java.util.List;
  * 2. <b>Bio-Molecular Pathogen Vulnerability</b>: Immunological collapse increases pathogen viral load (virions/mL) and mortality.
  *
  * @author Silvere Martin-Michiellot
- * @version 3.0.0
+ * @version 1.0.0-beta.1
  */
 public class BioMolecularEpidemiologyEngine {
     private static final Logger logger = LoggerFactory.getLogger(BioMolecularEpidemiologyEngine.class);
@@ -59,3 +59,4 @@ public class BioMolecularEpidemiologyEngine {
         }
     }
 }
+

@@ -19,7 +19,7 @@ import java.util.List;
  * 2. Nested S-Curve Paradigm Shifts: Logistic envelope transition when physical silicon/lithography limits are reached.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class KurzweilAcceleratingReturnsEngine {
     private static final Logger logger = LoggerFactory.getLogger(KurzweilAcceleratingReturnsEngine.class);
@@ -50,3 +50,4 @@ public class KurzweilAcceleratingReturnsEngine {
     public static double getGlobalKnowledgeStock() { return globalKnowledgeStock; }
     public static void setGlobalKnowledgeStock(double k) { globalKnowledgeStock = Math.max(1.0, k); }
 }
+

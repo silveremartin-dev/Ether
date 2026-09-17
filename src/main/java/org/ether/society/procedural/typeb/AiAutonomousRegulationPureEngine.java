@@ -18,7 +18,7 @@ import java.util.List;
  * and optimizes resource allocation efficiency (eta -> 0.99).
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class AiAutonomousRegulationPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(AiAutonomousRegulationPureEngine.class);
@@ -43,3 +43,4 @@ public class AiAutonomousRegulationPureEngine {
         }
     }
 }
+

@@ -21,8 +21,8 @@ import java.nio.file.Path;
  * Loads configuration from JSON files using Jackson.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.0.0
- * @since 2.0.0
+ * @version 1.0.0-beta.1-beta.1
+ * @since 1.0.0
  */
 public class ConfigurationLoader {
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationLoader.class);
@@ -94,3 +94,4 @@ public class ConfigurationLoader {
         logger.info("Configuration saved successfully");
     }
 }
+

@@ -18,7 +18,7 @@ import java.util.List;
  * favoring language skills, prolonged childhood learning, and grandmother effects.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class SelfDomesticationEngine {
     private static final Logger logger = LoggerFactory.getLogger(SelfDomesticationEngine.class);
@@ -39,3 +39,4 @@ public class SelfDomesticationEngine {
         }
     }
 }
+

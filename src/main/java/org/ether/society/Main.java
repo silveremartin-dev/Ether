@@ -32,7 +32,7 @@ package org.ether.society;
  * Required for proper JavaFX module initialization.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.0.0
+ * @version 1.0.0-beta.1-beta.1
  * @since 1.0.0
  */
 public class Main {
@@ -56,3 +56,4 @@ public class Main {
         }
     }
 }
+

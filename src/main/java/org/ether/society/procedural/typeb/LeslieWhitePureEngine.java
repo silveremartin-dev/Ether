@@ -17,7 +17,7 @@ import java.util.List;
  * Leslie White Law: Cultural Complexity C = E * T (Energy per capita * Technological efficiency).
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class LeslieWhitePureEngine {
     private static final Logger logger = LoggerFactory.getLogger(LeslieWhitePureEngine.class);
@@ -41,3 +41,4 @@ public class LeslieWhitePureEngine {
         }
     }
 }
+

@@ -18,13 +18,13 @@ param (
 )
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "     ETHER 2.0 — STARTING CLUSTER WORKER NODE             " -ForegroundColor Green
+Write-Host "     ETHER -- STARTING CLUSTER WORKER NODE (v1.0 b1)      " -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "  Master Host : $MasterHost" -ForegroundColor Yellow
 Write-Host "  Port        : $Port" -ForegroundColor Yellow
 Write-Host "----------------------------------------------------------"
 
-$JAR_PATH = "target/society-simulation-2.0.0-SNAPSHOT-executable.jar"
+$JAR_PATH = "target/society-simulation-1.0.0-beta.1-executable.jar"
 
 if (-not (Test-Path $JAR_PATH)) {
     Write-Host "🔨 Building executable JAR..." -ForegroundColor Yellow

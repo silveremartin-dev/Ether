@@ -20,7 +20,7 @@ import java.util.List;
  * 3. <b>Nuclear Winter Cooling & Famine</b>: Sub-zero surface temperature anomaly (ΔT_cool) causes global crop failure and demographic collapse.
  *
  * @author Silvere Martin-Michiellot
- * @version 3.9.0
+ * @version 1.0.0-beta.1
  */
 public class NuclearWarfareClimateEngine {
     private static final Logger logger = LoggerFactory.getLogger(NuclearWarfareClimateEngine.class);
@@ -106,3 +106,4 @@ public class NuclearWarfareClimateEngine {
         globalSootOpticalDepth = Math.max(0.0, depth);
     }
 }
+

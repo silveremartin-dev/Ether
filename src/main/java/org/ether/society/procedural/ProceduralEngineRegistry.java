@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Manages custom simulation plugins registered at runtime.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class ProceduralEngineRegistry {
     private static final Logger logger = LoggerFactory.getLogger(ProceduralEngineRegistry.class);
@@ -57,3 +57,4 @@ public class ProceduralEngineRegistry {
         registeredPlugins.clear();
     }
 }
+

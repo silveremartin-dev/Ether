@@ -29,7 +29,7 @@ import java.util.zip.ZipInputStream;
  * Archaeoglobe, and Seshat empirical datasets directly into disk cache.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 4.1.0
+ * @version 1.0.0-beta.1
  */
 public class DataDownloaderService {
     private static final Logger logger = LoggerFactory.getLogger(DataDownloaderService.class);
@@ -213,3 +213,4 @@ public class DataDownloaderService {
         }
     }
 }
+

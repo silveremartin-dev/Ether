@@ -20,7 +20,7 @@ import java.util.List;
  * 3. Agricultural intensification & drought vulnerability (e.g., Maya classic collapse).
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class AmerindianEcosystemEngine {
     private static final Logger logger = LoggerFactory.getLogger(AmerindianEcosystemEngine.class);
@@ -57,3 +57,4 @@ public class AmerindianEcosystemEngine {
     public static double getEpidemicMortalityRate() { return epidemicMortalityRate; }
     public static void setEpidemicMortalityRate(double rate) { epidemicMortalityRate = Math.max(0.1, Math.min(0.99, rate)); }
 }
+

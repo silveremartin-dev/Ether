@@ -19,7 +19,7 @@ import java.io.InputStream;
  * Supports dynamic political boundaries for ancient empires, Holy Roman Empire duchies, Ottoman vilayets, and Chinese dynasties.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class HgisAtlasIngestor {
     private static final Logger logger = LoggerFactory.getLogger(HgisAtlasIngestor.class);
@@ -50,3 +50,4 @@ public class HgisAtlasIngestor {
         return null;
     }
 }
+

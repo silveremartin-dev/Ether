@@ -21,7 +21,7 @@ import java.util.List;
  * 3. <b>Interplanetary Resource Transport</b>: Shipping water and rare metal ores across worlds.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.9.0
+ * @version 1.0.0-beta.1
  */
 public class SpaceTerraformingEngine {
     private static final Logger logger = LoggerFactory.getLogger(SpaceTerraformingEngine.class);
@@ -58,3 +58,4 @@ public class SpaceTerraformingEngine {
         }
     }
 }
+

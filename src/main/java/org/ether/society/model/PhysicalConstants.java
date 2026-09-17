@@ -12,7 +12,7 @@ package org.ether.society.model;
  * actuarial kinetics, and planetary radiative balance across all kernels.
  *
  * @author Silvere Martin-Michiellot
- * @version 3.0.0
+ * @version 1.0.0-beta.1
  */
 public final class PhysicalConstants {
 
@@ -89,3 +89,4 @@ public final class PhysicalConstants {
     /** Tainter institutional complexity scaling exponent θ */
     public static final double TAINTER_COMPLEXITY_EXPONENT = 1.15;
 }
+

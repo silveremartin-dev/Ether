@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 3. Acemoglu-Robinson Inclusive vs Extractive Institutions Engine
  *
  * @author Silvere Martin-Michiellot
- * @version 4.5.0
+ * @version 1.0.0-beta.1
  */
 public class Tier2MacroSociologyTest {
 
@@ -97,3 +97,4 @@ public class Tier2MacroSociologyTest {
         assertTrue(capitalAfter > capitalBefore, "Inclusive institutions must promote capital accumulation");
     }
 }
+

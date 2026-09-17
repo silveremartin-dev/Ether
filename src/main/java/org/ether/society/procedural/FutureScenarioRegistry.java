@@ -26,7 +26,7 @@ import java.util.List;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class FutureScenarioRegistry {
     private static final Logger logger = LoggerFactory.getLogger(FutureScenarioRegistry.class);
@@ -134,3 +134,4 @@ public class FutureScenarioRegistry {
         return null;
     }
 }
+

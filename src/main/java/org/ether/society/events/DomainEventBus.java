@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  * and deterministic phase flushing.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class DomainEventBus {
     private static final Logger logger = LoggerFactory.getLogger(DomainEventBus.class);

@@ -18,7 +18,7 @@ import java.util.List;
  * Type I = 10^16 W, Type II = 10^26 W, Type III = 10^36 W.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class KardashevPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(KardashevPureEngine.class);
@@ -44,3 +44,4 @@ public class KardashevPureEngine {
         }
     }
 }
+

@@ -37,8 +37,8 @@ import java.util.function.Consumer;
  * Thread-safe implementation using CopyOnWriteArrayList.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.0.0
- * @since 2.0.0
+ * @version 1.0.0-beta.1-beta.1
+ * @since 1.0.0
  */
 public class EventBus {
     private final List<Subscriber<?>> subscribers = new CopyOnWriteArrayList<>();
@@ -76,4 +76,5 @@ public class EventBus {
     private record Subscriber<T>(Class<T> eventType, Consumer<T> listener) {
     }
 }
+
 

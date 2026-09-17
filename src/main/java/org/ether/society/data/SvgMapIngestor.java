@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  * 5 multi-channel spatial tensors (Density, Sovereignty, Isogloss, Kinship, Rituals).
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class SvgMapIngestor {
     private static final Logger logger = LoggerFactory.getLogger(SvgMapIngestor.class);
@@ -580,3 +580,4 @@ public class SvgMapIngestor {
         return res;
     }
 }
+

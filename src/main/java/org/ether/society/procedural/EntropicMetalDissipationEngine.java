@@ -17,7 +17,7 @@ import java.util.List;
  * Models irreversible physical dissipation of metals into environment due to entropy generation.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class EntropicMetalDissipationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EntropicMetalDissipationEngine.class);
@@ -45,3 +45,4 @@ public class EntropicMetalDissipationEngine {
     public static double getAnnualDissipationRate() { return annualDissipationRate; }
     public static void setAnnualDissipationRate(double rate) { annualDissipationRate = Math.max(0.0, Math.min(0.20, rate)); }
 }
+

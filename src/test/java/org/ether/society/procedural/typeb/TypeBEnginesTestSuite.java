@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * in both Pure Standalone and Ether Hybrid cumulative variants.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class TypeBEnginesTestSuite {
 
@@ -90,3 +90,4 @@ public class TypeBEnginesTestSuite {
         }, "Cumulative execution of multiple Type B plugins should complete without exceptions.");
     }
 }
+

@@ -25,7 +25,7 @@ import java.util.List;
  *    regional water security and generating hydroelectric energy.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.2.0
+ * @version 1.0.0-beta.1
  */
 public class HydrologicalEngineeringEngine {
     private static final Logger logger = LoggerFactory.getLogger(HydrologicalEngineeringEngine.class);
@@ -106,3 +106,4 @@ public class HydrologicalEngineeringEngine {
         }
     }
 }
+

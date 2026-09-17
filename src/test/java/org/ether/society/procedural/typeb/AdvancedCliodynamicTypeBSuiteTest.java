@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Hamilton Kin Selection, Turchin Frontier Asabiyyah, and Buss Sexual Selection Mating models.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class AdvancedCliodynamicTypeBSuiteTest {
 
@@ -303,3 +303,4 @@ public class AdvancedCliodynamicTypeBSuiteTest {
         assertTrue(advancedClearance > abyssalStormHs, "Advanced ocean freighters (K=1500, Tech=6.0) should easily exceed deep ocean swell heights.");
     }
 }
+

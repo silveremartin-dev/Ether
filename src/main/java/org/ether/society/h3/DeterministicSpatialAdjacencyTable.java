@@ -18,7 +18,7 @@ import java.util.*;
  * providing O(1) neighbor lookups in under 1 nanosecond with zero object allocation.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class DeterministicSpatialAdjacencyTable {
     private static final Logger logger = LoggerFactory.getLogger(DeterministicSpatialAdjacencyTable.class);

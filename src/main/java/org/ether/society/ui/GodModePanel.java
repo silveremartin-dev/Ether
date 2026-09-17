@@ -23,7 +23,7 @@ import java.util.Locale;
  * selecting duration, and viewing/navigating the chronological scenario timeline audit trail.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.1.0
+ * @version 1.0.0-beta.1
  */
 public class GodModePanel extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(GodModePanel.class);
@@ -836,4 +836,5 @@ public class GodModePanel extends VBox {
         }
     }
 }
+
 

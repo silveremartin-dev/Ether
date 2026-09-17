@@ -20,7 +20,7 @@ import java.util.List;
  * Orchestrates deterministic phase transitions for physical, demographic, and cliodynamic sub-systems.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class SimulationPipeline {
     private static final Logger logger = LoggerFactory.getLogger(SimulationPipeline.class);
@@ -138,3 +138,4 @@ public class SimulationPipeline {
         GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(cells, dtMonthly);
     }
 }
+

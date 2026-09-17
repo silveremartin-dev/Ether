@@ -21,7 +21,7 @@ import java.util.Map;
  * against empirical benchmarks or target runs, diagnosing divergence root causes, and generating/applying automated parameter corrections.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.5.0
+ * @version 1.0.0-beta.1
  */
 public class ScenarioTestProtocol {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioTestProtocol.class);
@@ -236,3 +236,4 @@ public class ScenarioTestProtocol {
         }
     }
 }
+

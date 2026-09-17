@@ -19,7 +19,7 @@ import java.util.List;
  * 2. <b>Signal Attenuation & Cultural Decoupling</b>: Signal attenuation over distance and noise (S/N) drives dialect/political divergence.
  *
  * @author Silvere Martin-Michiellot
- * @version 3.0.0
+ * @version 1.0.0-beta.1
  */
 public class InformationEntropyEngine {
     private static final Logger logger = LoggerFactory.getLogger(InformationEntropyEngine.class);
@@ -59,3 +59,4 @@ public class InformationEntropyEngine {
         }
     }
 }
+

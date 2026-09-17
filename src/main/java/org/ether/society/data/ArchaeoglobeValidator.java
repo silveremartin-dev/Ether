@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * across 146 global regions over the past 10,000 years.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class ArchaeoglobeValidator {
     private static final Logger logger = LoggerFactory.getLogger(ArchaeoglobeValidator.class);
@@ -45,3 +45,4 @@ public class ArchaeoglobeValidator {
         return rawDensity;
     }
 }
+

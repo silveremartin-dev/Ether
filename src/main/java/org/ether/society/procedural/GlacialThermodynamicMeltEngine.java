@@ -26,7 +26,7 @@ import java.util.List;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 4.3.0
+ * @version 1.0.0-beta.1
  */
 public class GlacialThermodynamicMeltEngine {
     private static final Logger logger = LoggerFactory.getLogger(GlacialThermodynamicMeltEngine.class);
@@ -119,3 +119,4 @@ public class GlacialThermodynamicMeltEngine {
         return eustaticRiseMeters;
     }
 }
+

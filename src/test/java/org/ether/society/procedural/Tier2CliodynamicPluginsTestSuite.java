@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 7. Tainter Institutional Complexity Collapse Engine
  *
  * @author Silvere Martin-Michiellot
- * @version 4.3.0
+ * @version 1.0.0-beta.1
  */
 public class Tier2CliodynamicPluginsTestSuite {
 
@@ -169,3 +169,4 @@ public class Tier2CliodynamicPluginsTestSuite {
         assertEquals(0, ProceduralEngineRegistry.getPluginCount());
     }
 }
+

@@ -26,7 +26,7 @@ import java.util.Map;
  * 4. <b>Coupled Hybrid</b>: Physical EROEI limits combined with tech acceleration and ecological feedback.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class World3VsKurzweilComparator {
     private static final Logger logger = LoggerFactory.getLogger(World3VsKurzweilComparator.class);
@@ -145,3 +145,4 @@ public class World3VsKurzweilComparator {
         return clone;
     }
 }
+

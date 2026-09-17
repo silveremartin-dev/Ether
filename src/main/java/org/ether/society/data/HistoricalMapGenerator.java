@@ -34,9 +34,29 @@ public class HistoricalMapGenerator {
 
     private static final List<Path2D> LAND_POLYGONS = new ArrayList<>();
     private static final List<Path2D> SEA_POLYGONS = new ArrayList<>();
+    private static boolean[][] FAST_LAND_GRID = new boolean[720][360];
 
     static {
         initHighPrecisionGeographicPolygons();
+    }
+
+    public static boolean isLand(double lng, double lat) {
+        BufferedImage mask = loadElevationMask();
+        if (mask != null) {
+            int mx = Math.clamp((int) ((lng + 180.0) / 360.0 * mask.getWidth()), 0, mask.getWidth() - 1);
+            int my = Math.clamp((int) ((90.0 - lat) / 180.0 * mask.getHeight()), 0, mask.getHeight() - 1);
+            return mask.getRaster().getSample(mx, my, 0) > 0;
+        }
+        if (FAST_LAND_GRID != null) {
+            int gx = Math.clamp((int) ((lng + 180.0) / 360.0 * 720), 0, 719);
+            int gy = Math.clamp((int) ((90.0 - lat) / 180.0 * 360), 0, 359);
+            return FAST_LAND_GRID[gx][gy];
+        }
+        return lat >= -60.0 && lat <= 75.0;
+    }
+
+    public static BufferedImage createPureTransparentCanvas() {
+        return new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
     }
 
     public static void populateScenarioHistoricalMaps(Scenario scenario) {
@@ -271,21 +291,17 @@ public class HistoricalMapGenerator {
     public static boolean loadFromYearDirectory(Scenario scenario) {
         if (scenario == null) return false;
         long year = scenario.getStartDateYear();
-        // Primary: data/maps/ether/earth/<year>/
         java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
-        // Legacy fallbacks for backward compatibility
-        if (!java.nio.file.Files.isDirectory(earthDir)) {
-            earthDir = java.nio.file.Paths.get("data", "maps", "Earth", String.valueOf(year));
-        }
-        if (!java.nio.file.Files.isDirectory(earthDir)) {
-            earthDir = java.nio.file.Paths.get("data", "maps", "earth", String.valueOf(year));
-        }
         if (!java.nio.file.Files.isDirectory(earthDir)) {
             return false;
         }
 
         try {
-            java.nio.file.Path densityFile = earthDir.resolve("density.png");
+            // Check density
+            java.nio.file.Path densityFile = earthDir.resolve("earth_" + year + "_density.png");
+            if (!java.nio.file.Files.exists(densityFile)) {
+                densityFile = earthDir.resolve("density.png");
+            }
             if (java.nio.file.Files.exists(densityFile)) {
                 BufferedImage img = ImageIO.read(densityFile.toFile());
                 if (img != null) {
@@ -293,12 +309,15 @@ public class HistoricalMapGenerator {
                 }
             }
 
-            String[] mapKeys = {
-                "isogloss.png", "kinship.png", "rituals.png", "sovereignty.png",
-                "technology.png", "tradenetwork.png", "institutional.png", "ecological.png", "pathogen.png"
+            String[] mapTags = {
+                "isogloss", "kinship", "rituals", "sovereignty",
+                "technology", "tradenetwork", "institutional", "ecological", "pathogen"
             };
-            for (int i = 0; i < mapKeys.length; i++) {
-                java.nio.file.Path p = earthDir.resolve(mapKeys[i]);
+            for (int i = 0; i < mapTags.length; i++) {
+                java.nio.file.Path p = earthDir.resolve("earth_" + year + "_" + mapTags[i] + ".png");
+                if (!java.nio.file.Files.exists(p)) {
+                    p = earthDir.resolve(mapTags[i] + ".png");
+                }
                 if (!java.nio.file.Files.exists(p) && i == 5) {
                     p = earthDir.resolve("trade.png");
                 }
@@ -310,18 +329,22 @@ public class HistoricalMapGenerator {
                 }
             }
 
-            String[] geoKeys = {
-                "coal.png", "oil.png", "gas.png", "uranium.png",
-                "he3.png", "ironcopper.png", "preciousmetals.png", "rareearths.png", "mantleheat.png", "aquifer.png"
+            String[] geoTags = {
+                "coal", "oil", "gas", "uranium",
+                "helium3", "iron_copper", "precious_metals", "rare_earths", "geothermal", "aquifers"
             };
-            for (int i = 0; i < geoKeys.length; i++) {
-                java.nio.file.Path p = earthDir.resolve(geoKeys[i]);
-                if (!java.nio.file.Files.exists(p) && i == 6) {
-                    p = earthDir.resolve("preciousree.png");
+            for (int i = 0; i < geoTags.length; i++) {
+                java.nio.file.Path p = earthDir.resolve("earth_" + year + "_" + geoTags[i] + ".png");
+                if (!java.nio.file.Files.exists(p)) {
+                    p = earthDir.resolve(geoTags[i] + ".png");
                 }
-                if (!java.nio.file.Files.exists(p) && i == 7) {
-                    p = earthDir.resolve("rareearths.png");
-                }
+                if (!java.nio.file.Files.exists(p) && i == 4) p = earthDir.resolve("he3.png");
+                if (!java.nio.file.Files.exists(p) && i == 5) p = earthDir.resolve("ironcopper.png");
+                if (!java.nio.file.Files.exists(p) && i == 6) p = earthDir.resolve("preciousmetals.png");
+                if (!java.nio.file.Files.exists(p) && i == 6) p = earthDir.resolve("preciousree.png");
+                if (!java.nio.file.Files.exists(p) && i == 7) p = earthDir.resolve("rareearths.png");
+                if (!java.nio.file.Files.exists(p) && i == 8) p = earthDir.resolve("mantleheat.png");
+                if (!java.nio.file.Files.exists(p) && i == 9) p = earthDir.resolve("aquifer.png");
                 if (java.nio.file.Files.exists(p)) {
                     BufferedImage img = ImageIO.read(p.toFile());
                     if (img != null) {
@@ -350,31 +373,44 @@ public class HistoricalMapGenerator {
             java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
             java.nio.file.Files.createDirectories(earthDir);
 
-            if (imgDensity != null)     ImageIO.write(imgDensity,     "PNG", earthDir.resolve("density.png").toFile());
-            if (imgIsogloss != null)    ImageIO.write(imgIsogloss,    "PNG", earthDir.resolve("isogloss.png").toFile());
-            if (imgKinship != null)     ImageIO.write(imgKinship,     "PNG", earthDir.resolve("kinship.png").toFile());
-            if (imgRituals != null)     ImageIO.write(imgRituals,     "PNG", earthDir.resolve("rituals.png").toFile());
-            if (imgSovereignty != null) ImageIO.write(imgSovereignty, "PNG", earthDir.resolve("sovereignty.png").toFile());
-            if (imgTech != null)        ImageIO.write(imgTech,        "PNG", earthDir.resolve("technology.png").toFile());
-            if (imgTrade != null)       ImageIO.write(imgTrade,       "PNG", earthDir.resolve("tradenetwork.png").toFile());
-            if (imgInst != null)        ImageIO.write(imgInst,        "PNG", earthDir.resolve("institutional.png").toFile());
-            if (imgEco != null)         ImageIO.write(imgEco,         "PNG", earthDir.resolve("ecological.png").toFile());
-            if (imgPathogen != null)    ImageIO.write(imgPathogen,    "PNG", earthDir.resolve("pathogen.png").toFile());
+            // 1. Save standard earth_<year>_<layer>.png
+            if (imgDensity != null)         ImageIO.write(imgDensity,         "PNG", earthDir.resolve("earth_" + year + "_density.png").toFile());
+            if (imgIsogloss != null)        ImageIO.write(imgIsogloss,        "PNG", earthDir.resolve("earth_" + year + "_isogloss.png").toFile());
+            if (imgKinship != null)         ImageIO.write(imgKinship,         "PNG", earthDir.resolve("earth_" + year + "_kinship.png").toFile());
+            if (imgRituals != null)         ImageIO.write(imgRituals,         "PNG", earthDir.resolve("earth_" + year + "_rituals.png").toFile());
+            if (imgSovereignty != null)     ImageIO.write(imgSovereignty,     "PNG", earthDir.resolve("earth_" + year + "_sovereignty.png").toFile());
+            if (imgTech != null)            ImageIO.write(imgTech,            "PNG", earthDir.resolve("earth_" + year + "_technology.png").toFile());
+            if (imgTrade != null)           ImageIO.write(imgTrade,           "PNG", earthDir.resolve("earth_" + year + "_tradenetwork.png").toFile());
+            if (imgInst != null)            ImageIO.write(imgInst,            "PNG", earthDir.resolve("earth_" + year + "_institutional.png").toFile());
+            if (imgEco != null)             ImageIO.write(imgEco,             "PNG", earthDir.resolve("earth_" + year + "_ecological.png").toFile());
+            if (imgPathogen != null)        ImageIO.write(imgPathogen,        "PNG", earthDir.resolve("earth_" + year + "_pathogen.png").toFile());
 
-            if (imgCoal != null)           ImageIO.write(imgCoal,           "PNG", earthDir.resolve("coal.png").toFile());
-            if (imgOil != null)            ImageIO.write(imgOil,            "PNG", earthDir.resolve("oil.png").toFile());
-            if (imgGas != null)            ImageIO.write(imgGas,            "PNG", earthDir.resolve("gas.png").toFile());
-            if (imgUranium != null)        ImageIO.write(imgUranium,        "PNG", earthDir.resolve("uranium.png").toFile());
-            if (imgHe3 != null)            ImageIO.write(imgHe3,            "PNG", earthDir.resolve("he3.png").toFile());
-            if (imgIronCopper != null)     ImageIO.write(imgIronCopper,     "PNG", earthDir.resolve("ironcopper.png").toFile());
-            if (imgPreciousMetals != null) ImageIO.write(imgPreciousMetals, "PNG", earthDir.resolve("preciousmetals.png").toFile());
-            if (imgRareEarths != null)     ImageIO.write(imgRareEarths,     "PNG", earthDir.resolve("rareearths.png").toFile());
-            if (imgMantleHeat != null)     ImageIO.write(imgMantleHeat,     "PNG", earthDir.resolve("mantleheat.png").toFile());
-            if (imgAquifer != null)        ImageIO.write(imgAquifer,        "PNG", earthDir.resolve("aquifer.png").toFile());
+            if (imgCoal != null)            ImageIO.write(imgCoal,            "PNG", earthDir.resolve("earth_" + year + "_coal.png").toFile());
+            if (imgOil != null)             ImageIO.write(imgOil,             "PNG", earthDir.resolve("earth_" + year + "_oil.png").toFile());
+            if (imgGas != null)             ImageIO.write(imgGas,             "PNG", earthDir.resolve("earth_" + year + "_gas.png").toFile());
+            if (imgUranium != null)         ImageIO.write(imgUranium,         "PNG", earthDir.resolve("earth_" + year + "_uranium.png").toFile());
+            if (imgHe3 != null)             ImageIO.write(imgHe3,             "PNG", earthDir.resolve("earth_" + year + "_helium3.png").toFile());
+            if (imgIronCopper != null)      ImageIO.write(imgIronCopper,      "PNG", earthDir.resolve("earth_" + year + "_iron_copper.png").toFile());
+            if (imgPreciousMetals != null)  ImageIO.write(imgPreciousMetals,  "PNG", earthDir.resolve("earth_" + year + "_precious_metals.png").toFile());
+            if (imgRareEarths != null)      ImageIO.write(imgRareEarths,      "PNG", earthDir.resolve("earth_" + year + "_rare_earths.png").toFile());
+            if (imgMantleHeat != null)      ImageIO.write(imgMantleHeat,      "PNG", earthDir.resolve("earth_" + year + "_geothermal.png").toFile());
+            if (imgAquifer != null)         ImageIO.write(imgAquifer,         "PNG", earthDir.resolve("earth_" + year + "_aquifers.png").toFile());
 
-            logger.info("Persisted scenario cartographic maps into 'data/maps/Earth/{}/'", year);
+            // 2. Also write short aliases for compatibility
+            if (imgDensity != null)         ImageIO.write(imgDensity,         "PNG", earthDir.resolve("density.png").toFile());
+            if (imgIsogloss != null)        ImageIO.write(imgIsogloss,        "PNG", earthDir.resolve("isogloss.png").toFile());
+            if (imgKinship != null)         ImageIO.write(imgKinship,         "PNG", earthDir.resolve("kinship.png").toFile());
+            if (imgRituals != null)         ImageIO.write(imgRituals,         "PNG", earthDir.resolve("rituals.png").toFile());
+            if (imgSovereignty != null)     ImageIO.write(imgSovereignty,     "PNG", earthDir.resolve("sovereignty.png").toFile());
+            if (imgTech != null)            ImageIO.write(imgTech,            "PNG", earthDir.resolve("technology.png").toFile());
+            if (imgTrade != null)           ImageIO.write(imgTrade,           "PNG", earthDir.resolve("tradenetwork.png").toFile());
+            if (imgInst != null)            ImageIO.write(imgInst,            "PNG", earthDir.resolve("institutional.png").toFile());
+            if (imgEco != null)             ImageIO.write(imgEco,             "PNG", earthDir.resolve("ecological.png").toFile());
+            if (imgPathogen != null)        ImageIO.write(imgPathogen,        "PNG", earthDir.resolve("pathogen.png").toFile());
+
+            logger.info("Persisted standard scenario cartographic maps into 'data/maps/ether/earth/{}/'", year);
         } catch (Exception e) {
-            logger.warn("Failed to persist scenario maps to year directory 'data/maps/Earth/{}/': {}", year, e.getMessage());
+            logger.warn("Failed to persist scenario maps to year directory 'data/maps/ether/earth/{}/': {}", year, e.getMessage());
         }
     }
 
@@ -616,21 +652,148 @@ public class HistoricalMapGenerator {
     }
 
     public static void ensureAllScenarioMapsGenerated() {
+        ensureAllScenarioMapsGenerated(false);
+    }
+
+    public static void ensureAllScenarioMapsGenerated(boolean force) {
         List<Scenario> builtIns = Scenario.getBuiltInScenarios();
-        logger.info("Verifying and ensuring cartographic maps for all {} built-in scenarios in 'data/maps/ether/earth/<year>/'...", builtIns.size());
+        logger.info("Verifying and ensuring cartographic maps for all {} built-in scenarios in 'data/maps/ether/earth/<year>/' (force={})...", builtIns.size(), force);
         int generated = 0;
         for (Scenario sc : builtIns) {
             long year = sc.getStartDateYear();
             java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
-            boolean exists = java.nio.file.Files.exists(earthDir.resolve("density.png")) &&
-                             java.nio.file.Files.exists(earthDir.resolve("isogloss.png")) &&
-                             java.nio.file.Files.exists(earthDir.resolve("sovereignty.png"));
+            boolean exists = !force &&
+                             java.nio.file.Files.exists(earthDir.resolve("earth_" + year + "_density.png")) &&
+                             java.nio.file.Files.exists(earthDir.resolve("earth_" + year + "_isogloss.png")) &&
+                             java.nio.file.Files.exists(earthDir.resolve("earth_" + year + "_sovereignty.png"));
             if (!exists) {
-                populateScenarioHistoricalMaps(sc);
+                forceGenerateScenarioHistoricalMaps(sc);
                 generated++;
             }
         }
         logger.info("Batch generation check complete. Generated/updated {} scenarios in data/maps/ether/earth/.", generated);
+    }
+
+    public static void forceGenerateScenarioHistoricalMaps(Scenario scenario) {
+        if (scenario == null) return;
+        try {
+            String type = scenario.getPopulationDensityType();
+            if (type == null) type = "URBAN_CLUSTERS";
+
+            SvgMapIngestor.SvgIngestionResult neResult = NaturalEarthVectorIngestor.loadNaturalEarthMap(type);
+            if (neResult == null) {
+                neResult = SvgMapIngestor.ingestForScenario(type);
+            }
+            if (neResult == null && scenario.getStartDateYear() != 0) {
+                neResult = HgisAtlasIngestor.loadHistoricalPolityMap(scenario.getStartDateYear(), type);
+            }
+
+            BufferedImage imgDensity = (neResult != null && neResult.densityImage != null) ? neResult.densityImage : null;
+            if (imgDensity == null) {
+                if (scenario.getStartDateYear() < -10000) {
+                    BufferedImage baseHyde = Hyde34GridReader.loadForYear(-10000);
+                    if (baseHyde != null) {
+                        imgDensity = applyPrehistoricGeographicMask(scenario.getPresetKey(), scenario.getStartDateYear(), baseHyde);
+                    } else {
+                        imgDensity = generatePrehistoricSyntheticDensityMap(scenario.getStartDateYear(), type);
+                    }
+                    scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+                } else {
+                    imgDensity = Hyde34GridReader.loadForYear(scenario.getStartDateYear());
+                    if (imgDensity != null) {
+                        scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+                    } else {
+                        imgDensity = generateCleanDensityMap(type, scenario);
+                        if (imgDensity != null) {
+                            scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+                        }
+                    }
+                }
+            } else {
+                scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+            }
+
+            BufferedImage imgIsogloss = (neResult != null && neResult.isoglossImage != null) ? neResult.isoglossImage : generateCleanIsoglossMap(type, scenario);
+            scenario.setCustomTensorMapBase64(0, bufferedImageToBase64Png(imgIsogloss));
+
+            BufferedImage imgKinship = (neResult != null && neResult.kinshipImage != null) ? neResult.kinshipImage : generateCleanKinshipMap(type, scenario);
+            scenario.setCustomTensorMapBase64(1, bufferedImageToBase64Png(imgKinship));
+
+            BufferedImage imgRituals = (neResult != null && neResult.ritualsImage != null) ? neResult.ritualsImage : generateCleanRitualsMap(type, scenario);
+            scenario.setCustomTensorMapBase64(2, bufferedImageToBase64Png(imgRituals));
+
+            BufferedImage imgSovereignty = (neResult != null && neResult.sovereigntyImage != null) ? neResult.sovereigntyImage : generateCleanSovereigntyMap(type, scenario);
+            scenario.setCustomTensorMapBase64(3, bufferedImageToBase64Png(imgSovereignty));
+
+            BufferedImage imgTechnology = generateCleanTechnologyMap(type, scenario);
+            scenario.setCustomTensorMapBase64(4, bufferedImageToBase64Png(imgTechnology));
+
+            BufferedImage imgTrade = generateCleanTradeNetworkMap(type, scenario);
+            scenario.setCustomTensorMapBase64(5, bufferedImageToBase64Png(imgTrade));
+
+            BufferedImage imgInstitutional = generateCleanInstitutionalComplexityMap(type, scenario);
+            scenario.setCustomTensorMapBase64(6, bufferedImageToBase64Png(imgInstitutional));
+
+            BufferedImage imgEcological = generateCleanEcologicalFootprintMap(type, scenario);
+            scenario.setCustomTensorMapBase64(7, bufferedImageToBase64Png(imgEcological));
+
+            BufferedImage imgPathogen = generateCleanPathogenImmunityMap(type, scenario);
+            scenario.setCustomTensorMapBase64(8, bufferedImageToBase64Png(imgPathogen));
+
+            int dims = scenario.getCultureVectorDimensions();
+            if (dims > 9) {
+                for (int i = 9; i < dims; i++) {
+                    BufferedImage imgExt = generateCleanExtensibleTensorMap(i, type, scenario);
+                    scenario.setCustomTensorMapBase64(i, bufferedImageToBase64Png(imgExt));
+                }
+            }
+
+            BufferedImage imgCoal = generateCleanCoalMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(0, bufferedImageToBase64Png(imgCoal));
+
+            BufferedImage imgOil = generateCleanOilMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(1, bufferedImageToBase64Png(imgOil));
+
+            BufferedImage imgGas = generateCleanGasMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(2, bufferedImageToBase64Png(imgGas));
+
+            BufferedImage imgUranium = generateCleanUraniumMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(3, bufferedImageToBase64Png(imgUranium));
+
+            BufferedImage imgHe3 = generateCleanHelium3Map(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(4, bufferedImageToBase64Png(imgHe3));
+
+            BufferedImage imgIronCopper = generateCleanIronCopperMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(5, bufferedImageToBase64Png(imgIronCopper));
+
+            BufferedImage imgPreciousMetals = generateCleanPreciousMetalsMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(6, bufferedImageToBase64Png(imgPreciousMetals));
+
+            BufferedImage imgRareEarths = generateCleanRareEarthsMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(7, bufferedImageToBase64Png(imgRareEarths));
+
+            BufferedImage imgMantleHeat = generateCleanMantleHeatMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(8, bufferedImageToBase64Png(imgMantleHeat));
+
+            BufferedImage imgAquifer = generateCleanAquiferMap(type, scenario);
+            scenario.setCustomGeologyTensorMapBase64(9, bufferedImageToBase64Png(imgAquifer));
+
+            int resDims = scenario.getResourceVectorDimensions();
+            if (resDims > 10) {
+                for (int i = 10; i < resDims; i++) {
+                    BufferedImage imgExtRes = generateCleanExtensibleResourceTensorMap(i, type, scenario);
+                    scenario.setCustomGeologyTensorMapBase64(i, bufferedImageToBase64Png(imgExtRes));
+                }
+            }
+
+            saveImagesToYearDirectory(scenario.getStartDateYear(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
+            saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
+            saveGeologyTensorsToDiskCache(scenario.getName(), imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
+
+            logger.info("Force-generated all tensors for scenario '{}' (Year {}) in pure grayscale on black.", scenario.getName(), scenario.getStartDateYear());
+        } catch (Exception e) {
+            logger.error("Failed to force-generate maps for scenario {}", scenario.getName(), e);
+        }
     }
 
     // --- 1. CLEAN DENSITY MAP ---
@@ -723,42 +886,39 @@ public class HistoricalMapGenerator {
     public static BufferedImage applyAltimetryCoastlineMask(BufferedImage src) {
         if (src == null) return null;
         BufferedImage mask = loadElevationMask();
-        if (mask == null) return src; // graceful no-op if mask unavailable
-
         int w = src.getWidth(), h = src.getHeight();
-        BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        java.awt.Graphics2D g = out.createGraphics();
-        g.drawImage(src, 0, 0, w, h, null);
-        g.dispose();
+        BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
-                // Sample mask at same relative position (bilinear-nearest)
-                int mx = (int) ((x + 0.5) * mask.getWidth() / w);
-                int my = (int) ((y + 0.5) * mask.getHeight() / h);
-                mx = Math.max(0, Math.min(mx, mask.getWidth() - 1));
-                my = Math.max(0, Math.min(my, mask.getHeight() - 1));
-                int land = mask.getRaster().getSample(mx, my, 0);
+                int mx = (int) ((x + 0.5) * (mask != null ? mask.getWidth() : w) / w);
+                int my = (int) ((y + 0.5) * (mask != null ? mask.getHeight() : h) / h);
+                mx = Math.clamp(mx, 0, (mask != null ? mask.getWidth() : w) - 1);
+                my = Math.clamp(my, 0, (mask != null ? mask.getHeight() : h) - 1);
+                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
                 if (land == 0) {
-                    // Ocean pixel — apply deep ocean colour
-                    out.setRGB(x, y, 0xFF050811);
+                    // Ocean pixel -> strictly pure black
+                    out.setRGB(x, y, 0x000000);
+                } else {
+                    int rgb = src.getRGB(x, y);
+                    int r = (rgb >> 16) & 0xFF;
+                    int g = (rgb >> 8) & 0xFF;
+                    int b = rgb & 0xFF;
+                    int gray = (int) (0.299 * r + 0.587 * g + 0.114 * b);
+                    out.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
                 }
             }
         }
         return out;
     }
 
-
     public static double getTopographicHabitability(String scenarioType, double lng, double lat) {
-        // Relief/elevation penalties for high mountain ranges
         double himalayas = Math.exp(-(Math.pow(lat - 32.0, 2) + Math.pow(lng - 85.0, 2)) / 100.0);
         double alps = Math.exp(-(Math.pow(lat - 46.0, 2) + Math.pow(lng - 10.0, 2)) / 30.0);
         double zagros = Math.exp(-(Math.pow(lat - 33.0, 2) + Math.pow(lng - 47.0, 2)) / 40.0);
         double andes = Math.exp(-(Math.pow(lat - (-20.0), 2) + Math.pow(lng - (-70.0), 2)) / 60.0);
 
         double mountainPenalty = himalayas * 0.75 + alps * 0.5 + zagros * 0.5 + andes * 0.6;
-
-        // Sahara core penalty when not Green Sahara
         boolean isGreenSahara = scenarioType != null && scenarioType.equalsIgnoreCase("GREEN_SAHARA");
         double saharaPenalty = 0.0;
         if (!isGreenSahara) {
@@ -772,265 +932,342 @@ public class HistoricalMapGenerator {
 
     // --- 2. CLEAN SOVEREIGNTY MAP ---
     public static BufferedImage generateCleanSovereigntyMap(String type, Scenario scenario) {
-        BufferedImage img = createPureTransparentCanvas();
-        List<EmpireTerritory> empires = getEmpiresForScenario(type);
+        long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage mask = loadElevationMask();
+
+        List<double[]> empireCores = new ArrayList<>();
+        if (year <= -2000L) {
+            empireCores.add(new double[]{31.2, 29.9, 240.0, 12.0});  // Memphis / Egypt
+            empireCores.add(new double[]{44.4, 32.5, 235.0, 10.0});  // Ur / Babylon
+            empireCores.add(new double[]{114.3, 34.8, 220.0, 10.0}); // Erlitou / Early China
+            empireCores.add(new double[]{71.5, 27.5, 210.0, 10.0});  // Mohenjo-Daro / Harappa
+        } else if (year <= -500L) {
+            empireCores.add(new double[]{31.2, 30.0, 240.0, 15.0});  // Egypt
+            empireCores.add(new double[]{44.4, 32.5, 240.0, 15.0});  // Babylon / Assyria
+            empireCores.add(new double[]{52.9, 29.9, 235.0, 18.0});  // Persepolis / Persia
+            empireCores.add(new double[]{108.9, 34.3, 235.0, 15.0}); // Chang'an / Zhou China
+            empireCores.add(new double[]{85.1, 25.6, 230.0, 15.0});  // Magadha / Pataliputra
+            empireCores.add(new double[]{23.7, 37.9, 220.0, 8.0});   // Athens / Greece
+            empireCores.add(new double[]{-94.5, 18.0, 180.0, 8.0});  // Olmec Core
+        } else if (year <= 500L) {
+            empireCores.add(new double[]{12.5, 41.9, 255.0, 24.0});  // Rome / Pax Romana
+            empireCores.add(new double[]{28.9, 41.0, 245.0, 20.0});  // Constantinople
+            empireCores.add(new double[]{108.9, 34.3, 250.0, 22.0}); // Han / Jin Chang'an
+            empireCores.add(new double[]{85.1, 25.6, 240.0, 18.0});  // Pataliputra / Gupta
+            empireCores.add(new double[]{44.6, 33.1, 235.0, 16.0});  // Ctesiphon / Sasanian
+            empireCores.add(new double[]{-89.0, 17.2, 200.0, 8.0});  // Classic Maya
+            empireCores.add(new double[]{-98.8, 19.7, 210.0, 8.0});  // Teotihuacan
+        } else if (year <= 1400L) {
+            empireCores.add(new double[]{114.3, 34.8, 255.0, 22.0}); // Kaifeng / Song & Yuan Dadu
+            empireCores.add(new double[]{44.4, 33.3, 245.0, 20.0});  // Abbasid Baghdad
+            empireCores.add(new double[]{28.9, 41.0, 230.0, 14.0});  // Byzantine Constantinople
+            empireCores.add(new double[]{2.3, 48.8, 225.0, 14.0});   // Kingdom of France / Paris
+            empireCores.add(new double[]{-0.1, 51.5, 220.0, 12.0});  // Kingdom of England / London
+            empireCores.add(new double[]{77.2, 28.6, 235.0, 16.0});  // Delhi Sultanate
+            empireCores.add(new double[]{-8.0, 12.5, 220.0, 15.0});  // Mali Empire / Niani
+            empireCores.add(new double[]{135.8, 35.0, 225.0, 10.0}); // Heian-kyo / Kyoto
+            empireCores.add(new double[]{-89.0, 20.5, 210.0, 8.0});  // Postclassic Maya / Chichen Itza
+            empireCores.add(new double[]{-68.7, -16.5, 205.0, 8.0}); // Tiwanaku / Wari
+        } else if (year <= 1700L) {
+            empireCores.add(new double[]{116.4, 39.9, 255.0, 24.0}); // Ming / Qing Beijing
+            empireCores.add(new double[]{28.9, 41.0, 250.0, 22.0});  // Ottoman Istanbul
+            empireCores.add(new double[]{77.2, 28.6, 245.0, 20.0});  // Mughal Delhi/Agra
+            empireCores.add(new double[]{51.7, 32.6, 240.0, 16.0});  // Safavid Isfahan
+            empireCores.add(new double[]{2.3, 48.8, 240.0, 16.0});   // France / Paris
+            empireCores.add(new double[]{-0.1, 51.5, 240.0, 15.0});  // Britain / London
+            empireCores.add(new double[]{-3.7, 40.4, 240.0, 18.0});  // Spain / Madrid
+            empireCores.add(new double[]{139.7, 35.7, 240.0, 12.0}); // Tokugawa Edo
+            empireCores.add(new double[]{37.6, 55.7, 235.0, 20.0});  // Tsardom of Russia / Moscow
+            if (year < 1492L) {
+                empireCores.add(new double[]{-99.1, 19.4, 235.0, 10.0}); // Aztec Tenochtitlan
+                empireCores.add(new double[]{-71.9, -13.5, 240.0, 18.0}); // Inca Cuzco
+            }
+        } else {
+            empireCores.add(new double[]{-77.0, 38.9, 255.0, 30.0}); // USA
+            empireCores.add(new double[]{116.4, 39.9, 255.0, 30.0}); // China
+            empireCores.add(new double[]{37.6, 55.7, 255.0, 32.0});  // Russia
+            empireCores.add(new double[]{77.2, 28.6, 250.0, 22.0});  // India
+            empireCores.add(new double[]{2.3, 48.8, 250.0, 18.0});   // EU / Western Europe
+            empireCores.add(new double[]{-47.9, -15.8, 240.0, 22.0}); // Brazil
+            empireCores.add(new double[]{149.1, -35.3, 235.0, 25.0}); // Australia
+            empireCores.add(new double[]{31.2, 30.0, 235.0, 16.0});  // North Africa / Middle East
+            empireCores.add(new double[]{139.7, 35.7, 250.0, 14.0}); // Japan
+            empireCores.add(new double[]{9.0, 7.5, 230.0, 18.0});    // West Africa
+            empireCores.add(new double[]{28.0, -26.0, 230.0, 16.0}); // Southern Africa
+        }
 
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
-                double lng = (x + 0.5) / WIDTH * 360.0 - 180.0;
+                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
 
-                for (EmpireTerritory emp : empires) {
-                    if (emp.contains(lng, lat)) {
-                        int r = emp.color.getRed();
-                        int g = emp.color.getGreen();
-                        int b = emp.color.getBlue();
-                        img.setRGB(x, y, (210 << 24) | (r << 16) | (g << 8) | b);
-                        break;
-                    }
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                if (land == 0) {
+                    img.setRGB(x, y, 0x000000);
+                    continue;
                 }
+
+                double maxGov = 25.0;
+                for (double[] ec : empireCores) {
+                    double d2 = distSq(lon, lat, ec[0], ec[1]);
+                    double sigma = ec[3];
+                    double gov = ec[2] * Math.exp(-d2 / (2.0 * sigma * sigma));
+                    maxGov = Math.max(maxGov, gov);
+                }
+
+                int gray = Math.clamp((int) maxGov, 0, 255);
+                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
-        return img;
+        return applyAltimetryCoastlineMask(img);
     }
 
     // --- 3. CLEAN ISOGLOSS MAP ---
-
     public static BufferedImage generateCleanIsoglossMap(String type, Scenario scenario) {
-        BufferedImage img = createPureTransparentCanvas();
-        List<LanguageZone> langZones = getLanguageZonesForScenario(type);
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage mask = loadElevationMask();
+
+        double[][] languageCenters = {
+            {15.0, 50.0, 210.0, 25.0},   // Indo-European (European)
+            {75.0, 25.0, 218.0, 25.0},   // Indo-European (Indo-Iranian)
+            {110.0, 32.0, 240.0, 28.0},  // Sino-Tibetan
+            {40.0, 22.0, 180.0, 25.0},   // Afroasiatic (Semitic/Berber)
+            {78.0, 13.0, 195.0, 20.0},   // Dravidian
+            {60.0, 60.0, 160.0, 30.0},   // Uralic
+            {85.0, 48.0, 175.0, 35.0},   // Turkic / Altaic
+            {105.0, 48.0, 170.0, 25.0},  // Mongolic
+            {138.0, 36.0, 225.0, 20.0},  // Japonic
+            {127.0, 37.0, 220.0, 18.0},  // Koreanic
+            {102.0, 16.0, 185.0, 20.0},  // Austroasiatic / Tai-Kadai
+            {15.0, 5.0, 140.0, 28.0},    // Niger-Congo (Bantu/Volta)
+            {28.0, 10.0, 150.0, 22.0},   // Nilo-Saharan
+            {20.0, -25.0, 105.0, 22.0},  // Khoisan
+            {120.0, 0.0, 190.0, 30.0},   // Austronesian
+            {142.0, -5.0, 155.0, 18.0},  // Trans-New Guinea
+            {134.0, -24.0, 130.0, 28.0}, // Pama-Nyungan
+            {-100.0, 42.0, 90.0, 30.0},  // North American Amerind
+            {-120.0, 58.0, 75.0, 25.0},  // Na-Dene
+            {-95.0, 65.0, 60.0, 30.0},   // Eskimo-Aleut
+            {-92.0, 16.0, 115.0, 18.0},  // Mayan / Mesoamerican
+            {-75.0, -12.0, 120.0, 22.0}, // Quechumaran
+            {-55.0, -15.0, 85.0, 28.0}   // Tupi-Guarani
+        };
 
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
-                double lng = (x + 0.5) / WIDTH * 360.0 - 180.0;
+                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
 
-                double totalWeight = 0.0;
-                double rSum = 0, gSum = 0, bSum = 0;
-
-                for (LanguageZone lz : langZones) {
-                    double d2 = distSq(lng, lat, lz.centerLng, lz.centerLat);
-                    if (d2 > 2500.0) continue;
-                    double w = 1.0 / Math.pow(d2 + 4.0, 1.5);
-                    totalWeight += w;
-                    rSum += w * lz.color.getRed();
-                    gSum += w * lz.color.getGreen();
-                    bSum += w * lz.color.getBlue();
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                if (land == 0) {
+                    img.setRGB(x, y, 0x000000);
+                    continue;
                 }
 
-                if (totalWeight > 0.0001) {
-                    int r = (int) Math.min(255, rSum / totalWeight);
-                    int gCol = (int) Math.min(255, gSum / totalWeight);
-                    int b = (int) Math.min(255, bSum / totalWeight);
-                    img.setRGB(x, y, (200 << 24) | (r << 16) | (gCol << 8) | b);
+                double wSum = 0.0;
+                double valSum = 0.0;
+                for (double[] lc : languageCenters) {
+                    double d2 = distSq(lon, lat, lc[0], lc[1]);
+                    double sigma = lc[3];
+                    double w = Math.exp(-d2 / (2.0 * sigma * sigma));
+                    wSum += w;
+                    valSum += w * lc[2];
                 }
+
+                double langVal = (wSum > 0.0001) ? (valSum / wSum) : 128.0;
+                int gray = Math.clamp((int) langVal, 20, 255);
+                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
-        return img;
+        return applyAltimetryCoastlineMask(img);
     }
 
     // --- 4. CLEAN KINSHIP MAP ---
-
     public static BufferedImage generateCleanKinshipMap(String type, Scenario scenario) {
-        BufferedImage img = createPureTransparentCanvas();
-        List<LanguageZone> kinshipZones = getKinshipZonesForScenario(type);
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage mask = loadElevationMask();
+
+        double[][] kinshipCenters = {
+            {10.0, 50.0, 195.0, 35.0},   // Western Europe Bilateral
+            {35.0, 55.0, 215.0, 38.0},   // Slavic Patrilineal Clan
+            {45.0, 32.0, 225.0, 30.0},   // Near East Segmentary Lineage
+            {78.0, 22.0, 230.0, 32.0},   // Indo-Aryan Gotra Patrilineal
+            {112.0, 34.0, 220.0, 35.0},  // Chinese Agnation/Zongzu Clan
+            {138.0, 36.0, 205.0, 25.0},  // Japanese Ie Stem Family
+            {65.0, 48.0, 210.0, 40.0},   // Central Asian Nomadic Clan
+            {20.0, 5.0, 155.0, 30.0},    // Central Bantu Patrilineal
+            {25.0, -10.0, 135.0, 25.0},  // Matrilineal Belt (Zambia/Congo)
+            {5.0, 8.0, 145.0, 25.0},     // West African Segmentary
+            {22.0, -25.0, 115.0, 25.0},  // Khoisan Band Kinship
+            {38.0, 5.0, 160.0, 25.0},    // East African Age-Set
+            {-76.0, 43.0, 95.0, 22.0},   // Iroquois Matrilineal Clan
+            {-100.0, 45.0, 115.0, 28.0}, // Plains Bilateral/Patrilineal
+            {-110.0, 35.0, 85.0, 20.0},  // Pueblo Matrilocal Clan
+            {-125.0, 52.0, 135.0, 22.0}, // Pacific Northwest Potlatch
+            {-90.0, 32.0, 105.0, 22.0},  // Muskogean Matrilineal
+            {-65.0, -3.0, 75.0, 30.0},   // Amazonian Moiety
+            {-74.0, -13.0, 125.0, 25.0}, // Andean Ayllu Bilateral
+            {-50.0, -22.0, 90.0, 25.0},  // Tupi-Guarani Lineage
+            {-68.0, -45.0, 65.0, 25.0},  // Patagonian Nomadic Band
+            {133.0, -25.0, 235.0, 30.0}, // Australian 8-Skin Subsection
+            {145.0, -5.0, 165.0, 20.0},  // New Guinea Segmentary Clan
+            {175.0, -20.0, 145.0, 25.0}  // Polynesian Ramage
+        };
 
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
-                double lng = (x + 0.5) / WIDTH * 360.0 - 180.0;
+                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
 
-                LanguageZone bestZone = null;
-                double minDist = Double.MAX_VALUE;
-
-                for (LanguageZone kz : kinshipZones) {
-                    double d2 = distSq(lng, lat, kz.centerLng, kz.centerLat);
-                    if (d2 < minDist) {
-                        minDist = d2;
-                        bestZone = kz;
-                    }
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                if (land == 0) {
+                    img.setRGB(x, y, 0x000000);
+                    continue;
                 }
 
-                if (bestZone != null && minDist <= 1600.0) {
-                    int r = bestZone.color.getRed();
-                    int g = bestZone.color.getGreen();
-                    int b = bestZone.color.getBlue();
-                    img.setRGB(x, y, (200 << 24) | (r << 16) | (g << 8) | b);
+                double wSum = 0.0;
+                double valSum = 0.0;
+                for (double[] kc : kinshipCenters) {
+                    double d2 = distSq(lon, lat, kc[0], kc[1]);
+                    double sigma = kc[3];
+                    double w = Math.exp(-d2 / (2.0 * sigma * sigma));
+                    wSum += w;
+                    valSum += w * kc[2];
                 }
+
+                double kinVal = (wSum > 0.0001) ? (valSum / wSum) : 128.0;
+                int gray = Math.clamp((int) kinVal, 20, 255);
+                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
-        return img;
+        return applyAltimetryCoastlineMask(img);
     }
 
     // --- 5. CLEAN RITUALS MAP ---
-
     public static BufferedImage generateCleanRitualsMap(String type, Scenario scenario) {
-        BufferedImage img = createPureTransparentCanvas();
-        List<LanguageZone> sacredSites = getSacredSitesForScenario(type);
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage mask = loadElevationMask();
+
+        double[][] sacredSites = {
+            {35.2, 31.8, 255.0, 20.0},  // Jerusalem
+            {39.8, 21.4, 250.0, 20.0},  // Mecca
+            {12.5, 41.9, 245.0, 18.0},  // Rome / Vatican
+            {83.0, 25.3, 255.0, 20.0},  // Varanasi / Ganges
+            {91.1, 29.6, 240.0, 18.0},  // Lhasa / Mount Kailash
+            {117.1, 36.3, 240.0, 18.0}, // Mount Tai / Qufu
+            {138.7, 35.4, 230.0, 15.0}, // Mount Fuji / Ise
+            {32.6, 25.7, 245.0, 14.0},  // Karnak / Luxor
+            {44.4, 32.5, 235.0, 14.0},  // Babylon / Eridu
+            {103.9, 13.4, 240.0, 16.0}, // Angkor Wat
+            {110.2, -7.6, 235.0, 14.0}, // Borobudur
+            {131.0, -25.3, 245.0, 22.0},// Uluru / Kata Tjuta
+            {-98.8, 19.7, 245.0, 16.0}, // Teotihuacan / Cholula
+            {-71.9, -13.5, 245.0, 18.0},// Coricancha / Cuzco
+            {-68.7, -16.5, 240.0, 16.0},// Tiwanaku
+            {-1.8, 51.2, 230.0, 12.0},  // Stonehenge
+            {22.5, 38.5, 235.0, 12.0},  // Delphi
+            {30.9, -20.3, 225.0, 16.0}  // Great Zimbabwe
+        };
 
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
-                double lng = (x + 0.5) / WIDTH * 360.0 - 180.0;
+                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
 
-                double rSum = 0, gSum = 0, bSum = 0, wSum = 0;
-                for (LanguageZone ss : sacredSites) {
-                    double d2 = distSq(lng, lat, ss.centerLng, ss.centerLat);
-                    double w = Math.exp(-d2 / (2.0 * 35.0));
-                    wSum += w;
-                    rSum += w * ss.color.getRed();
-                    gSum += w * ss.color.getGreen();
-                    bSum += w * ss.color.getBlue();
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                if (land == 0) {
+                    img.setRGB(x, y, 0x000000);
+                    continue;
                 }
 
-                if (wSum > 0.02) {
-                    int r = (int) Math.min(255, rSum);
-                    int gCol = (int) Math.min(255, gSum);
-                    int b = (int) Math.min(255, bSum);
-                    int alpha = (int) Math.clamp(wSum * 255.0, 80.0, 230.0);
-                    img.setRGB(x, y, (alpha << 24) | (r << 16) | (gCol << 8) | b);
+                double maxRitual = 30.0;
+                for (double[] ss : sacredSites) {
+                    double d2 = distSq(lon, lat, ss[0], ss[1]);
+                    double sigma = ss[3];
+                    double val = ss[2] * Math.exp(-d2 / (2.0 * sigma * sigma));
+                    maxRitual = Math.max(maxRitual, val);
                 }
+
+                int gray = Math.clamp((int) maxRitual, 0, 255);
+                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
-        return img;
-    }
-
-
-    // --- SCENARIO BOUNDS FOR ALL 19 SCENARIOS ---
-
-    public static boolean isInScenarioBounds(String type, double lng, double lat) {
-        if (type == null) return true;
-
-        switch (type.toUpperCase()) {
-            case "ONE_CONTINENT": // Sortie d'Afrique (-100k)
-                if (lng < -25.0 || (lat < 10.0 && lng > 95.0) || (lat < -10.0 && lng > 110.0)) return false;
-                return (lat >= -35.0 && lat <= 65.0 && lng >= -18.0 && lng <= 125.0);
-
-            case "SAHUL_MIGRATION": // Sahul (-50k)
-                return (lat >= -45.0 && lat <= 15.0 && lng >= 105.0 && lng <= 160.0);
-
-            case "BERINGIA_AMERICAS": // Beringia (-20k)
-                return (lat >= 30.0 && lat <= 78.0 && (lng >= 130.0 || lng <= -100.0));
-
-            case "FERTILE_CRESCENT_8000BC": // Croissant Fertile (-8000)
-                return (lat >= 20.0 && lat <= 45.0 && lng >= 25.0 && lng <= 65.0);
-
-            case "GREEN_SAHARA": // Sahara Vert (-6000)
-                return (lat >= 10.0 && lat <= 36.0 && lng >= -18.0 && lng <= 40.0);
-
-            case "ROMAN_EMPIRE_0": // Empire Romain (An 0)
-                return (lat >= 20.0 && lat <= 60.0 && lng >= -15.0 && lng <= 50.0);
-
-            case "SONG_DYNASTY_1000": // Dynastie Song (1000)
-                return (lat >= 15.0 && lat <= 55.0 && lng >= 70.0 && lng <= 140.0);
-
-            case "MALI_EMPIRE_1324": // Empire du Mali (1324)
-                return (lat >= 4.0 && lat <= 30.0 && lng >= -18.0 && lng <= 20.0);
-
-            case "EGYPT_NILE": // Égypte & Nil (-3000)
-                return (lat >= 15.0 && lat <= 33.0 && lng >= 24.0 && lng <= 36.0);
-
-            case "MESOPOTAMIA_ASSYRIA": // Mésopotamie (-2000)
-                return (lat >= 28.0 && lat <= 40.0 && lng >= 38.0 && lng <= 50.0);
-
-            case "INDIA_MAURYA": // Empire Maurya (-250)
-                return (lat >= 5.0 && lat <= 38.0 && lng >= 65.0 && lng <= 95.0);
-
-            case "SAKOKU_JAPAN": // Japon Sakoku (1630)
-                return (lat >= 28.0 && lat <= 46.0 && lng >= 128.0 && lng <= 146.0);
-
-            case "MESOAMERICA": // Mésoamérique (-1200)
-                return (lat >= 12.0 && lat <= 24.0 && lng >= -105.0 && lng <= -86.0);
-
-            case "AMERICAS_1491": // Amériques (1491)
-                return (lat >= -56.0 && lat <= 72.0 && lng >= -170.0 && lng <= -34.0);
-
-            case "URBAN_CLUSTERS": // Modern Urban Clusters
-                return true;
-
-            default:
-                return true;
-        }
-    }
-
-    // --- LANDMASK UTILITIES ---
-
-    private static boolean[][] FAST_LAND_GRID;
-
-    private static BufferedImage createPureTransparentCanvas() {
-        return new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-    }
-
-    public static boolean isLand(double lng, double lat) {
-        if (FAST_LAND_GRID != null) {
-            int gx = Math.max(0, Math.min(719, (int) ((lng + 180.0) * 2.0)));
-            int gy = Math.max(0, Math.min(359, (int) ((90.0 - lat) * 2.0)));
-            return FAST_LAND_GRID[gx][gy];
-        }
-
-        int x = (int) ((lng + 180.0) / 360.0 * WIDTH);
-        int y = (int) ((90.0 - lat) / 180.0 * HEIGHT);
-        Point p = new Point(x, y);
-
-        for (Path2D land : LAND_POLYGONS) {
-            if (land.contains(p)) {
-                for (Path2D sea : SEA_POLYGONS) {
-                    if (sea.contains(p)) return false;
-                }
-                return true;
-            }
-        }
-        return false;
+        return applyAltimetryCoastlineMask(img);
     }
 
     // --- 6. CLEAN TECHNOLOGY & SUBSISTENCE MAP ---
     private static BufferedImage generateCleanTechnologyMap(String type, Scenario scenario) {
-        BufferedImage img = createPureTransparentCanvas();
+        long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage mask = loadElevationMask();
+
+        double baseTech = 25.0;
+        if (year <= -5000L) baseTech = 30.0;
+        else if (year <= 0L) baseTech = 70.0;
+        else if (year <= 1400L) baseTech = 110.0;
+        else if (year <= 1800L) baseTech = 160.0;
+        else if (year <= 1950L) baseTech = 210.0;
+        else baseTech = 245.0;
+
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
-                double lng = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
 
-                Color techColor = null;
-                if (type.equalsIgnoreCase("FERTILE_CRESCENT_8000BC") || type.equalsIgnoreCase("GREEN_SAHARA")) {
-                    if (lng >= 25.0 && lng <= 55.0 && lat >= 25.0 && lat <= 40.0) {
-                        techColor = new Color(52, 211, 153);
-                    }
-                } else if (type.equalsIgnoreCase("BRONZE_AGE_COLLAPSE") || type.equalsIgnoreCase("EGYPT_NILE") || type.equalsIgnoreCase("MESOPOTAMIA_ASSYRIA")) {
-                    if (lng >= 20.0 && lng <= 50.0 && lat >= 20.0 && lat <= 40.0) {
-                        techColor = new Color(251, 191, 36);
-                    }
-                } else if (type.equalsIgnoreCase("SONG_DYNASTY_1000") || type.equalsIgnoreCase("MALI_EMPIRE_1324")) {
-                    if (lng >= 95.0 && lng <= 125.0) {
-                        techColor = new Color(168, 85, 247);
-                    }
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                if (land == 0) {
+                    img.setRGB(x, y, 0x000000);
+                    continue;
                 }
 
-                if (techColor != null) {
-                    int r = techColor.getRed();
-                    int g = techColor.getGreen();
-                    int b = techColor.getBlue();
-                    img.setRGB(x, y, (190 << 24) | (r << 16) | (g << 8) | b);
-                }
+                double tech = baseTech;
+                double china = Math.exp(-(Math.pow(lat - 34.0, 2) + Math.pow(lon - 114.0, 2)) / 120.0);
+                double europe = Math.exp(-(Math.pow(lat - 50.0, 2) + Math.pow(lon - 6.0, 2)) / 100.0);
+                double mideast = Math.exp(-(Math.pow(lat - 33.0, 2) + Math.pow(lon - 44.0, 2)) / 80.0);
+                double meso = Math.exp(-(Math.pow(lat - 19.0, 2) + Math.pow(lon - (-99.0), 2)) / 60.0);
+                double andes = Math.exp(-(Math.pow(lat - (-13.0), 2) + Math.pow(lon - (-72.0), 2)) / 60.0);
+
+                if (year <= 0) tech += (mideast * 50.0 + china * 45.0 + europe * 30.0 + meso * 25.0 + andes * 25.0);
+                else if (year <= 1400) tech += (china * 65.0 + mideast * 50.0 + europe * 40.0 + meso * 30.0 + andes * 30.0);
+                else if (year <= 1850) tech += (europe * 70.0 + china * 45.0);
+                else tech += (europe * 30.0 + china * 30.0);
+
+                int gray = Math.clamp((int) tech, 15, 255);
+                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
-        return img;
+        return applyAltimetryCoastlineMask(img);
     }
 
     // --- 7. CLEAN TRADE NETWORK MAP ---
     private static BufferedImage generateCleanTradeNetworkMap(String type, Scenario scenario) {
-        BufferedImage img = createPureTransparentCanvas();
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Draw Trade Corridors directly on transparent ARGB overlay
-        drawTradeRoute(g, new double[][]{{115, 34}, {100, 38}, {75, 39}, {62, 37}, {44, 33}, {28, 41}}, new Color(236, 72, 153), 3.0); // Silk Road
-        drawTradeRoute(g, new double[][]{{-4, 12}, {-1, 18}, {3, 27}, {10, 36}}, new Color(245, 158, 11), 2.5); // Trans-Saharan Gold & Salt
-        drawTradeRoute(g, new double[][]{{45, 12}, {55, 24}, {75, 12}, {102, 2}, {115, -6}}, new Color(6, 182, 212), 2.5); // Indian Ocean Maritime
-        drawTradeRoute(g, new double[][]{{6, 53}, {12, 48}, {24, 50}, {30, 60}}, new Color(59, 130, 246), 2.0); // Amber & Fur Corridors
+        // Draw Historical Trade Arteries in high grayscale intensity
+        drawTradeRoute(g, new double[][]{{115, 34}, {100, 38}, {75, 39}, {62, 37}, {44, 33}, {28, 41}}, new Color(240, 240, 240), 4.0); // Silk Road
+        drawTradeRoute(g, new double[][]{{-4, 12}, {-1, 18}, {3, 27}, {10, 36}}, new Color(220, 220, 220), 3.5); // Trans-Saharan Gold & Salt
+        drawTradeRoute(g, new double[][]{{45, 12}, {55, 24}, {75, 12}, {102, 2}, {115, -6}}, new Color(210, 210, 210), 3.5); // Indian Ocean Maritime
+        drawTradeRoute(g, new double[][]{{6, 53}, {12, 48}, {24, 50}, {30, 60}}, new Color(200, 200, 200), 3.0); // Amber & Fur Corridors
+        drawTradeRoute(g, new double[][]{{-77, -12}, {-72, -14}, {-68, -17}, {-65, -20}}, new Color(210, 210, 210), 3.5); // Inca Qhapaq Ñan
+        drawTradeRoute(g, new double[][]{{-99, 19}, {-96, 17}, {-92, 15}, {-88, 14}}, new Color(200, 200, 200), 3.0); // Mesoamerican Trade Network
 
         g.dispose();
-        return img;
+        return applyAltimetryCoastlineMask(img);
     }
 
     private static void drawTradeRoute(Graphics2D g, double[][] coords, Color col, double strokeWidth) {
@@ -1047,73 +1284,134 @@ public class HistoricalMapGenerator {
 
     // --- 8. CLEAN INSTITUTIONAL COMPLEXITY MAP (SESHAT) ---
     private static BufferedImage generateCleanInstitutionalComplexityMap(String type, Scenario scenario) {
-        BufferedImage img = createPureTransparentCanvas();
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage mask = loadElevationMask();
         List<CityPoint> cities = getCitiesForScenario(type);
+
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
-                double lng = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
 
-                double maxInst = 0.0;
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                if (land == 0) {
+                    img.setRGB(x, y, 0x000000);
+                    continue;
+                }
+
+                double maxInst = 20.0;
                 for (CityPoint cp : cities) {
-                    double d2 = distSq(lng, lat, cp.lng, cp.lat);
-                    double val = cp.weight * Math.exp(-d2 / (2.0 * cp.sigma * cp.sigma));
+                    double d2 = distSq(lon, lat, cp.lng, cp.lat);
+                    double val = cp.weight * Math.exp(-d2 / (2.0 * cp.sigma * cp.sigma)) * 55.0;
                     maxInst = Math.max(maxInst, val);
                 }
 
-                if (maxInst > 0.1) {
-                    double norm = Math.clamp(maxInst / 4.0, 0.0, 1.0);
-                    Color instColor = Color.getHSBColor((float) ((1.0 - norm) * 0.65), 0.85f, (float) (0.4 + 0.6 * norm));
-                    int alpha = (int) Math.clamp(norm * 240.0, 90.0, 230.0);
-                    img.setRGB(x, y, (alpha << 24) | (instColor.getRed() << 16) | (instColor.getGreen() << 8) | instColor.getBlue());
-                }
+                int gray = Math.clamp((int) maxInst, 0, 255);
+                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
-        return img;
+        return applyAltimetryCoastlineMask(img);
     }
 
     // --- 9. CLEAN ECOLOGICAL FOOTPRINT MAP ---
     private static BufferedImage generateCleanEcologicalFootprintMap(String type, Scenario scenario) {
-        BufferedImage img = createPureTransparentCanvas();
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage mask = loadElevationMask();
+
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
-                double lng = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
 
-                double ecoStrain = 0.0;
-                if (lng >= 35.0 && lng <= 48.0 && lat >= 30.0 && lat <= 38.0) ecoStrain = 0.85; // Mesopotamia Salinization
-                else if (lng >= -9.0 && lng <= 35.0 && lat >= 34.0 && lat <= 45.0) ecoStrain = 0.65; // Mediterranean Deforestation
-                else if (lng >= 105.0 && lng <= 122.0 && lat >= 30.0 && lat <= 40.0) ecoStrain = 0.75; // Yellow River Loess Erosion
-
-                if (ecoStrain > 0.05) {
-                    Color ecoColor = new Color((int)(ecoStrain * 255), (int)((1.0 - ecoStrain) * 180), 40);
-                    int alpha = (int) (ecoStrain * 200);
-                    img.setRGB(x, y, (alpha << 24) | (ecoColor.getRed() << 16) | (ecoColor.getGreen() << 8) | ecoColor.getBlue());
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                if (land == 0) {
+                    img.setRGB(x, y, 0x000000);
+                    continue;
                 }
+
+                double ecoStrain = 20.0;
+                if (lon >= 35.0 && lon <= 48.0 && lat >= 30.0 && lat <= 38.0) ecoStrain = 210.0; // Mesopotamia Salinization
+                else if (lon >= -9.0 && lon <= 35.0 && lat >= 34.0 && lat <= 45.0) ecoStrain = 175.0; // Mediterranean Deforestation
+                else if (lon >= 105.0 && lon <= 122.0 && lat >= 30.0 && lat <= 40.0) ecoStrain = 195.0; // Yellow River Loess Erosion
+                else if (lon >= 68.0 && lon <= 88.0 && lat >= 20.0 && lat <= 32.0) ecoStrain = 180.0; // Indo-Gangetic Agricultural Strain
+                else if (lon >= 2.0 && lon <= 15.0 && lat >= 48.0 && lat <= 54.0) ecoStrain = 160.0; // European Agricultural Clearing
+
+                int gray = Math.clamp((int) ecoStrain, 0, 255);
+                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
-        return img;
+        return applyAltimetryCoastlineMask(img);
     }
 
     // --- 10. CLEAN PATHOGEN IMMUNITY MAP ---
-    private static BufferedImage generateCleanPathogenImmunityMap(String type, Scenario scenario) {
-        BufferedImage img = createPureTransparentCanvas();
+    public static BufferedImage generateCleanPathogenImmunityMap(String type, Scenario scenario) {
+        long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage mask = loadElevationMask();
+
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
-                double lng = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
 
-                Color pathColor = null;
-                if (lat >= -15.0 && lat <= 15.0 && lng >= -80.0 && lng <= 140.0) {
-                    pathColor = new Color(220, 38, 38); // Endemic Tropical Reservoirs (Red)
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                if (land == 0) {
+                    img.setRGB(x, y, 0x000000);
+                    continue;
                 }
 
-                if (pathColor != null) {
-                    img.setRGB(x, y, (180 << 24) | (pathColor.getRed() << 16) | (pathColor.getGreen() << 8) | pathColor.getBlue());
+                // 1. Vector-borne tropical reservoir component (Malaria, Dengue, Yellow Fever, Trypanosomiasis)
+                double absLat = Math.abs(lat);
+                double tropicalFactor = Math.max(0.0, Math.cos(Math.toRadians(Math.min(90.0, absLat * 3.2))));
+                double tropicalIntensity = tropicalFactor * 160.0;
+
+                double amazon = Math.exp(-(Math.pow(lat - (-3.0), 2) + Math.pow(lon - (-60.0), 2)) / 180.0);
+                double congo = Math.exp(-(Math.pow(lat - (0.0), 2) + Math.pow(lon - (22.0), 2)) / 140.0);
+                double ganges = Math.exp(-(Math.pow(lat - (24.0), 2) + Math.pow(lon - (85.0), 2)) / 80.0);
+                double niger = Math.exp(-(Math.pow(lat - (10.0), 2) + Math.pow(lon - (5.0), 2)) / 90.0);
+                double mekong = Math.exp(-(Math.pow(lat - (14.0), 2) + Math.pow(lon - (105.0), 2)) / 80.0);
+                tropicalIntensity += (amazon * 55.0 + congo * 65.0 + ganges * 60.0 + niger * 60.0 + mekong * 50.0);
+
+                // 2. Old World Zoonotic Crowd Disease Reservoir (Smallpox, Measles, Plague, Cholera)
+                boolean isOldWorld = lon >= -20.0 && lon <= 150.0 && lat >= -35.0 && lat <= 68.0;
+                double crowdIntensity = 0.0;
+                if (isOldWorld) {
+                    double medit = Math.exp(-(Math.pow(lat - 38.0, 2) + Math.pow(lon - 15.0, 2)) / 160.0);
+                    double china = Math.exp(-(Math.pow(lat - 34.0, 2) + Math.pow(lon - 114.0, 2)) / 140.0);
+                    double india = Math.exp(-(Math.pow(lat - 22.0, 2) + Math.pow(lon - 78.0, 2)) / 120.0);
+                    double mideast = Math.exp(-(Math.pow(lat - 32.0, 2) + Math.pow(lon - 44.0, 2)) / 100.0);
+                    double europe = Math.exp(-(Math.pow(lat - 48.0, 2) + Math.pow(lon - 10.0, 2)) / 120.0);
+                    crowdIntensity = (medit * 75.0 + china * 90.0 + india * 85.0 + mideast * 80.0 + europe * 75.0);
                 }
+
+                // 3. Historical Pre-1492 Isolation of Americas & Oceania
+                boolean isAmericas = lon <= -30.0 && lon >= -170.0;
+                boolean isAustralasia = lat <= -10.0 && lon >= 110.0 && lon <= 180.0;
+                double finalPathogen = 20.0;
+
+                if (isAmericas || isAustralasia) {
+                    if (year < 1492L) {
+                        finalPathogen = 15.0 + (isAmericas ? amazon * 40.0 : 0.0);
+                    } else {
+                        double timeSinceContact = Math.min(100.0, year - 1492L);
+                        double shockFactor = Math.min(1.0, timeSinceContact / 30.0);
+                        finalPathogen = 15.0 + shockFactor * 210.0;
+                    }
+                } else {
+                    finalPathogen = Math.min(255.0, 25.0 + tropicalIntensity * 0.6 + crowdIntensity * 0.7);
+                }
+
+                int gray = Math.clamp((int) finalPathogen, 0, 255);
+                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
-        return img;
+        return applyAltimetryCoastlineMask(img);
     }
 
     private static void initHighPrecisionGeographicPolygons() {

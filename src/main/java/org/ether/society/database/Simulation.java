@@ -45,8 +45,8 @@ import java.time.LocalDateTime;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 2.0.0
- * @since 2.0.0
+ * @version 1.0.0-beta.1-beta.1
+ * @since 1.0.0
  */
 @Entity
 @Table(name = "simulations")
@@ -340,4 +340,5 @@ public class Simulation {
         return lastTickAt;
     }
 }
+
 

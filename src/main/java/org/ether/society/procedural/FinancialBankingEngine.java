@@ -20,7 +20,7 @@ import java.util.List;
  * 3. <b>Inflation & Financial Crises</b>: Over-issuance of credit or debasement of currency increases Gini inequality and triggers financial panics.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.9.0
+ * @version 1.0.0-beta.1
  */
 public class FinancialBankingEngine {
     private static final Logger logger = LoggerFactory.getLogger(FinancialBankingEngine.class);
@@ -66,3 +66,4 @@ public class FinancialBankingEngine {
         }
     }
 }
+

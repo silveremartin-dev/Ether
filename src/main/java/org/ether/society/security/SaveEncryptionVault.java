@@ -24,7 +24,7 @@ import java.util.Arrays;
  * Protects saved worlds and scenarios against unauthorized offline tampering or extraction.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class SaveEncryptionVault {
     private static final Logger logger = LoggerFactory.getLogger(SaveEncryptionVault.class);

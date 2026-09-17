@@ -20,7 +20,7 @@ import java.util.List;
  * 3. Severe salinization causes agricultural crash and historical shift of civilizational center north.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class FertileCrescentSalinizationEngine {
     private static final Logger logger = LoggerFactory.getLogger(FertileCrescentSalinizationEngine.class);
@@ -53,3 +53,4 @@ public class FertileCrescentSalinizationEngine {
     public static double getSalinizationRatePerCentury() { return salinizationRatePerCentury; }
     public static void setSalinizationRatePerCentury(double rate) { salinizationRatePerCentury = Math.max(0.0, rate); }
 }
+

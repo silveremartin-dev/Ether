@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -33,6 +34,12 @@ public class SplashScreen {
         Label titleLabel = new Label(I18n.getOrDefault("splash.title", "ETHER"));
         titleLabel.setStyle("-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-effect: dropshadow(three-pass-box, rgba(56,189,248,0.6), 12, 0, 0, 0);");
 
+        Label versionBadge = new Label(I18n.getOrDefault("splash.version", "v1.0 b1"));
+        versionBadge.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-background-color: rgba(56, 189, 248, 0.15); -fx-padding: 3 8; -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.5); -fx-border-radius: 6;");
+
+        HBox titleBox = new HBox(10, titleLabel, versionBadge);
+        titleBox.setAlignment(Pos.CENTER);
+
         Label subtitleLabel = new Label(I18n.getOrDefault("splash.subtitle", "Cliodynamic Engine & Planetary Biophysics"));
         subtitleLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #94a3b8; -fx-font-weight: bold;");
 
@@ -47,7 +54,7 @@ public class SplashScreen {
         subStatusLabel = new Label(I18n.getOrDefault("splash.status.loading", "Please wait while subsystems are loading..."));
         subStatusLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #64748b;");
 
-        VBox content = new VBox(14, titleLabel, subtitleLabel, progressBar, statusLabel, subStatusLabel);
+        VBox content = new VBox(14, titleBox, subtitleLabel, progressBar, statusLabel, subStatusLabel);
         content.setAlignment(Pos.CENTER);
         content.setStyle("-fx-background-color: rgba(15, 23, 42, 0.96); -fx-padding: 32 44; -fx-background-radius: 16; -fx-border-color: #38bdf8; -fx-border-radius: 16; -fx-border-width: 1.5;");
 

@@ -19,7 +19,7 @@ import java.util.List;
  * 2. <b>Top-of-Atmosphere Solar Irradiance</b>: S₀ = 1361 W/m² attenuated by atmospheric optical transmittance (τ).
  *
  * @author Silvere Martin-Michiellot
- * @version 3.1.0
+ * @version 1.0.0-beta.1
  */
 public class RenewableEnergyPhysicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(RenewableEnergyPhysicsEngine.class);
@@ -67,3 +67,4 @@ public class RenewableEnergyPhysicsEngine {
         }
     }
 }
+

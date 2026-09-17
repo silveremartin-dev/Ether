@@ -20,7 +20,7 @@ import java.util.List;
  * 3. <b>Deep Mining Depth Cutoff</b>: Limits maximum mineral extraction depth based on cooling technology era.
  *
  * @author Silvere Martin-Michiellot
- * @version 3.2.0
+ * @version 1.0.0-beta.1
  */
 public class CrustalGeothermalEngine {
     private static final Logger logger = LoggerFactory.getLogger(CrustalGeothermalEngine.class);
@@ -66,3 +66,4 @@ public class CrustalGeothermalEngine {
         }
     }
 }
+

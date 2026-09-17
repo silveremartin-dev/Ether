@@ -54,7 +54,7 @@ import java.util.*;
  * 2D spatial cartographic tensor comparison with timeline date scrubber, and root cause analysis.
  *
  * @author Silvere Martin-Michiellot
- * @version 5.0.0
+ * @version 1.0.0-beta.1
  */
 public class ComparativeAnalyticsPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ComparativeAnalyticsPanel.class);
@@ -1271,3 +1271,4 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 }
+

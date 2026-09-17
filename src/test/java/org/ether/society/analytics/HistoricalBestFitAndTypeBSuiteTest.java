@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * and the Historical Telemetry Best-Fit Kernel (RMSE and R^2).
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class HistoricalBestFitAndTypeBSuiteTest {
 
@@ -66,3 +66,4 @@ public class HistoricalBestFitAndTypeBSuiteTest {
         }, "Isolated Type B hybrid executions should complete cleanly.");
     }
 }
+

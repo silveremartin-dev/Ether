@@ -22,8 +22,8 @@ public class GenerateAllScenarioMapsTest {
         List<Scenario> scenarios = Scenario.getBuiltInScenarios();
         assertTrue(scenarios.size() >= 20, "Must have all canonical scenarios defined");
 
-        // Ensure all scenario maps are generated in data/maps/Earth/<year>/
-        HistoricalMapGenerator.ensureAllScenarioMapsGenerated();
+        // Force regeneration of all scenario maps in data/maps/ether/earth/<year>/
+        HistoricalMapGenerator.ensureAllScenarioMapsGenerated(true);
 
         String[] requiredTensorFiles = {
             "density.png", "isogloss.png", "kinship.png", "rituals.png",
@@ -33,18 +33,16 @@ public class GenerateAllScenarioMapsTest {
 
         for (Scenario sc : scenarios) {
             long year = sc.getStartDateYear();
-            // Primary path: data/maps/ether/earth/<year>/
             File yearFolder = new File("data/maps/ether/earth/" + year);
-            // Legacy fallbacks
-            if (!yearFolder.exists()) yearFolder = new File("data/maps/Earth/" + year);
-            if (!yearFolder.exists()) yearFolder = new File("data/maps/earth/" + year);
             assertTrue(yearFolder.exists() && yearFolder.isDirectory(),
                     "Scenario directory 'data/maps/ether/earth/" + year + "' must exist for scenario '" + sc.getName() + "'");
 
             for (String mapFile : requiredTensorFiles) {
+                String stdFile = "earth_" + year + "_" + mapFile;
+                File fStd = new File(yearFolder, stdFile);
                 File f = new File(yearFolder, mapFile);
-                assertTrue(f.exists() && f.length() > 500,
-                        "Map file '" + mapFile + "' in 'data/maps/Earth/" + year + "/' must exist and have content for " + sc.getName());
+                assertTrue((fStd.exists() && fStd.length() > 500) || (f.exists() && f.length() > 500),
+                        "Map file '" + stdFile + "' in 'data/maps/ether/earth/" + year + "/' must exist and have content for " + sc.getName());
             }
 
             // Verify loading into Scenario instance

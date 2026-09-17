@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit Test Suite validating AES-256 GCM Encryption, Decryption, and Security Audit Logging.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class EtherSecurityTestSuite {
 
@@ -37,3 +37,4 @@ public class EtherSecurityTestSuite {
         });
     }
 }
+

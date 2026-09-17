@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit Test Suite validating the World3 (Meadows Limits to Growth) vs Kurzweil (Law of Accelerating Returns LOAR) comparator.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class World3VsKurzweilTestSuite {
 
@@ -47,3 +47,4 @@ public class World3VsKurzweilTestSuite {
         assertNotNull(report.dominantDriverSummary, "Summary should describe dominant system driver.");
     }
 }
+

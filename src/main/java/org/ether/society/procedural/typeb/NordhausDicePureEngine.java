@@ -17,7 +17,7 @@ import java.util.List;
  * Pure standalone model of economic growth coupled with quadratic climate damage functions.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.0.0
+ * @version 1.0.0-beta.1
  */
 public class NordhausDicePureEngine {
     private static final Logger logger = LoggerFactory.getLogger(NordhausDicePureEngine.class);
@@ -40,3 +40,4 @@ public class NordhausDicePureEngine {
     public double getGdp() { return gdp; }
     public double getTemperatureAnomaly() { return temperatureAnomaly; }
 }
+

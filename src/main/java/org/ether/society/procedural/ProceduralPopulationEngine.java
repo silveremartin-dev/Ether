@@ -26,7 +26,7 @@ import java.util.List;
  *    - Technological adaptation capacity (Neolithic = strict river/coastal dependence; 17th-18th century = high variable adaptation).
  *
  * @author Silvere Martin-Michiellot
- * @version 2.3.0
+ * @version 1.0.0-beta.1
  */
 public class ProceduralPopulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(ProceduralPopulationEngine.class);
@@ -571,3 +571,4 @@ public class ProceduralPopulationEngine {
         }
     }
 }
+

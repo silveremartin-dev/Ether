@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Replaces static/hardcoded routing tables with automated, physically adaptive graph recalculations.
  *
  * @author Silvere Martin-Michiellot
- * @version 4.2.0
+ * @version 1.0.0-beta.1
  */
 public class DynamicMaritimeRoutingGraph {
     private static final Logger logger = LoggerFactory.getLogger(DynamicMaritimeRoutingGraph.class);
@@ -240,3 +240,4 @@ public class DynamicMaritimeRoutingGraph {
         cachedNodeCount = -1;
     }
 }
+

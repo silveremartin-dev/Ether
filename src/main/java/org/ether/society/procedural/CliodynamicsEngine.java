@@ -23,7 +23,7 @@ import java.util.List;
  * 4. State Fragmentation & Rebellions when instability reaches critical thresholds.
  *
  * @author Silvere Martin-Michiellot
- * @version 2.4.0
+ * @version 1.0.0-beta.1
  */
 public class CliodynamicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(CliodynamicsEngine.class);
@@ -72,3 +72,4 @@ public class CliodynamicsEngine {
         nation.setEliteOverproduction(Math.max(0.1, nation.getEliteOverproduction() - 0.20));
     }
 }
+

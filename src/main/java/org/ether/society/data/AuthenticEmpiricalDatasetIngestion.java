@@ -14,6 +14,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,71 +47,62 @@ public class AuthenticEmpiricalDatasetIngestion {
 
         try (DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(shpFile), 65536))) {
             int fileCode = dis.readInt();
-            if (fileCode != 9994) {
-                logger.warn("Not a valid shapefile: {}", shpFile.getAbsolutePath());
-                return list;
+            if (fileCode != 0x0000270a) {
+                return list; // Not a valid shapefile
             }
-            dis.skipBytes(20);
+            dis.skipBytes(20); // 5 unused ints
             int fileLengthWords = dis.readInt();
             int version = Integer.reverseBytes(dis.readInt());
             int shapeType = Integer.reverseBytes(dis.readInt());
             dis.skipBytes(64); // Bounding box
 
-            while (dis.available() > 0) {
+            while (true) {
+                if (list.size() >= 5000) {
+                    break;
+                }
                 try {
                     int recNum = dis.readInt();
-                    int contentWords = dis.readInt();
-                    int contentBytes = contentWords * 2;
-                    if (contentBytes < 4) break;
+                    int contentLenWords = dis.readInt();
+                    int contentLenBytes = contentLenWords * 2;
+                    if (contentLenBytes <= 0) continue;
 
-                    int recShapeType = Integer.reverseBytes(dis.readInt());
-                    int remBytes = contentBytes - 4;
+                    byte[] recBytes = new byte[contentLenBytes];
+                    dis.readFully(recBytes);
+
+                    ByteBuffer bb = ByteBuffer.wrap(recBytes).order(ByteOrder.LITTLE_ENDIAN);
+                    int recShapeType = bb.getInt(0);
 
                     if (recShapeType == 1 || recShapeType == 11 || recShapeType == 21) { // Point
-                        double lon = Double.longBitsToDouble(Long.reverseBytes(dis.readLong()));
-                        double lat = Double.longBitsToDouble(Long.reverseBytes(dis.readLong()));
-                        if (lon >= -180.0 && lon <= 180.0 && lat >= -90.0 && lat <= 90.0) {
-                            list.add(new double[]{lon, lat, 8.0, defaultWeight});
-                        }
-                        if (remBytes > 16) dis.skipBytes(remBytes - 16);
-                    } else if (recShapeType == 3 || recShapeType == 5 || recShapeType == 13 || recShapeType == 15) { // PolyLine / Polygon
-                        if (remBytes < 40) {
-                            dis.skipBytes(remBytes);
-                            continue;
-                        }
-                        double xmin = Double.longBitsToDouble(Long.reverseBytes(dis.readLong()));
-                        double ymin = Double.longBitsToDouble(Long.reverseBytes(dis.readLong()));
-                        double xmax = Double.longBitsToDouble(Long.reverseBytes(dis.readLong()));
-                        double ymax = Double.longBitsToDouble(Long.reverseBytes(dis.readLong()));
-                        int numParts = Integer.reverseBytes(dis.readInt());
-                        int numPoints = Integer.reverseBytes(dis.readInt());
-
-                        int partsBytes = numParts * 4;
-                        if (partsBytes > 0 && partsBytes <= remBytes - 40) {
-                            dis.skipBytes(partsBytes);
-                        } else {
-                            dis.skipBytes(remBytes - 40);
-                            continue;
-                        }
-
-                        int maxPoints = (remBytes - 40 - partsBytes) / 16;
-                        int pointsToRead = Math.min(numPoints, Math.max(0, maxPoints));
-
-                        int step = pointsToRead > 300 ? (pointsToRead / 100) : 1;
-                        for (int p = 0; p < pointsToRead; p++) {
-                            double px = Double.longBitsToDouble(Long.reverseBytes(dis.readLong()));
-                            double py = Double.longBitsToDouble(Long.reverseBytes(dis.readLong()));
-                            if (p % step == 0 && px >= -180.0 && px <= 180.0 && py >= -90.0 && py <= 90.0) {
-                                list.add(new double[]{px, py, 10.0, defaultWeight});
+                        if (contentLenBytes >= 20) {
+                            double lon = bb.getDouble(4);
+                            double lat = bb.getDouble(12);
+                            if (lon >= -180.0 && lon <= 180.0 && lat >= -90.0 && lat <= 90.0) {
+                                list.add(new double[]{lon, lat, 8.0, defaultWeight});
                             }
                         }
+                    } else if (recShapeType == 3 || recShapeType == 5 || recShapeType == 13 || recShapeType == 15) { // PolyLine / Polygon
+                        if (contentLenBytes >= 44) {
+                            int numParts = bb.getInt(36);
+                            int numPoints = bb.getInt(40);
+                            int ptsOffset = 44 + numParts * 4;
 
-                        int alreadyRead = 40 + partsBytes + pointsToRead * 16;
-                        if (remBytes > alreadyRead) {
-                            dis.skipBytes(remBytes - alreadyRead);
+                            if (numPoints > 0 && ptsOffset + numPoints * 16 <= contentLenBytes) {
+                                int sampleCount = Math.min(numPoints, 20);
+                                int stride = Math.max(1, numPoints / sampleCount);
+                                for (int s = 0; s < sampleCount; s++) {
+                                    int offset = ptsOffset + (s * stride) * 16;
+                                    if (offset + 16 <= contentLenBytes) {
+                                        double px = bb.getDouble(offset);
+                                        double py = bb.getDouble(offset + 8);
+                                        if (px >= -180.0 && px <= 180.0 && py >= -90.0 && py <= 90.0) {
+                                            if (list.size() < 5000) {
+                                                list.add(new double[]{px, py, 10.0, defaultWeight});
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
-                    } else {
-                        dis.skipBytes(remBytes);
                     }
                 } catch (EOFException eof) {
                     break;
@@ -291,105 +284,127 @@ public class AuthenticEmpiricalDatasetIngestion {
         return col;
     }
 
+    private static List<double[]> cachedCoalOccurrences = null;
+    private static List<double[]> cachedOilOccurrences = null;
+    private static List<double[]> cachedGasOccurrences = null;
+    private static List<double[]> cachedAquiferOccurrences = null;
+    private static final Object CACHE_LOCK = new Object();
+
     /**
      * Extracts tens of thousands of empirical Coal deposit and mine points.
      */
     public static List<double[]> getEmpiricalCoalOccurrences() {
-        List<double[]> list = new ArrayList<>();
-        // 1. USGS MRDS Coal occurrences
-        list.addAll(extractMrdsDeposits("coal", "lignite", "anthracite", "bituminous"));
+        synchronized (CACHE_LOCK) {
+            if (cachedCoalOccurrences != null) return new ArrayList<>(cachedCoalOccurrences);
+            List<double[]> list = new ArrayList<>();
+            // 1. USGS MRDS Coal occurrences
+            list.addAll(extractMrdsDeposits("coal", "lignite", "anthracite", "bituminous"));
 
-        // 2. GEM Global Coal Mine Tracker
-        File coalMines = new File("data/maps/wep_world_energy/Global Coal Mine Tracker, August 2026.xlsx");
-        list.addAll(readXlsxCoordinates(coalMines));
+            // 2. GEM Global Coal Mine Tracker
+            File coalMines = new File("data/maps/wep_world_energy/Global Coal Mine Tracker, August 2026.xlsx");
+            list.addAll(readXlsxCoordinates(coalMines));
 
-        // 3. GEM Global Coal Plant Tracker
-        File coalPlants = new File("data/maps/wep_world_energy/Global-Coal-Plant-Tracker-July-2026.xlsx");
-        list.addAll(readXlsxCoordinates(coalPlants, "coal", "anthracite", "lignite", "bituminous"));
+            // 3. GEM Global Coal Plant Tracker
+            File coalPlants = new File("data/maps/wep_world_energy/Global-Coal-Plant-Tracker-July-2026.xlsx");
+            list.addAll(readXlsxCoordinates(coalPlants, "coal", "anthracite", "lignite", "bituminous"));
 
-        logger.info("Total empirical Coal occurrences gathered: {}", list.size());
-        return list;
+            logger.info("Total empirical Coal occurrences gathered: {}", list.size());
+            cachedCoalOccurrences = Collections.unmodifiableList(list);
+            return new ArrayList<>(cachedCoalOccurrences);
+        }
     }
 
     /**
      * Extracts tens of thousands of empirical Crude Oil extraction, basin, and pipeline points.
      */
     public static List<double[]> getEmpiricalOilOccurrences() {
-        List<double[]> list = new ArrayList<>();
-        // 1. GEM Global Oil and Gas Extraction Tracker (Oil)
-        File oilGasExtraction = new File("data/maps/wep_world_energy/Global-Oil-and-Gas-Extraction-Tracker-March-2026.xlsx");
-        list.addAll(readXlsxCoordinates(oilGasExtraction, "oil", "petroleum", "condensate", "crude", "bitumen"));
+        synchronized (CACHE_LOCK) {
+            if (cachedOilOccurrences != null) return new ArrayList<>(cachedOilOccurrences);
+            List<double[]> list = new ArrayList<>();
+            // 1. GEM Global Oil and Gas Extraction Tracker (Oil)
+            File oilGasExtraction = new File("data/maps/wep_world_energy/Global-Oil-and-Gas-Extraction-Tracker-March-2026.xlsx");
+            list.addAll(readXlsxCoordinates(oilGasExtraction, "oil", "petroleum", "condensate", "crude", "bitumen"));
 
-        // 2. GEM Oil Pipelines & Terminals
-        File oilPipelines = new File("data/maps/wep_world_energy/GEM-GOIT-Oil-NGL-Pipelines-2026-06.xlsx");
-        list.addAll(readXlsxCoordinates(oilPipelines));
+            // 2. GEM Oil Pipelines & Terminals
+            File oilPipelines = new File("data/maps/wep_world_energy/GEM-GOIT-Oil-NGL-Pipelines-2026-06.xlsx");
+            list.addAll(readXlsxCoordinates(oilPipelines));
 
-        // 3. USGS World Petroleum Assessment Units
-        File usgsPetroleumShp = new File("data/maps/wep_world_energy/usgs_world_petroleum/au_sumg.shp");
-        list.addAll(readShapefileCoordinates(usgsPetroleumShp, 2.0));
+            // 3. USGS World Petroleum Assessment Units
+            File usgsPetroleumShp = new File("data/maps/wep_world_energy/usgs_world_petroleum/au_sumg.shp");
+            list.addAll(readShapefileCoordinates(usgsPetroleumShp, 2.0));
 
-        // 4. MRDS Oil Shale & Petroleum
-        list.addAll(extractMrdsDeposits("oil shale", "bitumen", "petroleum", "asphalt"));
+            // 4. MRDS Oil Shale & Petroleum
+            list.addAll(extractMrdsDeposits("oil shale", "bitumen", "petroleum", "asphalt"));
 
-        logger.info("Total empirical Crude Oil occurrences gathered: {}", list.size());
-        return list;
+            logger.info("Total empirical Crude Oil occurrences gathered: {}", list.size());
+            cachedOilOccurrences = Collections.unmodifiableList(list);
+            return new ArrayList<>(cachedOilOccurrences);
+        }
     }
 
     /**
      * Extracts tens of thousands of empirical Natural Gas extraction, field, pipeline, and LNG points.
      */
     public static List<double[]> getEmpiricalGasOccurrences() {
-        List<double[]> list = new ArrayList<>();
-        // 1. GEM Global Oil and Gas Extraction Tracker (Gas)
-        File oilGasExtraction = new File("data/maps/wep_world_energy/Global-Oil-and-Gas-Extraction-Tracker-March-2026.xlsx");
-        list.addAll(readXlsxCoordinates(oilGasExtraction, "gas", "methane", "lng", "cbm", "shale gas"));
+        synchronized (CACHE_LOCK) {
+            if (cachedGasOccurrences != null) return new ArrayList<>(cachedGasOccurrences);
+            List<double[]> list = new ArrayList<>();
+            // 1. GEM Global Oil and Gas Extraction Tracker (Gas)
+            File oilGasExtraction = new File("data/maps/wep_world_energy/Global-Oil-and-Gas-Extraction-Tracker-March-2026.xlsx");
+            list.addAll(readXlsxCoordinates(oilGasExtraction, "gas", "methane", "lng", "cbm", "shale gas"));
 
-        // 2. GEM Gas Pipelines
-        File gasPipelines = new File("data/maps/wep_world_energy/GEM-GGIT-Gas-Pipelines-2025-11.xlsx");
-        list.addAll(readXlsxCoordinates(gasPipelines));
+            // 2. GEM Gas Pipelines
+            File gasPipelines = new File("data/maps/wep_world_energy/GEM-GGIT-Gas-Pipelines-2025-11.xlsx");
+            list.addAll(readXlsxCoordinates(gasPipelines));
 
-        // 3. GEM LNG Terminals
-        File lngTerminals = new File("data/maps/wep_world_energy/GEM-GGIT-LNG-Teminals-2025-09.xlsx");
-        list.addAll(readXlsxCoordinates(lngTerminals));
+            // 3. GEM LNG Terminals
+            File lngTerminals = new File("data/maps/wep_world_energy/GEM-GGIT-LNG-Teminals-2025-09.xlsx");
+            list.addAll(readXlsxCoordinates(lngTerminals));
 
-        // 4. GOGPT Gas Plants
-        File gogpt = new File("data/maps/wep_world_energy/Global Oil and Gas Plant Tracker (GOGPT) - August 2026.xlsx");
-        list.addAll(readXlsxCoordinates(gogpt, "gas", "methane", "lng"));
+            // 4. GOGPT Gas Plants
+            File gogpt = new File("data/maps/wep_world_energy/Global Oil and Gas Plant Tracker (GOGPT) - August 2026.xlsx");
+            list.addAll(readXlsxCoordinates(gogpt, "gas", "methane", "lng"));
 
-        // 5. USGS World Petroleum Gas Assessment Units
-        File usgsPetroleumShp = new File("data/maps/wep_world_energy/usgs_world_petroleum/au_sumg.shp");
-        list.addAll(readShapefileCoordinates(usgsPetroleumShp, 1.8));
+            // 5. USGS World Petroleum Gas Assessment Units
+            File usgsPetroleumShp = new File("data/maps/wep_world_energy/usgs_world_petroleum/au_sumg.shp");
+            list.addAll(readShapefileCoordinates(usgsPetroleumShp, 1.8));
 
-        logger.info("Total empirical Natural Gas occurrences gathered: {}", list.size());
-        return list;
+            logger.info("Total empirical Natural Gas occurrences gathered: {}", list.size());
+            cachedGasOccurrences = Collections.unmodifiableList(list);
+            return new ArrayList<>(cachedGasOccurrences);
+        }
     }
 
     /**
      * Extracts tens of thousands of empirical WHYMAP Groundwater Aquifers & Wetlands polygons/points.
      */
     public static List<double[]> getEmpiricalAquiferOccurrences() {
-        List<double[]> list = new ArrayList<>();
-        // 1. WHYMAP Global Groundwater Aquifers Polygons
-        File aquifersShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_GW_aquifers_v1_poly.shp");
-        if (!aquifersShp.exists()) {
-            aquifersShp = new File("data/maps/whymap_groundwater/whymap_GW_aquifers_v1_poly.shp");
+        synchronized (CACHE_LOCK) {
+            if (cachedAquiferOccurrences != null) return new ArrayList<>(cachedAquiferOccurrences);
+            List<double[]> list = new ArrayList<>();
+            // 1. WHYMAP Global Groundwater Aquifers Polygons
+            File aquifersShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_GW_aquifers_v1_poly.shp");
+            if (!aquifersShp.exists()) {
+                aquifersShp = new File("data/maps/whymap_groundwater/whymap_GW_aquifers_v1_poly.shp");
+            }
+            list.addAll(readShapefileCoordinates(aquifersShp, 2.5));
+
+            // 2. WHYMAP Groundwater-dependent Cities
+            File citiesShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_cities_dependGW_v1_point.shp");
+            list.addAll(readShapefileCoordinates(citiesShp, 2.0));
+
+            // 3. WHYMAP Wetlands
+            File wetlandsShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_wetlands__v1_point.shp");
+            list.addAll(readShapefileCoordinates(wetlandsShp, 1.5));
+
+            // 4. WHYMAP Saline Groundwater
+            File salineShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_salineGW__v1_poly.shp");
+            list.addAll(readShapefileCoordinates(salineShp, 1.0));
+
+            logger.info("Total empirical Aquifers occurrences gathered: {}", list.size());
+            cachedAquiferOccurrences = Collections.unmodifiableList(list);
+            return new ArrayList<>(cachedAquiferOccurrences);
         }
-        list.addAll(readShapefileCoordinates(aquifersShp, 2.5));
-
-        // 2. WHYMAP Groundwater-dependent Cities
-        File citiesShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_cities_dependGW_v1_point.shp");
-        list.addAll(readShapefileCoordinates(citiesShp, 2.0));
-
-        // 3. WHYMAP Wetlands
-        File wetlandsShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_wetlands__v1_point.shp");
-        list.addAll(readShapefileCoordinates(wetlandsShp, 1.5));
-
-        // 4. WHYMAP Saline Groundwater
-        File salineShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_salineGW__v1_poly.shp");
-        list.addAll(readShapefileCoordinates(salineShp, 1.0));
-
-        logger.info("Total empirical Aquifers occurrences gathered: {}", list.size());
-        return list;
     }
 
     /**
