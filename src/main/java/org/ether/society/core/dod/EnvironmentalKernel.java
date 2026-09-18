@@ -137,23 +137,27 @@ public class EnvironmentalKernel {
             float growth = baseProd * fvcbFactor * moistureAridityRatio * dtInYears;
             float decay = (float) (food[i] * 0.05 * dtInYears);
             
-            food[i] = Math.max(0.0f, Math.min(1000.0f, food[i] + growth - decay));
+            food[i] = Math.max(0.0f, Math.min(50000.0f, food[i] + growth - decay));
             
             // Natural biomass regeneration
             world.getBiomassNatural()[i] = Math.min(1000.0f, world.getBiomassNatural()[i] + growth * 0.5f);
         }
     }
 
+    /**
+     * Net primary photosynthetic & trophic energy production rate per biome in Gigajoules per year (GJ/yr).
+     */
     private float getBiomeProductionRate(Biome biome) {
         return switch (biome) {
-            case JUNGLE -> 100.0f;
-            case FOREST -> 80.0f;
-            case PLAINS -> 60.0f;
-            case HILLS -> 40.0f;
-            case BEACH -> 30.0f;
-            case MOUNTAINS -> 20.0f;
-            case OCEAN, DEEP_OCEAN -> 50.0f;
-            default -> 10.0f;
+            case JUNGLE -> 336.2f;
+            case FOREST -> 269.0f;
+            case PLAINS -> 201.7f;
+            case SAVANNAH -> 168.1f;
+            case HILLS -> 134.5f;
+            case BEACH -> 100.9f;
+            case MOUNTAINS -> 67.2f;
+            case OCEAN, DEEP_OCEAN -> 168.1f;
+            default -> 33.6f;
         };
     }
 }

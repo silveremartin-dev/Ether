@@ -64,8 +64,8 @@ public class MetricRegistry {
         ));
 
         register(new MetricDescriptor(
-            "foodPerCapita", "Nourriture / Individu", MetricDescriptor.Category.ENERGY_MATTER, "mois/hab",
-            "Autonomie métabolique résiduelle sans nouvelle récolte.",
+            "foodPerCapita", "Stock Alimentaire / Habitant", MetricDescriptor.Category.ENERGY_MATTER, "GJ/hab",
+            "Stock d'énergie trophique disponible par habitant (1 hab = 9 205 kJ/jour = 3,362 GJ/an).",
             cell -> cell.getPopulation() != null && cell.getPopulation() > 0 ? (cell.getFoodResource() != null ? cell.getFoodResource() / cell.getPopulation() : 0.0) : 0.0,
             cells -> {
                 long pop = cells.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();

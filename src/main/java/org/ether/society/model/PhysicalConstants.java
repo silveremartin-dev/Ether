@@ -57,13 +57,28 @@ public final class PhysicalConstants {
     public static final double EARTH_RADIUS_KM = 6371.0;
 
     // =========================================================================
-    // 3. BIOLOGICAL & METABOLIC CONSTANTS
+    // 3. BIOLOGICAL, METABOLIC & TROPHIC ENERGY CONSTANTS
     // =========================================================================
     /** Kleiber Allometric Scaling exponent (3/4 power law) */
     public static final double KLEIBER_ALLOMETRIC_EXPONENT = 0.75;
 
     /** Kleiber baseline specific metabolic rate coefficient in W/kg^(3/4) */
     public static final double KLEIBER_BASELINE_METABOLIC_RATE = 3.39;
+
+    /** Standard daily basal + active human metabolic intake in Joules (2,200 kcal/day = 9,204.8 kJ) */
+    public static final double HUMAN_DAILY_METABOLIC_ENERGY_JOULES = 9.2048e6;
+
+    /** Standard annual human metabolic intake in Joules per capita (365.25 days * 9.2048 MJ = 3.362 * 10^9 J) */
+    public static final double HUMAN_ANNUAL_METABOLIC_ENERGY_JOULES = 3.362e9;
+
+    /** Standard annual human metabolic intake in Gigajoules per capita (3.362 GJ/hab/an) */
+    public static final double HUMAN_ANNUAL_METABOLIC_ENERGY_GJ = 3.362;
+
+    /** Standard annual human metabolic intake in Megajoules per capita (3,362 MJ/hab/an) */
+    public static final double HUMAN_ANNUAL_METABOLIC_ENERGY_MJ = 3362.0;
+
+    /** Standard annual human metabolic intake in Kilojoules per capita (3,362,000 kJ/hab/an) */
+    public static final double HUMAN_ANNUAL_METABOLIC_ENERGY_KJ = 3.362e6;
 
     /** Standard enzymatic activation energy E_a in J/mol for cellular respiration */
     public static final double ENZYMATIC_ACTIVATION_ENERGY_J = 54000.0;

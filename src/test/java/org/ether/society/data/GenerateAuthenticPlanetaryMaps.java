@@ -298,11 +298,6 @@ public class GenerateAuthenticPlanetaryMaps {
             File fEtherSub = new File(etherSubDir, stdFileName);
             ImageIO.write(img, "PNG", fEtherSub);
 
-            // Also keep short raw tag file for fallback
-            String rawTag = TemporalMapTensorManager.canonicalLayerTag(baseName);
-            File fRaw = new File(etherSubDir, rawTag + ".png");
-            ImageIO.write(img, "PNG", fRaw);
-
             logger.info("Saved {} into data/maps/ether/{}/{}/", stdFileName, canonicalPreset, year);
         } catch (Exception e) {
             logger.error("Failed saving {} to {}/{}: {}", baseName, canonicalPreset, year, e.getMessage());

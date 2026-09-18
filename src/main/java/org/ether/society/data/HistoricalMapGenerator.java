@@ -299,9 +299,6 @@ public class HistoricalMapGenerator {
         try {
             // Check density
             java.nio.file.Path densityFile = earthDir.resolve("earth_" + year + "_density.png");
-            if (!java.nio.file.Files.exists(densityFile)) {
-                densityFile = earthDir.resolve("density.png");
-            }
             if (java.nio.file.Files.exists(densityFile)) {
                 BufferedImage img = ImageIO.read(densityFile.toFile());
                 if (img != null) {
@@ -315,12 +312,6 @@ public class HistoricalMapGenerator {
             };
             for (int i = 0; i < mapTags.length; i++) {
                 java.nio.file.Path p = earthDir.resolve("earth_" + year + "_" + mapTags[i] + ".png");
-                if (!java.nio.file.Files.exists(p)) {
-                    p = earthDir.resolve(mapTags[i] + ".png");
-                }
-                if (!java.nio.file.Files.exists(p) && i == 5) {
-                    p = earthDir.resolve("trade.png");
-                }
                 if (java.nio.file.Files.exists(p)) {
                     BufferedImage img = ImageIO.read(p.toFile());
                     if (img != null) {
@@ -335,16 +326,6 @@ public class HistoricalMapGenerator {
             };
             for (int i = 0; i < geoTags.length; i++) {
                 java.nio.file.Path p = earthDir.resolve("earth_" + year + "_" + geoTags[i] + ".png");
-                if (!java.nio.file.Files.exists(p)) {
-                    p = earthDir.resolve(geoTags[i] + ".png");
-                }
-                if (!java.nio.file.Files.exists(p) && i == 4) p = earthDir.resolve("he3.png");
-                if (!java.nio.file.Files.exists(p) && i == 5) p = earthDir.resolve("ironcopper.png");
-                if (!java.nio.file.Files.exists(p) && i == 6) p = earthDir.resolve("preciousmetals.png");
-                if (!java.nio.file.Files.exists(p) && i == 6) p = earthDir.resolve("preciousree.png");
-                if (!java.nio.file.Files.exists(p) && i == 7) p = earthDir.resolve("rareearths.png");
-                if (!java.nio.file.Files.exists(p) && i == 8) p = earthDir.resolve("mantleheat.png");
-                if (!java.nio.file.Files.exists(p) && i == 9) p = earthDir.resolve("aquifer.png");
                 if (java.nio.file.Files.exists(p)) {
                     BufferedImage img = ImageIO.read(p.toFile());
                     if (img != null) {
@@ -395,18 +376,6 @@ public class HistoricalMapGenerator {
             if (imgRareEarths != null)      ImageIO.write(imgRareEarths,      "PNG", earthDir.resolve("earth_" + year + "_rare_earths.png").toFile());
             if (imgMantleHeat != null)      ImageIO.write(imgMantleHeat,      "PNG", earthDir.resolve("earth_" + year + "_geothermal.png").toFile());
             if (imgAquifer != null)         ImageIO.write(imgAquifer,         "PNG", earthDir.resolve("earth_" + year + "_aquifers.png").toFile());
-
-            // 2. Also write short aliases for compatibility
-            if (imgDensity != null)         ImageIO.write(imgDensity,         "PNG", earthDir.resolve("density.png").toFile());
-            if (imgIsogloss != null)        ImageIO.write(imgIsogloss,        "PNG", earthDir.resolve("isogloss.png").toFile());
-            if (imgKinship != null)         ImageIO.write(imgKinship,         "PNG", earthDir.resolve("kinship.png").toFile());
-            if (imgRituals != null)         ImageIO.write(imgRituals,         "PNG", earthDir.resolve("rituals.png").toFile());
-            if (imgSovereignty != null)     ImageIO.write(imgSovereignty,     "PNG", earthDir.resolve("sovereignty.png").toFile());
-            if (imgTech != null)            ImageIO.write(imgTech,            "PNG", earthDir.resolve("technology.png").toFile());
-            if (imgTrade != null)           ImageIO.write(imgTrade,           "PNG", earthDir.resolve("tradenetwork.png").toFile());
-            if (imgInst != null)            ImageIO.write(imgInst,            "PNG", earthDir.resolve("institutional.png").toFile());
-            if (imgEco != null)             ImageIO.write(imgEco,             "PNG", earthDir.resolve("ecological.png").toFile());
-            if (imgPathogen != null)        ImageIO.write(imgPathogen,        "PNG", earthDir.resolve("pathogen.png").toFile());
 
             logger.info("Persisted standard scenario cartographic maps into 'data/maps/ether/earth/{}/'", year);
         } catch (Exception e) {
@@ -611,39 +580,6 @@ public class HistoricalMapGenerator {
                 }
             }
 
-            // Also synchronize cache files to data/maps/ether/earth/<year>/ if not present
-            java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(scenario.getStartDateYear()));
-            if (!java.nio.file.Files.exists(earthDir.resolve("density.png"))) {
-                java.nio.file.Files.createDirectories(earthDir);
-                if (java.nio.file.Files.exists(densityCache)) {
-                    java.nio.file.Files.copy(densityCache, earthDir.resolve("density.png"), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                }
-                String[] targetMapFiles = {
-                    "isogloss.png", "kinship.png", "rituals.png", "sovereignty.png",
-                    "technology.png", "tradenetwork.png", "institutional.png", "ecological.png", "pathogen.png"
-                };
-                for (int i = 0; i < mapKeys.length; i++) {
-                    java.nio.file.Path src = cacheDir.resolve(safeName + mapKeys[i]);
-                    if (java.nio.file.Files.exists(src)) {
-                        java.nio.file.Files.copy(src, earthDir.resolve(targetMapFiles[i]), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                    }
-                }
-                String[] targetGeoFiles = {
-                    "coal.png", "oil.png", "gas.png", "uranium.png",
-                    "he3.png", "ironcopper.png", "preciousmetals.png", "rareearths.png", "mantleheat.png", "aquifer.png"
-                };
-                for (int i = 0; i < geoKeys.length; i++) {
-                    java.nio.file.Path src = cacheDir.resolve(safeName + geoKeys[i]);
-                    if (!java.nio.file.Files.exists(src) && i == 6) {
-                        src = cacheDir.resolve(safeName + "_preciousree.png");
-                    }
-                    if (java.nio.file.Files.exists(src)) {
-                        java.nio.file.Files.copy(src, earthDir.resolve(targetGeoFiles[i]), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                    }
-                }
-                logger.info("Synchronized disk cache for '{}' into standardized year directory '{}'.", scenario.getName(), earthDir);
-            }
-
             return true;
         } catch (Exception e) {
             logger.warn("Failed to load scenario '{}' cartographic tensors from disk cache: {}", scenario.getName(), e.getMessage());
@@ -803,6 +739,9 @@ public class HistoricalMapGenerator {
     }
 
     public static BufferedImage generateCleanDensityMapForYear(String type, Scenario scenario, long targetYear) {
+        if (scenario != null && scenario.isUseRealEarthData() && (targetYear < -10000 || targetYear > 2024)) {
+            throw new IllegalStateException("ZERO FALLBACK VIOLATION: Empirical HYDE 3.4 dataset unavailable for year " + targetYear);
+        }
         if (targetYear < -10000) {
             BufferedImage baseHyde = Hyde34GridReader.loadForYear(-10000);
             if (baseHyde != null) {
@@ -2334,7 +2273,19 @@ public class HistoricalMapGenerator {
         return null;
     }
 
+    private static volatile BufferedImage cachedCoalMap = null;
+    private static volatile BufferedImage cachedOilMap = null;
+    private static volatile BufferedImage cachedGasMap = null;
+    private static volatile BufferedImage cachedUraniumMap = null;
+    private static volatile BufferedImage cachedHe3Map = null;
+    private static volatile BufferedImage cachedIronCopperMap = null;
+    private static volatile BufferedImage cachedPreciousMetalsMap = null;
+    private static volatile BufferedImage cachedRareEarthsMap = null;
+    private static volatile BufferedImage cachedMantleHeatMap = null;
+    private static volatile BufferedImage cachedAquiferMap = null;
+
     public static BufferedImage generateCleanCoalMap(String type, Scenario scenario) {
+        if (cachedCoalMap != null) return cachedCoalMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         var spots = AuthenticEmpiricalDatasetIngestion.getEmpiricalCoalOccurrences();
@@ -2342,10 +2293,12 @@ public class HistoricalMapGenerator {
             spots = loadMRDSDeposits("coal", "lignite", "anthracite", "bituminous");
         }
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 8.0);
+        cachedCoalMap = img;
         return img;
     }
 
     public static BufferedImage generateCleanOilMap(String type, Scenario scenario) {
+        if (cachedOilMap != null) return cachedOilMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         var spots = AuthenticEmpiricalDatasetIngestion.getEmpiricalOilOccurrences();
@@ -2353,10 +2306,12 @@ public class HistoricalMapGenerator {
             spots = loadMRDSDeposits("petroleum", "oil", "hydrocarbon");
         }
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 10.0);
+        cachedOilMap = img;
         return img;
     }
 
     public static BufferedImage generateCleanGasMap(String type, Scenario scenario) {
+        if (cachedGasMap != null) return cachedGasMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         var spots = AuthenticEmpiricalDatasetIngestion.getEmpiricalGasOccurrences();
@@ -2364,10 +2319,12 @@ public class HistoricalMapGenerator {
             spots = loadMRDSDeposits("natural gas", "gas", "methane");
         }
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 10.0);
+        cachedGasMap = img;
         return img;
     }
 
     public static BufferedImage generateCleanUraniumMap(String type, Scenario scenario) {
+        if (cachedUraniumMap != null) return cachedUraniumMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         var spots = loadMRDSDeposits("uranium", "thorium");
@@ -2377,15 +2334,19 @@ public class HistoricalMapGenerator {
         };
         for (double[] b : iaeaMajorDeposits) spots.add(b);
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 6.0);
+        cachedUraniumMap = img;
         return img;
     }
 
     public static BufferedImage generateCleanHelium3Map(String type, Scenario scenario) {
+        if (cachedHe3Map != null) return cachedHe3Map;
         // Pure black grayscale map: Helium-3 is exclusively a lunar resource
-        return new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
+        cachedHe3Map = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
+        return cachedHe3Map;
     }
 
     public static BufferedImage generateCleanIronCopperMap(String type, Scenario scenario) {
+        if (cachedIronCopperMap != null) return cachedIronCopperMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         var spots = loadMRDSDeposits("iron", "copper", "magnetite", "hematite", "chalcopyrite");
@@ -2399,10 +2360,12 @@ public class HistoricalMapGenerator {
         };
         for (double[] m : majorMetals) spots.add(m);
         rasterizeTieredSpotList(img, spots, new Color(80, 80, 80), new Color(160, 160, 160), new Color(240, 240, 240), 6.0);
+        cachedIronCopperMap = img;
         return img;
     }
 
     public static BufferedImage generateCleanPreciousMetalsMap(String type, Scenario scenario) {
+        if (cachedPreciousMetalsMap != null) return cachedPreciousMetalsMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         var spots = loadMRDSDeposits("gold", "silver", "platinum", "palladium", "electrum");
@@ -2420,10 +2383,12 @@ public class HistoricalMapGenerator {
         };
         for (double[] p : majorPrecious) spots.add(p);
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 5.0);
+        cachedPreciousMetalsMap = img;
         return img;
     }
 
     public static BufferedImage generateCleanRareEarthsMap(String type, Scenario scenario) {
+        if (cachedRareEarthsMap != null) return cachedRareEarthsMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         var spots = loadMRDSDeposits("rare earth", "bastnasite", "monazite", "xenotime", "neodymium", "dysprosium", "yttrium", "lanthanum", "cerium", "lithium", "spodumene", "carbonatite", "loparite", "allanite");
@@ -2447,10 +2412,12 @@ public class HistoricalMapGenerator {
         };
         for (double[] r : majorREE) spots.add(r);
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 5.0);
+        cachedRareEarthsMap = img;
         return img;
     }
 
     public static BufferedImage generateCleanMantleHeatMap(String type, Scenario scenario) {
+        if (cachedMantleHeatMap != null) return cachedMantleHeatMap;
         java.nio.file.Path csvPath = java.nio.file.Paths.get("data", "maps", "ihfc_davies2013", "heat_flow_2deg.csv");
         if (!java.nio.file.Files.exists(csvPath)) {
             csvPath = java.nio.file.Paths.get("data", "maps", "heat_flow_2deg.csv");
@@ -2522,6 +2489,7 @@ public class HistoricalMapGenerator {
                     }
                 }
                 logger.info("Successfully generated 9th geology tensor (Mantle Heat Flux) with seamless 2D Bilinear Interpolation from Davies 2013 CSV.");
+                cachedMantleHeatMap = img;
                 return img;
             } catch (Exception e) {
                 logger.warn("Could not parse Davies 2013 heat flow CSV: {}", e.getMessage());
@@ -2534,10 +2502,12 @@ public class HistoricalMapGenerator {
         var list = new java.util.ArrayList<double[]>();
         for (double[] s : spots) list.add(s);
         rasterizeSpotListToAlpha(img, list, Color.WHITE, 15.0);
+        cachedMantleHeatMap = img;
         return img;
     }
 
     public static BufferedImage generateCleanAquiferMap(String type, Scenario scenario) {
+        if (cachedAquiferMap != null) return cachedAquiferMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         var spots = AuthenticEmpiricalDatasetIngestion.getEmpiricalAquiferOccurrences();
@@ -2567,6 +2537,7 @@ public class HistoricalMapGenerator {
             for (double[] a : majorAquifers) spots.add(a);
         }
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 12.0);
+        cachedAquiferMap = img;
         return img;
     }
 

@@ -669,15 +669,16 @@ public class StatsPanel extends VBox {
             "D = (Stock_initial - Stock_actuel) / Stock_initial. Pourcentage cumulé de consommation des réserves minérales non-renouvelables.", inspectorTitle, inspectorText);
         addCard("energyPerCapita", "Énergie / Individu (Puissance)", "⚡ Énergie & Matière", "W/hab",
             "P_cap = P_tot / N_pop. Puissance énergétique continue disponible par habitant selon la loi de Leslie White (Culture = E × T. ~300 W au Paléolithique, ~10 kW en société industrielle).", inspectorTitle, inspectorText);
-        addCard("foodPerCapita", "Nourriture / Individu", "⚡ Énergie & Matière", "mois/hab",
-            "F_cap = Stock_Alimentaire / (N_pop × Consommation_mensuelle). Autonomie métabolique résiduelle sans nouvelle récolte.", inspectorTitle, inspectorText);
+        addCard("foodPerCapita", "Stock Alimentaire / Habitant", "⚡ Énergie & Matière", "GJ/hab",
+            "F_cap = Stock_Alimentaire / N_pop en Gigajoules. Stock d'énergie trophique disponible par individu (1 hab = 9 205 kJ/jour = 3,362 GJ/an).", inspectorTitle, inspectorText);
         addCard("pibMaterialFlow", "Flux Métabolique de Matière", "⚡ Énergie & Matière", "Mt/an", "Volume total de biomasse et de minerais déplacé par le métabolisme industriel.", inspectorTitle, inspectorText);
         addCard("biomassNatural", "Biomasse Naturelle", "⚡ Énergie & Matière", "GtC", "Stock total de carbone végétal et faunique sauvage préservé.", inspectorTitle, inspectorText);
         addCard("biomassDomesticated", "Biomasse Domestiquée", "⚡ Énergie & Matière", "GtC", "Biomasse totale des cultures agricoles et du bétail domestique.", inspectorTitle, inspectorText);
         addCard("potableWater", "Eau Douce & Aquifères", "⚡ Énergie & Matière", "10³ km³", "Réserves globales d'eau potable et nappe phréatique continentale.", inspectorTitle, inspectorText);
         addCard("remainingResources", "Ressources Restantes", "⚡ Énergie & Matière", "%", "Capital minéral et géologique non-extrait restant au sol.", inspectorTitle, inspectorText);
         addCard("entropyPollution", "Entropie & Pollution", "⚡ Énergie & Matière", "Idx", "Génération d'entropie thermodynamique et rejets polluants.", inspectorTitle, inspectorText);
-        addCard("occupiedTerritory", "Territoire Occupé", "⚡ Énergie & Matière", "km²", "Surface géographique totale colonisée ou exploitée.", inspectorTitle, inspectorText);
+        addCard("occupiedTerritory", "Territoire de Subsistance & Emprise", "⚡ Énergie & Matière", "km²",
+            "Surface écologique d'exploitation (Home Range de Binford, Kelly, Hassan). Modélise l'emprise diffuse des chasseurs-cueilleurs (10 à 100 km²/hab, soit 250 à 10 000 km² par bande de 25 personnes selon le biome) jusqu'à la concentration sédentaire agricole et urbaine.", inspectorTitle, inspectorText);
 
         // Category 2: Démographie & Santé
         addCard("population", "Population Humaine", "👥 Démographie & Santé", "hab", "Population totale d'habitants sur la planète.", inspectorTitle, inspectorText);

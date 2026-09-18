@@ -9,6 +9,7 @@ import org.ether.society.config.Configuration;
 import org.ether.society.data.SampleDataGenerator;
 import org.ether.society.database.H3Cell;
 import org.ether.society.density.H3ClimateSystem;
+import org.ether.society.model.PhysicalConstants;
 import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -906,7 +907,33 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     public double getOccupiedTerritoryArea() {
-        return getPopulatedCellCount() * 1250.0;
+        double baseCellArea = (currentScenario != null && currentScenario.getCellSizeKm2() > 0)
+                ? currentScenario.getCellSizeKm2() : 1250.0;
+        long populatedCells = getPopulatedCellCount();
+        long pop = getTotalPopulation();
+        if (populatedCells == 0 || pop == 0) return 0.0;
+
+        float tech = getAverageTechnology();
+        double physicalGridArea = populatedCells * baseCellArea;
+
+        // Binford (2001), Kelly (1995), Hassan (1981) - Behavioral Ecology & Home Range:
+        // Pre-agricultural Hunter-Gatherers (Tech < 1.5): 10 to 100 km² per capita diffuse subsistence home range
+        if (tech < 1.5f) {
+            double temp = 15.0;
+            if (worldBuffer != null && worldBuffer.getTemperature().length > 0) {
+                temp = worldBuffer.getTemperature()[0];
+            }
+            // Harsh cold/arid biomes require 80-100 km²/hab, rich temperate/river valleys 15-40 km²/hab
+            double km2PerCapita = (temp < 5.0) ? 85.0 : Math.max(12.0, 45.0 - (temp * 1.2));
+            double ecologicalHomeRange = pop * km2PerCapita;
+            return Math.max(physicalGridArea, ecologicalHomeRange);
+        } else if (tech < 5.0f) {
+            // Neolithic & Agrarian transition (Tech 1.5 to 5.0): 0.05 to 2.0 km²/hab
+            double km2PerCapita = Math.max(0.05, 2.0 - (tech - 1.5) * 0.55);
+            return Math.max(physicalGridArea, pop * km2PerCapita);
+        }
+
+        return physicalGridArea;
     }
 
     public double getOffspringPercentage() {
@@ -933,7 +960,8 @@ public class H3SimulationEngine implements ISimulationEngine {
         float gini = getCurrentGini();
         float life = getCurrentLifeExpectancy();
         double foodPerCap = getFoodPerCapita();
-        double foodSat = Math.min(1.0, foodPerCap > 0 ? foodPerCap / 2.0 : 0.5);
+        double annualReq = PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
+        double foodSat = Math.min(1.0, foodPerCap > 0 ? foodPerCap / annualReq : 0.5);
         double base = 40.0 + (life / 80.0) * 30.0 + (foodSat * 30.0) - (gini * 20.0);
         return Math.max(10.0, Math.min(100.0, base));
     }
@@ -942,7 +970,8 @@ public class H3SimulationEngine implements ISimulationEngine {
         float gini = getCurrentGini();
         double happiness = getHappinessIndex();
         double foodPerCap = getFoodPerCapita();
-        double scarcity = (foodPerCap > 0 && foodPerCap < 1.0) ? (1.0 - foodPerCap) * 25.0 : 0.0;
+        double annualReq = PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
+        double scarcity = (foodPerCap > 0 && foodPerCap < annualReq) ? (1.0 - foodPerCap / annualReq) * 25.0 : 0.0;
         return Math.max(0.0, Math.min(100.0, (gini * 35.0) + (100.0 - happiness) * 0.25 + scarcity));
     }
 
@@ -1177,26 +1206,32 @@ public class H3SimulationEngine implements ISimulationEngine {
     public double getEliteOverproductionIndex() {
         double eliteForm = getEliteFormationRatio();
         float gini = getCurrentGini();
-        return Math.min(10.0, (eliteForm / 5.0) * (1.0 + gini * 2.0));
+        double val = (eliteForm / 5.0) * (1.0 + (Double.isNaN(gini) ? 0.0 : gini) * 2.0);
+        return Double.isNaN(val) ? 1.0 : Math.max(0.0, Math.min(10.0, val));
     }
 
     public double getFiscalStressIndex() {
         double landRent = getLandRentIndex();
         float gini = getCurrentGini();
-        return Math.min(100.0, (gini * 50.0) + (landRent * 0.3));
+        double val = ((Double.isNaN(gini) ? 0.0 : gini) * 50.0) + (landRent * 0.3);
+        return Double.isNaN(val) ? 0.0 : Math.max(0.0, Math.min(100.0, val));
     }
 
     public double getGeopoliticalTension() {
         int cityStates = getCityStatesCount();
         double conflict = getConflictLevel();
-        return Math.min(100.0, (cityStates * 2.5) + (conflict * 0.7));
+        double val = (cityStates * 2.5) + (conflict * 0.7);
+        return Double.isNaN(val) ? 0.0 : Math.max(0.0, Math.min(100.0, val));
     }
 
     public double getCollapseVulnerability() {
         double resDep = getResourceDepletionRate();
         double psi = getEliteOverproductionIndex();
         double entropy = getSystemicEntropy();
-        return Math.min(100.0, (resDep * 0.3) + (psi * 4.0) + (entropy / 20.0));
+        double val = ((Double.isNaN(resDep) ? 0.0 : resDep) * 0.3) +
+                     ((Double.isNaN(psi) ? 0.0 : psi) * 4.0) +
+                     ((Double.isNaN(entropy) ? 0.0 : entropy) / 20.0);
+        return Double.isNaN(val) ? 0.0 : Math.max(0.0, Math.min(100.0, val));
     }
 
     public double getAverageAsabiyyah() {

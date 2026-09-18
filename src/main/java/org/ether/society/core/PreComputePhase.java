@@ -184,19 +184,19 @@ public class PreComputePhase {
                 cell.setBiomassFish(1200.0);
             }
 
-            // Food resources based on biome
+            // Food resources based on biome (stored in Gigajoules GJ)
             double wildFood = switch (biome) {
-                case JUNGLE -> 800 + random.nextDouble() * 400;
-                case FOREST -> 600 + random.nextDouble() * 300;
-                case SAVANNAH -> 700 + random.nextDouble() * 300;
-                case PLAINS -> 400 + random.nextDouble() * 200;
-                case HILLS -> 300 + random.nextDouble() * 150;
-                case BEACH, LAKE -> 200 + random.nextDouble() * 100;
-                case TUNDRA -> 100 + random.nextDouble() * 50;
-                case DESERT, SNOW -> 20 + random.nextDouble() * 30;
-                case GLACIER -> 10 + random.nextDouble() * 10;
-                case OCEAN, DEEP_OCEAN -> 0; // Fish handled separately
-                case MOUNTAINS -> 50 + random.nextDouble() * 50;
+                case JUNGLE -> 2500.0 + random.nextDouble() * 1000.0;
+                case FOREST -> 2000.0 + random.nextDouble() * 800.0;
+                case SAVANNAH -> 2200.0 + random.nextDouble() * 800.0;
+                case PLAINS -> 1700.0 + random.nextDouble() * 600.0;
+                case HILLS -> 1200.0 + random.nextDouble() * 400.0;
+                case BEACH, LAKE -> 800.0 + random.nextDouble() * 400.0;
+                case TUNDRA -> 400.0 + random.nextDouble() * 200.0;
+                case DESERT, SNOW -> 80.0 + random.nextDouble() * 100.0;
+                case GLACIER -> 20.0 + random.nextDouble() * 30.0;
+                case OCEAN, DEEP_OCEAN -> 0.0; // Fish handled separately
+                case MOUNTAINS -> 200.0 + random.nextDouble() * 200.0;
             };
             cell.setFoodResource(wildFood);
 
@@ -228,18 +228,18 @@ public class PreComputePhase {
     /**
      * Calculate carrying capacity based on food and water resources.
      * 
-     * @return carrying capacity for the cell
+     * @return carrying capacity for the cell (in human carrying capacity)
      */
     private double calculateCarryingCapacity(H3Cell cell) {
-        double food = cell.getFoodResource();
-        double water = cell.getWaterResource();
+        double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
+        double water = cell.getWaterResource() != null ? cell.getWaterResource() : 0.0;
         Biome biome = cell.getBiome();
 
         // Normalize water to 0-1 scale (max 1000)
         double waterFactor = Math.min(1.0, water / 1000.0);
 
-        // Base capacity: food availability * water factor
-        double capacity = (food / 100.0) * (0.3 + waterFactor * 0.7);
+        // Base capacity: food availability in GJ / annual metabolic energy per person (3.362 GJ/yr)
+        double capacity = (food / PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ) * (0.3 + waterFactor * 0.7);
 
         // Biome habitability modifier
         capacity *= switch (biome != null ? biome : Biome.PLAINS) {

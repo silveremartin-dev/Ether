@@ -2613,7 +2613,7 @@ public class H3MapCanvas extends Canvas {
         // Migration pressure: high population, low food = outbound (red)
         // Low population, high food = inbound attraction (blue)
         double foodPerCapita = food / Math.max(1, pop);
-        double pressure = 1.0 - Math.min(1.0, foodPerCapita / 10.0);
+        double pressure = 1.0 - Math.min(1.0, foodPerCapita / (org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * 2.0));
 
         if (pressure > 0.7) {
             // High outbound pressure - red

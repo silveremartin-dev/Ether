@@ -108,69 +108,89 @@ public class H3Cell {
     private Integer population = 0;
 
     /**
-     * Food resource availability (0-1000).
+     * Food resource availability / caloric stockpile in Gigajoules (GJ).
+     * 1 human annual metabolic requirement is ~3.362 GJ/yr (9,205 kJ/day).
      */
     @Column(nullable = false)
     private Double foodResource = 0.0;
 
     /**
-     * Water resource availability (0-1000).
+     * Water resource availability in thousand cubic meters (10³ m³).
      */
     @Column(nullable = false)
     private Double waterResource = 0.0;
 
     /**
-     * Wood resource availability (0-1000).
+     * Wood and combustible forestry biomass stockpile in metric tonnes (t).
      */
     @Column(nullable = false)
     private Double woodResource = 0.0;
 
-    // --- Detailed Tracking (Biomass) ---
+    // --- Detailed Tracking (Biomass in metric tonnes [t]) ---
+    /** Human biomass in metric tonnes (t). */
     @Column(nullable = false)
     private Double biomassHuman = 0.0;
+    /** Livestock biomass in metric tonnes (t). */
     @Column(nullable = false)
     private Double biomassLivestock = 0.0;
+    /** Marine & freshwater aquatic biomass in metric tonnes (t). */
     @Column(nullable = false)
     private Double biomassFish = 0.0;
+    /** Cultivated agricultural crop biomass in metric tonnes (t). */
     @Column(nullable = false)
     private Double biomassAgriculture = 0.0;
+    /** Natural terrestrial wild flora and fauna biomass in metric tonnes (t). */
     @Column(nullable = false)
     private Double biomassNatural = 0.0;
 
-    // --- Detailed Tracking (Energy) ---
+    // --- Detailed Tracking (Energy in Gigajoules [GJ]) ---
+    /** Harvested wind energy flow in Gigajoules (GJ). */
     @Column(nullable = false)
     private Double energyWind = 0.0;
+    /** Harvested direct solar energy flow in Gigajoules (GJ). */
     @Column(nullable = false)
     private Double energySolar = 0.0;
+    /** Fire / thermal combustion energy in Gigajoules (GJ). */
     @Column(nullable = false)
     private Double energyFire = 0.0;
+    /** Human physical labor treated as energetic work in Gigajoules (GJ). */
     @Column(nullable = false)
-    private Double energySlaves = 0.0; // Human labor treated as energy source
+    private Double energySlaves = 0.0;
+    /** Total food consumed for metabolism in Gigajoules (GJ). */
     @Column(nullable = false)
     private Double energyFoodConsumed = 0.0;
 
     // --- Detailed Tracking (Resources) ---
-    // Note: Food and Wood already exist above, explicitly adding others
+    /** Extractable base metal resources in metric tonnes (t). */
     @Column(nullable = false)
     private Double resourceMetal = 0.0;
+    /** Precious ore deposits in kilograms per square kilometer (kg/km²). */
     @Column(nullable = false)
-    private Double resourcePreciousMetal = 0.0; // Precious ores (kg/km²)
+    private Double resourcePreciousMetal = 0.0;
+    /** Clay and construction earthen material in metric tonnes (t). */
     @Column(nullable = false)
     private Double resourceClay = 0.0;
+    /** Available labor force (person-years equivalent). */
     @Column(nullable = false)
-    private Double resourceWork = 0.0; // Available labor
+    private Double resourceWork = 0.0;
+    /** Accumulated infrastructure and productive capital stock. */
     @Column(nullable = false)
-    private Double resourceCapital = 0.0; // Infrastructure/Tools
+    private Double resourceCapital = 0.0;
+    /** Soil organic carbon fertility in metric tonnes of Carbon per square kilometer (tC/km²). */
     @Column(nullable = false)
-    private Double soilOrganicCarbon = 0.0; // Soil carbon fertility (tC/km²)
+    private Double soilOrganicCarbon = 0.0;
+    /** Geothermal heat flow & tectonic baseline in milliwatts per square meter (mW/m²). */
     @Column(nullable = false)
-    private Double mantleHeatFlow = 87.0; // Geothermal heat flow & tectonic index (mW/m²)
+    private Double mantleHeatFlow = 87.0;
+    /** Total groundwater table volume in cubic meters per square kilometer (m³/km²). */
     @Column(nullable = false)
-    private Double freshwaterAquifer = 0.0; // Total groundwater table volume (m³/km²)
+    private Double freshwaterAquifer = 0.0;
+    /** Accessible shallow aquifer / springs volume in cubic meters per square kilometer (m³/km²). */
     @Column(nullable = false)
-    private Double accessibleAquifer = 0.0; // Accessible groundwater table volume (m³/km²) for shallow wells, springs & oasis
+    private Double accessibleAquifer = 0.0;
+    /** Environmental pollution index (0.0 clean to 1000.0 toxic contamination). */
     @Column(nullable = false)
-    private Double pollutionLevel = 0.0; // Environmental pollution index (0.0 clean to 1000.0 toxic contamination)
+    private Double pollutionLevel = 0.0;
 
     // --- Socio-Economic Indices ---
     @Column(nullable = false)

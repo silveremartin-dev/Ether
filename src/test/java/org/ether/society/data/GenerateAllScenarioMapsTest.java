@@ -17,13 +17,38 @@ public class GenerateAllScenarioMapsTest {
     private static final Logger logger = LoggerFactory.getLogger(GenerateAllScenarioMapsTest.class);
 
     @Test
+    @DisplayName("Quick Step Benchmark")
+    public void testQuickBenchmark() {
+        long t0 = System.currentTimeMillis();
+        logger.info("--- Starting Quick Ingestion Benchmark ---");
+        List<double[]> coal = AuthenticEmpiricalDatasetIngestion.getEmpiricalCoalOccurrences();
+        logger.info("Coal: {} points in {}ms", coal.size(), System.currentTimeMillis() - t0);
+
+        long t1 = System.currentTimeMillis();
+        List<double[]> oil = AuthenticEmpiricalDatasetIngestion.getEmpiricalOilOccurrences();
+        logger.info("Oil: {} points in {}ms", oil.size(), System.currentTimeMillis() - t1);
+
+        long t2 = System.currentTimeMillis();
+        List<double[]> gas = AuthenticEmpiricalDatasetIngestion.getEmpiricalGasOccurrences();
+        logger.info("Gas: {} points in {}ms", gas.size(), System.currentTimeMillis() - t2);
+
+        long t3 = System.currentTimeMillis();
+        List<double[]> aqu = AuthenticEmpiricalDatasetIngestion.getEmpiricalAquiferOccurrences();
+        logger.info("Aquifers: {} points in {}ms", aqu.size(), System.currentTimeMillis() - t3);
+
+        long t4 = System.currentTimeMillis();
+        var heat = HistoricalMapGenerator.generateCleanMantleHeatMap("URBAN_CLUSTERS", null);
+        logger.info("Mantle Heat generated in {}ms", System.currentTimeMillis() - t4);
+    }
+
+    @Test
     @DisplayName("Batch Generate & Verify Precalculated Maps for All Built-in Scenarios in data/maps/Earth/<year>/")
     public void testGenerateAllScenarioMaps() throws IOException {
         List<Scenario> scenarios = Scenario.getBuiltInScenarios();
         assertTrue(scenarios.size() >= 20, "Must have all canonical scenarios defined");
 
-        // Force regeneration of all scenario maps in data/maps/ether/earth/<year>/
-        HistoricalMapGenerator.ensureAllScenarioMapsGenerated(true);
+        // Ensure all scenario maps in data/maps/ether/earth/<year>/ are generated
+        HistoricalMapGenerator.ensureAllScenarioMapsGenerated(false);
 
         String[] requiredTensorFiles = {
             "density.png", "isogloss.png", "kinship.png", "rituals.png",
@@ -40,9 +65,8 @@ public class GenerateAllScenarioMapsTest {
             for (String mapFile : requiredTensorFiles) {
                 String stdFile = "earth_" + year + "_" + mapFile;
                 File fStd = new File(yearFolder, stdFile);
-                File f = new File(yearFolder, mapFile);
-                assertTrue((fStd.exists() && fStd.length() > 500) || (f.exists() && f.length() > 500),
-                        "Map file '" + stdFile + "' in 'data/maps/ether/earth/" + year + "/' must exist and have content for " + sc.getName());
+                assertTrue(fStd.exists() && fStd.length() > 500,
+                        "Standard map file '" + stdFile + "' in 'data/maps/ether/earth/" + year + "/' must exist and have content for " + sc.getName());
             }
 
             // Verify loading into Scenario instance

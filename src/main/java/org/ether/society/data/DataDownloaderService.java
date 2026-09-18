@@ -73,6 +73,16 @@ public class DataDownloaderService {
     /**
      * Downloads and extracts the empirical HYDE 3.4 ASCII raster grid files for a specific year natively.
      */
+    public static File downloadHydeDataset(long year) {
+        if (year < -10000) {
+            throw new IllegalStateException("Missing empirical HYDE dataset for prehistoric year " + year);
+        }
+        return downloadHydeGridForYear(year);
+    }
+
+    /**
+     * Downloads and extracts the empirical HYDE 3.4 ASCII raster grid files for a specific year natively.
+     */
     public static File downloadHydeGridForYear(long year) {
         if (year < -10000) {
             logger.warn("Prehistoric epoch {} BC precedes HYDE 3.4 baseline (-10,000 BC). Clamping to Paleolithic baseline 10,000 BC.", year);

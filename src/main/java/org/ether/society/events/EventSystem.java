@@ -191,9 +191,10 @@ public class EventSystem {
             }
         }
 
-        // Regional famine detection
+        // Regional famine detection (< 1 month reserve per habitant: 3.362 / 12 = 0.28017 GJ/hab)
+        double monthlyNeedPerCapita = org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ / 12.0;
         List<H3Cell> starvingList = cells.stream()
-                .filter(c -> c.getPopulation() > 10 && c.getFoodResource() < c.getPopulation())
+                .filter(c -> c.getPopulation() > 10 && c.getFoodResource() < c.getPopulation() * monthlyNeedPerCapita)
                 .toList();
 
         if (starvingList.size() > cells.size() * 0.2 && random.nextDouble() < 0.05) {
@@ -213,8 +214,10 @@ public class EventSystem {
     private void checkFamine(int year, int month, long totalPopulation, double totalFood, List<H3Cell> cells) {
         if (year - lastFamineYear < 10) return; // 10-year cooldown
 
-        if (totalFood < totalPopulation * 0.8 && totalPopulation > 500) {
-            double severity = 1.0 - (totalFood / (totalPopulation * 0.8));
+        // Famine triggered when food reserves fall below 3 months of annual consumption (0.25 * 3.362 GJ/hab)
+        double minReserveThreshold = totalPopulation * (org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * 0.25);
+        if (totalFood < minReserveThreshold && totalPopulation > 500) {
+            double severity = 1.0 - (totalFood / Math.max(1.0, minReserveThreshold));
 
             if (severity > 0.2 && random.nextDouble() < 0.08) {
                 H3Cell target = (cells != null && !cells.isEmpty()) ? cells.get(random.nextInt(cells.size())) : null;

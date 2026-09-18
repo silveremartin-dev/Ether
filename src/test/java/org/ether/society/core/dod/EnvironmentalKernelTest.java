@@ -40,11 +40,11 @@ class EnvironmentalKernelTest {
     @Test
     @DisplayName("Food resource cap is respected")
     void testFoodCap() {
-        worldBuffer.getFoodResource()[0] = 999.0f;
+        worldBuffer.getFoodResource()[0] = 49999.0f;
         for (int i = 0; i < 50; i++) {
             environmentalKernel.tick(worldBuffer, 6, 1.0f);
         }
 
-        assertTrue(worldBuffer.getFoodResource()[0] <= 1000.0f, "Food should not exceed 1000 cap");
+        assertTrue(worldBuffer.getFoodResource()[0] <= 50000.0f, "Food should not exceed 50000 GJ cap");
     }
 }

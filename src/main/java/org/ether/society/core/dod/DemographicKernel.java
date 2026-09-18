@@ -62,8 +62,9 @@ public class DemographicKernel {
             // Structure cost (Sigma)
             sigma[i] = (float) Math.pow(m, 1.05) * 0.01f; 
             
-            // Food consumption: 1 food unit in WorldBuffer feeds 1 human per year
-            float foodRequired = m * dtInYears;
+            // Food & Trophic energy consumption (SI Units: Gigajoules):
+            // 1 human requires PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ (3.362 GJ/yr = 9,205 kJ/day = 2,200 kcal/day)
+            float foodRequired = (float) (m * org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * dtInYears);
             float foodTaken = Math.min(food[hIdx], foodRequired);
             food[hIdx] -= foodTaken;
             

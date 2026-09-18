@@ -248,9 +248,10 @@ public class EcologicalDegradationEngine {
             int pop = c.getPopulation() != null ? c.getPopulation() : 0;
 
             double tempComfort = Math.exp(-Math.pow(temp - 18.0, 2) / 200.0);
-            double foodPerCapita = pop > 0 ? food / pop : 2.0;
+            double foodPerCapita = pop > 0 ? food / pop : org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
+            double foodNorm = Math.min(1.0, foodPerCapita / org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ);
 
-            double score = (foodPerCapita * 0.35) + (water / 500.0) * 0.25 + (tempComfort * 0.25) - (pollution / 500.0) * 0.15;
+            double score = (foodNorm * 0.35) + (water / 500.0) * 0.25 + (tempComfort * 0.25) - (pollution / 500.0) * 0.15;
             score = score / Math.max(0.5, friction * 0.5);
 
             habitability[i] = Math.max(0.001, score);

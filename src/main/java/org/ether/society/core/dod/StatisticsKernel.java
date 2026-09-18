@@ -12,8 +12,8 @@ public class StatisticsKernel {
      * G = (2 * sum(i * x_i) / (n * sum(x_i))) - (n + 1) / n
      */
     public float calculateGini(float[] values) {
+        if (values == null || values.length == 0) return 0.0f;
         int n = values.length;
-        if (n == 0) return 0;
 
         float[] sorted = values.clone();
         Arrays.sort(sorted);
@@ -21,13 +21,17 @@ public class StatisticsKernel {
         double sum = 0;
         double weightedSum = 0;
         for (int i = 0; i < n; i++) {
-            sum += sorted[i];
-            weightedSum += (i + 1) * sorted[i];
+            float v = sorted[i];
+            if (Float.isNaN(v) || Float.isInfinite(v) || v < 0) v = 0;
+            sum += v;
+            weightedSum += (i + 1) * v;
         }
 
-        if (sum == 0) return 0;
+        if (sum <= 0.0) return 0.0f;
 
-        return (float) ((2.0 * weightedSum) / (n * sum) - (n + 1.0) / n);
+        float gini = (float) ((2.0 * weightedSum) / (n * sum) - (n + 1.0) / n);
+        if (Float.isNaN(gini) || Float.isInfinite(gini)) return 0.0f;
+        return Math.clamp(gini, 0.0f, 1.0f);
     }
 
     /**
