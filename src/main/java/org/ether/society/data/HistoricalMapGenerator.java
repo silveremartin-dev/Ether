@@ -2199,7 +2199,6 @@ public class HistoricalMapGenerator {
         int height = img.getHeight();
 
         float[][] grid = new float[height][width];
-        float maxVal = 0.001f;
 
         for (double[] spot : spots) {
             double lon = spot[0];
@@ -2216,19 +2215,21 @@ public class HistoricalMapGenerator {
             int minX = cx - r;
             int maxX = cx + r;
 
+            double radiusSq = radiusPx * radiusPx;
+            double invR = 1.0 / radiusPx;
+
             for (int py = minY; py <= maxY; py++) {
                 double dy = py - cy;
+                double dySq = dy * dy;
                 for (int px = minX; px <= maxX; px++) {
-                    int wrapPx = (px % width + width) % width;
                     double dx = px - cx;
-                    double dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist <= radiusPx) {
-                        double norm = 1.0 - (dist / radiusPx);
-                        float val = (float) (Math.pow(norm, 1.5) * intensity);
+                    double dSq = dx * dx + dySq;
+                    if (dSq <= radiusSq) {
+                        int wrapPx = (px % width + width) % width;
+                        double dist = Math.sqrt(dSq);
+                        double norm = 1.0 - (dist * invR);
+                        float val = (float) (norm * Math.sqrt(norm) * intensity);
                         grid[py][wrapPx] += val;
-                        if (grid[py][wrapPx] > maxVal) {
-                            maxVal = grid[py][wrapPx];
-                        }
                     }
                 }
             }
@@ -2253,7 +2254,6 @@ public class HistoricalMapGenerator {
         int height = img.getHeight();
 
         float[][] grid = new float[height][width];
-        float maxVal = 0.001f;
 
         for (double[] spot : spots) {
             double lon = spot[0];
@@ -2270,19 +2270,21 @@ public class HistoricalMapGenerator {
             int minX = cx - r;
             int maxX = cx + r;
 
+            double radiusSq = radiusPx * radiusPx;
+            double invR = 1.0 / radiusPx;
+
             for (int py = minY; py <= maxY; py++) {
                 double dy = py - cy;
+                double dySq = dy * dy;
                 for (int px = minX; px <= maxX; px++) {
-                    int wrapPx = (px % width + width) % width;
                     double dx = px - cx;
-                    double dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist <= radiusPx) {
-                        double norm = 1.0 - (dist / radiusPx);
-                        float val = (float) (Math.pow(norm, 1.4) * intensity);
+                    double dSq = dx * dx + dySq;
+                    if (dSq <= radiusSq) {
+                        int wrapPx = (px % width + width) % width;
+                        double dist = Math.sqrt(dSq);
+                        double norm = 1.0 - (dist * invR);
+                        float val = (float) (norm * Math.sqrt(norm) * intensity);
                         grid[py][wrapPx] += val;
-                        if (grid[py][wrapPx] > maxVal) {
-                            maxVal = grid[py][wrapPx];
-                        }
                     }
                 }
             }

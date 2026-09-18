@@ -59,10 +59,15 @@ jobs:
         run: |
           VERSION="${{ steps.vars.outputs.version }}"
           DIST_DIR="dist/Ether-v${VERSION}-standalone"
+          rm -rf "$DIST_DIR"
           mkdir -p "$DIST_DIR/bin" "$DIST_DIR/data" "$DIST_DIR/docs" "$DIST_DIR/saves" "$DIST_DIR/logs"
           
           # Copy Shaded Fat JAR
-          cp target/*executable.jar "$DIST_DIR/bin/ether.jar" || cp target/*.jar "$DIST_DIR/bin/ether.jar"
+          if ls target/*executable.jar 1> /dev/null 2>&1; then
+            cp target/*executable.jar "$DIST_DIR/bin/ether.jar"
+          else
+            cp target/*.jar "$DIST_DIR/bin/ether.jar"
+          fi
           
           # Copy essential caches and metadata
           if [ -d "data/cache" ]; then
@@ -77,9 +82,58 @@ jobs:
           cp README.md LICENSE AGENT.md "$DIST_DIR/" 2>/dev/null || true
           cp -r docs "$DIST_DIR/" 2>/dev/null || true
           
-          # Copy 1-Click Launchers
+          # Copy existing root scripts
           cp install.bat install.sh run.bat run.sh run.ps1 "$DIST_DIR/" 2>/dev/null || true
           
+          # Generate Standalone run.sh in distribution
+          cat << 'EOF' > "$DIST_DIR/run.sh"
+          #!/usr/bin/env bash
+          set -e
+          DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+          cd "$DIR"
+
+          echo "============================================================"
+          echo "  ETHER - Planetary Cliodynamics Simulation Engine"
+          echo "============================================================"
+          echo ""
+
+          if ! command -v java &> /dev/null; then
+              echo "[ERROR] Java runtime not found in PATH."
+              echo "Please install OpenJDK 21 or higher (e.g. sudo apt install openjdk-21-jre or brew install openjdk@21)."
+              exit 1
+          fi
+
+          echo "[INFO] Starting Ether simulation engine..."
+          java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar bin/ether.jar "$@" || \
+          java -Xmx4g -jar bin/ether.jar "$@"
+          EOF
+          chmod +x "$DIST_DIR/run.sh"
+
+          # Generate Standalone install.sh in distribution
+          cat << 'EOF' > "$DIST_DIR/install.sh"
+          #!/usr/bin/env bash
+          set -e
+          DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+          cd "$DIR"
+
+          echo "============================================================"
+          echo "  Ether Instant Setup & Environment Verification"
+          echo "============================================================"
+          echo ""
+
+          if ! command -v java &> /dev/null; then
+              echo "[!] Java 21+ not found. Please install OpenJDK 21+ (e.g. sudo apt install openjdk-21-jre)."
+              exit 1
+          fi
+
+          echo "[OK] Java detected:"
+          java -version
+          echo ""
+          echo "[OK] Ready! Launching Ether..."
+          ./run.sh "$@"
+          EOF
+          chmod +x "$DIST_DIR/install.sh"
+
           # Create Friendly 1-Click Root Windows Launcher
           cat << 'EOF' > "$DIST_DIR/Ether_Windows.bat"
           @echo off
@@ -95,10 +149,10 @@ jobs:
           set -e
           DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
           cd "$DIR"
-          chmod +x run.sh install.sh
+          chmod +x run.sh install.sh 2>/dev/null || true
           ./run.sh "$@"
           EOF
-          chmod +x "$DIST_DIR/Ether_Linux_Mac.sh" "$DIST_DIR/run.sh" "$DIST_DIR/install.sh"
+          chmod +x "$DIST_DIR/Ether_Linux_Mac.sh"
           
           # Create ZIP and TAR.GZ archives
           cd dist
