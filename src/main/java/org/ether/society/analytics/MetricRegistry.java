@@ -75,6 +75,34 @@ public class MetricRegistry {
         ));
 
         register(new MetricDescriptor(
+            "eroiAlim", "EROI Alimentaire (Rendement Net)", MetricDescriptor.Category.ENERGY_MATTER, "Ratio",
+            "Ratio entre l'énergie métabolisable acquise et l'énergie dépensée pour la capturer ou la produire (E_out / E_in).",
+            cell -> 7.0,
+            cells -> 7.0
+        ));
+
+        register(new MetricDescriptor(
+            "netSurplus", "Surplus Énergétique Net", MetricDescriptor.Category.ENERGY_MATTER, "%",
+            "Fraction d'énergie nette disponible pour les structures non-agricoles Phi = 1 - 1/EROI.",
+            cell -> 85.0,
+            cells -> 85.0
+        ));
+
+        register(new MetricDescriptor(
+            "trophicMultiplier", "Empreinte Trophique (Multiplicateur)", MetricDescriptor.Category.ENERGY_MATTER, "x",
+            "Multiplicateur de biomasse brute mobilisée par rapport à l'ingestion métabolique (2x à 25x).",
+            cell -> 2.25,
+            cells -> 2.25
+        ));
+
+        register(new MetricDescriptor(
+            "biomassMobilized", "Biomasse Mobilisée / Habitant", MetricDescriptor.Category.ENERGY_MATTER, "kg/an",
+            "Masse brute annuelle de biomasse mobilisée par individu (chasse, récoltes, fourrage bétail).",
+            cell -> 1000.0,
+            cells -> 1000.0
+        ));
+
+        register(new MetricDescriptor(
             "potableWater", "Ressources en Eau Disponibles", MetricDescriptor.Category.ENERGY_MATTER, "10³ m³",
             "Niveau des réserves d'eau douce (aquifères, rivières et lacs) disponibles.",
             cell -> cell.getWaterResource() != null ? cell.getWaterResource() : 0.0,
@@ -324,6 +352,10 @@ public class MetricRegistry {
         map.put("energyCaptured", engine.getEnergyCaptured());
         map.put("resourceDepletion", engine.getResourceDepletionRate());
         map.put("energyPerCapita", engine.getEnergyPerCapita());
+        map.put("eroiAlim", engine.getEroiAlimentaire());
+        map.put("netSurplus", engine.getNetSurplusFraction() * 100.0);
+        map.put("trophicMultiplier", engine.getTrophicMultiplier());
+        map.put("biomassMobilized", engine.getBiomassMobilizedPerCapitaKg());
         map.put("potableWater", engine.getPotableWaterTotal());
         map.put("entropyPollution", engine.getSystemicEntropy());
 

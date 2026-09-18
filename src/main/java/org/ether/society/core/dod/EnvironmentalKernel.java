@@ -134,7 +134,15 @@ public class EnvironmentalKernel {
                     ? (dt / PhysicalConstants.SECONDS_PER_JULIAN_YEAR)
                     : (dt / 365.25));
             
-            float growth = baseProd * fvcbFactor * moistureAridityRatio * dtInYears;
+            float tech = world.getTechnologyLevel() != null ? world.getTechnologyLevel()[i] : 0.0f;
+            // In preindustrial agrarian societies (Tech 4 to 50), ~35% of land is allocated to draft animal feed (hay/oats)
+            float fodderFactor = (tech >= 4.0f && tech < 50.0f)
+                    ? (float) (1.0 - PhysicalConstants.PREINDUSTRIAL_FODDER_LAND_FRACTION)
+                    : 1.0f;
+            // In industrial/post-industrial (Tech >= 50), yield boosted by mechanization and Haber-Bosch inputs
+            float industrialBoost = (tech >= 50.0f) ? Math.min(3.5f, 1.0f + (tech - 50.0f) * 0.03f) : 1.0f;
+            
+            float growth = baseProd * fvcbFactor * moistureAridityRatio * fodderFactor * industrialBoost * dtInYears;
             float decay = (float) (food[i] * 0.05 * dtInYears);
             
             food[i] = Math.max(0.0f, Math.min(50000.0f, food[i] + growth - decay));

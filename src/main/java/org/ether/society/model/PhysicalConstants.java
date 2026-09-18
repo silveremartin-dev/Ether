@@ -86,6 +86,51 @@ public final class PhysicalConstants {
     /** Optimal biological temperature T_opt for terrestrial enzymes in Kelvin (25°C = 298.15K) */
     public static final double OPTIMAL_BIOLOGICAL_TEMP_KELVIN = 298.15;
 
+    // --- Biomass Energy Densities (MJ / kg fresh weight) (Smil 2008, 2013) ---
+    /** Terrestrial mammalian fauna energy density in MJ/kg (muscle, fat, offal, marrow) */
+    public static final double BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG = 8.0;
+
+    /** Wild edible flora, roots, berries and tubers in MJ/kg fresh weight */
+    public static final double BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG = 4.5;
+
+    /** Cultivated dry grains and legumes (wheat, barley, rice, maize) in MJ/kg */
+    public static final double BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG = 15.0;
+
+    /** Marine and freshwater aquatic biomass (fish, shellfish, seals) in MJ/kg */
+    public static final double BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG = 7.0;
+
+    /** Pasture herbage and forage biomass (ruminant feed) in MJ/kg */
+    public static final double BIOMASS_ENERGY_DENSITY_HERBAGE_MJ_PER_KG = 4.0;
+
+    // --- Trophic Footprint Multipliers (Mobilized Raw Biomass / Ingested Energy) ---
+    /** Terrestrial hunter-gatherers footprint multiplier (Speth & Spielmann 1983) */
+    public static final double TROPHIC_MULTIPLIER_HUNTER_GATHERER = 2.25;
+
+    /** Coastal & marine foragers footprint multiplier (higher oxidation & thermal cost) */
+    public static final double TROPHIC_MULTIPLIER_COASTAL_FORAGER = 2.75;
+
+    /** Nomadic pastoralists ecological footprint multiplier (ruminant conversion 10:1) */
+    public static final double TROPHIC_MULTIPLIER_NOMADIC_PASTORALIST = 12.5;
+
+    /** Early Neolithic agrarian footprint multiplier (storage mold/pest 20% + seed 15%) */
+    public static final double TROPHIC_MULTIPLIER_NEOLITHIC_EARLY_AGRARIAN = 2.25;
+
+    /** Advanced preindustrial agrarian with draft animals (horse/ox feed load) */
+    public static final double TROPHIC_MULTIPLIER_PREINDUSTRIAL_ADVANCED_AGRARIAN = 5.0;
+
+    /** Industrial urban & factory workers footprint multiplier */
+    public static final double TROPHIC_MULTIPLIER_INDUSTRIAL_WORKER = 6.0;
+
+    /** Modern post-industrial globalized food system footprint multiplier */
+    public static final double TROPHIC_MULTIPLIER_POST_INDUSTRIAL = 20.0;
+
+    // --- Structural Carcass & Agricultural Fractions ---
+    /** Carcass non-alimentary material fraction converted to physical Capital (Binford 1978: bones, sinew, hide) */
+    public static final double CARCASS_MATERIAL_BYPRODUCT_FRACTION = 0.20;
+
+    /** Arable land fraction allocated to draft animal fodder in preindustrial agrarianism */
+    public static final double PREINDUSTRIAL_FODDER_LAND_FRACTION = 0.35;
+
     /** Gompertz-Makeham baseline background mortality α (yr⁻¹) */
     public static final double GOMPERTZ_BACKGROUND_MORTALITY_ALPHA = 0.0002;
 

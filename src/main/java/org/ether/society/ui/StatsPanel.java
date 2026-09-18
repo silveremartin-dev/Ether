@@ -671,6 +671,14 @@ public class StatsPanel extends VBox {
             "P_cap = P_tot / N_pop. Puissance énergétique continue disponible par habitant selon la loi de Leslie White (Culture = E × T. ~300 W au Paléolithique, ~10 kW en société industrielle).", inspectorTitle, inspectorText);
         addCard("foodPerCapita", "Stock Alimentaire / Habitant", "⚡ Énergie & Matière", "GJ/hab",
             "F_cap = Stock_Alimentaire / N_pop en Gigajoules. Stock d'énergie trophique disponible par individu (1 hab = 9 205 kJ/jour = 3,362 GJ/an).", inspectorTitle, inspectorText);
+        addCard("eroiAlim", "EROI Alimentaire (Rendement Net)", "⚡ Énergie & Matière", "Ratio",
+            "EROI = E_sortie / E_entrée. Ratio d'énergie acquise par rapport au coût énergétique de subsistance (3:1 à 15:1 au Paléolithique/Néolithique, < 1.0 en régime thermo-industriel inversé).", inspectorTitle, inspectorText);
+        addCard("netSurplus", "Surplus Énergétique Net", "⚡ Énergie & Matière", "%",
+            "Phi = 1 - 1/EROI. Fraction d'énergie disponible pour les structures non-agricoles, l'artisanat, les cités et les institutions complexes.", inspectorTitle, inspectorText);
+        addCard("trophicMultiplier", "Empreinte Trophique", "⚡ Énergie & Matière", "x",
+            "Multiplicateur de biomasse brute mobilisée par rapport à l'ingestion métabolique (2.25x en chasse-cueillette, 12.5x en pastoralisme, 20x en système mondialisé).", inspectorTitle, inspectorText);
+        addCard("biomassMobilized", "Biomasse Mobilisée / Habitant", "⚡ Énergie & Matière", "kg/an",
+            "Masse brute annuelle de biomasse mobilisée par individu (nourriture directe, alimentation du bétail de trait/pâturage et pertes).", inspectorTitle, inspectorText);
         addCard("pibMaterialFlow", "Flux Métabolique de Matière", "⚡ Énergie & Matière", "Mt/an", "Volume total de biomasse et de minerais déplacé par le métabolisme industriel.", inspectorTitle, inspectorText);
         addCard("biomassNatural", "Biomasse Naturelle", "⚡ Énergie & Matière", "GtC", "Stock total de carbone végétal et faunique sauvage préservé.", inspectorTitle, inspectorText);
         addCard("biomassDomesticated", "Biomasse Domestiquée", "⚡ Énergie & Matière", "GtC", "Biomasse totale des cultures agricoles et du bétail domestique.", inspectorTitle, inspectorText);
@@ -882,6 +890,10 @@ public class StatsPanel extends VBox {
         double resDep = engine.getResourceDepletionRate();
         double energyPerCap = engine.getEnergyPerCapita();
         double foodPerCap = engine.getFoodPerCapita();
+        double eroiAlim = engine.getEroiAlimentaire();
+        double netSurplus = engine.getNetSurplusFraction() * 100.0;
+        double trophicMul = engine.getTrophicMultiplier();
+        double bioMobilized = engine.getBiomassMobilizedPerCapitaKg();
         double bioDom = engine.getBiomassDomesticated();
         double water = engine.getPotableWaterTotal();
         double remRes = engine.getRemainingResourcesRatio();
@@ -945,6 +957,10 @@ public class StatsPanel extends VBox {
                 setCardVal("resourceDepletion", String.format("%.1f", resDep), resDep);
                 setCardVal("energyPerCapita", String.format("%.1f", energyPerCap), energyPerCap);
                 setCardVal("foodPerCapita", String.format("%.2f", foodPerCap), foodPerCap);
+                setCardVal("eroiAlim", String.format("%.2f : 1", eroiAlim), eroiAlim);
+                setCardVal("netSurplus", String.format("%.1f%%", netSurplus), netSurplus);
+                setCardVal("trophicMultiplier", String.format("%.2fx", trophicMul), trophicMul);
+                setCardVal("biomassMobilized", String.format("%,.0f", bioMobilized), bioMobilized);
                 setCardVal("pibMaterialFlow", String.format("%.1f", resDep * 5.2), resDep * 5.2);
                 setCardVal("biomassNatural", String.format("%,.0f", bio), bio);
                 setCardVal("biomassDomesticated", String.format("%,.1f", bioDom), bioDom);

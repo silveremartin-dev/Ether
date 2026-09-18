@@ -62,14 +62,58 @@ public class DemographicKernel {
             // Structure cost (Sigma)
             sigma[i] = (float) Math.pow(m, 1.05) * 0.01f; 
             
-            // Food & Trophic energy consumption (SI Units: Gigajoules):
-            // 1 human requires PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ (3.362 GJ/yr = 9,205 kJ/day = 2,200 kcal/day)
-            float foodRequired = (float) (m * org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * dtInYears);
-            float foodTaken = Math.min(food[hIdx], foodRequired);
+            // --- Trophic Footprint & Bioenergetic Subsistence Regime ---
+            float tech = agents.getTechLevel()[i];
+            double trophicMultiplier;
+            double eroi;
+
+            if (tech < 1.5f) {
+                // Paleolithic / Mesolithic Hunter-Gatherers & Coastal Foragers
+                boolean isCoastal = world.getBiomes()[hIdx] == (byte) org.ether.society.model.Biome.BEACH.ordinal()
+                        || world.getBiomassFish()[hIdx] > 100.0f;
+                if (isCoastal) {
+                    trophicMultiplier = org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_COASTAL_FORAGER;
+                    eroi = 12.0;
+                } else {
+                    trophicMultiplier = org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER;
+                    eroi = 7.0;
+                }
+            } else if (tech < 4.0f) {
+                // Early Neolithic Agrarian
+                trophicMultiplier = org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_NEOLITHIC_EARLY_AGRARIAN;
+                eroi = 6.5;
+            } else if (tech < 50.0f) {
+                // Advanced Preindustrial Agrarian with Draft Animal Traction
+                trophicMultiplier = org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_PREINDUSTRIAL_ADVANCED_AGRARIAN;
+                eroi = 2.8;
+            } else if (tech < 120.0f) {
+                // Industrial Era
+                trophicMultiplier = org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_INDUSTRIAL_WORKER;
+                eroi = 0.5; // Thermodynamic inversion
+            } else {
+                // Post-Industrial Globalized Food System
+                trophicMultiplier = org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_POST_INDUSTRIAL;
+                eroi = 0.12; // 8-10 kcal fossil per 1 kcal ingested
+            }
+
+            // Food & Trophic energy consumption (in Gigajoules GJ):
+            // Base human metabolic need: 3.362 GJ/hab/yr. Mobilized raw biomass = need * trophicMultiplier.
+            float baseMetabolicNeed = (float) (m * org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * dtInYears);
+            float rawBiomassMobilized = (float) (baseMetabolicNeed * (trophicMultiplier / org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER));
+            
+            float foodTaken = Math.min(food[hIdx], rawBiomassMobilized);
             food[hIdx] -= foodTaken;
+            world.getEnergyFoodConsumed()[hIdx] += foodTaken;
+            
+            // Total Anatomical Exploitation (Binford 1978, Speth 1983):
+            // In hunter-gatherer bands (Tech < 1.5), 20% of harvested faunal biomass is converted directly into physical tools & capital (K)
+            if (tech < 1.5f && foodTaken > 0.0f) {
+                float carcassCapital = (float) (foodTaken * org.ether.society.model.PhysicalConstants.CARCASS_MATERIAL_BYPRODUCT_FRACTION * 0.05f);
+                world.getResourceCapital()[hIdx] += carcassCapital;
+            }
             
             // Calculate food satisfaction ratio (0.0 to 1.0)
-            float foodSatisfaction = foodRequired > 0.0001f ? (foodTaken / foodRequired) : 1.0f;
+            float foodSatisfaction = rawBiomassMobilized > 0.0001f ? (foodTaken / rawBiomassMobilized) : 1.0f;
             
             // Update internal energy store (0 to 100)
             if (foodSatisfaction >= 0.8f) {

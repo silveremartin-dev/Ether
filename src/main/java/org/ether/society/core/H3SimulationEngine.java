@@ -994,7 +994,58 @@ public class H3SimulationEngine implements ISimulationEngine {
     public double getDivisionOfLaborIndex() {
         float tech = getAverageTechnology();
         long pop = getTotalPopulation();
-        return Math.min(100.0, (tech * 0.5) + Math.log10(Math.max(1, pop)) * 5.0);
+        double surplus = getNetSurplusFraction();
+        return Math.min(100.0, (surplus * 60.0) + (tech * 0.25) + Math.log10(Math.max(1, pop)) * 3.0);
+    }
+
+    /**
+     * Energy Return on Investment for the food/subsistence system (EROI_alim = E_out / E_in).
+     * Preindustrial: 3:1 to 15:1. Industrial thermodynamic inversion: < 1.0 (7-10 kcal fossil per 1 kcal ingested).
+     */
+    public double getEroiAlimentaire() {
+        float tech = getAverageTechnology();
+        if (tech < 1.5f) {
+            return 7.0; // Paleolithic Hunter-Gatherer baseline
+        } else if (tech < 4.0f) {
+            return 6.5; // Early Neolithic
+        } else if (tech < 50.0f) {
+            return 2.8; // Preindustrial Agrarian with Draft Animals
+        } else if (tech < 120.0f) {
+            return 0.50; // Industrial Era (Thermodynamic inversion)
+        } else {
+            return 0.12; // Post-Industrial Globalized Food System (10:1 fossil input)
+        }
+    }
+
+    /**
+     * Net societal energy surplus fraction Phi = 1 - 1 / EROI_alim (Tainter 1988, Hall et al. 2014).
+     */
+    public double getNetSurplusFraction() {
+        double eroi = getEroiAlimentaire();
+        return Math.max(0.0, 1.0 - (1.0 / Math.max(0.1, eroi)));
+    }
+
+    /**
+     * Trophic footprint multiplier mu = Mobilized Raw Biomass / Ingested Energy (2.0x to 25.0x).
+     */
+    public double getTrophicMultiplier() {
+        float tech = getAverageTechnology();
+        if (tech < 1.5f) return PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER;
+        if (tech < 4.0f) return PhysicalConstants.TROPHIC_MULTIPLIER_NEOLITHIC_EARLY_AGRARIAN;
+        if (tech < 50.0f) return PhysicalConstants.TROPHIC_MULTIPLIER_PREINDUSTRIAL_ADVANCED_AGRARIAN;
+        if (tech < 120.0f) return PhysicalConstants.TROPHIC_MULTIPLIER_INDUSTRIAL_WORKER;
+        return PhysicalConstants.TROPHIC_MULTIPLIER_POST_INDUSTRIAL;
+    }
+
+    /**
+     * Gross raw biomass mobilized per capita per year in kg/hab/an.
+     */
+    public double getBiomassMobilizedPerCapitaKg() {
+        double trophicMul = getTrophicMultiplier();
+        float tech = getAverageTechnology();
+        double energyDensity = (tech < 1.5f) ? PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG
+                : (tech < 50.0f ? PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG : 14.0);
+        return (PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_MJ * trophicMul) / energyDensity;
     }
 
     public int getMaxHierarchyLevel() {
@@ -1228,9 +1279,13 @@ public class H3SimulationEngine implements ISimulationEngine {
         double resDep = getResourceDepletionRate();
         double psi = getEliteOverproductionIndex();
         double entropy = getSystemicEntropy();
-        double val = ((Double.isNaN(resDep) ? 0.0 : resDep) * 0.3) +
-                     ((Double.isNaN(psi) ? 0.0 : psi) * 4.0) +
-                     ((Double.isNaN(entropy) ? 0.0 : entropy) / 20.0);
+        double eroi = getEroiAlimentaire();
+        // Inversion thermodynamique : if EROI < 1.0 (industrial dependency), resource depletion accelerates collapse risk
+        double thermodynamicInversionRisk = (eroi < 1.0) ? (1.0 / Math.max(0.05, eroi)) * ((Double.isNaN(resDep) ? 0.0 : resDep) / 100.0) * 15.0 : 0.0;
+        double val = ((Double.isNaN(resDep) ? 0.0 : resDep) * 0.25) +
+                     ((Double.isNaN(psi) ? 0.0 : psi) * 3.5) +
+                     ((Double.isNaN(entropy) ? 0.0 : entropy) / 20.0) +
+                     thermodynamicInversionRisk;
         return Double.isNaN(val) ? 0.0 : Math.max(0.0, Math.min(100.0, val));
     }
 
