@@ -111,7 +111,7 @@ public class EmpiricalDataSourcesValidationTest {
         scenario.setUseRealEarthData(true);
         // Year -99999 has no empirical HYDE 3.4 file -> system must throw IllegalStateException under Zero Fallback Policy
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            HistoricalMapGenerator.generateCleanDensityMapForYear("RIVER_VALLEYS", scenario, -99999);
+            HistoricalMapGenerator.rasterizeDensityMapForYear("RIVER_VALLEYS", scenario, -99999);
         }, "Zero Fallback Policy must throw IllegalStateException when empirical data is missing");
         logger.info("Zero Fallback Policy Constraint Validated Successfully.");
     }

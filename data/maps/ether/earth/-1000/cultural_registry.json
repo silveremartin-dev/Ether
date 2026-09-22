@@ -1,0 +1,88 @@
+{
+  "epoch": -1000,
+  "description": "Cliodynamic Cultural & Linguistic Registry for -1000 BCE (Early Iron Age / Phoenician Maritime Thalassocracy, Western Zhou China, Neo-Assyrian Inception & Vedic India)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "phoenician_thalassocracy",
+      "colorHex": "#8E44AD",
+      "colorRgb": [142, 68, 173],
+      "traits": [0.65, 0.78, 0.85, 0.75],
+      "name": {
+        "en": "Phoenician Maritime Colonies & Alphabet (Tyre / Byblos / Sidon)",
+        "fr": "Thalassocratie Phénicienne & Alphabet (Tyr / Byblos / Sidon)",
+        "de": "Phönizische Seehandelskolonien & Alphabet (Tyrus / Byblos / Sidon)",
+        "es": "Talasocracia Fenicia y Alfabeto (Tiro / Biblos / Sidón)",
+        "zh": "腓尼基航海殖民与字母商贸城邦（提尔/比布鲁斯/西顿）"
+      },
+      "kinshipType": "Mercantile Oligarchic Citizen Assemblies",
+      "lithicTechnocomplex": "Iron Smelting, Bireme Shipbuilding & Linear Alphabet"
+    },
+    {
+      "id": "western_zhou_mandate",
+      "colorHex": "#C0392B",
+      "colorRgb": [192, 57, 43],
+      "traits": [0.75, 0.92, 0.90, 0.90],
+      "name": {
+        "en": "Western Zhou Dynasty & Mandate of Heaven (Haojing / Luoyang)",
+        "fr": "Dynastie des Zhou Occidentaux & Mandat du Ciel (Haojing / Luoyang)",
+        "de": "Westliche Zhou-Dynastie & Mandat des Himmels (Haojing / Luoyang)",
+        "es": "Dinastía Zhou Occidental y Mandato del Cielo (Haojing / Luoyang)",
+        "zh": "西周王朝与天命封建礼乐制度（镐京/洛邑）"
+      },
+      "kinshipType": "Fengjian Feudal Aristocracy & Zongfa Lineages",
+      "lithicTechnocomplex": "Advanced Bronze Ritual Vessels, Chariotry & Iron Weapons"
+    },
+    {
+      "id": "neo_assyrian_early",
+      "colorHex": "#D35400",
+      "colorRgb": [211, 84, 0],
+      "traits": [0.70, 0.90, 0.88, 0.85],
+      "name": {
+        "en": "Neo-Assyrian Iron Army & Imperial Heartlands (Assur / Nineveh)",
+        "fr": "Militarisme Néo-Assyrien & Cœur Impérial (Assur / Ninive)",
+        "de": "Neuassyrisches Eisenheer & Kernland (Assur / Ninive)",
+        "es": "Imperio Neoasirio y Ejército del Hierro (Assur / Nínive)",
+        "zh": "新亚述早期铁器军事帝国（阿淑尔/尼尼微）"
+      },
+      "kinshipType": "Autocratic Militarized Bureaucracy",
+      "lithicTechnocomplex": "Wrought Iron Weapons, Siege Engines & Cavalry Harnessing"
+    },
+    {
+      "id": "vedic_kuru_panchala",
+      "colorHex": "#27AE60",
+      "colorRgb": [39, 174, 96],
+      "traits": [0.60, 0.80, 0.82, 0.85],
+      "name": {
+        "en": "Late Vedic Kingdoms (Kuru-Panchala / Painted Grey Ware Horizon)",
+        "fr": "Royaumes Védiques Récents (Kuru-Panchala / Culture PGW)",
+        "de": "Spätvedische Königreiche (Kuru-Panchala / PGW-Kultur)",
+        "es": "Reinos Védicos Tardíos (Kuru-Panchala / Cerámica Gris Pintada)",
+        "zh": "后吠陀王国时期（俱卢-般遮罗 / 彩绘灰陶文化）"
+      },
+      "kinshipType": "Varna Social Stratification & Brahmanic Priesthood",
+      "lithicTechnocomplex": "Gangetic Iron Agriculture, PGW Ceramics & Oral Vedic Canons"
+    },
+    {
+      "id": "early_greek_geometric",
+      "colorHex": "#2980B9",
+      "colorRgb": [41, 128, 185],
+      "traits": [0.55, 0.70, 0.80, 0.75],
+      "name": {
+        "en": "Early Archaic Greece / Geometric Period (Incipient Polis)",
+        "fr": "Grèce Géométrique & Émergence de la Cité (Athènes / Corinthe)",
+        "de": "Geometrische Epoche Griechenlands / Frühe Polis (Athen / Korinth)",
+        "es": "Grecia Geométrica y Surgimiento de la Polis (Atenas / Corinto)",
+        "zh": "希腊几何陶时期 / 城邦萌芽（雅典/科林斯）"
+      },
+      "kinshipType": "Genos / Phratry Tribal Alliances",
+      "lithicTechnocomplex": "Iron Metallurgy, Geometric Pottery & Homeric Epic Traditions"
+    }
+  ]
+}

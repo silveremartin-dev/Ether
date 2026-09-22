@@ -877,7 +877,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             .toList();
 
         String metric = metricSelectorCombo.getValue();
-        if (metric == null || selectedExecuted.isEmpty()) return;
+        if (metric == null || metric.startsWith("──") || selectedExecuted.isEmpty()) return;
 
         // Determine timeline range across target scenarios for interpolated ground truth alignment
         int minYear = 0;
@@ -998,8 +998,8 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         try {
             if (channel.contains("Densité") || channel.contains("Demographic") || channel.contains("Density")) {
-                bufA = HistoricalMapGenerator.generateCleanDensityMapForYear(scA.getPopulationDensityType(), scA, targetYear);
-                bufB = HistoricalMapGenerator.generateCleanDensityMapForYear(scB.getPopulationDensityType(), scB, targetYear);
+                bufA = HistoricalMapGenerator.rasterizeDensityMapForYear(scA.getPopulationDensityType(), scA, targetYear);
+                bufB = HistoricalMapGenerator.rasterizeDensityMapForYear(scB.getPopulationDensityType(), scB, targetYear);
             } else {
                 HistoricalMapGenerator.populateScenarioHistoricalMaps(scA);
                 HistoricalMapGenerator.populateScenarioHistoricalMaps(scB);
@@ -1256,11 +1256,50 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             if (metricSelectorCombo != null) {
                 String selected = metricSelectorCombo.getValue();
                 metricSelectorCombo.getItems().clear();
-                metricSelectorCombo.getItems().addAll(MetricRegistry.getInstance().getAllMetricNames());
-                if (selected != null && metricSelectorCombo.getItems().contains(selected)) {
+
+                Map<MetricDescriptor.Category, List<MetricDescriptor>> grouped = new TreeMap<>();
+                for (MetricDescriptor d : MetricRegistry.getInstance().getAllMetrics()) {
+                    grouped.computeIfAbsent(d.getCategory(), k -> new ArrayList<>()).add(d);
+                }
+
+                for (var entry : grouped.entrySet()) {
+                    String categoryHeader = "── " + entry.getKey().getDisplayName() + " ──";
+                    metricSelectorCombo.getItems().add(categoryHeader);
+                    List<MetricDescriptor> metrics = entry.getValue();
+                    metrics.sort(Comparator.comparing(MetricDescriptor::getDisplayName, String.CASE_INSENSITIVE_ORDER));
+                    for (MetricDescriptor d : metrics) {
+                        metricSelectorCombo.getItems().add(d.getDisplayName());
+                    }
+                }
+
+                metricSelectorCombo.setCellFactory(p -> new ListCell<>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                            setDisable(false);
+                        } else if (item.startsWith("──")) {
+                            setText(item);
+                            setDisable(true);
+                            setStyle("-fx-font-weight: bold; -fx-opacity: 0.7; -fx-padding: 4 8; -fx-text-fill: #38bdf8;");
+                        } else {
+                            setText(item);
+                            setDisable(false);
+                            setStyle("-fx-font-weight: normal; -fx-padding: 2 12;");
+                        }
+                    }
+                });
+
+                if (selected != null && metricSelectorCombo.getItems().contains(selected) && !selected.startsWith("──")) {
                     metricSelectorCombo.setValue(selected);
-                } else if (!metricSelectorCombo.getItems().isEmpty()) {
-                    metricSelectorCombo.setValue(metricSelectorCombo.getItems().get(0));
+                } else {
+                    for (String item : metricSelectorCombo.getItems()) {
+                        if (!item.startsWith("──")) {
+                            metricSelectorCombo.setValue(item);
+                            break;
+                        }
+                    }
                 }
             }
 

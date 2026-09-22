@@ -1,0 +1,88 @@
+{
+  "epoch": -1900,
+  "description": "Cliodynamic Cultural & Linguistic Registry for -1900 BCE (Middle Bronze Age / Hammurabi, Indus-Sarasvati, Middle Kingdom Egypt & Erlitou/Shang)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "old_babylonian_amorite",
+      "colorHex": "#D35400",
+      "colorRgb": [211, 84, 0],
+      "traits": [0.65, 0.85, 0.90, 0.85],
+      "name": {
+        "en": "Old Babylonian Empire & Amorite Cuneiform State (Hammurabi)",
+        "fr": "Empire Paléo-Babylonien & Amorrite (Code d'Hammurabi)",
+        "de": "Altbabylonisches Reich & Amoriter-Keilschriftstaat (Hammurapi)",
+        "es": "Imperio Paleobabilónico y Estado Amorreo (Código de Hammurabi)",
+        "zh": "古巴比伦帝国与阿摩利人楔形文字城邦（汉谟拉比）"
+      },
+      "kinshipType": "Patriarchal Hydraulic Monarchy",
+      "lithicTechnocomplex": "Tin-Bronze Metallurgy & Cuneiform Bureaucracy"
+    },
+    {
+      "id": "egypt_middle_kingdom",
+      "colorHex": "#F39C12",
+      "colorRgb": [243, 156, 18],
+      "traits": [0.60, 0.90, 0.92, 0.90],
+      "name": {
+        "en": "Middle Kingdom Egypt (12th Dynasty / Thebes & Itjtawy)",
+        "fr": "Moyen Empire Égyptien (12e Dynastie / Thèbes & Itjtaouy)",
+        "de": "Mittleres Reich Ägypten (12. Dynastie / Theben & Itjtawy)",
+        "es": "Imperio Medio de Egipto (Dinastía XII / Tebas e Ity-tauy)",
+        "zh": "埃及中王国时期（第十二王朝 / 底比斯与伊塔威）"
+      },
+      "kinshipType": "Pharaonic Divine Dynasty & Nomarch Administration",
+      "lithicTechnocomplex": "Bronze Saws, Monumental Masonry & Hieratic Scripts"
+    },
+    {
+      "id": "indus_late_harappan",
+      "colorHex": "#27AE60",
+      "colorRgb": [39, 174, 96],
+      "traits": [0.55, 0.75, 0.85, 0.70],
+      "name": {
+        "en": "Late Harappan Civilization (Cemetery H / Indus Drainage)",
+        "fr": "Civilisation de l'Indus Tardive (Harappéen Tardif / Mohenjo-daro)",
+        "de": "Späte Indus-Zivilisation (Spät-Harappa / Friedhof H)",
+        "es": "Civilización Tardía del Indo (Fase Harappa Tardía)",
+        "zh": "后哈拉帕文明（印度河晚期城市与H墓地文化）"
+      },
+      "kinshipType": "Urban Guilds & Standardized Metrological Clan System",
+      "lithicTechnocomplex": "Lost-Wax Bronze Casting, Faience & Steatite Seals"
+    },
+    {
+      "id": "erlitou_early_bronze_china",
+      "colorHex": "#C0392B",
+      "colorRgb": [192, 57, 43],
+      "traits": [0.70, 0.80, 0.88, 0.80],
+      "name": {
+        "en": "Erlitou Culture / Proto-Shang Dynastic Core (Yellow River)",
+        "fr": "Culture d'Erlitou / Berceau Dynastique Xia-Shang (Fleuve Jaune)",
+        "de": "Erlitou-Kultur / Proto-Shang Dynastischer Kern (Gelber Fluss)",
+        "es": "Cultura de Erlitou y Núcleo Dinástico Proto-Shang (Río Amarillo)",
+        "zh": "二里头文化 / 夏商早期青铜王朝核心（黄河流域）"
+      },
+      "kinshipType": "Ancestral Patriarchal Lineage (Zongfa System)",
+      "lithicTechnocomplex": "Piece-Mold Bronze Vessel Casting & Oracle Scapulimancy"
+    },
+    {
+      "id": "minoan_protopalatial",
+      "colorHex": "#2980B9",
+      "colorRgb": [41, 128, 185],
+      "traits": [0.50, 0.70, 0.80, 0.75],
+      "name": {
+        "en": "Protopalatial Minoan Civilization (Knossos / Phaistos / Crete)",
+        "fr": "Civilisation Minoenne Protopalatiale (Cnossos / Phaistos / Crète)",
+        "de": "Altpalastzeitliche Minoische Kultur (Knossos / Phaistos / Kreta)",
+        "es": "Civilización Minoica Protopalacial (Cnosos / Festo / Creta)",
+        "zh": "前宫殿期米诺斯文明（克诺索斯/费斯托斯/克里特岛）"
+      },
+      "kinshipType": "Thalassocratic Matrifocal Palatial Elites",
+      "lithicTechnocomplex": "Cycladic/Minoan Bronze Metallurgy & Linear A Administration"
+    }
+  ]
+}

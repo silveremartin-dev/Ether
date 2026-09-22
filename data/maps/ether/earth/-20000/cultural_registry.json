@@ -1,0 +1,88 @@
+{
+  "epoch": -20000,
+  "description": "Cliodynamic Cultural & Linguistic Registry for -20,000 BP (Last Glacial Maximum / Solutrean & LGM Refugia)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "solutrean_franco_cantabrian",
+      "colorHex": "#E74C3C",
+      "colorRgb": [231, 76, 60],
+      "traits": [0.45, 0.14, 0.09, 0.70],
+      "name": {
+        "en": "Solutrean Laurel-Leaf Refugium (Franco-Cantabrian Basin)",
+        "fr": "Refuge Solutréen & Feuilles de Laurier (Bassin Franco-Cantabrique)",
+        "de": "Solutréen Lorbeerblatt-Refugium (Franko-Kantabrisches Becken)",
+        "es": "Refugio Solutrense y Puntas de Laurel (Cuenca Franco-Cantábrica)",
+        "zh": "梭鲁特桂叶形矛头避难所文化（法-坎塔布连盆地）"
+      },
+      "kinshipType": "Cave Sanctuary Aggregation Kinship",
+      "lithicTechnocomplex": "Pressure Flaking / Laurel-Leaf Points & Eyed Needles"
+    },
+    {
+      "id": "epigravettian_mediterranean",
+      "colorHex": "#3498DB",
+      "colorRgb": [52, 152, 219],
+      "traits": [0.44, 0.12, 0.08, 0.65],
+      "name": {
+        "en": "Epigravettian Mediterranean & Balkan Refugia (Italy / Greece / Euxine)",
+        "fr": "Épigravettien des Refuges Méditerranéens & Balkaniques (Italie / Grèce)",
+        "de": "Epigravettien Mediterrane & Balkan-Refugien (Italien / Griechenland)",
+        "es": "Epigravetiense de los Refugios Mediterráneos y Balcánicos",
+        "zh": "后格拉维特地中海与巴尔干避难所（意大利/希腊）"
+      },
+      "kinshipType": "Montane & Coastal Forager Networks",
+      "lithicTechnocomplex": "Shouldered Point / Micro-Gravette Microliths"
+    },
+    {
+      "id": "beringian_lgm_arctic",
+      "colorHex": "#1ABC9C",
+      "colorRgb": [26, 188, 156],
+      "traits": [0.48, 0.10, 0.08, 0.55],
+      "name": {
+        "en": "Ancient Beringian LGM Mammoth-Steppe Clades (Yana / Ushki)",
+        "fr": "Clades Béringiens du LGM & Steppe à Mammouths (Yana / Ushki)",
+        "de": "Beringia-LGM Mammutsteppen-Kladen (Jana / Uschki)",
+        "es": "Clados Beringianos del LGM y Estepa de Mamuts (Yana / Ushki)",
+        "zh": "白令末次盛冰期猛犸草原先民（亚纳/乌什基遗址）"
+      },
+      "kinshipType": "Permafrost Megafauna Mobile Bands",
+      "lithicTechnocomplex": "Dyuktai / Microblade Core Industry"
+    },
+    {
+      "id": "kebaran_early_levant",
+      "colorHex": "#F39C12",
+      "colorRgb": [243, 156, 18],
+      "traits": [0.38, 0.10, 0.12, 0.50],
+      "name": {
+        "en": "Early Kebaran Epipaleolithic Levant (Ohalo II Wild Seed Harvesters)",
+        "fr": "Kébarien & Épipaléolithique du Levant (Moissonneurs Sauvages d'Ohalo II)",
+        "de": "Frühes Kebarien Epipaläolithikum Levante (Ohalo II Wildgetreideerntung)",
+        "es": "Kebariense y Epipaleolítico del Levante (Recolectores de Ohalo II)",
+        "zh": "早基巴拉附旧石器时代黎凡特文化（奥哈洛二号采集群）"
+      },
+      "kinshipType": "Semi-Sedentary Lake-Shore Hamlets",
+      "lithicTechnocomplex": "Kebara Geometric Microliths & Basalt Mortars"
+    },
+    {
+      "id": "east_asia_microblade",
+      "colorHex": "#27AE60",
+      "colorRgb": [39, 174, 96],
+      "traits": [0.40, 0.08, 0.08, 0.45],
+      "name": {
+        "en": "East Asian Microblade Hunters & Early Pottery Innovators (Xianrendong)",
+        "fr": "Chasseurs à Microlames & Premières Poteries d'Asie Orientale",
+        "de": "Ostasiatische Mikroklingen-Jäger & Frühe Töpfer (Xianrendong)",
+        "es": "Cazadores de Microhojas e Innovadores de Cerámica Temprana (China)",
+        "zh": "东亚细石叶猎人与早期陶器先驱（仙人洞遗址）"
+      },
+      "kinshipType": "Forest & Riverine Forager Kin-Groups",
+      "lithicTechnocomplex": "Microblade Technocomplex & Incipient Ceramic Vessels"
+    }
+  ]
+}

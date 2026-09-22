@@ -21,24 +21,61 @@ public class GenerateAllScenarioMapsTest {
     public void testQuickBenchmark() {
         long t0 = System.currentTimeMillis();
         logger.info("--- Starting Quick Ingestion Benchmark ---");
-        List<double[]> coal = AuthenticEmpiricalDatasetIngestion.getEmpiricalCoalOccurrences();
+        List<double[]> coal = EmpiricalGeospatialDatasetIngestion.getEmpiricalCoalOccurrences();
         logger.info("Coal: {} points in {}ms", coal.size(), System.currentTimeMillis() - t0);
 
         long t1 = System.currentTimeMillis();
-        List<double[]> oil = AuthenticEmpiricalDatasetIngestion.getEmpiricalOilOccurrences();
+        List<double[]> oil = EmpiricalGeospatialDatasetIngestion.getEmpiricalOilOccurrences();
         logger.info("Oil: {} points in {}ms", oil.size(), System.currentTimeMillis() - t1);
 
         long t2 = System.currentTimeMillis();
-        List<double[]> gas = AuthenticEmpiricalDatasetIngestion.getEmpiricalGasOccurrences();
+        List<double[]> gas = EmpiricalGeospatialDatasetIngestion.getEmpiricalGasOccurrences();
         logger.info("Gas: {} points in {}ms", gas.size(), System.currentTimeMillis() - t2);
 
         long t3 = System.currentTimeMillis();
-        List<double[]> aqu = AuthenticEmpiricalDatasetIngestion.getEmpiricalAquiferOccurrences();
+        List<double[]> aqu = EmpiricalGeospatialDatasetIngestion.getEmpiricalAquiferOccurrences();
         logger.info("Aquifers: {} points in {}ms", aqu.size(), System.currentTimeMillis() - t3);
 
         long t4 = System.currentTimeMillis();
-        var heat = HistoricalMapGenerator.generateCleanMantleHeatMap("URBAN_CLUSTERS", null);
+        var heat = HistoricalMapGenerator.rasterizeMantleHeatMap("URBAN_CLUSTERS", null);
         logger.info("Mantle Heat generated in {}ms", System.currentTimeMillis() - t4);
+    }
+
+    @Test
+    @DisplayName("Regenerate & Verify Precalculated Maps for Scenario -100000 (Out of Africa Baseline)")
+    public void testGenerateScenarioMinus100k() throws IOException {
+        List<Scenario> scenarios = Scenario.getBuiltInScenarios();
+        Scenario sc100k = scenarios.stream()
+                .filter(s -> s.getStartDateYear() == -100000L)
+                .findFirst()
+                .orElse(null);
+        assertNotNull(sc100k, "Scenario -100000 must be defined");
+
+        // Force regenerate scenario tensors
+        HistoricalMapGenerator.forceGenerateScenarioHistoricalMaps(sc100k);
+
+        File yearFolder = new File("data/maps/ether/earth/-100000");
+        assertTrue(yearFolder.exists() && yearFolder.isDirectory());
+
+        String[] requiredTensorFiles = {
+            "density.png", "isogloss.png", "kinship.png", "rituals.png",
+            "sovereignty.png", "technology.png", "tradenetwork.png",
+            "institutional.png", "ecological.png", "pathogen.png"
+        };
+
+        for (String mapFile : requiredTensorFiles) {
+            String stdFile = "earth_-100000_" + mapFile;
+            File fStd = new File(yearFolder, stdFile);
+            assertTrue(fStd.exists() && fStd.length() > 500, "Map file must exist: " + stdFile);
+        }
+
+        // Verify loading into Scenario instance
+        HistoricalMapGenerator.populateScenarioHistoricalMaps(sc100k);
+        assertNotNull(sc100k.getCustomDensityBase64(), "customDensityBase64 must be populated");
+        for (int i = 0; i < 9; i++) {
+            assertNotNull(sc100k.getCustomTensorMapBase64(i), "Tensor index " + i + " must not be null");
+        }
+        logger.info("Successfully regenerated and verified all -100000 scenario maps!");
     }
 
     @Test
@@ -47,8 +84,8 @@ public class GenerateAllScenarioMapsTest {
         List<Scenario> scenarios = Scenario.getBuiltInScenarios();
         assertTrue(scenarios.size() >= 20, "Must have all canonical scenarios defined");
 
-        // Ensure all scenario maps in data/maps/ether/earth/<year>/ are generated
-        HistoricalMapGenerator.ensureAllScenarioMapsGenerated(false);
+        // Ensure all scenario maps in data/maps/ether/earth/<year>/ are regenerated with true elevation mask
+        HistoricalMapGenerator.ensureAllScenarioMapsGenerated(true);
 
         String[] requiredTensorFiles = {
             "density.png", "isogloss.png", "kinship.png", "rituals.png",

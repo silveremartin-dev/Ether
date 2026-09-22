@@ -1,0 +1,88 @@
+{
+  "epoch": -50000,
+  "description": "Cliodynamic Cultural & Linguistic Registry for -50,000 BP (Sahul Maritime Crossing & MIS 3 Interstadial)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "sapiens_african_san_hadza",
+      "colorHex": "#E67E22",
+      "colorRgb": [230, 126, 34],
+      "traits": [0.10, 0.05, 0.05, 0.20],
+      "name": {
+        "en": "Proto-Sapiens African Core (San & Hadza ancestral lineages)",
+        "fr": "Lignées Sapiens d'Afrique (Ancêtres San & Hadza)",
+        "de": "Proto-Sapiens Afrika-Kern (San & Hadza Ahnenlinien)",
+        "es": "Núcleo Africano Proto-Sapiens (Linajes ancestrales San y Hadza)",
+        "zh": "智人非洲核心（桑人与哈扎人古老谱系）"
+      },
+      "kinshipType": "Bilateral / Egalitarian Band",
+      "lithicTechnocomplex": "Late Middle Stone Age (MSA / Howiesons Poort)"
+    },
+    {
+      "id": "sapiens_eurasian_initial_up",
+      "colorHex": "#F39C12",
+      "colorRgb": [243, 156, 18],
+      "traits": [0.25, 0.08, 0.06, 0.35],
+      "name": {
+        "en": "Initial Upper Paleolithic Dispersal (Eurasian Blade & Ornament Culture)",
+        "fr": "Paléolithique Supérieur Initial (Lames & Parures d'Eurasie)",
+        "de": "Initiales Jungpaläolithikum (Eurasische Klingen & Schmuckkultur)",
+        "es": "Paleolítico Superior Inicial (Hojas líticas y adornos de Eurasia)",
+        "zh": "早期旧石器时代晚期扩散（欧亚石叶与饰品文化）"
+      },
+      "kinshipType": "Exogamous Hunter-Gatherer Clades",
+      "lithicTechnocomplex": "Initial Upper Paleolithic (IUP / Bacho Kiro & Bohunician)"
+    },
+    {
+      "id": "sapiens_sahul_aboriginal_pioneers",
+      "colorHex": "#D35400",
+      "colorRgb": [211, 84, 0],
+      "traits": [0.30, 0.06, 0.10, 0.40],
+      "name": {
+        "en": "Sahul Maritime Pioneers (First Australians & New Guinea Ancestors)",
+        "fr": "Pionniers Maritimes du Sahul (Premiers Aborigènes & Papous)",
+        "de": "Sahul Meerespioniere (Erste Australier & Papua-Ahnen)",
+        "es": "Pioneros Marítimos de Sahul (Primeros Australianos y Ancestros de Nueva Guinea)",
+        "zh": "萨胡尔航海先锋（第一批澳大利亚原住民与新几内亚先祖）"
+      },
+      "kinshipType": "Dreamtime Totemic Moiety Kinship",
+      "lithicTechnocomplex": "Core Tool and Scraper Tradition / Edge-ground Axes"
+    },
+    {
+      "id": "neanderthal_late_classic",
+      "colorHex": "#2980B9",
+      "colorRgb": [41, 128, 185],
+      "traits": [0.75, 0.05, 0.05, 0.15],
+      "name": {
+        "en": "Late Neanderthal Clades (Micoquian & Châtelperronian Horizon)",
+        "fr": "Néandertaliens Tardifs (Horizon Micoquien & Châtelperronien)",
+        "de": "Späte Neandertaler-Kladen (Micoquien & Châtelperronien)",
+        "es": "Neandertales Tardíos (Horizonte Micoquiense y Chatelperroniense)",
+        "zh": "晚期尼安德特人（米柯克与沙特尔佩龙文化层）"
+      },
+      "kinshipType": "Patrilocal Small Clades",
+      "lithicTechnocomplex": "Keilmesser / Late Mousterian & Châtelperronian Points"
+    },
+    {
+      "id": "denisovan_east_asia",
+      "colorHex": "#27AE60",
+      "colorRgb": [39, 174, 96],
+      "traits": [0.60, 0.05, 0.06, 0.12],
+      "name": {
+        "en": "High-Altitude & East Asian Denisovans (Tibetan Baishiya Lineage)",
+        "fr": "Dénisoviens d'Altitude & d'Asie Orientale (Lignée Baishiya / Xiahe)",
+        "de": "Hochland- & Ostasiatische Denisova (Tibetische Baishiya-Linie)",
+        "es": "Denisovanos de Gran Altitud y Asia Oriental (Linaje Baishiya / Tíbet)",
+        "zh": "高海拔与东亚丹尼索瓦人（青藏白石崖谱系）"
+      },
+      "kinshipType": "Highland Cold-Adapted Foragers",
+      "lithicTechnocomplex": "Tibetan & Altai Laminar Technology"
+    }
+  ]
+}

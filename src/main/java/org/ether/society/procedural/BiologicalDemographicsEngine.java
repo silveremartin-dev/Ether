@@ -55,22 +55,48 @@ public class BiologicalDemographicsEngine {
             if (pop <= 0) continue;
 
             double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
-            double food = cell.getFoodResource() != null ? cell.getFoodResource() : 500.0;
+            double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
+            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+            double tempC = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
 
-            // Physical carrying capacity K = baseline (100) + food * 50.0
-            double carryingCapacity = 100.0 + food * 50.0;
+            // Physical carrying capacity K = food available / annual metabolic requirement (3.362 GJ)
+            double carryingCapacity = Math.max(0.05, food / org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ);
             double stressRatio = (double) pop / carryingCapacity;
 
-            // Over-population stress factor: when pop > carrying capacity, hazard γ increases
-            double nutritionalStress = stressRatio > 1.0 ? Math.min(0.08, (stressRatio - 1.0) * 0.02) : 0.0;
-            double environmentalHazardGamma = 0.01 + (pollution / 5000.0) + nutritionalStress;
+            // Famine / Nutritional stress factor
+            double nutritionalStress = stressRatio > 1.0 ? Math.min(0.40, (stressRatio - 1.0) * 0.04) : 0.0;
+
+            // Altitude Hypoxia Hazard (HAPE/AMS above 3000m, death zone above 5500m)
+            double epas1 = cell.getMovementFriction() != null ? Math.clamp(1.0 - (cell.getMovementFriction() / 3.0), 0.0, 1.0) : 0.05;
+            double hypoxiaHazard = 0.0;
+            if (elev > 3000.0) {
+                double excessElev = (elev - 3000.0) / 1000.0;
+                double altitudeVulnerability = Math.max(0.1, 1.0 - epas1 * 0.85);
+                hypoxiaHazard = excessElev * 0.08 * altitudeVulnerability;
+            }
+
+            // Extreme Cold Hazard (Hypothermia / Frostbite below -10°C)
+            double coldHazard = tempC < -10.0 ? Math.min(0.25, (-10.0 - tempC) * 0.012) : 0.0;
+
+            double environmentalHazardGamma = 0.01 + (pollution / 5000.0) + nutritionalStress + hypoxiaHazard + coldHazard;
 
             // Gompertz actuarial hazard rate for cohort mean age 30
             double hazardRate = calculateGompertzHazardRate(30.0, environmentalHazardGamma);
 
             double deathProb = 1.0 - Math.exp(-hazardRate * dt);
-            int naturalDeaths = (int) (pop * deathProb);
-            cell.setPopulation(Math.max(0, pop - naturalDeaths));
+            double expectedDeaths = pop * deathProb;
+            int naturalDeaths = (int) expectedDeaths;
+            double fractionalDeath = expectedDeaths - naturalDeaths;
+            if (java.util.concurrent.ThreadLocalRandom.current().nextDouble() < fractionalDeath) {
+                naturalDeaths++;
+            }
+            naturalDeaths = Math.min(pop, naturalDeaths);
+
+            int finalPop = Math.max(0, pop - naturalDeaths);
+            cell.setPopulation(finalPop);
+            if (finalPop > 0) {
+                cell.updateAgePyramidFromTotal(cell.getTechnologyLevel() > 0 ? cell.getTechnologyLevel() : 1.0);
+            }
         }
     }
 

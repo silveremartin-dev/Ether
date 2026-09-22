@@ -27,6 +27,8 @@
  */
 package org.ether.society.database;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.ether.society.model.Biome;
 import jakarta.persistence.*;
 
@@ -44,6 +46,7 @@ import jakarta.persistence.*;
  * @since 1.0.0
  */
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "h3_cells_l8", indexes = {
         @Index(name = "idx_h3_index", columnList = "h3_index", unique = true),
         @Index(name = "idx_lat_lng", columnList = "latitude, longitude"),
@@ -265,6 +268,7 @@ public class H3Cell {
     private double fluxPressure = 0.0;
 
     @Transient // Not persisting political ownership yet
+    @JsonIgnore
     private org.ether.society.model.Nation owner;
 
     @Transient
@@ -384,10 +388,12 @@ public class H3Cell {
         this.fluxPressure = fluxPressure;
     }
 
+    @JsonIgnore
     public org.ether.society.model.Nation getOwner() {
         return owner;
     }
 
+    @JsonIgnore
     public void setOwner(org.ether.society.model.Nation owner) {
         this.owner = owner;
     }

@@ -78,3 +78,9 @@ user_data/
 input/
 dist/
 **/extracted/
+
+# Track standardized Ether planetary maps and tensors
+!data/maps/ether/
+!data/maps/ether/**
+!data/maps/earth/
+!data/maps/earth/**

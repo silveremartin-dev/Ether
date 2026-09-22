@@ -121,11 +121,30 @@ public class ProceduralPopulationEngine {
         boolean isSahulAustralia = (lat < 10.0 && lng > 95.0) || (lat < -10.0 && lng > 110.0);
         boolean isAmericas = lng < -25.0;
 
+        // Specific regional historical density pattern overrides if set
+        if (scenario != null && scenario.getPopulationDensityType() != null) {
+            String pType = scenario.getPopulationDensityType().toUpperCase();
+            switch (pType) {
+                case "AUSTRALIA_SAHUL" -> { return isSahulAustralia ? 15.0 : 0.0; }
+                case "EGYPT_NILE" -> { return isNileDelta ? 20.0 : 0.0; }
+                case "MESOAMERICA" -> { return isMesoamerica ? 20.0 : 0.0; }
+                case "ROMAN_EMPIRE" -> { return isMediterraneanEurope ? 20.0 : 0.0; }
+                case "WEST_AFRICA_MALI" -> { return (lat >= 5.0 && lat <= 25.0 && lng >= -18.0 && lng <= 15.0) ? 20.0 : 0.0; }
+                case "JAPAN_SAKOKU" -> { return (lat >= 30.0 && lat <= 45.0 && lng >= 128.0 && lng <= 146.0) ? 20.0 : 0.0; }
+                case "INDIA_MAURYA" -> { return (isGangesIndia || isIndusValley) ? 20.0 : 0.0; }
+                case "AMERICAS_1491" -> { return isAmericas ? 15.0 : 0.0; }
+                case "BERINGIA_AMERICAS" -> { return (lat >= 55.0 && lat <= 72.0 && (lng >= 150.0 || lng <= -150.0)) ? 20.0 : 0.0; }
+                case "GREEN_SAHARA" -> { return (lat >= 12.0 && lat <= 28.0 && lng >= -10.0 && lng <= 30.0) ? 20.0 : 0.0; }
+                case "YOUNGER_DRYAS" -> { return (lat >= 30.0 && lat <= 38.0 && lng >= 30.0 && lng <= 42.0) ? 20.0 : 0.0; }
+            }
+        }
+
+        String scName = scenario != null && scenario.getName() != null ? scenario.getName().toLowerCase() : "";
+
         // 1. Deep Paleolithic / Out of Africa (~100,000 BP to ~50,000 BP)
         // Homo sapiens core in Africa; Neanderthalensis in W. Eurasia; Denisova in E. Eurasia.
         // Strictly ZERO population in Sahul/Australia and Americas.
-        if (startYear <= -50000 || (scenario != null && scenario.getName() != null && 
-             (scenario.getName().toLowerCase().contains("africa") || scenario.getName().toLowerCase().contains("out_of_africa")))) {
+        if (startYear < -50000 || (scName.contains("out_of_africa") || (scName.contains("sortie d'afrique") && !scName.contains("sahul")))) {
             if (isAmericas || isSahulAustralia) return 0.0;
             if (isEastAfrica) return 15.0;
             if (isNileDelta || isFertileCrescent) return 6.0;
@@ -138,7 +157,7 @@ public class ProceduralPopulationEngine {
         // Sahul/Australia populated (~50k-45k BP). Americas remain unpopulated.
         if (startYear <= -25000) {
             if (isAmericas) return 0.0;
-            if (isSahulAustralia) return 3.0;
+            if (isSahulAustralia) return 4.0;
             if (isEastAfrica) return 6.0;
             if (isFertileCrescent || isNileDelta) return 5.0;
             if (isYellowYangtzeChina || isGangesIndia) return 4.0;

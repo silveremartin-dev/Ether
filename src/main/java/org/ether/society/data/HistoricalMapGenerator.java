@@ -29,8 +29,8 @@ import java.util.List;
 public class HistoricalMapGenerator {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalMapGenerator.class);
 
-    public static final int WIDTH = 1024;
-    public static final int HEIGHT = 512;
+    public static final int WIDTH = 2048;
+    public static final int HEIGHT = 1024;
 
     private static final List<Path2D> LAND_POLYGONS = new ArrayList<>();
     private static final List<Path2D> SEA_POLYGONS = new ArrayList<>();
@@ -38,6 +38,262 @@ public class HistoricalMapGenerator {
 
     static {
         initHighPrecisionGeographicPolygons();
+    }
+
+    // Archaeological Hominin Hearths for Organic Orographic Voronoi (-100,000 BP)
+    private static final double[][] HEARTHS_SAPIENS_AFRICA = {
+        {36.0, 4.5},    // Omo Kibish / Rift Valley Core
+        {40.5, 8.9},    // Herto / Middle Awash
+        {32.7, 26.1},   // Taramsa Hill / Upper Nile
+        {31.2, 30.0},   // Nile Delta / Lower Egypt
+        {-8.8, 31.6},   // Jebel Irhoud (Morocco / Western Maghreb)
+        {-2.4, 34.8},   // Taforalt & Rhafas (Eastern Morocco / Western Algeria)
+        {1.3, 35.4},    // Columnata / Tiaret (Central Algeria)
+        {5.4, 36.3},    // Aïn Boucherit / Aïn Hanech (Setif / Eastern Algeria)
+        {22.0, 32.0},   // Haua Fteah (Cyrenaica / Libya)
+        {5.1, 7.4},     // Iho Eleru (West Africa)
+        {-17.0, 14.7},  // Bargny / Dakar Peninsula (Senegal MSA / Western Tip)
+        {-12.0, 12.0},  // Falémé / Ounjougou (West African Savanna MSA)
+        {-14.0, 24.0},  // Bir Gandus / Western Sahara MSA
+        {20.0, 0.0},    // Congo Basin
+        {21.2, -34.4},  // Blombos / Klasies River (South Africa)
+        {31.9, -27.0}   // Border Cave (KwaZulu-Natal)
+    };
+
+    private static final double[][] HEARTHS_SAPIENS_PIONEERS = {
+        {35.3, 32.7},   // Skhul & Qafzeh (Mount Carmel / Southern Levant)
+        {34.0, 29.5},   // Sinai Corridor
+        {41.0, 28.0},   // Al-Wusta (Nefud Desert / Central Arabia)
+        {50.0, 26.0},   // Eastern Arabian Coastal Oasis
+        {45.5, 18.5},   // Mundafan (Rub' al Khali / Southern Arabia)
+        {44.0, 13.0},   // Bab-el-Mandeb crossing (Yemen)
+        {54.0, 17.0},   // Dhofar coastal oasis (Oman)
+        {55.9, 25.1}    // Jebel Faya (UAE / Gulf of Oman)
+    };
+
+    private static final double[][] HEARTHS_NEANDERTHAL_WEST = {
+        {-5.3, 36.1},   // Gorham's Cave (Gibraltar / Southern Iberia)
+        {-3.5, 42.3},   // Atapuerca (Northern Iberia)
+        {-9.0, 39.0},   // Gruta da Oliveira (Portugal / Atlantic Iberia)
+        {1.0, 45.0},    // La Ferrassie / Dordogne (France)
+        {8.5, 50.0},    // Neander Valley / Swabian Jura (Germany)
+        {-1.5, 53.2},   // Creswell Crags & Pontnewydd (Britain / Wales)
+        {13.0, 41.5},   // Monte Circeo / Grotta Guattari (Italy)
+        {22.4, 36.6},   // Kalamakia Cave (Mani / Southern Greece)
+        {21.7, 39.7},   // Theopetra (Thessaly)
+        {16.0, 45.0},   // Krapina / Vindija (Balkans)
+        {34.0, 45.0}    // Kiik-Koba (Crimea)
+    };
+
+    private static final double[][] HEARTHS_NEANDERTHAL_ZAGROS = {
+        {30.6, 37.0},   // Karain Cave (Anatolia)
+        {40.0, 44.0},   // Mezmaiskaya (Caucasus)
+        {44.2, 36.8},   // Shanidar Cave (Zagros / Northern Iraq)
+        {47.4, 34.4},   // Bisitun & Wezmeh (Western Iran)
+        {51.5, 32.4},   // Qaleh Bozi (Central Iran / Isfahan)
+        {53.3, 29.8},   // Arsanjan / Barm-e Shur (Southern Iran / Fars)
+        {52.0, 36.0}    // Hotu & Kamarband (Alborz / Caspian)
+    };
+
+    private static final double[][] HEARTHS_DENISOVAN_ALTAI = {
+        {84.7, 51.4},   // Denisova Cave (Altai Mountains)
+        {67.0, 38.0},   // Teshik-Tash / Obi-Rakhmat (Uzbekistan / Central Asia)
+        {95.0, 55.0},   // Ust'-Ishim / Krasnoyarsk (Siberia)
+        {102.8, 35.2},  // Baishiya Karst Cave (Tibetan Plateau / Xiahe)
+        {115.0, 40.0}   // Nihewan / Zhoukoudian (Northern China)
+    };
+
+    private static final double[][] HEARTHS_EASTERN_ARCHAIC = {
+        {77.0, 22.0},   // Narmada Valley (Central India)
+        {79.0, 13.0},   // Attirampakkam (Southern India)
+        {103.0, 20.0},  // Tam Pa Ling (Indochina)
+        {111.5, 25.5},  // Daoxian / Fuyan Cave (Southern China)
+        {102.0, 2.0},   // Malayan Peninsula
+        {111.0, -7.4}   // Solo River / Ngandong (Java / Sundaland)
+    };
+
+    public static double[] computeHomininCladeWeights(double lon, double lat) {
+        // --- 1. STRICT UNINHABITED GEOGRAPHIC EXCLUSIONS (-100,000 BP) ---
+        if (lat < -60.0 || lon < -26.0) return null; // Americas & Antarctica uninhabited
+        if (lat < -35.2) return null; // All sub-Antarctic & South Indian islands (Marion, Crozet, Kerguelen, Bouvet)
+        
+        // Madagascar & Mascarene Islands (Africa mainland coast is lon <= 41.0°E, Madagascar is >= 43.0°E)
+        if (lat <= -10.0 && lat >= -30.0 && lon >= 43.0 && lon <= 65.0) return null;
+        if (lat > -10.0 && lat <= -4.0 && lon >= 53.0 && lon <= 57.0) return null; // Seychelles
+
+        // Isolated Oceanic Islands in the Atlantic:
+        if (lon <= -21.5 && lat >= 14.0 && lat <= 18.0) return null; // Cape Verde archipelago (off Senegal)
+        if (lon <= -13.3 && lat >= 27.5 && lat <= 29.5) return null; // Canary Islands (off Morocco/Sahara)
+        if (lon <= -15.5 && lat >= 32.0 && lat <= 33.5) return null; // Madeira
+        if (lon <= -24.0 && lat >= 36.0 && lat <= 40.0) return null; // Azores
+        if (lon >= -6.5 && lon <= -5.0 && lat >= -16.5 && lat <= -15.5) return null; // Saint Helena
+        if (lon >= -15.0 && lon <= -13.5 && lat >= -8.5 && lat <= -7.5) return null; // Ascension
+
+        if (lat >= -2.0 && lat <= 2.0 && lon >= 6.0 && lon <= 9.0) return null; // São Tomé & Príncipe
+        if (lat >= 12.0 && lat <= 13.0 && lon >= 53.0 && lon <= 55.0) return null; // Socotra Island
+        if (lat <= -8.0 && lon >= 110.0) return null; // Australia / Sahul / Tasmania
+        if (lat > -8.0 && lat <= 0.0 && lon >= 128.0) return null; // New Guinea
+        if (lat > -8.0 && lat < 12.0 && lon >= 118.0 && lon <= 130.0) return null; // Wallacea
+        if (lat >= 0.0 && lat < 20.0 && lon >= 120.0 && lon <= 128.0) return null; // Philippines
+        if (lat >= 28.0 && lon >= 128.0) return null; // Japanese Archipelago
+        if (lat > 65.0) return null; // Arctic uninhabited
+
+        // --- 2. SMOOTH PHYSICAL BARRIERS & MARINE STRAITS ---
+        // Himalayan / Tibetan mountain ridge barrier centered along (32°N, 85°E)
+        double himalayas = Math.exp(-(Math.pow(lat - 32.0, 2) + Math.pow((lon - 85.0) * 0.55, 2)) / 70.0);
+
+        // Mediterranean Marine Strait Barrier (Strict separation: North Africa vs Southern Europe)
+        boolean isAfricanLandmass = (lat <= 37.2 && lon >= -18.5 && lon <= 32.5);
+        boolean isEuropeanLandmass = (lat >= 35.8 && lon >= -10.0 && lon <= 36.0);
+
+        // --- 3. COMPUTE MINIMUM EFFECTIVE DISTANCE TO EACH CLADE ---
+        double[] dists = new double[6];
+
+        // Clade 0: Sapiens African Core
+        double d0 = Double.MAX_VALUE;
+        for (double[] h : HEARTHS_SAPIENS_AFRICA) d0 = Math.min(d0, Math.sqrt(distSq(lon, lat, h[0], h[1])));
+        if (isEuropeanLandmass) d0 += 50.0; // Cannot cross Mediterranean into Europe
+        dists[0] = d0;
+
+        // Clade 1: Sapiens Out-of-Africa Pioneers (Levant / Arabia)
+        double d1 = Double.MAX_VALUE;
+        for (double[] h : HEARTHS_SAPIENS_PIONEERS) d1 = Math.min(d1, Math.sqrt(distSq(lon, lat, h[0], h[1])));
+        if (isEuropeanLandmass) d1 += 50.0;
+        dists[1] = d1;
+
+        // Clade 2: Neanderthals Western Classical Mousterian (Europe & Iberia)
+        double d2 = Double.MAX_VALUE;
+        for (double[] h : HEARTHS_NEANDERTHAL_WEST) d2 = Math.min(d2, Math.sqrt(distSq(lon, lat, h[0], h[1])));
+        if (isAfricanLandmass) d2 += 50.0; // Cannot cross Mediterranean into North Africa
+        dists[2] = d2;
+
+        // Clade 3: Neanderthals Zagros & Near East
+        double d3 = Double.MAX_VALUE;
+        for (double[] h : HEARTHS_NEANDERTHAL_ZAGROS) d3 = Math.min(d3, Math.sqrt(distSq(lon, lat, h[0], h[1])));
+        if (isAfricanLandmass) d3 += 50.0; // Cannot cross into North Africa
+        dists[3] = d3;
+
+        // Clade 4: Denisovans Altai & Siberian Archaic
+        double d4 = Double.MAX_VALUE;
+        for (double[] h : HEARTHS_DENISOVAN_ALTAI) d4 = Math.min(d4, Math.sqrt(distSq(lon, lat, h[0], h[1])));
+        if (isAfricanLandmass || isEuropeanLandmass) d4 += 50.0;
+        d4 += himalayas * 16.0; // Himalayan barrier separating Denisovans from Indian subcontinent
+        dists[4] = d4;
+
+        // Clade 5: Eastern Archaic & Sundaland
+        double d5 = Double.MAX_VALUE;
+        for (double[] h : HEARTHS_EASTERN_ARCHAIC) d5 = Math.min(d5, Math.sqrt(distSq(lon, lat, h[0], h[1])));
+        if (isAfricanLandmass || isEuropeanLandmass) d5 += 50.0;
+        d5 += himalayas * 16.0; // Himalayan barrier separating Sunda/Indian hominins from Tibetan plateau
+        dists[5] = d5;
+
+        // --- 4. SOFT-VORONOI GAUSSIAN BLEND ---
+        double minDist = Double.MAX_VALUE;
+        for (double d : dists) minDist = Math.min(minDist, d);
+
+        double sigma = 3.5; // Smooth transition scale in degrees (~380 km soft gradient)
+        double[] weights = new double[6];
+        double sum = 0.0;
+        for (int i = 0; i < 6; i++) {
+            weights[i] = Math.exp(-(dists[i] - minDist) / sigma);
+            sum += weights[i];
+        }
+        for (int i = 0; i < 6; i++) {
+            weights[i] /= sum;
+        }
+        return weights;
+    }
+
+    public static int getHomininEntityId(double lon, double lat) {
+        double[] weights = computeHomininCladeWeights(lon, lat);
+        if (weights == null) return 0;
+        int bestIdx = 0;
+        double maxW = 0.0;
+        for (int i = 0; i < 6; i++) {
+            if (weights[i] > maxW) {
+                maxW = weights[i];
+                bestIdx = i;
+            }
+        }
+        return bestIdx + 1;
+    }
+
+    public static int getHomininSpeciesType(double lon, double lat) {
+        int entity = getHomininEntityId(lon, lat);
+        return switch (entity) {
+            case 1, 2 -> 1; // Homo Sapiens
+            case 3, 4 -> 2; // Neanderthals
+            case 5, 6 -> 3; // Denisovans / Archaic Asian Hominins
+            default -> 0;   // Uninhabited
+        };
+    }
+
+    public static double blendPaleoTraits(double lon, double lat, double valSapiens, double valNeanderthal, double valDenisovan) {
+        double[] w = computeHomininCladeWeights(lon, lat);
+        if (w == null) return 0.0;
+        // Clades 0,1: Sapiens | Clades 2,3: Neanderthal | Clades 4,5: Denisovan
+        double sWeight = w[0] + w[1];
+        double nWeight = w[2] + w[3];
+        double dWeight = w[4] + w[5];
+        return sWeight * valSapiens + nWeight * valNeanderthal + dWeight * valDenisovan;
+    }
+
+    public static double getHomininOccupancyWeight(double lon, double lat, long year) {
+        if (lat < -60.0) return 0.0; // Antarctica is strictly uninhabited across human prehistory & antiquity
+        if (year > -70000L) {
+            if (year <= -40000L) {
+                // Sahul populated (~50k BC), Americas empty
+                if (lon < -25.0 || (lon > 175.0 && lat < 55.0)) return 0.0;
+                if (lat > 64.0) return 0.0;
+                if (lat > 50.0) {
+                    double t = (lat - 50.0) / 14.0;
+                    return 1.0 - t * t * (3.0 - 2.0 * t);
+                }
+                return 1.0;
+            } else if (year <= -20000L) {
+                // Beringia entry (~25k BC), South America empty
+                if ((lat < 15.0 && lon < -25.0 && lon > -120.0) || (lon < -60.0 && lat < 50.0)) return 0.0;
+                // Laurentide & Fennoscandian glaciated northern boundary
+                if (lon > -140.0 && lon < 50.0 && lat > 52.0) {
+                    if (lat > 66.0) return 0.0;
+                    double t = (lat - 52.0) / 14.0;
+                    return 1.0 - t * t * (3.0 - 2.0 * t);
+                }
+                if (lat > 68.0) return 0.0;
+                if (lat > 55.0) {
+                    double t = (lat - 55.0) / 13.0;
+                    return 1.0 - t * t * (3.0 - 2.0 * t);
+                }
+                return 1.0;
+            } else if (year <= -10000L) {
+                if (lat > 72.0 && lon > -60.0 && lon < -15.0) return 0.0; // Greenland ice cap
+                return 1.0;
+            }
+            return 1.0;
+        }
+
+        // --- PALEOLITHIC / OUT OF AFRICA (-100,000 BP / LIG / EEMIAN) ---
+        int species = getHomininSpeciesType(lon, lat);
+        if (species == 0) return 0.0;
+
+        if (species == 1) {
+            // Sapiens: Core tropical Africa & Levant
+            return 1.0;
+        } else {
+            // Neanderthals in Europe & Denisovans in Siberia (Eemian MIS 5e temperate boundary):
+            // Western/Central Europe reaches 58°N (Britain, Germany, Poland); Siberia reaches 53°N
+            double maxLat = (lon <= 40.0) ? 58.0 : (58.0 - Math.min(6.0, (lon - 40.0) / 15.0));
+            double fadeStart = maxLat - 4.0;
+            if (lat > fadeStart) {
+                double t = Math.clamp((lat - fadeStart) / (maxLat - fadeStart), 0.0, 1.0);
+                return 1.0 - t * t * (3.0 - 2.0 * t);
+            }
+            return 1.0;
+        }
+    }
+
+    public static boolean isHomininOccupied(double lon, double lat, long year) {
+        return getHomininOccupancyWeight(lon, lat, year) > 0.001;
     }
 
     public static boolean isLand(double lng, double lat) {
@@ -154,122 +410,129 @@ public class HistoricalMapGenerator {
             // 1. Demographic Density Map
             BufferedImage imgDensity = (neResult != null && neResult.densityImage != null) ? neResult.densityImage : null;
             if (imgDensity == null) {
-                if (scenario.getStartDateYear() < -10000) {
+                if (scenario.getStartDateYear() <= -70000) {
+                    imgDensity = applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(scenario.getStartDateYear(), type));
+                    scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+                    logger.info("Generated authentic hominin demographic density tensor for Paleolithic epoch year {} (Out of Africa).", scenario.getStartDateYear());
+                } else if (scenario.getStartDateYear() < -10000) {
                     BufferedImage baseHyde = Hyde34GridReader.loadForYear(-10000);
                     if (baseHyde != null) {
-                        imgDensity = applyPrehistoricGeographicMask(scenario.getPresetKey() != null ? scenario.getPresetKey() : safeName, scenario.getStartDateYear(), baseHyde);
+                        imgDensity = applyAltimetryCoastlineMask(applyPrehistoricGeographicMask(scenario.getPresetKey() != null ? scenario.getPresetKey() : safeName, scenario.getStartDateYear(), baseHyde));
                     } else {
-                        imgDensity = generatePrehistoricSyntheticDensityMap(scenario.getStartDateYear(), type);
+                        imgDensity = applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(scenario.getStartDateYear(), type));
                     }
                     scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
-                    logger.info("Generated precalculated density map for prehistoric epoch year {} (Out of Africa / Sahul / Beringia).", scenario.getStartDateYear());
+                    logger.info("Generated precalculated density map for prehistoric epoch year {} (Sahul / Beringia).", scenario.getStartDateYear());
                 } else {
                     imgDensity = Hyde34GridReader.loadForYear(scenario.getStartDateYear());
                     if (imgDensity != null) {
+                        imgDensity = applyAltimetryCoastlineMask(imgDensity);
                         scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
                         logger.info("Successfully populated scenario '{}' density tensor using HYDE 3.4 5-arc-minute grid for year {}.", scenario.getName(), scenario.getStartDateYear());
                     } else {
-                        imgDensity = generateCleanDensityMap(type, scenario);
+                        imgDensity = rasterizeDensityMap(type, scenario);
                         if (imgDensity != null) {
+                            imgDensity = applyAltimetryCoastlineMask(imgDensity);
                             scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
                         }
                     }
                 }
             } else {
+                imgDensity = applyAltimetryCoastlineMask(imgDensity);
                 scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
             }
 
-            // 1. Clean Multi-Channel Isogloss Map (Index 0)
-            BufferedImage imgIsogloss = (neResult != null && neResult.isoglossImage != null) ? neResult.isoglossImage : generateCleanIsoglossMap(type, scenario);
+            // 1. Multi-Channel Isogloss Map (Index 0)
+            BufferedImage imgIsogloss = (neResult != null && neResult.isoglossImage != null) ? neResult.isoglossImage : rasterizeIsoglossMap(type, scenario);
             scenario.setCustomTensorMapBase64(0, bufferedImageToBase64Png(imgIsogloss));
 
-            // 2. Clean Multi-Channel Kinship Map (Index 1)
-            BufferedImage imgKinship = (neResult != null && neResult.kinshipImage != null) ? neResult.kinshipImage : generateCleanKinshipMap(type, scenario);
+            // 2. Multi-Channel Kinship Map (Index 1)
+            BufferedImage imgKinship = (neResult != null && neResult.kinshipImage != null) ? neResult.kinshipImage : rasterizeKinshipMap(type, scenario);
             scenario.setCustomTensorMapBase64(1, bufferedImageToBase64Png(imgKinship));
 
-            // 3. Clean Multi-Channel Rituals Map (Index 2)
-            BufferedImage imgRituals = (neResult != null && neResult.ritualsImage != null) ? neResult.ritualsImage : generateCleanRitualsMap(type, scenario);
+            // 3. Multi-Channel Rituals Map (Index 2)
+            BufferedImage imgRituals = (neResult != null && neResult.ritualsImage != null) ? neResult.ritualsImage : rasterizeRitualsMap(type, scenario);
             scenario.setCustomTensorMapBase64(2, bufferedImageToBase64Png(imgRituals));
 
-            // 4. Clean Multi-Channel Sovereignty Map (Index 3)
-            BufferedImage imgSovereignty = (neResult != null && neResult.sovereigntyImage != null) ? neResult.sovereigntyImage : generateCleanSovereigntyMap(type, scenario);
+            // 4. Multi-Channel Sovereignty Map (Index 3)
+            BufferedImage imgSovereignty = (neResult != null && neResult.sovereigntyImage != null) ? neResult.sovereigntyImage : rasterizeSovereigntyMap(type, scenario);
             scenario.setCustomTensorMapBase64(3, bufferedImageToBase64Png(imgSovereignty));
 
-            // 5. Clean Multi-Channel Technology Mode Map (Index 4)
-            BufferedImage imgTechnology = generateCleanTechnologyMap(type, scenario);
+            // 5. Multi-Channel Technology Mode Map (Index 4)
+            BufferedImage imgTechnology = rasterizeTechnologyMap(type, scenario);
             scenario.setCustomTensorMapBase64(4, bufferedImageToBase64Png(imgTechnology));
 
-            // 6. Clean Multi-Channel Trade Network Map (Index 5)
-            BufferedImage imgTrade = generateCleanTradeNetworkMap(type, scenario);
+            // 6. Multi-Channel Trade Network Map (Index 5)
+            BufferedImage imgTrade = rasterizeTradeNetworkMap(type, scenario);
             scenario.setCustomTensorMapBase64(5, bufferedImageToBase64Png(imgTrade));
 
-            // 7. Clean Multi-Channel Institutional Complexity Map (Index 6)
-            BufferedImage imgInstitutional = generateCleanInstitutionalComplexityMap(type, scenario);
+            // 7. Multi-Channel Institutional Complexity Map (Index 6)
+            BufferedImage imgInstitutional = rasterizeInstitutionalComplexityMap(type, scenario);
             scenario.setCustomTensorMapBase64(6, bufferedImageToBase64Png(imgInstitutional));
 
-            // 8. Clean Multi-Channel Ecological Footprint Map (Index 7)
-            BufferedImage imgEcological = generateCleanEcologicalFootprintMap(type, scenario);
+            // 8. Multi-Channel Ecological Footprint Map (Index 7)
+            BufferedImage imgEcological = rasterizeEcologicalFootprintMap(type, scenario);
             scenario.setCustomTensorMapBase64(7, bufferedImageToBase64Png(imgEcological));
 
-            // 9. Clean Multi-Channel Pathogen Immunity Map (Index 8)
-            BufferedImage imgPathogen = generateCleanPathogenImmunityMap(type, scenario);
+            // 9. Multi-Channel Pathogen Immunity Map (Index 8)
+            BufferedImage imgPathogen = rasterizePathogenImmunityMap(type, scenario);
             scenario.setCustomTensorMapBase64(8, bufferedImageToBase64Png(imgPathogen));
 
             // 10. Extensible Cultural Tensors (Indices 9 to N-1) if N > 9
             int dims = scenario.getCultureVectorDimensions();
             if (dims > 9) {
                 for (int i = 9; i < dims; i++) {
-                    BufferedImage imgExt = generateCleanExtensibleTensorMap(i, type, scenario);
+                    BufferedImage imgExt = rasterizeExtensibleTensorMap(i, type, scenario);
                     scenario.setCustomTensorMapBase64(i, bufferedImageToBase64Png(imgExt));
                 }
             }
 
             // --- EXTENSIBLE GEOLOGICAL & ENERGY RESOURCE TENSORS (TAB 2) ---
             // Index 0: Coal Deposits
-            BufferedImage imgCoal = generateCleanCoalMap(type, scenario);
+            BufferedImage imgCoal = rasterizeCoalMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(0, bufferedImageToBase64Png(imgCoal));
 
             // Index 1: Crude Oil Reserves
-            BufferedImage imgOil = generateCleanOilMap(type, scenario);
+            BufferedImage imgOil = rasterizeOilMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(1, bufferedImageToBase64Png(imgOil));
 
             // Index 2: Natural Gas Fields
-            BufferedImage imgGas = generateCleanGasMap(type, scenario);
+            BufferedImage imgGas = rasterizeGasMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(2, bufferedImageToBase64Png(imgGas));
 
             // Index 3: Uranium & Thorium Ores
-            BufferedImage imgUranium = generateCleanUraniumMap(type, scenario);
+            BufferedImage imgUranium = rasterizeUraniumMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(3, bufferedImageToBase64Png(imgUranium));
 
             // Index 4: Helium-3 Fusion Ores
-            BufferedImage imgHe3 = generateCleanHelium3Map(type, scenario);
+            BufferedImage imgHe3 = rasterizeHelium3Map(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(4, bufferedImageToBase64Png(imgHe3));
 
             // Index 5: Iron & Copper Base Metals
-            BufferedImage imgIronCopper = generateCleanIronCopperMap(type, scenario);
+            BufferedImage imgIronCopper = rasterizeIronCopperMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(5, bufferedImageToBase64Png(imgIronCopper));
 
             // Index 6: Precious Metals (Au / Ag / Pt)
-            BufferedImage imgPreciousMetals = generateCleanPreciousMetalsMap(type, scenario);
+            BufferedImage imgPreciousMetals = rasterizePreciousMetalsMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(6, bufferedImageToBase64Png(imgPreciousMetals));
 
             // Index 7: Rare Earths & Critical Minerals (REE / Li)
-            BufferedImage imgRareEarths = generateCleanRareEarthsMap(type, scenario);
+            BufferedImage imgRareEarths = rasterizeRareEarthsMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(7, bufferedImageToBase64Png(imgRareEarths));
 
             // Index 8: Mantle Heat Flux & Tectonics
-            BufferedImage imgMantleHeat = generateCleanMantleHeatMap(type, scenario);
+            BufferedImage imgMantleHeat = rasterizeMantleHeatMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(8, bufferedImageToBase64Png(imgMantleHeat));
 
             // Index 9: Freshwater Aquifers
-            BufferedImage imgAquifer = generateCleanAquiferMap(type, scenario);
+            BufferedImage imgAquifer = rasterizeAquiferMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(9, bufferedImageToBase64Png(imgAquifer));
 
             // Extensible Geology Tensors (Indices 10 to N-1) if N > 10
             int resDims = scenario.getResourceVectorDimensions();
             if (resDims > 10) {
                 for (int i = 10; i < resDims; i++) {
-                    BufferedImage imgExtRes = generateCleanExtensibleResourceTensorMap(i, type, scenario);
+                    BufferedImage imgExtRes = rasterizeExtensibleResourceTensorMap(i, type, scenario);
                     scenario.setCustomGeologyTensorMapBase64(i, bufferedImageToBase64Png(imgExtRes));
                 }
             }
@@ -345,6 +608,114 @@ public class HistoricalMapGenerator {
         }
     }
 
+    public static final int BIOME_DEEP_OCEAN = 0x000032; // RGB(0, 0, 50)
+    public static final int BIOME_OCEAN      = 0x001464; // RGB(0, 20, 100)
+    public static final int BIOME_BEACH      = 0xF0DC96; // RGB(240, 220, 150)
+    public static final int BIOME_PLAINS     = 0x64C832; // RGB(100, 200, 50)
+    public static final int BIOME_FOREST     = 0x147814; // RGB(20, 120, 20)
+    public static final int BIOME_JUNGLE     = 0x005000; // RGB(0, 80, 0)
+    public static final int BIOME_DESERT     = 0xFFC832; // RGB(255, 200, 50)
+    public static final int BIOME_HILLS      = 0x969664; // RGB(150, 150, 100)
+    public static final int BIOME_MOUNTAINS  = 0x646464; // RGB(100, 100, 100)
+    public static final int BIOME_TUNDRA     = 0x96C8DC; // RGB(150, 200, 220)
+    public static final int BIOME_SNOW       = 0xFFFFFF; // RGB(255, 255, 255)
+    public static final int BIOME_GLACIER    = 0xDCF0FF; // RGB(220, 240, 255)
+
+    public static BufferedImage rasterizeBiomesMap(long year) {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage refBiome = null;
+        try {
+            java.io.File refFile = new java.io.File("data/maps/reference_earth_biomes.png");
+            if (!refFile.exists()) refFile = new java.io.File("data/maps/ether/earth/2026/earth_2026_biomes.png");
+            if (!refFile.exists()) refFile = new java.io.File("data/maps/scratch_db000ab_earth_biomes.png");
+            if (refFile.exists()) {
+                refBiome = ImageIO.read(refFile);
+            }
+        } catch (Exception e) {
+            logger.warn("Could not load reference biome map: {}", e.getMessage());
+        }
+
+        BufferedImage elevMask = loadElevationMask();
+
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y + 0.5) * 180.0 / HEIGHT;
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x + 0.5) * 360.0 / WIDTH;
+                boolean isLand = (elevMask != null) ? ((elevMask.getRGB(x, y) & 0xFF) > 128) : (lat > -60.0);
+
+                if (!isLand) {
+                    img.setRGB(x, y, BIOME_OCEAN);
+                    continue;
+                }
+
+                int baseColor = BIOME_PLAINS;
+                if (refBiome != null) {
+                    int rx = Math.clamp((int) (((lon + 180.0) / 360.0) * (refBiome.getWidth() - 1)), 0, refBiome.getWidth() - 1);
+                    int ry = Math.clamp((int) (((90.0 - lat) / 180.0) * (refBiome.getHeight() - 1)), 0, refBiome.getHeight() - 1);
+                    int c = refBiome.getRGB(rx, ry) & 0xFFFFFF;
+                    if (c != BIOME_OCEAN && c != BIOME_DEEP_OCEAN && c != 0x000000) {
+                        baseColor = c;
+                    }
+                }
+
+                // Apply epoch-specific paleoclimatic adjustments
+                int bColor = baseColor;
+                if (lat < -60.0) {
+                    bColor = BIOME_GLACIER; // Antarctica ice sheet
+                } else if (lat > 75.0 && lon > -70.0 && lon < -15.0) {
+                    bColor = BIOME_GLACIER; // Greenland ice sheet
+                } else if (year <= -70000L) {
+                    // -100,000 BP (Eemian MIS 5d/5e): Green Sahara, Arabian wet corridors, mammoth steppe
+                    if (lat >= 14.0 && lat <= 26.0 && lon >= -15.0 && lon <= 55.0 && (baseColor == BIOME_DESERT || baseColor == 0xFFD232)) {
+                        bColor = BIOME_PLAINS; // Savanna
+                    } else if (lat >= 48.0 && lat <= 62.0 && lon >= -10.0 && lon <= 120.0 && baseColor == BIOME_TUNDRA) {
+                        bColor = BIOME_PLAINS; // Steppe
+                    } else if (lat > 66.0 && (lon > 10.0 && lon < 40.0)) {
+                        bColor = BIOME_GLACIER; // Nascent Scandinavian ice
+                    }
+                } else if (year <= -40000L) {
+                    // -50,000 BP (MIS 3): Moderate glaciation, Sahul savanna, Eurasian mammoth steppe
+                    if (lat >= 62.0 && lon >= 10.0 && lon <= 35.0) {
+                        bColor = BIOME_GLACIER; // Fennoscandian ice
+                    } else if (lat >= 55.0 && lon >= -110.0 && lon <= -65.0) {
+                        bColor = BIOME_GLACIER; // Laurentide core
+                    } else if (lat >= 45.0 && lat <= 60.0 && lon >= -5.0 && lon <= 130.0) {
+                        bColor = (baseColor == BIOME_FOREST) ? BIOME_PLAINS : baseColor; // Steppe-tundra
+                    }
+                } else if (year <= -18000L) {
+                    // -25,000 BP & -20,000 BP (LGM Peak): Laurentide, Fennoscandia, Alps, Patagonia, Mammoth Steppe
+                    if (lat >= 42.0 && lon >= -135.0 && lon <= -60.0) {
+                        bColor = BIOME_GLACIER; // Laurentide & Cordilleran ice sheet
+                    } else if (lat >= 52.0 && lat <= 72.0 && lon >= -12.0 && lon <= 45.0) {
+                        bColor = BIOME_GLACIER; // Fennoscandian & British-Irish ice sheet
+                    } else if (lat >= 45.0 && lat <= 48.0 && lon >= 5.5 && lon <= 15.0) {
+                        bColor = BIOME_GLACIER; // Alpine ice cap
+                    } else if (lat <= -40.0 && lon >= -75.0 && lon <= -68.0) {
+                        bColor = BIOME_GLACIER; // Patagonian ice sheet
+                    } else if (lat >= 38.0 && lat <= 52.0 && lon >= -10.0 && lon <= 140.0) {
+                        bColor = BIOME_TUNDRA; // Mammoth steppe / periglacial tundra
+                    }
+                } else if (year <= -10500L) {
+                    // -10,900 BP (Younger Dryas): Cold reversal
+                    if (lat >= 60.0 && lon >= 8.0 && lon <= 30.0) {
+                        bColor = BIOME_GLACIER;
+                    } else if (lat >= 52.0 && lat <= 60.0 && lon >= -10.0 && lon <= 40.0) {
+                        bColor = BIOME_TUNDRA;
+                    }
+                } else if (year <= -4500L) {
+                    // -8,000 BP & -6,000 BP (African Humid Period / Green Sahara)
+                    if (lat >= 13.0 && lat <= 30.0 && lon >= -16.0 && lon <= 40.0) {
+                        bColor = BIOME_PLAINS; // Green Sahara
+                    } else if (lat >= 14.0 && lat <= 28.0 && lon >= 40.0 && lon <= 60.0) {
+                        bColor = BIOME_PLAINS; // Green Arabia
+                    }
+                }
+                img.setRGB(x, y, bColor);
+            }
+        }
+        return img;
+    }
+
     public static void saveImagesToYearDirectory(long year, BufferedImage imgDensity, BufferedImage imgSovereignty,
             BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech,
             BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen,
@@ -377,6 +748,36 @@ public class HistoricalMapGenerator {
             if (imgMantleHeat != null)      ImageIO.write(imgMantleHeat,      "PNG", earthDir.resolve("earth_" + year + "_geothermal.png").toFile());
             if (imgAquifer != null)         ImageIO.write(imgAquifer,         "PNG", earthDir.resolve("earth_" + year + "_aquifers.png").toFile());
 
+            // 2. Save authentic paleoclimatic biomes map
+            BufferedImage biomesImg = rasterizeBiomesMap(year);
+            if (biomesImg != null) {
+                ImageIO.write(biomesImg, "PNG", earthDir.resolve("earth_" + year + "_biomes.png").toFile());
+            }
+
+            // 3. Ensure invariant NOAA ETOPO relief elevation map is present across all epochs
+            java.nio.file.Path elevPath = earthDir.resolve("earth_" + year + "_elevation.png");
+            if (!java.nio.file.Files.exists(elevPath)) {
+                java.io.File srcElev = new java.io.File("data/maps/reference_earth_elevation.png");
+                if (!srcElev.exists()) srcElev = new java.io.File("data/maps/ether/earth/-100000/earth_-100000_elevation.png");
+                if (!srcElev.exists()) srcElev = new java.io.File("data/maps/ether/earth/2026/earth_2026_elevation.png");
+                if (srcElev.exists()) {
+                    java.nio.file.Files.copy(srcElev.toPath(), elevPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+
+            // 4. Ensure temperature, precipitation, seasonality are present
+            String[] climLayers = {"temperature", "precipitation", "seasonality"};
+            for (String cLayer : climLayers) {
+                java.nio.file.Path cPath = earthDir.resolve("earth_" + year + "_" + cLayer + ".png");
+                if (!java.nio.file.Files.exists(cPath)) {
+                    java.io.File srcClim = new java.io.File("data/maps/ether/earth/-100000/earth_-100000_" + cLayer + ".png");
+                    if (!srcClim.exists()) srcClim = new java.io.File("data/maps/ether/earth/2026/earth_2026_" + cLayer + ".png");
+                    if (srcClim.exists()) {
+                        java.nio.file.Files.copy(srcClim.toPath(), cPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+            }
+
             logger.info("Persisted standard scenario cartographic maps into 'data/maps/ether/earth/{}/'", year);
         } catch (Exception e) {
             logger.warn("Failed to persist scenario maps to year directory 'data/maps/ether/earth/{}/': {}", year, e.getMessage());
@@ -389,8 +790,7 @@ public class HistoricalMapGenerator {
 
         int w = src.getWidth();
         int h = src.getHeight();
-        BufferedImage masked = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        String key = scenarioKey != null ? scenarioKey.toLowerCase(java.util.Locale.ROOT) : "";
+        BufferedImage masked = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 
         for (int y = 0; y < h; y++) {
             double lat = 90.0 - (y + 0.5) * 180.0 / h;
@@ -398,36 +798,16 @@ public class HistoricalMapGenerator {
                 double lon = -180.0 + (x + 0.5) * 360.0 / w;
                 int rgb = src.getRGB(x, y);
 
-                boolean keep = true;
-                if (year <= -70000 || key.contains("africa") || key.contains("100000")) {
-                    // Out of Africa (-100,000 to -70,000 BC): Sapiens cradle strictly in Africa & Near East/Southern Arabia.
-                    // Americas, Europe, Asia, Australia/Sahul uninhabited by modern humans.
-                    boolean inAfrica = (lon >= -20.0 && lon <= 52.0 && lat >= -35.0 && lat <= 38.0);
-                    boolean inNearEastArabia = (lon >= 34.0 && lon <= 60.0 && lat >= 12.0 && lat <= 35.0);
-                    if (!inAfrica && !inNearEastArabia) {
-                        keep = false;
-                    }
-                } else if (year <= -40000 || key.contains("sahul") || key.contains("50000")) {
-                    // Sahul era (-50,000 BC): Africa, Eurasia, Sahul (Australia/NG) populated. Americas and Northern Glaciers empty.
-                    if ((lon < -20.0 || lon > 175.0) || lat > 55.0) {
-                        keep = false;
-                    }
-                } else if (year <= -20000 || key.contains("beringia") || key.contains("25000") || key.contains("23000")) {
-                    // Beringia era (-25,000 BC): Africa, Eurasia, Sahul, Beringia & NW North America. South America empty.
-                    if ((lat < 15.0 && lon < -25.0 && lon > -120.0) || (lon < -60.0 && lat < 50.0)) {
-                        keep = false;
-                    }
-                } else if (year < -10000 || key.contains("dryas") || key.contains("10900")) {
-                    // Younger Dryas / LGM (-10,900 BC): Glacial ice sheets uninhabited in North
-                    if (lat > 62.0 && lon > -140.0 && lon < 50.0) {
-                        keep = false;
-                    }
-                }
-
-                if (keep) {
-                    masked.setRGB(x, y, rgb);
+                double weight = getHomininOccupancyWeight(lon, lat, year);
+                if (weight > 0.001 && isLand(lon, lat)) {
+                    int r = (rgb >> 16) & 0xFF;
+                    int g = (rgb >> 8) & 0xFF;
+                    int b = rgb & 0xFF;
+                    int lum = (int) ((0.299 * r + 0.587 * g + 0.114 * b) * weight);
+                    lum = Math.clamp(lum, 0, 255);
+                    masked.setRGB(x, y, (lum << 16) | (lum << 8) | lum);
                 } else {
-                    masked.setRGB(x, y, 0xFF050811); // Deep dark oceanic/unpopulated background
+                    masked.setRGB(x, y, 0x000000); // Pure black for uninhabited regions & oceans
                 }
             }
         }
@@ -435,46 +815,69 @@ public class HistoricalMapGenerator {
     }
 
     public static BufferedImage generatePrehistoricSyntheticDensityMap(long year, String type) {
-        BufferedImage img = createPureTransparentCanvas();
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
                 double lng = (x + 0.5) / WIDTH * 360.0 - 180.0;
                 boolean isLand = isLand(lng, lat);
-                if (!isLand) continue;
+                double weight = getHomininOccupancyWeight(lng, lat, year);
+                if (!isLand || weight <= 0.001) {
+                    img.setRGB(x, y, 0x000000);
+                    continue;
+                }
 
                 double dens = 0.0;
                 if (year <= -70000) {
-                    // East African cradle & Nile corridor
-                    double dAfrica = distSq(lng, lat, 36.0, 0.0);
-                    if (dAfrica < 1600.0) {
-                        dens = Math.exp(-dAfrica / 400.0) * 8.0;
-                    }
-                    double dLevant = distSq(lng, lat, 35.0, 31.0);
-                    if (dLevant < 900.0) {
-                        dens = Math.max(dens, Math.exp(-dLevant / 250.0) * 5.0);
-                    }
+                    // Sapiens in Africa & Levant (high ecological carrying capacity)
+                    double densSapiens = 1.8 +
+                        5.5 * Math.exp(-distSq(lng, lat, 36.0, 0.0) / 450.0) +      // East African Rift
+                        4.0 * Math.exp(-distSq(lng, lat, 22.0, -34.0) / 300.0) +    // South African Coast
+                        3.5 * Math.exp(-distSq(lng, lat, 32.0, 26.0) / 300.0) +     // Nile Corridor
+                        2.5 * Math.exp(-distSq(lng, lat, 10.0, 14.0) / 400.0) +     // Sahel / West Africa
+                        3.0 * Math.exp(-distSq(lng, lat, 35.0, 31.5) / 250.0) +     // Levant
+                        2.2 * Math.exp(-distSq(lng, lat, 50.0, 16.0) / 300.0);      // Southern Arabia
+
+                    // Neanderthals in Europe & West Asia (low population density)
+                    double densNeanderthal = 0.35 +
+                        0.85 * Math.exp(-distSq(lng, lat, 2.0, 44.0) / 350.0) +     // France / Cantabria
+                        0.75 * Math.exp(-distSq(lng, lat, -4.0, 40.0) / 300.0) +    // Iberia
+                        0.70 * Math.exp(-distSq(lng, lat, 16.0, 47.0) / 350.0) +    // Central Europe / Balkans
+                        0.65 * Math.exp(-distSq(lng, lat, 40.0, 44.0) / 300.0) +    // Caucasus / Crimea
+                        0.60 * Math.exp(-distSq(lng, lat, 44.0, 36.0) / 300.0) +    // Zagros
+                        0.45 * Math.exp(-distSq(lng, lat, 85.0, 51.0) / 250.0);     // Altai
+
+                    // Denisovans & Asian Archaic Hominins (moderate population density)
+                    double densDenisovan = 0.40 +
+                        1.10 * Math.exp(-distSq(lng, lat, 112.0, 34.0) / 400.0) +   // Yellow River / North China
+                        0.95 * Math.exp(-distSq(lng, lat, 110.0, 26.0) / 400.0) +   // South China
+                        0.90 * Math.exp(-distSq(lng, lat, 105.0, -2.0) / 500.0) +   // Sundaland
+                        0.80 * Math.exp(-distSq(lng, lat, 102.0, 16.0) / 350.0) +   // Indochina
+                        0.75 * Math.exp(-distSq(lng, lat, 78.0, 20.0) / 400.0) +    // Indian Subcontinent
+                        0.40 * Math.exp(-distSq(lng, lat, 102.0, 35.0) / 250.0);    // Tibetan Plateau
+
+                    dens = blendPaleoTraits(lng, lat, densSapiens, densNeanderthal, densDenisovan);
                 } else if (year <= -40000) {
                     // Sahul & Sunda entry
                     double dSahul = distSq(lng, lat, 130.0, -20.0);
-                    if (dSahul < 2500.0) {
-                        dens = Math.exp(-dSahul / 600.0) * 4.0;
-                    }
+                    if (dSahul < 2500.0) dens = Math.max(dens, Math.exp(-dSahul / 600.0) * 4.0);
                     double dOldWorld = distSq(lng, lat, 40.0, 20.0);
-                    if (dOldWorld < 4000.0) {
-                        dens = Math.max(dens, Math.exp(-dOldWorld / 1000.0) * 6.0);
-                    }
+                    if (dOldWorld < 4000.0) dens = Math.max(dens, Math.exp(-dOldWorld / 1000.0) * 6.0);
                 } else if (year <= -20000) {
                     // Beringia & Old World
                     double dBeringia = distSq(lng, lat, -165.0, 65.0);
-                    if (dBeringia < 1600.0) {
-                        dens = Math.exp(-dBeringia / 400.0) * 3.0;
-                    }
+                    if (dBeringia < 1600.0) dens = Math.max(dens, Math.exp(-dBeringia / 400.0) * 3.0);
+                    double dOldWorld = distSq(lng, lat, 40.0, 20.0);
+                    if (dOldWorld < 4000.0) dens = Math.max(dens, Math.exp(-dOldWorld / 1000.0) * 7.0);
                 }
 
-                if (dens > 0.05) {
-                    int col = Hyde34GridReader.getHydeColor((float) dens, true);
-                    img.setRGB(x, y, (220 << 24) | (col & 0xFFFFFF));
+                dens *= weight;
+                if (dens > 0.01) {
+                    double logNorm = Math.log1p(dens * 5.0) / Math.log1p(45.0);
+                    int gray = (int) Math.clamp(18.0 + logNorm * 237.0, 18.0, 255.0);
+                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                } else {
+                    img.setRGB(x, y, 0x000000);
                 }
             }
         }
@@ -626,98 +1029,104 @@ public class HistoricalMapGenerator {
 
             BufferedImage imgDensity = (neResult != null && neResult.densityImage != null) ? neResult.densityImage : null;
             if (imgDensity == null) {
-                if (scenario.getStartDateYear() < -10000) {
+                if (scenario.getStartDateYear() <= -70000) {
+                    imgDensity = applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(scenario.getStartDateYear(), type));
+                    scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
+                } else if (scenario.getStartDateYear() < -10000) {
                     BufferedImage baseHyde = Hyde34GridReader.loadForYear(-10000);
                     if (baseHyde != null) {
-                        imgDensity = applyPrehistoricGeographicMask(scenario.getPresetKey(), scenario.getStartDateYear(), baseHyde);
+                        imgDensity = applyAltimetryCoastlineMask(applyPrehistoricGeographicMask(scenario.getPresetKey(), scenario.getStartDateYear(), baseHyde));
                     } else {
-                        imgDensity = generatePrehistoricSyntheticDensityMap(scenario.getStartDateYear(), type);
+                        imgDensity = applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(scenario.getStartDateYear(), type));
                     }
                     scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
                 } else {
                     imgDensity = Hyde34GridReader.loadForYear(scenario.getStartDateYear());
                     if (imgDensity != null) {
+                        imgDensity = applyAltimetryCoastlineMask(imgDensity);
                         scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
                     } else {
-                        imgDensity = generateCleanDensityMap(type, scenario);
+                        imgDensity = rasterizeDensityMap(type, scenario);
                         if (imgDensity != null) {
+                            imgDensity = applyAltimetryCoastlineMask(imgDensity);
                             scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
                         }
                     }
                 }
             } else {
+                imgDensity = applyAltimetryCoastlineMask(imgDensity);
                 scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
             }
 
-            BufferedImage imgIsogloss = (neResult != null && neResult.isoglossImage != null) ? neResult.isoglossImage : generateCleanIsoglossMap(type, scenario);
+            BufferedImage imgIsogloss = (neResult != null && neResult.isoglossImage != null) ? neResult.isoglossImage : rasterizeIsoglossMap(type, scenario);
             scenario.setCustomTensorMapBase64(0, bufferedImageToBase64Png(imgIsogloss));
 
-            BufferedImage imgKinship = (neResult != null && neResult.kinshipImage != null) ? neResult.kinshipImage : generateCleanKinshipMap(type, scenario);
+            BufferedImage imgKinship = (neResult != null && neResult.kinshipImage != null) ? neResult.kinshipImage : rasterizeKinshipMap(type, scenario);
             scenario.setCustomTensorMapBase64(1, bufferedImageToBase64Png(imgKinship));
 
-            BufferedImage imgRituals = (neResult != null && neResult.ritualsImage != null) ? neResult.ritualsImage : generateCleanRitualsMap(type, scenario);
+            BufferedImage imgRituals = (neResult != null && neResult.ritualsImage != null) ? neResult.ritualsImage : rasterizeRitualsMap(type, scenario);
             scenario.setCustomTensorMapBase64(2, bufferedImageToBase64Png(imgRituals));
 
-            BufferedImage imgSovereignty = (neResult != null && neResult.sovereigntyImage != null) ? neResult.sovereigntyImage : generateCleanSovereigntyMap(type, scenario);
+            BufferedImage imgSovereignty = (neResult != null && neResult.sovereigntyImage != null) ? neResult.sovereigntyImage : rasterizeSovereigntyMap(type, scenario);
             scenario.setCustomTensorMapBase64(3, bufferedImageToBase64Png(imgSovereignty));
 
-            BufferedImage imgTechnology = generateCleanTechnologyMap(type, scenario);
+            BufferedImage imgTechnology = rasterizeTechnologyMap(type, scenario);
             scenario.setCustomTensorMapBase64(4, bufferedImageToBase64Png(imgTechnology));
 
-            BufferedImage imgTrade = generateCleanTradeNetworkMap(type, scenario);
+            BufferedImage imgTrade = rasterizeTradeNetworkMap(type, scenario);
             scenario.setCustomTensorMapBase64(5, bufferedImageToBase64Png(imgTrade));
 
-            BufferedImage imgInstitutional = generateCleanInstitutionalComplexityMap(type, scenario);
+            BufferedImage imgInstitutional = rasterizeInstitutionalComplexityMap(type, scenario);
             scenario.setCustomTensorMapBase64(6, bufferedImageToBase64Png(imgInstitutional));
 
-            BufferedImage imgEcological = generateCleanEcologicalFootprintMap(type, scenario);
+            BufferedImage imgEcological = rasterizeEcologicalFootprintMap(type, scenario);
             scenario.setCustomTensorMapBase64(7, bufferedImageToBase64Png(imgEcological));
 
-            BufferedImage imgPathogen = generateCleanPathogenImmunityMap(type, scenario);
+            BufferedImage imgPathogen = rasterizePathogenImmunityMap(type, scenario);
             scenario.setCustomTensorMapBase64(8, bufferedImageToBase64Png(imgPathogen));
 
             int dims = scenario.getCultureVectorDimensions();
             if (dims > 9) {
                 for (int i = 9; i < dims; i++) {
-                    BufferedImage imgExt = generateCleanExtensibleTensorMap(i, type, scenario);
+                    BufferedImage imgExt = rasterizeExtensibleTensorMap(i, type, scenario);
                     scenario.setCustomTensorMapBase64(i, bufferedImageToBase64Png(imgExt));
                 }
             }
 
-            BufferedImage imgCoal = generateCleanCoalMap(type, scenario);
+            BufferedImage imgCoal = rasterizeCoalMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(0, bufferedImageToBase64Png(imgCoal));
 
-            BufferedImage imgOil = generateCleanOilMap(type, scenario);
+            BufferedImage imgOil = rasterizeOilMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(1, bufferedImageToBase64Png(imgOil));
 
-            BufferedImage imgGas = generateCleanGasMap(type, scenario);
+            BufferedImage imgGas = rasterizeGasMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(2, bufferedImageToBase64Png(imgGas));
 
-            BufferedImage imgUranium = generateCleanUraniumMap(type, scenario);
+            BufferedImage imgUranium = rasterizeUraniumMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(3, bufferedImageToBase64Png(imgUranium));
 
-            BufferedImage imgHe3 = generateCleanHelium3Map(type, scenario);
+            BufferedImage imgHe3 = rasterizeHelium3Map(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(4, bufferedImageToBase64Png(imgHe3));
 
-            BufferedImage imgIronCopper = generateCleanIronCopperMap(type, scenario);
+            BufferedImage imgIronCopper = rasterizeIronCopperMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(5, bufferedImageToBase64Png(imgIronCopper));
 
-            BufferedImage imgPreciousMetals = generateCleanPreciousMetalsMap(type, scenario);
+            BufferedImage imgPreciousMetals = rasterizePreciousMetalsMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(6, bufferedImageToBase64Png(imgPreciousMetals));
 
-            BufferedImage imgRareEarths = generateCleanRareEarthsMap(type, scenario);
+            BufferedImage imgRareEarths = rasterizeRareEarthsMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(7, bufferedImageToBase64Png(imgRareEarths));
 
-            BufferedImage imgMantleHeat = generateCleanMantleHeatMap(type, scenario);
+            BufferedImage imgMantleHeat = rasterizeMantleHeatMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(8, bufferedImageToBase64Png(imgMantleHeat));
 
-            BufferedImage imgAquifer = generateCleanAquiferMap(type, scenario);
+            BufferedImage imgAquifer = rasterizeAquiferMap(type, scenario);
             scenario.setCustomGeologyTensorMapBase64(9, bufferedImageToBase64Png(imgAquifer));
 
             int resDims = scenario.getResourceVectorDimensions();
             if (resDims > 10) {
                 for (int i = 10; i < resDims; i++) {
-                    BufferedImage imgExtRes = generateCleanExtensibleResourceTensorMap(i, type, scenario);
+                    BufferedImage imgExtRes = rasterizeExtensibleResourceTensorMap(i, type, scenario);
                     scenario.setCustomGeologyTensorMapBase64(i, bufferedImageToBase64Png(imgExtRes));
                 }
             }
@@ -734,11 +1143,11 @@ public class HistoricalMapGenerator {
 
     // --- 1. CLEAN DENSITY MAP ---
 
-    public static BufferedImage generateCleanDensityMap(String type, Scenario scenario) {
-        return generateCleanDensityMapForYear(type, scenario, (scenario != null) ? scenario.getStartDateYear() : -10000);
+    public static BufferedImage rasterizeDensityMap(String type, Scenario scenario) {
+        return rasterizeDensityMapForYear(type, scenario, (scenario != null) ? scenario.getStartDateYear() : -10000);
     }
 
-    public static BufferedImage generateCleanDensityMapForYear(String type, Scenario scenario, long targetYear) {
+    public static BufferedImage rasterizeDensityMapForYear(String type, Scenario scenario, long targetYear) {
         if (scenario != null && scenario.isUseRealEarthData() && (targetYear < -10000 || targetYear > 2024)) {
             throw new IllegalStateException("ZERO FALLBACK VIOLATION: Empirical HYDE 3.4 dataset unavailable for year " + targetYear);
         }
@@ -765,49 +1174,68 @@ public class HistoricalMapGenerator {
     private static final Object ELEV_LOCK = new Object();
 
     /**
-     * Loads the altimetry-derived land/ocean mask from earth_elevation.png.
+     * Loads the altimetry-derived land/ocean mask from earth_elevation.png in data/maps/ether/.
      * Pixels with luminance ≤ threshold (corresponding to ≤ 0m elevation) are ocean.
-     * The threshold 38 corresponds roughly to sea level in the ETOPO 2022 / Blue Marble encoding
-     * where ocean depths are dark (0–40) and land starts around 40–50.
      */
     public static BufferedImage loadElevationMask() {
         if (cachedElevationMask != null) return cachedElevationMask;
         synchronized (ELEV_LOCK) {
             if (cachedElevationMask != null) return cachedElevationMask;
             try {
-                // Try classpath first, then filesystem
-                java.io.InputStream is = HistoricalMapGenerator.class.getResourceAsStream("/maps/earth_elevation.png");
+                int tw = WIDTH, th = HEIGHT;
+                BufferedImage mask = new BufferedImage(tw, th, BufferedImage.TYPE_BYTE_GRAY);
+
+                // 1. Load directly from official NOAA ETOPO 2022 GeoTIFF
+                float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(tw, th);
+                if (etopo != null) {
+                    for (int y = 0; y < th; y++) {
+                        for (int x = 0; x < tw; x++) {
+                            mask.getRaster().setSample(x, y, 0, (etopo[y][x] >= 0.0f) ? 255 : 0);
+                        }
+                    }
+                    cachedElevationMask = mask;
+                    logger.info("Altimetry coastline mask loaded directly from official NOAA ETOPO 2022 GeoTIFF ({}x{}).", tw, th);
+                    return cachedElevationMask;
+                }
+
+                // 2. Fallback to grayscale elevation map
                 BufferedImage elev = null;
-                if (is != null) {
-                    elev = ImageIO.read(is);
+                java.io.File f100k = new java.io.File("data/maps/ether/earth/-100000/earth_-100000_elevation.png");
+                if (f100k.exists()) {
+                    try { elev = ImageIO.read(f100k); } catch (Exception ignored) {}
                 }
                 if (elev == null) {
-                    java.nio.file.Path p = java.nio.file.Paths.get("data", "maps", "ether", "earth", "2026", "earth_elevation.png");
-                    if (java.nio.file.Files.exists(p)) elev = ImageIO.read(p.toFile());
+                    java.io.File f2026 = new java.io.File("data/maps/ether/earth/2026/earth_2026_elevation.png");
+                    if (f2026.exists()) {
+                        try { elev = ImageIO.read(f2026); } catch (Exception ignored) {}
+                    }
                 }
                 if (elev == null) {
-                    java.nio.file.Path p = java.nio.file.Paths.get("data", "maps", "ether", "earth", "0", "earth_elevation.png");
-                    if (java.nio.file.Files.exists(p)) elev = ImageIO.read(p.toFile());
+                    java.io.File fCache = new java.io.File("data/cache/earth_elevation.png");
+                    if (fCache.exists()) {
+                        try { elev = ImageIO.read(fCache); } catch (Exception ignored) {}
+                    }
                 }
                 if (elev == null) {
                     logger.warn("earth_elevation.png not found — altimetry coastline mask disabled.");
                     return null;
                 }
-                // Build 1-bit land mask at target resolution (1024x512)
-                int tw = 1024, th = 512;
-                BufferedImage mask = new BufferedImage(tw, th, BufferedImage.TYPE_BYTE_GRAY);
-                java.awt.Graphics2D g = mask.createGraphics();
-                g.drawImage(elev, 0, 0, tw, th, null);
-                g.dispose();
-                // Threshold: luminance > 38 → land (255), else ocean (0)
                 for (int y = 0; y < th; y++) {
                     for (int x = 0; x < tw; x++) {
-                        int gray = mask.getRGB(x, y) & 0xFF;
-                        mask.getRaster().setSample(x, y, 0, gray > 38 ? 255 : 0);
+                        int sx = Math.clamp((int) ((x / (double) tw) * elev.getWidth()), 0, elev.getWidth() - 1);
+                        int sy = Math.clamp((int) ((y / (double) th) * elev.getHeight()), 0, elev.getHeight() - 1);
+                        int rgb = elev.getRGB(sx, sy);
+                        int r = (rgb >> 16) & 0xFF;
+                        int gr = (rgb >> 8) & 0xFF;
+                        int b = rgb & 0xFF;
+                        double lum = (0.299 * r + 0.587 * gr + 0.114 * b) / 255.0;
+                        boolean isLand = (lum >= 0.478);
+
+                        mask.getRaster().setSample(x, y, 0, isLand ? 255 : 0);
                     }
                 }
                 cachedElevationMask = mask;
-                logger.info("Altimetry coastline mask loaded from earth_elevation.png ({}x{} → {}x{}).",
+                logger.info("Altimetry coastline mask loaded from data/maps/ether/ ({}x{} → {}x{}).",
                         elev.getWidth(), elev.getHeight(), tw, th);
                 return cachedElevationMask;
             } catch (Exception e) {
@@ -819,7 +1247,7 @@ public class HistoricalMapGenerator {
 
     /**
      * Applies the altimetry-derived coastline mask to a density image.
-     * Ocean pixels (mask=0) are forced to the ocean background colour 0xFF050811.
+     * Ocean pixels (mask=0) are forced to the ocean background colour 0x000000 (Pure Black).
      * This ensures coastlines are derived from real elevation data, not vectorized outlines.
      */
     public static BufferedImage applyAltimetryCoastlineMask(BufferedImage src) {
@@ -839,12 +1267,7 @@ public class HistoricalMapGenerator {
                     // Ocean pixel -> strictly pure black
                     out.setRGB(x, y, 0x000000);
                 } else {
-                    int rgb = src.getRGB(x, y);
-                    int r = (rgb >> 16) & 0xFF;
-                    int g = (rgb >> 8) & 0xFF;
-                    int b = rgb & 0xFF;
-                    int gray = (int) (0.299 * r + 0.587 * g + 0.114 * b);
-                    out.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                    out.setRGB(x, y, src.getRGB(x, y));
                 }
             }
         }
@@ -869,8 +1292,50 @@ public class HistoricalMapGenerator {
         return Math.max(0.12, Math.min(1.0, factor));
     }
 
-    // --- 2. CLEAN SOVEREIGNTY MAP ---
-    public static BufferedImage generateCleanSovereigntyMap(String type, Scenario scenario) {
+    // --- 2. SOVEREIGNTY TENSOR MAP ---
+    private static final int[] COLORS_SOVEREIGNTY_100K = {
+        0xD35400, // Clade 0: Proto-Sapiens Pan-African Domain (#D35400)
+        0xF39C12, // Clade 1: Out-of-Africa Dispersal Domain (#F39C12)
+        0x1F618D, // Clade 2: Western Mousterian Clan Territories (#1F618D)
+        0x1A5276, // Clade 3: Zagros & Near East Mousterian Domain (#1A5276)
+        0x229954, // Clade 4: Denisovan Central Asian Domain (#229954)
+        0x7D3C98  // Clade 5: Eastern Archaic Sunda Domain (#7D3C98)
+    };
+
+    private static final int[] COLORS_ISOGLOSS_100K = {
+        0xE67E22, // Clade 0: Sapiens African Core (#E67E22)
+        0xF39C12, // Clade 1: Sapiens Pioneers Levant & Jebel Faya (#F39C12)
+        0x2980B9, // Clade 2: Neanderthal Western Classical Mousterian (#2980B9)
+        0x1F4788, // Clade 3: Neanderthal Zagros & Near East / Shanidar (#1F4788)
+        0x27AE60, // Clade 4: Denisovans Altai & Siberian (#27AE60)
+        0x8E44AD  // Clade 5: Eastern Archaic & Sundaland (#8E44AD)
+    };
+
+    private static final int[] COLORS_KINSHIP_100K = {
+        0xE74C3C, // Clade 0: Bilateral / Multi-Band Foragers (#E74C3C)
+        0xF39C12, // Clade 1: Pioneer Coastal Dispersal Bands (#F39C12)
+        0x3498DB, // Clade 2: Patrilocal Small Neanderthal Clades (#3498DB)
+        0x2980B9, // Clade 3: Zagros Highland Cave Kin-Groups (#2980B9)
+        0x2ECC71, // Clade 4: Cold-Adapted Steppe Foragers (#2ECC71)
+        0x9B59B6  // Clade 5: Tropical Forest & Bamboo Bands (#9B59B6)
+    };
+
+    public static int blendCladeRgb(double[] w, int[] cladeColors, double occWeight) {
+        if (w == null || occWeight <= 0.001) return 0x000000;
+        double r = 0.0, g = 0.0, b = 0.0;
+        for (int i = 0; i < 6; i++) {
+            int c = cladeColors[i];
+            r += w[i] * ((c >> 16) & 0xFF);
+            g += w[i] * ((c >> 8) & 0xFF);
+            b += w[i] * (c & 0xFF);
+        }
+        int ir = Math.clamp((int) Math.round(r * occWeight), 0, 255);
+        int ig = Math.clamp((int) Math.round(g * occWeight), 0, 255);
+        int ib = Math.clamp((int) Math.round(b * occWeight), 0, 255);
+        return (ir << 16) | (ig << 8) | ib;
+    }
+
+    public static BufferedImage rasterizeSovereigntyMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
@@ -944,8 +1409,16 @@ public class HistoricalMapGenerator {
                 int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
                 int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                if (land == 0) {
+                double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                if (land == 0 || occWeight <= 0.001) {
                     img.setRGB(x, y, 0x000000);
+                    continue;
+                }
+
+                if (year <= -70000L) {
+                    double[] w = computeHomininCladeWeights(lon, lat);
+                    int rgb = blendCladeRgb(w, COLORS_SOVEREIGNTY_100K, occWeight);
+                    img.setRGB(x, y, rgb);
                     continue;
                 }
 
@@ -957,15 +1430,16 @@ public class HistoricalMapGenerator {
                     maxGov = Math.max(maxGov, gov);
                 }
 
-                int gray = Math.clamp((int) maxGov, 0, 255);
+                int gray = Math.clamp((int) (maxGov * occWeight), 0, 255);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
         return applyAltimetryCoastlineMask(img);
     }
 
-    // --- 3. CLEAN ISOGLOSS MAP ---
-    public static BufferedImage generateCleanIsoglossMap(String type, Scenario scenario) {
+    // --- 3. ISOGLOSS TENSOR MAP ---
+    public static BufferedImage rasterizeIsoglossMap(String type, Scenario scenario) {
+        long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
 
@@ -1003,8 +1477,16 @@ public class HistoricalMapGenerator {
                 int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
                 int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                if (land == 0) {
+                double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                if (land == 0 || occWeight <= 0.001) {
                     img.setRGB(x, y, 0x000000);
+                    continue;
+                }
+
+                if (year <= -70000L) {
+                    double[] w = computeHomininCladeWeights(lon, lat);
+                    int rgb = blendCladeRgb(w, COLORS_ISOGLOSS_100K, occWeight);
+                    img.setRGB(x, y, rgb);
                     continue;
                 }
 
@@ -1019,15 +1501,16 @@ public class HistoricalMapGenerator {
                 }
 
                 double langVal = (wSum > 0.0001) ? (valSum / wSum) : 128.0;
-                int gray = Math.clamp((int) langVal, 20, 255);
+                int gray = Math.clamp((int) (langVal * occWeight), 0, 255);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
         return applyAltimetryCoastlineMask(img);
     }
 
-    // --- 4. CLEAN KINSHIP MAP ---
-    public static BufferedImage generateCleanKinshipMap(String type, Scenario scenario) {
+    // --- 4. KINSHIP TENSOR MAP ---
+    public static BufferedImage rasterizeKinshipMap(String type, Scenario scenario) {
+        long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
 
@@ -1066,8 +1549,16 @@ public class HistoricalMapGenerator {
                 int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
                 int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                if (land == 0) {
+                double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                if (land == 0 || occWeight <= 0.001) {
                     img.setRGB(x, y, 0x000000);
+                    continue;
+                }
+
+                if (year <= -70000L) {
+                    double[] w = computeHomininCladeWeights(lon, lat);
+                    int rgb = blendCladeRgb(w, COLORS_KINSHIP_100K, occWeight);
+                    img.setRGB(x, y, rgb);
                     continue;
                 }
 
@@ -1082,15 +1573,16 @@ public class HistoricalMapGenerator {
                 }
 
                 double kinVal = (wSum > 0.0001) ? (valSum / wSum) : 128.0;
-                int gray = Math.clamp((int) kinVal, 20, 255);
+                int gray = Math.clamp((int) (kinVal * occWeight), 0, 255);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
         return applyAltimetryCoastlineMask(img);
     }
 
-    // --- 5. CLEAN RITUALS MAP ---
-    public static BufferedImage generateCleanRitualsMap(String type, Scenario scenario) {
+    // --- 5. RITUALS TENSOR MAP ---
+    public static BufferedImage rasterizeRitualsMap(String type, Scenario scenario) {
+        long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
 
@@ -1123,8 +1615,39 @@ public class HistoricalMapGenerator {
                 int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
                 int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                if (land == 0) {
+                double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                if (land == 0 || occWeight <= 0.001) {
                     img.setRGB(x, y, 0x000000);
+                    continue;
+                }
+
+                if (year <= -70000L) {
+                    double baseRitual = blendPaleoTraits(lon, lat, 55.0, 48.0, 38.0);
+                    double maxRitual = baseRitual;
+                    double[][] paleoSites = {
+                        // Sapiens ritual & mortuary sites (Africa & Levant)
+                        {21.2, -34.4, 160.0, 10.0}, // Blombos Cave (ochre engraving, shell beads)
+                        {22.1, -34.2, 155.0, 10.0}, // Pinnacle Point (pyrotechnology, ochre)
+                        {31.9, -27.0, 150.0, 10.0}, // Border Cave (mortuary adornment)
+                        {35.3, 32.7, 145.0, 8.0},   // Qafzeh & Skhul (Levant Sapiens burials with red ochre)
+                        {-8.8, 31.6, 140.0, 8.0},   // Jebel Irhoud (Moroccan early MSA pigment use)
+                        // Neanderthal mortuary & symbolic sites (Europe & Zagros)
+                        {-5.3, 36.1, 135.0, 8.0},   // Gorham's Cave (Gibraltar / Iberian Neanderthal engravings)
+                        {1.0, 45.0, 130.0, 8.0},    // La Ferrassie (Neanderthal burials)
+                        {15.8, 46.1, 125.0, 8.0},   // Krapina (Neanderthal eagle talon adornments)
+                        {44.2, 36.8, 130.0, 8.0},   // Shanidar Cave (Neanderthal flower burial)
+                        // Denisovan & Archaic Asian sites
+                        {84.0, 51.4, 130.0, 8.0},   // Denisova Cave (chlorite bracelet & pendants)
+                        {102.8, 35.2, 120.0, 8.0}   // Baishiya Karst Cave (Denisovan mandible & tools)
+                    };
+                    for (double[] ss : paleoSites) {
+                        double d2 = distSq(lon, lat, ss[0], ss[1]);
+                        double sigma = ss[3];
+                        double val = ss[2] * Math.exp(-d2 / (2.0 * sigma * sigma));
+                        maxRitual = Math.max(maxRitual, val);
+                    }
+                    int gray = Math.clamp((int) (maxRitual * occWeight), 0, 255);
+                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
                     continue;
                 }
 
@@ -1136,15 +1659,15 @@ public class HistoricalMapGenerator {
                     maxRitual = Math.max(maxRitual, val);
                 }
 
-                int gray = Math.clamp((int) maxRitual, 0, 255);
+                int gray = Math.clamp((int) (maxRitual * occWeight), 0, 255);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
         return applyAltimetryCoastlineMask(img);
     }
 
-    // --- 6. CLEAN TECHNOLOGY & SUBSISTENCE MAP ---
-    private static BufferedImage generateCleanTechnologyMap(String type, Scenario scenario) {
+    // --- 6. TECHNOLOGY & SUBSISTENCE TENSOR MAP ---
+    private static BufferedImage rasterizeTechnologyMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
@@ -1165,8 +1688,16 @@ public class HistoricalMapGenerator {
                 int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
                 int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                if (land == 0) {
+                double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                if (land == 0 || occWeight <= 0.001) {
                     img.setRGB(x, y, 0x000000);
+                    continue;
+                }
+
+                if (year <= -70000L) {
+                    double techVal = blendPaleoTraits(lon, lat, 130.0, 112.0, 92.0);
+                    int gray = Math.clamp((int) (techVal * occWeight), 0, 255);
+                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
                     continue;
                 }
 
@@ -1182,16 +1713,42 @@ public class HistoricalMapGenerator {
                 else if (year <= 1850) tech += (europe * 70.0 + china * 45.0);
                 else tech += (europe * 30.0 + china * 30.0);
 
-                int gray = Math.clamp((int) tech, 15, 255);
+                int gray = Math.clamp((int) (tech * occWeight), 0, 255);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
         return applyAltimetryCoastlineMask(img);
     }
 
-    // --- 7. CLEAN TRADE NETWORK MAP ---
-    private static BufferedImage generateCleanTradeNetworkMap(String type, Scenario scenario) {
+    // --- 7. TRADE NETWORK TENSOR MAP ---
+    private static BufferedImage rasterizeTradeNetworkMap(String type, Scenario scenario) {
+        long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        if (year <= -70000L) {
+            Graphics2D g = img.createGraphics();
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, WIDTH, HEIGHT);
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // 1. Homo Sapiens Middle Stone Age Obsidian & Ochre Transfer Circuits (East & South Africa, Levant)
+            drawTradeRoute(g, new double[][]{{36.1, 2.5}, {36.5, 0.5}, {36.4, -1.5}, {38.5, 8.5}}, new Color(175, 175, 175), 2.0); // East African Rift Obsidian (Turkana - Olorgesailie - Ethiopia)
+            drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}}, new Color(165, 165, 165), 2.0); // South African Coastal Silcrete & Ochre (Blombos - Pinnacle Point - Klasies)
+            drawTradeRoute(g, new double[][]{{35.0, 32.7}, {35.3, 32.7}, {35.6, 33.0}}, new Color(170, 170, 170), 2.0); // Levant Skhul-Qafzeh Flint & Red Ochre Network
+            drawTradeRoute(g, new double[][]{{31.5, 26.0}, {32.6, 25.7}, {32.9, 24.1}}, new Color(155, 155, 155), 2.0); // Nile Valley Chert Corridor (Nazlet Khater - Taramsa)
+
+            // 2. Neanderthal Mousterian Flint (Silex), Radiolarite & Jasper Corridors (Europe & West Asia)
+            drawTradeRoute(g, new double[][]{{-4.0, 43.4}, {-1.5, 43.5}, {1.0, 45.0}, {0.3, 45.2}}, new Color(160, 160, 160), 2.0); // Franco-Cantabrian / Iberian Silex Network (Dordogne/Vézère - Basque - Cantabria)
+            drawTradeRoute(g, new double[][]{{9.5, 48.5}, {13.0, 47.8}, {15.8, 46.1}, {17.1, 49.2}}, new Color(160, 160, 160), 2.0); // Central European Silex & Radiolarite (Swabian Jura - Krapina - Moravia)
+            drawTradeRoute(g, new double[][]{{34.2, 44.9}, {38.5, 44.5}, {40.2, 44.2}}, new Color(150, 150, 150), 2.0); // Crimean - Caucasian Flint Network (Kiik-Koba - Mezmaiskaya)
+            drawTradeRoute(g, new double[][]{{44.2, 36.8}, {47.1, 34.4}}, new Color(150, 150, 150), 2.0); // Zagros Mousterian Chert Corridor (Shanidar - Bisitun)
+
+            // 3. Denisovans & Asian Archaic Hominins Raw Material Transfers
+            drawTradeRoute(g, new double[][]{{83.9, 51.4}, {85.5, 51.7}}, new Color(150, 150, 150), 2.0); // Altai Chlorite & Chert (Denisova - Okladnikov - Chagyrskaya)
+            drawTradeRoute(g, new double[][]{{114.5, 40.2}, {115.9, 39.7}}, new Color(150, 150, 150), 2.0); // Nihewan - Zhoukoudian Quartzite/Chert Corridor
+
+            g.dispose();
+            return applyAltimetryCoastlineMask(img);
+        }
         Graphics2D g = img.createGraphics();
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, WIDTH, HEIGHT);
@@ -1221,8 +1778,9 @@ public class HistoricalMapGenerator {
         }
     }
 
-    // --- 8. CLEAN INSTITUTIONAL COMPLEXITY MAP (SESHAT) ---
-    private static BufferedImage generateCleanInstitutionalComplexityMap(String type, Scenario scenario) {
+    // --- 8. INSTITUTIONAL COMPLEXITY TENSOR MAP (SESHAT) ---
+    private static BufferedImage rasterizeInstitutionalComplexityMap(String type, Scenario scenario) {
+        long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
         List<CityPoint> cities = getCitiesForScenario(type);
@@ -1235,8 +1793,16 @@ public class HistoricalMapGenerator {
                 int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
                 int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                if (land == 0) {
+                double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                if (land == 0 || occWeight <= 0.001) {
                     img.setRGB(x, y, 0x000000);
+                    continue;
+                }
+
+                if (year <= -70000L) {
+                    double instVal = blendPaleoTraits(lon, lat, 24.0, 18.0, 16.0);
+                    int gray = Math.clamp((int) (instVal * occWeight), 0, 255);
+                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
                     continue;
                 }
 
@@ -1247,47 +1813,15 @@ public class HistoricalMapGenerator {
                     maxInst = Math.max(maxInst, val);
                 }
 
-                int gray = Math.clamp((int) maxInst, 0, 255);
+                int gray = Math.clamp((int) (maxInst * occWeight), 0, 255);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
         return applyAltimetryCoastlineMask(img);
     }
 
-    // --- 9. CLEAN ECOLOGICAL FOOTPRINT MAP ---
-    private static BufferedImage generateCleanEcologicalFootprintMap(String type, Scenario scenario) {
-        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        BufferedImage mask = loadElevationMask();
-
-        for (int y = 0; y < HEIGHT; y++) {
-            double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
-            for (int x = 0; x < WIDTH; x++) {
-                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
-
-                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
-                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
-                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                if (land == 0) {
-                    img.setRGB(x, y, 0x000000);
-                    continue;
-                }
-
-                double ecoStrain = 20.0;
-                if (lon >= 35.0 && lon <= 48.0 && lat >= 30.0 && lat <= 38.0) ecoStrain = 210.0; // Mesopotamia Salinization
-                else if (lon >= -9.0 && lon <= 35.0 && lat >= 34.0 && lat <= 45.0) ecoStrain = 175.0; // Mediterranean Deforestation
-                else if (lon >= 105.0 && lon <= 122.0 && lat >= 30.0 && lat <= 40.0) ecoStrain = 195.0; // Yellow River Loess Erosion
-                else if (lon >= 68.0 && lon <= 88.0 && lat >= 20.0 && lat <= 32.0) ecoStrain = 180.0; // Indo-Gangetic Agricultural Strain
-                else if (lon >= 2.0 && lon <= 15.0 && lat >= 48.0 && lat <= 54.0) ecoStrain = 160.0; // European Agricultural Clearing
-
-                int gray = Math.clamp((int) ecoStrain, 0, 255);
-                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
-            }
-        }
-        return applyAltimetryCoastlineMask(img);
-    }
-
-    // --- 10. CLEAN PATHOGEN IMMUNITY MAP ---
-    public static BufferedImage generateCleanPathogenImmunityMap(String type, Scenario scenario) {
+    // --- 9. ECOLOGICAL FOOTPRINT TENSOR MAP ---
+    private static BufferedImage rasterizeEcologicalFootprintMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
@@ -1300,8 +1834,60 @@ public class HistoricalMapGenerator {
                 int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
                 int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                if (land == 0) {
+                double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                if (land == 0 || occWeight <= 0.001) {
                     img.setRGB(x, y, 0x000000);
+                    continue;
+                }
+
+                if (year <= -70000L) {
+                    double ecoVal = blendPaleoTraits(lon, lat, 26.0, 20.0, 18.0);
+                    int gray = Math.clamp((int) (ecoVal * occWeight), 0, 255);
+                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                    continue;
+                }
+
+                double ecoStrain = 20.0;
+                if (lon >= 35.0 && lon <= 48.0 && lat >= 30.0 && lat <= 38.0) ecoStrain = 210.0; // Mesopotamia Salinization
+                else if (lon >= -9.0 && lon <= 35.0 && lat >= 34.0 && lat <= 45.0) ecoStrain = 175.0; // Mediterranean Deforestation
+                else if (lon >= 105.0 && lon <= 122.0 && lat >= 30.0 && lat <= 40.0) ecoStrain = 195.0; // Yellow River Loess Erosion
+                else if (lon >= 68.0 && lon <= 88.0 && lat >= 20.0 && lat <= 32.0) ecoStrain = 180.0; // Indo-Gangetic Agricultural Strain
+                else if (lon >= 2.0 && lon <= 15.0 && lat >= 48.0 && lat <= 54.0) ecoStrain = 160.0; // European Agricultural Clearing
+
+                int gray = Math.clamp((int) (ecoStrain * occWeight), 0, 255);
+                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+            }
+        }
+        return applyAltimetryCoastlineMask(img);
+    }
+
+    // --- 10. PATHOGEN IMMUNITY TENSOR MAP ---
+    public static BufferedImage rasterizePathogenImmunityMap(String type, Scenario scenario) {
+        long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage mask = loadElevationMask();
+
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                if (land == 0 || occWeight <= 0.001) {
+                    img.setRGB(x, y, 0x000000);
+                    continue;
+                }
+
+                if (year <= -70000L) {
+                    double absLat = Math.abs(lat);
+                    double tropicalFactor = Math.max(0.0, Math.cos(Math.toRadians(Math.min(90.0, absLat * 2.8))));
+                    double speciesBaseline = blendPaleoTraits(lon, lat, 38.0, 22.0, 26.0);
+                    double pathogenVal = speciesBaseline + tropicalFactor * 135.0;
+                    int gray = Math.clamp((int) (pathogenVal * occWeight), 0, 255);
+                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
                     continue;
                 }
 
@@ -1346,7 +1932,7 @@ public class HistoricalMapGenerator {
                     finalPathogen = Math.min(255.0, 25.0 + tropicalIntensity * 0.6 + crowdIntensity * 0.7);
                 }
 
-                int gray = Math.clamp((int) finalPathogen, 0, 255);
+                int gray = Math.clamp((int) (finalPathogen * occWeight), 0, 255);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
@@ -1975,7 +2561,7 @@ public class HistoricalMapGenerator {
         }
     }
 
-    public static BufferedImage generateCleanExtensibleTensorMap(int tensorIndex, String type, Scenario scenario) {
+    public static BufferedImage rasterizeExtensibleTensorMap(int tensorIndex, String type, Scenario scenario) {
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
@@ -2082,7 +2668,7 @@ public class HistoricalMapGenerator {
         g.dispose();
     }
 
-    public static BufferedImage generateCleanCoastlines(int width, int height) {
+    public static BufferedImage rasterizeCoastlines(int width, int height) {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
         g.setColor(Color.BLACK);
@@ -2105,13 +2691,13 @@ public class HistoricalMapGenerator {
                 String line;
                 while ((line = br.readLine()) != null) {
                     if (line.isEmpty()) continue;
-                    String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-                    if (parts.length > 14) {
+                    java.util.List<String> parts = EmpiricalGeospatialDatasetIngestion.fastParseCsv(line);
+                    if (parts.size() > 14) {
                         try {
-                            double lat = Double.parseDouble(parts[5].replace("\"", "").trim());
-                            double lon = Double.parseDouble(parts[6].replace("\"", "").trim());
+                            double lat = Double.parseDouble(parts.get(5).replace("\"", "").trim());
+                            double lon = Double.parseDouble(parts.get(6).replace("\"", "").trim());
 
-                            String comms = (parts[11] + " " + parts[12] + " " + parts[13] + " " + parts[14]).toLowerCase();
+                            String comms = (parts.get(11) + " " + parts.get(12) + " " + parts.get(13) + " " + parts.get(14)).toLowerCase();
 
                             boolean match = false;
                             for (String kw : commodityKeywords) {
@@ -2284,11 +2870,11 @@ public class HistoricalMapGenerator {
     private static volatile BufferedImage cachedMantleHeatMap = null;
     private static volatile BufferedImage cachedAquiferMap = null;
 
-    public static BufferedImage generateCleanCoalMap(String type, Scenario scenario) {
+    public static BufferedImage rasterizeCoalMap(String type, Scenario scenario) {
         if (cachedCoalMap != null) return cachedCoalMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        var spots = AuthenticEmpiricalDatasetIngestion.getEmpiricalCoalOccurrences();
+        var spots = EmpiricalGeospatialDatasetIngestion.getEmpiricalCoalOccurrences();
         if (spots.isEmpty()) {
             spots = loadMRDSDeposits("coal", "lignite", "anthracite", "bituminous");
         }
@@ -2297,11 +2883,11 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    public static BufferedImage generateCleanOilMap(String type, Scenario scenario) {
+    public static BufferedImage rasterizeOilMap(String type, Scenario scenario) {
         if (cachedOilMap != null) return cachedOilMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        var spots = AuthenticEmpiricalDatasetIngestion.getEmpiricalOilOccurrences();
+        var spots = EmpiricalGeospatialDatasetIngestion.getEmpiricalOilOccurrences();
         if (spots.isEmpty()) {
             spots = loadMRDSDeposits("petroleum", "oil", "hydrocarbon");
         }
@@ -2310,11 +2896,11 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    public static BufferedImage generateCleanGasMap(String type, Scenario scenario) {
+    public static BufferedImage rasterizeGasMap(String type, Scenario scenario) {
         if (cachedGasMap != null) return cachedGasMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        var spots = AuthenticEmpiricalDatasetIngestion.getEmpiricalGasOccurrences();
+        var spots = EmpiricalGeospatialDatasetIngestion.getEmpiricalGasOccurrences();
         if (spots.isEmpty()) {
             spots = loadMRDSDeposits("natural gas", "gas", "methane");
         }
@@ -2323,7 +2909,7 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    public static BufferedImage generateCleanUraniumMap(String type, Scenario scenario) {
+    public static BufferedImage rasterizeUraniumMap(String type, Scenario scenario) {
         if (cachedUraniumMap != null) return cachedUraniumMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -2338,14 +2924,14 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    public static BufferedImage generateCleanHelium3Map(String type, Scenario scenario) {
+    public static BufferedImage rasterizeHelium3Map(String type, Scenario scenario) {
         if (cachedHe3Map != null) return cachedHe3Map;
-        // Pure black grayscale map: Helium-3 is exclusively a lunar resource
+        // Grayscale map: Helium-3 is exclusively a lunar resource
         cachedHe3Map = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
         return cachedHe3Map;
     }
 
-    public static BufferedImage generateCleanIronCopperMap(String type, Scenario scenario) {
+    public static BufferedImage rasterizeIronCopperMap(String type, Scenario scenario) {
         if (cachedIronCopperMap != null) return cachedIronCopperMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -2364,7 +2950,7 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    public static BufferedImage generateCleanPreciousMetalsMap(String type, Scenario scenario) {
+    public static BufferedImage rasterizePreciousMetalsMap(String type, Scenario scenario) {
         if (cachedPreciousMetalsMap != null) return cachedPreciousMetalsMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -2387,7 +2973,7 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    public static BufferedImage generateCleanRareEarthsMap(String type, Scenario scenario) {
+    public static BufferedImage rasterizeRareEarthsMap(String type, Scenario scenario) {
         if (cachedRareEarthsMap != null) return cachedRareEarthsMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -2416,7 +3002,7 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    public static BufferedImage generateCleanMantleHeatMap(String type, Scenario scenario) {
+    public static BufferedImage rasterizeMantleHeatMap(String type, Scenario scenario) {
         if (cachedMantleHeatMap != null) return cachedMantleHeatMap;
         java.nio.file.Path csvPath = java.nio.file.Paths.get("data", "maps", "ihfc_davies2013", "heat_flow_2deg.csv");
         if (!java.nio.file.Files.exists(csvPath)) {
@@ -2506,11 +3092,11 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    public static BufferedImage generateCleanAquiferMap(String type, Scenario scenario) {
+    public static BufferedImage rasterizeAquiferMap(String type, Scenario scenario) {
         if (cachedAquiferMap != null) return cachedAquiferMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        var spots = AuthenticEmpiricalDatasetIngestion.getEmpiricalAquiferOccurrences();
+        var spots = EmpiricalGeospatialDatasetIngestion.getEmpiricalAquiferOccurrences();
         if (spots.isEmpty()) {
             // Fallback to major global sedimentary aquifer systems (UNESCO WHYMAP GWR)
             double[][] majorAquifers = {
@@ -2541,7 +3127,7 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    public static BufferedImage generateCleanExtensibleResourceTensorMap(int index, String type, Scenario scenario) {
+    public static BufferedImage rasterizeExtensibleResourceTensorMap(int index, String type, Scenario scenario) {
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();

@@ -181,6 +181,24 @@ public enum DisplayMode {
         return POPULATION;
     }
 
+    public enum EncodingType {
+        SCALAR_1D("1D Scalaire (Continu)"),
+        ID_24BIT_CATEGORICAL("ID 24-bits (Catégoriel RVB)");
+
+        private final String defaultLabel;
+        EncodingType(String defaultLabel) { this.defaultLabel = defaultLabel; }
+        public String getLabel() {
+            return org.ether.society.i18n.I18n.getOrDefault("displaymode.encoding." + name().toLowerCase(), defaultLabel);
+        }
+    }
+
+    public EncodingType getEncodingType() {
+        return switch (this) {
+            case BIOME, CULTURE, POLITICAL -> EncodingType.ID_24BIT_CATEGORICAL;
+            default -> EncodingType.SCALAR_1D;
+        };
+    }
+
     @Override
     public String toString() {
         return displayName;

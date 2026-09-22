@@ -197,6 +197,18 @@ public class I18n {
         String lower = name.toLowerCase();
         if (lower.contains("super-terre") || lower.contains("super-earth") || lower.contains("gaia")) {
             return getOrDefault("planet.preset.super_earth", "Super-Terre (Gaia Prime)");
+        } else if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire") || lower.contains("eemian")) {
+            return getOrDefault("planet.preset.earth_lig", "Terre (-100 000 / Dernier Interglaciaire)");
+        } else if (lower.contains("-20") || lower.contains("lgm") || (lower.contains("glaciaire") && (lower.contains("maximum") || lower.contains("dernier")))) {
+            return getOrDefault("planet.preset.earth_lgm", "Terre (-20 000 / Maximum Glaciaire)");
+        } else if (lower.contains("-10") || lower.contains("eh") || lower.contains("précoce") || lower.contains("early holocene")) {
+            return getOrDefault("planet.preset.earth_eh", "Terre (-10 000 / Holocène Précoce)");
+        } else if (lower.contains("-6") || lower.contains("mh") || lower.contains("sahara vert") || lower.contains("green sahara") || lower.contains("mid holocene")) {
+            return getOrDefault("planet.preset.earth_mh", "Terre (-6 000 / Sahara Vert)");
+        } else if (lower.contains("-3") || lower.contains("lh") || lower.contains("tardif") || lower.contains("late holocene")) {
+            return getOrDefault("planet.preset.earth_lh", "Terre (-3 000 / Holocène Tardif)");
+        } else if (lower.contains("2026") || lower.contains("moderne") || lower.contains("modern") || lower.contains("anthropocène") || lower.contains("anthropocene")) {
+            return getOrDefault("planet.preset.earth_modern", "Terre (2026 / Moderne)");
         } else if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) {
             return getOrDefault("planet.preset.earth", "Terre (Terran)");
         } else if (lower.contains("mars") || lower.contains("ares")) {

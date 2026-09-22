@@ -76,10 +76,16 @@ public class PreComputePhase {
 
     /**
      * Compute climate (temperature, precipitation) and glaciological forcings for each cell.
-     * Handles: LGM ice sheets (2,000m depth, -120m sea level), Green Sahara, Younger Dryas.
+     * Preserves climate if already initialized via Tab 1 / raster tensors.
      */
     private void computeClimate(List<H3Cell> cells) {
-        logger.info("Computing climate and glaciological forcings...");
+        boolean hasExistingClimate = cells.stream().anyMatch(c -> c.getTemperature() != null && c.getRainfall() != null);
+        if (hasExistingClimate) {
+            logger.info("Preserving existing climate & temperature data from configuration/raster maps");
+            return;
+        }
+
+        logger.info("Computing climate and glaciological forcings procedurally...");
         double axialTilt = scenario.getAxialTiltDegrees();
         long year = scenario.getStartDateYear();
 
@@ -90,7 +96,7 @@ public class PreComputePhase {
         for (H3Cell cell : cells) {
             double lat = cell.getLatitude();
             double lng = cell.getLongitude();
-            double elev = cell.getElevation();
+            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
 
             // Base temperature from latitude
             double latFactor = Math.abs(lat) / 90.0;
@@ -167,9 +173,42 @@ public class PreComputePhase {
 
     /**
      * Initialize resource stockpiles based on biome type and coastal marine abundance.
+     * Preserves existing resources if already populated by Tab 2.
      */
     private void initializeResources(List<H3Cell> cells) {
-        logger.info("Initializing resources & coastal marine biomes...");
+        boolean hasExistingResources = cells.stream().anyMatch(c -> (c.getFoodResource() != null && c.getFoodResource() > 0)
+                || (c.getWaterResource() != null && c.getWaterResource() > 0));
+
+        if (hasExistingResources) {
+            logger.info("Preserving existing resource distributions (Food, Water, Wood, Minerals) from configuration/raster maps");
+            for (H3Cell cell : cells) {
+                if (cell.getIsCoastal() == null) {
+                    Biome biome = cell.getBiome() != null ? cell.getBiome() : Biome.PLAINS;
+                    boolean coastal = biome == Biome.BEACH || (cell.getElevation() != null && cell.getElevation() > 0 && cell.getElevation() < 150.0);
+                    cell.setIsCoastal(coastal);
+                }
+                if (cell.getBiomassFish() == null || cell.getBiomassFish() == 0.0) {
+                    if (Boolean.TRUE.equals(cell.getIsCoastal())) {
+                        cell.setBiomassFish(1200.0);
+                    } else if (cell.getBiome() == Biome.LAKE) {
+                        cell.setBiomassFish(800.0);
+                    }
+                }
+                if (cell.getBiomassNatural() == null && cell.getFoodResource() != null) {
+                    cell.setBiomassNatural(cell.getFoodResource());
+                }
+                if (cell.getBiomassLivestock() == null) {
+                    Biome b = cell.getBiome();
+                    cell.setBiomassLivestock(b == Biome.SAVANNAH || b == Biome.PLAINS ? 400.0 : (b == Biome.TUNDRA ? 200.0 : 0.0));
+                }
+                if (cell.getBiomassAgriculture() == null) {
+                    cell.setBiomassAgriculture(0.0);
+                }
+            }
+            return;
+        }
+
+        logger.info("Initializing fallback resources & coastal marine biomes...");
 
         for (H3Cell cell : cells) {
             Biome biome = cell.getBiome();
@@ -182,7 +221,13 @@ public class PreComputePhase {
             if (coastal) {
                 cell.setCoastalMarineResource(800.0 + random.nextDouble() * 200.0);
                 cell.setBiomassFish(1200.0);
+            } else if (biome == Biome.LAKE) {
+                cell.setBiomassFish(800.0);
+            } else {
+                cell.setBiomassFish(0.0);
             }
+
+            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
 
             // Food resources based on biome (stored in Gigajoules GJ)
             double wildFood = switch (biome) {
@@ -190,15 +235,19 @@ public class PreComputePhase {
                 case FOREST -> 2000.0 + random.nextDouble() * 800.0;
                 case SAVANNAH -> 2200.0 + random.nextDouble() * 800.0;
                 case PLAINS -> 1700.0 + random.nextDouble() * 600.0;
-                case HILLS -> 1200.0 + random.nextDouble() * 400.0;
+                case HILLS -> 1000.0 + random.nextDouble() * 400.0;
                 case BEACH, LAKE -> 800.0 + random.nextDouble() * 400.0;
-                case TUNDRA -> 400.0 + random.nextDouble() * 200.0;
-                case DESERT, SNOW -> 80.0 + random.nextDouble() * 100.0;
-                case GLACIER -> 20.0 + random.nextDouble() * 30.0;
-                case OCEAN, DEEP_OCEAN -> 0.0; // Fish handled separately
-                case MOUNTAINS -> 200.0 + random.nextDouble() * 200.0;
+                case TUNDRA -> (elev < 1500.0 ? 450.0 : 150.0) + random.nextDouble() * 150.0;
+                case DESERT -> 40.0 + random.nextDouble() * 40.0;
+                case SNOW -> elev > 4000.0 ? 0.0 : 5.0;
+                case GLACIER -> 0.0;
+                case OCEAN, DEEP_OCEAN -> 0.0;
+                case MOUNTAINS -> elev > 4500.0 ? 0.0 : (elev > 3000.0 ? 25.0 : 250.0);
             };
             cell.setFoodResource(wildFood);
+            cell.setBiomassNatural(wildFood);
+            cell.setBiomassLivestock(biome == Biome.SAVANNAH || biome == Biome.PLAINS ? 400.0 : (biome == Biome.TUNDRA ? 200.0 : 0.0));
+            cell.setBiomassAgriculture(0.0);
 
             // Wood resources
             double wood = switch (biome) {
@@ -212,273 +261,48 @@ public class PreComputePhase {
 
             // Water resources (also used as proxy for freshwater access)
             double water = switch (biome) {
-                case JUNGLE, LAKE -> 1000;
-                case SAVANNAH -> 800;
-                case FOREST, PLAINS -> 600 + random.nextDouble() * 200;
-                case HILLS, BEACH -> 400;
-                case TUNDRA, MOUNTAINS -> 300; // Snow melt
-                case DESERT -> 50;
-                case OCEAN, DEEP_OCEAN -> 0; // Salt water
-                case SNOW, GLACIER -> 200;
+                case JUNGLE, LAKE -> 1000.0;
+                case SAVANNAH -> 800.0;
+                case FOREST, PLAINS -> 600.0 + random.nextDouble() * 200.0;
+                case HILLS, BEACH -> 400.0;
+                case TUNDRA -> 300.0;
+                case MOUNTAINS -> elev > 5000.0 ? 0.0 : 300.0;
+                case DESERT -> 50.0;
+                case OCEAN, DEEP_OCEAN -> 0.0;
+                case SNOW -> 100.0;
+                case GLACIER -> 0.0;
             };
             cell.setWaterResource(water);
         }
     }
 
     /**
-     * Calculate carrying capacity based on food and water resources.
-     * 
-     * @return carrying capacity for the cell (in human carrying capacity)
-     */
-    private double calculateCarryingCapacity(H3Cell cell) {
-        double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
-        double water = cell.getWaterResource() != null ? cell.getWaterResource() : 0.0;
-        Biome biome = cell.getBiome();
-
-        // Normalize water to 0-1 scale (max 1000)
-        double waterFactor = Math.min(1.0, water / 1000.0);
-
-        // Base capacity: food availability in GJ / annual metabolic energy per person (3.362 GJ/yr)
-        double capacity = (food / PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ) * (0.3 + waterFactor * 0.7);
-
-        // Biome habitability modifier
-        capacity *= switch (biome != null ? biome : Biome.PLAINS) {
-            case JUNGLE -> 0.8; // Disease, difficulty
-            case SAVANNAH -> 1.1; // Rich game & pasture
-            case FOREST, PLAINS -> 1.0;
-            case HILLS -> 0.9;
-            case BEACH, LAKE -> 0.7;
-            case TUNDRA -> 0.4;
-            case DESERT, SNOW -> 0.2;
-            case GLACIER -> 0.05;
-            case MOUNTAINS -> 0.3;
-            case OCEAN, DEEP_OCEAN -> 0.0;
-        };
-
-        return Math.max(0, capacity);
-    }
-
-    /**
      * Distribute initial human population based on scenario settings.
+     * Preserves already configured populations (from UI or custom density maps),
+     * or delegates to ProceduralPopulationEngine.
      */
     private void distributeInitialPopulation(List<H3Cell> cells) {
-        logger.info("Distributing initial population: {} humans", scenario.getInitialHumanCount());
-
-        // Filter habitable cells (positive carrying capacity)
-        List<H3Cell> habitable = cells.stream()
-                .filter(c -> c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
-                .filter(c -> calculateCarryingCapacity(c) > 0)
-                .toList();
-
-        if (habitable.isEmpty()) {
-            logger.warn("No habitable cells found!");
+        // 1. If cells already have population (from Tab 3 UI setup or loaded scenario), preserve it!
+        boolean hasExistingPop = cells.stream().anyMatch(c -> c.getPopulation() != null && c.getPopulation() > 0);
+        if (hasExistingPop) {
+            long totalAssigned = cells.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
+            long populatedCells = cells.stream().filter(c -> c.getPopulation() != null && c.getPopulation() > 0).count();
+            logger.info("Preserving existing population distribution: {} humans across {} cells", totalAssigned, populatedCells);
             return;
         }
 
+        // 2. Otherwise distribute via standard ProceduralPopulationEngine
+        logger.info("Distributing initial population via ProceduralPopulationEngine: {} humans", scenario.getInitialHumanCount());
         long totalPop = scenario.getInitialHumanCount();
-        String distType = scenario.getPopulationDensityType();
+        double capitalK0 = scenario.getInitialCapitalPerCapita();
+        double techLevel = Math.clamp(Math.log10(Math.max(1.0, capitalK0)) * 2.2 + 0.2, 0.2, 10.0);
+        String pattern = scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL";
+        boolean isEarthPreset = scenario.getPlanetPreset() != null
+                && ((scenario.getPlanetPreset().elevationUseImport() && "earth".equalsIgnoreCase(scenario.getPlanetPreset().elevationMapSource()))
+                || (scenario.getPlanetPreset().name() != null && (scenario.getPlanetPreset().name().toLowerCase().contains("terre") || scenario.getPlanetPreset().name().toLowerCase().contains("earth"))));
+        long startYear = scenario.getStartDateYear();
 
-        switch (distType) {
-            case "ONE_CONTINENT", "OUT_OF_AFRICA" -> {
-                // Cluster population in Africa origin (tropical/savannah/plains)
-                H3Cell origin = habitable.stream()
-                        .filter(c -> c.getLatitude() >= 0 && c.getLatitude() <= 15)
-                        .filter(c -> c.getLongitude() >= 30 && c.getLongitude() <= 45)
-                        .findFirst()
-                        .orElse(habitable.stream()
-                                .filter(c -> Math.abs(c.getLatitude()) < 30)
-                                .findFirst()
-                                .orElse(habitable.get(random.nextInt(habitable.size()))));
-                int centerIdx = habitable.indexOf(origin);
-                distributeNearCell(habitable, centerIdx, totalPop, 0.15);
-            }
-            case "BERINGIA_AMERICAS" -> {
-                // Cluster population in Beringia / NE Siberia region
-                H3Cell beringiaOrigin = habitable.stream()
-                        .filter(c -> c.getLatitude() >= 55.0 && c.getLatitude() <= 72.0)
-                        .filter(c -> c.getLongitude() >= 150.0 || c.getLongitude() <= -150.0)
-                        .findFirst()
-                        .orElse(habitable.stream()
-                                .filter(c -> c.getLatitude() > 50.0)
-                                .findFirst()
-                                .orElse(habitable.get(0)));
-                int centerIdx = habitable.indexOf(beringiaOrigin);
-                distributeNearCell(habitable, centerIdx, totalPop, 0.20);
-            }
-            case "GREEN_SAHARA" -> {
-                // Distribute population across lush North African savannahs
-                List<H3Cell> saharaCells = habitable.stream()
-                        .filter(c -> c.getLatitude() >= 12.0 && c.getLatitude() <= 28.0)
-                        .filter(c -> c.getLongitude() >= -10.0 && c.getLongitude() <= 30.0)
-                        .toList();
-                if (!saharaCells.isEmpty()) {
-                    distributeByCapacity(saharaCells, totalPop);
-                } else {
-                    distributeByCapacity(habitable, totalPop);
-                }
-            }
-            case "YOUNGER_DRYAS" -> {
-                // Cluster population in the Levant / Near East Natufian region
-                H3Cell levantOrigin = habitable.stream()
-                        .filter(c -> c.getLatitude() >= 30.0 && c.getLatitude() <= 38.0)
-                        .filter(c -> c.getLongitude() >= 30.0 && c.getLongitude() <= 42.0)
-                        .findFirst()
-                        .orElse(habitable.get(0));
-                int centerIdx = habitable.indexOf(levantOrigin);
-                distributeNearCell(habitable, centerIdx, totalPop, 0.25);
-            }
-            case "ROMAN_EMPIRE" -> {
-                // Distribute population across Roman Mediterranean provinces
-                List<H3Cell> romanCells = habitable.stream()
-                        .filter(c -> c.getLatitude() >= 25.0 && c.getLatitude() <= 55.0)
-                        .filter(c -> c.getLongitude() >= -10.0 && c.getLongitude() <= 45.0)
-                        .toList();
-                if (!romanCells.isEmpty()) {
-                    distributeByRomanDensity(romanCells, totalPop);
-                } else {
-                    distributeByCapacity(habitable, totalPop);
-                }
-            }
-            case "RIVER_VALLEYS", "FERTILE_CRESCENT", "MESOPOTAMIA_ASSYRIA" -> {
-                // Prefer high water access
-                distributeByWater(habitable, totalPop);
-            }
-            case "COASTAL" -> {
-                // Prefer beach biome and cells near ocean
-                distributeByCoast(habitable, cells, totalPop);
-            }
-            case "SPARSE", "SPARSE_NOMADIC" -> {
-                // Low-density scatter across all habitable terrain
-                distributeByCapacity(habitable, totalPop);
-                // Reduce all populations to simulate sparse nomadic life
-                for (H3Cell c : habitable) {
-                    c.setPopulation((int) (c.getPopulation() * 0.3));
-                }
-            }
-            case "DENSE", "URBAN_CLUSTERS" -> {
-                // High-density in optimal areas only
-                List<H3Cell> optimal = habitable.stream()
-                        .filter(c -> calculateCarryingCapacity(c) > 0.5)
-                        .toList();
-                if (optimal.isEmpty())
-                    optimal = habitable;
-                distributeByCapacity(optimal, totalPop);
-            }
-            case "AUSTRALIA_SAHUL" -> {
-                List<H3Cell> sahulCells = habitable.stream()
-                        .filter(c -> c.getLatitude() >= -42.0 && c.getLatitude() <= -10.0)
-                        .filter(c -> c.getLongitude() >= 112.0 && c.getLongitude() <= 155.0)
-                        .toList();
-                if (!sahulCells.isEmpty()) {
-                    distributeBySahulDensity(sahulCells, totalPop);
-                } else {
-                    distributeByCapacity(habitable, totalPop);
-                }
-            }
-            case "EGYPT_NILE" -> {
-                List<H3Cell> nileCells = habitable.stream()
-                        .filter(c -> c.getLatitude() >= 21.0 && c.getLatitude() <= 32.0)
-                        .filter(c -> c.getLongitude() >= 27.0 && c.getLongitude() <= 35.0)
-                        .toList();
-                if (!nileCells.isEmpty()) {
-                    distributeByNileDensity(nileCells, totalPop);
-                } else {
-                    distributeByWater(habitable, totalPop);
-                }
-            }
-            case "MESOAMERICA" -> {
-                List<H3Cell> mesoCells = habitable.stream()
-                        .filter(c -> c.getLatitude() >= 12.0 && c.getLatitude() <= 24.0)
-                        .filter(c -> c.getLongitude() >= -105.0 && c.getLongitude() <= -85.0)
-                        .toList();
-                if (!mesoCells.isEmpty()) {
-                    distributeByMesoamericaDensity(mesoCells, totalPop);
-                } else {
-                    distributeByCapacity(habitable, totalPop);
-                }
-            }
-            case "AMERICAS_1491" -> {
-                List<H3Cell> americasCells = habitable.stream()
-                        .filter(c -> c.getLongitude() >= -130.0 && c.getLongitude() <= -35.0)
-                        .toList();
-                if (!americasCells.isEmpty()) {
-                    distributeByAmericas1491Density(americasCells, totalPop);
-                } else {
-                    distributeByCapacity(habitable, totalPop);
-                }
-            }
-            case "INDUSTRIAL_1800" -> {
-                distributeByIndustrial1800Density(habitable, totalPop);
-            }
-            case "JAPAN_SAKOKU" -> {
-                List<H3Cell> japanCells = habitable.stream()
-                        .filter(c -> c.getLatitude() >= 30.0 && c.getLatitude() <= 45.0)
-                        .filter(c -> c.getLongitude() >= 128.0 && c.getLongitude() <= 146.0)
-                        .toList();
-                if (!japanCells.isEmpty()) {
-                    distributeByJapanSakokuDensity(japanCells, totalPop);
-                } else {
-                    distributeByCapacity(habitable, totalPop);
-                }
-            }
-            case "WEST_AFRICA_MALI" -> {
-                List<H3Cell> maliCells = habitable.stream()
-                        .filter(c -> c.getLatitude() >= 5.0 && c.getLatitude() <= 25.0)
-                        .filter(c -> c.getLongitude() >= -18.0 && c.getLongitude() <= 15.0)
-                        .toList();
-                if (!maliCells.isEmpty()) {
-                    distributeByWestAfricaMaliDensity(maliCells, totalPop);
-                } else {
-                    distributeByCapacity(habitable, totalPop);
-                }
-            }
-            case "INDIA_MAURYA" -> {
-                List<H3Cell> indiaCells = habitable.stream()
-                        .filter(c -> c.getLatitude() >= 8.0 && c.getLatitude() <= 35.0)
-                        .filter(c -> c.getLongitude() >= 68.0 && c.getLongitude() <= 90.0)
-                        .toList();
-                if (!indiaCells.isEmpty()) {
-                    distributeByIndiaMauryaDensity(indiaCells, totalPop);
-                } else {
-                    distributeByCapacity(habitable, totalPop);
-                }
-            }
-            case "COLUMBIAN_CONTACT" -> {
-                distributeByColumbianContactDensity(habitable, totalPop);
-            }
-            case "RANDOM" -> {
-                // Randomized with capacity weighting
-                distributeByCapacity(habitable, totalPop);
-                // Add random noise
-                for (H3Cell c : habitable) {
-                    double factor = 0.5 + random.nextDouble();
-                    c.setPopulation((int) (c.getPopulation() * factor));
-                }
-            }
-            case "UNIFORM" -> {
-                // Equal population in all habitable cells
-                int perCell = (int) (totalPop / habitable.size());
-                for (H3Cell c : habitable) {
-                    c.setPopulation(perCell);
-                }
-            }
-            case "EMPTY" -> {
-                // No initial population
-                for (H3Cell c : cells) {
-                    c.setPopulation(0);
-                }
-            }
-            default -> {
-                // Default to capacity-based
-                distributeByCapacity(habitable, totalPop);
-            }
-        }
-
-        // Log distribution stats
-        long totalAssigned = cells.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
-        long populatedCells = cells.stream().filter(c -> c.getPopulation() != null && c.getPopulation() > 0).count();
-        logger.info("Assigned {} population across {} cells (of {} habitable)",
-                totalAssigned, populatedCells, habitable.size());
+        org.ether.society.procedural.ProceduralPopulationEngine.distributePopulation(cells, scenario, totalPop, techLevel, pattern, isEarthPreset, startYear);
     }
 
     /**
@@ -499,295 +323,6 @@ public class PreComputePhase {
 
             c.calculateMovementFriction(techLevel);
             c.updateAgePyramidFromTotal(techLevel);
-        }
-    }
-
-    private void distributeByCoast(List<H3Cell> habitable, List<H3Cell> all, long totalPop) {
-        // Weight by proximity to ocean
-        double[] weights = new double[habitable.size()];
-        double totalWeight = 0;
-
-        for (int i = 0; i < habitable.size(); i++) {
-            H3Cell c = habitable.get(i);
-
-            // Beach biome gets high weight
-            if (c.getBiome() == Biome.BEACH) {
-                weights[i] = 5.0;
-            } else {
-                // Check if any neighbor is ocean
-                double coastalBonus = 0;
-                for (H3Cell other : all) {
-                    if (other.getBiome() == Biome.OCEAN || other.getBiome() == Biome.DEEP_OCEAN) {
-                        double dist = Math.sqrt(
-                                Math.pow(c.getLatitude() - other.getLatitude(), 2) +
-                                        Math.pow(c.getLongitude() - other.getLongitude(), 2));
-                        if (dist < 5.0) { // Within ~500km
-                            coastalBonus = Math.max(coastalBonus, 3.0 - dist * 0.5);
-                        }
-                    }
-                }
-                weights[i] = 1.0 + coastalBonus;
-            }
-            totalWeight += weights[i];
-        }
-
-        // Distribute population
-        for (int i = 0; i < habitable.size(); i++) {
-            long pop = Math.round(totalPop * weights[i] / totalWeight);
-            habitable.get(i).setPopulation((int) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
-        }
-    }
-
-    private void distributeNearCell(List<H3Cell> cells, int centerIndex, long totalPop, double spread) {
-        H3Cell center = cells.get(centerIndex);
-        double centerLat = center.getLatitude();
-        double centerLng = center.getLongitude();
-
-        // Calculate weights based on distance
-        double[] weights = new double[cells.size()];
-        double totalWeight = 0;
-
-        for (int i = 0; i < cells.size(); i++) {
-            H3Cell c = cells.get(i);
-            double dist = Math.sqrt(
-                    Math.pow(c.getLatitude() - centerLat, 2) +
-                            Math.pow(c.getLongitude() - centerLng, 2));
-            weights[i] = Math.exp(-dist * spread * 10);
-            totalWeight += weights[i];
-        }
-
-        // Distribute population
-        for (int i = 0; i < cells.size(); i++) {
-            long pop = Math.round(totalPop * weights[i] / totalWeight);
-            cells.get(i).setPopulation((int) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
-        }
-    }
-
-    private void distributeByWater(List<H3Cell> cells, long totalPop) {
-        double totalWeight = cells.stream()
-                .mapToDouble(c -> c.getWaterResource() != null ? c.getWaterResource() : 0.0)
-                .sum();
-
-        if (totalWeight == 0) {
-            // Fallback to equal distribution
-            long perCell = totalPop / cells.size();
-            cells.forEach(c -> c.setPopulation((int) Math.clamp(perCell, 0L, (long) Integer.MAX_VALUE)));
-            return;
-        }
-
-        for (H3Cell c : cells) {
-            double weight = c.getWaterResource() != null ? c.getWaterResource() : 0.0;
-            long pop = Math.round(totalPop * weight / totalWeight);
-            c.setPopulation((int) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
-        }
-    }
-
-    private void distributeByCapacity(List<H3Cell> cells, long totalPop) {
-        double totalWeight = cells.stream()
-                .mapToDouble(this::calculateCarryingCapacity)
-                .sum();
-
-        if (totalWeight == 0) {
-            // Fallback to equal distribution
-            long perCell = totalPop / cells.size();
-            cells.forEach(c -> c.setPopulation((int) Math.clamp(perCell, 0L, (long) Integer.MAX_VALUE)));
-            return;
-        }
-
-        for (H3Cell c : cells) {
-            double weight = calculateCarryingCapacity(c);
-            long pop = Math.round(totalPop * weight / totalWeight);
-            c.setPopulation((int) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
-        }
-    }
-
-    private void distributeByRomanDensity(List<H3Cell> cells, long totalPop) {
-        double[] weights = new double[cells.size()];
-        double totalWeight = 0;
-
-        for (int i = 0; i < cells.size(); i++) {
-            H3Cell c = cells.get(i);
-            double lat = c.getLatitude();
-            double lng = c.getLongitude();
-
-            // Distance to Rome (41.9, 12.5)
-            double distRome = Math.sqrt(Math.pow(lat - 41.9, 2) + Math.pow(lng - 12.5, 2));
-            // Distance to Alexandria (31.2, 29.9)
-            double distAlex = Math.sqrt(Math.pow(lat - 31.2, 2) + Math.pow(lng - 29.9, 2));
-
-            double centerBonus = Math.max(3.0 - distRome * 0.2, 0.0) + Math.max(2.5 - distAlex * 0.2, 0.0);
-            double coastalBonus = Boolean.TRUE.equals(c.getIsCoastal()) ? 1.5 : 1.0;
-            double baseCap = calculateCarryingCapacity(c);
-
-            weights[i] = (baseCap + 0.1) * (1.0 + centerBonus) * coastalBonus;
-            totalWeight += weights[i];
-        }
-
-        if (totalWeight == 0) {
-            long perCell = totalPop / cells.size();
-            cells.forEach(c -> c.setPopulation((int) Math.clamp(perCell, 0L, (long) Integer.MAX_VALUE)));
-            return;
-        }
-
-        for (int i = 0; i < cells.size(); i++) {
-            long pop = Math.round(totalPop * weights[i] / totalWeight);
-            cells.get(i).setPopulation((int) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
-        }
-    }
-
-    private void distributeBySahulDensity(List<H3Cell> cells, long totalPop) {
-        double[] weights = new double[cells.size()];
-        double totalWeight = 0;
-        for (int i = 0; i < cells.size(); i++) {
-            H3Cell c = cells.get(i);
-            double coastalBonus = Boolean.TRUE.equals(c.getIsCoastal()) ? 2.0 : 0.8;
-            double waterBonus = c.getWaterResource() != null ? c.getWaterResource() * 0.002 : 0.1;
-            weights[i] = (calculateCarryingCapacity(c) + 0.1) * coastalBonus * (1.0 + waterBonus);
-            totalWeight += weights[i];
-        }
-        distributeWithWeights(cells, weights, totalWeight, totalPop);
-    }
-
-    private void distributeByNileDensity(List<H3Cell> cells, long totalPop) {
-        double[] weights = new double[cells.size()];
-        double totalWeight = 0;
-        for (int i = 0; i < cells.size(); i++) {
-            H3Cell c = cells.get(i);
-            double waterBonus = c.getWaterResource() != null ? c.getWaterResource() * 0.005 : 0.05;
-            weights[i] = waterBonus + 0.05;
-            totalWeight += weights[i];
-        }
-        distributeWithWeights(cells, weights, totalWeight, totalPop);
-    }
-
-    private void distributeByMesoamericaDensity(List<H3Cell> cells, long totalPop) {
-        double[] weights = new double[cells.size()];
-        double totalWeight = 0;
-        for (int i = 0; i < cells.size(); i++) {
-            H3Cell c = cells.get(i);
-            double lat = c.getLatitude();
-            double lng = c.getLongitude();
-            double distTenochtitlan = Math.sqrt(Math.pow(lat - 19.4, 2) + Math.pow(lng - 99.1, 2));
-            double distTikal = Math.sqrt(Math.pow(lat - 17.2, 2) + Math.pow(lng - 89.6, 2));
-            double hubBonus = Math.max(3.0 - distTenochtitlan * 0.3, 0.0) + Math.max(3.0 - distTikal * 0.3, 0.0);
-            weights[i] = (calculateCarryingCapacity(c) + 0.1) * (1.0 + hubBonus);
-            totalWeight += weights[i];
-        }
-        distributeWithWeights(cells, weights, totalWeight, totalPop);
-    }
-
-    private void distributeByAmericas1491Density(List<H3Cell> cells, long totalPop) {
-        double[] weights = new double[cells.size()];
-        double totalWeight = 0;
-        for (int i = 0; i < cells.size(); i++) {
-            H3Cell c = cells.get(i);
-            double lat = c.getLatitude();
-            double lng = c.getLongitude();
-            double meso = (lat >= 12 && lat <= 24 && lng >= -105 && lng <= -85) ? 3.0 : 0.2;
-            double andes = (lat >= -22 && lat <= 2 && lng >= -82 && lng <= -68) ? 3.5 : 0.2;
-            double mississippi = (lat >= 30 && lat <= 40 && lng >= -92 && lng <= -80) ? 1.5 : 0.2;
-            weights[i] = calculateCarryingCapacity(c) * (meso + andes + mississippi);
-            totalWeight += weights[i];
-        }
-        distributeWithWeights(cells, weights, totalWeight, totalPop);
-    }
-
-    private void distributeByIndustrial1800Density(List<H3Cell> cells, long totalPop) {
-        double[] weights = new double[cells.size()];
-        double totalWeight = 0;
-        for (int i = 0; i < cells.size(); i++) {
-            H3Cell c = cells.get(i);
-            double lat = c.getLatitude();
-            double lng = c.getLongitude();
-            double europe = (lat >= 35 && lat <= 60 && lng >= -10 && lng <= 30) ? 4.0 : 0.5;
-            double eastAsia = (lat >= 20 && lat <= 42 && lng >= 100 && lng <= 130) ? 3.5 : 0.5;
-            double northAmerica = (lat >= 30 && lat <= 50 && lng >= -90 && lng <= -70) ? 1.5 : 0.5;
-            weights[i] = calculateCarryingCapacity(c) * (europe + eastAsia + northAmerica);
-            totalWeight += weights[i];
-        }
-        distributeWithWeights(cells, weights, totalWeight, totalPop);
-    }
-
-    private void distributeByJapanSakokuDensity(List<H3Cell> cells, long totalPop) {
-        double[] weights = new double[cells.size()];
-        double totalWeight = 0;
-        for (int i = 0; i < cells.size(); i++) {
-            H3Cell c = cells.get(i);
-            double lat = c.getLatitude();
-            double lng = c.getLongitude();
-            double distEdo = Math.sqrt(Math.pow(lat - 35.7, 2) + Math.pow(lng - 139.7, 2));
-            double distKyoto = Math.sqrt(Math.pow(lat - 35.0, 2) + Math.pow(lng - 135.7, 2));
-            double distOsaka = Math.sqrt(Math.pow(lat - 34.7, 2) + Math.pow(lng - 135.5, 2));
-            double urbanHotspot = Math.max(5.0 - distEdo * 1.5, 0.0) + Math.max(4.0 - distKyoto * 1.5, 0.0) + Math.max(4.0 - distOsaka * 1.5, 0.0);
-            double coastalBonus = Boolean.TRUE.equals(c.getIsCoastal()) ? 1.8 : 1.0;
-            weights[i] = (calculateCarryingCapacity(c) + 0.1) * (1.0 + urbanHotspot) * coastalBonus;
-            totalWeight += weights[i];
-        }
-        distributeWithWeights(cells, weights, totalWeight, totalPop);
-    }
-
-    private void distributeByWestAfricaMaliDensity(List<H3Cell> cells, long totalPop) {
-        double[] weights = new double[cells.size()];
-        double totalWeight = 0;
-        for (int i = 0; i < cells.size(); i++) {
-            H3Cell c = cells.get(i);
-            double lat = c.getLatitude();
-            double lng = c.getLongitude();
-            double distTimbuktu = Math.sqrt(Math.pow(lat - 16.7, 2) + Math.pow(lng - (-3.0), 2));
-            double distGao = Math.sqrt(Math.pow(lat - 16.3, 2) + Math.pow(lng - 0.0, 2));
-            double distJenne = Math.sqrt(Math.pow(lat - 13.9, 2) + Math.pow(lng - (-4.5), 2));
-            double urbanHotspot = Math.max(4.0 - distTimbuktu * 1.2, 0.0) + Math.max(3.5 - distGao * 1.2, 0.0) + Math.max(4.0 - distJenne * 1.2, 0.0);
-            double waterBonus = c.getWaterResource() != null ? c.getWaterResource() * 0.003 : 0.1;
-            weights[i] = (calculateCarryingCapacity(c) + 0.1) * (1.0 + urbanHotspot + waterBonus);
-            totalWeight += weights[i];
-        }
-        distributeWithWeights(cells, weights, totalWeight, totalPop);
-    }
-
-    private void distributeByIndiaMauryaDensity(List<H3Cell> cells, long totalPop) {
-        double[] weights = new double[cells.size()];
-        double totalWeight = 0;
-        for (int i = 0; i < cells.size(); i++) {
-            H3Cell c = cells.get(i);
-            double lat = c.getLatitude();
-            double lng = c.getLongitude();
-            double distPatali = Math.sqrt(Math.pow(lat - 25.6, 2) + Math.pow(lng - 85.1, 2));
-            double distTaxila = Math.sqrt(Math.pow(lat - 33.7, 2) + Math.pow(lng - 72.8, 2));
-            double distVaranasi = Math.sqrt(Math.pow(lat - 25.3, 2) + Math.pow(lng - 83.0, 2));
-            double urbanHotspot = Math.max(5.0 - distPatali * 0.8, 0.0) + Math.max(4.0 - distTaxila * 0.8, 0.0) + Math.max(4.0 - distVaranasi * 0.8, 0.0);
-            double waterBonus = c.getWaterResource() != null ? c.getWaterResource() * 0.004 : 0.1;
-            weights[i] = (calculateCarryingCapacity(c) + 0.1) * (1.0 + urbanHotspot + waterBonus);
-            totalWeight += weights[i];
-        }
-        distributeWithWeights(cells, weights, totalWeight, totalPop);
-    }
-
-    private void distributeByColumbianContactDensity(List<H3Cell> cells, long totalPop) {
-        double[] weights = new double[cells.size()];
-        double totalWeight = 0;
-        for (int i = 0; i < cells.size(); i++) {
-            H3Cell c = cells.get(i);
-            double lat = c.getLatitude();
-            double lng = c.getLongitude();
-            double distTeno = Math.sqrt(Math.pow(lat - 19.4, 2) + Math.pow(lng - (-99.1), 2));
-            double distSanto = Math.sqrt(Math.pow(lat - 18.5, 2) + Math.pow(lng - (-69.9), 2));
-            double distCusco = Math.sqrt(Math.pow(lat - (-13.5), 2) + Math.pow(lng - (-71.9), 2));
-            double urbanHotspot = Math.max(5.0 - distTeno * 0.5, 0.0) + Math.max(4.0 - distSanto * 0.5, 0.0) + Math.max(5.0 - distCusco * 0.5, 0.0);
-            weights[i] = (calculateCarryingCapacity(c) + 0.1) * (1.0 + urbanHotspot);
-            totalWeight += weights[i];
-        }
-        distributeWithWeights(cells, weights, totalWeight, totalPop);
-    }
-
-    private void distributeWithWeights(List<H3Cell> cells, double[] weights, double totalWeight, long totalPop) {
-        if (totalWeight == 0) {
-            long perCell = totalPop / cells.size();
-            cells.forEach(c -> c.setPopulation((int) Math.clamp(perCell, 0L, (long) Integer.MAX_VALUE)));
-            return;
-        }
-        for (int i = 0; i < cells.size(); i++) {
-            long pop = Math.round(totalPop * weights[i] / totalWeight);
-            cells.get(i).setPopulation((int) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
         }
     }
 }

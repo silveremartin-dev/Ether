@@ -28,16 +28,31 @@ public class TemporalMapTensorManager {
 
     public static final long[] STANDARD_EARTH_EPOCHS = {
         -100000L, // Out of Africa / Early Glacial Inception
+        -50000L,  // MIS 3 / Sahul Colonization
+        -25000L,  // LGM Onset / Proto-Beringia
         -20000L,  // Last Glacial Maximum (LGM, Sea Level -120m, Mammoth Steppe)
+        -10900L,  // Younger Dryas Cold Event
         -10000L,  // Younger Dryas Recovery & Neolithization
+        -8000L,   // 8.2 ka Event / Early Agriculture
         -6000L,   // Holocene Climate Optimum & Green Sahara / Mega-Chad
-        -3000L,   // Bronze Age / First Hydraulic Civilizations
+        -3000L,   // Early Bronze Age
+        -1900L,   // Middle Bronze Age / Hammurabi & Shang
+        -1000L,   // Early Iron Age / Phoenicians & Zhou
         0L,       // Roman Optimum / Antiquity Baseline
+        536L,     // Late Antique Little Ice Age / Volcanic Winter
         1000L,    // Medieval Climate Optimum
+        1324L,    // Mali Empire / Mansa Musa Pilgrimage
+        1492L,    // Age of Discovery / Columbian Exchange
+        1639L,    // Early Modern / Treaty of Zuhab
         1800L,    // Industrial Revolution Dawn (100% Virgin Resource Stocks)
         1900L,    // Early Industrial Coal/Oil Expansion
         1950L,    // Great Acceleration (Deep Aquifer Pumping, Global Hydrocarbons)
-        2026L     // Anthropocene / Present-Day Empirical Baseline (GEM/USGS/WHYMAP)
+        2000L,    // Digital Revolution & Global Trade
+        2026L,    // Anthropocene / Present-Day Empirical Baseline (GEM/USGS/WHYMAP)
+        2035L,    // Near-Future Energy Transition
+        2045L,    // Mid-Century Technological Singularity
+        2050L,    // Mid-Century Demographic Peak
+        2060L     // Post-Transition Stable State
     };
 
     private static final Map<String, Image> memoryCache = new HashMap<>();

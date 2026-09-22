@@ -19,20 +19,28 @@ public class PlanetaryGrayscaleVerificationTest {
 
     @Test
     public void testAllPlanetaryMapsAreGrayscaleOnBlackBackground() throws IOException {
-        File dir = new File("src/main/resources/maps");
-        assertTrue(dir.exists() && dir.isDirectory(), "Maps resource folder must exist");
+        File baseDir = new File("data/maps/ether");
+        assertTrue(baseDir.exists() && baseDir.isDirectory(), "Maps base folder must exist: " + baseDir.getPath());
 
         for (String planet : PLANETS) {
-            for (String res : RESOURCE_TYPES) {
-                File file = new File(dir, planet + "_" + res + ".png");
-                if (file.exists()) {
-                    verifyGrayscaleAndBlackBackground(file);
+            File planetDir = new File(baseDir, planet);
+            if (!planetDir.exists() || !planetDir.isDirectory()) continue;
+            File[] yearDirs = planetDir.listFiles(File::isDirectory);
+            if (yearDirs == null) continue;
+
+            for (File yearDir : yearDirs) {
+                String yearName = yearDir.getName();
+                for (String res : RESOURCE_TYPES) {
+                    File file = new File(yearDir, planet + "_" + yearName + "_" + res + ".png");
+                    if (file.exists()) {
+                        verifyGrayscaleAndBlackBackground(file);
+                    }
                 }
-            }
-            for (String clim : CLIMATE_TYPES) {
-                File file = new File(dir, planet + "_" + clim + ".png");
-                if (file.exists()) {
-                    verifyGrayscale(file);
+                for (String clim : CLIMATE_TYPES) {
+                    File file = new File(yearDir, planet + "_" + yearName + "_" + clim + ".png");
+                    if (file.exists()) {
+                        verifyGrayscale(file);
+                    }
                 }
             }
         }
@@ -42,29 +50,22 @@ public class PlanetaryGrayscaleVerificationTest {
         BufferedImage img = ImageIO.read(file);
         assertNotNull(img, "Image must load: " + file.getName());
 
-        int nonBlackCount = 0;
+        int w = img.getWidth(), h = img.getHeight();
+        int[] rgb = img.getRGB(0, 0, w, h, null, 0, w);
         int zeroCount = 0;
 
-        for (int y = 0; y < img.getHeight(); y++) {
-            for (int x = 0; x < img.getWidth(); x++) {
-                int rgb = img.getRGB(x, y);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
+        for (int i = 0; i < rgb.length; i++) {
+            int val = rgb[i];
+            int r = (val >> 16) & 0xFF;
+            int g = (val >> 8) & 0xFF;
+            int b = val & 0xFF;
 
-                // 1. Must be pure grayscale: R == G == B
-                assertEquals(r, g, "Red and Green must match in " + file.getName() + " at (" + x + "," + y + ")");
-                assertEquals(g, b, "Green and Blue must match in " + file.getName() + " at (" + x + "," + y + ")");
-
-                if (r == 0) {
-                    zeroCount++;
-                } else {
-                    nonBlackCount++;
-                }
+            if (r != g || g != b) {
+                fail(String.format("Non-grayscale pixel in %s at index %d: R=%d G=%d B=%d", file.getName(), i, r, g, b));
             }
+            if (r == 0) zeroCount++;
         }
 
-        // For non-universal resources, background should be black (value 0)
         assertTrue(zeroCount > 0, "Resource map " + file.getName() + " must have a black (0) background");
     }
 
@@ -72,15 +73,17 @@ public class PlanetaryGrayscaleVerificationTest {
         BufferedImage img = ImageIO.read(file);
         assertNotNull(img, "Image must load: " + file.getName());
 
-        for (int y = 0; y < img.getHeight(); y++) {
-            for (int x = 0; x < img.getWidth(); x++) {
-                int rgb = img.getRGB(x, y);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
+        int w = img.getWidth(), h = img.getHeight();
+        int[] rgb = img.getRGB(0, 0, w, h, null, 0, w);
 
-                assertEquals(r, g, "Red and Green must match in " + file.getName() + " at (" + x + "," + y + ")");
-                assertEquals(g, b, "Green and Blue must match in " + file.getName() + " at (" + x + "," + y + ")");
+        for (int i = 0; i < rgb.length; i++) {
+            int val = rgb[i];
+            int r = (val >> 16) & 0xFF;
+            int g = (val >> 8) & 0xFF;
+            int b = val & 0xFF;
+
+            if (r != g || g != b) {
+                fail(String.format("Non-grayscale pixel in %s at index %d: R=%d G=%d B=%d", file.getName(), i, r, g, b));
             }
         }
     }
@@ -88,9 +91,6 @@ public class PlanetaryGrayscaleVerificationTest {
     @Test
     public void testMarsPrecipitationBackgroundIsBlack() throws IOException {
         File file = new File("data/maps/ether/mars/2026/mars_2026_precipitation.png");
-        if (!file.exists()) {
-            file = new File("src/main/resources/maps/mars_precipitation.png");
-        }
         if (!file.exists()) return;
         BufferedImage img = ImageIO.read(file);
         assertNotNull(img);
@@ -108,9 +108,6 @@ public class PlanetaryGrayscaleVerificationTest {
     @Test
     public void testMarsSeasonalityEquatorContinuity() throws IOException {
         File file = new File("data/maps/ether/mars/2026/mars_2026_seasonality.png");
-        if (!file.exists()) {
-            file = new File("src/main/resources/maps/mars_seasonality.png");
-        }
         if (!file.exists()) return;
         BufferedImage img = ImageIO.read(file);
         assertNotNull(img);

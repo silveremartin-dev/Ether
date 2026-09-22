@@ -801,7 +801,8 @@ public class Scenario implements Serializable {
         s0.setInitialInformationPerCapita(2.0);
         s0.setPopulationDensityType("ONE_CONTINENT");
         s0.setTargetCohortSize(30);
-        s0.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s0.setPlanetPreset(PlanetPreset.EARTH_LIG_100000BP);
+        s0.setEcologyPreset(EcologyPreset.EARTH_LIG_100000BP);
         s0.setDescription("""
             🌍 SCÉNARIO PALÉOLITHIQUE : Berceau Africain, Traversée des Continents & Out of Africa (-100 000 av. J.-C.)
             
@@ -846,7 +847,8 @@ public class Scenario implements Serializable {
         sSahul.setInitialInformationPerCapita(3.0);
         sSahul.setPopulationDensityType("AUSTRALIA_SAHUL");
         sSahul.setTargetCohortSize(35);
-        sSahul.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sSahul.setPlanetPreset(PlanetPreset.EARTH_MIS3_50000BP);
+        sSahul.setEcologyPreset(EcologyPreset.EARTH_MIS3_50000BP);
         sSahul.setClippingEnabled(true);
         sSahul.setMinLat(-42.0); sSahul.setMaxLat(-10.0); sSahul.setMinLng(112.0); sSahul.setMaxLng(155.0);
         sSahul.setBoundaryMode("DYNAMIC_RESERVOIR");
@@ -882,7 +884,8 @@ public class Scenario implements Serializable {
         sBeringia.setInitialInformationPerCapita(4.0);
         sBeringia.setPopulationDensityType("BERINGIA_AMERICAS");
         sBeringia.setTargetCohortSize(40);
-        sBeringia.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sBeringia.setPlanetPreset(PlanetPreset.EARTH_LGM_ONSET_25000BP);
+        sBeringia.setEcologyPreset(EcologyPreset.EARTH_LGM_ONSET_25000BP);
         sBeringia.setClippingEnabled(true);
         sBeringia.setMinLat(45.0); sBeringia.setMaxLat(75.0); sBeringia.setMinLng(140.0); sBeringia.setMaxLng(-120.0);
         sBeringia.setBoundaryMode("DYNAMIC_RESERVOIR");
@@ -906,6 +909,35 @@ public class Scenario implements Serializable {
         sBeringiaEngines.put("PeriglacialLoessDustEngine", true);
         list.add(sBeringia);
 
+        // --- SCÉNARIO : DERNIER MAXIMUM GLACIAIRE & SOLUTRÉEN (-20000) ---
+        Scenario sLGM = new Scenario();
+        sLGM.setPresetKey("lgm_solutrean");
+        sLGM.setName("Dernier Maximum Glaciaire & Solutréen (-20000)");
+        sLGM.setStartDateYear(-20000);
+        sLGM.setEndDateYear(-12000);
+        sLGM.setInitialHumanCount(20000);
+        sLGM.setInitialCapitalPerCapita(4.0);
+        sLGM.setInitialEnergyPerCapita(7.0);
+        sLGM.setInitialFoodReserveMonths(2.5);
+        sLGM.setInitialInformationPerCapita(5.0);
+        sLGM.setPopulationDensityType("LGM_REFUGIA");
+        sLGM.setTargetCohortSize(40);
+        sLGM.setPlanetPreset(PlanetPreset.EARTH_LGM_20000BP);
+        sLGM.setEcologyPreset(EcologyPreset.EARTH_LGM_20000BP);
+        sLGM.setDescription("""
+            ❄️ SCÉNARIO PALÉOLITHIQUE : Apogée Glaciaire & Refuges Solutréens (-20 000 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise le paroxysme du Dernier Maximum Glaciaire (LGM) avec un niveau marin abaissé de 120 mètres (exposant le Doggerland, le Sundaland, le Sahul et la Béringie), les inlandsis massifs (Laurentide, Fennoscandie) et l'industrie lithique foliacée solutréenne.
+            """);
+        java.util.Map<String, Boolean> sLGMEngines = sLGM.getTypeBEngineStates();
+        sLGMEngines.put("PressureFlakerPointEngine", true);
+        sLGMEngines.put("TailoredClothingThermalEngine", true);
+        sLGMEngines.put("EyedNeedleSewingEngine", true);
+        sLGMEngines.put("MeatCuringReservesEngine", true);
+        sLGMEngines.put("PermafrostColdCacheEngine", true);
+        list.add(sLGM);
+
         // --- SCÉNARIO : RÉCENTS DRYAS (-10900) ---
         Scenario sYoungerDryas = new Scenario();
         sYoungerDryas.setPresetKey("younger_dryas");
@@ -919,7 +951,8 @@ public class Scenario implements Serializable {
         sYoungerDryas.setInitialInformationPerCapita(8.0);
         sYoungerDryas.setPopulationDensityType("YOUNGER_DRYAS");
         sYoungerDryas.setTargetCohortSize(50);
-        sYoungerDryas.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sYoungerDryas.setPlanetPreset(PlanetPreset.EARTH_EH_10000BP);
+        sYoungerDryas.setEcologyPreset(EcologyPreset.EARTH_EH_10000BP);
         sYoungerDryas.setDescription("""
             ❄️ SCÉNARIO PALÉOCLIMATIQUE : Le Récents Dryas & Pression Foragère Au Levant (-10 900 av. J.-C.)
             
@@ -949,7 +982,8 @@ public class Scenario implements Serializable {
         s1.setInitialInformationPerCapita(5.0);
         s1.setPopulationDensityType("FERTILE_CRESCENT");
         s1.setTargetCohortSize(150);
-        s1.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s1.setPlanetPreset(PlanetPreset.EARTH_EH_10000BP);
+        s1.setEcologyPreset(EcologyPreset.EARTH_EH_10000BP);
         s1.setClippingEnabled(true);
         s1.setMinLat(25.0); s1.setMaxLat(42.0); s1.setMinLng(25.0); s1.setMaxLng(55.0);
         s1.setBoundaryMode("DYNAMIC_RESERVOIR");
@@ -981,7 +1015,8 @@ public class Scenario implements Serializable {
         sGreenSahara.setInitialInformationPerCapita(10.0);
         sGreenSahara.setPopulationDensityType("GREEN_SAHARA");
         sGreenSahara.setTargetCohortSize(60);
-        sGreenSahara.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sGreenSahara.setPlanetPreset(PlanetPreset.EARTH_MH_6000BP);
+        sGreenSahara.setEcologyPreset(EcologyPreset.EARTH_MH_6000BP);
         sGreenSahara.setDescription("""
             🌴 SCÉNARIO PALÉOCLIMATIQUE : Le Sahara Vert & Période Humide Africaine (-6000 av. J.-C.)
             
@@ -1008,7 +1043,8 @@ public class Scenario implements Serializable {
         sEgypt.setInitialInformationPerCapita(40.0);
         sEgypt.setPopulationDensityType("EGYPT_NILE");
         sEgypt.setTargetCohortSize(300);
-        sEgypt.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sEgypt.setPlanetPreset(PlanetPreset.EARTH_LH_3000BP);
+        sEgypt.setEcologyPreset(EcologyPreset.EARTH_LH_3000BP);
         sEgypt.setClippingEnabled(true);
         sEgypt.setMinLat(21.0); sEgypt.setMaxLat(32.0); sEgypt.setMinLng(24.0); sEgypt.setMaxLng(36.0);
         sEgypt.setBoundaryMode("DYNAMIC_RESERVOIR");
@@ -1025,27 +1061,29 @@ public class Scenario implements Serializable {
         sEgyptEngines.put("MaritimeHighwayEngine", true);
         list.add(sEgypt);
 
+        // --- SCÉNARIO : ÂGE DU BRONZE MOYEN & MÉSOPOTAMIE (-1900) ---
         Scenario s3 = new Scenario();
         s3.setPresetKey("assyrian_empire");
-        s3.setName("Empire Assyrien & Irrigation Mésopotamienne (-2000)");
-        s3.setStartDateYear(-2000);
+        s3.setName("Âge du Bronze Moyen & Mésopotamie (-1900)");
+        s3.setStartDateYear(-1900);
         s3.setEndDateYear(-600);
-        s3.setInitialHumanCount(500000);
+        s3.setInitialHumanCount(600000);
         s3.setInitialCapitalPerCapita(80.0);
         s3.setInitialEnergyPerCapita(50.0);
         s3.setInitialFoodReserveMonths(6.0);
         s3.setInitialInformationPerCapita(50.0);
         s3.setPopulationDensityType("MESOPOTAMIA_ASSYRIA");
         s3.setTargetCohortSize(500);
-        s3.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s3.setPlanetPreset(PlanetPreset.EARTH_BRONZE_1900BP);
+        s3.setEcologyPreset(EcologyPreset.EARTH_BRONZE_1900BP);
         s3.setClippingEnabled(true);
         s3.setMinLat(28.0); s3.setMaxLat(40.0); s3.setMinLng(38.0); s3.setMaxLng(52.0);
         s3.setBoundaryMode("DYNAMIC_RESERVOIR");
         s3.setDescription("""
-            🏛️ SCÉNARIO HISTORIQUE : Hydraulique, Salinisation & Guerre Cinétique Assyrienne (-2000 av. J.-C.)
+            🏛️ SCÉNARIO HISTORIQUE : Hydraulique, Salinisation & Cités-États de l'Âge du Bronze (-1900 av. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
-            Modélise l'apogée et les vulnérabilités de la civilisation mésopotamienne et de l'Empire Assyrien basés sur l'irrigation intensive à partir du Tigre et de l'Euphrate.
+            Modélise l'apogée du Bronze Moyen (Code d'Hammurabi, première dynastie de Babylone, dynastie Shang en Chine, fin de la civilisation de l'Indus) et les vulnérabilités écologiques d'irrigation intensive.
             """);
         java.util.Map<String, Boolean> s3Engines = s3.getTypeBEngineStates();
         s3Engines.put("FertileCrescentSalinizationEngine", true);
@@ -1053,6 +1091,33 @@ public class Scenario implements Serializable {
         s3Engines.put("FrontierAsabiyyahEngine", true);
         s3Engines.put("HydrologicalEngineeringEngine", true);
         list.add(s3);
+
+        // --- SCÉNARIO : DÉBUT ÂGE DU FER & MÉDITERRANÉE ANTIQUE (-1000) ---
+        Scenario sIron = new Scenario();
+        sIron.setPresetKey("early_iron_age");
+        sIron.setName("Début de l'Âge du Fer & Méditerranée Antique (-1000)");
+        sIron.setStartDateYear(-1000);
+        sIron.setEndDateYear(-300);
+        sIron.setInitialHumanCount(20000000);
+        sIron.setInitialCapitalPerCapita(150.0);
+        sIron.setInitialEnergyPerCapita(70.0);
+        sIron.setInitialFoodReserveMonths(6.0);
+        sIron.setInitialInformationPerCapita(120.0);
+        sIron.setPopulationDensityType("URBAN_CLUSTERS");
+        sIron.setTargetCohortSize(500);
+        sIron.setPlanetPreset(PlanetPreset.EARTH_IRON_1000BP);
+        sIron.setEcologyPreset(EcologyPreset.EARTH_IRON_1000BP);
+        sIron.setDescription("""
+            ⚔️ SCÉNARIO HISTORIQUE : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.
+            """);
+        java.util.Map<String, Boolean> sIronEngines = sIron.getTypeBEngineStates();
+        sIronEngines.put("FrontierAsabiyyahEngine", true);
+        sIronEngines.put("MaritimeHighwayEngine", true);
+        sIronEngines.put("SpatialCityFractalEngine", true);
+        list.add(sIron);
 
         // --- SCÉNARIO : MÉSOAMÉRIQUE (-1500) ---
         Scenario sMeso = new Scenario();

@@ -1,0 +1,88 @@
+{
+  "epoch": -25000,
+  "description": "Cliodynamic Cultural & Linguistic Registry for -25,000 BP (Beringian Standstill & Gravettian Horizon)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "gravettian_european_mammoth",
+      "colorHex": "#3498DB",
+      "colorRgb": [52, 152, 219],
+      "traits": [0.40, 0.12, 0.08, 0.60],
+      "name": {
+        "en": "Gravettian Mammoth Hunters & Venus Figurine Culture (Europe)",
+        "fr": "Gravettien & Chasseurs de Mammouths (Vénus Paléolithiques d'Europe)",
+        "de": "Gravettien Mammutjäger & Venusstatuetten-Kultur (Europa)",
+        "es": "Cazadores de Mamuts Gravetienses y Cultura de Venus (Europa)",
+        "zh": "格拉维特猛犸猎人与维纳斯雕像文化（欧洲）"
+      },
+      "kinshipType": "Extended Sedentary Mammoth-Camp Bands",
+      "lithicTechnocomplex": "Gravette Points / Backed Bladelets & Ivory Industry"
+    },
+    {
+      "id": "beringian_isolation_standstill",
+      "colorHex": "#1ABC9C",
+      "colorRgb": [26, 188, 156],
+      "traits": [0.45, 0.10, 0.08, 0.50],
+      "name": {
+        "en": "Proto-Amerind Beringian Standstill Lineages (Bering Land Bridge)",
+        "fr": "Lignées de l'Isolement Béringien (Pont Terrestre de Béringie)",
+        "de": "Proto-Indianische Beringia-Stillstands-Linien (Bering-Landbrücke)",
+        "es": "Linajes del Aislamiento Beringiano (Puente de Beringia)",
+        "zh": "白令陆桥隔离滞留先民（古美洲原住民原初谱系）"
+      },
+      "kinshipType": "Arctic Steppe Adapted Micro-Bands",
+      "lithicTechnocomplex": "Microblade & Micro-Core Beringian Tradition"
+    },
+    {
+      "id": "malta_buret_siberian",
+      "colorHex": "#9B59B6",
+      "colorRgb": [155, 89, 182],
+      "traits": [0.42, 0.10, 0.07, 0.55],
+      "name": {
+        "en": "Ancient North Eurasian (ANE / Mal'ta-Buret' Lake Baikal)",
+        "fr": "Anciens Eurasiens du Nord (ANE / Mal'ta-Buret' & Lac Baïkal)",
+        "de": "Alte Nordeurasier (ANE / Mal'ta-Buret' & Baikalsee)",
+        "es": "Antiguos Eurasiáticos del Norte (ANE / Mal'ta-Buret' y Baikal)",
+        "zh": "古北欧亚人（ANE / 贝加尔湖马尔他-布列奇文化）"
+      },
+      "kinshipType": "Sub-Arctic Megafauna Hunter Kin-Groups",
+      "lithicTechnocomplex": "Laminar Prismatic Bladelet & Antler Carving"
+    },
+    {
+      "id": "sapiens_african_lsa",
+      "colorHex": "#E67E22",
+      "colorRgb": [230, 126, 34],
+      "traits": [0.12, 0.06, 0.06, 0.25],
+      "name": {
+        "en": "African Later Stone Age (LSA Microlithic Complexes)",
+        "fr": "Later Stone Age Africain (Complexes Microlithiques LSA)",
+        "de": "Afrikanische Späte Steinzeit (LSA Mikrolithen)",
+        "es": "Later Stone Age Africano (Complejos Microlíticos LSA)",
+        "zh": "非洲晚期石器时代（LSA细石器复合体）"
+      },
+      "kinshipType": "Regional Foraging Bands",
+      "lithicTechnocomplex": "Microlithic Backed Bladelet & Ostrich Shell Beads"
+    },
+    {
+      "id": "australian_sahul_core",
+      "colorHex": "#D35400",
+      "colorRgb": [211, 84, 0],
+      "traits": [0.35, 0.08, 0.10, 0.50],
+      "name": {
+        "en": "Sahul Aboriginal Desert & Coastal Nations",
+        "fr": "Nations Aborigènes du Désert & des Côtes du Sahul",
+        "de": "Sahul Aborigine Wüsten- & Küstennationen",
+        "es": "Naciones Aborígenes Costeras y del Desierto de Sahul",
+        "zh": "萨胡尔原住民沙漠与沿海部族"
+      },
+      "kinshipType": "Skin Group Complex Moieties",
+      "lithicTechnocomplex": "Core Tool and Scraper Tradition / Fire-Stick Land Management"
+    }
+  ]
+}

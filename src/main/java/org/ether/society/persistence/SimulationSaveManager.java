@@ -35,6 +35,8 @@ public class SimulationSaveManager {
         this.cellRepository = new H3CellRepository(DatabaseConfig.getEntityManagerFactory());
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.objectMapper.configure(com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         
         // Ensure save directory exists
         try {

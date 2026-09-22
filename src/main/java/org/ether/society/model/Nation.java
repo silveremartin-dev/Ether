@@ -1,5 +1,7 @@
 package org.ether.society.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.ether.society.database.H3Cell;
 import javafx.scene.paint.Color;
 
@@ -12,11 +14,15 @@ import java.util.UUID;
  * Represents a political entity (Tribe, Nation, Empire) that controls
  * territory.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Nation {
     private final String id;
     private String name;
+    @JsonIgnore
     private Color color;
+    @JsonIgnore
     private H3Cell capital;
+    @JsonIgnore
     private final Set<H3Cell> territory = new HashSet<>();
 
     // Cliodynamics & Institutional Indicators (Turchin Secular Cycles)
@@ -47,18 +53,22 @@ public class Nation {
         this.name = name;
     }
 
+    @JsonIgnore
     public Color getColor() {
         return color;
     }
 
+    @JsonIgnore
     public void setColor(Color color) {
         this.color = color;
     }
 
+    @JsonIgnore
     public H3Cell getCapital() {
         return capital;
     }
 
+    @JsonIgnore
     public void setCapital(H3Cell capital) {
         this.capital = capital;
         if (capital != null) {
@@ -80,10 +90,12 @@ public class Nation {
         }
     }
 
+    @JsonIgnore
     public Set<H3Cell> getTerritory() {
         return Collections.unmodifiableSet(territory);
     }
 
+    @JsonIgnore
     public long getTotalPopulation() {
         return territory.stream().mapToLong(H3Cell::getPopulation).sum();
     }

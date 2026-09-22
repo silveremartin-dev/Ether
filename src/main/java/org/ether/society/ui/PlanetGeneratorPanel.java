@@ -1526,21 +1526,28 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private void loadEarthPresetMaps() {
-        try {
-            customElevImage        = ImageMapLoader.loadMapImage("earth_elevation.png");
-            customBiomeImage       = ImageMapLoader.loadMapImage("earth_biomes.png");
-            customClimateImage     = ImageMapLoader.loadMapImage("earth_temperature.png");
-            customRainfallImage    = ImageMapLoader.loadMapImage("earth_precipitation.png");
-            customSeasonalityImage = ImageMapLoader.loadMapImage("earth_seasonality.png");
+        long year = (presetBar != null && presetBar.getPresetCombo() != null && presetBar.getPresetCombo().getValue() != null)
+                ? presetBar.getPresetCombo().getValue().getAssociatedEpochYear() : 2026L;
+        loadEarthPresetMaps(year);
+    }
 
-            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.status.earth_dem_active", "📷 Active preset: Earth Elevation (NOAA/NASA DEM)"));
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.status.earth_biome_active", "🌿 Active preset: Earth Biomes & Land Cover (MODIS)"));
+    private void loadEarthPresetMaps(long epochYear) {
+        try {
+            customElevImage        = ImageMapLoader.loadMapImage("earth", epochYear, "elevation");
+            customBiomeImage       = ImageMapLoader.loadMapImage("earth", epochYear, "biomes");
+            customClimateImage     = ImageMapLoader.loadMapImage("earth", epochYear, "temperature");
+            customRainfallImage    = ImageMapLoader.loadMapImage("earth", epochYear, "precipitation");
+            customSeasonalityImage = ImageMapLoader.loadMapImage("earth", epochYear, "seasonality");
+
+            String yearStr = (epochYear <= 0) ? Math.abs(epochYear) + " BP" : epochYear + " AD";
+            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.status.earth_dem_active", "📷 Active preset: Earth Elevation") + " (" + yearStr + ")");
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.status.earth_biome_active", "🌿 Active preset: Earth Biomes & Land Cover") + " (" + yearStr + ")");
             if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.status.no_file_proc", "📄 No file loaded (Procedural active)"));
-            if (climateFileLabel != null) climateFileLabel.setText("🌡️ " + CLIMATE_SRC_TEMP_EARTH);
-            if (rainfallFileLabel != null) rainfallFileLabel.setText("🌧️ " + CLIMATE_SRC_PRECIP_EARTH);
-            if (seasonalityFileLabel != null) seasonalityFileLabel.setText("☀️ " + CLIMATE_SRC_SEASON_EARTH);
+            if (climateFileLabel != null) climateFileLabel.setText("🌡️ " + CLIMATE_SRC_TEMP_EARTH + " (" + yearStr + ")");
+            if (rainfallFileLabel != null) rainfallFileLabel.setText("🌧️ " + CLIMATE_SRC_PRECIP_EARTH + " (" + yearStr + ")");
+            if (seasonalityFileLabel != null) seasonalityFileLabel.setText("☀️ " + CLIMATE_SRC_SEASON_EARTH + " (" + yearStr + ")");
         } catch (Exception e) {
-            logger.warn("Could not load internal Earth maps", e);
+            logger.warn("Could not load internal Earth maps for epoch " + epochYear, e);
         }
     }
 
@@ -1597,7 +1604,10 @@ public class PlanetGeneratorPanel extends BorderPane {
                 }
 
                 if (!oldUpdating) {
-                    applyPreset(PlanetPreset.EARTH_LIKE);
+                    PlanetPreset currentP = (presetBar != null && presetBar.getPresetCombo() != null) ? presetBar.getPresetCombo().getValue() : null;
+                    if (currentP == null || !currentP.getCanonicalPlanet().equals("earth")) {
+                        applyPreset(PlanetPreset.EARTH_LIKE);
+                    }
                 }
                 return;
             }
@@ -1975,7 +1985,9 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
 
         if (p.elevationUseImport() || p.customElevBase64() != null) {
-            if ("earth".equals(elevSrc) || "mars".equals(elevSrc) || "venus".equals(elevSrc) || "moon".equals(elevSrc) || "mercury".equals(elevSrc)) {
+            if ("earth".equals(elevSrc)) {
+                if (p.customElevBase64() == null) loadEarthPresetMaps(p.getAssociatedEpochYear());
+            } else if ("mars".equals(elevSrc) || "venus".equals(elevSrc) || "moon".equals(elevSrc) || "mercury".equals(elevSrc)) {
                 if (p.customElevBase64() == null) applyMapSourcePreset(elevSrc);
             }
             radioImport.setSelected(true);
@@ -2435,7 +2447,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                             int ey = (int) Math.min(v * hElev, hElev - 1);
                             Color c = elevReader.getColor(ex, ey);
                             double eNorm = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
-                            isGlobOcean = (eNorm < 0.35);
+                            isGlobOcean = (eNorm < preset.waterLevel());
                         } else {
                             var pt = generator.getPlanetPoint(gLat, gLng, preset);
                             isGlobOcean = (pt.elevation() < preset.waterLevel());

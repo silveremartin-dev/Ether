@@ -659,13 +659,18 @@ public class ScenarioSetupPanel extends BorderPane {
             if (p.name().equalsIgnoreCase(name)) return p;
         }
         String lower = name.toLowerCase();
-        if (lower.contains("earth") || lower.contains("terre") || lower.contains("terran")) {
-            return PlanetPreset.EARTH_LIKE;
-        }
+        if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire")) return PlanetPreset.EARTH_LIG_100000BP;
+        if (lower.contains("-20") || lower.contains("lgm") || lower.contains("glaciaire")) return PlanetPreset.EARTH_LGM_20000BP;
+        if (lower.contains("-10") || lower.contains("eh") || lower.contains("précoce")) return PlanetPreset.EARTH_EH_10000BP;
+        if (lower.contains("-6") || lower.contains("mh") || lower.contains("sahara")) return PlanetPreset.EARTH_MH_6000BP;
+        if (lower.contains("-3") || lower.contains("lh") || lower.contains("tardif")) return PlanetPreset.EARTH_LH_3000BP;
         for (PlanetPreset p : PlanetPreset.getPresets()) {
             if (p.name().toLowerCase().contains(lower) || lower.contains(p.name().toLowerCase())) {
                 return p;
             }
+        }
+        if (lower.contains("earth") || lower.contains("terre") || lower.contains("terran")) {
+            return PlanetPreset.EARTH_LIKE;
         }
         return PlanetPreset.EARTH_LIKE;
     }
@@ -3405,7 +3410,16 @@ public class ScenarioSetupPanel extends BorderPane {
         btnExportProvenanceManifest.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.gen_provenance", "Generate a cryptographic JSON manifest (provenance.json) containing SHA-256 hashes of datasets and parameters.")));
         btnExportProvenanceManifest.setOnAction(e -> exportProvenanceManifest());
 
-        HBox formatRow = new HBox(8, culturalHelpBtn, btnExportGisMultiFormat, btnExportProvenanceManifest);
+        Button btnCulturalMatrix = new Button(I18n.getOrDefault("scenario.btn.cultural_matrix", "🧩 Matrice d'Affinité"));
+        btnCulturalMatrix.getStyleClass().add("button-secondary");
+        btnCulturalMatrix.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
+        btnCulturalMatrix.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_matrix", "Inspect the N × N Pairwise Cultural Affinity and Distance Heatmap Matrix.")));
+        btnCulturalMatrix.setOnAction(e -> {
+            long epoch = startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -100000L;
+            new CulturalAffinityMatrixDialog(epoch).show();
+        });
+
+        HBox formatRow = new HBox(8, culturalHelpBtn, btnCulturalMatrix, btnExportGisMultiFormat, btnExportProvenanceManifest);
         formatRow.setAlignment(Pos.CENTER_LEFT);
 
         VBox seedAndActionBox = new VBox(6, seedRow, formatRow);
@@ -3493,6 +3507,97 @@ public class ScenarioSetupPanel extends BorderPane {
                 logger.error("Erreur lors de la génération du manifeste de provenance: {}", ex.getMessage(), ex);
             }
         }
+    }
+
+    private void showCulturalImportFormatHelp() {
+        javafx.stage.Stage dialog = new javafx.stage.Stage();
+        dialog.setTitle(I18n.getOrDefault("scenario.title.layer_formats_modal", "Spécifications Techniques des Tenseurs Cartographiques & Datasets"));
+        dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        if (getScene() != null && getScene().getWindow() != null) {
+            dialog.initOwner(getScene().getWindow());
+        }
+
+        VBox root = new VBox(14);
+        root.setPadding(new Insets(20));
+        root.setStyle("-fx-background-color: #0f172a; -fx-text-fill: #f8fafc;");
+        root.setPrefWidth(720);
+        root.setPrefHeight(600);
+
+        Label title = new Label("🗺️ " + I18n.getOrDefault("scenario.layer_formats.title", "Standard des Tenseurs Spatio-Temporels (2048 × 1024, Équirectangulaire 2:1)"));
+        title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+
+        ScrollPane scroll = new ScrollPane();
+        scroll.setFitToWidth(true);
+        scroll.setStyle("-fx-background: #0f172a; -fx-background-color: transparent;");
+        VBox.setVgrow(scroll, Priority.ALWAYS);
+
+        VBox contentBox = new VBox(14);
+        contentBox.setStyle("-fx-background-color: #0f172a;");
+
+        // Section 1: 24-bit RGB Entity ID Tensors
+        VBox sec1 = new VBox(6);
+        sec1.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #3b82f6; -fx-border-radius: 8;");
+        Label lblSec1 = new Label("🏷️ " + I18n.getOrDefault("scenario.layer_formats.rgb_title", "1. Tenseurs Catégoriels Discrets (Encodage RGB 24-bit Entité ID)"));
+        lblSec1.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #60a5fa;");
+        Label descSec1 = new Label(
+            "• Tenseur 0 (Isoglosses / Familles de Langues) : Couleur RGB unique par famille linguistique / clade archaïque (Glottolog 4.8 / ASJP).\n" +
+            "• Tenseur 1 (Structures de Parenté / Lignages) : Couleur RGB identifiant la règle de filiation et organisation clanique (Murdock Atlas).\n" +
+            "• Tenseur 3 (Souveraineté Politico-Militaire / Polities) : Couleur RGB de l'entité politique / tribu / empire (Centennia / CShapes / HGis).\n" +
+            "↳ Référence d'association : data/maps/ether/earth/<année>/cultural_registry.json"
+        );
+        descSec1.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11.5px;");
+        descSec1.setWrapText(true);
+        sec1.getChildren().addAll(lblSec1, descSec1);
+
+        // Section 2: 8-bit Continuous Grayscale Tensors
+        VBox sec2 = new VBox(6);
+        sec2.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #10b981; -fx-border-radius: 8;");
+        Label lblSec2 = new Label("📈 " + I18n.getOrDefault("scenario.layer_formats.gray_title", "2. Tenseurs Continus d'Intensité (Niveaux de Gris 8-bit [0..255])"));
+        lblSec2.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #34d399;");
+        Label descSec2 = new Label(
+            "• Démographie (Density) : [0..255] Échelle logarithmique normalisée de la densité de population (hab/km²).\n" +
+            "• Tenseur 2 (Rituels / Asabiyyah) : [0..255] Cohésion sacrée et solidarité de groupe (Seshat / Turchin).\n" +
+            "• Tenseur 4 (Matérialité & Technologies) : [0..255] Complexité outillage lithique / métallurgie (ArchaeoGLOBE).\n" +
+            "• Tenseur 5 (Réseaux Commerciaux / Routes) : [0..255] Connectivité et corridors marchands (ORBIS / Soirées).\n" +
+            "• Tenseur 6 (Complexité Institutionnelle / Droit) : [0..255] Hiérarchie et codification administrative (Seshat).\n" +
+            "• Tenseur 7 (Empreinte Écologique / Dégradation) : [0..255] Pression malthusienne et déforestation (HYDE 3.4).\n" +
+            "• Tenseur 8 (Immunité Pathogène / Épidémies) : [0..255] Mémoire immunitaire et résistance aux zoonoses.\n" +
+            "• 10 Tenseurs Géologiques : Charbon, Pétrole, Gaz, Uranium, Hélium-3, Fer/Cuivre, Métaux Précieux, Terres Rares, Géothermie, Aquifères (USGS MRDS / WHYMAP / GEM)."
+        );
+        descSec2.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11.5px;");
+        descSec2.setWrapText(true);
+        sec2.getChildren().addAll(lblSec2, descSec2);
+
+        // Section 3: Temporal Validity of Datasets
+        VBox sec3 = new VBox(6);
+        sec3.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #f59e0b; -fx-border-radius: 8;");
+        Label lblSec3 = new Label("⏳ " + I18n.getOrDefault("scenario.layer_formats.validity_title", "3. Plage de Validité Temporelle des Jeux de Données"));
+        lblSec3.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #fbbf24;");
+        Label descSec3 = new Label(
+            "• SESHAT & HYDE 3.4 : Strictement valides pour t ≥ -10 000 BCE (Holocène et Histoire documentée).\n" +
+            "• Préhistoire Paléolithique (t < -10 000 BCE) : Modèles archéologiques soft-Voronoi orographiques multi-clades (Sapiens, Néandertaliens de l'Ouest et du Zagros, Denisoviens de l'Altaï, Archaïques est-asiatiques).\n" +
+            "• Forçages Paléoclimatiques : CHELSA-TraCE21k (LGM -20k, Holocène) et WorldClim / PaleoClim LIG (-100k BP).\n" +
+            "• Altimétrie & Bathymétrie : NOAA ETOPO 2022 (Niveau marin ajusté dynamiquement via le slider du scénario)."
+        );
+        descSec3.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11.5px;");
+        descSec3.setWrapText(true);
+        sec3.getChildren().addAll(lblSec3, descSec3);
+
+        contentBox.getChildren().addAll(sec1, sec2, sec3);
+        scroll.setContent(contentBox);
+
+        Button btnClose = new Button(I18n.getOrDefault("common.close", "Fermer"));
+        btnClose.getStyleClass().add("button-primary");
+        btnClose.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20;");
+        btnClose.setOnAction(e -> dialog.close());
+
+        HBox btnBox = new HBox(btnClose);
+        btnBox.setAlignment(Pos.CENTER_RIGHT);
+
+        root.getChildren().addAll(title, scroll, btnBox);
+        javafx.scene.Scene scene = new javafx.scene.Scene(root);
+        dialog.setScene(scene);
+        dialog.show();
     }
 
     private String getCulturalTensorTitle(int index) {
@@ -4645,39 +4750,6 @@ public class ScenarioSetupPanel extends BorderPane {
         );
     }
 
-    private void showCulturalImportFormatHelp() {
-        WindowUtils.showScrollableInfoDialog(
-                I18n.getOrDefault("scenario.title.cultural_specs_dialog", "Spécifications des Calques Cartographiques & Tenseurs"),
-                I18n.getOrDefault("scenario.header.cultural_specs", "Formats Supportés & Tenseurs Culturels / Géopolitiques (Projection 2:1 Plate Carrée)"),
-                "Vous pouvez importer des cartes cartographiques pour l'ensemble des 9+ tenseurs culturels et géopolitiques (PNG/JPEG ratio 2:1, ex: 2048x1024 pixels, Plate Carrée) :\n\n" +
-                "1. 📜 TENSEUR 1 (Isoglosses & Langues) :\n" +
-                "   • Canaux RVB codant le continuum linguistique, dialectes et gradients de friction phonétique ΔL.\n\n" +
-                "2. 🏛️ TENSEUR 2 (Kinship & Structures de Clans) :\n" +
-                "   • Nuances codant les structures de parenté, exogamie/endogamie, lignages et réseaux claniques.\n\n" +
-                "3. 🔮 TENSEUR 3 (Rituels, Croyances & Sacré) :\n" +
-                "   • Cartographie des sanctuaires, religions d'État, tabous et cohésion sociale d'Asabiyyah (Ibn Khaldoun).\n\n" +
-                "4. 👑 TENSEUR 4 (Souveraineté & Capitales) :\n" +
-                "   • Démarcation géographique des États, zones de contrôle des capitales et friction de frontière σ_friction.\n\n" +
-                "5. 🏺 TENSEUR 5 (Outillage, Matérialité & Technologies) :\n" +
-                "   • Distribution des traditions artisanales, métallurgie, outillage et niveau d'ingénierie matérielle.\n\n" +
-                "6. 🐫 TENSEUR 6 (Corridors & Réseaux Commerciaux) :\n" +
-                "   • Voies commerciales majeures (Route de la Soie, Trans-Sahara, Océan Indien), nœuds d'échanges et foires.\n\n" +
-                "7. ⚖️ TENSEUR 7 (Complexité Institutionnelle & Normes) :\n" +
-                "   • Modèle Seshat : codification du droit coutumier, tribunaux, bureaucratie fiscale et édits judiciaires.\n\n" +
-                "8. ⚠️ TENSEUR 8 (Empreinte Écologique & Tension Malthusienne) :\n" +
-                "   • Salinisation des sols, déforestation, érosion et pression malthusienne sur la capacité de charge.\n\n" +
-                "9. 🧬 TENSEUR 9 (Immunité Pathogène & Mémoire Sanitaire) :\n" +
-                "   • Zones d'endémie tropicale, réservoirs zoonotiques et barrières d'immunité croisée épidémiologique.\n\n" +
-                "────────────────────────────────────────────────────────────\n" +
-                "FLEXIBILITÉ & GESTION DES CALQUES MANQUANTS :\n" +
-                "• Calques Partiels : Si vous possédez des données pour certains calques (ex: Tenseurs 1 & 4) mais pas pour d'autres, l'application active un fallback stochastique automatique sur les calques non renseignés.\n" +
-                "• Options de Fallback par Sous-Bloc :\n" +
-                "  - Fallback Procédural Auto (Langevin-SDE Stochastique)\n" +
-                "  - Valeur Neutre Constante (0.5)\n" +
-                "  - Copie / Interpolation depuis un calque adjacent."
-        );
-    }
-
     private void generatePreview() {
         if (previewStatusLabel != null) {
             previewStatusLabel.setText(I18n.getOrDefault("scenario.status.calc_preview", "⚡ Calculating demographic preview in background..."));
@@ -4981,6 +5053,11 @@ public class ScenarioSetupPanel extends BorderPane {
             double dynamicCellDeg = Math.sqrt(avgAreaPerCell) * 1.08;
             double cellSize = Math.max(1.5, dynamicCellDeg * scale);
 
+            PlanetPreset activePlanet = activePlanetPreset != null ? activePlanetPreset : PlanetPreset.EARTH_LIKE;
+            double wLvl = activePlanet.waterLevel();
+            boolean hasOcean = wLvl > -0.4;
+            boolean isReliefActive = (btnReliefOverlay != null && btnReliefOverlay.isSelected());
+
             for (H3Cell c : currentPreviewCells) {
                 double x = (c.getLongitude() - minLng) * scale + offX;
                 double y = (maxLat - c.getLatitude()) * scale + offY;
@@ -4988,12 +5065,12 @@ public class ScenarioSetupPanel extends BorderPane {
                 if (x < -cellSize || x > w + cellSize || y < -cellSize || y > h + cellSize) continue;
 
                 Color col = getPreviewColorForCell(c);
-                boolean isReliefActive = (btnReliefOverlay != null && btnReliefOverlay.isSelected());
                 boolean isCoastalCell = Boolean.TRUE.equals(c.getIsCoastal());
+                double elev = c.getElevation() != null ? c.getElevation() : 0.0;
+                boolean isDatumCell = !hasOcean && Math.abs(elev) < 350.0;
 
                 if (isReliefActive) {
-                    double elev = c.getElevation() != null ? c.getElevation() : 0.0;
-                    if (elev <= 0) {
+                    if (hasOcean && elev <= 0) {
                         double depthRatio = Math.clamp(Math.abs(elev) / 4000.0, 0.0, 1.0);
                         double mult = 0.85 + 0.15 * (1.0 - depthRatio);
                         col = Color.color(
@@ -5004,7 +5081,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     } else {
                         double decl = c.getMovementFriction() != null ? Math.max(0.0, c.getMovementFriction() - 1.0) : 0.0;
                         double normElev = Math.clamp(elev / 4000.0, 0.0, 1.0);
-                        double mult = 0.80 + 0.25 * normElev + 0.10 * Math.min(1.0, decl);
+                        double mult = 0.75 + 0.30 * normElev + 0.15 * Math.min(1.0, decl);
                         col = Color.color(
                             Math.clamp(col.getRed() * mult, 0.0, 1.0),
                             Math.clamp(col.getGreen() * mult, 0.0, 1.0),
@@ -5020,8 +5097,12 @@ public class ScenarioSetupPanel extends BorderPane {
 
                 if (cellW >= 7.0 && cellH >= 7.0) {
                     gc.fillRoundRect(x - cellW / 2.0, y - cellH / 2.0, cellW, cellH, 3.0, 3.0);
-                    if (isReliefActive && isCoastalCell) {
-                        gc.setStroke(Color.rgb(224, 242, 254)); // Crisp white-cyan coastline outline
+                    if (isReliefActive && hasOcean && isCoastalCell) {
+                        gc.setStroke(Color.rgb(240, 249, 255)); // Crisp white-cyan coastline outline
+                        gc.setLineWidth(1.5);
+                        gc.strokeRoundRect(x - cellW / 2.0, y - cellH / 2.0, cellW, cellH, 3.0, 3.0);
+                    } else if (isReliefActive && isDatumCell) {
+                        gc.setStroke(Color.rgb(251, 191, 36)); // Crisp amber-gold Datum Z=0 line
                         gc.setLineWidth(1.5);
                         gc.strokeRoundRect(x - cellW / 2.0, y - cellH / 2.0, cellW, cellH, 3.0, 3.0);
                     } else if (cellW >= 12.0) {
@@ -5031,22 +5112,19 @@ public class ScenarioSetupPanel extends BorderPane {
                     }
                 } else {
                     gc.fillRect(x - cellW / 2.0, y - cellH / 2.0, cellW, cellH);
-                    if (isReliefActive && isCoastalCell) {
-                        gc.setStroke(Color.rgb(224, 242, 254));
+                    if (isReliefActive && hasOcean && isCoastalCell) {
+                        gc.setStroke(Color.rgb(240, 249, 255));
+                        gc.setLineWidth(1.0);
+                        gc.strokeRect(x - cellW / 2.0, y - cellH / 2.0, cellW, cellH);
+                    } else if (isReliefActive && isDatumCell) {
+                        gc.setStroke(Color.rgb(251, 191, 36));
                         gc.setLineWidth(1.0);
                         gc.strokeRect(x - cellW / 2.0, y - cellH / 2.0, cellW, cellH);
                     }
                 }
             }
         } else {
-            gc.setFill(Color.rgb(15, 23, 42));
-            gc.fillRect(0, 0, w, h);
-            gc.setFill(Color.rgb(56, 189, 248, 0.9));
-            gc.setFont(javafx.scene.text.Font.font("System", javafx.scene.text.FontWeight.BOLD, 14));
-            String msg = isPreviewGenerating.get()
-                    ? I18n.getOrDefault("scenario.status.calc_preview", "⚡ Calcul de l'aperçu démographique en cours...")
-                    : I18n.getOrDefault("scenario.status.no_cells", "🪐 Aperçu en attente de génération...");
-            gc.fillText(msg, Math.max(20, w / 2.0 - 150), h / 2.0);
+            drawInstant2DDensityPreview(gc, w, h, scale, offX, offY);
         }
 
         // Draw Clipping bounding box & dimmed overlay
@@ -5167,14 +5245,31 @@ public class ScenarioSetupPanel extends BorderPane {
             PixelWriter writer = img.getPixelWriter();
             ProceduralGenerator generator = new ProceduralGenerator();
 
+            double minAlt = planet != null ? planet.minAltitudeMeters() : -11000.0;
+            double maxAlt = planet != null ? planet.maxAltitudeMeters() : 8848.0;
+            double wLevel = planet != null ? planet.waterLevel() : 0.38;
+            boolean hasOcean = wLevel > -0.4;
+
+            double cutThreshold;
+            if (hasOcean) {
+                if (isEarth) {
+                    cutThreshold = 0.478 + (wLevel - 0.38) * 0.60;
+                } else {
+                    double altRange = Math.max(100.0, maxAlt - minAlt);
+                    cutThreshold = Math.clamp((-minAlt) / altRange + (wLevel - 0.38) * 0.50, 0.01, 0.99);
+                }
+            } else {
+                double altRange = Math.max(100.0, maxAlt - minAlt);
+                cutThreshold = Math.clamp((-minAlt) / altRange, 0.05, 0.95);
+            }
+
             for (int py = 0; py < pwHeight; py++) {
                 for (int px = 0; px < pwWidth; px++) {
                     double lat = 90.0 - (py / (double) pwHeight) * 180.0;
                     double lon = -180.0 + (px / (double) pwWidth) * 360.0;
 
-                    // 1) Accurate elevation, water level and coastlines (z = 0)
+                    // 1) Accurate elevation, water level and coastlines / Datum Z = 0
                     double elevVal;
-                    double wLevel = planet.waterLevel();
                     boolean isLand;
                     boolean isCoast;
                     double hillshade;
@@ -5185,7 +5280,8 @@ public class ScenarioSetupPanel extends BorderPane {
                         int bx = (int) Math.clamp(((px / (double) pwWidth) * bgW), 0, bgW - 1);
                         int by = (int) Math.clamp(((py / (double) pwHeight) * bgH), 0, bgH - 1);
                         elevVal = bgReader.getColor(bx, by).getRed();
-                        isLand = elevVal > 0.185;
+                        boolean isAboveCut = elevVal >= cutThreshold;
+                        isLand = hasOcean ? isAboveCut : true;
 
                         int bxE = (bx + 1) % (int) bgW;
                         int bxW = (bx - 1 + (int) bgW) % (int) bgW;
@@ -5197,11 +5293,8 @@ public class ScenarioSetupPanel extends BorderPane {
                         double eN = bgReader.getColor(bx, byN).getRed();
                         double eS = bgReader.getColor(bx, byS).getRed();
 
-                        boolean isLandE = eE > 0.185;
-                        boolean isLandW = eW > 0.185;
-                        boolean isLandN = eN > 0.185;
-                        boolean isLandS = eS > 0.185;
-                        isCoast = (isLand != isLandE) || (isLand != isLandW) || (isLand != isLandN) || (isLand != isLandS);
+                        isCoast = (isAboveCut != (eE >= cutThreshold)) || (isAboveCut != (eW >= cutThreshold))
+                                || (isAboveCut != (eN >= cutThreshold)) || (isAboveCut != (eS >= cutThreshold));
 
                         double dLng = (eE - eW) * 16.0;
                         double dLat = (eN - eS) * 16.0;
@@ -5209,7 +5302,6 @@ public class ScenarioSetupPanel extends BorderPane {
                     } else {
                         var pt = generator.getPlanetPoint(lat, lon, planet);
                         elevVal = pt.elevation();
-                        isLand = elevVal >= wLevel;
 
                         double dDeg = 0.5;
                         var ptE = generator.getPlanetPoint(lat, lon + dDeg, planet);
@@ -5217,11 +5309,21 @@ public class ScenarioSetupPanel extends BorderPane {
                         var ptN = generator.getPlanetPoint(lat + dDeg, lon, planet);
                         var ptS = generator.getPlanetPoint(lat - dDeg, lon, planet);
 
-                        boolean isLandE = ptE.elevation() >= wLevel;
-                        boolean isLandW = ptW.elevation() >= wLevel;
-                        boolean isLandN = ptN.elevation() >= wLevel;
-                        boolean isLandS = ptS.elevation() >= wLevel;
-                        isCoast = (isLand != isLandE) || (isLand != isLandW) || (isLand != isLandN) || (isLand != isLandS);
+                        if (hasOcean) {
+                            isLand = elevVal >= wLevel;
+                            isCoast = (isLand != (ptE.elevation() >= wLevel))
+                                    || (isLand != (ptW.elevation() >= wLevel))
+                                    || (isLand != (ptN.elevation() >= wLevel))
+                                    || (isLand != (ptS.elevation() >= wLevel));
+                        } else {
+                            isLand = true;
+                            double datumCut = 0.0;
+                            boolean isAboveDatum = elevVal >= datumCut;
+                            isCoast = (isAboveDatum != (ptE.elevation() >= datumCut))
+                                    || (isAboveDatum != (ptW.elevation() >= datumCut))
+                                    || (isAboveDatum != (ptN.elevation() >= datumCut))
+                                    || (isAboveDatum != (ptS.elevation() >= datumCut));
+                        }
 
                         double dLng = ((ptE.elevation() - ptW.elevation()) / 1200.0);
                         double dLat = ((ptN.elevation() - ptS.elevation()) / 1200.0);
@@ -5232,7 +5334,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     if (!isLand) {
                         baseReliefColor = Color.rgb(15, 23, 42); // Sea / Deep ocean navy
                     } else {
-                        double landNorm = bgReader != null ? Math.clamp((elevVal - 0.185) / 0.815, 0.0, 1.0) : Math.clamp((elevVal - wLevel) / Math.max(1000.0, planet.maxAltitudeMeters() - wLevel), 0.0, 1.0);
+                        double landNorm = bgReader != null ? Math.clamp((elevVal - cutThreshold) / Math.max(0.01, 1.0 - cutThreshold), 0.0, 1.0) : Math.clamp((elevVal - wLevel) / Math.max(1000.0, planet.maxAltitudeMeters() - wLevel), 0.0, 1.0);
                         int r = Math.clamp((int) (55 + landNorm * 120), 0, 255);
                         int g = Math.clamp((int) (125 + landNorm * 80), 0, 255);
                         int bCol = Math.clamp((int) (50 + landNorm * 60), 0, 255);
@@ -5278,12 +5380,12 @@ public class ScenarioSetupPanel extends BorderPane {
                         pxColor = heatCol;
                     }
 
-                    // 3) Relief overlay and coastline outlines
+                    // 3) Relief overlay and coastline / Datum outlines
                     if (isReliefOverlay) {
                         if (isCoast) {
-                            pxColor = Color.rgb(224, 242, 254); // Crisp white-cyan coastline outline at z = 0
+                            pxColor = hasOcean ? Color.rgb(240, 249, 255) : Color.rgb(251, 191, 36); // Crisp coastline outline at z = Z_sea or Datum Z = 0
                         } else {
-                            double mult = 0.75 + 0.35 * hillshade;
+                            double mult = 0.68 + 0.45 * hillshade;
                             pxColor = Color.color(
                                 Math.clamp(pxColor.getRed() * mult, 0.0, 1.0),
                                 Math.clamp(pxColor.getGreen() * mult, 0.0, 1.0),
@@ -5323,9 +5425,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private static Image cachedEarthElevationImage = null;
     private Image getCachedEarthElevationImage() {
         if (cachedEarthElevationImage == null) {
-            try (var is = getClass().getResourceAsStream("/maps/earth_elevation.png")) {
-                if (is != null) cachedEarthElevationImage = new Image(is);
-            } catch (Exception ignored) {}
+            cachedEarthElevationImage = org.ether.society.data.ImageMapLoader.loadMapImage("earth", 2026L, "elevation.png");
         }
         return cachedEarthElevationImage;
     }
@@ -5638,41 +5738,22 @@ public class ScenarioSetupPanel extends BorderPane {
             } catch (Exception e) {
                 logger.warn("Could not decode custom Base64 elevation map image for preset {}", cfg.name(), e);
             }
-        } else if (mapSource.equals("earth") || presetName.contains("earth") || presetName.contains("terre") || presetName.contains("terran")) {
-            try (var elevStream = getClass().getResourceAsStream("/maps/earth_elevation.png");
-                 var biomeStream = getClass().getResourceAsStream("/maps/earth_biomes.png")) {
-                if (elevStream != null || biomeStream != null) {
-                    new org.ether.society.data.ImageMapLoader().mapDataToCells(cells, elevStream, biomeStream);
-                }
-            } catch (Exception e) {
-                logger.warn("Could not load Earth elevation map image", e);
-            }
-        } else if (mapSource.equals("mars") || presetName.contains("mars") || presetName.contains("ares")) {
-            try (var elevStream = getClass().getResourceAsStream("/maps/mars_elevation.png");
-                 var biomeStream = getClass().getResourceAsStream("/maps/mars_biomes.png")) {
-                if (elevStream != null || biomeStream != null) {
-                    new org.ether.society.data.ImageMapLoader().mapDataToCells(cells, elevStream, biomeStream);
-                }
-            } catch (Exception e) {
-                logger.debug("No static Mars image resource found, using physical Simplex terrain generator");
-            }
-        } else if (mapSource.equals("venus") || presetName.contains("venus") || presetName.contains("vénus") || presetName.contains("hesperos")) {
-            try (var elevStream = getClass().getResourceAsStream("/maps/venus_elevation.png");
-                 var biomeStream = getClass().getResourceAsStream("/maps/venus_biomes.png")) {
-                if (elevStream != null || biomeStream != null) {
-                    new org.ether.society.data.ImageMapLoader().mapDataToCells(cells, elevStream, biomeStream);
-                }
-            } catch (Exception e) {
-                logger.debug("No static Venus image resource found, using physical Simplex terrain generator");
-            }
-        } else if (mapSource.equals("moon") || presetName.contains("lune") || presetName.contains("moon") || presetName.contains("selene")) {
-            try (var elevStream = getClass().getResourceAsStream("/maps/moon_elevation.png");
-                 var biomeStream = getClass().getResourceAsStream("/maps/moon_biomes.png")) {
-                if (elevStream != null || biomeStream != null) {
-                    new org.ether.society.data.ImageMapLoader().mapDataToCells(cells, elevStream, biomeStream);
-                }
-            } catch (Exception e) {
-                logger.debug("No static Moon image resource found, using physical Simplex terrain generator");
+        } else {
+            String pKey = "earth";
+            if (mapSource.equals("mars") || presetName.contains("mars") || presetName.contains("ares")) pKey = "mars";
+            else if (mapSource.equals("venus") || presetName.contains("venus") || presetName.contains("vénus") || presetName.contains("hesperos")) pKey = "venus";
+            else if (mapSource.equals("moon") || presetName.contains("lune") || presetName.contains("moon") || presetName.contains("selene")) pKey = "moon";
+            else if (mapSource.equals("mercury") || presetName.contains("mercure") || presetName.contains("mercury") || presetName.contains("hermes")) pKey = "mercury";
+
+            long targetYear = (scenarioPresetBar != null && scenarioPresetBar.getPresetCombo() != null && scenarioPresetBar.getPresetCombo().getValue() != null) 
+                    ? scenarioPresetBar.getPresetCombo().getValue().getStartDateYear() : 2026L;
+            Image elevImg = org.ether.society.data.ImageMapLoader.loadMapImage(pKey, targetYear, "elevation.png");
+            Image biomeImg = org.ether.society.data.ImageMapLoader.loadMapImage(pKey, targetYear, "biomes.png");
+
+            if (elevImg != null || biomeImg != null) {
+                new org.ether.society.data.ImageMapLoader().mapImagesToCells(cells, elevImg, biomeImg, null, cfg.minAltitudeMeters(), cfg.maxAltitudeMeters());
+            } else {
+                logger.debug("No precalculated map found for preset {}, using physical terrain generator", pKey);
             }
         }
     }
@@ -6628,7 +6709,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
 
         // C. Check for Demographic Population in Ocean / Submerged Areas
-        if (customDensityImage != null) {
+        if (customDensityImage != null && customDensityImage.getPixelReader() != null) {
             double totalDensityBrightness = 0.0;
             double oceanDensityBrightness = 0.0;
             int imgW = (int) customDensityImage.getWidth();
@@ -6650,7 +6731,7 @@ public class ScenarioSetupPanel extends BorderPane {
                         if (activePlanetPreset != null) {
                             if (activePlanetPreset.elevationUseImport()) {
                                 Image elevImg = getCachedEarthElevationImage();
-                                if (elevImg != null) {
+                                if (elevImg != null && elevImg.getPixelReader() != null) {
                                     int ex = (int) Math.min(elevImg.getWidth() - 1, normLon * elevImg.getWidth());
                                     int ey = (int) Math.min(elevImg.getHeight() - 1, normLat * elevImg.getHeight());
                                     Color ec = elevImg.getPixelReader().getColor(ex, ey);
@@ -6681,7 +6762,7 @@ public class ScenarioSetupPanel extends BorderPane {
         // D. Check for Cultural Tensors Active in Ocean Areas
         for (int i = 0; i < dimsCount; i++) {
             Image tImg = customTensorImages.get(i);
-            if (tImg != null && activePlanetPreset != null && activePlanetPreset.waterLevel() > -0.4) {
+            if (tImg != null && tImg.getPixelReader() != null && activePlanetPreset != null && activePlanetPreset.waterLevel() > -0.4) {
                 double totalTB = 0.0;
                 double oceanTB = 0.0;
                 int tw = (int) tImg.getWidth();
@@ -6702,7 +6783,7 @@ public class ScenarioSetupPanel extends BorderPane {
                             boolean isOceanCell = false;
                             if (activePlanetPreset.elevationUseImport()) {
                                 Image elevImg = getCachedEarthElevationImage();
-                                if (elevImg != null) {
+                                if (elevImg != null && elevImg.getPixelReader() != null) {
                                     int ex = (int) Math.min(elevImg.getWidth() - 1, normLon * elevImg.getWidth());
                                     int ey = (int) Math.min(elevImg.getHeight() - 1, normLat * elevImg.getHeight());
                                     Color ec = elevImg.getPixelReader().getColor(ex, ey);

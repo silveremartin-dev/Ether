@@ -1,0 +1,118 @@
+{
+  "epoch": -100000,
+  "description": "Cliodynamic Cultural & Linguistic Registry for -100,000 BP (Out-of-Africa / MIS 5c-d Inception)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "sapiens_african_core",
+      "colorHex": "#E67E22",
+      "colorRgb": [230, 126, 34],
+      "traits": [0.10, 0.05, 0.05, 0.15],
+      "name": {
+        "en": "Proto-Sapiens Core Dialects (Sub-Saharan Africa)",
+        "fr": "Dialectes Proto-Sapiens Centraux (Afrique subsaharienne)",
+        "de": "Proto-Sapiens Kerndialekte (Subsahara-Afrika)",
+        "es": "Dialectos Proto-Sapiens Centrales (África subsahariana)",
+        "zh": "智人核心方言群（撒哈拉以南非洲）"
+      },
+      "kinshipType": "Bilateral / Multi-Band Forager",
+      "lithicTechnocomplex": "Middle Stone Age (MSA / Mode 3)"
+    },
+    {
+      "id": "sapiens_east_horn",
+      "colorHex": "#D35400",
+      "colorRgb": [211, 84, 0],
+      "traits": [0.12, 0.05, 0.05, 0.18],
+      "name": {
+        "en": "Proto-Sapiens Horn & Rift Lineages (Omo / Herto)",
+        "fr": "Lignées Sapiens de la Corne & du Rift (Omo / Herto)",
+        "de": "Proto-Sapiens Horn- & Rift-Linien (Omo / Herto)",
+        "es": "Linajes Sapiens del Cuerno y Rift (Omo / Herto)",
+        "zh": "智人裂谷与非洲之角谱系（奥莫/赫托）"
+      },
+      "kinshipType": "Bilateral Forager Bands",
+      "lithicTechnocomplex": "MSA Advanced Bladelet & Ochre"
+    },
+    {
+      "id": "sapiens_out_of_africa_pioneers",
+      "colorHex": "#F39C12",
+      "colorRgb": [243, 156, 18],
+      "traits": [0.15, 0.05, 0.08, 0.20],
+      "name": {
+        "en": "Out-of-Africa Pioneers (Sinai / Levant Skhul-Qafzeh & Jebel Faya)",
+        "fr": "Pionniers Sortie d'Afrique (Sinaï / Levant Skhul-Qafzeh & Jebel Faya)",
+        "de": "Out-of-Africa Pioniere (Sinai / Levante Skhul-Qafzeh & Dschabal Faya)",
+        "es": "Pioneros Salida de África (Sinaí / Levante Skhul-Qafzeh y Jebel Faya)",
+        "zh": "出非洲先锋群体（西奈/黎凡特斯库尔-卡夫泽与法亚）"
+      },
+      "kinshipType": "Pioneer Coastal Dispersal Bands",
+      "lithicTechnocomplex": "Early Levant Middle Paleolithic & Arabian Nubian Complex"
+    },
+    {
+      "id": "neanderthal_western_mousterian",
+      "colorHex": "#2980B9",
+      "colorRgb": [41, 128, 185],
+      "traits": [0.80, 0.05, 0.05, 0.10],
+      "name": {
+        "en": "Western Classical Mousterian (Europe & Iberia)",
+        "fr": "Moustérien Occidental Classique (Europe & Ibérie)",
+        "de": "Westliches Klassisches Moustérien (Europa & Iberien)",
+        "es": "Musteriense Occidental Clásico (Europa e Iberia)",
+        "zh": "西欧经典莫斯特文化（欧洲与伊比利亚）"
+      },
+      "kinshipType": "Patrilocal Small Neanderthal Clades",
+      "lithicTechnocomplex": "Mousterian of Acheulean Tradition / Levallois Flakes"
+    },
+    {
+      "id": "neanderthal_zagros_shanidar",
+      "colorHex": "#1F4788",
+      "colorRgb": [31, 71, 136],
+      "traits": [0.82, 0.05, 0.05, 0.12],
+      "name": {
+        "en": "Zagros & Near East Mousterian (Shanidar / Bisitun / Anatolia)",
+        "fr": "Moustérien du Zagros & Proche-Orient (Shanidar / Bisitun / Anatolie)",
+        "de": "Zagros- & Nahost-Moustérien (Schanidar / Bisitun / Anatolien)",
+        "es": "Musteriense de Zagros y Oriente Próximo (Shanidar / Bisitún / Anatolia)",
+        "zh": "扎格罗斯与近东莫斯特文化（沙尼达尔/贝希斯敦/安纳托利亚）"
+      },
+      "kinshipType": "Zagros Highland Cave Kin-Groups",
+      "lithicTechnocomplex": "Zagros Mousterian Point / Side-Scraper Complex"
+    },
+    {
+      "id": "denisovan_altai_siberian",
+      "colorHex": "#27AE60",
+      "colorRgb": [39, 174, 96],
+      "traits": [0.65, 0.05, 0.05, 0.10],
+      "name": {
+        "en": "Altai Denisovans & Siberian Archaic Lineages",
+        "fr": "Dénisoviens de l'Altaï & Lignées Archaïques Sibériennes",
+        "de": "Altai-Denisova & Sibirische Archaische Linien",
+        "es": "Denisovanos de Altái y Linajes Arcaicos Siberianos",
+        "zh": "阿尔泰丹尼索瓦人与西伯利亚古老谱系"
+      },
+      "kinshipType": "Cold-Adapted Steppe Foragers",
+      "lithicTechnocomplex": "Altai Middle Paleolithic Laminar Complex"
+    },
+    {
+      "id": "eastern_archaic_sunda",
+      "colorHex": "#8E44AD",
+      "colorRgb": [142, 68, 173],
+      "traits": [0.55, 0.05, 0.05, 0.08],
+      "name": {
+        "en": "East Asian & Sundaland Archaic Hominins (Late Erectus / Denisovan Clades)",
+        "fr": "Hominines Archaïques d'Asie Orientale & du Sunda (Erectus tardif / Dénisoviens)",
+        "de": "Ostasiatische & Sundaland Archaische Homininen (Später Erectus / Denisova)",
+        "es": "Homínidos Arcaicos de Asia Oriental y Sondalandia (Erectus tardío / Denisovanos)",
+        "zh": "东亚与巽他古人类群（晚期直立人/丹尼索瓦支系）"
+      },
+      "kinshipType": "Tropical Forest & Bamboo Technocomplex Bands",
+      "lithicTechnocomplex": "East Asian Core-and-Flake / Chopper Industry"
+    }
+  ]
+}
