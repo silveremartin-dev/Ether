@@ -113,6 +113,23 @@ public class PresetControlBar<T> extends VBox {
         presetCombo.setCellFactory(p -> createPresetListCell());
         presetCombo.setButtonCell(createPresetListCell());
 
+        // Dynamic update of the ComboBox's tooltip on selection change
+        presetCombo.valueProperty().addListener((obs, oldV, newV) -> {
+            if (newV != null) {
+                String desc = getPresetDetailedDescription(newV);
+                if (desc != null && !desc.isBlank()) {
+                    Tooltip tip = new Tooltip(desc);
+                    tip.setWrapText(true);
+                    tip.setMaxWidth(480);
+                    presetCombo.setTooltip(tip);
+                } else {
+                    presetCombo.setTooltip(null);
+                }
+            } else {
+                presetCombo.setTooltip(null);
+            }
+        });
+
         // --- Inline editable name field ---
         nameField = new TextField();
         nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Preset name…"));
@@ -619,7 +636,7 @@ public class PresetControlBar<T> extends VBox {
     private String formatPresetItem(T item) {
         if (item == null) return "";
         if (item instanceof org.ether.society.procedural.PlanetPreset p) return I18n.getPlanetPresetDisplayName(p.name());
-        if (item instanceof org.ether.society.model.EcologyPreset e) return e.name();
+        if (item instanceof org.ether.society.model.EcologyPreset e) return org.ether.society.i18n.I18n.getPlanetPresetDisplayName(e.name());
         if (item instanceof org.ether.society.model.Scenario s) {
             return cleanScenarioName(s.getName());
         }
@@ -655,6 +672,22 @@ public class PresetControlBar<T> extends VBox {
         return null;
     }
 
+    private String getPresetDetailedDescription(T item) {
+        if (item == null) return null;
+        if (item instanceof org.ether.society.procedural.PlanetPreset p) {
+            return p.getPresetDescription();
+        }
+        if (item instanceof org.ether.society.model.EcologyPreset e) {
+            return e.getPresetDescription();
+        }
+        if (item instanceof org.ether.society.model.Scenario s) {
+            String desc = s.getDescription();
+            if (desc != null && !desc.isBlank()) return desc;
+            return s.getName();
+        }
+        return formatPresetItem(item);
+    }
+
     private ListCell<T> createPresetListCell() {
         return new ListCell<>() {
             private final Label nameLabel = new Label();
@@ -676,6 +709,7 @@ public class PresetControlBar<T> extends VBox {
                 if (empty || item == null) {
                     setGraphic(null);
                     setText(null);
+                    setTooltip(null);
                 } else {
                     String formattedName = formatPresetItem(item);
                     String dateText = getPresetDateText(item);
@@ -688,8 +722,18 @@ public class PresetControlBar<T> extends VBox {
                         setGraphic(null);
                         setText(formattedName);
                     }
+                    String desc = getPresetDetailedDescription(item);
+                    if (desc != null && !desc.isBlank()) {
+                        Tooltip tip = new Tooltip(desc);
+                        tip.setWrapText(true);
+                        tip.setMaxWidth(480);
+                        setTooltip(tip);
+                    } else {
+                        setTooltip(null);
+                    }
                 }
             }
         };
     }
 }
+

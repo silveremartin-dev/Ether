@@ -73,6 +73,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private VBox bottomActionBox;
 
     // Form Controls
+    private Label scenarioDescLabel;
     private TextArea scenarioDescriptionArea;
     private Spinner<Integer> startYearSpinner;
     private Spinner<Integer> endYearSpinner;
@@ -756,6 +757,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 Scenario custom = getScenario();
                 custom.setName(name);
                 scenarioRepo.saveOrUpdate(custom);
+                scenarioPresetBar.getPresetCombo().getItems().removeIf(s -> s != null && name.equalsIgnoreCase(s.getName()));
                 scenarioPresetBar.getPresetCombo().getItems().add(custom);
                 scenarioPresetBar.getPresetCombo().setValue(custom);
                 scenarioPresetBar.setNameText(name);
@@ -981,16 +983,7 @@ public class ScenarioSetupPanel extends BorderPane {
         grid1.addRow(3, startYearLabel, startYearSpinner);
         grid1.addRow(4, endYearLabel, endYearSpinner);
 
-        Label descLabel = new Label(I18n.getOrDefault("scenario.section.description", "📖 Detailed Description & Physical Forcing Terms:"));
-        descLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 6 0 2 0;");
-
-        scenarioDescriptionArea = new TextArea();
-        scenarioDescriptionArea.setPrefRowCount(8);
-        scenarioDescriptionArea.setWrapText(true);
-        scenarioDescriptionArea.getStyleClass().add("scenario-description-area");
-        scenarioDescriptionArea.textProperty().addListener((obs, oldV, newV) -> notifyParamChange());
-
-        VBox section1Content = new VBox(10, grid1, descLabel, scenarioDescriptionArea);
+        VBox section1Content = new VBox(10, grid1);
         VBox section1 = createSection(title1, section1Content);
 
         // --- 2. Demographics & Density Map Management (RadioButtons) ---
@@ -1310,8 +1303,18 @@ public class ScenarioSetupPanel extends BorderPane {
         startBtn.setOnAction(e -> handleStartOrCancel());
         startBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.start", "Calculate H3 cells and launch simulation.")));
 
+        scenarioDescLabel = new Label(I18n.getOrDefault("scenario.section.description", "📖 Detailed Description, Initial Conditions & Key Observables:"));
+        scenarioDescLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 6 0 2 0;");
+
+        scenarioDescriptionArea = new TextArea();
+        scenarioDescriptionArea.setPrefRowCount(9);
+        scenarioDescriptionArea.setWrapText(true);
+        scenarioDescriptionArea.getStyleClass().add("scenario-description-area");
+        scenarioDescriptionArea.setStyle("-fx-font-size: 11px; -fx-text-fill: #e2e8f0; -fx-background-color: rgba(15, 23, 42, 0.6); -fx-border-color: rgba(255, 255, 255, 0.15); -fx-border-radius: 4; -fx-background-radius: 4;");
+        scenarioDescriptionArea.textProperty().addListener((obs, oldV, newV) -> notifyParamChange());
+
         scenarioPresetHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "🎛️ GLOBAL PRESETS & SCENARIO SAVE"));
-        VBox scenarioPresetSection = createSection(scenarioPresetHeader, scenarioPresetBar);
+        VBox scenarioPresetSection = createSection(scenarioPresetHeader, new VBox(8, scenarioPresetBar, scenarioDescLabel, scenarioDescriptionArea));
 
         VBox snapshotSection = createSnapshotSection();
         VBox bundleSection = createBundleSection();
@@ -1937,7 +1940,15 @@ public class ScenarioSetupPanel extends BorderPane {
                 updateDemoCompatibilityDisplay();
             }
 
-            // Restore Cultural Vector & Multi-Layer UI Controls
+            // Auto-select the demographic reference source combo based on the scenario epoch/planet
+            if (demoSourceCombo != null) {
+                String autoSrc = pickDemoSourceForEpoch(s.getStartDateYear(), this.activePlanetPreset);
+                if (autoSrc != null && demoSourceCombo.getItems().contains(autoSrc)) {
+                    demoSourceCombo.setValue(autoSrc);
+                }
+            }
+
+
             if (s.getCultureVectorDimensions() > 0 && cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValueFactory() != null) {
                 cultureVectorDimSpinner.getValueFactory().setValue(s.getCultureVectorDimensions());
             }
@@ -3660,6 +3671,119 @@ public class ScenarioSetupPanel extends BorderPane {
         };
     }
 
+    /**
+     * Given the scenario's start year and active planet preset, returns the best-matching
+     * entry string for demoSourceCombo, or null if no match can be determined.
+     */
+    private String pickDemoSourceForEpoch(long startYear, org.ether.society.procedural.PlanetPreset planet) {
+        String pName = planet != null ? planet.name().toLowerCase() : "";
+        if (pName.contains("mars") || pName.contains("ares"))
+            return "🔴 Mars — Modèle de Colonisation Spatiale & Dômes d'Habitation";
+        if (pName.contains("vénus") || pName.contains("venus") || pName.contains("hesperos"))
+            return "🟡 Vénus — Stations Aérostatiques Cloud Cities (Altitude 50 km)";
+        if (pName.contains("lune") || pName.contains("moon") || pName.contains("selene"))
+            return "⚪ Lune — Bases Sélénites Sous-Terraines & Cratères Shackleton";
+        if (pName.contains("mercure") || pName.contains("mercury") || pName.contains("hermes"))
+            return "⚪ Mercure — Dômes Polaires & Habitats d'Ombre Permanente";
+        // Earth epochs
+        if (startYear < -10000)
+            return "🌍 Terre — Paléo-Démographie & Expansion Sapiens (-100000 BC)";
+        return "🌍 Terre — HYDE 3.4 / Grille Historique Anthropocène (-10000 BC - 2023 AD)";
+    }
+
+    /**
+     * Given the tensor index, scenario start year, and active planet preset, returns the best-matching
+     * entry string for the cultural source combo at that tensor index, or null if the default should be kept.
+     */
+    private String pickCulturalSourceForEpoch(int tensorIdx, long startYear, org.ether.society.procedural.PlanetPreset planet) {
+        String pName = planet != null ? planet.name().toLowerCase() : "";
+        if (pName.contains("mars") || pName.contains("ares")) {
+            return switch (tensorIdx) {
+                case 0 -> "🔴 Mars — Cartographie Linguistique Coloniale Martienne";
+                case 1 -> "🔴 Mars — Structures de Parenté & Cohortes Pionnières";
+                case 2 -> "🔴 Mars — Mythologie Martienne & Cultes de la Frontière";
+                case 3 -> "🔴 Mars — Juridictions Consulaires & Traités Martiens";
+                case 4 -> "🔴 Mars — Niveau Technologique Industriel & Robotique ISRU";
+                case 5 -> "🔴 Mars — Réseau Ferroviaire Maglev Sub-Surface";
+                case 6 -> "🔴 Mars — Conseil Spatial & Chartes Constitutionnelles";
+                case 7 -> "🔴 Mars — Bioregenerative Life Support (BLSS) & Dégradation";
+                case 8 -> "🔴 Mars — Microbiome Artificiel Confiné & Résistance";
+                default -> null;
+            };
+        }
+        if (pName.contains("vénus") || pName.contains("venus") || pName.contains("hesperos")) {
+            return switch (tensorIdx) {
+                case 0 -> "🟡 Vénus — Réseau Isogloss des Cités Aérostatiques";
+                case 1 -> "🟡 Vénus — Guildes & Lignages Technologiques Flottants";
+                case 2 -> "🟡 Vénus — Rituels Solaires & Cérémonies de Nuages";
+                case 3 -> "🟡 Vénus — Fédération des Stations Stratosphériques";
+                case 4 -> "🟡 Vénus — Synthèse Aérostatique & Ingénierie Acide";
+                case 5 -> "🟡 Vénus — Navettes Stratosphériques Inter-Stations";
+                case 6 -> "🟡 Vénus — Syndicats Flottants & Corporations Aérostats";
+                case 7 -> "🟡 Vénus — Érosion Chimique & Recyclage Fermé";
+                case 8 -> "🟡 Vénus — Immunologie en Atmosphère Confinée";
+                default -> null;
+            };
+        }
+        if (pName.contains("lune") || pName.contains("moon") || pName.contains("selene")) {
+            return switch (tensorIdx) {
+                case 0 -> "⚪ Lune — Dialectes Sélénites des Stations Cratériques";
+                case 1 -> "⚪ Lune — Associations d'Équipages & Clans Sélénites";
+                case 2 -> "⚪ Lune — Philosophie Cosmique & Rituels du Clair de Terre";
+                case 3 -> "⚪ Lune — Secteurs Traité de l'Espace & Bases Nationales";
+                case 4 -> "⚪ Lune — Fonderies Régolithes & Extraction Sélénite";
+                case 5 -> "⚪ Lune — Tunnels de Transport Magnétique Sélénite";
+                case 6 -> "⚪ Lune — Protocoles Légaux des Habitats Sélénites";
+                case 7 -> "⚪ Lune — Épuisement des Volatils & Poussière Régolithe";
+                case 8 -> "⚪ Lune — Pathogènes d'Isolement & Régime Stérile";
+                default -> null;
+            };
+        }
+        if (pName.contains("mercure") || pName.contains("mercury") || pName.contains("hermes")) {
+            return switch (tensorIdx) {
+                case 0 -> "⚪ Mercure — Protocoles Herméens & Terminologie d'Ombre";
+                case 1 -> "⚪ Mercure — Confréries de Maintenance & Lignages Thermiques";
+                case 2 -> "⚪ Mercure — Ordres d'Énergie & Croyances de Haute Radiation";
+                case 3 -> "⚪ Mercure — Domaines Miniers & Enclaves Polaires";
+                case 4 -> "⚪ Mercure — Collecteurs Haute Énergie & Fours Directs";
+                case 5 -> "⚪ Mercure — Réseau de Convois Électromagnétiques";
+                case 6 -> "⚪ Mercure — Administration Thermique & Urgences";
+                case 7 -> "⚪ Mercure — Usure Thermique & Contraintes Matérielles";
+                case 8 -> "⚪ Mercure — Filtrage Radiatif & Microbiote Synthétique";
+                default -> null;
+            };
+        }
+        // Earth — pick based on epoch
+        if (startYear < -10000) {
+            // Prehistoric: prefer ArchaeoGLOBE for tech, Glottolog for language, generic Seshat for others
+            return switch (tensorIdx) {
+                case 0 -> "🌍 Terre — Automated Phonological Distance Model (ASJP)";
+                case 1 -> "🌍 Terre — Standard Cross-Cultural Sample (SCCS)";
+                case 2 -> "🌍 Terre — Turchin Asabiyyah Cohesion Metric (Cliodynamics)";
+                case 3 -> "🌍 Terre — GADM Administrative Sovereign Centers";
+                case 4 -> "🌍 Terre — Lithic-to-Metallurgy Technology Frontier Model";
+                case 5 -> "🌍 Terre — Old World Overland Caravan Network";
+                case 6 -> "🌍 Terre — Historical Jurisprudence & Administration Matrix";
+                case 7 -> "🌍 Terre — Malthusian Carrying Capacity Model";
+                case 8 -> "🌍 Terre — Host-Pathogen Coevolution & Immunity Model";
+                default -> null;
+            };
+        }
+        // Default Earth modern/historical: first real item per tensor
+        return switch (tensorIdx) {
+            case 0 -> "🌍 Terre — Glottolog 4.8 / WALS Language Families (Composite)";
+            case 1 -> "🌍 Terre — Murdock Ethnographic Atlas (Kinship Systems)";
+            case 2 -> "🌍 Terre — Seshat Global History Databank (Rituals & Sacred)";
+            case 3 -> "🌍 Terre — Centennia Historical Atlas (Sovereignty Boundaries)";
+            case 4 -> "🌍 Terre — ArchaeoGLOBE Project (Land Use & Material Tools)";
+            case 5 -> "🌍 Terre — ORBIS Stanford Geospatial Network (Trade Routes)";
+            case 6 -> "🌍 Terre — Seshat Databank (Institutional Complexity & Law)";
+            case 7 -> "🌍 Terre — HYDE 3.4 Historical Land Use & Anthropogenic Stress";
+            case 8 -> "🌍 Terre — GADM / Historical Pathogen Memory & Epidemics";
+            default -> null;
+        };
+    }
+
     private ComboBox<String> buildPopulationSourceCombo() {
         ComboBox<String> combo = new ComboBox<>();
         combo.setMaxWidth(Double.MAX_VALUE);
@@ -3673,13 +3797,8 @@ public class ScenarioSetupPanel extends BorderPane {
             "⚪ Lune — Bases Sélénites Sous-Terraines & Cratères Shackleton",
             "⚪ Mercure — Dômes Polaires & Habitats d'Ombre Permanente"
         );
-        combo.setCellFactory(p -> new ListCell<>() {
-            @Override protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null || item.isEmpty() ? I18n.getOrDefault("common.combo.prompt_source", "— Select a data source —") : item);
-            }
-        });
-        combo.setButtonCell(combo.getCellFactory().call(null));
+        org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
+                combo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
         combo.setValue("");
         combo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
@@ -3692,8 +3811,6 @@ public class ScenarioSetupPanel extends BorderPane {
                 drawPreview();
             }
         });
-        combo.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.map_source_hint",
-                "Select reference data source. The 'Load Map' button below allows importing your local file.")));
         return combo;
     }
 
@@ -3789,13 +3906,8 @@ public class ScenarioSetupPanel extends BorderPane {
                 "🔴 Mars — Modèle Cartographique Martien Dérivé"
             );
         }
-        combo.setCellFactory(p -> new ListCell<>() {
-            @Override protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null || item.isEmpty() ? I18n.getOrDefault("common.combo.prompt_source", "— Select a data source —") : item);
-            }
-        });
-        combo.setButtonCell(combo.getCellFactory().call(null));
+        org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
+                combo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
         combo.setValue("");
         combo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
@@ -3808,8 +3920,6 @@ public class ScenarioSetupPanel extends BorderPane {
                 drawPreview();
             }
         });
-        combo.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.map_source_hint",
-                "Select reference data source. The 'Load Map' button below allows importing your local file.")));
         return combo;
     }
 
@@ -4073,8 +4183,16 @@ public class ScenarioSetupPanel extends BorderPane {
             tensorSourceLabels.put(tensorIdx, sourceLbl);
 
             ComboBox<String> sourceCombo = buildCulturalSourceCombo(tensorIdx);
-            if (sourceCombo.getItems().size() > 1) {
-                sourceCombo.setValue(sourceCombo.getItems().get(1));
+            {
+                // Auto-select the culturally appropriate source based on the scenario epoch and planet
+                long scYear = (startYearSpinner != null && startYearSpinner.getValue() != null)
+                        ? startYearSpinner.getValue().longValue() : 0L;
+                String autoSrc = pickCulturalSourceForEpoch(tensorIdx, scYear, this.activePlanetPreset);
+                if (autoSrc != null && sourceCombo.getItems().contains(autoSrc)) {
+                    sourceCombo.setValue(autoSrc);
+                } else if (sourceCombo.getItems().size() > 1) {
+                    sourceCombo.setValue(sourceCombo.getItems().get(1));
+                }
             }
             tensorSourceCombos.put(tensorIdx, sourceCombo);
 
@@ -5247,17 +5365,12 @@ public class ScenarioSetupPanel extends BorderPane {
 
             double minAlt = planet != null ? planet.minAltitudeMeters() : -11000.0;
             double maxAlt = planet != null ? planet.maxAltitudeMeters() : 8848.0;
-            double wLevel = planet != null ? planet.waterLevel() : 0.38;
+            double wLevel = planet != null ? planet.waterLevel() : 0.48;
             boolean hasOcean = wLevel > -0.4;
 
             double cutThreshold;
             if (hasOcean) {
-                if (isEarth) {
-                    cutThreshold = 0.478 + (wLevel - 0.38) * 0.60;
-                } else {
-                    double altRange = Math.max(100.0, maxAlt - minAlt);
-                    cutThreshold = Math.clamp((-minAlt) / altRange + (wLevel - 0.38) * 0.50, 0.01, 0.99);
-                }
+                cutThreshold = Math.clamp(wLevel, 0.01, 0.99);
             } else {
                 double altRange = Math.max(100.0, maxAlt - minAlt);
                 cutThreshold = Math.clamp((-minAlt) / altRange, 0.05, 0.95);
@@ -5516,6 +5629,12 @@ public class ScenarioSetupPanel extends BorderPane {
                 alert.setContentText(I18n.getOrDefault("scenario.confirm_restart.content", "Lancer cette nouvelle configuration réinitialisera la simulation en cours. Souhaitez-vous continuer ?"));
                 java.util.Optional<ButtonType> res = alert.showAndWait();
                 if (res.isEmpty() || res.get() != ButtonType.OK) {
+                    return;
+                }
+            }
+            if (isDirty()) {
+                javafx.stage.Window window = getScene() != null ? getScene().getWindow() : null;
+                if (!promptSaveIfDirty(window)) {
                     return;
                 }
             }
@@ -6075,6 +6194,7 @@ public class ScenarioSetupPanel extends BorderPane {
         try {
             if (headerLabel != null) headerLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.panel.title", "📜 Scenario Configuration & Setup"));
             if (scenarioPresetHeader != null) scenarioPresetHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "🎛️ GLOBAL PRESETS & SCENARIO SAVE"));
+            if (scenarioDescLabel != null) scenarioDescLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.description", "📖 Detailed Description, Initial Conditions & Key Observables:"));
             if (planetSectionHeader != null) planetSectionHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.inherited", "🪐 INHERITED CONTEXT (TABS 1 & 2)"));
             if (title1 != null) title1.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "🌐 EPOCH & SPATIOTEMPORAL DEFINITION"));
             if (cultureHeader != null) cultureHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.culture_section", "🧠 CULTURAL VECTOR DIMENSION & MULTI-FIELD LAYERS"));

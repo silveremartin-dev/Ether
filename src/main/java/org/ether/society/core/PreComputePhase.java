@@ -76,22 +76,42 @@ public class PreComputePhase {
 
     /**
      * Compute climate (temperature, precipitation) and glaciological forcings for each cell.
-     * Preserves climate if already initialized via Tab 1 / raster tensors.
+     * Preserves climate if already initialized via Tab 1 / raster tensors, applying paleoclimate anomalies if requested.
      */
     private void computeClimate(List<H3Cell> cells) {
-        boolean hasExistingClimate = cells.stream().anyMatch(c -> c.getTemperature() != null && c.getRainfall() != null);
-        if (hasExistingClimate) {
-            logger.info("Preserving existing climate & temperature data from configuration/raster maps");
-            return;
-        }
-
-        logger.info("Computing climate and glaciological forcings procedurally...");
-        double axialTilt = scenario.getAxialTiltDegrees();
         long year = scenario.getStartDateYear();
 
         boolean isGlacialMax = year <= -12000;
         boolean isYoungerDryas = (year >= -10900 && year <= -9700) || "YOUNGER_DRYAS".equals(scenario.getPopulationDensityType());
         boolean isGreenSahara = (year >= -8000 && year <= -5000) || "GREEN_SAHARA".equals(scenario.getPopulationDensityType());
+
+        boolean hasExistingClimate = cells.stream().anyMatch(c -> c.getTemperature() != null && c.getRainfall() != null);
+        if (hasExistingClimate) {
+            logger.info("Preserving existing climate & temperature data from configuration/raster maps");
+            if (isGreenSahara || isYoungerDryas || isGlacialMax) {
+                for (H3Cell cell : cells) {
+                    double lat = cell.getLatitude();
+                    double lng = cell.getLongitude();
+                    if (isGreenSahara && lat >= 12.0 && lat <= 30.0 && lng >= -15.0 && lng <= 35.0) {
+                        cell.setRainfall(Math.max(cell.getRainfall() != null ? cell.getRainfall() : 0.0, 1200.0));
+                        if (cell.getBiome() == Biome.DESERT) cell.setBiome(Biome.SAVANNAH);
+                    }
+                    if (isYoungerDryas && lat >= 30.0 && lat <= 65.0 && lng >= -30.0 && lng <= 45.0) {
+                        if (cell.getTemperature() != null) cell.setTemperature(cell.getTemperature() - 5.5);
+                    }
+                    if (isGlacialMax) {
+                        cell.setSeaLevelOffsetMeters(-120.0);
+                    }
+                }
+                if (isGlacialMax) {
+                    org.ether.society.procedural.SeaLevelTransitionEngine.applySeaLevelTransition(cells, -120.0);
+                }
+            }
+            return;
+        }
+
+        logger.info("Computing climate and glaciological forcings procedurally...");
+        double axialTilt = scenario.getAxialTiltDegrees();
 
         for (H3Cell cell : cells) {
             double lat = cell.getLatitude();
@@ -137,7 +157,7 @@ public class PreComputePhase {
                 baseTemp = Math.min(baseTemp, 27.0);
             }
 
-            double elevEffect = -elev * 0.006;
+            double elevEffect = -Math.max(0.0, elev) * 0.006;
             double harshness = scenario.getClimateHarshness();
             double tempVariation = (random.nextDouble() - 0.5) * 10.0 * harshness;
 
@@ -176,24 +196,31 @@ public class PreComputePhase {
      * Preserves existing resources if already populated by Tab 2.
      */
     private void initializeResources(List<H3Cell> cells) {
+        // Always identify coastal cells & marine resources across the planetary grid
+        for (H3Cell cell : cells) {
+            Biome biome = cell.getBiome() != null ? cell.getBiome() : Biome.PLAINS;
+            boolean coastal = biome == Biome.BEACH || (cell.getElevation() != null && cell.getElevation() > 0 && cell.getElevation() < 150.0);
+            cell.setIsCoastal(coastal);
+            if (coastal) {
+                if (cell.getCoastalMarineResource() == null || cell.getCoastalMarineResource() == 0.0) {
+                    cell.setCoastalMarineResource(800.0 + random.nextDouble() * 200.0);
+                }
+                if (cell.getBiomassFish() == null || cell.getBiomassFish() == 0.0) {
+                    cell.setBiomassFish(1200.0);
+                }
+            } else if (biome == Biome.LAKE) {
+                if (cell.getBiomassFish() == null || cell.getBiomassFish() == 0.0) {
+                    cell.setBiomassFish(800.0);
+                }
+            }
+        }
+
         boolean hasExistingResources = cells.stream().anyMatch(c -> (c.getFoodResource() != null && c.getFoodResource() > 0)
                 || (c.getWaterResource() != null && c.getWaterResource() > 0));
 
         if (hasExistingResources) {
             logger.info("Preserving existing resource distributions (Food, Water, Wood, Minerals) from configuration/raster maps");
             for (H3Cell cell : cells) {
-                if (cell.getIsCoastal() == null) {
-                    Biome biome = cell.getBiome() != null ? cell.getBiome() : Biome.PLAINS;
-                    boolean coastal = biome == Biome.BEACH || (cell.getElevation() != null && cell.getElevation() > 0 && cell.getElevation() < 150.0);
-                    cell.setIsCoastal(coastal);
-                }
-                if (cell.getBiomassFish() == null || cell.getBiomassFish() == 0.0) {
-                    if (Boolean.TRUE.equals(cell.getIsCoastal())) {
-                        cell.setBiomassFish(1200.0);
-                    } else if (cell.getBiome() == Biome.LAKE) {
-                        cell.setBiomassFish(800.0);
-                    }
-                }
                 if (cell.getBiomassNatural() == null && cell.getFoodResource() != null) {
                     cell.setBiomassNatural(cell.getFoodResource());
                 }
@@ -214,18 +241,6 @@ public class PreComputePhase {
             Biome biome = cell.getBiome();
             if (biome == null)
                 biome = Biome.PLAINS;
-
-            // Detect coastal cell status & marine resources
-            boolean coastal = biome == Biome.BEACH || (cell.getElevation() != null && cell.getElevation() > 0 && cell.getElevation() < 150.0);
-            cell.setIsCoastal(coastal);
-            if (coastal) {
-                cell.setCoastalMarineResource(800.0 + random.nextDouble() * 200.0);
-                cell.setBiomassFish(1200.0);
-            } else if (biome == Biome.LAKE) {
-                cell.setBiomassFish(800.0);
-            } else {
-                cell.setBiomassFish(0.0);
-            }
 
             double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
 
@@ -297,9 +312,14 @@ public class PreComputePhase {
         double capitalK0 = scenario.getInitialCapitalPerCapita();
         double techLevel = Math.clamp(Math.log10(Math.max(1.0, capitalK0)) * 2.2 + 0.2, 0.2, 10.0);
         String pattern = scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL";
-        boolean isEarthPreset = scenario.getPlanetPreset() != null
-                && ((scenario.getPlanetPreset().elevationUseImport() && "earth".equalsIgnoreCase(scenario.getPlanetPreset().elevationMapSource()))
-                || (scenario.getPlanetPreset().name() != null && (scenario.getPlanetPreset().name().toLowerCase().contains("terre") || scenario.getPlanetPreset().name().toLowerCase().contains("earth"))));
+        String pType = pattern.toUpperCase();
+        boolean isEarthPreset = (scenario.getPlanetPreset() == null)
+                || (scenario.getPlanetPreset().elevationUseImport() && "earth".equalsIgnoreCase(scenario.getPlanetPreset().elevationMapSource()))
+                || (scenario.getPlanetPreset().name() != null && (scenario.getPlanetPreset().name().toLowerCase().contains("terre") || scenario.getPlanetPreset().name().toLowerCase().contains("earth")))
+                || pType.equals("EGYPT_NILE") || pType.equals("ROMAN_EMPIRE") || pType.equals("MESOAMERICA")
+                || pType.equals("AUSTRALIA_SAHUL") || pType.equals("BERINGIA_AMERICAS") || pType.equals("GREEN_SAHARA")
+                || pType.equals("YOUNGER_DRYAS") || pType.equals("WEST_AFRICA_MALI") || pType.equals("JAPAN_SAKOKU")
+                || pType.equals("INDIA_MAURYA") || pType.equals("AMERICAS_1491");
         long startYear = scenario.getStartDateYear();
 
         org.ether.society.procedural.ProceduralPopulationEngine.distributePopulation(cells, scenario, totalPop, techLevel, pattern, isEarthPreset, startYear);

@@ -60,11 +60,34 @@ public class ProceduralPopulationEngine {
             c.setBiomassHuman(0.0);
         }
 
+        // For specific Earth historical regional scenarios, ensure cradle cells are habitable
+        if (isEarthPreset && scenario != null && scenario.getPopulationDensityType() != null) {
+            String p = scenario.getPopulationDensityType().toUpperCase();
+            for (H3Cell c : cells) {
+                double lat = c.getLatitude();
+                double lng = c.getLongitude();
+                if (p.equals("EGYPT_NILE") && lat >= 15.0 && lat <= 35.0 && lng >= 22.0 && lng <= 38.0) {
+                    if (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN) c.setBiome(Biome.PLAINS);
+                    if (c.getElevation() == null || c.getElevation() <= 0) c.setElevation(150.0);
+                } else if (p.equals("MESOAMERICA") && lat >= 10.0 && lat <= 25.0 && lng >= -110.0 && lng <= -80.0) {
+                    if (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN) c.setBiome(Biome.JUNGLE);
+                    if (c.getElevation() == null || c.getElevation() <= 0) c.setElevation(250.0);
+                } else if (p.equals("ROMAN_EMPIRE") && lat >= 25.0 && lat <= 58.0 && lng >= -12.0 && lng <= 45.0) {
+                    if (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN) c.setBiome(Biome.PLAINS);
+                    if (c.getElevation() == null || c.getElevation() <= 0) c.setElevation(100.0);
+                } else if (p.equals("GREEN_SAHARA") && lat >= 10.0 && lat <= 32.0 && lng >= -18.0 && lng <= 35.0) {
+                    if (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN) c.setBiome(Biome.SAVANNAH);
+                    if (c.getElevation() == null || c.getElevation() <= 0) c.setElevation(200.0);
+                }
+            }
+        }
+
         // Filter habitable cells (including land, reclaimed polders, seasteading floating habitats, and high-tech oceanic settlements)
         List<H3Cell> landCells = cells.stream()
-                .filter(c -> (c.getElevation() != null && c.getElevation() > 0 && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
-                        || c.getIsPolder()
-                        || c.getHasFloatingInfrastructure()
+                .filter(c -> (c.getBiome() != null && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
+                        || (c.getElevation() != null && c.getElevation() > 0 && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
+                        || Boolean.TRUE.equals(c.getIsPolder())
+                        || Boolean.TRUE.equals(c.getHasFloatingInfrastructure())
                         || (techLevel >= 8.5 && (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN)))
                 .toList();
 
@@ -75,6 +98,11 @@ public class ProceduralPopulationEngine {
         long seedVal = scenario != null ? scenario.getSeed() : 12345L;
         if (isEarthPreset) {
             distributeEarthHistorical(landCells, totalPopulation, techLevel, capitalPerCapita, startYear, scenario);
+            long populatedCount = landCells.stream().filter(c -> c.getPopulation() != null && c.getPopulation() > 0).count();
+            if (populatedCount == 0) {
+                logger.info("Historical regional distribution had no populated cells; falling back to procedural distribution");
+                distributeProcedural(landCells, totalPopulation, techLevel, pattern, seedVal, capitalPerCapita);
+            }
         } else {
             distributeProcedural(landCells, totalPopulation, techLevel, pattern, seedVal, capitalPerCapita);
         }
@@ -109,17 +137,18 @@ public class ProceduralPopulationEngine {
      * Regional weighting heuristic for Earth historical geography based on techLevel.
      */
     private static double getEarthHistoricalRegionalWeight(double lat, double lng, Biome biome, double techLevel, long startYear, Scenario scenario) {
-        boolean isEastAfrica = (lat >= -15 && lat <= 15) && (lng >= 25 && lng <= 45);
-        boolean isFertileCrescent = (lat >= 28 && lat <= 38) && (lng >= 34 && lng <= 48);
-        boolean isNileDelta = (lat >= 20 && lat <= 31) && (lng >= 28 && lng <= 34);
-        boolean isIndusValley = (lat >= 22 && lat <= 34) && (lng >= 67 && lng <= 76);
-        boolean isYellowYangtzeChina = (lat >= 22 && lat <= 41) && (lng >= 102 && lng <= 122);
-        boolean isGangesIndia = (lat >= 8 && lat <= 28) && (lng >= 72 && lng <= 88);
-        boolean isMediterraneanEurope = (lat >= 35 && lat <= 58) && (lng >= -10 && lng <= 30);
-        boolean isMesoamerica = (lat >= 14 && lat <= 22) && (lng >= -105 && lng <= -88);
-        boolean isAndes = (lat >= -20 && lat <= 0) && (lng >= -80 && lng <= -65);
-        boolean isSahulAustralia = (lat < 10.0 && lng > 95.0) || (lat < -10.0 && lng > 110.0);
+        boolean isEastAfrica = (lat >= -15.0 && lat <= 15.0) && (lng >= 25.0 && lng <= 45.0);
+        boolean isFertileCrescent = (lat >= 25.0 && lat <= 40.0) && (lng >= 32.0 && lng <= 50.0);
+        boolean isNileDelta = (lat >= 15.0 && lat <= 35.0) && (lng >= 22.0 && lng <= 38.0);
+        boolean isIndusValley = (lat >= 20.0 && lat <= 35.0) && (lng >= 65.0 && lng <= 78.0);
+        boolean isYellowYangtzeChina = (lat >= 20.0 && lat <= 42.0) && (lng >= 100.0 && lng <= 125.0);
+        boolean isGangesIndia = (lat >= 8.0 && lat <= 30.0) && (lng >= 70.0 && lng <= 90.0);
+        boolean isMediterraneanEurope = (lat >= 25.0 && lat <= 58.0) && (lng >= -12.0 && lng <= 45.0);
+        boolean isMesoamerica = (lat >= 10.0 && lat <= 25.0) && (lng >= -110.0 && lng <= -80.0);
+        boolean isAndes = (lat >= -25.0 && lat <= 5.0) && (lng >= -82.0 && lng <= -62.0);
+        boolean isSahulAustralia = (lat < 10.0 && lng > 95.0) || (lat < -8.0 && lng > 110.0);
         boolean isAmericas = lng < -25.0;
+        boolean isSahara = (lat >= 10.0 && lat <= 32.0) && (lng >= -18.0 && lng <= 35.0);
 
         // Specific regional historical density pattern overrides if set
         if (scenario != null && scenario.getPopulationDensityType() != null) {
@@ -133,9 +162,9 @@ public class ProceduralPopulationEngine {
                 case "JAPAN_SAKOKU" -> { return (lat >= 30.0 && lat <= 45.0 && lng >= 128.0 && lng <= 146.0) ? 20.0 : 0.0; }
                 case "INDIA_MAURYA" -> { return (isGangesIndia || isIndusValley) ? 20.0 : 0.0; }
                 case "AMERICAS_1491" -> { return isAmericas ? 15.0 : 0.0; }
-                case "BERINGIA_AMERICAS" -> { return (lat >= 55.0 && lat <= 72.0 && (lng >= 150.0 || lng <= -150.0)) ? 20.0 : 0.0; }
-                case "GREEN_SAHARA" -> { return (lat >= 12.0 && lat <= 28.0 && lng >= -10.0 && lng <= 30.0) ? 20.0 : 0.0; }
-                case "YOUNGER_DRYAS" -> { return (lat >= 30.0 && lat <= 38.0 && lng >= 30.0 && lng <= 42.0) ? 20.0 : 0.0; }
+                case "BERINGIA_AMERICAS" -> { return (lat >= 50.0 && lat <= 75.0 && (lng >= 140.0 || lng <= -140.0)) ? 20.0 : 0.0; }
+                case "GREEN_SAHARA" -> { return isSahara ? 20.0 : 0.0; }
+                case "YOUNGER_DRYAS" -> { return (lat >= 28.0 && lat <= 40.0 && lng >= 28.0 && lng <= 45.0) ? 20.0 : 0.0; }
             }
         }
 
@@ -553,7 +582,10 @@ public class ProceduralPopulationEngine {
         // Adjust rounding discrepancy on highest weight cell
         long diff = totalPopulation - assigned;
         if (diff != 0 && !landCells.isEmpty()) {
-            H3Cell topCell = landCells.get(0);
+            H3Cell topCell = landCells.stream()
+                    .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
+                    .max(Comparator.comparingInt(H3Cell::getPopulation))
+                    .orElse(landCells.get(0));
             long newTopPop = Math.clamp((long) topCell.getPopulation() + diff, 0L, (long) Integer.MAX_VALUE);
             topCell.setPopulation((int) newTopPop);
             topCell.setBiomassHuman((double) newTopPop);

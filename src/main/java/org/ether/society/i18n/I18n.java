@@ -199,14 +199,22 @@ public class I18n {
             return getOrDefault("planet.preset.super_earth", "Super-Terre (Gaia Prime)");
         } else if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire") || lower.contains("eemian")) {
             return getOrDefault("planet.preset.earth_lig", "Terre (-100 000 / Dernier Interglaciaire)");
-        } else if (lower.contains("-20") || lower.contains("lgm") || (lower.contains("glaciaire") && (lower.contains("maximum") || lower.contains("dernier")))) {
+        } else if (lower.contains("-50") || lower.contains("mis3") || lower.contains("mis 3") || lower.contains("sahul")) {
+            return getOrDefault("planet.preset.earth_mis3", "Terre (-50 000 / Stade Isotopique 3 & Sahul)");
+        } else if (lower.contains("-25") || lower.contains("béringie") || lower.contains("beringia")) {
+            return getOrDefault("planet.preset.earth_lgm_onset", "Terre (-25 000 / Début LGM & Béringie)");
+        } else if (lower.contains("-20") || lower.contains("lgm") || lower.contains("maximum glaciaire") || lower.contains("last glacial maximum") || lower.contains("末次盛冰期") || lower.contains("letztes glaziales maximum")) {
             return getOrDefault("planet.preset.earth_lgm", "Terre (-20 000 / Maximum Glaciaire)");
-        } else if (lower.contains("-10") || lower.contains("eh") || lower.contains("précoce") || lower.contains("early holocene")) {
+        } else if (lower.contains("-10000") || lower.contains("-10 000") || lower.contains("eh") || lower.contains("précoce") || lower.contains("early holocene") || lower.contains("frühholozän") || lower.contains("早全新世")) {
             return getOrDefault("planet.preset.earth_eh", "Terre (-10 000 / Holocène Précoce)");
-        } else if (lower.contains("-6") || lower.contains("mh") || lower.contains("sahara vert") || lower.contains("green sahara") || lower.contains("mid holocene")) {
+        } else if (lower.contains("-6000") || lower.contains("-6 000") || lower.contains("mh") || lower.contains("sahara") || lower.contains("mid holocene") || lower.contains("绿色撒哈拉") || lower.contains("grüne sahara")) {
             return getOrDefault("planet.preset.earth_mh", "Terre (-6 000 / Sahara Vert)");
-        } else if (lower.contains("-3") || lower.contains("lh") || lower.contains("tardif") || lower.contains("late holocene")) {
+        } else if (lower.contains("-3000") || lower.contains("-3 000") || lower.contains("lh") || lower.contains("tardif") || lower.contains("late holocene") || lower.contains("spätholozän") || lower.contains("晚全新世")) {
             return getOrDefault("planet.preset.earth_lh", "Terre (-3 000 / Holocène Tardif)");
+        } else if (lower.contains("-1900") || lower.contains("-1 900") || lower.contains("bronze") || lower.contains("青铜时代")) {
+            return getOrDefault("planet.preset.earth_bronze", "Terre (-1 900 / Âge du Bronze Moyen)");
+        } else if (lower.contains("-1000") || lower.contains("-1 000") || lower.contains("iron") || lower.contains("fer") || lower.contains("eisenzeit") || lower.contains("hierro") || lower.contains("铁器时代")) {
+            return getOrDefault("planet.preset.earth_iron", "Terre (-1 000 / Début Âge du Fer)");
         } else if (lower.contains("2026") || lower.contains("moderne") || lower.contains("modern") || lower.contains("anthropocène") || lower.contains("anthropocene")) {
             return getOrDefault("planet.preset.earth_modern", "Terre (2026 / Moderne)");
         } else if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) {
@@ -219,6 +227,8 @@ public class I18n {
             return getOrDefault("planet.preset.titan", "Titan (Cryo-Lune)");
         } else if (lower.contains("lune") || lower.contains("moon") || lower.contains("selene")) {
             return getOrDefault("planet.preset.moon", "Lune (Selene)");
+        } else if (lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes")) {
+            return getOrDefault("planet.preset.mercury", "Mercure (Hermes)");
         } else if (lower.contains("synchrone") || lower.contains("eyeball")) {
             return getOrDefault("planet.preset.eyeball", "Monde Synchrone (Eyeball)");
         } else if (lower.contains("océan") || lower.contains("ocean") || lower.contains("oceania")) {
@@ -229,6 +239,48 @@ public class I18n {
             return getOrDefault("planet.preset.archipelago", "Archipel");
         }
         return name;
+    }
+
+    /**
+     * Get localized description for a planet preset.
+     * Falls back to the display name if no dedicated description key exists.
+     */
+    public static String getPlanetPresetDescription(String name) {
+        String displayName = getPlanetPresetDisplayName(name);
+        // Try a dedicated description key derived from the display name key
+        String lower = name == null ? "" : name.toLowerCase();
+        String descKey = null;
+        if (lower.contains("-100") || lower.contains("lig")) descKey = "planet.preset.earth_lig.desc";
+        else if (lower.contains("-50") || lower.contains("mis3")) descKey = "planet.preset.earth_mis3.desc";
+        else if (lower.contains("-25") || lower.contains("beringia") || lower.contains("béringie")) descKey = "planet.preset.earth_lgm_onset.desc";
+        else if (lower.contains("-20") || lower.contains("lgm")) descKey = "planet.preset.earth_lgm.desc";
+        else if (lower.contains("-10000") || lower.contains("early holocene") || lower.contains("précoce")) descKey = "planet.preset.earth_eh.desc";
+        else if (lower.contains("-6000") || lower.contains("sahara")) descKey = "planet.preset.earth_mh.desc";
+        else if (lower.contains("-3000") || lower.contains("late holocene") || lower.contains("tardif")) descKey = "planet.preset.earth_lh.desc";
+        else if (lower.contains("-1900") || lower.contains("bronze")) descKey = "planet.preset.earth_bronze.desc";
+        else if (lower.contains("-1000") || lower.contains("iron") || lower.contains("fer")) descKey = "planet.preset.earth_iron.desc";
+        else if (lower.contains("2026") || lower.contains("modern")) descKey = "planet.preset.earth_modern.desc";
+        else if (lower.contains("mars")) descKey = "planet.preset.mars.desc";
+        else if (lower.contains("venus") || lower.contains("vénus")) descKey = "planet.preset.venus.desc";
+        else if (lower.contains("titan")) descKey = "planet.preset.titan.desc";
+        else if (lower.contains("moon") || lower.contains("lune")) descKey = "planet.preset.moon.desc";
+        else if (lower.contains("mercury") || lower.contains("mercure")) descKey = "planet.preset.mercury.desc";
+        if (descKey != null && bundle != null && bundle.containsKey(descKey)) {
+            return sanitize(bundle.getString(descKey));
+        }
+        if (descKey != null && defaultBundle != null && defaultBundle.containsKey(descKey)) {
+            return sanitize(defaultBundle.getString(descKey));
+        }
+        return displayName;
+    }
+
+    /**
+     * Get localized description for an ecology preset.
+     * Falls back to the planet preset description for the same epoch.
+     */
+    public static String getEcologyPresetDescription(String name) {
+        // Ecology presets share the same epoch naming as planet presets
+        return getPlanetPresetDescription(name);
     }
 
     /**

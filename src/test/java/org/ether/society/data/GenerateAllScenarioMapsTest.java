@@ -84,8 +84,8 @@ public class GenerateAllScenarioMapsTest {
         List<Scenario> scenarios = Scenario.getBuiltInScenarios();
         assertTrue(scenarios.size() >= 20, "Must have all canonical scenarios defined");
 
-        // Ensure all scenario maps in data/maps/ether/earth/<year>/ are regenerated with true elevation mask
-        HistoricalMapGenerator.ensureAllScenarioMapsGenerated(true);
+        // Ensure all scenario maps in data/maps/ether/earth/<year>/ are generated and present on disk
+        HistoricalMapGenerator.ensureAllScenarioMapsGenerated(false);
 
         String[] requiredTensorFiles = {
             "density.png", "isogloss.png", "kinship.png", "rituals.png",

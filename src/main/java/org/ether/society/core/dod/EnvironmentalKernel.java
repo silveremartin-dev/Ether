@@ -154,18 +154,21 @@ public class EnvironmentalKernel {
 
     /**
      * Net primary photosynthetic & trophic energy production rate per biome in Gigajoules per year (GJ/yr).
+     * Scaled for macro-hexagonal cells (1,250 to 11,000 km²) supporting preindustrial & historical bands.
      */
     private float getBiomeProductionRate(Biome biome) {
         return switch (biome) {
-            case JUNGLE -> 336.2f;
-            case FOREST -> 269.0f;
-            case PLAINS -> 201.7f;
-            case SAVANNAH -> 168.1f;
-            case HILLS -> 134.5f;
-            case BEACH -> 100.9f;
-            case MOUNTAINS -> 67.2f;
-            case OCEAN, DEEP_OCEAN -> 168.1f;
-            default -> 33.6f;
+            case JUNGLE -> 3500.0f;
+            case FOREST -> 2800.0f;
+            case SAVANNAH -> 3000.0f;
+            case PLAINS -> 2500.0f;
+            case HILLS -> 1800.0f;
+            case BEACH, LAKE -> 1500.0f;
+            case MOUNTAINS -> 800.0f;
+            case OCEAN, DEEP_OCEAN -> 1200.0f;
+            case TUNDRA -> 600.0f;
+            case DESERT -> 150.0f;
+            default -> 300.0f;
         };
     }
 }

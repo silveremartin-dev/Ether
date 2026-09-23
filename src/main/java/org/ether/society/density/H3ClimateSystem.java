@@ -83,8 +83,8 @@ public class H3ClimateSystem {
         // Seasonal effect is stronger at higher latitudes
         seasonalOffset *= latFactor;
 
-        // 3. Elevation effect (lapse rate: ~6°C per 1000m)
-        double elevationOffset = -elevation * elevationLapseRate;
+        // 3. Elevation effect (lapse rate: ~6°C per 1000m on land above sea level)
+        double elevationOffset = -Math.max(0.0, elevation) * elevationLapseRate;
 
         return baseTemp + seasonalOffset + elevationOffset;
     }

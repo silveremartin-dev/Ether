@@ -712,14 +712,21 @@ public class H3SimulationEngine implements ISimulationEngine {
         return t;
     });
 
+    private long lastAutoSaveTimeMs = 0;
+
     private void autoSaveCheckpoint() {
         if (cells == null || cells.isEmpty()) return;
+        long now = System.currentTimeMillis();
+        if (now - lastAutoSaveTimeMs < 30_000L) {
+            return;
+        }
+        lastAutoSaveTimeMs = now;
         final int currentTick = tickCounter;
         saveExecutor.submit(() -> {
             try {
                 simulationSaveManager.saveCheckpoint(this, currentTick);
             } catch (Exception ex) {
-                logger.error("Failed to save 60-tick checkpoint", ex);
+                logger.error("Failed to save periodic checkpoint", ex);
             }
         });
     }
@@ -754,6 +761,9 @@ public class H3SimulationEngine implements ISimulationEngine {
                 biomes[i] = (byte) cell.getBiome().ordinal();
             } else if (biomes[i] >= 0 && biomes[i] < biomeValues.length) {
                 cell.setBiome(biomeValues[biomes[i]]);
+            }
+            if (p > 0) {
+                cell.updateAgePyramidFromTotal(cell.getTechnologyLevel() != null && cell.getTechnologyLevel() > 0 ? cell.getTechnologyLevel() : 1.0);
             }
         }
     }
@@ -1157,27 +1167,30 @@ public class H3SimulationEngine implements ISimulationEngine {
         int[] cohorts = new int[7];
         if (agentBuffer != null && agentBuffer.getCapacity() > 0) {
             float[] ages = agentBuffer.getAge();
+            float[] masses = agentBuffer.getMass();
             int[] hexIds = agentBuffer.getHexIds();
             for (int i = 0; i < agentBuffer.getCapacity(); i++) {
                 if (hexIds != null && hexIds[i] == -1) continue;
                 float age = ages != null ? ages[i] : 25.0f;
-                if (age < 15) cohorts[0]++;
-                else if (age < 25) cohorts[1]++;
-                else if (age < 40) cohorts[2]++;
-                else if (age < 55) cohorts[3]++;
-                else if (age < 70) cohorts[4]++;
-                else if (age < 85) cohorts[5]++;
-                else cohorts[6]++;
+                float m = masses != null ? masses[i] : 1.0f;
+                if (m <= 0) continue;
+                int count = Math.max(1, (int) Math.round(m));
+                if (age < 15) cohorts[0] += count;
+                else if (age < 25) cohorts[1] += count;
+                else if (age < 40) cohorts[2] += count;
+                else if (age < 55) cohorts[3] += count;
+                else if (age < 70) cohorts[4] += count;
+                else if (age < 85) cohorts[5] += count;
+                else cohorts[6] += count;
             }
-            // Scale by cohort weight if agents represent demographic cohorts
-            int cohortSize = currentScenario != null && currentScenario.getTargetCohortSize() > 0 ? currentScenario.getTargetCohortSize() : 150;
             long realPop = getTotalPopulation();
             long agentSum = 0; for (int c : cohorts) agentSum += c;
-            if (agentSum > 0 && realPop > agentSum) {
+            if (agentSum > 0 && Math.abs(realPop - agentSum) > 5) {
                 double scale = (double) realPop / agentSum;
-                for (int i = 0; i < 7; i++) cohorts[i] = (int) (cohorts[i] * scale);
+                for (int i = 0; i < 7; i++) cohorts[i] = (int) Math.round(cohorts[i] * scale);
             }
-        } else {
+        }
+        if (cohorts[0] == 0 && cohorts[1] == 0 && cohorts[2] == 0 && cohorts[3] == 0 && cohorts[4] == 0 && cohorts[5] == 0 && cohorts[6] == 0) {
             long pop = getTotalPopulation();
             float life = getCurrentLifeExpectancy();
             double c0_pct = Math.max(0.12, 0.35 - (life - 30.0) * 0.003);

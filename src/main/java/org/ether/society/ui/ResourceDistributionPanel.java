@@ -114,6 +114,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
     // Presets Bar
     private PresetControlBar<EcologyPreset> ecologyPresetBar;
+    private TextArea ecologyDescriptionArea;
 
     // Scientific Resource Sliders (Metric Units)
     private Slider terrestrialBiomassSlider;  // GtC (Gigatons of Carbon)
@@ -457,28 +458,33 @@ public class ResourceDistributionPanel extends BorderPane {
         ecologyPresetBar.setExportCategory("ecology");
         ecologyPresetBar.setPresets(EcologyPreset.getBuiltInPresets(), EcologyPreset.EARTH_STANDARD);
 
+        ecologyDescriptionArea = new TextArea();
+        ecologyDescriptionArea.setPrefRowCount(4);
+        ecologyDescriptionArea.setWrapText(true);
+        ecologyDescriptionArea.setEditable(false);
+        ecologyDescriptionArea.getStyleClass().add("glass-text-area");
+        ecologyDescriptionArea.setStyle("-fx-font-size: 11px; -fx-text-fill: #e2e8f0; -fx-background-color: rgba(15, 23, 42, 0.6); -fx-border-color: rgba(255, 255, 255, 0.15); -fx-border-radius: 4; -fx-background-radius: 4;");
+
         ecologyPresetBar.setListener(new PresetControlBar.PresetActionsListener<EcologyPreset>() {
             @Override
             public void onPresetSelected(EcologyPreset preset) {
+                if (preset != null) {
+                    PlanetPreset p = preset.embeddedPlanetPreset() != null
+                            ? preset.embeddedPlanetPreset()
+                            : findPlanetPresetByName(preset.planetPresetName());
+                    if (p != null) {
+                        activePlanetPreset = p;
+                        if (planetPresetCombo != null) {
+                            planetPresetCombo.setValue(p);
+                        }
+                        if (planetPresetApplyCallback != null) {
+                            planetPresetApplyCallback.accept(p);
+                        }
+                    }
+                }
                 applyEcologyPreset(preset);
                 if (viewModeCombo != null) {
                     viewModeCombo.getSelectionModel().select(1);
-                }
-                if (preset != null) {
-                    if (preset.embeddedPlanetPreset() != null) {
-                        setActivePlanetPreset(preset.embeddedPlanetPreset());
-                        if (planetPresetApplyCallback != null) {
-                            planetPresetApplyCallback.accept(preset.embeddedPlanetPreset());
-                        }
-                    } else if (preset.planetPresetName() != null) {
-                        PlanetPreset p = findPlanetPresetByName(preset.planetPresetName());
-                        if (p != null) {
-                            setActivePlanetPreset(p);
-                            if (planetPresetApplyCallback != null) {
-                                planetPresetApplyCallback.accept(p);
-                            }
-                        }
-                    }
                 }
             }
 
@@ -567,18 +573,8 @@ public class ResourceDistributionPanel extends BorderPane {
         mapSourceCombo = new ComboBox<>();
         mapSourceCombo.getItems().addAll("none", "earth", "mars", "venus", "moon", "mercury");
         mapSourceCombo.setValue("none");
-        mapSourceCombo.setCellFactory(p -> new ListCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText("");
-                } else {
-                    setText("none".equals(item) ? I18n.getOrDefault("common.combo.prompt_source", "— Select Data Source —") : I18n.getOrDefault("planet.map." + item, item));
-                }
-            }
-        });
-        mapSourceCombo.setButtonCell(mapSourceCombo.getCellFactory().call(null));
+        org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
+                mapSourceCombo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
         mapSourceCombo.setMaxWidth(Double.MAX_VALUE);
         mapSourceCombo.setOnAction(e -> applyPresetMapSource(mapSourceCombo.getValue()));
 
@@ -885,13 +881,8 @@ public class ResourceDistributionPanel extends BorderPane {
         biomeSourceCombo = new ComboBox<>();
         biomeSourceCombo.getItems().addAll("none", "earth", "mars", "venus", "moon", "mercury");
         biomeSourceCombo.setValue("none");
-        biomeSourceCombo.setCellFactory(p -> new ListCell<>() {
-            @Override protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null || "none".equals(item) ? I18n.getOrDefault("common.combo.prompt_source", "— Select Data Source —") : I18n.getOrDefault("planet.map." + item, item));
-            }
-        });
-        biomeSourceCombo.setButtonCell(biomeSourceCombo.getCellFactory().call(null));
+        org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
+                biomeSourceCombo, "common.combo.prompt_source", "resource.desc.import_biome_map");
         biomeSourceCombo.setMaxWidth(Double.MAX_VALUE);
         biomeSourceCombo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
@@ -979,13 +970,8 @@ public class ResourceDistributionPanel extends BorderPane {
         hydroSourceCombo = new ComboBox<>();
         hydroSourceCombo.getItems().addAll("none", "earth", "mars", "venus", "moon", "mercury");
         hydroSourceCombo.setValue("none");
-        hydroSourceCombo.setCellFactory(p -> new ListCell<>() {
-            @Override protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null || "none".equals(item) ? I18n.getOrDefault("common.combo.prompt_source", "— Select Data Source —") : I18n.getOrDefault("planet.map." + item, item));
-            }
-        });
-        hydroSourceCombo.setButtonCell(hydroSourceCombo.getCellFactory().call(null));
+        org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
+                hydroSourceCombo, "common.combo.prompt_source", "resource.desc.import_hydro_map");
         hydroSourceCombo.setMaxWidth(Double.MAX_VALUE);
         hydroSourceCombo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
@@ -1072,13 +1058,8 @@ public class ResourceDistributionPanel extends BorderPane {
                 "⚪ Mercure — MESSENGER MLA & Polar Ice Model"
         );
         climateSourceCombo.setValue("none");
-        climateSourceCombo.setCellFactory(p -> new ListCell<>() {
-            @Override protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null || "none".equals(item) ? I18n.getOrDefault("common.combo.prompt_source", "— Select Data Source —") : item);
-            }
-        });
-        climateSourceCombo.setButtonCell(climateSourceCombo.getCellFactory().call(null));
+        org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
+                climateSourceCombo, "common.combo.prompt_source", "planet.tooltip.climate_map");
         climateSourceCombo.setMaxWidth(Double.MAX_VALUE);
         climateSourceCombo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
@@ -1144,7 +1125,6 @@ public class ResourceDistributionPanel extends BorderPane {
         });
         HBox geologySeedBox = new HBox(5, geologySeedField, geologyRandBtn);
         HBox.setHgrow(geologySeedField, Priority.ALWAYS);
-        HBox.setHgrow(geologySeedField, Priority.ALWAYS);
 
         Button exportGeologyBtn = new Button(I18n.getOrDefault("resource.btn.export_geology", "📤 Export Geological Map (PNG + WorldFile)"));
         exportGeologyBtn.setMaxWidth(Double.MAX_VALUE);
@@ -1177,13 +1157,8 @@ public class ResourceDistributionPanel extends BorderPane {
         geologySourceCombo = new ComboBox<>();
         geologySourceCombo.getItems().addAll("none", "earth", "mars", "venus", "moon", "mercury");
         geologySourceCombo.setValue("none");
-        geologySourceCombo.setCellFactory(p -> new ListCell<>() {
-            @Override protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null || "none".equals(item) ? I18n.getOrDefault("common.combo.prompt_source", "— Select Data Source —") : I18n.getOrDefault("planet.map." + item, item));
-            }
-        });
-        geologySourceCombo.setButtonCell(geologySourceCombo.getCellFactory().call(null));
+        org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
+                geologySourceCombo, "common.combo.prompt_source", "resource.desc.import_geology_map");
         geologySourceCombo.setMaxWidth(Double.MAX_VALUE);
         geologySourceCombo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
@@ -1223,6 +1198,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 headerLabel,
                 validationWarningBanner,
                 ecologyPresetBar,
+                ecologyDescriptionArea,
                 planetSection,
                 biomeDomainSection,
                 hydroDomainSection,
@@ -1603,6 +1579,10 @@ public class ResourceDistributionPanel extends BorderPane {
     public void applyEcologyPreset(EcologyPreset p) {
         if (p == null) return;
         isUpdatingFromPreset = true;
+
+        if (ecologyDescriptionArea != null) {
+            ecologyDescriptionArea.setText(p.getPresetDescription());
+        }
 
         terrestrialBiomassSlider.setValue(p.terrestrialBiomassGtC());
         soilCarbonSlider.setValue(p.soilOrganicCarbonGtC());
@@ -2615,19 +2595,13 @@ public class ResourceDistributionPanel extends BorderPane {
 
                 double minAlt = planet != null ? planet.minAltitudeMeters() : -11000.0;
                 double maxAlt = planet != null ? planet.maxAltitudeMeters() : 8848.0;
-                double wLvl = planet != null ? planet.waterLevel() : 0.38;
+                double wLvl = planet != null ? planet.waterLevel() : 0.48;
                 boolean hasOcean = wLvl > -0.4;
 
                 double cutThreshold;
                 if (hasOcean) {
                     // Ocean-bearing world: Sea level threshold
-                    boolean isEtopoEarth = planet == null || "earth".equalsIgnoreCase(planet.elevationMapSource()) || (planet.name() != null && planet.name().toLowerCase().contains("terre"));
-                    if (isEtopoEarth) {
-                        cutThreshold = 0.478 + (wLvl - 0.38) * 0.60;
-                    } else {
-                        double altRange = Math.max(100.0, maxAlt - minAlt);
-                        cutThreshold = Math.clamp((-minAlt) / altRange + (wLvl - 0.38) * 0.50, 0.01, 0.99);
-                    }
+                    cutThreshold = Math.clamp(wLvl, 0.01, 0.99);
                 } else {
                     // Dry / waterless world (Mars, Moon, Mercury, Venus): Datum Z = 0 km reference
                     double altRange = Math.max(100.0, maxAlt - minAlt);
@@ -3051,7 +3025,9 @@ public class ResourceDistributionPanel extends BorderPane {
         isUpdatingFromPreset = true;
         try {
             if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("resource.title", "RESOURCE DISTRIBUTION & ECOLOGY (SCIENTIFIC METRICS)"));
-            if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("resource.title", "RESOURCE DISTRIBUTION & ECOLOGY (SCIENTIFIC METRICS)"));
+            if (ecologyDescriptionArea != null && ecologyPresetBar != null && ecologyPresetBar.getPresetCombo() != null && ecologyPresetBar.getPresetCombo().getValue() != null) {
+                ecologyDescriptionArea.setText(ecologyPresetBar.getPresetCombo().getValue().getPresetDescription());
+            }
             if (planetSectionHeader != null) planetSectionHeader.setText(I18n.getOrDefault("resource.section.planet_preset", "PLANETARY PARAMETERS"));
             if (biomeDomainSecHeader != null) biomeDomainSecHeader.setText(I18n.getOrDefault("resource.domain.biome", "BIOME & FLORA DOMAIN (VEGETATION)"));
             if (hydroDomainSecHeader != null) hydroDomainSecHeader.setText(I18n.getOrDefault("resource.domain.hydro", "HYDROGRAPHY & FRESHWATER DOMAIN"));
@@ -3795,13 +3771,8 @@ public class ResourceDistributionPanel extends BorderPane {
                 "Global Planetary Survey"
             );
         }
-        combo.setCellFactory(p -> new ListCell<>() {
-            @Override protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null || item.isEmpty() ? I18n.getOrDefault("common.combo.prompt_source", "— Select a data source —") : item);
-            }
-        });
-        combo.setButtonCell(combo.getCellFactory().call(null));
+        org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
+                combo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
         combo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
             String val = combo.getValue();
@@ -3832,8 +3803,6 @@ public class ResourceDistributionPanel extends BorderPane {
                 updatePreviewCanvas();
             }
         });
-        combo.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.map_source_hint",
-                "Select reference data source. The 'Load Map' button below allows importing your local file.")));
         return combo;
     }
 

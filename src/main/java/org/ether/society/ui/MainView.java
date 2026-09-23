@@ -731,17 +731,12 @@ public class MainView extends StackPane {
                 int day = engine.getTimeManager().getCurrentDay();
                 String dateStr = String.format("An %d - M.%02d D.%02d", year, month + 1, day);
 
-                if (isRecording) {
-                    javafx.application.Platform.runLater(() -> {
-                        if (mapCanvas != null) {
-                            mapCanvas.setCurrentDateStr(dateStr);
-                        }
-                    });
+                if (isRecording && mapCanvas != null) {
+                    mapCanvas.setCurrentDateStr(dateStr);
                 }
 
-                if (now - lastUiUpdateNanos.get() >= 16_000_000L) {
+                if (now - lastUiUpdateNanos.get() >= 33_000_000L) {
                     if (renderPending.compareAndSet(false, true)) {
-                        lastUiUpdateNanos.set(now);
                         javafx.application.Platform.runLater(() -> {
                             try {
                                 if (mapCanvas != null) {
@@ -756,6 +751,7 @@ public class MainView extends StackPane {
                                     controlPanel.updateYear(dateStr);
                                 }
                             } finally {
+                                lastUiUpdateNanos.set(System.nanoTime());
                                 renderPending.set(false);
                             }
                         });
@@ -799,7 +795,9 @@ public class MainView extends StackPane {
                             ((org.ether.society.core.H3SimulationEngine)engine).getCurrentTPS()
                         );
 
-                        statsPanel.update();
+                        if (statsPanel != null && statsPanel.isVisible()) {
+                            statsPanel.update();
+                        }
 
                         controlPanel.updateSeason(engine.getTimeManager().getCurrentMonth());
                     }

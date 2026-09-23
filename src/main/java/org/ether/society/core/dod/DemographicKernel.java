@@ -123,23 +123,54 @@ public class DemographicKernel {
             }
             
             // --- Cycle Naissances / Décès ---
-            // Taux de natalité annuel (2% à 4.5% par an selon le niveau d'énergie)
-            float fertility = (energy[i] > 50.0f ? 0.035f : 0.010f);
+            // Fécondité biologique dépendante de l'âge de la cohorte (Wood 1994, Coale-Trussell)
+            // 0% avant 15 ans et après 48 ans (ménopause), pic reproductif entre 20 et 35 ans
+            float ageFecundity;
+            if (ageYears < 15.0f || ageYears >= 48.0f) {
+                ageFecundity = 0.0f; // Infécondité infantile & post-ménopause stricte
+            } else if (ageYears >= 20.0f && ageYears <= 35.0f) {
+                ageFecundity = 1.0f; // Fenêtre optimale de fertilité
+            } else if (ageYears < 20.0f) {
+                ageFecundity = (ageYears - 15.0f) / 5.0f; // Transition adolescente (15-20 ans)
+            } else {
+                ageFecundity = Math.max(0.0f, (48.0f - ageYears) / 13.0f); // Déclin préménopause (35-48 ans)
+            }
+
+            // Taux de natalité annuel effectif (3.5% à 6% en âge fertile optimal selon l'énergie)
+            float baseFertility = (energy[i] > 50.0f ? 0.055f : 0.020f);
+            float fertility = baseFertility * ageFecundity;
             float newBirths = m * fertility * dtInYears;
             births[i] = newBirths;
 
-            // Taux de mortalité annuel (Loi de Gompertz-Makeham + famine)
+            // Mortalité infantile physique (1.5% à 25% selon le stock de capital physique K/m, l'eau et la nutrition)
+            // Le niveau technologique reste un simple observable dérivé du capital et de l'entropie
+            float capitalPerCapita = m > 0.001f ? (world.getResourceCapital()[hIdx] / m) : 0.0f;
+            float waterSecurity = world.getWaterResource()[hIdx] > 10.0f ? 1.0f : 0.3f;
+            float hygieneFactor = (float) Math.exp(-capitalPerCapita / 50.0f); // 1.0 (paléolithique) -> 0.0 (sanitaire moderne)
+            float infantMortalityRate = Math.clamp(0.015f + 0.20f * hygieneFactor * (2.0f - foodSatisfaction) * (2.0f - waterSecurity), 0.015f, 0.45f);
+            float survivingNewborns = newBirths * (1.0f - infantMortalityRate);
+
+            // Taux de mortalité adulte/sénescente annuel (Loi de Gompertz-Makeham + famine)
             float baseMortality = 0.015f; // 1.5% baseline
             float ageMortality = (float) (Math.pow(ageYears / 75.0f, 3.5) * 0.04f); // Sénescence
             float starvationMortality = (energy[i] < 20.0f ? 0.15f * (1.0f - energy[i] / 20.0f) : 0.0f);
             
             float annualMortality = Math.min(0.95f, baseMortality + ageMortality + starvationMortality);
-            float newDeaths = m * annualMortality * dtInYears;
-            deaths[i] = newDeaths;
+            float adultDeaths = m * annualMortality * dtInYears;
+            float totalDeaths = adultDeaths + (newBirths - survivingNewborns);
+            deaths[i] = totalDeaths;
 
-            // Solde démographique de la cohorte
-            float newMass = m + newBirths - newDeaths;
+            // Solde démographique net de la cohorte
+            float newMass = m + survivingNewborns - adultDeaths;
             mass[i] = Math.max(0.0f, newMass);
+
+            // Dynamique de renouvellement générationnel de l'âge moyen :
+            // Les nouveau-nés survivants entrent strictement à l'âge 0.0f (0 * survivingNewborns), rajeunissant la cohorte.
+            if (newMass > minMassThreshold) {
+                float survivingMass = Math.max(0.0f, m - adultDeaths);
+                float updatedMeanAge = (ageYears * survivingMass + 0.0f * survivingNewborns) / newMass;
+                age[i] = Math.max(0.0f, Math.min(95.0f, updatedMeanAge));
+            }
 
             // Accumulation dans la biomasse humaine de la cellule H3
             biomassHuman[hIdx] += mass[i];
@@ -177,7 +208,7 @@ public class DemographicKernel {
                     agents.getH3Indexes()[newSlot] = agents.getH3Indexes()[i];
                     agents.getTechLevel()[newSlot] = agents.getTechLevel()[i];
                     agents.getGenerationCount()[newSlot] = agents.getGenerationCount()[i] + 1;
-                    agents.getAge()[newSlot] = 0; // Nouvelle cohorte repart à 0
+                    agents.getAge()[newSlot] = Math.max(5.0f, (float) (Math.random() * 22.0)); // Nouvelle cohorte jeune (5-22 ans)
                     
                     // Héritage avec mutation (bruit)
                     for (int d = 0; d < 4; d++) {

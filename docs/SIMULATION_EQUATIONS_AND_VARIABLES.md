@@ -654,3 +654,46 @@ Ether decouples numerical integration across three discrete physical time scales
 | **Ore Grade Exergy Depletion (`OreGradeThermodynamicsEngine`)** | Tier 3 | Annual ($\Delta t = 365\text{d}$) | Hyperbolic exergy work $O(1)$ | $0.1\text{ ms}$ |
 | **Viscoelastic GIA (`GlacialIsostaticAdjustmentEngine`)** | Tier 3 | Annual ($\Delta t = 365\text{d}$) | Relaxation PDE $O(1)$ | $0.4\text{ ms}$ |
 | **Historical Telemetry Kernel (`SeshatDataIntegrator`)** | Tier 3 | Annual ($\Delta t = 365\text{d}$) | Statistical $R^2$ / RMSE regression | $0.2\text{ ms}$ |
+
+---
+
+## 6. Spatiotemporal Cartographic Tensors & Cultural Affinity Matrix
+
+### 6.1 Multi-Channel Cartographic Tensor Architecture (2048 × 1024, 2:1 Equirectangular)
+The simulation state at $T_0$ is initialized from a coupled tensor stack:
+
+1. **24-bit Categorical RGB Entity Tensors**:
+   - **Tensor 0 (Isoglosses / Languages)**: $\text{RGB}(R,G,B) \leftrightarrow \text{Language Family / Glottolog Clade ID}$.
+   - **Tensor 1 (Kinship & Clan Structures)**: $\text{RGB}(R,G,B) \leftrightarrow \text{Lineage System (Patrilineal, Matrilineal, Bilateral Foraging Band)}$.
+   - **Tensor 3 (Politico-Military Sovereignty & Polities)**: $\text{RGB}(R,G,B) \leftrightarrow \text{Polity ID / Sovereign Capital Jurisdiction}$.
+   - Linked to `data/maps/ether/earth/<epoch>/cultural_registry.json`.
+
+2. **8-bit Continuous Intensity Grayscale Tensors ($[0, 255]$)**:
+   - **Demographic Density**: $\rho(\mathbf{x}) = \rho_{\max} \cdot \left(\frac{G(\mathbf{x})}{255}\right)^\gamma$.
+   - **Tensor 2 (Rituals / Asabiyyah)**: $A(\mathbf{x}) \in [0, 1]$ social cohesion and sacred norms.
+   - **Tensor 4 (Materiality & Technologies)**: $\tau(\mathbf{x}) \in [0, 1]$ lithic / metallurgical complexity.
+   - **Tensor 5 (Trade Corridors & Hubs)**: $C(\mathbf{x}) \in [0, 1]$ caravan / maritime conductance.
+   - **Tensor 6 (Institutional Complexity)**: $\mathcal{I}(\mathbf{x}) \in [0, 1]$ legal codification and administrative depth (Seshat).
+   - **Tensor 7 (Ecological Footprint & Degradation)**: $D(\mathbf{x}) \in [0, 1]$ soil salinization, erosion, deforestation.
+   - **Tensor 8 (Pathogen Immunity & Health Memory)**: $H(\mathbf{x}) \in [0, 1]$ endemic pathogen resistance.
+   - **10 Geological Tensors**: Coal, Oil, Gas, Uranium, He-3, Iron/Copper, Precious Metals, Rare Earths, Geothermal Heat, Aquifers.
+
+### 6.2 Pairwise Cultural Affinity & Distance Metric
+For any two cultural entities $i$ and $j$ registered in `cultural_registry.json`, their phenotypic/cultural distance $\text{Dist}_{ij}$ and symmetric affinity $\text{Affinity}_{ij}$ are given by:
+
+$$\text{Dist}_{ij} = \sqrt{\sum_{k=1}^K w_k \left( T_{i,k} - T_{j,k} \right)^2}$$
+
+$$\text{Affinity}_{ij} = \exp\left( -\lambda \cdot \text{Dist}_{ij} \right) \in (0, 1]$$
+
+where $\lambda \approx 3.5$, and trait dimensions $k$ include:
+- Linguistic distance $\Delta L_{ij}$ (ASJP phonological divergence)
+- Kinship incompatibility $\Delta K_{ij}$
+- Asabiyyah / sacred divergence $\Delta R_{ij}$
+- Institutional hierarchy distance $\Delta I_{ij}$
+
+### 6.3 Paleoclimatic Invariant Elevation & Dynamic Sea Level
+- **Altimetry Invariance**: Topography $z(\mathbf{x})$ is sourced from the NOAA ETOPO 2022 global relief model and remains identical across all epochs.
+- **Dynamic Shorelines**: Emergent land (e.g. Sundaland, Sahul, Beringia, Doggerland during LGM $-120\text{m}$) is dynamically governed by the scenario `waterLevel` slider:
+  $$\text{LandMask}(\mathbf{x}) = \mathbb{I}\left( \text{Elevation}(\mathbf{x}) \ge z_{\text{sea}}(\text{waterLevel}) \right)$$
+  with threshold $z_{\text{sea}} = 0.478 + (\text{waterLevel} - 0.38) \times 0.35$.
+- **Authentic Biomes**: `earth_<year>_biomes.png` rasters reflect epoch-specific paleoclimatic vegetation (MIS 5e Green Sahara savanna at $-100\text{k}$, MIS 3 mammoth steppe at $-50\text{k}$, LGM Laurentide/Fennoscandian ice sheets at $-25\text{k}/-20\text{k}$, Holocene Green Sahara at $-6\text{k}$).

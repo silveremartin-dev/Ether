@@ -809,12 +809,17 @@ public class Scenario implements Serializable {
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise la dynamique démographique et l'expansion spatiale des premières populations d'Homo Sapiens depuis l'Afrique de l'Est à travers le Moyen-Orient, l'Eurasie, l'Océanie et les Amériques.
             
-            [CONDITIONS INITIALES PHYSIQUES (T_0)]
+            [CONDITIONS INITIALES PHYSIQUES (T₀)]
             • Population Initiale : 50 000 individus (Capacité nomade pré-agricole).
-            • Stock Capital Physique (K₀) : 2 kg/habitant (bifaces en pierre, javelots, bifaces).
+            • Stock Capital Physique (K₀) : 2 kg/habitant (bifaces en pierre, javelots).
             • Énergie Stockée (E₀) : 5 MJ/habitant (maîtrise du feu et combustible bois).
             • Réserves Alimentaires (F₀) : 2 mois de subsistance en chasse-cueillette.
             • Savoir Archivé (I₀) : 2 bits/habitant (traditions orales paléolithiques & langage).
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Vitesse de dispersion géographique vers le Proche-Orient, l'Asie du Sud et l'Europe.
+            • Survie démographique nomade face aux glaciations et évènements de Dansgaard-Oeschger.
+            • Dérive linguistique paléolithique et innovations lithiques (Levallois, emmanchement à la résine).
             """);
         java.util.Map<String, Boolean> s0Engines = s0.getTypeBEngineStates();
         s0Engines.put("PaleoLanguageDriftEngine", true);
@@ -857,6 +862,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Premier franchissement maritime majeur de la ligne de Wallace par les ancêtres des Aborigènes d'Australie. Modélise la colonisation du continent Sahul (Australie, Tasmanie, Nouvelle-Guinée réunies) et l'adaptation aux écosystèmes arides.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Franchissement maritime de la ligne de Wallace et navigation côtière insulaire.
+            • Adaptation aux régimes arides intérieurs et gestion des paysages par brûlis (fire-stick farming).
+            • Stabilité démographique à long terme et réseaux d'alliances à l'ocre à travers le désert.
             """);
         java.util.Map<String, Boolean> sSahulEngines = sSahul.getTypeBEngineStates();
         sSahulEngines.put("PaleoLanguageDriftEngine", true);
@@ -894,6 +904,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'isolation des populations paléolithiques sur le pont terrestre de Béringie pendant le Dernier Maximum Glaciaire (LGM), suivie de leur dispersion à travers le corridor libre de glace et la route côtière du Pacifique.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Temps de pause/stase génétique sur le pont de Béringie (Beringian Standstill).
+            • Franchissement du corridor libre de glace ou de la route côtière du varech (Kelp Highway).
+            • Taux d'expansion démographique rapide vers l'Amérique du Nord puis du Sud.
             """);
         java.util.Map<String, Boolean> sBeringiaEngines = sBeringia.getTypeBEngineStates();
         sBeringiaEngines.put("TailoredClothingThermalEngine", true);
@@ -929,6 +944,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise le paroxysme du Dernier Maximum Glaciaire (LGM) avec un niveau marin abaissé de 120 mètres (exposant le Doggerland, le Sundaland, le Sahul et la Béringie), les inlandsis massifs (Laurentide, Fennoscandie) et l'industrie lithique foliacée solutréenne.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Concentration des populations dans les refuges thermiques (péninsule Ibérique, zone franco-cantabrique, Balkans).
+            • Maîtrise technologique du froid extrême (vêtements ajustés à l'aiguille à chas, fosses-congélateurs périglaciaires).
+            • Réexpansion démographique post-glaciaire rapide lors du réchauffement de Bølling-Allerød.
             """);
         java.util.Map<String, Boolean> sLGMEngines = sLGM.getTypeBEngineStates();
         sLGMEngines.put("PressureFlakerPointEngine", true);
@@ -958,6 +978,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Refroidissement brutal de 5 à 8°C de l'Atlantique Nord déclenché par le déversement d'eau douce du Lac Agassiz. Au Levant, la sécheresse aiguë réduit les céréales sauvages, contraignant les populations Natufiennes à la sédentarisation pré-agricole et au contrôle des graines.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Chute brutale des rendements foragers de céréales sauvages au Levant suite à l'aridification.
+            • Émergence des premiers hameaux sédentaires natoufiens et stockage intensif des grains en silos.
+            • Pression sélective poussant à la domestication du chien et aux premiers semis intentionnels.
             """);
         java.util.Map<String, Boolean> sYoungerDryasEngines = sYoungerDryas.getTypeBEngineStates();
         sYoungerDryasEngines.put("WildCerealGrindingEngine", true);
@@ -992,6 +1017,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Ce scénario modélise la transition majeure du Néolithique entre l'économie de subsistance des chasseurs-cueilleurs et l'émergence des premières communautés agricoles sédentaires le long du Tigre, de l'Euphrate, du Nil et de la côte Levantine.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Explosion démographique liée aux surplus agricoles céréaliers (engrain, amidonnier, orge).
+            • Émergence des premières cités-États mésopotamiennes, chefferies et différenciation sociale.
+            • Dégradation environnementale précoce (déforestation des piémonts, érosion des sols, début de salinisation).
             """);
         java.util.Map<String, Boolean> s1Engines = s1.getTypeBEngineStates();
         s1Engines.put("WildCerealGrindingEngine", true);
@@ -1017,11 +1047,19 @@ public class Scenario implements Serializable {
         sGreenSahara.setTargetCohortSize(60);
         sGreenSahara.setPlanetPreset(PlanetPreset.EARTH_MH_6000BP);
         sGreenSahara.setEcologyPreset(EcologyPreset.EARTH_MH_6000BP);
+        sGreenSahara.setClippingEnabled(true);
+        sGreenSahara.setMinLat(0.0); sGreenSahara.setMaxLat(42.0); sGreenSahara.setMinLng(-20.0); sGreenSahara.setMaxLng(45.0);
+        sGreenSahara.setBoundaryMode("DYNAMIC_RESERVOIR");
         sGreenSahara.setDescription("""
             🌴 SCÉNARIO PALÉOCLIMATIQUE : Le Sahara Vert & Période Humide Africaine (-6000 av. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise la Période Humide Africaine (AHP) où l'insolation printanière amplifiée par l'orbite terrestre a intensifié la mousson africaine. Le désert du Sahara était alors une savane verdoyante parsemée de lac majeurs (Lac Méga-Tchad), peuplée d'éleveurs néolithiques et de chasseurs-cueilleurs.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Densité humaine élevée et corridor trans-saharien autour du Lac Méga-Tchad et des oueds.
+            • Économie mixte : pastoralisme bovin néolithique, chasse et pêche pélagique lacustre.
+            • Migration et repli massif des populations vers la vallée du Nil lors de la désertification vers -3500.
             """);
         java.util.Map<String, Boolean> sGreenSaharaEngines = sGreenSahara.getTypeBEngineStates();
         sGreenSaharaEngines.put("LakeChadWadiMigrationEngine", true);
@@ -1053,6 +1091,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'émergence de la première civilisation pharaonique unifiée. Dépendance absolue vis-à-vis du rythme annuel du Nil, de la gestion du bassin d'irrigation et de l'administration hiéroglyphique.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Gestion hydraulique étatique centralisée des crues annuelles et du limon fertile.
+            • Accumulation monumentale de capital physique et symbolique (pyramides, canaux, greniers d'État).
+            • Vulnérabilité systémique aux sécheresses prolongées (chute de l'Ancien Empire / 1ère Période Intermédiaire).
             """);
         java.util.Map<String, Boolean> sEgyptEngines = sEgypt.getTypeBEngineStates();
         sEgyptEngines.put("FertileCrescentSalinizationEngine", true);
@@ -1084,6 +1127,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'apogée du Bronze Moyen (Code d'Hammurabi, première dynastie de Babylone, dynastie Shang en Chine, fin de la civilisation de l'Indus) et les vulnérabilités écologiques d'irrigation intensive.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Salinisation progressive des sols irrigués de basse Mésopotamie (baisse du blé au profit de l'orge).
+            • Dynamique d'Asabiyyah des peuples périphériques et militarisation de l'Empire Néo-Assyrien.
+            • Réseaux urbains denses le long des canaux et dépendance au commerce du cuivre et de l'étain.
             """);
         java.util.Map<String, Boolean> s3Engines = s3.getTypeBEngineStates();
         s3Engines.put("FertileCrescentSalinizationEngine", true);
@@ -1112,6 +1160,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Démocratisation de l'outillage et des armes grâce à l'abondance géologique du minerai de fer.
+            • Essor du commerce maritime thalassocratique en Méditerranée (Phéniciens, Grecs, Étrusques).
+            • Rupture de la dépendance stratégique au cuivre/étain et multiplication des centres de pouvoir régionaux.
             """);
         java.util.Map<String, Boolean> sIronEngines = sIron.getTypeBEngineStates();
         sIronEngines.put("FrontierAsabiyyahEngine", true);
@@ -1132,7 +1185,8 @@ public class Scenario implements Serializable {
         sMeso.setInitialInformationPerCapita(150.0);
         sMeso.setPopulationDensityType("MESOAMERICA");
         sMeso.setTargetCohortSize(250);
-        sMeso.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sMeso.setPlanetPreset(PlanetPreset.EARTH_BRONZE_1900BP);
+        sMeso.setEcologyPreset(EcologyPreset.EARTH_BRONZE_1900BP);
         sMeso.setClippingEnabled(true);
         sMeso.setMinLat(12.0); sMeso.setMaxLat(24.0); sMeso.setMinLng(-105.0); sMeso.setMaxLng(-85.0);
         sMeso.setBoundaryMode("DYNAMIC_RESERVOIR");
@@ -1141,6 +1195,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Émergence des centres cérémoniels de San Lorenzo et La Venta, puis essor de la civilisation maya classique. Modélise la maïsiculture intensive, les réservoirs d'eau pluviale et l'astronomie de précision.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Intensification agricole sur terrasses et chinampas sans bêtes de trait ni métallurgie du fer.
+            • Cyclicités de sécheresse mésoaméricaines et résilience des réservoirs d'eau (aguadas, chultuns, cénotes).
+            • Évolution fractale et dispersion des cités cérémonielles mayas suivies d'effondrements régionaux.
             """);
         java.util.Map<String, Boolean> sMesoEngines = sMeso.getTypeBEngineStates();
         sMesoEngines.put("AmerindianEcosystemEngine", true);
@@ -1161,7 +1220,8 @@ public class Scenario implements Serializable {
         sMaurya.setInitialInformationPerCapita(300.0);
         sMaurya.setPopulationDensityType("INDIA_MAURYA");
         sMaurya.setTargetCohortSize(1000);
-        sMaurya.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sMaurya.setPlanetPreset(PlanetPreset.EARTH_IRON_1000BP);
+        sMaurya.setEcologyPreset(EcologyPreset.EARTH_IRON_1000BP);
         sMaurya.setClippingEnabled(true);
         sMaurya.setMinLat(8.0); sMaurya.setMaxLat(35.0); sMaurya.setMinLng(68.0); sMaurya.setMaxLng(90.0);
         sMaurya.setBoundaryMode("DYNAMIC_RESERVOIR");
@@ -1170,6 +1230,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Unification du sous-continent indien sous Chandragupta et Ashoka. Modélise l'agriculture rizicole de la plaine gângétique, les routes commerciales de la Soie et le réseau urbain autour de Pataliputra et Taxila.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Densification démographique extrême de la plaine indo-gangétique grâce au riz irrigué.
+            • Diffusion des édits impériaux et baisse institutionnelle de la violence (pacification d'Ashoka).
+            • Intégration commerciale transasiatique le long de la Grand Trunk Road et des ports de l'océan Indien.
             """);
         java.util.Map<String, Boolean> sMauryaEngines = sMaurya.getTypeBEngineStates();
         sMauryaEngines.put("FrontierAsabiyyahEngine", true);
@@ -1191,6 +1256,7 @@ public class Scenario implements Serializable {
         sRoman.setPopulationDensityType("ROMAN_EMPIRE");
         sRoman.setTargetCohortSize(1000);
         sRoman.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sRoman.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sRoman.setClippingEnabled(true);
         sRoman.setMinLat(25.0); sRoman.setMaxLat(55.0); sRoman.setMinLng(-10.0); sRoman.setMaxLng(45.0);
         sRoman.setBoundaryMode("DYNAMIC_RESERVOIR");
@@ -1203,6 +1269,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE - SOURCES BESSES & BENCHMARKS CIA / SESHAT / HYDE]
             Modélise le bassin méditerranéen au moment de la Pax Romana sous Auguste. Intègre les données démographiques historiques (55 millions d'habitants), les réseaux d'infrastructures (viae, aqueducs) et les dynamiques cliodynamiques de Turchin.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Déploiement des infrastructures de transport (réseau viaire terrestre et autoroutes maritimes méditerranéennes).
+            • Cycles cliodynamiques de Turchin (surproduction des élites, instabilité politique, dévaluation monétaire du denier).
+            • Impact conjugué des chocs climatiques (Optimum Romain vers refroidissement) et des épidémies (Peste Antonine).
             """);
         list.add(sRoman);
 
@@ -1219,11 +1290,17 @@ public class Scenario implements Serializable {
         s2.setPopulationDensityType("URBAN_CLUSTERS");
         s2.setTargetCohortSize(1500);
         s2.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s2.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         s2.setDescription("""
             🌋 SCÉNARIO HISTORIQUE : L'Anomalie Climatique Volcanique de 536 & Choc Sanitaire
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             L'année 536 est considérée par les historiens du climat comme "la pire année de l'histoire humaine". Deux éruptions volcaniques super-massives consécutives ont injecté un voile d'aérosols stratosphériques occultant le Soleil pendant 18 mois.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Chute brutale des températures estivales (-2°C à -3°C) et effondrement des récoltes céréalières eurasiennes.
+            • Propagation fulgurante de la Peste de Justinien (Yersinia pestis) le long des routes de commerce maritime.
+            • Déstabilisation militaire des frontières impériales byzantines et grandes migrations de peuples des steppes.
             """);
         java.util.Map<String, Boolean> s2Engines = s2.getTypeBEngineStates();
         s2Engines.put("BioMolecularEpidemiologyEngine", true);
@@ -1244,11 +1321,17 @@ public class Scenario implements Serializable {
         s4.setPopulationDensityType("RIVER_VALLEYS");
         s4.setTargetCohortSize(2000);
         s4.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s4.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         s4.setDescription("""
             🏮 SCÉNARIO HISTORIQUE : Le Siècle d'Or de la Dynastie Song (1000 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             La Chine des Song a connu la première pré-industrialisation de l'histoire, avec une utilisation massive du charbon de terre pour la fonte du fer et des réseaux de transport fluviaux ultra-efficaces.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Révolution énergétique pré-industrielle : transition massive vers le charbon minéral et hauts-fourneaux au coke.
+            • Révolution monétaire et commerciale : première monnaie fiduciaire en papier (Jiaozi) et navigation à la boussole.
+            • Hyper-urbanisation fluviale (Kaifeng, Hangzhou) et vulnérabilité militaire face aux cavaliers nomades du Nord.
             """);
         java.util.Map<String, Boolean> s4Engines = s4.getTypeBEngineStates();
         s4Engines.put("MilitaryTechShockEngine", true);
@@ -1271,6 +1354,7 @@ public class Scenario implements Serializable {
         sMali.setPopulationDensityType("WEST_AFRICA_MALI");
         sMali.setTargetCohortSize(500);
         sMali.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sMali.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sMali.setClippingEnabled(true);
         sMali.setMinLat(5.0); sMali.setMaxLat(25.0); sMali.setMinLng(-18.0); sMali.setMaxLng(15.0);
         sMali.setBoundaryMode("DYNAMIC_RESERVOIR");
@@ -1279,6 +1363,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise le réseau urbain et marchand trans-saharien de la boucle du Niger (Tombouctou, Gao, Djenné). Contrôle des mines d'or de Bambouk/Boure et des salines de Teghaza.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Flux caravaniers trans-sahariens de métaux précieux (or) contre sel gemme, textiles et manuscrits.
+            • Essor académique et théologique de Tombouctou (Université Sankoré) et sédentarisation sahélienne.
+            • Choc monétaire mondial provoqué par les dépenses d'or de Mansa Musa lors de son pèlerinage au Caire.
             """);
         java.util.Map<String, Boolean> sMaliEngines = sMali.getTypeBEngineStates();
         sMaliEngines.put("FrontierAsabiyyahEngine", true);
@@ -1300,6 +1389,7 @@ public class Scenario implements Serializable {
         sAmericas1491.setPopulationDensityType("AMERICAS_1491");
         sAmericas1491.setTargetCohortSize(1000);
         sAmericas1491.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sAmericas1491.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sAmericas1491.setClippingEnabled(true);
         sAmericas1491.setMinLat(-45.0); sAmericas1491.setMaxLat(30.0); sAmericas1491.setMinLng(-110.0); sAmericas1491.setMaxLng(-35.0);
         sAmericas1491.setBoundaryMode("DYNAMIC_RESERVOIR");
@@ -1308,6 +1398,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise les grands empires précolombiens (Empire Inca du Tawantinsuyu, Empire Aztèque de la Triple Alliance) et les sociétés Mississippiennes avant la rupture épidémique.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Optimisation écologique des paysages anthropiques (terra preta amazonienne, terrasses andines, canaux chinampas).
+            • Densités urbaines précolombiennes culminantes dans les bassins de Mexico (Tenochtitlan) et de Cuzco.
+            • Absence d'immunité croisée et vulnérabilité maximale face aux pathogènes de l'Ancien Monde.
             """);
         java.util.Map<String, Boolean> sAmericas1491Engines = sAmericas1491.getTypeBEngineStates();
         sAmericas1491Engines.put("AmerindianEcosystemEngine", true);
@@ -1329,11 +1424,17 @@ public class Scenario implements Serializable {
         sColumbian.setPopulationDensityType("COLUMBIAN_CONTACT");
         sColumbian.setTargetCohortSize(1000);
         sColumbian.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sColumbian.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sColumbian.setDescription("""
             ⛵ SCÉNARIO HISTORIQUE : Le Choc du Contact d'Échange Colombien & Effondrement Épidémique (1492)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'impact bio-démographique mondial de la rencontre entre l'Ancien et le Nouveau Monde. Trajectoire de choc microbiologique (chute démographique de 80-90% du continent américain) et réorganisation commerciale transatlantique.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Chute démographique cataclysmique (80 à 90%) des populations amérindiennes sous l'effet de la variole et de la rougeole.
+            • Échange colombien global : diffusion mondiale du maïs, de la pomme de terre, du manioc et de l'argent du Potosí.
+            • Reforestation spontanée des terres abandonnées et baisse temporaire du CO₂ atmosphérique mondial (Orbis Spike).
             """);
         java.util.Map<String, Boolean> sColumbianEngines = sColumbian.getTypeBEngineStates();
         sColumbianEngines.put("BioMolecularEpidemiologyEngine", true);
@@ -1355,6 +1456,7 @@ public class Scenario implements Serializable {
         sSakoku.setPopulationDensityType("JAPAN_SAKOKU");
         sSakoku.setTargetCohortSize(500);
         sSakoku.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sSakoku.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sSakoku.setClippingEnabled(true);
         sSakoku.setMinLat(30.0); sSakoku.setMaxLat(45.0); sSakoku.setMinLng(128.0); sSakoku.setMaxLng(146.0);
         sSakoku.setBoundaryMode("DYNAMIC_RESERVOIR");
@@ -1363,6 +1465,11 @@ public class Scenario implements Serializable {
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Fermeture des frontières de l'archipel japonais décrétée par le Shogunat Tokugawa. Modélise une économie circulaire hautement autarcique, l'urbanisation géante d'Edo (Tokyo, 1 million d'habitants) et l'absence d'intrants extérieurs jusqu'à l'arrivée des bateaux noirs du Commandant Perry en 1853.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Stabilité démographique et gestion rigoureuse des ressources forestières et agricoles en boucle fermée.
+            • Modèle de croissance zéro durable sans dépendance aux importations énergétiques ou minérales extérieures.
+            • Urbanisation pacifiée d'Edo et floraison artisanale et culturelle sous autarcie stricte.
             """);
         java.util.Map<String, Boolean> sSakokuEngines = sSakoku.getTypeBEngineStates();
         sSakokuEngines.put("EdoJapanIsolationEngine", true);
@@ -1383,11 +1490,17 @@ public class Scenario implements Serializable {
         sIndustrial1800.setPopulationDensityType("INDUSTRIAL_1800");
         sIndustrial1800.setTargetCohortSize(5000);
         sIndustrial1800.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sIndustrial1800.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sIndustrial1800.setDescription("""
             ⚙️ SCÉNARIO HISTORIQUE : La Machine à Vapeur & L'Émergence du Charbon (1800 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Basculement énergétique mondial du régime organique vers le régime minéral fossile (charbon de terre, machine à vapeur de Watt).
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Rupture du piège malthusien : découplage entre croissance démographique et contrainte surfacique des sols.
+            • Paradoxe de Jevons : les gains d'efficacité des machines à vapeur décuplent la consommation globale de charbon.
+            • Urbanisation industrielle ultra-rapide (exode rural) et amorce des émissions anthropiques massives de CO₂.
             """);
         java.util.Map<String, Boolean> sIndustrial1800Engines = sIndustrial1800.getTypeBEngineStates();
         sIndustrial1800Engines.put("JevonsParadoxEngine", true);
@@ -1411,11 +1524,17 @@ public class Scenario implements Serializable {
         sModern2000.setPopulationDensityType("URBAN_CLUSTERS");
         sModern2000.setTargetCohortSize(10000);
         sModern2000.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sModern2000.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sModern2000.setDescription("""
             🌐 SCÉNARIO HISTORIQUE : L'Ère Numérique & La Grande Accélération (2000 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Consolidation du système économique mondial interconnecté, essor des microprocesseurs en silicium, de l'Internet mondial et de l'urbanisation globale.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Grande Accélération : croissance exponentielle des flux de matière, d'énergie fossile et d'information numérique.
+            • Franchissement des limites planétaires (Cycle de l'azote/phosphore, forçage radiatif CO₂, érosion de biodiversité).
+            • Rendements décroissants de la complexité institutionnelle et fragilité des chaînes logistiques just-in-time.
             """);
         java.util.Map<String, Boolean> sModern2000Engines = sModern2000.getTypeBEngineStates();
         sModern2000Engines.put("World3HybridEngine", true);
@@ -1439,11 +1558,17 @@ public class Scenario implements Serializable {
         s5.setPopulationDensityType("URBAN_CLUSTERS");
         s5.setTargetCohortSize(10000);
         s5.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s5.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         s5.setDescription("""
             📉 SCÉNARIO FUTUR : Business As Usual (Trajectoire GIEC SSP5-8.5)
             
-            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]
             Poursuite de l'extraction des combustibles fossiles traditionnels sans déploiement massif de la fusion ni captage du carbone.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Trajectoire de concentration CO₂ non régulée (>1000 ppm en 2100) et hausse thermique globale >4°C.
+            • Submersion marine des métropoles côtières et stress thermique létal (température thermomètre mouillé Tw > 35°C).
+            • Effondrement des rendements agricoles tropicaux et vagues de réfugiés climatiques vers les hautes latitudes.
             """);
         java.util.Map<String, Boolean> s5Engines = s5.getTypeBEngineStates();
         s5Engines.put("NordhausDiceHybridEngine", true);
@@ -1465,11 +1590,17 @@ public class Scenario implements Serializable {
         s6.setPopulationDensityType("URBAN_CLUSTERS");
         s6.setTargetCohortSize(10000);
         s6.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s6.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         s6.setDescription("""
             🤖 SCÉNARIO FUTUR : Singularité Technologique & Énergie de Fusion D-T
             
-            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]
             Franchissement du seuil d'émergence d'une Super-Intelligence Artificielle (ASI) et maîtrise industrielle de la fusion nucléaire deutérium-tritium.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Croissance exponentielle des rendements de la recherche et automatisation intégrale du travail physique.
+            • Déploiement massif de réacteurs à fusion deutérium-tritium conférant une abondance énergétique quasi-infinie.
+            • Élimination des pénuries matérielles, transition vers l'échelle de Kardashev Type I et régulation systémique.
             """);
         java.util.Map<String, Boolean> s6Engines = s6.getTypeBEngineStates();
         s6Engines.put("TechnologicalSingularityEngine", true);
@@ -1491,11 +1622,17 @@ public class Scenario implements Serializable {
         s7.setPopulationDensityType("URBAN_CLUSTERS");
         s7.setTargetCohortSize(250);
         s7.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s7.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         s7.setDescription("""
             ☢️ SCÉNARIO FUTUR : Catastrophe de la Guerre Nucléaire & Hiver Stratosphérique
             
-            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]
             Conflit nucléaire à haute intensité déclenchant d'immenses tempêtes de feu urbaines et l'injection massive de carbone suie dans la stratosphère.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Chute brutale de l'insolation solaire au sol (-70%) et refroidissement planétaire de -15°C à -25°C.
+            • Effondrement total de la photosynthèse et rupture généralisée des chaînes alimentaires en moins de 60 jours.
+            • Survie démographique résiduelle restreinte aux refuges souterrains, biomes marins profonds et serres protégées.
             """);
         java.util.Map<String, Boolean> s7Engines = s7.getTypeBEngineStates();
         s7Engines.put("NuclearWarfareClimateEngine", true);
@@ -1515,11 +1652,17 @@ public class Scenario implements Serializable {
         s8.setPopulationDensityType("URBAN_CLUSTERS");
         s8.setTargetCohortSize(5000);
         s8.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s8.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         s8.setDescription("""
             ⛏️ SCÉNARIO FUTUR : Épuisement du Phosphate de Roche (Peak P 2050)
             
-            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]
             Épuisement géologique complet des gisements de phosphate de roche bon marché sans transition vers un recyclage circulaire intégral.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Chute inexorable des rendements agricoles sous déficit de fertilisation phosphatée minérale (stœchiométrie N-P-K).
+            • Flambée des prix alimentaires mondiaux, crises de famine urbaine et tensions géopolitiques autour des derniers gisements.
+            • Re-localisation agricole d'urgence, baisse de la population vers la capacité de charge organique et recyclage des flux.
             """);
         java.util.Map<String, Boolean> s8Engines = s8.getTypeBEngineStates();
         s8Engines.put("World3PureEngine", true);
@@ -1540,17 +1683,23 @@ public class Scenario implements Serializable {
         s9.setPopulationDensityType("URBAN_CLUSTERS");
         s9.setTargetCohortSize(250);
         s9.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s9.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         s9.setDescription("""
             🌋 SCÉNARIO FUTUR : Super-Volcan VEI-8 & Refroidissement Vulcanologique
             
-            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T_0)]
-            Éruption super-volcanique de degré VEI-8 éjectant plus de 1000 km³ de cendres et de dioxyde de soufre (SO2) dans la haute atmosphère.
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]
+            Éruption super-volcanique de degré VEI-8 éjectant plus de 1000 km³ de cendres et de dioxyde de soufre (SO₂) dans la haute atmosphère.
             
-            [CONDITIONS INITIALES PHYSIQUES (T_0)]
+            [CONDITIONS INITIALES PHYSIQUES (T₀)]
             • Stock Capital Physique (K₀) : 25 000 kg/habitant (infrastructures avancées et serres automatisées).
             • Énergie Stockée (E₀) : 20 000 MJ/habitant (centrales nucléaires et géothermiques).
-            • Réserves Alimentaires (F₀) : 3.0 mois (destructions agricoles par cendres).
+            • Réserves Alimentaires (F₀) : 3,0 mois (destructions agricoles par cendres).
             • Savoir Archivé (I₀) : 5 000 000 bits/habitant (savoir automatisé & archives).
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Hiver volcanique pluriannuel (baisse de 8°C à 12°C des températures globales pendant 5 à 10 ans).
+            • Dépôts massifs de téphras toxiques détruisant les sols agricoles, les toitures urbaines et les réseaux électriques.
+            • Déploiement d'une logistique de crise alimentaire basée sur les stocks stratégiques et les cultures protégées.
             """);
         java.util.Map<String, Boolean> s9Engines = s9.getTypeBEngineStates();
         s9Engines.put("VolcanicTephraRefugiaEngine", true);

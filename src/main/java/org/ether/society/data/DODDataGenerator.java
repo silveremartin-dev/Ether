@@ -103,7 +103,15 @@ public class DODDataGenerator {
                 agents.getMass()[agentIndex] = cohortMass;
                 agents.getEnergy()[agentIndex] = 100.0f; // Baseline energy
                 agents.getSigmaCost()[agentIndex] = 0.1f; // Initial structure cost
-                agents.getTechLevel()[agentIndex] = world.getTechnologyLevel()[i];
+                // Realistic demographic age distribution (empirical preindustrial pyramid: mean ~26 yrs)
+                float initialAge;
+                if (numCohorts == 1) {
+                    initialAge = 22.0f + (float) (Math.random() * 8.0); // 22-30 yrs prime cohort
+                } else {
+                    float u = (float) (c + Math.random() * 0.9) / (float) numCohorts;
+                    initialAge = (float) (Math.pow(u, 1.25) * 68.0); // Natural demographic pyramid
+                }
+                agents.getAge()[agentIndex] = initialAge;
                 
                 // Initialize identity tensors with some baseline/noise
                 for (int d = 0; d < 4; d++) {

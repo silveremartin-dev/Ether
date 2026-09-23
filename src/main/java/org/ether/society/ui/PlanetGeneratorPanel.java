@@ -79,6 +79,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     // Controls
     private ComboBox<PlanetPreset> presetCombo;
+    private TextArea planetDescriptionArea;
     private ComboBox<String> mapSourceCombo;
     private TextField seedField;
     private Button randSeedBtn;
@@ -310,7 +311,15 @@ public class PlanetGeneratorPanel extends BorderPane {
         });
 
         presetsSecHeader = new Label(I18n.getOrDefault("planet.section.presets", "GLOBAL PRESETS & PLANET SAVE"));
-        VBox presetSection = createSection(presetsSecHeader, topPresetBar);
+        
+        planetDescriptionArea = new TextArea();
+        planetDescriptionArea.setPrefRowCount(4);
+        planetDescriptionArea.setWrapText(true);
+        planetDescriptionArea.setEditable(false);
+        planetDescriptionArea.getStyleClass().add("glass-text-area");
+        planetDescriptionArea.setStyle("-fx-font-size: 11px; -fx-text-fill: #e2e8f0; -fx-background-color: rgba(15, 23, 42, 0.6); -fx-border-color: rgba(255, 255, 255, 0.15); -fx-border-radius: 4; -fx-background-radius: 4;");
+
+        VBox presetSection = createSection(presetsSecHeader, new VBox(8, topPresetBar, planetDescriptionArea));
 
         // --- 2. General Parameters (seed moved to topo/procedural panel; kept for astro labels) ---
         VBox generalControls = new VBox(8);
@@ -424,7 +433,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         maxAltSlider = createSlider(500, 25000, 8848);
         minAltSlider.valueProperty().addListener((obs, old, val) -> updateAltRangeDisplay());
         maxAltSlider.valueProperty().addListener((obs, old, val) -> updateAltRangeDisplay());
-        waterSlider = createSlider(-0.5, 1.0, 0.38);
+        waterSlider = createSlider(-0.5, 1.0, 0.48);
         noiseFreqSlider = createSlider(0.1, 2.0, 1.0);
         noiseScaleSlider = createSlider(0.5, 3.0, 1.0);
 
@@ -444,7 +453,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                 createControlRow(minAltRowLabel, minAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.min_alt", "Absolute minimum altitude (ocean floor) [Corresponds to image level 0]")),
                 createControlRow(maxAltRowLabel, maxAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.max_alt", "Altitude maximale absolue (sommet montagneux) [Correspond au niveau 255 de l'image]")),
                 altRangeLabel,
-                createControlRow(waterRowLabel, waterSlider, "%.2f", I18n.getOrDefault("planet.tooltip.water_level", "Oceanic submergence threshold — 0.38 corresponds to ~71% submerged oceans on Earth"))
+                createControlRow(waterRowLabel, waterSlider, "%.2f", I18n.getOrDefault("planet.tooltip.water_level", "Oceanic submergence threshold — 0.48 corresponds to ~71% submerged oceans on Earth"))
         );
 
         // Seed + random button (inside procedural panel)
@@ -516,18 +525,8 @@ public class PlanetGeneratorPanel extends BorderPane {
         mapSourceCombo = new ComboBox<>();
         mapSourceCombo.getItems().addAll("", "earth", "mars", "venus", "moon", "mercury");
         mapSourceCombo.setValue("earth");
-        mapSourceCombo.setCellFactory(p -> new ListCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null || item.isEmpty()) {
-                    setText(I18n.getOrDefault("common.combo.prompt_source", "— Select a data source —"));
-                } else {
-                    setText(I18n.get("planet.map." + item));
-                }
-            }
-        });
-        mapSourceCombo.setButtonCell(mapSourceCombo.getCellFactory().call(null));
+        org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
+                mapSourceCombo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
         mapSourceCombo.setMaxWidth(Double.MAX_VALUE);
         mapSourceCombo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
@@ -1120,13 +1119,8 @@ public class PlanetGeneratorPanel extends BorderPane {
                     CLIMATE_SRC_SEASON_WMS
             );
         }
-        combo.setCellFactory(p -> new ListCell<>() {
-            @Override protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null || item.isEmpty() ? I18n.getOrDefault("common.combo.prompt_source", "— Select a data source —") : item);
-            }
-        });
-        combo.setButtonCell(combo.getCellFactory().call(null));
+        org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
+                combo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
         combo.setValue("");
         combo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
@@ -1139,8 +1133,6 @@ public class PlanetGeneratorPanel extends BorderPane {
                 }
             }
         });
-        combo.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.map_source_hint",
-                "Sélectionnez la source de données de référence.\nLe bouton '📂 Charger…' ci-dessous permet d'importer votre fichier PNG local.")));
         return combo;
     }
 
@@ -1900,6 +1892,9 @@ public class PlanetGeneratorPanel extends BorderPane {
 
             bodyTypeCombo.setValue(p.isSatellite() ? "satellite" : "planet");
             toggleSatelliteControls();
+            if (planetDescriptionArea != null) {
+                planetDescriptionArea.setText(p.getPresetDescription());
+            }
         parentMassSlider.setValue(p.parentPlanetMassEarthMasses());
         orbitDistanceParentSlider.setValue(p.orbitalDistanceToParentKm());
 
@@ -2581,6 +2576,9 @@ public class PlanetGeneratorPanel extends BorderPane {
         try {
             headerLabel.setText(I18n.get("planet.section.header"));
             presetsSecHeader.setText(I18n.getOrDefault("planet.section.presets", "GLOBAL PRESETS & PLANET SAVE"));
+            if (planetDescriptionArea != null && presetCombo != null && presetCombo.getValue() != null) {
+                planetDescriptionArea.setText(presetCombo.getValue().getPresetDescription());
+            }
             generalSecHeader.setText(I18n.getOrDefault("planet.section.general", "GENERAL PARAMETERS & RESOLUTION"));
             astroSecHeader.setText(I18n.getOrDefault("planet.section.astro", "ASTRONOMY, PHYSICS & CELESTIAL BODIES DOMAIN"));
             topoSecHeader.setText(I18n.getOrDefault("planet.section.topo", "TOPOGRAPHY & PLANETARY RELIEF DOMAIN"));

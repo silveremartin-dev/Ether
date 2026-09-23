@@ -1049,32 +1049,31 @@ public class H3MapCanvas extends Canvas {
             double cx = getWidth() / 2.0;
             double cy = getHeight() / 2.0;
 
-            double dx = mouseX - cx;
-            double dy = cy - mouseY;
+            double dx = (mouseX - cx) / radius;
+            double dy = (cy - mouseY) / radius;
             double r2 = dx * dx + dy * dy;
-            if (r2 > radius * radius) {
+            if (r2 > 1.0) {
                 return null;
             }
 
-            double xr = dx / radius;
-            double yrt = dy / radius;
-            double zrt = Math.sqrt(Math.max(0.0, 1.0 - xr * xr - yrt * yrt));
+            double zr = Math.sqrt(Math.max(0.0, 1.0 - r2));
 
             double radRotationY = Math.toRadians(-centerLng);
             double radTilt = Math.toRadians(centerLat);
 
             double cosT = Math.cos(radTilt);
             double sinT = Math.sin(radTilt);
-            double y = yrt * cosT + zrt * sinT;
-            double zr = -yrt * sinT + zrt * cosT;
-
             double cosR = Math.cos(radRotationY);
             double sinR = Math.sin(radRotationY);
-            double x = xr * cosR - zr * sinR;
-            double z = xr * sinR + zr * cosR;
 
-            double lat = Math.toDegrees(Math.asin(Math.clamp(y, -1.0, 1.0)));
-            double lng = Math.toDegrees(Math.atan2(x, z));
+            // Exact inverse ray transformation matching drawSmoothGlobeSurface
+            double yrt = dy * cosT - zr * sinT;
+            double zrt = dy * sinT + zr * cosT;
+            double xr = dx * cosR - zrt * sinR;
+            double zr_orig = dx * sinR + zrt * cosR;
+
+            double lat = Math.toDegrees(Math.asin(Math.clamp(yrt, -1.0, 1.0)));
+            double lng = Math.toDegrees(Math.atan2(xr, zr_orig));
             return new double[]{lat, lng};
         } else {
             double lng = ((mouseX - offsetX) / scale) + minLng;
@@ -1137,32 +1136,31 @@ public class H3MapCanvas extends Canvas {
             double cx = getWidth() / 2.0;
             double cy = getHeight() / 2.0;
 
-            double dx = mouseX - cx;
-            double dy = cy - mouseY;
+            double dx = (mouseX - cx) / radius;
+            double dy = (cy - mouseY) / radius;
             double r2 = dx * dx + dy * dy;
-            if (r2 > radius * radius) {
+            if (r2 > 1.0) {
                 return null; // Outside sphere disk
             }
 
-            double xr = dx / radius;
-            double yrt = dy / radius;
-            double zrt = Math.sqrt(Math.max(0.0, 1.0 - xr * xr - yrt * yrt));
+            double zr = Math.sqrt(Math.max(0.0, 1.0 - r2));
 
             double radRotationY = Math.toRadians(-centerLng);
             double radTilt = Math.toRadians(centerLat);
 
             double cosT = Math.cos(radTilt);
             double sinT = Math.sin(radTilt);
-            double y = yrt * cosT + zrt * sinT;
-            double zr = -yrt * sinT + zrt * cosT;
-
             double cosR = Math.cos(radRotationY);
             double sinR = Math.sin(radRotationY);
-            double x = xr * cosR - zr * sinR;
-            double z = xr * sinR + zr * cosR;
 
-            lat = Math.toDegrees(Math.asin(Math.clamp(y, -1.0, 1.0)));
-            lng = Math.toDegrees(Math.atan2(x, z));
+            // Exact inverse ray transformation matching drawSmoothGlobeSurface
+            double yrt = dy * cosT - zr * sinT;
+            double zrt = dy * sinT + zr * cosT;
+            double xr = dx * cosR - zrt * sinR;
+            double zr_orig = dx * sinR + zrt * cosR;
+
+            lat = Math.toDegrees(Math.asin(Math.clamp(yrt, -1.0, 1.0)));
+            lng = Math.toDegrees(Math.atan2(xr, zr_orig));
         } else {
             // Convert canvas coordinates to lat/lng (reverse of draw() transform)
             lng = ((mouseX - offsetX) / scale) + minLng;

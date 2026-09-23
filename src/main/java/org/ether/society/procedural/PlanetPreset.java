@@ -91,7 +91,7 @@ public record PlanetPreset(
 
     /** Modern Earth (2026 baseline) */
     public static final PlanetPreset EARTH_MODERN = new PlanetPreset(
-            "Terre (Terran)", 3, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.38, 40.0, 21.0, 0.30, 1.0,
+            "Terre (Terran)", 3, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.48, 40.0, 21.0, 0.30, 1.0,
             false, 1.0, 0.0, 420.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "🌍 Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)", 12445L,
@@ -103,7 +103,7 @@ public record PlanetPreset(
 
     /** -1 000 ans : Début Âge du Fer */
     public static final PlanetPreset EARTH_IRON_1000BP = new PlanetPreset(
-            "Terre (-1 000 / Début Âge du Fer)", 3, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 14.7, 12344L, 1.0, 1.0, 0.38, 40.0, 20.95, 0.305, 1.0,
+            "Terre (-1 000 / Début Âge du Fer)", 3, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 14.7, 12344L, 1.0, 1.0, 0.48, 40.0, 20.95, 0.305, 1.0,
             false, 1.0, 0.0, 278.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "🌍 Terre (-1000 BP) — Âge du Fer Ancien", 12444L,
@@ -112,7 +112,7 @@ public record PlanetPreset(
 
     /** -1 900 ans : Âge du Bronze Moyen */
     public static final PlanetPreset EARTH_BRONZE_1900BP = new PlanetPreset(
-            "Terre (-1 900 / Âge du Bronze Moyen)", 3, 6371.0, 24.0, 23.6, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.38, 39.5, 20.95, 0.30, 1.0,
+            "Terre (-1 900 / Âge du Bronze Moyen)", 3, 6371.0, 24.0, 23.6, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.48, 39.5, 20.95, 0.30, 1.0,
             false, 1.0, 0.0, 275.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "🌍 Terre (-1900 BP) — Âge du Bronze Moyen", 12445L,
@@ -121,7 +121,7 @@ public record PlanetPreset(
 
     /** -3 000 ans (LH) : Holocène tardif */
     public static final PlanetPreset EARTH_LH_3000BP = new PlanetPreset(
-            "Terre (-3 000 / Holocène Tardif)", 3, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 14.8, 12346L, 1.0, 1.0, 0.38, 40.0, 20.95, 0.305, 1.0,
+            "Terre (-3 000 / Holocène Tardif)", 3, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 14.8, 12346L, 1.0, 1.0, 0.48, 40.0, 20.95, 0.305, 1.0,
             false, 1.0, 0.0, 275.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "🌍 Terre (-3000 BP) — Paléoclimat Tardif", 12446L,
@@ -130,7 +130,7 @@ public record PlanetPreset(
 
     /** -6 000 ans (MH) : Holocène moyen avec le Sahara Vert et le lac Méga-Tchad */
     public static final PlanetPreset EARTH_MH_6000BP = new PlanetPreset(
-            "Terre (-6 000 / Sahara Vert)", 3, 6371.0, 24.0, 24.1, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.8, 12347L, 1.0, 1.0, 0.38, 38.0, 20.95, 0.29, 1.0,
+            "Terre (-6 000 / Sahara Vert)", 3, 6371.0, 24.0, 24.1, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.8, 12347L, 1.0, 1.0, 0.48, 38.0, 20.95, 0.29, 1.0,
             false, 1.0, 0.0, 265.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "🌍 Terre (-6000 BP) — Optimum Climatique & Sahara Vert", 12447L,
@@ -139,7 +139,7 @@ public record PlanetPreset(
 
     /** -10 000 ans (EH) : Holocène précoce */
     public static final PlanetPreset EARTH_EH_10000BP = new PlanetPreset(
-            "Terre (-10 000 / Holocène Précoce)", 3, 6371.0, 24.0, 24.2, 365.25, 1.0, 1.0, -11000.0, 8848.0, 13.5, 12348L, 1.0, 1.0, 0.36, 42.0, 20.9, 0.32, 1.0,
+            "Terre (-10 000 / Holocène Précoce)", 3, 6371.0, 24.0, 24.2, 365.25, 1.0, 1.0, -11000.0, 8848.0, 13.5, 12348L, 1.0, 1.0, 0.46, 42.0, 20.9, 0.32, 1.0,
             false, 1.0, 0.0, 260.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "🌍 Terre (-10000 BP) — Paléoclimat Déglaciation", 12448L,
@@ -148,7 +148,7 @@ public record PlanetPreset(
 
     /** -20 000 ans (LGM) : Dernier Maximum Glaciaire */
     public static final PlanetPreset EARTH_LGM_20000BP = new PlanetPreset(
-            "Terre (-20 000 / Maximum Glaciaire)", 3, 6371.0, 24.0, 23.0, 365.25, 1.0, 1.0, -11000.0, 8848.0, 9.0, 12349L, 1.0, 1.0, 0.32, 55.0, 20.9, 0.36, 1.0,
+            "Terre (-20 000 / Maximum Glaciaire)", 3, 6371.0, 24.0, 23.0, 365.25, 1.0, 1.0, -11000.0, 8848.0, 9.0, 12349L, 1.0, 1.0, 0.42, 55.0, 20.9, 0.36, 1.0,
             false, 1.0, 0.0, 190.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "🌍 Terre (-20000 BP) — Climat Glaciaire LGM & Inlandsis", 12449L,
@@ -157,7 +157,7 @@ public record PlanetPreset(
 
     /** -25 000 ans : Début LGM & Béringie */
     public static final PlanetPreset EARTH_LGM_ONSET_25000BP = new PlanetPreset(
-            "Terre (-25 000 / Début LGM & Béringie)", 3, 6371.0, 24.0, 23.2, 365.25, 1.0, 1.0, -11000.0, 8848.0, 10.5, 12351L, 1.0, 1.0, 0.33, 52.0, 20.9, 0.35, 1.0,
+            "Terre (-25 000 / Début LGM & Béringie)", 3, 6371.0, 24.0, 23.2, 365.25, 1.0, 1.0, -11000.0, 8848.0, 10.5, 12351L, 1.0, 1.0, 0.43, 52.0, 20.9, 0.35, 1.0,
             false, 1.0, 0.0, 205.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "🌍 Terre (-25000 BP) — Début LGM & Béringie", 12451L,
@@ -166,7 +166,7 @@ public record PlanetPreset(
 
     /** -50 000 ans : Stade Isotopique 3 & Sahul */
     public static final PlanetPreset EARTH_MIS3_50000BP = new PlanetPreset(
-            "Terre (-50 000 / Stade Isotopique 3 & Sahul)", 3, 6371.0, 24.0, 23.4, 365.25, 1.0, 1.0, -11000.0, 8848.0, 12.0, 12352L, 1.0, 1.0, 0.34, 48.0, 20.9, 0.335, 1.0,
+            "Terre (-50 000 / Stade Isotopique 3 & Sahul)", 3, 6371.0, 24.0, 23.4, 365.25, 1.0, 1.0, -11000.0, 8848.0, 12.0, 12352L, 1.0, 1.0, 0.44, 48.0, 20.9, 0.335, 1.0,
             false, 1.0, 0.0, 220.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "🌍 Terre (-50000 BP) — Stade Isotopique 3 & Sahul", 12452L,
@@ -175,10 +175,10 @@ public record PlanetPreset(
 
     /** -100 000 ans (LIG) : Dernier Interglaciaire / Eémien */
     public static final PlanetPreset EARTH_LIG_100000BP = new PlanetPreset(
-            "Terre (-100 000 / Dernier Interglaciaire)", 3, 6371.0, 24.0, 23.8, 365.25, 1.0, 1.0, -11000.0, 8848.0, 16.2, 12350L, 1.0, 1.0, 0.39, 36.0, 20.95, 0.295, 1.0,
+            "Terre (-100 000 / Dernier Interglaciaire)", 3, 6371.0, 24.0, 23.8, 365.25, 1.0, 1.0, -11000.0, 8848.0, 16.2, 12350L, 1.0, 1.0, 0.49, 36.0, 20.95, 0.295, 1.0,
             false, 1.0, 0.0, 280.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
-            true, "🌍 Terre (-100000 BP) — Dernier Interglaciaire Eémien", 12450L,
+            true, "🌍 Terre (-10000 BP) — Dernier Interglaciaire Eémien", 12450L,
             true, "🌍 Terre (-100000 BP) — Humidité & Savane Trans-saharienne", 13350L,
             true, "🌍 Terre (-100000 BP) — Saisonnalité Eémienne", 14350L);
 
@@ -350,6 +350,10 @@ public record PlanetPreset(
         return "none";
     }
 
+    public String getPresetDescription() {
+        return org.ether.society.i18n.I18n.getPlanetPresetDescription(name);
+    }
+
     public boolean isTidalLocked() {
         return name != null && (name.contains("Eyeball") || name.contains("Synchrone") || name.toLowerCase().contains("tidally locked"));
     }
@@ -363,4 +367,5 @@ public record PlanetPreset(
         return name;
     }
 }
+
 

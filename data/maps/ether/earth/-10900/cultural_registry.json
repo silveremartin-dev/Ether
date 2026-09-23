@@ -1,0 +1,175 @@
+{
+  "epochYear": -10900,
+  "epochName": "Younger Dryas Cold Stadial & Natufian Early Sedentism (-10900 BP / 10900 BCE)",
+  "description": "Climatic cold reversal of the Younger Dryas (GS-1), early Natufian sedentism in the Levant, Ahrensburgian reindeer hunters on the periglacial European plain, and Clovis big-game foragers across North America.",
+  "entities": [
+    {
+      "id": 1,
+      "name": "Culture Natoufienne (Levant / Croissant Fertile)",
+      "species": "Homo Sapiens",
+      "speciesId": 1,
+      "colorRgb": "#d97706",
+      "homininClade": "Sapiens Near Eastern Natufian",
+      "languageFamily": "Proto-Afroasiatique / Nostratique",
+      "kinshipSystem": "Clans sédentaires territoriaux & maisonnées semi-permanentes",
+      "materialCulture": "Microlithes géométriques, faucilles en silex, mortiers en basalte, parures en dentales",
+      "subsistenceStrategy": "Sédentarisme pré-agricole, cueillette de céréales sauvages (engrain, orge), chasse à la gazelle",
+      "latitude": 32.8,
+      "longitude": 35.6,
+      "traits": {
+        "asabiyyah": 0.65,
+        "technologyLevel": 0.22,
+        "socialHierarchy": 0.25,
+        "ecologicalFootprint": 0.18,
+        "pathogenImmunity": 0.30
+      }
+    },
+    {
+      "id": 2,
+      "name": "Culture Ahrensbourgienne & Federmesser (Plaine d'Europe du Nord)",
+      "species": "Homo Sapiens",
+      "speciesId": 1,
+      "colorRgb": "#2563eb",
+      "homininClade": "Sapiens Western European Hunters",
+      "languageFamily": "Paléo-Européen / Basque archaïque",
+      "kinshipSystem": "Bandes exogames de chasseurs spécialisés",
+      "materialCulture": "Pointes à cran ahrensbourgiennes, harpons en bois de renne, grattoirs",
+      "subsistenceStrategy": "Chasse hautement spécialisée au renne arctique et cheval dans la toundra steppique",
+      "latitude": 53.6,
+      "longitude": 10.2,
+      "traits": {
+        "asabiyyah": 0.50,
+        "technologyLevel": 0.18,
+        "socialHierarchy": 0.10,
+        "ecologicalFootprint": 0.08,
+        "pathogenImmunity": 0.15
+      }
+    },
+    {
+      "id": 3,
+      "name": "Culture Épigravettienne & Azilienne (Europe Méridionale & Méditerranée)",
+      "species": "Homo Sapiens",
+      "speciesId": 1,
+      "colorRgb": "#10b981",
+      "homininClade": "Sapiens Franco-Cantabrian / Mediterranean",
+      "languageFamily": "Paléo-Européen / Épigravettien",
+      "kinshipSystem": "Groupes lignagers mobiles & réseaux d'échange de coquillages",
+      "materialCulture": "Galets peints aziliens, pointes aziliennes, harpons plats en bois de cerf",
+      "subsistenceStrategy": "Chasse au cerf élaphe, sanglier, pêche fluviale et côtière, collecte de noisettes",
+      "latitude": 43.5,
+      "longitude": 1.2,
+      "traits": {
+        "asabiyyah": 0.55,
+        "technologyLevel": 0.19,
+        "socialHierarchy": 0.12,
+        "ecologicalFootprint": 0.10,
+        "pathogenImmunity": 0.18
+      }
+    },
+    {
+      "id": 4,
+      "name": "Culture Ibéromaurusienne Finale & Proto-Capsien (Afrique du Nord / Maghreb)",
+      "species": "Homo Sapiens",
+      "speciesId": 1,
+      "colorRgb": "#dc2626",
+      "homininClade": "Sapiens North African Taforalt",
+      "languageFamily": "Proto-Berbère / Afroasiatique Ancien",
+      "kinshipSystem": "Bandes côtières et nécropoles familiales (Taforalt, Afalou)",
+      "materialCulture": "Lamelles à dos tronquées, outils en os poli, avulsion rituelle des incisives",
+      "subsistenceStrategy": "Chasse au mouflon à manchettes, gazelle, ramassage intensif de gastéropodes",
+      "latitude": 34.8,
+      "longitude": -2.4,
+      "traits": {
+        "asabiyyah": 0.60,
+        "technologyLevel": 0.17,
+        "socialHierarchy": 0.15,
+        "ecologicalFootprint": 0.12,
+        "pathogenImmunity": 0.22
+      }
+    },
+    {
+      "id": 5,
+      "name": "Complexe Clovis & Chasseurs de Mégafaune (Amérique du Nord)",
+      "species": "Homo Sapiens",
+      "speciesId": 1,
+      "colorRgb": "#8b5cf6",
+      "homininClade": "Sapiens Proto-Amerind Early Entry",
+      "languageFamily": "Proto-Amérindien basal",
+      "kinshipSystem": "Bandes nomades hautement mobiles à grande portée géographique",
+      "materialCulture": "Pointes de Clovis bifaciales cannelées, propulseurs, outillage sur ivoire",
+      "subsistenceStrategy": "Chasse aux mammouths de Colomb, mastodontes et bisons antiques, cueillette saisonnière",
+      "latitude": 34.5,
+      "longitude": -103.2,
+      "traits": {
+        "asabiyyah": 0.50,
+        "technologyLevel": 0.20,
+        "socialHierarchy": 0.10,
+        "ecologicalFootprint": 0.15,
+        "pathogenImmunity": 0.12
+      }
+    },
+    {
+      "id": 6,
+      "name": "Période Jōmon Initial (Archipel Japonais)",
+      "species": "Homo Sapiens",
+      "speciesId": 1,
+      "colorRgb": "#ec4899",
+      "homininClade": "Sapiens East Asian / Jomon",
+      "languageFamily": "Proto-Japonique / Aïnou basal",
+      "kinshipSystem": "Communautés sédentaires côtières et forestières",
+      "materialCulture": "Première poterie mondiale à motif cordé (Jōmon), microlithes en obsidienne",
+      "subsistenceStrategy": "Pêche en haute mer (pirogues monoxyles), coquillages, chasse au cerf et sanglier",
+      "latitude": 35.7,
+      "longitude": 139.7,
+      "traits": {
+        "asabiyyah": 0.62,
+        "technologyLevel": 0.21,
+        "socialHierarchy": 0.18,
+        "ecologicalFootprint": 0.14,
+        "pathogenImmunity": 0.25
+      }
+    },
+    {
+      "id": 7,
+      "name": "Culture Dyuktai & Chasseurs Sibériens de Béringie (Sibérie Orientale)",
+      "species": "Homo Sapiens",
+      "speciesId": 1,
+      "colorRgb": "#06b6d4",
+      "homininClade": "Sapiens Ancient North Eurasian (ANE)",
+      "languageFamily": "Paléo-Sibérien / Proto-Éniseïen",
+      "kinshipSystem": "Bandes arctiques hyper-adaptées au pergélisol",
+      "materialCulture": "Micro-lames sur nucléus cunéiformes, bifaces foliacés, tentes en peaux de mammouth",
+      "subsistenceStrategy": "Chasse au bison des steppes, rhinocéros laineux, renne arctique",
+      "latitude": 59.5,
+      "longitude": 132.0,
+      "traits": {
+        "asabiyyah": 0.52,
+        "technologyLevel": 0.19,
+        "socialHierarchy": 0.10,
+        "ecologicalFootprint": 0.07,
+        "pathogenImmunity": 0.10
+      }
+    },
+    {
+      "id": 8,
+      "name": "Aborigènes du Sahul & Gardiens du Temps du Rêve (Australie / Sahul)",
+      "species": "Homo Sapiens",
+      "speciesId": 1,
+      "colorRgb": "#f59e0b",
+      "homininClade": "Sapiens Australo-Papuan Lineage",
+      "languageFamily": "Pama-Nyungan & Macro-Pama",
+      "kinshipSystem": "Système de sections et sous-sections totémiques exogames",
+      "materialCulture": "Boomerangs, propulseurs woomera, meules à graines, art pariétal ocre",
+      "subsistenceStrategy": "Fire-stick farming (brûlis contrôlé), chasse aux marsupiaux, collecte de graines et racines",
+      "latitude": -23.7,
+      "longitude": 133.8,
+      "traits": {
+        "asabiyyah": 0.70,
+        "technologyLevel": 0.16,
+        "socialHierarchy": 0.15,
+        "ecologicalFootprint": 0.10,
+        "pathogenImmunity": 0.20
+      }
+    }
+  ]
+}

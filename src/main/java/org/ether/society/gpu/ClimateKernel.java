@@ -98,9 +98,9 @@ public class ClimateKernel {
             final double MAX_TEMP_DIFF = 40.0; // Equator vs poles difference
             double baseTemp = latitudeFactor * MAX_TEMP_DIFF - 10.0;
 
-            // Elevation lapse rate: -10°C per 1000m
+            // Elevation lapse rate: -10°C per 1000m (on terrestrial land above sea level)
             final double LAPSE_RATE = 10.0 / 1000.0;
-            double elevEffect = -elev * LAPSE_RATE;
+            double elevEffect = -Math.max(0.0, elev) * LAPSE_RATE;
 
             // Seasonal variation (stronger at poles)
             final double SEASONAL_AMPLITUDE = 15.0;

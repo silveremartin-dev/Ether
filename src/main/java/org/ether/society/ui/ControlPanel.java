@@ -64,8 +64,7 @@ public class ControlPanel extends VBox {
     private final VBox eventsListBox;
 
     // Controls
-    private final Button startBtn;
-    private final Button pauseBtn;
+    private final Button playPauseBtn;
     private final Button rewindBtn;
     private final Button fastRewindBtn;
     private final Button stepBackBtn;
@@ -75,6 +74,7 @@ public class ControlPanel extends VBox {
 
     private final ToggleButton speedMax;
     private final Slider speedSlider;
+    private final Label speedValueLabel;
 
     private final Button hdScreenshotBtn;
     private final Button recordVideoBtn;
@@ -142,6 +142,7 @@ public class ControlPanel extends VBox {
         rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Réinitialiser T=0")));
         rewindBtn.setOnAction(e -> {
             engine.pause();
+            updatePlayPauseVisuals(false);
             if (onTimelapseSeek != null) {
                 int startYear = engine.getCurrentScenario() != null ? (int) engine.getCurrentScenario().getStartDateYear() : -20000;
                 onTimelapseSeek.accept(startYear);
@@ -162,24 +163,22 @@ public class ControlPanel extends VBox {
         autoRecordCheck.getStyleClass().add("opt-sub-checkbox");
         autoRecordCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
 
-        startBtn = new Button("▶");
-        startBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
-        startBtn.setOnAction(e -> {
-            if (autoRecordCheck.isSelected() && !isRecordingVideo) {
-                toggleVideoRecording();
+        playPauseBtn = new Button("▶");
+        playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
+        playPauseBtn.setOnAction(e -> {
+            if (engine.isRunning()) {
+                engine.pause();
+                if (autoRecordCheck != null && autoRecordCheck.isSelected() && isRecordingVideo) {
+                    toggleVideoRecording();
+                }
+                updatePlayPauseVisuals(false);
+            } else {
+                if (autoRecordCheck.isSelected() && !isRecordingVideo) {
+                    toggleVideoRecording();
+                }
+                engine.start();
+                updatePlayPauseVisuals(true);
             }
-            engine.start();
-            updatePlayPauseVisuals(true);
-        });
-
-        pauseBtn = new Button("⏸");
-        pauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause", "Mettre en pause")));
-        pauseBtn.setOnAction(e -> {
-            engine.pause();
-            if (autoRecordCheck != null && autoRecordCheck.isSelected() && isRecordingVideo) {
-                toggleVideoRecording();
-            }
-            updatePlayPauseVisuals(false);
         });
 
         stepForwardBtn = new Button("⏵");
@@ -194,6 +193,7 @@ public class ControlPanel extends VBox {
         endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Aller à la fin de la simulation (Dernier checkpoint / Fin)")));
         endBtn.setOnAction(e -> {
             engine.pause();
+            updatePlayPauseVisuals(false);
             if (onTimelapseSeekToEnd != null) {
                 onTimelapseSeekToEnd.run();
             } else {
@@ -201,7 +201,7 @@ public class ControlPanel extends VBox {
             }
         });
 
-        Button[] playButtons = { rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stepForwardBtn, fastForwardBtn, endBtn };
+        Button[] playButtons = { rewindBtn, fastRewindBtn, stepBackBtn, playPauseBtn, stepForwardBtn, fastForwardBtn, endBtn };
         for (Button btn : playButtons) {
             btn.setMinWidth(36);
             btn.setPrefWidth(38);
@@ -219,7 +219,7 @@ public class ControlPanel extends VBox {
         pauseOnEventCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         pauseOnEventCheck.setOnAction(e -> engine.setPauseAtNextEvent(pauseOnEventCheck.isSelected()));
 
-        HBox playBar = new HBox(4, rewindBtn, fastRewindBtn, stepBackBtn, startBtn, pauseBtn, stepForwardBtn, fastForwardBtn, endBtn);
+        HBox playBar = new HBox(4, rewindBtn, fastRewindBtn, stepBackBtn, playPauseBtn, stepForwardBtn, fastForwardBtn, endBtn);
         playBar.setAlignment(Pos.CENTER);
 
         speedSlider = new Slider(1, 100, 1);
@@ -232,36 +232,40 @@ public class ControlPanel extends VBox {
         speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "Vitesse de simulation CPU (Gauche = 1 tick/sec | Droite = Mode Rapide)")));
         HBox.setHgrow(speedSlider, Priority.ALWAYS);
 
-        Label speedValueLabel = new Label("⏱️ " + I18n.getOrDefault("sim.speed.label", "Vitesse : 1 tick/sec"));
+        speedValueLabel = new Label("⏱️ " + I18n.getOrDefault("sim.speed.label", "Vitesse : 1 tick/sec"));
         speedValueLabel.getStyleClass().add("value-label");
         speedValueLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
 
         speedMax = new ToggleButton("MAX 🚀");
         speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Calcule les itérations à la vitesse maximale du processeur")));
-        speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4; -fx-cursor: hand;");
+        updateSpeedMaxStyle(false);
 
         speedSlider.valueProperty().addListener((obs, oldV, newV) -> {
             int spd = newV.intValue();
-            if (speedMax.isSelected()) {
-                speedMax.setSelected(false);
-                speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4; -fx-cursor: hand;");
+            if (spd < (int) speedSlider.getMax() && speedMax.isSelected()) {
+                updateSpeedMaxStyle(false);
             }
-            engine.setSpeed(spd);
-            speedValueLabel.setText(String.format("⏱️ " + I18n.getOrDefault("sim.speed.target_fmt", "Vitesse Cible : %d ticks/sec"), spd));
+            if (!speedMax.isSelected()) {
+                engine.setSpeed(spd);
+                updateSpeedLabel(spd);
+            }
         });
 
         speedMax.setOnAction(e -> {
             if (speedMax.isSelected()) {
+                speedSlider.setValue(speedSlider.getMax());
+                updateSpeedMaxStyle(true);
                 engine.setSpeed(999);
-                speedValueLabel.setText("⏱️ " + I18n.getOrDefault("sim.speed.max_label", "Vitesse Cible : MAX 🚀 (Illimité)"));
-                speedMax.setStyle("-fx-background-color: #7c3aed; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4; -fx-cursor: hand; -fx-border-color: #c4b5fd; -fx-border-width: 1.5; -fx-border-radius: 4;");
+                updateSpeedLabel(999);
             } else {
+                updateSpeedMaxStyle(false);
                 int spd = (int) speedSlider.getValue();
                 engine.setSpeed(spd);
-                speedValueLabel.setText(String.format("⏱️ " + I18n.getOrDefault("sim.speed.target_fmt", "Vitesse Cible : %d ticks/sec"), spd));
-                speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4; -fx-cursor: hand;");
+                updateSpeedLabel(spd);
             }
         });
+
+        updateSpeedLabel(1);
 
         HBox sliderRow = new HBox(8, speedSlider, speedMax);
         sliderRow.setAlignment(Pos.TOP_LEFT);
@@ -592,16 +596,48 @@ public class ControlPanel extends VBox {
     }
 
     public void updatePlayPauseVisuals(boolean isRunning) {
-        if (startBtn == null || pauseBtn == null) return;
-        startBtn.setText("▶");
-        pauseBtn.setText("⏸");
-
+        if (playPauseBtn == null) return;
         if (isRunning) {
-            startBtn.setStyle("-fx-background-color: #059669; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-border-color: #34d399; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.7), 6, 0, 0, 0);");
-            pauseBtn.setStyle("-fx-background-color: #334155; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-background-radius: 6; -fx-effect: none;");
+            playPauseBtn.setText("⏸");
+            playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause", "Mettre en pause")));
+            playPauseBtn.setStyle("-fx-background-color: #059669; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-border-color: #34d399; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.7), 6, 0, 0, 0); -fx-cursor: hand;");
         } else {
-            startBtn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-background-radius: 6; -fx-effect: none;");
-            pauseBtn.setStyle("-fx-background-color: #d97706; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-border-color: #fbbf24; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(245,158,11,0.7), 6, 0, 0, 0);");
+            playPauseBtn.setText("▶");
+            playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
+            playPauseBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 2 4; -fx-border-color: #38bdf8; -fx-border-width: 1.5px; -fx-background-radius: 6; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(2,132,199,0.5), 6, 0, 0, 0); -fx-cursor: hand;");
+        }
+    }
+
+    private void updateSpeedMaxStyle(boolean isMax) {
+        if (speedMax == null) return;
+        speedMax.setSelected(isMax);
+        if (isMax) {
+            speedMax.setStyle("-fx-background-color: #7c3aed; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4; -fx-cursor: hand; -fx-border-color: #c4b5fd; -fx-border-width: 1.5; -fx-border-radius: 4; -fx-effect: dropshadow(three-pass-box, rgba(139,92,246,0.8), 6, 0, 0, 0);");
+        } else {
+            speedMax.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-radius: 4; -fx-cursor: hand; -fx-border-color: transparent; -fx-border-width: 1.5; -fx-border-radius: 4; -fx-effect: none;");
+        }
+    }
+
+    private void updateSpeedLabel(int spd) {
+        if (speedValueLabel == null) return;
+        if (speedMax != null && speedMax.isSelected()) {
+            speedValueLabel.setText("⏱️ " + I18n.getOrDefault("sim.speed.max_label", "Vitesse Cible : MAX 🚀 (Calcul CPU sans limite de fréquence)"));
+            return;
+        }
+        String fmt = I18n.getOrDefault("sim.speed.target_fmt", "Vitesse Cible : %d pas/sec (%d jours/sec)");
+        try {
+            if (fmt.contains("%d")) {
+                long specifierCount = fmt.chars().filter(ch -> ch == '%').count();
+                if (specifierCount >= 2) {
+                    speedValueLabel.setText(String.format("⏱️ " + fmt, spd, spd));
+                } else {
+                    speedValueLabel.setText(String.format("⏱️ " + fmt, spd));
+                }
+            } else {
+                speedValueLabel.setText("⏱️ " + fmt + ": " + spd);
+            }
+        } catch (Exception e) {
+            speedValueLabel.setText(String.format(java.util.Locale.ROOT, "⏱️ Vitesse Cible : %d ticks/sec", spd));
         }
     }
 
@@ -1042,17 +1078,23 @@ public class ControlPanel extends VBox {
     }
 
     private void updateTexts() {
-        startBtn.setText("▶");
-        startBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
-        pauseBtn.setText("⏸");
-        pauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause", "Mettre en pause")));
+        if (playPauseBtn != null) {
+            boolean running = engine != null && engine.isRunning();
+            playPauseBtn.setText(running ? "⏸" : "▶");
+            playPauseBtn.setTooltip(new Tooltip(running
+                    ? I18n.getOrDefault("sim.tooltip.pause", "Mettre en pause")
+                    : I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
+        }
         rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Réinitialiser T=0")));
         fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Reculer de 1000 pas [Maintenir appuyé]")));
         stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Reculer de 10 pas [Maintenir appuyé]")));
         stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer de 10 pas [Maintenir appuyé]")));
         fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Avancer de 1000 pas [Maintenir appuyé]")));
         endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Aller à la fin de la simulation (Dernier checkpoint / Fin)")));
+        speedMax.setText("MAX 🚀");
         speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Calcule les itérations à la vitesse maximale du processeur")));
+        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "Vitesse de simulation CPU (Gauche = 1 tick/sec | Droite = Mode Rapide)")));
+        updateSpeedLabel(speedMax != null && speedMax.isSelected() ? 999 : (speedSlider != null ? (int) speedSlider.getValue() : 1));
         mode3dCheck.setText(I18n.getOrDefault("sim.layer.mode3d", "🌐 Globe 3D H3"));
         mode3dCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.mode3d", "Toggles between 3D spherical globe and 2D flat map")));
         reliefLabel.setText(String.format(java.util.Locale.ROOT, "%s : %.0fx", I18n.getOrDefault("sim.layer.relief3d", "⛰️ Relief 3D"), reliefSlider != null ? reliefSlider.getValue() : 25.0));
