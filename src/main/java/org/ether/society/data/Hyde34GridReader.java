@@ -30,8 +30,8 @@ import java.util.zip.ZipInputStream;
 public class Hyde34GridReader {
     private static final Logger logger = LoggerFactory.getLogger(Hyde34GridReader.class);
 
-    public static final int ETHER_WIDTH = 1024;
-    public static final int ETHER_HEIGHT = 512;
+    public static final int ETHER_WIDTH = 2048;
+    public static final int ETHER_HEIGHT = 1024;
 
     private static final java.util.Map<Long, BufferedImage> GRID_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
 

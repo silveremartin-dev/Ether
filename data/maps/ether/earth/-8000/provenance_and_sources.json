@@ -1,0 +1,274 @@
+{
+  "epoch": -8000,
+  "era": "Early Neolithic / 8.2 ka Event & Early Farming Dispersal",
+  "planet": "earth",
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "overview": {
+    "summary_fr": "Reconstitution cartographique et tensorielle globale de la Terre pour l'époque -8000 BP (environ 6000 av. J.-C.). Cette période voit l'épanouissement de la méga-agglomération néolithique de Çatalhöyük en Anatolie, la vague d'expansion des premiers agriculteurs européens (céramique Cardiale en Méditerranée, Starčevo-Körös-Criş dans les Balkans, début du Rubané LBK), l'agriculture mature du millet à Jiahu (flûtes en os de grue, fermentation) et du riz dans le Yangtsé, ainsi que le pastoralisme bovin de Nabta Playa dans le Sahara Vert et les débuts de Mehrgarh dans l'Indus. L'Antarctique, Madagascar et les îles océaniques éloignées sont rigoureusement inhabités.",
+    "summary_en": "Global cartographic and tensor reconstruction of Earth for the -8000 BP epoch (~6000 BC). Features the flourishing of the Anatolian Neolithic mega-settlement of Çatalhöyük, the wave of Early European Farmer dispersals (Cardial Impressed Ware in the Mediterranean, Starčevo-Körös-Criş in the Balkans, early LBK pioneers), mature millet and rice farming in China (Jiahu, Kuahuqiao), cattle pastoralism at Nabta Playa in the Green Sahara, and early Mehrgarh in the Indus Valley. Antarctica, Madagascar, and remote oceanic islands are strictly uninhabited."
+  },
+  "layers": {
+    "elevation": {
+      "filename": "earth_-8000_elevation.png",
+      "category": "geophysics",
+      "data_sources": [
+        "NOAA ETOPO 2022 15-arc-second Global Relief Model",
+        "GEBCO 2023 Grid Bathymetric and Topographic Model"
+      ],
+      "scientific_parameters_and_corrections": {
+        "eustatic_sea_level_offset_meters": -20.0,
+        "isostatic_rebound_model": "ICE-6G_C (Peltier et al. 2015)",
+        "paleotopographic_features": "Doggerland drowning / Storegga slide tsunami transition (~8150 BP); rising Black Sea reconnecting with the Mediterranean via the Bosporus."
+      },
+      "reconstitution_rationale": "Direct downsampling of NOAA ETOPO 2022 with global eustatic depression of 20m matching the final phase of early Holocene sea-level rise."
+    },
+    "biomes": {
+      "filename": "earth_-8000_biomes.png",
+      "category": "ecology",
+      "data_sources": [
+        "CHELSA-Trace21k Paleoclimate Downscaling Engine",
+        "PaleoView v1.2 (Fordham et al. 2017)",
+        "European Pollen Database (EPD) Holocene Climax Forest Maps"
+      ],
+      "scientific_parameters_and_corrections": {
+        "green_sahara_climax": "Lush tropical savanna, Acacia woodland, and interconnected freshwater lakes across the central Sahara and Arabia.",
+        "climax_forest_europe": "Dense mixed oak-elm-linden temperate deciduous forests across Central and Western Europe.",
+        "glaciated_ice_sheets": "Nearly vanished Laurentide ice with only minor remnant in Ungava/Labrador; Scandinavian ice completely melted."
+      },
+      "reconstitution_rationale": "Combines Köppen-Geiger classifications with fully developed African Humid Period savanna and climax temperate broadleaf woodlands."
+    },
+    "temperature": {
+      "filename": "earth_-8000_temperature.png",
+      "category": "climate",
+      "data_sources": [
+        "NGRIP & GISP2 Greenland Ice Core δ18O (8.2 ka cooling event)",
+        "EPICA Dome C Deuterium Series",
+        "Marcott et al. (2013) Science Holocene Thermal Reconstruction"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_mean_surface_temp_celsius": 14.5,
+        "event_8200_anomaly_celsius": -1.5,
+        "equatorial_thermal_range_celsius": [26.0, 28.0],
+        "polar_thermal_range_celsius": [-33.0, -14.0]
+      },
+      "reconstitution_rationale": "General Holocene warming interrupted by a brief transient North Atlantic cold pulse (8.2 ka cooling event)."
+    },
+    "precipitation": {
+      "filename": "earth_-8000_precipitation.png",
+      "category": "climate",
+      "data_sources": [
+        "Sanbao Cave Speleothem δ18O Records (Cheng et al. 2016)",
+        "Lake Bosumtwi & Lake Mega-Chad Paleohydrology (Armitage et al. 2015 PNAS)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "african_humid_period_monsoon": "+950 mm/yr over the Sahara and Arabian peninsula, maintaining Lake Mega-Chad at over 300,000 km².",
+        "asian_monsoon_peak": "Enhanced summer precipitation fueling early rice agriculture in the Yangtze and Ganges basins."
+      },
+      "reconstitution_rationale": "Peak orbital monsoon circulation providing abundant freshwater across Northern Africa and Southern Asia."
+    },
+    "seasonality": {
+      "filename": "earth_-8000_seasonality.png",
+      "category": "climate",
+      "data_sources": [
+        "Astronomical Milankovitch Parameters at 8,000 BP (Laskar et al. 2004)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "obliquity_degrees": 24.28,
+        "eccentricity": 0.0196,
+        "precession_parameter": 0.020
+      },
+      "reconstitution_rationale": "Maximum Holocene obliquity driving peak seasonal thermal amplitudes and enhanced continental heating."
+    },
+    "density": {
+      "filename": "earth_-8000_density.png",
+      "category": "demography",
+      "data_sources": [
+        "HYDE 3.4 History Database of the Global Environment (-8000 BC / -6000 cal BC grid)",
+        "Seshat Global History Databank (Çatalhöyük, Jiahu, Mehrgarh, Sesklo inventories)",
+        "Shennan et al. (2013) Nature Early Neolithic Population Dynamics in Europe"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_human_population_estimate": 11000000,
+        "focal_hearths": [
+          "Çatalhöyük Mega-Village & Central Anatolia: 14.0 hab/100km²",
+          "Ain Ghazal & Levantine PPNB/Ceramic Neolithic: 10.5 hab/100km²",
+          "Jiahu & Yellow River Peiligang/Cishan: 11.5 hab/100km²",
+          "Kuahuqiao & Yangtze Wet Rice: 9.5 hab/100km²",
+          "Sesklo / Thessaly & Starčevo-Körös Balkans: 9.5 hab/100km²",
+          "Mehrgarh Period I-II (Balochistan / Indus): 9.5 hab/100km²",
+          "Nabta Playa Green Sahara Pastoralists: 8.5 hab/100km²",
+          "Nanchoc Valley & Central Andes: 5.0 hab/100km²"
+        ]
+      },
+      "reconstitution_rationale": "Demographic explosion driven by agricultural surplus, grain storage, and livestock domestication."
+    },
+    "sovereignty": {
+      "filename": "earth_-8000_sovereignty.png",
+      "category": "sociology",
+      "data_sources": [
+        "Archaeological settlement hierarchies and egalitarian village organization studies (Hodder 2006, Flannery & Marcus 2012)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "governance_mode": "Autonomous agricultural mega-villages with household-based egalitarian governance (Çatalhöyük, Jiahu, Sesklo)."
+      },
+      "reconstitution_rationale": "Multi-focal sovereignty fields reflecting autonomous dense village settlements without royal centralization."
+    },
+    "isogloss": {
+      "filename": "earth_-8000_isogloss.png",
+      "category": "linguistics",
+      "data_sources": [
+        "WALS & D-PLACE Ethnolinguistic Distributions",
+        "Agricultural dispersal and language family co-expansion models (Bellwood & Renfrew 2002)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "expanding_families": "Proto-Indo-European / Anatolian in Anatolia/Balkans, Proto-Afroasiatic in Levant/Sahara, Proto-Sino-Tibetan in Yellow River, Proto-Austroasiatic in Yangtze, Proto-Dravidian in Indus."
+      },
+      "reconstitution_rationale": "Farming-language dispersal wave-of-advance models expanding from primary domestication centers."
+    },
+    "kinship": {
+      "filename": "earth_-8000_kinship.png",
+      "category": "anthropology",
+      "data_sources": [
+        "D-PLACE Murdock Ethnographic Atlas Kinship Codes",
+        "Ancient DNA and dental biodistance studies of Neolithic burial groups (Childe, Bentley et al. 2012)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "kinship_systems": "Segmentary patrilineages in Near East and China; matrilocal/bilateral structures in early European farming enclaves."
+      },
+      "reconstitution_rationale": "Lineage-based corporate property transmission of agricultural land and livestock herds."
+    },
+    "rituals": {
+      "filename": "earth_-8000_rituals.png",
+      "category": "anthropology",
+      "data_sources": [
+        "Mellaart & Hodder Çatalhöyük Shrines with Bull Bucrania and Wall Paintings",
+        "Nabta Playa Megalithic Astronomical Calendar & Cattle Tumuli (Wendorf & Schild 2001)",
+        "Jiahu Excavation Reports (Sacred Crane Bone Flutes, Tortoise Shell Divination)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "symbolic_intensity": "Domestic shrines, bull bucrania wall installations, female and animal terracotta figurines, musical shamanism."
+      },
+      "reconstitution_rationale": "Peak ritual intensity focused on Çatalhöyük, Nabta Playa, Jiahu, and Thessalian goddess figurine sanctuaries."
+    },
+    "technology": {
+      "filename": "earth_-8000_technology.png",
+      "category": "technology",
+      "data_sources": [
+        "Ceramic & Pyrotechnology Catalogs (Vandiver et al. 1989)",
+        "Archaeobotanical and Zooarchaeological Domestication Packages (Fuller et al. 2014, Larson et al. 2014)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "key_innovations": "Pottery vessels (low-fire ceramic), domesticated sheep/goat/cattle/pigs, domesticated emmer/einkorn/barley/millet/rice, mudbrick architecture, loom weaving."
+      },
+      "reconstitution_rationale": "Technological index of 85-115 reflecting full agrarian package adoption across Eurasia and the Green Sahara."
+    },
+    "institutional": {
+      "filename": "earth_-8000_institutional.png",
+      "category": "sociology",
+      "data_sources": [
+        "Seshat Global History Databank (Early Neolithic village complexity)",
+        "Carneiro Scale of Cultural Development"
+      ],
+      "scientific_parameters_and_corrections": {
+        "hierarchy_levels": "Level 1-2 (Egalitarian mega-villages with corporate clan councils, Seshat score 45-60)."
+      },
+      "reconstitution_rationale": "High population density managed through peer-to-peer egalitarian norms without institutionalized kingship."
+    },
+    "ecological": {
+      "filename": "earth_-8000_ecological.png",
+      "category": "ecology",
+      "data_sources": [
+        "Pollen and sediment cores showing Neolithic deforestation and erosion (Kaplan et al. 2009)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "anthropic_impact": "Substantial clearance of deciduous forest for swidden farming, goat and sheep overgrazing in Near Eastern foothills."
+      },
+      "reconstitution_rationale": "Continuous 2D fields modeling deforestation, crop monoculture, and domestic livestock grazing footprints."
+    },
+    "pathogen": {
+      "filename": "earth_-8000_pathogen.png",
+      "category": "epidemiology",
+      "data_sources": [
+        "Ancient DNA Pathogen Genomes (Mycobacterium tuberculosis, Yersinia pestis precursors)",
+        "Paleopathological Surveys of Neolithic Skeletons"
+      ],
+      "scientific_parameters_and_corrections": {
+        "zoonotic_emergence": "Cross-species transmission from cattle (tuberculosis), pigs, and sheep; high crowd-disease vulnerability in dense mudbrick agglomerations."
+      },
+      "reconstitution_rationale": "Significant pathogen surge directly coupled to animal domestication and permanent urban-like crowding."
+    },
+    "tradenetwork": {
+      "filename": "earth_-8000_tradenetwork.png",
+      "category": "economics",
+      "data_sources": [
+        "Geochemical Spondylus shell provenance studies (Séfériadès 2000)",
+        "Cappadocian Obsidian Distribution Networks (Cauvin 1998, Perlès 2001)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "circuits": "Çatalhöyük obsidian pipeline from Göllü Dağ; Spondylus shell route from the Aegean/Black Sea deep into the Balkans and Danube; Badakhshan lapis lazuli and turquoise to Mehrgarh."
+      },
+      "reconstitution_rationale": "Established long-distance exchange corridors transporting prestige goods and essential lithic raw materials."
+    },
+    "coal": {
+      "filename": "earth_-8000_coal.png",
+      "category": "geology",
+      "data_sources": ["USGS World Coal Quality Inventory (WoCQI)", "BGS World Mineral Statistics"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global coal basins."
+    },
+    "oil": {
+      "filename": "earth_-8000_oil.png",
+      "category": "geology",
+      "data_sources": ["USGS World Petroleum Assessment", "Global Energy Monitor (GEM)"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global oil reserves."
+    },
+    "gas": {
+      "filename": "earth_-8000_gas.png",
+      "category": "geology",
+      "data_sources": ["USGS Global Gas Database"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of natural gas plays."
+    },
+    "uranium": {
+      "filename": "earth_-8000_uranium.png",
+      "category": "geology",
+      "data_sources": ["IAEA / NEA Red Book 2022"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of uranium deposits."
+    },
+    "helium3": {
+      "filename": "earth_-8000_helium3.png",
+      "category": "geology",
+      "data_sources": ["USGS Mantle Volatiles Survey"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of Helium-3 terrestrial plume sources."
+    },
+    "iron_copper": {
+      "filename": "earth_-8000_iron_copper.png",
+      "category": "geology",
+      "data_sources": ["USGS Mineral Resources Data System (MRDS)"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global iron and copper deposits."
+    },
+    "precious_metals": {
+      "filename": "earth_-8000_precious_metals.png",
+      "category": "geology",
+      "data_sources": ["USGS Global Mineral Assessment"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of precious metal deposits."
+    },
+    "rare_earths": {
+      "filename": "earth_-8000_rare_earths.png",
+      "category": "geology",
+      "data_sources": ["USGS REE Database"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of rare earth deposits."
+    },
+    "geothermal": {
+      "filename": "earth_-8000_geothermal.png",
+      "category": "geology",
+      "data_sources": ["Global Heat Flow Database (IHFC)"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of terrestrial heat flow."
+    },
+    "aquifers": {
+      "filename": "earth_-8000_aquifers.png",
+      "category": "geology",
+      "data_sources": ["UNESCO WHYMAP"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 hydrogeological raster of deep regional aquifer storage."
+    }
+  }
+}

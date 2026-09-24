@@ -82,8 +82,8 @@ public class ThermohalineStommelAMOCEngine {
         double densityDrive = (ALPHA_THERMAL * deltaT) - (BETA_HALINE * deltaS);
         double amocFlowSv = Math.max(0.0, STOMMEL_COUPLING_C * densityDrive);
 
-        // AMOC collapsed if flow drops below critical threshold (5.0 Sv)
-        boolean isCollapsed = (amocFlowSv < 5.0);
+        // AMOC collapsed if flow drops below critical convective threshold (8.0 Sv)
+        boolean isCollapsed = (amocFlowSv < 8.0);
         // Cooling anomaly over Europe/North Atlantic when AMOC is weakened
         double coolingShift = isCollapsed ? -7.5 : -(18.0 - amocFlowSv) * 0.35;
 

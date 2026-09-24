@@ -69,14 +69,14 @@ public class TainterComplexityCollapseEngine implements ProceduralEnginePlugin {
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             double surplus = pop * 0.05;
 
-            // Complexity index
-            double complexity = Math.log(1.0 + 0.05 * capital);
-            // Superlinear maintenance overhead of bureaucratic structures
-            double maintenanceCost = Math.pow(complexity, 1.20) * 10.0 * deltaYears;
+            // Complexity index derived from institutional capital depth
+            double complexity = Math.log(1.0 + 0.02 * capital);
+            // Institutional & infrastructural maintenance overhead scales with capital stock and bureaucratic depth
+            double maintenanceCost = (0.015 * capital + Math.pow(complexity, 1.5) * 5.0) * deltaYears;
 
             if (maintenanceCost > surplus) {
-                // Diminishing returns trap: complexity maintenance exceeds surplus -> capital collapse
-                double erosion = (maintenanceCost - surplus) * 0.5;
+                // Diminishing returns trap (Tainter 1988): complexity maintenance exceeds surplus -> capital collapse
+                double erosion = (maintenanceCost - surplus) * 0.8;
                 cell.setResourceCapital(Math.max(10.0, capital - erosion));
             }
         }

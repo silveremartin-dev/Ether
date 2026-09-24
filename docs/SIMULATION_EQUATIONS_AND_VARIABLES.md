@@ -884,6 +884,101 @@ $$\mathbf{S}(\mathbf{x}, t) = \underbrace{\mathcal{T}_{t_0}(\mathbf{x})}_{\text{
 
 This decoupling guarantees that cartographic initial condition errors (e.g. baseline carrying capacity) can be calibrated and validated independently of dynamical algorithm behaviors (e.g. migration diffusion, albedo feedback, or Malthusian checks).
 
+---
+
+## 10. Agro-Hydrological Salinization & Draft Animal Energetic Competition
+
+### 10.1 Soil Salinization Mass-Balance in Arid Irrigated Basins (`SoilSalinizationHydrologyEngine`)
+In arid and semi-arid lowlands ($P < 400\text{ mm/yr}$, $T > 18^\circ\text{C}$), intensive crop irrigation deposits dissolved salts in the rhizosphere. The dynamic conservation of mass for salt concentration $[\text{Salts}]_{\text{soil}}$ (in $\text{dS/m}$ or $\text{g/kg}$) is governed by:
+
+$$\frac{d [\text{Salts}]_{\text{soil}}}{dt} = \frac{Q_{\text{irr}}(\mathbf{x}) \cdot [\text{Salts}]_{\text{water}}}{h_{\text{root}} \cdot \theta_{\text{field}}} - \frac{Q_{\text{drain}}(\mathbf{x}) \cdot [\text{Salts}]_{\text{leach}}}{h_{\text{root}} \cdot \theta_{\text{field}}} - \gamma_{\text{flush}}(P)$$
+
+where:
+* $Q_{\text{irr}}(\mathbf{x}) = \min\left(Q_{\max}, \alpha_{\text{pop}} \cdot N_{\text{pop}}(\mathbf{x})\right)$ is the annual irrigation water volume applied per hectare ($\text{m}^3/\text{ha/yr}$).
+* $[\text{Salts}]_{\text{water}} \approx 0.3\text{--}1.2\text{ g/L}$ is the mineral solute load of incoming river canals (e.g. Tigris, Euphrates, Indus, Amu Darya).
+* $Q_{\text{drain}}$ is the artificial subsurface drainage discharge. In pre-industrial societies ($\text{Tech} \le 4.0$), $Q_{\text{drain}} \approx 0$, preventing salt evacuation.
+* $h_{\text{root}} \approx 0.8\text{ m}$ is the active root zone depth, and $\theta_{\text{field}}$ is the soil field capacity.
+* $\gamma_{\text{flush}}(P) = k_{\text{flush}} \cdot \max(0, P - \text{PET})$ represents natural meteoric leaching by rainfall in excess of potential evapotranspiration.
+
+**Crop Yield Attenuation & Cultivar Substitution**:
+Total agricultural food biomass $Y(\mathbf{x}, t)$ decays non-linearly with soil salinity:
+
+$$Y(\mathbf{x}, t) = Y_0(\mathbf{x}) \cdot \max\left(0.15, \, 1.0 - \beta_{\text{salt}} \cdot \max\left(0, [\text{Salts}]_{\text{soil}} - \text{Threshold}_{\text{crop}}\right)\right)$$
+
+* For wheat (*Triticum aestivum*): $\text{Threshold}_{\text{wheat}} = 6.0\text{ dS/m}$, $\beta = 0.071$.
+* For barley (*Hordeum vulgare*): $\text{Threshold}_{\text{barley}} = 8.0\text{ dS/m}$, $\beta = 0.050$.
+* When $[\text{Salts}] > 16.0\text{ dS/m}$, agricultural collapse occurs, forcing regional demographic exodus (Jacobsen & Adams, 1958).
+
+---
+
+### 10.2 Draft Animal Mechanical Traction & Fodder Allocation Trade-off (`DraftAnimalFodderAllocationEngine`)
+Pre-industrial agricultural intensification relies on working draft animals (oxen, horses, mules). The model formalizes the dual energetic impact of animal traction:
+
+#### A. Mechanical Power & Labor Amplification
+Each working draft animal provides a mechanical output $P_{\text{draft}} \approx 500\text{--}750\text{ W}$ ($0.7\text{--}1.0\text{ hp}$), delivering $E_{\text{work}} \approx 2.5\times 10^9\text{ J/yr}$ of effective mechanical work. Agricultural labor productivity scales with draft animal ratio $\rho_{\text{draft}} = N_{\text{draft}} / N_{\text{pop}}$:
+
+$$\text{Productivity}_{\text{agri}}(\mathbf{x}) = \text{Productivity}_0 \cdot \left(1.0 + \eta_{\text{plow}} \cdot \min(0.40, \rho_{\text{draft}})\right)$$
+
+where $\eta_{\text{plow}} \approx 1.25$ with medieval heavy moldboard plow and horse collar ($\text{Tech} \ge 3.0$).
+
+#### B. Metabolic Fodder Preemption (Land Competition)
+Draft equines/bovines consume $15\,000\text{--}25\,000\text{ kcal/day}$ ($62.8\text{--}104.6\text{ MJ/day}$), requiring $1.0\text{--}1.5\text{ ha}$ of fertile pasture, oats, and hay per head. Net food biomass available for direct human metabolic consumption $\text{Food}_{\text{net}}(\mathbf{x}, t)$ is:
+
+$$\text{Food}_{\text{net}}(\mathbf{x}, t) = \text{Food}_{\text{gross}}(\mathbf{x}, t) \cdot \left(1.0 - \kappa_{\text{fodder}} \cdot \rho_{\text{draft}}(\mathbf{x})\right)$$
+
+where $\kappa_{\text{fodder}} \approx 0.22$.
+
+This formalizes the historical 20th-century caloric surge documented by Vaclav Smil (2017) and E. A. Wrigley (2010).
+
+---
+
+### 10.3 Thermohaline Ocean Overturning & Stommel 2-Box AMOC Tipping Point (`ThermohalineStommelAMOCEngine`)
+Atlantic Meridional Overturning Circulation (AMOC) transports heat poleward ($1.2\text{ PW}$ northward) and is governed by non-linear thermal and haline density gradients across low and high latitudes (Stommel, 1961):
+
+#### A. Seawater Density Equation of State
+$$\rho(T, S) = \rho_0 \left[ 1 - \alpha_T (T - T_0) + \beta_S (S - S_0) \right]$$
+where $\rho_0 = 1025.0\text{ kg/m}^3$, $\alpha_T = 2.0\times 10^{-4}\text{ K}^{-1}$, $\beta_S = 7.5\times 10^{-4}\text{ PSU}^{-1}$.
+
+#### B. Overturning Flux & Critical Saddle-Node Bifurcation
+$$q_{\text{AMOC}} = \max\left(0, \, C_{\text{stommel}} \left[ \alpha_T (T_{\text{equator}} - T_{\text{pole}}) - \beta_S (S_{\text{equator}} - S_{\text{pole}}) \right]\right)$$
+* In normal Holocene state ($T_{\text{eq}}=28^\circ\text{C}, T_{\text{pole}}=4^\circ\text{C}, S_{\text{eq}}=36.5\text{ PSU}, S_{\text{pole}}=34.8\text{ PSU}$), $q_{\text{AMOC}} \approx 18\text{ Sv}$.
+* When polar meltwater freshening drops polar salinity ($S_{\text{pole}} < 32.0\text{ PSU}$), haline buoyancy overcomes thermal contraction, triggering a saddle-node bifurcation collapse ($q_{\text{AMOC}} < 8\text{ Sv}$).
+* Collapse induces a regional thermal anomaly: $\Delta T_{\text{NorthAtlantic}} = -7.5^\circ\text{C}$ (Younger Dryas / Heinrich event analogue).
+
+---
+
+### 10.4 Biophysical Net Energy & EROEI Civilizational Metabolism (`NetEnergyEROEIEngine`)
+Societies require a minimum Energy Return on Investment ($\text{EROEI} = E_{\text{gross}} / E_{\text{invested}}$) to sustain complexity, institutions, education, and health (Hall & Klitgaard, 2018):
+
+$$\text{Net Energy Fraction} : \xi_{\text{net}} = 1.0 - \frac{1}{\text{EROEI}}$$
+$$\text{Net Available Social Surplus} : E_{\text{surplus}}(\mathbf{x}) = E_{\text{gross}}(\mathbf{x}) \cdot \max\left(0.0, \, 1.0 - \frac{1}{\text{EROEI}}\right)$$
+
+* For high-quality fossil fuels ($\text{EROEI} \approx 50\text{--}100:1$), $\xi_{\text{net}} \ge 98\%$.
+* When $\text{EROEI}$ falls below $5:1$, $\xi_{\text{net}} < 80\%$; below $1.5:1$, societal overhead collapses, inducing mandatory demographic and institutional contraction.
+
+---
+
+### 10.5 Kinetic & Thermodynamic Lanchester Warfare Dynamics (`ThermodynamicWarfareEngine`)
+Inter-polity armed conflict is modeled through coupled Lanchester differential equations modulated by energetic capital and metallurgical lethality:
+
+#### A. Lanchester Combat Attrition Laws
+* **Ancient/Melee Formations (Linear Law, 1-on-1 duels)**:
+  $$\frac{dA}{dt} = -\beta B, \quad \frac{dB}{dt} = -\alpha A \implies \alpha (A_0 - A) = \beta (B_0 - B)$$
+* **Modern Ranged/Firearms Formations (Square Law, concentrated fire)**:
+  $$\frac{dA}{dt} = -\beta B, \quad \frac{dB}{dt} = -\alpha A \implies \alpha (A_0^2 - A^2) = \beta (B_0^2 - B^2)$$
+
+#### B. Exergy and Metallurgy Scaling
+$$\alpha, \beta = \text{Lethality}_0 \cdot \left(1.0 + 0.35 \cdot \text{Tech}\right) \cdot \sqrt{\frac{\text{ExergyCapita}}{\text{BaselineExergy}}}$$
+
+---
+
+### 10.6 Quaternary Megafauna Overkill & Trophic Ecosystem Cascade (`MegafaunaEcosystemEngine`)
+The rapid extinction of large mammalian herbivores ($M_{\text{body}} > 44\text{ kg}$) following hominin colonization of pristine continents (Sahul, Americas, Madagascar, New Zealand) is modeled using the Martin (1973) predator-prey overkill dynamics:
+
+$$\frac{d M_{\text{megafauna}}}{dt} = r_M M \left(1 - \frac{M}{K_M}\right) - \gamma_{\text{hunt}} \cdot N_{\text{hominin}} \cdot M$$
+
+Because large herbivores have slow intrinsic reproduction rates ($r_M \approx 0.04\text{--}0.08\text{ yr}^{-1}$), hominin hunting efficiency $\gamma_{\text{hunt}} \cdot N_{\text{hominin}} > r_M$ precipitates irreversible population crash within $500\text{--}1\,500\text{ years}$. Extinction removes megaherbivore biome disturbance, initiating vegetation succession (grassland $\to$ dense scrub/forest) and pyrogenic fire accumulation.
+
 
 
 

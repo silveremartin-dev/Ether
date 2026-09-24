@@ -1,0 +1,271 @@
+{
+  "epoch": -10000,
+  "era": "Early Holocene (Preboreal) / Pre-Pottery Neolithic A (PPNA) & Göbekli Tepe",
+  "planet": "earth",
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "overview": {
+    "summary_fr": "Reconstitution cartographique et tensorielle globale de la Terre pour l'époque -10 000 BP (environ 8000 av. J.-C., début de l'Holocène). Cette période charnière voit l'émergence des premiers sanctuaires monumentaux mégalithiques (Göbekli Tepe, Karahan Tepe), des premières agglomérations pré-poterie (Jéricho PPNA, Mureybet, Çayönü) et des premières domestications de graminées au Proche-Orient, ainsi que la proto-culture du millet et du riz en Chine (Peiligang, Shangshan). Les Amériques sont peuplées par les traditions Folsom, Plano et Paiján. L'Antarctique, Madagascar et les îles océaniques éloignées sont rigoureusement inhabités.",
+    "summary_en": "Global cartographic and tensor reconstruction of Earth for the -10,000 BP epoch (~8000 BC, dawn of the Holocene). Features the emergence of the first megalithic monumental sanctuaries (Göbekli Tepe, Karahan Tepe), early pre-pottery villages (Jericho PPNA, Mureybet, Çayönü), and initial grain domestication in the Near East, alongside proto-millet and proto-rice cultivation in China (Peiligang, Shangshan). The Americas are populated across Folsom, Plano, and Paiján horizons. Antarctica, Madagascar, and remote oceanic islands are strictly uninhabited."
+  },
+  "layers": {
+    "elevation": {
+      "filename": "earth_-10000_elevation.png",
+      "category": "geophysics",
+      "data_sources": [
+        "NOAA ETOPO 2022 15-arc-second Global Relief Model",
+        "GEBCO 2023 Grid Bathymetric and Topographic Model"
+      ],
+      "scientific_parameters_and_corrections": {
+        "eustatic_sea_level_offset_meters": -45.0,
+        "isostatic_rebound_model": "ICE-6G_C (Peltier et al. 2015)",
+        "paleotopographic_features": "Doggerland marshland connecting Britain to mainland Europe; broad coastal plains along the Sunda Shelf and Yellow Sea."
+      },
+      "reconstitution_rationale": "Direct downsampling of NOAA ETOPO 2022 with global eustatic depression of 45m matching early Holocene meltwater pulse transitions."
+    },
+    "biomes": {
+      "filename": "earth_-10000_biomes.png",
+      "category": "ecology",
+      "data_sources": [
+        "CHELSA-Trace21k Paleoclimate Downscaling Engine",
+        "PaleoView v1.2 (Fordham et al. 2017)",
+        "Global Pollen Database (Neotoma)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "african_humid_period_onset": "Initiation of the Green Sahara with expanding tropical savanna and perennial lake basins.",
+        "temperate_forest_expansion": "Oak, hazel, and birch woodland replacing European steppe-tundra.",
+        "glaciated_ice_sheets": "Rapidly melting Laurentide ice in Quebec/Hudson Bay and small residual Scandinavian ice cap."
+      },
+      "reconstitution_rationale": "Warm Preboreal biomes reflecting post-glacial reforestation in mid-latitudes and monsoonal greening of the Sahara and Arabia."
+    },
+    "temperature": {
+      "filename": "earth_-10000_temperature.png",
+      "category": "climate",
+      "data_sources": [
+        "NGRIP Greenland Ice Core δ18O",
+        "EPICA Dome C Ice Core Deuterium Series",
+        "Marcott et al. (2013) Science Holocene Temperature Reconstruction"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_mean_surface_temp_celsius": 13.8,
+        "equatorial_thermal_range_celsius": [25.5, 27.5],
+        "polar_thermal_range_celsius": [-36.0, -18.0]
+      },
+      "reconstitution_rationale": "Rapid thermal rise marking the termination of the Younger Dryas and onset of the Holocene thermal climb."
+    },
+    "precipitation": {
+      "filename": "earth_-10000_precipitation.png",
+      "category": "climate",
+      "data_sources": [
+        "Dongge & Hulu Cave Speleothem Records (Dykoski et al. 2005)",
+        "Lake Bosumtwi & Lake Chad Paleohydrology (Shanahan et al. 2006)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "monsoon_strengthening": "Northward shift of tropical rain belt delivering +400 to +800 mm/yr across North Africa, Arabia, and South Asia."
+      },
+      "reconstitution_rationale": "High orbital insolation drives strong summer monsoon circulation across the Afro-Asian desert belt."
+    },
+    "seasonality": {
+      "filename": "earth_-10000_seasonality.png",
+      "category": "climate",
+      "data_sources": [
+        "Astronomical Milankovitch Parameters at 10,000 BP (Laskar et al. 2004)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "obliquity_degrees": 24.23,
+        "eccentricity": 0.0195,
+        "precession_parameter": 0.019
+      },
+      "reconstitution_rationale": "Near-maximum Holocene obliquity creating strong Northern Hemisphere seasonal contrast and peak summer solar radiation."
+    },
+    "density": {
+      "filename": "earth_-10000_density.png",
+      "category": "demography",
+      "data_sources": [
+        "HYDE 3.4 History Database of the Global Environment (-10000 BC grid)",
+        "Seshat Global History Databank (Göbekli Tepe and PPNA archaeological sites)",
+        "Bocquet-Appel et al. (2002) Neolithic Demographic Transition"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_human_population_estimate": 6000000,
+        "focal_hearths": [
+          "Göbekli Tepe & Karahan Tepe Megalithic Core: 8.5 hab/100km²",
+          "Jericho PPNA & Damascus Basin (Tell Aswad, Mureybet): 7.5 hab/100km²",
+          "Çayönü & Hallan Çemi Upper Tigris: 6.0 hab/100km²",
+          "Peiligang & Shangshan (Yellow/Yangtze Rivers): 5.5 hab/100km²",
+          "Lepenski Vir & Danube Mesolithic: 4.5 hab/100km²",
+          "Lake Mega-Chad Early Aquatic Foragers: 4.2 hab/100km²",
+          "Folsom & Great Plains Early Archaic: 3.8 hab/100km²",
+          "Paiján & Las Vegas (Andes & Pacific Coast): 3.2 hab/100km²"
+        ]
+      },
+      "reconstitution_rationale": "Multi-focal Gaussian carrying capacity model calibrated against HYDE 3.4 5-arc-minute base grids and archaeological site inventories."
+    },
+    "sovereignty": {
+      "filename": "earth_-10000_sovereignty.png",
+      "category": "sociology",
+      "data_sources": [
+        "Archaeological territorial studies of PPNA ritual sodalities and aggregation centers"
+      ],
+      "scientific_parameters_and_corrections": {
+        "governance_mode": "Communal sanctuary networks and semi-sedentary village alliances centered on Göbekli Tepe, Jericho, and Jerf el Ahmar."
+      },
+      "reconstitution_rationale": "Soft territorial fields representing regional ritual confederations around monumental centers."
+    },
+    "isogloss": {
+      "filename": "earth_-10000_isogloss.png",
+      "category": "linguistics",
+      "data_sources": [
+        "WALS & D-PLACE Ethnolinguistic Distributions",
+        "Historical linguistics phylogenies of Afroasiatic, Sino-Tibetan, Dravidian, and Indo-European origins"
+      ],
+      "scientific_parameters_and_corrections": {
+        "ancestral_hearths": "Proto-Afroasiatic in Levant/Horn of Africa, Proto-Sino-Tibetan in Yellow River, Proto-Austric in Yangtze, Early Amerind across the Americas."
+      },
+      "reconstitution_rationale": "Continuous Gaussian distance interpolation based on ancestral linguistic hearth reconstructions."
+    },
+    "kinship": {
+      "filename": "earth_-10000_kinship.png",
+      "category": "anthropology",
+      "data_sources": [
+        "D-PLACE Murdock Ethnographic Atlas Kinship Codes",
+        "Archaeological household architecture and intramural burials at Jericho and Çayönü"
+      ],
+      "scientific_parameters_and_corrections": {
+        "kinship_systems": "Transition from mobile foraging bands to sedentary corporate lineages and ancestral cult houses."
+      },
+      "reconstitution_rationale": "Sedentary lineage clustering in the Fertile Crescent transitioning to bilateral foraging bands in peripheral zones."
+    },
+    "rituals": {
+      "filename": "earth_-10000_rituals.png",
+      "category": "anthropology",
+      "data_sources": [
+        "Schmidt (2006) Göbekli Tepe Excavation Reports",
+        "Jericho plastered skull mortuary complex",
+        "Lepenski Vir fish-human sculpture shrines"
+      ],
+      "scientific_parameters_and_corrections": {
+        "symbolic_intensity": "Monumental T-shaped limestone pillars with zoomorphic high-reliefs, skull cult sanctuaries, communal mortuary feasting."
+      },
+      "reconstitution_rationale": "Peak global ritual intensity focused on Göbekli Tepe, Karahan Tepe, Jericho, and Lepenski Vir."
+    },
+    "technology": {
+      "filename": "earth_-10000_technology.png",
+      "category": "technology",
+      "data_sources": [
+        "Lithic Technology Databases (PPNA El-Khiam and Helwan points, polished axes, querns)",
+        "Early agricultural domestication genetics (Zohary, Hopf & Weiss 2012)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "key_innovations": "Monumental stone masonry, wild cereal cultivation, sickle blades, polished celts, circular semi-subterranean architecture, early lime plaster."
+      },
+      "reconstitution_rationale": "High technological index (60-75) in the Fertile Crescent and early farming hearths of China."
+    },
+    "institutional": {
+      "filename": "earth_-10000_institutional.png",
+      "category": "sociology",
+      "data_sources": [
+        "Seshat Global History Databank (PPNA monumental labor coordination)",
+        "Carneiro Cultural Complexity Scale"
+      ],
+      "scientific_parameters_and_corrections": {
+        "hierarchy_levels": "Level 1-2 (Cooperative monumental builder sodalities, supra-village ceremonial leadership, Seshat score 30-40)."
+      },
+      "reconstitution_rationale": "Emergence of large-scale collective action and ritual leadership without institutionalized hereditary royalty."
+    },
+    "ecological": {
+      "filename": "earth_-10000_ecological.png",
+      "category": "ecology",
+      "data_sources": [
+        "Paleoecological Charcoal & Siltation Records from Near Eastern Lake Basins"
+      ],
+      "scientific_parameters_and_corrections": {
+        "anthropic_impact": "Proto-cultivation forest clearings, intensive firewood foraging for lime-plaster production, gazelle hunting pressure."
+      },
+      "reconstitution_rationale": "Continuous 2D fields depicting early agricultural clearings and pyrotechnological fuel demands."
+    },
+    "pathogen": {
+      "filename": "earth_-10000_pathogen.png",
+      "category": "epidemiology",
+      "data_sources": [
+        "Paleopathological Studies on PPNA Skeletal Series (Cribra orbitalia, periostitis, dental caries)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "parasite_load": "Increase in commensal rodent contact (Mus musculus in PPNA storage structures), water-borne enteric parasites in permanent settlements."
+      },
+      "reconstitution_rationale": "Sedentary village pathogen amplification modeling the early hygiene penalty of permanent habitation."
+    },
+    "tradenetwork": {
+      "filename": "earth_-10000_tradenetwork.png",
+      "category": "economics",
+      "data_sources": [
+        "Obsidian Geochemical Fingerprinting (Göllü Dağ, Bingöl, Melos, Lipari)",
+        "Greenstone and marine shell exchange networks (Bar-Yosef Mayer 2002)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "circuits": "Göllü Dağ & Bingöl obsidian exchange to Göbekli Tepe and Levant; Melos obsidian maritime crossing to Franchthi Cave; Red Sea cowrie shells."
+      },
+      "reconstitution_rationale": "Long-distance raw material transfer corridors connecting volcanic quarries with monumental sanctuary sites."
+    },
+    "coal": {
+      "filename": "earth_-10000_coal.png",
+      "category": "geology",
+      "data_sources": ["USGS World Coal Quality Inventory (WoCQI)", "BGS World Mineral Statistics"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global coal basins."
+    },
+    "oil": {
+      "filename": "earth_-10000_oil.png",
+      "category": "geology",
+      "data_sources": ["USGS World Petroleum Assessment", "Global Energy Monitor (GEM)"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global oil reserves."
+    },
+    "gas": {
+      "filename": "earth_-10000_gas.png",
+      "category": "geology",
+      "data_sources": ["USGS Global Gas Database"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of natural gas plays."
+    },
+    "uranium": {
+      "filename": "earth_-10000_uranium.png",
+      "category": "geology",
+      "data_sources": ["IAEA / NEA Red Book 2022"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of uranium deposits."
+    },
+    "helium3": {
+      "filename": "earth_-10000_helium3.png",
+      "category": "geology",
+      "data_sources": ["USGS Mantle Volatiles Survey"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of Helium-3 terrestrial plume sources."
+    },
+    "iron_copper": {
+      "filename": "earth_-10000_iron_copper.png",
+      "category": "geology",
+      "data_sources": ["USGS Mineral Resources Data System (MRDS)"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global iron and copper deposits."
+    },
+    "precious_metals": {
+      "filename": "earth_-10000_precious_metals.png",
+      "category": "geology",
+      "data_sources": ["USGS Global Mineral Assessment"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of precious metal deposits."
+    },
+    "rare_earths": {
+      "filename": "earth_-10000_rare_earths.png",
+      "category": "geology",
+      "data_sources": ["USGS REE Database"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of rare earth deposits."
+    },
+    "geothermal": {
+      "filename": "earth_-10000_geothermal.png",
+      "category": "geology",
+      "data_sources": ["Global Heat Flow Database (IHFC)"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of terrestrial heat flow."
+    },
+    "aquifers": {
+      "filename": "earth_-10000_aquifers.png",
+      "category": "geology",
+      "data_sources": ["UNESCO WHYMAP"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 hydrogeological raster of deep regional aquifer storage."
+    }
+  }
+}

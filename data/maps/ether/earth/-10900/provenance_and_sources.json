@@ -1,0 +1,271 @@
+{
+  "epoch": -10900,
+  "era": "Younger Dryas / Late Epipaleolithic & Clovis Horizon",
+  "planet": "earth",
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "overview": {
+    "summary_fr": "Reconstitution cartographique et tensorielle globale de la Terre pour l'époque -10 900 BP (Récents Dryas). Cette période est marquée par un refroidissement brutal de 5 à 8°C dans l'Atlantique Nord lié à la rupture du barrage glaciaire du Lac Agassiz et au ralentissement de l'AMOC. Au Levant, les chasseurs-cueilleurs natoufiens intensifient la récolte de céréales sauvages dans des hameaux semi-sédentaires. En Amérique du Nord, la culture Clovis s'épanouit tout en amorçant la transition face à l'extinction de la mégafaune pléistocène. L'Antarctique, le cœur de la calotte groenlandaise, Madagascar et les îles océaniques éloignées sont rigoureusement inhabités.",
+    "summary_en": "Global cartographic and tensor reconstruction of Earth for the -10,900 BP epoch (Younger Dryas). Marked by an abrupt 5-8°C cooling across the North Atlantic triggered by Lake Agassiz glacial outburst and AMOC collapse. In the Levant, Natufian foragers intensify wild cereal harvesting in semi-sedentary hamlets. In North America, the Clovis culture flourishes alongside the terminal Pleistocene megafaunal extinction transition. Antarctica, inland Greenland, Madagascar, and remote oceanic islands are strictly uninhabited."
+  },
+  "layers": {
+    "elevation": {
+      "filename": "earth_-10900_elevation.png",
+      "category": "geophysics",
+      "data_sources": [
+        "NOAA ETOPO 2022 15-arc-second Global Relief Model",
+        "GEBCO 2023 Grid Bathymetric and Topographic Model"
+      ],
+      "scientific_parameters_and_corrections": {
+        "eustatic_sea_level_offset_meters": -60.0,
+        "isostatic_rebound_model": "ICE-6G_C (Peltier et al. 2015)",
+        "paleotopographic_features": "Exposed Doggerland plain connecting Britain to Europe, subaerial Beringian land bridge, broad Persian Gulf oasis, and exposed Sunda Shelf."
+      },
+      "reconstitution_rationale": "Direct downsampling of NOAA ETOPO 2022 with global eustatic depression of 60m matching Younger Dryas sea-level reconstructions (Lambeck et al. 2014)."
+    },
+    "biomes": {
+      "filename": "earth_-10900_biomes.png",
+      "category": "ecology",
+      "data_sources": [
+        "CHELSA-Trace21k Paleoclimate Downscaling Engine",
+        "PaleoView v1.2 (Fordham et al. 2017)",
+        "European Pollen Database (EPD) Late Glacial reconstructions"
+      ],
+      "scientific_parameters_and_corrections": {
+        "amoc_cooling_impact": "Expansion of periglacial tundra across Northern Europe (Ahrensburgian zone) and shrinking temperate forest refugia in Southern Europe.",
+        "glaciated_ice_sheets": "Residual Fennoscandian glacier in Scandinavia and retreating Keewatin/Quebec domes of the Laurentide ice sheet."
+      },
+      "reconstitution_rationale": "Combines Köppen-Geiger rules with Younger Dryas cold-dry steppe/tundra vegetation expansion in Eurasia and mammoth steppe in Siberia."
+    },
+    "temperature": {
+      "filename": "earth_-10900_temperature.png",
+      "category": "climate",
+      "data_sources": [
+        "NGRIP Greenland Ice Core δ18O Temperature Inversion",
+        "EPICA Dome C Ice Core Series",
+        "Alley (2000) The Younger Dryas cold interval as viewed from central Greenland"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_mean_surface_temp_celsius": 11.8,
+        "north_atlantic_thermal_anomaly_celsius": -7.0,
+        "equatorial_thermal_range_celsius": [24.0, 26.5],
+        "polar_thermal_range_celsius": [-48.0, -22.0]
+      },
+      "reconstitution_rationale": "Strong polar and North Atlantic cooling driven by thermohaline circulation shutdown with milder equatorial impacts."
+    },
+    "precipitation": {
+      "filename": "earth_-10900_precipitation.png",
+      "category": "climate",
+      "data_sources": [
+        "Soreq Cave Speleothem Records (Bar-Matthews et al. 2003)",
+        "Hulu Cave Asian Monsoon Series (Wang et al. 2001)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "levantine_aridification": "Reduction in winter precipitation leading to steppe expansion and wild cereal patch fragmentation.",
+        "tropical_itcz_displacement": "Southward shift of ITCZ, weakening the African and Asian monsoon belts."
+      },
+      "reconstitution_rationale": "Monsoonal suppression and temperate mid-latitude drying typical of Heinrich-stadial / Younger Dryas boundary conditions."
+    },
+    "seasonality": {
+      "filename": "earth_-10900_seasonality.png",
+      "category": "climate",
+      "data_sources": [
+        "Astronomical Milankovitch Parameters at 10,900 BP (Laskar et al. 2004)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "obliquity_degrees": 24.18,
+        "eccentricity": 0.0194,
+        "precession_parameter": 0.018
+      },
+      "reconstitution_rationale": "High orbital obliquity and perihelion alignment in Northern Hemisphere summer producing elevated summer continentality."
+    },
+    "density": {
+      "filename": "earth_-10900_density.png",
+      "category": "demography",
+      "data_sources": [
+        "Seshat Global History Databank (Natufian and Epipaleolithic benchmarks)",
+        "HYDE 3.4 Prehistoric Demographic Reconstruction Baseline",
+        "Archaeological radiocarbon density maps (Gignoux et al. 2011, Chaput et al. 2015)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_human_population_estimate": 4200000,
+        "focal_hearths": [
+          "Levant Natufian core (Ain Mallaha, Hayonim, Shubayqa 1, El Wad): 6.5 hab/100km²",
+          "Upper Tigris Proto-PPNA (Hallan Çemi, Körtik Tepe): 4.5 hab/100km²",
+          "Franco-Cantabrian Late Magdalenian / Federmesser: 3.8 hab/100km²",
+          "Clovis Great Plains & Texas (Blackwater Draw, Gault, Murray Springs): 3.5 hab/100km²",
+          "South America Early Foragers (Monte Verde II, Fell's Cave, Guitarrero): 3.0 hab/100km²",
+          "East Asia & Incipient Jomon (Xianrendong, Honshu): 3.2 hab/100km²",
+          "Africa LSA (Nile Valley, Taforalt): 3.2 hab/100km²"
+        ]
+      },
+      "reconstitution_rationale": "Multi-focal Gaussian carrying capacity fields centered on documented archaeological sites, masked by altimetry coastline and glacial limits."
+    },
+    "sovereignty": {
+      "filename": "earth_-10900_sovereignty.png",
+      "category": "sociology",
+      "data_sources": [
+        "Archaeological settlement surveys of Epipaleolithic and Clovis complex territoriality"
+      ],
+      "scientific_parameters_and_corrections": {
+        "governance_mode": "Multi-band autonomous territorial forager networks with seasonal aggregation nodes.",
+        "core_domains": "Ain Mallaha, Gault, Dordogne Magdalenian basin, Monte Verde."
+      },
+      "reconstitution_rationale": "Soft exponential territorial fields radiating from documented seasonal aggregation hubs."
+    },
+    "isogloss": {
+      "filename": "earth_-10900_isogloss.png",
+      "category": "linguistics",
+      "data_sources": [
+        "World Atlas of Language Structures (WALS)",
+        "D-PLACE Database of Places, Language, Culture and Environment",
+        "Proto-language macro-family phylolinguistic trees (Ruhlen, Greenberg, Starostin)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "macro_families": "Proto-Afroasiatic (Levant/NE Africa), Proto-Nostratic/Eurasiatic (Eurasia), Proto-Sino-Tibetan (Yellow River), Proto-Austric (Yangtze/Sunda), Proto-Amerind (Americas), Pama-Nyungan (Sahul)."
+      },
+      "reconstitution_rationale": "Continuous geographic Voronoi-Gaussian blend centered on ancestral phylolinguistic hearths."
+    },
+    "kinship": {
+      "filename": "earth_-10900_kinship.png",
+      "category": "anthropology",
+      "data_sources": [
+        "D-PLACE Kinship and Social Structure Dataset (Murdock Ethnographic Atlas)",
+        "Archaeological burial organization at Natufian Ain Mallaha and Clovis Anzick"
+      ],
+      "scientific_parameters_and_corrections": {
+        "kinship_systems": "Flexible bilateral band exogamy, nascent corporate burial clusters in the Levant."
+      },
+      "reconstitution_rationale": "Bilateral hunter-gatherer baselines with localized sedentary lineage grouping in the Levant."
+    },
+    "rituals": {
+      "filename": "earth_-10900_rituals.png",
+      "category": "anthropology",
+      "data_sources": [
+        "Archaeological mortuary sites: Ain Mallaha, Hayonim, Anzick ochre cache, Lascaux, Altamira"
+      ],
+      "scientific_parameters_and_corrections": {
+        "symbolic_intensity": "Mortuary skull separation, red ochre sprinkling, shell bead adornment, cave sanctuaries."
+      },
+      "reconstitution_rationale": "Gaussian intensity fields centered on major Epipaleolithic and Late Magdalenian ritual complexes."
+    },
+    "technology": {
+      "filename": "earth_-10900_technology.png",
+      "category": "technology",
+      "data_sources": [
+        "Lithic Typology Catalogs (Bordes, Tixier, Bradley et al. 2010)",
+        "Early Ceramic & Pyrotechnology Inventories (Wu et al. 2012 Science)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "key_innovations": "Microblade microliths, sickle gloss blades, stone mortars/pestles, fluted Clovis points, atlatl spear-throwers, early low-fire pottery in East Asia."
+      },
+      "reconstitution_rationale": "Technological index baseline of 35-50 with local peaks in the Fertile Crescent and East Asian pottery hearths."
+    },
+    "institutional": {
+      "filename": "earth_-10900_institutional.png",
+      "category": "sociology",
+      "data_sources": [
+        "Seshat Global History Databank (Epipaleolithic institutional complexity)",
+        "Carneiro (1967) Scale of Cultural Development"
+      ],
+      "scientific_parameters_and_corrections": {
+        "hierarchy_levels": "Level 0-1 (Egalitarian bands and semi-sedentary clan councils, Seshat scale 22-28)."
+      },
+      "reconstitution_rationale": "Uniform egalitarian baseline with smooth elevation around Natufian sedentary hamlets."
+    },
+    "ecological": {
+      "filename": "earth_-10900_ecological.png",
+      "category": "ecology",
+      "data_sources": [
+        "Quaternary Megafaunal Extinction Chronologies (Barnosky et al. 2004, Sandom et al. 2014)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "anthropic_pressure": "Megafauna hunting pressure across North America, selective harvesting of wild gazelle and caprines in Levant."
+      },
+      "reconstitution_rationale": "Continuous 2D Gaussian fields representing localized foraging pressure and hunting intensification."
+    },
+    "pathogen": {
+      "filename": "earth_-10900_pathogen.png",
+      "category": "epidemiology",
+      "data_sources": [
+        "Paleopathological Surveys of Late Pleistocene & Epipaleolithic Skeletal Series",
+        "Global vector-borne disease ecology models"
+      ],
+      "scientific_parameters_and_corrections": {
+        "disease_vectors": "Sylvatic vector-borne ticks, enteric parasites in semi-sedentary hamlets, low crowd-disease density."
+      },
+      "reconstitution_rationale": "Baseline sylvatic pathogen risk elevated near tropical wetlands and early sedentary refuse sites."
+    },
+    "tradenetwork": {
+      "filename": "earth_-10900_tradenetwork.png",
+      "category": "economics",
+      "data_sources": [
+        "Archaeological geochemical provenance studies for obsidian, chert, and marine shells (Cann & Renfrew 1964, Shackley 2005)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "circuits": "Natufian Mediterranean/Red Sea Dentalium shell and flint routes; Clovis Alibates and Knife River chert corridors; Magdalenian silex exchange."
+      },
+      "reconstitution_rationale": "Line-rendered raw material exchange pathways between recognized quarry sources and archaeological findspots."
+    },
+    "coal": {
+      "filename": "earth_-10900_coal.png",
+      "category": "geology",
+      "data_sources": ["USGS World Coal Quality Inventory (WoCQI)", "BGS World Mineral Statistics"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global Carboniferous and Permian coal basins."
+    },
+    "oil": {
+      "filename": "earth_-10900_oil.png",
+      "category": "geology",
+      "data_sources": ["USGS World Petroleum Assessment", "Global Energy Monitor (GEM)"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global hydrocarbon plays."
+    },
+    "gas": {
+      "filename": "earth_-10900_gas.png",
+      "category": "geology",
+      "data_sources": ["USGS Global Conventional & Unconventional Gas Database"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global natural gas reserves."
+    },
+    "uranium": {
+      "filename": "earth_-10900_uranium.png",
+      "category": "geology",
+      "data_sources": ["IAEA / NEA Uranium 2022 (Red Book)"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global uranium occurrences."
+    },
+    "helium3": {
+      "filename": "earth_-10900_helium3.png",
+      "category": "geology",
+      "data_sources": ["USGS Mantle Plume & Primordial Volatiles Survey"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of terrestrial mantle plume Helium-3 outgassing."
+    },
+    "iron_copper": {
+      "filename": "earth_-10900_iron_copper.png",
+      "category": "geology",
+      "data_sources": ["USGS Mineral Resources Data System (MRDS)"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global porphyry copper and BIF iron deposits."
+    },
+    "precious_metals": {
+      "filename": "earth_-10900_precious_metals.png",
+      "category": "geology",
+      "data_sources": ["USGS Global Mineral Resource Assessment"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global gold, silver, and platinum group metals."
+    },
+    "rare_earths": {
+      "filename": "earth_-10900_rare_earths.png",
+      "category": "geology",
+      "data_sources": ["USGS Rare Earth Elements Deposits"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global carbonatite and alkaline REE deposits."
+    },
+    "geothermal": {
+      "filename": "earth_-10900_geothermal.png",
+      "category": "geology",
+      "data_sources": ["Global Heat Flow Database (IHFC)", "GPM Heat Flow Grid"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of terrestrial surface heat flow."
+    },
+    "aquifers": {
+      "filename": "earth_-10900_aquifers.png",
+      "category": "geology",
+      "data_sources": ["UNESCO WHYMAP Groundwater Resources of the World"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 hydrogeological raster of deep regional aquifer storage."
+    }
+  }
+}

@@ -1,0 +1,274 @@
+{
+  "epoch": -6000,
+  "era": "Holocene Climatic Optimum / Middle Neolithic & Ubaid / Yangshao Horizon",
+  "planet": "earth",
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "overview": {
+    "summary_fr": "Reconstitution cartographique et tensorielle globale de la Terre pour l'époque -6000 BP (environ 4000 av. J.-C., Optimum Climatique de l'Holocène / Période Atlantique). Cette période est caractérisée par l'apogée du Sahara Vert et du Lac Méga-Tchad, les débuts de l'irrigation canalisée et des temples proto-urbains d'Eridu (période d'Obeïd en Mésopotamie), la brillante culture chalcolithique de Vinča en Europe avec extraction et fonte du cuivre à Pločnik, la culture de Yangshao en Chine (céramique peinte de Banpo) et le riz mature de Hemudu, ainsi que l'édification des premiers grands monuments mégalithiques sur la façade atlantique (Carnac, Bougon). L'Antarctique, Madagascar et les îles océaniques isolées sont rigoureusement inhabités.",
+    "summary_en": "Global cartographic and tensor reconstruction of Earth for the -6000 BP epoch (~4000 BC, Holocene Climatic Optimum / Atlantic period). Features the peak of the Green Sahara and Lake Mega-Chad, the emergence of canal irrigation and proto-urban temple complexes at Eridu (Ubaid period in Mesopotamia), the rich Chalcolithic Vinča culture in the Balkans with early copper smelting at Pločnik, the Yangshao painted pottery culture in China (Banpo) and mature Hemudu wet-rice farming, and the initial megalithic constructions along the Atlantic fringe (Carnac, Bougon). Antarctica, Madagascar, and remote oceanic islands are strictly uninhabited."
+  },
+  "layers": {
+    "elevation": {
+      "filename": "earth_-6000_elevation.png",
+      "category": "geophysics",
+      "data_sources": [
+        "NOAA ETOPO 2022 15-arc-second Global Relief Model",
+        "GEBCO 2023 Grid Bathymetric and Topographic Model"
+      ],
+      "scientific_parameters_and_corrections": {
+        "eustatic_sea_level_offset_meters": 0.0,
+        "isostatic_rebound_model": "ICE-6G_C (Peltier et al. 2015)",
+        "paleotopographic_features": "Modern global coastline baseline achieved; Persian Gulf marine transgression reaching inland to Ur and Eridu."
+      },
+      "reconstitution_rationale": "Direct downsampling of NOAA ETOPO 2022 matching the modern eustatic sea level reached at the Holocene Climate Optimum."
+    },
+    "biomes": {
+      "filename": "earth_-6000_biomes.png",
+      "category": "ecology",
+      "data_sources": [
+        "CHELSA-Trace21k Paleoclimate Downscaling Engine",
+        "PaleoView v1.2 (Fordham et al. 2017)",
+        "Jolly et al. (1998) Biome 6000 Project: African and European vegetation"
+      ],
+      "scientific_parameters_and_corrections": {
+        "green_sahara_maximum": "Full savanna, open woodland, and riparian gallery forests covering the Sahara between 12°N and 30°N.",
+        "european_climax_forest": "Dense deciduous oak-linden-elm forest canopy with minimal open heathland.",
+        "glaciated_ice_sheets": "No continental glaciers in Europe or North America except Greenland and high mountain ranges."
+      },
+      "reconstitution_rationale": "Empirical Biome 6000 data showing maximal northward expansion of tropical savannas and dense temperate forests."
+    },
+    "temperature": {
+      "filename": "earth_-6000_temperature.png",
+      "category": "climate",
+      "data_sources": [
+        "Marcott et al. (2013) Science Holocene Thermal Maximum Synthesis",
+        "NGRIP & EPICA Ice Core Deuterium/δ18O Profiles"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_mean_surface_temp_celsius": 15.2,
+        "thermal_maximum_anomaly_celsius": 1.2,
+        "equatorial_thermal_range_celsius": [26.5, 28.5],
+        "polar_thermal_range_celsius": [-30.0, -12.0]
+      },
+      "reconstitution_rationale": "Hypsithermal peak warmth driven by orbital insolation and reduced northern polar ice albedo."
+    },
+    "precipitation": {
+      "filename": "earth_-6000_precipitation.png",
+      "category": "climate",
+      "data_sources": [
+        "Armitage et al. (2015 PNAS) Lake Mega-Chad Paleohydrology",
+        "Dongge & Sanbao Cave Speleothems (Cheng et al. 2016)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "african_humid_period_peak": "Rainfall +1100 mm/yr in the central Sahara; Lake Mega-Chad extent of 350,000 km².",
+        "asian_monsoon_intensification": "Heavy summer rains supporting dense agricultural settlements in the Yellow and Yangtze basins."
+      },
+      "reconstitution_rationale": "Maximal Holocene African and Asian monsoon penetration into continental interiors."
+    },
+    "seasonality": {
+      "filename": "earth_-6000_seasonality.png",
+      "category": "climate",
+      "data_sources": [
+        "Astronomical Milankovitch Parameters at 6,000 BP (Laskar et al. 2004)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "obliquity_degrees": 24.10,
+        "eccentricity": 0.0187,
+        "precession_parameter": 0.016
+      },
+      "reconstitution_rationale": "Elevated obliquity maintaining high seasonal contrast in Northern Hemisphere landmasses."
+    },
+    "density": {
+      "filename": "earth_-6000_density.png",
+      "category": "demography",
+      "data_sources": [
+        "HYDE 3.4 History Database of the Global Environment (-6000 BC / -4000 cal BC grid)",
+        "Seshat Global History Databank (Ubaid Mesopotamia, Yangshao, Vinča, Badari)",
+        "Müller et al. (2016) Cucuteni-Trypillia and Vinča Demographic Densities"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_human_population_estimate": 19000000,
+        "focal_hearths": [
+          "Ubaid Southern Mesopotamia (Eridu, Tell el-'Oueili, Ur): 24.0 hab/100km²",
+          "Yangshao Painted Pottery (Banpo, Miaodigou) & Hemudu: 18.5 hab/100km²",
+          "Predynastic Egypt (Badari, Merimde Beni Salama, Faiyum): 18.0 hab/100km²",
+          "Vinča-Belo Brdo & Pločnik (Balkans Chalcolithic): 16.0 hab/100km²",
+          "Mehrgarh Period III-IV & Proto-Harappan (Indus Valley): 15.0 hab/100km²",
+          "Lake Mega-Chad & Green Sahara Pastoralists: 12.0 hab/100km²",
+          "Atlantic Megalithic Builders (Carnac, Bougon): 12.0 hab/100km²",
+          "Norte Chico / Caral Precursor (Peru): 7.5 hab/100km²"
+        ]
+      },
+      "reconstitution_rationale": "High-density agrarian and pastoral populations driven by canal irrigation, animal traction, and copper metallurgy."
+    },
+    "sovereignty": {
+      "filename": "earth_-6000_sovereignty.png",
+      "category": "sociology",
+      "data_sources": [
+        "Archaeological territorial surveys of Ubaid temple polities and Vinča chiefdoms (Stein 1994, Chapman 2000)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "governance_mode": "Temple-centered redistributive theocratic chiefdoms (Eridu), Chalcolithic craft-metallurgy centers (Vinča), and tribal village clusters."
+      },
+      "reconstitution_rationale": "Hierarchical territorial cores around central temple platforms and copper extraction sites."
+    },
+    "isogloss": {
+      "filename": "earth_-6000_isogloss.png",
+      "category": "linguistics",
+      "data_sources": [
+        "WALS & D-PLACE Ethnolinguistic Distributions",
+        "Linguistic paleontology and Chalcolithic expansions (Mallory, Anthony 2007)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "expanding_families": "Proto-Sumerian / Euphratic substrate, Early Proto-Indo-European in Pontic-Caspian steppes and Old Europe, Proto-Sino-Tibetan in Yellow River, Proto-Austronesian precursor in Taiwan/Fujian, Proto-Bantu precursors in West Africa."
+      },
+      "reconstitution_rationale": "Linguistic divergence driven by regional agricultural intensification and pastoral nomadism."
+    },
+    "kinship": {
+      "filename": "earth_-6000_kinship.png",
+      "category": "anthropology",
+      "data_sources": [
+        "D-PLACE Murdock Ethnographic Atlas Kinship Codes",
+        "Ancient DNA kinship networks in Cucuteni-Trypillia, LBK, and Yangshao settlements"
+      ],
+      "scientific_parameters_and_corrections": {
+        "kinship_systems": "Patrilineal agnatic clans in Near East and China; complex lineage alliances and hereditary status differentiation."
+      },
+      "reconstitution_rationale": "Consolidation of lineage-held land, irrigation canal maintenance rights, and herd inheritance."
+    },
+    "rituals": {
+      "filename": "earth_-6000_rituals.png",
+      "category": "anthropology",
+      "data_sources": [
+        "Eridu Temple VII Excavation Reports (Safar, Mustafa & Lloyd 1981)",
+        "Vinča Anthropomorphic Cult Figurines and Script Plaques",
+        "Carnac Alignments and Atlantic Passage Graves",
+        "Hongshan Niuheliang Goddess Temple (Liaoning)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "symbolic_intensity": "Monumental tripartite mudbrick temples with central altars (Eridu), megalithic stone alignments, jade ritual bi/cong, female figurines."
+      },
+      "reconstitution_rationale": "Peak global ritual density focused on Eridu, Vinča, Carnac, Niuheliang, and Badari."
+    },
+    "technology": {
+      "filename": "earth_-6000_technology.png",
+      "category": "technology",
+      "data_sources": [
+        "Early Metallurgy Database (Radivojević et al. 2010 Pločnik copper smelting)",
+        "Canal Irrigation Archaeological Surveys in Lower Mesopotamia"
+      ],
+      "scientific_parameters_and_corrections": {
+        "key_innovations": "Canal gravity irrigation, copper smelting and cast axes (Vinča/Pločnik), slow potter's wheel (tournette), sail navigation, cattle traction and ard plows."
+      },
+      "reconstitution_rationale": "Technological index of 120-155 reflecting the onset of metallurgy and intensive irrigation."
+    },
+    "institutional": {
+      "filename": "earth_-6000_institutional.png",
+      "category": "sociology",
+      "data_sources": [
+        "Seshat Global History Databank (Ubaid period institutional hierarchy)",
+        "Carneiro Cultural Complexity Scale"
+      ],
+      "scientific_parameters_and_corrections": {
+        "hierarchy_levels": "Level 2-3 (Simple to complex theocratic chiefdoms, temple administrative bureaucracies, Seshat score 65-95)."
+      },
+      "reconstitution_rationale": "Emergence of institutionalized religious hierarchies and centralized grain storage redistribution."
+    },
+    "ecological": {
+      "filename": "earth_-6000_ecological.png",
+      "category": "ecology",
+      "data_sources": [
+        "Geomorphological studies of Mesopotamian salinization and Mediterranean terrace erosion (Jacobsen & Adams 1958)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "anthropic_impact": "Initial irrigation soil salinization in Southern Iraq, extensive cattle grazing throughout the Green Sahara, large-scale European forest clearings."
+      },
+      "reconstitution_rationale": "Continuous 2D fields modeling irrigation stress, hydraulic diversions, and widespread pastoralist grazing."
+    },
+    "pathogen": {
+      "filename": "earth_-6000_pathogen.png",
+      "category": "epidemiology",
+      "data_sources": [
+        "Ancient DNA of Schistosoma and Malaria in Pre-dynastic Egypt and Mesopotamia",
+        "Paleoepidemiological surveys of Chalcolithic tell populations"
+      ],
+      "scientific_parameters_and_corrections": {
+        "irrigation_diseases": "High incidence of Schistosomiasis (bilharzia) in irrigation canals, endemic malaria in Mediterranean/Near East wetlands, high tuberculosis prevalence."
+      },
+      "reconstitution_rationale": "Substantial rise in irrigation-linked parasitism and dense urban-like village epidemic transmission."
+    },
+    "tradenetwork": {
+      "filename": "earth_-6000_tradenetwork.png",
+      "category": "economics",
+      "data_sources": [
+        "Persian Gulf Ubaid Maritime Trade Studies (Carter 2006)",
+        "European Chalcolithic Copper & Spondylus Provenance (Pernicka et al. 1993)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "circuits": "Ubaid Persian Gulf maritime sail routes to Bahrain and Oman; Vinča copper and Spondylus shell networks connecting Balkans to the Rhine; Atlantic megalithic coastal sea routes; Badarian Red Sea malachite trade."
+      },
+      "reconstitution_rationale": "Inter-regional maritime and overland trade networks transporting smelted copper, pottery, and luxury status symbols."
+    },
+    "coal": {
+      "filename": "earth_-6000_coal.png",
+      "category": "geology",
+      "data_sources": ["USGS World Coal Quality Inventory (WoCQI)", "BGS World Mineral Statistics"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global coal basins."
+    },
+    "oil": {
+      "filename": "earth_-6000_oil.png",
+      "category": "geology",
+      "data_sources": ["USGS World Petroleum Assessment", "Global Energy Monitor (GEM)"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global oil reserves."
+    },
+    "gas": {
+      "filename": "earth_-6000_gas.png",
+      "category": "geology",
+      "data_sources": ["USGS Global Gas Database"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of natural gas plays."
+    },
+    "uranium": {
+      "filename": "earth_-6000_uranium.png",
+      "category": "geology",
+      "data_sources": ["IAEA / NEA Red Book 2022"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of uranium deposits."
+    },
+    "helium3": {
+      "filename": "earth_-6000_helium3.png",
+      "category": "geology",
+      "data_sources": ["USGS Mantle Volatiles Survey"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of Helium-3 terrestrial plume sources."
+    },
+    "iron_copper": {
+      "filename": "earth_-6000_iron_copper.png",
+      "category": "geology",
+      "data_sources": ["USGS Mineral Resources Data System (MRDS)"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of global iron and copper deposits."
+    },
+    "precious_metals": {
+      "filename": "earth_-6000_precious_metals.png",
+      "category": "geology",
+      "data_sources": ["USGS Global Mineral Assessment"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of precious metal deposits."
+    },
+    "rare_earths": {
+      "filename": "earth_-6000_rare_earths.png",
+      "category": "geology",
+      "data_sources": ["USGS REE Database"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of rare earth deposits."
+    },
+    "geothermal": {
+      "filename": "earth_-6000_geothermal.png",
+      "category": "geology",
+      "data_sources": ["Global Heat Flow Database (IHFC)"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 geological raster of terrestrial heat flow."
+    },
+    "aquifers": {
+      "filename": "earth_-6000_aquifers.png",
+      "category": "geology",
+      "data_sources": ["UNESCO WHYMAP"],
+      "reconstitution_rationale": "Standardized invariant 2048x1024 hydrogeological raster of deep regional aquifer storage."
+    }
+  }
+}

@@ -28,6 +28,7 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
 ---
 
 ## 📄 4. Technical Documentation Standard
+* **Strict English Language Requirement**: ALL `README.md` files, technical documentation, architectural specifications, mathematical justifications, epoch provenance files, and source code comments MUST be written strictly in English.
 * All equations, physical constants, historical eras, and heuristic catalog items MUST be documented in **`docs/SIMULATION_EQUATIONS_AND_VARIABLES.md`** in English.
 
 ---
