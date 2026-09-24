@@ -100,6 +100,11 @@ public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
                 // Increases local friction due to riots and civil breakdown
                 double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
                 cell.setMovementFriction(Math.min(10.0, friction + (0.1 * deltaYears)));
+
+                // Post-crisis elite purge: structural breakdown purges excessive elite fortunes, resetting Gini
+                if (psi > 8.0) {
+                    cell.setGiniIndex(Math.max(0.30, gini - (0.02 * deltaYears)));
+                }
             }
         }
     }

@@ -41,3 +41,29 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
    * **Light Theme**: Light background with low-luminance (dark) text, icons, and control strokes.
    * Low contrast combinations (e.g., dark blue/gray text on dark backgrounds, saturated blue combo boxes on dark panels) are strictly forbidden. High visual contrast is required systematically across all panels and themes.
 
+---
+
+## 🗺️ 6. Cartographic Tensor Provenance & Historical Epoch Standards
+For every historical epoch (from -100,000 BP to present-day) supported in `data/maps/ether/<planet>/<year>/`:
+1. **Exhaustive Layer Documentation**:
+   * Every directory MUST contain `provenance_and_sources.json` and `README.md` detailing the exact geophysical, ecological, demographic, and sociological sources for all 25 map layers.
+   * Empirical raster layers (Elevation, Bathymetry, Water tables, Minerals) MUST cite exact global geological datasets (e.g. NOAA ETOPO 2022, GEBCO 2023, UNESCO WHYMAP, USGS MRDS, IAEA NFCIS).
+2. **Reconstitution Rationale & Physical Decoupling**:
+   * Reconstructed cliodynamic layers (Cultural tensors, Kinship, Isogloss, Carrying capacity, Demographic density) MUST document all underlying physiological, metabolic, and archaeological formulas.
+   * Documentation MUST explicitly decouple the static initial conditions ($t = t_0$) from the dynamical simulation engines running per tick ($t > t_0$), enabling transparent diagnostic, calibration, and scientific falsification.
+
+---
+
+## 🔬 7. Scientific Epistemic Falsification & Automated Benchmark Testing Directives
+1. **Epistemic Laboratory Identity**:
+   * Ether is not merely a generative procedural toy; it is an **epistemic falsification laboratory** designed to evaluate competing cliodynamic and macroeconomic hypotheses against empirical historical datasets (Seshat Global History Databank, Maddison Project, HYDE 3.4, UN FAO, EPICA ice cores).
+2. **Two-Tier Ontological Separation**:
+   * **Tier 1 (Core Model Physics)**: Invariant physical, chemical, thermodynamic, and biological conservation laws (Energy balance, Darcy piezometric flow, Farquhar photosynthesis, Stull wet-bulb lethality, Lotka metabolic energetics, material yield strength $\sigma_{\text{yield}}$).
+   * **Tier 2 (Pluggable Cliodynamic Hypotheses)**: Contested sociological and institutional theories (Boserup vs. Malthus, Turchin SDT vs. Pinker, Smil Exergy vs. Nordhaus DICE, Ostrom vs. Hardin, Acemoglu vs. Geography, Scott vs. State Formation, Henrich vs. Static Retention).
+3. **Automated Continuous Falsification Suite**:
+   * Every competing paradigm MUST be formalized mathematically as coupled differential equations and benchmarked within **`ScientificModelFalsificationAndValidationSuite.java`**.
+   * Tests MUST systematically evaluate parameter sweeps, bifurcation thresholds, domain validity bounds, and historical counter-examples.
+   * All results and mathematical derivations MUST be fully documented in **`docs/SCIENTIFIC_MODEL_EVALUATION_AND_FALSIFICATION.md`**.
+
+
+

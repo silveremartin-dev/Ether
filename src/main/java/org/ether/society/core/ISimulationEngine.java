@@ -15,7 +15,15 @@ public interface ISimulationEngine {
 
     void setSpeed(int multiplier);
 
+    default void setSpeed(double multiplier) {
+        setSpeed((int) Math.round(multiplier));
+    }
+
     int getSpeed();
+
+    default double getSpeedMultiplier() {
+        return getSpeed();
+    }
 
     TimeManager getTimeManager();
 

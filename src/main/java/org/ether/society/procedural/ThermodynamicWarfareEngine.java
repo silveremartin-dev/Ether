@@ -26,11 +26,12 @@ public class ThermodynamicWarfareEngine {
     private static final Logger logger = LoggerFactory.getLogger(ThermodynamicWarfareEngine.class);
 
     /**
-     * Executes one kinetic warfare and fortification breaching tick.
+     * Executes one kinetic warfare and fortification breaching tick with physical time integration.
      */
-    public static void processKineticWarfare(List<H3Cell> cells) {
+    public static void processKineticWarfare(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
+        double dt = Math.max(0.001, deltaYears);
         int structuralBreaches = 0;
 
         for (H3Cell cell : cells) {
@@ -40,25 +41,30 @@ public class ThermodynamicWarfareEngine {
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
 
-            // Material Yield Strength (σ_yield in MPa): Wood (20 MPa) -> Bronze (200 MPa) -> Steel (500 MPa)
-            double materialYieldStrengthMPa = 20.0 + tech * 50.0;
+            // Material Yield Strength (σ_yield in MPa): Wood (20 MPa) -> Bronze (200 MPa) -> Steel (500 MPa) -> Composites (1200+ MPa)
+            double materialYieldStrengthMPa = Math.clamp(20.0 + tech * 15.0, 20.0, 2000.0);
 
-            // Kinetic & Chemical Energy Output (Joules/sec = Watts)
-            double kineticPowerOutputWatts = pop * (100.0 + Math.pow(tech, 2.5) * 500.0);
+            // Kinetic & Chemical Energy Output (Joules/sec = Watts) per mobilized force
+            double kineticPowerOutputWatts = pop * (50.0 + Math.pow(Math.min(tech, 150.0), 2.2) * 200.0);
 
-            // Fortification penetration check
-            double fortificationResistanceJoules = materialYieldStrengthMPa * 1e6 * 0.5; // 0.5m thickness
+            // Fortification structural resistance in Joules (Yield Strength * Thickness * Reference Cross Section)
+            double fortificationResistanceJoules = materialYieldStrengthMPa * 1e6 * 0.5; // 0.5m barrier thickness
 
-            if (kineticPowerOutputWatts > fortificationResistanceJoules && capital > 1000.0) {
+            if (kineticPowerOutputWatts > fortificationResistanceJoules && capital > 100.0) {
                 structuralBreaches++;
-                // Infrastructure damage proportional to excess kinetic energy
-                cell.setResourceCapital(Math.max(0.0, capital - (kineticPowerOutputWatts / 1e6)));
+                // Infrastructure damage proportional to delivered kinetic work: E_kinetic = P_kinetic * dt
+                double kineticEnergyDamageMegaJoules = (kineticPowerOutputWatts / 1e6) * dt;
+                cell.setResourceCapital(Math.max(0.0, capital - kineticEnergyDamageMegaJoules));
             }
         }
 
         if (structuralBreaches > 0) {
-            logger.info("Warfare Engine: Kinetic structural breaches evaluated across {} fortified cells.", structuralBreaches);
+            logger.debug("Warfare Engine: Kinetic structural breaches evaluated across {} fortified cells.", structuralBreaches);
         }
+    }
+
+    public static void processKineticWarfare(List<H3Cell> cells) {
+        processKineticWarfare(cells, 30.0 / 365.25);
     }
 }
 

@@ -1051,11 +1051,11 @@ public class ResourceDistributionPanel extends BorderPane {
         climateSourceCombo = new ComboBox<>();
         climateSourceCombo.getItems().addAll(
                 "none",
-                "🌍 Terre — ERA5 Reanalysis & MODIS / IMERG (Composite)",
-                "🔴 Mars — MGS TES & Subsurface MARSIS (Composite)",
-                "🟡 Vénus — Magellan Radar & VIRTIS Thermal Model",
-                "⚪ Lune — LRO Diviner & LCROSS Cold Traps",
-                "⚪ Mercure — MESSENGER MLA & Polar Ice Model"
+                "🌍 Terre — ERA5 Reanalysis & MODIS / IMERG (Composite) [Global, -100 000 BP à +2100 AD]",
+                "🔴 Mars — MGS TES & Subsurface MARSIS (Composite) [Planétaire (Mars), -4.1 Ga à Actuel]",
+                "🟡 Vénus — Magellan Radar & VIRTIS Thermal Model [Planétaire (Vénus), -500 Ma à Actuel]",
+                "⚪ Lune — LRO Diviner & LCROSS Cold Traps [Planétaire (Lune), -4.5 Ga à Actuel]",
+                "⚪ Mercure — MESSENGER MLA & Polar Ice Model [Planétaire (Mercure), -4.0 Ga à Actuel]"
         );
         climateSourceCombo.setValue("none");
         org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
@@ -1438,6 +1438,9 @@ public class ResourceDistributionPanel extends BorderPane {
         double aquifer = Math.round(15000.0 * areaScale * waterMod);
         freshwaterAquiferSlider.setValue(aquifer);
 
+        if (radioProcHydro != null) {
+            radioProcHydro.setSelected(true);
+        }
         if (hydroStatusLabel != null) {
             hydroStatusLabel.setText(String.format(I18n.getOrDefault("resource.status.auto_derived_hydro", "⚡ Auto-derived from %s: Groundwater / Aquifers=%.0f x10³ km³"), p.name(), aquifer));
         }
@@ -1473,6 +1476,9 @@ public class ResourceDistributionPanel extends BorderPane {
             volcanicActivitySlider.setValue(volcanic);
         }
 
+        if (radioProcGeology != null) {
+            radioProcGeology.setSelected(true);
+        }
         if (geologyStatusLabel != null) {
             geologyStatusLabel.setText(String.format(I18n.getOrDefault("resource.status.auto_derived_geo", "⚡ Auto-derived from %s: Metals=%.0f Gt | Precious=%.0f Mt | Mantle=%.1f mW/m² | Seismic=%.1f Mag | Volcanism=%.1f VEI"),
                     p.name(), crustal, precious, heat, seismic, volcanic));
@@ -2096,8 +2102,13 @@ public class ResourceDistributionPanel extends BorderPane {
 
     private void generateProceduralHydrography() {
         customHydroImage = null;
+        if (radioProcHydro != null) radioProcHydro.setSelected(true);
+        if (viewModeCombo != null) {
+            viewModeCombo.getSelectionModel().select(2);
+        }
         if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("resource.mode.procedural_hydro", "⚡ Procedural Hydrography (Rivers/Slope)"));
         if (mapStatusLabel != null) mapStatusLabel.setText(I18n.getOrDefault("resource.map.procedural_generated", "⚡ Procedural hydrographic map generated via slope and watershed calculation."));
+        if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
         updateLegend();
         updatePreviewCanvas();
         updateSummary();
@@ -3143,8 +3154,13 @@ public class ResourceDistributionPanel extends BorderPane {
 
             if (applyBtn != null) applyBtn.setText(I18n.getOrDefault("resource.btn.apply", "✅ Apply scientific distribution to simulation"));
 
-            // Dynamic refresh of the 9 geology tensor cards
-            for (int i = 0; i < 9; i++) {
+            if (btnGenerateProceduralGeologyTensors != null) {
+                btnGenerateProceduralGeologyTensors.setText(I18n.getOrDefault("resource.btn.regen_tensors", "🪄 Regenerate Tensors"));
+                btnGenerateProceduralGeologyTensors.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.regen_geology_tensors", "Switch all geological tensors to procedural mode and regenerate maps according to parameters and stochastic seed.")));
+            }
+
+            // Dynamic refresh of all 10 geology tensor cards
+            for (int i = 0; i < GEOLOGY_SLIDER_SPECS.length; i++) {
                 if (geologySubTitles.containsKey(i) && geologySubTitles.get(i) != null) {
                     geologySubTitles.get(i).setText(getGeologyTensorTitle(i));
                     Tooltip.install(geologySubTitles.get(i), new Tooltip(getGeologyTensorTooltip(i)));
@@ -3267,10 +3283,22 @@ public class ResourceDistributionPanel extends BorderPane {
             if (p.name().equalsIgnoreCase(name)) return p;
         }
         String lower = name.toLowerCase();
+        if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire") || lower.contains("eemian")) return PlanetPreset.EARTH_LIG_100000BP;
+        if (lower.contains("-50") || lower.contains("sahul") || lower.contains("mis3") || lower.contains("mis 3")) return PlanetPreset.EARTH_MIS3_50000BP;
+        if (lower.contains("-25") || lower.contains("beringia") || lower.contains("béringie")) return PlanetPreset.EARTH_LGM_ONSET_25000BP;
+        if (lower.contains("-20") || lower.contains("lgm") || lower.contains("glaciaire") || lower.contains("solutrean") || lower.contains("solutréen")) return PlanetPreset.EARTH_LGM_20000BP;
+        if (lower.contains("-10") || lower.contains("eh") || lower.contains("précoce") || lower.contains("early holocene") || lower.contains("dryas")) return PlanetPreset.EARTH_EH_10000BP;
+        if (lower.contains("-6") || lower.contains("mh") || lower.contains("sahara") || lower.contains("mid holocene")) return PlanetPreset.EARTH_MH_6000BP;
+        if (lower.contains("-3") || lower.contains("lh") || lower.contains("tardif") || lower.contains("late holocene")) return PlanetPreset.EARTH_LH_3000BP;
+        if (lower.contains("-1900") || lower.contains("bronze")) return PlanetPreset.EARTH_BRONZE_1900BP;
+        if (lower.contains("-1000") || lower.contains("iron") || lower.contains("fer")) return PlanetPreset.EARTH_IRON_1000BP;
         for (PlanetPreset p : PlanetPreset.getPresets()) {
             if (p.name().toLowerCase().contains(lower) || lower.contains(p.name().toLowerCase())) {
                 return p;
             }
+        }
+        if (lower.contains("earth") || lower.contains("terre") || lower.contains("terran")) {
+            return PlanetPreset.EARTH_LIKE;
         }
         return PlanetPreset.EARTH_LIKE;
     }
@@ -3697,78 +3725,78 @@ public class ResourceDistributionPanel extends BorderPane {
         combo.getItems().add("");
         switch (index) {
             case 0 -> combo.getItems().addAll(
-                "🌍 Terre — USGS MRDS & BGR Coal Basins (Composite)",
-                "🔴 Mars — Regolith & Abiotic Crust (Sterile / Barren)",
-                "🟡 Vénus — Pyrolyzed Carbon Crust (Sterile / Void)",
-                "⚪ Lune — Regolith & Vacuum Crust (Barren)",
-                "⚪ Mercure — Silicate Crust (Sterile / Barren)"
+                "🌍 Terre — USGS MRDS & BGR Coal Basins [Global, -360 Ma (Carbonifère) à Actuel]",
+                "🔴 Mars — Regolith & Abiotic Crust [Planétaire (Mars), -4.1 Ga à Actuel (Abiotique / Stérile)]",
+                "🟡 Vénus — Pyrolyzed Carbon Crust [Planétaire (Vénus), -500 Ma à Actuel (Pyrolyse / Stérile)]",
+                "⚪ Lune — Regolith & Vacuum Crust [Planétaire (Lune), -4.5 Ga à Actuel (Abiotique / Stérile)]",
+                "⚪ Mercure — Silicate Crust [Planétaire (Mercure), -4.0 Ga à Actuel (Abiotique / Stérile)]"
             );
             case 1 -> combo.getItems().addAll(
-                "🌍 Terre — USGS WPA & BGR Oil Assessment (Composite)",
-                "🔴 Mars — Lacustrine Bedrocks (Abiotic Traces)",
-                "🟡 Vénus — Supercritical CO₂ Crust (Pyrolyzed / Void)",
-                "⚪ Lune — Sterile Regolith (Barren / Void)",
-                "⚪ Mercure — Airless Crust (Sterile / Void)"
+                "🌍 Terre — USGS WPA & BGR Oil Assessment [Global, -250 Ma (Mésozoïque) à Actuel]",
+                "🔴 Mars — Lacustrine Bedrocks [Planétaire (Mars), -4.1 Ga à Actuel (Traces Paléo-Lacustres)]",
+                "🟡 Vénus — Supercritical CO₂ Crust [Planétaire (Vénus), -500 Ma à Actuel (Pyrolyse / Stérile)]",
+                "⚪ Lune — Sterile Regolith [Planétaire (Lune), -4.5 Ga à Actuel (Stérile / Vide)]",
+                "⚪ Mercure — Airless Crust [Planétaire (Mercure), -4.0 Ga à Actuel (Stérile / Vide)]"
             );
             case 2 -> combo.getItems().addAll(
-                "🌍 Terre — USGS & WEP/BGR Natural Gas Fields (Composite)",
-                "🔴 Mars — Subsurface Methane & Clathrates (Trace Model)",
-                "🟡 Vénus — Supercritical Atmosphere & Crustal Gas Traps",
-                "⚪ Lune — Solar Wind Entrapped Gases (Low Trace)",
-                "⚪ Mercure — Exospheric Outgassing (Sterile / Void)"
+                "🌍 Terre — USGS & WEP/BGR Natural Gas Fields [Global, -300 Ma à Actuel]",
+                "🔴 Mars — Subsurface Methane & Clathrates [Planétaire (Mars), -4.1 Ga à Actuel (Traces Méthanogènes)]",
+                "🟡 Vénus — Supercritical Atmosphere & Crustal Gas Traps [Planétaire (Vénus), -500 Ma à Actuel (Pièges Crustaux)]",
+                "⚪ Lune — Solar Wind Entrapped Gases [Planétaire (Lune), -4.5 Ga à Actuel (Pièges Vent Solaire)]",
+                "⚪ Mercure — Exospheric Outgassing [Planétaire (Mercure), -4.0 Ga à Actuel (Traces Exosphériques)]"
             );
             case 3 -> combo.getItems().addAll(
-                "🌍 Terre — IAEA UDEPO & NEA Red Book Uranium (Composite)",
-                "🔴 Mars — Mars Odyssey GRS Thorium & Uranium (NASA)",
-                "🟡 Vénus — Venera 8/9/10 Gamma-Ray Spectrometry (Roscosmos)",
-                "⚪ Lune — Lunar Prospector KREEP GRS Thorium (NASA)",
-                "⚪ Mercure — MESSENGER GRS/XRS Thorium & Uranium (NASA)"
+                "🌍 Terre — IAEA UDEPO & NEA Red Book Uranium [Global, -2.5 Ga (Protérozoïque) à Actuel]",
+                "🔴 Mars — Mars Odyssey GRS Thorium & Uranium [Planétaire (Mars), -4.1 Ga à Actuel (Spectrométrie Gamma)]",
+                "🟡 Vénus — Venera 8/9/10 Gamma-Ray Spectrometry [Planétaire (Vénus), -500 Ma à Actuel (Sondes Venera)]",
+                "⚪ Lune — Lunar Prospector KREEP GRS Thorium [Planétaire (Lune), -4.5 Ga à Actuel (Terrains KREEP)]",
+                "⚪ Mercure — MESSENGER GRS/XRS Thorium & Uranium [Planétaire (Mercure), -4.0 Ga à Actuel (Spectrométrie X/GRS)]"
             );
             case 4 -> combo.getItems().addAll(
-                "🌍 Terre — Atmosphere Shielded Crust (Negligible / Trace)",
-                "🔴 Mars — Low-Magnetism Regolith Infiltration (NASA)",
-                "🟡 Vénus — Upper Ionosphere Solar Traps (ESA/NASA)",
-                "⚪ Lune — LRO LOLA & Lunar Prospector Ilmenite (NASA)",
-                "⚪ Mercure — MESSENGER Magnetosphere Solar Wind Trap (NASA)"
+                "🌍 Terre — Atmosphere Shielded Crust [Global, -4.5 Ga à Actuel (Traces Négligeables / Bouclier Magnétique)]",
+                "🔴 Mars — Low-Magnetism Regolith Infiltration [Planétaire (Mars), -4.1 Ga à Actuel (Infiltration Régolithe)]",
+                "🟡 Vénus — Upper Ionosphere Solar Traps [Planétaire (Vénus), -500 Ma à Actuel (Haute Atmosphère)]",
+                "⚪ Lune — LRO LOLA & Lunar Prospector Ilmenite [Planétaire (Lune), -4.5 Ga à Actuel (Régolithe Titane/Ilménite)]",
+                "⚪ Mercure — MESSENGER Magnetosphere Solar Wind Trap [Planétaire (Mercure), -4.0 Ga à Actuel (Pièges Magnétiques)]"
             );
             case 5 -> combo.getItems().addAll(
-                "🌍 Terre — USGS MRDS & Banded Iron Formations Atlas (Composite)",
-                "🔴 Mars — Mars Express OMEGA & CRISM Hematite (ESA/NASA)",
-                "🟡 Vénus — Magellan SAR Basaltic Volcanism & Pyrite (NASA)",
-                "⚪ Lune — Clementine & Lunar Prospector FeO Basalts (NASA)",
-                "⚪ Mercure — MESSENGER High-Iron Crust & Regolith (NASA)"
+                "🌍 Terre — USGS MRDS & Banded Iron Formations Atlas [Global, -3.8 Ga (Archéen) à Actuel]",
+                "🔴 Mars — Mars Express OMEGA & CRISM Hematite [Planétaire (Mars), -4.1 Ga à Actuel (Hématite / Oxydes de Fer)]",
+                "🟡 Vénus — Magellan SAR Basaltic Volcanism & Pyrite [Planétaire (Vénus), -500 Ma à Actuel (Sulfures & Pyrites)]",
+                "⚪ Lune — Clementine & Lunar Prospector FeO Basalts [Planétaire (Lune), -4.5 Ga à Actuel (Basaltes des Mers)]",
+                "⚪ Mercure — MESSENGER High-Iron Crust & Regolith [Planétaire (Mercure), -4.0 Ga à Actuel (Noyau Géant Ferrique)]"
             );
             case 6 -> combo.getItems().addAll(
-                "🌍 Terre — USGS MRDS Precious Metals Au/Ag/PGM (Composite)",
-                "🔴 Mars — Hydrothermal Quartz & Native Gold Model (NASA)",
-                "🟡 Vénus — Heavy Metallic Pyrite & Telluride Frosts (NASA)",
-                "⚪ Lune — Impact Siderophile & Native Platinum Traces (NASA)",
-                "⚪ Mercure — Core-Mantle Precious Metals & Sulfides (NASA)"
+                "🌍 Terre — USGS MRDS Precious Metals Au/Ag/PGM [Global, -3.8 Ga à Actuel (Gisements Orogéniques & Alluvionnaires)]",
+                "🔴 Mars — Hydrothermal Quartz & Native Gold Model [Planétaire (Mars), -4.1 Ga à Actuel (Paléo-Hydrothermalisme)]",
+                "🟡 Vénus — Heavy Metallic Pyrite & Telluride Frosts [Planétaire (Vénus), -500 Ma à Actuel (Gels Métalliques Sommitaux)]",
+                "⚪ Lune — Impact Siderophile & Native Platinum Traces [Planétaire (Lune), -4.5 Ga à Actuel (Éjectas Sidérophiles)]",
+                "⚪ Mercure — Core-Mantle Precious Metals & Sulfides [Planétaire (Mercure), -4.0 Ga à Actuel (Différenciation Manteau/Noyau)]"
             );
             case 7 -> combo.getItems().addAll(
-                "🌍 Terre — USGS Rare Earth Elements & Salars (Composite)",
-                "🔴 Mars — Acid Fog & Hydrothermal REE Model (NASA)",
-                "🟡 Vénus — Alkaline Carbonatites & REE Model (NASA)",
-                "⚪ Lune — KREEP Basalts & Rare Earth Elements (NASA)",
-                "⚪ Mercure — Magmatic Sulfide & REE Model (NASA)"
+                "🌍 Terre — USGS Rare Earth Elements & Salars [Global, -2.5 Ga à Actuel (Pegmatites, Carbonatites & Salars)]",
+                "🔴 Mars — Acid Fog & Hydrothermal REE Model [Planétaire (Mars), -4.1 Ga à Actuel (Altération Hydrothermale Acide)]",
+                "🟡 Vénus — Alkaline Carbonatites & REE Model [Planétaire (Vénus), -500 Ma à Actuel (Carbonatites Alcalines)]",
+                "⚪ Lune — KREEP Basalts & Rare Earth Elements [Planétaire (Lune), -4.5 Ga à Actuel (Complexes Magmatiques KREEP)]",
+                "⚪ Mercure — Magmatic Sulfide & REE Model [Planétaire (Mercure), -4.0 Ga à Actuel (Sulfures Magmatiques)]"
             );
             case 8 -> combo.getItems().addAll(
-                "🌍 Terre — IHFC / Davies Global Crustal Heat Flow (Composite)",
-                "🔴 Mars — InSight Crustal Heat Flow & Volcanic Plumes (NASA)",
-                "🟡 Vénus — Magellan Coronae & Mantle Plumes (NASA)",
-                "⚪ Lune — Apollo 15/17 Lunar Heat Flow Experiment (NASA)",
-                "⚪ Mercure — MESSENGER Core Conduction & Residual Heat (NASA)"
+                "🌍 Terre — IHFC / Davies Global Crustal Heat Flow [Global, -4.5 Ga à Actuel (Flux 40 à 120 mW/m²)]",
+                "🔴 Mars — InSight Crustal Heat Flow & Volcanic Plumes [Planétaire (Mars), -4.1 Ga à Actuel (Panaches Résiduels Tharsis/Elysium)]",
+                "🟡 Vénus — Magellan Coronae & Mantle Plumes [Planétaire (Vénus), -500 Ma à Actuel (Points Chauds & Coronae)]",
+                "⚪ Lune — Apollo 15/17 Lunar Heat Flow Experiment [Planétaire (Lune), -4.5 Ga à Actuel (Flux Résiduel 15-20 mW/m²)]",
+                "⚪ Mercure — MESSENGER Core Conduction & Residual Heat [Planétaire (Mercure), -4.0 Ga à Actuel (Conduction Thermique du Noyau)]"
             );
             case 9 -> combo.getItems().addAll(
-                "🌍 Terre — UNESCO / WHYMAP Global Groundwater Aquifers (Composite)",
-                "🔴 Mars — Mars Express MARSIS Subsurface Ice (ESA)",
-                "🟡 Vénus — Atmospheric Supercritical Vapor (Desiccated Crust)",
-                "⚪ Lune — LRO / LCROSS Polar Cold Trap Ice (NASA)",
-                "⚪ Mercure — MESSENGER Polar Crater Water Ice (NASA)"
+                "🌍 Terre — UNESCO / WHYMAP Global Groundwater Aquifers [Global, -10 000 BP à Actuel (Holocène & Aquifères Fossiles)]",
+                "🔴 Mars — Mars Express MARSIS Subsurface Ice [Planétaire (Mars), -4.1 Ga à Actuel (Calottes & Glace Enfouie)]",
+                "🟡 Vénus — Atmospheric Supercritical Vapor [Planétaire (Vénus), -500 Ma à Actuel (Croûte Desséchée)]",
+                "⚪ Lune — LRO / LCROSS Polar Cold Trap Ice [Planétaire (Lune), -4.5 Ga à Actuel (Pièges Froids Polaires)]",
+                "⚪ Mercure — MESSENGER Polar Crater Water Ice [Planétaire (Mercure), -4.0 Ga à Actuel (Cratères d'Ombre)]"
             );
             default -> combo.getItems().addAll(
-                "🌍 Terre — USGS Scientific Dataset (Composite)",
-                "Global Planetary Survey"
+                "🌍 Terre — USGS Scientific Dataset [Global, -4.5 Ga à Actuel]",
+                "Global Planetary Survey [Planétaire, -4.5 Ga à Actuel]"
             );
         }
         org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
@@ -3809,12 +3837,92 @@ public class ResourceDistributionPanel extends BorderPane {
     private VBox createGeologyVectorAndLayersSection() {
         geologyDomainSecHeader = new Label(I18n.getOrDefault("resource.section.geological_tensors", "4. DOMAINE GÉOLOGIE, TECTONIQUE ET MINERAIS"));
 
+        Label subHeader = new Label(I18n.getOrDefault("resource.header.geology_subblocks", "🗺️ 4.1 Cartographic Sub-Blocks per Geological Tensor (Procedural Generation / Imported Maps)"));
+        subHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
+        subHeader.setWrapText(true);
+
+        btnGenerateProceduralGeologyTensors = new Button(I18n.getOrDefault("resource.btn.regen_tensors", "🪄 Regenerate Tensors"));
+        btnGenerateProceduralGeologyTensors.getStyleClass().add("button");
+        btnGenerateProceduralGeologyTensors.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
+        btnGenerateProceduralGeologyTensors.setMinWidth(Region.USE_PREF_SIZE);
+        btnGenerateProceduralGeologyTensors.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.regen_geology_tensors", "Switch all geological tensors to procedural mode and regenerate maps according to parameters and stochastic seed.")));
+        btnGenerateProceduralGeologyTensors.setOnAction(e -> generateProceduralGeologyTensors());
+
+        geologySeedInput = new TextField("45678");
+        geologySeedInput.setPrefWidth(80);
+        geologySeedInput.setStyle("-fx-font-size: 11px;");
+        geologySeedInput.textProperty().addListener((obs, oldV, newV) -> {
+            if (!isUpdatingFromPreset && ecologyPresetBar != null) {
+                ecologyPresetBar.notifyParametersChanged();
+            }
+        });
+
+        Button geoRandSeedBtn = new Button("🎲");
+        geoRandSeedBtn.getStyleClass().add("button-secondary");
+        geoRandSeedBtn.setStyle("-fx-font-size: 11px;");
+        geoRandSeedBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.random_geology_seed", "Draw a new random stochastic seed for all geological tensors.")));
+        geoRandSeedBtn.setOnAction(e -> {
+            String s = String.valueOf(new Random().nextLong(1000000));
+            geologySeedInput.setText(s);
+            generateProceduralGeologyTensors();
+        });
+
+        HBox geoSeedBox = new HBox(4, new Label(I18n.getOrDefault("resource.label.geology_seed", "Seed:")), new Label("🎲"), geologySeedInput, geoRandSeedBtn);
+        geoSeedBox.setAlignment(Pos.CENTER_LEFT);
+
+        HBox seedRow = new HBox(8, geoSeedBox, btnGenerateProceduralGeologyTensors);
+        seedRow.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(btnGenerateProceduralGeologyTensors, Priority.ALWAYS);
+
         geologyLayersDynamicContainer = new VBox(10);
         rebuildGeologyTensorSubBlocks();
 
         prepopulateEarthGeologyTensors();
 
-        return createSection(geologyDomainSecHeader, geologyLayersDynamicContainer);
+        VBox content = new VBox(8, subHeader, seedRow, geologyLayersDynamicContainer);
+        return createSection(geologyDomainSecHeader, content);
+    }
+
+    private void generateProceduralGeologyTensors() {
+        if (geologyProcRadios != null) {
+            for (var entry : geologyProcRadios.entrySet()) {
+                if (entry.getValue() != null) {
+                    entry.getValue().setSelected(true);
+                }
+            }
+        }
+        customGeologyLayerImages.clear();
+        if (geologyFileLabels != null) {
+            for (Integer idx : geologyFileLabels.keySet()) {
+                if (geologyFileLabels.get(idx) != null) {
+                    geologyFileLabels.get(idx).setText("—");
+                }
+            }
+        }
+        if (geologySeedInput != null && !geologySeedInput.getText().isBlank()) {
+            try {
+                long baseSeed = Long.parseLong(geologySeedInput.getText().trim());
+                if (geologyTensorSeeds != null) {
+                    for (int i = 0; i < GEOLOGY_SLIDER_SPECS.length; i++) {
+                        TextField tf = geologyTensorSeeds.get(i);
+                        if (tf != null) {
+                            tf.setText(String.valueOf(baseSeed + i * 777L));
+                        }
+                    }
+                }
+            } catch (NumberFormatException ignored) {}
+        }
+        if (viewModeCombo != null) {
+            int curSel = viewModeCombo.getSelectionModel().getSelectedIndex();
+            if (curSel < 3 || curSel > 12) {
+                viewModeCombo.getSelectionModel().select(3);
+            }
+        }
+        if (!isUpdatingFromPreset && ecologyPresetBar != null) {
+            ecologyPresetBar.notifyParametersChanged();
+        }
+        updateSummary();
+        updatePreviewCanvas();
     }
 
     private static class TensorSliderMeta {
@@ -3964,6 +4072,11 @@ public class ResourceDistributionPanel extends BorderPane {
             randSeedBtn.setStyle("-fx-font-size: 11px;");
             randSeedBtn.setOnAction(e -> {
                 seedTF.setText(String.valueOf(new Random().nextLong(1000000)));
+                if (radioProc != null) radioProc.setSelected(true);
+                customGeologyLayerImages.remove(layerIdx);
+                if (viewModeCombo != null) {
+                    viewModeCombo.getSelectionModel().select(layerIdx + 3);
+                }
                 if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
                 updatePreviewCanvas();
             });
@@ -3972,6 +4085,11 @@ public class ResourceDistributionPanel extends BorderPane {
             btnGenTensor.getStyleClass().add("button");
             btnGenTensor.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
             btnGenTensor.setOnAction(e -> {
+                if (radioProc != null) radioProc.setSelected(true);
+                customGeologyLayerImages.remove(layerIdx);
+                if (viewModeCombo != null) {
+                    viewModeCombo.getSelectionModel().select(layerIdx + 3);
+                }
                 if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
                 updatePreviewCanvas();
             });

@@ -312,17 +312,9 @@ public class PreComputePhase {
         double capitalK0 = scenario.getInitialCapitalPerCapita();
         double techLevel = Math.clamp(Math.log10(Math.max(1.0, capitalK0)) * 2.2 + 0.2, 0.2, 10.0);
         String pattern = scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL";
-        String pType = pattern.toUpperCase();
-        boolean isEarthPreset = (scenario.getPlanetPreset() == null)
-                || (scenario.getPlanetPreset().elevationUseImport() && "earth".equalsIgnoreCase(scenario.getPlanetPreset().elevationMapSource()))
-                || (scenario.getPlanetPreset().name() != null && (scenario.getPlanetPreset().name().toLowerCase().contains("terre") || scenario.getPlanetPreset().name().toLowerCase().contains("earth")))
-                || pType.equals("EGYPT_NILE") || pType.equals("ROMAN_EMPIRE") || pType.equals("MESOAMERICA")
-                || pType.equals("AUSTRALIA_SAHUL") || pType.equals("BERINGIA_AMERICAS") || pType.equals("GREEN_SAHARA")
-                || pType.equals("YOUNGER_DRYAS") || pType.equals("WEST_AFRICA_MALI") || pType.equals("JAPAN_SAKOKU")
-                || pType.equals("INDIA_MAURYA") || pType.equals("AMERICAS_1491");
         long startYear = scenario.getStartDateYear();
 
-        org.ether.society.procedural.ProceduralPopulationEngine.distributePopulation(cells, scenario, totalPop, techLevel, pattern, isEarthPreset, startYear);
+        org.ether.society.procedural.ProceduralPopulationEngine.distributePopulation(cells, scenario, totalPop, techLevel, pattern, false, startYear);
     }
 
     /**

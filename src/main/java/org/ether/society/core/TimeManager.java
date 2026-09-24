@@ -164,6 +164,25 @@ public class TimeManager {
     }
 
     /**
+     * Formats simulation date according to the scenario's temporal resolution.
+     * For annual resolutions (>= 360 days), returns only the year (e.g. "An -100000" or "-100000 BC").
+     * For monthly resolutions (>= 28 days), returns year and month (e.g. "An -2500, Mois 4").
+     * For daily resolutions (< 28 days), returns full date.
+     *
+     * @param temporalResolutionDays Step size in days
+     * @return Formatted contextual date string
+     */
+    public String formatContextualDate(double temporalResolutionDays) {
+        if (temporalResolutionDays >= 360.0) {
+            return String.format(Locale.ROOT, "An %d", currentYear);
+        } else if (temporalResolutionDays >= 28.0) {
+            return String.format(Locale.ROOT, "An %d - M.%02d", currentYear, currentMonth + 1);
+        } else {
+            return String.format(Locale.ROOT, "An %d - M.%02d D.%02d", currentYear, currentMonth + 1, currentDay);
+        }
+    }
+
+    /**
      * Sets the simulation time and total ticks directly (used during rewind, seek, or snapshot restore).
      *
      * @param year Current year (negative for BC)

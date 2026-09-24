@@ -51,23 +51,29 @@ public class WindowUtils {
                 stage.getIcons().setAll(cachedIcons);
             }
 
-            // Set OS Taskbar icon once for the process (macOS Dock / AWT Taskbar)
-            if (!taskbarIconSet && java.awt.Taskbar.isTaskbarSupported()) {
-                var taskbar = java.awt.Taskbar.getTaskbar();
-                if (taskbar.isSupported(java.awt.Taskbar.Feature.ICON_IMAGE)) {
-                    try (InputStream awtStream = WindowUtils.class.getResourceAsStream("/icons/icon.png")) {
-                        if (awtStream != null) {
-                            java.awt.Image awtImage = javax.imageio.ImageIO.read(awtStream);
-                            if (awtImage != null) {
-                                taskbar.setIconImage(awtImage);
-                                taskbarIconSet = true;
-                                logger.info("AWT Taskbar icon updated successfully.");
+            // Set OS Taskbar icon once for the process (macOS Dock / AWT Taskbar) asynchronously to avoid UI freeze
+            if (!taskbarIconSet) {
+                new Thread(() -> {
+                    try {
+                        if (java.awt.Taskbar.isTaskbarSupported()) {
+                            var taskbar = java.awt.Taskbar.getTaskbar();
+                            if (taskbar.isSupported(java.awt.Taskbar.Feature.ICON_IMAGE)) {
+                                try (InputStream awtStream = WindowUtils.class.getResourceAsStream("/icons/icon.png")) {
+                                    if (awtStream != null) {
+                                        java.awt.Image awtImage = javax.imageio.ImageIO.read(awtStream);
+                                        if (awtImage != null) {
+                                            taskbar.setIconImage(awtImage);
+                                            taskbarIconSet = true;
+                                            logger.info("AWT Taskbar icon updated successfully.");
+                                        }
+                                    }
+                                }
                             }
                         }
-                    } catch (Exception ex) {
+                    } catch (Throwable ex) {
                         logger.debug("Could not set AWT Taskbar icon", ex);
                     }
-                }
+                }, "AWT-Taskbar-Init").start();
             }
         } catch (Exception e) {
             logger.warn("Could not load application icon for stage", e);

@@ -217,6 +217,8 @@ public class I18n {
             return getOrDefault("planet.preset.earth_iron", "Terre (-1 000 / Début Âge du Fer)");
         } else if (lower.contains("2026") || lower.contains("moderne") || lower.contains("modern") || lower.contains("anthropocène") || lower.contains("anthropocene")) {
             return getOrDefault("planet.preset.earth_modern", "Terre (2026 / Moderne)");
+        } else if (lower.contains("super-terre") || lower.contains("super-earth") || lower.contains("gaia")) {
+            return getOrDefault("planet.preset.super_earth", "Super-Terre (Gaia Prime)");
         } else if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) {
             return getOrDefault("planet.preset.earth", "Terre (Terran)");
         } else if (lower.contains("mars") || lower.contains("ares")) {
@@ -229,7 +231,7 @@ public class I18n {
             return getOrDefault("planet.preset.moon", "Lune (Selene)");
         } else if (lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes")) {
             return getOrDefault("planet.preset.mercury", "Mercure (Hermes)");
-        } else if (lower.contains("synchrone") || lower.contains("eyeball")) {
+        } else if (lower.contains("synchrone") || lower.contains("eyeball") || lower.contains("locked")) {
             return getOrDefault("planet.preset.eyeball", "Monde Synchrone (Eyeball)");
         } else if (lower.contains("océan") || lower.contains("ocean") || lower.contains("oceania")) {
             return getOrDefault("planet.preset.water", "Monde Océan (Oceania)");
@@ -250,26 +252,33 @@ public class I18n {
         // Try a dedicated description key derived from the display name key
         String lower = name == null ? "" : name.toLowerCase();
         String descKey = null;
-        if (lower.contains("-100") || lower.contains("lig")) descKey = "planet.preset.earth_lig.desc";
-        else if (lower.contains("-50") || lower.contains("mis3")) descKey = "planet.preset.earth_mis3.desc";
+        if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire") || lower.contains("eemian")) descKey = "planet.preset.earth_lig.desc";
+        else if (lower.contains("-50") || lower.contains("mis3") || lower.contains("mis 3") || lower.contains("sahul")) descKey = "planet.preset.earth_mis3.desc";
         else if (lower.contains("-25") || lower.contains("beringia") || lower.contains("béringie")) descKey = "planet.preset.earth_lgm_onset.desc";
-        else if (lower.contains("-20") || lower.contains("lgm")) descKey = "planet.preset.earth_lgm.desc";
-        else if (lower.contains("-10000") || lower.contains("early holocene") || lower.contains("précoce")) descKey = "planet.preset.earth_eh.desc";
-        else if (lower.contains("-6000") || lower.contains("sahara")) descKey = "planet.preset.earth_mh.desc";
-        else if (lower.contains("-3000") || lower.contains("late holocene") || lower.contains("tardif")) descKey = "planet.preset.earth_lh.desc";
-        else if (lower.contains("-1900") || lower.contains("bronze")) descKey = "planet.preset.earth_bronze.desc";
-        else if (lower.contains("-1000") || lower.contains("iron") || lower.contains("fer")) descKey = "planet.preset.earth_iron.desc";
-        else if (lower.contains("2026") || lower.contains("modern")) descKey = "planet.preset.earth_modern.desc";
-        else if (lower.contains("mars")) descKey = "planet.preset.mars.desc";
-        else if (lower.contains("venus") || lower.contains("vénus")) descKey = "planet.preset.venus.desc";
+        else if (lower.contains("-20") || lower.contains("lgm") || lower.contains("maximum glaciaire") || lower.contains("last glacial maximum") || lower.contains("末次盛冰期") || lower.contains("letztes glaziales maximum")) descKey = "planet.preset.earth_lgm.desc";
+        else if (lower.contains("-10000") || lower.contains("-10 000") || lower.contains("early holocene") || lower.contains("précoce") || lower.contains("frühholozän") || lower.contains("早全新世")) descKey = "planet.preset.earth_eh.desc";
+        else if (lower.contains("-6000") || lower.contains("-6 000") || lower.contains("sahara") || lower.contains("mid holocene") || lower.contains("绿色撒哈拉") || lower.contains("grüne sahara")) descKey = "planet.preset.earth_mh.desc";
+        else if (lower.contains("-3000") || lower.contains("-3 000") || lower.contains("late holocene") || lower.contains("tardif") || lower.contains("spätholozän") || lower.contains("晚全新世")) descKey = "planet.preset.earth_lh.desc";
+        else if (lower.contains("-1900") || lower.contains("-1 900") || lower.contains("bronze") || lower.contains("青铜时代")) descKey = "planet.preset.earth_bronze.desc";
+        else if (lower.contains("-1000") || lower.contains("-1 000") || lower.contains("iron") || lower.contains("fer") || lower.contains("eisenzeit") || lower.contains("hierro") || lower.contains("铁器时代")) descKey = "planet.preset.earth_iron.desc";
+        else if (lower.contains("2026") || lower.contains("modern") || lower.contains("moderne") || lower.contains("anthropocène") || lower.contains("anthropocene")) descKey = "planet.preset.earth_modern.desc";
+        else if (lower.contains("super-terre") || lower.contains("super-earth") || lower.contains("gaia")) descKey = "planet.preset.super_earth.desc";
+        else if (lower.contains("mars") || lower.contains("ares")) descKey = "planet.preset.mars.desc";
+        else if (lower.contains("venus") || lower.contains("vénus") || lower.contains("hesperos")) descKey = "planet.preset.venus.desc";
         else if (lower.contains("titan")) descKey = "planet.preset.titan.desc";
-        else if (lower.contains("moon") || lower.contains("lune")) descKey = "planet.preset.moon.desc";
-        else if (lower.contains("mercury") || lower.contains("mercure")) descKey = "planet.preset.mercury.desc";
-        if (descKey != null && bundle != null && bundle.containsKey(descKey)) {
-            return sanitize(bundle.getString(descKey));
-        }
-        if (descKey != null && defaultBundle != null && defaultBundle.containsKey(descKey)) {
-            return sanitize(defaultBundle.getString(descKey));
+        else if (lower.contains("moon") || lower.contains("lune") || lower.contains("selene")) descKey = "planet.preset.moon.desc";
+        else if (lower.contains("mercury") || lower.contains("mercure") || lower.contains("hermes")) descKey = "planet.preset.mercury.desc";
+        else if (lower.contains("synchrone") || lower.contains("eyeball") || lower.contains("locked")) descKey = "planet.preset.eyeball.desc";
+        else if (lower.contains("océan") || lower.contains("ocean") || lower.contains("oceania")) descKey = "planet.preset.water.desc";
+        else if (lower.contains("glaciaire") || lower.contains("ice") || lower.contains("boreas")) descKey = "planet.preset.ice.desc";
+        else if (lower.contains("archipel") || lower.contains("archipelago")) descKey = "planet.preset.archipelago.desc";
+        else if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) descKey = "planet.preset.earth_modern.desc";
+
+        if (descKey != null) {
+            String desc = get(descKey);
+            if (desc != null && !desc.equals(descKey) && !desc.isBlank()) {
+                return desc;
+            }
         }
         return displayName;
     }

@@ -60,52 +60,22 @@ public class ProceduralPopulationEngine {
             c.setBiomassHuman(0.0);
         }
 
-        // For specific Earth historical regional scenarios, ensure cradle cells are habitable
-        if (isEarthPreset && scenario != null && scenario.getPopulationDensityType() != null) {
-            String p = scenario.getPopulationDensityType().toUpperCase();
-            for (H3Cell c : cells) {
-                double lat = c.getLatitude();
-                double lng = c.getLongitude();
-                if (p.equals("EGYPT_NILE") && lat >= 15.0 && lat <= 35.0 && lng >= 22.0 && lng <= 38.0) {
-                    if (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN) c.setBiome(Biome.PLAINS);
-                    if (c.getElevation() == null || c.getElevation() <= 0) c.setElevation(150.0);
-                } else if (p.equals("MESOAMERICA") && lat >= 10.0 && lat <= 25.0 && lng >= -110.0 && lng <= -80.0) {
-                    if (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN) c.setBiome(Biome.JUNGLE);
-                    if (c.getElevation() == null || c.getElevation() <= 0) c.setElevation(250.0);
-                } else if (p.equals("ROMAN_EMPIRE") && lat >= 25.0 && lat <= 58.0 && lng >= -12.0 && lng <= 45.0) {
-                    if (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN) c.setBiome(Biome.PLAINS);
-                    if (c.getElevation() == null || c.getElevation() <= 0) c.setElevation(100.0);
-                } else if (p.equals("GREEN_SAHARA") && lat >= 10.0 && lat <= 32.0 && lng >= -18.0 && lng <= 35.0) {
-                    if (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN) c.setBiome(Biome.SAVANNAH);
-                    if (c.getElevation() == null || c.getElevation() <= 0) c.setElevation(200.0);
-                }
-            }
-        }
-
-        // Filter habitable cells (including land, reclaimed polders, seasteading floating habitats, and high-tech oceanic settlements)
+        // Filter habitable cells (including land, coastal shelves, reclaimed polders, seasteading floating habitats, and high-tech oceanic settlements)
         List<H3Cell> landCells = cells.stream()
-                .filter(c -> (c.getBiome() != null && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
-                        || (c.getElevation() != null && c.getElevation() > 0 && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
+                .filter(c -> (c.getBiome() != null && c.getBiome() != Biome.DEEP_OCEAN)
+                        || (c.getElevation() != null && c.getElevation() > -200.0)
+                        || Boolean.TRUE.equals(c.getIsCoastal())
                         || Boolean.TRUE.equals(c.getIsPolder())
                         || Boolean.TRUE.equals(c.getHasFloatingInfrastructure())
-                        || (techLevel >= 8.5 && (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN)))
+                        || techLevel >= 8.5)
                 .toList();
 
-        if (landCells.isEmpty()) return;
+        if (landCells.isEmpty()) landCells = cells;
 
         double capitalPerCapita = scenario != null ? scenario.getInitialCapitalPerCapita() : Math.pow(10, (techLevel - 0.2) / 2.2);
-
         long seedVal = scenario != null ? scenario.getSeed() : 12345L;
-        if (isEarthPreset) {
-            distributeEarthHistorical(landCells, totalPopulation, techLevel, capitalPerCapita, startYear, scenario);
-            long populatedCount = landCells.stream().filter(c -> c.getPopulation() != null && c.getPopulation() > 0).count();
-            if (populatedCount == 0) {
-                logger.info("Historical regional distribution had no populated cells; falling back to procedural distribution");
-                distributeProcedural(landCells, totalPopulation, techLevel, pattern, seedVal, capitalPerCapita);
-            }
-        } else {
-            distributeProcedural(landCells, totalPopulation, techLevel, pattern, seedVal, capitalPerCapita);
-        }
+
+        distributeProcedural(landCells, totalPopulation, techLevel, pattern, seedVal, capitalPerCapita);
     }
 
     /**
@@ -487,16 +457,30 @@ public class ProceduralPopulationEngine {
         Biome b = cell.getBiome();
         double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
         double lat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
+        double lng = cell.getLongitude() != null ? cell.getLongitude() : 0.0;
         double water = cell.getWaterResource() != null ? cell.getWaterResource() : 0.0;
         double aquifer = cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 0.0;
 
         return switch (pattern) {
             case "UNBIASED_NATURAL", "UNBIASED", "NONE", "NATURAL_EQUILIBRIUM" -> 1.0;
-            case "COASTAL_MARITIME" -> (b == Biome.BEACH || elev < 50.0) ? 3.5 : 0.4;
-            case "RIVER_VALLEYS" -> (water > 400.0 || (b == Biome.PLAINS && cell.getRainfall() != null && cell.getRainfall() > 0.4)) ? 4.0 : 0.3;
-            case "HIGHLAND_MOUNTAIN" -> (b == Biome.HILLS || b == Biome.MOUNTAINS || elev > 800.0) ? 3.5 : 0.4;
-            case "INLAND_OASIS" -> (aquifer > 2000.0) ? 4.0 : 0.5;
-            case "EQUATORIAL_BELT" -> (Math.abs(lat) <= 25.0) ? 3.0 : 0.4;
+            case "COASTAL_MARITIME" -> (b == Biome.BEACH || elev < 50.0) ? 3.5 : 0.6;
+            case "RIVER_VALLEYS" -> (water > 400.0 || (b == Biome.PLAINS && cell.getRainfall() != null && cell.getRainfall() > 0.4)) ? 4.0 : 0.6;
+            case "HIGHLAND_MOUNTAIN" -> (b == Biome.HILLS || b == Biome.MOUNTAINS || elev > 800.0) ? 3.5 : 0.6;
+            case "INLAND_OASIS" -> (aquifer > 2000.0) ? 4.0 : 0.6;
+            case "EQUATORIAL_BELT" -> (Math.abs(lat) <= 25.0) ? 3.0 : 0.6;
+            case "EGYPT_NILE" -> ((water > 300.0 || aquifer > 1500.0 || (lat >= 20.0 && lat <= 35.0)) ? 4.0 : 1.0);
+            case "GREEN_SAHARA" -> ((b == Biome.SAVANNAH || aquifer > 1500.0 || (lat >= 10.0 && lat <= 32.0)) ? 4.0 : 1.0);
+            case "MESOAMERICA" -> ((b == Biome.JUNGLE || b == Biome.HILLS || (lat >= 10.0 && lat <= 25.0)) ? 3.5 : 1.0);
+            case "ROMAN_EMPIRE" -> ((b == Biome.BEACH || elev < 150.0 || (lat >= 25.0 && lat <= 55.0)) ? 3.5 : 1.0);
+            case "AUSTRALIA_SAHUL" -> ((b == Biome.BEACH || aquifer > 1500.0 || lat < -10.0) ? 3.5 : 1.0);
+            case "INDIA_MAURYA" -> ((water > 300.0 || b == Biome.PLAINS || (lat >= 8.0 && lat <= 35.0)) ? 4.0 : 1.0);
+            case "FERTILE_CRESCENT", "MESOPOTAMIA_ASSYRIA" -> ((water > 300.0 || b == Biome.PLAINS || (lat >= 25.0 && lat <= 42.0)) ? 4.0 : 1.0);
+            case "BERINGIA_AMERICAS", "LGM_REFUGIA", "YOUNGER_DRYAS" -> ((b == Biome.BEACH || b == Biome.TUNDRA || b == Biome.PLAINS || lat >= 35.0) ? 3.5 : 1.0);
+            case "WEST_AFRICA_MALI" -> ((b == Biome.SAVANNAH || aquifer > 1500.0 || (lat >= 5.0 && lat <= 25.0)) ? 3.5 : 1.0);
+            case "JAPAN_SAKOKU" -> ((b == Biome.BEACH || elev < 300.0 || (lat >= 30.0 && lat <= 45.0)) ? 3.5 : 1.0);
+            case "AMERICAS_1491", "COLUMBIAN_CONTACT" -> ((b == Biome.JUNGLE || b == Biome.PLAINS || b == Biome.HILLS) ? 3.0 : 1.0);
+            case "ONE_CONTINENT" -> ((Math.abs(lat) <= 35.0) ? 3.0 : 1.0);
+            case "INDUSTRIAL_1800" -> ((lat >= 30.0 && lat <= 60.0) ? 3.0 : 1.0);
             case "URBAN_CLUSTERS" -> 1.0;
             case "SPARSE_NOMADIC" -> 0.8;
             case "UNIFORM" -> 1.0;

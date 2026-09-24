@@ -11,6 +11,8 @@ import org.ether.society.database.H3Cell;
 import org.ether.society.density.H3ClimateSystem;
 import org.ether.society.model.PhysicalConstants;
 import org.ether.society.model.Scenario;
+import org.ether.society.procedural.PlanetPreset;
+import org.ether.society.procedural.NuclearWarfareClimateEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +74,7 @@ public class H3SimulationEngine implements ISimulationEngine {
     private ScheduledExecutorService executorService;
     private final AtomicBoolean running = new AtomicBoolean(false);
     private final java.util.concurrent.atomic.AtomicBoolean pauseAtNextEvent = new java.util.concurrent.atomic.AtomicBoolean(false);
-    private int speedMultiplier = 1;
+    private double speedMultiplier = 1.0;
 
     public H3SimulationEngine(Configuration config) {
         this.config = config;
@@ -133,6 +135,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         firedScenarioEventKeys.clear();
         if (eventSystem != null) {
             eventSystem.reset();
+            eventSystem.setEnableHistoricalMilestones(scenario == null || scenario.isRandomEventsEnabled());
         }
 
         if (diplomacyManager != null) {
@@ -245,7 +248,12 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     @Override
     public void setSpeed(int multiplier) {
-        this.speedMultiplier = multiplier;
+        setSpeed((double) multiplier);
+    }
+
+    @Override
+    public void setSpeed(double multiplier) {
+        this.speedMultiplier = Math.max(0.01, multiplier);
         if (running.get()) {
             pause();
             start();
@@ -254,6 +262,11 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     @Override
     public int getSpeed() {
+        return (int) Math.round(speedMultiplier);
+    }
+
+    @Override
+    public double getSpeedMultiplier() {
         return speedMultiplier;
     }
 
@@ -343,11 +356,11 @@ public class H3SimulationEngine implements ISimulationEngine {
             t.setDaemon(true);
             return t;
         });
-        if (speedMultiplier >= 999) {
+        if (speedMultiplier >= 999.0) {
             // MAX speed: continuous non-accumulating loop with minimum fixed delay (1 ms)
             executorService.scheduleWithFixedDelay(this::tick, 0, 1, TimeUnit.MILLISECONDS);
         } else {
-            long delay = Math.max(1, config.simulation().tickRateMs() / Math.max(1, speedMultiplier));
+            long delay = Math.max(1L, Math.round(config.simulation().tickRateMs() / Math.max(0.01, speedMultiplier)));
             executorService.scheduleWithFixedDelay(this::tick, 0, delay, TimeUnit.MILLISECONDS);
         }
     }
@@ -553,9 +566,19 @@ public class H3SimulationEngine implements ISimulationEngine {
                 if (!firedScenarioEventKeys.contains(eventKey)) {
                     firedScenarioEventKeys.add(eventKey);
 
+                    String type = evt.getType() != null ? evt.getType().toLowerCase() : "";
+                    String displayTitle;
+                    if (type.contains("milestone") || type.contains("hist")) {
+                        displayTitle = "📜 REPÈRE : " + evt.getName();
+                    } else if (type.contains("nuclear") || type.contains("strike")) {
+                        displayTitle = "☢️ FRAPPE NUCLÉAIRE : " + evt.getName() + " (Mag: " + evt.getMagnitude() + ")";
+                    } else {
+                        displayTitle = "🌋 ÉVÉNEMENT : " + evt.getName() + " (" + evt.getType() + " - Mag: " + evt.getMagnitude() + ")";
+                    }
+
                     org.ether.society.events.ActiveEvent ae = new org.ether.society.events.ActiveEvent(
                         "SCENARIO_EVT_" + System.currentTimeMillis(),
-                        "🌋 SCÉNARIO : " + evt.getName() + " (" + evt.getType() + " - Mag: " + evt.getMagnitude() + ")",
+                        displayTitle,
                         evt.getType().toUpperCase(),
                         evt.getLatitude(), evt.getLongitude(),
                         currentYear, timeManager.getCurrentMonth(), 1, 25.0, evt.getMagnitude()
@@ -585,7 +608,22 @@ public class H3SimulationEngine implements ISimulationEngine {
                 double attenuation = 1.0 - (distDeg / impactRadius);
                 String type = evt.getType() != null ? evt.getType().toLowerCase() : "";
 
-                if (type.contains("volcano") || type.contains("nuclear") || type.contains("ice")) {
+                if (type.contains("nuclear") || type.contains("strike")) {
+                    NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() + mag * 0.15);
+                    double cooling = -0.6 * mag * attenuation;
+                    cell.setTemperature(Math.max(-50.0, (cell.getTemperature() != null ? cell.getTemperature() : 15.0) + cooling));
+                    if (cell.getPopulation() != null && cell.getPopulation() > 0) {
+                        int lost = (int) (cell.getPopulation() * (0.85 * attenuation));
+                        cell.setPopulation(Math.max(0, cell.getPopulation() - lost));
+                    }
+                    if (cell.getResourceCapital() != null) {
+                        cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * (1.0 - 0.70 * attenuation)));
+                    }
+                    if (cell.getFoodResource() != null) {
+                        cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.80 * attenuation)));
+                    }
+                    cell.setPollutionLevel(Math.min(1.0, (cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0) + 0.8 * attenuation));
+                } else if (type.contains("volcano") || type.contains("ice")) {
                     double cooling = -0.5 * mag * attenuation;
                     cell.setTemperature(Math.max(-50.0, (cell.getTemperature() != null ? cell.getTemperature() : 15.0) + cooling));
                 } else if (type.contains("earthquake") || type.contains("tsunami") || type.contains("meteor")) {

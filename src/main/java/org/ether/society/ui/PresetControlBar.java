@@ -385,7 +385,8 @@ public class PresetControlBar<T> extends VBox {
             markClean();
             return true;
         } else if (res.isPresent() && res.get() == btnDiscard) {
-            // Maintain visual dirty indication that the preset was modified but not saved
+            dirty = false;
+            trackingChanges = false;
             if (nameField != null) {
                 nameField.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
             }

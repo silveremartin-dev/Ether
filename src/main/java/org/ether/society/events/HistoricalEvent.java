@@ -8,6 +8,9 @@ package org.ether.society.events;
 /**
  * Represents a predefined historical event.
  */
-public record HistoricalEvent(int year, String title, String message) {
+public record HistoricalEvent(int year, String title, String message, double latitude, double longitude) {
+    public HistoricalEvent(int year, String title, String message) {
+        this(year, title, message, 0.0, 0.0);
+    }
 }
 

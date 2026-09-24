@@ -63,8 +63,12 @@ public class BiologicalDemographicsEngine {
             double carryingCapacity = Math.max(0.05, food / org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ);
             double stressRatio = (double) pop / carryingCapacity;
 
-            // Famine / Nutritional stress factor
-            double nutritionalStress = stressRatio > 1.0 ? Math.min(0.40, (stressRatio - 1.0) * 0.04) : 0.0;
+            // Famine / Nutritional stress factor (acute scaling with caloric deficit)
+            double nutritionalStress = 0.0;
+            if (stressRatio > 1.0) {
+                double deficit = 1.0 - (1.0 / stressRatio); // ranges from 0.0 (at K) to 1.0 (extreme deficit)
+                nutritionalStress = deficit * 0.20 + Math.pow(deficit, 3) * 2.50;
+            }
 
             // Altitude Hypoxia Hazard (HAPE/AMS above 3000m, death zone above 5500m)
             double epas1 = cell.getMovementFriction() != null ? Math.clamp(1.0 - (cell.getMovementFriction() / 3.0), 0.0, 1.0) : 0.05;
@@ -82,20 +86,17 @@ public class BiologicalDemographicsEngine {
 
             // Gompertz actuarial hazard rate for cohort mean age 30
             double hazardRate = calculateGompertzHazardRate(30.0, environmentalHazardGamma);
-
             double deathProb = 1.0 - Math.exp(-hazardRate * dt);
             double expectedDeaths = pop * deathProb;
-            int naturalDeaths = (int) expectedDeaths;
-            double fractionalDeath = expectedDeaths - naturalDeaths;
-            if (java.util.concurrent.ThreadLocalRandom.current().nextDouble() < fractionalDeath) {
-                naturalDeaths++;
-            }
-            naturalDeaths = Math.min(pop, naturalDeaths);
 
-            int finalPop = Math.max(0, pop - naturalDeaths);
+            double birthRate = cell.getFertility() != null && cell.getFertility() > 0 ? cell.getFertility() : 0.038;
+            double expectedBirths = pop * birthRate * dt;
+            int netChange = (int) Math.round(expectedBirths - expectedDeaths);
+
+            int finalPop = Math.max(0, pop + netChange);
             cell.setPopulation(finalPop);
             if (finalPop > 0) {
-                cell.updateAgePyramidFromTotal(cell.getTechnologyLevel() > 0 ? cell.getTechnologyLevel() : 1.0);
+                cell.updateAgePyramidFromTotal(cell.getTechnologyLevel() != null && cell.getTechnologyLevel() > 0 ? cell.getTechnologyLevel() : 1.0);
             }
         }
     }

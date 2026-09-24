@@ -1,0 +1,271 @@
+{
+  "epoch": -20000,
+  "era": "Last Glacial Maximum (LGM Climax) / Solutrean & Epigravettian Refugia",
+  "planet": "earth",
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "overview": {
+    "summary_fr": "Reconstitution cartographique et tensorielle globale de la Terre pour l'époque -20 000 BP (apogée du Dernier Maximum Glaciaire / LGM). Le niveau moyen des mers atteint son minimum eustatique (-125 à -130 m). Les inlandsis laurentidien, cordillérien et fennoscandien atteignent leur extension maximale, poussant les populations humaines vers des refuges climatiques méridionaux : le refuge franco-cantabrique (culture solutréenne : feuilles de laurier, propulseurs), les refuges méditerranéens (Épigravettien), le Levant (Kébarien), la Béringie non englacée, et les refuges subtropicaux d'Asie et d'Afrique. Les Amériques au sud des calottes glaciaires restent rigoureusement inhabitées.",
+    "summary_en": "Global cartographic and tensor reconstruction for the -20,000 BP epoch (Peak Last Glacial Maximum / LGM). Global eustatic sea level drops to its lowest level (-125 to -130m). Continental ice sheets reach maximum extent, forcing human populations into southern ecological refugia: Franco-Cantabrian (Solutrean: laurel-leaf bifaces, spearthrowers), Mediterranean/Balkans (Epigravettian), Levant (Kebaran), unglaciated Beringia, and subtropical African/Asian refuges. The Americas south of the ice sheets remain strictly uninhabited."
+  },
+  "layers": {
+    "elevation": {
+      "filename": "earth_-20000_elevation.png",
+      "category": "geophysics",
+      "data_sources": [
+        "NOAA ETOPO 2022 15-arc-second Global Relief Model",
+        "GEBCO 2023 Grid Bathymetric and Topographic Model",
+        "Peltier et al. (2015) ICE-6G_C GIA Reconstruction"
+      ],
+      "scientific_parameters_and_corrections": {
+        "eustatic_sea_level_offset_meters": -128.0,
+        "isostatic_depression_meters": -800.0,
+        "paleotopographic_features": "Doggerland fully terrestrial; Beringia land bridge >1200 km wide; Sunda and Sahul mega-continents at maximum land area."
+      },
+      "reconstitution_rationale": "Peak eustatic sea level drop of -128m exposing continental shelves worldwide."
+    },
+    "biomes": {
+      "filename": "earth_-20000_biomes.png",
+      "category": "ecology",
+      "data_sources": [
+        "CHELSA-Trace21k LGM Downscaled Paleobiomes",
+        "Ray & Adams (2001) LGM Global Biome Database"
+      ],
+      "scientific_parameters_and_corrections": {
+        "ice_sheet_extent_km2": 32000000,
+        "hyper_arid_deserts": "Massive expansion of Saharan, Arabian, and Gobi sand dunes",
+        "mammoth_steppe_refugia": "Continuous cold steppe across unglaciated Eurasia"
+      },
+      "reconstitution_rationale": "Extreme aridity and cold suppressing tropical forests and expanding desert/tundra belts."
+    },
+    "temperature": {
+      "filename": "earth_-20000_temperature.png",
+      "category": "climate",
+      "data_sources": [
+        "EPICA Dome C Antarctic Ice Core",
+        "NGRIP Greenland Ice Core",
+        "MARGO Project (2009) Glacial Sea Surface Temperature Synthesis"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_mean_surface_temp_celsius": 8.5,
+        "equatorial_cooling_celsius": -3.0,
+        "polar_cooling_celsius": -20.0
+      },
+      "reconstitution_rationale": "Coldest planetary state of the last 100,000 years (~6°C colder than pre-industrial)."
+    },
+    "precipitation": {
+      "filename": "earth_-20000_precipitation.png",
+      "category": "climate",
+      "data_sources": [
+        "EPICA Dust Influx Records",
+        "Global Speleothem δ18O Synthesis (Cheng et al. 2016)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_precipitation_reduction_percent": 40.0,
+        "monsoon_collapse": "Severe weakening of tropical convection and summer monsoons"
+      },
+      "reconstitution_rationale": "Widespread global continental desiccation and hyper-arid dust storms."
+    },
+    "seasonality": {
+      "filename": "earth_-20000_seasonality.png",
+      "category": "climate",
+      "data_sources": [
+        "Milankovitch Insolation Parameters at 20,000 BP (Laskar 2004)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "obliquity_degrees": 22.95,
+        "eccentricity": 0.0190
+      },
+      "reconstitution_rationale": "Extreme continental seasonality with brutally harsh winters."
+    },
+    "density": {
+      "filename": "earth_-20000_density.png",
+      "category": "demography",
+      "data_sources": [
+        "Tallavaara et al. (2015) 'Human population dynamics in Europe over the Last Glacial Maximum'",
+        "Bocquet-Appel et al. (2005) 'Estimates of Upper Palaeolithic meta-population in South-Western France'",
+        "HYDE 3.4 Archaeological Baseline"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_human_population_estimate": [100000, 250000],
+        "solutrean_refuge_density_hab_km2": [0.025, 0.055],
+        "epigravettian_refuge_density_hab_km2": [0.015, 0.035],
+        "kebaran_levant_density_hab_km2": [0.020, 0.045],
+        "strict_uninhabited_regions": [
+          "North America south of Laurentide ice sheet", "South America", "Mesoamerica", "Caribbean",
+          "Antarctica", "Greenland Ice Sheet", "Fennoscandia Ice Sheet", "Madagascar", "New Zealand"
+        ]
+      },
+      "reconstitution_rationale": "Pronounced demographic bottleneck with dense population clusters in southern micro-climatic refugia (Franco-Cantabria, Southern Italy, Balkans, Levant, Sundaland)."
+    },
+    "isogloss": {
+      "filename": "earth_-20000_isogloss.png",
+      "category": "linguistics",
+      "data_sources": [
+        "Nichols (1992) Linguistic Refugia Models",
+        "Glottolog Macrofamily Reconstructions"
+      ],
+      "scientific_parameters_and_corrections": {
+        "clades_separated": [
+          "Solutrean Western European Dialect Network (Franco-Cantabrian)",
+          "Epigravettian Mediterranean & Balkan Dialect Network",
+          "Kebaran / Early Afroasiatic Levantine Root",
+          "Proto-Beringian Standstill Lineage",
+          "African Late Stone Age Lineages",
+          "Australian Aboriginal Desert / Coastal Stocks"
+        ]
+      },
+      "reconstitution_rationale": "Fragmentation of language networks into isolated glacial refugia."
+    },
+    "sovereignty": {
+      "filename": "earth_-20000_sovereignty.png",
+      "category": "polity",
+      "data_sources": ["Gamble (1999)"],
+      "scientific_parameters_and_corrections": {
+        "state_formation_level": 0.0,
+        "refuge_territorial_defense": "High band density in river valleys with marked cave boundary markers"
+      },
+      "reconstitution_rationale": "Intensified territoriality within constrained refuge valleys (Dordogne, Cantabria)."
+    },
+    "kinship": {
+      "filename": "earth_-20000_kinship.png",
+      "category": "sociology",
+      "data_sources": ["Murdock EA", "Foley & Gamble (2009)"],
+      "scientific_parameters_and_corrections": {
+        "kinship_mode": "Exogamous alliance networks connecting neighboring refuge valleys"
+      },
+      "reconstitution_rationale": "Regional mating networks ensuring genetic viability across small refuge clusters."
+    },
+    "rituals": {
+      "filename": "earth_-20000_rituals.png",
+      "category": "culture",
+      "data_sources": [
+        "Cosquer Cave, Cussac Cave, Altamira Solutrean Layer",
+        "Leroi-Gourhan (1965) 'Préhistoire de l'art occidental'"
+      ],
+      "scientific_parameters_and_corrections": {
+        "symbolic_intensity_scale": 0.70,
+        "parietal_sanctuaries": "Deep cave painting sanctuaries with hand stencils and polychrome animal figures"
+      },
+      "reconstitution_rationale": "High symbolic explosion in deep limestone caves serving as ritual aggregation hubs."
+    },
+    "technology": {
+      "filename": "earth_-20000_technology.png",
+      "category": "technology",
+      "data_sources": [
+        "Smith (1966) 'The Solutrean Culture of Western Europe'",
+        "Invention of Spearthrower (Atlatl) and Pressure Flaking"
+      ],
+      "scientific_parameters_and_corrections": {
+        "technological_innovations": [
+          "Pressure-flaked laurel-leaf and willow-leaf bifacial points",
+          "Spearthrower (Atlatl) increasing projectile kinetic range by 3x",
+          "Bone eyed needles and tailored waterproof hide garments",
+          "Early ceramic experimentation in Southern China (Xianrendong)"
+        ]
+      },
+      "reconstitution_rationale": "Apex of Paleolithic lithic craftsmanship and mechanical projectile propulsion."
+    },
+    "institutional": {
+      "filename": "earth_-20000_institutional.png",
+      "category": "institutions",
+      "data_sources": ["Carneiro Scale Level 0"],
+      "scientific_parameters_and_corrections": {"institutional_complexity_score": 0.04},
+      "reconstitution_rationale": "Egalitarian bands with specialized master knappers and ritual leaders."
+    },
+    "ecological": {
+      "filename": "earth_-20000_ecological.png",
+      "category": "environment",
+      "data_sources": ["Ellis et al. (2021)"],
+      "scientific_parameters_and_corrections": {"refuge_hunting_pressure": "Concentrated hunting of reindeer, horse, and ibex in refuge valleys"},
+      "reconstitution_rationale": "Intensive exploitation of cold-adapted herd fauna."
+    },
+    "pathogen": {
+      "filename": "earth_-20000_pathogen.png",
+      "category": "epidemiology",
+      "data_sources": ["Wolfe et al. (2007)"],
+      "scientific_parameters_and_corrections": {"pathogen_pressure": "Suppressed globally by glacial hyper-aridity and cold"},
+      "reconstitution_rationale": "Minimum historical pathogen transmission due to low global demographic density."
+    },
+    "tradenetwork": {
+      "filename": "earth_-20000_tradenetwork.png",
+      "category": "economy",
+      "data_sources": ["Féblot-Augustins (1997)"],
+      "scientific_parameters_and_corrections": {
+        "max_exchange_distance_km": 400,
+        "traded_materials": ["Bergerac flint", "Atlantic marine shells", "Pyrenean chert"]
+      },
+      "reconstitution_rationale": "Dense raw material exchange between Franco-Cantabrian valleys."
+    },
+    "aquifers": {
+      "filename": "earth_-20000_aquifers.png",
+      "category": "resources",
+      "data_sources": ["UNESCO WHYMAP"],
+      "scientific_parameters_and_corrections": {"fossil_storage_fullness": 1.0},
+      "reconstitution_rationale": "100% pristine virgin water tables."
+    },
+    "coal": {
+      "filename": "earth_-20000_coal.png",
+      "category": "resources",
+      "data_sources": ["USGS World Coal Inventory"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "100% untouched coal reserves."
+    },
+    "oil": {
+      "filename": "earth_-20000_oil.png",
+      "category": "resources",
+      "data_sources": ["USGS Petroleum Assessment"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "100% virgin hydrocarbons."
+    },
+    "gas": {
+      "filename": "earth_-20000_gas.png",
+      "category": "resources",
+      "data_sources": ["USGS Global Gas Survey"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "100% untouched gas fields."
+    },
+    "iron_copper": {
+      "filename": "earth_-20000_iron_copper.png",
+      "category": "resources",
+      "data_sources": ["USGS MRDS"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "100% virgin metallic ores."
+    },
+    "precious_metals": {
+      "filename": "earth_-20000_precious_metals.png",
+      "category": "resources",
+      "data_sources": ["USGS MRDS Placers"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "Intact placer gold and silver deposits."
+    },
+    "uranium": {
+      "filename": "earth_-20000_uranium.png",
+      "category": "resources",
+      "data_sources": ["IAEA NFCIS"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "Untouched uranium deposits."
+    },
+    "rare_earths": {
+      "filename": "earth_-20000_rare_earths.png",
+      "category": "resources",
+      "data_sources": ["USGS REE Global Database"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "Untouched carbonatite and alkaline complexes."
+    },
+    "geothermal": {
+      "filename": "earth_-20000_geothermal.png",
+      "category": "geophysics",
+      "data_sources": ["IHFC Davies 2013"],
+      "scientific_parameters_and_corrections": {"crustal_heat_flow_mW_m2": [40.0, 120.0]},
+      "reconstitution_rationale": "Crustal mantle heat flow."
+    },
+    "helium3": {
+      "filename": "earth_-20000_helium3.png",
+      "category": "resources",
+      "data_sources": ["Solar Wind Volatiles Model"],
+      "scientific_parameters_and_corrections": {"terrestrial_baseline_ppb": 0.0},
+      "reconstitution_rationale": "Terrestrial atmospheric screening."
+    }
+  }
+}

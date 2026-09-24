@@ -212,15 +212,7 @@ public class MainView extends StackPane {
             if (newTab == comparativeAnalyticsTab && comparativeAnalyticsPanel != null) {
                 comparativeAnalyticsPanel.refreshRunList();
             }
-            if (newTab == resourcesTab && planetGeneratorPanel != null) {
-                resourcePanel.setActivePlanetPreset(planetGeneratorPanel.buildPresetFromUI());
-            }
             if (newTab == setupTab && setupPanel != null) {
-                if (resourcePanel != null) {
-                    org.ether.society.procedural.PlanetPreset activePlanet = resourcePanel.getActivePlanetPreset();
-                    org.ether.society.model.EcologyPreset activeEco = resourcePanel.getSelectedEcologyPreset();
-                    setupPanel.setInheritedContext(activePlanet, activeEco != null ? activeEco.name() : null);
-                }
                 setupPanel.ensurePreviewGeneratedIfNeeded();
             }
         });
@@ -296,7 +288,7 @@ public class MainView extends StackPane {
         notificationOverlay = new NotificationOverlay();
         notificationOverlay.setPickOnBounds(false);
         notificationOverlay.setMaxSize(javafx.scene.layout.Region.USE_PREF_SIZE, javafx.scene.layout.Region.USE_PREF_SIZE);
-        StackPane.setAlignment(notificationOverlay, Pos.BOTTOM_CENTER);
+        StackPane.setAlignment(notificationOverlay, Pos.BOTTOM_LEFT);
         mapStack.getChildren().add(notificationOverlay);
 
         if (controlPanel != null) {
@@ -510,9 +502,10 @@ public class MainView extends StackPane {
                     statsPanel.resetChartSeries();
                 }
 
-                simulationTab.setDisable(false);
-                tabPane.getSelectionModel().select(simulationTab);
-                logger.info("Simulation tab activated via snapshot restore");
+                // Move systematically from Tab 3 to Tab 4 (Execution Context) for review
+                executionContextTab.setDisable(false);
+                tabPane.getSelectionModel().select(executionContextTab);
+                logger.info("Transitioned to Execution Context Tab (4) following snapshot restore for review before launch");
                 return;
             }
         }
@@ -726,10 +719,8 @@ public class MainView extends StackPane {
                 boolean isRecording = mapCanvas != null && mapCanvas.isRecordingVideo();
                 long currentTick = h3Engine.getTickCounter();
 
-                int year = engine.getTimeManager().getCurrentYear();
-                int month = engine.getTimeManager().getCurrentMonth();
-                int day = engine.getTimeManager().getCurrentDay();
-                String dateStr = String.format("An %d - M.%02d D.%02d", year, month + 1, day);
+                double resDays = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getTemporalResolutionDays() : 1.0;
+                String dateStr = engine.getTimeManager().formatContextualDate(resDays);
 
                 if (isRecording && mapCanvas != null) {
                     mapCanvas.setCurrentDateStr(dateStr);

@@ -1,6 +1,7 @@
 {
   "epoch": -100000,
-  "description": "Cliodynamic Cultural & Linguistic Registry for -100,000 BP (Out-of-Africa / MIS 5c-d Inception)",
+  "era": "Late Pleistocene / MIS 5c-d Transition (Early Out-of-Africa Inception)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for -100,000 BP",
   "encoding": "ID_RGB_24BIT",
   "traitDimensions": [
     "linguisticBranch",
@@ -8,6 +9,42 @@
     "subsistenceMode",
     "ritualTradition"
   ],
+  "globalDemographics": {
+    "totalWorldPopulationRange": [85000, 150000],
+    "homininSpecies": {
+      "homoSapiens": {
+        "sharePercent": 65.0,
+        "focalRegions": ["Sub-Saharan Africa", "Nile Valley", "Maghreb", "Levant", "Southern Arabia"],
+        "meanCarryingCapacityHabKm2": 0.035,
+        "dailyCaloricRequirementKcal": 2400,
+        "socialOrganization": "Bilateral exogamous forager multi-band networks (50-150 individuals)",
+        "archaeologicalHearths": ["Omo Kibish", "Herto", "Jebel Irhoud", "Blombos", "Klasies River", "Skhul", "Qafzeh", "Jebel Faya"]
+      },
+      "homoNeanderthalensis": {
+        "sharePercent": 20.0,
+        "focalRegions": ["Western & Southern Europe", "Crimea", "Caucasus", "Zagros Mountains", "Levant"],
+        "meanCarryingCapacityHabKm2": 0.010,
+        "dailyCaloricRequirementKcal": 4500,
+        "socialOrganization": "Small patrilocal kin-groups with high genetic inbreeding (15-30 individuals)",
+        "archaeologicalHearths": ["La Ferrassie", "Neander Valley", "Gorham's Cave", "Atapuerca", "Krapina", "Shanidar", "Bisitun"]
+      },
+      "denisovansAndArchaicClades": {
+        "sharePercent": 15.0,
+        "focalRegions": ["Altai Mountains", "Tibetan Plateau", "Northern China", "Indochina", "Sundaland"],
+        "meanCarryingCapacityHabKm2": 0.014,
+        "dailyCaloricRequirementKcal": 3200,
+        "socialOrganization": "Cold-adapted & tropical forest nomadic foraging bands (20-50 individuals)",
+        "archaeologicalHearths": ["Denisova Cave", "Baishiya Karst Cave", "Nihewan", "Narmada Valley", "Tam Pa Ling", "Ngandong"]
+      }
+    },
+    "strictlyUninhabitedContinentsAndIslands": [
+      "North America", "South America", "Mesoamerica", "Caribbean Archipelagos",
+      "Australia (Sahul)", "New Guinea", "Tasmania", "New Zealand",
+      "Madagascar", "Mascarene Islands (Mauritius, Réunion)", "Seychelles",
+      "Antarctica", "Iceland", "Polynesia / Micronesia / Melanesia",
+      "Atlantic isolated archipelagos (Canaries, Azores, Cape Verde, Madeira, St Helena, Ascension)"
+    ]
+  },
   "entities": [
     {
       "id": "sapiens_african_core",
@@ -21,8 +58,11 @@
         "es": "Dialectos Proto-Sapiens Centrales (África subsahariana)",
         "zh": "智人核心方言群（撒哈拉以南非洲）"
       },
+      "species": "Homo sapiens",
       "kinshipType": "Bilateral / Multi-Band Forager",
-      "lithicTechnocomplex": "Middle Stone Age (MSA / Mode 3)"
+      "lithicTechnocomplex": "Middle Stone Age (MSA / Mode 3)",
+      "ecologicalNiche": "Savanna, tropical woodland & coastal foraging",
+      "caloricIntakePerCapitaKcal": 2350
     },
     {
       "id": "sapiens_east_horn",
@@ -36,8 +76,11 @@
         "es": "Linajes Sapiens del Cuerno y Rift (Omo / Herto)",
         "zh": "智人裂谷与非洲之角谱系（奥莫/赫托）"
       },
+      "species": "Homo sapiens",
       "kinshipType": "Bilateral Forager Bands",
-      "lithicTechnocomplex": "MSA Advanced Bladelet & Ochre"
+      "lithicTechnocomplex": "MSA Advanced Bladelet & Ochre",
+      "ecologicalNiche": "Rift Valley lacustrine & riverine hunting/gathering",
+      "caloricIntakePerCapitaKcal": 2400
     },
     {
       "id": "sapiens_out_of_africa_pioneers",
@@ -51,8 +94,11 @@
         "es": "Pioneros Salida de África (Sinaí / Levante Skhul-Qafzeh y Jebel Faya)",
         "zh": "出非洲先锋群体（西奈/黎凡特斯库尔-卡夫泽与法亚）"
       },
+      "species": "Homo sapiens",
       "kinshipType": "Pioneer Coastal Dispersal Bands",
-      "lithicTechnocomplex": "Early Levant Middle Paleolithic & Arabian Nubian Complex"
+      "lithicTechnocomplex": "Early Levant Middle Paleolithic & Arabian Nubian Complex",
+      "ecologicalNiche": "Semi-arid oasis & coastal marine gathering",
+      "caloricIntakePerCapitaKcal": 2500
     },
     {
       "id": "neanderthal_western_mousterian",
@@ -66,8 +112,11 @@
         "es": "Musteriense Occidental Clásico (Europa e Iberia)",
         "zh": "西欧经典莫斯特文化（欧洲与伊比利亚）"
       },
+      "species": "Homo neanderthalensis",
       "kinshipType": "Patrilocal Small Neanderthal Clades",
-      "lithicTechnocomplex": "Mousterian of Acheulean Tradition / Levallois Flakes"
+      "lithicTechnocomplex": "Mousterian of Acheulean Tradition / Levallois Flakes",
+      "ecologicalNiche": "Periglacial mammoth steppe & temperate woodland hunting",
+      "caloricIntakePerCapitaKcal": 4600
     },
     {
       "id": "neanderthal_zagros_shanidar",
@@ -81,8 +130,11 @@
         "es": "Musteriense de Zagros y Oriente Próximo (Shanidar / Bisitún / Anatolia)",
         "zh": "扎格罗斯与近东莫斯特文化（沙尼达尔/贝希斯敦/安纳托利亚）"
       },
+      "species": "Homo neanderthalensis",
       "kinshipType": "Zagros Highland Cave Kin-Groups",
-      "lithicTechnocomplex": "Zagros Mousterian Point / Side-Scraper Complex"
+      "lithicTechnocomplex": "Zagros Mousterian Point / Side-Scraper Complex",
+      "ecologicalNiche": "Highland plateau & mountain karst valley hunting",
+      "caloricIntakePerCapitaKcal": 4200
     },
     {
       "id": "denisovan_altai_siberian",
@@ -96,8 +148,11 @@
         "es": "Denisovanos de Altái y Linajes Arcaicos Siberianos",
         "zh": "阿尔泰丹尼索瓦人与西伯利亚古老谱系"
       },
+      "species": "Denisova hominin / Archaic Asian",
       "kinshipType": "Cold-Adapted Steppe Foragers",
-      "lithicTechnocomplex": "Altai Middle Paleolithic Laminar Complex"
+      "lithicTechnocomplex": "Altai Middle Paleolithic Laminar Complex",
+      "ecologicalNiche": "High-altitude cold steppe & subarctic taiga",
+      "caloricIntakePerCapitaKcal": 3800
     },
     {
       "id": "eastern_archaic_sunda",
@@ -111,8 +166,11 @@
         "es": "Homínidos Arcaicos de Asia Oriental y Sondalandia (Erectus tardío / Denisovanos)",
         "zh": "东亚与巽他古人类群（晚期直立人/丹尼索瓦支系）"
       },
+      "species": "Late Homo erectus / Sundaland Denisovan clades",
       "kinshipType": "Tropical Forest & Bamboo Technocomplex Bands",
-      "lithicTechnocomplex": "East Asian Core-and-Flake / Chopper Industry"
+      "lithicTechnocomplex": "East Asian Core-and-Flake / Chopper Industry",
+      "ecologicalNiche": "Tropical rainforest, mangrove & riverine gathering",
+      "caloricIntakePerCapitaKcal": 2200
     }
   ]
 }

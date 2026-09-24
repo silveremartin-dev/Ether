@@ -207,7 +207,7 @@ public class ProceduralGenerator {
                 throw new java.util.concurrent.CancellationException("Planet generation thread interrupted");
             }
             PlanetPoint p = getPlanetPoint(cell.getLatitude(), cell.getLongitude(), preset);
-            cell.setElevation(p.elevation());
+            cell.setElevation(p.elevationMeters());
             cell.setTemperature(p.temperature());
             cell.setRainfall(p.rainfall());
             cell.setBiome(p.biome());

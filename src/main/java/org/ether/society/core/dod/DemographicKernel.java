@@ -122,54 +122,76 @@ public class DemographicKernel {
                 energy[i] = Math.max(0.0f, energy[i] - 15.0f * (1.0f - foodSatisfaction));
             }
             
-            // --- Cycle Naissances / Décès ---
-            // Fécondité biologique dépendante de l'âge de la cohorte (Wood 1994, Coale-Trussell)
-            // 0% avant 15 ans et après 48 ans (ménopause), pic reproductif entre 20 et 35 ans
-            float ageFecundity;
-            if (ageYears < 15.0f || ageYears >= 48.0f) {
-                ageFecundity = 0.0f; // Infécondité infantile & post-ménopause stricte
-            } else if (ageYears >= 20.0f && ageYears <= 35.0f) {
-                ageFecundity = 1.0f; // Fenêtre optimale de fertilité
-            } else if (ageYears < 20.0f) {
-                ageFecundity = (ageYears - 15.0f) / 5.0f; // Transition adolescente (15-20 ans)
+            // --- Cycle Naissances / Décès & Modèle Démographique Physique ---
+            // 1. Âge au premier enfant (Primiparité) & Structure d'âge continue (Lotka)
+            // L'âge au premier enfant varie de 14 ans (sociétés traditionnelles/pionnières hyper-fertiles)
+            // à plus de 30 ans (mariage tardif, haute technologie / éducation).
+            float[][] culture = agents.getCulture();
+            float kinshipNatalism = (culture != null && culture.length > 1 && culture[1] != null) ? Math.clamp(culture[1][i], 0.0f, 1.0f) : 0.5f;
+            float primiparityAge = (float) (org.ether.society.model.PhysicalConstants.HUMAN_MIN_PRIMIPARITY_AGE_YEARS 
+                    + 10.0f * (1.0f - kinshipNatalism) 
+                    + 6.0f * Math.tanh(tech / 80.0f));
+            float peakFertilityAge = primiparityAge + 8.0f;
+
+            float fecundityAgeFactor;
+            if (ageYears < primiparityAge - 1.5f) {
+                fecundityAgeFactor = 0.0f; // Infécondité avant l'âge de primiparité / puberté
             } else {
-                ageFecundity = Math.max(0.0f, (48.0f - ageYears) / 13.0f); // Déclin préménopause (35-48 ans)
+                fecundityAgeFactor = (float) Math.exp(-Math.pow(ageYears - peakFertilityAge, 2) / (2.0f * Math.pow(13.0f, 2)));
             }
 
-            // Taux de natalité annuel effectif (3.5% à 6% en âge fertile optimal selon l'énergie)
-            float baseFertility = (energy[i] > 50.0f ? 0.055f : 0.020f);
-            float fertility = baseFertility * ageFecundity;
-            float newBirths = m * fertility * dtInYears;
+            // 2. Facteur bio-énergétique / nutritionnel (ovulation et état physiologique)
+            float nutritionalFactor = (float) Math.clamp(0.15f + 0.85f * (energy[i] / 75.0f) * foodSatisfaction, 0.05f, 1.25f);
+
+            // 3. Modulation culturelle de natalité (Tenseur Culturel dimension 1: Parenté & Pro-natalisme)
+            float culturalFertilityMultiplier = 0.35f + 1.30f * kinshipNatalism; // Permet un TFR de ~1.5 à 8.5+ selon la culture
+
+            // 4. Rétroaction densité-dépendante malthusienne (N / K)
+            float carryingCapacity = Math.max(0.05f, food[hIdx] / (float) org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ);
+            float malthusianPressure = m / carryingCapacity;
+            float densityFeedback = (float) (1.0 / (1.0 + Math.pow(malthusianPressure, 2)));
+
+            // 5. Taux brut de natalité annuel effectif (maximum biologique unconstrained ~6.5% / an)
+            float maxBiologicalFertility = 0.065f;
+            float birthRate = maxBiologicalFertility * fecundityAgeFactor * nutritionalFactor * culturalFertilityMultiplier * densityFeedback;
+            float newBirths = m * birthRate * dtInYears;
             births[i] = newBirths;
 
-            // Mortalité infantile physique (1.5% à 25% selon le stock de capital physique K/m, l'eau et la nutrition)
-            // Le niveau technologique reste un simple observable dérivé du capital et de l'entropie
+            // 6. Prélèvement bioénergétique maternel de reproduction (Gestation + Allaitement : 0.80 GJ / naissance)
+            float reproductionMetabolicLoad = (float) (newBirths * org.ether.society.model.PhysicalConstants.HUMAN_GESTATION_LACTATION_ENERGY_GJ);
+            float reproductionFoodTaken = Math.min(food[hIdx], reproductionMetabolicLoad);
+            food[hIdx] -= reproductionFoodTaken;
+            world.getEnergyFoodConsumed()[hIdx] += reproductionFoodTaken;
+
+            // 7. Mortalité infantile physique (fonction du capital K/m, de l'assainissement, de l'eau et de la nutrition)
             float capitalPerCapita = m > 0.001f ? (world.getResourceCapital()[hIdx] / m) : 0.0f;
             float waterSecurity = world.getWaterResource()[hIdx] > 10.0f ? 1.0f : 0.3f;
             float hygieneFactor = (float) Math.exp(-capitalPerCapita / 50.0f); // 1.0 (paléolithique) -> 0.0 (sanitaire moderne)
-            float infantMortalityRate = Math.clamp(0.015f + 0.20f * hygieneFactor * (2.0f - foodSatisfaction) * (2.0f - waterSecurity), 0.015f, 0.45f);
+            float infantMortalityRate = Math.clamp(0.015f + 0.25f * hygieneFactor * (1.5f - 0.5f * foodSatisfaction) * (1.5f - 0.5f * waterSecurity), 0.015f, 0.50f);
             float survivingNewborns = newBirths * (1.0f - infantMortalityRate);
+            float nonSurvivingInfants = newBirths - survivingNewborns; // Dépense calorique investie dissipée en pure perte (entropie)
 
-            // Taux de mortalité adulte/sénescente annuel (Loi de Gompertz-Makeham + famine)
-            float baseMortality = 0.015f; // 1.5% baseline
-            float ageMortality = (float) (Math.pow(ageYears / 75.0f, 3.5) * 0.04f); // Sénescence
-            float starvationMortality = (energy[i] < 20.0f ? 0.15f * (1.0f - energy[i] / 20.0f) : 0.0f);
-            
-            float annualMortality = Math.min(0.95f, baseMortality + ageMortality + starvationMortality);
-            float adultDeaths = m * annualMortality * dtInYears;
-            float totalDeaths = adultDeaths + (newBirths - survivingNewborns);
+            // 8. Mortalité adulte/sénescente (Loi actuarielle de Gompertz-Makeham + aléas physiques et famines)
+            float gompertzSenescence = (float) (0.0001f * Math.exp(0.08f * ageYears));
+            float acuteDeficit = Math.max(0.0f, 1.0f - foodSatisfaction);
+            float starvationMortality = (acuteDeficit > 0.3f ? 0.35f * (acuteDeficit - 0.3f) : 0.0f)
+                    + (energy[i] < 25.0f ? 0.45f * (1.0f - energy[i] / 25.0f) : 0.0f);
+            float baselineHazard = 0.012f;
+            float adultMortalityRate = Math.clamp(baselineHazard + gompertzSenescence + starvationMortality, 0.01f, 0.98f);
+            float adultDeaths = m * adultMortalityRate * dtInYears;
+            float totalDeaths = adultDeaths + nonSurvivingInfants;
             deaths[i] = totalDeaths;
 
-            // Solde démographique net de la cohorte
+            // 9. Solde démographique net de la cohorte
             float newMass = m + survivingNewborns - adultDeaths;
             mass[i] = Math.max(0.0f, newMass);
 
-            // Dynamique de renouvellement générationnel de l'âge moyen :
-            // Les nouveau-nés survivants entrent strictement à l'âge 0.0f (0 * survivingNewborns), rajeunissant la cohorte.
+            // 10. Dynamique de renouvellement continu de l'âge moyen (conservation des personnes-années) :
+            // Les nouveau-nés survivants entrent strictement à l'âge 0.0f (0 * survivingNewborns), renouvelant la population.
             if (newMass > minMassThreshold) {
                 float survivingMass = Math.max(0.0f, m - adultDeaths);
                 float updatedMeanAge = (ageYears * survivingMass + 0.0f * survivingNewborns) / newMass;
-                age[i] = Math.max(0.0f, Math.min(95.0f, updatedMeanAge));
+                age[i] = Math.max(0.0f, updatedMeanAge);
             }
 
             // Accumulation dans la biomasse humaine de la cellule H3

@@ -4,6 +4,7 @@ import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -66,10 +67,20 @@ public class HistoryManager {
          history.addSnapshot(snapshot);
      }
 
+    private int maxSnapshots = 2000;
+
+    public int getMaxSnapshots() {
+        return maxSnapshots;
+    }
+
+    public void setMaxSnapshots(int maxSnapshots) {
+        this.maxSnapshots = Math.max(10, maxSnapshots);
+    }
+
     /**
-     * Capture a full world state snapshot for replay (bounded ring buffer).
+     * Capture a full world state snapshot for replay (high-capacity buffer with smart decimation).
      */
-    public void captureWorldSnapshot(H3SimulationEngine engine) {
+    public synchronized void captureWorldSnapshot(H3SimulationEngine engine) {
         if (engine.getCells() == null || engine.getCells().isEmpty()) return;
         long tickIndex = engine.getTimeManager().getTotalTicks();
         
@@ -77,27 +88,65 @@ public class HistoryManager {
             .map(H3Cell::snapshot)
             .collect(Collectors.toList());
             
-        // Ring buffer: keep max 24 snapshots in memory to prevent excessive RAM pressure
-        if (worldSnapshots.size() >= 24) {
-            worldSnapshots.pollFirstEntry();
+        // If exceeding max snapshots, thin out older snapshots by removing alternate entries in the first half
+        if (worldSnapshots.size() >= maxSnapshots) {
+            List<Long> keys = new ArrayList<>(worldSnapshots.keySet());
+            int half = keys.size() / 2;
+            for (int i = 1; i < half; i += 2) {
+                worldSnapshots.remove(keys.get(i));
+            }
+            if (worldSnapshots.size() >= maxSnapshots) {
+                worldSnapshots.pollFirstEntry();
+            }
         }
         worldSnapshots.put(tickIndex, snapshot);
     }
 
-    public List<H3Cell> getWorldSnapshot(long tickIndex) {
+    public synchronized List<H3Cell> getWorldSnapshot(long tickIndex) {
         return worldSnapshots.get(tickIndex);
     }
     
-    public NavigableMap<Long, List<H3Cell>> getWorldSnapshots() {
+    public synchronized NavigableMap<Long, List<H3Cell>> getWorldSnapshots() {
         return worldSnapshots;
     }
 
-    public void truncateAfter(int year, int month, long tick) {
+    public synchronized int getSnapshotCount() {
+        return worldSnapshots.size();
+    }
+
+    public synchronized Long getMinTick() {
+        return worldSnapshots.isEmpty() ? null : worldSnapshots.firstKey();
+    }
+
+    public synchronized Long getMaxTick() {
+        return worldSnapshots.isEmpty() ? null : worldSnapshots.lastKey();
+    }
+
+    public synchronized Long getTickByIndex(int index) {
+        if (worldSnapshots.isEmpty() || index < 0 || index >= worldSnapshots.size()) return null;
+        return new ArrayList<>(worldSnapshots.keySet()).get(index);
+    }
+
+    public synchronized List<H3Cell> getSnapshotByIndex(int index) {
+        Long tick = getTickByIndex(index);
+        return tick != null ? worldSnapshots.get(tick) : null;
+    }
+
+    public synchronized List<H3Cell> getNearestSnapshot(long targetTick) {
+        if (worldSnapshots.isEmpty()) return null;
+        Long floor = worldSnapshots.floorKey(targetTick);
+        Long ceiling = worldSnapshots.ceilingKey(targetTick);
+        if (floor == null) return worldSnapshots.get(ceiling);
+        if (ceiling == null) return worldSnapshots.get(floor);
+        return (targetTick - floor <= ceiling - targetTick) ? worldSnapshots.get(floor) : worldSnapshots.get(ceiling);
+    }
+
+    public synchronized void truncateAfter(int year, int month, long tick) {
         history.truncateAfter(year, month);
         worldSnapshots.tailMap(tick, false).clear();
     }
 
-    public void reset() {
+    public synchronized void reset() {
         history.clear();
         worldSnapshots.clear();
     }

@@ -131,16 +131,20 @@ public class RealDataLoader {
      * Replace with actual SRTM data reading.
      */
     private double calculateSyntheticElevation(double lat, double lng) {
-        // Simple mountain range simulation
-        // Alps around lat 46, Pyrenees around lat 42
-        double alpsFactor = Math.exp(-Math.pow((lat - 46) / 5, 2));
-        double pyreneesFactor = Math.exp(-Math.pow((lat - 42) / 3, 2));
+        // Realistic mountain range simulation (Alps at lat 46.5, lng 9.0; Pyrenees at lat 42.6, lng 0.5; Massif Central at lat 45.5, lng 3.0)
+        double dAlps = Math.hypot((lat - 46.5) * 1.2, (lng - 9.0) * 0.8);
+        double dPyr = Math.hypot((lat - 42.6) * 1.5, (lng - 0.5) * 1.0);
+        double dMC = Math.hypot((lat - 45.5) * 1.2, (lng - 3.0) * 1.2);
 
-        double baseElevation = 200; // Sea level average
-        double mountainHeight = alpsFactor * 2000 + pyreneesFactor * 1500;
+        double alpsHeight = 3200.0 * Math.exp(-Math.pow(dAlps / 2.2, 2));
+        double pyrHeight = 2400.0 * Math.exp(-Math.pow(dPyr / 1.5, 2));
+        double mcHeight = 1200.0 * Math.exp(-Math.pow(dMC / 1.0, 2));
 
-        // Add some noise
-        double noise = Math.sin(lat * 10) * Math.cos(lng * 10) * 100;
+        double baseElevation = 120.0; // Sea level plain average (France / Germany lowlands)
+        double mountainHeight = alpsHeight + pyrHeight + mcHeight;
+
+        // Add small local relief noise
+        double noise = Math.sin(lat * 10) * Math.cos(lng * 10) * 30.0;
 
         return Math.max(0, baseElevation + mountainHeight + noise);
     }

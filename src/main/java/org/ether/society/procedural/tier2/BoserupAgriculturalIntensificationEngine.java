@@ -72,12 +72,16 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
             if (density > 50.0) {
                 // High density forces multi-cropping / terrace irrigation (Stage 4)
                 cell.setBiomassAgriculture(agriBiomass + (agriBiomass * 0.04 * deltaYears));
+                double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+                cell.setTechnologyLevel(Math.min(10.0, tech + 0.005 * deltaYears));
                 // High labor demand absorbs work capacity
                 double work = cell.getResourceWork() != null ? cell.getResourceWork() : 50.0;
                 cell.setResourceWork(Math.max(10.0, work * 0.98));
             } else if (density > 10.0) {
                 // Moderate density: Annual cropping / draft animals (Stage 3)
                 cell.setBiomassAgriculture(agriBiomass + (agriBiomass * 0.02 * deltaYears));
+                double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+                cell.setTechnologyLevel(Math.min(10.0, tech + 0.002 * deltaYears));
             }
         }
     }

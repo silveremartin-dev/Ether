@@ -235,10 +235,23 @@ Ether decouples numerical integration across three discrete physical time scales
   Mortality escalation: $M_{\text{heat}} = \max\left(0, \frac{T_w - 31.0}{35.0 - 31.0}\right)^3$. If $T_w \ge 35^\circ\text{C}$, survival without air conditioning is $< 6$ hours.
 - **Complexity**: $O(1)$ per cell.
 
-#### 25. Kleiber 3/4 Scaling & Gompertz-Makeham Demographics (`BiologicalDemographicsEngine`, `ProceduralPopulationEngine`)
+#### 25. Kleiber 3/4 Scaling, Primiparity & Gompertz-Makeham Demographics (`DemographicKernel`, `BiologicalDemographicsEngine`, `ProceduralPopulationEngine`)
 - **Governing Equations**:
-  $$B = B_0 M^{3/4}, \quad \mu(a) = \alpha_{\text{makeham}} + \beta_{\text{gompertz}} \cdot \exp(\gamma a)$$
-  Cohort population aging: $N(a+1, t+1) = N(a, t) \cdot (1 - \mu(a))$.
+  - **Metabolic Baseline**: $B = B_0 M^{3/4}$ with standard human metabolic consumption $E_{\text{metabolic}} = 3.362\text{ GJ/capita/yr}$.
+  - **Age at First Child (Primiparity)**:
+    $$a_{\text{primiparity}} = 14.0 + 10.0 \cdot (1.0 - C_{\text{kinship}}) + 6.0 \cdot \tanh\left(\frac{T}{80.0}\right)$$
+    Ranges from 14–16 years in traditional high-natalist pioneer societies to 30+ years in delayed-marriage or high-tech societies.
+  - **Lotka Reproductive Structure**:
+    $$\Phi_{\text{age}}(\bar{a}) = \begin{cases} 0 & \text{if } \bar{a} < a_{\text{primiparity}} - 1.5 \\ \exp\left( - \frac{(\bar{a} - (a_{\text{primiparity}} + 8.0))^2}{2 \cdot 13.0^2} \right) & \text{otherwise} \end{cases}$$
+  - **Crude Birth Rate**:
+    $$b = b_{\text{max}} \cdot \Phi_{\text{age}}(\bar{a}) \cdot F_{\text{nutritional}}(E) \cdot (0.35 + 1.30 C_{\text{kinship}}) \cdot \frac{1}{1 + (N/K)^2}$$
+  - **Maternal Bioenergetic Cost & Infant Mortality Dissipation**:
+    $$E_{\text{reproduction}} = B_{\text{gross}} \cdot E_{\text{birth\_cost\_GJ}} \quad (E_{\text{birth\_cost\_GJ}} = 0.80\text{ GJ/birth})$$
+    $$\Delta E_{\text{waste}} = D_{\text{infant}} \cdot E_{\text{birth\_cost\_GJ}} = (B_{\text{gross}} - B_{\text{surviving}}) \cdot 0.80\text{ GJ}$$
+    Quantifies entropic metabolic loss in high-fertility / high-mortality pre-modern regimes ($r$-selection, e.g. 8 births, 4 infant deaths) vs efficient high-investment regimes ($K$-selection, 2 births, 2 surviving).
+  - **Actuarial Mortality**: $\mu(a) = \alpha_{\text{makeham}} + \beta_{\text{gompertz}} \cdot \exp(\gamma a) + \mu_{\text{starvation}}$.
+  - **Dynamic Mean Age Renewal**:
+    $$\bar{a}_{t+dt} = \frac{\bar{a}_t \cdot (M - D_{\text{adult}}) + 0 \cdot B_{\text{surviving}}}{M + B_{\text{surviving}} - D_{\text{total}}} + dt$$
 - **Complexity**: $O(\text{cohorts}) = O(1)$ per cell.
 
 #### 26. Kimura Neutral Genetic Drift & Wright-Fisher SDE (`GeneticAdaptationEngine`)
@@ -604,10 +617,23 @@ Ether decouples numerical integration across three discrete physical time scales
   $$\text{Leverage} = \frac{\text{Assets}}{\text{Equity}}, \quad \frac{d \text{Debt}}{dt} = r \cdot \text{Debt} - \text{Repayment}$$
 - **Complexity**: $O(1)$ per financial node.
 
-#### 93. Thermodynamic Warfare & Combat Enthalpy (`ThermodynamicWarfareEngine`, `WarDiplomacyEngine`)
+#### 93. Thermodynamic Warfare, Violence & Structural Demographics (`ThermodynamicWarfareEngine`, `WarDiplomacyEngine`, `TurchinGoldstoneSDTEngine`, `GranovetterThresholdCascadeEngine`)
 - **Governing Equations**:
-  $$\frac{d A}{dt} = -k_b B \cdot \text{EnthalpyRatio}, \quad \frac{d B}{dt} = -k_a A \cdot \text{EnthalpyRatio}$$
-- **Complexity**: $O(1)$ per conflict zone.
+  - **Kinetic Energy Delivery & Fortification Breaching**:
+    $$P_{\text{kinetic}} = N_{\text{pop}} \cdot \left( 50.0 + \min(T, 150)^{2.2} \cdot 200.0 \right) \quad [\text{Watts}], \quad E_{\text{kinetic}} = P_{\text{kinetic}} \cdot \Delta t$$
+    $$\text{Structural Resistance} = \sigma_{\text{yield}} \cdot d_{\text{barrier}} \cdot A_{\text{cross}} \quad (\sigma_{\text{yield}} \in [20, 2000] \text{ MPa, } d = 0.5\text{ m})$$
+    Breaching occurs if $P_{\text{kinetic}} > \text{Structural Resistance}$, causing capital destruction $\Delta K = E_{\text{kinetic}} / 10^6 \text{ MJ}$.
+  - **Boundary Friction & Geopolitical War Trigger**:
+    $$\sigma_{\text{friction}} = 1.0 + 0.4 \mu_{\text{terrain}} + 0.3 \frac{|\Delta z|}{500} + \Delta_{\text{sovereignty}}$$
+    $$\text{WarDesire} = \frac{0.6 \text{Asabiyyah} + 0.4 \text{PSI}_{\text{defender}} - 0.3 \text{StateCapacity}_{\text{defender}}}{\sqrt{\sigma_{\text{friction}}}}$$
+  - **Lanchester Force Ratio & Demographic Casualties (15-24 Cohort)**:
+    $$\text{Power} = \frac{N_{15-24} \cdot (0.5 + \text{StateCapacity})}{\sigma_{\text{friction}}}, \quad \text{CasualtyRate} = \text{clamp}\left(0.15 \sqrt{\sigma_{\text{friction}}}, 0.10, 0.45\right)$$
+  - **Goldstone-Turchin Political Stress Index (PSI) & Secular Crises**:
+    $$\text{PSI} = \text{MMP} \cdot \text{EMP} \cdot \text{SF} = \left( \frac{w_0}{w_{\text{real}}} \cdot \frac{N_{\text{youth}}}{N} \cdot U \right) \cdot \left( \frac{N_{\text{elites}}}{N_{\text{offices}}} \cdot \text{Gini}^2 \right) \cdot \left( \frac{\text{Overhead}}{\text{Revenue}} (1 - \text{Capacity}) \right)$$
+    If $\text{PSI} > 5.0$, spontaneous civil unrest, riots, and structural balkanization occur.
+  - **Granovetter Collective Action Tipping Point Cascades**:
+    $$f_{\text{active}}(t + \Delta t) = \int_0^{f_{\text{active}}(t)} \mathcal{N}(\mu_{\text{grievance}}, \sigma^2) \, d\theta$$
+- **Complexity**: $O(1)$ per cell; $O(\text{borders})$ for inter-national battle friction.
 
 #### 94. Thermodynamic Migration & Spatial Gravitation (`ThermodynamicMigrationEngine`)
 - **Governing Equations**:
@@ -692,8 +718,172 @@ where $\lambda \approx 3.5$, and trait dimensions $k$ include:
 - Institutional hierarchy distance $\Delta I_{ij}$
 
 ### 6.3 Paleoclimatic Invariant Elevation & Dynamic Sea Level
-- **Altimetry Invariance**: Topography $z(\mathbf{x})$ is sourced from the NOAA ETOPO 2022 global relief model and remains identical across all epochs.
-- **Dynamic Shorelines**: Emergent land (e.g. Sundaland, Sahul, Beringia, Doggerland during LGM $-120\text{m}$) is dynamically governed by the scenario `waterLevel` slider:
-  $$\text{LandMask}(\mathbf{x}) = \mathbb{I}\left( \text{Elevation}(\mathbf{x}) \ge z_{\text{sea}}(\text{waterLevel}) \right)$$
-  with threshold $z_{\text{sea}} = 0.478 + (\text{waterLevel} - 0.38) \times 0.35$.
+- **Altimetry Invariance & Physical Datum**: Topography $z(\mathbf{x})$ is sourced from the NOAA ETOPO 2022 global relief model ($[0, 255]$ normalized luminance $\in [0.0, 1.0]$). The global Mean Sea Level ($0\text{ m}$ MSL) corresponds to the calibrated datum $z_0 = 0.478$ ($\approx 122/255$).
+- **Dynamic Shorelines & Land Mask**: Emergent land (e.g. Sundaland, Sahul, Beringia, Doggerland) is dynamically governed by the scenario `waterLevel` configuration:
+  $$\text{LandMask}(\mathbf{x}) = \mathbb{I}\left( \text{Elevation}(\mathbf{x}) \ge \text{waterLevel} \right)$$
+- **Exact Bi-Directional Conversion (Meter-to-Threshold)**:
+  Given minimum elevation $z_{\min}$ (e.g. $-11000\text{ m}$ bathymetric trench) and maximum elevation $z_{\max}$ (e.g. $+8848\text{ m}$ Everest) with datum $z_0 = 0.478$:
+  $$\text{waterLevel}(z_{\text{sea}}) = \begin{cases} 
+  z_0 \cdot \left(1 + \frac{z_{\text{sea}}}{|z_{\min}|}\right) & \text{if } z_{\text{sea}} \le 0 \\ 
+  z_0 + (1 - z_0) \cdot \frac{z_{\text{sea}}}{z_{\max}} & \text{if } z_{\text{sea}} > 0 
+  \end{cases}$$
+  $$z_{\text{sea}}(\text{waterLevel}) = \begin{cases} 
+  \left(\frac{\text{waterLevel}}{z_0} - 1\right) \cdot |z_{\min}| & \text{if } \text{waterLevel} \le z_0 \\ 
+  \left(\frac{\text{waterLevel} - z_0}{1 - z_0}\right) \cdot z_{\max} & \text{if } \text{waterLevel} > z_0 
+  \end{cases}$$
+- **Calibrated Earth Paleoclimate Presets**:
+  - **Earth Present Day (2026 CE / 0 BP)**: `waterLevel = 0.478` ($0\text{ m}$ MSL).
+  - **Earth Iron Age (-1000 BP / -1000 BCE)**: `waterLevel = 0.478` ($0\text{ m}$ MSL).
+  - **Earth Middle Bronze Age (-1900 BP / -1900 BCE)**: `waterLevel = 0.478` ($0\text{ m}$ MSL).
+  - **Earth Late Holocene (-3000 BP / -3000 BCE)**: `waterLevel = 0.478` ($0\text{ m}$ MSL).
+  - **Earth Holocene Optimum (-6000 BP / -4000 BCE)**: `waterLevel = 0.478` ($0\text{ m}$ MSL).
+  - **Earth Early Holocene (-10000 BP)**: `waterLevel = 0.476479` ($-35\text{ m}$ eustatic sea level drop).
+  - **Earth Last Glacial Maximum (-20000 BP)**: `waterLevel = 0.472568` ($-125\text{ m}$ eustatic lowstand, exposing Beringia, Sundaland, Sahul, Doggerland).
+  - **Earth LGM Onset (-25000 BP)**: `waterLevel = 0.473655` ($-100\text{ m}$ eustatic drop).
+  - **Earth MIS 3 Interstadial (-50000 BP)**: `waterLevel = 0.475393` ($-60\text{ m}$ eustatic drop).
+  - **Earth Eemian / Out of Africa (-100000 BP)**: `waterLevel = 0.478` ($0\text{ m}$ MSL datum, preserving African rift valleys and Red Sea coastal corridors).
 - **Authentic Biomes**: `earth_<year>_biomes.png` rasters reflect epoch-specific paleoclimatic vegetation (MIS 5e Green Sahara savanna at $-100\text{k}$, MIS 3 mammoth steppe at $-50\text{k}$, LGM Laurentide/Fennoscandian ice sheets at $-25\text{k}/-20\text{k}$, Holocene Green Sahara at $-6\text{k}$).
+
+---
+
+## 7. Dynamic Territorial Atlas, Multi-Layer Compositing & Spatial Analytics
+
+### 7.1 Spatiotemporal Snapshot Buffer & Uniform Decimation (`HistoryManager`)
+To enable smooth, non-destructive retrospective timeline replay across arbitrary simulation durations ($10$ to $100\,000$ years) without memory exhaustion, the engine implements a capacity-bounded temporal buffer with smart downsampling:
+- **Maximum Snapshot Capacity**: $K = 2000$ world snapshots.
+- **Adaptive Decimation Rule**:
+  When snapshot count exceeds $K$, every second snapshot is pruned across the historical series:
+  $$\text{KeepIndex}(i) \iff i \equiv 0 \pmod 2 \quad \lor \quad i = N_{\text{current}}-1$$
+  This halves the sampling frequency while preserving full temporal extent from $T_0$ to $T_{\text{current}}$, avoiding tail-only truncation.
+- **Interpolation & Nearest Neighbor Lookup**: Fast $O(\log K)$ temporal binary search via `NavigableMap.floorEntry(tick)` / `ceilingEntry(tick)`.
+
+### 7.2 Multi-Layer 2D Compositing Engine (`SpatialHeatmapPanel`)
+The 2D Dynamic Atlas renders composite thematic layers onto an equirectangular canvas with adjustable layer weights and category grouping:
+1. **Base Layer**: Procedural Biome Classification / Topographic Relief (Albedo, Elevation, Bathymetry).
+2. **Thematic Scalar Heatmaps**: Normalized colormapped overlays:
+   - **Physical/Climate**: Surface Temperature ($T$), Precipitation ($P$), Aridity Index ($P/\text{PET}$), Elevation ($z$).
+   - **Demography**: Total Population Density ($\rho$), Cohort Ratios (Infant/Youth/Working/Elderly), Life Expectancy, Urbanization ($N_{\text{urban}}/\rho$).
+   - **Ecology & Pedology**: Soil N-P-K Nutrient Index, Soil Organic Carbon, Forest Biomass, Desertification Risk.
+   - **Minerals & Energy**: Metal/Ore Grade ($\mu$), Mineral Extraction Rate, Hydraulic Aquifer Depth, Fossil Exergy Reserve.
+   - **Society & Politics**: State Legitimacy, Cultural Cohesion (Asabiyyah $A$), Technological Level ($\tau$), Trade Conductivity ($C$), Epidemic Prevalence ($I/N$).
+3. **Alpha Compositing Formulation**:
+   For stacked layers $k = 1, \dots, M$ with base color $\mathbf{C}_0$ and layer colors $\mathbf{C}_k$ with opacity $\alpha_k \in [0, 1]$:
+   $$\mathbf{C}_{\text{composite}} = \sum_{k=1}^M \alpha_k \mathbf{C}_k + \left(1 - \max_{k} \alpha_k\right) \mathbf{C}_0$$
+
+### 7.3 Spatial Autocorrelation & Global Moran's $I$
+Spatial clustering vs. dispersion of simulated variables across the hexagonal lattice is quantified via Global Moran's $I$:
+$$I = \frac{N}{W} \frac{\sum_{i=1}^N \sum_{j=1}^N w_{ij}(x_i - \bar{x})(x_j - \bar{x})}{\sum_{i=1}^N (x_i - \bar{x})^2}$$
+where $w_{ij}$ is the spatial adjacency matrix ($w_{ij} = 1$ if cell $j$ neighbors cell $i$ in H3 ring 1, $0$ otherwise), and $W = \sum_{i,j} w_{ij}$.
+- $I > 0$: Spatially clustered phenomena (e.g. agglomeration economies, imperial cohesion).
+- $I \approx 0$: Spatially random dispersion.
+- $I < 0$: Spatially dispersed / competing territories.
+
+### 7.4 Direct Video & Animated Cartographic Exporter (`AtlasVideoExporter`)
+The simulation state across intervals $[T_A, T_B]$ is exported directly into animated video formats (Animated GIF / MP4 frame sequences):
+- **Decoupled Background Rendering**: Asynchronous frame streaming via `AtlasVideoExporter.exportVideoAsync()` avoiding main thread blocking.
+- **Pure Java Video Streamer**: Zero-dependency `GifSequenceWriter` utilizing standard ImageIO SPI with Netscape 2.0 application loop extensions and Graphic Control Extension frame delays $\Delta t_{\text{frame}} \in [30\text{ ms}, 600\text{ ms}]$.
+- **High-Resolution HUD Overlays**: Each frame includes real-time telemetry: Simulation Step (Pas), Historical Year, Snapshot Index, Active Layer Stack, and Global Moran's $I$ autocorrelation coefficient.
+
+---
+
+## 8. Epistemic Model Falsification & Hypothesis Testing Suite
+
+Ether functions as an epistemic laboratory designed to quantitatively evaluate, validate, or falsify mutually incompatible macroeconomic, demographic, and cliodynamic theories against empirical historical datasets (Seshat Global History Databank, Maddison Project Database, HYDE 3.4, UN FAO, EPICA ice cores).
+
+The automated suite (`ScientificModelFalsificationAndValidationSuite`) benchmarks 7 fundamental cliodynamic debates:
+
+```
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                          ETHER SCIENTIFIC MODEL FALSIFICATION MATRIX                                  │
+├───────────────────────────────┬───────────────────────────────┬───────────────────────────────────────┤
+│ Domain & Debate               │ Competing Paradigm A          │ Competing Paradigm B                  │
+├───────────────────────────────┼───────────────────────────────┼───────────────────────────────────────┤
+│ 1. Carrying Capacity          │ Malthus / World3 Limits       │ Ester Boserup Intensification         │
+│ 2. Sociology of Violence      │ Steven Pinker Pacification    │ Peter Turchin Secular Cycles (SDT)    │
+│ 3. Energy Economics           │ William Nordhaus DICE (Price) │ Vaclav Smil / Kümmel-Ayres Exergy     │
+│ 4. Governance of Commons      │ Garrett Hardin Commons Tragedy│ Elinor Ostrom Polycentric CPR         │
+│ 5. Economic Divergence        │ Acemoglu-Robinson Institutions│ Sachs-Diamond Geographic Determinism  │
+│ 6. State Formation            │ James C. Scott Coercive Cages │ Co-Governance Coordination Multiplier │
+│ 7. Cultural Evolution         │ Joseph Henrich Tasmanian Loss │ Static Repertoire Retention           │
+└───────────────────────────────┴───────────────────────────────┴───────────────────────────────────────┘
+```
+
+### 8.1 Scenario 1: Malthusian Bounds vs. Boserupian Agricultural Intensification
+- **Competing Hypotheses**:
+  - *Malthus / Meadows (World3)*: Technological carrying capacity $K$ is rigid. Density growth beyond $K$ triggers positive checks (mass starvation, epidemiological collapse).
+  - *Boserup (1965)*: High demographic density $D = N / \text{Area}$ is the primary exogenous driver forcing technological transitions to multi-cropping, drainage, and nitrogen-fixing rotation ($L_{\text{req}} \propto Y^{1.40}$).
+- **Empirical Falsification**: Historical agrarian transitions (e.g. Song Dynasty Champa wet-rice revolution, 17th C Flemish four-course rotation) falsify static Malthusian bounds during intensification phases, confirming Boserup's endogenous capacity expansion.
+
+### 8.2 Scenario 2: Steven Pinker Monotonic Pacification vs. Peter Turchin Secular Cycles (SDT)
+- **Competing Hypotheses**:
+  - *Pinker (The Better Angels of Our Nature)*: Institutional state monopoly on violence (Leviathan) and commercial interconnectedness monotonically reduce violent mortality over time ($C(t) = C_0 e^{-kt}$).
+  - *Turchin (Secular Cycles & SDT)*: Pacification is cyclical. Elite overproduction, falling real wages ($w/w_0$), and extreme wealth concentration (Gini $> 0.55$) trigger non-linear surges in Political Stress ($\Psi > 0.70$), generating violent state collapse and civil wars.
+- **Empirical Falsification**: Historical high-inequality episodes (Late Roman Republic, French Wars of Religion, Antebellum US, 1917 Russia) falsify monotonic linear pacification, validating Turchin's non-linear Structural Demographic Index ($\Psi$).
+
+### 8.3 Scenario 3: Nordhaus Neoclassical Substitution vs. Smil Thermodynamic Inertia
+- **Competing Hypotheses**:
+  - *Nordhaus (DICE)*: Energy forms are fungible and substitute instantaneously based on carbon price elasticity ($\varepsilon_{\text{subst}}$).
+  - *Vaclav Smil / Kümmel-Ayres*: Primary energy transitions are constrained by physical exergy turnover and heavy infrastructural capital replacement lifetimes ($\tau \approx 35\text{--}50\text{ years}$):
+    $$\frac{d F_{\text{fossil}}}{dt} = -\frac{F_{\text{fossil}} - F_{\text{target}}}{\tau}$$
+- **Empirical Falsification**: The 150-year global energy history (wood $\to$ coal $\to$ petroleum $\to$ gas $\to$ nuclear $\to$ solar) confirms Smil's physical infrastructure inertia and refutes instantaneous market clearing.
+
+### 8.4 Scenario 4: Hardin Tragedy of the Commons vs. Ostrom Polycentric CPR Governance
+- **Competing Hypotheses**:
+  - *Hardin (1968)*: Unmanaged common-pool resources inevitably collapse due to individual rational utility maximization (Nash defect equilibrium).
+  - *Ostrom (1990)*: Self-organized community institutions with clear boundaries, local monitoring, and graduated sanctions maintain stable equilibrium harvest $H \le \text{MSY}$.
+- **Empirical Falsification**: Long-enduring CPR institutions (Swiss alpine pastures of Törbel, Spanish Huerta irrigation canals) falsify Hardin's inevitability theorem in favor of Ostrom's 8 design principles.
+
+### 8.5 Scenario 5: Institutional Primacy vs. Geographic Friction
+- **Competing Hypotheses**:
+  - *Acemoglu-Johnson-Robinson*: Inclusive institutions (property rights, constraints on executive power) uniquely determine long-run capital and technological divergence.
+  - *Diamond / Sachs*: Biogeographic barriers (high transport friction, malaria/trypanosomiasis ecology) impose hard thermodynamic boundaries on institutional efficacy.
+- **Epistemic Synthesis**: Ether demonstrates that inclusive institutions maximize technological adoption efficiency, but physical geographical friction ($\mu_{\text{transport}}$) acts as an irreducible energetic constraint.
+
+### 8.6 Scenario 6: Scott Coercive State Cages vs. Forager Resilience
+- **Competing Hypotheses**:
+  - *James C. Scott (Against the Grain)*: Early cereal states were coercive ecological cages characterized by nutritional deficiency, high zoonotic epidemic mortality, and heavy cereal taxation levies ($T \ge 0.35$).
+  - *Classic State Teleology*: States arose as spontaneous Pareto-improving public goods providing immediate welfare advantages over foragers.
+- **Empirical Validation**: Ether validates Scott's thesis for the Early Bronze Age: dense urban cereal cells exhibit acute vulnerability to zoonotic shocks relative to diversified foraging wetlands.
+
+### 8.7 Scenario 7: Henrich Tasmanian Cultural Loss vs. Static Retention
+- **Competing Hypotheses**:
+  - *Joseph Henrich (Tasmanian Effect)*: Complex cultural repertoire size ($C$) requires a critical effective population size ($N_{\text{crit}} \approx 5000$). Below this threshold, stochastic transmission errors exceed discovery rates ($\frac{dC}{dt} = \alpha N C - \beta C < 0$).
+  - *Static Cognitive Model*: Technologies once invented remain permanent regardless of demographic scale.
+- **Empirical Falsification**: Archaeological evidence from post-glacial Tasmania (loss of bone points, spearthrowers, and marine fishing over 8000 years of isolation) validates Henrich's demographic-cultural coevolution model.
+
+---
+
+## 9. Cartographic Tensor Field Initialization & Soft-Voronoi Formulations
+
+### 9.1 Paleolithic Carrying Capacity & Bioenergetics
+For pre-agricultural epochs ($t \le -10\,000\text{ BP}$), local carrying capacity $K(\mathbf{x})$ per cell is computed directly from Net Primary Productivity $\text{NPP}(\mathbf{x})$ and species-specific basal metabolic rates $\mathcal{E}_{\text{req}}$:
+
+$$K(\mathbf{x}) = \frac{\text{NPP}(\mathbf{x}) \cdot \eta_{\text{trophic}} \cdot \alpha_{\text{biome}}}{\mathcal{E}_{\text{req}} \cdot 365.25}$$
+
+where:
+* $\mathcal{E}_{\text{req}} \approx 2\,400\text{ kcal/day}$ for *Homo sapiens* in tropical/subtropical savannas.
+* $\mathcal{E}_{\text{req}} \approx 4\,500\text{--}5\,000\text{ kcal/day}$ for *Homo neanderthalensis* in periglacial Europe (Froehle & Churchill 2009, Sorensen 2011).
+* $\eta_{\text{trophic}} \approx 0.01$ (hyper-carnivores) to $0.08$ (generalist plant/game foragers).
+
+### 9.2 Anisotropic Soft-Voronoi Gaussian Clade Weights
+Spatial distribution of hominin cultural entities and linguistic isoglosses is computed across $N$ verified archaeological hearths $\mathcal{H}_i$:
+
+$$w_i(\mathbf{x}) = \frac{\exp\left(-\frac{d_i(\mathbf{x}) - d_{\min}}{\sigma}\right)}{\sum_{k=1}^N \exp\left(-\frac{d_k(\mathbf{x}) - d_{\min}}{\sigma}\right)}$$
+
+where $\sigma = 3.5^\circ$ ($\approx 380\text{ km}$), and effective geodesic distance $d_i(\mathbf{x})$ incorporates physical barrier penalties:
+
+$$d_i(\mathbf{x}) = \min_{\mathbf{h} \in \mathcal{H}_i} \|\mathbf{x} - \mathbf{h}\| + \mathcal{P}_{\text{marine}}(\mathbf{x}) + \mathcal{P}_{\text{orographic}}(\mathbf{x})$$
+
+* **Mediterranean Marine Strait Barrier**: $\mathcal{P}_{\text{marine}} = +50.0$ (Strict isolation: Sapiens cannot cross into Iberia; Neanderthals cannot cross into North Africa at 100 ka BP).
+* **Himalayan Mountain Barrier**: $\mathcal{P}_{\text{orographic}} = 16.0 \cdot \exp\left(-\frac{(\phi - 32.0)^2 + ((\lambda - 85.0)\cdot 0.55)^2}{70.0}\right)$.
+
+### 9.3 Epistemological Decoupling Theorem
+Ether maintains strict separation between the static initial cartographic state and the dynamical simulation kernel:
+
+$$\mathbf{S}(\mathbf{x}, t) = \underbrace{\mathcal{T}_{t_0}(\mathbf{x})}_{\text{Static Initial Tensor at } t=t_0} + \int_{t_0}^t \mathcal{F}_{\text{cliodynamic}}\left(\mathbf{S}(\mathbf{x}, \tau), \nabla \mathbf{S}(\mathbf{x}, \tau)\right) \, d\tau$$
+
+This decoupling guarantees that cartographic initial condition errors (e.g. baseline carrying capacity) can be calibrated and validated independently of dynamical algorithm behaviors (e.g. migration diffusion, albedo feedback, or Malthusian checks).
+
+
+
+

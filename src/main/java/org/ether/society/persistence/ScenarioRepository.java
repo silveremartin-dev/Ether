@@ -32,7 +32,9 @@ public class ScenarioRepository extends JsonRepository<Scenario> {
                 scenarioMap.put(s.getName(), s);
             }
         }
-        return new java.util.ArrayList<>(scenarioMap.values());
+        List<Scenario> result = new java.util.ArrayList<>(scenarioMap.values());
+        result.sort(java.util.Comparator.comparingLong(Scenario::getStartDateYear));
+        return result;
     }
 
     public void saveOrUpdate(Scenario scenario) {

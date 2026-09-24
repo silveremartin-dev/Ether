@@ -296,6 +296,8 @@ public class ScenarioSetupPanel extends BorderPane {
     private Button resetClippingBtn;
     private VBox clippingSubPanel;
     private Button btnGenerateProceduralTensorsSection;
+    private ComboBox<String> engineSortCombo;
+    private Label engineSortLabel;
 
     // Navigation & Selection State
     private double zoomFactor = 1.0;
@@ -660,11 +662,15 @@ public class ScenarioSetupPanel extends BorderPane {
             if (p.name().equalsIgnoreCase(name)) return p;
         }
         String lower = name.toLowerCase();
-        if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire")) return PlanetPreset.EARTH_LIG_100000BP;
-        if (lower.contains("-20") || lower.contains("lgm") || lower.contains("glaciaire")) return PlanetPreset.EARTH_LGM_20000BP;
-        if (lower.contains("-10") || lower.contains("eh") || lower.contains("précoce")) return PlanetPreset.EARTH_EH_10000BP;
-        if (lower.contains("-6") || lower.contains("mh") || lower.contains("sahara")) return PlanetPreset.EARTH_MH_6000BP;
-        if (lower.contains("-3") || lower.contains("lh") || lower.contains("tardif")) return PlanetPreset.EARTH_LH_3000BP;
+        if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire") || lower.contains("eemian")) return PlanetPreset.EARTH_LIG_100000BP;
+        if (lower.contains("-50") || lower.contains("sahul") || lower.contains("mis3") || lower.contains("mis 3")) return PlanetPreset.EARTH_MIS3_50000BP;
+        if (lower.contains("-25") || lower.contains("beringia") || lower.contains("béringie")) return PlanetPreset.EARTH_LGM_ONSET_25000BP;
+        if (lower.contains("-20") || lower.contains("lgm") || lower.contains("glaciaire") || lower.contains("solutrean") || lower.contains("solutréen")) return PlanetPreset.EARTH_LGM_20000BP;
+        if (lower.contains("-10") || lower.contains("eh") || lower.contains("précoce") || lower.contains("early holocene") || lower.contains("dryas")) return PlanetPreset.EARTH_EH_10000BP;
+        if (lower.contains("-6") || lower.contains("mh") || lower.contains("sahara") || lower.contains("mid holocene")) return PlanetPreset.EARTH_MH_6000BP;
+        if (lower.contains("-3") || lower.contains("lh") || lower.contains("tardif") || lower.contains("late holocene")) return PlanetPreset.EARTH_LH_3000BP;
+        if (lower.contains("-1900") || lower.contains("bronze")) return PlanetPreset.EARTH_BRONZE_1900BP;
+        if (lower.contains("-1000") || lower.contains("iron") || lower.contains("fer")) return PlanetPreset.EARTH_IRON_1000BP;
         for (PlanetPreset p : PlanetPreset.getPresets()) {
             if (p.name().toLowerCase().contains(lower) || lower.contains(p.name().toLowerCase())) {
                 return p;
@@ -1657,86 +1663,292 @@ public class ScenarioSetupPanel extends BorderPane {
         return cachedJitReport;
     }
 
+    private void renderDiagnosticCategory(VBox container, String title, List<String> items) {
+        if (items == null || items.isEmpty()) return;
+        Label catLabel = new Label(title);
+        catLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #38bdf8; -fx-padding: 6 0 2 0;");
+        container.getChildren().add(catLabel);
+        for (String item : items) {
+            Label lbl = new Label("  • " + item);
+            lbl.setWrapText(true);
+            if (item.startsWith("❌")) {
+                lbl.getStyleClass().add("diagnostic-error");
+                lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #ef4444; -fx-font-weight: bold;");
+            } else if (item.startsWith("⚠️")) {
+                lbl.getStyleClass().add("diagnostic-warn");
+                lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #f59e0b;");
+            } else {
+                lbl.getStyleClass().add("diagnostic-pass");
+                lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981;");
+            }
+            container.getChildren().add(lbl);
+        }
+    }
+
     private void updateLiveDiagnosticBlock() {
         if (liveDiagnosticContentBox == null) return;
         PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
         if (p == null) p = PlanetPreset.EARTH_LIKE;
         EcologyPreset eco = ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : EcologyPreset.EARTH_STANDARD;
+        String planetName = p.name();
+        String planetKey = planetName.toLowerCase();
 
-        List<String> warnings = new ArrayList<>();
-        List<String> passes = new ArrayList<>();
+        List<String> geoItems = new ArrayList<>();
+        List<String> ecoItems = new ArrayList<>();
+        List<String> engineItems = new ArrayList<>();
+        List<String> validationItems = new ArrayList<>();
+        int alertCount = 0;
 
+        // =========================================================================
+        // 1. CARTOGRAPHIC & GEOGRAPHIC COMPATIBILITY (Tabs 1 & 3)
+        // =========================================================================
+        org.ether.society.procedural.ProceduralGenerator generator = new org.ether.society.procedural.ProceduralGenerator();
+
+        // A. Planetary Body Mismatch
+        String demoSrc = demoSourceCombo != null ? demoSourceCombo.getValue() : null;
+        boolean bodyMismatch = false;
+        if (demoSrc != null && !demoSrc.isBlank()) {
+            String demoLower = demoSrc.toLowerCase();
+            boolean planetIsEarth = planetKey.contains("terre") || planetKey.contains("earth") || planetKey.contains("terran");
+            boolean demoIsMars = demoLower.contains("mars");
+            boolean demoIsMoon = demoLower.contains("lune") || demoLower.contains("moon");
+            boolean demoIsVenus = demoLower.contains("vénus") || demoLower.contains("venus");
+            boolean demoIsMercury = demoLower.contains("mercure") || demoLower.contains("mercury");
+            boolean demoIsEarth = demoLower.contains("terre") || demoLower.contains("earth") || demoLower.contains("hyde");
+
+            if (planetIsEarth && (demoIsMars || demoIsMoon || demoIsVenus || demoIsMercury)) {
+                geoItems.add("⚠️ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique « %s » sélectionnée sur un relief terrestre (Onglet 1)."), demoSrc.trim()));
+                bodyMismatch = true;
+                alertCount++;
+            } else if (planetKey.contains("mars") && demoIsEarth) {
+                geoItems.add("⚠️ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre « %s » appliquée sur le relief martien (Onglet 1)."), demoSrc.trim()));
+                bodyMismatch = true;
+                alertCount++;
+            } else if (planetKey.contains("lune") && demoIsEarth) {
+                geoItems.add("⚠️ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre « %s » appliquée sur le relief lunaire (Onglet 1)."), demoSrc.trim()));
+                bodyMismatch = true;
+                alertCount++;
+            } else if (planetKey.contains("vénus") && demoIsEarth) {
+                geoItems.add("⚠️ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre « %s » appliquée sur Vénus (Onglet 1)."), demoSrc.trim()));
+                bodyMismatch = true;
+                alertCount++;
+            } else if (planetKey.contains("mercure") && demoIsEarth) {
+                geoItems.add("⚠️ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre « %s » appliquée sur Mercure (Onglet 1)."), demoSrc.trim()));
+                bodyMismatch = true;
+                alertCount++;
+            }
+        }
+        if (!bodyMismatch) {
+            geoItems.add(String.format(I18n.getOrDefault("scenario.diagnostic.geo_ok", "✅ Relief et corps céleste parfaitement cohérents (%s)"), planetName));
+        }
+
+        // B. Demographic Density vs Ocean Immersion
+        Image elevImg = getElevationImageForPreset(p);
+        PixelReader elevReader = elevImg != null ? elevImg.getPixelReader() : null;
+
+        if (customDensityImage != null && customDensityImage.getPixelReader() != null) {
+            double totalDensityBrightness = 0.0;
+            double oceanDensityBrightness = 0.0;
+            int imgW = (int) customDensityImage.getWidth();
+            int imgH = (int) customDensityImage.getHeight();
+            PixelReader pr = customDensityImage.getPixelReader();
+            int sampleSteps = 60;
+
+            for (int sy = 0; sy < sampleSteps; sy++) {
+                double normLat = (sy + 0.5) / sampleSteps;
+                double lat = 90.0 - normLat * 180.0;
+                int py = (int) Math.min(imgH - 1, normLat * imgH);
+                for (int sx = 0; sx < sampleSteps * 2; sx++) {
+                    double normLon = (sx + 0.5) / (sampleSteps * 2.0);
+                    double lon = -180.0 + normLon * 360.0;
+                    int px = (int) Math.min(imgW - 1, normLon * imgW);
+                    double b = pr.getColor(px, py).getBrightness();
+                    if (b > 0.05) {
+                        totalDensityBrightness += b;
+                        boolean isOceanCell = false;
+                        if (elevReader != null && elevImg != null) {
+                            int ex = (int) Math.min(elevImg.getWidth() - 1, normLon * elevImg.getWidth());
+                            int ey = (int) Math.min(elevImg.getHeight() - 1, normLat * elevImg.getHeight());
+                            Color ec = elevReader.getColor(ex, ey);
+                            double eNorm = (ec.getRed() + ec.getGreen() + ec.getBlue()) / 3.0;
+                            isOceanCell = (eNorm < p.waterLevel());
+                        } else {
+                            var pt = generator.getPlanetPoint(lat, lon, p);
+                            isOceanCell = (pt.elevation() < p.waterLevel());
+                        }
+                        if (isOceanCell) {
+                            oceanDensityBrightness += b;
+                        }
+                    }
+                }
+            }
+            if (totalDensityBrightness > 0 && oceanDensityBrightness > 0) {
+                double oceanPct = (oceanDensityBrightness * 100.0) / totalDensityBrightness;
+                if (oceanPct > 15.0) {
+                    geoItems.add(String.format(java.util.Locale.FRANCE,
+                        I18n.getOrDefault("scenario.warning.ocean_density", "⚠️ Incompatibilité géographique : %.1f%% de la densité démographique importée se trouve en zone océanique / sous-marine (%s)."),
+                        oceanPct, planetName));
+                    alertCount++;
+                } else {
+                    geoItems.add(String.format(I18n.getOrDefault("scenario.diagnostic.demo_coast_ok", "✅ Densité démographique conforme aux terres émergées (%s)"), planetName));
+                }
+            } else {
+                geoItems.add(String.format(I18n.getOrDefault("scenario.diagnostic.demo_coast_ok", "✅ Densité démographique conforme aux terres émergées (%s)"), planetName));
+            }
+        }
+
+        // C. Cultural Tensors vs Ocean Immersion
+        int dimsCount = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 8;
+        boolean tensorOceanWarn = false;
+        for (int i = 0; i < dimsCount; i++) {
+            Image tImg = customTensorImages.get(i);
+            if (tImg != null && tImg.getPixelReader() != null && p.waterLevel() > -0.4) {
+                double totalTB = 0.0;
+                double oceanTB = 0.0;
+                int tw = (int) tImg.getWidth();
+                int th = (int) tImg.getHeight();
+                PixelReader pr = tImg.getPixelReader();
+                int sampleSteps = 40;
+                for (int sy = 0; sy < sampleSteps; sy++) {
+                    double normLat = (sy + 0.5) / sampleSteps;
+                    double lat = 90.0 - normLat * 180.0;
+                    int py = (int) Math.min(th - 1, normLat * th);
+                    for (int sx = 0; sx < sampleSteps * 2; sx++) {
+                        double normLon = (sx + 0.5) / (sampleSteps * 2.0);
+                        double lon = -180.0 + normLon * 360.0;
+                        int px = (int) Math.min(tw - 1, normLon * tw);
+                        double b = pr.getColor(px, py).getBrightness();
+                        if (b > 0.08) {
+                            totalTB += b;
+                            boolean isOceanCell = false;
+                            if (elevReader != null && elevImg != null) {
+                                int ex = (int) Math.min(elevImg.getWidth() - 1, normLon * elevImg.getWidth());
+                                int ey = (int) Math.min(elevImg.getHeight() - 1, normLat * elevImg.getHeight());
+                                Color ec = elevReader.getColor(ex, ey);
+                                double eNorm = (ec.getRed() + ec.getGreen() + ec.getBlue()) / 3.0;
+                                isOceanCell = (eNorm < p.waterLevel());
+                            } else {
+                                var pt = generator.getPlanetPoint(lat, lon, p);
+                                isOceanCell = (pt.elevation() < p.waterLevel());
+                            }
+                            if (isOceanCell) oceanTB += b;
+                        }
+                    }
+                }
+                if (totalTB > 0 && oceanTB > 0) {
+                    double oceanPct = (oceanTB * 100.0) / totalTB;
+                    if (oceanPct > 20.0) {
+                        geoItems.add(String.format(java.util.Locale.FRANCE,
+                            I18n.getOrDefault("scenario.warning.ocean_culture", "⚠️ Incompatibilité culturelle : %.1f%% de l'intensité du tenseur « %s » est située sur l'océan (%s)."),
+                            oceanPct, getCulturalTensorTitle(i), planetName));
+                        tensorOceanWarn = true;
+                        alertCount++;
+                    }
+                }
+            }
+        }
+        if (!tensorOceanWarn && !customTensorImages.isEmpty()) {
+            geoItems.add(String.format(I18n.getOrDefault("scenario.diagnostic.tensors_ok", "✅ Tenseurs culturels conformes aux terres émergées (%s)"), planetName));
+        }
+
+        // D. Extreme Hostile Environment
+        double atmoPres = p.atmospherePressureAtm();
+        double avgTemp = p.averageTempC();
+        boolean isSpaceBody = planetKey.contains("lune") || planetKey.contains("moon") || planetKey.contains("mercure") || planetKey.contains("mercury") || planetKey.contains("mars") || planetKey.contains("venus") || planetKey.contains("vénus");
+        if (!isSpaceBody && (atmoPres < 0.1 || atmoPres > 5.0 || avgTemp < -50 || avgTemp > 60)) {
+            geoItems.add(String.format(java.util.Locale.FRANCE,
+                I18n.getOrDefault("scenario.warning.hostile_environment", "⚠️ Environnement hostile (Onglet 1) : Pression (%.2f atm) ou Température (%.1f °C) extrême — Survie humaine conditionnée à des habitats scellés."),
+                atmoPres, avgTemp));
+            alertCount++;
+        }
+
+        // =========================================================================
+        // 2. ECOLOGICAL VIABILITY & PLANETARY RESOURCES (Tabs 2 & 3)
+        // =========================================================================
         if (p.atmospherePressureAtm() < 0.01) {
-            warnings.add("❌ Atmosphère absente/tenue (" + String.format("%.3f", p.atmospherePressureAtm()) + " atm) : L'eau liquide bout à la surface. Survie humaine impossible sans dômes fermés.");
+            ecoItems.add("❌ Atmosphère absente/tenue (" + String.format("%.3f", p.atmospherePressureAtm()) + " atm) : L'eau liquide bout à la surface. Survie humaine impossible sans dômes fermés.");
+            alertCount++;
         } else if (p.oxygenPercentage() < 10.0) {
-            warnings.add("⚠️ Atmosphère hypoxique (O2 = " + String.format("%.1f%%", p.oxygenPercentage()) + ") : Insuffisant pour la respiration des organismes complexes.");
+            ecoItems.add("⚠️ Atmosphère hypoxique (O2 = " + String.format("%.1f%%", p.oxygenPercentage()) + ") : Insuffisant pour la respiration des organismes complexes.");
+            alertCount++;
         } else {
-            passes.add("✅ Atmosphère respirable & constante (P = " + String.format("%.2f", p.atmospherePressureAtm()) + " atm, O2 = " + String.format("%.1f%%", p.oxygenPercentage()) + ")");
+            ecoItems.add("✅ Atmosphère respirable & constante (P = " + String.format("%.2f", p.atmospherePressureAtm()) + " atm, O2 = " + String.format("%.1f%%", p.oxygenPercentage()) + ")");
         }
 
         if (p.waterLevel() < -0.3) {
-            warnings.add("⚠️ Ressources en Eau Limitées : Monde très aride. Stress hydrique majeur prévisible.");
+            ecoItems.add("⚠️ Ressources en Eau Limitées : Monde très aride. Stress hydrique majeur prévisible.");
+            alertCount++;
         } else {
-            passes.add("✅ Hydrologie équilibrée (Niveau d'eau = " + String.format("%.0f%%", (1.0 + p.waterLevel()) * 50) + ")");
+            ecoItems.add("✅ Hydrologie équilibrée (Niveau d'eau = " + String.format("%.0f%%", (1.0 + p.waterLevel()) * 50) + ")");
         }
 
         double capitalK0 = computeAutoCapitalFromYear(startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -8000);
         double crustal = eco != null ? eco.crustalMetalOresGt() : 80.0;
         if (capitalK0 >= 8000.0 && crustal < 20.0) {
-            warnings.add("⚠️ Déficit en Métaux Industriels : Capital physique " + String.format("%.0f", capitalK0) + " kg/hab configuré mais métaux crustaux faibles (" + String.format("%.1f Gt", crustal) + "). Risque de pénurie industrielle.");
+            ecoItems.add("⚠️ Déficit en Métaux Industriels : Capital physique " + String.format("%.0f", capitalK0) + " kg/hab configuré mais métaux crustaux faibles (" + String.format("%.1f Gt", crustal) + "). Risque de pénurie industrielle.");
+            alertCount++;
         } else {
-            passes.add("✅ Compatibilité Matériaux / Capital Physique");
+            ecoItems.add("✅ Compatibilité Matériaux / Capital Physique");
         }
 
         long pop = initialHumanCountSpinner != null ? initialHumanCountSpinner.getValue() : 1_000_000L;
         if (pop > 5_000_000_000L && p.waterLevel() < -0.2) {
-            warnings.add("❌ Surpopulation Majeure : " + String.format("%,d", pop) + " habitants configurés sur un monde aride.");
+            ecoItems.add("❌ Surpopulation Majeure : " + String.format("%,d", pop) + " habitants configurés sur un monde aride.");
+            alertCount++;
         } else {
-            passes.add("✅ Densité Démographique Initiale Réaliste (" + String.format("%,d", pop) + " hab)");
+            ecoItems.add("✅ Densité Démographique Initiale Réaliste (" + String.format("%,d", pop) + " hab)");
         }
 
-        // --- Static Engine JIT Conflict & Compatibility Diagnostic ---
+        // =========================================================================
+        // 3. PHYSICAL ENGINES & JIT FUSIONS
+        // =========================================================================
         org.ether.society.procedural.jit.EngineConflictReport jitReport = getOrCreateJitReport();
         if (jitReport != null && !jitReport.getEntries().isEmpty()) {
             for (org.ether.society.procedural.jit.EngineConflictReport.ConflictEntry entry : jitReport.getEntries()) {
                 if (entry.getSeverity() == org.ether.society.procedural.jit.EngineConflictReport.ConflictSeverity.INCOMPATIBLE) {
-                    warnings.add("❌ INCOMPATIBILITÉ MOTEURS (" + entry.getVariableName() + ") : " + entry.getDescription());
+                    engineItems.add("❌ INCOMPATIBILITÉ MOTEURS (" + entry.getVariableName() + ") : " + entry.getDescription());
+                    alertCount++;
                 } else {
-                    passes.add("✅ Fusion JIT Moteurs (" + entry.getVariableName() + ") : " + entry.getDescription());
+                    engineItems.add("✅ Fusion JIT Moteurs (" + entry.getVariableName() + ") : " + entry.getDescription());
                 }
             }
         } else {
-            passes.add("✅ Compilation JIT Moteurs : 100% Compatible & Fusions Validées");
+            engineItems.add("✅ Compilation JIT Moteurs : 100% Compatible & Fusions Validées");
         }
 
+        // =========================================================================
+        // 4. SCENARIO CONFIGURATION & SETUP INTEGRITY
+        // =========================================================================
+        List<String> configErrors = getScenarioValidationErrors();
+        if (configErrors.isEmpty()) {
+            validationItems.add(I18n.getOrDefault("scenario.diagnostic.validation_ok", "✅ Configuration et couches du scénario 100% conformes et prêtes à l'exécution"));
+        } else {
+            for (String err : configErrors) {
+                validationItems.add("❌ " + err);
+                alertCount++;
+            }
+        }
+
+        // =========================================================================
+        // RENDER CATEGORIZED DIAGNOSTIC BOX
+        // =========================================================================
         liveDiagnosticContentBox.getChildren().clear();
+
         if (liveDiagnosticHeader != null) {
             liveDiagnosticHeader.getStyleClass().removeAll("diagnostic-header-success", "diagnostic-header-warn");
-            if (warnings.isEmpty()) {
-                liveDiagnosticHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.diagnostic.header_viable", "📋 9. CIVILIZATIONAL VIABILITY DIAGNOSTIC: FULLY VIABLE SCENARIO"));
+            if (alertCount == 0) {
+                liveDiagnosticHeader.setText(I18n.getOrDefault("scenario.diagnostic.header_viable", "📋 9. CIVILIZATIONAL VIABILITY & COMPATIBILITY DIAGNOSTICS: 100% VIABLE & COMPATIBLE"));
                 liveDiagnosticHeader.getStyleClass().add("diagnostic-header-success");
             } else {
-                liveDiagnosticHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.diagnostic.header_alerts", "📋 9. CIVILIZATIONAL VIABILITY DIAGNOSTIC: ") + warnings.size() + " ALERTE(S) / TENSION(S)");
+                liveDiagnosticHeader.setText(I18n.getOrDefault("scenario.diagnostic.header_alerts", "📋 9. CIVILIZATIONAL VIABILITY & COMPATIBILITY DIAGNOSTICS: ") + alertCount + " " + I18n.getOrDefault("scenario.diagnostic.alert_count_label", "ALERTE(S) / TENSION(S)"));
                 liveDiagnosticHeader.getStyleClass().add("diagnostic-header-warn");
             }
         }
 
-        for (String w : warnings) {
-            Label lbl = new Label("• " + w);
-            lbl.setWrapText(true);
-            if (w.startsWith("❌")) {
-                lbl.getStyleClass().add("diagnostic-error");
-            } else {
-                lbl.getStyleClass().add("diagnostic-warn");
-            }
-            liveDiagnosticContentBox.getChildren().add(lbl);
-        }
-        for (String pass : passes) {
-            Label lbl = new Label("• " + pass);
-            lbl.setWrapText(true);
-            lbl.getStyleClass().add("diagnostic-pass");
-            liveDiagnosticContentBox.getChildren().add(lbl);
-        }
+        renderDiagnosticCategory(liveDiagnosticContentBox, I18n.getOrDefault("scenario.diagnostic.cat.geography", "🗺️ Cartographic & Geographic Compatibility (Tabs 1 & 3)"), geoItems);
+        renderDiagnosticCategory(liveDiagnosticContentBox, I18n.getOrDefault("scenario.diagnostic.cat.ecology", "🌿 Ecological Viability & Planetary Resources (Tabs 2 & 3)"), ecoItems);
+        renderDiagnosticCategory(liveDiagnosticContentBox, I18n.getOrDefault("scenario.diagnostic.cat.engines", "⚡ Physical Engines & JIT Fusion Compatibility"), engineItems);
+        renderDiagnosticCategory(liveDiagnosticContentBox, I18n.getOrDefault("scenario.diagnostic.cat.validation", "🛑 Scenario Setup & Configuration Validation"), validationItems);
     }
 
     private VBox createSection(Label header, javafx.scene.Node content) {
@@ -2015,6 +2227,16 @@ public class ScenarioSetupPanel extends BorderPane {
                 for (int i = 0; i < dims; i++) {
                     if (tensorImportRadios.containsKey(i)) {
                         tensorImportRadios.get(i).setSelected(true);
+                    }
+                }
+            }
+
+            // Restore Scheduled Events
+            if (eventsList != null) {
+                eventsList.clear();
+                if (s.getClimateEvents() != null && !s.getClimateEvents().isEmpty()) {
+                    for (org.ether.society.model.ClimateEvent ce : s.getClimateEvents()) {
+                        eventsList.add(new ClimateEvent(ce.getType(), ce.getName(), ce.getYear(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude()));
                     }
                 }
             }
@@ -2530,7 +2752,7 @@ public class ScenarioSetupPanel extends BorderPane {
         typeBBoxContainer.getChildren().add(importExportBox);
 
         // Sorting toolbar for optional engines
-        ComboBox<String> engineSortCombo = new ComboBox<>();
+        engineSortCombo = new ComboBox<>();
         engineSortCombo.getItems().addAll(
             org.ether.society.i18n.I18n.getOrDefault("scenario.sort.default", "⚙️ System Order (By Category)"),
             org.ether.society.i18n.I18n.getOrDefault("scenario.sort.date_asc", "📅 Chronological Sort (Oldest → Newest)"),
@@ -2540,9 +2762,9 @@ public class ScenarioSetupPanel extends BorderPane {
         engineSortCombo.setValue(org.ether.society.i18n.I18n.getOrDefault("scenario.sort.default", "⚙️ System Order (By Category)"));
         engineSortCombo.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
 
-        Label sortLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.sort.label", "🔀 Engine Sorting:"));
-        sortLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
-        HBox sortBar = new HBox(8, sortLabel, engineSortCombo);
+        engineSortLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.sort.label", "🔀 Engine Sorting:"));
+        engineSortLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
+        HBox sortBar = new HBox(8, engineSortLabel, engineSortCombo);
         sortBar.setAlignment(Pos.CENTER_LEFT);
         sortBar.setStyle("-fx-padding: 4 0 8 0;");
         typeBBoxContainer.getChildren().add(sortBar);
@@ -3147,8 +3369,8 @@ public class ScenarioSetupPanel extends BorderPane {
             typeBBoxContainer.getChildren().add(engContainer);
         }
 
-        engineSortCombo.valueProperty().addListener((obs, oldV, newV) -> {
-            sortOptionalEngines(newV, optionalEngines, engineContainers);
+        engineSortCombo.getSelectionModel().selectedIndexProperty().addListener((obs, oldV, newV) -> {
+            sortOptionalEngines(newV != null ? newV.intValue() : 0, optionalEngines, engineContainers);
         });
 
         TitledPane typeBPane = new TitledPane(String.format(I18n.getOrDefault("scenario.header.opt_engines_format", "⚙️ MODULES OPTIONNELS (%d MOTEURS EXTENSIBLES & IMPORT/EXPORT)"), optionalEngines.size()), typeBBoxContainer);
@@ -3167,7 +3389,7 @@ public class ScenarioSetupPanel extends BorderPane {
         notifyParamChange();
     }
 
-    private void sortOptionalEngines(String sortMode, List<String[]> optionalEngines, Map<String, VBox> engineContainers) {
+    private void sortOptionalEngines(int sortIdx, List<String[]> optionalEngines, Map<String, VBox> engineContainers) {
         if (typeBBoxContainer == null) return;
         List<javafx.scene.Node> headers = new ArrayList<>();
         if (typeBBoxContainer.getChildren().size() >= 2) {
@@ -3176,15 +3398,13 @@ public class ScenarioSetupPanel extends BorderPane {
         }
 
         List<String[]> sorted = new ArrayList<>(optionalEngines);
-        if (sortMode != null) {
-            if (sortMode.contains("Oldest") || sortMode.contains("date_asc")) {
-                sorted.sort(Comparator.comparingLong(e -> getEngineApparitionYear(e[0])));
-            } else if (sortMode.contains("Newest") || sortMode.contains("date_desc")) {
-                sorted.sort((a, b) -> Long.compare(getEngineApparitionYear(b[0]), getEngineApparitionYear(a[0])));
-            } else if (sortMode.contains("Alphabetical") || sortMode.contains("alpha_asc") || sortMode.contains("A - Z")) {
-                sorted.sort(Comparator.comparing(e -> e[1]));
-            }
-        }
+        if (sortIdx == 1) { // Chronological (Oldest -> Newest)
+            sorted.sort(Comparator.comparingLong(e -> getEngineApparitionYear(e[0])));
+        } else if (sortIdx == 2) { // Reverse Chronological (Newest -> Oldest)
+            sorted.sort((a, b) -> Long.compare(getEngineApparitionYear(b[0]), getEngineApparitionYear(a[0])));
+        } else if (sortIdx == 3) { // Alphabetical (A - Z)
+            sorted.sort(Comparator.comparing(e -> e[1]));
+        } // sortIdx == 0 -> Keep original system category order
 
         typeBBoxContainer.getChildren().clear();
         typeBBoxContainer.getChildren().addAll(headers);
@@ -3789,13 +4009,13 @@ public class ScenarioSetupPanel extends BorderPane {
         combo.setMaxWidth(Double.MAX_VALUE);
         combo.getItems().addAll(
             "",
-            "🌍 Terre — HYDE 3.4 / Grille Historique Anthropocène (-10000 BC - 2023 AD)",
-            "🌍 Terre — Paléo-Démographie & Expansion Sapiens (-100000 BC)",
-            "🌍 Terre — CShapes & Centennia Reconstitutions Démographiques",
-            "🔴 Mars — Modèle de Colonisation Spatiale & Dômes d'Habitation",
-            "🟡 Vénus — Stations Aérostatiques Cloud Cities (Altitude 50 km)",
-            "⚪ Lune — Bases Sélénites Sous-Terraines & Cratères Shackleton",
-            "⚪ Mercure — Dômes Polaires & Habitats d'Ombre Permanente"
+            "🌍 Terre — HYDE 3.4 / Grille Historique Anthropocène [Global, -10 000 BC à +2023 AD]",
+            "🌍 Terre — Paléo-Démographie & Expansion Sapiens [Afrique & Eurasie, -100 000 BC à -10 000 BC]",
+            "🌍 Terre — CShapes & Centennia Reconstitutions Démographiques [Empires & États, -3000 BC à +2000 AD]",
+            "🔴 Mars — Modèle de Colonisation Spatiale & Dômes d'Habitation [Planétaire (Mars), +2050 AD à Futur]",
+            "🟡 Vénus — Stations Aérostatiques Cloud Cities (Altitude 50 km) [Planétaire (Vénus), +2100 AD à Futur]",
+            "⚪ Lune — Bases Sélénites Sous-Terraines & Cratères Shackleton [Planétaire (Lune), +2040 AD à Futur]",
+            "⚪ Mercure — Dômes Polaires & Habitats d'Ombre Permanente [Planétaire (Mercure), +2150 AD à Futur]"
         );
         org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
                 combo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
@@ -3820,90 +4040,90 @@ public class ScenarioSetupPanel extends BorderPane {
         combo.getItems().add("");
         switch (tensorIdx) {
             case 0 -> combo.getItems().addAll(
-                "🌍 Terre — Glottolog 4.8 / WALS Language Families (Composite)",
-                "🌍 Terre — Ethnologue World Linguistic Tree (Atlas)",
-                "🌍 Terre — Automated Phonological Distance Model (ASJP)",
-                "🔴 Mars — Cartographie Linguistique Coloniale Martienne",
-                "🟡 Vénus — Réseau Isogloss des Cités Aérostatiques",
-                "⚪ Lune — Dialectes Sélénites des Stations Cratériques",
-                "⚪ Mercure — Protocoles Herméens & Terminologie d'Ombre"
+                "🌍 Terre — Glottolog 4.8 / WALS Language Families [Global, -10 000 BC à Actuel (8 500+ Langues)]",
+                "🌍 Terre — Ethnologue World Linguistic Tree [Global, -3000 BC à Actuel (7 100+ Langues)]",
+                "🌍 Terre — Automated Phonological Distance Model (ASJP) [Global, -10 000 BC à Actuel (Macro-Familles)]",
+                "🔴 Mars — Cartographie Linguistique Coloniale Martienne [Planétaire (Mars), +2060 AD à Futur]",
+                "🟡 Vénus — Réseau Isogloss des Cités Aérostatiques [Planétaire (Vénus), +2120 AD à Futur]",
+                "⚪ Lune — Dialectes Sélénites des Stations Cratériques [Planétaire (Lune), +2050 AD à Futur]",
+                "⚪ Mercure — Protocoles Herméens & Terminologie d'Ombre [Planétaire (Mercure), +2160 AD à Futur]"
             );
             case 1 -> combo.getItems().addAll(
-                "🌍 Terre — Murdock Ethnographic Atlas (Kinship Systems)",
-                "🌍 Terre — Standard Cross-Cultural Sample (SCCS)",
-                "🌍 Terre — Clan & Lineage Structural Matrix (Seshat)",
-                "🔴 Mars — Structures de Parenté & Cohortes Pionnières",
-                "🟡 Vénus — Guildes & Lignages Technologiques Flottants",
-                "⚪ Lune — Associations d'Équipages & Clans Sélénites",
-                "⚪ Mercure — Confréries de Maintenance & Lignages Thermiques"
+                "🌍 Terre — Murdock Ethnographic Atlas (Kinship Systems) [Global, -4000 BC à Actuel (1 267 Sociétés)]",
+                "🌍 Terre — Standard Cross-Cultural Sample (SCCS) [Global, -4000 BC à Actuel (186 Cultures)]",
+                "🌍 Terre — Clan & Lineage Structural Matrix (Seshat) [Global, -4000 BC à +1900 AD]",
+                "🔴 Mars — Structures de Parenté & Cohortes Pionnières [Planétaire (Mars), +2050 AD à Futur]",
+                "🟡 Vénus — Guildes & Lignages Technologiques Flottants [Planétaire (Vénus), +2100 AD à Futur]",
+                "⚪ Lune — Associations d'Équipages & Clans Sélénites [Planétaire (Lune), +2045 AD à Futur]",
+                "⚪ Mercure — Confréries de Maintenance & Lignages Thermiques [Planétaire (Mercure), +2150 AD à Futur]"
             );
             case 2 -> combo.getItems().addAll(
-                "🌍 Terre — Seshat Global History Databank (Rituals & Sacred)",
-                "🌍 Terre — World Religion Database (WRD & Cultes)",
-                "🌍 Terre — Turchin Asabiyyah Cohesion Metric (Cliodynamics)",
-                "🔴 Mars — Mythologie Martienne & Cultes de la Frontière",
-                "🟡 Vénus — Rituels Solaires & Cérémonies de Nuages",
-                "⚪ Lune — Philosophie Cosmique & Rituels du Clair de Terre",
-                "⚪ Mercure — Ordres d'Énergie & Croyances de Haute Radiation"
+                "🌍 Terre — Seshat Global History Databank (Rituals & Sacred) [Global, -5000 BC à +1900 AD]",
+                "🌍 Terre — World Religion Database (WRD & Cultes) [Global, -3000 BC à +2020 AD]",
+                "🌍 Terre — Turchin Asabiyyah Cohesion Metric (Cliodynamics) [Global, -3000 BC à +2000 AD]",
+                "🔴 Mars — Mythologie Martienne & Cultes de la Frontière [Planétaire (Mars), +2060 AD à Futur]",
+                "🟡 Vénus — Rituels Solaires & Cérémonies de Nuages [Planétaire (Vénus), +2120 AD à Futur]",
+                "⚪ Lune — Philosophie Cosmique & Rituels du Clair de Terre [Planétaire (Lune), +2050 AD à Futur]",
+                "⚪ Mercure — Ordres d'Énergie & Croyances de Haute Radiation [Planétaire (Mercure), +2170 AD à Futur]"
             );
             case 3 -> combo.getItems().addAll(
-                "🌍 Terre — Centennia Historical Atlas (Sovereignty Boundaries)",
-                "🌍 Terre — CShapes 2.0 Historical Polities & Borders",
-                "🌍 Terre — GADM Administrative Sovereign Centers",
-                "🔴 Mars — Juridictions Consulaires & Traités Martiens",
-                "🟡 Vénus — Fédération des Stations Stratosphériques",
-                "⚪ Lune — Secteurs Traité de l'Espace & Bases Nationales",
-                "⚪ Mercure — Domaines Miniers & Enclaves Polaires"
+                "🌍 Terre — Centennia Historical Atlas (Sovereignty Boundaries) [Eurasie / Afrique / Amériques, -1000 BC à +2000 AD]",
+                "🌍 Terre — CShapes 2.0 Historical Polities & Borders [Global, 1886 AD à 2019 AD]",
+                "🌍 Terre — GADM Administrative Sovereign Centers [Global, 1950 AD à Actuel]",
+                "🔴 Mars — Juridictions Consulaires & Traités Martiens [Planétaire (Mars), +2060 AD à Futur]",
+                "🟡 Vénus — Fédération des Stations Stratosphériques [Planétaire (Vénus), +2110 AD à Futur]",
+                "⚪ Lune — Secteurs Traité de l'Espace & Bases Nationales [Planétaire (Lune), +2050 AD à Futur]",
+                "⚪ Mercure — Domaines Miniers & Enclaves Polaires [Planétaire (Mercure), +2150 AD à Futur]"
             );
             case 4 -> combo.getItems().addAll(
-                "🌍 Terre — ArchaeoGLOBE Project (Land Use & Material Tools)",
-                "🌍 Terre — Archaeological Material Culture Database",
-                "🌍 Terre — Lithic-to-Metallurgy Technology Frontier Model",
-                "🔴 Mars — Niveau Technologique Industriel & Robotique ISRU",
-                "🟡 Vénus — Synthèse Aérostatique & Ingénierie Acide",
-                "⚪ Lune — Fonderies Régolithes & Extraction Sélénite",
-                "⚪ Mercure — Collecteurs Haute Énergie & Fours Directs"
+                "🌍 Terre — ArchaeoGLOBE Project (Land Use & Material Tools) [Global, -10 000 BC à +1850 AD]",
+                "🌍 Terre — Archaeological Material Culture Database [Global, -50 000 BC à +1500 AD]",
+                "🌍 Terre — Lithic-to-Metallurgy Technology Frontier Model [Global, -100 000 BC à +2000 AD]",
+                "🔴 Mars — Niveau Technologique Industriel & Robotique ISRU [Planétaire (Mars), +2050 AD à Futur]",
+                "🟡 Vénus — Synthèse Aérostatique & Ingénierie Acide [Planétaire (Vénus), +2100 AD à Futur]",
+                "⚪ Lune — Fonderies Régolithes & Extraction Sélénite [Planétaire (Lune), +2045 AD à Futur]",
+                "⚪ Mercure — Collecteurs Haute Énergie & Fours Directs [Planétaire (Mercure), +2150 AD à Futur]"
             );
             case 5 -> combo.getItems().addAll(
-                "🌍 Terre — ORBIS Stanford Geospatial Network (Trade Routes)",
-                "🌍 Terre — Silk Road & Maritime Monsoon Corridors",
-                "🌍 Terre — Old World Overland Caravan Network",
-                "🔴 Mars — Réseau Ferroviaire Maglev Sub-Surface",
-                "🟡 Vénus — Navettes Stratosphériques Inter-Stations",
-                "⚪ Lune — Tunnels de Transport Magnétique Sélénite",
-                "⚪ Mercure — Réseau de Convois Électromagnétiques"
+                "🌍 Terre — ORBIS Stanford Geospatial Network (Trade Routes) [Bassin Méditerranéen & Proche-Orient, -300 BC à +500 AD]",
+                "🌍 Terre — Silk Road & Maritime Monsoon Corridors [Eurasie & Océan Indien, -500 BC à +1700 AD]",
+                "🌍 Terre — Old World Overland Caravan Network [Sahara & Asie Centrale, -1000 BC à +1800 AD]",
+                "🔴 Mars — Réseau Ferroviaire Maglev Sub-Surface [Planétaire (Mars), +2070 AD à Futur]",
+                "🟡 Vénus — Navettes Stratosphériques Inter-Stations [Planétaire (Vénus), +2110 AD à Futur]",
+                "⚪ Lune — Tunnels de Transport Magnétique Sélénite [Planétaire (Lune), +2050 AD à Futur]",
+                "⚪ Mercure — Réseau de Convois Électromagnétiques [Planétaire (Mercure), +2160 AD à Futur]"
             );
             case 6 -> combo.getItems().addAll(
-                "🌍 Terre — Seshat Databank (Institutional Complexity & Law)",
-                "🌍 Terre — Cross-National Time-Series Data (CNTS Bureaucracy)",
-                "🌍 Terre — Historical Jurisprudence & Administration Matrix",
-                "🔴 Mars — Conseil Spatial & Chartes Constitutionnelles",
-                "🟡 Vénus — Syndicats Flottants & Corporations Aérostats",
-                "⚪ Lune — Protocoles Légaux des Habitats Sélénites",
-                "⚪ Mercure — Administration Thermique & Urgences"
+                "🌍 Terre — Seshat Databank (Institutional Complexity & Law) [Global, -4000 BC à +1900 AD]",
+                "🌍 Terre — Cross-National Time-Series Data (CNTS Bureaucracy) [Global, 1815 AD à 2022 AD]",
+                "🌍 Terre — Historical Jurisprudence & Administration Matrix [Europe & Asie, -2000 BC à +1800 AD]",
+                "🔴 Mars — Conseil Spatial & Chartes Constitutionnelles [Planétaire (Mars), +2060 AD à Futur]",
+                "🟡 Vénus — Syndicats Flottants & Corporations Aérostats [Planétaire (Vénus), +2110 AD à Futur]",
+                "⚪ Lune — Protocoles Légaux des Habitats Sélénites [Planétaire (Lune), +2050 AD à Futur]",
+                "⚪ Mercure — Administration Thermique & Urgences [Planétaire (Mercure), +2160 AD à Futur]"
             );
             case 7 -> combo.getItems().addAll(
-                "🌍 Terre — HYDE 3.4 Historical Land Use & Anthropogenic Stress",
-                "🌍 Terre — Anthromes 2.0 Global Anthropogenic Biomes",
-                "🌍 Terre — Malthusian Carrying Capacity Model",
-                "🔴 Mars — Bioregenerative Life Support (BLSS) & Dégradation",
-                "🟡 Vénus — Érosion Chimique & Recyclage Fermé",
-                "⚪ Lune — Épuisement des Volatils & Poussière Régolithe",
-                "⚪ Mercure — Usure Thermique & Contraintes Matérielles"
+                "🌍 Terre — HYDE 3.4 Historical Land Use & Anthropogenic Stress [Global, -10 000 BC à +2023 AD]",
+                "🌍 Terre — Anthromes 2.0 Global Anthropogenic Biomes [Global, -8000 BC à +2000 AD]",
+                "🌍 Terre — Malthusian Carrying Capacity Model [Global, -100 000 BC à +2100 AD]",
+                "🔴 Mars — Bioregenerative Life Support (BLSS) & Dégradation [Planétaire (Mars), +2050 AD à Futur]",
+                "🟡 Vénus — Érosion Chimique & Recyclage Fermé [Planétaire (Vénus), +2100 AD à Futur]",
+                "⚪ Lune — Épuisement des Volatils & Poussière Régolithe [Planétaire (Lune), +2045 AD à Futur]",
+                "⚪ Mercure — Usure Thermique & Contraintes Matérielles [Planétaire (Mercure), +2150 AD à Futur]"
             );
             case 8 -> combo.getItems().addAll(
-                "🌍 Terre — GADM / Historical Pathogen Memory & Epidemics",
-                "🌍 Terre — Global Infectious Disease Vector Database",
-                "🌍 Terre — Host-Pathogen Coevolution & Immunity Model",
-                "🔴 Mars — Microbiome Artificiel Confiné & Résistance",
-                "🟡 Vénus — Immunologie en Atmosphère Confinée",
-                "⚪ Lune — Pathogènes d'Isolement & Régime Stérile",
-                "⚪ Mercure — Filtrage Radiatif & Microbiote Synthétique"
+                "🌍 Terre — GADM / Historical Pathogen Memory & Epidemics [Global, -3000 BC à +2023 AD]",
+                "🌍 Terre — Global Infectious Disease Vector Database [Zones Tropicales & Tempérées, -1000 BC à +2020 AD]",
+                "🌍 Terre — Host-Pathogen Coevolution & Immunity Model [Global, -100 000 BC à +2100 AD]",
+                "🔴 Mars — Microbiome Artificiel Confiné & Résistance [Planétaire (Mars), +2050 AD à Futur]",
+                "🟡 Vénus — Immunologie en Atmosphère Confinée [Planétaire (Vénus), +2110 AD à Futur]",
+                "⚪ Lune — Pathogènes d'Isolement & Régime Stérile [Planétaire (Lune), +2045 AD à Futur]",
+                "⚪ Mercure — Filtrage Radiatif & Microbiote Synthétique [Planétaire (Mercure), +2160 AD à Futur]"
             );
             default -> combo.getItems().addAll(
-                "🌍 Terre — Seshat / Global Databank Substrate (Composite)",
-                "🌍 Terre — Historical Empirical Baseline (Composite)",
-                "🔴 Mars — Modèle Cartographique Martien Dérivé"
+                "🌍 Terre — Seshat / Global Databank Substrate [Global, -5000 BC à +2000 AD]",
+                "🌍 Terre — Historical Empirical Baseline [Global, -100 000 BP à Actuel]",
+                "🔴 Mars — Modèle Cartographique Martien Dérivé [Planétaire (Mars), +2050 AD à Futur]"
             );
         }
         org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
@@ -4031,6 +4251,25 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void generateProceduralSingleCulturalTensor(int tensorIdx) {
+        // 1. Force procedural mode toggle
+        RadioButton rp = tensorProcRadios.get(tensorIdx);
+        if (rp != null) {
+            rp.setSelected(true);
+        }
+        customTensorImages.remove(tensorIdx);
+        if (tensorIdx == 0) customIsoglossImage = null;
+        if (tensorIdx == 1) customKinshipImage = null;
+        if (tensorIdx == 2) customRitualsImage = null;
+        if (tensorIdx == 3) customSovereigntyImage = null;
+        updateTensorFileLabel(tensorIdx);
+
+        // 2. Automatically switch right preview to this tensor layer
+        if (previewModeCombo != null) {
+            previewModeCombo.getSelectionModel().select(tensorIdx + 1);
+            updatePreviewTitleText();
+            updateBottomLegend();
+        }
+
         Scenario s = getScenario();
         if (s == null) return;
         Button btn = tensorGenSingleBtns.get(tensorIdx);
@@ -4039,6 +4278,19 @@ public class ScenarioSetupPanel extends BorderPane {
             org.ether.society.data.HistoricalMapGenerator.generateProceduralMapsForScenario(s);
         }).thenRun(() -> javafx.application.Platform.runLater(() -> {
             if (btn != null) btn.setDisable(false);
+            String b64 = s.getCustomTensorMapBase64(tensorIdx);
+            if (b64 != null && !b64.isBlank()) {
+                Image img = org.ether.society.data.ImageMapLoader.base64PngToImage(b64);
+                if (img != null) {
+                    customTensorImages.put(tensorIdx, img);
+                    if (tensorIdx == 0) customIsoglossImage = img;
+                    if (tensorIdx == 1) customKinshipImage = img;
+                    if (tensorIdx == 2) customRitualsImage = img;
+                    if (tensorIdx == 3) customSovereigntyImage = img;
+                }
+            }
+            updateTensorFileLabel(tensorIdx);
+            notifyParamChange();
             drawPreview();
         }));
     }
@@ -4144,8 +4396,10 @@ public class ScenarioSetupPanel extends BorderPane {
             randBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.random_tensor_seed", "Tirer une nouvelle graine aléatoire pour ce tenseur.")));
             randBtn.setOnAction(e -> {
                 seedField.setText(String.valueOf(new java.util.Random().nextLong(1000000)));
-                notifyParamChange();
-                drawPreview();
+                if (radioProc != null) {
+                    radioProc.setSelected(true);
+                }
+                generateProceduralSingleCulturalTensor(tensorIdx);
             });
 
             Button genSingleBtn = new Button(I18n.getOrDefault("scenario.tensor.btn.gen_single", "🪄 Générer"));
@@ -4549,7 +4803,27 @@ public class ScenarioSetupPanel extends BorderPane {
     private void generateProceduralPopulationDensity() {
         customDensityImage = null;
         if (radioProcDemo != null) radioProcDemo.setSelected(true);
-        if (currentPreviewCells == null || currentPreviewCells.isEmpty()) {
+        if (previewModeCombo != null) {
+            previewModeCombo.getSelectionModel().select(0);
+            updatePreviewTitleText();
+            updateBottomLegend();
+        }
+        Scenario s = getScenario();
+        if (s != null) {
+            java.util.concurrent.CompletableFuture.runAsync(() -> {
+                org.ether.society.data.HistoricalMapGenerator.generateProceduralMapsForScenario(s);
+            }).thenRun(() -> javafx.application.Platform.runLater(() -> {
+                String b64 = s.getCustomDensityBase64();
+                if (b64 != null && !b64.isBlank()) {
+                    customDensityImage = org.ether.society.data.ImageMapLoader.base64PngToImage(b64);
+                }
+                if (currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
+                    distributeInitialPopulation(currentPreviewCells);
+                }
+                notifyParamChange();
+                drawPreview();
+            }));
+        } else if (currentPreviewCells == null || currentPreviewCells.isEmpty()) {
             generatePreview();
         } else {
             java.util.concurrent.CompletableFuture.runAsync(() -> {
@@ -4567,6 +4841,21 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         }
         customTensorImages.clear();
+        customIsoglossImage = null;
+        customKinshipImage = null;
+        customRitualsImage = null;
+        customSovereigntyImage = null;
+
+        if (previewModeCombo != null) {
+            int curSel = previewModeCombo.getSelectionModel().getSelectedIndex();
+            int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
+            if (curSel <= 0 || curSel > dims) {
+                previewModeCombo.getSelectionModel().select(1); // Select first cultural tensor (isogloss)
+            }
+            updatePreviewTitleText();
+            updateBottomLegend();
+        }
+
         if (tensorFileLabels != null) {
             for (Integer idx : tensorFileLabels.keySet()) {
                 updateTensorFileLabel(idx);
@@ -4581,6 +4870,22 @@ public class ScenarioSetupPanel extends BorderPane {
             org.ether.society.data.HistoricalMapGenerator.generateProceduralMapsForScenario(s);
         }).thenRun(() -> javafx.application.Platform.runLater(() -> {
             if (btnGenerateProceduralTensorsSection != null) btnGenerateProceduralTensorsSection.setDisable(false);
+            int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
+            for (int i = 0; i < dims; i++) {
+                String b64 = s.getCustomTensorMapBase64(i);
+                if (b64 != null && !b64.isBlank()) {
+                    Image img = org.ether.society.data.ImageMapLoader.base64PngToImage(b64);
+                    if (img != null) {
+                        customTensorImages.put(i, img);
+                        if (i == 0) customIsoglossImage = img;
+                        if (i == 1) customKinshipImage = img;
+                        if (i == 2) customRitualsImage = img;
+                        if (i == 3) customSovereigntyImage = img;
+                    }
+                }
+                updateTensorFileLabel(i);
+            }
+            notifyParamChange();
             drawPreview();
         }));
     }
@@ -4650,75 +4955,109 @@ public class ScenarioSetupPanel extends BorderPane {
             colors = new Color[]{
                 Color.rgb(30, 95, 165), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68)
             };
-            labels = new String[]{"Dialecte Archaïque (C₀=0)", "Foyer Prosodique (0.25)", "Isoglosse Médiane (0.50)", "Innovations Substratiques (0.75)", "Dialecte Exogène (1.0)"};
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.dialect.0", "Dialecte Archaïque (C₀=0)"),
+                I18n.getOrDefault("setup.legend.dialect.1", "Foyer Prosodique (0.25)"),
+                I18n.getOrDefault("setup.legend.dialect.2", "Isoglosse Médiane (0.50)"),
+                I18n.getOrDefault("setup.legend.dialect.3", "Innovations Substratiques (0.75)"),
+                I18n.getOrDefault("setup.legend.dialect.4", "Dialecte Exogène (1.0)")
+            };
             fullTooltips = new String[]{
-                "Dialecte Archaïque : Formes originelles non diffusées",
-                "Foyer Prosodique : Zone d'expansion dialectale secondaire",
-                "Isoglosse Médiane : Zone de frontière linguistique et bilinguisme",
-                "Innovations Substratiques : Lexique technique ou grammatical rénové",
-                "Dialecte Exogène / Innovant : Standard de communication émergent"
+                I18n.getOrDefault("setup.legend.dialect.0.desc", "Dialecte Archaïque : Formes originelles non diffusées"),
+                I18n.getOrDefault("setup.legend.dialect.1.desc", "Foyer Prosodique : Zone d'expansion dialectale secondaire"),
+                I18n.getOrDefault("setup.legend.dialect.2.desc", "Isoglosse Médiane : Zone de frontière linguistique et bilinguisme"),
+                I18n.getOrDefault("setup.legend.dialect.3.desc", "Innovations Substratiques : Lexique technique ou grammatical rénové"),
+                I18n.getOrDefault("setup.legend.dialect.4.desc", "Dialecte Exogène / Innovant : Standard de communication émergent")
             };
         } else if (idx == 2 || mode.contains("Kinship") || mode.contains("Clans")) {
             colors = new Color[]{
                 Color.rgb(56, 189, 248), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(167, 139, 250)
             };
-            labels = new String[]{"Famille Nucléaire (C₁=0)", "Lignée Élargie (0.25)", "Matriarcat Lacustre (0.50)", "Patriarcat Hiérarchique (0.75)", "Confédération Tribale (1.0)"};
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.kinship.0", "Famille Nucléaire (C₁=0)"),
+                I18n.getOrDefault("setup.legend.kinship.1", "Lignée Élargie (0.25)"),
+                I18n.getOrDefault("setup.legend.kinship.2", "Matriarcat Lacustre (0.50)"),
+                I18n.getOrDefault("setup.legend.kinship.3", "Patriarcat Hiérarchique (0.75)"),
+                I18n.getOrDefault("setup.legend.kinship.4", "Confédération Tribale (1.0)")
+            };
             fullTooltips = new String[]{
-                "Famille Nucléaire : Cellule parentale autonome de base",
-                "Lignée Élargie : Entraide inter-générationnelle et clans d'alliance",
-                "Matriarcat Lacustre : Filiations matrilinéaires et terres collectives",
-                "Patriarcat Hiérarchique : Structure agnatique et chefferies martiales",
-                "Confédération Tribale : Assemblée de clans fédérés à grande échelle"
+                I18n.getOrDefault("setup.legend.kinship.0.desc", "Famille Nucléaire : Cellule parentale autonome de base"),
+                I18n.getOrDefault("setup.legend.kinship.1.desc", "Lignée Élargie : Entraide inter-générationnelle et clans d'alliance"),
+                I18n.getOrDefault("setup.legend.kinship.2.desc", "Matriarcat Lacustre : Filiations matrilinéaires et terres collectives"),
+                I18n.getOrDefault("setup.legend.kinship.3.desc", "Patriarcat Hiérarchique : Structure agnatique et chefferies martiales"),
+                I18n.getOrDefault("setup.legend.kinship.4.desc", "Confédération Tribale : Assemblée de clans fédérés à grande échelle")
             };
         } else if (idx == 3 || mode.contains("Rituels") || mode.contains("Asabiyyah")) {
             colors = new Color[]{
                 Color.rgb(14, 165, 233), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(225, 29, 72)
             };
-            labels = new String[]{"Animisme Local (C₂=0)", "Cultes Civiques (0.25)", "Polythéisme (0.50)", "Asabiyyah Élevée (0.75)", "Dogme Transcendant (1.0)"};
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.rituals.0", "Animisme Local (C₂=0)"),
+                I18n.getOrDefault("setup.legend.rituals.1", "Cultes Civiques (0.25)"),
+                I18n.getOrDefault("setup.legend.rituals.2", "Polythéisme (0.50)"),
+                I18n.getOrDefault("setup.legend.rituals.3", "Asabiyyah Élevée (0.75)"),
+                I18n.getOrDefault("setup.legend.rituals.4", "Dogme Transcendant (1.0)")
+            };
             fullTooltips = new String[]{
-                "Animisme Local : Croyances de terroirs et esprit des éléments",
-                "Cultes Civiques : Rites urbains d'intégration communautaire",
-                "Polythéisme : Panthéons structurés et clergés régionaux",
-                "Asabiyyah Élevée : Forte solidarité tribale (Cohésion d'Ibn Khaldoun)",
-                "Dogme Transcendant : Monothéisme ou idéologie universaliste"
+                I18n.getOrDefault("setup.legend.rituals.0.desc", "Animisme Local : Croyances de terroirs et esprit des éléments"),
+                I18n.getOrDefault("setup.legend.rituals.1.desc", "Cultes Civiques : Rites urbains d'intégration communautaire"),
+                I18n.getOrDefault("setup.legend.rituals.2.desc", "Polythéisme : Panthéons structurés et clergés régionaux"),
+                I18n.getOrDefault("setup.legend.rituals.3.desc", "Asabiyyah Élevée : Forte solidarité tribale (Cohésion d'Ibn Khaldoun)"),
+                I18n.getOrDefault("setup.legend.rituals.4.desc", "Dogme Transcendant : Monothéisme ou idéologie universaliste")
             };
         } else if (idx == 4 || mode.contains("Souveraineté") || mode.contains("Politiques")) {
             colors = new Color[]{
                 Color.rgb(30, 95, 165), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68)
             };
-            labels = new String[]{"Zone Franche (C₃=0)", "Cité-État Libre (0.25)", "Principauté (0.50)", "Empire Centralisé (0.75)", "Capitale Core (1.0)"};
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.sovereignty.0", "Zone Franche (C₃=0)"),
+                I18n.getOrDefault("setup.legend.sovereignty.1", "Cité-État Libre (0.25)"),
+                I18n.getOrDefault("setup.legend.sovereignty.2", "Principauté (0.50)"),
+                I18n.getOrDefault("setup.legend.sovereignty.3", "Empire Centralisé (0.75)"),
+                I18n.getOrDefault("setup.legend.sovereignty.4", "Capitale Core (1.0)")
+            };
             fullTooltips = new String[]{
-                "Zone Franche / Nomade : Absence de souveraineté étatique formalisée",
-                "Cité-État Libre : Autonomie municipale et hinterland restreint",
-                "Principauté Régionale : Contrôle féodal ou provincial intermédiaire",
-                "Empire Centralisé : Administration unifiée et prélèvement fiscal",
-                "Capitale Core : Foyer du pouvoir politique et militaire suprême"
+                I18n.getOrDefault("setup.legend.sovereignty.0.desc", "Zone Franche / Nomade : Absence de souveraineté étatique formalisée"),
+                I18n.getOrDefault("setup.legend.sovereignty.1.desc", "Cité-État Libre : Autonomie municipale et hinterland restreint"),
+                I18n.getOrDefault("setup.legend.sovereignty.2.desc", "Principauté Régionale : Contrôle féodal ou provincial intermédiaire"),
+                I18n.getOrDefault("setup.legend.sovereignty.3.desc", "Empire Centralisé : Administration unifiée et prélèvement fiscal"),
+                I18n.getOrDefault("setup.legend.sovereignty.4.desc", "Capitale Core : Foyer du pouvoir politique et militaire suprême")
             };
         } else if (idx == 7 || mode.contains("Friction")) {
             colors = new Color[]{
                 Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68), Color.rgb(167, 139, 250)
             };
-            labels = new String[]{"Plaine (Faible σ)", "Colline / Fleuve (Moyen)", "Montagne (Fort)", "Désert / Extrême", "Barrière Absolue"};
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.friction.0", "Plaine (Faible σ)"),
+                I18n.getOrDefault("setup.legend.friction.1", "Colline / Fleuve (Moyen)"),
+                I18n.getOrDefault("setup.legend.friction.2", "Montagne (Fort)"),
+                I18n.getOrDefault("setup.legend.friction.3", "Désert / Extrême"),
+                I18n.getOrDefault("setup.legend.friction.4", "Barrière Absolue")
+            };
             fullTooltips = new String[]{
-                "Plaine Alluviale : Friction minimale à la mobilité (σ ≈ 0.1)",
-                "Colline / Fleuve : Obstacle naturel mineur franchissable",
-                "Chaîne Montagneuse : Transports ralentis, cols escarpés",
-                "Désert Extrême : Zone aride exigeant des convois spécialisés",
-                "Haute Altitude / Falaise : Barrière infranchissable pour les armées"
+                I18n.getOrDefault("setup.legend.friction.0.desc", "Plaine Alluviale : Friction minimale à la mobilité (σ ≈ 0.1)"),
+                I18n.getOrDefault("setup.legend.friction.1.desc", "Colline / Fleuve : Obstacle naturel mineur franchissable"),
+                I18n.getOrDefault("setup.legend.friction.2.desc", "Chaîne Montagneuse : Transports ralentis, cols escarpés"),
+                I18n.getOrDefault("setup.legend.friction.3.desc", "Désert Extrême : Zone aride exigeant des convois spécialisés"),
+                I18n.getOrDefault("setup.legend.friction.4.desc", "Haute Altitude / Falaise : Barrière infranchissable pour les armées")
             };
         } else {
             colors = new Color[]{
                 Color.rgb(30, 95, 165), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68)
             };
             labels = new String[]{
-                "Inhabité (0 hab/km²)", "Faible (1–50 hab/km²)", "Moyenne (50–500)", "Élevée (500–2.5k)", "Métropole (> 2.5k)"
+                I18n.getOrDefault("setup.legend.density.0", "Inhabité (0 hab/km²)"),
+                I18n.getOrDefault("setup.legend.density.1", "Faible (1–50 hab/km²)"),
+                I18n.getOrDefault("setup.legend.density.2", "Moyenne (50–500)"),
+                I18n.getOrDefault("setup.legend.density.3", "Élevée (500–2.5k)"),
+                I18n.getOrDefault("setup.legend.density.4", "Métropole (> 2.5k)")
             };
             fullTooltips = new String[]{
-                "Zone Inhabitée : 0 hab/km² (Océans, déserts, haute montagne)",
-                "Densité Faible : 1 à 50 hab/km² (Campagnes, tribus nomades)",
-                "Densité Moyenne : 50 à 500 hab/km² (Bourgades & vallées agricoles)",
-                "Densité Élevée / Cité : 500 à 2 500 hab/km² (Centres urbains régionaux)",
-                "Métropole / Megapole : > 2 500 hab/km² (Grandes capitales historiques)"
+                I18n.getOrDefault("setup.legend.density.0.desc", "Zone Inhabitée : 0 hab/km² (Océans, déserts, haute montagne)"),
+                I18n.getOrDefault("setup.legend.density.1.desc", "Densité Faible : 1 à 50 hab/km² (Campagnes, tribus nomades)"),
+                I18n.getOrDefault("setup.legend.density.2.desc", "Densité Moyenne : 50 à 500 hab/km² (Bourgades & vallées agricoles)"),
+                I18n.getOrDefault("setup.legend.density.3.desc", "Densité Élevée / Cité : 500 à 2 500 hab/km² (Centres urbains régionaux)"),
+                I18n.getOrDefault("setup.legend.density.4.desc", "Métropole / Megapole : > 2 500 hab/km² (Grandes capitales historiques)")
             };
         }
 
@@ -5328,9 +5667,15 @@ public class ScenarioSetupPanel extends BorderPane {
         int pwHeight = 160;
 
         PlanetPreset planet = activePlanetPreset != null ? activePlanetPreset : PlanetPreset.EARTH_LIKE;
-        boolean isEarth = planet != null && planet.elevationUseImport() && "earth".equalsIgnoreCase(planet.elevationMapSource());
-
-        Image bgImage = isEarth ? getCachedEarthElevationImage() : null;
+        Image bgImage = null;
+        if (planet.customElevBase64() != null && !planet.customElevBase64().isBlank()) {
+            bgImage = org.ether.society.data.ImageMapLoader.base64PngToImage(planet.customElevBase64());
+        } else if (planet.elevationUseImport()) {
+            bgImage = org.ether.society.data.ImageMapLoader.loadMapImage(planet.elevationMapSource(), planet.getAssociatedEpochYear(), "elevation.png");
+        }
+        if (bgImage == null && "earth".equalsIgnoreCase(planet.elevationMapSource())) {
+            bgImage = getCachedEarthElevationImage();
+        }
         PixelReader bgReader = bgImage != null ? bgImage.getPixelReader() : null;
 
         int idx = previewModeCombo != null ? previewModeCombo.getSelectionModel().getSelectedIndex() : 0;
@@ -5365,7 +5710,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
             double minAlt = planet != null ? planet.minAltitudeMeters() : -11000.0;
             double maxAlt = planet != null ? planet.maxAltitudeMeters() : 8848.0;
-            double wLevel = planet != null ? planet.waterLevel() : 0.48;
+            double wLevel = planet != null ? planet.waterLevel() : 0.478;
             boolean hasOcean = wLevel > -0.4;
 
             double cutThreshold;
@@ -5447,11 +5792,25 @@ public class ScenarioSetupPanel extends BorderPane {
                     if (!isLand) {
                         baseReliefColor = Color.rgb(15, 23, 42); // Sea / Deep ocean navy
                     } else {
-                        double landNorm = bgReader != null ? Math.clamp((elevVal - cutThreshold) / Math.max(0.01, 1.0 - cutThreshold), 0.0, 1.0) : Math.clamp((elevVal - wLevel) / Math.max(1000.0, planet.maxAltitudeMeters() - wLevel), 0.0, 1.0);
-                        int r = Math.clamp((int) (55 + landNorm * 120), 0, 255);
-                        int g = Math.clamp((int) (125 + landNorm * 80), 0, 255);
-                        int bCol = Math.clamp((int) (50 + landNorm * 60), 0, 255);
-                        baseReliefColor = Color.rgb(r, g, bCol);
+                        double landNorm = bgReader != null
+                                ? Math.clamp((elevVal - cutThreshold) / Math.max(0.01, 1.0 - cutThreshold), 0.0, 1.0)
+                                : Math.clamp((elevVal - wLevel) / Math.max(1000.0, planet.maxAltitudeMeters() - wLevel), 0.0, 1.0);
+                        if (landNorm < 0.20) {
+                            double t = landNorm / 0.20;
+                            baseReliefColor = Color.rgb((int)(34 + 60 * t), (int)(139 + 30 * t), (int)(34 + 20 * t));
+                        } else if (landNorm < 0.40) {
+                            double t = (landNorm - 0.20) / 0.20;
+                            baseReliefColor = Color.rgb((int)(94 + 86 * t), (int)(169 + 16 * t), (int)(54 + 21 * t));
+                        } else if (landNorm < 0.65) {
+                            double t = (landNorm - 0.40) / 0.25;
+                            baseReliefColor = Color.rgb((int)(180 - 10 * t), (int)(185 - 65 * t), (int)(75 - 15 * t));
+                        } else if (landNorm < 0.85) {
+                            double t = (landNorm - 0.65) / 0.20;
+                            baseReliefColor = Color.rgb((int)(170 - 20 * t), (int)(120 + 40 * t), (int)(60 + 80 * t));
+                        } else {
+                            double t = (landNorm - 0.85) / 0.15;
+                            baseReliefColor = Color.rgb((int)(150 + 95 * t), (int)(160 + 90 * t), (int)(140 + 115 * t));
+                        }
                     }
 
                     // 2) Main layer color (custom uploaded image OR procedural density overlay)
@@ -5460,15 +5819,17 @@ public class ScenarioSetupPanel extends BorderPane {
                         int imgX = (int) Math.clamp(((px / (double) pwWidth) * activeCustomImage.getWidth()), 0, activeCustomImage.getWidth() - 1);
                         int imgY = (int) Math.clamp(((py / (double) pwHeight) * activeCustomImage.getHeight()), 0, activeCustomImage.getHeight() - 1);
                         pxColor = customReader.getColor(imgX, imgY);
+                        if (!isLand) {
+                            pxColor = baseReliefColor;
+                        }
                     } else if (!isLand) {
                         pxColor = baseReliefColor; // Ocean Navy
                     } else {
-                        // Density mode default preview on land
+                        // Density mode default preview on land: blend population heat on top of natural hypsometric base
                         long startYear = startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -8000;
                         boolean isAmericas = lon < -25.0;
                         boolean isSahul = (lat < 10.0 && lon > 95.0) || (lat < -10.0 && lon > 110.0);
 
-                        // Prehistoric geographic human presence checks
                         boolean isHumanSettled = true;
                         if (startYear <= -50000 && (isAmericas || isSahul)) {
                             isHumanSettled = false;
@@ -5476,21 +5837,20 @@ public class ScenarioSetupPanel extends BorderPane {
                             isHumanSettled = false;
                         }
 
-                        Color heatCol;
                         if (!isHumanSettled) {
-                            heatCol = Color.rgb(30, 95, 165); // Inhabité (0 hab/km²) - Blue from legend
+                            pxColor = blendColors(baseReliefColor, Color.rgb(30, 95, 165), 0.35); // Inhabité
                         } else {
                             boolean isEastAfrica = (lat >= -15 && lat <= 15) && (lon >= 25 && lon <= 45);
                             boolean isFertileCrescent = (lat >= 20 && lat <= 38) && (lon >= 25 && lon <= 90);
                             boolean isChinaIndus = (lat >= 10 && lat <= 42) && (lon >= 65 && lon <= 125);
 
                             if (isEastAfrica || isFertileCrescent || isChinaIndus) {
-                                heatCol = isFootprintMode ? Color.rgb(239, 68, 68) : Color.rgb(249, 115, 22); // High / Orange
+                                Color heatCol = isFootprintMode ? Color.rgb(239, 68, 68) : Color.rgb(249, 115, 22);
+                                pxColor = blendColors(baseReliefColor, heatCol, 0.70);
                             } else {
-                                heatCol = Color.rgb(16, 185, 129); // Faible / Green
+                                pxColor = blendColors(baseReliefColor, Color.rgb(16, 185, 129), 0.50);
                             }
                         }
-                        pxColor = heatCol;
                     }
 
                     // 3) Relief overlay and coastline / Datum outlines
@@ -5535,12 +5895,25 @@ public class ScenarioSetupPanel extends BorderPane {
         return scenarioPresetBar;
     }
 
-    private static Image cachedEarthElevationImage = null;
-    private Image getCachedEarthElevationImage() {
-        if (cachedEarthElevationImage == null) {
-            cachedEarthElevationImage = org.ether.society.data.ImageMapLoader.loadMapImage("earth", 2026L, "elevation.png");
+    private Image getElevationImageForPreset(PlanetPreset planet) {
+        if (planet == null) planet = activePlanetPreset != null ? activePlanetPreset : PlanetPreset.EARTH_LIKE;
+        if (planet.customElevBase64() != null && !planet.customElevBase64().isBlank()) {
+            return org.ether.society.data.ImageMapLoader.base64PngToImage(planet.customElevBase64());
         }
-        return cachedEarthElevationImage;
+        String pSource = planet.elevationMapSource();
+        if (pSource == null || pSource.isBlank() || "none".equalsIgnoreCase(pSource)) {
+            pSource = planet.getCanonicalPlanet();
+        }
+        long yr = planet.getAssociatedEpochYear();
+        Image img = org.ether.society.data.ImageMapLoader.loadMapImage(pSource, yr, "elevation.png");
+        if (img == null && "earth".equalsIgnoreCase(pSource)) {
+            img = org.ether.society.data.ImageMapLoader.loadMapImage("earth", 2026L, "elevation.png");
+        }
+        return img;
+    }
+
+    private Image getCachedEarthElevationImage() {
+        return getElevationImageForPreset(activePlanetPreset);
     }
 
     // =========================================================================
@@ -5809,6 +6182,9 @@ public class ScenarioSetupPanel extends BorderPane {
                     previewStatusLabel.setText(I18n.getOrDefault("scenario.status.generated_prefix", "Generated: ") + finalCells.size() + I18n.getOrDefault("scenario.status.generated_h3_suffix", " H3 cells."));
 
                     setStartButtonCompletedState();
+                    if (scenarioPresetBar != null) {
+                        scenarioPresetBar.markClean();
+                    }
 
                     if (onStartSimulation != null) {
                         onStartSimulation.accept(scenarioToSave);
@@ -5897,15 +6273,42 @@ public class ScenarioSetupPanel extends BorderPane {
         eventsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         List<String> eventTypes = List.of(
+            // --- JALONS INFORMATIFS (Préfixe milestone_) ---
+            "milestone_archaeology",
+            "milestone_polity",
+            "milestone_technology",
+            "milestone_golden_age",
+            "milestone_ethnography",
+            // --- DÉSASTRES & CATACLYSMES (Préfixe disaster_) ---
+            "disaster_volcano",
+            "disaster_earthquake",
+            "disaster_tsunami",
+            "disaster_pandemic",
+            "disaster_famine",
+            "disaster_heatwave",
+            "disaster_ice_age",
+            "disaster_meteor",
+            "disaster_solar_emp",
+            "disaster_nuclear_strike",
+            "disaster_nuclear_winter",
+            "disaster_cyber_attack",
+            "disaster_economic_crash",
+            "disaster_biodiversity_collapse",
+            "disaster_geoengineering",
+            "disaster_alien_contact",
+            // --- ALIASES RÉTROCOMPATIBLES ---
+            "milestone",
+            "historical",
             "volcano",
-            "heatwave",
+            "nuclear_strike",
+            "nuclear_winter",
+            "earthquake",
+            "tsunami",
+            "meteor",
             "solar_emp",
             "pandemic",
-            "meteor",
-            "nuclear_winter",
             "famine",
-            "tsunami",
-            "earthquake",
+            "heatwave",
             "ice_age",
             "cyber_attack",
             "economic_crash",
@@ -5920,7 +6323,7 @@ public class ScenarioSetupPanel extends BorderPane {
         colType.setCellValueFactory(d -> d.getValue().typeProperty());
         colType.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableArrayList(eventTypes)));
         colType.setOnEditCommit(e -> e.getRowValue().setType(e.getNewValue()));
-        colType.setPrefWidth(115);
+        colType.setPrefWidth(140);
 
         colName = new TableColumn<>();
         colName.setCellValueFactory(d -> d.getValue().nameProperty());
@@ -5961,13 +6364,13 @@ public class ScenarioSetupPanel extends BorderPane {
         eventsTable.getColumns().clear();
         eventsTable.getColumns().addAll(colType, colName, colYear, colLat, colLon, colDepth, colMag);
         eventsTable.setUserData(new TableColumn[]{colType, colName, colYear, colLat, colLon, colDepth, colMag});
-        eventsTable.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events_table", "📋 Events Table: Double-click a cell to edit its type (17 values available), name, year, coordinates, or magnitude.")));
+        eventsTable.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events_table", "📋 Events Table: Double-click a cell to edit its type (milestone_* or disaster_*), name, year, coordinates, or magnitude.")));
 
         addEventBtn = new Button();
         addEventBtn.getStyleClass().add("button-secondary");
         addEventBtn.setMinWidth(Region.USE_PREF_SIZE);
-        addEventBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events.add", "➕ Add new event (choose among 17 cataclysmic/climate types).")));
-        addEventBtn.setOnAction(e -> eventsList.add(new ClimateEvent("volcano", "Nouvel Événement", 2026, 0.0, 0.0, 10.0, 6.0)));
+        addEventBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events.add", "➕ Add new event (choose among milestone_* or disaster_* types).")));
+        addEventBtn.setOnAction(e -> eventsList.add(new ClimateEvent("milestone_archaeology", "Nouvel Événement / Repère", 2026, 0.0, 0.0, 0.0, 5.0)));
 
         removeEventBtn = new Button();
         removeEventBtn.getStyleClass().add("button-secondary");
@@ -5992,7 +6395,7 @@ public class ScenarioSetupPanel extends BorderPane {
         loadEarthEventsBtn = new Button();
         loadEarthEventsBtn.getStyleClass().add("button-secondary");
         loadEarthEventsBtn.setMinWidth(Region.USE_PREF_SIZE);
-        loadEarthEventsBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events.load", "Load or merge Earth historical events.")));
+        loadEarthEventsBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events.load", "Load or merge master chronological events catalog (cataclysms & milestones).")));
         loadEarthEventsBtn.setOnAction(e -> loadEarthHistoricalEvents(startYearSpinner != null ? startYearSpinner.getValue() : -8000, true));
 
         CheckBox eventsCheckBox = new CheckBox(org.ether.society.i18n.I18n.getOrDefault("scenario.events.enable", "Schedule climate events & historical disasters"));
@@ -6059,60 +6462,12 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         }
 
-        List<ClimateEvent> masterList = new ArrayList<>();
-
-        // Éruptions Volcaniques & Stratosphère (tau)
-        masterList.add(new ClimateEvent("volcano", "Super-Éruption Toba (VEI-8, τ=3.50, Gel Global)", -74000, 2.88, 98.88, 0.0, 8.0));
-        masterList.add(new ClimateEvent("volcano", "Éruption Santorini / Thera (VEI-7)", -1640, 36.40, 25.40, 0.0, 7.0));
-        masterList.add(new ClimateEvent("volcano", "Éruption Vésuve (Pompéi VEI-5)", 79, 40.82, 14.43, 0.0, 5.0));
-        masterList.add(new ClimateEvent("volcano", "Anomalie Volcanique & Hiver Global 536 (VEI-7)", 536, 13.70, -89.20, 0.0, 7.0));
-        masterList.add(new ClimateEvent("volcano", "Éruption Samalas / Rinjani (VEI-7, Petit Âge Glaciaire)", 1257, -8.40, 116.47, 0.0, 7.0));
-        masterList.add(new ClimateEvent("volcano", "Éruption Huaynaputina (VEI-6)", 1600, -16.60, -71.35, 0.0, 6.0));
-        masterList.add(new ClimateEvent("volcano", "Éruption Laki (Islande, Nuage Toxique VEI-6)", 1783, 64.06, -17.33, 0.0, 6.0));
-        masterList.add(new ClimateEvent("volcano", "Éruption Tambora (VEI-7, τ=1.20, Année sans été)", 1815, -8.25, 117.98, 0.0, 7.0));
-        masterList.add(new ClimateEvent("volcano", "Éruption Krakatoa (VEI-6, τ=0.80)", 1883, -6.10, 105.42, 0.0, 6.0));
-        masterList.add(new ClimateEvent("volcano", "Éruption Pinatubo (VEI-6, τ=0.40)", 1991, 15.13, 120.35, 0.0, 6.0));
-
-        // Tempêtes Solaires & EMP Carrington
-        masterList.add(new ClimateEvent("solar_emp", "Événement Solaire Carrington (EMP & Grille Électrique)", 1859, 50.0, 0.0, 0.0, 8.5));
-
-        // Impact Météorique
-        masterList.add(new ClimateEvent("meteor", "Impact Chicxulub (Extinction K-Pg VEI-10)", -66000000, 21.40, -89.50, 0.0, 10.0));
-        masterList.add(new ClimateEvent("meteor", "Impact Tunguska (Onde de Choc 15Mt)", 1908, 60.89, 101.89, 0.0, 5.0));
-
-        // Tectonique, Séismes & Tsunamis
-        masterList.add(new ClimateEvent("earthquake", "Séisme Shensi (Chine, 830k victimes)", 1556, 34.50, 109.70, 20.0, 8.0));
-        masterList.add(new ClimateEvent("earthquake", "Séisme Lisbonne (Portugal & Tsunami, M8.7)", 1755, 36.00, -10.50, 30.0, 8.7));
-        masterList.add(new ClimateEvent("earthquake", "Séisme Valdivia (Chili, M9.5)", 1960, -38.14, -73.41, 25.0, 9.5));
-        masterList.add(new ClimateEvent("earthquake", "Séisme Alaska (M9.2)", 1964, 61.02, -147.65, 25.0, 9.2));
-        masterList.add(new ClimateEvent("earthquake", "Séisme Sumatra-Andaman (M9.1)", 2004, 3.30, 95.98, 30.0, 9.1));
-        masterList.add(new ClimateEvent("earthquake", "Séisme Tohoku Japon (M9.0)", 2011, 38.30, 142.37, 29.0, 9.0));
-        masterList.add(new ClimateEvent("tsunami", "Tsunami Sumatra (Submersion Littorale)", 2004, 3.30, 95.98, 30.0, 9.1));
-        masterList.add(new ClimateEvent("tsunami", "Tsunami Fukushima & Accident Nucléaire", 2011, 38.30, 142.37, 29.0, 9.0));
-
-        // Glaciations, Pandémies & Famines
-        masterList.add(new ClimateEvent("ice_age", "Glaciation Abrupte Younger Dryas", -10900, 60.0, -20.0, 0.0, 4.5));
-        masterList.add(new ClimateEvent("famine", "Grande Famine Médiévale Européenne (1315-1317)", 1315, 50.0, 10.0, 0.0, 6.0));
-        masterList.add(new ClimateEvent("pandemic", "Peste Noire (Europe, 1/3 Pop.)", 1347, 44.00, 10.00, 0.0, 9.0));
-        masterList.add(new ClimateEvent("pandemic", "Grippe Espagnole (50M Victimes)", 1918, 40.00, 0.00, 0.0, 8.0));
-
-        // Hiver Nucléaire & Catastrophes Modernes
-        masterList.add(new ClimateEvent("nuclear_winter", "Hiver Nucléaire Tchernobyl & Fallout Stratosphérique", 1986, 51.38, 30.10, 0.0, 7.5));
-        masterList.add(new ClimateEvent("heatwave", "Canicule Extrême Européenne", 2003, 46.5, 2.5, 0.0, 5.0));
-
-        // Anticipations & Événements Futurs (Cyber, Krach, Bio, Géoingénierie, Singularité)
-        masterList.add(new ClimateEvent("cyber_attack", "Panne Numérique Mondiale / Blackout Système", 2028, 48.85, 2.35, 0.0, 6.5));
-        masterList.add(new ClimateEvent("economic_crash", "Krach Boursier & Crise Systémique Mondiale", 2030, 40.71, -74.00, 0.0, 7.0));
-        masterList.add(new ClimateEvent("biodiversity_collapse", "Effondrement des Pollinisateurs & Biomasse", 2035, 0.0, 0.0, 0.0, 6.0));
-        masterList.add(new ClimateEvent("geoengineering", "Injection Stratosphérique Aérosols Test SRM", 2040, 15.0, 100.0, 0.0, 4.0));
-        masterList.add(new ClimateEvent("renaissance_boom", "Émergence Révolution Énergie Fusion Superconductrice", 2050, 43.60, 5.70, 0.0, 8.0));
-        masterList.add(new ClimateEvent("tech_singularity", "Singularité Technologique & Superintelligence", 2075, 37.77, -122.41, 0.0, 9.5));
-        masterList.add(new ClimateEvent("alien_contact", "Réception Signal Radio Exogène Unificateur", 2090, -31.0, 149.0, 0.0, 10.0));
+        List<org.ether.society.model.ClimateEvent> rawList = org.ether.society.data.WikidataEventsFetcher.getOrBuildFullCatalog();
 
         List<ClimateEvent> filtered = new ArrayList<>();
-        for (ClimateEvent ev : masterList) {
+        for (org.ether.society.model.ClimateEvent ev : rawList) {
             if (ev.getYear() >= startYear) {
-                filtered.add(ev);
+                filtered.add(new ClimateEvent(ev.getType(), ev.getName(), ev.getYear(), ev.getLatitude(), ev.getLongitude(), ev.getDepth(), ev.getMagnitude()));
             }
         }
 
@@ -6306,6 +6661,24 @@ public class ScenarioSetupPanel extends BorderPane {
             if (getLeft() instanceof ScrollPane sp && sp.getContent() instanceof VBox root) {
                 root.lookupAll("#__popHeader").forEach(n -> { if (n instanceof Label l) l.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "👥 2. INITIAL POPULATION IDENTITY CARD")); });
             }
+            if (engineSortLabel != null) {
+                engineSortLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.sort.label", "🔀 Engine Sorting:"));
+            }
+            if (engineSortCombo != null) {
+                int selIdx = engineSortCombo.getSelectionModel().getSelectedIndex();
+                engineSortCombo.getItems().setAll(
+                    org.ether.society.i18n.I18n.getOrDefault("scenario.sort.default", "⚙️ System Order (By Category)"),
+                    org.ether.society.i18n.I18n.getOrDefault("scenario.sort.date_asc", "📅 Chronological Sort (Oldest → Newest)"),
+                    org.ether.society.i18n.I18n.getOrDefault("scenario.sort.date_desc", "📅 Reverse Chronological Sort (Newest → Oldest)"),
+                    org.ether.society.i18n.I18n.getOrDefault("scenario.sort.alpha_asc", "🔤 Alphabetical Sort (A - Z)")
+                );
+                if (selIdx >= 0 && selIdx < engineSortCombo.getItems().size()) {
+                    engineSortCombo.getSelectionModel().select(selIdx);
+                } else {
+                    engineSortCombo.getSelectionModel().select(0);
+                }
+            }
+
             rebuildCulturalTensorSubBlocks(cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9);
             updateDemoCompatibilityDisplay();
         } finally {
@@ -6485,6 +6858,15 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         }
         s.setTypeBEngineParameters(typeBParams);
+
+        // Save Scheduled Events
+        if (eventsList != null) {
+            java.util.List<org.ether.society.model.ClimateEvent> sEvents = new java.util.ArrayList<>();
+            for (ClimateEvent ce : eventsList) {
+                sEvents.add(new org.ether.society.model.ClimateEvent(ce.getType(), ce.getName(), ce.getYear(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude()));
+            }
+            s.setClimateEvents(sEvents);
+        }
 
         return s;
     }
@@ -6687,24 +7069,72 @@ public class ScenarioSetupPanel extends BorderPane {
         this.resourcePanelSupplier = supplier;
     }
 
-    public boolean validateScenarioSetup() {
+    public List<String> getScenarioValidationErrors() {
         List<String> errors = new ArrayList<>();
-        List<String> warnings = new ArrayList<>();
-
-        // 1. Cross-Tab Validation: Tab 1 (Planet) and Tab 2 (Ecology/Resource)
         if (planetPanelSupplier != null && planetPanelSupplier.get() != null) {
             errors.addAll(planetPanelSupplier.get().getValidationErrors());
         }
         if (resourcePanelSupplier != null && resourcePanelSupplier.get() != null) {
             errors.addAll(resourcePanelSupplier.get().getValidationErrors());
         }
-
-        // 2. Dates Validation
         if (startYearSpinner != null && endYearSpinner != null) {
             int startYr = startYearSpinner.getValue();
             int endYr = endYearSpinner.getValue();
             if (startYr >= endYr) {
                 errors.add(I18n.getOrDefault("scenario.validation.invalid_years", "Start year must be strictly less than end year (Tab 3)."));
+            }
+        }
+        if (initialHumanCountSpinner != null) {
+            long count = initialHumanCountSpinner.getValue();
+            if (count <= 0) {
+                errors.add(I18n.getOrDefault("scenario.validation.invalid_pop", "Initial human population must be greater than 0 (Tab 3)."));
+            }
+        }
+        if (radioImportDemo != null && radioImportDemo.isSelected()) {
+            if (customDensityImage == null) {
+                errors.add(I18n.getOrDefault("scenario.validation.missing_density_map", "Missing demographic density map in import mode (Tab 3)."));
+            } else {
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customDensityImage);
+                if (!val.valid()) {
+                    errors.add(String.format(I18n.getOrDefault("scenario.validation.invalid_density_map", "Incompatible demographic density map (Tab 3): %s"), val.message()));
+                }
+            }
+        }
+        if (cultureVectorDimSpinner != null) {
+            int dims = cultureVectorDimSpinner.getValue();
+            if (dims < 1 || dims > 32) {
+                errors.add(I18n.getOrDefault("scenario.validation.invalid_tensor_dim", "Cultural tensor dimension must be between 1 and 32 (Tab 3)."));
+            }
+        }
+        int dimsCount = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 8;
+        for (int i = 0; i < dimsCount; i++) {
+            RadioButton importRadio = tensorImportRadios.get(i);
+            if (importRadio != null && importRadio.isSelected()) {
+                Image img = customTensorImages.get(i);
+                if (img == null) {
+                    String tensorName = getCulturalTensorTitle(i);
+                    errors.add(String.format(I18n.getOrDefault("scenario.validation.missing_tensor_map", "Missing external map for %s in import mode (Tab 3)."), tensorName));
+                } else {
+                    org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(img);
+                    if (!val.valid()) {
+                        String tensorName = getCulturalTensorTitle(i);
+                        errors.add(String.format(I18n.getOrDefault("scenario.validation.invalid_tensor_map", "Incompatible or unreadable map for %s (Tab 3): %s"), tensorName, val.message()));
+                    }
+                }
+            }
+        }
+        return errors;
+    }
+
+    public boolean validateScenarioSetup() {
+        List<String> errors = getScenarioValidationErrors();
+        boolean isValid = errors.isEmpty();
+
+        // Control border highlights
+        if (startYearSpinner != null && endYearSpinner != null) {
+            int startYr = startYearSpinner.getValue();
+            int endYr = endYearSpinner.getValue();
+            if (startYr >= endYr) {
                 startYearSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
                 endYearSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
             } else {
@@ -6712,247 +7142,51 @@ public class ScenarioSetupPanel extends BorderPane {
                 endYearSpinner.setStyle("");
             }
         }
-
-        // 3. Population Count Validation
         if (initialHumanCountSpinner != null) {
             long count = initialHumanCountSpinner.getValue();
             if (count <= 0) {
-                errors.add(I18n.getOrDefault("scenario.validation.invalid_pop", "Initial human population must be greater than 0 (Tab 3)."));
                 initialHumanCountSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
             } else {
                 initialHumanCountSpinner.setStyle("");
             }
         }
-
-        // 4. Demographic Density Map Import
         if (radioImportDemo != null && radioImportDemo.isSelected()) {
-            if (customDensityImage == null) {
-                errors.add(I18n.getOrDefault("scenario.validation.missing_density_map", "Missing demographic density map in import mode (Tab 3)."));
+            if (customDensityImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customDensityImage).valid()) {
                 if (loadDensityMapBtn != null) loadDensityMapBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-            } else {
-                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customDensityImage);
-                if (!val.valid()) {
-                    errors.add(String.format(I18n.getOrDefault("scenario.validation.invalid_density_map", "Incompatible demographic density map (Tab 3): %s"), val.message()));
-                    if (loadDensityMapBtn != null) loadDensityMapBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-                } else if (loadDensityMapBtn != null) {
-                    loadDensityMapBtn.setStyle("");
-                }
+            } else if (loadDensityMapBtn != null) {
+                loadDensityMapBtn.setStyle("");
             }
         } else if (loadDensityMapBtn != null) {
             loadDensityMapBtn.setStyle("");
         }
-
-        // 5. Cultural Tensor Dimensions Index Bounds Protection
         if (cultureVectorDimSpinner != null) {
             int dims = cultureVectorDimSpinner.getValue();
             if (dims < 1 || dims > 32) {
-                errors.add(I18n.getOrDefault("scenario.validation.invalid_tensor_dim", "Cultural tensor dimension must be between 1 and 32 (Tab 3)."));
                 cultureVectorDimSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
             } else {
                 cultureVectorDimSpinner.setStyle("");
             }
         }
-
-        // 6. Cultural Tensors in Import Mode Validation
         int dimsCount = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 8;
         for (int i = 0; i < dimsCount; i++) {
             RadioButton importRadio = tensorImportRadios.get(i);
             Button loadBtn = tensorLoadBtns.get(i);
             if (importRadio != null && importRadio.isSelected()) {
                 Image img = customTensorImages.get(i);
-                if (img == null) {
-                    String tensorName = getCulturalTensorTitle(i);
-                    errors.add(String.format(I18n.getOrDefault("scenario.validation.missing_tensor_map", "Missing external map for %s in import mode (Tab 3)."), tensorName));
-                    if (loadBtn != null) {
-                        loadBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-                    }
-                } else {
-                    org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(img);
-                    if (!val.valid()) {
-                        String tensorName = getCulturalTensorTitle(i);
-                        errors.add(String.format(I18n.getOrDefault("scenario.validation.invalid_tensor_map", "Incompatible or unreadable map for %s (Tab 3): %s"), tensorName, val.message()));
-                        if (loadBtn != null) {
-                            loadBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-                        }
-                    } else if (loadBtn != null) {
-                        loadBtn.setStyle("");
-                    }
+                if (img == null || !org.ether.society.data.ImageMapLoader.validateMapImage(img).valid()) {
+                    if (loadBtn != null) loadBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
+                } else if (loadBtn != null) {
+                    loadBtn.setStyle("");
                 }
             } else if (loadBtn != null) {
                 loadBtn.setStyle("");
             }
         }
 
-        // 7. CROSS-TAB COMPATIBILITY CHECKS (Tab 1 Planet/Terrain & Tab 2 Ecology vs Tab 3 Setup)
-        org.ether.society.procedural.ProceduralGenerator generator = new org.ether.society.procedural.ProceduralGenerator();
-        String planetName = activePlanetPreset != null ? activePlanetPreset.name() : "Terre";
-        String planetKey = planetName.toLowerCase();
-
-        // A. Check for Demographic Source Planet Mismatch
-        String demoSrc = demoSourceCombo != null ? demoSourceCombo.getValue() : null;
-        if (demoSrc != null && !demoSrc.isBlank()) {
-            String demoLower = demoSrc.toLowerCase();
-            boolean planetIsEarth = planetKey.contains("terre") || planetKey.contains("earth") || planetKey.contains("terran");
-            boolean demoIsMars = demoLower.contains("mars");
-            boolean demoIsMoon = demoLower.contains("lune") || demoLower.contains("moon");
-            boolean demoIsVenus = demoLower.contains("vénus") || demoLower.contains("venus");
-            boolean demoIsMercury = demoLower.contains("mercure") || demoLower.contains("mercury");
-            boolean demoIsEarth = demoLower.contains("terre") || demoLower.contains("earth") || demoLower.contains("hyde");
-
-            if (planetIsEarth && (demoIsMars || demoIsMoon || demoIsVenus || demoIsMercury)) {
-                warnings.add(String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "⚠️ Incohérence planétaire : Source démographique « %s » sélectionnée sur un relief terrestre (Onglet 1)."), demoSrc.trim()));
-            } else if (planetKey.contains("mars") && demoIsEarth) {
-                warnings.add(String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "⚠️ Incohérence planétaire : Source démographique terrestre « %s » appliquée sur le relief martien (Onglet 1)."), demoSrc.trim()));
-            } else if (planetKey.contains("lune") && demoIsEarth) {
-                warnings.add(String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "⚠️ Incohérence planétaire : Source démographique terrestre « %s » appliquée sur le relief lunaire (Onglet 1)."), demoSrc.trim()));
-            } else if (planetKey.contains("vénus") && demoIsEarth) {
-                warnings.add(String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "⚠️ Incohérence planétaire : Source démographique terrestre « %s » appliquée sur Vénus (Onglet 1)."), demoSrc.trim()));
-            } else if (planetKey.contains("mercure") && demoIsEarth) {
-                warnings.add(String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "⚠️ Incohérence planétaire : Source démographique terrestre « %s » appliquée sur Mercure (Onglet 1)."), demoSrc.trim()));
-            }
-        }
-
-        // B. Check for Cultural Tensor Planet Mismatch
-        for (var entry : tensorSourceCombos.entrySet()) {
-            String tSrc = entry.getValue().getValue();
-            if (tSrc != null && !tSrc.isBlank()) {
-                String tLower = tSrc.toLowerCase();
-                boolean planetIsEarth = planetKey.contains("terre") || planetKey.contains("earth") || planetKey.contains("terran");
-                boolean tIsMars = tLower.contains("mars");
-                boolean tIsMoon = tLower.contains("lune") || tLower.contains("moon");
-                boolean tIsVenus = tLower.contains("vénus") || tLower.contains("venus");
-                boolean tIsMercury = tLower.contains("mercure") || tLower.contains("mercury");
-                if (planetIsEarth && (tIsMars || tIsMoon || tIsVenus || tIsMercury)) {
-                    warnings.add(String.format(I18n.getOrDefault("scenario.warning.culture_body_mismatch", "⚠️ Incohérence culturelle : Source « %s » (%s) appliquée sur la Terre."), tSrc.trim(), getCulturalTensorTitle(entry.getKey())));
-                }
-            }
-        }
-
-        // C. Check for Demographic Population in Ocean / Submerged Areas
-        if (customDensityImage != null && customDensityImage.getPixelReader() != null) {
-            double totalDensityBrightness = 0.0;
-            double oceanDensityBrightness = 0.0;
-            int imgW = (int) customDensityImage.getWidth();
-            int imgH = (int) customDensityImage.getHeight();
-            PixelReader pr = customDensityImage.getPixelReader();
-            int sampleSteps = 60;
-            for (int sy = 0; sy < sampleSteps; sy++) {
-                double normLat = (sy + 0.5) / sampleSteps;
-                double lat = 90.0 - normLat * 180.0;
-                int py = (int) Math.min(imgH - 1, normLat * imgH);
-                for (int sx = 0; sx < sampleSteps * 2; sx++) {
-                    double normLon = (sx + 0.5) / (sampleSteps * 2.0);
-                    double lon = -180.0 + normLon * 360.0;
-                    int px = (int) Math.min(imgW - 1, normLon * imgW);
-                    double b = pr.getColor(px, py).getBrightness();
-                    if (b > 0.05) {
-                        totalDensityBrightness += b;
-                        boolean isOceanCell = false;
-                        if (activePlanetPreset != null) {
-                            if (activePlanetPreset.elevationUseImport()) {
-                                Image elevImg = getCachedEarthElevationImage();
-                                if (elevImg != null && elevImg.getPixelReader() != null) {
-                                    int ex = (int) Math.min(elevImg.getWidth() - 1, normLon * elevImg.getWidth());
-                                    int ey = (int) Math.min(elevImg.getHeight() - 1, normLat * elevImg.getHeight());
-                                    Color ec = elevImg.getPixelReader().getColor(ex, ey);
-                                    double eNorm = (ec.getRed() + ec.getGreen() + ec.getBlue()) / 3.0;
-                                    isOceanCell = (eNorm < activePlanetPreset.waterLevel());
-                                }
-                            } else {
-                                var pt = generator.getPlanetPoint(lat, lon, activePlanetPreset);
-                                isOceanCell = (pt.elevation() < activePlanetPreset.waterLevel());
-                            }
-                        }
-                        if (isOceanCell) {
-                            oceanDensityBrightness += b;
-                        }
-                    }
-                }
-            }
-            if (totalDensityBrightness > 0 && oceanDensityBrightness > 0) {
-                double oceanPct = (oceanDensityBrightness * 100.0) / totalDensityBrightness;
-                if (oceanPct > 5.0) {
-                    warnings.add(String.format(java.util.Locale.FRANCE,
-                        I18n.getOrDefault("scenario.warning.ocean_density", "⚠️ Incompatibilité géographique : %.1f%% de la densité démographique importée se trouve en zone océanique / sous-marine (%s)."),
-                        oceanPct, planetName));
-                }
-            }
-        }
-
-        // D. Check for Cultural Tensors Active in Ocean Areas
-        for (int i = 0; i < dimsCount; i++) {
-            Image tImg = customTensorImages.get(i);
-            if (tImg != null && tImg.getPixelReader() != null && activePlanetPreset != null && activePlanetPreset.waterLevel() > -0.4) {
-                double totalTB = 0.0;
-                double oceanTB = 0.0;
-                int tw = (int) tImg.getWidth();
-                int th = (int) tImg.getHeight();
-                PixelReader pr = tImg.getPixelReader();
-                int sampleSteps = 40;
-                for (int sy = 0; sy < sampleSteps; sy++) {
-                    double normLat = (sy + 0.5) / sampleSteps;
-                    double lat = 90.0 - normLat * 180.0;
-                    int py = (int) Math.min(th - 1, normLat * th);
-                    for (int sx = 0; sx < sampleSteps * 2; sx++) {
-                        double normLon = (sx + 0.5) / (sampleSteps * 2.0);
-                        double lon = -180.0 + normLon * 360.0;
-                        int px = (int) Math.min(tw - 1, normLon * tw);
-                        double b = pr.getColor(px, py).getBrightness();
-                        if (b > 0.08) {
-                            totalTB += b;
-                            boolean isOceanCell = false;
-                            if (activePlanetPreset.elevationUseImport()) {
-                                Image elevImg = getCachedEarthElevationImage();
-                                if (elevImg != null && elevImg.getPixelReader() != null) {
-                                    int ex = (int) Math.min(elevImg.getWidth() - 1, normLon * elevImg.getWidth());
-                                    int ey = (int) Math.min(elevImg.getHeight() - 1, normLat * elevImg.getHeight());
-                                    Color ec = elevImg.getPixelReader().getColor(ex, ey);
-                                    double eNorm = (ec.getRed() + ec.getGreen() + ec.getBlue()) / 3.0;
-                                    isOceanCell = (eNorm < activePlanetPreset.waterLevel());
-                                }
-                            } else {
-                                var pt = generator.getPlanetPoint(lat, lon, activePlanetPreset);
-                                isOceanCell = (pt.elevation() < activePlanetPreset.waterLevel());
-                            }
-                            if (isOceanCell) oceanTB += b;
-                        }
-                    }
-                }
-                if (totalTB > 0 && oceanTB > 0) {
-                    double oceanPct = (oceanTB * 100.0) / totalTB;
-                    if (oceanPct > 10.0) {
-                        warnings.add(String.format(java.util.Locale.FRANCE,
-                            I18n.getOrDefault("scenario.warning.ocean_culture", "⚠️ Incompatibilité culturelle : %.1f%% de l'intensité du tenseur « %s » est située sur l'océan (%s)."),
-                            oceanPct, getCulturalTensorTitle(i), planetName));
-                    }
-                }
-            }
-        }
-
-        // E. Extreme Environmental Habitability Warning
-        if (activePlanetPreset != null) {
-            double atmoPres = activePlanetPreset.atmospherePressureAtm();
-            double avgTemp = activePlanetPreset.averageTempC();
-            boolean isSpaceBody = planetKey.contains("lune") || planetKey.contains("moon") || planetKey.contains("mercure") || planetKey.contains("mercury") || planetKey.contains("mars") || planetKey.contains("venus") || planetKey.contains("vénus");
-            if (!isSpaceBody && (atmoPres < 0.1 || atmoPres > 5.0 || avgTemp < -50 || avgTemp > 60)) {
-                warnings.add(String.format(java.util.Locale.FRANCE,
-                    I18n.getOrDefault("scenario.warning.hostile_environment", "⚠️ Environnement hostile (Onglet 1) : Pression (%.2f atm) ou Température (%.1f °C) extrême — Survie humaine conditionnée à des habitats scellés."),
-                    atmoPres, avgTemp));
-            }
-        }
-
-        boolean isValid = errors.isEmpty();
-
         if (!isValid) {
             StringBuilder sb = new StringBuilder();
             for (String err : errors) {
                 sb.append("• ").append(err).append("\n");
-            }
-            if (!warnings.isEmpty()) {
-                sb.append("\n").append(I18n.getOrDefault("scenario.validation.subhead_warnings", "Avertissements de compatibilité :")).append("\n");
-                for (String w : warnings) {
-                    sb.append("• ").append(w).append("\n");
-                }
             }
             if (validationErrorLabel != null && validationErrorBanner != null) {
                 if (validationBannerHeaderLabel != null) {
@@ -6968,22 +7202,6 @@ public class ScenarioSetupPanel extends BorderPane {
             if (configScroll != null) {
                 configScroll.setVvalue(0.0);
             }
-        } else if (!warnings.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (String w : warnings) {
-                sb.append("• ").append(w).append("\n");
-            }
-            if (validationErrorLabel != null && validationErrorBanner != null) {
-                if (validationBannerHeaderLabel != null) {
-                    validationBannerHeaderLabel.setText("⚠️ " + I18n.getOrDefault("scenario.validation.header_warnings", "AVERTISSEMENTS DE COMPATIBILITÉ GÉOGRAPHIQUE & ENVIRONNEMENTALE (ONGLETS 1 & 2) :"));
-                    validationBannerHeaderLabel.setStyle("-fx-text-fill: #fbbf24; -fx-font-weight: bold; -fx-font-size: 13px;");
-                }
-                validationErrorLabel.setStyle("-fx-text-fill: #f59e0b; -fx-font-size: 11px;");
-                validationErrorBanner.setStyle("-fx-background-color: rgba(245, 158, 11, 0.15); -fx-border-color: #f59e0b; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;");
-                validationErrorLabel.setText(sb.toString().trim());
-                validationErrorBanner.setVisible(true);
-                validationErrorBanner.setManaged(true);
-            }
         } else {
             if (validationErrorBanner != null) {
                 validationErrorBanner.setVisible(false);
@@ -6991,6 +7209,7 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         }
 
+        updateLiveDiagnosticBlock();
         return isValid;
     }
 

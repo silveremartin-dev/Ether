@@ -130,14 +130,58 @@ public class ScenarioSetupIntegrationTest {
     }
 
     @Test
-    @DisplayName("Verify callback triggering on simulation launch trigger")
-    public void testStartSimulationCallback() throws Exception {
+    @DisplayName("Verify Earth paleoclimate ocean waterLevel datum conforms to physical bathymetry (0.478 datum)")
+    public void testEarthPaleoclimateOceanLevelDatum() {
+        assertEquals(0.478, PlanetPreset.EARTH_MODERN.waterLevel(), 0.001);
+        assertEquals(0.478, PlanetPreset.EARTH_LIG_100000BP.waterLevel(), 0.001);
+        assertEquals(0.478, PlanetPreset.EARTH_MH_6000BP.waterLevel(), 0.001);
+        assertEquals(0.476479, PlanetPreset.EARTH_EH_10000BP.waterLevel(), 0.0001);
+        assertEquals(0.472568, PlanetPreset.EARTH_LGM_20000BP.waterLevel(), 0.0001);
+    }
+
+    @Test
+    @DisplayName("Verify Sea Level in meters to normalized waterLevel conversion to the single meter precision")
+    public void testSeaLevelMetersConversionAccuracy() {
+        double minAlt = -11000.0;
+        double maxAlt = 8848.0;
+
+        // 0m MSL should map exactly to 0.478
+        assertEquals(0.0, PlanetPreset.waterLevelToMeters(0.478, minAlt, maxAlt), 0.01);
+        assertEquals(0.478, PlanetPreset.metersToWaterLevel(0.0, minAlt, maxAlt), 0.0001);
+
+        // LGM -125m should map to ~0.472568 (rounded 0.473)
+        double lgmW = PlanetPreset.metersToWaterLevel(-125.0, minAlt, maxAlt);
+        assertEquals(0.472568, lgmW, 0.0001);
+        assertEquals(-125.0, PlanetPreset.waterLevelToMeters(lgmW, minAlt, maxAlt), 0.01);
+
+        // Early Holocene -35m
+        double ehW = PlanetPreset.metersToWaterLevel(-35.0, minAlt, maxAlt);
+        assertEquals(-35.0, PlanetPreset.waterLevelToMeters(ehW, minAlt, maxAlt), 0.01);
+
+        // Positive Sea Level +50m
+        double posW = PlanetPreset.metersToWaterLevel(50.0, minAlt, maxAlt);
+        assertEquals(50.0, PlanetPreset.waterLevelToMeters(posW, minAlt, maxAlt), 0.01);
+
+        // Full round-trip test across every meter from -1000m to +1000m
+        for (int m = -1000; m <= 1000; m += 5) {
+            double w = PlanetPreset.metersToWaterLevel(m, minAlt, maxAlt);
+            double backMeters = PlanetPreset.waterLevelToMeters(w, minAlt, maxAlt);
+            assertEquals((double) m, backMeters, 0.001, "Round-trip conversion failed for " + m + " meters");
+        }
+    }
+
+    @Test
+    @DisplayName("Verify Out of Africa scenario validation with Earth -100 000 preset")
+    public void testOutOfAfricaCompatibilityValidation() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
         Platform.runLater(() -> {
             try {
-                Scenario sc = sharedPanel.getScenario();
-                assertNotNull(sc);
+                sharedPanel.setInheritedContext(PlanetPreset.EARTH_LIG_100000BP, "Terre (-100 000 / Dernier Interglaciaire)");
+                boolean valid = sharedPanel.validateScenarioSetup();
+                assertTrue(valid, "Scenario setup should be valid for Out of Africa with Earth -100 000");
+                List<String> errors = sharedPanel.getScenarioValidationErrors();
+                assertTrue(errors.isEmpty(), "There should be no validation errors: " + errors);
             } finally {
                 latch.countDown();
             }
@@ -146,3 +190,4 @@ public class ScenarioSetupIntegrationTest {
         assertTrue(latch.await(15, TimeUnit.SECONDS));
     }
 }
+

@@ -109,18 +109,7 @@ public class ImageMapLoader {
                 int y = (int) Math.min(v * hElev, hElev - 1);
                 Color c = elevReader.getColor(x, y);
                 double brightness = c.getBrightness(); // 0..1
-                double elevation;
-                if (Math.abs(minAlt + maxAlt) < 500.0) {
-                    // Standard linear grayscale heightmap (-Alt to +Alt)
-                    elevation = minAlt + brightness * (maxAlt - minAlt);
-                } else {
-                    double waterLvl = 0.35; // Standard sea level baseline threshold
-                    if (brightness < waterLvl) {
-                        elevation = minAlt * (1.0 - brightness / waterLvl);
-                    } else {
-                        elevation = maxAlt * ((brightness - waterLvl) / (1.0 - waterLvl));
-                    }
-                }
+                double elevation = org.ether.society.procedural.PlanetPreset.waterLevelToMeters(brightness, minAlt, maxAlt);
                 cell.setElevation(elevation);
             }
 

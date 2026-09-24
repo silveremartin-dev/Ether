@@ -105,7 +105,7 @@ public class SimulationPipeline {
 
         // Step 5: Warfare, Infrastructure & Migration
         PhysicsTransportEngine.processPhysicsTransport(cells);
-        ThermodynamicWarfareEngine.processKineticWarfare(cells);
+        ThermodynamicWarfareEngine.processKineticWarfare(cells, dtYears);
         NuclearWarfareClimateEngine.processNuclearWarfareClimate(cells);
         InfrastructureEnergyEngine.processInfrastructureEnergy(cells);
         ThermodynamicMigrationEngine.processThermodynamicMigration(cells, perfConfig);

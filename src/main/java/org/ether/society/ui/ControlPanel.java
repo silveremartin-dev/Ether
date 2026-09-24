@@ -124,7 +124,7 @@ public class ControlPanel extends VBox {
         scenarioHeaderLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
         scenarioHeaderLabel.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.scenario_name", "Name of current historical or procedural scenario")));
 
-        dateHeaderLabel = new Label("📅 " + I18n.getOrDefault("sim.header.date", "Date : ") + "An -20000, Mois 1");
+        dateHeaderLabel = new Label("📅 " + I18n.getOrDefault("sim.header.date", "Date : ") + "An -100000");
         dateHeaderLabel.getStyleClass().add("sidebar-title");
         dateHeaderLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         dateHeaderLabel.setTooltip(new Tooltip(
@@ -222,17 +222,17 @@ public class ControlPanel extends VBox {
         HBox playBar = new HBox(4, rewindBtn, fastRewindBtn, stepBackBtn, playPauseBtn, stepForwardBtn, fastForwardBtn, endBtn);
         playBar.setAlignment(Pos.CENTER);
 
-        speedSlider = new Slider(1, 100, 1);
-        speedSlider.setBlockIncrement(5);
-        speedSlider.setMajorTickUnit(25);
+        speedSlider = new Slider(0.1, 20.0, 1.0);
+        speedSlider.setBlockIncrement(0.5);
+        speedSlider.setMajorTickUnit(5.0);
         speedSlider.setMinorTickCount(4);
         speedSlider.setShowTickMarks(true);
         speedSlider.setShowTickLabels(true);
-        speedSlider.setSnapToTicks(true);
-        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "Vitesse de simulation CPU (Gauche = 1 tick/sec | Droite = Mode Rapide)")));
+        speedSlider.setSnapToTicks(false);
+        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "Vitesse de simulation CPU (0.1 à 20 pas/sec ou MAX)")));
         HBox.setHgrow(speedSlider, Priority.ALWAYS);
 
-        speedValueLabel = new Label("⏱️ " + I18n.getOrDefault("sim.speed.label", "Vitesse : 1 tick/sec"));
+        speedValueLabel = new Label("⏱️ " + I18n.getOrDefault("sim.speed.label", "Vitesse : 1 pas/sec"));
         speedValueLabel.getStyleClass().add("value-label");
         speedValueLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
 
@@ -241,8 +241,17 @@ public class ControlPanel extends VBox {
         updateSpeedMaxStyle(false);
 
         speedSlider.valueProperty().addListener((obs, oldV, newV) -> {
-            int spd = newV.intValue();
-            if (spd < (int) speedSlider.getMax() && speedMax.isSelected()) {
+            double raw = newV.doubleValue();
+            double spd;
+            if (raw < 1.0) {
+                spd = Math.max(0.1, Math.round(raw * 10.0) / 10.0);
+            } else if (raw <= 5.0) {
+                spd = Math.round(raw * 2.0) / 2.0;
+            } else {
+                spd = Math.round(raw);
+            }
+
+            if (spd < speedSlider.getMax() && speedMax.isSelected()) {
                 updateSpeedMaxStyle(false);
             }
             if (!speedMax.isSelected()) {
@@ -255,17 +264,24 @@ public class ControlPanel extends VBox {
             if (speedMax.isSelected()) {
                 speedSlider.setValue(speedSlider.getMax());
                 updateSpeedMaxStyle(true);
-                engine.setSpeed(999);
-                updateSpeedLabel(999);
+                engine.setSpeed(999.0);
+                updateSpeedLabel(999.0);
             } else {
                 updateSpeedMaxStyle(false);
-                int spd = (int) speedSlider.getValue();
+                double spd = speedSlider.getValue();
+                if (spd < 1.0) {
+                    spd = Math.max(0.1, Math.round(spd * 10.0) / 10.0);
+                } else if (spd <= 5.0) {
+                    spd = Math.round(spd * 2.0) / 2.0;
+                } else {
+                    spd = Math.round(spd);
+                }
                 engine.setSpeed(spd);
                 updateSpeedLabel(spd);
             }
         });
 
-        updateSpeedLabel(1);
+        updateSpeedLabel(1.0);
 
         HBox sliderRow = new HBox(8, speedSlider, speedMax);
         sliderRow.setAlignment(Pos.TOP_LEFT);
@@ -285,7 +301,7 @@ public class ControlPanel extends VBox {
         hdScreenshotBtn.setOnAction(e -> takeHDScreenshot());
 
         recordVideoBtn = new Button("🎥 " + I18n.getOrDefault("sim.btn.video", "Record MP4 Video"));
-        recordVideoBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.video", "Starts MP4 video capture (1:1 tick) in saves/timelapse/")));
+        recordVideoBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.video", "Starts MP4 video capture (1:1 step) in saves/timelapse/")));
         recordVideoBtn.setMaxWidth(Double.MAX_VALUE);
         recordVideoBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-padding: 6 10; -fx-background-radius: 6;");
         recordVideoBtn.setOnAction(e -> toggleVideoRecording());
@@ -543,6 +559,7 @@ public class ControlPanel extends VBox {
         paletteCombo.setOnAction(e -> {
             if (mapCanvas != null && paletteCombo.getValue() != null) {
                 mapCanvas.setScientificColorMap(paletteCombo.getValue());
+                if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
             }
         });
 
@@ -618,27 +635,55 @@ public class ControlPanel extends VBox {
         }
     }
 
-    private void updateSpeedLabel(int spd) {
+    private void updateSpeedLabel(double spd) {
         if (speedValueLabel == null) return;
         if (speedMax != null && speedMax.isSelected()) {
             speedValueLabel.setText("⏱️ " + I18n.getOrDefault("sim.speed.max_label", "Vitesse Cible : MAX 🚀 (Calcul CPU sans limite de fréquence)"));
             return;
         }
-        String fmt = I18n.getOrDefault("sim.speed.target_fmt", "Vitesse Cible : %d pas/sec (%d jours/sec)");
-        try {
-            if (fmt.contains("%d")) {
-                long specifierCount = fmt.chars().filter(ch -> ch == '%').count();
-                if (specifierCount >= 2) {
-                    speedValueLabel.setText(String.format("⏱️ " + fmt, spd, spd));
-                } else {
-                    speedValueLabel.setText(String.format("⏱️ " + fmt, spd));
-                }
+        double stepDays = engine != null && engine.getCurrentScenario() != null && engine.getCurrentScenario().getTemporalResolutionDays() > 0
+                ? engine.getCurrentScenario().getTemporalResolutionDays() : 1.0;
+        double simDaysPerSec = spd * stepDays;
+
+        String spdStr = (Math.abs(spd - Math.round(spd)) < 0.001)
+                ? String.valueOf(Math.round(spd))
+                : String.format(java.util.Locale.US, "%.1f", spd);
+
+        String timeUnit;
+        if (stepDays >= 360.0) {
+            double yearsPerSec = simDaysPerSec / 365.0;
+            if (Math.abs(yearsPerSec - 1.0) < 0.001) {
+                timeUnit = I18n.getOrDefault("sim.speed.unit.year_singular", "1 an/sec");
             } else {
-                speedValueLabel.setText("⏱️ " + fmt + ": " + spd);
+                String yStr = (Math.abs(yearsPerSec - Math.round(yearsPerSec)) < 0.001)
+                        ? String.valueOf(Math.round(yearsPerSec))
+                        : String.format(java.util.Locale.US, "%.1f", yearsPerSec);
+                timeUnit = String.format(I18n.getOrDefault("sim.speed.unit.year_plural", "%s ans/sec"), yStr);
             }
-        } catch (Exception e) {
-            speedValueLabel.setText(String.format(java.util.Locale.ROOT, "⏱️ Vitesse Cible : %d ticks/sec", spd));
+        } else if (stepDays >= 28.0) {
+            double monthsPerSec = simDaysPerSec / 30.0;
+            if (Math.abs(monthsPerSec - 1.0) < 0.001) {
+                timeUnit = I18n.getOrDefault("sim.speed.unit.month_singular", "1 mois/sec");
+            } else {
+                String mStr = (Math.abs(monthsPerSec - Math.round(monthsPerSec)) < 0.001)
+                        ? String.valueOf(Math.round(monthsPerSec))
+                        : String.format(java.util.Locale.US, "%.1f", monthsPerSec);
+                timeUnit = String.format(I18n.getOrDefault("sim.speed.unit.month_plural", "%s mois/sec"), mStr);
+            }
+        } else {
+            double daysPerSec = simDaysPerSec;
+            if (Math.abs(daysPerSec - 1.0) < 0.001) {
+                timeUnit = I18n.getOrDefault("sim.speed.unit.day_singular", "1 jour/sec");
+            } else {
+                String dStr = (Math.abs(daysPerSec - Math.round(daysPerSec)) < 0.001)
+                        ? String.valueOf(Math.round(daysPerSec))
+                        : String.format(java.util.Locale.US, "%.1f", daysPerSec);
+                timeUnit = String.format(I18n.getOrDefault("sim.speed.unit.day_plural", "%s jours/sec"), dStr);
+            }
         }
+
+        String fmt = I18n.getOrDefault("sim.speed.target_custom_fmt", "Vitesse Cible : %s pas/sec (%s)");
+        speedValueLabel.setText("⏱️ " + String.format(fmt, spdStr, timeUnit));
     }
 
     private void onLayerToggled(DisplayMode mode, boolean selected) {
@@ -862,7 +907,7 @@ public class ControlPanel extends VBox {
     public void setOnFullScreen(Runnable onFullScreen) { this.onFullScreen = onFullScreen; }
 
     public void updateTimelapseSlider(int minYear, int maxYear, int currentYear) {
-        dateHeaderLabel.setText(String.format("📅 Date & Heure : An %d", currentYear));
+        dateHeaderLabel.setText("📅 " + I18n.getOrDefault("sim.header.date", "Date : ") + String.format(java.util.Locale.ROOT, "An %d", currentYear));
     }
 
     public void setMapCanvas(H3MapCanvas canvas) {
@@ -1034,11 +1079,12 @@ public class ControlPanel extends VBox {
         tooltip.setShowDelay(javafx.util.Duration.millis(150));
         Tooltip.install(card, tooltip);
 
-        // Double click navigates / flies camera to this event's coordinates
+        // Double click navigates / flies camera to this event's coordinates and pings the location
         card.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 if (mapCanvas != null) {
                     mapCanvas.flyTo(evt.getLatitude(), evt.getLongitude());
+                    mapCanvas.pingLocation(evt.getLatitude(), evt.getLongitude(), evt.getTitle(), evt.getType(), evt.getMagnitude());
                     if (notificationOverlay != null) {
                         notificationOverlay.showNotification("🎯 Centrage sur l'événement :\n" + evt.getTitle(), "#38bdf8");
                     }
@@ -1093,8 +1139,8 @@ public class ControlPanel extends VBox {
         endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Aller à la fin de la simulation (Dernier checkpoint / Fin)")));
         speedMax.setText("MAX 🚀");
         speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Calcule les itérations à la vitesse maximale du processeur")));
-        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "Vitesse de simulation CPU (Gauche = 1 tick/sec | Droite = Mode Rapide)")));
-        updateSpeedLabel(speedMax != null && speedMax.isSelected() ? 999 : (speedSlider != null ? (int) speedSlider.getValue() : 1));
+        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "Vitesse de simulation CPU (0.1 à 20 pas/sec ou MAX)")));
+        updateSpeedLabel(speedMax != null && speedMax.isSelected() ? 999.0 : (speedSlider != null ? speedSlider.getValue() : 1.0));
         mode3dCheck.setText(I18n.getOrDefault("sim.layer.mode3d", "🌐 Globe 3D H3"));
         mode3dCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.mode3d", "Toggles between 3D spherical globe and 2D flat map")));
         reliefLabel.setText(String.format(java.util.Locale.ROOT, "%s : %.0fx", I18n.getOrDefault("sim.layer.relief3d", "⛰️ Relief 3D"), reliefSlider != null ? reliefSlider.getValue() : 25.0));
@@ -1141,7 +1187,7 @@ public class ControlPanel extends VBox {
         }
         if (recordVideoBtn != null) {
             recordVideoBtn.setText("🎥 " + I18n.getOrDefault("sim.btn.video", "Enregistrer Vidéo MP4"));
-            recordVideoBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.video", "Démarre l'export vidéo MP4 (1:1 tick) dans saves/timelapse/")));
+            recordVideoBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.video", "Démarre l'export vidéo MP4 (1:1 pas) dans saves/timelapse/")));
         }
         if (autoRecordCheck != null) {
             autoRecordCheck.setText(I18n.getOrDefault("sim.option.auto_record", "🎬 Synchronisation Vidéo Auto (Start & Pause)"));

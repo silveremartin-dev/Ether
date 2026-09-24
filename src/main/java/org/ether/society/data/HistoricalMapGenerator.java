@@ -240,56 +240,64 @@ public class HistoricalMapGenerator {
 
     public static double getHomininOccupancyWeight(double lon, double lat, long year) {
         if (lat < -60.0) return 0.0; // Antarctica is strictly uninhabited across human prehistory & antiquity
-        if (year > -70000L) {
-            if (year <= -40000L) {
-                // Sahul populated (~50k BC), Americas empty
-                if (lon < -25.0 || (lon > 175.0 && lat < 55.0)) return 0.0;
-                if (lat > 64.0) return 0.0;
-                if (lat > 50.0) {
-                    double t = (lat - 50.0) / 14.0;
-                    return 1.0 - t * t * (3.0 - 2.0 * t);
-                }
+        if (year <= -70000L) {
+            // --- PALEOLITHIC / OUT OF AFRICA (-100,000 BP / LIG / EEMIAN) ---
+            int species = getHomininSpeciesType(lon, lat);
+            if (species == 0) return 0.0;
+
+            if (species == 1) {
+                // Sapiens: Core tropical Africa & Levant
                 return 1.0;
-            } else if (year <= -20000L) {
-                // Beringia entry (~25k BC), South America empty
-                if ((lat < 15.0 && lon < -25.0 && lon > -120.0) || (lon < -60.0 && lat < 50.0)) return 0.0;
-                // Laurentide & Fennoscandian glaciated northern boundary
-                if (lon > -140.0 && lon < 50.0 && lat > 52.0) {
-                    if (lat > 66.0) return 0.0;
-                    double t = (lat - 52.0) / 14.0;
+            } else {
+                // Neanderthals in Europe & Denisovans in Siberia (Eemian MIS 5e temperate boundary):
+                double maxLat = (lon <= 40.0) ? 58.0 : (58.0 - Math.min(6.0, (lon - 40.0) / 15.0));
+                double fadeStart = maxLat - 4.0;
+                if (lat > fadeStart) {
+                    double t = Math.clamp((lat - fadeStart) / (maxLat - fadeStart), 0.0, 1.0);
                     return 1.0 - t * t * (3.0 - 2.0 * t);
                 }
-                if (lat > 68.0) return 0.0;
-                if (lat > 55.0) {
-                    double t = (lat - 55.0) / 13.0;
-                    return 1.0 - t * t * (3.0 - 2.0 * t);
-                }
-                return 1.0;
-            } else if (year <= -10000L) {
-                if (lat > 72.0 && lon > -60.0 && lon < -15.0) return 0.0; // Greenland ice cap
                 return 1.0;
             }
-            return 1.0;
-        }
-
-        // --- PALEOLITHIC / OUT OF AFRICA (-100,000 BP / LIG / EEMIAN) ---
-        int species = getHomininSpeciesType(lon, lat);
-        if (species == 0) return 0.0;
-
-        if (species == 1) {
-            // Sapiens: Core tropical Africa & Levant
-            return 1.0;
-        } else {
-            // Neanderthals in Europe & Denisovans in Siberia (Eemian MIS 5e temperate boundary):
-            // Western/Central Europe reaches 58°N (Britain, Germany, Poland); Siberia reaches 53°N
-            double maxLat = (lon <= 40.0) ? 58.0 : (58.0 - Math.min(6.0, (lon - 40.0) / 15.0));
-            double fadeStart = maxLat - 4.0;
-            if (lat > fadeStart) {
-                double t = Math.clamp((lat - fadeStart) / (maxLat - fadeStart), 0.0, 1.0);
+        } else if (year <= -40000L) {
+            // --- -50,000 BP (MIS 3 / Sahul Colonization) ---
+            // Americas & Greenland strictly UNINHABITED
+            if (lon < -25.0 || (lon > 175.0 && lat < 55.0)) return 0.0;
+            // Madagascar & Mascarene uninhabited
+            if (lat <= -10.0 && lat >= -30.0 && lon >= 43.0 && lon <= 65.0) return 0.0;
+            // High arctic uninhabited
+            if (lat > 62.0) return 0.0;
+            if (lat > 50.0) {
+                double t = (lat - 50.0) / 12.0;
                 return 1.0 - t * t * (3.0 - 2.0 * t);
             }
             return 1.0;
+        } else if (year <= -18000L) {
+            // --- -25,000 BP & -20,000 BP (Gravettian / LGM Peak / Beringian Standstill) ---
+            // 1. Glaciated Laurentide Ice Sheet & Uninhabited Americas (South of 55°N and East of -130°W)
+            if (lon >= -130.0 && lon <= -20.0) {
+                return 0.0; // Entire North & South America south/east of Beringia & Greenland ice
+            }
+            // 2. Beringian Standstill corridor (Alaska / Yukon / Chukotka / Yana: lon < -130°W or lon > 130°E, lat >= 58°N and lat <= 72°N)
+            if (lon < -130.0) {
+                if (lat < 56.0 || lat > 72.0) return 0.0; // Strictly restricted to unglaciated Beringian refuge & Pacific rim
+            }
+            // 3. Glaciated Fennoscandia & British-Irish Ice Sheet
+            if (lon >= -12.0 && lon <= 48.0 && lat >= 50.0 && lat <= 72.0) {
+                return 0.0; // Uninhabited under northern European ice
+            }
+            // 4. Glaciated Alpine Cap
+            if (lat >= 44.5 && lat <= 47.8 && lon >= 5.5 && lon <= 15.0) {
+                return 0.0;
+            }
+            // 5. Madagascar & Remote Oceania
+            if (lat <= -10.0 && lat >= -30.0 && lon >= 43.0 && lon <= 65.0) return 0.0;
+            if (lat > 72.0) return 0.0;
+            return 1.0;
+        } else if (year <= -10000L) {
+            if (lat > 72.0 && lon > -60.0 && lon < -15.0) return 0.0; // Greenland ice cap
+            return 1.0;
         }
+        return 1.0;
     }
 
     public static boolean isHomininOccupied(double lon, double lat, long year) {
@@ -679,21 +687,25 @@ public class HistoricalMapGenerator {
                         bColor = BIOME_GLACIER; // Fennoscandian ice
                     } else if (lat >= 55.0 && lon >= -110.0 && lon <= -65.0) {
                         bColor = BIOME_GLACIER; // Laurentide core
-                    } else if (lat >= 45.0 && lat <= 60.0 && lon >= -5.0 && lon <= 130.0) {
-                        bColor = (baseColor == BIOME_FOREST) ? BIOME_PLAINS : baseColor; // Steppe-tundra
+                    } else if (lat >= 45.0 && lon >= -10.0 && lon <= 180.0) {
+                        bColor = (baseColor == BIOME_FOREST || baseColor == BIOME_JUNGLE) ? BIOME_PLAINS : baseColor; // Mammoth steppe / steppe-tundra
+                    } else if (lat <= -10.0 && lat >= -42.0 && lon >= 112.0 && lon <= 155.0) {
+                        if (baseColor == BIOME_DESERT) bColor = BIOME_PLAINS; // Sahul savanna & dry sclerophyll woodland
                     }
                 } else if (year <= -18000L) {
                     // -25,000 BP & -20,000 BP (LGM Peak): Laurentide, Fennoscandia, Alps, Patagonia, Mammoth Steppe
-                    if (lat >= 42.0 && lon >= -135.0 && lon <= -60.0) {
+                    if (lat >= 40.0 && lon >= -135.0 && lon <= -55.0) {
                         bColor = BIOME_GLACIER; // Laurentide & Cordilleran ice sheet
-                    } else if (lat >= 52.0 && lat <= 72.0 && lon >= -12.0 && lon <= 45.0) {
+                    } else if (lat >= 50.0 && lat <= 72.0 && lon >= -12.0 && lon <= 48.0) {
                         bColor = BIOME_GLACIER; // Fennoscandian & British-Irish ice sheet
-                    } else if (lat >= 45.0 && lat <= 48.0 && lon >= 5.5 && lon <= 15.0) {
+                    } else if (lat >= 44.5 && lat <= 47.8 && lon >= 5.5 && lon <= 15.0) {
                         bColor = BIOME_GLACIER; // Alpine ice cap
                     } else if (lat <= -40.0 && lon >= -75.0 && lon <= -68.0) {
                         bColor = BIOME_GLACIER; // Patagonian ice sheet
-                    } else if (lat >= 38.0 && lat <= 52.0 && lon >= -10.0 && lon <= 140.0) {
-                        bColor = BIOME_TUNDRA; // Mammoth steppe / periglacial tundra
+                    } else if (lat >= 38.0 && lon >= -10.0 && lon <= 180.0) {
+                        bColor = BIOME_TUNDRA; // Continuous unglaciated Mammoth Steppe across all Siberia & Eurasia (no taiga artifacts)
+                    } else if (lat >= 38.0 && lon < -135.0) {
+                        bColor = BIOME_TUNDRA; // Beringian Mammoth Steppe
                     }
                 } else if (year <= -10500L) {
                     // -10,900 BP (Younger Dryas): Cold reversal
@@ -716,6 +728,163 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    public static BufferedImage rasterizeTemperatureMap(long year) {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage mask = loadElevationMask();
+
+        // Baseline global thermal parameters (°C)
+        double tEq = 27.0;
+        double tPole = -35.0;
+
+        if (year <= -70000L) {
+            // Eemian (-100k BP): Warmer interglacial
+            tEq = 28.0;
+            tPole = -28.0;
+        } else if (year <= -40000L) {
+            // MIS 3 (-50k BP): Moderate interstadial
+            tEq = 25.0;
+            tPole = -42.0;
+        } else if (year <= -22000L) {
+            // LGM Onset (-25k BP)
+            tEq = 24.0;
+            tPole = -48.0;
+        } else if (year <= -18000L) {
+            // LGM Peak (-20k BP): Maximum glacial cooling
+            tEq = 23.0;
+            tPole = -55.0;
+        } else if (year <= -10000L) {
+            tEq = 26.0;
+            tPole = -38.0;
+        }
+
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+            double cosLat = Math.cos(Math.toRadians(lat));
+            double sinLat = Math.abs(Math.sin(Math.toRadians(lat)));
+
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                boolean isLand = (mask != null) && (mask.getRaster().getSample(mx, my, 0) > 0);
+
+                // Thermal latitudinal profile
+                double tempC = tEq * cosLat * cosLat + tPole * sinLat * sinLat;
+
+                // Continental thermal enhancement / ocean moderation
+                if (isLand) {
+                    double distFromCoast = Math.min(1.0, Math.abs(lon) / 100.0);
+                    if (lat > 35.0) {
+                        tempC -= (lat - 35.0) * 0.15; // Higher continental winter chill
+                    }
+                }
+
+                // Glacial ice sheet albedo feedback cooling
+                if (year <= -18000L) {
+                    if (lat >= 40.0 && lon >= -135.0 && lon <= -55.0) tempC -= 14.0; // Laurentide
+                    else if (lat >= 50.0 && lat <= 72.0 && lon >= -12.0 && lon <= 48.0) tempC -= 12.0; // Fennoscandia
+                }
+
+                // Encode temperature [-50°C, +50°C] -> [0, 255]
+                double norm = Math.clamp((tempC + 50.0) / 100.0, 0.0, 1.0);
+                int gray = (int) Math.round(norm * 255.0);
+                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+            }
+        }
+        return img;
+    }
+
+    public static BufferedImage rasterizePrecipitationMap(long year) {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage mask = loadElevationMask();
+
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+            double absLat = Math.abs(lat);
+
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+
+                // 1. ITCZ Tropical precipitation belt
+                double rainMm = 2200.0 * Math.exp(-(absLat * absLat) / 120.0);
+
+                // 2. Subtropical dry descent (Hadley cell descending branch ~20° to 32°)
+                double dryBelt = Math.exp(-Math.pow(absLat - 25.0, 2) / 60.0);
+                rainMm *= (1.0 - dryBelt * 0.85);
+
+                // 3. Mid-latitude storm tracks (~40° to 55°)
+                double stormTrack = Math.exp(-Math.pow(absLat - 48.0, 2) / 80.0);
+                rainMm += stormTrack * 950.0;
+
+                // 4. Polar arid zone
+                if (absLat > 65.0) {
+                    rainMm = Math.max(80.0, rainMm * Math.exp(-(absLat - 65.0) / 10.0));
+                }
+
+                // Paleoclimatic monsoon & aridity shifts
+                if (year <= -70000L || (year <= -4500L && year >= -9000L)) {
+                    // Green Sahara & Arabian wet phase
+                    if (lat >= 12.0 && lat <= 28.0 && lon >= -16.0 && lon <= 55.0) {
+                        rainMm += 850.0;
+                    }
+                } else if (year <= -18000L && year >= -25000L) {
+                    // LGM Global Aridification (40-50% reduction in mid/high latitudes)
+                    if (absLat >= 30.0) rainMm *= 0.55;
+                } else if (year <= -40000L) {
+                    // MIS 3 Sahul monsoon
+                    if (lat <= -10.0 && lat >= -30.0 && lon >= 115.0 && lon <= 150.0) {
+                        rainMm += 450.0;
+                    }
+                }
+
+                // Encode rainfall [0, 3000 mm/yr] -> [0, 255]
+                double norm = Math.clamp(rainMm / 3000.0, 0.0, 1.0);
+                int gray = (int) Math.round(norm * 255.0);
+                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+            }
+        }
+        return img;
+    }
+
+    public static BufferedImage rasterizeSeasonalityMap(long year) {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage mask = loadElevationMask();
+
+        for (int y = 0; y < HEIGHT; y++) {
+            double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+            double absLat = Math.abs(lat);
+
+            for (int x = 0; x < WIDTH; x++) {
+                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                boolean isLand = (mask != null) && (mask.getRaster().getSample(mx, my, 0) > 0);
+
+                // Base orbital obliquity seasonality amplitude (0° at equator, ~25°C at poles)
+                double ampC = Math.sin(Math.toRadians(absLat)) * 26.0;
+
+                // Continentality boost: deep Eurasian / North American continental interior
+                if (isLand) {
+                    double contSiberia = Math.exp(-(Math.pow(lat - 62.0, 2) + Math.pow(lon - 105.0, 2)) / 500.0);
+                    double contCanada = Math.exp(-(Math.pow(lat - 55.0, 2) + Math.pow(lon - (-95.0), 2)) / 400.0);
+                    ampC += (contSiberia * 22.0 + contCanada * 18.0);
+                    if (absLat > 30.0) ampC += 6.0;
+                }
+
+                if (year <= -18000L) {
+                    // Glacial high continentality
+                    ampC *= 1.15;
+                }
+
+                // Encode seasonality [0, 50°C] -> [0, 255]
+                double norm = Math.clamp(ampC / 50.0, 0.0, 1.0);
+                int gray = (int) Math.round(norm * 255.0);
+                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+            }
+        }
+        return img;
+    }
+
     public static void saveImagesToYearDirectory(long year, BufferedImage imgDensity, BufferedImage imgSovereignty,
             BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech,
             BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen,
@@ -725,7 +894,7 @@ public class HistoricalMapGenerator {
             java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
             java.nio.file.Files.createDirectories(earthDir);
 
-            // 1. Save standard earth_<year>_<layer>.png
+            // 1. Save standard earth_<year>_<layer>.png in ultra-high-definition 2048x1024
             if (imgDensity != null)         ImageIO.write(imgDensity,         "PNG", earthDir.resolve("earth_" + year + "_density.png").toFile());
             if (imgIsogloss != null)        ImageIO.write(imgIsogloss,        "PNG", earthDir.resolve("earth_" + year + "_isogloss.png").toFile());
             if (imgKinship != null)         ImageIO.write(imgKinship,         "PNG", earthDir.resolve("earth_" + year + "_kinship.png").toFile());
@@ -754,7 +923,21 @@ public class HistoricalMapGenerator {
                 ImageIO.write(biomesImg, "PNG", earthDir.resolve("earth_" + year + "_biomes.png").toFile());
             }
 
-            // 3. Ensure invariant NOAA ETOPO relief elevation map is present across all epochs
+            // 3. Save authentic epoch paleoclimatic layers (Temperature, Precipitation, Seasonality)
+            BufferedImage tempImg = rasterizeTemperatureMap(year);
+            if (tempImg != null) {
+                ImageIO.write(tempImg, "PNG", earthDir.resolve("earth_" + year + "_temperature.png").toFile());
+            }
+            BufferedImage rainImg = rasterizePrecipitationMap(year);
+            if (rainImg != null) {
+                ImageIO.write(rainImg, "PNG", earthDir.resolve("earth_" + year + "_precipitation.png").toFile());
+            }
+            BufferedImage seasImg = rasterizeSeasonalityMap(year);
+            if (seasImg != null) {
+                ImageIO.write(seasImg, "PNG", earthDir.resolve("earth_" + year + "_seasonality.png").toFile());
+            }
+
+            // 4. Ensure invariant NOAA ETOPO relief elevation map is present across all epochs
             java.nio.file.Path elevPath = earthDir.resolve("earth_" + year + "_elevation.png");
             if (!java.nio.file.Files.exists(elevPath)) {
                 java.io.File srcElev = new java.io.File("data/maps/reference_earth_elevation.png");
@@ -762,19 +945,6 @@ public class HistoricalMapGenerator {
                 if (!srcElev.exists()) srcElev = new java.io.File("data/maps/ether/earth/2026/earth_2026_elevation.png");
                 if (srcElev.exists()) {
                     java.nio.file.Files.copy(srcElev.toPath(), elevPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                }
-            }
-
-            // 4. Ensure temperature, precipitation, seasonality are present
-            String[] climLayers = {"temperature", "precipitation", "seasonality"};
-            for (String cLayer : climLayers) {
-                java.nio.file.Path cPath = earthDir.resolve("earth_" + year + "_" + cLayer + ".png");
-                if (!java.nio.file.Files.exists(cPath)) {
-                    java.io.File srcClim = new java.io.File("data/maps/ether/earth/-100000/earth_-100000_" + cLayer + ".png");
-                    if (!srcClim.exists()) srcClim = new java.io.File("data/maps/ether/earth/2026/earth_2026_" + cLayer + ".png");
-                    if (srcClim.exists()) {
-                        java.nio.file.Files.copy(srcClim.toPath(), cPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                    }
                 }
             }
 
@@ -829,7 +999,7 @@ public class HistoricalMapGenerator {
 
                 double dens = 0.0;
                 if (year <= -70000) {
-                    // Sapiens in Africa & Levant (high ecological carrying capacity)
+                    // -100,000 BP: Sapiens in Africa & Levant, Mousterian Neanderthals, Denisovans
                     double densSapiens = 1.8 +
                         5.5 * Math.exp(-distSq(lng, lat, 36.0, 0.0) / 450.0) +      // East African Rift
                         4.0 * Math.exp(-distSq(lng, lat, 22.0, -34.0) / 300.0) +    // South African Coast
@@ -838,7 +1008,6 @@ public class HistoricalMapGenerator {
                         3.0 * Math.exp(-distSq(lng, lat, 35.0, 31.5) / 250.0) +     // Levant
                         2.2 * Math.exp(-distSq(lng, lat, 50.0, 16.0) / 300.0);      // Southern Arabia
 
-                    // Neanderthals in Europe & West Asia (low population density)
                     double densNeanderthal = 0.35 +
                         0.85 * Math.exp(-distSq(lng, lat, 2.0, 44.0) / 350.0) +     // France / Cantabria
                         0.75 * Math.exp(-distSq(lng, lat, -4.0, 40.0) / 300.0) +    // Iberia
@@ -847,7 +1016,6 @@ public class HistoricalMapGenerator {
                         0.60 * Math.exp(-distSq(lng, lat, 44.0, 36.0) / 300.0) +    // Zagros
                         0.45 * Math.exp(-distSq(lng, lat, 85.0, 51.0) / 250.0);     // Altai
 
-                    // Denisovans & Asian Archaic Hominins (moderate population density)
                     double densDenisovan = 0.40 +
                         1.10 * Math.exp(-distSq(lng, lat, 112.0, 34.0) / 400.0) +   // Yellow River / North China
                         0.95 * Math.exp(-distSq(lng, lat, 110.0, 26.0) / 400.0) +   // South China
@@ -858,17 +1026,115 @@ public class HistoricalMapGenerator {
 
                     dens = blendPaleoTraits(lng, lat, densSapiens, densNeanderthal, densDenisovan);
                 } else if (year <= -40000) {
-                    // Sahul & Sunda entry
-                    double dSahul = distSq(lng, lat, 130.0, -20.0);
-                    if (dSahul < 2500.0) dens = Math.max(dens, Math.exp(-dSahul / 600.0) * 4.0);
-                    double dOldWorld = distSq(lng, lat, 40.0, 20.0);
-                    if (dOldWorld < 4000.0) dens = Math.max(dens, Math.exp(-dOldWorld / 1000.0) * 6.0);
-                } else if (year <= -20000) {
-                    // Beringia & Old World
-                    double dBeringia = distSq(lng, lat, -165.0, 65.0);
-                    if (dBeringia < 1600.0) dens = Math.max(dens, Math.exp(-dBeringia / 400.0) * 3.0);
-                    double dOldWorld = distSq(lng, lat, 40.0, 20.0);
-                    if (dOldWorld < 4000.0) dens = Math.max(dens, Math.exp(-dOldWorld / 1000.0) * 7.0);
+                    // -50,000 BP (MIS 3): Sapiens expansion, initial IUP in Eurasia, maritime colonization of SAHUL
+                    double densAfrica = 1.6 +
+                        4.5 * Math.exp(-distSq(lng, lat, 36.0, 0.5) / 400.0) +      // East Africa
+                        3.5 * Math.exp(-distSq(lng, lat, 21.5, -34.0) / 300.0) +    // South Africa (Blombos/Klasies)
+                        3.0 * Math.exp(-distSq(lng, lat, 32.5, 26.0) / 280.0) +     // Nile
+                        2.2 * Math.exp(-distSq(lng, lat, 8.0, 12.0) / 350.0) +      // West Africa
+                        2.5 * Math.exp(-distSq(lng, lat, -7.0, 32.0) / 300.0);      // Maghreb (Taforalt)
+
+                    double densSahul = 0.0;
+                    if (lat <= -10.0 && lat >= -42.0 && lng >= 112.0 && lng <= 155.0) {
+                        densSahul = 0.8 +
+                            3.2 * Math.exp(-distSq(lng, lat, 132.9, -12.5) / 120.0) + // Madjedbebe / Arnhem Land
+                            2.8 * Math.exp(-distSq(lng, lat, 125.0, -16.0) / 150.0) + // Kimberley / Carpenter's Gap
+                            2.6 * Math.exp(-distSq(lng, lat, 143.0, -33.7) / 160.0) + // Lake Mungo / Willandra Lakes
+                            2.2 * Math.exp(-distSq(lng, lat, 116.0, -32.0) / 140.0) + // Swan River / Devil's Lair
+                            2.0 * Math.exp(-distSq(lng, lat, 143.0, -5.5) / 150.0) +  // New Guinea Highlands
+                            1.5 * Math.exp(-distSq(lng, lat, 147.0, -42.0) / 100.0);  // Tasmania
+                    }
+
+                    double densEurasia = 0.45 +
+                        1.5 * Math.exp(-distSq(lng, lat, 35.5, 32.5) / 180.0) +     // Levant (Ksar Akil / Boker Tachtit)
+                        1.2 * Math.exp(-distSq(lng, lat, 25.0, 43.0) / 200.0) +     // Bacho Kiro / Balkans IUP
+                        0.9 * Math.exp(-distSq(lng, lat, 1.5, 45.0) / 220.0) +      // Franco-Cantabrian Châtelperronian/Mousterian
+                        0.8 * Math.exp(-distSq(lng, lat, -4.0, 38.0) / 200.0) +     // Iberian Mousterian
+                        1.4 * Math.exp(-distSq(lng, lat, 78.0, 22.0) / 300.0) +     // Indian subcontinent
+                        1.6 * Math.exp(-distSq(lng, lat, 105.0, -2.0) / 350.0) +    // Sundaland
+                        1.2 * Math.exp(-distSq(lng, lat, 112.0, 32.0) / 300.0) +    // China (Tianyuan / Shuidonggou)
+                        0.7 * Math.exp(-distSq(lng, lat, 84.5, 51.4) / 150.0);      // Denisova / Altai
+
+                    dens = Math.max(densAfrica, Math.max(densSahul, densEurasia));
+                } else if (year <= -22000) {
+                    // -25,000 BP: Gravettian Horizon across Europe, Asian basins, Sahul, and BERINGIAN STANDSTILL
+                    double densEurope = 0.4 +
+                        3.8 * Math.exp(-distSq(lng, lat, 16.5, 48.8) / 120.0) +     // Pavlovian / Dolní Věstonice / Willendorf
+                        3.5 * Math.exp(-distSq(lng, lat, 1.0, 45.0) / 140.0) +      // Franco-Cantabrian Gravettian (Laugerie, Abri Pataud)
+                        3.2 * Math.exp(-distSq(lng, lat, 39.0, 51.4) / 150.0) +     // Kostenki-Borshchevo / Don
+                        2.8 * Math.exp(-distSq(lng, lat, 40.5, 56.2) / 120.0) +     // Sungir / Upper Volga
+                        2.6 * Math.exp(-distSq(lng, lat, 15.5, 41.7) / 120.0) +     // Paglicci / Italian Gravettian
+                        2.4 * Math.exp(-distSq(lng, lat, -7.5, 37.5) / 120.0);      // Vale Boi / Iberian Gravettian
+
+                    double densBeringia = 0.0;
+                    if (lng >= 130.0 || lng <= -130.0) {
+                        densBeringia = 0.5 +
+                            3.2 * Math.exp(-distSq(lng, lat, 135.4, 70.7) / 80.0) +   // Yana RHS (Arctic Siberia mammoth hunters)
+                            2.8 * Math.exp(-distSq(lng, lat, 145.0, 71.0) / 80.0) +   // Berelekh mammoth graveyard
+                            3.0 * Math.exp(-distSq(lng, lat, -140.7, 67.1) / 100.0) + // Bluefish Caves (Yukon / Beringia standstill)
+                            2.5 * Math.exp(-distSq(lng, lat, -168.0, 65.0) / 140.0);  // Central Beringian Land Bridge
+                    }
+
+                    double densAsiaAfrica = 0.5 +
+                        2.8 * Math.exp(-distSq(lng, lat, 35.5, 32.7) / 140.0) +     // Ohalo II / Early Epipaleolithic Levant
+                        2.5 * Math.exp(-distSq(lng, lat, 32.0, 26.0) / 200.0) +     // Nile Valley
+                        2.2 * Math.exp(-distSq(lng, lat, 22.0, -34.0) / 250.0) +    // South African LSA
+                        2.2 * Math.exp(-distSq(lng, lat, 78.0, 22.0) / 250.0) +     // India
+                        2.4 * Math.exp(-distSq(lng, lat, 115.0, 30.0) / 250.0) +    // Yangtze / South China
+                        1.8 * Math.exp(-distSq(lng, lat, 135.0, -25.0) / 300.0);    // Sahul forager network
+
+                    dens = Math.max(densEurope, Math.max(densBeringia, densAsiaAfrica));
+                } else if (year <= -15000) {
+                    // -20,000 BP: LGM Paroxysm Refugia (Solutrean Franco-Cantabria, Mediterranean, Kebaran, Beringia)
+                    double densSolutrean = 0.0;
+                    if (lat >= 36.0 && lat <= 48.0 && lng >= -10.0 && lng <= 10.0) {
+                        densSolutrean = 0.6 +
+                            4.5 * Math.exp(-distSq(lng, lat, 0.5, 44.8) / 80.0) +    // Dordogne & Aquitaine Solutrean Core (Laugerie-Haute, Solutré)
+                            4.2 * Math.exp(-distSq(lng, lat, -4.5, 43.4) / 70.0) +   // Cantabrian / Altamira Solutrean
+                            3.5 * Math.exp(-distSq(lng, lat, -3.5, 38.0) / 90.0) +   // Iberian Mediterranean (Parpalló)
+                            3.0 * Math.exp(-distSq(lng, lat, -8.5, 37.1) / 80.0);    // Portuguese Estremadura (Vale Almoinha)
+                    }
+
+                    double densMedEpigravettian = 0.0;
+                    if (lat >= 36.0 && lat <= 46.0 && lng >= 8.0 && lng <= 30.0) {
+                        densMedEpigravettian = 0.5 +
+                            3.6 * Math.exp(-distSq(lng, lat, 15.5, 41.7) / 80.0) +   // Grotta Paglicci / Italian Epigravettian
+                            3.2 * Math.exp(-distSq(lng, lat, 23.0, 38.5) / 90.0);    // Franchthi / Greek refuge
+                    }
+
+                    double densEasternRefugia = 0.0;
+                    if (lat >= 48.0 && lat <= 54.0 && lng >= 30.0 && lng <= 45.0) {
+                        densEasternRefugia = 0.4 +
+                            3.2 * Math.exp(-distSq(lng, lat, 35.0, 50.5) / 100.0) +  // Mezhirich / Dnepr mammoth bone settlements
+                            3.0 * Math.exp(-distSq(lng, lat, 39.0, 51.4) / 90.0);    // Kostenki
+                    }
+
+                    double densLevantAfrica = 0.4 +
+                        4.2 * Math.exp(-distSq(lng, lat, 35.5, 32.7) / 80.0) +      // Kebaran Levant (Ohalo II / Sea of Galilee)
+                        3.2 * Math.exp(-distSq(lng, lat, 32.5, 25.5) / 180.0) +     // Nile valley (Wadi Kubbaniya)
+                        2.4 * Math.exp(-distSq(lng, lat, 22.0, -34.0) / 200.0) +    // South Africa (Nelson Bay, Boomplaas)
+                        2.2 * Math.exp(-distSq(lng, lat, 80.0, 22.0) / 250.0) +     // India
+                        2.5 * Math.exp(-distSq(lng, lat, 114.0, 28.0) / 250.0);     // South China
+
+                    double densBeringiaLGM = 0.0;
+                    if (lng >= 130.0 || lng <= -130.0) {
+                        densBeringiaLGM = 0.4 +
+                            2.5 * Math.exp(-distSq(lng, lat, -140.7, 67.1) / 90.0) + // Bluefish Caves
+                            2.2 * Math.exp(-distSq(lng, lat, 135.4, 70.7) / 90.0) +  // Yana RHS
+                            2.0 * Math.exp(-distSq(lng, lat, -165.0, 65.0) / 120.0); // Beringia Standstill
+                    }
+
+                    double densSahulLGM = 0.0;
+                    if (lat <= -10.0 && lat >= -42.0 && lng >= 112.0 && lng <= 155.0) {
+                        densSahulLGM = 0.5 +
+                            2.4 * Math.exp(-distSq(lng, lat, 132.9, -12.5) / 120.0) + // Madjedbebe
+                            2.2 * Math.exp(-distSq(lng, lat, 143.0, -33.7) / 140.0) + // Lake Mungo
+                            2.0 * Math.exp(-distSq(lng, lat, 125.0, -16.0) / 140.0);  // Kimberley
+                    }
+
+                    dens = Math.max(densSolutrean, Math.max(densMedEpigravettian,
+                           Math.max(densEasternRefugia, Math.max(densLevantAfrica,
+                           Math.max(densBeringiaLGM, densSahulLGM)))));
                 }
 
                 dens *= weight;
@@ -1029,16 +1295,8 @@ public class HistoricalMapGenerator {
 
             BufferedImage imgDensity = (neResult != null && neResult.densityImage != null) ? neResult.densityImage : null;
             if (imgDensity == null) {
-                if (scenario.getStartDateYear() <= -70000) {
+                if (scenario.getStartDateYear() < -10000) {
                     imgDensity = applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(scenario.getStartDateYear(), type));
-                    scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
-                } else if (scenario.getStartDateYear() < -10000) {
-                    BufferedImage baseHyde = Hyde34GridReader.loadForYear(-10000);
-                    if (baseHyde != null) {
-                        imgDensity = applyAltimetryCoastlineMask(applyPrehistoricGeographicMask(scenario.getPresetKey(), scenario.getStartDateYear(), baseHyde));
-                    } else {
-                        imgDensity = applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(scenario.getStartDateYear(), type));
-                    }
                     scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
                 } else {
                     imgDensity = Hyde34GridReader.loadForYear(scenario.getStartDateYear());
@@ -1152,11 +1410,6 @@ public class HistoricalMapGenerator {
             throw new IllegalStateException("ZERO FALLBACK VIOLATION: Empirical HYDE 3.4 dataset unavailable for year " + targetYear);
         }
         if (targetYear < -10000) {
-            BufferedImage baseHyde = Hyde34GridReader.loadForYear(-10000);
-            if (baseHyde != null) {
-                BufferedImage masked = applyPrehistoricGeographicMask(scenario != null ? scenario.getPresetKey() : null, targetYear, baseHyde);
-                return applyAltimetryCoastlineMask(masked);
-            }
             return applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(targetYear, type));
         }
         BufferedImage realHydeImg = Hyde34GridReader.loadForYear(targetYear);
@@ -1783,7 +2036,7 @@ public class HistoricalMapGenerator {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
-        List<CityPoint> cities = getCitiesForScenario(type);
+        List<CityPoint> cities = getCitiesForScenario(type, scenario);
 
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
@@ -1799,14 +2052,23 @@ public class HistoricalMapGenerator {
                     continue;
                 }
 
-                if (year <= -70000L) {
-                    double instVal = blendPaleoTraits(lon, lat, 24.0, 18.0, 16.0);
+                if (year <= -10000L) {
+                    // Paleolithic Era: Egalitarian band & clan networks (Carneiro Scale Level 0 / score 18-24)
+                    double instVal = 20.0;
+                    if (year <= -70000L) {
+                        instVal = blendPaleoTraits(lon, lat, 24.0, 18.0, 16.0);
+                    } else if (year <= -40000L) {
+                        instVal = 22.0; // MIS 3 Sahul & Eurasian clans
+                    } else if (year <= -20000L) {
+                        instVal = 24.0; // Gravettian / Solutrean complex alliances
+                    }
                     int gray = Math.clamp((int) (instVal * occWeight), 0, 255);
                     img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
                     continue;
                 }
 
-                double maxInst = 20.0;
+                // Holocene & Historical Eras: Seshat hierarchy scaling
+                double maxInst = 25.0;
                 for (CityPoint cp : cities) {
                     double d2 = distSq(lon, lat, cp.lng, cp.lat);
                     double val = cp.weight * Math.exp(-d2 / (2.0 * cp.sigma * cp.sigma)) * 55.0;
@@ -1840,19 +2102,37 @@ public class HistoricalMapGenerator {
                     continue;
                 }
 
-                if (year <= -70000L) {
-                    double ecoVal = blendPaleoTraits(lon, lat, 26.0, 20.0, 18.0);
+                if (year <= -10000L) {
+                    // Paleolithic hunter-gatherer metabolic footprint & fire-stick farming
+                    double ecoVal = 20.0;
+                    if (year <= -70000L) {
+                        ecoVal = blendPaleoTraits(lon, lat, 26.0, 20.0, 18.0);
+                    } else if (year <= -40000L) {
+                        // Sahul anthropogenic mosaic burning (fire-stick farming)
+                        double sahulFire = Math.exp(-(Math.pow(lat - (-22.0), 2) + Math.pow(lon - 135.0, 2)) / 250.0);
+                        ecoVal = 22.0 + sahulFire * 45.0;
+                    } else if (year <= -18000L) {
+                        // Gravettian & LGM megafauna hunting pressure in periglacial plains
+                        double mammothHunt = Math.exp(-(Math.pow(lat - 50.0, 2) + Math.pow(lon - 30.0, 2)) / 300.0);
+                        ecoVal = 22.0 + mammothHunt * 35.0;
+                    }
                     int gray = Math.clamp((int) (ecoVal * occWeight), 0, 255);
                     img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
                     continue;
                 }
 
-                double ecoStrain = 20.0;
-                if (lon >= 35.0 && lon <= 48.0 && lat >= 30.0 && lat <= 38.0) ecoStrain = 210.0; // Mesopotamia Salinization
-                else if (lon >= -9.0 && lon <= 35.0 && lat >= 34.0 && lat <= 45.0) ecoStrain = 175.0; // Mediterranean Deforestation
-                else if (lon >= 105.0 && lon <= 122.0 && lat >= 30.0 && lat <= 40.0) ecoStrain = 195.0; // Yellow River Loess Erosion
-                else if (lon >= 68.0 && lon <= 88.0 && lat >= 20.0 && lat <= 32.0) ecoStrain = 180.0; // Indo-Gangetic Agricultural Strain
-                else if (lon >= 2.0 && lon <= 15.0 && lat >= 48.0 && lat <= 54.0) ecoStrain = 160.0; // European Agricultural Clearing
+                // Holocene Agricultural & Industrial Stress (Smooth 2D continuous Gaussians)
+                double ecoStrain = 22.0;
+                double mesopotamia = Math.exp(-(Math.pow(lat - 33.0, 2) + Math.pow(lon - 44.0, 2)) / 45.0);
+                double meditteranean = Math.exp(-(Math.pow(lat - 38.0, 2) + Math.pow(lon - 15.0, 2)) / 120.0);
+                double yellowRiver = Math.exp(-(Math.pow(lat - 35.0, 2) + Math.pow(lon - 114.0, 2)) / 65.0);
+                double ganges = Math.exp(-(Math.pow(lat - 26.0, 2) + Math.pow(lon - 82.0, 2)) / 60.0);
+                double nwEurope = Math.exp(-(Math.pow(lat - 50.0, 2) + Math.pow(lon - 6.0, 2)) / 60.0);
+                double mesoamerica = Math.exp(-(Math.pow(lat - 19.0, 2) + Math.pow(lon - (-99.0), 2)) / 40.0);
+                double andes = Math.exp(-(Math.pow(lat - (-13.0), 2) + Math.pow(lon - (-72.0), 2)) / 40.0);
+
+                ecoStrain += (mesopotamia * 180.0 + yellowRiver * 170.0 + ganges * 160.0 +
+                              meditteranean * 140.0 + nwEurope * 135.0 + mesoamerica * 120.0 + andes * 120.0);
 
                 int gray = Math.clamp((int) (ecoStrain * occWeight), 0, 255);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);

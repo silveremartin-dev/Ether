@@ -810,22 +810,47 @@ public class H3Cell {
     public void setHasFloatingInfrastructure(Boolean hasFloatingInfrastructure) { this.hasFloatingInfrastructure = hasFloatingInfrastructure; }
 
     /**
+     * Standard average H3 hexagon area in km² according to resolution level (0 to 15).
+     */
+    public static double getAvgHexagonAreaKm2(int resolution) {
+        return switch (resolution) {
+            case 0 -> 4357449.42;
+            case 1 -> 609788.44;
+            case 2 -> 86801.78;
+            case 3 -> 12393.43;
+            case 4 -> 1770.49;
+            case 5 -> 252.93;
+            case 6 -> 36.1329;
+            case 7 -> 5.1618;
+            case 8 -> 0.7373276;
+            case 9 -> 0.1053325;
+            case 10 -> 0.0150475;
+            default -> (resolution < 0) ? 4357449.42 : (0.7373276 * Math.pow(7.0, 8 - resolution));
+        };
+    }
+
+    /**
      * Calculates the effective 3D real surface area of the cell in km², taking into account:
-     * 1. Spherical projection latitude distortion (Equal-Area H3 base planimetric projection).
+     * 1. H3 grid resolution level embedded in the H3 64-bit index.
      * 2. Topographical 3D slope expansion derived from terrain ruggedness / movement friction.
      * 
-     * @return Effective 3D surface area in km² (>= 0.737 km² base).
+     * @return Effective 3D surface area in km² calibrated to actual grid resolution.
      */
     public double getEffectiveSurfaceAreaKm2() {
-        double latRad = Math.toRadians(latitude != null ? latitude : 0.0);
-        // Base planimetric area for H3 Level 8 (~0.737 km² near equator with spherical latitudinal cosine scaling)
-        double baseArea2D = 0.7373276 * Math.max(0.20, Math.cos(latRad));
+        int res = 3;
+        if (h3Index != 0) {
+            int r = (int) ((h3Index >>> 52) & 0xF);
+            if (r >= 0 && r <= 15) {
+                res = r;
+            }
+        }
+        double baseArea = getAvgHexagonAreaKm2(res);
         
         // 3D Topographical slope expansion factor: slope declivity derived from movement friction
         double friction = movementFriction != null ? movementFriction : 1.0;
         double slopeFactor3D = Math.sqrt(1.0 + 0.15 * Math.pow(Math.max(0.0, friction - 1.0), 1.8));
         
-        return baseArea2D * slopeFactor3D;
+        return baseArea * slopeFactor3D;
     }
 
     /**

@@ -45,7 +45,7 @@ public class PerformanceHUD extends VBox {
         memoryLabel = createLabel("Memory: --");
         entitiesLabel = createLabel("Cells: --");
         cameraLabel = createLabel("Zoom: --");
-        profilerLabel = createLabel("Tick: -- ms");
+        profilerLabel = createLabel("Pas : -- ms");
 
         getChildren().addAll(fpsLabel, memoryLabel, entitiesLabel, cameraLabel, profilerLabel);
 
@@ -118,7 +118,7 @@ public class PerformanceHUD extends VBox {
 
     public void updateProfilerInfo(double avgTickMs, double p95TickMs) {
         if (profilerLabel != null) {
-            profilerLabel.setText(String.format("⏱️ Tick: %.1fms (P95: %.1fms)", avgTickMs, p95TickMs));
+            profilerLabel.setText(String.format("⏱️ Pas : %.1fms (P95: %.1fms)", avgTickMs, p95TickMs));
         }
     }
 }

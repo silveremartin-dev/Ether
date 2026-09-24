@@ -315,7 +315,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                     if (empty || item == null) {
                         setStyle("");
                     } else if ("HISTORICAL_GROUND_TRUTH".equals(item.getRunId())) {
-                        setStyle("-fx-border-color: transparent transparent #38bdf8 transparent; -fx-border-width: 0 0 3px 0; -fx-border-style: double; -fx-background-color: rgba(56, 189, 248, 0.12); -fx-font-weight: bold;");
+                        setStyle("-fx-border-color: transparent transparent #38bdf8 transparent; -fx-border-width: 0 0 3px 0; -fx-border-style: solid; -fx-background-color: rgba(56, 189, 248, 0.12); -fx-font-weight: bold;");
                     } else {
                         setStyle("");
                     }

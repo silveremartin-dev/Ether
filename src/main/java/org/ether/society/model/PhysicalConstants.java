@@ -86,6 +86,12 @@ public final class PhysicalConstants {
     /** Optimal biological temperature T_opt for terrestrial enzymes in Kelvin (25°C = 298.15K) */
     public static final double OPTIMAL_BIOLOGICAL_TEMP_KELVIN = 298.15;
 
+    /** Standard maternal bioenergetic cost of gestation and lactation per birth in Gigajoules (~80k kcal gestation + ~110k kcal lactation) */
+    public static final double HUMAN_GESTATION_LACTATION_ENERGY_GJ = 0.80;
+
+    /** Biological baseline minimum age of primiparity (first child) in years */
+    public static final double HUMAN_MIN_PRIMIPARITY_AGE_YEARS = 14.0;
+
     // --- Biomass Energy Densities (MJ / kg fresh weight) (Smil 2008, 2013) ---
     /** Terrestrial mammalian fauna energy density in MJ/kg (muscle, fat, offal, marrow) */
     public static final double BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG = 8.0;

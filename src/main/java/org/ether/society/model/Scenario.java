@@ -837,6 +837,9 @@ public class Scenario implements Serializable {
         s0Engines.put("DemographicLifeTableEngine", true);
         s0Engines.put("ToolKitMaintenanceEngine", true);
         s0Engines.put("SelfDomesticationEngine", true);
+        s0Engines.put("TasmanianCulturalRegressionEngine", true);
+        s0Engines.put("KinSelectionHamiltonEngine", true);
+        s0Engines.put("SexualSelectionMatingEngine", true);
         list.add(s0);
 
         // --- SCÉNARIO : SAHUL (-50000) ---
@@ -879,6 +882,9 @@ public class Scenario implements Serializable {
         sSahulEngines.put("AridWaterStorageStashEngine", true);
         sSahulEngines.put("OchreTradeAllianceEngine", true);
         sSahulEngines.put("ArchaicIntrogressionEngine", true);
+        sSahulEngines.put("TasmanianCulturalRegressionEngine", true);
+        sSahulEngines.put("MegafaunaEcosystemEngine", true);
+        sSahulEngines.put("KinSelectionHamiltonEngine", true);
         list.add(sSahul);
 
         // --- SCÉNARIO : BÉRINGIE & PEUPLEMENT DES AMÉRIQUES (-25000) ---
@@ -922,6 +928,8 @@ public class Scenario implements Serializable {
         sBeringiaEngines.put("PressureFlakerPointEngine", true);
         sBeringiaEngines.put("IvoryHotWaterStraighteningEngine", true);
         sBeringiaEngines.put("PeriglacialLoessDustEngine", true);
+        sBeringiaEngines.put("TasmanianCulturalRegressionEngine", true);
+        sBeringiaEngines.put("KinSelectionHamiltonEngine", true);
         list.add(sBeringia);
 
         // --- SCÉNARIO : DERNIER MAXIMUM GLACIAIRE & SOLUTRÉEN (-20000) ---
@@ -956,6 +964,12 @@ public class Scenario implements Serializable {
         sLGMEngines.put("EyedNeedleSewingEngine", true);
         sLGMEngines.put("MeatCuringReservesEngine", true);
         sLGMEngines.put("PermafrostColdCacheEngine", true);
+        sLGMEngines.put("TasmanianCulturalRegressionEngine", true);
+        sLGMEngines.put("MarrowFatRenderingEngine", true);
+        sLGMEngines.put("SnowTroughRefrigerationEngine", true);
+        sLGMEngines.put("IvoryHotWaterStraighteningEngine", true);
+        sLGMEngines.put("CaveWallClaySealingEngine", true);
+        sLGMEngines.put("KinSelectionHamiltonEngine", true);
         list.add(sLGM);
 
         // --- SCÉNARIO : RÉCENTS DRYAS (-10900) ---
@@ -993,6 +1007,9 @@ public class Scenario implements Serializable {
         sYoungerDryasEngines.put("SeasonalAggregationSanctuaryEngine", true);
         sYoungerDryasEngines.put("BisonCliffJumpDriveEngine", true);
         sYoungerDryasEngines.put("CanidDomesticationEngine", true);
+        sYoungerDryasEngines.put("BasaltGrindingSlabEngine", true);
+        sYoungerDryasEngines.put("OstromCommonsPureEngine", true);
+        sYoungerDryasEngines.put("TasmanianCulturalRegressionEngine", true);
         list.add(sYoungerDryas);
 
         Scenario s1 = new Scenario();
@@ -1028,7 +1045,9 @@ public class Scenario implements Serializable {
         s1Engines.put("EpipaleolithicStorageHamletEngine", true);
         s1Engines.put("BasaltGrindingSlabEngine", true);
         s1Engines.put("CanidDomesticationEngine", true);
+        s1Engines.put("BoserupAgriculturalIntensificationEngine", true);
         s1Engines.put("ScottAgainstTheGrainPureEngine", true);
+        s1Engines.put("OstromCommonsPureEngine", true);
         s1Engines.put("DeforestationErosionEngine", true);
         list.add(s1);
 
@@ -1065,7 +1084,9 @@ public class Scenario implements Serializable {
         sGreenSaharaEngines.put("LakeChadWadiMigrationEngine", true);
         sGreenSaharaEngines.put("AridWaterStorageStashEngine", true);
         sGreenSaharaEngines.put("PelagicFishingHookEngine", true);
+        sGreenSaharaEngines.put("BoserupAgriculturalIntensificationEngine", true);
         sGreenSaharaEngines.put("OstromCommonsPureEngine", true);
+        sGreenSaharaEngines.put("CulturalSociologyEngine", true);
         list.add(sGreenSahara);
 
         // --- SCÉNARIO : ÉGYPTE ANTIQUE (-3000) ---
@@ -1098,10 +1119,16 @@ public class Scenario implements Serializable {
             • Vulnérabilité systémique aux sécheresses prolongées (chute de l'Ancien Empire / 1ère Période Intermédiaire).
             """);
         java.util.Map<String, Boolean> sEgyptEngines = sEgypt.getTypeBEngineStates();
-        sEgyptEngines.put("FertileCrescentSalinizationEngine", true);
+        sEgyptEngines.put("BoserupAgriculturalIntensificationEngine", true);
         sEgyptEngines.put("ScottAgainstTheGrainPureEngine", true);
+        sEgyptEngines.put("TurchinGoldstoneSDTEngine", true);
+        sEgyptEngines.put("FertileCrescentSalinizationEngine", true);
         sEgyptEngines.put("HydrologicalEngineeringEngine", true);
         sEgyptEngines.put("MaritimeHighwayEngine", true);
+        sEgyptEngines.put("SpatialCityFractalEngine", true);
+        sEgyptEngines.put("TainterComplexityCollapseEngine", true);
+        sEgyptEngines.put("FrontierAsabiyyahEngine", true);
+        sEgyptEngines.put("DeforestationErosionEngine", true);
         list.add(sEgypt);
 
         // --- SCÉNARIO : ÂGE DU BRONZE MOYEN & MÉSOPOTAMIE (-1900) ---
@@ -1134,43 +1161,16 @@ public class Scenario implements Serializable {
             • Réseaux urbains denses le long des canaux et dépendance au commerce du cuivre et de l'étain.
             """);
         java.util.Map<String, Boolean> s3Engines = s3.getTypeBEngineStates();
-        s3Engines.put("FertileCrescentSalinizationEngine", true);
+        s3Engines.put("BoserupAgriculturalIntensificationEngine", true);
         s3Engines.put("ScottAgainstTheGrainPureEngine", true);
+        s3Engines.put("TurchinGoldstoneSDTEngine", true);
+        s3Engines.put("FertileCrescentSalinizationEngine", true);
         s3Engines.put("FrontierAsabiyyahEngine", true);
         s3Engines.put("HydrologicalEngineeringEngine", true);
+        s3Engines.put("SpatialCityFractalEngine", true);
+        s3Engines.put("TainterComplexityCollapseEngine", true);
+        s3Engines.put("DeforestationErosionEngine", true);
         list.add(s3);
-
-        // --- SCÉNARIO : DÉBUT ÂGE DU FER & MÉDITERRANÉE ANTIQUE (-1000) ---
-        Scenario sIron = new Scenario();
-        sIron.setPresetKey("early_iron_age");
-        sIron.setName("Début de l'Âge du Fer & Méditerranée Antique (-1000)");
-        sIron.setStartDateYear(-1000);
-        sIron.setEndDateYear(-300);
-        sIron.setInitialHumanCount(20000000);
-        sIron.setInitialCapitalPerCapita(150.0);
-        sIron.setInitialEnergyPerCapita(70.0);
-        sIron.setInitialFoodReserveMonths(6.0);
-        sIron.setInitialInformationPerCapita(120.0);
-        sIron.setPopulationDensityType("URBAN_CLUSTERS");
-        sIron.setTargetCohortSize(500);
-        sIron.setPlanetPreset(PlanetPreset.EARTH_IRON_1000BP);
-        sIron.setEcologyPreset(EcologyPreset.EARTH_IRON_1000BP);
-        sIron.setDescription("""
-            ⚔️ SCÉNARIO HISTORIQUE : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 av. J.-C.)
-            
-            [CONTEXTE HISTORIQUE & PHYSIQUE]
-            Modélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.
-            
-            [OBSERVABLES CLÉS DU SCÉNARIO]
-            • Démocratisation de l'outillage et des armes grâce à l'abondance géologique du minerai de fer.
-            • Essor du commerce maritime thalassocratique en Méditerranée (Phéniciens, Grecs, Étrusques).
-            • Rupture de la dépendance stratégique au cuivre/étain et multiplication des centres de pouvoir régionaux.
-            """);
-        java.util.Map<String, Boolean> sIronEngines = sIron.getTypeBEngineStates();
-        sIronEngines.put("FrontierAsabiyyahEngine", true);
-        sIronEngines.put("MaritimeHighwayEngine", true);
-        sIronEngines.put("SpatialCityFractalEngine", true);
-        list.add(sIron);
 
         // --- SCÉNARIO : MÉSOAMÉRIQUE (-1500) ---
         Scenario sMeso = new Scenario();
@@ -1202,10 +1202,54 @@ public class Scenario implements Serializable {
             • Évolution fractale et dispersion des cités cérémonielles mayas suivies d'effondrements régionaux.
             """);
         java.util.Map<String, Boolean> sMesoEngines = sMeso.getTypeBEngineStates();
+        sMesoEngines.put("BoserupAgriculturalIntensificationEngine", true);
+        sMesoEngines.put("ScottAgainstTheGrainPureEngine", true);
+        sMesoEngines.put("TurchinGoldstoneSDTEngine", true);
         sMesoEngines.put("AmerindianEcosystemEngine", true);
         sMesoEngines.put("HydrologicalEngineeringEngine", true);
         sMesoEngines.put("SpatialCityFractalEngine", true);
+        sMesoEngines.put("TainterComplexityCollapseEngine", true);
+        sMesoEngines.put("DeforestationErosionEngine", true);
+        sMesoEngines.put("OstromCommonsPureEngine", true);
         list.add(sMeso);
+
+        // --- SCÉNARIO : DÉBUT ÂGE DU FER & MÉDITERRANÉE ANTIQUE (-1000) ---
+        Scenario sIron = new Scenario();
+        sIron.setPresetKey("early_iron_age");
+        sIron.setName("Début de l'Âge du Fer & Méditerranée Antique (-1000)");
+        sIron.setStartDateYear(-1000);
+        sIron.setEndDateYear(-300);
+        sIron.setInitialHumanCount(20000000);
+        sIron.setInitialCapitalPerCapita(150.0);
+        sIron.setInitialEnergyPerCapita(70.0);
+        sIron.setInitialFoodReserveMonths(6.0);
+        sIron.setInitialInformationPerCapita(120.0);
+        sIron.setPopulationDensityType("URBAN_CLUSTERS");
+        sIron.setTargetCohortSize(500);
+        sIron.setPlanetPreset(PlanetPreset.EARTH_IRON_1000BP);
+        sIron.setEcologyPreset(EcologyPreset.EARTH_IRON_1000BP);
+        sIron.setDescription("""
+            ⚔️ SCÉNARIO HISTORIQUE : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Démocratisation de l'outillage et des armes grâce à l'abondance géologique du minerai de fer.
+            • Essor du commerce maritime thalassocratique en Méditerranée (Phéniciens, Grecs, Étrusques).
+            • Rupture de la dépendance stratégique au cuivre/étain et multiplication des centres de pouvoir régionaux.
+            """);
+        java.util.Map<String, Boolean> sIronEngines = sIron.getTypeBEngineStates();
+        sIronEngines.put("BoserupAgriculturalIntensificationEngine", true);
+        sIronEngines.put("TurchinGoldstoneSDTEngine", true);
+        sIronEngines.put("FrontierAsabiyyahEngine", true);
+        sIronEngines.put("MaritimeHighwayEngine", true);
+        sIronEngines.put("DynamicMaritimeRoutingGraph", true);
+        sIronEngines.put("SpatialCityFractalEngine", true);
+        sIronEngines.put("TainterComplexityCollapseEngine", true);
+        sIronEngines.put("KrugmanCorePeripheryEngine", true);
+        sIronEngines.put("ArthurCombinatorialTechnologyEngine", true);
+        list.add(sIron);
 
         // --- SCÉNARIO : EMPIRE MAURYA & INDE (-300) ---
         Scenario sMaurya = new Scenario();
@@ -1237,9 +1281,15 @@ public class Scenario implements Serializable {
             • Intégration commerciale transasiatique le long de la Grand Trunk Road et des ports de l'océan Indien.
             """);
         java.util.Map<String, Boolean> sMauryaEngines = sMaurya.getTypeBEngineStates();
+        sMauryaEngines.put("BoserupAgriculturalIntensificationEngine", true);
+        sMauryaEngines.put("ScottAgainstTheGrainPureEngine", true);
+        sMauryaEngines.put("TurchinGoldstoneSDTEngine", true);
         sMauryaEngines.put("FrontierAsabiyyahEngine", true);
         sMauryaEngines.put("SpatialCityFractalEngine", true);
-        sMauryaEngines.put("PinkerViolenceDeclinePureEngine", true);
+        sMauryaEngines.put("SelfDomesticationEngine", true);
+        sMauryaEngines.put("ArthurCombinatorialTechnologyEngine", true);
+        sMauryaEngines.put("GranovetterThresholdCascadeEngine", true);
+        sMauryaEngines.put("OstromCommonsPureEngine", true);
         list.add(sMaurya);
 
         // --- SCÉNARIO : EMPIRE ROMAIN & PAX ROMANA (AN 0) ---
@@ -1260,10 +1310,21 @@ public class Scenario implements Serializable {
         sRoman.setClippingEnabled(true);
         sRoman.setMinLat(25.0); sRoman.setMaxLat(55.0); sRoman.setMinLng(-10.0); sRoman.setMaxLng(45.0);
         sRoman.setBoundaryMode("DYNAMIC_RESERVOIR");
-        sRoman.getTypeBEngineStates().put("RomanImperialCliodynamicEngine", true);
-        sRoman.getTypeBEngineStates().put("FrontierAsabiyyahEngine", true);
-        sRoman.getTypeBEngineStates().put("MaritimeHighwayEngine", true);
-        sRoman.getTypeBEngineStates().put("SpatialCityFractalEngine", true);
+        java.util.Map<String, Boolean> sRomanEngines = sRoman.getTypeBEngineStates();
+        sRomanEngines.put("RomanImperialCliodynamicEngine", true);
+        sRomanEngines.put("TurchinGoldstoneSDTEngine", true);
+        sRomanEngines.put("BoserupAgriculturalIntensificationEngine", true);
+        sRomanEngines.put("FrontierAsabiyyahEngine", true);
+        sRomanEngines.put("MaritimeHighwayEngine", true);
+        sRomanEngines.put("DynamicMaritimeRoutingGraph", true);
+        sRomanEngines.put("SpatialCityFractalEngine", true);
+        sRomanEngines.put("TainterComplexityCollapseEngine", true);
+        sRomanEngines.put("BioMolecularEpidemiologyEngine", true);
+        sRomanEngines.put("SpatialMetapopulationSEIREngine", true);
+        sRomanEngines.put("DeforestationErosionEngine", true);
+        sRomanEngines.put("KrugmanCorePeripheryEngine", true);
+        sRomanEngines.put("ArthurCombinatorialTechnologyEngine", true);
+        sRomanEngines.put("GranovetterThresholdCascadeEngine", true);
         sRoman.setDescription("""
             🏛️ SCÉNARIO HISTORIQUE : L'Empire Romain à son Apogée (Pax Romana, An 0)
             
@@ -1304,8 +1365,15 @@ public class Scenario implements Serializable {
             """);
         java.util.Map<String, Boolean> s2Engines = s2.getTypeBEngineStates();
         s2Engines.put("BioMolecularEpidemiologyEngine", true);
+        s2Engines.put("SpatialMetapopulationSEIREngine", true);
         s2Engines.put("FrontierAsabiyyahEngine", true);
         s2Engines.put("MonasticDemographicBufferEngine", true);
+        s2Engines.put("TurchinGoldstoneSDTEngine", true);
+        s2Engines.put("BoserupAgriculturalIntensificationEngine", true);
+        s2Engines.put("TainterComplexityCollapseEngine", true);
+        s2Engines.put("MaritimeHighwayEngine", true);
+        s2Engines.put("DynamicMaritimeRoutingGraph", true);
+        s2Engines.put("GranovetterThresholdCascadeEngine", true);
         list.add(s2);
 
         Scenario s4 = new Scenario();
@@ -1334,10 +1402,18 @@ public class Scenario implements Serializable {
             • Hyper-urbanisation fluviale (Kaifeng, Hangzhou) et vulnérabilité militaire face aux cavaliers nomades du Nord.
             """);
         java.util.Map<String, Boolean> s4Engines = s4.getTypeBEngineStates();
+        s4Engines.put("BoserupAgriculturalIntensificationEngine", true);
+        s4Engines.put("TurchinGoldstoneSDTEngine", true);
+        s4Engines.put("AcemogluRobinsonInstitutionsEngine", true);
         s4Engines.put("MilitaryTechShockEngine", true);
         s4Engines.put("DynamicMaritimeRoutingGraph", true);
         s4Engines.put("MaritimeHighwayEngine", true);
         s4Engines.put("SpatialCityFractalEngine", true);
+        s4Engines.put("HydrologicalEngineeringEngine", true);
+        s4Engines.put("KrugmanCorePeripheryEngine", true);
+        s4Engines.put("ArthurCombinatorialTechnologyEngine", true);
+        s4Engines.put("GranovetterThresholdCascadeEngine", true);
+        s4Engines.put("WestBettencourtAllometryEngine", true);
         list.add(s4);
 
         // --- SCÉNARIO : EMPIRE DU MALI (1324) ---
@@ -1370,9 +1446,14 @@ public class Scenario implements Serializable {
             • Choc monétaire mondial provoqué par les dépenses d'or de Mansa Musa lors de son pèlerinage au Caire.
             """);
         java.util.Map<String, Boolean> sMaliEngines = sMali.getTypeBEngineStates();
+        sMaliEngines.put("BoserupAgriculturalIntensificationEngine", true);
+        sMaliEngines.put("TurchinGoldstoneSDTEngine", true);
         sMaliEngines.put("FrontierAsabiyyahEngine", true);
         sMaliEngines.put("AsymmetricColonialTradeEngine", true);
         sMaliEngines.put("SpatialCityFractalEngine", true);
+        sMaliEngines.put("OstromCommonsPureEngine", true);
+        sMaliEngines.put("ArthurCombinatorialTechnologyEngine", true);
+        sMaliEngines.put("GranovetterThresholdCascadeEngine", true);
         list.add(sMali);
 
         // --- SCÉNARIO : AMÉRIQUES PRÉCOLOMBIENNES (1491) ---
@@ -1405,9 +1486,14 @@ public class Scenario implements Serializable {
             • Absence d'immunité croisée et vulnérabilité maximale face aux pathogènes de l'Ancien Monde.
             """);
         java.util.Map<String, Boolean> sAmericas1491Engines = sAmericas1491.getTypeBEngineStates();
+        sAmericas1491Engines.put("BoserupAgriculturalIntensificationEngine", true);
+        sAmericas1491Engines.put("TurchinGoldstoneSDTEngine", true);
         sAmericas1491Engines.put("AmerindianEcosystemEngine", true);
         sAmericas1491Engines.put("HydrologicalEngineeringEngine", true);
         sAmericas1491Engines.put("SpatialCityFractalEngine", true);
+        sAmericas1491Engines.put("OstromCommonsPureEngine", true);
+        sAmericas1491Engines.put("TainterComplexityCollapseEngine", true);
+        sAmericas1491Engines.put("DeforestationErosionEngine", true);
         list.add(sAmericas1491);
 
         // --- SCÉNARIO : CHOC DU CONTACT PRÉCOLOMBIEN (1492) ---
@@ -1438,8 +1524,12 @@ public class Scenario implements Serializable {
             """);
         java.util.Map<String, Boolean> sColumbianEngines = sColumbian.getTypeBEngineStates();
         sColumbianEngines.put("BioMolecularEpidemiologyEngine", true);
+        sColumbianEngines.put("SpatialMetapopulationSEIREngine", true);
         sColumbianEngines.put("AsymmetricColonialTradeEngine", true);
         sColumbianEngines.put("DynamicMaritimeRoutingGraph", true);
+        sColumbianEngines.put("MaritimeHighwayEngine", true);
+        sColumbianEngines.put("AcemogluRobinsonInstitutionsEngine", true);
+        sColumbianEngines.put("AmerindianEcosystemEngine", true);
         list.add(sColumbian);
 
         // --- SCÉNARIO : JAPON EDO & SAKOKU (1639) ---
@@ -1474,6 +1564,11 @@ public class Scenario implements Serializable {
         java.util.Map<String, Boolean> sSakokuEngines = sSakoku.getTypeBEngineStates();
         sSakokuEngines.put("EdoJapanIsolationEngine", true);
         sSakokuEngines.put("OstromCommonsPureEngine", true);
+        sSakokuEngines.put("BoserupAgriculturalIntensificationEngine", true);
+        sSakokuEngines.put("TurchinGoldstoneSDTEngine", true);
+        sSakokuEngines.put("AcemogluRobinsonInstitutionsEngine", true);
+        sSakokuEngines.put("SpatialCityFractalEngine", true);
+        sSakokuEngines.put("DeforestationErosionEngine", true);
         list.add(sSakoku);
 
         // --- SCÉNARIO : RÉVOLUTION INDUSTRIELLE (1800) ---
@@ -1503,11 +1598,18 @@ public class Scenario implements Serializable {
             • Urbanisation industrielle ultra-rapide (exode rural) et amorce des émissions anthropiques massives de CO₂.
             """);
         java.util.Map<String, Boolean> sIndustrial1800Engines = sIndustrial1800.getTypeBEngineStates();
+        sIndustrial1800Engines.put("KummelAyresExergyEngine", true);
+        sIndustrial1800Engines.put("SmilMaterialTransitionsPureEngine", true);
         sIndustrial1800Engines.put("JevonsParadoxEngine", true);
         sIndustrial1800Engines.put("EntropicMetalDissipationEngine", true);
-        sIndustrial1800Engines.put("SmilMaterialTransitionsPureEngine", true);
         sIndustrial1800Engines.put("ProtestantWorkEthicEngine", true);
         sIndustrial1800Engines.put("UrbanThermodynamicsEngine", true);
+        sIndustrial1800Engines.put("AcemogluRobinsonInstitutionsEngine", true);
+        sIndustrial1800Engines.put("ArthurCombinatorialTechnologyEngine", true);
+        sIndustrial1800Engines.put("WestBettencourtAllometryEngine", true);
+        sIndustrial1800Engines.put("KrugmanCorePeripheryEngine", true);
+        sIndustrial1800Engines.put("HotellingResourceDepletionEngine", true);
+        sIndustrial1800Engines.put("OreGradeThermodynamicsEngine", true);
         list.add(sIndustrial1800);
 
         // --- SCÉNARIO : ANTHROPOCÈNE (2000) ---
@@ -1537,11 +1639,21 @@ public class Scenario implements Serializable {
             • Rendements décroissants de la complexité institutionnelle et fragilité des chaînes logistiques just-in-time.
             """);
         java.util.Map<String, Boolean> sModern2000Engines = sModern2000.getTypeBEngineStates();
+        sModern2000Engines.put("KummelAyresExergyEngine", true);
+        sModern2000Engines.put("SmilMaterialTransitionsPureEngine", true);
         sModern2000Engines.put("World3HybridEngine", true);
-        sModern2000Engines.put("NordhausDiceHybridEngine", true);
         sModern2000Engines.put("EcotoxicologyFertilityEngine", true);
         sModern2000Engines.put("UrbanThermodynamicsEngine", true);
         sModern2000Engines.put("KurzweilAcceleratingReturnsEngine", true);
+        sModern2000Engines.put("AcemogluRobinsonInstitutionsEngine", true);
+        sModern2000Engines.put("ArthurCombinatorialTechnologyEngine", true);
+        sModern2000Engines.put("WestBettencourtAllometryEngine", true);
+        sModern2000Engines.put("KrugmanCorePeripheryEngine", true);
+        sModern2000Engines.put("HotellingResourceDepletionEngine", true);
+        sModern2000Engines.put("OreGradeThermodynamicsEngine", true);
+        sModern2000Engines.put("JevonsParadoxEngine", true);
+        sModern2000Engines.put("EntropicMetalDissipationEngine", true);
+        sModern2000Engines.put("BioMolecularEpidemiologyEngine", true);
         list.add(sModern2000);
 
         // --- SCÉNARIOS DU FUTUR ---
@@ -1571,11 +1683,75 @@ public class Scenario implements Serializable {
             • Effondrement des rendements agricoles tropicaux et vagues de réfugiés climatiques vers les hautes latitudes.
             """);
         java.util.Map<String, Boolean> s5Engines = s5.getTypeBEngineStates();
-        s5Engines.put("NordhausDiceHybridEngine", true);
+        s5Engines.put("KummelAyresExergyEngine", true);
+        s5Engines.put("SmilMaterialTransitionsPureEngine", true);
         s5Engines.put("World3HybridEngine", true);
         s5Engines.put("MarineSubmersionEngine", true);
         s5Engines.put("GeoengineeringAlbedoFeedbackEngine", true);
+        s5Engines.put("UrbanThermodynamicsEngine", true);
+        s5Engines.put("EcotoxicologyFertilityEngine", true);
+        s5Engines.put("HotellingResourceDepletionEngine", true);
+        s5Engines.put("OreGradeThermodynamicsEngine", true);
+        s5Engines.put("JevonsParadoxEngine", true);
         list.add(s5);
+
+        Scenario s7 = new Scenario();
+        s7.setPresetKey("nuclear_winter_2035");
+        s7.setName("Hiver Nucléaire & Ombre Stratosphérique (2035)");
+        s7.setStartDateYear(2035);
+        s7.setEndDateYear(2085);
+        s7.setInitialHumanCount(8500000000L);
+        s7.setInitialCapitalPerCapita(18000.0);
+        s7.setInitialEnergyPerCapita(1500.0);
+        s7.setInitialFoodReserveMonths(1.5);
+        s7.setInitialInformationPerCapita(500000.0);
+        s7.setPopulationDensityType("URBAN_CLUSTERS");
+        s7.setTargetCohortSize(250);
+        s7.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        s7.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
+        s7.setDescription("""
+            ☢️ SCÉNARIO FUTUR : Catastrophe de la Guerre Nucléaire & Hiver Stratosphérique
+            
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]
+            Conflit nucléaire à haute intensité déclenchant d'immenses tempêtes de feu urbaines et l'injection massive de carbone suie dans la stratosphère.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Chute brutale de l'insolation solaire au sol (-70%) et refroidissement planétaire de -15°C à -25°C.
+            • Effondrement total de la photosynthèse et rupture généralisée des chaînes alimentaires en moins de 60 jours.
+            • Survie démographique résiduelle restreinte aux refuges souterrains, biomes marins profonds et serres protégées.
+            """);
+        java.util.Map<String, Boolean> s7Engines = s7.getTypeBEngineStates();
+        s7Engines.put("NuclearWarfareClimateEngine", true);
+        s7Engines.put("NuclearSafetyRadiotoxicityEngine", true);
+        s7Engines.put("BifurcationChaosEngine", true);
+        s7Engines.put("VolcanicTephraRefugiaEngine", true);
+
+        // Targeted Strategic Nuclear Strike Package (Anti-Forces & Anti-Cities)
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Stratégique : Washington D.C. & Pentagone", 2035, 38.88, -77.05, 0.0, 8.5));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Anti-Forces : Silos Minot AFB (Dakota du Nord)", 2035, 48.41, -101.35, 0.0, 9.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Anti-Forces : Silos Malmstrom AFB (Montana)", 2035, 47.50, -111.18, 0.0, 9.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Anti-Bunker : Complexe Cheyenne Mountain / NORAD", 2035, 38.74, -104.84, 0.0, 9.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Anti-Cités : Agglomération New York & Hub Maritime", 2035, 40.71, -74.00, 0.0, 8.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Anti-Cités : Mégalopole Los Angeles / Long Beach", 2035, 34.05, -118.24, 0.0, 8.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Stratégique : Moscou & Centre de Commandement", 2035, 55.75, 37.61, 0.0, 8.5));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Anti-Forces : Base Bombardiers Engels-2 (Saratov)", 2035, 51.48, 46.21, 0.0, 8.5));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Anti-Forces : Champs de Silos ICBM Kozelsk", 2035, 54.04, 35.80, 0.0, 9.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Navale : Chantiers Sous-Marins Severodvinsk", 2035, 64.56, 39.83, 0.0, 8.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Anti-Cités : Métropole Saint-Pétersbourg & Baltique", 2035, 59.93, 30.33, 0.0, 8.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Stratégique : Londres & Amirauté Britannique", 2035, 51.50, -0.12, 0.0, 8.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Navale : Base SNLE Faslane / HMNB Clyde", 2035, 56.06, -4.81, 0.0, 8.5));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Stratégique : Paris & Commandement des Forces Aériennes", 2035, 48.85, 2.35, 0.0, 8.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Navale : Base SNLE Île Longue (Brest)", 2035, 48.30, -4.50, 0.0, 8.5));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Stratégique : Pékin & Commission Militaire Centrale", 2035, 39.90, 116.40, 0.0, 8.5));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Anti-Forces : Silos DF-41 Yumen / Hami (Gansu)", 2035, 40.28, 97.04, 0.0, 9.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Anti-Cités : Mégalopole Industrielle Shanghai / Yangtze", 2035, 31.23, 121.47, 0.0, 8.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Stratégique : Tokyo & Complexe Industriel Kanto", 2035, 35.68, 139.69, 0.0, 8.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Anti-Forces : Base Stratégique Andersen (Guam)", 2035, 13.58, 144.92, 0.0, 8.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Anti-Forces : Base Aérienne Ramstein (OTAN)", 2035, 49.43, 7.60, 0.0, 8.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Stratégique : New Delhi & Centres Stratégiques", 2035, 28.61, 77.20, 0.0, 8.0));
+        s7.getClimateEvents().add(new ClimateEvent("NUCLEAR_STRIKE", "Frappe Stratégique : Islamabad & Complexe Nucléaire Kahuta", 2035, 33.68, 73.04, 0.0, 8.0));
+
+        list.add(s7);
 
         Scenario s6 = new Scenario();
         s6.setPresetKey("singularity_2045");
@@ -1607,37 +1783,9 @@ public class Scenario implements Serializable {
         s6Engines.put("AiAutonomousRegulationPureEngine", true);
         s6Engines.put("KurzweilAcceleratingReturnsEngine", true);
         s6Engines.put("KardashevPureEngine", true);
+        s6Engines.put("ArthurCombinatorialTechnologyEngine", true);
+        s6Engines.put("AcemogluRobinsonInstitutionsEngine", true);
         list.add(s6);
-
-        Scenario s7 = new Scenario();
-        s7.setPresetKey("nuclear_winter_2035");
-        s7.setName("Hiver Nucléaire & Ombre Stratosphérique (2035)");
-        s7.setStartDateYear(2035);
-        s7.setEndDateYear(2085);
-        s7.setInitialHumanCount(8500000000L);
-        s7.setInitialCapitalPerCapita(18000.0);
-        s7.setInitialEnergyPerCapita(1500.0);
-        s7.setInitialFoodReserveMonths(1.5);
-        s7.setInitialInformationPerCapita(500000.0);
-        s7.setPopulationDensityType("URBAN_CLUSTERS");
-        s7.setTargetCohortSize(250);
-        s7.setPlanetPreset(PlanetPreset.EARTH_LIKE);
-        s7.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
-        s7.setDescription("""
-            ☢️ SCÉNARIO FUTUR : Catastrophe de la Guerre Nucléaire & Hiver Stratosphérique
-            
-            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]
-            Conflit nucléaire à haute intensité déclenchant d'immenses tempêtes de feu urbaines et l'injection massive de carbone suie dans la stratosphère.
-            
-            [OBSERVABLES CLÉS DU SCÉNARIO]
-            • Chute brutale de l'insolation solaire au sol (-70%) et refroidissement planétaire de -15°C à -25°C.
-            • Effondrement total de la photosynthèse et rupture généralisée des chaînes alimentaires en moins de 60 jours.
-            • Survie démographique résiduelle restreinte aux refuges souterrains, biomes marins profonds et serres protégées.
-            """);
-        java.util.Map<String, Boolean> s7Engines = s7.getTypeBEngineStates();
-        s7Engines.put("NuclearWarfareClimateEngine", true);
-        s7Engines.put("NuclearSafetyRadiotoxicityEngine", true);
-        list.add(s7);
 
         Scenario s8 = new Scenario();
         s8.setPresetKey("peak_phosphate_2050");
@@ -1665,9 +1813,12 @@ public class Scenario implements Serializable {
             • Re-localisation agricole d'urgence, baisse de la population vers la capacité de charge organique et recyclage des flux.
             """);
         java.util.Map<String, Boolean> s8Engines = s8.getTypeBEngineStates();
-        s8Engines.put("World3PureEngine", true);
+        s8Engines.put("World3HybridEngine", true);
         s8Engines.put("EcotoxicologyFertilityEngine", true);
         s8Engines.put("SmilMaterialTransitionsPureEngine", true);
+        s8Engines.put("HotellingResourceDepletionEngine", true);
+        s8Engines.put("OreGradeThermodynamicsEngine", true);
+        s8Engines.put("TainterComplexityCollapseEngine", true);
         list.add(s8);
 
         Scenario s9 = new Scenario();
@@ -1704,7 +1855,11 @@ public class Scenario implements Serializable {
         java.util.Map<String, Boolean> s9Engines = s9.getTypeBEngineStates();
         s9Engines.put("VolcanicTephraRefugiaEngine", true);
         s9Engines.put("BifurcationChaosEngine", true);
+        s9Engines.put("World3HybridEngine", true);
         list.add(s9);
+
+        // Sort all canonical presets chronologically by start year
+        list.sort(java.util.Comparator.comparingLong(Scenario::getStartDateYear));
 
         // Enforce precalculated map import mode for all canonical built-in scenarios
         for (Scenario sc : list) {

@@ -104,10 +104,16 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     // Topography Controls
     private Slider minAltSlider;
+    private Spinner<Double> minAltSpinner;
     private Slider maxAltSlider;
+    private Spinner<Double> maxAltSpinner;
     private Slider noiseFreqSlider;
     private Slider noiseScaleSlider;
     private Slider waterSlider;
+    private Spinner<Double> seaLevelMetersSpinner;
+    private Label seaLevelMetersLabel;
+    private Label waterNormValLabel;
+    private boolean isUpdatingControlSync = false;
 
     // Climate & Ecosystem Controls
     private Slider tempGradSlider;
@@ -433,27 +439,102 @@ public class PlanetGeneratorPanel extends BorderPane {
         maxAltSlider = createSlider(500, 25000, 8848);
         minAltSlider.valueProperty().addListener((obs, old, val) -> updateAltRangeDisplay());
         maxAltSlider.valueProperty().addListener((obs, old, val) -> updateAltRangeDisplay());
-        waterSlider = createSlider(-0.5, 1.0, 0.48);
+        waterSlider = createSlider(-0.5, 1.0, 0.478);
         noiseFreqSlider = createSlider(0.1, 2.0, 1.0);
         noiseScaleSlider = createSlider(0.5, 3.0, 1.0);
 
         minAltRowLabel = new Label();
         maxAltRowLabel = new Label();
         waterRowLabel = new Label();
+        seaLevelMetersLabel = new Label(I18n.getOrDefault("planet.param.sea_level", "Niveau de la Mer (Altitude) :"));
         freqRowLabel = new Label();
         scaleRowLabel = new Label();
         seedRowLabel = new Label();
+
+        minAltSpinner = new Spinner<>(-20000.0, -100.0, -11000.0, 10.0);
+        VBox minAltBox = createControlRowWithSpinner(minAltRowLabel, minAltSlider, minAltSpinner, "%.0f m",
+                I18n.getOrDefault("planet.tooltip.min_alt", "Absolute minimum altitude (ocean floor) [Corresponds to image level 0]"));
+
+        maxAltSpinner = new Spinner<>(100.0, 30000.0, 8848.0, 10.0);
+        VBox maxAltBox = createControlRowWithSpinner(maxAltRowLabel, maxAltSlider, maxAltSpinner, "%.0f m",
+                I18n.getOrDefault("planet.tooltip.max_alt", "Altitude maximale absolue (sommet montagneux) [Correspond au niveau 255 de l'image]"));
 
         altRangeLabel = new Label();
         altRangeLabel.getStyleClass().add("value-label");
         altRangeLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 2 0 4 0;");
         updateAltRangeDisplay();
 
-        VBox commonTopoBox = new VBox(6,
-                createControlRow(minAltRowLabel, minAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.min_alt", "Absolute minimum altitude (ocean floor) [Corresponds to image level 0]")),
-                createControlRow(maxAltRowLabel, maxAltSlider, "%.0f m", I18n.getOrDefault("planet.tooltip.max_alt", "Altitude maximale absolue (sommet montagneux) [Correspond au niveau 255 de l'image]")),
+        // Dedicated Sea Level / Niveau de la Mer Control (Exact to the meter)
+        seaLevelMetersLabel.getStyleClass().add("control-label");
+        seaLevelMetersSpinner = new Spinner<>(-20000.0, 30000.0, 0.0, 1.0);
+        seaLevelMetersSpinner.setEditable(true);
+        seaLevelMetersSpinner.setPrefWidth(100);
+        seaLevelMetersSpinner.setMaxWidth(115);
+        seaLevelMetersSpinner.getStyleClass().add("dense-spinner");
+        seaLevelMetersSpinner.getEditor().setOnAction(e -> commitEditorDoubleText(seaLevelMetersSpinner));
+        seaLevelMetersSpinner.focusedProperty().addListener((obs, oldV, focused) -> {
+            if (!focused) commitEditorDoubleText(seaLevelMetersSpinner);
+        });
+
+        Label seaLevelUnit = new Label("m");
+        seaLevelUnit.getStyleClass().add("unit-label");
+        HBox seaLevelValBox = new HBox(4, seaLevelMetersSpinner, seaLevelUnit);
+        seaLevelValBox.setAlignment(Pos.CENTER_RIGHT);
+
+        HBox seaLevelHeader = new HBox(seaLevelMetersLabel, new Pane(), seaLevelValBox);
+        HBox.setHgrow(seaLevelHeader.getChildren().get(1), Priority.ALWAYS);
+
+        waterNormValLabel = new Label();
+        waterNormValLabel.getStyleClass().add("card-description-muted");
+        waterNormValLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+
+        String seaLevelTooltip = I18n.getOrDefault("planet.tooltip.sea_level_meters",
+                "Niveau de la mer au mètre près. Réglez l'altitude eustatique exacte en mètres (ex: 0 m actuel, -125 m LGM). La valeur est convertie selon le datum NOAA ETOPO (0.478 à 0 m).");
+        Tooltip slTt = new Tooltip(seaLevelTooltip);
+        seaLevelMetersLabel.setTooltip(slTt);
+        seaLevelMetersSpinner.setTooltip(slTt);
+        waterSlider.setTooltip(slTt);
+
+        VBox seaLevelBox = new VBox(4, seaLevelHeader, waterSlider, waterNormValLabel);
+
+        // Listeners for Sea Level synchronization
+        seaLevelMetersSpinner.valueProperty().addListener((obs, oldV, newV) -> {
+            if (isUpdatingFromPreset || isUpdatingControlSync || newV == null) return;
+            isUpdatingControlSync = true;
+            try {
+                double minAlt = minAltSlider.getValue();
+                double maxAlt = maxAltSlider.getValue();
+                double w = PlanetPreset.metersToWaterLevel(newV, minAlt, maxAlt);
+                waterSlider.setValue(w);
+                updateSeaLevelDisplay(newV, w);
+                if (presetBar != null) presetBar.notifyParametersChanged();
+                updatePreview();
+            } finally {
+                isUpdatingControlSync = false;
+            }
+        });
+
+        waterSlider.valueProperty().addListener((obs, oldV, newV) -> {
+            if (isUpdatingFromPreset || isUpdatingControlSync || newV == null) return;
+            isUpdatingControlSync = true;
+            try {
+                double minAlt = minAltSlider.getValue();
+                double maxAlt = maxAltSlider.getValue();
+                double meters = PlanetPreset.waterLevelToMeters(newV.doubleValue(), minAlt, maxAlt);
+                seaLevelMetersSpinner.getValueFactory().setValue(Math.round(meters * 10.0) / 10.0);
+                updateSeaLevelDisplay(meters, newV.doubleValue());
+                if (presetBar != null) presetBar.notifyParametersChanged();
+                updatePreview();
+            } finally {
+                isUpdatingControlSync = false;
+            }
+        });
+
+        VBox commonTopoBox = new VBox(8,
+                minAltBox,
+                maxAltBox,
                 altRangeLabel,
-                createControlRow(waterRowLabel, waterSlider, "%.2f", I18n.getOrDefault("planet.tooltip.water_level", "Oceanic submergence threshold — 0.48 corresponds to ~71% submerged oceans on Earth"))
+                seaLevelBox
         );
 
         // Seed + random button (inside procedural panel)
@@ -1064,26 +1145,26 @@ public class PlanetGeneratorPanel extends BorderPane {
         updatePreview();
     }
 
-    public static final String CLIMATE_SRC_TEMP_EARTH = "🌍 Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)";
-    public static final String CLIMATE_SRC_TEMP_MARS = "🔴 Mars — MGS TES Thermal Radiometry";
-    public static final String CLIMATE_SRC_TEMP_VENUS = "🟡 Vénus — Magellan SAR & Hypsometric Model";
-    public static final String CLIMATE_SRC_TEMP_MOON = "⚪ Lune — LRO Diviner Thermal Radiometer";
-    public static final String CLIMATE_SRC_TEMP_MERCURY = "⚪ Mercure — MESSENGER MLA Extreme Thermal Model";
-    public static final String CLIMATE_SRC_TEMP_WMS = "🌐 NASA MERRA-2 (WMS Satellite)";
+    public static final String CLIMATE_SRC_TEMP_EARTH = "🌍 Terre — WorldClim v2.1 Bio1 & ERA5 (Composite) [Global, -100 000 BP à +2100 AD]";
+    public static final String CLIMATE_SRC_TEMP_MARS = "🔴 Mars — MGS TES Thermal Radiometry [Planétaire (Mars), -4.1 Ga à Actuel]";
+    public static final String CLIMATE_SRC_TEMP_VENUS = "🟡 Vénus — Magellan SAR & Hypsometric Model [Planétaire (Vénus), -500 Ma à Actuel]";
+    public static final String CLIMATE_SRC_TEMP_MOON = "⚪ Lune — LRO Diviner Thermal Radiometer [Planétaire (Lune), -4.5 Ga à Actuel]";
+    public static final String CLIMATE_SRC_TEMP_MERCURY = "⚪ Mercure — MESSENGER MLA Extreme Thermal Model [Planétaire (Mercure), -4.0 Ga à Actuel]";
+    public static final String CLIMATE_SRC_TEMP_WMS = "🌐 NASA MERRA-2 (WMS Satellite) [Global, 1980 AD à Actuel]";
 
-    public static final String CLIMATE_SRC_PRECIP_EARTH = "🌍 Terre — WorldClim v2.1 & GPCP v2.3 (Composite)";
-    public static final String CLIMATE_SRC_PRECIP_MARS = "🔴 Mars — Frost & Sublimation Model";
-    public static final String CLIMATE_SRC_PRECIP_VENUS = "🟡 Vénus — H2SO4 Virga Cycle Model";
-    public static final String CLIMATE_SRC_PRECIP_MOON = "⚪ Lune — LRO LEND Vacuum Exosphere";
-    public static final String CLIMATE_SRC_PRECIP_MERCURY = "⚪ Mercure — MESSENGER Exospheric Vacuum Model";
-    public static final String CLIMATE_SRC_PRECIP_WMS = "🌐 NASA GPM IMERG (WMS Satellite)";
+    public static final String CLIMATE_SRC_PRECIP_EARTH = "🌍 Terre — WorldClim v2.1 & GPCP v2.3 (Composite) [Global, -100 000 BP à +2100 AD]";
+    public static final String CLIMATE_SRC_PRECIP_MARS = "🔴 Mars — Frost & Sublimation Model [Planétaire (Mars), -4.1 Ga à Actuel]";
+    public static final String CLIMATE_SRC_PRECIP_VENUS = "🟡 Vénus — H2SO4 Virga Cycle Model [Planétaire (Vénus), -500 Ma à Actuel]";
+    public static final String CLIMATE_SRC_PRECIP_MOON = "⚪ Lune — LRO LEND Vacuum Exosphere [Planétaire (Lune), -4.5 Ga à Actuel]";
+    public static final String CLIMATE_SRC_PRECIP_MERCURY = "⚪ Mercure — MESSENGER Exospheric Vacuum Model [Planétaire (Mercure), -4.0 Ga à Actuel]";
+    public static final String CLIMATE_SRC_PRECIP_WMS = "🌐 NASA GPM IMERG (WMS Satellite) [Global, 2000 AD à Actuel]";
 
-    public static final String CLIMATE_SRC_SEASON_EARTH = "🌍 Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)";
-    public static final String CLIMATE_SRC_SEASON_MARS = "🔴 Mars — Orbital Eccentricity Insolation Model";
-    public static final String CLIMATE_SRC_SEASON_VENUS = "🟡 Vénus — Super-Rotation Low Variance Model";
-    public static final String CLIMATE_SRC_SEASON_MOON = "⚪ Lune — Diurnal Insolation Amplitude Model";
-    public static final String CLIMATE_SRC_SEASON_MERCURY = "⚪ Mercure — 3:2 Spin-Orbit Thermal Variance Model";
-    public static final String CLIMATE_SRC_SEASON_WMS = "🌐 NASA MODIS LST Amplitude (WMS Satellite)";
+    public static final String CLIMATE_SRC_SEASON_EARTH = "🌍 Terre — WorldClim v2.1 Bio4 & ERA5 (Composite) [Global, -100 000 BP à +2100 AD]";
+    public static final String CLIMATE_SRC_SEASON_MARS = "🔴 Mars — Orbital Eccentricity Insolation Model [Planétaire (Mars), Cycles Milankovitch Martiens]";
+    public static final String CLIMATE_SRC_SEASON_VENUS = "🟡 Vénus — Super-Rotation Low Variance Model [Planétaire (Vénus), -500 Ma à Actuel]";
+    public static final String CLIMATE_SRC_SEASON_MOON = "⚪ Lune — Diurnal Insolation Amplitude Model [Planétaire (Lune), Cycle Synodique 29.5j]";
+    public static final String CLIMATE_SRC_SEASON_MERCURY = "⚪ Mercure — 3:2 Spin-Orbit Thermal Variance Model [Planétaire (Mercure), Résonance 3:2]";
+    public static final String CLIMATE_SRC_SEASON_WMS = "🌐 NASA MODIS LST Amplitude (WMS Satellite) [Global, 2002 AD à Actuel]";
 
     /**
      * Builds the climate source combo for a given map type (temp / precip / season).
@@ -1268,6 +1349,81 @@ public class PlanetGeneratorPanel extends BorderPane {
         HBox header = new HBox(label, new Pane(), valLabel);
         HBox.setHgrow(header.getChildren().get(1), Priority.ALWAYS);
         return new VBox(3, header, slider);
+    }
+
+    private void commitEditorDoubleText(Spinner<Double> spinner) {
+        if (spinner == null || !spinner.isEditable()) return;
+        String text = spinner.getEditor().getText();
+        if (text == null || text.isBlank()) return;
+        String cleanText = text.trim().replace(',', '.').replaceAll("[^0-9.-]", "");
+        try {
+            double value = Double.parseDouble(cleanText);
+            SpinnerValueFactory.DoubleSpinnerValueFactory factory =
+                    (SpinnerValueFactory.DoubleSpinnerValueFactory) spinner.getValueFactory();
+            value = Math.clamp(value, factory.getMin(), factory.getMax());
+            factory.setValue(value);
+        } catch (NumberFormatException ignored) {}
+    }
+
+    private VBox createControlRowWithSpinner(Label label, Slider slider, Spinner<Double> spinner, String formatPattern, String tooltipText) {
+        label.getStyleClass().add("control-label");
+        spinner.setEditable(true);
+        spinner.setPrefWidth(95);
+        spinner.setMaxWidth(110);
+        spinner.getStyleClass().add("dense-spinner");
+
+        spinner.getEditor().setOnAction(e -> commitEditorDoubleText(spinner));
+        spinner.focusedProperty().addListener((obs, oldV, focused) -> {
+            if (!focused) commitEditorDoubleText(spinner);
+        });
+
+        slider.valueProperty().addListener((obs, oldV, newV) -> {
+            if (isUpdatingFromPreset || isUpdatingControlSync) return;
+            isUpdatingControlSync = true;
+            try {
+                spinner.getValueFactory().setValue(Math.round(newV.doubleValue() * 10.0) / 10.0);
+            } finally {
+                isUpdatingControlSync = false;
+            }
+        });
+
+        spinner.valueProperty().addListener((obs, oldV, newV) -> {
+            if (isUpdatingFromPreset || isUpdatingControlSync || newV == null) return;
+            isUpdatingControlSync = true;
+            try {
+                slider.setValue(newV);
+                if (presetBar != null) presetBar.notifyParametersChanged();
+                updatePreview();
+            } finally {
+                isUpdatingControlSync = false;
+            }
+        });
+
+        String unit = formatPattern.replaceAll("[^a-zA-Z°☉%²³/]", "").trim();
+        Label unitLbl = new Label(unit);
+        unitLbl.getStyleClass().add("unit-label");
+        HBox valBox = new HBox(4, spinner, unitLbl);
+        valBox.setAlignment(Pos.CENTER_RIGHT);
+
+        if (tooltipText != null && !tooltipText.isBlank()) {
+            Tooltip tt = new Tooltip(tooltipText);
+            label.setTooltip(tt);
+            slider.setTooltip(tt);
+            spinner.setTooltip(tt);
+        }
+
+        HBox header = new HBox(label, new Pane(), valBox);
+        HBox.setHgrow(header.getChildren().get(1), Priority.ALWAYS);
+        return new VBox(3, header, slider);
+    }
+
+    private void updateSeaLevelDisplay(double meters, double normWater) {
+        if (waterNormValLabel != null) {
+            waterNormValLabel.setText(String.format(
+                    I18n.getOrDefault("planet.param.water_norm_info", "Seuil normalisé : %.4f | Niveau marin : %,.0f m"),
+                    normWater, meters
+            ));
+        }
     }
 
     private void chooseElevMapFile() {
@@ -1881,7 +2037,18 @@ public class PlanetGeneratorPanel extends BorderPane {
     private void updateAltRangeDisplay() {
         double min = minAltSlider.getValue();
         double max = maxAltSlider.getValue();
-        altRangeLabel.setText(String.format("%s: %.0f m", I18n.get("planet.param.alt_range"), max - min));
+        altRangeLabel.setText(String.format("%s: %,.0f m", I18n.get("planet.param.alt_range"), max - min));
+        double w = waterSlider.getValue();
+        double m = PlanetPreset.waterLevelToMeters(w, min, max);
+        if (!isUpdatingControlSync && seaLevelMetersSpinner != null) {
+            isUpdatingControlSync = true;
+            try {
+                seaLevelMetersSpinner.getValueFactory().setValue(Math.round(m * 10.0) / 10.0);
+                updateSeaLevelDisplay(m, w);
+            } finally {
+                isUpdatingControlSync = false;
+            }
+        }
     }
 
     public void applyPreset(PlanetPreset p) {
@@ -1906,12 +2073,17 @@ public class PlanetGeneratorPanel extends BorderPane {
         distanceSunSlider.setValue(p.distanceToSunAU());
         solarLumSlider.setValue(p.solarLuminosity());
         minAltSlider.setValue(p.minAltitudeMeters());
+        if (minAltSpinner != null) minAltSpinner.getValueFactory().setValue(p.minAltitudeMeters());
         maxAltSlider.setValue(p.maxAltitudeMeters());
+        if (maxAltSpinner != null) maxAltSpinner.getValueFactory().setValue(p.maxAltitudeMeters());
         avgTempSlider.setValue(p.averageTempC());
         resolutionCombo.setValue(p.resolution());
         noiseFreqSlider.setValue(p.noiseFrequency());
         noiseScaleSlider.setValue(p.noiseScale());
         waterSlider.setValue(p.waterLevel());
+        double seaM = PlanetPreset.waterLevelToMeters(p.waterLevel(), p.minAltitudeMeters(), p.maxAltitudeMeters());
+        if (seaLevelMetersSpinner != null) seaLevelMetersSpinner.getValueFactory().setValue(Math.round(seaM * 10.0) / 10.0);
+        updateSeaLevelDisplay(seaM, p.waterLevel());
         tempGradSlider.setValue(p.temperatureGradient());
         oxygenSlider.setValue(p.oxygenPercentage());
         co2Slider.setValue(p.co2Ppm());
@@ -2348,7 +2520,8 @@ public class PlanetGeneratorPanel extends BorderPane {
                                 pxColor = Color.rgb(15, 23, 42); // Ocean
                                 oceanCount++;
                             } else {
-                                pxColor = getHypsometricColor(eNorm);
+                                double norm = (eNorm - preset.waterLevel()) / (1.0 - preset.waterLevel() + 0.001);
+                                pxColor = getHypsometricColor(norm);
                             }
                         } else {
                             if (isOcean) {
@@ -2618,6 +2791,8 @@ public class PlanetGeneratorPanel extends BorderPane {
             minAltRowLabel.setText(I18n.get("planet.param.min_alt"));
             maxAltRowLabel.setText(I18n.get("planet.param.max_alt"));
             waterRowLabel.setText(I18n.get("planet.param.water_level"));
+            if (seaLevelMetersLabel != null) seaLevelMetersLabel.setText(I18n.getOrDefault("planet.param.sea_level", "Niveau de la Mer (Altitude) :"));
+            updateAltRangeDisplay();
             freqRowLabel.setText(I18n.get("planet.param.noise_freq"));
             scaleRowLabel.setText(I18n.get("planet.param.noise_scale"));
             gradRowLabel.setText(I18n.get("planet.param.temp_grad"));

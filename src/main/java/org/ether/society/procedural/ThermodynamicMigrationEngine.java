@@ -43,6 +43,10 @@ public class ThermodynamicMigrationEngine {
      * Evaluates actual Haversine spatial proximity (<= 150 km migration radius) rather than array indices.
      */
     public static void processThermodynamicMigration(List<H3Cell> cells, SimulationPerformanceConfig config) {
+        processThermodynamicMigration(cells, config, 6371.0);
+    }
+
+    public static void processThermodynamicMigration(List<H3Cell> cells, SimulationPerformanceConfig config, double planetRadiusKm) {
         if (cells == null || cells.isEmpty()) return;
 
         int migrationEvents = 0;
@@ -50,6 +54,7 @@ public class ThermodynamicMigrationEngine {
 
         // Spatial neighbor flux evaluation radius (150 km baseline land migration range)
         final double maxMigrationRadiusKm = 150.0;
+        final double radius = (planetRadiusKm > 0) ? planetRadiusKm : 6371.0;
 
         for (int i = 0; i < n; i++) {
             H3Cell origin = cells.get(i);
@@ -76,7 +81,8 @@ public class ThermodynamicMigrationEngine {
 
                 double distKm = calculateHaversineDistance(
                         origin.getLatitude(), origin.getLongitude(),
-                        destination.getLatitude(), destination.getLongitude()
+                        destination.getLatitude(), destination.getLongitude(),
+                        radius
                 );
 
                 if (distKm > maxMigrationRadiusKm) continue;
@@ -109,8 +115,12 @@ public class ThermodynamicMigrationEngine {
         }
     }
 
-    private static double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) {
-        double R = 6371.0;
+    public static double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) {
+        return calculateHaversineDistance(lat1, lon1, lat2, lon2, 6371.0);
+    }
+
+    public static double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2, double planetRadiusKm) {
+        double R = (planetRadiusKm > 0) ? planetRadiusKm : 6371.0;
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)

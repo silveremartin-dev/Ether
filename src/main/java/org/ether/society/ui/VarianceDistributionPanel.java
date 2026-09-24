@@ -14,17 +14,53 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Dedicated Variance & Individual Distribution Analytics Panel.
- * Computes and displays variance between individuals/cells on a selected variable
- * (e.g. Wealth / Capital, Food, Population Density, Age), standard deviation bounds (μ ± σ),
- * Gini coefficient, and a 10-bin histogram distribution curve.
+ * Computes and displays variance between individuals/cells on an exhaustive catalog of simulation variables
+ * (Physical, Climate, Demographics, Cohorts, Ecology, Minerals, Energy, Society & Capital),
+ * standard deviation bounds (μ ± σ), Gini coefficient, and a 10-bin histogram distribution curve.
  *
  * @author Silvere Martin-Michiellot
+ * @version 2.0.0
  */
 public class VarianceDistributionPanel extends VBox {
+
+    public static class VariableEntry {
+        private final String key;
+        private final String displayName;
+        private final String category;
+        private final boolean isHeader;
+
+        public VariableEntry(String key, String displayName, String category) {
+            this.key = key;
+            this.displayName = displayName;
+            this.category = category;
+            this.isHeader = false;
+        }
+
+        private VariableEntry(String headerTitle) {
+            this.key = null;
+            this.displayName = headerTitle;
+            this.category = null;
+            this.isHeader = true;
+        }
+
+        public static VariableEntry header(String headerTitle) {
+            return new VariableEntry(headerTitle);
+        }
+
+        public String getKey() { return key; }
+        public String getDisplayName() { return displayName; }
+        public String getCategory() { return category; }
+        public boolean isHeader() { return isHeader; }
+
+        @Override
+        public String toString() {
+            return displayName;
+        }
+    }
 
     private final PluggableStatEngine pluggableStatEngine;
     private final StatisticsKernel statisticsKernel = new StatisticsKernel();
@@ -32,7 +68,7 @@ public class VarianceDistributionPanel extends VBox {
     private final Label headerTitle;
     private final Label subtitle;
     private final Label comboPrompt;
-    private final ComboBox<String> variableCombo;
+    private final ComboBox<VariableEntry> variableCombo;
 
     private final Label kpiMeanTitle = new Label();
     private final Label kpiVarTitle = new Label();
@@ -87,7 +123,44 @@ public class VarianceDistributionPanel extends VBox {
 
         variableCombo = new ComboBox<>();
         variableCombo.setMaxWidth(Double.MAX_VALUE);
-        variableCombo.setOnAction(e -> updateData(currentCells));
+        variableCombo.setCellFactory(lv -> new ListCell<VariableEntry>() {
+            @Override
+            protected void updateItem(VariableEntry item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else if (item.isHeader()) {
+                    setDisable(true);
+                    setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 4 6; -fx-opacity: 1.0; -fx-background-color: rgba(30, 41, 59, 0.5);");
+                    setText(item.getDisplayName());
+                } else {
+                    setDisable(false);
+                    setStyle("-fx-font-size: 11px; -fx-text-fill: #e2e8f0; -fx-padding: 3 12;");
+                    setText("  " + item.getDisplayName());
+                }
+            }
+        });
+
+        variableCombo.setButtonCell(new ListCell<VariableEntry>() {
+            @Override
+            protected void updateItem(VariableEntry item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getDisplayName());
+                    setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+                }
+            }
+        });
+
+        variableCombo.setOnAction(e -> {
+            VariableEntry selected = variableCombo.getValue();
+            if (selected != null && !selected.isHeader()) {
+                updateData(currentCells);
+            }
+        });
 
         // KPI Summary Cards: Exactly 3 rows of 2 columns
         GridPane kpiGrid = new GridPane();
@@ -150,19 +223,70 @@ public class VarianceDistributionPanel extends VBox {
         subtitle.setText(I18n.getOrDefault("variance.subtitle", "Évalue à quel point les individus / mailles s'éloignent du schéma standard (Moyenne μ ± Écart-type σ)"));
         comboPrompt.setText(I18n.getOrDefault("variance.prompt.variable", "Variable analysée :"));
 
-        int selectedIdx = variableCombo.getSelectionModel().getSelectedIndex();
+        String prevKey = (variableCombo.getValue() != null && !variableCombo.getValue().isHeader())
+                ? variableCombo.getValue().getKey()
+                : "wealth";
+
         variableCombo.getItems().clear();
-        variableCombo.getItems().addAll(
-                I18n.getOrDefault("variance.var.wealth", "💎 Richesse & Capital (wealth)"),
-                I18n.getOrDefault("variance.var.food", "🍞 Nourriture disponible (food)"),
-                I18n.getOrDefault("variance.var.population", "👥 Densité de Population (population)"),
-                I18n.getOrDefault("variance.var.water", "💧 Ressources en Eau (water)"),
-                I18n.getOrDefault("variance.var.rainfall", "🌧️ Précipitations (rainfall)"),
-                I18n.getOrDefault("variance.var.temperature", "🌡️ Température (temperature)"),
-                I18n.getOrDefault("variance.var.tech", "⚙️ Niveau Technologique (tech)"),
-                I18n.getOrDefault("variance.var.age", "👴 Âge Approximatif (age)")
-        );
-        variableCombo.getSelectionModel().select(selectedIdx >= 0 ? selectedIdx : 0);
+
+        // 1. Économie & Société
+        variableCombo.getItems().add(VariableEntry.header("─── 💎 " + I18n.getOrDefault("variance.cat.economy", "ÉCONOMIE, CAPITAL & SOCIÉTÉ") + " ───"));
+        variableCombo.getItems().add(new VariableEntry("wealth", I18n.getOrDefault("variance.var.wealth", "💎 Richesse & Capital Bâti"), "economy"));
+        variableCombo.getItems().add(new VariableEntry("tech", I18n.getOrDefault("variance.var.tech", "⚙️ Niveau Technologique"), "economy"));
+        variableCombo.getItems().add(new VariableEntry("giniindex", I18n.getOrDefault("variance.var.gini", "⚖️ Indice d'Inégalité (Gini)"), "economy"));
+        variableCombo.getItems().add(new VariableEntry("asabiyyah", I18n.getOrDefault("variance.var.asabiyyah", "⚔️ Cohésion Asabiyyah"), "economy"));
+
+        // 2. Démographie, Santé & Cohortes d'Âge
+        variableCombo.getItems().add(VariableEntry.header("─── 👥 " + I18n.getOrDefault("variance.cat.demography", "DÉMOGRAPHIE, SANTÉ & COHORTES") + " ───"));
+        variableCombo.getItems().add(new VariableEntry("population", I18n.getOrDefault("variance.var.population", "👥 Densité de Population"), "demography"));
+        variableCombo.getItems().add(new VariableEntry("lifespan", I18n.getOrDefault("variance.var.lifespan", "🏥 Espérance de Vie (ans)"), "demography"));
+        variableCombo.getItems().add(new VariableEntry("fertility", I18n.getOrDefault("variance.var.fertility", "👶 Taux de Fertilité"), "demography"));
+        variableCombo.getItems().add(new VariableEntry("popyouth", I18n.getOrDefault("variance.var.popyouth", "🧒 Cohorte Jeunesse (0-14 ans)"), "demography"));
+        variableCombo.getItems().add(new VariableEntry("popadult", I18n.getOrDefault("variance.var.popadult", "🧑 Cohorte Adultes Actifs (15-64 ans)"), "demography"));
+        variableCombo.getItems().add(new VariableEntry("popelderly", I18n.getOrDefault("variance.var.popelderly", "👴 Cohorte Aînés (65+ ans)"), "demography"));
+
+        // 3. Écologie, Alimentation & Ressources
+        variableCombo.getItems().add(VariableEntry.header("─── 🌾 " + I18n.getOrDefault("variance.cat.resources", "ÉCOLOGIE, SOLS & RESSOURCES") + " ───"));
+        variableCombo.getItems().add(new VariableEntry("food", I18n.getOrDefault("variance.var.food", "🍞 Stocks Alimentaires"), "resources"));
+        variableCombo.getItems().add(new VariableEntry("food_per_capita", I18n.getOrDefault("variance.var.food_per_capita", "🍞 Nourriture / Habitant"), "resources"));
+        variableCombo.getItems().add(new VariableEntry("water", I18n.getOrDefault("variance.var.water", "💧 Ressources en Eau"), "resources"));
+        variableCombo.getItems().add(new VariableEntry("aquifer", I18n.getOrDefault("variance.var.aquifer", "🚰 Nappe Aquifère"), "resources"));
+        variableCombo.getItems().add(new VariableEntry("wood", I18n.getOrDefault("variance.var.wood", "🌲 Biomasse Forestière / Bois"), "resources"));
+        variableCombo.getItems().add(new VariableEntry("soilcarbon", I18n.getOrDefault("variance.var.soil", "🌾 Fertilité Organique des Sols (NPK)"), "resources"));
+        variableCombo.getItems().add(new VariableEntry("biomassnatural", I18n.getOrDefault("variance.var.biomassnatural", "🌿 Biomasse Sauvage"), "resources"));
+        variableCombo.getItems().add(new VariableEntry("biomasslivestock", I18n.getOrDefault("variance.var.biomasslivestock", "🐄 Biomasse Bétail Domestique"), "resources"));
+
+        // 4. Physique & Climat
+        variableCombo.getItems().add(VariableEntry.header("─── 🌍 " + I18n.getOrDefault("variance.cat.physical", "PHYSIQUE, CLIMAT & ENVIRONNEMENT") + " ───"));
+        variableCombo.getItems().add(new VariableEntry("temperature", I18n.getOrDefault("variance.var.temperature", "🌡️ Température de Surface"), "physical"));
+        variableCombo.getItems().add(new VariableEntry("rainfall", I18n.getOrDefault("variance.var.rainfall", "🌧️ Précipitations Annuelles"), "physical"));
+        variableCombo.getItems().add(new VariableEntry("elevation", I18n.getOrDefault("variance.var.elevation", "🏔️ Altitude & Relief Topographique"), "physical"));
+        variableCombo.getItems().add(new VariableEntry("pollution", I18n.getOrDefault("variance.var.pollution", "☣️ Entropie & Pollution"), "physical"));
+        variableCombo.getItems().add(new VariableEntry("friction", I18n.getOrDefault("variance.var.friction", "🧗 Friction de Déplacement"), "physical"));
+
+        // 5. Énergie & Métabolisme
+        variableCombo.getItems().add(VariableEntry.header("─── ⚡ " + I18n.getOrDefault("variance.cat.energy", "ÉNERGIE & MÉTABOLISME") + " ───"));
+        variableCombo.getItems().add(new VariableEntry("energysolar", I18n.getOrDefault("variance.var.energysolar", "☀️ Énergie Solaire Captée"), "energy"));
+        variableCombo.getItems().add(new VariableEntry("energywind", I18n.getOrDefault("variance.var.energywind", "💨 Énergie Éolienne"), "energy"));
+        variableCombo.getItems().add(new VariableEntry("energyfire", I18n.getOrDefault("variance.var.energyfire", "🔥 Énergie Biomasse / Feu"), "energy"));
+        variableCombo.getItems().add(new VariableEntry("metal", I18n.getOrDefault("variance.var.metal", "⛏️ Gisements Minéraux & Métaux"), "energy"));
+
+        VariableEntry toSelect = null;
+        for (VariableEntry entry : variableCombo.getItems()) {
+            if (!entry.isHeader() && entry.getKey().equalsIgnoreCase(prevKey)) {
+                toSelect = entry;
+                break;
+            }
+        }
+        if (toSelect == null) {
+            for (VariableEntry entry : variableCombo.getItems()) {
+                if (!entry.isHeader()) {
+                    toSelect = entry;
+                    break;
+                }
+            }
+        }
+        variableCombo.setValue(toSelect);
 
         kpiMeanTitle.setText(I18n.getOrDefault("variance.kpi.mean", "Moyenne (μ) :"));
         kpiVarTitle.setText(I18n.getOrDefault("variance.kpi.variance", "Variance (σ²) :"));
@@ -210,10 +334,10 @@ public class VarianceDistributionPanel extends VBox {
 
     public void updateData(List<H3Cell> cells) {
         this.currentCells = cells;
-        String sel = variableCombo.getValue();
-        if (sel == null) return;
+        VariableEntry entry = variableCombo.getValue();
+        if (entry == null || entry.isHeader()) return;
 
-        String varKey = extractKey(sel);
+        String varKey = entry.getKey();
         float[] values = pluggableStatEngine.extractVariableArray(varKey, cells, null);
 
         if (values == null || values.length == 0) {
@@ -223,7 +347,7 @@ public class VarianceDistributionPanel extends VBox {
             lblGini.setText("--");
             lblMinMax.setText("-- / --");
             lblCv.setText("-- %");
-            lblSpreadDesc.setText(I18n.getOrDefault("variance.desc.no_data", "Aucune donnée disponible pour ") + varKey);
+            lblSpreadDesc.setText(I18n.getOrDefault("variance.desc.no_data", "Aucune donnée disponible pour ") + entry.getDisplayName());
             histogramSeries.getData().clear();
             return;
         }
@@ -287,18 +411,5 @@ public class VarianceDistributionPanel extends VBox {
         } else {
             return String.format(java.util.Locale.US, "%.2f", val);
         }
-    }
-
-    private String extractKey(String comboText) {
-        if (comboText == null) return "wealth";
-        if (comboText.contains("wealth") || comboText.contains("Richesse") || comboText.contains("Reichtum") || comboText.contains("Riqueza") || comboText.contains("财富")) return "wealth";
-        if (comboText.contains("food") || comboText.contains("Nourriture") || comboText.contains("Nahrung") || comboText.contains("Alimento") || comboText.contains("食物")) return "food";
-        if (comboText.contains("population") || comboText.contains("Population") || comboText.contains("Bevölkerung") || comboText.contains("Población") || comboText.contains("人口")) return "population";
-        if (comboText.contains("water") || comboText.contains("Eau") || comboText.contains("Wasser") || comboText.contains("Agua") || comboText.contains("水")) return "water";
-        if (comboText.contains("rainfall") || comboText.contains("Précipitations") || comboText.contains("Niederschlag") || comboText.contains("Precipitación") || comboText.contains("降水")) return "rainfall";
-        if (comboText.contains("temperature") || comboText.contains("Température") || comboText.contains("Temperatur") || comboText.contains("Temperatura") || comboText.contains("温度")) return "temperature";
-        if (comboText.contains("tech") || comboText.contains("Technologique") || comboText.contains("Technologie") || comboText.contains("Tecnológico") || comboText.contains("科技")) return "tech";
-        if (comboText.contains("age") || comboText.contains("Âge") || comboText.contains("Alter") || comboText.contains("Edad") || comboText.contains("年龄")) return "age";
-        return "wealth";
     }
 }

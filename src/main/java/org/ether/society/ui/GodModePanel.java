@@ -56,6 +56,7 @@ public class GodModePanel extends VBox {
 
     private static final List<EventTypeItem> EVENT_TYPES = List.of(
         new EventTypeItem("VOLCANO", "godmode.type.volcano", "godmode.event.volcano", "godmode.event.volcano.desc", 365, 7.0),
+        new EventTypeItem("NUCLEAR_STRIKE", "godmode.type.nuclear_strike", "godmode.event.nuclear_strike", "godmode.event.nuclear_strike.desc", 0, 7.5),
         new EventTypeItem("HEATWAVE", "godmode.type.heatwave", "godmode.event.heatwave", "godmode.event.heatwave.desc", 30, 5.0),
         new EventTypeItem("SOLAR_EMP", "godmode.type.solar_emp", "godmode.event.solar_emp", "godmode.event.solar_emp.desc", 30, 8.5),
         new EventTypeItem("PANDEMIC", "godmode.type.pandemic", "godmode.event.pandemic", "godmode.event.pandemic.desc", 730, 8.0),
@@ -235,7 +236,7 @@ public class GodModePanel extends VBox {
         magnitudeSpinner.setPrefWidth(95);
         magnitudeSpinner.setMaxWidth(110);
 
-        durationDaysSpinner = new Spinner<>(1, 36500, 365, 1);
+        durationDaysSpinner = new Spinner<>(0, 36500, 365, 1);
         durationDaysSpinner.setEditable(true);
         durationDaysSpinner.setPrefWidth(95);
         durationDaysSpinner.setMaxWidth(110);
@@ -251,6 +252,7 @@ public class GodModePanel extends VBox {
             if (durationDaysSpinner.getValueFactory() != null) {
                 durationDaysSpinner.getValueFactory().setValue(newV.defaultDurationDays());
             }
+            durationDaysSpinner.setDisable(newV.defaultDurationDays() == 0);
         });
         eventTypeCombo.getSelectionModel().select(0);
 
@@ -724,6 +726,21 @@ public class GodModePanel extends VBox {
         if (type == null) return;
         switch (type) {
             case "VOLCANO" -> NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(mag);
+            case "NUCLEAR_STRIKE" -> {
+                NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() + mag * 1.5);
+                if (engine != null && engine.getCells() != null) {
+                    for (H3Cell c : engine.getCells()) {
+                        double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
+                        if (dist < mag * 1.5) {
+                            double blastFactor = Math.max(0.0, 1.0 - (dist / (mag * 1.5)));
+                            c.setPopulation((int) (c.getPopulation() * (1.0 - 0.90 * blastFactor)));
+                            c.setFoodResource(Math.max(0.0, (c.getFoodResource() != null ? c.getFoodResource() : 0.0) * (1.0 - 0.80 * blastFactor)));
+                            c.setTechnologyLevel(Math.max(0.0, (c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0) * (1.0 - 0.70 * blastFactor)));
+                            c.setPollutionLevel(Math.min(1.0, (c.getPollutionLevel() != null ? c.getPollutionLevel() : 0.0) + 0.9 * blastFactor));
+                        }
+                    }
+                }
+            }
             case "HEATWAVE" -> {
                 if (engine != null && engine.getCells() != null) {
                     for (H3Cell c : engine.getCells()) {

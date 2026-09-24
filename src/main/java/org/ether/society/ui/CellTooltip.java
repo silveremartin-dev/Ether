@@ -186,9 +186,21 @@ public class CellTooltip extends VBox {
         }
         popLabel.setText(String.format("%-14s %,d hab%s", "Population :", currentPop, trendStr));
 
-        // Density (H3 Level 8 cell area ~ 0.737 km²)
-        double density = currentPop / 0.737;
-        densityLabel.setText(String.format("%-14s %,.1f hab/km²", "Densité :", density));
+        // Density based on cell's effective surface area in km²
+        double cellArea = (cell != null) ? cell.getEffectiveSurfaceAreaKm2() : 12393.43;
+        if (cellArea <= 0.0001) cellArea = 1.0;
+        double density = currentPop / cellArea;
+        String densityStr;
+        if (density == 0.0) {
+            densityStr = "0.0 hab/km²";
+        } else if (density < 0.01) {
+            densityStr = String.format(java.util.Locale.ROOT, "%,.4f hab/km²", density);
+        } else if (density < 1.0) {
+            densityStr = String.format(java.util.Locale.ROOT, "%,.2f hab/km²", density);
+        } else {
+            densityStr = String.format(java.util.Locale.ROOT, "%,.1f hab/km²", density);
+        }
+        densityLabel.setText(String.format("%-14s %s", "Densité :", densityStr));
 
         // Resources
         double food = 0.0;

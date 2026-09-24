@@ -1,0 +1,272 @@
+{
+  "epoch": -25000,
+  "era": "Upper Paleolithic / Gravettian Horizon & Beringian Standstill (LGM Onset)",
+  "planet": "earth",
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "overview": {
+    "summary_fr": "Reconstitution cartographique et tensorielle globale de la Terre pour l'époque -25 000 BP. Cette période correspond à l'apogée de la culture gravettienne en Eurasie (statuettes de Vénus, architectures en os de mammouth de Kostenki et Pavlov, parures complexes de Sungir), à la disparition complète des Néandertaliens, et à la phase du 'Beringian Standstill' où la population ancestrale des Amérindiens s'isole dans le refuge béringien non englacé entre la Sibérie et les inlandsis laurentidien et cordillérien. Les Amériques au sud des calottes glaciaires restent rigoureusement inhabitées.",
+    "summary_en": "Global cartographic and tensor reconstruction for the -25,000 BP epoch. Represents the peak of the Gravettian technocomplex in Eurasia (Venus figurines, mammoth bone architecture at Kostenki/Pavlov, tailored garments at Sungir), the complete extinction of Neanderthals, and the 'Beringian Standstill' phase where proto-Native American ancestral lineages become isolated in unglaciated Beringia. The Americas south of the continental ice sheets remain strictly uninhabited."
+  },
+  "layers": {
+    "elevation": {
+      "filename": "earth_-25000_elevation.png",
+      "category": "geophysics",
+      "data_sources": [
+        "NOAA ETOPO 2022 15-arc-second Global Relief Model",
+        "GEBCO 2023 Grid Bathymetric and Topographic Model"
+      ],
+      "scientific_parameters_and_corrections": {
+        "eustatic_sea_level_offset_meters": -115.0,
+        "isostatic_rebound_model": "ICE-6G_C (Peltier et al. 2015)",
+        "paleotopographic_features": "Beringia land bridge fully exposed (>1000 km wide); Sundaland and Sahul shelves broadly exposed; English Channel dry."
+      },
+      "reconstitution_rationale": "Eustatic sea level drop of -115m exposing the massive Bering land bridge connecting Chukotka to Alaska."
+    },
+    "biomes": {
+      "filename": "earth_-25000_biomes.png",
+      "category": "ecology",
+      "data_sources": [
+        "CHELSA-Trace21k Paleoclimate Downscaling Engine",
+        "PaleoView v1.2 (Fordham et al. 2017)",
+        "Ray & Adams (2001) 'Global Physical and Biome Maps of the Last Glacial Maximum'"
+      ],
+      "scientific_parameters_and_corrections": {
+        "continental_ice_sheets": "Laurentide, Cordilleran, and Fennoscandian ice sheets covering North America and Northern Europe",
+        "mammoth_steppe": "Vast hyper-arid cold steppe-tundra with Artemisia and Poaceae supporting large megafaunal herds"
+      },
+      "reconstitution_rationale": "Severe cold and aridity converting mid-latitude forests into open steppe-tundra biomes."
+    },
+    "temperature": {
+      "filename": "earth_-25000_temperature.png",
+      "category": "climate",
+      "data_sources": [
+        "EPICA Dome C Antarctic Ice Core",
+        "NGRIP Greenland Ice Core",
+        "MARGO Project (2009) Glacial Sea Surface Temperature Reconstruction"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_mean_surface_temp_celsius": 9.2,
+        "high_latitude_cooling_celsius": -15.0
+      },
+      "reconstitution_rationale": "Global mean temperature ~5°C colder than modern pre-industrial levels, with severe polar amplification."
+    },
+    "precipitation": {
+      "filename": "earth_-25000_precipitation.png",
+      "category": "climate",
+      "data_sources": [
+        "Dust and Aerosol Fluxes in EPICA and Greenland Ice Cores",
+        "Global Speleothem and Lake Level Database"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_atmospheric_aridity_factor": 0.65,
+        "monsoon_weakening": "Suppression of African and Asian summer monsoons, desert expansion"
+      },
+      "reconstitution_rationale": "High dust loading and widespread continental desiccation."
+    },
+    "seasonality": {
+      "filename": "earth_-25000_seasonality.png",
+      "category": "climate",
+      "data_sources": [
+        "Milankovitch Insolation Parameters at 25,000 BP"
+      ],
+      "scientific_parameters_and_corrections": {
+        "obliquity_degrees": 22.85,
+        "eccentricity": 0.0195
+      },
+      "reconstitution_rationale": "Pronounced winter freezing and short, intense continental summers."
+    },
+    "density": {
+      "filename": "earth_-25000_density.png",
+      "category": "demography",
+      "data_sources": [
+        "Tallavaara et al. (2015) 'Human Carrying Capacity during the Gravettian'",
+        "Llamas et al. (2016) 'Ancient Mitochondrial DNA and the Beringian Standstill'",
+        "Raghavan et al. (2014) 'Upper Palaeolithic Siberian Genome from Mal'ta'"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_human_population_estimate": [150000, 300000],
+        "gravettian_core_density_hab_km2": [0.015, 0.040],
+        "beringian_refuge_density_hab_km2": [0.005, 0.015],
+        "strict_uninhabited_regions": [
+          "North America south of Laurentide ice sheet", "South America", "Mesoamerica", "Caribbean",
+          "Antarctica", "Greenland Ice Sheet", "Fennoscandia Ice Sheet", "Madagascar", "New Zealand"
+        ]
+      },
+      "reconstitution_rationale": "Demographic contraction into southern European refuges and low-density mammoth-hunting camps in Central Europe/Russia; isolated population in Beringia."
+    },
+    "isogloss": {
+      "filename": "earth_-25000_isogloss.png",
+      "category": "linguistics",
+      "data_sources": [
+        "Nichols (1992) Linguistic Geography",
+        "Greenberg et al. (1986) Proto-Amerind/Beringian Linguistic Root Modeling"
+      ],
+      "scientific_parameters_and_corrections": {
+        "clades_separated": [
+          "Gravettian Central & Western European Dialect Network",
+          "Eastern European / Siberian Mammoth Hunters (Kostenki-Mal'ta Lineage)",
+          "Proto-Beringian Standstill Linguistic Lineage (Ancestral to First Americans)",
+          "African Late Stone Age Core",
+          "Australian Aboriginal Dreamtime Dialect Stocks"
+        ]
+      },
+      "reconstitution_rationale": "Emergence of the distinct Proto-Beringian linguistic stock isolated by ice sheets from Eurasia and unglaciated America."
+    },
+    "sovereignty": {
+      "filename": "earth_-25000_sovereignty.png",
+      "category": "polity",
+      "data_sources": [
+        "Gamble (1999) 'The Palaeolithic Societies of Europe'"
+      ],
+      "scientific_parameters_and_corrections": {
+        "state_formation_level": 0.0,
+        "gravettian_aggregation_camps": "Seasonal aggregation sites with up to 100-200 individuals (Dolní Věstonice, Pavlov)"
+      },
+      "reconstitution_rationale": "Semi-sedentary mammoth-hunting band networks with winter long-houses."
+    },
+    "kinship": {
+      "filename": "earth_-25000_kinship.png",
+      "category": "sociology",
+      "data_sources": [
+        "Sikora et al. (2017) 'Ancient Genomes Show Social and Reproductive Behavior of Early Upper Paleolithic Foragers at Sunghir'",
+        "Murdock EA"
+      ],
+      "scientific_parameters_and_corrections": {
+        "kinship_structure": "Exogamous band networks with strict taboo against close-kin inbreeding (confirmed by Sunghir aDNA)"
+      },
+      "reconstitution_rationale": "Genetically proven exogamous mating networks with low inbreeding across Gravettian Europe."
+    },
+    "rituals": {
+      "filename": "earth_-25000_rituals.png",
+      "category": "culture",
+      "data_sources": [
+        "Willendorf, Lespugue, Dolní Věstonice, Brassempouy Venus Figurines",
+        "Sunghir Elaborate Mammoth Ivory Bead Burials"
+      ],
+      "scientific_parameters_and_corrections": {
+        "symbolic_intensity_scale": 0.65,
+        "female_fertility_figurines_and_ceramic_baking": "World's earliest ceramic technology (baked clay figurines at Dolní Věstonice)"
+      },
+      "reconstitution_rationale": "Unprecedented pan-European symbolic cohesion and rich ivory bead burial rituals."
+    },
+    "technology": {
+      "filename": "earth_-25000_technology.png",
+      "category": "technology",
+      "data_sources": [
+        "Klima (1963) Dolní Věstonice Excavation Reports",
+        "Svoboda (2004) 'The Gravettian on the Middle Danube'"
+      ],
+      "scientific_parameters_and_corrections": {
+        "technological_innovations": [
+          "Eyed bone needles and tailored thermal fur clothing",
+          "Baked clay ceramic kilns (Dolní Věstonice)",
+          "Woven plant fiber textiles and basketry",
+          "Mammoth bone and tusks architecture"
+        ]
+      },
+      "reconstitution_rationale": "Advanced cold-adaptation technologies enabling permanent winter habitation of periglacial Siberia and Central Europe."
+    },
+    "institutional": {
+      "filename": "earth_-25000_institutional.png",
+      "category": "institutions",
+      "data_sources": ["Carneiro Scale Level 0"],
+      "scientific_parameters_and_corrections": {"institutional_complexity_score": 0.04},
+      "reconstitution_rationale": "Egalitarian bands with ritual and hunting prestige hierarchy."
+    },
+    "ecological": {
+      "filename": "earth_-25000_ecological.png",
+      "category": "environment",
+      "data_sources": ["Ellis et al. (2021) Anthrome 6"],
+      "scientific_parameters_and_corrections": {"megafaunal_harvesting": "Targeted predation on Mammuthus primigenius and Coelodonta antiquitatis"},
+      "reconstitution_rationale": "High local biomass harvesting at mammoth kill and processing sites."
+    },
+    "pathogen": {
+      "filename": "earth_-25000_pathogen.png",
+      "category": "epidemiology",
+      "data_sources": ["Wolfe et al. (2007)"],
+      "scientific_parameters_and_corrections": {"arctic_parasite_load": "Extremely low bacterial/viral vector load in permafrost zones"},
+      "reconstitution_rationale": "Freezing winter temperatures suppress insect and water-borne pathogens in the northern hemisphere."
+    },
+    "tradenetwork": {
+      "filename": "earth_-25000_tradenetwork.png",
+      "category": "economy",
+      "data_sources": ["Féblot-Augustins (1997) 'La circulation des matières premières au Paléolithique'"],
+      "scientific_parameters_and_corrections": {
+        "max_exchange_distance_km": 500,
+        "traded_materials": ["Kraków Jurassic flint", "Slovakian radiolarite", "Baltic amber", "Mediterranean dentalium shells"]
+      },
+      "reconstitution_rationale": "Continental-scale raw material transfers across >500 km indicating formalized alliance networks."
+    },
+    "aquifers": {
+      "filename": "earth_-25000_aquifers.png",
+      "category": "resources",
+      "data_sources": ["UNESCO WHYMAP"],
+      "scientific_parameters_and_corrections": {"fossil_storage_fullness": 1.0},
+      "reconstitution_rationale": "100% pristine virgin water tables."
+    },
+    "coal": {
+      "filename": "earth_-25000_coal.png",
+      "category": "resources",
+      "data_sources": ["USGS World Coal Inventory"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "100% untouched coal reserves (early lignite burning at Dolní Věstonice)."
+    },
+    "oil": {
+      "filename": "earth_-25000_oil.png",
+      "category": "resources",
+      "data_sources": ["USGS Petroleum Assessment"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "100% virgin hydrocarbons."
+    },
+    "gas": {
+      "filename": "earth_-25000_gas.png",
+      "category": "resources",
+      "data_sources": ["USGS Global Gas Survey"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "100% untouched gas deposits."
+    },
+    "iron_copper": {
+      "filename": "earth_-25000_iron_copper.png",
+      "category": "resources",
+      "data_sources": ["USGS MRDS"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "100% virgin metallic ores."
+    },
+    "precious_metals": {
+      "filename": "earth_-25000_precious_metals.png",
+      "category": "resources",
+      "data_sources": ["USGS MRDS Placers"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "Intact alluvial placer gold and silver beds."
+    },
+    "uranium": {
+      "filename": "earth_-25000_uranium.png",
+      "category": "resources",
+      "data_sources": ["IAEA NFCIS"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "Untouched high-grade uranium deposits."
+    },
+    "rare_earths": {
+      "filename": "earth_-25000_rare_earths.png",
+      "category": "resources",
+      "data_sources": ["USGS REE Global Database"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "Untouched rare earth mineral complexes."
+    },
+    "geothermal": {
+      "filename": "earth_-25000_geothermal.png",
+      "category": "geophysics",
+      "data_sources": ["IHFC Davies 2013"],
+      "scientific_parameters_and_corrections": {"crustal_heat_flow_mW_m2": [40.0, 120.0]},
+      "reconstitution_rationale": "Crustal mantle heat flow."
+    },
+    "helium3": {
+      "filename": "earth_-25000_helium3.png",
+      "category": "resources",
+      "data_sources": ["Solar Wind Volatiles Model"],
+      "scientific_parameters_and_corrections": {"terrestrial_baseline_ppb": 0.0},
+      "reconstitution_rationale": "Terrestrial atmospheric screening."
+    }
+  }
+}

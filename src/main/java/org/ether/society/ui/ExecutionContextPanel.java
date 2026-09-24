@@ -361,12 +361,12 @@ public class ExecutionContextPanel extends BorderPane {
 
         syncIntervalCombo = new ComboBox<>();
         syncIntervalCombo.getItems().addAll(
-            "Synchronisation Chaque Tick (Pas de Temps Δt - Consommation Réseau Haute)",
-            "Synchronisation Tous les 5 Ticks (Standard Équilibré)",
-            "Synchronisation Tous les 10 Ticks (Haute Performance Réseau)",
-            "Synchronisation Tous les 25 Ticks (Basse Bande Passante)",
-            "Synchronisation Tous les 50 Ticks (Recommandé pour Réseau WAN / Internet)",
-            "Synchronisation Tous les 100 Ticks (Ultra-Basse Bande Passante)"
+            "Synchronisation Chaque Pas (Pas de Temps Δt - Consommation Réseau Haute)",
+            "Synchronisation Tous les 5 Pas (Standard Équilibré)",
+            "Synchronisation Tous les 10 Pas (Haute Performance Réseau)",
+            "Synchronisation Tous les 25 Pas (Basse Bande Passante)",
+            "Synchronisation Tous les 50 Pas (Recommandé pour Réseau WAN / Internet)",
+            "Synchronisation Tous les 100 Pas (Ultra-Basse Bande Passante)"
         );
         syncIntervalCombo.setValue(syncIntervalCombo.getItems().get(1));
         syncIntervalCombo.setMaxWidth(Double.MAX_VALUE);
@@ -585,7 +585,7 @@ public class ExecutionContextPanel extends BorderPane {
 
         RenderingMode ren = getRenderingMode();
         if (ren == RenderingMode.HEADLESS) {
-            summaryRenderingLabel.setText("• " + I18n.getOrDefault("exec.summary.headless_mode", "Mode Headless Batch") + "\n(" + targetTicksSpinner.getValue() + " " + I18n.getOrDefault("exec.summary.target_ticks", "Ticks Cibles") + ")");
+            summaryRenderingLabel.setText("• " + I18n.getOrDefault("exec.summary.headless_mode", "Mode Headless Batch") + "\n(" + targetTicksSpinner.getValue() + " " + I18n.getOrDefault("exec.summary.target_ticks", "Pas Cibles") + ")");
         } else {
             summaryRenderingLabel.setText("• " + I18n.getOrDefault("exec.summary.gui_mode", "Mode GUI Interactif") + "\n(" + I18n.getOrDefault("exec.summary.realtime_2d3d", "Real-Time 2D/3D Visual") + ")");
         }
@@ -699,7 +699,7 @@ public class ExecutionContextPanel extends BorderPane {
 
             javafx.application.Platform.runLater(() -> {
                 String formatted = String.format(I18n.getOrDefault("exec.audit.result",
-                        "✅ Audit Réussi [%s] : %.1f TPS | %.2f ms/tick | %,d cellules H3/sec"),
+                        "✅ Audit Réussi [%s] : %.1f TPS | %.2f ms/pas | %,d cellules H3/sec"),
                         activeEngineStr, tps, msPerTick, cellThroughput);
                 auditResultLabel.setText(formatted);
                 auditResultLabel.getStyleClass().removeAll("hint-label");

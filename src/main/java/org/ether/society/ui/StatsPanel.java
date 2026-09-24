@@ -348,14 +348,47 @@ public class StatsPanel extends VBox {
 
         chartMetricCombo = new ComboBox<>();
         chartMetricCombo.setMaxWidth(Double.MAX_VALUE);
+        chartMetricCombo.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                    setStyle("");
+                } else if (item.startsWith("─── ") && item.endsWith(" ───")) {
+                    setDisable(true);
+                    setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 4 6; -fx-opacity: 1.0; -fx-background-color: rgba(30, 41, 59, 0.5);");
+                    setText(item);
+                } else {
+                    setDisable(false);
+                    setStyle("-fx-font-size: 11px; -fx-text-fill: #e2e8f0; -fx-padding: 3 12;");
+                    setText("  " + item);
+                }
+            }
+        });
+        chartMetricCombo.setButtonCell(new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+                }
+            }
+        });
         chartMetricCombo.setOnAction(e -> {
             if (isUpdatingTexts) return;
-            resetChartSeries();
             String title = chartMetricCombo.getValue();
-            if (title != null && onDisplayModeRequested != null) {
-                org.ether.society.analytics.MetricDescriptor desc = org.ether.society.analytics.MetricRegistry.getInstance().getDescriptorByName(title);
-                if (desc != null) {
-                    onDisplayModeRequested.accept(DisplayMode.fromMetricId(desc.getId()));
+            if (title != null && !title.startsWith("─── ")) {
+                resetChartSeries();
+                if (onDisplayModeRequested != null) {
+                    org.ether.society.analytics.MetricDescriptor desc = org.ether.society.analytics.MetricRegistry.getInstance().getDescriptorByName(title);
+                    if (desc != null) {
+                        onDisplayModeRequested.accept(DisplayMode.fromMetricId(desc.getId()));
+                    }
                 }
             }
         });
@@ -588,8 +621,8 @@ public class StatsPanel extends VBox {
             samplingCombo.getItems().addAll(
                 I18n.getOrDefault("stats.sampling.1tick", "1 Tick (Chaque Cycle)"),
                 I18n.getOrDefault("stats.sampling.5ticks", "5 Ticks"),
-                I18n.getOrDefault("stats.sampling.20ticks", "20 Ticks (~1 Seconde)"),
-                I18n.getOrDefault("stats.sampling.100ticks", "100 Ticks (~5 Secondes)")
+                I18n.getOrDefault("stats.sampling.20ticks", "20 Ticks"),
+                I18n.getOrDefault("stats.sampling.100ticks", "100 Ticks")
             );
             samplingCombo.getSelectionModel().select(selectedSampling >= 0 ? selectedSampling : 0);
             samplingCombo.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.sampling", "Fréquence d'échantillonnage et de rafraîchissement des métriques.")));
@@ -638,20 +671,35 @@ public class StatsPanel extends VBox {
             exportBtn.setText(I18n.getOrDefault("stats.btn.export_csv", "📥 Exporter les Données (CSV)"));
             exportBtn.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.export_csv", "Exporter l'historique complet des métriques sociétales, énergétiques et économiques au format CSV.")));
 
-            // Refresh Metric Combo: Sorted by category and then alphabetically by title
+            // Refresh Metric Combo: Grouped by category with section headers
             String prevSelected = chartMetricCombo.getValue();
             chartMetricCombo.getItems().clear();
 
-            List<MetricCard> sortedCards = new ArrayList<>(metricCards.values());
-            sortedCards.sort(Comparator.comparing(MetricCard::getCategory).thenComparing(MetricCard::getTitle, String.CASE_INSENSITIVE_ORDER));
-
-            for (MetricCard card : sortedCards) {
-                chartMetricCombo.getItems().add(card.getTitle());
+            Map<String, List<MetricCard>> cardsByCategory = new LinkedHashMap<>();
+            for (MetricCard card : metricCards.values()) {
+                cardsByCategory.computeIfAbsent(card.getCategory(), k -> new ArrayList<>()).add(card);
             }
+
+            for (Map.Entry<String, List<MetricCard>> entry : cardsByCategory.entrySet()) {
+                String catName = entry.getKey();
+                List<MetricCard> cardsInCat = entry.getValue();
+                cardsInCat.sort(Comparator.comparing(MetricCard::getTitle, String.CASE_INSENSITIVE_ORDER));
+
+                chartMetricCombo.getItems().add("─── " + catName + " ───");
+                for (MetricCard card : cardsInCat) {
+                    chartMetricCombo.getItems().add(card.getTitle());
+                }
+            }
+
             if (prevSelected != null && chartMetricCombo.getItems().contains(prevSelected)) {
                 chartMetricCombo.setValue(prevSelected);
-            } else if (!chartMetricCombo.getItems().isEmpty()) {
-                chartMetricCombo.setValue(chartMetricCombo.getItems().get(0));
+            } else {
+                for (String it : chartMetricCombo.getItems()) {
+                    if (!it.startsWith("─── ")) {
+                        chartMetricCombo.setValue(it);
+                        break;
+                    }
+                }
             }
 
             filterMetrics();
@@ -685,6 +733,7 @@ public class StatsPanel extends VBox {
         addCard("potableWater", "Eau Douce & Aquifères", "⚡ Énergie & Matière", "10³ km³", "Réserves globales d'eau potable et nappe phréatique continentale.", inspectorTitle, inspectorText);
         addCard("remainingResources", "Ressources Restantes", "⚡ Énergie & Matière", "%", "Capital minéral et géologique non-extrait restant au sol.", inspectorTitle, inspectorText);
         addCard("entropyPollution", "Entropie & Pollution", "⚡ Énergie & Matière", "Idx", "Génération d'entropie thermodynamique et rejets polluants.", inspectorTitle, inspectorText);
+        addCard("energyEroi", "EROI Énergétique Global", "⚡ Énergie & Matière", "Ratio", "Energy Return On Investment : Ratio moyen de rendement énergétique de l'ensemble des sources d'énergie exploitées.", inspectorTitle, inspectorText);
         addCard("occupiedTerritory", "Territoire de Subsistance & Emprise", "⚡ Énergie & Matière", "km²",
             "Surface écologique d'exploitation (Home Range de Binford, Kelly, Hassan). Modélise l'emprise diffuse des chasseurs-cueilleurs (10 à 100 km²/hab, soit 250 à 10 000 km² par bande de 25 personnes selon le biome) jusqu'à la concentration sédentaire agricole et urbaine.", inspectorTitle, inspectorText);
 
@@ -713,6 +762,7 @@ public class StatsPanel extends VBox {
 
         // Category 4: Économie & Richesse
         addCard("giniIndex", "Indice de Gini (Inégalité)", "💎 Économie & Richesse", "Coeff", "G = A / (A + B). Mesure de concentration des richesses (0 = égalité, 1 = inégalité absolue).", inspectorTitle, inspectorText);
+        addCard("landGini", "Inégalité Foncière (Gini Sol)", "💎 Économie & Richesse", "Coeff", "Coefficient de concentration de la propriété des terres agricoles et des ressources du sol.", inspectorTitle, inspectorText);
         addCard("gdpTotal", "PIB Global (GDP)", "💎 Économie & Richesse", "G$", "Produit Intérieur Brut total converti en monnaie constante.", inspectorTitle, inspectorText);
         addCard("builtCapital", "Capital Bâti & Outillage", "💎 Économie & Richesse", "kg/hab", "Stock total d'infrastructures physiques et de machines.", inspectorTitle, inspectorText);
         addCard("eliteFormation", "Formation d'Élite", "💎 Économie & Richesse", "%", "Proportion de la population détenant les fonctions de commandement.", inspectorTitle, inspectorText);
@@ -729,11 +779,15 @@ public class StatsPanel extends VBox {
 
         // Category 6: Écologie & Frontières Planétaires
         addCard("soilNPK", "Qualité NPK des Sols", "🌍 Écologie & Frontières Planétaires", "%", "Indice de fertilité et teneur en nutriments organiques des sols cultivés.", inspectorTitle, inspectorText);
+        addCard("carryingCapacitySat", "Saturation Capacité Portante (N/K)", "🌍 Écologie & Frontières Planétaires", "Ratio", "Ratio démographique global rapporté à la biocapacité soutenable (N/K). Seuil critique à 1.0 (Overshoot malthusien).", inspectorTitle, inspectorText);
+        addCard("planetaryOvershoot", "Dépassement Planétaire (Overshoot)", "🌍 Écologie & Frontières Planétaires", "x", "Facteur de dépassement des 9 frontières planétaires du Stockholm Resilience Centre (Rockström et al.).", inspectorTitle, inspectorText);
         addCard("carbonFootprint", "Empreinte Carbone", "🌍 Écologie & Frontières Planétaires", "GtCO₂", "Émissions annuelles de gaz à effet de serre et carbone fossile.", inspectorTitle, inspectorText);
         addCard("wildBiodiversity", "Biodiversité Sauvage", "🌍 Écologie & Frontières Planétaires", "%", "Part de la biomasse faunique et florale sauvage préservée.", inspectorTitle, inspectorText);
         addCard("wetBulbSafety", "Marge Sécurité Bulbe Humide", "🌍 Écologie & Frontières Planétaires", "°C", "Écart de température avec le seuil létal de bulbe humide (35°C).", inspectorTitle, inspectorText);
 
         // Category 7: Cliodynamique & Risques Systémiques
+        addCard("turchinPsi", "Indice de Stress Politique (PSI)", "⏳ Cliodynamique & Risques Systémiques", "Idx", "PSI = W × E × S. Indice synthétique de Peter Turchin modélisant la détresse populaire (W), la surproduction des élites (E) et la faiblesse de l'État (S).", inspectorTitle, inspectorText);
+        addCard("asabiyyah", "Cohésion Asabiyyah", "⏳ Cliodynamique & Risques Systémiques", "%", "Indice de solidarité de groupe et de capacité d'action collective d'Ibn Khaldoun (1377).", inspectorTitle, inspectorText);
         addCard("eliteOverproduction", "Surproduction Élitaire (Turchin)", "⏳ Cliodynamique & Risques Systémiques", "Idx", "PSI = (Élites_aspirantes / Postes_disponibles) × Inégalité. Ratio de compétition pour le pouvoir (Indice PSI de Turchin).", inspectorTitle, inspectorText);
         addCard("fiscalStress", "Pression & Stress Fiscal", "⏳ Cliodynamique & Risques Systémiques", "%", "Stress financier et charge de maintien des institutions publiques.", inspectorTitle, inspectorText);
         addCard("geopoliticalTension", "Tension Géopolitique", "⏳ Cliodynamique & Risques Systémiques", "%", "Friction diplomatique et risque d'escalade guerrière multipolaire.", inspectorTitle, inspectorText);
@@ -745,7 +799,7 @@ public class StatsPanel extends VBox {
         addCard("systemInterdependence", "Interdépendance (Rouages)", "⚙️ Complexité Systémique", "%", "Fragilité systémique liée à l'interdépendance des chaînes logistiques.", inspectorTitle, inspectorText);
 
         // Category 9: Performances Engine
-        addCard("engineTPS", "Fréquence de Calcul (Ticks/s)", "💻 Performances Techniques", "ticks/s", "Fréquence réelle de calcul du moteur de simulation (ticks par seconde).", inspectorTitle, inspectorText);
+        addCard("engineTPS", "Fréquence de Calcul (Pas/s)", "💻 Performances Techniques", "pas/s", "Fréquence réelle de calcul du moteur de simulation (pas par seconde).", inspectorTitle, inspectorText);
         addCard("ramMemory", "Utilisation Mémoire RAM", "💻 Performances Techniques", "MB", "Consommation mémoire vive du moteur.", inspectorTitle, inspectorText);
         addCard("cellCount", "Cellules Hexagonales H3", "💻 Performances Techniques", "hex", "Nombre total de mailles hexagonales chargées en mémoire.", inspectorTitle, inspectorText);
     }
@@ -820,6 +874,9 @@ public class StatsPanel extends VBox {
         }
 
         String selectedMetric = chartMetricCombo != null ? chartMetricCombo.getValue() : "Population Humaine";
+        if (selectedMetric == null || selectedMetric.startsWith("─── ")) {
+            selectedMetric = "Population Humaine";
+        }
         double currentTime = engine.getTimeManager().getCurrentYear() + (engine.getTimeManager().getCurrentMonth() / 12.0);
         double minAllowed = getMinAllowedYear();
 
@@ -1027,6 +1084,9 @@ public class StatsPanel extends VBox {
 
                 // Update Time Series Chart
                 String selectedMetric = chartMetricCombo.getValue();
+                if (selectedMetric == null || selectedMetric.startsWith("─── ")) {
+                    selectedMetric = "Population Humaine";
+                }
                 double yVal = extractMetricValue(selectedMetric, energyCap, resDep, energyPerCap, foodPerCap, bio, bioDom,
                         water, remRes, entropy, territory, pop, fert, offspring, ageFirstChild, immigration, life,
                         education, happiness, conflict, cityStates, instMaturity, divLabor, maxHier, largestCult,
@@ -1153,7 +1213,7 @@ public class StatsPanel extends VBox {
         if (m.contains("reconstruire") || m.contains("reconstruction")) return reconCap;
         if (m.contains("interdépendance") || m.contains("interdependence")) return sysInter;
 
-        if (m.contains("tps") || m.contains("fréquence") || m.contains("ticks/s")) return tps;
+        if (m.contains("tps") || m.contains("fréquence") || m.contains("pas/s") || m.contains("ticks/s")) return tps;
         if (m.contains("ram") || m.contains("mémoire")) return usedMem;
         if (m.contains("cellules") || m.contains("cells") || m.contains("hex")) return totalCells;
 

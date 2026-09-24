@@ -1,0 +1,289 @@
+{
+  "epoch": -50000,
+  "era": "Upper Paleolithic Inception / MIS 3 Interstadial & Sahul Maritime Colonization",
+  "planet": "earth",
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "overview": {
+    "summary_fr": "Reconstitution cartographique et tensorielle globale de la Terre pour l'époque -50 000 BP. Cette période est marquée par la première colonisation humaine du continent Sahul (Australie et Nouvelle-Guinée) via des traversées maritimes hauturières à travers la ligne Wallacea (Madjedbebe, Carpenter's Gap), la diffusion du Paléolithique supérieur initial en Eurasie (Bacho Kiro, Bohunicien), et la coexistence avec les derniers Néandertaliens et Dénisoviens d'altitude. Les Amériques restent rigoureusement inhabitées.",
+    "summary_en": "Global cartographic and tensor reconstruction for the -50,000 BP epoch. Marked by the first maritime human colonization of Sahul (Australia and New Guinea) across the deep-water Wallacea line, the Initial Upper Paleolithic dispersal in Eurasia, and coexistence with late Neanderthals and high-altitude Denisovans. The Americas remain strictly uninhabited."
+  },
+  "layers": {
+    "elevation": {
+      "filename": "earth_-50000_elevation.png",
+      "category": "geophysics",
+      "data_sources": [
+        "NOAA ETOPO 2022 15-arc-second Global Relief Model",
+        "GEBCO 2023 Grid Bathymetric and Topographic Model"
+      ],
+      "scientific_parameters_and_corrections": {
+        "eustatic_sea_level_offset_meters": -75.0,
+        "isostatic_rebound_model": "ICE-6G_C (Peltier et al. 2015)",
+        "paleotopographic_features": "Sundaland shelf fully exposed; Sahul land bridge connecting Australia and New Guinea; Beringia land bridge emerged."
+      },
+      "reconstitution_rationale": "Global eustatic depression of -75m during MIS 3 interstadial exposing the Arafura shelf and Sunda shelf, narrowing Wallacean water gaps."
+    },
+    "biomes": {
+      "filename": "earth_-50000_biomes.png",
+      "category": "ecology",
+      "data_sources": [
+        "CHELSA-Trace21k Paleoclimate Downscaling Engine",
+        "PaleoView v1.2 (Fordham et al. 2017)",
+        "Köppen-Geiger MIS 3 Reconstructed Paleobiomes"
+      ],
+      "scientific_parameters_and_corrections": {
+        "australian_megafaunal_savanna": "Semi-arid eucalyptus woodland and interior lake systems (Lake Mungo precursors)",
+        "mammoth_steppe_eurasia": "Mammoth steppe belt spanning from Western Europe to Eastern Siberia"
+      },
+      "reconstitution_rationale": "Moderate interstadial warming during MIS 3 supporting rich megafaunal grazing ecosystems across Eurasia and Australia."
+    },
+    "temperature": {
+      "filename": "earth_-50000_temperature.png",
+      "category": "climate",
+      "data_sources": [
+        "EPICA Dome C Ice Core Series",
+        "NGRIP Greenland Ice Core Dansgaard-Oeschger (DO-14/13) Events"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_mean_surface_temp_celsius": 11.8,
+        "interstadial_thermal_oscillation": "Mild warming DO cycle with temperate European summer refugia"
+      },
+      "reconstitution_rationale": "Colder than Holocene baseline by ~3°C, but significantly warmer than the upcoming LGM peak."
+    },
+    "precipitation": {
+      "filename": "earth_-50000_precipitation.png",
+      "category": "climate",
+      "data_sources": [
+        "Lynch's Crater (Queensland) Pollen & Charcoal Records",
+        "Hulu Cave Speleothem Paleomonsoon Series"
+      ],
+      "scientific_parameters_and_corrections": {
+        "sahul_monsoon_activity": "Active tropical monsoon sustaining northern Australian wetlands and savannahs"
+      },
+      "reconstitution_rationale": "Moderate rainfall across Sahul facilitating rapid human expansion along coastal and riverine corridors."
+    },
+    "seasonality": {
+      "filename": "earth_-50000_seasonality.png",
+      "category": "climate",
+      "data_sources": [
+        "Astronomical Milankovitch Parameters at 50,000 BP (Laskar et al. 2004)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "obliquity_degrees": 23.45,
+        "eccentricity": 0.0152
+      },
+      "reconstitution_rationale": "Moderate seasonal thermal swing in mid-latitudes."
+    },
+    "density": {
+      "filename": "earth_-50000_density.png",
+      "category": "demography",
+      "data_sources": [
+        "Clarkson et al. (2017) 'Human occupation of northern Australia by 65,000 years ago' (Madjedbebe)",
+        "O'Connell & Allen (2015) 'The process, biotic impact, and global significance of the human colonization of Sahul'",
+        "Tallavaara et al. (2015) Human Carrying Capacity in MIS 3"
+      ],
+      "scientific_parameters_and_corrections": {
+        "global_human_population_estimate": [120000, 250000],
+        "sahul_density_hab_km2": [0.015, 0.035],
+        "eurasia_density_hab_km2": [0.008, 0.025],
+        "africa_density_hab_km2": [0.025, 0.050],
+        "strict_uninhabited_regions": [
+          "North America", "South America", "Mesoamerica", "Caribbean",
+          "Madagascar", "Antarctica", "Iceland", "New Zealand", "Remote Pacific Islands"
+        ]
+      },
+      "reconstitution_rationale": "First appearance of human population in Australia (Sahul) while the New World remains strictly uninhabited."
+    },
+    "isogloss": {
+      "filename": "earth_-50000_isogloss.png",
+      "category": "linguistics",
+      "data_sources": [
+        "Dixon (2002) 'The Australian Languages'",
+        "Atkinson (2011) Phonemic Gradients",
+        "Glottolog Sahul and Eurasian Paleolithic Nodes"
+      ],
+      "scientific_parameters_and_corrections": {
+        "clades_separated": [
+          "Proto-Sapiens African Core (Ancestral Click & Complex Phoneme Stock)",
+          "Initial Upper Paleolithic Eurasian Dispersal Lineages",
+          "Proto-Australian & Papuan Maritime Pioneer Language Stock",
+          "Late Neanderthal (Micoquian/Châtelperronian) Vocal Communicators",
+          "Denisovan Highland Asian Vocal Systems"
+        ]
+      },
+      "reconstitution_rationale": "Separates ancestral Sahul linguistic roots from African and Eurasian Upper Paleolithic dispersions."
+    },
+    "sovereignty": {
+      "filename": "earth_-50000_sovereignty.png",
+      "category": "polity",
+      "data_sources": [
+        "Tindale (1974) 'Aboriginal Tribes of Australia'",
+        "Boehm (1999) Egalitarian Foraging Territoriality"
+      ],
+      "scientific_parameters_and_corrections": {
+        "state_formation_level": 0.0,
+        "band_territory_size_km2": [500, 2500]
+      },
+      "reconstitution_rationale": "Egalitarian band home ranges and totemic landscape boundaries."
+    },
+    "kinship": {
+      "filename": "earth_-50000_kinship.png",
+      "category": "sociology",
+      "data_sources": [
+        "Murdock EA (EA022-EA024)",
+        "Keen (2004) 'Aboriginal Economy and Society: Australia at the Threshold of Colonisation'"
+      ],
+      "scientific_parameters_and_corrections": {
+        "sahul_kinship_mode": "Skin / Moiety Section Systems with Totemic Landscape Alliances",
+        "eurasian_kinship_mode": "Bilateral Exogamous Upper Paleolithic Foraging Networks"
+      },
+      "reconstitution_rationale": "Early manifestation of complex multi-band marriage rules and totemic moieties in Sahul."
+    },
+    "rituals": {
+      "filename": "earth_-50000_rituals.png",
+      "category": "culture",
+      "data_sources": [
+        "Bowler et al. (2003) Lake Mungo 3 Ochre Inhumation (42 ka proxy)",
+        "Bacho Kiro Cave Pendants and Personal Ornaments (Hublin et al. 2020)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "symbolic_intensity_scale": 0.35,
+        "ochre_cremation_and_grave_goods": "Widespread ritual use across Sahul and Eurasia"
+      },
+      "reconstitution_rationale": "High symbolic and personal ornament expression across all Sapiens groups."
+    },
+    "technology": {
+      "filename": "earth_-50000_technology.png",
+      "category": "technology",
+      "data_sources": [
+        "Davidson & Noble (1992) Watercraft Construction Evidence",
+        "Initial Upper Paleolithic Blade Technology (Bacho Kiro, Denisova Cave)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "key_innovations": [
+          "Deep-sea ocean watercraft & bamboo/wood raft navigation",
+          "Prismatic blade cores & bone/antler projectile points",
+          "Edge-ground stone axes in Sahul (earliest in world)"
+        ]
+      },
+      "reconstitution_rationale": "Technological leap enabling intentional maritime crossing and standardized bladelet production."
+    },
+    "institutional": {
+      "filename": "earth_-50000_institutional.png",
+      "category": "institutions",
+      "data_sources": [
+        "Carneiro Scale Level 0",
+        "Flannery & Marcus (2012)"
+      ],
+      "scientific_parameters_and_corrections": {
+        "institutional_complexity_score": 0.03
+      },
+      "reconstitution_rationale": "Egalitarian clan councils with elder ritual authority."
+    },
+    "ecological": {
+      "filename": "earth_-50000_ecological.png",
+      "category": "environment",
+      "data_sources": [
+        "Miller et al. (2005) 'Ecosystem Collapse in Pleistocene Australia and a Human Role in Megafaunal Extinction'"
+      ],
+      "scientific_parameters_and_corrections": {
+        "fire_stick_farming_in_australia": "Systematic landscape burning altering vegetation mosaics",
+        "megafaunal_hunting_pressure": "Incipient hunting of Diprotodon and Genyornis"
+      },
+      "reconstitution_rationale": "First appearance of systematic anthropogenic landscape fire management across Australia."
+    },
+    "pathogen": {
+      "filename": "earth_-50000_pathogen.png",
+      "category": "epidemiology",
+      "data_sources": [
+        "Wolfe et al. (2007) Infectious Disease Biogeography"
+      ],
+      "scientific_parameters_and_corrections": {
+        "sahul_pathogen_regime": "Moderate tropical vector load without Old World herd zoonoses"
+      },
+      "reconstitution_rationale": "Distinct epidemiological equilibrium in Sahul isolated from Eurasian zoonoses."
+    },
+    "tradenetwork": {
+      "filename": "earth_-50000_tradenetwork.png",
+      "category": "economy",
+      "data_sources": [
+        "Mulvaney & Kamminga (1999) 'Prehistory of Australia'"
+      ],
+      "scientific_parameters_and_corrections": {
+        "max_exchange_distance_km": 300,
+        "traded_items": ["Ochre pigments", "Kimberley chert", "Shell ornaments"]
+      },
+      "reconstitution_rationale": "Long-distance ceremonial gift exchange (Walanari/Dreamtime songlines precursor)."
+    },
+    "aquifers": {
+      "filename": "earth_-50000_aquifers.png",
+      "category": "resources",
+      "data_sources": ["UNESCO WHYMAP"],
+      "scientific_parameters_and_corrections": {"fossil_storage_fullness": 1.0},
+      "reconstitution_rationale": "100% pristine virgin water tables."
+    },
+    "coal": {
+      "filename": "earth_-50000_coal.png",
+      "category": "resources",
+      "data_sources": ["USGS World Coal Inventory", "GEM"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "100% untouched coal reserves."
+    },
+    "oil": {
+      "filename": "earth_-50000_oil.png",
+      "category": "resources",
+      "data_sources": ["USGS Petroleum Assessment"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "100% virgin hydrocarbons."
+    },
+    "gas": {
+      "filename": "earth_-50000_gas.png",
+      "category": "resources",
+      "data_sources": ["USGS Global Gas Survey"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "100% untouched gas deposits."
+    },
+    "iron_copper": {
+      "filename": "earth_-50000_iron_copper.png",
+      "category": "resources",
+      "data_sources": ["USGS MRDS", "BGR Germany"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "100% virgin metallic mineral deposits."
+    },
+    "precious_metals": {
+      "filename": "earth_-50000_precious_metals.png",
+      "category": "resources",
+      "data_sources": ["USGS MRDS Placers"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "Intact alluvial placer gold and silver beds."
+    },
+    "uranium": {
+      "filename": "earth_-50000_uranium.png",
+      "category": "resources",
+      "data_sources": ["IAEA NFCIS"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "Untouched high-grade uranium reserves."
+    },
+    "rare_earths": {
+      "filename": "earth_-50000_rare_earths.png",
+      "category": "resources",
+      "data_sources": ["USGS REE Global Database"],
+      "scientific_parameters_and_corrections": {"extraction_depletion_level": 0.0},
+      "reconstitution_rationale": "Untouched carbonatite and alkaline complexes."
+    },
+    "geothermal": {
+      "filename": "earth_-50000_geothermal.png",
+      "category": "geophysics",
+      "data_sources": ["IHFC Davies 2013"],
+      "scientific_parameters_and_corrections": {"crustal_heat_flow_mW_m2": [40.0, 120.0]},
+      "reconstitution_rationale": "Mantle and volcanic heat flux mapping."
+    },
+    "helium3": {
+      "filename": "earth_-50000_helium3.png",
+      "category": "resources",
+      "data_sources": ["Solar Wind Volatiles Model"],
+      "scientific_parameters_and_corrections": {"terrestrial_baseline_ppb": 0.0},
+      "reconstitution_rationale": "Atmospheric geomagnetic screening."
+    }
+  }
+}

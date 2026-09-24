@@ -344,7 +344,7 @@ public class H3MapCanvas extends Canvas {
 
     // Video Recording & Overlay Metadata
     private String scenarioName = "Scénario Standard";
-    private String currentDateStr = "An -100000 - M.01 D.01";
+    private String currentDateStr = "An -100000";
     private boolean isRecordingVideo = false;
     private java.io.File videoSessionDir = null;
     private long frameCounter = 0;
@@ -905,21 +905,91 @@ public class H3MapCanvas extends Canvas {
         logger.info("Flying camera to lat={}, lng={}, zoom={}", String.format("%.2f", targetLat), String.format("%.2f", targetLng), String.format("%.2f", finalTargetZoom));
     }
 
+    public static class BeaconItem {
+        private final double lat;
+        private final double lng;
+        private final String title;
+        private final String type;
+        private final double magnitude;
+        private final long createdAtMs;
+        private final long durationMs;
+
+        public BeaconItem(double lat, double lng, String title, String type, double magnitude, long createdAtMs, long durationMs) {
+            this.lat = lat;
+            this.lng = lng;
+            this.title = title;
+            this.type = type;
+            this.magnitude = magnitude;
+            this.createdAtMs = createdAtMs;
+            this.durationMs = durationMs;
+        }
+
+        public double getLatitude() { return lat; }
+        public double getLongitude() { return lng; }
+        public String getTitle() { return title; }
+        public String getType() { return type; }
+        public double getMagnitude() { return magnitude; }
+        public long getCreatedAtMs() { return createdAtMs; }
+        public boolean isExpired(long now) { return (now - createdAtMs) >= durationMs; }
+    }
+
+    private final java.util.List<BeaconItem> manualPings = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private javafx.animation.AnimationTimer pingAnimationTimer;
+
+    public void pingLocation(double lat, double lng, String title, String type, double magnitude) {
+        long now = System.currentTimeMillis();
+        manualPings.removeIf(p -> p.isExpired(now));
+        manualPings.add(new BeaconItem(lat, lng, title != null ? title : "📍 Événement", type != null ? type : "PING", magnitude > 0 ? magnitude : 6.5, now, 8000L));
+
+        if (pingAnimationTimer == null) {
+            pingAnimationTimer = new javafx.animation.AnimationTimer() {
+                @Override
+                public void handle(long nowNs) {
+                    long currentMs = System.currentTimeMillis();
+                    manualPings.removeIf(p -> p.isExpired(currentMs));
+                    if (!manualPings.isEmpty()) {
+                        draw();
+                    } else {
+                        stop();
+                        pingAnimationTimer = null;
+                        draw();
+                    }
+                }
+            };
+            pingAnimationTimer.start();
+        } else {
+            draw();
+        }
+    }
+
     private void drawEventBeacons(GraphicsContext gc) {
-        if (eventSystem == null) return;
-        List<org.ether.society.events.ActiveEvent> events = eventSystem.getActiveEvents();
+        List<BeaconItem> allBeacons = new ArrayList<>();
+        long now = System.currentTimeMillis();
+
+        if (eventSystem != null) {
+            List<org.ether.society.events.ActiveEvent> events = eventSystem.getActiveEvents();
+            if (events != null) {
+                for (org.ether.society.events.ActiveEvent ev : events) {
+                    if (!ev.isExpired()) {
+                        allBeacons.add(new BeaconItem(ev.getLatitude(), ev.getLongitude(), ev.getTitle(), ev.getType(), ev.getMagnitude(), ev.getCreatedAtMs(), 8000L));
+                    }
+                }
+            }
+        }
+
+        for (BeaconItem ping : manualPings) {
+            if (!ping.isExpired(now)) {
+                allBeacons.add(ping);
+            }
+        }
         
         synchronized (activeBeaconTargets) {
             activeBeaconTargets.clear();
         }
 
-        if (events == null || events.isEmpty()) return;
+        if (allBeacons.isEmpty()) return;
 
-        long now = System.currentTimeMillis();
-
-        for (org.ether.society.events.ActiveEvent event : events) {
-            if (event.isExpired()) continue;
-
+        for (BeaconItem event : allBeacons) {
             double lat = event.getLatitude();
             double lng = event.getLongitude();
 
@@ -962,14 +1032,14 @@ public class H3MapCanvas extends Canvas {
             long elapsedMs = event.getCreatedAtMs() > 0 ? now - event.getCreatedAtMs() : 0;
             boolean isBlinking = elapsedMs >= 0 && elapsedMs < 8000; // Pulsing ring stops blinking after 8s max
 
-            Color eventColor = switch (event.getType()) {
+            Color eventColor = switch (event.getType() != null ? event.getType() : "") {
                 case "VOLCANO", "METEOR", "NUCLEAR_WINTER" -> Color.rgb(239, 68, 68); // Red
                 case "FLOOD", "ECOLOGICAL" -> Color.rgb(14, 165, 233); // Cyan
                 case "FAMINE" -> Color.rgb(234, 179, 8); // Yellow
                 case "PANDEMIC" -> Color.rgb(168, 85, 247); // Purple
                 case "EARTHQUAKE" -> Color.rgb(249, 115, 22); // Orange
                 case "GOD_MODE" -> Color.rgb(236, 72, 153); // Pink
-                default -> Color.rgb(34, 197, 94); // Green
+                default -> Color.rgb(56, 189, 248); // Cyan/Sky blue for PING / default
             };
 
             // Inner glowing core sphere (sized by magnitude)
@@ -987,37 +1057,25 @@ public class H3MapCanvas extends Canvas {
                 gc.strokeOval(screenX - pulseRadius / 2.0, screenY - pulseRadius / 2.0, pulseRadius, pulseRadius);
             }
 
-            // Title & Fly-To Banner
-            double titleWidth = Math.min(180, event.getTitle().length() * 7 + 10);
-            double flyBtnWidth = 54;
-            double totalWidth = titleWidth + flyBtnWidth + 6;
+            // Title Banner
+            double titleWidth = Math.min(240, event.getTitle().length() * 7 + 16);
 
             gc.setFill(Color.rgb(15, 23, 42, 0.90));
-            gc.fillRect(screenX + 8, screenY - 18, totalWidth, 20);
+            gc.fillRoundRect(screenX + 8, screenY - 18, titleWidth, 20, 4, 4);
             gc.setStroke(eventColor);
             gc.setLineWidth(1.2);
-            gc.strokeRect(screenX + 8, screenY - 18, totalWidth, 20);
+            gc.strokeRoundRect(screenX + 8, screenY - 18, titleWidth, 20, 4, 4);
 
             // Event Title
             gc.setFill(Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("Consolas", javafx.scene.text.FontWeight.BOLD, 10));
-            gc.fillText(event.getTitle(), screenX + 12, screenY - 4);
-
-            // Fly-To Action Button
-            double btnX = screenX + 12 + titleWidth;
-            double btnY = screenY - 16;
-            gc.setFill(Color.rgb(14, 165, 233, 0.95)); // Vibrant cyan
-            gc.fillRoundRect(btnX, btnY, flyBtnWidth, 16, 4, 4);
-
-            gc.setFill(Color.WHITE);
-            gc.setFont(javafx.scene.text.Font.font("Consolas", javafx.scene.text.FontWeight.BOLD, 9));
-            gc.fillText("✈ FLY TO", btnX + 5, btnY + 11);
+            gc.fillText(event.getTitle(), screenX + 14, screenY - 4);
 
             // Record target hit box
             EventBeaconTarget target = new EventBeaconTarget();
             target.x = screenX - 10;
             target.y = screenY - 20;
-            target.width = totalWidth + 25;
+            target.width = titleWidth + 25;
             target.height = 32;
             target.lat = lat;
             target.lng = lng;

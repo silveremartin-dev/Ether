@@ -72,11 +72,11 @@ public final class DataSourceMetadataRegistry {
                     setTooltip(null);
                 } else {
                     String label = item;
-                    if ("earth".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.earth", "🌍 Terre (Moderne / Satellitaire)");
-                    else if ("mars".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.mars", "🔴 Mars (Ares / MGS & MRO)");
-                    else if ("venus".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.venus", "🟡 Vénus (Magellan SAR & VIRTIS)");
-                    else if ("moon".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.moon", "⚪ Lune (Selene / LRO LOLA)");
-                    else if ("mercury".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.mercury", "⚪ Mercure (Hermes / MESSENGER)");
+                    if ("earth".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.earth", "🌍 Terre — NOAA ETOPO2022 / GMTED2010 [Global, -100ka à Actuel]");
+                    else if ("mars".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.mars", "🔴 Mars — MGS MOLA Global Elevation [Planétaire, Éon Actuel]");
+                    else if ("venus".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.venus", "🟡 Vénus — Magellan SAR & VIRTIS [Planétaire, Éon Actuel]");
+                    else if ("moon".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.moon", "⚪ Lune — LRO LOLA Altimetry [Planétaire, Éon Actuel]");
+                    else if ("mercury".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.mercury", "⚪ Mercure — MESSENGER MLA Topography [Planétaire, Éon Actuel]");
 
                     setText(label);
                     String desc = getDetailedSourceDescription(item);
@@ -100,11 +100,11 @@ public final class DataSourceMetadataRegistry {
                     setText(I18n.getOrDefault(promptKey, "— Select Data Source —"));
                 } else {
                     String label = item;
-                    if ("earth".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.earth", "🌍 Terre (Moderne / Satellitaire)");
-                    else if ("mars".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.mars", "🔴 Mars (Ares / MGS & MRO)");
-                    else if ("venus".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.venus", "🟡 Vénus (Magellan SAR & VIRTIS)");
-                    else if ("moon".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.moon", "⚪ Lune (Selene / LRO LOLA)");
-                    else if ("mercury".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.mercury", "⚪ Mercure (Hermes / MESSENGER)");
+                    if ("earth".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.earth", "🌍 Terre — NOAA ETOPO2022 / GMTED2010 [Global, -100ka à Actuel]");
+                    else if ("mars".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.mars", "🔴 Mars — MGS MOLA Global Elevation [Planétaire, Éon Actuel]");
+                    else if ("venus".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.venus", "🟡 Vénus — Magellan SAR & VIRTIS [Planétaire, Éon Actuel]");
+                    else if ("moon".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.moon", "⚪ Lune — LRO LOLA Altimetry [Planétaire, Éon Actuel]");
+                    else if ("mercury".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.mercury", "⚪ Mercure — MESSENGER MLA Topography [Planétaire, Éon Actuel]");
                     setText(label);
                 }
             }
@@ -133,9 +133,47 @@ public final class DataSourceMetadataRegistry {
     }
 
     private static String getI18nKeyForSource(String lower) {
+        // --- TOPOGRAPHY ---
+        if (lower.equals("earth") || lower.contains("etopo") || lower.contains("gmted")) return "source.topo.earth";
+        if (lower.equals("mars") || lower.contains("mola")) return "source.topo.mars";
+        if (lower.equals("venus") || lower.equals("vénus") || lower.contains("magellan")) return "source.topo.venus";
+        if (lower.equals("moon") || lower.equals("lune") || lower.contains("lola")) return "source.topo.moon";
+        if (lower.equals("mercury") || lower.equals("mercure") || lower.contains("messenger")) return "source.topo.mercury";
+
+        // --- CLIMATE : TEMPERATURE ---
+        if (lower.contains("bio1") || (lower.contains("era5") && lower.contains("temp"))) return "source.climate.temp.earth";
+        if (lower.contains("merra-2") || lower.contains("merra")) return "source.climate.temp.wms";
+        if (lower.contains("mgs tes") || (lower.contains("mars") && lower.contains("thermal"))) return "source.climate.temp.mars";
+        if (lower.contains("virtis") || (lower.contains("vénus") && lower.contains("hypsometric")) || (lower.contains("venus") && lower.contains("hypsometric"))) return "source.climate.temp.venus";
+        if (lower.contains("diviner")) return "source.climate.temp.moon";
+        if (lower.contains("messenger mla extreme")) return "source.climate.temp.mercury";
+
+        // --- CLIMATE : PRECIPITATION ---
+        if (lower.contains("gpcp") || (lower.contains("worldclim") && lower.contains("precip"))) return "source.climate.precip.earth";
+        if (lower.contains("gpm") || lower.contains("imerg")) return "source.climate.precip.wms";
+        if (lower.contains("frost & sublimation")) return "source.climate.precip.mars";
+        if (lower.contains("h2so4") || lower.contains("virga")) return "source.climate.precip.venus";
+        if (lower.contains("vacuum exosphere") || lower.contains("lend")) return "source.climate.precip.moon";
+        if (lower.contains("exospheric vacuum")) return "source.climate.precip.mercury";
+
+        // --- CLIMATE : SEASONALITY ---
+        if (lower.contains("bio4") || (lower.contains("era5") && lower.contains("season"))) return "source.climate.season.earth";
+        if (lower.contains("modis lst")) return "source.climate.season.wms";
+        if (lower.contains("orbital eccentricity")) return "source.climate.season.mars";
+        if (lower.contains("super-rotation")) return "source.climate.season.venus";
+        if (lower.contains("diurnal insolation")) return "source.climate.season.moon";
+        if (lower.contains("3:2 spin-orbit")) return "source.climate.season.mercury";
+
+        // --- BIOMES & HYDROGRAPHY ---
+        if (lower.contains("modis") || lower.contains("biome")) return "source.biome.earth";
+        if (lower.contains("hydrosheds") || lower.contains("swbd") || lower.contains("hydro")) return "source.hydro.earth";
+
+        // --- DEMOGRAPHY ---
         if (lower.contains("hyde 3.4") || lower.contains("hyde")) return "source.demo.hyde";
         if (lower.contains("paléo-démographie") || lower.contains("paleo-demography") || lower.contains("-100000")) return "source.demo.paleo";
         if (lower.contains("cshapes") || lower.contains("centennia")) return "source.demo.cshapes";
+
+        // --- CULTURAL TENSORS (0-8) ---
         if (lower.contains("glottolog") || lower.contains("wals")) return "source.tensor.0.glottolog";
         if (lower.contains("murdock") || lower.contains("kinship") || lower.contains("sccs")) return "source.tensor.1.murdock";
         if (lower.contains("seshat") && (lower.contains("sacred") || lower.contains("rituals") || lower.contains("asabiyyah"))) return "source.tensor.2.seshat";
@@ -145,21 +183,33 @@ public final class DataSourceMetadataRegistry {
         if (lower.contains("seshat") && lower.contains("law")) return "source.tensor.6.seshat_law";
         if (lower.contains("anthromes") || (lower.contains("hyde") && lower.contains("stress"))) return "source.tensor.7.anthromes";
         if (lower.contains("gadm") && lower.contains("pathogen")) return "source.tensor.8.pathogens";
-        if (lower.contains("usgs mrds") || lower.contains("coal")) return "source.geo.coal";
-        if (lower.contains("crude oil") || lower.contains("pétrole")) return "source.geo.oil";
-        if (lower.contains("natural gas") || lower.contains("gaz naturel")) return "source.geo.gas";
-        if (lower.contains("iaea") || lower.contains("uranium")) return "source.geo.uranium";
-        if (lower.contains("helium-3") || lower.contains("hélium-3")) return "source.geo.helium3";
-        if (lower.contains("banded iron") || lower.contains("bif") || lower.contains("iron_copper")) return "source.geo.iron";
-        if (lower.contains("precious metals") || lower.contains("or/argent")) return "source.geo.precious";
-        if (lower.contains("rare earth") || lower.contains("terres rares")) return "source.geo.ree";
-        if (lower.contains("ihfc") || lower.contains("heat flow") || lower.contains("mantle heat")) return "source.geo.heat";
-        if (lower.contains("whymap") || lower.contains("aquifer") || lower.contains("groundwater")) return "source.geo.aquifers";
+
+        // --- GEOLOGICAL TENSORS (0-9) ---
+        if (lower.contains("coal") || lower.contains("charbon")) return "source.geo.coal";
+        if (lower.contains("oil") || lower.contains("pétrole") || lower.contains("wpa")) return "source.geo.oil";
+        if (lower.contains("natural gas") || lower.contains("gaz naturel") || (lower.contains("gas") && !lower.contains("degas"))) return "source.geo.gas";
+        if (lower.contains("iaea") || lower.contains("uranium") || lower.contains("udepo")) return "source.geo.uranium";
+        if (lower.contains("helium-3") || lower.contains("hélium-3") || lower.contains("lunar prospector")) return "source.geo.helium3";
+        if (lower.contains("banded iron") || lower.contains("bif") || lower.contains("iron_copper") || lower.contains("fer / cuivre")) return "source.geo.iron";
+        if (lower.contains("precious metals") || lower.contains("or/argent") || lower.contains("métaux précieux") || lower.contains("pgm")) return "source.geo.precious";
+        if (lower.contains("rare earth") || lower.contains("terres rares") || lower.contains("ree") || lower.contains("lithium")) return "source.geo.ree";
+        if (lower.contains("ihfc") || lower.contains("heat flow") || lower.contains("mantle heat") || lower.contains("chaleur mantellique") || lower.contains("géothermie")) return "source.geo.heat";
+        if (lower.contains("whymap") || lower.contains("aquifer") || lower.contains("groundwater") || lower.contains("nappes")) return "source.geo.aquifers";
         return null;
     }
 
     private static String buildStructuredDescription(String raw, String lower) {
         StringBuilder sb = new StringBuilder();
+
+        // --- TAB 1 & 2 : TOPOGRAPHIE ---
+        if (lower.equals("earth") || lower.contains("etopo") || lower.contains("gmted") || (lower.contains("terre") && lower.contains("satellit"))) {
+            sb.append("📡 SOURCE : NOAA ETOPO2022 Global Relief & USGS GMTED2010\n");
+            sb.append("🏛️ ORGANISATION : National Oceanic and Atmospheric Administration (NOAA) & USGS\n");
+            sb.append("🔬 VARIABLES : Topographie continentale et bathymétrie océanique combinées (-11 000m à +8 848m)\n");
+            sb.append("🌐 RÉSOLUTION : Modèle d'élévation global 1 arc-minute calibré au niveau marin de référence (0m = 0.478)\n");
+            sb.append("📚 RÉFÉRENCE : NOAA NCEI (2022) ETOPO 2022 15 Arc-Second Global Relief Model.");
+            return sb.toString();
+        }
 
         // --- TAB 3 : DÉMOGRAPHIE ---
         if (lower.contains("hyde 3.4") || (lower.contains("terre") && lower.contains("anthropocène"))) {

@@ -101,18 +101,28 @@ public class SampleDataGenerator {
      * Generates realistic elevation, temperature, biome for a cell.
      */
     private void generateCellData(H3Cell cell, double lat, double lng) {
-        // Elevation: use distance from "mountain center" to simulate terrain
-        double mountainCenterLat = (cell.getLatitude() + 45.0) / 2.0;
-        double mountainCenterLng = (cell.getLongitude() + 10.0) / 2.0;
+        // Realistic ocean mask for European bounding box (35-70 N, -10 to 40 E)
+        boolean isSea = (lng < -5.0) // Atlantic Ocean
+                || (lat < 42.0 && lng > -5.0 && lng < 28.0 && !(lat > 37.0 && lng > -4.0 && lng < 0.0)) // Mediterranean Sea
+                || (lat > 56.0 && lng < 5.0) // North Sea / Norwegian Sea
+                || (lat > 66.0); // Arctic Ocean
 
-        double distToMountain = Math.sqrt(
-                Math.pow(lat - mountainCenterLat, 2) +
-                        Math.pow(lng - mountainCenterLng, 2));
+        double elevation;
+        if (isSea) {
+            elevation = -10.0 - random.nextDouble() * 70.0;
+        } else {
+            double dAlps = Math.hypot((lat - 46.5) * 1.2, (lng - 9.0) * 0.8);
+            double dPyr = Math.hypot((lat - 42.6) * 1.5, (lng - 0.5) * 1.0);
+            double dMC = Math.hypot((lat - 45.5) * 1.2, (lng - 3.0) * 1.2);
 
-        // Elevation: higher near "mountains", lower far away
-        double baseElev = Math.max(0, 3000 - distToMountain * 300);
-        double noise = (random.nextDouble() - 0.5) * 200;
-        double elevation = Math.max(-100, baseElev + noise);
+            double alpsHeight = 3200.0 * Math.exp(-Math.pow(dAlps / 2.2, 2));
+            double pyrHeight = 2400.0 * Math.exp(-Math.pow(dPyr / 1.5, 2));
+            double mcHeight = 1200.0 * Math.exp(-Math.pow(dMC / 1.0, 2));
+
+            double baseElev = 120.0 + alpsHeight + pyrHeight + mcHeight;
+            double noise = (random.nextDouble() - 0.5) * 60.0;
+            elevation = Math.max(5.0, baseElev + noise);
+        }
 
         cell.setElevation(elevation);
 

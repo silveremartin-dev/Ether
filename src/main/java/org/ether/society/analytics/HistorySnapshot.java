@@ -69,6 +69,13 @@ public record HistorySnapshot(
             case "Eau Douce & Aquifères", "potableWater" -> potableWater;
             case "Taux de Fertilité", "fertilityRate" -> fertilityRate;
             case "Nombre de Cités-États", "cityStates" -> cityStates;
+            case "Indice de Stress Politique (PSI)", "Indice PSI de Turchin", "turchinPsi", "turchinPSI", "PSI" -> eliteOverproduction * (1.0 + globalGini) * Math.max(0.5, conflictLevel / 20.0);
+            case "Saturation Capacité Portante (N/K)", "carryingCapacitySat", "carryingCapacityRatio", "pressionMalthusienne", "Pression Malthusienne" -> totalFood > 0 ? (totalPopulation * 3.362) / totalFood : 1.0;
+            case "Cohésion Asabiyyah", "asabiyyah", "Asabiyyah (Cohésion)" -> Math.max(0.0, Math.min(100.0, 100.0 - conflictLevel - globalGini * 40.0));
+            case "Dépassement Planétaire (Overshoot)", "planetaryOvershoot", "Empreinte Écologique" -> (carbonFootprint * 2.0 + resourceDepletion) / 100.0;
+            case "EROI Énergétique", "energyEroi", "eroiAlim", "EROI Alimentaire (Rendement Net)" -> Math.max(1.0, 15.0 - (resourceDepletion * 0.1));
+            case "Inégalité Foncière (Gini Sol)", "landGini" -> Math.min(1.0, globalGini * 1.15);
+            case "Qualité NPK des Sols", "soilNPK" -> Math.max(10.0, 100.0 - resourceDepletion * 0.5);
             default -> totalPopulation;
         };
     }
