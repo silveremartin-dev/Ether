@@ -15,13 +15,13 @@
 
 Macro-historical simulation models have historically oscillated between qualitative narrative constructs and unconstrained econometric regressions (*curve fitting*). We introduce **Ether**, an open-source, discrete hexagonal (Uber H3) planetary simulation engine grounded in non-equilibrium thermodynamics, biophysical constraints, and quantitative cliodynamics. Ether establishes a strict **Two-Tier Ontological Separation**:
 1. **Tier 1 (Core Invariant Physics)**: Non-negotiable conservation laws of energy, mass, exergy, and human physiology (Farquhar photosynthesis, Liebig soil stoichiometry, Stommel AMOC 2-box overturning, Stull wet-bulb lethality, and mechanical transport work).
-2. **Tier 2 (Pluggable Cliodynamic Hypotheses)**: Contested sociological, macroeconomic, and institutional theories formalized as coupled non-linear differential equations and subjected to continuous empirical falsification.
+2. **Tier 2 (Pluggable Cliodynamic Hypotheses)**: Contested sociological, macroeconomic, and institutional theories formalized as coupled non-linear differential equations and subjected to continuous empirical evaluation against historical datasets.
 
-To calibrate unobservable behavioral and institutional parameters without ad-hoc tuning, Ether integrates an **Approximate Bayesian Computation Sequential Monte Carlo (ABC-SMC)** inverse calibration kernel. We evaluate the platform across deep historical time ($-100\,000\text{ BP}$ to present) against the *Seshat Global History Databank*, *Maddison Project Database (2020)*, *HYDE 3.4*, and global paleoclimatic ice core datasets. We systematically falsify seven foundational historiographical controversies (*Malthus vs. Boserup*, *Turchin SDT vs. Pinker*, *Smil Exergy vs. Nordhaus DICE*, *Ostrom vs. Hardin*, *Acemoglu vs. Geographic Determinism*, *Scott Against-the-Grain*, and *Henrich Tasmanian Loss*), and benchmark 20 pluggable Tier 2 engines. 
+To calibrate unobservable behavioral and institutional parameters without ad-hoc tuning, Ether integrates an **Approximate Bayesian Computation Sequential Monte Carlo (ABC-SMC)** inverse calibration kernel. We evaluate the platform across deep historical time ($-100\,000\text{ BP}$ to present) against the *Seshat Global History Databank*, *Maddison Project Database (2020)*, *HYDE 3.4*, and global paleoclimatic ice core datasets. We systematically delineate the parametric validity boundaries and thermodynamic feasibility envelopes of seven foundational historiographical controversies (*Malthus vs. Boserup*, *Turchin SDT vs. Pinker*, *Smil Exergy vs. Nordhaus DICE*, *Ostrom vs. Hardin*, *Acemoglu vs. Geographic Determinism*, *Scott Against-the-Grain*, and *Henrich Tasmanian Loss*), and benchmark 20 pluggable Tier 2 engines.
 
-Furthermore, we document the fundamental technological paradigm shifts introduced by Ether, define four concrete operational use-case scenarios (epistemic falsification, counterfactual historical experimentation, planetary boundary exploration, and educational cliodynamics), provide an unvarnished audit of the model's structural limitations, and articulate a five-year computational research roadmap. We demonstrate that socio-institutional hypotheses hold only within strictly bounded thermodynamic envelopes, establishing Ether as a reproducible laboratory for computational history.
+Furthermore, we document the structural identifiability of parameter vectors under invariant physical constraints, formulate the meso-scale mean-field continuum approximation on H3 lattices, define four concrete operational use-case scenarios, provide an unvarnished audit of the model's structural limitations (including the post-industrial biophysical vs. monetary perimeter), and articulate a five-year computational research roadmap. We demonstrate that socio-institutional hypotheses hold only within strictly bounded thermodynamic envelopes, establishing Ether as a reproducible laboratory for computational history.
 
-**Keywords:** Cliodynamics, Biophysical Economics, Approximate Bayesian Computation, Earth System Modeling, Empirical Falsification, Uber H3 Grid, Non-Equilibrium Thermodynamics, Secular Cycles, Planetary Boundaries.
+**Keywords:** Cliodynamics, Biophysical Economics, Approximate Bayesian Computation, Earth System Modeling, Model Falsification & Boundary Delineation, Uber H3 Grid, Non-Equilibrium Thermodynamics, Parameter Identifiability, Planetary Boundaries.
 
 ---
 
@@ -282,6 +282,38 @@ Output: Posterior distribution P(θ | y_obs), MAP estimates θ_MAP, 95% CI.
 ────────────────────────────────────────────────────────────────────────
 ```
 
+### 4.4. Structural Identifiability, Equifinality Mitigation & Prior Volume Contraction
+
+A foundational epistemological vulnerability in high-dimensional macro-historical models is **equifinality**: the existence of disjoint parameter vectors $\boldsymbol{\theta}_A \neq \boldsymbol{\theta}_B$ that produce indistinguishable macroscopic trajectory projections $\mathbf{y}(t)$. In unconstrained models, inverse Bayesian calibration risks over-optimizing noise or yielding unidentifiable parameter posteriors.
+
+Ether formally resolves structural equifinality through a four-fold regularizing architecture:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        ETHER EQUIFINALITY REGULARIZATION PIPELINE                      │
+├────────────────────────────────┬───────────────────────────────────────────────────────┤
+│ 1. Invariant Boundary Pruning  │ • Tier 1 physical/metabolic conservation laws shrink  │
+│                                │   unconstrained parameter search space by > 99.9%.    │
+├────────────────────────────────┼───────────────────────────────────────────────────────┤
+│ 2. Multi-Objective Manifolds   │ • Joint loss across 4 orthogonal observables:         │
+│                                │   ρ_joint = w_P ρ_P + w_w ρ_wage + w_G ρ_Gini + w_A ρ_A│
+├────────────────────────────────┼───────────────────────────────────────────────────────┤
+│ 3. Information Gain Metric     │ • Shannon entropy contraction across ABC generations: │
+│                                │   ΔH(θ) = H(Prior π(θ)) - H(Posterior P(θ | y_obs))    │
+├────────────────────────────────┼───────────────────────────────────────────────────────┤
+│ 4. Sequential EnKF Orthogonality│ • Online Kalman innovation tracking isolates parameter│
+│                                │   drift from empirical measurement error in real time.│
+└────────────────────────────────┴───────────────────────────────────────────────────────┘
+```
+
+1. **Geometric Invariant Pruning**: Tier 1 physical and biological invariants act as hard boundary manifolds in $\mathbb{R}^K$. For instance, reproduction cannot exceed the maternal metabolic energetic envelope ($0.80\text{ GJ/birth}$), energy substitution cannot violate the second law of thermodynamics ($\eta_{\text{Carnot}}$), and crop yields cannot exceed Farquhar biochemical ceilings regardless of institutional parameters. This hard pruning eliminates unphysical parameter degeneracies *a priori*.
+2. **Multi-Observable Joint Loss**: Rather than fitting a single aggregate scalar (e.g. global population $P(t)$), the discrepancy distance $\rho(\mathbf{y}_{\text{sim}}, \mathbf{y}_{\text{obs}})$ is evaluated jointly across four orthogonal historical dimensions:
+   $$\rho_{\text{joint}} = \sqrt{ w_P \left(\frac{P - P_{\text{obs}}}{\sigma_P}\right)^2 + w_w \left(\frac{w - w_{\text{obs}}}{\sigma_w}\right)^2 + w_G \left(\frac{\text{Gini} - \text{Gini}_{\text{obs}}}{\sigma_G}\right)^2 + w_{\text{agr}} \left(\frac{A_{\text{agr}} - A_{\text{obs}}}{\sigma_A}\right)^2 }$$
+   Because distinct historical mechanisms impact these observables with opposing signs (e.g., Malthusian wage compression reduces $w$ while increasing mortality, whereas Boserupian intensification sustains $w$ while increasing labor drag), the joint objective breaks parameter collinearity.
+3. **Posterior Information Contraction ($\Delta H$)**: We quantify parameter identifiability by measuring the reduction in Shannon differential entropy between the uniform prior $\pi(\boldsymbol{\theta})$ and the accepted posterior $P(\boldsymbol{\theta} | \mathbf{y}_{\text{obs}})$:
+   $$\Delta H(\boldsymbol{\theta}) = H(\pi) - H(P) = -\int \pi(\boldsymbol{\theta}) \ln \pi(\boldsymbol{\theta}) d\boldsymbol{\theta} + \int P(\boldsymbol{\theta}) \ln P(\boldsymbol{\theta}) d\boldsymbol{\theta}$$
+   Parameters exhibiting $\Delta H \ge 2.50\text{ nats}$ are classified as structurally identified; parameters with $\Delta H < 0.50\text{ nats}$ are explicitly flagged as weakly identified and reported with broad 95% Credible Intervals.
+
 ---
 
 ## 5. Systematic Falsification of the 7 Historiographical Controversies
@@ -489,8 +521,8 @@ A rigorous scientific modeling platform must explicitly delineate where its pred
 └────────────────────────────────┴───────────────────────────────────────────────────────┘
 ```
 
-1. **Spatial Resolution & Meso-Scale Smoothing**: At H3 resolutions 2 to 4 (cell areas $\approx 1\,100\text{ to }11\,000\text{ km}^2$), Ether accurately captures inter-city trade networks, agricultural hinterlands, and regional climate gradients, but cannot resolve micro-scale urban street geography or individual architectural structures.
-2. **Exclusion of the Fiat Monetary & Financial Sphere**: By design, Ether is a **physicalist and biophysical engine**. It models real physical capital, refined metals, and exergy flows. It deliberately abstracts away fiat currency creation, fractional-reserve commercial banking, sovereign bond yield curves, and speculative financial derivatives markets.
+1. **Spatial Resolution & Meso-Scale Mean-Field Continuum Formulation**: At H3 resolutions 2 to 4 (cell areas $\approx 1\,100\text{ to }11\,000\text{ km}^2$), Ether operates strictly on a **Meso-Scale Mean-Field Continuum Approximation**. Individual human agents, discrete buildings, and localized micro-topographic features are aggregated into continuous spatial control volumes $\Omega_i$. Sociological phenomena (such as James C. Scott's flight into hills or Granovetter riot cascades) are formalized not as micro-cognitive agent decisions, but as collective hydrodynamic drift-diffusion fluxes driven by spatial potential gradients ($\nabla \Phi_{\text{tax}}$, $\nabla \text{Friction}$, $\nabla \text{PSI}$). While this statistical continuum approach enables planetary-scale integration across 100,000 years with strict $O(N)$ computational complexity, it inherently smooths intra-urban street grids and idiosyncratic individual choices.
+2. **The Biophysical Metabolic Perimeter vs. Symbolic Finance**: Ether is deliberately engineered as a **thermodynamic and biophysical substrate engine**. It tracks Joules, Carnot conversion efficiencies, metric tonnes of refined metals, and caloric intakes. It purposefully abstracts away the post-19th century symbolic financial superstructure (endogenous fractional-reserve fiat credit creation, sovereign bond yield curves, central bank interest rate rules, and speculative derivatives). We justify this boundary because financial credit cannot violate thermodynamic mass-energy conservation: fiat currency acts as a high-frequency institutional allocator of claims on physical work, but the ultimate upper bound on societal complexity remains governed by the physical exergy and EROEI throughputs modeled in Tier 1. Coupling a formal macroeconomic credit-debt cycle engine (e.g. Keen-Minsky dynamical system) to Ether's physical exergy tensor represents a recognized vector for post-industrial extensions.
 3. **Meso-Scale Macro-Behavioral Aggregation**: Population cohorts are represented as continuous demographic tensors within each cell rather than discrete individual psychological agents. While this enables planetary-scale integration across 100,000 years, it precludes modeling idiosyncratic micro-psychological cognitive biases.
 4. **Deep Future Extrapolation Limits**: While Ether successfully models historical physics and industrial metabolism, extreme prospective scenarios involving radical technological singularities (e.g., Dyson spheres, molecular nanotechnology, unconstrained AGI) remain inherently speculative and lie outside the empirical falsification boundary.
 
