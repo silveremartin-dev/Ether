@@ -855,10 +855,11 @@ public class ResourceDistributionPanel extends BorderPane {
         HBox.setHgrow(biomeSeedField, Priority.ALWAYS);
         seedField = biomeSeedField; // EcologyPreset compat
 
-        Button exportBiomeBtn = new Button(I18n.getOrDefault("resource.btn.export_biome", "📤 Export Procedural Biome Map (PNG)"));
+        Button exportBiomeBtn = new Button(I18n.getOrDefault("resource.btn.export_biome", "📤 Export Biome Map (PNG / JPEG)"));
         exportBiomeBtn.setMaxWidth(Double.MAX_VALUE);
         exportBiomeBtn.getStyleClass().add("button-secondary");
-        exportBiomeBtn.setOnAction(e -> exportMapsWithWorldFiles());
+        exportBiomeBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_biome", "Export the active biome map as high-resolution raster (PNG / JPEG).")));
+        exportBiomeBtn.setOnAction(e -> exportBiomeMap());
 
         autoDeriveEcologyBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_eco", "⚡ Auto-derive Ecology & Biomes from Physics"));
         autoDeriveEcologyBtn.getStyleClass().add("button-secondary");
@@ -912,6 +913,9 @@ public class ResourceDistributionPanel extends BorderPane {
             if (!isProc && customBiomeImage == null && biomeSourceCombo.getValue() != null && !"none".equals(biomeSourceCombo.getValue())) {
                 applyPresetMapSource(biomeSourceCombo.getValue());
             }
+            if (viewModeCombo != null) {
+                viewModeCombo.getSelectionModel().select(1);
+            }
             if (!isUpdatingFromPreset) {
                 if (ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
                 updatePreviewCanvas();
@@ -957,13 +961,19 @@ public class ResourceDistributionPanel extends BorderPane {
         hydroStatusLabel.getStyleClass().add("subcard-status-label");
         hydroStatusLabel.setWrapText(true);
 
+        Button exportHydroBtn = new Button(I18n.getOrDefault("resource.btn.export_hydro", "📤 Export Hydrography Map (PNG / JPEG)"));
+        exportHydroBtn.setMaxWidth(Double.MAX_VALUE);
+        exportHydroBtn.getStyleClass().add("button-secondary");
+        exportHydroBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_hydro", "Export the active hydrographic map as high-resolution raster (PNG / JPEG).")));
+        exportHydroBtn.setOnAction(e -> exportHydroMap());
+
         VBox hydroProcBox = new VBox(8,
                 createControlRow(new Label(I18n.getOrDefault("resource.seed.label", "Generation Seed:")), hydroSeedBox,
                         "Graine aléatoire pour la génération procédurale des cours d'eau"),
                 autoDeriveHydroBtn,
                 hydroStatusLabel,
                 createControlRow(freshwaterAquiferRowLabel, freshwaterAquiferSlider, "%.0f x10³ km³", I18n.getOrDefault("resource.desc.freshwater_aquifer", "Total volume of groundwater and continental aquifers")),
-                proceduralHydroBtn
+                exportHydroBtn
         );
         hydroProcBox.getStyleClass().add("subcard-procedural-box");
 
@@ -1000,6 +1010,9 @@ public class ResourceDistributionPanel extends BorderPane {
             hydroImportBox.setVisible(!isProc); hydroImportBox.setManaged(!isProc);
             if (!isProc && customHydroImage == null && hydroSourceCombo.getValue() != null && !"none".equals(hydroSourceCombo.getValue())) {
                 fetchOnlineHydroData();
+            }
+            if (viewModeCombo != null) {
+                viewModeCombo.getSelectionModel().select(2);
             }
             if (!isUpdatingFromPreset) {
                 if (ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
@@ -2678,16 +2691,15 @@ public class ResourceDistributionPanel extends BorderPane {
                 Color pxColor;
 
                 if (mode == 0) { // Biome Map
-                    if (radioImportBiome != null && radioImportBiome.isSelected() && customBiomeReader != null) {
-                        int bx = (int) Math.min((x_base / (double) w) * wBio, wBio - 1);
-                        int by = (int) Math.min((y_base / (double) h) * hBio, hBio - 1);
-                        Color rawC = customBiomeReader.getColor(bx, by);
-                        pxColor = mapLoader.getBiomeTargetColor(mapLoader.matchBiomeColor(rawC));
-                    } else if (customBiomeReader != null && wBio > 0 && hBio > 0) {
-                        int bx = (int) Math.min((x_base / (double) w) * wBio, wBio - 1);
-                        int by = (int) Math.min((y_base / (double) h) * hBio, hBio - 1);
-                        Color rawC = customBiomeReader.getColor(bx, by);
-                        pxColor = mapLoader.getBiomeTargetColor(mapLoader.matchBiomeColor(rawC));
+                    if (radioImportBiome != null && radioImportBiome.isSelected()) {
+                        if (customBiomeReader != null && wBio > 0 && hBio > 0) {
+                            int bx = (int) Math.min((x_base / (double) w) * wBio, wBio - 1);
+                            int by = (int) Math.min((y_base / (double) h) * hBio, hBio - 1);
+                            Color rawC = customBiomeReader.getColor(bx, by);
+                            pxColor = mapLoader.getBiomeTargetColor(mapLoader.matchBiomeColor(rawC));
+                        } else {
+                            pxColor = Color.BLACK;
+                        }
                     } else if (!isLandHere) {
                         pxColor = Color.rgb(0, 50, 200); // Ocean
                     } else {
@@ -2695,22 +2707,26 @@ public class ResourceDistributionPanel extends BorderPane {
                         pxColor = mapLoader.getBiomeTargetColor(point.biome());
                     }
                 } else if (mode == 1) { // Hydrography & River Networks Map
-                    if (customHydroReader != null) {
-                        int hx = (int) Math.min((x_base / (double) w) * wHydro, wHydro - 1);
-                        int hy = (int) Math.min((y_base / (double) h) * hHydro, hHydro - 1);
-                        Color c = customHydroReader.getColor(hx, hy);
-                        double waterIntensity = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
-                        if (waterIntensity > 0.6) {
-                            pxColor = Color.rgb(2, 132, 199);
-                        } else if (waterIntensity > 0.3) {
-                            pxColor = Color.rgb(56, 189, 248);
-                        } else if (!isLandHere) {
-                            pxColor = Color.rgb(15, 23, 42);
+                    if (radioImportHydro != null && radioImportHydro.isSelected()) {
+                        if (customHydroReader != null && wHydro > 0 && hHydro > 0) {
+                            int hx = (int) Math.min((x_base / (double) w) * wHydro, wHydro - 1);
+                            int hy = (int) Math.min((y_base / (double) h) * hHydro, hHydro - 1);
+                            Color c = customHydroReader.getColor(hx, hy);
+                            double waterIntensity = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
+                            if (waterIntensity > 0.6) {
+                                pxColor = Color.rgb(2, 132, 199);
+                            } else if (waterIntensity > 0.3) {
+                                pxColor = Color.rgb(56, 189, 248);
+                            } else if (!isLandHere) {
+                                pxColor = Color.rgb(15, 23, 42);
+                            } else {
+                                int r = (int) Math.min(255, 45 + declivityVal * 100);
+                                int g = (int) Math.min(255, 60 + declivityVal * 80);
+                                int b = (int) Math.min(255, 55 + declivityVal * 50);
+                                pxColor = Color.rgb(r, g, b);
+                            }
                         } else {
-                            int r = (int) Math.min(255, 45 + declivityVal * 100);
-                            int g = (int) Math.min(255, 60 + declivityVal * 80);
-                            int b = (int) Math.min(255, 55 + declivityVal * 50);
-                            pxColor = Color.rgb(r, g, b);
+                            pxColor = Color.BLACK;
                         }
                     } else if (!isLandHere) {
                         pxColor = Color.rgb(15, 23, 42);
@@ -2732,23 +2748,26 @@ public class ResourceDistributionPanel extends BorderPane {
                     }
                 } else if (mode >= 2 && mode <= 11) { // GEOLOGICAL & ENERGY TENSORS (Modes 2..11 for Layers 0..9)
                     int layerIdx = mode - 2;
-                    boolean useImport = (geologyImportRadios.get(layerIdx) != null && geologyImportRadios.get(layerIdx).isSelected())
-                            || (customGeologyLayerImages.containsKey(layerIdx) && customGeologyLayerImages.get(layerIdx) != null);
+                    boolean useImport = geologyImportRadios.containsKey(layerIdx) && geologyImportRadios.get(layerIdx).isSelected();
                     Image gImg = customGeologyLayerImages.get(layerIdx);
 
                     Color baseBackground = isLandHere ? Color.rgb(30, 41, 59) : Color.rgb(15, 23, 42);
 
-                    if (useImport && gImg != null && gImg.getPixelReader() != null) {
-                        int gx = (int) Math.clamp((x_base / (double) w) * gImg.getWidth(), 0, gImg.getWidth() - 1);
-                        int gy = (int) Math.clamp((y_base / (double) h) * gImg.getHeight(), 0, gImg.getHeight() - 1);
-                        Color c = gImg.getPixelReader().getColor(gx, gy);
-                        double alpha = c.getOpacity();
-                        double brightness = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
+                    if (useImport) {
+                        if (gImg != null && gImg.getPixelReader() != null && gImg.getWidth() > 0 && gImg.getHeight() > 0) {
+                            int gx = (int) Math.clamp((x_base / (double) w) * gImg.getWidth(), 0, gImg.getWidth() - 1);
+                            int gy = (int) Math.clamp((y_base / (double) h) * gImg.getHeight(), 0, gImg.getHeight() - 1);
+                            Color c = gImg.getPixelReader().getColor(gx, gy);
+                            double alpha = c.getOpacity();
+                            double brightness = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
 
-                        if (alpha > 0.05 && brightness > 0.02) {
-                            pxColor = blendColors(baseBackground, Color.color(c.getRed(), c.getGreen(), c.getBlue()), alpha);
+                            if (alpha > 0.05 && brightness > 0.02) {
+                                pxColor = blendColors(baseBackground, Color.color(c.getRed(), c.getGreen(), c.getBlue()), alpha);
+                            } else {
+                                pxColor = baseBackground;
+                            }
                         } else {
-                            pxColor = baseBackground;
+                            pxColor = Color.BLACK;
                         }
                     } else {
                         double val = sampleProceduralGeologyTensor(layerIdx, lon, lat, planet);
@@ -4073,31 +4092,23 @@ public class ResourceDistributionPanel extends BorderPane {
             randSeedBtn.setOnAction(e -> {
                 seedTF.setText(String.valueOf(new Random().nextLong(1000000)));
                 if (radioProc != null) radioProc.setSelected(true);
-                customGeologyLayerImages.remove(layerIdx);
                 if (viewModeCombo != null) {
-                    viewModeCombo.getSelectionModel().select(layerIdx + 3);
+                    viewModeCombo.getSelectionModel().select(getGeologyViewComboIndex(layerIdx));
                 }
                 if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
                 updatePreviewCanvas();
             });
 
-            Button btnGenTensor = new Button(I18n.getOrDefault("resource.btn.gen_single_tensor", "🪄 Generate"));
-            btnGenTensor.getStyleClass().add("button");
-            btnGenTensor.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
-            btnGenTensor.setOnAction(e -> {
-                if (radioProc != null) radioProc.setSelected(true);
-                customGeologyLayerImages.remove(layerIdx);
-                if (viewModeCombo != null) {
-                    viewModeCombo.getSelectionModel().select(layerIdx + 3);
-                }
-                if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
-                updatePreviewCanvas();
-            });
-            geologyGenBtns.put(layerIdx, btnGenTensor);
+            Button btnExportTensor = new Button(I18n.getOrDefault("resource.btn.export_single_tensor", "📤 Exporter"));
+            btnExportTensor.getStyleClass().add("button-secondary");
+            btnExportTensor.setStyle("-fx-font-size: 11px;");
+            btnExportTensor.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_tensor", "Exporter ce tenseur géologique sous forme d'image raster haute résolution (PNG / JPEG).")));
+            btnExportTensor.setOnAction(e -> exportGeologyTensor(layerIdx));
+            geologyGenBtns.put(layerIdx, btnExportTensor);
 
             Label seedLbl = new Label(I18n.getOrDefault("resource.label.tensor_seed", "Generation Seed:"));
             geologySeedLabels.put(layerIdx, seedLbl);
-            HBox seedBox = new HBox(6, seedLbl, seedTF, randSeedBtn, btnGenTensor);
+            HBox seedBox = new HBox(6, seedLbl, seedTF, randSeedBtn, btnExportTensor);
             seedBox.setAlignment(Pos.CENTER_LEFT);
 
             VBox slidersContainer = new VBox(4);
@@ -4196,6 +4207,9 @@ public class ResourceDistributionPanel extends BorderPane {
                 proceduralBox.setManaged(isProc);
                 importBox.setVisible(!isProc);
                 importBox.setManaged(!isProc);
+                if (viewModeCombo != null) {
+                    viewModeCombo.getSelectionModel().select(getGeologyViewComboIndex(layerIdx));
+                }
                 if (!isUpdatingFromPreset) {
                     if (ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
                     updatePreviewCanvas();
@@ -4224,6 +4238,113 @@ public class ResourceDistributionPanel extends BorderPane {
             subBlock.getChildren().addAll(subTitle, radioProc, proceduralBox, radioImport, importBox);
             geologyLayersDynamicContainer.getChildren().add(subBlock);
         }
+    }
+
+    public Image generateProceduralBiomeRasterImage(int width, int height) {
+        PlanetPreset planet = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
+        if (planet == null) planet = PlanetPreset.EARTH_LIKE;
+        WritableImage img = new WritableImage(width, height);
+        PixelWriter pw = img.getPixelWriter();
+        double wLvl = planet.waterLevel();
+        for (int y = 0; y < height; y++) {
+            double lat = 90.0 - ((double) y / height) * 180.0;
+            for (int x = 0; x < width; x++) {
+                double lon = ((double) x / width) * 360.0 - 180.0;
+                var pt = generator.getPlanetPoint(lat, lon, planet);
+                Color c;
+                if (wLvl > -0.4 && pt.elevation() < wLvl) {
+                    c = Color.rgb(0, 50, 200);
+                } else {
+                    c = mapLoader.getBiomeTargetColor(pt.biome());
+                }
+                pw.setColor(x, y, c);
+            }
+        }
+        return img;
+    }
+
+    public void exportBiomeMap() {
+        Image img = (radioImportBiome != null && radioImportBiome.isSelected() && customBiomeImage != null)
+                ? customBiomeImage : generateProceduralBiomeRasterImage(1024, 512);
+        WindowUtils.exportImageWithChooser(getScene() != null ? getScene().getWindow() : null,
+                img, "biomes_map.png", I18n.getOrDefault("resource.dialog.export_biome_title", "Export Biome Map (PNG / JPEG)"));
+    }
+
+    public Image generateProceduralHydroRasterImage(int width, int height) {
+        PlanetPreset planet = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
+        if (planet == null) planet = PlanetPreset.EARTH_LIKE;
+        WritableImage img = new WritableImage(width, height);
+        PixelWriter pw = img.getPixelWriter();
+        double wLvl = planet.waterLevel();
+        for (int y = 0; y < height; y++) {
+            double lat = 90.0 - ((double) y / height) * 180.0;
+            for (int x = 0; x < width; x++) {
+                double lon = ((double) x / width) * 360.0 - 180.0;
+                var pt = generator.getPlanetPoint(lat, lon, planet);
+                Color c;
+                if (wLvl > -0.4 && pt.elevation() < wLvl) {
+                    c = Color.rgb(15, 23, 42);
+                } else {
+                    double riverFlow = pt.riverFlow();
+                    if (riverFlow > 0.42) c = Color.rgb(2, 132, 199);
+                    else if (riverFlow > 0.28) c = Color.rgb(56, 189, 248);
+                    else if (riverFlow > 0.16) c = Color.rgb(20, 184, 166);
+                    else {
+                        int r = (int) Math.min(255, 45 + pt.declivity() * 100);
+                        int g = (int) Math.min(255, 60 + pt.declivity() * 80);
+                        int b = (int) Math.min(255, 55 + pt.declivity() * 50);
+                        c = Color.rgb(r, g, b);
+                    }
+                }
+                pw.setColor(x, y, c);
+            }
+        }
+        return img;
+    }
+
+    public void exportHydroMap() {
+        Image img = (radioImportHydro != null && radioImportHydro.isSelected() && customHydroImage != null)
+                ? customHydroImage : generateProceduralHydroRasterImage(1024, 512);
+        WindowUtils.exportImageWithChooser(getScene() != null ? getScene().getWindow() : null,
+                img, "hydrography_map.png", I18n.getOrDefault("resource.dialog.export_hydro_title", "Export Hydrography Map (PNG / JPEG)"));
+    }
+
+    public Image generateProceduralGeologyRasterImage(int layerIdx, int width, int height) {
+        PlanetPreset planet = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
+        if (planet == null) planet = PlanetPreset.EARTH_LIKE;
+        WritableImage img = new WritableImage(width, height);
+        PixelWriter pw = img.getPixelWriter();
+        double wLvl = planet.waterLevel();
+        for (int y = 0; y < height; y++) {
+            double lat = 90.0 - ((double) y / height) * 180.0;
+            for (int x = 0; x < width; x++) {
+                double lon = ((double) x / width) * 360.0 - 180.0;
+                var pt = generator.getPlanetPoint(lat, lon, planet);
+                boolean isLand = wLvl <= -0.4 || pt.elevation() >= wLvl;
+                Color baseBackground = isLand ? Color.rgb(30, 41, 59) : Color.rgb(15, 23, 42);
+                double val = sampleProceduralGeologyTensor(layerIdx, lon, lat, planet);
+                val = Math.clamp(val, 0.0, 1.0);
+                Color pxColor;
+                if (val > 0.02) {
+                    Color resourceColor = getGeologyResourceColor(layerIdx, val);
+                    pxColor = blendColors(baseBackground, resourceColor, Math.min(1.0, val * 1.3));
+                } else {
+                    pxColor = baseBackground;
+                }
+                pw.setColor(x, y, pxColor);
+            }
+        }
+        return img;
+    }
+
+    public void exportGeologyTensor(int layerIdx) {
+        boolean isImport = geologyImportRadios.containsKey(layerIdx) && geologyImportRadios.get(layerIdx).isSelected();
+        Image img = (isImport && customGeologyLayerImages.containsKey(layerIdx) && customGeologyLayerImages.get(layerIdx) != null)
+                ? customGeologyLayerImages.get(layerIdx)
+                : generateProceduralGeologyRasterImage(layerIdx, 1024, 512);
+        String defaultName = "geology_tensor_" + (layerIdx + 1) + ".png";
+        WindowUtils.exportImageWithChooser(getScene() != null ? getScene().getWindow() : null,
+                img, defaultName, I18n.getOrDefault("resource.dialog.export_geology_tensor_title", "Export Geology Tensor Map (PNG / JPEG)"));
     }
 
     private void loadCustomGeologyLayer(int layerIdx, Consumer<Image> onLoaded) {

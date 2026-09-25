@@ -33,6 +33,7 @@ import java.util.List;
 /**
  * Interactive Dialog & Heatmap Inspector for Cliodynamic Cultural Affinity & Distance Matrices.
  * Displays discrete 24-bit RGB Entity traits, technocomplexes, and pairwise cultural affinities (N x N).
+ * Supports live dynamic theming (Dark, Light, Presentation) and full localization across 5 languages.
  *
  * @author Silvere Martin-Michiellot
  */
@@ -82,7 +83,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
     private final ComboBox<Long> epochSelector = new ComboBox<>();
     private final Label titleLabel = new Label();
     private final Label subtitleLabel = new Label();
-    private final VBox entitiesBox = new VBox(6);
+    private final VBox entitiesBox = new VBox(8);
     private final GridPane matrixGrid = new GridPane();
     private final ScrollPane matrixScroll = new ScrollPane(matrixGrid);
     private final Button btnExportCsv = new Button();
@@ -102,15 +103,18 @@ public class CulturalAffinityMatrixDialog extends Stage {
 
         // Header Section
         titleLabel.setText(I18n.getOrDefault("cultural.matrix.header_title", "🏛️ Cliodynamic Cultural & Trait Affinity Matrix (N × N)"));
-        titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        titleLabel.getStyleClass().add("panel-header");
+        titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         subtitleLabel.setText(I18n.getOrDefault("cultural.matrix.header_desc", "Inspect pairwise cultural compatibility, linguistic drift, kinship structures, and technological contagion rates."));
-        subtitleLabel.setStyle("-fx-font-size: 12px; -fx-opacity: 0.85;");
+        subtitleLabel.getStyleClass().add("card-description-muted");
+        subtitleLabel.setStyle("-fx-font-size: 12px;");
 
         // Epoch Selector Row
         HBox epochRow = new HBox(10);
         epochRow.setAlignment(Pos.CENTER_LEFT);
         Label lblEpoch = new Label(I18n.getOrDefault("cultural.matrix.select_epoch", "Historical Epoch:"));
+        lblEpoch.getStyleClass().add("control-label");
         lblEpoch.setStyle("-fx-font-weight: bold;");
 
         epochSelector.getItems().addAll(-100000L, -50000L, -25000L, -20000L, -10900L, -10000L, -8000L, -6000L, -3000L, -1900L, -1000L, 0L, 1000L, 2026L);
@@ -127,6 +131,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
             }
         });
         epochSelector.setButtonCell(epochSelector.getCellFactory().call(null));
+        epochSelector.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.epoch", "Select the historical epoch to inspect reconstructed ethnolinguistic entities and affinity structures.")));
         epochSelector.setOnAction(e -> {
             Long val = epochSelector.getValue();
             if (val != null) {
@@ -141,19 +146,21 @@ public class CulturalAffinityMatrixDialog extends Stage {
         VBox.setVgrow(tabPane, Priority.ALWAYS);
 
         // Tab 1: Matrix Heatmap
-        matrixGrid.setHgap(4);
-        matrixGrid.setVgap(4);
+        matrixGrid.setHgap(6);
+        matrixGrid.setVgap(6);
         matrixGrid.setPadding(new Insets(10));
         matrixScroll.setFitToWidth(true);
         matrixScroll.setStyle("-fx-background-color: transparent;");
 
         Tab tabMatrix = new Tab(I18n.getOrDefault("cultural.matrix.tab_heatmap", "📊 Affinity Heatmap (N × N)"), matrixScroll);
+        tabMatrix.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.tab_heatmap", "Pairwise affinity percentage matrix calculated via exponential Euclidean distance in multidimensional trait space.")));
 
         // Tab 2: Entities List
         ScrollPane entitiesScroll = new ScrollPane(entitiesBox);
         entitiesScroll.setFitToWidth(true);
         entitiesBox.setPadding(new Insets(10));
         Tab tabEntities = new Tab(I18n.getOrDefault("cultural.matrix.tab_entities", "📜 Cultural Registry & Technocomplexes"), entitiesScroll);
+        tabEntities.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.tab_entities", "Discrete ethnolinguistic entities with 24-bit color coding, kinship regimes, and lithic technocomplexes.")));
 
         tabPane.getTabs().addAll(tabMatrix, tabEntities);
 
@@ -163,18 +170,22 @@ public class CulturalAffinityMatrixDialog extends Stage {
 
         btnExportCsv.setText(I18n.getOrDefault("cultural.matrix.btn_export", "💾 Export Matrix (CSV)"));
         btnExportCsv.getStyleClass().add("button-secondary");
+        btnExportCsv.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.export", "Export the complete N×N cultural affinity matrix as a standard CSV file.")));
         btnExportCsv.setOnAction(e -> exportMatrixCsv());
 
         btnClose.setText(I18n.getOrDefault("common.btn.close", "Close"));
         btnClose.getStyleClass().add("button-secondary");
+        btnClose.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.close", "Close the cultural affinity inspector.")));
         btnClose.setOnAction(e -> close());
 
         footer.getChildren().addAll(btnExportCsv, btnClose);
 
         root.getChildren().addAll(titleLabel, subtitleLabel, epochRow, tabPane, footer);
 
-        Scene scene = new Scene(root, 820, 620);
+        Scene scene = new Scene(root, 840, 640);
         setScene(scene);
+        Theme.applyCurrentTheme(scene);
+        Theme.themeProperty().addListener((obs, oldV, newV) -> Theme.applyCurrentTheme(scene));
         WindowUtils.applyWindowIcon(this);
 
         loadEpochRegistry(epochSelector.getValue());
@@ -195,12 +206,12 @@ public class CulturalAffinityMatrixDialog extends Stage {
     }
 
     private static String formatEpochName(long yr) {
-        if (yr == -100000L) return "–100 000 BP (Out-of-Africa / Eemian)";
-        if (yr == -50000L)  return "–50 000 BP (Sahul Maritime Settlement)";
-        if (yr == -25000L)  return "–25 000 BP (Beringian Standstill & Gravettian)";
-        if (yr == -20000L)  return "–20 000 BP (Last Glacial Maximum & Solutrean)";
-        if (yr == -1900L)   return "–1 900 BCE (Middle Bronze Age / Babylon & Shang)";
-        if (yr == -1000L)   return "–1 000 BCE (Early Iron Age / Phoenicians & Zhou)";
+        if (yr == -100000L) return I18n.getOrDefault("cultural.epoch.eemian", "–100 000 BP (Out-of-Africa / Eemian)");
+        if (yr == -50000L)  return I18n.getOrDefault("cultural.epoch.sahul", "–50 000 BP (Sahul Maritime Settlement)");
+        if (yr == -25000L)  return I18n.getOrDefault("cultural.epoch.beringia", "–25 000 BP (Beringian Standstill & Gravettian)");
+        if (yr == -20000L)  return I18n.getOrDefault("cultural.epoch.lgm", "–20 000 BP (Last Glacial Maximum & Solutrean)");
+        if (yr == -1900L)   return I18n.getOrDefault("cultural.epoch.bronze", "–1 900 BCE (Middle Bronze Age / Babylon & Shang)");
+        if (yr == -1000L)   return I18n.getOrDefault("cultural.epoch.iron", "–1 000 BCE (Early Iron Age / Phoenicians & Zhou)");
         return (yr < 0 ? Math.abs(yr) + " BCE" : yr + " CE");
     }
 
@@ -259,6 +270,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
         entitiesBox.getChildren().clear();
         if (activeEntities.isEmpty()) {
             Label empty = new Label(I18n.getOrDefault("cultural.matrix.no_data", "No cultural entities found for this epoch."));
+            empty.getStyleClass().add("card-description-muted");
             entitiesBox.getChildren().add(empty);
             return;
         }
@@ -279,20 +291,25 @@ public class CulturalAffinityMatrixDialog extends Stage {
             }
             colorBadge.setArcWidth(4);
             colorBadge.setArcHeight(4);
+            colorBadge.setStroke(Color.rgb(100, 116, 139, 0.6));
 
             Label nameLbl = new Label(entity.getLocalizedName());
-            nameLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #f8fafc;");
+            nameLbl.getStyleClass().add("card-title");
+            nameLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
 
             Label idLbl = new Label("[" + entity.id() + "]");
-            idLbl.setStyle("-fx-opacity: 0.6; -fx-font-size: 11px;");
+            idLbl.getStyleClass().add("card-description-muted");
+            idLbl.setStyle("-fx-font-size: 11px;");
 
             header.getChildren().addAll(colorBadge, nameLbl, idLbl);
 
             Label kinshipLbl = new Label("• " + I18n.getOrDefault("cultural.entity.kinship", "Kinship & Social Structure: ") + entity.kinshipType());
-            kinshipLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #cbd5e1;");
+            kinshipLbl.getStyleClass().add("control-label");
+            kinshipLbl.setStyle("-fx-font-size: 11px;");
 
             Label lithicLbl = new Label("• " + I18n.getOrDefault("cultural.entity.techno", "Lithic / Metallurgy Technocomplex: ") + entity.lithicTechnocomplex());
-            lithicLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+            lithicLbl.getStyleClass().add("card-description-muted");
+            lithicLbl.setStyle("-fx-font-size: 11px;");
 
             StringBuilder traitsSb = new StringBuilder("• Traits: [");
             for (int i = 0; i < entity.traits().length; i++) {
@@ -301,7 +318,8 @@ public class CulturalAffinityMatrixDialog extends Stage {
             }
             traitsSb.append("]");
             Label traitsLbl = new Label(traitsSb.toString());
-            traitsLbl.setStyle("-fx-font-size: 10px; -fx-font-family: monospace; -fx-opacity: 0.7;");
+            traitsLbl.getStyleClass().add("card-description-muted");
+            traitsLbl.setStyle("-fx-font-size: 10px; -fx-font-family: monospace;");
 
             card.getChildren().addAll(header, kinshipLbl, lithicLbl, traitsLbl);
             entitiesBox.getChildren().add(card);
@@ -315,7 +333,8 @@ public class CulturalAffinityMatrixDialog extends Stage {
 
         // Top-Left empty corner
         Label corner = new Label(I18n.getOrDefault("cultural.matrix.entities_label", "Entities \\ Entities"));
-        corner.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        corner.getStyleClass().add("control-label");
+        corner.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
         matrixGrid.add(corner, 0, 0);
 
         // Column headers
@@ -328,8 +347,10 @@ public class CulturalAffinityMatrixDialog extends Stage {
             Rectangle badge = new Rectangle(12, 12);
             try { badge.setFill(Color.web(colEnt.colorHex())); } catch (Exception ignored) { badge.setFill(Color.WHITE); }
             badge.setArcWidth(3); badge.setArcHeight(3);
+            badge.setStroke(Color.rgb(100, 116, 139, 0.6));
 
             Label lbl = new Label(shortenName(colEnt.getLocalizedName()));
+            lbl.getStyleClass().add("control-label");
             lbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
             lbl.setTooltip(new Tooltip(colEnt.getLocalizedName()));
 
@@ -347,8 +368,10 @@ public class CulturalAffinityMatrixDialog extends Stage {
             Rectangle badge = new Rectangle(12, 12);
             try { badge.setFill(Color.web(rowEnt.colorHex())); } catch (Exception ignored) { badge.setFill(Color.WHITE); }
             badge.setArcWidth(3); badge.setArcHeight(3);
+            badge.setStroke(Color.rgb(100, 116, 139, 0.6));
 
             Label lbl = new Label(rowEnt.getLocalizedName());
+            lbl.getStyleClass().add("control-label");
             lbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
             lbl.setTooltip(new Tooltip(rowEnt.getLocalizedName()));
 
@@ -364,13 +387,12 @@ public class CulturalAffinityMatrixDialog extends Stage {
                 StackPane cell = new StackPane();
                 cell.setPrefSize(90, 36);
 
-                // Color interpolation: 0% -> deep purple (0x1E1B4B), 50% -> teal (0x0F766E), 100% -> gold/emerald (0x059669)
                 Color cellColor = computeHeatmapColor(affinity);
                 cell.setStyle(String.format("-fx-background-color: #%02X%02X%02X; -fx-background-radius: 4; -fx-border-color: #334155; -fx-border-radius: 4;",
                         (int)(cellColor.getRed() * 255), (int)(cellColor.getGreen() * 255), (int)(cellColor.getBlue() * 255)));
 
                 Label valLbl = new Label(String.format("%.1f%%", affinity * 100.0));
-                valLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: " + (affinity > 0.4 ? "#ffffff" : "#cbd5e1") + ";");
+                valLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: " + (affinity > 0.4 ? "#ffffff" : "#f1f5f9") + ";");
                 cell.getChildren().add(valLbl);
 
                 String tooltipText = String.format(

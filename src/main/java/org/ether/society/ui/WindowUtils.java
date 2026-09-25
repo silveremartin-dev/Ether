@@ -199,5 +199,52 @@ public class WindowUtils {
             } catch (Exception ignored) {}
         });
     }
+
+    /**
+     * Prompts the user to save a JavaFX Image to a raster file (PNG or JPEG) and writes it out.
+     *
+     * @param parentWindow the parent window/stage
+     * @param image the image to export
+     * @param defaultFileName the suggested filename (e.g. "density_map.png")
+     * @param dialogTitle the dialog title
+     */
+    public static void exportImageWithChooser(javafx.stage.Window parentWindow, Image image, String defaultFileName, String dialogTitle) {
+        if (image == null) return;
+        javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
+        chooser.setTitle(dialogTitle);
+        chooser.getExtensionFilters().addAll(
+                new javafx.stage.FileChooser.ExtensionFilter("Portable Network Graphics (*.png)", "*.png"),
+                new javafx.stage.FileChooser.ExtensionFilter("JPEG Image (*.jpg, *.jpeg)", "*.jpg", "*.jpeg")
+        );
+        chooser.setInitialFileName(defaultFileName);
+        java.io.File file = chooser.showSaveDialog(parentWindow);
+        if (file != null) {
+            try {
+                int w = (int) image.getWidth();
+                int h = (int) image.getHeight();
+                java.awt.image.BufferedImage bImg = new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+                javafx.scene.image.PixelReader pr = image.getPixelReader();
+                for (int y = 0; y < h; y++) {
+                    for (int x = 0; x < w; x++) {
+                        bImg.setRGB(x, y, pr.getArgb(x, y));
+                    }
+                }
+                String name = file.getName().toLowerCase();
+                String format = (name.endsWith(".jpg") || name.endsWith(".jpeg")) ? "jpg" : "png";
+                if ("jpg".equals(format)) {
+                    java.awt.image.BufferedImage rgbImg = new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_INT_RGB);
+                    java.awt.Graphics2D g2 = rgbImg.createGraphics();
+                    g2.drawImage(bImg, 0, 0, java.awt.Color.BLACK, null);
+                    g2.dispose();
+                    javax.imageio.ImageIO.write(rgbImg, "jpg", file);
+                } else {
+                    javax.imageio.ImageIO.write(bImg, "png", file);
+                }
+                logger.info("Successfully exported image map to {}", file.getAbsolutePath());
+            } catch (Exception ex) {
+                logger.error("Failed to export image map", ex);
+            }
+        }
+    }
 }
 

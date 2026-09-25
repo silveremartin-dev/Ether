@@ -39,8 +39,8 @@ public class ExtractLocalSourceRastersTest {
 
             BufferedImage img = Hyde34GridReader.loadForYear(year);
             Assertions.assertNotNull(img, "Empirical raster image must be extracted and loaded for year " + year);
-            Assertions.assertEquals(1024, img.getWidth());
-            Assertions.assertEquals(512, img.getHeight());
+            Assertions.assertEquals(Hyde34GridReader.ETHER_WIDTH, img.getWidth());
+            Assertions.assertEquals(Hyde34GridReader.ETHER_HEIGHT, img.getHeight());
 
             File outDir = new File("target/test-output/hyde-rasters");
             outDir.mkdirs();

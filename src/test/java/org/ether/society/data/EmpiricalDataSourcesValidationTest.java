@@ -41,8 +41,8 @@ public class EmpiricalDataSourcesValidationTest {
     public void testHyde34Ingestion() throws Exception {
         BufferedImage img1000BC = Hyde34GridReader.loadForYear(-1000);
         Assertions.assertNotNull(img1000BC, "HYDE 3.4 -1000 BC raster image must be loaded");
-        Assertions.assertEquals(1024, img1000BC.getWidth());
-        Assertions.assertEquals(512, img1000BC.getHeight());
+        Assertions.assertEquals(Hyde34GridReader.ETHER_WIDTH, img1000BC.getWidth());
+        Assertions.assertEquals(Hyde34GridReader.ETHER_HEIGHT, img1000BC.getHeight());
 
         File outFile1000BC = new File(ARTIFACT_DIR, "val_hyde_1000bc.png");
         ImageIO.write(img1000BC, "PNG", outFile1000BC);

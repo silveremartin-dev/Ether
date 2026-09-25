@@ -456,14 +456,22 @@ public class StatsPanel extends VBox {
         lineChart.setPrefHeight(160);
         lineChart.getData().add(chartSeries);
 
-        // Clamped Interactive Mouse Zoom (CTRL + Scroll Wheel) & Pan (CTRL + Drag)
+        // Navigation guidance banner
+        Label chartNavHelpLabel = new Label(I18n.getOrDefault("stats.chart.nav_help", "💡 Navigation : Molette pour zoomer sur le curseur | Glisser (clic) pour défiler temporellement | Double-clic pour réinitialiser"));
+        chartNavHelpLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #38bdf8; -fx-padding: 3 6; -fx-background-color: rgba(56, 189, 248, 0.08); -fx-background-radius: 4;");
+        chartNavHelpLabel.setWrapText(true);
+
+        // Clamped Interactive Mouse Zoom (centered at mouse cursor) & Pan (Direct Drag)
         final double[] dragAnchor = new double[2];
+        lineChart.setOnMouseEntered(e -> lineChart.setCursor(javafx.scene.Cursor.HAND));
+        lineChart.setOnMouseExited(e -> lineChart.setCursor(javafx.scene.Cursor.DEFAULT));
         lineChart.setOnMousePressed(e -> {
             dragAnchor[0] = e.getX();
             dragAnchor[1] = e.getY();
+            lineChart.setCursor(javafx.scene.Cursor.CLOSED_HAND);
         });
+        lineChart.setOnMouseReleased(e -> lineChart.setCursor(javafx.scene.Cursor.HAND));
         lineChart.setOnMouseDragged(e -> {
-            if (!e.isControlDown()) return;
             if (xAxis.isAutoRanging()) xAxis.setAutoRanging(false);
             double minYear = getMinAllowedYear();
             double maxYear = getMaxAllowedYear();
@@ -486,17 +494,43 @@ public class StatsPanel extends VBox {
             xAxis.setUpperBound(newUpper);
         });
         lineChart.setOnScroll(e -> {
-            if (!e.isControlDown()) return;
             e.consume();
             if (xAxis.isAutoRanging()) xAxis.setAutoRanging(false);
             double minYear = getMinAllowedYear();
             double maxYear = getMaxAllowedYear();
             double zoomFactor = e.getDeltaY() > 0 ? 0.85 : 1.15;
-            double center = (xAxis.getLowerBound() + xAxis.getUpperBound()) / 2.0;
-            double halfSpan = Math.max(0.5, ((xAxis.getUpperBound() - xAxis.getLowerBound()) / 2.0) * zoomFactor);
-            double newLower = Math.max(minYear, center - halfSpan);
-            double newUpper = Math.min(maxYear, center + halfSpan);
+
+            double curLower = xAxis.getLowerBound();
+            double curUpper = xAxis.getUpperBound();
+            double curSpan = Math.max(0.1, curUpper - curLower);
+
+            // Compute value under cursor
+            javafx.geometry.Point2D localPoint = xAxis.sceneToLocal(e.getSceneX(), e.getSceneY());
+            double mouseVal;
+            if (localPoint != null && xAxis.getWidth() > 0) {
+                double fractionOnAxis = Math.clamp(localPoint.getX() / xAxis.getWidth(), 0.0, 1.0);
+                mouseVal = curLower + fractionOnAxis * curSpan;
+            } else {
+                mouseVal = (curLower + curUpper) / 2.0;
+            }
+
+            double newSpan = Math.max(0.5, curSpan * zoomFactor);
+            double fraction = Math.clamp((mouseVal - curLower) / curSpan, 0.0, 1.0);
+
+            double newLower = mouseVal - fraction * newSpan;
+            double newUpper = mouseVal + (1.0 - fraction) * newSpan;
+
+            if (newLower < minYear) {
+                newUpper += (minYear - newLower);
+                newLower = minYear;
+            }
+            if (newUpper > maxYear) {
+                newLower -= (newUpper - maxYear);
+                newUpper = maxYear;
+            }
+            if (newLower < minYear) newLower = minYear;
             if (newUpper <= newLower) newUpper = newLower + 1.0;
+
             xAxis.setLowerBound(newLower);
             xAxis.setUpperBound(newUpper);
         });
@@ -511,7 +545,7 @@ public class StatsPanel extends VBox {
             }
         });
 
-        VBox chartBox = new VBox(6, chartHeaderLabel, comboLabel, chartMetricCombo, windowBox, lineChart);
+        VBox chartBox = new VBox(6, chartHeaderLabel, comboLabel, chartMetricCombo, windowBox, chartNavHelpLabel, lineChart);
         chartBox.getStyleClass().add("card-section");
 
         // --- SECTION 2: DEMOGRAPHICS (AGE PYRAMID) ---

@@ -1153,20 +1153,13 @@ public class ScenarioSetupPanel extends BorderPane {
             customPhysicalSubPanel.setManaged(isCustom);
         });
 
-        exportDensityMapBtn = new Button(I18n.getOrDefault("scenario.btn.export_map_png", "📤 Export Map (PNG)"));
+        exportDensityMapBtn = new Button(I18n.getOrDefault("scenario.btn.export_map_png", "📤 Export Raster (PNG / JPEG)"));
         exportDensityMapBtn.getStyleClass().add("button-secondary");
         exportDensityMapBtn.setMaxWidth(Double.MAX_VALUE);
-        exportDensityMapBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_map_png", "Export density map as a PNG image file.")));
+        exportDensityMapBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_map_png", "Export demographic density map as a high-resolution PNG or JPEG raster file.")));
         exportDensityMapBtn.setOnAction(e -> exportDensityMap());
 
-        Button btnGenerateProceduralTensors = new Button(I18n.getOrDefault("scenario.btn.redistribute_density", "🪄 Redistribute Procedural Density (T₀)"));
-        btnGenerateProceduralTensors.getStyleClass().add("button");
-        btnGenerateProceduralTensors.setMaxWidth(Double.MAX_VALUE);
-        btnGenerateProceduralTensors.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.redistribute_density", "Recalculate and redistribute T₀ demographic density map based on selected pattern and ecology.")));
-        btnGenerateProceduralTensors.setOnAction(e -> generateProceduralPopulationDensity());
-
-        HBox demoBtnBar = new HBox(8, btnGenerateProceduralTensors, exportDensityMapBtn);
-        HBox.setHgrow(btnGenerateProceduralTensors, Priority.ALWAYS);
+        HBox demoBtnBar = new HBox(8, exportDensityMapBtn);
         HBox.setHgrow(exportDensityMapBtn, Priority.ALWAYS);
 
         VBox proceduralDemoPanel = new VBox(8, popGrid, customPhysicalSubPanel, demoBtnBar);
@@ -1243,9 +1236,6 @@ public class ScenarioSetupPanel extends BorderPane {
             proceduralDemoPanel.setManaged(isProc);
             importDemoPanel.setVisible(!isProc);
             importDemoPanel.setManaged(!isProc);
-            if (isProc) {
-                customDensityImage = null;
-            }
             if (previewModeCombo != null && previewModeCombo.getSelectionModel().getSelectedIndex() != 0) {
                 previewModeCombo.getSelectionModel().select(0);
             }
@@ -2155,9 +2145,7 @@ public class ScenarioSetupPanel extends BorderPane {
             // Auto-select the demographic reference source combo based on the scenario epoch/planet
             if (demoSourceCombo != null) {
                 String autoSrc = pickDemoSourceForEpoch(s.getStartDateYear(), this.activePlanetPreset);
-                if (autoSrc != null && demoSourceCombo.getItems().contains(autoSrc)) {
-                    demoSourceCombo.setValue(autoSrc);
-                }
+                selectBestSource(demoSourceCombo, autoSrc, "Terre");
             }
 
 
@@ -3898,17 +3886,57 @@ public class ScenarioSetupPanel extends BorderPane {
     private String pickDemoSourceForEpoch(long startYear, org.ether.society.procedural.PlanetPreset planet) {
         String pName = planet != null ? planet.name().toLowerCase() : "";
         if (pName.contains("mars") || pName.contains("ares"))
-            return "🔴 Mars — Modèle de Colonisation Spatiale & Dômes d'Habitation";
+            return "🔴 Mars — Modèle de Colonisation Spatiale & Dômes d'Habitation [Planétaire (Mars), +2050 AD à Futur]";
         if (pName.contains("vénus") || pName.contains("venus") || pName.contains("hesperos"))
-            return "🟡 Vénus — Stations Aérostatiques Cloud Cities (Altitude 50 km)";
+            return "🟡 Vénus — Stations Aérostatiques Cloud Cities (Altitude 50 km) [Planétaire (Vénus), +2100 AD à Futur]";
         if (pName.contains("lune") || pName.contains("moon") || pName.contains("selene"))
-            return "⚪ Lune — Bases Sélénites Sous-Terraines & Cratères Shackleton";
+            return "⚪ Lune — Bases Sélénites Sous-Terraines & Cratères Shackleton [Planétaire (Lune), +2040 AD à Futur]";
         if (pName.contains("mercure") || pName.contains("mercury") || pName.contains("hermes"))
-            return "⚪ Mercure — Dômes Polaires & Habitats d'Ombre Permanente";
+            return "⚪ Mercure — Dômes Polaires & Habitats d'Ombre Permanente [Planétaire (Mercure), +2150 AD à Futur]";
         // Earth epochs
         if (startYear < -10000)
-            return "🌍 Terre — Paléo-Démographie & Expansion Sapiens (-100000 BC)";
-        return "🌍 Terre — HYDE 3.4 / Grille Historique Anthropocène (-10000 BC - 2023 AD)";
+            return "🌍 Terre — Paléo-Démographie & Expansion Sapiens [Afrique & Eurasie, -100 000 BC à -10 000 BC]";
+        if (startYear >= -3000 && startYear < 1900)
+            return "🌍 Terre — CShapes & Centennia Reconstitutions Démographiques [Empires & États, -3000 BC à +2000 AD]";
+        return "🌍 Terre — HYDE 3.4 / Grille Historique Anthropocène [Global, -10 000 BC à +2023 AD]";
+    }
+
+    /**
+     * Resiliently selects the best matching item in a source ComboBox.
+     */
+    private void selectBestSource(ComboBox<String> combo, String target, String fallbackKeyword) {
+        if (combo == null || combo.getItems() == null || combo.getItems().isEmpty()) return;
+        if (target != null && combo.getItems().contains(target)) {
+            combo.setValue(target);
+            return;
+        }
+        if (target != null && !target.isBlank()) {
+            String cleanTarget = target.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
+            for (String it : combo.getItems()) {
+                if (it != null && !it.isEmpty()) {
+                    String cleanIt = it.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
+                    if (cleanIt.contains(cleanTarget) || cleanTarget.contains(cleanIt)) {
+                        combo.setValue(it);
+                        return;
+                    }
+                }
+            }
+        }
+        if (fallbackKeyword != null && !fallbackKeyword.isBlank()) {
+            String kw = fallbackKeyword.toLowerCase();
+            for (String it : combo.getItems()) {
+                if (it != null && it.toLowerCase().contains(kw)) {
+                    combo.setValue(it);
+                    return;
+                }
+            }
+        }
+        for (String it : combo.getItems()) {
+            if (it != null && !it.isEmpty()) {
+                combo.setValue(it);
+                return;
+            }
+        }
     }
 
     /**
@@ -3919,87 +3947,86 @@ public class ScenarioSetupPanel extends BorderPane {
         String pName = planet != null ? planet.name().toLowerCase() : "";
         if (pName.contains("mars") || pName.contains("ares")) {
             return switch (tensorIdx) {
-                case 0 -> "🔴 Mars — Cartographie Linguistique Coloniale Martienne";
-                case 1 -> "🔴 Mars — Structures de Parenté & Cohortes Pionnières";
-                case 2 -> "🔴 Mars — Mythologie Martienne & Cultes de la Frontière";
-                case 3 -> "🔴 Mars — Juridictions Consulaires & Traités Martiens";
-                case 4 -> "🔴 Mars — Niveau Technologique Industriel & Robotique ISRU";
-                case 5 -> "🔴 Mars — Réseau Ferroviaire Maglev Sub-Surface";
-                case 6 -> "🔴 Mars — Conseil Spatial & Chartes Constitutionnelles";
-                case 7 -> "🔴 Mars — Bioregenerative Life Support (BLSS) & Dégradation";
-                case 8 -> "🔴 Mars — Microbiome Artificiel Confiné & Résistance";
+                case 0 -> "🔴 Mars — Cartographie Linguistique Coloniale Martienne [Planétaire (Mars), +2060 AD à Futur]";
+                case 1 -> "🔴 Mars — Structures de Parenté & Cohortes Pionnières [Planétaire (Mars), +2050 AD à Futur]";
+                case 2 -> "🔴 Mars — Mythologie Martienne & Cultes de la Frontière [Planétaire (Mars), +2060 AD à Futur]";
+                case 3 -> "🔴 Mars — Juridictions Consulaires & Traités Martiens [Planétaire (Mars), +2060 AD à Futur]";
+                case 4 -> "🔴 Mars — Niveau Technologique Industriel & Robotique ISRU [Planétaire (Mars), +2050 AD à Futur]";
+                case 5 -> "🔴 Mars — Réseau Ferroviaire Maglev Sub-Surface [Planétaire (Mars), +2070 AD à Futur]";
+                case 6 -> "🔴 Mars — Conseil Spatial & Chartes Constitutionnelles [Planétaire (Mars), +2060 AD à Futur]";
+                case 7 -> "🔴 Mars — Bioregenerative Life Support (BLSS) & Dégradation [Planétaire (Mars), +2050 AD à Futur]";
+                case 8 -> "🔴 Mars — Microbiome Artificiel Confiné & Résistance [Planétaire (Mars), +2050 AD à Futur]";
                 default -> null;
             };
         }
         if (pName.contains("vénus") || pName.contains("venus") || pName.contains("hesperos")) {
             return switch (tensorIdx) {
-                case 0 -> "🟡 Vénus — Réseau Isogloss des Cités Aérostatiques";
-                case 1 -> "🟡 Vénus — Guildes & Lignages Technologiques Flottants";
-                case 2 -> "🟡 Vénus — Rituels Solaires & Cérémonies de Nuages";
-                case 3 -> "🟡 Vénus — Fédération des Stations Stratosphériques";
-                case 4 -> "🟡 Vénus — Synthèse Aérostatique & Ingénierie Acide";
-                case 5 -> "🟡 Vénus — Navettes Stratosphériques Inter-Stations";
-                case 6 -> "🟡 Vénus — Syndicats Flottants & Corporations Aérostats";
-                case 7 -> "🟡 Vénus — Érosion Chimique & Recyclage Fermé";
-                case 8 -> "🟡 Vénus — Immunologie en Atmosphère Confinée";
+                case 0 -> "🟡 Vénus — Réseau Isogloss des Cités Aérostatiques [Planétaire (Vénus), +2120 AD à Futur]";
+                case 1 -> "🟡 Vénus — Guildes & Lignages Technologiques Flottants [Planétaire (Vénus), +2100 AD à Futur]";
+                case 2 -> "🟡 Vénus — Rituels Solaires & Cérémonies de Nuages [Planétaire (Vénus), +2120 AD à Futur]";
+                case 3 -> "🟡 Vénus — Fédération des Stations Stratosphériques [Planétaire (Vénus), +2110 AD à Futur]";
+                case 4 -> "🟡 Vénus — Synthèse Aérostatique & Ingénierie Acide [Planétaire (Vénus), +2100 AD à Futur]";
+                case 5 -> "🟡 Vénus — Navettes Stratosphériques Inter-Stations [Planétaire (Vénus), +2110 AD à Futur]";
+                case 6 -> "🟡 Vénus — Syndicats Flottants & Corporations Aérostats [Planétaire (Vénus), +2110 AD à Futur]";
+                case 7 -> "🟡 Vénus — Érosion Chimique & Recyclage Fermé [Planétaire (Vénus), +2100 AD à Futur]";
+                case 8 -> "🟡 Vénus — Immunologie en Atmosphère Confinée [Planétaire (Vénus), +2110 AD à Futur]";
                 default -> null;
             };
         }
         if (pName.contains("lune") || pName.contains("moon") || pName.contains("selene")) {
             return switch (tensorIdx) {
-                case 0 -> "⚪ Lune — Dialectes Sélénites des Stations Cratériques";
-                case 1 -> "⚪ Lune — Associations d'Équipages & Clans Sélénites";
-                case 2 -> "⚪ Lune — Philosophie Cosmique & Rituels du Clair de Terre";
-                case 3 -> "⚪ Lune — Secteurs Traité de l'Espace & Bases Nationales";
-                case 4 -> "⚪ Lune — Fonderies Régolithes & Extraction Sélénite";
-                case 5 -> "⚪ Lune — Tunnels de Transport Magnétique Sélénite";
-                case 6 -> "⚪ Lune — Protocoles Légaux des Habitats Sélénites";
-                case 7 -> "⚪ Lune — Épuisement des Volatils & Poussière Régolithe";
-                case 8 -> "⚪ Lune — Pathogènes d'Isolement & Régime Stérile";
+                case 0 -> "⚪ Lune — Dialectes Sélénites des Stations Cratériques [Planétaire (Lune), +2050 AD à Futur]";
+                case 1 -> "⚪ Lune — Associations d'Équipages & Clans Sélénites [Planétaire (Lune), +2045 AD à Futur]";
+                case 2 -> "⚪ Lune — Philosophie Cosmique & Rituels du Clair de Terre [Planétaire (Lune), +2050 AD à Futur]";
+                case 3 -> "⚪ Lune — Secteurs Traité de l'Espace & Bases Nationales [Planétaire (Lune), +2050 AD à Futur]";
+                case 4 -> "⚪ Lune — Fonderies Régolithes & Extraction Sélénite [Planétaire (Lune), +2045 AD à Futur]";
+                case 5 -> "⚪ Lune — Tunnels de Transport Magnétique Sélénite [Planétaire (Lune), +2050 AD à Futur]";
+                case 6 -> "⚪ Lune — Protocoles Légaux des Habitats Sélénites [Planétaire (Lune), +2050 AD à Futur]";
+                case 7 -> "⚪ Lune — Épuisement des Volatils & Poussière Régolithe [Planétaire (Lune), +2045 AD à Futur]";
+                case 8 -> "⚪ Lune — Pathogènes d'Isolement & Régime Stérile [Planétaire (Lune), +2045 AD à Futur]";
                 default -> null;
             };
         }
         if (pName.contains("mercure") || pName.contains("mercury") || pName.contains("hermes")) {
             return switch (tensorIdx) {
-                case 0 -> "⚪ Mercure — Protocoles Herméens & Terminologie d'Ombre";
-                case 1 -> "⚪ Mercure — Confréries de Maintenance & Lignages Thermiques";
-                case 2 -> "⚪ Mercure — Ordres d'Énergie & Croyances de Haute Radiation";
-                case 3 -> "⚪ Mercure — Domaines Miniers & Enclaves Polaires";
-                case 4 -> "⚪ Mercure — Collecteurs Haute Énergie & Fours Directs";
-                case 5 -> "⚪ Mercure — Réseau de Convois Électromagnétiques";
-                case 6 -> "⚪ Mercure — Administration Thermique & Urgences";
-                case 7 -> "⚪ Mercure — Usure Thermique & Contraintes Matérielles";
-                case 8 -> "⚪ Mercure — Filtrage Radiatif & Microbiote Synthétique";
+                case 0 -> "⚪ Mercure — Protocoles Herméens & Terminologie d'Ombre [Planétaire (Mercure), +2160 AD à Futur]";
+                case 1 -> "⚪ Mercure — Confréries de Maintenance & Lignages Thermiques [Planétaire (Mercure), +2150 AD à Futur]";
+                case 2 -> "⚪ Mercure — Ordres d'Énergie & Croyances de Haute Radiation [Planétaire (Mercure), +2170 AD à Futur]";
+                case 3 -> "⚪ Mercure — Domaines Miniers & Enclaves Polaires [Planétaire (Mercure), +2150 AD à Futur]";
+                case 4 -> "⚪ Mercure — Collecteurs Haute Énergie & Fours Directs [Planétaire (Mercure), +2150 AD à Futur]";
+                case 5 -> "⚪ Mercure — Réseau de Convois Électromagnétiques [Planétaire (Mercure), +2160 AD à Futur]";
+                case 6 -> "⚪ Mercure — Administration Thermique & Urgences [Planétaire (Mercure), +2160 AD à Futur]";
+                case 7 -> "⚪ Mercure — Usure Thermique & Contraintes Matérielles [Planétaire (Mercure), +2150 AD à Futur]";
+                case 8 -> "⚪ Mercure — Filtrage Radiatif & Microbiote Synthétique [Planétaire (Mercure), +2160 AD à Futur]";
                 default -> null;
             };
         }
         // Earth — pick based on epoch
         if (startYear < -10000) {
-            // Prehistoric: prefer ArchaeoGLOBE for tech, Glottolog for language, generic Seshat for others
             return switch (tensorIdx) {
-                case 0 -> "🌍 Terre — Automated Phonological Distance Model (ASJP)";
-                case 1 -> "🌍 Terre — Standard Cross-Cultural Sample (SCCS)";
-                case 2 -> "🌍 Terre — Turchin Asabiyyah Cohesion Metric (Cliodynamics)";
-                case 3 -> "🌍 Terre — GADM Administrative Sovereign Centers";
-                case 4 -> "🌍 Terre — Lithic-to-Metallurgy Technology Frontier Model";
-                case 5 -> "🌍 Terre — Old World Overland Caravan Network";
-                case 6 -> "🌍 Terre — Historical Jurisprudence & Administration Matrix";
-                case 7 -> "🌍 Terre — Malthusian Carrying Capacity Model";
-                case 8 -> "🌍 Terre — Host-Pathogen Coevolution & Immunity Model";
+                case 0 -> "🌍 Terre — Automated Phonological Distance Model (ASJP) [Global, -10 000 BC à Actuel (Macro-Familles)]";
+                case 1 -> "🌍 Terre — Standard Cross-Cultural Sample (SCCS) [Global, -4000 BC à Actuel (186 Cultures)]";
+                case 2 -> "🌍 Terre — Turchin Asabiyyah Cohesion Metric (Cliodynamics) [Global, -3000 BC à +2000 AD]";
+                case 3 -> "🌍 Terre — GADM Administrative Sovereign Centers [Global, 1950 AD à Actuel]";
+                case 4 -> "🌍 Terre — Lithic-to-Metallurgy Technology Frontier Model [Global, -100 000 BC à +2000 AD]";
+                case 5 -> "🌍 Terre — Old World Overland Caravan Network [Sahara & Asie Centrale, -1000 BC à +1800 AD]";
+                case 6 -> "🌍 Terre — Historical Jurisprudence & Administration Matrix [Europe & Asie, -2000 BC à +1800 AD]";
+                case 7 -> "🌍 Terre — Malthusian Carrying Capacity Model [Global, -100 000 BC à +2100 AD]";
+                case 8 -> "🌍 Terre — Host-Pathogen Coevolution & Immunity Model [Global, -100 000 BC à +2100 AD]";
                 default -> null;
             };
         }
         // Default Earth modern/historical: first real item per tensor
         return switch (tensorIdx) {
-            case 0 -> "🌍 Terre — Glottolog 4.8 / WALS Language Families (Composite)";
-            case 1 -> "🌍 Terre — Murdock Ethnographic Atlas (Kinship Systems)";
-            case 2 -> "🌍 Terre — Seshat Global History Databank (Rituals & Sacred)";
-            case 3 -> "🌍 Terre — Centennia Historical Atlas (Sovereignty Boundaries)";
-            case 4 -> "🌍 Terre — ArchaeoGLOBE Project (Land Use & Material Tools)";
-            case 5 -> "🌍 Terre — ORBIS Stanford Geospatial Network (Trade Routes)";
-            case 6 -> "🌍 Terre — Seshat Databank (Institutional Complexity & Law)";
-            case 7 -> "🌍 Terre — HYDE 3.4 Historical Land Use & Anthropogenic Stress";
-            case 8 -> "🌍 Terre — GADM / Historical Pathogen Memory & Epidemics";
+            case 0 -> "🌍 Terre — Glottolog 4.8 / WALS Language Families [Global, -10 000 BC à Actuel (8 500+ Langues)]";
+            case 1 -> "🌍 Terre — Murdock Ethnographic Atlas (Kinship Systems) [Global, -4000 BC à Actuel (1 267 Sociétés)]";
+            case 2 -> "🌍 Terre — Seshat Global History Databank (Rituals & Sacred) [Global, -5000 BC à +1900 AD]";
+            case 3 -> "🌍 Terre — Centennia Historical Atlas (Sovereignty Boundaries) [Eurasie / Afrique / Amériques, -1000 BC à +2000 AD]";
+            case 4 -> "🌍 Terre — ArchaeoGLOBE Project (Land Use & Material Tools) [Global, -10 000 BC à +1850 AD]";
+            case 5 -> "🌍 Terre — ORBIS Stanford Geospatial Network (Trade Routes) [Bassin Méditerranéen & Proche-Orient, -300 BC à +500 AD]";
+            case 6 -> "🌍 Terre — Seshat Databank (Institutional Complexity & Law) [Global, -4000 BC à +1900 AD]";
+            case 7 -> "🌍 Terre — HYDE 3.4 Historical Land Use & Anthropogenic Stress [Global, -10 000 BC à +2023 AD]";
+            case 8 -> "🌍 Terre — GADM / Historical Pathogen Memory & Epidemics [Global, -3000 BC à +2023 AD]";
             default -> null;
         };
     }
@@ -4019,7 +4046,9 @@ public class ScenarioSetupPanel extends BorderPane {
         );
         org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
                 combo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
-        combo.setValue("");
+        long startYr = (startYearSpinner != null && startYearSpinner.getValue() != null) ? startYearSpinner.getValue().longValue() : -8000L;
+        String initSrc = pickDemoSourceForEpoch(startYr, this.activePlanetPreset);
+        selectBestSource(combo, initSrc, "Terre");
         combo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
             String val = combo.getValue();
@@ -4128,7 +4157,10 @@ public class ScenarioSetupPanel extends BorderPane {
         }
         org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
                 combo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
-        combo.setValue("");
+        long scYear = (startYearSpinner != null && startYearSpinner.getValue() != null)
+                ? startYearSpinner.getValue().longValue() : -8000L;
+        String autoSrc = pickCulturalSourceForEpoch(tensorIdx, scYear, this.activePlanetPreset);
+        selectBestSource(combo, autoSrc, "Terre");
         combo.setOnAction(e -> {
             if (isUpdatingFromPreset) return;
             String val = combo.getValue();
@@ -4250,49 +4282,85 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    private void generateProceduralSingleCulturalTensor(int tensorIdx) {
-        // 1. Force procedural mode toggle
-        RadioButton rp = tensorProcRadios.get(tensorIdx);
-        if (rp != null) {
-            rp.setSelected(true);
+    private void exportCulturalTensor(int tensorIdx) {
+        Image img = customTensorImages.get(tensorIdx);
+        if (img == null) {
+            img = generateProceduralTensorRasterImage(tensorIdx, 2048, 1024);
         }
-        customTensorImages.remove(tensorIdx);
-        if (tensorIdx == 0) customIsoglossImage = null;
-        if (tensorIdx == 1) customKinshipImage = null;
-        if (tensorIdx == 2) customRitualsImage = null;
-        if (tensorIdx == 3) customSovereigntyImage = null;
-        updateTensorFileLabel(tensorIdx);
+        String defaultName = "cultural_tensor_" + (tensorIdx + 1) + ".png";
+        String title = I18n.getOrDefault("scenario.title.export_tensor_dialog", "Export Cultural Tensor " + (tensorIdx + 1));
+        WindowUtils.exportImageWithChooser(getScene() != null ? getScene().getWindow() : null, img, defaultName, title);
+    }
 
-        // 2. Automatically switch right preview to this tensor layer
-        if (previewModeCombo != null) {
-            previewModeCombo.getSelectionModel().select(tensorIdx + 1);
-            updatePreviewTitleText();
-            updateBottomLegend();
+    private Image generateProceduralTensorRasterImage(int tensorIdx, int w, int h) {
+        WritableImage img = new WritableImage(w, h);
+        PixelWriter pw = img.getPixelWriter();
+        double p1 = tensorParam1Sliders.containsKey(tensorIdx) ? tensorParam1Sliders.get(tensorIdx).getValue() : 1.0;
+        double p2 = tensorParam2Sliders.containsKey(tensorIdx) ? tensorParam2Sliders.get(tensorIdx).getValue() : 1.0;
+        double p3 = tensorParam3Sliders.containsKey(tensorIdx) ? tensorParam3Sliders.get(tensorIdx).getValue() : 1.0;
+        long seed = 11235L + tensorIdx * 11111L;
+        if (tensorSeedFields.containsKey(tensorIdx)) {
+            try { seed = Long.parseLong(tensorSeedFields.get(tensorIdx).getText().trim()); } catch (Exception ignored) {}
         }
-
-        Scenario s = getScenario();
-        if (s == null) return;
-        Button btn = tensorGenSingleBtns.get(tensorIdx);
-        if (btn != null) btn.setDisable(true);
-        java.util.concurrent.CompletableFuture.runAsync(() -> {
-            org.ether.society.data.HistoricalMapGenerator.generateProceduralMapsForScenario(s);
-        }).thenRun(() -> javafx.application.Platform.runLater(() -> {
-            if (btn != null) btn.setDisable(false);
-            String b64 = s.getCustomTensorMapBase64(tensorIdx);
-            if (b64 != null && !b64.isBlank()) {
-                Image img = org.ether.society.data.ImageMapLoader.base64PngToImage(b64);
-                if (img != null) {
-                    customTensorImages.put(tensorIdx, img);
-                    if (tensorIdx == 0) customIsoglossImage = img;
-                    if (tensorIdx == 1) customKinshipImage = img;
-                    if (tensorIdx == 2) customRitualsImage = img;
-                    if (tensorIdx == 3) customSovereigntyImage = img;
-                }
+        for (int y = 0; y < h; y++) {
+            double lat = 90.0 - (y / (double) h) * 180.0;
+            for (int x = 0; x < w; x++) {
+                double lon = -180.0 + (x / (double) w) * 360.0;
+                Color c = evaluateProceduralTensorColor(tensorIdx, lat, lon, 500.0, p1, p2, p3, seed);
+                pw.setColor(x, y, c);
             }
-            updateTensorFileLabel(tensorIdx);
-            notifyParamChange();
-            drawPreview();
-        }));
+        }
+        return img;
+    }
+
+    private Color evaluateProceduralTensorColor(int tIndex, double lat, double lon, double elevation, double p1, double p2, double p3, long seed) {
+        double noiseX = (lon + 180.0) / 360.0;
+        double noiseY = (lat + 90.0) / 180.0;
+        double pseudoNoise = Math.sin(noiseX * 12.0 + seed % 100) * Math.cos(noiseY * 12.0 + (seed / 100) % 100);
+        double pseudoNoise2 = Math.sin(noiseX * 24.0 + (seed / 10) % 100) * Math.cos(noiseY * 24.0 + seed % 50);
+        double combinedNoise = Math.clamp(0.5 + 0.35 * pseudoNoise + 0.15 * pseudoNoise2, 0.0, 1.0);
+
+        return switch (tIndex % 9) {
+            case 0 -> {
+                double reliefFactor = Math.clamp(elevation / 3000.0, 0.0, 1.0) * p3;
+                double val = Math.clamp((noiseY * 0.7 + noiseX * 0.3 + combinedNoise * 0.3 * p1 + reliefFactor * 0.2) * (p2 / 4.0), 0.0, 1.0);
+                yield Color.hsb(val * 300.0, 0.75, 0.90);
+            }
+            case 1 -> {
+                double val = Math.clamp(Math.abs(Math.sin((lat + p1 * 0.01) * 0.1) * Math.cos((lon + p2 * 10.0) * 0.1) + combinedNoise * p3 * 0.3), 0.0, 1.0);
+                yield Color.hsb(180.0 + val * 120.0, 0.80, 0.85);
+            }
+            case 2 -> {
+                double altNorm = Math.clamp(elevation / 3000.0, 0.0, 1.0);
+                double val = Math.clamp(altNorm * 0.5 + combinedNoise * 0.5 * p1, 0.0, 1.0);
+                yield Color.hsb(40.0 + val * 200.0, 0.85, 0.95);
+            }
+            case 3 -> {
+                double val = Math.clamp(combinedNoise * p2, 0.0, 1.0);
+                yield Color.hsb((val * 360.0 + seed % 360) % 360.0, 0.75, 0.85);
+            }
+            case 4 -> {
+                double val = Math.clamp(combinedNoise * (p2 / 5.0) + p1 * 0.05, 0.0, 1.0);
+                yield Color.hsb(10.0 + val * 50.0, 0.80, 0.90);
+            }
+            case 5 -> {
+                double val = Math.clamp(combinedNoise * p3 + (p1 / 30.0), 0.0, 1.0);
+                yield Color.hsb(35.0 + val * 30.0, 0.85, 0.95);
+            }
+            case 6 -> {
+                double val = Math.clamp(combinedNoise * p2 + (p1 / 8.0) * 0.5, 0.0, 1.0);
+                yield Color.hsb(270.0 + val * 40.0, 0.80, 0.85);
+            }
+            case 7 -> {
+                double val = Math.clamp(combinedNoise * p1 + p2 * 5.0, 0.0, 1.0);
+                yield Color.hsb(0.0 + (1.0 - val) * 120.0, 0.85, 0.90);
+            }
+            case 8 -> {
+                double val = Math.clamp(combinedNoise * p1 + p3 * 2.0, 0.0, 1.0);
+                yield Color.hsb(195.0 + val * 40.0, 0.80, 0.90);
+            }
+            default -> Color.hsb((tIndex * 47.0 + seed % 360) % 360.0, 0.75, 0.85);
+        };
     }
 
     private HBox createTensorParamRow(TensorParamDescriptor desc, Slider slider, Label valueLabel, Runnable onChange) {
@@ -4399,17 +4467,21 @@ public class ScenarioSetupPanel extends BorderPane {
                 if (radioProc != null) {
                     radioProc.setSelected(true);
                 }
-                generateProceduralSingleCulturalTensor(tensorIdx);
+                if (previewModeCombo != null && previewModeCombo.getSelectionModel().getSelectedIndex() != (tensorIdx + 1)) {
+                    previewModeCombo.getSelectionModel().select(tensorIdx + 1);
+                }
+                notifyParamChange();
+                drawPreview();
             });
 
-            Button genSingleBtn = new Button(I18n.getOrDefault("scenario.tensor.btn.gen_single", "🪄 Générer"));
-            genSingleBtn.getStyleClass().add("button-secondary");
-            genSingleBtn.setStyle("-fx-font-size: 10px; -fx-padding: 2 8; -fx-font-weight: bold;");
-            genSingleBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tensor.btn.gen_single_tooltip", "Générer la carte procédurale pour ce tenseur spécifique à partir de sa graine et de ses paramètres.")));
-            tensorGenSingleBtns.put(tensorIdx, genSingleBtn);
-            genSingleBtn.setOnAction(e -> generateProceduralSingleCulturalTensor(tensorIdx));
+            Button exportSingleBtn = new Button(I18n.getOrDefault("scenario.tensor.btn.export_single", "📤 Export"));
+            exportSingleBtn.getStyleClass().add("button-secondary");
+            exportSingleBtn.setStyle("-fx-font-size: 10px; -fx-padding: 2 8; -fx-font-weight: bold;");
+            exportSingleBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tensor.btn.export_single_tooltip", "Export this cultural tensor raster as a high-resolution PNG or JPEG file.")));
+            tensorGenSingleBtns.put(tensorIdx, exportSingleBtn);
+            exportSingleBtn.setOnAction(e -> exportCulturalTensor(tensorIdx));
 
-            HBox seedRow = new HBox(6, seedLbl, seedField, randBtn, genSingleBtn);
+            HBox seedRow = new HBox(6, seedLbl, seedField, randBtn, exportSingleBtn);
             seedRow.setAlignment(Pos.CENTER_LEFT);
 
             Slider p1Slider = tensorParam1Sliders.computeIfAbsent(tensorIdx, k -> new Slider());
@@ -4442,11 +4514,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 long scYear = (startYearSpinner != null && startYearSpinner.getValue() != null)
                         ? startYearSpinner.getValue().longValue() : 0L;
                 String autoSrc = pickCulturalSourceForEpoch(tensorIdx, scYear, this.activePlanetPreset);
-                if (autoSrc != null && sourceCombo.getItems().contains(autoSrc)) {
-                    sourceCombo.setValue(autoSrc);
-                } else if (sourceCombo.getItems().size() > 1) {
-                    sourceCombo.setValue(sourceCombo.getItems().get(1));
-                }
+                selectBestSource(sourceCombo, autoSrc, "Terre");
             }
             tensorSourceCombos.put(tensorIdx, sourceCombo);
 
@@ -5134,63 +5202,51 @@ public class ScenarioSetupPanel extends BorderPane {
 
     private void exportDensityMap() {
         if (previewCanvas == null) return;
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("scenario.title.export_density_dialog", "Export Population Density Map (PNG)"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers PNG", "*.png"));
-        chooser.setInitialFileName("ether-population-density.png");
-        File file = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
-        if (file != null) {
-            try {
-                int w = 800;
-                int h = 400;
-                WritableImage image = new WritableImage(w, h);
-                PixelWriter pw = image.getPixelWriter();
+        int w = 2048;
+        int h = 1024;
+        WritableImage image = new WritableImage(w, h);
+        PixelWriter pw = image.getPixelWriter();
 
-                if (currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
-                    double minLat = -90, maxLat = 90;
-                    double minLng = -180, maxLng = 180;
-                    double scaleX = w / (maxLng - minLng);
-                    double scaleY = h / (maxLat - minLat);
-
-                    // Fill background
-                    for (int y = 0; y < h; y++) {
-                        for (int x = 0; x < w; x++) {
-                            pw.setColor(x, y, Color.rgb(15, 23, 42));
-                        }
-                    }
-
-                    for (H3Cell c : currentPreviewCells) {
-                        int px = (int) ((c.getLongitude() - minLng) * scaleX);
-                        int py = (int) ((maxLat - c.getLatitude()) * scaleY);
-                        if (px >= 0 && px < w && py >= 0 && py < h) {
-                            long pop = c.getPopulation();
-                            Color col;
-                            if (c.getElevation() <= 0) col = Color.rgb(15, 23, 42);
-                            else if (pop <= 0) col = Color.rgb(30, 41, 59);
-                            else if (pop < 100) col = Color.rgb(16, 185, 129);
-                            else if (pop < 1000) col = Color.rgb(234, 179, 8);
-                            else if (pop < 5000) col = Color.rgb(249, 115, 22);
-                            else col = Color.rgb(239, 68, 68);
-
-                            pw.setColor(px, py, col);
-                        }
-                    }
+        if (customDensityImage != null && customDensityImage.getWidth() > 0) {
+            PixelReader pr = customDensityImage.getPixelReader();
+            double srcW = customDensityImage.getWidth();
+            double srcH = customDensityImage.getHeight();
+            for (int y = 0; y < h; y++) {
+                int sy = (int) Math.clamp((y / (double) h) * srcH, 0, srcH - 1);
+                for (int x = 0; x < w; x++) {
+                    int sx = (int) Math.clamp((x / (double) w) * srcW, 0, srcW - 1);
+                    pw.setColor(x, y, pr.getColor(sx, sy));
                 }
-                int iw = (int) image.getWidth();
-                int ih = (int) image.getHeight();
-                java.awt.image.BufferedImage bImg = new java.awt.image.BufferedImage(iw, ih, java.awt.image.BufferedImage.TYPE_INT_ARGB);
-                PixelReader pr = image.getPixelReader();
-                for (int y = 0; y < ih; y++) {
-                    for (int x = 0; x < iw; x++) {
-                        bImg.setRGB(x, y, pr.getArgb(x, y));
-                    }
+            }
+        } else if (currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
+            double minLat = -90, maxLat = 90;
+            double minLng = -180, maxLng = 180;
+            double scaleX = w / (maxLng - minLng);
+            double scaleY = h / (maxLat - minLat);
+
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    pw.setColor(x, y, Color.rgb(15, 23, 42));
                 }
-                ImageIO.write(bImg, "png", file);
-                logger.info("Exported density map to {}", file.getAbsolutePath());
-            } catch (Exception ex) {
-                logger.error("Failed to export density map", ex);
+            }
+
+            for (H3Cell c : currentPreviewCells) {
+                int px = (int) ((c.getLongitude() - minLng) * scaleX);
+                int py = (int) ((maxLat - c.getLatitude()) * scaleY);
+                if (px >= 0 && px < w && py >= 0 && py < h) {
+                    pw.setColor(px, py, getReliefAndDensityColor(c));
+                }
+            }
+        } else {
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    pw.setColor(x, y, Color.rgb(15, 23, 42));
+                }
             }
         }
+        WindowUtils.exportImageWithChooser(getScene() != null ? getScene().getWindow() : null, image,
+                "ether-population-density.png",
+                I18n.getOrDefault("scenario.title.export_density_dialog", "Export Population Density Map (PNG / JPEG)"));
     }
 
     private void showDensityImportFormatHelp() {
@@ -5399,9 +5455,12 @@ public class ScenarioSetupPanel extends BorderPane {
 
         if (idx == 0) {
             // Default Density & Relief Mode
-            if (customDensityImage != null && customDensityImage.getWidth() > 0) {
-                Color customCol = sampleImageColorAtLatLon(customDensityImage, lat, lon);
-                if (customCol != null) return customCol;
+            if (radioImportDemo != null && radioImportDemo.isSelected()) {
+                if (customDensityImage != null && customDensityImage.getWidth() > 0) {
+                    Color customCol = sampleImageColorAtLatLon(customDensityImage, lat, lon);
+                    if (customCol != null) return customCol;
+                }
+                return Color.BLACK;
             }
             return getReliefAndDensityColor(c);
         }
@@ -5409,36 +5468,24 @@ public class ScenarioSetupPanel extends BorderPane {
         int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
         if (idx >= 1 && idx <= dims) {
             int tIndex = idx - 1;
-            Image img = customTensorImages.get(tIndex);
-            if (img != null && img.getWidth() > 0) {
-                Color customCol = sampleImageColorAtLatLon(img, lat, lon);
-                if (customCol != null) return customCol;
+            boolean isImport = tensorImportRadios.containsKey(tIndex) && tensorImportRadios.get(tIndex).isSelected();
+            if (isImport) {
+                Image img = customTensorImages.get(tIndex);
+                if (img != null && img.getWidth() > 0) {
+                    Color customCol = sampleImageColorAtLatLon(img, lat, lon);
+                    if (customCol != null) return customCol;
+                }
+                return Color.BLACK;
             }
 
-            return switch (tIndex % 9) {
-                case 0 -> {
-                    double val = Math.clamp((lat + 90.0) / 180.0 * 0.7 + (lon + 180.0) / 360.0 * 0.3, 0.0, 1.0);
-                    yield Color.hsb(val * 300.0, 0.75, 0.90);
-                }
-                case 1 -> {
-                    double val = Math.clamp(Math.abs(Math.sin(lat * 0.1) * Math.cos(lon * 0.1)), 0.0, 1.0);
-                    yield Color.hsb(180.0 + val * 120.0, 0.80, 0.85);
-                }
-                case 2 -> {
-                    double val = Math.clamp((c.getElevation() != null ? c.getElevation() : 0) / 3000.0, 0.0, 1.0);
-                    yield Color.hsb(40.0 + val * 200.0, 0.85, 0.95);
-                }
-                case 3 -> {
-                    if (c.getOwner() != null && c.getOwner().getColor() != null) yield c.getOwner().getColor();
-                    yield Color.rgb(71, 85, 105);
-                }
-                case 4 -> Color.rgb(248, 113, 113); // Tech (Coral)
-                case 5 -> Color.rgb(245, 158, 11);  // Trade (Amber)
-                case 6 -> Color.rgb(168, 85, 247);  // Institutional (Purple)
-                case 7 -> Color.rgb(239, 68, 68);   // Ecological (Red)
-                case 8 -> Color.rgb(14, 165, 233);  // Pathogen Immunity (Sky Blue)
-                default -> Color.hsb((tIndex * 47.0) % 360.0, 0.75, 0.85);
-            };
+            double p1 = tensorParam1Sliders.containsKey(tIndex) ? tensorParam1Sliders.get(tIndex).getValue() : 1.0;
+            double p2 = tensorParam2Sliders.containsKey(tIndex) ? tensorParam2Sliders.get(tIndex).getValue() : 1.0;
+            double p3 = tensorParam3Sliders.containsKey(tIndex) ? tensorParam3Sliders.get(tIndex).getValue() : 1.0;
+            long seed = 11235L + tIndex * 11111L;
+            if (tensorSeedFields.containsKey(tIndex)) {
+                try { seed = Long.parseLong(tensorSeedFields.get(tIndex).getText().trim()); } catch (Exception ignored) {}
+            }
+            return evaluateProceduralTensorColor(tIndex, lat, lon, c.getElevation() != null ? c.getElevation() : 0.0, p1, p2, p3, seed);
         }
 
         // Calques déduits & physiques
@@ -5682,9 +5729,13 @@ public class ScenarioSetupPanel extends BorderPane {
         String mode = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue().toLowerCase() : "";
         int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
         Image activeCustomImage = null;
+        boolean isImportActive = false;
         if (idx >= 1 && idx <= dims) {
-            activeCustomImage = customTensorImages.get(idx - 1);
+            int tIndex = idx - 1;
+            isImportActive = tensorImportRadios.containsKey(tIndex) && tensorImportRadios.get(tIndex).isSelected();
+            activeCustomImage = customTensorImages.get(tIndex);
         } else if (idx == 0) {
+            isImportActive = radioImportDemo != null && radioImportDemo.isSelected();
             activeCustomImage = customDensityImage;
         }
 
@@ -5693,6 +5744,7 @@ public class ScenarioSetupPanel extends BorderPane {
         boolean isReliefOverlay = btnReliefOverlay != null && btnReliefOverlay.isSelected();
 
         String cacheKey = "sc_mode=" + idx + "_w=" + pwWidth + "_h=" + pwHeight + "_relief=" + isReliefOverlay
+                + "_import=" + isImportActive
                 + "_pName=" + (planet != null ? planet.name() : "")
                 + "_startYear=" + (startYearSpinner != null ? startYearSpinner.getValue() : -8000)
                 + "_pop=" + (initialHumanCountSpinner != null ? initialHumanCountSpinner.getValue() : 1000000)
@@ -5813,14 +5865,38 @@ public class ScenarioSetupPanel extends BorderPane {
                         }
                     }
 
-                    // 2) Main layer color (custom uploaded image OR procedural density overlay)
+                    // 2) Main layer color
                     Color pxColor;
-                    if (customReader != null && activeCustomImage.getWidth() > 0 && activeCustomImage.getHeight() > 0) {
-                        int imgX = (int) Math.clamp(((px / (double) pwWidth) * activeCustomImage.getWidth()), 0, activeCustomImage.getWidth() - 1);
-                        int imgY = (int) Math.clamp(((py / (double) pwHeight) * activeCustomImage.getHeight()), 0, activeCustomImage.getHeight() - 1);
-                        pxColor = customReader.getColor(imgX, imgY);
-                        if (!isLand) {
-                            pxColor = baseReliefColor;
+                    if (idx >= 1 && idx <= dims) {
+                        int tIndex = idx - 1;
+                        if (isImportActive) {
+                            if (customReader != null && activeCustomImage.getWidth() > 0 && activeCustomImage.getHeight() > 0) {
+                                int imgX = (int) Math.clamp(((px / (double) pwWidth) * activeCustomImage.getWidth()), 0, activeCustomImage.getWidth() - 1);
+                                int imgY = (int) Math.clamp(((py / (double) pwHeight) * activeCustomImage.getHeight()), 0, activeCustomImage.getHeight() - 1);
+                                pxColor = customReader.getColor(imgX, imgY);
+                            } else {
+                                pxColor = Color.BLACK;
+                            }
+                        } else {
+                            double p1 = tensorParam1Sliders.containsKey(tIndex) ? tensorParam1Sliders.get(tIndex).getValue() : 1.0;
+                            double p2 = tensorParam2Sliders.containsKey(tIndex) ? tensorParam2Sliders.get(tIndex).getValue() : 1.0;
+                            double p3 = tensorParam3Sliders.containsKey(tIndex) ? tensorParam3Sliders.get(tIndex).getValue() : 1.0;
+                            long seed = 11235L + tIndex * 11111L;
+                            if (tensorSeedFields.containsKey(tIndex)) {
+                                try { seed = Long.parseLong(tensorSeedFields.get(tIndex).getText().trim()); } catch (Exception ignored) {}
+                            }
+                            pxColor = evaluateProceduralTensorColor(tIndex, lat, lon, elevVal, p1, p2, p3, seed);
+                        }
+                    } else if (isImportActive) {
+                        if (customReader != null && activeCustomImage.getWidth() > 0 && activeCustomImage.getHeight() > 0) {
+                            int imgX = (int) Math.clamp(((px / (double) pwWidth) * activeCustomImage.getWidth()), 0, activeCustomImage.getWidth() - 1);
+                            int imgY = (int) Math.clamp(((py / (double) pwHeight) * activeCustomImage.getHeight()), 0, activeCustomImage.getHeight() - 1);
+                            pxColor = customReader.getColor(imgX, imgY);
+                            if (!isLand) {
+                                pxColor = baseReliefColor;
+                            }
+                        } else {
+                            pxColor = Color.BLACK;
                         }
                     } else if (!isLand) {
                         pxColor = baseReliefColor; // Ocean Navy
@@ -5854,7 +5930,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     }
 
                     // 3) Relief overlay and coastline / Datum outlines
-                    if (isReliefOverlay) {
+                    if (isReliefOverlay && pxColor != Color.BLACK) {
                         if (isCoast) {
                             pxColor = hasOcean ? Color.rgb(240, 249, 255) : Color.rgb(251, 191, 36); // Crisp coastline outline at z = Z_sea or Datum Z = 0
                         } else {
@@ -6398,19 +6474,30 @@ public class ScenarioSetupPanel extends BorderPane {
         loadEarthEventsBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events.load", "Load or merge master chronological events catalog (cataclysms & milestones).")));
         loadEarthEventsBtn.setOnAction(e -> loadEarthHistoricalEvents(startYearSpinner != null ? startYearSpinner.getValue() : -8000, true));
 
-        CheckBox eventsCheckBox = new CheckBox(org.ether.society.i18n.I18n.getOrDefault("scenario.events.enable", "Schedule climate events & historical disasters"));
-        eventsCheckBox.setStyle("-fx-font-weight: bold;");
-        eventsCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.enable_events", "Enable event calendar to simulate earthquakes, eruptions, and climate impacts on fixed dates.")));
-
-        randomEventsCheckBox = new CheckBox(org.ether.society.i18n.I18n.getOrDefault("scenario.events.random_checkbox", "☑️ Dynamically generate geological events & climate drifts (earthquakes, volcanism, sea rise, green Sahara)"));
+        randomEventsCheckBox = new CheckBox(org.ether.society.i18n.I18n.getOrDefault("scenario.events.random_checkbox", "🎲 Activer les événements aléatoires & crises stochastiques (Famines, Épidémies, Séismes, Éruptions)"));
         randomEventsCheckBox.setSelected(true);
         randomEventsCheckBox.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
-        randomEventsCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.random_events", "Allows stochastic engine to generate random geological events consistent with region.")));
+        randomEventsCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.random_events",
+            "🎲 GESTION DES ÉVÉNEMENTS ALÉATOIRES & STOCHASTIQUES\n" +
+            "• Si activé : Le moteur génère des crises émergentes (famines, pestes, sécheresses, éruptions) pilotées par la graine stochastique (Seed).\n" +
+            "• Si désactivé : AUCUN événement aléatoire ne survient spontanément (moins réaliste, mais garantit une trajectoire déterministe pure).")));
+        randomEventsCheckBox.setOnAction(e -> notifyParamChange());
+
+        Label randomEventsNote = new Label(I18n.getOrDefault("scenario.note.random_events", "💡 Note Réalisme & Graine : Les événements aléatoires utilisent la graine (Seed) du scénario pour une reproductibilité exacte. Les désactiver supprime toute crise spontanée imprévue."));
+        randomEventsNote.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
+        randomEventsNote.setWrapText(true);
+
+        VBox randomEventsBox = new VBox(4, randomEventsCheckBox, randomEventsNote);
+        randomEventsBox.setStyle("-fx-padding: 6 10; -fx-background-color: rgba(56, 189, 248, 0.06); -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 6;");
+
+        CheckBox eventsCheckBox = new CheckBox(org.ether.society.i18n.I18n.getOrDefault("scenario.events.enable", "📅 Planifier des événements climatiques & désastres datés (Tableau / Scénario)"));
+        eventsCheckBox.setStyle("-fx-font-weight: bold;");
+        eventsCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.enable_events", "Active le calendrier d'événements datés (éruptions, séismes, traités) à des années précises.")));
 
         HBox btnBar = new HBox(8, addEventBtn, removeEventBtn, new Separator(javafx.geometry.Orientation.VERTICAL), loadEarthEventsBtn);
         btnBar.setAlignment(Pos.CENTER_LEFT);
 
-        VBox eventsSubPanel = new VBox(8, randomEventsCheckBox, btnBar, eventsTable);
+        VBox eventsSubPanel = new VBox(8, btnBar, eventsTable);
         eventsSubPanel.setStyle("-fx-padding: 8 0 0 12; -fx-border-color: rgba(251,146,60,0.25); -fx-border-radius: 6; -fx-border-width: 0 0 0 3;");
         eventsSubPanel.setVisible(false);
         eventsSubPanel.setManaged(false);
@@ -6422,7 +6509,7 @@ public class ScenarioSetupPanel extends BorderPane {
             notifyParamChange();
         });
 
-        section.getChildren().addAll(title3Events, eventsCheckBox, eventsSubPanel);
+        section.getChildren().addAll(title3Events, randomEventsBox, eventsCheckBox, eventsSubPanel);
         return section;
     }
 
@@ -6572,6 +6659,13 @@ public class ScenarioSetupPanel extends BorderPane {
             if (addEventBtn != null) addEventBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.add", "➕ Add Event"));
             if (removeEventBtn != null) removeEventBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.remove", "🗑️ Remove Event"));
             if (loadEarthEventsBtn != null) loadEarthEventsBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.load_earth", "🌍 Load Earth Historical Events"));
+            if (randomEventsCheckBox != null) {
+                randomEventsCheckBox.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.random_checkbox", "🎲 Activer les événements aléatoires & crises stochastiques (Famines, Épidémies, Séismes, Éruptions)"));
+                randomEventsCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.random_events",
+                    "🎲 GESTION DES ÉVÉNEMENTS ALÉATOIRES & STOCHASTIQUES\n" +
+                    "• Si activé : Le moteur génère des crises émergentes (famines, pestes, sécheresses, éruptions) pilotées par la graine stochastique (Seed).\n" +
+                    "• Si désactivé : AUCUN événement aléatoire ne survient spontanément (moins réaliste, mais garantit une trajectoire déterministe pure).")));
+            }
 
             if (colType != null) colType.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.type", "Event Type"));
             if (colName != null) colName.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.name", "Event Name"));

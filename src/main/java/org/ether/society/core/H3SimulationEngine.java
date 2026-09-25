@@ -135,7 +135,14 @@ public class H3SimulationEngine implements ISimulationEngine {
         firedScenarioEventKeys.clear();
         if (eventSystem != null) {
             eventSystem.reset();
-            eventSystem.setEnableHistoricalMilestones(scenario == null || scenario.isRandomEventsEnabled());
+            if (scenario != null) {
+                eventSystem.setSeed(scenario.getSeed());
+                eventSystem.setEnableRandomEvents(scenario.isRandomEventsEnabled());
+                eventSystem.setEnableHistoricalMilestones(scenario.isRandomEventsEnabled());
+            } else {
+                eventSystem.setEnableRandomEvents(true);
+                eventSystem.setEnableHistoricalMilestones(true);
+            }
         }
 
         if (diplomacyManager != null) {

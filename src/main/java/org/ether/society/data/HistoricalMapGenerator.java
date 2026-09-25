@@ -814,63 +814,91 @@ public class HistoricalMapGenerator {
     public static final int BIOME_SNOW       = 0xFFFFFF; // RGB(255, 255, 255)
     public static final int BIOME_GLACIER    = 0xDCF0FF; // RGB(220, 240, 255)
 
+    private static final org.ether.society.procedural.SimplexNoise CLIMATE_NOISE = new org.ether.society.procedural.SimplexNoise(424242L);
+
     public static double computeSurfaceTemperature(double lat, double lon, double elevM, long year) {
         double radLat = Math.toRadians(lat);
+        double radLon = Math.toRadians(lon);
         double cosLat = Math.cos(radLat);
-        double sinLat = Math.abs(Math.sin(radLat));
+        double sinLat = Math.sin(radLat);
 
-        double tEq = 27.5;
-        double tPole = -32.0;
+        double nx = cosLat * Math.cos(radLon);
+        double ny = cosLat * Math.sin(radLon);
+        double nz = sinLat;
+
+        double tEq = 28.0;
+        double tNorthPole = -30.0;
+        double tSouthPole = -48.0;
 
         if (year <= -70000L) {
-            tEq = 28.0; tPole = -28.0; // Eemian / MIS 5
+            tEq = 28.5; tNorthPole = -26.0; tSouthPole = -44.0; // Eemian / MIS 5e
         } else if (year <= -40000L) {
-            tEq = 25.0; tPole = -42.0; // MIS 3 Interstadial
+            tEq = 25.5; tNorthPole = -40.0; tSouthPole = -54.0; // MIS 3
         } else if (year <= -22000L) {
-            tEq = 24.0; tPole = -48.0; // LGM Onset (-25k BP)
+            tEq = 24.0; tNorthPole = -48.0; tSouthPole = -58.0; // LGM Onset
         } else if (year <= -18000L) {
-            tEq = 23.0; tPole = -54.0; // LGM Peak (-20k BP)
+            tEq = 23.0; tNorthPole = -52.0; tSouthPole = -62.0; // LGM Peak
         } else if (year <= -10500L) {
-            tEq = 24.5; tPole = -44.0; // Younger Dryas (-10,900 BP)
+            tEq = 24.5; tNorthPole = -44.0; tSouthPole = -54.0; // Younger Dryas
         } else if (year <= -9000L) {
-            tEq = 26.5; tPole = -36.0; // Early Holocene (-10k BP)
+            tEq = 26.8; tNorthPole = -34.0; tSouthPole = -50.0; // Early Holocene
         } else if (year <= -7000L) {
-            tEq = 27.0; tPole = -33.0; // Early Neolithic (-8k BP)
+            tEq = 27.2; tNorthPole = -31.0; tSouthPole = -49.0; // Early Neolithic
         } else if (year <= -4500L) {
-            tEq = 27.8; tPole = -29.5; // Holocene Optimum (-6k BP)
+            tEq = 28.0; tNorthPole = -28.0; tSouthPole = -47.0; // Holocene Optimum
         }
 
-        // 1. Zonal solar insolation base
-        double tempC = tEq * (cosLat * cosLat) + tPole * (sinLat * sinLat);
+        // 1. Asymmetric hemispheric thermal baseline (thermal equator is naturally at ~6°N)
+        double baseTemp;
+        if (lat >= 6.0) {
+            double f = Math.sin(Math.toRadians((lat - 6.0) * (90.0 / 84.0)));
+            baseTemp = tEq * (1.0 - f * f) + tNorthPole * (f * f);
+        } else {
+            double f = Math.sin(Math.toRadians((6.0 - lat) * (90.0 / 96.0)));
+            baseTemp = tEq * (1.0 - f * f) + tSouthPole * (f * f);
+        }
 
-        // 2. Elevation Lapse Rate (-6.5 °C per 1000m on land)
+        double tempC = baseTemp;
+
+        // 2. Global Ocean Currents & Western/Eastern Boundary Gyres
+        // North Atlantic Drift & Gulf Stream (+6°C to +8.5°C in NE Atlantic & NW Europe)
+        if (year > -10500L || year <= -70000L) {
+            double dGulf = Math.exp(-(Math.pow(lat - 56.0, 2) / 220.0 + Math.pow(lon - 5.0, 2) / 600.0));
+            tempC += dGulf * 7.5;
+        }
+        // Kuroshio Current (+3.5°C off Japan & East Asia)
+        double dKuroshio = Math.exp(-(Math.pow(lat - 35.0, 2) / 120.0 + Math.pow(lon - 140.0, 2) / 300.0));
+        tempC += dKuroshio * 3.5;
+
+        // Cold Eastern Boundary Currents (California, Humboldt, Benguela, Canary, Labrador, Oyashio)
+        double dHumboldt = Math.exp(-(Math.pow(lat - (-22.0), 2) / 250.0 + Math.pow(lon - (-75.0), 2) / 60.0));
+        tempC -= dHumboldt * 4.5;
+        double dBenguela = Math.exp(-(Math.pow(lat - (-24.0), 2) / 200.0 + Math.pow(lon - 12.0, 2) / 50.0));
+        tempC -= dBenguela * 4.0;
+        double dCalif = Math.exp(-(Math.pow(lat - 32.0, 2) / 150.0 + Math.pow(lon - (-122.0), 2) / 60.0));
+        tempC -= dCalif * 3.5;
+        double dCanary = Math.exp(-(Math.pow(lat - 24.0, 2) / 150.0 + Math.pow(lon - (-18.0), 2) / 60.0));
+        tempC -= dCanary * 3.0;
+        double dLabrador = Math.exp(-(Math.pow(lat - 54.0, 2) / 100.0 + Math.pow(lon - (-56.0), 2) / 100.0));
+        tempC -= dLabrador * 6.5;
+        double dOyashio = Math.exp(-(Math.pow(lat - 50.0, 2) / 100.0 + Math.pow(lon - 155.0, 2) / 120.0));
+        tempC -= dOyashio * 5.0;
+
+        // 3. Deep Continental Winter Cold Poles (Continentality)
+        if (elevM >= 0.0) {
+            double dSiberia = (Math.pow(lat - 64.0, 2) / 220.0) + (Math.pow(lon - 125.0, 2) / 800.0);
+            if (dSiberia < 4.0) tempC -= (16.0 * Math.exp(-dSiberia * 0.5));
+
+            double dCanada = (Math.pow(lat - 62.0, 2) / 180.0) + (Math.pow(lon - (-105.0), 2) / 600.0);
+            if (dCanada < 4.0) tempC -= (11.0 * Math.exp(-dCanada * 0.5));
+        }
+
+        // 4. Elevation Lapse Rate (-6.5 °C per 1000m on land)
         if (elevM > 0.0) {
             tempC -= 0.0065 * elevM;
         }
 
-        // 3. Continentality / Landmass thermal winter cooling & summer heat
-        if (elevM >= 0.0) {
-            // Siberian cold high-pressure core (~62°N, 105°E)
-            double dSiberia = (Math.pow(lat - 62.0, 2) / 250.0) + (Math.pow(lon - 105.0, 2) / 900.0);
-            if (dSiberia < 4.0) {
-                tempC -= (14.0 * Math.exp(-dSiberia * 0.5));
-            }
-            // Canadian shield cold core (~58°N, -95°W)
-            double dCanada = (Math.pow(lat - 58.0, 2) / 200.0) + (Math.pow(lon - (-95.0), 2) / 600.0);
-            if (dCanada < 4.0) {
-                tempC -= (10.0 * Math.exp(-dCanada * 0.5));
-            }
-
-            // Maritime North Atlantic Drift warming in interglacials (Western/Northern Europe)
-            if (year > -10500L || year <= -70000L) {
-                double dEuroWarm = (Math.pow(lat - 55.0, 2) / 180.0) + (Math.pow(lon - 5.0, 2) / 400.0);
-                if (dEuroWarm < 3.0) {
-                    tempC += (5.0 * Math.exp(-dEuroWarm * 0.6));
-                }
-            }
-        }
-
-        // 4. Glacial Ice Sheet Cold Dome & Albedo Feedback
+        // 5. Glacial Cold Dome & Albedo Cooling
         if (year <= -18000L) {
             double dLaurentide = signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_LGM);
             double dFenno = signedDistanceToPolygon(lon, lat, POLY_FENNOSCANDIA_LGM);
@@ -897,94 +925,170 @@ public class HistoricalMapGenerator {
             tempC -= (coolLaurentide + coolFenno + amocPlume * 9.0);
         }
 
+        // 6. Spherical Harmonic & Planetary Wave Meander Noise (~1.5°C)
+        double thermalNoise = CLIMATE_NOISE.noise(nx * 2.5, ny * 2.5, nz * 2.5) * 1.8
+                            + CLIMATE_NOISE.noise(nx * 6.0, ny * 6.0, nz * 6.0) * 0.7;
+        tempC += thermalNoise;
+
         return Math.clamp(tempC, -50.0, 50.0);
     }
 
     public static double computeAnnualPrecipitation(double lat, double lon, double elevM, long year) {
+        double radLat = Math.toRadians(lat);
+        double radLon = Math.toRadians(lon);
+        double cosLat = Math.cos(radLat);
+        double sinLat = Math.sin(radLat);
+        double nx = cosLat * Math.cos(radLon);
+        double ny = cosLat * Math.sin(radLon);
+        double nz = sinLat;
+
+        // 1. Asymmetric undulating ITCZ (curved thermal equator between 4°N and 10°N)
+        double itczLat = 6.0 + 3.0 * Math.sin(radLon * 2.0 + 0.5) + 2.0 * Math.cos(radLon * 3.0);
+        double dItcz = Math.abs(lat - itczLat);
+        double rainMm = 2400.0 * Math.exp(-(dItcz * dItcz) / 100.0);
+
+        // 2. Subtropical Hadley Descending Arid Belts (~20° to 34° in each hemisphere)
+        double dryNorth = Math.exp(-Math.pow(lat - 26.0, 2) / 65.0);
+        double drySouth = Math.exp(-Math.pow(lat - (-24.0), 2) / 60.0);
+        rainMm *= (1.0 - Math.max(dryNorth, drySouth) * 0.78);
+
+        // 3. Mid-latitude Storm Tracks (~42° to 58° N/S)
+        double stormNorth = Math.exp(-Math.pow(lat - 50.0, 2) / 80.0) * 1050.0;
+        double stormSouth = Math.exp(-Math.pow(lat - (-48.0), 2) / 75.0) * 1250.0;
+        rainMm += (stormNorth + stormSouth);
+
+        // 4. Polar Aridification (> 62° N/S)
         double absLat = Math.abs(lat);
-
-        // 1. Zonal ITCZ Convective Belt
-        double rainMm = 2300.0 * Math.exp(-(absLat * absLat) / 130.0);
-
-        // 2. Subtropical Hadley Descending Branch (Deserts ~20° to 32°)
-        double dryBelt = Math.exp(-Math.pow(absLat - 25.0, 2) / 60.0);
-        rainMm *= (1.0 - dryBelt * 0.82);
-
-        // 3. Mid-latitude Storm Tracks (~40° to 58°)
-        double stormTrack = Math.exp(-Math.pow(absLat - 50.0, 2) / 90.0);
-        rainMm += stormTrack * 1050.0;
-
-        // 4. Polar Aridification (> 65°)
-        if (absLat > 65.0) {
-            rainMm = Math.max(70.0, rainMm * Math.exp(-(absLat - 65.0) / 9.0));
+        if (absLat > 62.0) {
+            rainMm = Math.max(60.0, rainMm * Math.exp(-(absLat - 62.0) / 8.5));
         }
 
-        // 5. Orographic Enhancement on windward mountain slopes (up to +800mm)
-        if (elevM > 400.0) {
-            double oro = Math.min(800.0, (elevM - 400.0) * 0.35);
-            if (absLat < 65.0) {
-                rainMm += oro;
-            }
+        // 5. Regional Wind Advection & Major Monsoons:
+        // A. Tropical Rainforest Basins (Amazon, Congo, Sundaland/Maritime Continent)
+        double dAmazon = Math.exp(-(Math.pow(lat - (-3.0), 2) / 120.0 + Math.pow(lon - (-62.0), 2) / 250.0));
+        rainMm += dAmazon * 1400.0;
+        double dCongo = Math.exp(-(Math.pow(lat - 0.0, 2) / 80.0 + Math.pow(lon - 22.0, 2) / 120.0));
+        rainMm += dCongo * 1200.0;
+        double dGuinea = Math.exp(-(Math.pow(lat - 6.5, 2) / 30.0 + Math.pow(lon - (-2.0), 2) / 180.0));
+        rainMm += dGuinea * 1100.0;
+        double dSunda = Math.exp(-(Math.pow(lat - 0.0, 2) / 120.0 + Math.pow(lon - 120.0, 2) / 450.0));
+        rainMm += dSunda * 1500.0;
+
+        // B. Asian & Australian Monsoons:
+        double dIndia = Math.exp(-(Math.pow(lat - 22.0, 2) / 90.0 + Math.pow(lon - 82.0, 2) / 160.0));
+        rainMm += dIndia * 950.0;
+        double dEastAsia = Math.exp(-(Math.pow(lat - 28.0, 2) / 100.0 + Math.pow(lon - 118.0, 2) / 180.0));
+        rainMm += dEastAsia * 750.0;
+
+        // C. Cold Current Coastal Deserts & Rain Shadows (Desiccation):
+        double dAtacama = Math.exp(-(Math.pow(lat - (-22.0), 2) / 120.0 + Math.pow(lon - (-70.0), 2) / 25.0));
+        rainMm *= (1.0 - dAtacama * 0.92);
+        double dNamib = Math.exp(-(Math.pow(lat - (-24.0), 2) / 80.0 + Math.pow(lon - 14.5, 2) / 20.0));
+        rainMm *= (1.0 - dNamib * 0.90);
+        double dSomalia = Math.exp(-(Math.pow(lat - 7.0, 2) / 60.0 + Math.pow(lon - 46.0, 2) / 60.0));
+        rainMm *= (1.0 - dSomalia * 0.75);
+        double dSaharaCore = Math.exp(-(Math.pow(lat - 24.0, 2) / 70.0 + Math.pow(lon - 12.0, 2) / 350.0));
+        rainMm *= (1.0 - dSaharaCore * 0.85);
+        double dArabiaCore = Math.exp(-(Math.pow(lat - 23.0, 2) / 50.0 + Math.pow(lon - 48.0, 2) / 100.0));
+        rainMm *= (1.0 - dArabiaCore * 0.85);
+
+        // D. Mid-latitude West Coast Maritime Plumes:
+        double dPacNW = Math.exp(-(Math.pow(lat - 48.0, 2) / 60.0 + Math.pow(lon - (-125.0), 2) / 40.0));
+        rainMm += dPacNW * 1300.0;
+        double dWestEuro = Math.exp(-(Math.pow(lat - 54.0, 2) / 70.0 + Math.pow(lon - (-5.0), 2) / 70.0));
+        rainMm += dWestEuro * 850.0;
+        double dChile = Math.exp(-(Math.pow(lat - (-46.0), 2) / 70.0 + Math.pow(lon - (-74.0), 2) / 30.0));
+        rainMm += dChile * 1600.0;
+        double dNZ = Math.exp(-(Math.pow(lat - (-43.0), 2) / 30.0 + Math.pow(lon - 171.0, 2) / 30.0));
+        rainMm += dNZ * 1800.0;
+
+        // E. Central Asian / Tarim / Gobi Continental Rain Shadow Desiccation:
+        double dGobi = Math.exp(-(Math.pow(lat - 41.0, 2) / 80.0 + Math.pow(lon - 90.0, 2) / 350.0));
+        rainMm *= (1.0 - dGobi * 0.80);
+
+        // 6. Orographic Precipitation & Elevation Coupling
+        if (elevM > 350.0 && absLat < 65.0) {
+            double oro = Math.min(1000.0, (elevM - 350.0) * 0.38);
+            rainMm += oro;
         }
 
-        // 6. Continental Interior Rain Shadow / Desiccation (e.g. Central Asia / Gobi)
-        if (elevM >= 0.0) {
-            double dGobi = (Math.pow(lat - 42.0, 2) / 100.0) + (Math.pow(lon - 95.0, 2) / 400.0);
-            if (dGobi < 3.0) {
-                rainMm *= (0.35 + 0.65 * (dGobi / 3.0));
-            }
-        }
-
-        // 7. Paleoclimatic Monsoons & Aridity Shifts
+        // 7. Paleoclimatic Epoch Monsoon Shifts:
         if (year <= -70000L || (year <= -4500L && year >= -10000L)) {
             // Green Sahara / African Humid Period & Arabian wet corridor
-            double greenSahara = Math.exp(-(Math.pow(lat - 21.0, 2) / 80.0 + Math.pow(lon - 14.0, 2) / 650.0));
-            double greenArabia = Math.exp(-(Math.pow(lat - 22.0, 2) / 50.0 + Math.pow(lon - 48.0, 2) / 140.0));
-            rainMm += (greenSahara * 850.0 + greenArabia * 550.0);
-
-            // Asian Summer Monsoon Enhancement
-            double asianMonsoon = Math.exp(-(Math.pow(lat - 27.0, 2) / 120.0 + Math.pow(lon - 95.0, 2) / 300.0));
-            rainMm += asianMonsoon * 500.0;
+            double greenSahara = Math.exp(-(Math.pow(lat - 21.0, 2) / 90.0 + Math.pow(lon - 14.0, 2) / 500.0));
+            double greenArabia = Math.exp(-(Math.pow(lat - 22.0, 2) / 55.0 + Math.pow(lon - 48.0, 2) / 120.0));
+            rainMm += (greenSahara * 950.0 + greenArabia * 650.0);
         } else if (year <= -18000L && year >= -25000L) {
-            // LGM Global Aridification
-            double aridFactor = 1.0 - 0.45 / (1.0 + Math.exp(-(absLat - 32.0) / 6.0));
-            rainMm *= aridFactor;
-        } else if (year <= -40000L) {
-            // MIS 3 Sahul / Sunda Monsoon
-            double sahulMonsoon = Math.exp(-(Math.pow(lat - (-18.0), 2) / 100.0 + Math.pow(lon - 132.0, 2) / 250.0));
-            rainMm += sahulMonsoon * 450.0;
+            // LGM Global Glacial Aridification
+            rainMm *= (1.0 - 0.40 / (1.0 + Math.exp(-(absLat - 30.0) / 6.0)));
         }
+
+        // 8. Atmospheric Planetary Wave & Fluid Turbulence Noise (multi-octave simplex)
+        double fluidNoise = CLIMATE_NOISE.noise(nx * 3.0 + 50.0, ny * 3.0 + 50.0, nz * 3.0 + 50.0) * 0.15
+                          + CLIMATE_NOISE.noise(nx * 7.0 + 80.0, ny * 7.0 + 80.0, nz * 7.0 + 80.0) * 0.08;
+        rainMm *= (1.0 + fluidNoise);
 
         return Math.clamp(rainMm, 0.0, 3000.0);
     }
 
     public static double computeSeasonalityAmplitude(double lat, double lon, double elevM, long year) {
+        double radLat = Math.toRadians(lat);
+        double radLon = Math.toRadians(lon);
+        double cosLat = Math.cos(radLat);
+        double sinLat = Math.sin(radLat);
+        double nx = cosLat * Math.cos(radLon);
+        double ny = cosLat * Math.sin(radLon);
+        double nz = sinLat;
+
         double absLat = Math.abs(lat);
 
-        // 1. Orbital Obliquity Amplitude Baseline (0°C at Equator, ~25°C near poles)
-        double ampC = Math.sin(Math.toRadians(absLat)) * 26.0;
+        // 1. Orbital Obliquity Amplitude (Milankovitch)
+        double obliqFactor = (year <= -70000L) ? 1.05 : ((year <= -18000L) ? 0.96 : 1.0);
+        double baseAmp = Math.sin(Math.toRadians(absLat)) * 22.0 * obliqFactor;
 
-        // 2. Continentality Enhancement: deep landmass interior thermal swing
-        if (elevM >= 0.0) {
-            // Siberian continentality core
-            double contSiberia = Math.exp(-(Math.pow(lat - 62.0, 2) / 300.0 + Math.pow(lon - 105.0, 2) / 600.0));
-            // Canadian continentality core
-            double contCanada = Math.exp(-(Math.pow(lat - 56.0, 2) / 250.0 + Math.pow(lon - (-95.0), 2) / 500.0));
-            // Central Asian continentality core
-            double contAsia = Math.exp(-(Math.pow(lat - 45.0, 2) / 180.0 + Math.pow(lon - 65.0, 2) / 400.0));
-
-            ampC += (contSiberia * 24.0 + contCanada * 18.0 + contAsia * 14.0);
-            if (absLat > 30.0) {
-                ampC += 4.0;
-            }
+        // 2. Fundamental Ocean vs Land Thermal Capacity Difference
+        double ampC;
+        if (elevM < 0.0) {
+            // Open Oceans have massive heat capacity: seasonal range is strictly buffered (2°C to 7°C)
+            ampC = 2.0 + Math.sin(Math.toRadians(absLat)) * 5.0;
+            ampC += CLIMATE_NOISE.noise(nx * 4.0 + 20.0, ny * 4.0 + 20.0, nz * 4.0 + 20.0) * 0.8;
         } else {
-            // Oceanic moderation: oceans have dampened seasonal range (max 5-8°C)
-            ampC *= 0.35;
+            // Land continentality is strongly asymmetric and driven by landmass width
+            ampC = baseAmp;
+
+            // Siberian Hyper-Continentality Core (Yakutia / Verkhoyansk ~64°N, 125°E)
+            double contSiberia = Math.exp(-(Math.pow(lat - 64.0, 2) / 250.0 + Math.pow(lon - 120.0, 2) / 600.0));
+            // Canadian Shield Continentality (~60°N, -100°W)
+            double contCanada = Math.exp(-(Math.pow(lat - 60.0, 2) / 200.0 + Math.pow(lon - (-100.0), 2) / 450.0));
+            // Central Asian / Mongolian Continentality (~46°N, 85°E)
+            double contAsia = Math.exp(-(Math.pow(lat - 46.0, 2) / 150.0 + Math.pow(lon - 85.0, 2) / 350.0));
+
+            ampC += (contSiberia * 26.0 + contCanada * 18.0 + contAsia * 14.0);
+
+            if (lat > 28.0) {
+                ampC += 5.0;
+            }
+
+            // Maritime coasts damping: Western Europe westerlies keep seasonality mild
+            double dEuro = Math.exp(-(Math.pow(lat - 52.0, 2) / 120.0 + Math.pow(lon - 5.0, 2) / 200.0));
+            ampC -= dEuro * 6.0;
+
+            // Equatorial tropical landmasses (Amazon, Congo, Indonesia) have minimal seasonality (< 3°C)
+            if (absLat < 10.0) {
+                ampC = Math.min(4.0, ampC * 0.25);
+            }
+
+            // Southern Hemisphere land has much lower continentality
+            if (lat < -10.0) {
+                ampC = Math.min(16.0, ampC * 0.65);
+            }
+
+            double landNoise = CLIMATE_NOISE.noise(nx * 3.5 + 30.0, ny * 3.5 + 30.0, nz * 3.5 + 30.0) * 1.5;
+            ampC += landNoise;
         }
 
         if (year <= -18000L) {
-            // Glacial amplified continentality
-            ampC *= 1.12;
+            ampC *= 1.10;
         }
 
         return Math.clamp(ampC, 0.0, 50.0);
@@ -997,8 +1101,17 @@ public class HistoricalMapGenerator {
 
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) * 180.0 / HEIGHT;
+            double radLat = Math.toRadians(lat);
+            double cosLat = Math.cos(radLat);
+            double sinLat = Math.sin(radLat);
+
             for (int x = 0; x < WIDTH; x++) {
                 double lon = -180.0 + (x + 0.5) * 360.0 / WIDTH;
+                double radLon = Math.toRadians(lon);
+                double nx = cosLat * Math.cos(radLon);
+                double ny = cosLat * Math.sin(radLon);
+                double nz = sinLat;
+
                 double elevM = (etopo != null) ? etopo[y][x] : ((elevMask != null && (elevMask.getRGB(x, y) & 0xFF) > 128) ? 100.0 : -100.0);
                 boolean isLand = elevM >= 0.0;
 
@@ -1010,7 +1123,12 @@ public class HistoricalMapGenerator {
                 double tempC = computeSurfaceTemperature(lat, lon, elevM, year);
                 double rainMm = computeAnnualPrecipitation(lat, lon, elevM, year);
 
-                // Permanent Polar Ice Caps
+                // Local micro-climate boundary perturbation to prevent straight biome lines
+                double bNoise = CLIMATE_NOISE.noise(nx * 12.0 + 10.0, ny * 12.0 + 10.0, nz * 12.0 + 10.0) * 0.08;
+                double effRain = rainMm * (1.0 + bNoise);
+                double effTemp = tempC + bNoise * 3.0;
+
+                // Permanent Polar Ice Caps & Glacial Polygons
                 int bColor;
                 if (lat < -60.0) {
                     bColor = BIOME_GLACIER; // Antarctica ice sheet
@@ -1024,27 +1142,27 @@ public class HistoricalMapGenerator {
                     bColor = BIOME_GLACIER; // Younger Dryas ice sheets
                 } else if (year <= -9000L && year > -10500L && signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_MIS3) <= 0 && lat >= 58.0) {
                     bColor = BIOME_GLACIER; // Preboreal residual ice
-                } else if (elevM > 5200.0 || (tempC < -14.0 && elevM > 3500.0)) {
+                } else if (elevM > 5200.0 || (effTemp < -14.0 && elevM > 3500.0)) {
                     bColor = BIOME_SNOW; // Glaciated mountain peaks
                 } else if (elevM > 2600.0) {
                     bColor = BIOME_MOUNTAINS;
-                } else if (elevM > 1100.0 && rainMm < 1200.0 && tempC < 20.0) {
+                } else if (elevM > 1000.0 && effRain < 1200.0 && effTemp < 20.0) {
                     bColor = BIOME_HILLS;
-                } else if (tempC < -2.0) {
+                } else if (effTemp < -2.0) {
                     bColor = BIOME_TUNDRA; // Periglacial / Polar Tundra
-                } else if (tempC < 14.0) {
-                    if (rainMm < 450.0) {
+                } else if (effTemp < 14.0) {
+                    if (effRain < 450.0) {
                         bColor = BIOME_PLAINS; // Steppe / Mammoth Steppe
                     } else {
                         bColor = BIOME_FOREST; // Boreal / Temperate Forest
                     }
                 } else {
-                    // Warm / Subtropical / Tropical thermal zones (tempC >= 14.0°C)
-                    if (rainMm < 220.0) {
+                    // Warm / Subtropical / Tropical thermal zones (effTemp >= 14.0°C)
+                    if (effRain < 220.0) {
                         bColor = BIOME_DESERT; // Arid desert
-                    } else if (rainMm < 1100.0) {
+                    } else if (effRain < 1100.0) {
                         bColor = BIOME_PLAINS; // Savanna / Grassland
-                    } else if (tempC >= 21.0) {
+                    } else if (effTemp >= 21.0 && effRain >= 1400.0) {
                         bColor = BIOME_JUNGLE; // Tropical Rainforest
                     } else {
                         bColor = BIOME_FOREST; // Subtropical / Temperate Forest
@@ -1128,10 +1246,6 @@ public class HistoricalMapGenerator {
             BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen,
             BufferedImage imgCoal, BufferedImage imgOil, BufferedImage imgGas, BufferedImage imgUranium,
             BufferedImage imgHe3, BufferedImage imgIronCopper, BufferedImage imgPreciousMetals, BufferedImage imgRareEarths, BufferedImage imgMantleHeat, BufferedImage imgAquifer) {
-        if (year == -100000L) {
-            logger.info("Preserving empirical -100000 BP baseline datasets without modification.");
-            return;
-        }
         try {
             java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
             java.nio.file.Files.createDirectories(earthDir);

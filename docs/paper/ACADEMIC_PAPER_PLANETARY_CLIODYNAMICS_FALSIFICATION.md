@@ -458,6 +458,19 @@ Because Tier 2 procedural engines represent competing sociological and economic 
 ╚══════════════════════════════════════════╩══════════════════════════════════════════╩══════════════════════════════════════════════════╝
 ```
 
+### 6.2. Offline Invariant Verification, Metamorphic Testing & Deterministic Bit-Reproducibility
+
+To ensure uncompromising computational and mathematical rigor without incurring performance overhead in production, Ether implements an **offline formal verification pipeline** rather than relying on inductive interactive theorem provers (e.g., Lean 4, Coq):
+
+1. **Epistemic Demarcation vs. Formal Theorem Provers**:
+   * While interactive proof assistants (Lean 4, Coq) certify that a computer program adheres to an abstract mathematical specification on continuous real numbers $\mathbb{R}$, they cannot adjudicate empirical truth in historical or ecological systems. In complex cliodynamics, scientific falsification requires confronting non-linear coupled differential systems with archaeological and paleoclimatic observations ($100\,000\text{ years}$).
+   * Furthermore, machine-checked continuous proofs do not easily bridge the IEEE-754 floating-point discretization gap inherent to high-throughput planetary grids ($175\,000+$ cells).
+2. **Four-Pillar Offline Verification Architecture**:
+   * **High-Dimensional Property-Based Testing (`PropertyBasedPhysicalVerificationTest.java`)**: Evaluates $10\,000+$ randomized synthetic planetary states across multi-dimensional parameter spaces to ensure non-negativity ($\text{Biomass} \ge 0, \text{Food} \ge 0, \text{Energy} \ge 0$), psychrometric wet-bulb bounds ($T_{\text{wb}} \le T_{\text{dry}}$), and Liebig stoichiometric limits.
+   * **Multi-Millennial Invariant Conservation Auditing (`PhysicalConservationMultiMillennialTest.java`)**: Audits isolated planetary runs over $5\,000\text{ ticks}$, certifying that internal metabolic conversions preserve closed-world mass $\Delta M_{\text{total}} = 0 \pm 10^{-5}$ and open-system First-Law energy conservation with zero runtime overhead in production.
+   * **Metamorphic Directional Testing (`MetamorphicDirectionalVerificationTest.java`)**: Overcomes the simulation *Oracle Problem* by validating invariant input-output transformation pairs (e.g., $\alpha_2 > \alpha_1 \implies T_{\text{eq}}(\alpha_2) < T_{\text{eq}}(\alpha_1)$; $\text{EROEI}_2 < \text{EROEI}_1 \implies \text{NetSurplus}_2 < \text{NetSurplus}_1$; $\text{Harvest} > \text{MSY} \implies \text{Extinction}$).
+   * **Dual-Engine Discretization Bounding & Determinism (`HighPrecisionDiscretizationAndDeterminismTest.java`)**: Verifies that fast 32-bit single-precision vector steps remain bounded within $< 1.0\%$ relative truncation error against 64-bit 4th-order Runge-Kutta (RK4) analytical reference solutions, and certifies 100% SHA-256 bit-exact reproducibility across parallel runs.
+
 ---
 
 ## 7. Concrete Operational Use-Case Scenarios

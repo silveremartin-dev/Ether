@@ -1451,7 +1451,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     /**
-     * Exports the current procedural heightmap to a PNG file.
+     * Exports the current procedural heightmap to a PNG/JPEG file.
      * Resolution is automatically recommended based on planet radius.
      */
     private void exportProceduralHeightmap() {
@@ -1460,53 +1460,24 @@ public class PlanetGeneratorPanel extends BorderPane {
         int recW = circumference > 60000 ? 2048 : (circumference > 20000 ? 1024 : 512);
         int recH = recW / 2;
 
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("planet.dialog.export_heightmap", "Export Procedural Heightmap (PNG)"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Image", "*.png"));
-        chooser.setInitialFileName(String.format("ether-heightmap-%s-%dx%d.png",
-                preset.name().toLowerCase().replaceAll("[^a-z0-9]", "-"), recW, recH));
-        File file = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
-        if (file == null) return;
-
-        new Thread(() -> {
-            try {
-                WritableImage img = new WritableImage(recW, recH);
-                PixelWriter pw = img.getPixelWriter();
-                for (int y = 0; y < recH; y++) {
-                    for (int x = 0; x < recW; x++) {
-                        double lon = ((double) x / recW) * 360.0 - 180.0;
-                        double lat = 90.0 - ((double) y / recH) * 180.0;
-                        ProceduralGenerator.PlanetPoint pt = generator.getPlanetPoint(lat, lon, preset);
-                        double norm = Math.max(0, Math.min(1,
-                                (pt.elevation() - preset.minAltitudeMeters()) /
-                                (preset.maxAltitudeMeters() - preset.minAltitudeMeters())));
-                        int v = (int) (norm * 255);
-                        pw.setColor(x, y, Color.rgb(v, v, v));
-                    }
-                }
-                // Write PNG via ImageIO
-                int w = recW, h = recH;
-                java.awt.image.BufferedImage bImg = new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_BYTE_GRAY);
-                PixelReader pr = img.getPixelReader();
-                for (int y = 0; y < h; y++) {
-                    for (int x = 0; x < w; x++) {
-                        bImg.setRGB(x, y, pr.getArgb(x, y));
-                    }
-                }
-                javax.imageio.ImageIO.write(bImg, "png", file);
-                javafx.application.Platform.runLater(() -> {
-                    if (mapStatusLabel != null)
-                        mapStatusLabel.setText(I18n.getOrDefault("planet.status.heightmap_exported", "✅ Heightmap exported: ") + file.getName() + " (" + recW + "×" + recH + " px)");
-                });
-                logger.info("Exported procedural heightmap to {} ({}x{})", file.getAbsolutePath(), recW, recH);
-            } catch (Exception ex) {
-                logger.error("Failed to export procedural heightmap", ex);
-                javafx.application.Platform.runLater(() -> {
-                    if (mapStatusLabel != null)
-                        mapStatusLabel.setText(I18n.getOrDefault("planet.status.heightmap_export_error", "❌ Erreur export heightmap : ") + ex.getMessage());
-                });
+        WritableImage img = new WritableImage(recW, recH);
+        PixelWriter pw = img.getPixelWriter();
+        for (int y = 0; y < recH; y++) {
+            for (int x = 0; x < recW; x++) {
+                double lon = ((double) x / recW) * 360.0 - 180.0;
+                double lat = 90.0 - ((double) y / recH) * 180.0;
+                ProceduralGenerator.PlanetPoint pt = generator.getPlanetPoint(lat, lon, preset);
+                double norm = Math.max(0, Math.min(1,
+                        (pt.elevation() - preset.minAltitudeMeters()) /
+                        (preset.maxAltitudeMeters() - preset.minAltitudeMeters())));
+                int v = (int) (norm * 255);
+                pw.setColor(x, y, Color.rgb(v, v, v));
             }
-        }).start();
+        }
+        String defaultName = String.format("ether-heightmap-%s-%dx%d.png",
+                preset.name().toLowerCase().replaceAll("[^a-z0-9]", "-"), recW, recH);
+        WindowUtils.exportImageWithChooser(getScene() != null ? getScene().getWindow() : null,
+                img, defaultName, I18n.getOrDefault("planet.dialog.export_heightmap", "Export Heightmap (PNG / JPEG)"));
     }
 
     private void exportProceduralClimateMap(String type) {
@@ -1515,51 +1486,29 @@ public class PlanetGeneratorPanel extends BorderPane {
         int recW = circumference > 60000 ? 2048 : (circumference > 20000 ? 1024 : 512);
         int recH = recW / 2;
 
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("planet.chooser.export", "Export map ") + type + " (PNG)");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Image", "*.png"));
-        chooser.setInitialFileName(String.format("ether-%s-%s-%dx%d.png",
-                type, preset.name().toLowerCase().replaceAll("[^a-z0-9]", "-"), recW, recH));
-        File file = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
-        if (file == null) return;
-
-        new Thread(() -> {
-            try {
-                WritableImage img = new WritableImage(recW, recH);
-                PixelWriter pw = img.getPixelWriter();
-                for (int y = 0; y < recH; y++) {
-                    for (int x = 0; x < recW; x++) {
-                        double lon = ((double) x / recW) * 360.0 - 180.0;
-                        double lat = 90.0 - ((double) y / recH) * 180.0;
-                        ProceduralGenerator.PlanetPoint pt = generator.getPlanetPoint(lat, lon, preset);
-                        double norm = 0.5;
-                        if ("temp".equalsIgnoreCase(type)) {
-                            norm = Math.max(0, Math.min(1, (pt.temperature() + 50.0) / 100.0));
-                        } else if ("precip".equalsIgnoreCase(type)) {
-                            norm = Math.max(0, Math.min(1, pt.rainfall()));
-                        } else {
-                            norm = Math.max(0, Math.min(1, (Math.abs(lat) / 90.0) * (preset.axialTiltDegrees() / 45.0)));
-                        }
-                        int v = (int) (norm * 255);
-                        pw.setColor(x, y, Color.rgb(v, v, v));
-                    }
+        WritableImage img = new WritableImage(recW, recH);
+        PixelWriter pw = img.getPixelWriter();
+        for (int y = 0; y < recH; y++) {
+            for (int x = 0; x < recW; x++) {
+                double lon = ((double) x / recW) * 360.0 - 180.0;
+                double lat = 90.0 - ((double) y / recH) * 180.0;
+                ProceduralGenerator.PlanetPoint pt = generator.getPlanetPoint(lat, lon, preset);
+                double norm = 0.5;
+                if ("temp".equalsIgnoreCase(type)) {
+                    norm = Math.max(0, Math.min(1, (pt.temperature() + 50.0) / 100.0));
+                } else if ("precip".equalsIgnoreCase(type)) {
+                    norm = Math.max(0, Math.min(1, pt.rainfall()));
+                } else {
+                    norm = Math.max(0, Math.min(1, (Math.abs(lat) / 90.0) * (preset.axialTiltDegrees() / 45.0)));
                 }
-                java.awt.image.BufferedImage bImg = new java.awt.image.BufferedImage(recW, recH, java.awt.image.BufferedImage.TYPE_BYTE_GRAY);
-                PixelReader pr = img.getPixelReader();
-                for (int y = 0; y < recH; y++) {
-                    for (int x = 0; x < recW; x++) {
-                        bImg.setRGB(x, y, pr.getArgb(x, y));
-                    }
-                }
-                javax.imageio.ImageIO.write(bImg, "png", file);
-                javafx.application.Platform.runLater(() -> {
-                    if (mapStatusLabel != null)
-                        mapStatusLabel.setText(I18n.getOrDefault("planet.status.map_exported_prefix", "✅ Map ") + type + I18n.getOrDefault("planet.status.map_exported_middle", " exported: ") + file.getName());
-                });
-            } catch (Exception ex) {
-                logger.error("Failed to export procedural climate map " + type, ex);
+                int v = (int) (norm * 255);
+                pw.setColor(x, y, Color.rgb(v, v, v));
             }
-        }).start();
+        }
+        String defaultName = String.format("ether-%s-%s-%dx%d.png",
+                type, preset.name().toLowerCase().replaceAll("[^a-z0-9]", "-"), recW, recH);
+        WindowUtils.exportImageWithChooser(getScene() != null ? getScene().getWindow() : null,
+                img, defaultName, I18n.getOrDefault("planet.chooser.export", "Export Climate Map (PNG / JPEG)"));
     }
 
     private void chooseBiomeMapFile() {
@@ -2509,19 +2458,23 @@ public class PlanetGeneratorPanel extends BorderPane {
                     }
 
                     if (mapMode == 0) { // Heightmap / Relief
-                        if (radioImport.isSelected() && customElevImage != null && elevReader != null) {
-                            double u = (lng + 180.0) / 360.0;
-                            double v = (90.0 - lat) / 180.0;
-                            int ex = (int) Math.min(u * wElev, wElev - 1);
-                            int ey = (int) Math.min(v * hElev, hElev - 1);
-                            Color c = elevReader.getColor(ex, ey);
-                            double eNorm = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
-                            if (isOcean) {
-                                pxColor = Color.rgb(15, 23, 42); // Ocean
-                                oceanCount++;
+                        if (radioImport.isSelected()) {
+                            if (customElevImage != null && elevReader != null && wElev > 0 && hElev > 0) {
+                                double u = (lng + 180.0) / 360.0;
+                                double v = (90.0 - lat) / 180.0;
+                                int ex = (int) Math.min(u * wElev, wElev - 1);
+                                int ey = (int) Math.min(v * hElev, hElev - 1);
+                                Color c = elevReader.getColor(ex, ey);
+                                double eNorm = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
+                                if (isOcean) {
+                                    pxColor = Color.rgb(15, 23, 42); // Ocean
+                                    oceanCount++;
+                                } else {
+                                    double norm = (eNorm - preset.waterLevel()) / (1.0 - preset.waterLevel() + 0.001);
+                                    pxColor = getHypsometricColor(norm);
+                                }
                             } else {
-                                double norm = (eNorm - preset.waterLevel()) / (1.0 - preset.waterLevel() + 0.001);
-                                pxColor = getHypsometricColor(norm);
+                                pxColor = Color.BLACK;
                             }
                         } else {
                             if (isOcean) {
@@ -2534,56 +2487,77 @@ public class PlanetGeneratorPanel extends BorderPane {
                             }
                         }
                     } else if (mapMode == 1) { // Température (°C)
-                        double tempC;
-                        if (radioTempImport != null && radioTempImport.isSelected() && customClimateImage != null) {
-                            PixelReader pr = customClimateImage.getPixelReader();
-                            double u = (lng + 180.0) / 360.0;
-                            double v = (90.0 - lat) / 180.0;
-                            int tx = (int) Math.min(u * customClimateImage.getWidth(), customClimateImage.getWidth() - 1);
-                            int ty = (int) Math.min(v * customClimateImage.getHeight(), customClimateImage.getHeight() - 1);
-                            int argb = pr.getArgb(tx, ty);
-                            double tNorm = (((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / (3.0 * 255.0);
-                            tempC = minTemp + tNorm * (maxTemp - minTemp);
+                        if (radioTempImport != null && radioTempImport.isSelected()) {
+                            if (customClimateImage != null && customClimateImage.getPixelReader() != null && customClimateImage.getWidth() > 0) {
+                                PixelReader pr = customClimateImage.getPixelReader();
+                                double u = (lng + 180.0) / 360.0;
+                                double v = (90.0 - lat) / 180.0;
+                                int tx = (int) Math.min(u * customClimateImage.getWidth(), customClimateImage.getWidth() - 1);
+                                int ty = (int) Math.min(v * customClimateImage.getHeight(), customClimateImage.getHeight() - 1);
+                                int argb = pr.getArgb(tx, ty);
+                                double tNorm = (((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / (3.0 * 255.0);
+                                double tempC = minTemp + tNorm * (maxTemp - minTemp);
+                                pxColor = getTemperatureColor(tempC, minTemp, maxTemp);
+                                if (isOcean) {
+                                    pxColor = blendColors(pxColor, Color.rgb(10, 25, 60), 0.30);
+                                }
+                            } else {
+                                pxColor = Color.BLACK;
+                            }
                         } else {
-                            tempC = generator.getPlanetPoint(lat, lng, preset, tSeed, pSeed, sSeed).temperature();
-                        }
-                        pxColor = getTemperatureColor(tempC, minTemp, maxTemp);
-                        if (isOcean) {
-                            pxColor = blendColors(pxColor, Color.rgb(10, 25, 60), 0.30);
+                            double tempC = generator.getPlanetPoint(lat, lng, preset, tSeed, pSeed, sSeed).temperature();
+                            pxColor = getTemperatureColor(tempC, minTemp, maxTemp);
+                            if (isOcean) {
+                                pxColor = blendColors(pxColor, Color.rgb(10, 25, 60), 0.30);
+                            }
                         }
                     } else if (mapMode == 2) { // Précipitations (mm/an)
-                        double precipNorm;
-                        if (radioPrecipImport != null && radioPrecipImport.isSelected() && customRainfallImage != null) {
-                            PixelReader pr = customRainfallImage.getPixelReader();
-                            double u = (lng + 180.0) / 360.0;
-                            double v = (90.0 - lat) / 180.0;
-                            int rx = (int) Math.min(u * customRainfallImage.getWidth(), customRainfallImage.getWidth() - 1);
-                            int ry = (int) Math.min(v * customRainfallImage.getHeight(), customRainfallImage.getHeight() - 1);
-                            int argb = pr.getArgb(rx, ry);
-                            precipNorm = (((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / (3.0 * 255.0);
+                        if (radioPrecipImport != null && radioPrecipImport.isSelected()) {
+                            if (customRainfallImage != null && customRainfallImage.getPixelReader() != null && customRainfallImage.getWidth() > 0) {
+                                PixelReader pr = customRainfallImage.getPixelReader();
+                                double u = (lng + 180.0) / 360.0;
+                                double v = (90.0 - lat) / 180.0;
+                                int rx = (int) Math.min(u * customRainfallImage.getWidth(), customRainfallImage.getWidth() - 1);
+                                int ry = (int) Math.min(v * customRainfallImage.getHeight(), customRainfallImage.getHeight() - 1);
+                                int argb = pr.getArgb(rx, ry);
+                                double precipNorm = (((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / (3.0 * 255.0);
+                                pxColor = getPrecipitationColor(precipNorm);
+                                if (isOcean) {
+                                    pxColor = blendColors(pxColor, Color.rgb(15, 23, 42), 0.35);
+                                }
+                            } else {
+                                pxColor = Color.BLACK;
+                            }
                         } else {
-                            precipNorm = generator.getPlanetPoint(lat, lng, preset, tSeed, pSeed, sSeed).rainfall();
-                        }
-                        pxColor = getPrecipitationColor(precipNorm);
-                        if (isOcean) {
-                            pxColor = blendColors(pxColor, Color.rgb(15, 23, 42), 0.35);
+                            double precipNorm = generator.getPlanetPoint(lat, lng, preset, tSeed, pSeed, sSeed).rainfall();
+                            pxColor = getPrecipitationColor(precipNorm);
+                            if (isOcean) {
+                                pxColor = blendColors(pxColor, Color.rgb(15, 23, 42), 0.35);
+                            }
                         }
                     } else { // Seasonality / Thermal Amplitude (°C)
-                        double seasonNorm;
-                        if (radioSeasonImport != null && radioSeasonImport.isSelected() && customSeasonalityImage != null) {
-                            PixelReader pr = customSeasonalityImage.getPixelReader();
-                            double u = (lng + 180.0) / 360.0;
-                            double v = (90.0 - lat) / 180.0;
-                            int sx = (int) Math.min(u * customSeasonalityImage.getWidth(), customSeasonalityImage.getWidth() - 1);
-                            int sy = (int) Math.min(v * customSeasonalityImage.getHeight(), customSeasonalityImage.getHeight() - 1);
-                            int argb = pr.getArgb(sx, sy);
-                            seasonNorm = (((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / (3.0 * 255.0);
+                        if (radioSeasonImport != null && radioSeasonImport.isSelected()) {
+                            if (customSeasonalityImage != null && customSeasonalityImage.getPixelReader() != null && customSeasonalityImage.getWidth() > 0) {
+                                PixelReader pr = customSeasonalityImage.getPixelReader();
+                                double u = (lng + 180.0) / 360.0;
+                                double v = (90.0 - lat) / 180.0;
+                                int sx = (int) Math.min(u * customSeasonalityImage.getWidth(), customSeasonalityImage.getWidth() - 1);
+                                int sy = (int) Math.min(v * customSeasonalityImage.getHeight(), customSeasonalityImage.getHeight() - 1);
+                                int argb = pr.getArgb(sx, sy);
+                                double seasonNorm = (((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / (3.0 * 255.0);
+                                pxColor = getSeasonalityColor(seasonNorm);
+                                if (isOcean) {
+                                    pxColor = blendColors(pxColor, Color.rgb(10, 20, 50), 0.30);
+                                }
+                            } else {
+                                pxColor = Color.BLACK;
+                            }
                         } else {
-                            seasonNorm = generator.getPlanetPoint(lat, lng, preset, tSeed, pSeed, sSeed).seasonality();
-                        }
-                        pxColor = getSeasonalityColor(seasonNorm);
-                        if (isOcean) {
-                            pxColor = blendColors(pxColor, Color.rgb(10, 20, 50), 0.30);
+                            double seasonNorm = generator.getPlanetPoint(lat, lng, preset, tSeed, pSeed, sSeed).seasonality();
+                            pxColor = getSeasonalityColor(seasonNorm);
+                            if (isOcean) {
+                                pxColor = blendColors(pxColor, Color.rgb(10, 20, 50), 0.30);
+                            }
                         }
                     }
 

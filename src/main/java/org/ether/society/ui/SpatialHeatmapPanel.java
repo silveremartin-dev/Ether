@@ -50,12 +50,6 @@ public class SpatialHeatmapPanel extends VBox {
 
     private static final Logger logger = LoggerFactory.getLogger(SpatialHeatmapPanel.class);
 
-    // Preset Buttons
-    private final Button presetSynthBtn;
-    private final Button presetDemoBtn;
-    private final Button presetClimBtn;
-    private final Button presetEconBtn;
-
     // Timeline Scrubbing & Transport Controls
     private final Slider timeSlider;
     private final Label timePositionLabel;
@@ -115,16 +109,7 @@ public class SpatialHeatmapPanel extends VBox {
 
         buildLayerMenu();
 
-        // 1-Click Scientific Presets
-        presetSynthBtn = createMiniPresetBtn("🌍 Synthèse", () -> applyPreset(DisplayMode.BIOME, DisplayMode.POPULATION));
-        presetDemoBtn = createMiniPresetBtn("👥 Démographie", () -> applyPreset(DisplayMode.BIOME, DisplayMode.POPULATION, DisplayMode.MIGRATION));
-        presetClimBtn = createMiniPresetBtn("🌡️ Climat", () -> applyPreset(DisplayMode.BIOME, DisplayMode.TEMPERATURE, DisplayMode.WATER));
-        presetEconBtn = createMiniPresetBtn("💰 Économie", () -> applyPreset(DisplayMode.BIOME, DisplayMode.GDP_WEALTH, DisplayMode.FLUX, DisplayMode.MINERAL_RESOURCES));
-
-        HBox presetsBox = new HBox(4, presetSynthBtn, presetDemoBtn, presetClimBtn, presetEconBtn);
-        presetsBox.setAlignment(Pos.CENTER_LEFT);
-
-        VBox layerControlBox = new VBox(4, activeLayersMenuBtn, activeLayersChipsBox, presetsBox);
+        VBox layerControlBox = new VBox(4, activeLayersMenuBtn, activeLayersChipsBox);
 
         // 3. Map Canvas (320x150)
         mapCanvas = new Canvas(320, 150);
@@ -184,28 +169,35 @@ public class SpatialHeatmapPanel extends VBox {
         speedCombo.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.speed", "Vitesse de relecture temporelle")));
         speedCombo.setOnAction(e -> updatePlaybackSpeed());
 
-        loopCheckBox = new CheckBox(I18n.getOrDefault("heatmap.loop", "🔁 Boucle"));
+        loopCheckBox = new CheckBox(I18n.getOrDefault("heatmap.loop", "🔁"));
         loopCheckBox.setSelected(true);
         loopCheckBox.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8; -fx-font-weight: bold;");
+        loopCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.loop", "Relecture en boucle")));
 
-        HBox transportBar = new HBox(6, btnJumpStart, btnStepBack, playPauseBtn, btnStepForward, btnJumpEnd, speedCombo, loopCheckBox);
+        HBox transportBar = new HBox(4, btnJumpStart, btnStepBack, playPauseBtn, btnStepForward, btnJumpEnd, speedCombo, loopCheckBox);
         transportBar.setAlignment(Pos.CENTER_LEFT);
 
         // 7. Interval / Range Selection & Video Export Bar
         btnSetStart = createMiniRangeBtn("📌 Début A", () -> setRangeStart(currentSnapshotIndex));
-        btnSetEnd = createMiniRangeBtn("📌 Fin B", () -> setRangeEnd(currentSnapshotIndex));
-        btnClearRange = createMiniRangeBtn("✖ Réinitialiser Bornes", this::clearRange);
+        btnSetStart.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.set_start", "Définir l'instant actuel comme borne de départ (A)")));
 
-        btnExportVideo = new Button("🎥 " + I18n.getOrDefault("heatmap.btn.export_video", "Exporter Vidéo"));
-        btnExportVideo.setStyle("-fx-background-color: #0369a1; -fx-text-fill: white; -fx-font-size: 9px; -fx-font-weight: bold; -fx-padding: 2 8; -fx-background-radius: 4; -fx-cursor: hand;");
+        btnSetEnd = createMiniRangeBtn("📌 Fin B", () -> setRangeEnd(currentSnapshotIndex));
+        btnSetEnd.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.set_end", "Définir l'instant actuel comme borne de fin (B)")));
+
+        btnClearRange = createMiniRangeBtn("✖ Bornes", this::clearRange);
+        btnClearRange.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.clear_range", "Réinitialiser les bornes pour rejouer tout l'historique")));
+
+        btnExportVideo = new Button("🎥 " + I18n.getOrDefault("heatmap.btn.export_video", "Export"));
+        btnExportVideo.setStyle("-fx-background-color: #0369a1; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 3 8; -fx-background-radius: 4; -fx-cursor: hand;");
         btnExportVideo.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.export_video", "Exporte l'atlas dynamique et ses couches multicouches au format vidéo / GIF animé haute fidélité.")));
         btnExportVideo.setOnAction(e -> exportVideo());
 
         rangeInfoLabel = new Label(I18n.getOrDefault("heatmap.range.all", "Plage : Tout l'historique"));
-        rangeInfoLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
+        rangeInfoLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8; -fx-font-weight: bold;");
+        rangeInfoLabel.setWrapText(true);
 
-        HBox rangeBar = new HBox(6, btnSetStart, btnSetEnd, btnClearRange, btnExportVideo, rangeInfoLabel);
-        rangeBar.setAlignment(Pos.CENTER_LEFT);
+        FlowPane rangeBtnsBox = new FlowPane(4, 4, btnSetStart, btnSetEnd, btnClearRange, btnExportVideo);
+        VBox rangeBar = new VBox(4, rangeBtnsBox, rangeInfoLabel);
 
         getChildren().addAll(titleBox, layerControlBox, mapCanvas, lblMoranI, sliderBox, transportBar, rangeBar);
 
@@ -215,24 +207,17 @@ public class SpatialHeatmapPanel extends VBox {
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
     }
 
-    private Button createMiniPresetBtn(String label, Runnable action) {
-        Button btn = new Button(label);
-        btn.setStyle("-fx-background-color: #334155; -fx-text-fill: #e2e8f0; -fx-font-size: 9px; -fx-padding: 2 6; -fx-background-radius: 4; -fx-cursor: hand;");
-        btn.setOnAction(e -> action.run());
-        return btn;
-    }
-
     private Button createTransportBtn(String text, String tooltipKey, String fallbackTooltip) {
         Button btn = new Button(text);
-        btn.setMinSize(30, 28);
-        btn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 6; -fx-cursor: hand;");
+        btn.setMinSize(28, 26);
+        btn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-background-radius: 4; -fx-cursor: hand;");
         btn.setTooltip(new Tooltip(I18n.getOrDefault(tooltipKey, fallbackTooltip)));
         return btn;
     }
 
     private Button createMiniRangeBtn(String label, Runnable action) {
         Button btn = new Button(label);
-        btn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #cbd5e1; -fx-font-size: 9px; -fx-padding: 2 6; -fx-background-radius: 4; -fx-cursor: hand;");
+        btn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #38bdf8; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 3 6; -fx-background-radius: 4; -fx-cursor: hand; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 4;");
         btn.setOnAction(e -> action.run());
         return btn;
     }
@@ -380,7 +365,7 @@ public class SpatialHeatmapPanel extends VBox {
             playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.play", "Lancer la séquence temporelle (2D+1D)")));
         }
 
-        btnExportVideo.setText("🎥 " + I18n.getOrDefault("heatmap.btn.export_video", "Exporter Vidéo"));
+        btnExportVideo.setText("🎥 " + I18n.getOrDefault("heatmap.btn.export_video", "Export"));
         btnExportVideo.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.export_video", "Exporte l'atlas dynamique et ses couches multicouches au format vidéo / GIF animé haute fidélité.")));
 
         updateRangeLabel();

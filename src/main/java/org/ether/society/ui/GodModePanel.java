@@ -55,6 +55,8 @@ public class GodModePanel extends VBox {
     }
 
     private static final List<EventTypeItem> EVENT_TYPES = List.of(
+        new EventTypeItem("FLOOD", "godmode.type.flood", "godmode.event.flood", "godmode.event.flood.desc", 30, 6.0),
+        new EventTypeItem("DROUGHT", "godmode.type.drought", "godmode.event.drought", "godmode.event.drought.desc", 180, 5.5),
         new EventTypeItem("VOLCANO", "godmode.type.volcano", "godmode.event.volcano", "godmode.event.volcano.desc", 365, 7.0),
         new EventTypeItem("NUCLEAR_STRIKE", "godmode.type.nuclear_strike", "godmode.event.nuclear_strike", "godmode.event.nuclear_strike.desc", 0, 7.5),
         new EventTypeItem("HEATWAVE", "godmode.type.heatwave", "godmode.event.heatwave", "godmode.event.heatwave.desc", 30, 5.0),
@@ -665,6 +667,38 @@ public class GodModePanel extends VBox {
         return l;
     }
 
+    private H3Cell findNearestCell(double lat, double lng) {
+        if (engine == null || engine.getCells() == null || engine.getCells().isEmpty()) return null;
+        H3Cell nearest = null;
+        double minD = Double.MAX_VALUE;
+        for (H3Cell c : engine.getCells()) {
+            double d = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
+            if (d < minD) {
+                minD = d;
+                nearest = c;
+            }
+        }
+        return nearest;
+    }
+
+    private boolean isTerrestrialEventType(String type) {
+        if (type == null) return false;
+        return switch (type.toUpperCase()) {
+            case "FLOOD", "DROUGHT", "FAMINE", "VOLCANO", "EARTHQUAKE", "PANDEMIC",
+                 "RENAISSANCE_BOOM", "TECH_SINGULARITY", "CYBER_ATTACK", "ECONOMIC_CRASH",
+                 "BIODIVERSITY_COLLAPSE" -> true;
+            default -> false;
+        };
+    }
+
+    private boolean isOceanicEventType(String type) {
+        if (type == null) return false;
+        return switch (type.toUpperCase()) {
+            case "TSUNAMI" -> true;
+            default -> false;
+        };
+    }
+
     private void scheduleEvent(boolean immediate) {
         EventTypeItem item = eventTypeCombo.getValue();
         String type = item != null ? item.id() : "VOLCANO";
@@ -681,6 +715,37 @@ public class GodModePanel extends VBox {
         double lng = lngSpinner.getValue();
         double mag = magnitudeSpinner.getValue();
         int durationDays = durationDaysSpinner.getValue();
+
+        // Biome and spatial compatibility validation
+        H3Cell nearestCell = findNearestCell(lat, lng);
+        if (nearestCell != null) {
+            boolean isOcean = nearestCell.getBiome() == org.ether.society.model.Biome.OCEAN || nearestCell.getBiome() == org.ether.society.model.Biome.DEEP_OCEAN;
+            if (isTerrestrialEventType(type) && isOcean) {
+                String warnMsg = String.format(Locale.ROOT, "⚠️ Incompatibilité Géographique :\nL'événement '%s' (%s) ne peut pas se produire en plein océan (Lat: %.2f°, Lng: %.2f°).", name, type, lat, lng);
+                if (notificationOverlay != null) {
+                    notificationOverlay.showNotification(warnMsg, "#ef4444");
+                }
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle(I18n.getOrDefault("godmode.incompatible.title", "Emplacement Incompatible"));
+                alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "⚠️ Événement incompatible avec le milieu océanique"));
+                alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice", "Veuillez sélectionner des coordonnées situées sur la terre ferme."));
+                WindowUtils.applyWindowIcon(alert);
+                alert.showAndWait();
+                return;
+            } else if (isOceanicEventType(type) && !isOcean && nearestCell.getElevation() != null && nearestCell.getElevation() > 300) {
+                String warnMsg = String.format(Locale.ROOT, "⚠️ Incompatibilité Géographique :\nL'événement '%s' (%s) nécessite une zone maritime ou côtière (Lat: %.2f°, Lng: %.2f°).", name, type, lat, lng);
+                if (notificationOverlay != null) {
+                    notificationOverlay.showNotification(warnMsg, "#ef4444");
+                }
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle(I18n.getOrDefault("godmode.incompatible.title", "Emplacement Incompatible"));
+                alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "⚠️ Événement incompatible avec les hautes terres"));
+                alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice_ocean", "Veuillez sélectionner des coordonnées maritimes ou côtières."));
+                WindowUtils.applyWindowIcon(alert);
+                alert.showAndWait();
+                return;
+            }
+        }
 
         String daysUnit = durationDays > 1 ? "jours" : "jour";
         String details = String.format(Locale.ROOT, "Lat: %.2f°, Lng: %.2f°, Mag: %.1f, Durée: %d %s", lat, lng, mag, durationDays, daysUnit);
@@ -755,6 +820,38 @@ public class GodModePanel extends VBox {
                 if (engine != null && engine.getCells() != null) {
                     for (H3Cell c : engine.getCells()) {
                         c.setFoodResource(Math.max(0.0, (c.getFoodResource() != null ? c.getFoodResource() : 100.0) * (1.0 - mag * 0.08)));
+                    }
+                }
+            }
+            case "FLOOD" -> {
+                if (engine != null && engine.getCells() != null) {
+                    for (H3Cell c : engine.getCells()) {
+                        double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
+                        if (dist < mag * 1.5) {
+                            double blast = Math.max(0.0, 1.0 - (dist / (mag * 1.5)));
+                            if (c.getPopulation() != null && c.getPopulation() > 0) {
+                                c.setPopulation((int) (c.getPopulation() * (1.0 - 0.20 * blast)));
+                            }
+                            if (c.getFoodResource() != null) {
+                                c.setFoodResource(Math.max(0.0, c.getFoodResource() * (1.0 - 0.50 * blast)));
+                            }
+                        }
+                    }
+                }
+            }
+            case "DROUGHT" -> {
+                if (engine != null && engine.getCells() != null) {
+                    for (H3Cell c : engine.getCells()) {
+                        double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
+                        if (dist < mag * 2.0) {
+                            double blast = Math.max(0.0, 1.0 - (dist / (mag * 2.0)));
+                            if (c.getWaterResource() != null) {
+                                c.setWaterResource(Math.max(0.0, c.getWaterResource() * (1.0 - 0.70 * blast)));
+                            }
+                            if (c.getFoodResource() != null) {
+                                c.setFoodResource(Math.max(0.0, c.getFoodResource() * (1.0 - 0.40 * blast)));
+                            }
+                        }
                     }
                 }
             }

@@ -26,6 +26,9 @@ public class EventSystem {
     private final List<String> eventQueue = new CopyOnWriteArrayList<>();
     private final Random random = new Random();
 
+    private boolean enableHistoricalMilestones = true;
+    private boolean enableRandomEvents = true;
+
     // Cooldowns to prevent event spam
     private int lastPlagueYear = Integer.MIN_VALUE;
     private int lastFamineYear = Integer.MIN_VALUE;
@@ -34,6 +37,18 @@ public class EventSystem {
 
     public EventSystem() {
         initializeHistoricalEvents();
+    }
+
+    public void setSeed(long seed) {
+        this.random.setSeed(seed);
+    }
+
+    public boolean isEnableRandomEvents() {
+        return enableRandomEvents;
+    }
+
+    public void setEnableRandomEvents(boolean enableRandomEvents) {
+        this.enableRandomEvents = enableRandomEvents;
     }
 
     private void initializeHistoricalEvents() {
@@ -173,16 +188,6 @@ public class EventSystem {
                 .orElse(getRandomLandCell(cells));
     }
 
-    private boolean enableHistoricalMilestones = true;
-
-    public boolean isEnableHistoricalMilestones() {
-        return enableHistoricalMilestones;
-    }
-
-    public void setEnableHistoricalMilestones(boolean enableHistoricalMilestones) {
-        this.enableHistoricalMilestones = enableHistoricalMilestones;
-    }
-
     /**
      * Check for events occurring at the current state.
      */
@@ -206,10 +211,12 @@ public class EventSystem {
             }
         }
 
-        // Triggered events based on state
-        checkFamine(year, month, totalPopulation, totalFood, cells);
-        checkPlague(year, month, totalPopulation, cells);
-        checkNaturalDisasters(year, month, totalPopulation, cells);
+        // Stochastic and triggered events based on simulation state (guarded by enableRandomEvents)
+        if (enableRandomEvents) {
+            checkFamine(year, month, totalPopulation, totalFood, cells);
+            checkPlague(year, month, totalPopulation, cells);
+            checkNaturalDisasters(year, month, totalPopulation, cells);
+        }
         checkAchievements(year, month, totalPopulation, cells);
     }
 
@@ -217,12 +224,20 @@ public class EventSystem {
         checkEvents(year, 0, totalPopulation, totalFood, null);
     }
 
+    public boolean isEnableHistoricalMilestones() {
+        return enableHistoricalMilestones;
+    }
+
+    public void setEnableHistoricalMilestones(boolean enableHistoricalMilestones) {
+        this.enableHistoricalMilestones = enableHistoricalMilestones;
+    }
+
     /**
      * Check for events based on cell-level data.
      * Call this for more detailed event generation.
      */
     public void checkCellEvents(int year, int month, List<H3Cell> cells) {
-        if (cells == null || cells.isEmpty()) return;
+        if (!enableRandomEvents || cells == null || cells.isEmpty()) return;
 
         List<H3Cell> forestList = cells.stream().filter(c -> c.getBiome() == Biome.FOREST || c.getBiome() == Biome.JUNGLE).toList();
         List<H3Cell> desertList = cells.stream().filter(c -> c.getBiome() == Biome.DESERT).toList();
@@ -236,7 +251,7 @@ public class EventSystem {
                 if (target != null) {
                     recordSpatialEvent(new ActiveEvent(
                         "ECO_DEFOR_" + System.currentTimeMillis(),
-                        "⚠️ ÉCOLOGIE : Déforestation critique! Plus que " + String.format("%.1f%%", forestRatio * 100) + " de forêts.",
+                        "⚠️ ÉCOLOGIE : Déforestation critique! Plus que " + String.format(java.util.Locale.ROOT, "%.1f%%", forestRatio * 100) + " de forêts.",
                         "ECOLOGICAL", target.getLatitude(), target.getLongitude(), year, month, 1, 20.0, 4.5
                     ));
                 }
@@ -251,7 +266,7 @@ public class EventSystem {
                 if (target != null) {
                     recordSpatialEvent(new ActiveEvent(
                         "ECO_DESERT_" + System.currentTimeMillis(),
-                        "🏜️ ÉCOLOGIE : Désertification rampante! " + String.format("%.1f%%", desertRatio * 100) + " des terres sont de véritables déserts.",
+                        "🏜️ ÉCOLOGIE : Désertification rampante! " + String.format(java.util.Locale.ROOT, "%.1f%%", desertRatio * 100) + " des terres sont de véritables déserts.",
                         "ECOLOGICAL", target.getLatitude(), target.getLongitude(), year, month, 1, 20.0, 5.0
                     ));
                 }
@@ -318,7 +333,7 @@ public class EventSystem {
         double lat = target != null ? target.getLatitude() : 0.0;
         double lng = target != null ? target.getLongitude() : 0.0;
 
-        // Drought
+        // Drought (continental land)
         if (year - lastDroughtYear > 20 && random.nextDouble() < 0.005) {
             recordSpatialEvent(new ActiveEvent("DROUGHT_" + year, "☀️ SÉCHERESSE : Stress hydrique prolongé et assèchement des nappes.", "DROUGHT", lat, lng, year, month, 1, 20.0, 5.5));
             lastDroughtYear = year;
@@ -333,14 +348,31 @@ public class EventSystem {
             lastVolcanoYear = year;
         }
 
-        // Earthquake
+        // Earthquake (continental tectonic faults / land cells)
         if (random.nextDouble() < 0.002) {
             recordSpatialEvent(new ActiveEvent("EARTHQUAKE_" + year, "🌍 SÉISME / TREMBLEMENT DE TERRE : Secousse cataclysmique locale.", "EARTHQUAKE", lat, lng, year, month, 1, 20.0, 6.8));
         }
 
-        // Flood (river/coastal/lowland land cells)
+        // Flood (strictly land cells: river valleys, coastal lowlands, or populated basins with water)
         if (random.nextDouble() < 0.003) {
-            recordSpatialEvent(new ActiveEvent("FLOOD_" + year, "🌊 INONDATION / CRUE MAJEURE : Les cours d'eau débordent de leur lit.", "FLOOD", lat, lng, year, month, 1, 20.0, 5.2));
+            H3Cell floodTarget = null;
+            if (cells != null && !cells.isEmpty()) {
+                List<H3Cell> candidateLowlands = cells.stream()
+                        .filter(c -> (c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
+                                && ((c.getWaterResource() != null && c.getWaterResource() > 0.2)
+                                    || (c.getPopulation() != null && c.getPopulation() > 0)
+                                    || (c.getElevation() != null && c.getElevation() >= 0 && c.getElevation() < 400)))
+                        .toList();
+                if (!candidateLowlands.isEmpty()) {
+                    floodTarget = candidateLowlands.get(random.nextInt(candidateLowlands.size()));
+                }
+            }
+            if (floodTarget == null) {
+                floodTarget = target;
+            }
+            double fLat = floodTarget != null ? floodTarget.getLatitude() : lat;
+            double fLng = floodTarget != null ? floodTarget.getLongitude() : lng;
+            recordSpatialEvent(new ActiveEvent("FLOOD_" + year, "🌊 INONDATION / CRUE MAJEURE : Les cours d'eau débordent de leur lit.", "FLOOD", fLat, fLng, year, month, 1, 20.0, 5.2));
         }
     }
 

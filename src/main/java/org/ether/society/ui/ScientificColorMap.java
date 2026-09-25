@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
  * Supports Google TURBO, Matplotlib VIRIDIS, MAGMA, SPECTRAL, and TERRAIN palettes.
  */
 public enum ScientificColorMap {
+    RAINBOW("Arc-en-ciel Classique (Rainbow / Jet)"),
     TURBO("Google Turbo (Uniform Rainbow)"),
     VIRIDIS("Viridis (Sequential Blue-Yellow)"),
     MAGMA("Magma (High-Contrast Heatmap)"),
@@ -39,6 +40,7 @@ public enum ScientificColorMap {
     public Color getColor(double norm) {
         double v = Math.clamp(norm, 0.0, 1.0);
         return switch (this) {
+            case RAINBOW -> sampleRainbow(v);
             case TURBO -> sampleTurbo(v);
             case VIRIDIS -> sampleViridis(v);
             case MAGMA -> sampleMagma(v);
@@ -104,6 +106,21 @@ public enum ScientificColorMap {
             Color.rgb(34, 139, 34),  // Lowland forest
             Color.rgb(160, 120, 60), // Mountain rock
             Color.rgb(255, 255, 255) // Glacier / Snow
+        };
+        return interpolateStops(stops, x);
+    }
+
+    // --- 6. Classic Rainbow / Jet Colormap (Deep Blue -> Cyan -> Green -> Yellow -> Orange -> Red -> Dark Red) ---
+    private static Color sampleRainbow(double x) {
+        Color[] stops = {
+            Color.rgb(0, 0, 140),    // Dark Blue
+            Color.rgb(0, 70, 255),   // Blue
+            Color.rgb(0, 220, 255),  // Cyan
+            Color.rgb(0, 220, 50),   // Green
+            Color.rgb(240, 230, 0),  // Yellow
+            Color.rgb(255, 120, 0),  // Orange
+            Color.rgb(230, 20, 0),   // Red
+            Color.rgb(130, 0, 0)     // Dark Red
         };
         return interpolateStops(stops, x);
     }

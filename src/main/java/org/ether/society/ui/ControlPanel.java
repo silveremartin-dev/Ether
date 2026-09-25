@@ -1008,6 +1008,8 @@ public class ControlPanel extends VBox {
         eventHistory.addAll(events);
     }
 
+    private final List<String> lastRenderedEventSignatures = new ArrayList<>();
+
     public void updateRecentEvents(List<ActiveEvent> events) {
         if (events == null || eventsListBox == null) return;
 
@@ -1020,6 +1022,18 @@ public class ControlPanel extends VBox {
         if (sortedList.size() > 10) {
             sortedList = sortedList.subList(sortedList.size() - 10, sortedList.size());
         }
+
+        // Fast signature check to avoid rebuilding DOM nodes 4x per second if unchanged
+        List<String> currentSignatures = sortedList.stream()
+                .map(e -> e.getId() + "@" + e.getYear() + ":" + e.getMonth() + ":" + e.getDay() + "#" + e.getMagnitude())
+                .toList();
+
+        if (currentSignatures.equals(lastRenderedEventSignatures) && !eventsListBox.getChildren().isEmpty()) {
+            return;
+        }
+
+        lastRenderedEventSignatures.clear();
+        lastRenderedEventSignatures.addAll(currentSignatures);
 
         eventsListBox.getChildren().clear();
         if (sortedList.isEmpty()) {
@@ -1073,21 +1087,19 @@ public class ControlPanel extends VBox {
 
         // Tooltip with complete event details
         Tooltip tooltip = new Tooltip(String.format(
-            "%s\n\n📅 Date : %s\n⚡ Magnitude : %.1f (%s)\n📍 Coordonnées : %s\n\n💡 Double-cliquer pour centrer la vue 3D / 2D sur cet événement.",
+            "%s\n\n📅 Date : %s\n⚡ Magnitude : %.1f (%s)\n📍 Coordonnées : %s\n\n💡 Cliquer pour centrer la vue 3D / 2D sur cet événement.",
             evt.getTitle(), evt.getFormattedDate(), evt.getMagnitude(), evt.getIntensityLabel(), evt.getFormattedCoordinates()
         ));
         tooltip.setShowDelay(javafx.util.Duration.millis(150));
         Tooltip.install(card, tooltip);
 
-        // Double click navigates / flies camera to this event's coordinates and pings the location
+        // Click or Double click navigates / flies camera to this event's coordinates and pings the location
         card.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
-                if (mapCanvas != null) {
-                    mapCanvas.flyTo(evt.getLatitude(), evt.getLongitude());
-                    mapCanvas.pingLocation(evt.getLatitude(), evt.getLongitude(), evt.getTitle(), evt.getType(), evt.getMagnitude());
-                    if (notificationOverlay != null) {
-                        notificationOverlay.showNotification("🎯 Centrage sur l'événement :\n" + evt.getTitle(), "#38bdf8");
-                    }
+            if (mapCanvas != null) {
+                mapCanvas.flyTo(evt.getLatitude(), evt.getLongitude());
+                mapCanvas.pingLocation(evt.getLatitude(), evt.getLongitude(), evt.getTitle(), evt.getType(), evt.getMagnitude());
+                if (notificationOverlay != null) {
+                    notificationOverlay.showNotification("🎯 Centrage sur l'événement :\n" + evt.getTitle(), "#38bdf8");
                 }
             }
         });

@@ -208,8 +208,8 @@ public class H3Globe3DSubScene {
         final double startX = rotateX.getAngle();
         final double startY = rotateY.getAngle();
 
-        final double targetRotateX = -targetLat;
-        double dY = (-targetLng) - startY;
+        final double targetRotateX = Math.clamp(targetLat, -85.0, 85.0);
+        double dY = (180.0 - targetLng) - startY;
         while (dY > 180.0) dY -= 360.0;
         while (dY < -180.0) dY += 360.0;
         final double targetRotateY = startY + dY;
