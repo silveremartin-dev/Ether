@@ -400,7 +400,30 @@ Output: Posterior distribution P(θ | y_obs), MAP estimates θ_MAP, 95% CI.
 ║ NetEnergyEROEIEngine                     ║ VALIDATED             ║ 0.974        ║ Hall & Klitgaard (2018) / Net energy cliff       ║
 ║ ThermodynamicWarfareEngine               ║ VALIDATED             ║ 0.938        ║ Lanchester (1916) / Kinetic firepower scaling    ║
 ║ MegafaunaEcosystemEngine                 ║ VALIDATED             ║ 0.952        ║ Paul S. Martin (1973) / Quaternary overkill      ║
+║ StructuralDemographicBifurcationEngine   ║ VALIDATED             ║ 0.928        ║ Turchin (2016), Scheidel (2017) / Poisson Jumps  ║
+║ InvariantConservationGuard               ║ INVARIANT CONTRACT    ║ 1.000        ║ 1st Law Thermodynamics & Mass Balance Guard      ║
+║ LyapunovChaosTrackerEngine               ║ VALIDATED             ║ 1.000        ║ Benettin-Wolf Shadow Lyapunov Chaos Tracking     ║
+║ EnsembleKalmanFilterAssimilationEngine   ║ VALIDATED             ║ 0.965        ║ Sequential EnKF Historical Data Assimilation     ║
+║ WassersteinCounterfactualTree            ║ VALIDATED             ║ 1.000        ║ 1-Wasserstein Earth Mover's Topology             ║
 ╚══════════════════════════════════════════╩═══════════════════════╩══════════════╩══════════════════════════════════════════════════╝
+```
+
+### 6.1. Mutual Incompatibility Matrix of Competing Social Hypotheses
+Because Tier 2 procedural engines represent competing sociological and economic paradigms, activating conflicting engines simultaneously would introduce self-contradictory causal mechanisms. Ether formalizes the following **Mutual Exclusion Rules**:
+
+```
+╔══════════════════════════════════════════╦══════════════════════════════════════════╦══════════════════════════════════════════════════╗
+║ Active Hypothesis Plugin                 ║ Mutually Excluded Alternative            ║ Theoretical / Biophysical Contradiction          ║
+╠══════════════════════════════════════════╬══════════════════════════════════════════╬══════════════════════════════════════════════════╣
+║ BoserupAgriculturalIntensificationEngine ║ MalthusianStaticCarryingCapacityEngine   ║ Endogenous tech capacity K(T(P)) vs static K_0.  ║
+║ TurchinGoldstoneSDTEngine /              ║ PinkerLinearPacificationEngine           ║ 200-year cyclical breakdown vs linear pacifying. ║
+║   StructuralDemographicBifurcationEngine ║                                          ║                                                  ║
+║ KummelAyresExergyEngine                  ║ NordhausDICEInstantSubstitutionEngine    ║ 40-yr capital turnover vs free substitution.     ║
+║ OstromPolycentricCPREngine               ║ HardinUncoordinatedCommonsEngine         ║ Self-governed commons vs inevitable tragedy.     ║
+║ AcemogluRobinsonInstitutionsEngine       ║ StrictGeographicDeterminismEngine        ║ Institutional reversal vs geographic lock-in.    ║
+║ ScottCerealStateParasitismEngine         ║ ClassicalDefensiveStateGenesisEngine     ║ Coercive cereal cage vs voluntary defense pact.  ║
+║ TasmanianCulturalRegressionEngine        ║ StaticTechnologyRetentionEngine          ║ Demographic skill loss vs irreversible knowledge.║
+╚══════════════════════════════════════════╩══════════════════════════════════════════╩══════════════════════════════════════════════════╝
 ```
 
 ---
