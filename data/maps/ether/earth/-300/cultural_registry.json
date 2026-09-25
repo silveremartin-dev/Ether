@@ -1,0 +1,62 @@
+{
+  "epoch": -300,
+  "era": "Iron Age Classical Epoch (Maurya Empire, Hellenistic World & Warring States)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for -300 BP (300 BC)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "maurya_empire_ashoka",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.70, 0.92, 0.90, 0.95],
+      "name": {
+        "en": "Maurya Imperial Civilization (Pataliputra & Ashoka Edicts)",
+        "fr": "Empire Maurya d'Ashoka (Pataliputra & Édits sur Piliers)",
+        "de": "Maurya-Reich unter Ashoka (Pataliputra & Säulenedikte)",
+        "es": "Imperio Maurya de Ashoka (Pataliputra y Edictos en Pilares)",
+        "zh": "孔雀帝国阿育王政教文明（华氏城与石柱法令）"
+      },
+      "kinshipType": "Gotra Patrilineal Endogamy & Bureaucratic Monarchy",
+      "lithicTechnocomplex": "Brahmi Script Inscriptions, Northern Black Polished Ware & Iron Smelting",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "hellenistic_mediterranean",
+      "colorHex": "#3B82F6",
+      "colorRgb": [59, 130, 246],
+      "traits": [0.75, 0.88, 0.88, 0.85],
+      "name": {
+        "en": "Hellenistic Mediterranean Poleis (Alexandria, Athens & Antioch)",
+        "fr": "Monde Hellénistique (Alexandrie, Athènes & Antioche)",
+        "de": "Hellenistische Mittelmeerwelt (Alexandria, Athen & Antiochia)",
+        "es": "Mundo Helenístico del Mediterráneo (Alejandría, Atenas y Antioquía)",
+        "zh": "希腊化地中海城邦联盟（亚历山大港、雅典与安条克）"
+      },
+      "kinshipType": "Civic Polis Citizenship & Royal Courts",
+      "lithicTechnocomplex": "Papyrus Treatises, Torsion Catapults & Coinage Economy",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "qin_han_warring_states",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.72, 0.94, 0.92, 0.90],
+      "name": {
+        "en": "Late Warring States & Early Imperial China (Qin & Western Han)",
+        "fr": "Royaumes Combattants Tardifs & Unification Qin/Han",
+        "de": "Späte Streitende Reiche & Frühes Kaiserliches China (Qin & West-Han)",
+        "es": "Reinos Combatientes Tardíos e Imperio Qin/Han",
+        "zh": "战国晚期与秦汉帝国大一统文明（咸阳与长安）"
+      },
+      "kinshipType": "Prefectural Junxian System & Patriarchal Households",
+      "lithicTechnocomplex": "Standardized Small Seal Script, Crossbows & Cast Iron Plows",
+      "caloricIntakePerCapitaKcal": 3000
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "epoch": 0,
+  "era": "Classical Antiquity Peak (Pax Romana & Han Dynasty)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for Year 0 (1 AD)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "roman_empire_augustan",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.80, 0.95, 0.92, 0.88],
+      "name": {
+        "en": "Roman Principate & Pax Romana (Rome & Mediterranean Provinces)",
+        "fr": "Empire Romain & Pax Romana (Rome & Provinces Méditerranéennes)",
+        "de": "Römisches Reich & Pax Romana (Rom & Provinzen)",
+        "es": "Principado Romano y Pax Romana (Roma y Provincias)",
+        "zh": "罗马元首制与罗马和平时期（罗马与地中海诸省）"
+      },
+      "kinshipType": "Patria Potestas Civil Law & Imperial Bureaucracy",
+      "lithicTechnocomplex": "Pozzolanic Concrete (Opus Caementicium), Aqueducts & Viae Network",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "han_dynasty_china",
+      "colorHex": "#EF4444",
+      "colorRgb": [239, 68, 68],
+      "traits": [0.78, 0.96, 0.94, 0.92],
+      "name": {
+        "en": "Han Empire (Chang'an & Great Silk Road)",
+        "fr": "Empire Han (Chang'an & Route de la Soie)",
+        "de": "Han-Dynastie (Chang'an & Seidenstraße)",
+        "es": "Imperio Han (Chang'an y Ruta de la Seda)",
+        "zh": "汉帝国文明（长安与丝绸之路）"
+      },
+      "kinshipType": "Confucian Scholar-Bureaucracy & Extended Agnation",
+      "lithicTechnocomplex": "Cai Lun Paper Making, Blast Furnaces & Watermills",
+      "caloricIntakePerCapitaKcal": 3050
+    }
+  ]
+}

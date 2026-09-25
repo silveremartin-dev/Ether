@@ -1,0 +1,62 @@
+{
+  "epoch": 1639,
+  "era": "Tokugawa Sakoku Autarky & Early Modern Global Gunpowder Empires (1639 AD)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for Year 1639 AD",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "tokugawa_shogunate_sakoku",
+      "colorHex": "#2ECC71",
+      "colorRgb": [46, 204, 113],
+      "traits": [0.88, 0.96, 0.94, 0.90],
+      "name": {
+        "en": "Tokugawa Shogunate & Sakoku Maritime Edicts (Edo / Tokyo)",
+        "fr": "Shogunat Tokugawa & Isolement Autarcique Sakoku (Edo / Tokyo)",
+        "de": "Tokugawa-Shogunat & Sakoku-Isolation (Edo / Tokio)",
+        "es": "Shogunato Tokugawa y Aislamiento Autárquico Sakoku (Edo / Tokio)",
+        "zh": "德川幕府江户锁国文明（江户/东京）"
+      },
+      "kinshipType": "Baku-Han System, Samurai Castes & Ie Stem Family",
+      "lithicTechnocomplex": "Circular Bio-Economy, Nightsoil Recycling, Woodblock Printing & Castle Forts",
+      "caloricIntakePerCapitaKcal": 2800
+    },
+    {
+      "id": "mughal_empire_shah_jahan",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.86, 0.95, 0.95, 0.92],
+      "name": {
+        "en": "Mughal Empire at Architecture Peak (Delhi, Agra & Taj Mahal)",
+        "fr": "Empire Moghol à l'Apogée Architectural (Delhi, Âgrâ & Taj Mahal)",
+        "de": "Mogulreich zur Zeit des Taj Mahal (Delhi & Agra)",
+        "es": "Imperio Mogol en su Cúspide Arquitectónica (Delhi, Agra y Taj Mahal)",
+        "zh": "莫卧儿帝国盛世文明（德里、阿格拉与泰姬陵）"
+      },
+      "kinshipType": "Mansabdari Military-Fiscal Nobility",
+      "lithicTechnocomplex": "Pietra Dura Marble Craft, Proto-Industrial Cotton Textiles & Damascus Steel",
+      "caloricIntakePerCapitaKcal": 2950
+    },
+    {
+      "id": "ottoman_empire_murad_iv",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.85, 0.95, 0.94, 0.94],
+      "name": {
+        "en": "Ottoman Empire (Constantinople / Istanbul Sublime Porte)",
+        "fr": "Empire Ottoman (Constantinople / Istanbul & Sublime Porte)",
+        "de": "Osmanisches Reich (Konstantinopel / Istanbul)",
+        "es": "Imperio Otomano (Constantinopla / Estambul y Sublime Puerta)",
+        "zh": "奥斯曼帝国盛期文明（君士坦丁堡/伊斯坦布尔）"
+      },
+      "kinshipType": "Janissary Corps, Timar Land Grants & Millet Confessional Autonomy",
+      "lithicTechnocomplex": "Grand Bazaar Guilds, Bronze Siege Cannons & Imperial Iznik Ceramics",
+      "caloricIntakePerCapitaKcal": 3000
+    }
+  ]
+}

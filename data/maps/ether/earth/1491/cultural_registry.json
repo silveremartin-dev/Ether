@@ -1,0 +1,62 @@
+{
+  "epoch": 1491,
+  "era": "Pre-Columbian Americas Zenith (Tawantinsuyu Inca, Triple Alliance Aztec & Mississippian)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for Year 1491 AD",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "tawantinsuyu_inca_empire",
+      "colorHex": "#D97706",
+      "colorRgb": [217, 119, 6],
+      "traits": [0.82, 0.94, 0.92, 0.95],
+      "name": {
+        "en": "Inca Empire of Tawantinsuyu (Cusco & Qhapaq Ñan Network)",
+        "fr": "Empire Inca du Tawantinsuyu (Cuzco & Réseau Qhapaq Ñan)",
+        "de": "Inka-Reich Tawantinsuyu (Cusco & Qhapaq-Ñan-Straßennetz)",
+        "es": "Imperio Inca del Tawantinsuyu (Cuzco y Red Qhapaq Ñan)",
+        "zh": "印加帝国塔万廷苏尤（库斯科与印加路网）"
+      },
+      "kinshipType": "Ayllu Dual Moieties & Sapa Inca Divine State",
+      "lithicTechnocomplex": "Qhapaq Ñan Stone Road System, Quipu Accounting, Terracing & Ashlar Masonry",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "aztec_triple_alliance",
+      "colorHex": "#06B6D4",
+      "colorRgb": [6, 182, 212],
+      "traits": [0.80, 0.92, 0.90, 0.96],
+      "name": {
+        "en": "Aztec Triple Alliance (Tenochtitlan, Texcoco & Tlacopan)",
+        "fr": "Triple Alliance Aztèque (Tenochtitlan, Texcoco & Tlacopan)",
+        "de": "Aztekischer Dreibund (Tenochtitlan, Texcoco & Tlacopan)",
+        "es": "Triple Alianza Azteca (Tenochtitlan, Texcoco y Tlacopan)",
+        "zh": "阿兹特克三同盟文明（特诺奇蒂特兰、特斯科科与特拉科潘）"
+      },
+      "kinshipType": "Calpulli Neighborhood Clans & Hueyi Tlatoani Monarchy",
+      "lithicTechnocomplex": "Chinampa Hydro-Agriculture, Pictographic Codices & Obsidian Macuahuitl",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "ming_dynasty_renaissance",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.90, 0.98, 0.96, 0.92],
+      "name": {
+        "en": "Ming Empire (Forbidden City Beijing & Zheng He Maritime Legacy)",
+        "fr": "Empire Ming (Cité Interdite de Pékin & Flottes de Zheng He)",
+        "de": "Ming-Dynastie (Verbotene Stadt Peking & Zheng-He-Flotte)",
+        "es": "Imperio Ming (Ciudad Prohibida de Pekín y Flotas de Zheng He)",
+        "zh": "大明帝国文明（北京紫禁城与江南市井经济）"
+      },
+      "kinshipType": "Grand Secretariat & Neo-Confucian Lineage Ancestry",
+      "lithicTechnocomplex": "Porcelain Kilns, Great Wall Brick Restorations & Silver Economy",
+      "caloricIntakePerCapitaKcal": 3200
+    }
+  ]
+}

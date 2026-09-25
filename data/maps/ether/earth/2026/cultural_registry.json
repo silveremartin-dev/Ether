@@ -1,0 +1,30 @@
+{
+  "epoch": 2026,
+  "era": "Contemporary Planetary Technosphere & AI Inception (2026 AD)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for Year 2026 AD",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "contemporary_global_technosphere",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.99, 0.99, 0.99, 0.75],
+      "name": {
+        "en": "Planetary AI & Distributed Technosphere (Global Megalopolises)",
+        "fr": "Technosphère Planétaire & IA Distribuée (Mégalopoles Mondiales)",
+        "de": "Planetare KI- & Verteilte Technosphäre (Globale Megastädte)",
+        "es": "Tecnosfera Planetaria e IA Distribuida (Megalópolis Globales)",
+        "zh": "行星级人工智能与分布式技术圈文明（全球超大城市群）"
+      },
+      "kinshipType": "Hyper-Individualized Digital Households & Algorithmic Networks",
+      "lithicTechnocomplex": "Frontier AI Foundation Models, GPU Superclusters, Orbital Constellations & EV Grid",
+      "caloricIntakePerCapitaKcal": 3500
+    }
+  ]
+}

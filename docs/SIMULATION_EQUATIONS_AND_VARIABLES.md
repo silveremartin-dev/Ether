@@ -979,6 +979,69 @@ $$\frac{d M_{\text{megafauna}}}{dt} = r_M M \left(1 - \frac{M}{K_M}\right) - \ga
 
 Because large herbivores have slow intrinsic reproduction rates ($r_M \approx 0.04\text{--}0.08\text{ yr}^{-1}$), hominin hunting efficiency $\gamma_{\text{hunt}} \cdot N_{\text{hominin}} > r_M$ precipitates irreversible population crash within $500\text{--}1\,500\text{ years}$. Extinction removes megaherbivore biome disturbance, initiating vegetation succession (grassland $\to$ dense scrub/forest) and pyrogenic fire accumulation.
 
+---
+
+## 11. Scientific Hardening, Invariants, & Epistemic Verification Engines
+
+### 11.1 Runtime Invariant & Mass-Energy Conservation Guard (`InvariantConservationGuard`)
+To prevent unphysical numerical drift and ensure that the symplectic integration pipeline respects the 1st Law of Thermodynamics and conservation of mass, Ether executes continuous runtime invariant checks:
+
+$$\Delta M_{\text{total}} = \sum_{i=1}^N \left( \Delta M_{\text{human}, i} + \Delta M_{\text{livestock}, i} + \Delta M_{\text{crop}, i} + \Delta M_{\text{nature}, i} + \Delta M_{\text{food}, i} \right) - M_{\text{external\_input}} \le \epsilon \cdot M_{\text{total}}$$
+$$\Delta E_{\text{total}} = \sum_{i=1}^N \left( \Delta E_{\text{solar}, i} + \Delta E_{\text{wind}, i} + \Delta E_{\text{fire}, i} - \Delta E_{\text{consumed}, i} \right) - E_{\text{flux\_in}} \le \epsilon \cdot E_{\text{total}}$$
+
+* **Relative Tolerance**: $\epsilon = 10^{-5}$ default ($10^{-7}$ under strict deterministic physics).
+* **Positivity and Validity Invariants**: $\forall i, \, P_i \ge 0, \, F_i \ge 0, \, E_i \ge 0, \, \text{Gini}_i \in [0, 1]$.
+
+---
+
+### 11.2 Real-Time Maximal Lyapunov Exponent Tracking (`LyapunovChaosTrackerEngine`)
+To mathematically distinguish deterministic physical chaos from numerical integration instability, Ether employs the Benettin-Wolf tangent shadow perturbation method:
+
+$$\lambda_{\max} = \lim_{T \to \infty} \frac{1}{T} \sum_{k=1}^K \ln \left( \frac{\|\mathbf{x}_{\text{shadow}}(t_k) - \mathbf{x}_{\text{base}}(t_k)\|}{\|\mathbf{\delta}_0\|} \right)$$
+
+* **Perturbation Magnitude**: $\|\mathbf{\delta}_0\| = 10^{-6}$.
+* **Renormalization**: At each observation step $\Delta t$, the shadow state $\mathbf{x}_{\text{shadow}}$ is re-projected back to distance $\|\mathbf{\delta}_0\|$ along the perturbation direction vector $\mathbf{u}_k = \frac{\mathbf{x}_{\text{shadow}} - \mathbf{x}_{\text{base}}}{\|\mathbf{x}_{\text{shadow}} - \mathbf{x}_{\text{base}}\|}$.
+* **Dynamical Classification**:
+  * $\lambda_{\max} > 0.05$: Deterministic Chaos (sensitive dependence on initial conditions).
+  * $-0.05 \le \lambda_{\max} \le 0.05$: Neutral Limit Cycle / Stable Periodic Orbit.
+  * $\lambda_{\max} < -0.05$: Asymptotic Contraction / Stable Equilibrium Attractor.
+
+---
+
+### 11.3 Structural Demographic Bifurcation & Poisson Catastrophe Jumps (`StructuralDemographicBifurcationEngine`)
+Translates continuous Goldstone-Turchin Political Stress Index ($PSI$) tensors into discrete macro-historical regime collapses and Great Leveler dissipation jumps without requiring micro-cognitive individual agents:
+
+$$\text{PSI}_i = \text{MMP}_i \cdot \text{EMP}_i \cdot \text{SF}_i$$
+$$\lambda_{\text{crisis}, i} = \lambda_0 \cdot \exp\left( \kappa \cdot \max(0, \, \text{PSI}_i - \text{PSI}_{\text{crit}}) \right)$$
+$$P(\text{Crisis Jump in } [t, t+\Delta t]) = 1.0 - \exp\left(-\lambda_{\text{crisis}, i} \cdot \Delta t\right)$$
+
+* **Structural Dissipative Shock Transitions (Scheidel Great Leveler)**:
+  * Wealth inequality compression: $\text{Gini}_{t+} = \max(0.20, \, 0.70 \cdot \text{Gini}_{t-})$.
+  * Physical capital destruction: $K_{t+} = \max(10, \, 0.75 \cdot K_{t-})$.
+  * Crisis excess mortality: $P_{t+} = \max(20, \, 0.85 \cdot P_{t-})$.
+
+---
+
+### 11.4 Sequential Ensemble Kalman Filter Data Assimilation (`EnsembleKalmanFilterAssimilationEngine`)
+Ingests empirical historical time series (Seshat, HYDE 3.4, Maddison) into a parallel ensemble of $M = 20\text{--}50$ planetary trajectories:
+
+$$\mathbf{K}_k = \mathbf{P}_k^f \mathbf{H}^T \left( \mathbf{H} \mathbf{P}_k^f \mathbf{H}^T + \mathbf{R} \right)^{-1}$$
+$$\mathbf{x}_i^a = \mathbf{x}_i^f + \mathbf{K}_k \left( \mathbf{y}_{\text{obs}, k} + \boldsymbol{\epsilon}_i - \mathbf{H} \mathbf{x}_i^f \right)$$
+
+* **Epistemic Discrepancy Index**:
+  $$\Omega_k = \left\| \bar{\mathbf{x}}_k^a - \bar{\mathbf{x}}_k^f \right\|$$
+  Quantifies the degree to which empirical historical history defied the biophysical and structural cliodynamic equations.
+
+---
+
+### 11.5 1-Wasserstein Counterfactual Phylogenetic Topology (`WassersteinCounterfactualTree`)
+Measures the exact optimal transport Earth Mover's Distance between alternative spatial distributions of civilization across branched counterfactual timeline scenarios:
+
+$$W_1(\mu_A, \mu_B) = \int_{-\infty}^{\infty} \left| \text{CDF}_A(x) - \text{CDF}_B(x) \right| \, dx$$
+
+Constructs an ultrametric dendrogram matrix $D_{ij} = W_1(\text{Scenario}_i, \, \text{Scenario}_j)$ mapping the phylogenetic tree of divergent historical worlds.
+
+
 
 
 

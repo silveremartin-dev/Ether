@@ -1,0 +1,46 @@
+{
+  "epoch": 1492,
+  "era": "Columbian Exchange & Age of Global Discovery (1492 AD)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for Year 1492 AD",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "spanish_habsburg_monarchy",
+      "colorHex": "#EAB308",
+      "colorRgb": [234, 179, 8],
+      "traits": [0.88, 0.95, 0.94, 0.94],
+      "name": {
+        "en": "Crown of Castile & Early Oceanic Exploration (Seville & Caribbean)",
+        "fr": "Couronne de Castille & Premières Traversées Océaniques (Séville & Caraïbes)",
+        "de": "Krone von Kastilien & Frühe Ozeanische Entdeckungen (Sevilla & Karibik)",
+        "es": "Corona de Castilla y Primeras Travesías Oceánicas (Sevilla y Caribe)",
+        "zh": "卡斯蒂利亚王国与大航海地理大发现先驱（塞维利亚与加勒比）"
+      },
+      "kinshipType": "Hidalgo Nobility & Royal Casa de Contratación",
+      "lithicTechnocomplex": "Oceanic Caravels, Astrolabes, Matchlock Arquebuses & Portolan Charts",
+      "caloricIntakePerCapitaKcal": 2950
+    },
+    {
+      "id": "portuguese_estado_da_india",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.88, 0.94, 0.94, 0.92],
+      "name": {
+        "en": "Portuguese Maritime Empire & Cape Route (Lisbon & Goa)",
+        "fr": "Empire Maritime Portugais & Route du Cap (Lisbonne & Goa)",
+        "de": "Portugiesisches Seereich & Kaproute (Lissabon & Goa)",
+        "es": "Imperio Marítimo Portugués y Ruta del Cabo (Lisboa y Goa)",
+        "zh": "葡萄牙好望角航线与海洋帝国（里斯本与果阿）"
+      },
+      "kinshipType": "Casa da Índia & Feitoria Factory Network",
+      "lithicTechnocomplex": "Carracks (Nau), Global Spices Transshipment & Coastal Feitorias",
+      "caloricIntakePerCapitaKcal": 2900
+    }
+  ]
+}

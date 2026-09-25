@@ -1,0 +1,46 @@
+{
+  "epoch": 536,
+  "era": "Late Antique Volcanic Winter & Justinian Plague (536 AD)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for Year 536 AD",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "byzantine_justinianic",
+      "colorHex": "#9333EA",
+      "colorRgb": [147, 51, 234],
+      "traits": [0.82, 0.92, 0.85, 0.92],
+      "name": {
+        "en": "Eastern Roman Empire (Constantinople & Justinian Codex)",
+        "fr": "Empire Romain d'Orient (Constantinople & Code Justinien)",
+        "de": "Oströmisches Reich (Konstantinopel & Justinianischer Kodex)",
+        "es": "Imperio Romano de Oriente (Constantinopla y Código de Justiniano)",
+        "zh": "东罗马拜占庭帝国（君士坦丁堡与查士丁尼法典）"
+      },
+      "kinshipType": "Imperial Senate, Orthodox Clergy & Thematic System",
+      "lithicTechnocomplex": "Hagia Sophia Pendentive Domes, Silk Workshops & Dromon Fleets",
+      "caloricIntakePerCapitaKcal": 2800
+    },
+    {
+      "id": "sasanian_persian_empire",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.80, 0.90, 0.86, 0.90],
+      "name": {
+        "en": "Sasanian Empire (Ctesiphon & Zoroastrian High Priesthood)",
+        "fr": "Empire Sassanide (Ctésiphon & Clergé Zoroastrien)",
+        "de": "Sassanidisches Reich (Ktesiphon & Zoroastrischer Klerus)",
+        "es": "Imperio Sasánida (Ctesifonte y Clero Zoroástrico)",
+        "zh": "萨珊波斯帝国（泰西封与琐罗亚斯德祭司团）"
+      },
+      "kinshipType": "Dehqan Gentry & Zoroastrian Caste Hierarchy",
+      "lithicTechnocomplex": "Taq Kasra Arch, Qanat Irrigation Systems & Heavy Cataphracts",
+      "caloricIntakePerCapitaKcal": 2850
+    }
+  ]
+}

@@ -14,3 +14,4 @@ org.ether.society.procedural.tier2.KummelAyresExergyEngine
 org.ether.society.procedural.tier2.SoilSalinizationHydrologyEngine
 org.ether.society.procedural.tier2.KrugmanCorePeripheryEngine
 org.ether.society.procedural.tier2.SchellingAxelrodSegregationEngine
+org.ether.society.procedural.tier2.StructuralDemographicBifurcationEngine

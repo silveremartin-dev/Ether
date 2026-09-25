@@ -1,0 +1,78 @@
+{
+  "epoch": -6000,
+  "era": "Middle Neolithic / Holocene Climatic Optimum (Proto-Urban Ubaid & Mega-Chad Optimum)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for -6,000 BP",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "ubaid_mesopotamian_proto_urban",
+      "colorHex": "#E74C3C",
+      "colorRgb": [231, 76, 60],
+      "traits": [0.55, 0.60, 0.80, 0.75],
+      "name": {
+        "en": "Proto-Urban Ubaid Temple Complexes (Eridu & Tell el-'Oueili)",
+        "fr": "Complexes Templiers Proto-Urbains d'Obeïd (Eridu & Tell el-'Oueili)",
+        "de": "Proto-Urbane Ubaid-Tempelkomplexe (Eridu & Tell el-'Oueili)",
+        "es": "Complejos Templarios Proto-Urbanos de Ubaid (Eridu y Tell el-'Oueili)",
+        "zh": "欧贝德原初城市神庙复合体（埃利都与欧埃利遗址）"
+      },
+      "kinshipType": "Ranked Theocratic Lineages",
+      "lithicTechnocomplex": "Fired Mudbrick, Copper Metallurgy & Canal Irrigation",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "vinca_cucuteni_danubian_copper",
+      "colorHex": "#3498DB",
+      "colorRgb": [52, 152, 219],
+      "traits": [0.50, 0.55, 0.75, 0.70],
+      "name": {
+        "en": "Old European Metallurgical Cultures (Vinča & Cucuteni-Trypillia)",
+        "fr": "Cultures Métallurgiques de la Vieille Europe (Vinča & Cucuteni-Trypillia)",
+        "de": "Alteuropäische Metallurgische Kulturen (Vinča & Cucuteni-Trypillia)",
+        "es": "Culturas Metalúrgicas de la Vieja Europa (Vinča y Cucuteni-Trypillia)",
+        "zh": "古欧洲早期铜冶金文化（温查与库库泰尼-特里波利耶大型聚落）"
+      },
+      "kinshipType": "Matrilineal Mega-Village Clans",
+      "lithicTechnocomplex": "Pločnik Copper Smelting, Vinča Symbols & Painted Ceramics",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "yangshao_hemudu_chinese_neolithic",
+      "colorHex": "#2ECC71",
+      "colorRgb": [46, 204, 113],
+      "traits": [0.52, 0.50, 0.78, 0.68],
+      "name": {
+        "en": "Yangshao Painted Pottery & Hemudu Wet Rice Cultures (Banpo & Hemudu)",
+        "fr": "Yangshao à Céramique Peinte & Riziculture d'Hemudu (Banpo & Hemudu)",
+        "de": "Yangshao-Bemalte Keramik & Hemudu-Nassreiskulturen (Banpo & Hemudu)",
+        "es": "Culturas de Cerámica Pintada de Yangshao y Arroz de Hemudu (Banpo)",
+        "zh": "仰韶彩陶与河姆渡水稻农业文化（半坡与河姆渡）"
+      },
+      "kinshipType": "Clan Moieties with Communal Houses",
+      "lithicTechnocomplex": "Jade Carving, Silk Sericulture & Spindle Whorls",
+      "caloricIntakePerCapitaKcal": 2700
+    },
+    {
+      "id": "badarian_naqada_predynastic_nile",
+      "colorHex": "#D35400",
+      "colorRgb": [211, 84, 0],
+      "traits": [0.48, 0.52, 0.72, 0.72],
+      "name": {
+        "en": "Predynastic Nile Agropastoralists (Badarian & Early Naqada)",
+        "fr": "Agro-pasteurs Prédynastiques du Nil (Badarien & Naqada I)",
+        "de": "Prädynastische Nil-Ackerbauern (Badari- & Früh-Naqada-Kultur)",
+        "es": "Agropastores Predinásticos del Nilo (Badariense y Naqada Temprano)",
+        "zh": "尼罗河前王朝农牧文化（巴达里与早期涅伽达文化）"
+      },
+      "kinshipType": "Segmentary Chieftain Lineages",
+      "lithicTechnocomplex": "Cosmetic Palettes, Malachite Grinding & Black-topped Pottery",
+      "caloricIntakePerCapitaKcal": 2600
+    }
+  ]
+}

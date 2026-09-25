@@ -1,0 +1,46 @@
+{
+  "epoch": 2000,
+  "era": "Digital Anthropocene & Global Great Acceleration (2000 AD)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for Year 2000 AD",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "global_digital_information_network",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.98, 0.99, 0.99, 0.80],
+      "name": {
+        "en": "Global Digital Information Network (Silicon Valley, Tokyo & European Nodes)",
+        "fr": "Réseau d'Information Numérique Mondial (Silicon Valley, Tokyo & Nœuds Européens)",
+        "de": "Globales Digitales Informationsnetzwerk (Silicon Valley, Tokio & Europa)",
+        "es": "Red Global de Información Digital (Silicon Valley, Tokio y Nodos Europeos)",
+        "zh": "全球数字化信息与互联网络文明（硅谷、东京与欧洲中枢）"
+      },
+      "kinshipType": "Nuclear Post-Industrial Households & Multinational Corporations",
+      "lithicTechnocomplex": "Silicon Microchips, World Wide Web, Global Satellites & Containerized Logistics",
+      "caloricIntakePerCapitaKcal": 3450
+    },
+    {
+      "id": "east_asian_manufacturing_hub",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.96, 0.99, 0.99, 0.85],
+      "name": {
+        "en": "East Asian Industrial Manufacturing Belt (Pearl River & Yangtze Deltas)",
+        "fr": "Bassin Manufacturier d'Asie Orientale (Deltas de la Rivière des Perles & Yangtsé)",
+        "de": "Ostasiatischer Industrieller Fertigungsgürtel (Perlfluss- & Jangtse-Delta)",
+        "es": "Cinturón Manufacturero de Asia Oriental (Deltas del Río de las Perlas y Yangtsé)",
+        "zh": "东亚世界工厂与制造业基地（珠江三角洲与长江三角洲）"
+      },
+      "kinshipType": "Rapid Urbanizing Nuclear Households & Special Economic Zones",
+      "lithicTechnocomplex": "High-Density Electronics SMT, Deep-Water Mega-Ports & High-Speed Rail",
+      "caloricIntakePerCapitaKcal": 3300
+    }
+  ]
+}

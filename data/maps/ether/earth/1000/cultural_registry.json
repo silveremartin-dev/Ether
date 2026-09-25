@@ -1,0 +1,62 @@
+{
+  "epoch": 1000,
+  "era": "Song Dynasty & High Medieval Golden Age (1000 AD)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for Year 1000 AD",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "song_dynasty_china",
+      "colorHex": "#EF4444",
+      "colorRgb": [239, 68, 68],
+      "traits": [0.85, 0.98, 0.98, 0.94],
+      "name": {
+        "en": "Northern Song Hydraulic & Commercial Civilization (Kaifeng)",
+        "fr": "Civilisation Song Hydraulique & Marchande (Kaifeng)",
+        "de": "Nördliche Song-Dynastie Handelszivilisation (Kaifeng)",
+        "es": "Civilización Comercial e Hidráulica Song del Norte (Kaifeng)",
+        "zh": "北宋水利与早熟商业文明（开封与大运河）"
+      },
+      "kinshipType": "Keju Imperial Examination Meritocracy & Lineage Trust Estates",
+      "lithicTechnocomplex": "Movable Type Printing, Magnetic Compass, Gunpowder & Jiaozi Paper Money",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "abbasid_caliphate_islamic_golden_age",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.84, 0.94, 0.92, 0.95],
+      "name": {
+        "en": "Abbasid House of Wisdom & Islamic Golden Age (Baghdad)",
+        "fr": "Califat Abbasside & Maison de la Sagesse (Bagdad)",
+        "de": "Abbasidisches Kalifat & Haus der Weisheit (Bagdad)",
+        "es": "Califato Abasí y Casa de la Sabiduría (Bagdad)",
+        "zh": "阿拔斯哈里发国智慧宫文明（巴格达）"
+      },
+      "kinshipType": "Sharia Jurisprudence, Diwan Administration & Merchant Guilds",
+      "lithicTechnocomplex": "Astrolabes, Paper Mills, Windmills & Algebraic Mathematics",
+      "caloricIntakePerCapitaKcal": 2950
+    },
+    {
+      "id": "classic_maya_terminal",
+      "colorHex": "#06B6D4",
+      "colorRgb": [6, 182, 212],
+      "traits": [0.65, 0.85, 0.86, 0.90],
+      "name": {
+        "en": "Terminal Classic Maya & Toltec Horizons (Chichen Itza & Tula)",
+        "fr": "Maya Classique Terminal & Toltèques (Chichen Itza & Tula)",
+        "de": "Terminal-Klassische Maya & Tolteken (Chichén Itzá & Tula)",
+        "es": "Maya Clásico Terminal y Toltecas (Chichén Itzá y Tula)",
+        "zh": "终典期玛雅与托尔特克文明（奇琴伊察与图拉）"
+      },
+      "kinshipType": "K'uhul Ajaw Sacred Lordships",
+      "lithicTechnocomplex": "Hieroglyphic Codices, Astronomical Observatories & Cenote Hydraulic Systems",
+      "caloricIntakePerCapitaKcal": 2700
+    }
+  ]
+}

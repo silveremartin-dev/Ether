@@ -1,0 +1,46 @@
+{
+  "epoch": 1800,
+  "era": "First Industrial Revolution & Mineral Energy Regime (1800 AD)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for Year 1800 AD",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "british_industrial_revolution",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.94, 0.98, 0.98, 0.85],
+      "name": {
+        "en": "British Coal & Steam Industrial Revolution (Manchester & Birmingham)",
+        "fr": "Révolution Industrielle Britannique (Charbon & Vapeur à Manchester)",
+        "de": "Britische Industrielle Revolution (Kohle & Dampf in Manchester)",
+        "es": "Revolución Industrial Británica (Carbón y Vapor en Mánchester)",
+        "zh": "英国工业革命矿物能源体系（曼彻斯特与伯明翰）"
+      },
+      "kinshipType": "Industrial Capitalist Bourgeoisie & Wage-Labor Proletariat",
+      "lithicTechnocomplex": "Watt Steam Engines, Puddling Iron Metallurgy, Power Looms & Canal Barges",
+      "caloricIntakePerCapitaKcal": 3300
+    },
+    {
+      "id": "qing_dynasty_high_era",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.92, 0.98, 0.98, 0.90],
+      "name": {
+        "en": "High Qing Civilization (Jiaqing Reign & Jiangnan Commercial Heartland)",
+        "fr": "Civilisation des Grands Qing (Règne de Jiaqing & Prospérité du Jiangnan)",
+        "de": "Hohe Qing-Dynastie (Jiaqing-Ära & Jiangnan-Handelszentren)",
+        "es": "Cúspide de la Dinastía Qing (Reinado de Jiaqing y Prosperidad del Jiangnan)",
+        "zh": "大清盛世文明（嘉庆时期与江南市镇工商业网络）"
+      },
+      "kinshipType": "Eight Banners & Neo-Confucian Lineage Clan Estates",
+      "lithicTechnocomplex": "Intensive Double-Cropping Wet Rice, Tea Export Monopolies & Canton System",
+      "caloricIntakePerCapitaKcal": 3150
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "epoch": -8000,
+  "era": "Early Holocene / 8.2 ka Event (Early Neolithic Transition & Green Sahara)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for -8,000 BP",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "catalhoyuk_anatolian_farmers",
+      "colorHex": "#D35400",
+      "colorRgb": [211, 84, 0],
+      "traits": [0.35, 0.40, 0.70, 0.65],
+      "name": {
+        "en": "Central Anatolian Mega-Village Farmers (Çatalhöyük & Hacılar)",
+        "fr": "Agriculteurs des Méga-Villages d'Anatolie Centrale (Çatalhöyük & Hacılar)",
+        "de": "Zentralanatolische Großdorf-Bauern (Çatalhöyük & Hacılar)",
+        "es": "Agricultores de Mega-Aldeas de Anatolia Central (Çatalhöyük y Hacılar)",
+        "zh": "安纳托利亚中部大型村落农耕者（恰塔尔霍育克与哈吉拉尔）"
+      },
+      "kinshipType": "Egalitarian Matrifocal Village Moieties",
+      "lithicTechnocomplex": "Polished Stone & Obsidian Pressure Blade Technology",
+      "caloricIntakePerCapitaKcal": 2600
+    },
+    {
+      "id": "sesklo_cardial_european_eef",
+      "colorHex": "#3498DB",
+      "colorRgb": [52, 152, 219],
+      "traits": [0.40, 0.35, 0.65, 0.55],
+      "name": {
+        "en": "Early European Farmers (EEF / Sesklo & Starčevo-Körös)",
+        "fr": "Premiers Agriculteurs Européens (EEF / Sesklo & Starčevo-Körös)",
+        "de": "Frühe Europäische Bauern (EEF / Sesklo & Starčevo-Körös)",
+        "es": "Primeros Agricultores Europeos (EEF / Sesklo y Starčevo-Körös)",
+        "zh": "早期欧洲农耕先民（EEF / 塞斯克洛与斯塔切沃文化）"
+      },
+      "kinshipType": "Patrilocal Clan Aggregations",
+      "lithicTechnocomplex": "Cardial Impressed Ware & Ground Stone Adzes",
+      "caloricIntakePerCapitaKcal": 2550
+    },
+    {
+      "id": "jiahu_cishan_chinese_millet_rice",
+      "colorHex": "#E74C3C",
+      "colorRgb": [231, 76, 60],
+      "traits": [0.50, 0.45, 0.75, 0.70],
+      "name": {
+        "en": "Yellow & Yangtze River Early Agriculturalists (Jiahu & Peiligang-Cishan)",
+        "fr": "Premiers Agriculteurs du Fleuve Jaune & Yangtsé (Jiahu & Peiligang-Cishan)",
+        "de": "Frühe Ackerbauern am Gelben Fluss & Jangtse (Jiahu & Peiligang-Cishan)",
+        "es": "Primeros Agricultores de los Ríos Amarillo y Yangtsé (Jiahu y Peiligang)",
+        "zh": "黄河与长江流域早期农耕先民（贾湖与裴李岗-磁山文化）"
+      },
+      "kinshipType": "Sedentary Village Lineages",
+      "lithicTechnocomplex": "Bone Flutes, Fermented Beverages & Cord-marked Pottery",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "mehrgarh_indus_precursors",
+      "colorHex": "#9C27B0",
+      "colorRgb": [156, 39, 176],
+      "traits": [0.45, 0.38, 0.68, 0.58],
+      "name": {
+        "en": "Mehrgarh Early Baluchistan Agropastoralists (Period I-II)",
+        "fr": "Agro-pasteurs de Mehrgarh & Baloutchistan (Période I-II)",
+        "de": "Frühe Ackerbauern von Mehrgarh & Belutschistan (Periode I-II)",
+        "es": "Agropastores Tempranos de Mehrgarh y Baluchistán (Período I-II)",
+        "zh": "梅赫尔格尔早期俾路支农牧先民（第一至二期）"
+      },
+      "kinshipType": "Mudbrick Compound Extended Families",
+      "lithicTechnocomplex": "Aceramic Neolithic Microliths & Zebu Cattle Domestication",
+      "caloricIntakePerCapitaKcal": 2500
+    },
+    {
+      "id": "nabta_playa_green_sahara_pastoralists",
+      "colorHex": "#27AE60",
+      "colorRgb": [39, 174, 96],
+      "traits": [0.30, 0.30, 0.50, 0.60],
+      "name": {
+        "en": "Green Sahara Megalithic Cattle Pastoralists (Nabta Playa)",
+        "fr": "Pasteurs de Bovins du Sahara Vert (Mégalithes de Nabta Playa)",
+        "de": "Megalithische Rinderhirten der Grünen Sahara (Nabta Playa)",
+        "es": "Pastores Megalíticos de Ganado del Sáhara Verde (Nabta Playa)",
+        "zh": "绿色撒哈拉巨石天文牧牛群体（纳布塔普拉亚）"
+      },
+      "kinshipType": "Nomadic Cattle Pastoral Moieties",
+      "lithicTechnocomplex": "Astronomical Megalithic Alignments & Dotted Wavy Line Pottery",
+      "caloricIntakePerCapitaKcal": 2450
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "epoch": -3000,
+  "era": "Early Bronze Age (Unification of Egypt & Sumerian Early Dynastic)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for -3,000 BP (3000 BC)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "egypt_early_dynastic_pharaonic",
+      "colorHex": "#D35400",
+      "colorRgb": [211, 84, 0],
+      "traits": [0.60, 0.85, 0.88, 0.90],
+      "name": {
+        "en": "Early Dynastic Pharaonic Egypt (Narmer & Thinite Dynasty)",
+        "fr": "Égypte Pharaonique Thinite (Narmer & Première Dynastie)",
+        "de": "Frühdynastisches Pharaonisches Ägypten (Narmer & Thinitenzeit)",
+        "es": "Egipto Faraónico Dinástico Temprano (Narmer y Época Tinita)",
+        "zh": "早期埃及法老王朝（那尔迈与提尼斯第一王朝）"
+      },
+      "kinshipType": "Centralized Divine Kingship & Scribes",
+      "lithicTechnocomplex": "Hieroglyphic Script, Basin Irrigation & Monumental Mastabas",
+      "caloricIntakePerCapitaKcal": 2800
+    },
+    {
+      "id": "sumer_uruk_cuniform_city_states",
+      "colorHex": "#E74C3C",
+      "colorRgb": [231, 76, 60],
+      "traits": [0.65, 0.90, 0.92, 0.88],
+      "name": {
+        "en": "Sumerian City-State Complex (Uruk IV & Kish)",
+        "fr": "Cités-États Sumériennes (Uruk IV & Kish)",
+        "de": "Sumerische Stadtstaaten-Zivilisation (Uruk IV & Kisch)",
+        "es": "Complejo de Ciudades-Estado Sumerias (Uruk IV y Kish)",
+        "zh": "苏美尔城邦文明复合体（乌鲁克第四期与基什）"
+      },
+      "kinshipType": "Temple-City Ensi Theocracy",
+      "lithicTechnocomplex": "Proto-Cuneiform Clay Tablets, Bronze Casting & Cylinder Seals",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "caral_supe_norte_chico",
+      "colorHex": "#1ABC9C",
+      "colorRgb": [26, 188, 156],
+      "traits": [0.45, 0.70, 0.75, 0.80],
+      "name": {
+        "en": "Norte Chico Monumental Center (Caral-Supe)",
+        "fr": "Centre Monumental de Caral-Supe (Norte Chico)",
+        "de": "Monumentales Zentrum Norte Chico (Caral-Supe)",
+        "es": "Centro Monumental de Caral-Supe (Norte Chico)",
+        "zh": "小北文明巨石金字塔聚落（卡拉尔-苏佩）"
+      },
+      "kinshipType": "Maritime-Agro Cotton Theocratic Complex",
+      "lithicTechnocomplex": "Quipu Knotted Records, Sunken Circular Plazas & Monumental Pyramids",
+      "caloricIntakePerCapitaKcal": 2500
+    },
+    {
+      "id": "liangzhu_jade_hydraulic_culture",
+      "colorHex": "#2ECC71",
+      "colorRgb": [46, 204, 113],
+      "traits": [0.55, 0.75, 0.82, 0.85],
+      "name": {
+        "en": "Liangzhu Hydraulic City & Jade Civilization (Taihu Lake)",
+        "fr": "Cité Hydraulique & Civilisation du Jade de Liangzhu",
+        "de": "Hydraulische Stadt- & Jadekultur Liangzhu",
+        "es": "Ciudad Hidráulica y Cultura de Jade de Liangzhu",
+        "zh": "良渚水利巨城与玉器文明（太湖流域）"
+      },
+      "kinshipType": "Stratified Elite Moieties",
+      "lithicTechnocomplex": "Cong & Bi Ritual Jades, Massive Earthen Dams & Canal Networks",
+      "caloricIntakePerCapitaKcal": 2750
+    }
+  ]
+}

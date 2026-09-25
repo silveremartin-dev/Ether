@@ -1,0 +1,46 @@
+{
+  "epoch": 1324,
+  "era": "Late Medieval & Trans-Saharan Trade Peak (Mali Empire Mansa Musa & Yuan Dynasty)",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for Year 1324 AD",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "mali_empire_mansa_musa",
+      "colorHex": "#D97706",
+      "colorRgb": [217, 119, 6],
+      "traits": [0.80, 0.90, 0.88, 0.92],
+      "name": {
+        "en": "Mali Empire & Trans-Saharan Gold Nexus (Niani, Timbuktu & Djenné)",
+        "fr": "Empire du Mali & Commerce de l'Or (Niani, Tombouctou & Djenné)",
+        "de": "Mali-Reich & Transsahara-Goldhandel (Niani, Timbuktu & Djenné)",
+        "es": "Imperio de Malí y Rutas de Oro Transaharianas (Tombuctú y Djenné)",
+        "zh": "马里帝国与跨撒哈拉黄金商贸文明（廷巴克图与杰内）"
+      },
+      "kinshipType": "Mansa Royal Sovereignty & Gbara Assembly",
+      "lithicTechnocomplex": "Sudano-Sahelian Adobe Architecture (Sankore University) & Gold Coinage",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "yuan_dynasty_mongol_pax",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.96, 0.95, 0.90],
+      "name": {
+        "en": "Yuan Dynasty & Pax Mongolica (Khanbaliq / Dadu)",
+        "fr": "Dynastie Yuan & Pax Mongolica (Khanbalik / Dadu)",
+        "de": "Yuan-Dynastie & Pax Mongolica (Khanbaliq / Dadu)",
+        "es": "Dinastía Yuan y Pax Mongolica (Janbalic / Dadu)",
+        "zh": "元朝大都与蒙古和平欧亚商贸网络（大都）"
+      },
+      "kinshipType": "Chinggisid Royal Clan & Semu Administrative Hierarchy",
+      "lithicTechnocomplex": "Chao Paper Currency, Grand Canal Grain Transshipment & Trebuchet Artillery",
+      "caloricIntakePerCapitaKcal": 3100
+    }
+  ]
+}

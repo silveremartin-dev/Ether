@@ -298,6 +298,27 @@ public class MetricRegistry {
             cell -> 100.0,
             cells -> 100.0
         ));
+
+        register(new MetricDescriptor(
+            "lyapunovExponent", "🌀 Exposant de Lyapunov λ_max", MetricDescriptor.Category.COMPLEXITY, "1/an",
+            "Mesure la divergence exponentielle des trajectoires d'ombre (sensibilité aux conditions initiales et chaos déterministe).",
+            cell -> 0.0,
+            cells -> 0.0
+        ));
+
+        register(new MetricDescriptor(
+            "epistemicDiscrepancy", "🔬 Écart Épistémique Ω_k", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
+            "Distance quadratique entre la prédiction du modèle physique et les repères empiriques historiques (Seshat, HYDE).",
+            cell -> 0.0,
+            cells -> 0.0
+        ));
+
+        register(new MetricDescriptor(
+            "psiStressIndex", "⚡ Stress Politique PSI (Turchin)", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
+            "Indice de tension structurelle-démographique : PSI = MMP · EMP · SF.",
+            cell -> cell.getGiniIndex() != null ? cell.getGiniIndex() * 2.0 : 0.0,
+            cells -> cells.stream().mapToDouble(c -> c.getGiniIndex() != null ? c.getGiniIndex() * 2.0 : 0.0).average().orElse(0.0)
+        ));
     }
 
     public MetricDescriptor getDescriptor(String id) {
