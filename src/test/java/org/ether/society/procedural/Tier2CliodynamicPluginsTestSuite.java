@@ -155,6 +155,53 @@ public class Tier2CliodynamicPluginsTestSuite {
     }
 
     @Test
+    @DisplayName("Soil Salinization Hydrology: Salt accumulation degrades crop yield in arid basins")
+    public void testSoilSalinization() {
+        SoilSalinizationHydrologyEngine engine = new SoilSalinizationHydrologyEngine();
+        assertNotNull(engine.getEquationsTooltip());
+        assertTrue(engine.getEquationsTooltip().contains("Jacobsen"));
+
+        H3Cell mesopotamianCell = new H3Cell();
+        mesopotamianCell.setPopulation(5000);
+        mesopotamianCell.setRainfall(180.0);
+        mesopotamianCell.setTemperature(26.0);
+        mesopotamianCell.setElevation(50.0);
+        mesopotamianCell.setFoodResource(5000.0);
+        mesopotamianCell.setTechnologyLevel(2.0);
+
+        engine.process(List.of(mesopotamianCell), 10.0);
+        assertTrue(mesopotamianCell.getFoodResource() < 5000.0, "Intensive irrigation in arid lowland must trigger salinization yield penalty");
+    }
+
+    @Test
+    @DisplayName("Draft Animal Fodder Allocation: Work amplification balanced by fodder land competition")
+    public void testDraftAnimalFodderAllocation() {
+        DraftAnimalFodderAllocationEngine engine = new DraftAnimalFodderAllocationEngine();
+        assertNotNull(engine.getEquationsTooltip());
+        assertTrue(engine.getEquationsTooltip().contains("Smil"));
+
+        H3Cell medievalCell = new H3Cell();
+        medievalCell.setPopulation(2000);
+        medievalCell.setResourceCapital(10000.0);
+        medievalCell.setFoodResource(2000.0);
+        medievalCell.setTechnologyLevel(3.0);
+
+        engine.process(List.of(medievalCell), 1.0);
+        assertTrue(medievalCell.getResourceCapital() > 10000.0, "Draft animals must augment available capital and labor productivity");
+        assertTrue(medievalCell.getFoodResource() < 2000.0, "Fodder preemption must slightly reduce food directly available to humans");
+    }
+
+    @Test
+    @DisplayName("SPI ServiceLoader: Discover and register all classpath procedural plugins")
+    public void testSpiDiscovery() {
+        ProceduralEngineRegistry.clearPlugins();
+        int loaded = ProceduralEngineSpiLoader.loadClasspathPlugins();
+        assertTrue(loaded >= 15, "SPI loader should discover all 16 registered ProceduralEnginePlugin implementations");
+        assertTrue(ProceduralEngineRegistry.getPluginCount() >= 15);
+        ProceduralEngineRegistry.clearPlugins();
+    }
+
+    @Test
     @DisplayName("ProceduralEngineRegistry integration with Tier 2 plugins")
     public void testRegistryIntegration() {
         ProceduralEngineRegistry.clearPlugins();
