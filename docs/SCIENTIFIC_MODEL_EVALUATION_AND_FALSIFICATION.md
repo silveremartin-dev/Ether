@@ -688,6 +688,32 @@ This framework resolves the Great Man vs. Determinism paradox through physical c
 2. **The Activation Energy Barrier ($E_{\text{barrier}}$)**: Transitioning between attractors requires overcoming an organizational, institutional, or capital hurdle. Without an impulse, a society remains trapped in a sub-optimal local well for centuries (e.g., fragmented pre-Sui China).
 3. **The Leader as Catalytic Enzyme**: An extreme biographical outlier does not create energy *ex nihilo*; rather, the leader acts as an **enzyme that lowers the activation energy barrier** or injects a concentrated pulse of political work ($\Delta E \ge E_{\text{barrier}}$), triggering the phase transition into the lower-energy global attractor.
 
+### 4.9.4 Dual-Scale Testing Methodology: Micro-Algebraic Clusters vs. Planetary DOD Meshes
+A critical methodological distinction governs the computational evaluation of Ether:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                    DUAL-SCALE METHODOLOGICAL TAXONOMY IN THE ETHER VALIDATION SUITE                         │
+├─────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 1. MICRO-ALGEBRAIC CLUSTER BENCHMARKS (JUnit / CI — Execution Time: ~0.1 to 0.5 sec)                        │
+│    • Scope: Local topological clusters (N = 20 cells) isolating target regional epicenters.                 │
+│    • Purpose: Rigorous analytical proof of mathematical contracts, invariance theorems, boundary conditions,│
+│      Lipschitz continuity, and negative Lyapunov dissipation rates (λ < 0).                                 │
+│    • What it Solves:                                                                                        │
+│      - Proves that ∂Outcome/∂Name ≡ 0 (Identity Invariance Theorem is mathematically scale-free).           │
+│      - Proves exponential dissipation of military shocks in unforced logistic demography (dN/dt = rN(1-N/K))│
+│      - Quantifies exact ANOVA η² variance decomposition and Minimal Necessary Forcing μ* in pure CPU cache. │
+├─────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 2. GLOBAL MACRO-PLANETARY INTEGRATION (HeadlessBatchRunner / GCP Batch — Execution Time: 10 to 30 min)      │
+│    • Scope: Complete Earth planetary mesh (41,162 active H3 resolution 3/4 cells, 25 continuous tensors,   │
+│      20 coupled differential procedural engines across multi-millennial horizons).                          │
+│    • Purpose: Observes non-local emergent network phenomena that cannot exist on a 20-cell patch:           │
+│      - Intercontinental trade core-periphery bifurcations (Krugman NEG cascades).                           │
+│      - Planetary teleconnections & climate tipping points (AMOC thermohaline collapse, megadroughts).        │
+│      - Trans-Eurasian geopolitical contagion (e.g. Mongol steppe horde expansion across 8,000 km).         │
+└─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
 ---
 
 ## 5. Master Academic Bibliography & Model Reference Catalog

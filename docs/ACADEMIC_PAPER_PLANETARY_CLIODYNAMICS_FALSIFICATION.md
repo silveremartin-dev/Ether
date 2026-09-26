@@ -441,6 +441,13 @@ To definitively transcend epistemic circularity (*Garbage In, Axiom Out*), Ether
 
 ---
 
+### 5.11. Dual-Scale Computational Architecture: Micro-Algebraic Proofs vs. Planetary Integration
+To balance rigorous mathematical verification with computational tractability, Ether decouples evaluation across two complementary scales:
+1. **Micro-Algebraic Topological Clusters ($N = 20\text{ cells}, \Delta t \sim 0.1\text{ s}$)**: Validates scale-free mathematical theorems (Identity Invariance $\partial \text{Outcome}/\partial \text{Name} \equiv 0$, negative Lyapunov dissipation $\lambda < 0$, exact ANOVA $\eta^2$ variance bounds) in high-speed CPU cache without allocating full global planetary memory.
+2. **Global Planetary DOD Meshes ($41\,162\text{ cells}, 25\text{ tensors}, \Delta t \sim 10\text{--}30\text{ min}$)**: Integrates non-local emergent teleconnections (trans-continental trade core-periphery cascades, AMOC thermohaline shutdowns, multi-thousand-kilometer nomadic military conquests) across full historical planetary grids.
+
+---
+
 ## 6. Systematic Evaluation of the 20 Pluggable Procedural Engines
 
 ```
