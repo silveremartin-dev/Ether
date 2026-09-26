@@ -258,7 +258,7 @@ public class HistoricalMapGenerator {
         return current;
     }
 
-    private static final double[][] POLY_LAURENTIDE_LGM = chaikinSmoothPolygon(new double[][]{
+    public static final double[][] POLY_LAURENTIDE_LGM = chaikinSmoothPolygon(new double[][]{
         {-142.0, 60.0}, {-136.0, 56.0}, {-126.0, 51.0}, {-120.0, 48.0},
         {-114.0, 47.5}, {-104.0, 46.5}, {-96.0, 42.5}, {-90.0, 39.5},
         {-83.0, 39.0}, {-77.0, 40.5}, {-73.0, 41.0}, {-68.0, 42.5},
@@ -266,17 +266,17 @@ public class HistoricalMapGenerator {
         {-65.0, 70.0}, {-85.0, 75.0}, {-115.0, 75.0}, {-135.0, 70.0}
     }, 3);
 
-    private static final double[][] POLY_LAURENTIDE_MIS3 = chaikinSmoothPolygon(new double[][]{
+    public static final double[][] POLY_LAURENTIDE_MIS3 = chaikinSmoothPolygon(new double[][]{
         {-98.0, 65.0}, {-95.0, 55.0}, {-85.0, 52.0}, {-75.0, 52.0}, {-65.0, 56.0},
         {-60.0, 62.0}, {-70.0, 68.0}, {-85.0, 70.0}
     }, 2);
 
-    private static final double[][] POLY_LAURENTIDE_YD = chaikinSmoothPolygon(new double[][]{
+    public static final double[][] POLY_LAURENTIDE_YD = chaikinSmoothPolygon(new double[][]{
         {-96.0, 64.0}, {-98.0, 56.0}, {-90.0, 51.0}, {-78.0, 49.0}, {-68.0, 50.5},
         {-60.0, 56.0}, {-62.0, 64.0}, {-78.0, 68.0}
     }, 2);
 
-    private static final double[][] POLY_FENNOSCANDIA_LGM = chaikinSmoothPolygon(new double[][]{
+    public static final double[][] POLY_FENNOSCANDIA_LGM = chaikinSmoothPolygon(new double[][]{
         {-11.0, 54.0}, {-10.0, 51.5}, {-6.0, 52.0}, {-1.0, 53.0},
         {4.0, 52.5}, {10.0, 52.0}, {18.0, 52.5}, {26.0, 54.0},
         {34.0, 57.5}, {42.0, 62.0}, {52.0, 67.0}, {58.0, 71.0},
@@ -284,27 +284,27 @@ public class HistoricalMapGenerator {
         {-2.0, 64.0}, {-8.0, 58.5}
     }, 3);
 
-    private static final double[][] POLY_FENNOSCANDIA_MIS3 = chaikinSmoothPolygon(new double[][]{
+    public static final double[][] POLY_FENNOSCANDIA_MIS3 = chaikinSmoothPolygon(new double[][]{
         {6.0, 60.0}, {8.0, 62.0}, {14.0, 68.0}, {20.0, 70.0},
         {25.0, 68.0}, {22.0, 64.0}, {16.0, 62.0}, {10.0, 59.0}
     }, 2);
 
-    private static final double[][] POLY_FENNOSCANDIA_YD = chaikinSmoothPolygon(new double[][]{
+    public static final double[][] POLY_FENNOSCANDIA_YD = chaikinSmoothPolygon(new double[][]{
         {5.0, 60.0}, {8.0, 62.5}, {14.0, 66.0}, {20.0, 69.0},
         {26.0, 68.5}, {24.0, 64.5}, {18.0, 62.0}, {11.0, 59.5}
     }, 2);
 
-    private static final double[][] POLY_ALPS_LGM = chaikinSmoothPolygon(new double[][]{
+    public static final double[][] POLY_ALPS_LGM = chaikinSmoothPolygon(new double[][]{
         {5.5, 45.0}, {6.8, 46.2}, {9.5, 47.2}, {13.5, 47.0},
         {14.5, 46.0}, {11.5, 45.4}, {7.8, 45.0}
     }, 2);
 
-    private static final double[][] POLY_PATAGONIA_LGM = chaikinSmoothPolygon(new double[][]{
+    public static final double[][] POLY_PATAGONIA_LGM = chaikinSmoothPolygon(new double[][]{
         {-74.0, -39.0}, {-71.2, -40.5}, {-70.8, -46.0}, {-72.0, -51.5},
         {-70.0, -55.0}, {-74.5, -54.2}, {-75.5, -46.5}, {-74.5, -41.0}
     }, 2);
 
-    private static final double[][] POLY_BERINGIA_REFUGE = chaikinSmoothPolygon(new double[][]{
+    public static final double[][] POLY_BERINGIA_REFUGE = chaikinSmoothPolygon(new double[][]{
         {130.0, 71.0}, {145.0, 72.0}, {165.0, 70.0}, {-170.0, 68.0},
         {-160.0, 64.0}, {-145.0, 63.0}, {-135.0, 66.0}, {-138.0, 69.0},
         {-150.0, 71.5}, {-175.0, 72.0}, {160.0, 66.0}, {140.0, 67.0}
@@ -1101,17 +1101,8 @@ public class HistoricalMapGenerator {
 
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) * 180.0 / HEIGHT;
-            double radLat = Math.toRadians(lat);
-            double cosLat = Math.cos(radLat);
-            double sinLat = Math.sin(radLat);
-
             for (int x = 0; x < WIDTH; x++) {
                 double lon = -180.0 + (x + 0.5) * 360.0 / WIDTH;
-                double radLon = Math.toRadians(lon);
-                double nx = cosLat * Math.cos(radLon);
-                double ny = cosLat * Math.sin(radLon);
-                double nz = sinLat;
-
                 double elevM = (etopo != null) ? etopo[y][x] : ((elevMask != null && (elevMask.getRGB(x, y) & 0xFF) > 128) ? 100.0 : -100.0);
                 boolean isLand = elevM >= 0.0;
 
@@ -1120,55 +1111,10 @@ public class HistoricalMapGenerator {
                     continue;
                 }
 
-                double tempC = computeSurfaceTemperature(lat, lon, elevM, year);
-                double rainMm = computeAnnualPrecipitation(lat, lon, elevM, year);
+                double tempC = WorldClimEmpiricalRasterLoader.getTemperature(lat, lon, elevM, year);
+                double rainMm = WorldClimEmpiricalRasterLoader.getPrecipitation(lat, lon, elevM, year);
 
-                // Local micro-climate boundary perturbation to prevent straight biome lines
-                double bNoise = CLIMATE_NOISE.noise(nx * 12.0 + 10.0, ny * 12.0 + 10.0, nz * 12.0 + 10.0) * 0.08;
-                double effRain = rainMm * (1.0 + bNoise);
-                double effTemp = tempC + bNoise * 3.0;
-
-                // Permanent Polar Ice Caps & Glacial Polygons
-                int bColor;
-                if (lat < -60.0) {
-                    bColor = BIOME_GLACIER; // Antarctica ice sheet
-                } else if (lat > 60.0 && lon > -55.0 && lon < -18.0) {
-                    bColor = BIOME_GLACIER; // Greenland ice sheet
-                } else if (year <= -40000L && year > -70000L && (signedDistanceToPolygon(lon, lat, POLY_FENNOSCANDIA_MIS3) <= 0 || signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_MIS3) <= 0)) {
-                    bColor = BIOME_GLACIER; // MIS 3 Ice domes
-                } else if (year <= -18000L && (signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_LGM) <= 0 || signedDistanceToPolygon(lon, lat, POLY_FENNOSCANDIA_LGM) <= 0 || signedDistanceToPolygon(lon, lat, POLY_ALPS_LGM) <= 0 || signedDistanceToPolygon(lon, lat, POLY_PATAGONIA_LGM) <= 0)) {
-                    bColor = BIOME_GLACIER; // LGM Ice sheets
-                } else if (year <= -10500L && year > -18000L && (signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_YD) <= 0 || signedDistanceToPolygon(lon, lat, POLY_FENNOSCANDIA_YD) <= 0)) {
-                    bColor = BIOME_GLACIER; // Younger Dryas ice sheets
-                } else if (year <= -9000L && year > -10500L && signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_MIS3) <= 0 && lat >= 58.0) {
-                    bColor = BIOME_GLACIER; // Preboreal residual ice
-                } else if (elevM > 5200.0 || (effTemp < -14.0 && elevM > 3500.0)) {
-                    bColor = BIOME_SNOW; // Glaciated mountain peaks
-                } else if (elevM > 2600.0) {
-                    bColor = BIOME_MOUNTAINS;
-                } else if (elevM > 1000.0 && effRain < 1200.0 && effTemp < 20.0) {
-                    bColor = BIOME_HILLS;
-                } else if (effTemp < -2.0) {
-                    bColor = BIOME_TUNDRA; // Periglacial / Polar Tundra
-                } else if (effTemp < 14.0) {
-                    if (effRain < 450.0) {
-                        bColor = BIOME_PLAINS; // Steppe / Mammoth Steppe
-                    } else {
-                        bColor = BIOME_FOREST; // Boreal / Temperate Forest
-                    }
-                } else {
-                    // Warm / Subtropical / Tropical thermal zones (effTemp >= 14.0°C)
-                    if (effRain < 220.0) {
-                        bColor = BIOME_DESERT; // Arid desert
-                    } else if (effRain < 1100.0) {
-                        bColor = BIOME_PLAINS; // Savanna / Grassland
-                    } else if (effTemp >= 21.0 && effRain >= 1400.0) {
-                        bColor = BIOME_JUNGLE; // Tropical Rainforest
-                    } else {
-                        bColor = BIOME_FOREST; // Subtropical / Temperate Forest
-                    }
-                }
-
+                int bColor = WorldClimEmpiricalRasterLoader.classifyBiome(tempC, rainMm, elevM, lat, lon, year);
                 img.setRGB(x, y, bColor);
             }
         }
@@ -1186,7 +1132,7 @@ public class HistoricalMapGenerator {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
                 double elevM = (etopo != null) ? etopo[y][x] : ((mask != null && (mask.getRaster().getSample(x, y, 0) > 0)) ? 100.0 : -100.0);
 
-                double tempC = computeSurfaceTemperature(lat, lon, elevM, year);
+                double tempC = WorldClimEmpiricalRasterLoader.getTemperature(lat, lon, elevM, year);
 
                 // Encode temperature [-50°C, +50°C] -> [0, 255]
                 double norm = Math.clamp((tempC + 50.0) / 100.0, 0.0, 1.0);
@@ -1208,7 +1154,7 @@ public class HistoricalMapGenerator {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
                 double elevM = (etopo != null) ? etopo[y][x] : ((mask != null && (mask.getRaster().getSample(x, y, 0) > 0)) ? 100.0 : -100.0);
 
-                double rainMm = computeAnnualPrecipitation(lat, lon, elevM, year);
+                double rainMm = WorldClimEmpiricalRasterLoader.getPrecipitation(lat, lon, elevM, year);
 
                 // Encode rainfall [0, 3000 mm/yr] -> [0, 255]
                 double norm = Math.clamp(rainMm / 3000.0, 0.0, 1.0);
@@ -1230,7 +1176,7 @@ public class HistoricalMapGenerator {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
                 double elevM = (etopo != null) ? etopo[y][x] : ((mask != null && (mask.getRaster().getSample(x, y, 0) > 0)) ? 100.0 : -100.0);
 
-                double ampC = computeSeasonalityAmplitude(lat, lon, elevM, year);
+                double ampC = WorldClimEmpiricalRasterLoader.getSeasonality(lat, lon, elevM, year);
 
                 // Encode seasonality [0, 50°C] -> [0, 255]
                 double norm = Math.clamp(ampC / 50.0, 0.0, 1.0);
@@ -1273,36 +1219,30 @@ public class HistoricalMapGenerator {
             if (imgMantleHeat != null)      ImageIO.write(imgMantleHeat,      "PNG", earthDir.resolve("earth_" + year + "_geothermal.png").toFile());
             if (imgAquifer != null)         ImageIO.write(imgAquifer,         "PNG", earthDir.resolve("earth_" + year + "_aquifers.png").toFile());
 
-            // 2. Save authentic paleoclimatic biomes map (preserve empirical -100000 BP)
+            // 2. Save authentic paleoclimatic biomes map
             java.nio.file.Path biomesPath = earthDir.resolve("earth_" + year + "_biomes.png");
-            if (year != -100000L || !java.nio.file.Files.exists(biomesPath)) {
-                BufferedImage biomesImg = rasterizeBiomesMap(year);
-                if (biomesImg != null) {
-                    ImageIO.write(biomesImg, "PNG", biomesPath.toFile());
-                }
+            BufferedImage biomesImg = rasterizeBiomesMap(year);
+            if (biomesImg != null) {
+                ImageIO.write(biomesImg, "PNG", biomesPath.toFile());
             }
 
             // 3. Save authentic epoch paleoclimatic layers (Temperature, Precipitation, Seasonality)
             java.nio.file.Path tempPath = earthDir.resolve("earth_" + year + "_temperature.png");
-            if (year != -100000L || !java.nio.file.Files.exists(tempPath)) {
-                BufferedImage tempImg = rasterizeTemperatureMap(year);
-                if (tempImg != null) {
-                    ImageIO.write(tempImg, "PNG", tempPath.toFile());
-                }
+            BufferedImage tempImg = rasterizeTemperatureMap(year);
+            if (tempImg != null) {
+                ImageIO.write(tempImg, "PNG", tempPath.toFile());
             }
+
             java.nio.file.Path rainPath = earthDir.resolve("earth_" + year + "_precipitation.png");
-            if (year != -100000L || !java.nio.file.Files.exists(rainPath)) {
-                BufferedImage rainImg = rasterizePrecipitationMap(year);
-                if (rainImg != null) {
-                    ImageIO.write(rainImg, "PNG", rainPath.toFile());
-                }
+            BufferedImage rainImg = rasterizePrecipitationMap(year);
+            if (rainImg != null) {
+                ImageIO.write(rainImg, "PNG", rainPath.toFile());
             }
+
             java.nio.file.Path seasPath = earthDir.resolve("earth_" + year + "_seasonality.png");
-            if (year != -100000L || !java.nio.file.Files.exists(seasPath)) {
-                BufferedImage seasImg = rasterizeSeasonalityMap(year);
-                if (seasImg != null) {
-                    ImageIO.write(seasImg, "PNG", seasPath.toFile());
-                }
+            BufferedImage seasImg = rasterizeSeasonalityMap(year);
+            if (seasImg != null) {
+                ImageIO.write(seasImg, "PNG", seasPath.toFile());
             }
 
             // 4. Ensure invariant NOAA ETOPO relief elevation map is present across all epochs
@@ -1793,11 +1733,6 @@ public class HistoricalMapGenerator {
 
     public static void forceGenerateScenarioHistoricalMaps(Scenario scenario) {
         if (scenario == null) return;
-        if (scenario.getStartDateYear() == -100000L) {
-            loadFromYearDirectory(scenario);
-            logger.info("Preserved empirical -100000 BP maps from disk without overwriting.");
-            return;
-        }
         try {
             String type = scenario.getPopulationDensityType();
             if (type == null) type = "URBAN_CLUSTERS";
@@ -2202,22 +2137,198 @@ public class HistoricalMapGenerator {
             empireCores.add(new double[]{-77.0, -10.0, 0x009688, 20.0}); // South American Caral Precursor (#009688)
             empireCores.add(new double[]{68.0, 29.0, 0x9C27B0, 18.0});   // Mehrgarh III (#9C27B0)
             empireCores.add(new double[]{125.0, 50.0, 0x16A085, 22.0});  // Northeast Asia (#16A085)
-        } else if (year <= 500L) {
-            empireCores.add(new double[]{12.5, 41.9, 0xDC2626, 24.0});   // Rome / Pax Romana (#DC2626)
-            empireCores.add(new double[]{28.9, 41.0, 0x9333EA, 20.0});   // Constantinople (#9333EA)
-            empireCores.add(new double[]{108.9, 34.3, 0xEF4444, 22.0});  // Han Chang'an (#EF4444)
-            empireCores.add(new double[]{85.1, 25.6, 0xF59E0B, 18.0});   // Gupta Pataliputra (#F59E0B)
-            empireCores.add(new double[]{44.6, 33.1, 0x10B981, 16.0});   // Sasanian Ctesiphon (#10B981)
-            empireCores.add(new double[]{-89.0, 17.2, 0x06B6D4, 12.0});  // Classic Maya (#06B6D4)
+        } else if (year <= -2500L) {
+            // -3,000 BP (Early Bronze Age: Narmer Egypt, Uruk/Sumer, Caral, Liangzhu)
+            empireCores.add(new double[]{31.20, 29.85, 0xD35400, 15.0}); // Early Dynastic Egypt / Memphis (#D35400)
+            empireCores.add(new double[]{45.64, 31.32, 0xE74C3C, 14.0}); // Sumerian City-States / Uruk IV (#E74C3C)
+            empireCores.add(new double[]{48.26, 32.19, 0xF39C12, 14.0}); // Proto-Elamite Susa (#F39C12)
+            empireCores.add(new double[]{68.70, 27.50, 0x9B59B6, 16.0}); // Kot Diji / Early Harappan (#9B59B6)
+            empireCores.add(new double[]{120.00, 30.38, 0x2ECC71, 16.0});// Liangzhu Culture / Yangtze (#2ECC71)
+            empireCores.add(new double[]{114.50, 34.80, 0x27AE60, 16.0});// Longshan Culture / Yellow River (#27AE60)
+            empireCores.add(new double[]{23.70, 37.90, 0x3498DB, 14.0}); // Early Cycladic / Helladic Greece (#3498DB)
+            empireCores.add(new double[]{36.00, 48.00, 0x2980B9, 20.0}); // Yamnaya Steppe Pastoralists (#2980B9)
+            empireCores.add(new double[]{-77.52, -10.89, 0x1ABC9C, 15.0});// Norte Chico / Caral-Supe Peru (#1ABC9C)
+            empireCores.add(new double[]{32.00, 19.50, 0xE67E22, 16.0}); // Early Kerma / Nubia (#E67E22)
+            empireCores.add(new double[]{22.0, -34.0, 0xF1C40F, 22.0});  // Southern Africa LSA (#F1C40F)
+            empireCores.add(new double[]{134.0, -24.0, 0xC0392B, 28.0}); // Australia (#C0392B)
+            empireCores.add(new double[]{-90.0, 35.0, 0x3F51B5, 20.0});  // North American Archaic (#3F51B5)
+        } else if (year <= -1700L) {
+            // -1,900 BP (Middle Bronze Age: Hammurabi Babylon, Middle Kingdom Egypt, Erlitou Xia)
+            empireCores.add(new double[]{44.42, 32.54, 0xE74C3C, 15.0}); // Hammurabi Old Babylonian Empire (#E74C3C)
+            empireCores.add(new double[]{32.65, 25.72, 0xD35400, 16.0}); // Middle Kingdom Egypt / Thebes (#D35400)
+            empireCores.add(new double[]{68.14, 27.33, 0x9B59B6, 16.0}); // Mature Harappan / Mohenjo-Daro (#9B59B6)
+            empireCores.add(new double[]{112.70, 34.70, 0x2ECC71, 16.0});// Xia Dynasty / Erlitou (#2ECC71)
+            empireCores.add(new double[]{25.16, 35.30, 0x3498DB, 12.0}); // Minoan Knossos / Crete (#3498DB)
+            empireCores.add(new double[]{34.60, 40.00, 0xF39C12, 14.0}); // Old Hittite Kingdom / Hattusa (#F39C12)
+            empireCores.add(new double[]{32.40, 19.60, 0xE67E22, 15.0}); // Kingdom of Kerma / Kush (#E67E22)
+            empireCores.add(new double[]{-77.50, -10.90, 0x1ABC9C, 15.0});// Caral / Kotosh Peru (#1ABC9C)
+            empireCores.add(new double[]{22.0, -34.0, 0xF1C40F, 22.0});  // Southern Africa (#F1C40F)
+            empireCores.add(new double[]{134.0, -24.0, 0xC0392B, 28.0}); // Australia (#C0392B)
+            empireCores.add(new double[]{-90.0, 35.0, 0x3F51B5, 20.0});  // North America Poverty Point (#3F51B5)
+        } else if (year <= -1200L) {
+            // -1,500 BP (Late Bronze Age: New Kingdom Egypt, Shang China, Hittites, Mycenae)
+            empireCores.add(new double[]{32.65, 25.72, 0xD35400, 18.0}); // New Kingdom Egypt (Thutmose III) (#D35400)
+            empireCores.add(new double[]{114.30, 36.10, 0x2ECC71, 18.0});// Shang Dynasty Anyang/Yin (#2ECC71)
+            empireCores.add(new double[]{34.60, 40.00, 0xF39C12, 16.0}); // Hittite Empire (#F39C12)
+            empireCores.add(new double[]{22.75, 37.73, 0x3498DB, 14.0}); // Mycenaean Greece (#3498DB)
+            empireCores.add(new double[]{44.42, 32.54, 0xE74C3C, 15.0}); // Kassite Babylon (#E74C3C)
+            empireCores.add(new double[]{40.50, 36.80, 0xE67E22, 15.0}); // Mitanni Kingdom (#E67E22)
+            empireCores.add(new double[]{75.80, 30.90, 0x9B59B6, 16.0}); // Early Vedic Aryan Punjab (#9B59B6)
+            empireCores.add(new double[]{-94.76, 17.75, 0x1ABC9C, 14.0});// Olmec Early San Lorenzo (#1ABC9C)
+            empireCores.add(new double[]{-77.18, -9.60, 0x16A085, 14.0}); // Chavin Precursor Andes (#16A085)
+            empireCores.add(new double[]{22.0, -34.0, 0xF1C40F, 22.0});  // Southern Africa (#F1C40F)
+            empireCores.add(new double[]{134.0, -24.0, 0xC0392B, 28.0}); // Australia (#C0392B)
+            empireCores.add(new double[]{-90.0, 35.0, 0x3F51B5, 20.0});  // North America (#3F51B5)
+        } else if (year <= -600L) {
+            // -1,000 BP (Early Iron Age: Neo-Assyrian, Phoenician, Western Zhou)
+            empireCores.add(new double[]{43.15, 36.36, 0xE74C3C, 18.0}); // Neo-Assyrian Empire Nimrud/Nineveh (#E74C3C)
+            empireCores.add(new double[]{35.20, 33.27, 0x9B59B6, 14.0}); // Phoenician Thalassocracy Tyre/Sidon (#9B59B6)
+            empireCores.add(new double[]{108.70, 34.20, 0x2ECC71, 20.0});// Western Zhou Dynasty Haojing (#2ECC71)
+            empireCores.add(new double[]{23.70, 37.90, 0x3498DB, 15.0}); // Greek Archaic City-States (#3498DB)
+            empireCores.add(new double[]{31.88, 31.00, 0xD35400, 15.0}); // 21st Dynasty Egypt / Tanis (#D35400)
+            empireCores.add(new double[]{77.20, 28.60, 0xF39C12, 18.0}); // Vedic Kuru-Panchala Janapadas (#F39C12)
+            empireCores.add(new double[]{31.80, 18.50, 0xE67E22, 16.0}); // Kingdom of Kush / Napata (#E67E22)
+            empireCores.add(new double[]{-94.76, 17.75, 0x1ABC9C, 14.0});// Olmec San Lorenzo / La Venta (#1ABC9C)
+            empireCores.add(new double[]{-77.18, -9.60, 0x16A085, 14.0}); // Chavin de Huantar Andes (#16A085)
+            empireCores.add(new double[]{22.0, -34.0, 0xF1C40F, 22.0});  // Southern Africa (#F1C40F)
+            empireCores.add(new double[]{134.0, -24.0, 0xC0392B, 28.0}); // Australia (#C0392B)
+            empireCores.add(new double[]{-90.0, 35.0, 0x3F51B5, 20.0});  // North America (#3F51B5)
+        } else if (year <= -100L) {
+            // -300 BP (Hellenistic & Maurya: Ashoka Empire, Seleucid, Ptolemaic, Rome)
+            empireCores.add(new double[]{85.14, 25.61, 0xF59E0B, 22.0}); // Maurya Empire Pataliputra (#F59E0B)
+            empireCores.add(new double[]{36.20, 36.20, 0x3498DB, 18.0}); // Seleucid Empire Antioch (#3498DB)
+            empireCores.add(new double[]{29.92, 31.20, 0xD35400, 16.0}); // Ptolemaic Egypt Alexandria (#D35400)
+            empireCores.add(new double[]{12.50, 41.90, 0xDC2626, 16.0}); // Roman Republic Rome (#DC2626)
+            empireCores.add(new double[]{10.32, 36.85, 0x9B59B6, 15.0}); // Carthaginian Republic (#9B59B6)
+            empireCores.add(new double[]{108.70, 34.34, 0x2ECC71, 20.0});// Qin & Warring States Xianyang (#2ECC71)
+            empireCores.add(new double[]{22.50, 40.75, 0x2980B9, 14.0}); // Antigonid Macedonia (#2980B9)
+            empireCores.add(new double[]{-89.80, 17.75, 0x06B6D4, 14.0});// Preclassic Maya El Mirador (#06B6D4)
+            empireCores.add(new double[]{22.0, -34.0, 0xF1C40F, 22.0});  // Southern Africa (#F1C40F)
+            empireCores.add(new double[]{134.0, -24.0, 0xC0392B, 28.0}); // Australia (#C0392B)
+            empireCores.add(new double[]{-90.0, 35.0, 0x3F51B5, 20.0});  // North America (#3F51B5)
+        } else if (year <= 250L) {
+            // An 0 (Pax Romana & Han Dynasty)
+            empireCores.add(new double[]{12.50, 41.90, 0xDC2626, 24.0}); // Roman Empire Rome / Augustus (#DC2626)
+            empireCores.add(new double[]{108.94, 34.26, 0xEF4444, 24.0});// Western Han Dynasty Chang'an (#EF4444)
+            empireCores.add(new double[]{44.58, 33.09, 0x10B981, 18.0}); // Parthian Empire Ctesiphon (#10B981)
+            empireCores.add(new double[]{72.82, 33.75, 0xF59E0B, 18.0}); // Kushan Empire Taxila (#F59E0B)
+            empireCores.add(new double[]{80.50, 16.50, 0xD97706, 18.0}); // Satavahana Dynasty Deccan (#D97706)
+            empireCores.add(new double[]{38.72, 14.13, 0xE67E22, 15.0}); // Kingdom of Aksum (#E67E22)
+            empireCores.add(new double[]{-89.62, 17.22, 0x06B6D4, 14.0});// Maya Lowlands Tikal Precursor (#06B6D4)
+            empireCores.add(new double[]{-98.88, 19.69, 0x0891B2, 14.0});// Teotihuacan Basin of Mexico (#0891B2)
+            empireCores.add(new double[]{130.40, 33.60, 0x9B59B6, 12.0}); // Yayoi Japan (#9B59B6)
+            empireCores.add(new double[]{22.0, -34.0, 0xF1C40F, 22.0});  // Southern Africa (#F1C40F)
+            empireCores.add(new double[]{134.0, -24.0, 0xC0392B, 28.0}); // Australia (#C0392B)
+            empireCores.add(new double[]{-90.0, 35.0, 0x3F51B5, 20.0});  // Hopewell Culture North America (#3F51B5)
+        } else if (year <= 750L) {
+            // 536 (Late Antique: Justinian Byzantium, Sasanian Khosrow, Northern Wei)
+            empireCores.add(new double[]{28.98, 41.01, 0x9333EA, 22.0}); // Byzantine Empire Constantinople (#9333EA)
+            empireCores.add(new double[]{44.58, 33.09, 0x10B981, 18.0}); // Sasanian Empire Ctesiphon (#10B981)
+            empireCores.add(new double[]{112.45, 34.62, 0xEF4444, 22.0});// Northern Wei / Liang Luoyang (#EF4444)
+            empireCores.add(new double[]{79.92, 27.05, 0xF59E0B, 20.0}); // Harsha Empire / Post-Gupta India (#F59E0B)
+            empireCores.add(new double[]{2.35, 48.86, 0x2563EB, 16.0});  // Merovingian Frankish Kingdom (#2563EB)
+            empireCores.add(new double[]{-4.02, 39.86, 0x3B82F6, 15.0}); // Visigothic Kingdom Toledo (#3B82F6)
+            empireCores.add(new double[]{-89.62, 17.22, 0x06B6D4, 14.0});// Classic Maya Tikal & Calakmul (#06B6D4)
+            empireCores.add(new double[]{-68.67, -16.55, 0x1ABC9C, 15.0});// Tiwanaku Altiplano Andes (#1ABC9C)
+            empireCores.add(new double[]{22.0, -34.0, 0xF1C40F, 22.0});  // Southern Africa (#F1C40F)
+            empireCores.add(new double[]{134.0, -24.0, 0xC0392B, 28.0}); // Australia (#C0392B)
+            empireCores.add(new double[]{-90.0, 35.0, 0x3F51B5, 20.0});  // North America (#3F51B5)
+        } else if (year <= 1150L) {
+            // 1000 (High Medieval: Song Dynasty, Fatimid Caliphate, Holy Roman Empire)
+            empireCores.add(new double[]{114.35, 34.79, 0xEF4444, 24.0});// Song Dynasty Kaifeng (#EF4444)
+            empireCores.add(new double[]{31.24, 30.04, 0x10B981, 20.0}); // Fatimid Caliphate Cairo (#10B981)
+            empireCores.add(new double[]{11.58, 48.14, 0x2563EB, 18.0}); // Holy Roman Empire (#2563EB)
+            empireCores.add(new double[]{28.98, 41.01, 0x9333EA, 18.0}); // Byzantine Empire Basil II (#9333EA)
+            empireCores.add(new double[]{79.13, 10.79, 0xF59E0B, 18.0}); // Chola Empire Thanjavur (#F59E0B)
+            empireCores.add(new double[]{30.52, 50.45, 0x3B82F6, 18.0}); // Kievan Rus Kiev (#3B82F6)
+            empireCores.add(new double[]{-4.78, 37.89, 0x059669, 16.0}); // Cordoba Caliphate Al-Andalus (#059669)
+            empireCores.add(new double[]{-88.57, 20.68, 0x06B6D4, 14.0});// Maya Toltec Chichen Itza (#06B6D4)
+            empireCores.add(new double[]{-90.06, 38.66, 0x3F51B5, 15.0});// Cahokia Mississippian Metropolis (#3F51B5)
+            empireCores.add(new double[]{22.0, -34.0, 0xF1C40F, 22.0});  // Southern Africa (#F1C40F)
+            empireCores.add(new double[]{134.0, -24.0, 0xC0392B, 28.0}); // Australia (#C0392B)
+        } else if (year <= 1400L) {
+            // 1324 (Mansa Musa Mali & Mongol Khanates)
+            empireCores.add(new double[]{-8.30, 11.38, 0xF59E0B, 22.0}); // Mali Empire Mansa Musa / Niani (#F59E0B)
+            empireCores.add(new double[]{116.41, 39.90, 0xEF4444, 25.0});// Yuan Dynasty Khanbaliq/Beijing (#EF4444)
+            empireCores.add(new double[]{46.29, 38.08, 0x10B981, 20.0}); // Ilkhanate Tabriz (#10B981)
+            empireCores.add(new double[]{47.25, 47.15, 0x3B82F6, 22.0}); // Golden Horde Sarai (#3B82F6)
+            empireCores.add(new double[]{77.21, 28.61, 0xD97706, 20.0}); // Delhi Sultanate (#D97706)
+            empireCores.add(new double[]{2.35, 48.86, 0x2563EB, 16.0});  // Kingdom of France (#2563EB)
+            empireCores.add(new double[]{31.24, 30.04, 0x059669, 18.0}); // Mamluk Sultanate Cairo (#059669)
+            empireCores.add(new double[]{-0.13, 51.51, 0xDC2626, 14.0}); // Kingdom of England (#DC2626)
+            empireCores.add(new double[]{-99.13, 19.43, 0x06B6D4, 14.0});// Aztec Mexica Tenochtitlan Foundation (#06B6D4)
+            empireCores.add(new double[]{-71.97, -13.53, 0x1ABC9C, 15.0});// Inca Cusco Foundation (#1ABC9C)
+            empireCores.add(new double[]{22.0, -34.0, 0xF1C40F, 22.0});  // Southern Africa (#F1C40F)
+            empireCores.add(new double[]{134.0, -24.0, 0xC0392B, 28.0}); // Australia (#C0392B)
+        } else if (year <= 1550L) {
+            // 1491 & 1492 (Columbian Horizon: Aztec, Inca, Ming, Renaissance Europe)
+            empireCores.add(new double[]{-99.13, 19.43, 0x06B6D4, 18.0});// Aztec Triple Alliance Tenochtitlan (#06B6D4)
+            empireCores.add(new double[]{-71.97, -13.53, 0x10B981, 22.0});// Inca Empire Tawantinsuyu (#10B981)
+            empireCores.add(new double[]{116.41, 39.90, 0xEF4444, 25.0});// Ming Dynasty Beijing (#EF4444)
+            empireCores.add(new double[]{28.98, 41.01, 0x059669, 20.0}); // Ottoman Empire Bayezid II (#059669)
+            empireCores.add(new double[]{-3.70, 40.42, 0xDC2626, 16.0}); // Spanish Crown Castile & Aragon (#DC2626)
+            empireCores.add(new double[]{2.35, 48.86, 0x2563EB, 16.0});  // Kingdom of France (#2563EB)
+            empireCores.add(new double[]{13.40, 52.52, 0x3B82F6, 16.0}); // Holy Roman Empire (#3B82F6)
+            empireCores.add(new double[]{-0.05, 16.27, 0xF59E0B, 18.0}); // Songhai Empire Gao/Timbuktu (#F59E0B)
+            empireCores.add(new double[]{76.46, 15.33, 0xD97706, 18.0}); // Vijayanagara Empire Hampi (#D97706)
+            empireCores.add(new double[]{22.0, -34.0, 0xF1C40F, 22.0});  // Southern Africa (#F1C40F)
+            empireCores.add(new double[]{134.0, -24.0, 0xC0392B, 28.0}); // Australia (#C0392B)
+        } else if (year <= 1700L) {
+            // 1639 (Sakoku Japan & Westphalia: Tokugawa, Qing, Mughal, Ottoman)
+            empireCores.add(new double[]{139.69, 35.69, 0xE11D48, 15.0});// Tokugawa Shogunate Edo (#E11D48)
+            empireCores.add(new double[]{116.41, 39.90, 0xEF4444, 25.0});// Ming / Qing Dynasty China (#EF4444)
+            empireCores.add(new double[]{77.21, 28.61, 0xF59E0B, 22.0}); // Mughal Empire Shah Jahan (#F59E0B)
+            empireCores.add(new double[]{28.98, 41.01, 0x059669, 20.0}); // Ottoman Empire Murad IV (#059669)
+            empireCores.add(new double[]{51.68, 32.65, 0x10B981, 18.0}); // Safavid Empire Isfahan (#10B981)
+            empireCores.add(new double[]{2.35, 48.86, 0x2563EB, 16.0});  // Kingdom of France Louis XIII (#2563EB)
+            empireCores.add(new double[]{-3.70, 40.42, 0xDC2626, 18.0}); // Spanish Global Empire (#DC2626)
+            empireCores.add(new double[]{37.62, 55.75, 0x7C3AED, 24.0}); // Tsardom of Russia Moscow (#7C3AED)
+            empireCores.add(new double[]{-0.13, 51.51, 0x3B82F6, 14.0}); // Kingdom of England (#3B82F6)
+            empireCores.add(new double[]{-99.13, 19.43, 0xD97706, 18.0});// Viceroyalty of New Spain (#D97706)
+            empireCores.add(new double[]{-77.04, -12.05, 0xEA580C, 18.0});// Viceroyalty of Peru (#EA580C)
+        } else if (year <= 1850L) {
+            // 1800 (Industrial Revolution & Napoleonic Era)
+            empireCores.add(new double[]{-0.13, 51.51, 0xDC2626, 22.0}); // British Empire & Royal Navy (#DC2626)
+            empireCores.add(new double[]{2.35, 48.86, 0x2563EB, 18.0});  // Napoleonic France (#2563EB)
+            empireCores.add(new double[]{116.41, 39.90, 0xEF4444, 25.0});// Qing Empire China Jiaqing (#EF4444)
+            empireCores.add(new double[]{30.32, 59.93, 0x7C3AED, 26.0}); // Russian Empire Saint Petersburg (#7C3AED)
+            empireCores.add(new double[]{16.37, 48.21, 0xF59E0B, 16.0}); // Austrian Habsburg Empire (#F59E0B)
+            empireCores.add(new double[]{13.40, 52.52, 0x1E293B, 15.0}); // Kingdom of Prussia (#1E293B)
+            empireCores.add(new double[]{-77.04, 38.91, 0x3B82F6, 20.0}); // United States Washington (#3B82F6)
+            empireCores.add(new double[]{28.98, 41.01, 0x059669, 18.0}); // Ottoman Empire Selim III (#059669)
+            empireCores.add(new double[]{73.86, 18.52, 0xD97706, 18.0}); // Maratha Confederacy Pune (#D97706)
+            empireCores.add(new double[]{139.69, 35.69, 0xE11D48, 14.0});// Tokugawa Japan (#E11D48)
+        } else if (year <= 1925L) {
+            // 1900 (Belle Époque & Global Empires)
+            empireCores.add(new double[]{-0.13, 51.51, 0xDC2626, 26.0}); // British Empire Global (#DC2626)
+            empireCores.add(new double[]{2.35, 48.86, 0x2563EB, 20.0});  // French Colonial Empire (#2563EB)
+            empireCores.add(new double[]{13.40, 52.52, 0x1E293B, 16.0}); // German Empire Berlin (#1E293B)
+            empireCores.add(new double[]{30.32, 59.93, 0x7C3AED, 28.0}); // Russian Empire Nicholas II (#7C3AED)
+            empireCores.add(new double[]{-77.04, 38.91, 0x3B82F6, 25.0}); // United States (#3B82F6)
+            empireCores.add(new double[]{139.69, 35.69, 0xE11D48, 16.0});// Empire of Japan Meiji (#E11D48)
+            empireCores.add(new double[]{16.37, 48.21, 0xF59E0B, 16.0}); // Austro-Hungarian Empire (#F59E0B)
+            empireCores.add(new double[]{116.41, 39.90, 0xEF4444, 25.0});// Qing Empire China (#EF4444)
+        } else if (year <= 1975L) {
+            // 1950 (Cold War & Decolonization)
+            empireCores.add(new double[]{-77.04, 38.91, 0x2563EB, 30.0}); // Western Bloc / NATO (USA) (#2563EB)
+            empireCores.add(new double[]{37.62, 55.75, 0xDC2626, 30.0}); // Eastern Bloc / Warsaw Pact (USSR) (#DC2626)
+            empireCores.add(new double[]{116.41, 39.90, 0xEF4444, 26.0});// People's Republic of China (#EF4444)
+            empireCores.add(new double[]{77.21, 28.61, 0xF59E0B, 22.0}); // Republic of India (Nehru) (#F59E0B)
+            empireCores.add(new double[]{106.85, -6.21, 0x10B981, 20.0});// Non-Aligned Movement (Bandung) (#10B981)
+            empireCores.add(new double[]{2.35, 48.86, 0x3B82F6, 16.0});  // Western Europe (#3B82F6)
+            empireCores.add(new double[]{-47.93, -15.78, 0x059669, 22.0});// Latin America (#059669)
         } else {
-            empireCores.add(new double[]{-77.0, 38.9, 0x2563EB, 30.0});  // North America (#2563EB)
-            empireCores.add(new double[]{116.4, 39.9, 0xDC2626, 30.0});  // East Asia (#DC2626)
-            empireCores.add(new double[]{37.6, 55.7, 0x7C3AED, 32.0});   // Northern Eurasia (#7C3AED)
-            empireCores.add(new double[]{77.2, 28.6, 0xF59E0B, 22.0});   // South Asia (#F59E0B)
-            empireCores.add(new double[]{2.3, 48.8, 0x059669, 18.0});    // Western Europe (#059669)
-            empireCores.add(new double[]{-47.9, -15.8, 0x10B981, 22.0}); // South America (#10B981)
-            empireCores.add(new double[]{149.1, -35.3, 0xD97706, 25.0}); // Oceania (#D97706)
-            empireCores.add(new double[]{31.2, 30.0, 0xEA580C, 16.0});   // Middle East / North Africa (#EA580C)
+            // 2000 to 2060 (Contemporary & Future Multipolar World)
+            empireCores.add(new double[]{-77.0, 38.9, 0x2563EB, 30.0});  // North America (USA/Canada) (#2563EB)
+            empireCores.add(new double[]{4.35, 50.85, 0x3B82F6, 18.0});  // European Union Brussels (#3B82F6)
+            empireCores.add(new double[]{116.4, 39.9, 0xDC2626, 30.0});  // China / East Asia (#DC2626)
+            empireCores.add(new double[]{77.2, 28.6, 0xF59E0B, 22.0});   // India / South Asia (#F59E0B)
+            empireCores.add(new double[]{37.6, 55.7, 0x7C3AED, 32.0});   // Russia / Northern Eurasia (#7C3AED)
+            empireCores.add(new double[]{-47.9, -15.8, 0x10B981, 25.0}); // Latin America (#10B981)
+            empireCores.add(new double[]{31.2, 30.0, 0xEA580C, 18.0});   // Middle East & North Africa (#EA580C)
+            empireCores.add(new double[]{3.38, 6.52, 0xD97706, 24.0});   // Sub-Saharan Africa (#D97706)
+            empireCores.add(new double[]{106.8, -6.2, 0x06B6D4, 22.0});  // ASEAN Southeast Asia (#06B6D4)
+            empireCores.add(new double[]{149.1, -35.3, 0x14B8A6, 24.0}); // Oceania / Australia (#14B8A6)
         }
 
         for (int y = 0; y < HEIGHT; y++) {

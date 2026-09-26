@@ -74,7 +74,14 @@ public class GodModePanel extends VBox {
         new EventTypeItem("GEOENGINEERING", "godmode.type.geoengineering", "godmode.event.geoengineering", "godmode.event.geoengineering.desc", 730, 4.0),
         new EventTypeItem("RENAISSANCE_BOOM", "godmode.type.renaissance_boom", "godmode.event.renaissance_boom", "godmode.event.renaissance_boom.desc", 7300, 8.0),
         new EventTypeItem("TECH_SINGULARITY", "godmode.type.tech_singularity", "godmode.event.tech_singularity", "godmode.event.tech_singularity.desc", 3650, 9.5),
-        new EventTypeItem("ALIEN_CONTACT", "godmode.type.alien_contact", "godmode.event.alien_contact", "godmode.event.alien_contact.desc", 1825, 10.0)
+        new EventTypeItem("ALIEN_CONTACT", "godmode.type.alien_contact", "godmode.event.alien_contact", "godmode.event.alien_contact.desc", 1825, 10.0),
+        // Historical Contingency Leaders & Reformers
+        new EventTypeItem("LEADER_MILITARY_CONQUEROR", "leader.archetype.military_conqueror", "leader.archetype.military_conqueror", "leader.archetype.military_conqueror.desc", 7300, 8.0),
+        new EventTypeItem("LEADER_INFRASTRUCTURE_BUILDER", "leader.archetype.infrastructure_builder", "leader.archetype.infrastructure_builder", "leader.archetype.infrastructure_builder.desc", 10950, 7.5),
+        new EventTypeItem("LEADER_INSTITUTIONAL_REFORMER", "leader.archetype.institutional_reformer", "leader.archetype.institutional_reformer", "leader.archetype.institutional_reformer.desc", 9125, 7.0),
+        new EventTypeItem("LEADER_HYDRAULIC_AGRARIAN_INNOVATOR", "leader.archetype.hydraulic_agrarian_innovator", "leader.archetype.hydraulic_agrarian_innovator", "leader.archetype.hydraulic_agrarian_innovator.desc", 12775, 7.5),
+        new EventTypeItem("LEADER_MORAL_RELIGIOUS_SAGE", "leader.archetype.moral_religious_sage", "leader.archetype.moral_religious_sage", "leader.archetype.moral_religious_sage.desc", 14600, 8.0),
+        new EventTypeItem("LEADER_TOTALITARIAN_PURGER", "leader.archetype.totalitarian_purger", "leader.archetype.totalitarian_purger", "leader.archetype.totalitarian_purger.desc", 5475, 8.5)
     );
 
     private final H3SimulationEngine engine;
@@ -886,6 +893,29 @@ public class GodModePanel extends VBox {
                     for (H3Cell c : engine.getCells()) {
                         c.setTechnologyLevel((c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 10.0) + mag * 5.0);
                     }
+                }
+            }
+            case "LEADER_MILITARY_CONQUEROR", "LEADER_INFRASTRUCTURE_BUILDER", "LEADER_INSTITUTIONAL_REFORMER",
+                 "LEADER_HYDRAULIC_AGRARIAN_INNOVATOR", "LEADER_MORAL_RELIGIOUS_SAGE", "LEADER_TOTALITARIAN_PURGER" -> {
+                org.ether.society.events.LeaderArchetype arch = switch (type) {
+                    case "LEADER_MILITARY_CONQUEROR" -> org.ether.society.events.LeaderArchetype.MILITARY_CONQUEROR;
+                    case "LEADER_INFRASTRUCTURE_BUILDER" -> org.ether.society.events.LeaderArchetype.INFRASTRUCTURE_BUILDER;
+                    case "LEADER_INSTITUTIONAL_REFORMER" -> org.ether.society.events.LeaderArchetype.INSTITUTIONAL_REFORMER;
+                    case "LEADER_HYDRAULIC_AGRARIAN_INNOVATOR" -> org.ether.society.events.LeaderArchetype.HYDRAULIC_AGRARIAN_INNOVATOR;
+                    case "LEADER_MORAL_RELIGIOUS_SAGE" -> org.ether.society.events.LeaderArchetype.MORAL_RELIGIOUS_SAGE;
+                    default -> org.ether.society.events.LeaderArchetype.TOTALITARIAN_PURGER;
+                };
+                int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 0;
+                org.ether.society.events.HistoricalIntervention hi = new org.ether.society.events.HistoricalIntervention(
+                    "GM_LEADER_" + System.currentTimeMillis(),
+                    arch.getDisplayName() + " (God Mode)",
+                    "Intervention divine d'une figure majeure.",
+                    currentYear,
+                    arch.getDefaultDurationYears(),
+                    lat, lng, 1000.0, arch, mag
+                );
+                if (engine != null && engine.getEventSystem() != null) {
+                    engine.getEventSystem().injectCustomIntervention(hi);
                 }
             }
         }

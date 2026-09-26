@@ -1,0 +1,78 @@
+{
+  "epoch": 1950,
+  "era": "Epoch 1950",
+  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for Epoch 1950",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "core_polity_east_asia",
+      "colorHex": "#EF4444",
+      "colorRgb": [239, 68, 68],
+      "traits": [0.70, 0.85, 0.90, 0.85],
+      "name": {
+        "en": "East Asian Civilizational Core (Epoch 1950)",
+        "fr": "Foyer Civilisationnel Est-Asiatique (Epoch 1950)",
+        "de": "Ostasietischer Zivilisationsraum (Epoch 1950)",
+        "es": "Núcleo Civilizatorio de Asia Oriental (Epoch 1950)",
+        "zh": "东亚文明核心区（Epoch 1950）"
+      },
+      "kinshipType": "Patrilineal Lineage & Dynastic Administration",
+      "lithicTechnocomplex": "Intensive Agrarian & Bureaucratic State Complex",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "core_polity_west_eurasia",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.75, 0.80, 0.88, 0.80],
+      "name": {
+        "en": "Western Eurasian Civilizational Core (Epoch 1950)",
+        "fr": "Foyer Civilisationnel Ouest-Eurasien (Epoch 1950)",
+        "de": "Westeurasischer Zivilisationsraum (Epoch 1950)",
+        "es": "Núcleo Civilizatorio Euroasiático Occidental (Epoch 1950)",
+        "zh": "西欧亚文明核心区（Epoch 1950）"
+      },
+      "kinshipType": "Segmentary & Institutional Governance",
+      "lithicTechnocomplex": "Metallurgy, Urban Commerce & Maritime Networks",
+      "caloricIntakePerCapitaKcal": 2800
+    },
+    {
+      "id": "core_polity_south_asia",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.65, 0.85, 0.92, 0.90],
+      "name": {
+        "en": "South Asian Civilizational Core (Epoch 1950)",
+        "fr": "Foyer Civilisationnel Sud-Asiatique (Epoch 1950)",
+        "de": "Südasiatischer Zivilisationsraum (Epoch 1950)",
+        "es": "Núcleo Civilizatorio de Asia del Sur (Epoch 1950)",
+        "zh": "南亚文明核心区（Epoch 1950）"
+      },
+      "kinshipType": "Endogamous Social Stratification & Village Republics",
+      "lithicTechnocomplex": "Wet-Rice Agriculture & Monsoonal Hydraulic Engineering",
+      "caloricIntakePerCapitaKcal": 2700
+    },
+    {
+      "id": "core_polity_americas",
+      "colorHex": "#06B6D4",
+      "colorRgb": [6, 182, 212],
+      "traits": [0.55, 0.75, 0.82, 0.88],
+      "name": {
+        "en": "Americas Civilizational Core (Epoch 1950)",
+        "fr": "Foyer Civilisationnel des Amériques (Epoch 1950)",
+        "de": "Amerikanischer Zivilisationsraum (Epoch 1950)",
+        "es": "Núcleo Civilizatorio de las Américas (Epoch 1950)",
+        "zh": "美洲文明核心区（Epoch 1950）"
+      },
+      "kinshipType": "Corporate Lineage & Theocratic Chiefdoms/States",
+      "lithicTechnocomplex": "Maize/Potato Terracing & Monumental Architecture",
+      "caloricIntakePerCapitaKcal": 2600
+    }
+  ]
+}

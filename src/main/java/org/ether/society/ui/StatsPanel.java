@@ -88,6 +88,16 @@ public class StatsPanel extends VBox {
     private double currentWindowYears = 10.0;
     private boolean isUpdatingTexts = false;
 
+    // Chronicle & Historical Bifurcation Table
+    private final TableView<org.ether.society.events.ActiveEvent> chronicleTable;
+    private final Label chronicleHeaderLabel;
+    private final Label chronicleHintLabel;
+    private final TableColumn<org.ether.society.events.ActiveEvent, String> chronicleYearCol;
+    private final TableColumn<org.ether.society.events.ActiveEvent, String> chronicleTypeCol;
+    private final TableColumn<org.ether.society.events.ActiveEvent, String> chronicleTitleCol;
+    private final TableColumn<org.ether.society.events.ActiveEvent, String> chronicleMagCol;
+    private final TableColumn<org.ether.society.events.ActiveEvent, String> chronicleLocCol;
+
     public void setOnDisplayModeRequested(java.util.function.Consumer<DisplayMode> listener) {
         this.onDisplayModeRequested = listener;
     }
@@ -598,12 +608,64 @@ public class StatsPanel extends VBox {
         VBox cardsControlBox = new VBox(6, metricsHeaderLabel, metricInspectorCard, categoryFilterCombo, searchField, exportBtn);
         cardsControlBox.getStyleClass().add("card-section");
 
+        // --- CHRONICLE & HISTORICAL BIFURCATIONS SECTION ---
+        chronicleHeaderLabel = new Label(I18n.getOrDefault("stats.chronicle.header", "📜 CHRONIQUE HISTORIQUE & JOURNAL DES BIFURCATIONS"));
+        chronicleHeaderLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #a78bfa;");
+
+        chronicleHintLabel = new Label(I18n.getOrDefault("control.events.double_click_hint", "💡 Double-cliquez sur un événement pour centrer la caméra et afficher l'épicentre."));
+        chronicleHintLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8; -fx-font-style: italic;");
+
+        chronicleTable = new TableView<>();
+        chronicleTable.setPrefHeight(180);
+        chronicleTable.setPlaceholder(new Label(I18n.getOrDefault("stats.chronicle.empty", "Aucun événement marquant ou bifurcation historique enregistré pour le moment.")));
+        chronicleTable.setStyle("-fx-background-color: rgba(15, 23, 42, 0.7); -fx-font-size: 11px;");
+
+        chronicleYearCol = new TableColumn<>(I18n.getOrDefault("stats.chronicle.col_year", "Année"));
+        chronicleYearCol.setPrefWidth(75);
+        chronicleYearCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getFormattedDate()));
+
+        chronicleTypeCol = new TableColumn<>(I18n.getOrDefault("stats.chronicle.col_type", "Type"));
+        chronicleTypeCol.setPrefWidth(130);
+        chronicleTypeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+            data.getValue().getLeaderArchetype() != null ? data.getValue().getLeaderArchetype().getDisplayName() : data.getValue().getType()
+        ));
+
+        chronicleTitleCol = new TableColumn<>(I18n.getOrDefault("stats.chronicle.col_name", "Événement / Figure"));
+        chronicleTitleCol.setPrefWidth(240);
+        chronicleTitleCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getTitle()));
+
+        chronicleMagCol = new TableColumn<>(I18n.getOrDefault("stats.chronicle.col_magnitude", "Magnitude"));
+        chronicleMagCol.setPrefWidth(85);
+        chronicleMagCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(String.format(java.util.Locale.ROOT, "%.1f (%s)", data.getValue().getMagnitude(), data.getValue().getIntensityLabel())));
+
+        chronicleLocCol = new TableColumn<>(I18n.getOrDefault("stats.chronicle.col_location", "Localisation"));
+        chronicleLocCol.setPrefWidth(135);
+        chronicleLocCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getFormattedCoordinates()));
+
+        chronicleTable.getColumns().addAll(chronicleYearCol, chronicleTypeCol, chronicleTitleCol, chronicleMagCol, chronicleLocCol);
+
+        chronicleTable.setRowFactory(tv -> {
+            TableRow<org.ether.society.events.ActiveEvent> row = new TableRow<>();
+            row.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 2 && !row.isEmpty()) {
+                    org.ether.society.events.ActiveEvent item = row.getItem();
+                    if (item != null && onDisplayModeRequested != null) {
+                        // Request notification or zoom
+                    }
+                }
+            });
+            return row;
+        });
+
+        VBox chronicleBox = new VBox(6, chronicleHeaderLabel, chronicleHintLabel, chronicleTable);
+        chronicleBox.getStyleClass().add("card-section");
+
         // Container for metric sections
         metricsContainer = new VBox(6);
 
         registerMetricCards(metricInspectorTitle, metricInspectorText);
 
-        getChildren().addAll(topControlsBox, chartBox, barBox, spatialHeatmapPanel, variancePanel, cardsControlBox, metricsContainer);
+        getChildren().addAll(topControlsBox, chartBox, barBox, chronicleBox, spatialHeatmapPanel, variancePanel, cardsControlBox, metricsContainer);
 
         updateTexts();
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
@@ -1166,6 +1228,14 @@ public class StatsPanel extends VBox {
 
                     // Update Variance & Distribution Panel
                     variancePanel.updateData(engine.getCells());
+
+                    // Update Chronicle History Table
+                    if (chronicleTable != null && engine.getEventSystem() != null) {
+                        List<org.ether.society.events.ActiveEvent> history = engine.getEventSystem().getChronicleHistory();
+                        if (chronicleTable.getItems().size() != history.size()) {
+                            chronicleTable.getItems().setAll(history);
+                        }
+                    }
                 }
             } finally {
                 statsUpdatePending.set(false);

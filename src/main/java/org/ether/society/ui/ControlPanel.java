@@ -100,6 +100,9 @@ public class ControlPanel extends VBox {
     private final java.util.Map<DisplayMode, CheckBox> layerCheckBoxMap = new java.util.EnumMap<>(DisplayMode.class);
     private final FlowPane activeLayersChipsBox;
     private final Button fullScreenBtn;
+    private final CheckBox filterGeophysicalCheck;
+    private final CheckBox filterHistoricalCheck;
+    private final List<ActiveEvent> rawEventsCache = new ArrayList<>();
 
     // Callbacks
     private Runnable onSave;
@@ -583,9 +586,24 @@ public class ControlPanel extends VBox {
 
         // --- 5. ÉVÉNEMENTS RÉCENTS (CHRONOLOGIE) CARD ---
         eventsTitleLabel = createCardTitle(I18n.getOrDefault("sim.card.recent_events", "📜 5. ÉVÉNEMENTS RÉCENTS (CHRONOLOGIE)"));
-        eventsHintLabel = new Label(I18n.getOrDefault("sim.events.double_click_hint", "💡 Double-cliquer sur un événement pour voler vers sa position"));
+        eventsHintLabel = new Label(I18n.getOrDefault("control.events.double_click_hint", "💡 Double-cliquez sur un événement pour centrer la caméra et afficher l'épicentre."));
         eventsHintLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8; -fx-font-style: italic;");
         eventsHintLabel.setWrapText(true);
+
+        filterGeophysicalCheck = new CheckBox(I18n.getOrDefault("control.events.filter_geophysical", "🌋 Naturels & Géophysiques"));
+        filterGeophysicalCheck.setSelected(true);
+        filterGeophysicalCheck.setTooltip(new Tooltip(I18n.getOrDefault("control.events.filter_geophysical.tooltip", "Afficher ou masquer les catastrophes naturelles, séismes, volcans, inondations, sécheresses et pandémies.")));
+        filterGeophysicalCheck.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #f87171; -fx-cursor: hand;");
+        filterGeophysicalCheck.setOnAction(e -> applyEventsFilter());
+
+        filterHistoricalCheck = new CheckBox(I18n.getOrDefault("control.events.filter_historical", "👑 Historiques & Personnages"));
+        filterHistoricalCheck.setSelected(true);
+        filterHistoricalCheck.setTooltip(new Tooltip(I18n.getOrDefault("control.events.filter_historical.tooltip", "Afficher ou masquer les interventions de personnages historiques, conquêtes et réformes majeures.")));
+        filterHistoricalCheck.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #a78bfa; -fx-cursor: hand;");
+        filterHistoricalCheck.setOnAction(e -> applyEventsFilter());
+
+        HBox filtersBox = new HBox(8, filterGeophysicalCheck, filterHistoricalCheck);
+        filtersBox.setAlignment(Pos.CENTER_LEFT);
 
         noEventsLabel = new Label(I18n.getOrDefault("sim.events.no_events", "Aucun événement enregistré pour le moment."));
         noEventsLabel.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-style: italic; -fx-padding: 4 0;");
@@ -593,7 +611,7 @@ public class ControlPanel extends VBox {
         eventsListBox = new VBox(6);
         eventsListBox.getChildren().add(noEventsLabel);
 
-        VBox eventsCard = new VBox(8, eventsTitleLabel, eventsHintLabel, eventsListBox);
+        VBox eventsCard = new VBox(8, eventsTitleLabel, eventsHintLabel, filtersBox, eventsListBox);
         styleCard(eventsCard);
 
         // Keep age and season labels initialized for dateHeaderBox updates
@@ -1010,11 +1028,30 @@ public class ControlPanel extends VBox {
 
     private final List<String> lastRenderedEventSignatures = new ArrayList<>();
 
+    private void applyEventsFilter() {
+        lastRenderedEventSignatures.clear();
+        updateRecentEvents(rawEventsCache);
+    }
+
     public void updateRecentEvents(List<ActiveEvent> events) {
-        if (events == null || eventsListBox == null) return;
+        if (eventsListBox == null) return;
+        if (events != null) {
+            rawEventsCache.clear();
+            rawEventsCache.addAll(events);
+        }
+
+        boolean showGeo = filterGeophysicalCheck == null || filterGeophysicalCheck.isSelected();
+        boolean showHist = filterHistoricalCheck == null || filterHistoricalCheck.isSelected();
+
+        List<ActiveEvent> filteredList = new ArrayList<>();
+        for (ActiveEvent evt : rawEventsCache) {
+            if (evt.isGeophysical() && !showGeo) continue;
+            if (evt.isHistoricalLeader() && !showHist) continue;
+            filteredList.add(evt);
+        }
 
         // Filter and get last 10 events sorted chronologically (by year, then month, then day)
-        List<ActiveEvent> sortedList = new ArrayList<>(events);
+        List<ActiveEvent> sortedList = new ArrayList<>(filteredList);
         sortedList.sort(Comparator.comparingInt(ActiveEvent::getYear)
                 .thenComparingInt(ActiveEvent::getMonth)
                 .thenComparingInt(ActiveEvent::getDay));

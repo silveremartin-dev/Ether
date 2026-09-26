@@ -121,6 +121,8 @@ public class Scenario implements Serializable {
     private long seed = 12345L; // Demographic density seed
     private long culturalSeed = 54321L; // Cultural tensor suite seed
     private boolean randomEventsEnabled = true;
+    private boolean earthHistoricalLeadersEnabled = true;
+    private boolean proceduralLeadersEnabled = true;
     private String customDensityBase64;
     // Cultural Vector & Multi-Field Layers (Persisted per Scenario)
     private int cultureVectorDimensions = 8; // 4D to 32D culture vector dimensions
@@ -449,6 +451,22 @@ public class Scenario implements Serializable {
 
     public void setRandomEventsEnabled(boolean randomEventsEnabled) {
         this.randomEventsEnabled = randomEventsEnabled;
+    }
+
+    public boolean isEarthHistoricalLeadersEnabled() {
+        return earthHistoricalLeadersEnabled;
+    }
+
+    public void setEarthHistoricalLeadersEnabled(boolean earthHistoricalLeadersEnabled) {
+        this.earthHistoricalLeadersEnabled = earthHistoricalLeadersEnabled;
+    }
+
+    public boolean isProceduralLeadersEnabled() {
+        return proceduralLeadersEnabled;
+    }
+
+    public void setProceduralLeadersEnabled(boolean proceduralLeadersEnabled) {
+        this.proceduralLeadersEnabled = proceduralLeadersEnabled;
     }
 
     public String getCustomDensityBase64() {

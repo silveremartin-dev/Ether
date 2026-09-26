@@ -39,6 +39,10 @@ public class ProceduralEngineRegistry {
         }
     }
 
+    public static void clearPlugins() {
+        registeredPlugins.clear();
+    }
+
     public static void processPlugins(List<H3Cell> cells, double deltaYears) {
         for (Map.Entry<String, ProceduralEnginePlugin> entry : registeredPlugins.entrySet()) {
             try {
@@ -51,10 +55,6 @@ public class ProceduralEngineRegistry {
 
     public static int getPluginCount() {
         return registeredPlugins.size();
-    }
-
-    public static void clearPlugins() {
-        registeredPlugins.clear();
     }
 }
 

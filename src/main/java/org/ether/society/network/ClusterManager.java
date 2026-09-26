@@ -192,11 +192,10 @@ public class ClusterManager {
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
 
-            String rawHandshake = in.readUTF();
-            String decryptedMsg = securityManager.decrypt(rawHandshake);
+            String decryptedMsg = readEncryptedFrame(in, securityManager);
 
             if (!decryptedMsg.startsWith("REGISTER_WORKER:")) {
-                out.writeUTF(securityManager.encrypt("REJECT:INVALID_PROTOCOL"));
+                writeEncryptedFrame(out, "REJECT:INVALID_PROTOCOL", securityManager);
                 return;
             }
 
@@ -212,19 +211,16 @@ public class ClusterManager {
             rebalanceSpatialChunks();
 
             String ackMessage = String.format("ACK_REGISTER:%s:%d:%d", registeredWorkerId, record.getAssignedChunkStart(), record.getAssignedChunkEnd());
-            out.writeUTF(securityManager.encrypt(ackMessage));
-            out.flush();
+            writeEncryptedFrame(out, ackMessage, securityManager);
 
             // Loop to handle incoming worker messages (Heartbeats, Chunk Results)
             while (running.get() && !socket.isClosed()) {
-                String rawMsg = in.readUTF();
-                String decrypted = securityManager.decrypt(rawMsg);
+                String decrypted = readEncryptedFrame(in, securityManager);
 
                 if (decrypted.startsWith("HEARTBEAT:")) {
                     record.touchHeartbeat();
                     record.setStatus(NodeStatus.ACTIVE);
-                    out.writeUTF(securityManager.encrypt("HEARTBEAT_ACK"));
-                    out.flush();
+                    writeEncryptedFrame(out, "HEARTBEAT_ACK", securityManager);
                 } else if (decrypted.startsWith("CHUNK_RESULT:")) {
                     // CHUNK_RESULT:<workerId>:<tickId>:<start>:<count>:<payloadBase64>
                     String[] resParts = decrypted.split(":", 6);
@@ -260,7 +256,7 @@ public class ClusterManager {
     private void connectWorkerToMaster() {
         networkPool.execute(() -> {
             int retries = 0;
-            while (running.get() && retries < 5) {
+            while (running.get()) {
                 try {
                     workerClientSocket = new Socket(masterHost, port);
                     logger.info("🔗 Connected to Master Cluster at {}:{}", masterHost, port);
@@ -270,11 +266,9 @@ public class ClusterManager {
 
                     String workerId = "worker-" + UUID.randomUUID().toString().substring(0, 6);
                     String registerMsg = "REGISTER_WORKER:" + workerId + ":Compute Core Worker";
-                    out.writeUTF(securityManager.encrypt(registerMsg));
-                    out.flush();
+                    writeEncryptedFrame(out, registerMsg, securityManager);
 
-                    String response = in.readUTF();
-                    String decryptedResp = securityManager.decrypt(response);
+                    String decryptedResp = readEncryptedFrame(in, securityManager);
                     logger.info("Cluster Master Response: {}", decryptedResp);
 
                     // Start background heartbeat sender
@@ -283,8 +277,7 @@ public class ClusterManager {
                             try {
                                 Thread.sleep(2000);
                                 synchronized (out) {
-                                    out.writeUTF(securityManager.encrypt("HEARTBEAT:" + workerId));
-                                    out.flush();
+                                    writeEncryptedFrame(out, "HEARTBEAT:" + workerId, securityManager);
                                 }
                             } catch (Exception ignored) {
                                 break;
@@ -296,8 +289,7 @@ public class ClusterManager {
 
                     // Main worker loop: listen for instructions from Master
                     while (running.get() && !workerClientSocket.isClosed()) {
-                        String rawMsg = in.readUTF();
-                        String decrypted = securityManager.decrypt(rawMsg);
+                        String decrypted = readEncryptedFrame(in, securityManager);
 
                         if ("HEARTBEAT_ACK".equals(decrypted)) {
                             // Normal ping ACK
@@ -330,8 +322,7 @@ public class ClusterManager {
                             String resultBase64 = WorldBufferWireCodec.encodeAndEncryptChunk(currentWorldBuffer, start, count, tickId, securityManager);
                             String resMsg = String.format(Locale.ROOT, "CHUNK_RESULT:%s:%d:%d:%d:%s", workerId, tickId, start, count, resultBase64);
                             synchronized (out) {
-                                out.writeUTF(securityManager.encrypt(resMsg));
-                                out.flush();
+                                writeEncryptedFrame(out, resMsg, securityManager);
                             }
                         }
                     }
@@ -381,8 +372,7 @@ public class ClusterManager {
                     String payload = WorldBufferWireCodec.encodeAndEncryptChunk(buffer, start, count, tickId, securityManager);
                     String cmd = String.format(Locale.ROOT, "EXECUTE_CHUNK:%d:%d:%d:%.4f:%s", tickId, start, count, dt, payload);
                     synchronized (out) {
-                        out.writeUTF(securityManager.encrypt(cmd));
-                        out.flush();
+                        writeEncryptedFrame(out, cmd, securityManager);
                     }
                 } catch (Exception e) {
                     logger.error("Error dispatching chunk to worker {}: {}", worker.getId(), e.getMessage());
@@ -472,6 +462,30 @@ public class ClusterManager {
             if (workerClientSocket != null && !workerClientSocket.isClosed()) workerClientSocket.close();
         } catch (IOException ignored) {}
         logger.info("Cluster Manager stopped cleanly.");
+    }
+
+    private static void writeEncryptedFrame(DataOutputStream out, String plainText, EtherSecurityManager sec) throws IOException {
+        try {
+            String encrypted = sec.encrypt(plainText);
+            byte[] bytes = encrypted.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            out.writeInt(bytes.length);
+            out.write(bytes);
+            out.flush();
+        } catch (Exception e) {
+            throw new IOException("Failed to encrypt frame", e);
+        }
+    }
+
+    private static String readEncryptedFrame(DataInputStream in, EtherSecurityManager sec) throws IOException {
+        int length = in.readInt();
+        byte[] bytes = new byte[length];
+        in.readFully(bytes);
+        String encrypted = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+        try {
+            return sec.decrypt(encrypted);
+        } catch (Exception e) {
+            throw new IOException("Failed to decrypt frame", e);
+        }
     }
 }
 

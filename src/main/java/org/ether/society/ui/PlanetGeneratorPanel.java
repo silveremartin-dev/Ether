@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Integrated UI Panel for procedural planet generation, astronomical physics, 
@@ -1451,8 +1452,8 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     /**
-     * Exports the current procedural heightmap to a PNG/JPEG file.
-     * Resolution is automatically recommended based on planet radius.
+     * Exports the current procedural heightmap / DEM to professional GIS & image formats
+     * (GeoTIFF Float32, 16-bit PNG, Polychrome PNG + WorldFile, ESRI ASCII Grid).
      */
     private void exportProceduralHeightmap() {
         PlanetPreset preset = buildPresetFromUI();
@@ -1460,24 +1461,46 @@ public class PlanetGeneratorPanel extends BorderPane {
         int recW = circumference > 60000 ? 2048 : (circumference > 20000 ? 1024 : 512);
         int recH = recW / 2;
 
-        WritableImage img = new WritableImage(recW, recH);
-        PixelWriter pw = img.getPixelWriter();
+        long tSeed = preset.seed() + 100L;
+        long pSeed = preset.seed() + 1000L;
+        long sSeed = preset.seed() + 2000L;
+        try { if (tempSeedField != null && tempSeedField.getText() != null && !tempSeedField.getText().isBlank()) tSeed = Long.parseLong(tempSeedField.getText()); } catch (NumberFormatException ignored) {}
+        try { if (precipSeedField != null && precipSeedField.getText() != null && !precipSeedField.getText().isBlank()) pSeed = Long.parseLong(precipSeedField.getText()); } catch (NumberFormatException ignored) {}
+        try { if (seasonSeedField != null && seasonSeedField.getText() != null && !seasonSeedField.getText().isBlank()) sSeed = Long.parseLong(seasonSeedField.getText()); } catch (NumberFormatException ignored) {}
+
+        float[][] grid = new float[recH][recW];
+        double seaM = PlanetPreset.waterLevelToMeters(preset.waterLevel(), preset.minAltitudeMeters(), preset.maxAltitudeMeters());
+
         for (int y = 0; y < recH; y++) {
+            double lat = 90.0 - ((double) y / recH) * 180.0;
             for (int x = 0; x < recW; x++) {
                 double lon = ((double) x / recW) * 360.0 - 180.0;
-                double lat = 90.0 - ((double) y / recH) * 180.0;
-                ProceduralGenerator.PlanetPoint pt = generator.getPlanetPoint(lat, lon, preset);
-                double norm = Math.max(0, Math.min(1,
-                        (pt.elevation() - preset.minAltitudeMeters()) /
-                        (preset.maxAltitudeMeters() - preset.minAltitudeMeters())));
-                int v = (int) (norm * 255);
-                pw.setColor(x, y, Color.rgb(v, v, v));
+                ProceduralGenerator.PlanetPoint pt = generator.getPlanetPoint(lat, lon, preset, tSeed, pSeed, sSeed);
+                grid[y][x] = (float) pt.elevationMeters();
             }
         }
+
+        java.util.function.Function<Float, Color> colorMapper = elevM -> {
+            if (elevM < seaM && preset.waterLevel() > -0.4) {
+                return Color.rgb(15, 23, 42); // Deep navy ocean
+            } else {
+                double norm = (elevM - seaM) / (preset.maxAltitudeMeters() - seaM + 0.001);
+                return getHypsometricColor(norm);
+            }
+        };
+
         String defaultName = String.format("ether-heightmap-%s-%dx%d.png",
                 preset.name().toLowerCase().replaceAll("[^a-z0-9]", "-"), recW, recH);
-        WindowUtils.exportImageWithChooser(getScene() != null ? getScene().getWindow() : null,
-                img, defaultName, I18n.getOrDefault("planet.dialog.export_heightmap", "Export Heightmap (PNG / JPEG)"));
+        org.ether.society.data.GeospatialRasterExporter.exportRasterWithDialog(
+                getScene() != null ? getScene().getWindow() : null,
+                grid,
+                defaultName,
+                I18n.getOrDefault("planet.dialog.export_heightmap", "Export Heightmap / Digital Elevation Model (GeoTIFF / PNG / ASCII)"),
+                colorMapper,
+                (float) preset.minAltitudeMeters(),
+                (float) preset.maxAltitudeMeters(),
+                "m"
+        );
     }
 
     private void exportProceduralClimateMap(String type) {
@@ -1486,29 +1509,77 @@ public class PlanetGeneratorPanel extends BorderPane {
         int recW = circumference > 60000 ? 2048 : (circumference > 20000 ? 1024 : 512);
         int recH = recW / 2;
 
-        WritableImage img = new WritableImage(recW, recH);
-        PixelWriter pw = img.getPixelWriter();
-        for (int y = 0; y < recH; y++) {
-            for (int x = 0; x < recW; x++) {
-                double lon = ((double) x / recW) * 360.0 - 180.0;
+        long tSeed = preset.seed() + 100L;
+        long pSeed = preset.seed() + 1000L;
+        long sSeed = preset.seed() + 2000L;
+        try { if (tempSeedField != null && tempSeedField.getText() != null && !tempSeedField.getText().isBlank()) tSeed = Long.parseLong(tempSeedField.getText()); } catch (NumberFormatException ignored) {}
+        try { if (precipSeedField != null && precipSeedField.getText() != null && !precipSeedField.getText().isBlank()) pSeed = Long.parseLong(precipSeedField.getText()); } catch (NumberFormatException ignored) {}
+        try { if (seasonSeedField != null && seasonSeedField.getText() != null && !seasonSeedField.getText().isBlank()) sSeed = Long.parseLong(seasonSeedField.getText()); } catch (NumberFormatException ignored) {}
+
+        float[][] grid = new float[recH][recW];
+        double co2Forcing = 3.0 * (Math.log(Math.max(1.0, preset.co2Ppm()) / 280.0) / Math.log(2.0));
+        double pressureBoost = (preset.atmospherePressureAtm() - 1.0) * 8.0;
+        double minTemp = preset.averageTempC() + co2Forcing + pressureBoost - preset.temperatureGradient() - 20.0;
+        double maxTemp = preset.averageTempC() + co2Forcing + pressureBoost + preset.temperatureGradient();
+        double maxAmp = Math.min(60.0, (preset.axialTiltDegrees() / 23.5) * 35.0);
+
+        java.util.function.Function<Float, Color> colorMapper;
+        float minVal, maxVal;
+        String unit;
+
+        if ("temp".equalsIgnoreCase(type)) {
+            minVal = (float) minTemp;
+            maxVal = (float) maxTemp;
+            unit = "°C";
+            for (int y = 0; y < recH; y++) {
                 double lat = 90.0 - ((double) y / recH) * 180.0;
-                ProceduralGenerator.PlanetPoint pt = generator.getPlanetPoint(lat, lon, preset);
-                double norm = 0.5;
-                if ("temp".equalsIgnoreCase(type)) {
-                    norm = Math.max(0, Math.min(1, (pt.temperature() + 50.0) / 100.0));
-                } else if ("precip".equalsIgnoreCase(type)) {
-                    norm = Math.max(0, Math.min(1, pt.rainfall()));
-                } else {
-                    norm = Math.max(0, Math.min(1, (Math.abs(lat) / 90.0) * (preset.axialTiltDegrees() / 45.0)));
+                for (int x = 0; x < recW; x++) {
+                    double lon = ((double) x / recW) * 360.0 - 180.0;
+                    ProceduralGenerator.PlanetPoint pt = generator.getPlanetPoint(lat, lon, preset, tSeed, pSeed, sSeed);
+                    grid[y][x] = (float) pt.temperature();
                 }
-                int v = (int) (norm * 255);
-                pw.setColor(x, y, Color.rgb(v, v, v));
             }
+            colorMapper = val -> getTemperatureColor(val, minTemp, maxTemp);
+        } else if ("precip".equalsIgnoreCase(type)) {
+            minVal = 0.0f;
+            maxVal = 3000.0f;
+            unit = "mm/an";
+            for (int y = 0; y < recH; y++) {
+                double lat = 90.0 - ((double) y / recH) * 180.0;
+                for (int x = 0; x < recW; x++) {
+                    double lon = ((double) x / recW) * 360.0 - 180.0;
+                    ProceduralGenerator.PlanetPoint pt = generator.getPlanetPoint(lat, lon, preset, tSeed, pSeed, sSeed);
+                    grid[y][x] = (float) (pt.rainfall() * 3000.0);
+                }
+            }
+            colorMapper = val -> getPrecipitationColor(val / 3000.0);
+        } else {
+            minVal = 0.0f;
+            maxVal = (float) maxAmp;
+            unit = "°C";
+            for (int y = 0; y < recH; y++) {
+                double lat = 90.0 - ((double) y / recH) * 180.0;
+                for (int x = 0; x < recW; x++) {
+                    double lon = ((double) x / recW) * 360.0 - 180.0;
+                    ProceduralGenerator.PlanetPoint pt = generator.getPlanetPoint(lat, lon, preset, tSeed, pSeed, sSeed);
+                    grid[y][x] = (float) (pt.seasonality() * maxAmp);
+                }
+            }
+            colorMapper = val -> getSeasonalityColor(val / Math.max(0.001, maxAmp));
         }
+
         String defaultName = String.format("ether-%s-%s-%dx%d.png",
                 type, preset.name().toLowerCase().replaceAll("[^a-z0-9]", "-"), recW, recH);
-        WindowUtils.exportImageWithChooser(getScene() != null ? getScene().getWindow() : null,
-                img, defaultName, I18n.getOrDefault("planet.chooser.export", "Export Climate Map (PNG / JPEG)"));
+        org.ether.society.data.GeospatialRasterExporter.exportRasterWithDialog(
+                getScene() != null ? getScene().getWindow() : null,
+                grid,
+                defaultName,
+                I18n.getOrDefault("planet.dialog.export_" + type, "Export Climate Map (GeoTIFF / PNG / ASCII)"),
+                colorMapper,
+                minVal,
+                maxVal,
+                unit
+        );
     }
 
     private void chooseBiomeMapFile() {
@@ -1938,18 +2009,15 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private void exportMapsWithWorldFiles() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("planet.chooser.worldfile", "Export map with ESRI World File (.tfw)"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Map Image", "*.png"));
-        File file = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
-        if (file != null) {
-            Image imgToExport = customElevImage;
-            if (imgToExport == null) {
-                WritableImage wimg = new WritableImage((int) previewCanvas.getWidth(), (int) previewCanvas.getHeight());
-                previewCanvas.snapshot(null, wimg);
-                imgToExport = wimg;
-            }
-            mapLoader.exportMapToPngAndWorldFile(imgToExport, file);
+        int selectedIdx = viewModeCombo != null ? viewModeCombo.getSelectionModel().getSelectedIndex() : 0;
+        if (selectedIdx == 0) {
+            exportProceduralHeightmap();
+        } else if (selectedIdx == 1) {
+            exportProceduralClimateMap("temp");
+        } else if (selectedIdx == 2) {
+            exportProceduralClimateMap("precip");
+        } else {
+            exportProceduralClimateMap("season");
         }
     }
 
@@ -2302,11 +2370,16 @@ public class PlanetGeneratorPanel extends BorderPane {
             minLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
             legendBar.getChildren().add(minLabel);
-            addLegendItem("DEPRESSIONS", Color.rgb(30, 30, 30), I18n.getOrDefault("planet.legend.depressions", "Dépressions / Abysses"));
-            addLegendItem("LOWLANDS", Color.rgb(90, 90, 90), I18n.getOrDefault("planet.legend.lowlands", "Basses Terres"));
-            addLegendItem("PLAINS", Color.rgb(150, 150, 150), I18n.getOrDefault("planet.legend.plains", "Plaines / Niveau 0"));
-            addLegendItem("HIGHLANDS", Color.rgb(205, 205, 205), I18n.getOrDefault("planet.legend.highlands", "Reliefs & Plateaux"));
-            addLegendItem("PEAKS", Color.rgb(255, 255, 255), I18n.getOrDefault("planet.legend.peaks", "Sommets"));
+            if (preset.waterLevel() > -0.4) {
+                addLegendItem("OCEAN", Color.rgb(15, 23, 42), I18n.getOrDefault("planet.legend.depressions", "Abysses / Océans"));
+            } else {
+                addLegendItem("DEPRESSIONS", getHypsometricColor(0.0), I18n.getOrDefault("planet.legend.depressions", "Dépressions / Abysses"));
+            }
+            addLegendItem("LOWLANDS", getHypsometricColor(0.10), I18n.getOrDefault("planet.legend.lowlands", "Basses Terres"));
+            addLegendItem("PLAINS", getHypsometricColor(0.35), I18n.getOrDefault("planet.legend.plains", "Plaines & Bassins"));
+            addLegendItem("PLATEAUS", getHypsometricColor(0.55), I18n.getOrDefault("planet.legend.highlands", "Plateaux & Collines"));
+            addLegendItem("HIGHLANDS", getHypsometricColor(0.75), I18n.getOrDefault("planet.legend.mountains", "Hauts Reliefs"));
+            addLegendItem("PEAKS", getHypsometricColor(1.00), I18n.getOrDefault("planet.legend.peaks", "Sommets & Neiges"));
 
             Label maxLabel = new Label(String.format("Max: %,.0f m", maxAlt));
             maxLabel.getStyleClass().add("control-label");

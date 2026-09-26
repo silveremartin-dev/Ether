@@ -85,3 +85,16 @@ data/maps/dplace/
 !data/maps/ether/**
 !data/maps/earth/
 !data/maps/earth/**
+
+# Security & Cloud Credentials
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.jks
+*gcp-key*.json
+*service-account*.json
+credentials.json
+secrets/
+config/secrets/

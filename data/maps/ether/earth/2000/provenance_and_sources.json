@@ -1,0 +1,113 @@
+{
+  "epoch": 2000,
+  "era": "Anthropocène & Grande Accélération Mondiale (2000)",
+  "planet": "earth",
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "overview": {
+    "summary_en": "Global cartographic and tensor reconstruction of Earth for epoch 2000 (Anthropocène & Grande Accélération Mondiale (2000)). Includes empirical physical climate baselines (WorldClim v2.1 Bio1, Bio4, Bio12), ETOPO 2022 relief, HYDE 3.4 demographic grids, Seshat cultural dynamics, and USGS/BGS geological resource tensors.",
+    "summary_fr": "Reconstitution cartographique et tensorielle globale de la Terre pour l'époque 2000 (Anthropocène & Grande Accélération Mondiale (2000)). Intègre les références empiriques WorldClim v2.1, le relief ETOPO 2022, les grilles HYDE 3.4, la dynamique Seshat et les ressources géologiques USGS/BGS."
+  },
+  "layers": {
+    "elevation": {
+      "filename": "earth_2000_elevation.png",
+      "category": "geophysics",
+      "data_sources": ["NOAA ETOPO 2022 15-arc-second Global Relief Model", "GEBCO 2023 Grid Bathymetric Model"],
+      "reconstitution_rationale": "High-fidelity elevation model calibrated against epoch eustatic sea level offset."
+    },
+    "biomes": {
+      "filename": "earth_2000_biomes.png",
+      "category": "ecology",
+      "data_sources": ["WorldClim v2.1 Bioclimatic Indicators", "Biome 6000 Project", "CHELSA-Trace21k"],
+      "reconstitution_rationale": "Coupled Holdridge-Whittaker bioclimatic classification driven by empirical temperature and precipitation."
+    },
+    "temperature": {
+      "filename": "earth_2000_temperature.png",
+      "category": "climate",
+      "data_sources": ["WorldClim v2.1 Bio1 (Annual Mean Temperature)", "PMIP4 Paleoclimate Synthesis"],
+      "reconstitution_rationale": "Empirical baseline modulated by continuous 2D orbital and continental paleoclimatic anomaly field."
+    },
+    "precipitation": {
+      "filename": "earth_2000_precipitation.png",
+      "category": "climate",
+      "data_sources": ["WorldClim v2.1 Bio12 (Annual Precipitation)", "Speleothem & Lake Core Records"],
+      "reconstitution_rationale": "Empirical precipitation grid with dynamic ITCZ, monsoonal, and glacial humidity corrections."
+    },
+    "seasonality": {
+      "filename": "earth_2000_seasonality.png",
+      "category": "climate",
+      "data_sources": ["WorldClim v2.1 Bio4 (Temperature Seasonality)", "Milankovitch Astronomical Solutions"],
+      "reconstitution_rationale": "Continuous seasonality amplitude accounting for axial tilt, obliquity, and ocean thermal inertia."
+    },
+    "density": {
+      "filename": "earth_2000_density.png",
+      "category": "demography",
+      "data_sources": ["HYDE 3.4 History Database of the Global Environment", "Seshat Global History Databank"],
+      "reconstitution_rationale": "Authentic empirical demographic density field."
+    },
+    "sovereignty": {
+      "filename": "earth_2000_sovereignty.png",
+      "category": "sociology",
+      "data_sources": ["Seshat Databank Polities", "Historical GIS Global Boundary Datasets"],
+      "reconstitution_rationale": "Multi-center polity sovereign domains."
+    },
+    "isogloss": {
+      "filename": "earth_2000_isogloss.png",
+      "category": "linguistics",
+      "data_sources": ["WALS World Atlas of Language Structures", "D-PLACE Ethnolinguistic Database"],
+      "reconstitution_rationale": "Global ethnolinguistic phyla and language families."
+    },
+    "kinship": {
+      "filename": "earth_2000_kinship.png",
+      "category": "anthropology",
+      "data_sources": ["D-PLACE Murdock Ethnographic Atlas Kinship Codes"],
+      "reconstitution_rationale": "Spatial social structures and kinship organization modes."
+    },
+    "rituals": {
+      "filename": "earth_2000_rituals.png",
+      "category": "anthropology",
+      "data_sources": ["Archaeological Temple & Monumental Site Catalog"],
+      "reconstitution_rationale": "Sacred geography and monumental ritual intensity."
+    },
+    "technology": {
+      "filename": "earth_2000_technology.png",
+      "category": "technology",
+      "data_sources": ["Archaeological Metallurgical & Innovation Datasets", "Maddison Project"],
+      "reconstitution_rationale": "Technological complexity index and diffusion fronts."
+    },
+    "institutional": {
+      "filename": "earth_2000_institutional.png",
+      "category": "sociology",
+      "data_sources": ["Seshat Global History Databank Institutional Hierarchy Scales"],
+      "reconstitution_rationale": "Administrative, legal, and bureaucratic state capacity."
+    },
+    "ecological": {
+      "filename": "earth_2000_ecological.png",
+      "category": "ecology",
+      "data_sources": ["Global Land Use & Anthropogenic Deforestation Syntheses"],
+      "reconstitution_rationale": "Human ecological footprint and resource appropriation."
+    },
+    "pathogen": {
+      "filename": "earth_2000_pathogen.png",
+      "category": "epidemiology",
+      "data_sources": ["Paleoepidemiology & Ancient DNA Pathogen Catalogs"],
+      "reconstitution_rationale": "Endemic disease pressure, malaria/zoonotic zones, and immunity."
+    },
+    "tradenetwork": {
+      "filename": "earth_2000_tradenetwork.png",
+      "category": "economics",
+      "data_sources": ["Historical Maritime & Overland Trade Route Atlases"],
+      "reconstitution_rationale": "Commercial trade corridors, emporia, and maritime networks."
+    },
+    "coal": { "filename": "earth_2000_coal.png", "category": "geology", "data_sources": ["USGS World Coal Quality Inventory"] },
+    "oil": { "filename": "earth_2000_oil.png", "category": "geology", "data_sources": ["USGS World Petroleum Assessment"] },
+    "gas": { "filename": "earth_2000_gas.png", "category": "geology", "data_sources": ["USGS Global Gas Assessment"] },
+    "uranium": { "filename": "earth_2000_uranium.png", "category": "geology", "data_sources": ["IAEA / NEA Red Book"] },
+    "helium3": { "filename": "earth_2000_helium3.png", "category": "geology", "data_sources": ["USGS Mantle Volatiles Survey"] },
+    "iron_copper": { "filename": "earth_2000_iron_copper.png", "category": "geology", "data_sources": ["USGS MRDS Mineral Database"] },
+    "precious_metals": { "filename": "earth_2000_precious_metals.png", "category": "geology", "data_sources": ["USGS Mineral Assessment"] },
+    "rare_earths": { "filename": "earth_2000_rare_earths.png", "category": "geology", "data_sources": ["USGS REE Database"] },
+    "geothermal": { "filename": "earth_2000_geothermal.png", "category": "geology", "data_sources": ["IHFC Terrestrial Heat Flow Database"] },
+    "aquifers": { "filename": "earth_2000_aquifers.png", "category": "geology", "data_sources": ["UNESCO WHYMAP Global Groundwater"] }
+  }
+}

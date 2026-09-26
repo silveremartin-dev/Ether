@@ -281,6 +281,8 @@ public class ScenarioSetupPanel extends BorderPane {
     private TextField cultSeedField;
     private Button demoRandSeedBtn;
     private CheckBox randomEventsCheckBox;
+    private CheckBox earthLeadersCheckBox;
+    private CheckBox proceduralLeadersCheckBox;
 
     // Spatial Clipping & Boundary Condition Controls
     private Label clippingHeader;
@@ -1610,13 +1612,24 @@ public class ScenarioSetupPanel extends BorderPane {
 
                     if (bundle.planetPreset() != null) {
                         this.activePlanetPreset = bundle.planetPreset();
-                        if (planetPresetCombo != null) planetPresetCombo.setValue(bundle.planetPreset());
+                        if (planetPresetCombo != null) {
+                            if (!planetPresetCombo.getItems().contains(bundle.planetPreset())) {
+                                planetPresetCombo.getItems().add(bundle.planetPreset());
+                            }
+                            planetPresetCombo.setValue(bundle.planetPreset());
+                        }
                     }
                     if (bundle.ecologyPreset() != null && ecologyPresetCombo != null) {
+                        if (!ecologyPresetCombo.getItems().contains(bundle.ecologyPreset())) {
+                            ecologyPresetCombo.getItems().add(bundle.ecologyPreset());
+                        }
                         ecologyPresetCombo.setValue(bundle.ecologyPreset());
                     }
                     if (bundle.scenario() != null) {
                         applyScenarioToUI(bundle.scenario());
+                    }
+                    if (onScenarioLoadedCallback != null) {
+                        onScenarioLoadedCallback.accept(this.activePlanetPreset, bundle.ecologyPreset() != null ? bundle.ecologyPreset() : EcologyPreset.EARTH_STANDARD);
                     }
                     generatePreview();
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -2068,6 +2081,12 @@ public class ScenarioSetupPanel extends BorderPane {
             }
             if (randomEventsCheckBox != null) {
                 randomEventsCheckBox.setSelected(s.isRandomEventsEnabled());
+            }
+            if (earthLeadersCheckBox != null) {
+                earthLeadersCheckBox.setSelected(s.isEarthHistoricalLeadersEnabled());
+            }
+            if (proceduralLeadersCheckBox != null) {
+                proceduralLeadersCheckBox.setSelected(s.isProceduralLeadersEnabled());
             }
             if (clippingCheckBox != null) {
                 boolean active = s.isClippingEnabled();
@@ -3629,7 +3648,7 @@ public class ScenarioSetupPanel extends BorderPane {
         btnExportProvenanceManifest.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.gen_provenance", "Generate a cryptographic JSON manifest (provenance.json) containing SHA-256 hashes of datasets and parameters.")));
         btnExportProvenanceManifest.setOnAction(e -> exportProvenanceManifest());
 
-        Button btnCulturalMatrix = new Button(I18n.getOrDefault("scenario.btn.cultural_matrix", "🧩 Matrice d'Affinité"));
+        Button btnCulturalMatrix = new Button(I18n.getOrDefault("scenario.btn.cultural_matrix_inspect", "🔍 Inspecteur des Affinités Culturales"));
         btnCulturalMatrix.getStyleClass().add("button-secondary");
         btnCulturalMatrix.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnCulturalMatrix.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_matrix", "Inspect the N × N Pairwise Cultural Affinity and Distance Heatmap Matrix.")));
@@ -3638,10 +3657,19 @@ public class ScenarioSetupPanel extends BorderPane {
             new CulturalAffinityMatrixDialog(epoch).show();
         });
 
-        HBox formatRow = new HBox(8, culturalHelpBtn, btnCulturalMatrix, btnExportGisMultiFormat, btnExportProvenanceManifest);
-        formatRow.setAlignment(Pos.CENTER_LEFT);
+        HBox actionButtonsRow = new HBox(8, culturalHelpBtn, btnExportGisMultiFormat, btnExportProvenanceManifest);
+        actionButtonsRow.setAlignment(Pos.CENTER_LEFT);
 
-        VBox seedAndActionBox = new VBox(6, seedRow, formatRow);
+        VBox matrixCard = new VBox(4);
+        matrixCard.setStyle("-fx-padding: 8px 10px; -fx-background-color: rgba(148, 163, 184, 0.08); -fx-background-radius: 6px; -fx-border-color: rgba(148, 163, 184, 0.25); -fx-border-radius: 6px; -fx-border-width: 1px;");
+        Label matrixTitle = new Label(I18n.getOrDefault("scenario.cultural_matrix.title", "Matrice d'Affinité & Distances Culturelles"));
+        matrixTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
+        Label matrixDesc = new Label(I18n.getOrDefault("scenario.cultural_matrix.desc", "Inspecter et éditer la matrice N×N des distances de Mahalanobis et coefficients d'assimilation entre entités culturelles."));
+        matrixDesc.setStyle("-fx-font-size: 10px; -fx-text-fill: -fx-text-muted;");
+        matrixDesc.setWrapText(true);
+        matrixCard.getChildren().addAll(matrixTitle, matrixDesc, btnCulturalMatrix);
+
+        VBox seedAndActionBox = new VBox(8, seedRow, actionButtonsRow, matrixCard);
 
         VBox layerHeaderBox = new VBox(6, layerTitle, seedAndActionBox);
 
@@ -5453,16 +5481,36 @@ public class ScenarioSetupPanel extends BorderPane {
         double lat = c.getLatitude() != null ? c.getLatitude() : 0.0;
         double lon = c.getLongitude() != null ? c.getLongitude() : 0.0;
 
+        double elev = c.getElevation() != null ? c.getElevation() : 0.0;
+        boolean isLand = elev > 0.0 || (c.getBiome() != null && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN);
+
         if (idx == 0) {
             // Default Density & Relief Mode
             if (radioImportDemo != null && radioImportDemo.isSelected()) {
                 if (customDensityImage != null && customDensityImage.getWidth() > 0) {
+                    if (!isLand) return getReliefAndDensityColor(c);
                     Color customCol = sampleImageColorAtLatLon(customDensityImage, lat, lon);
-                    if (customCol != null) return customCol;
+                    if (customCol != null) {
+                        double brightness = (customCol.getRed() + customCol.getGreen() + customCol.getBlue()) / 3.0;
+                        if (Math.abs(customCol.getRed() - customCol.getGreen()) < 0.02 && Math.abs(customCol.getGreen() - customCol.getBlue()) < 0.02) {
+                            Color heatCol;
+                            if (brightness <= 0.02) heatCol = Color.rgb(30, 95, 165);       // Inhabité
+                            else if (brightness < 0.20) heatCol = Color.rgb(16, 185, 129);  // Faible
+                            else if (brightness < 0.45) heatCol = Color.rgb(234, 179, 8);   // Moyenne
+                            else if (brightness < 0.75) heatCol = Color.rgb(249, 115, 22);  // Élevée
+                            else heatCol = Color.rgb(239, 68, 68);                          // Métropole
+                            return blendColors(getReliefAndDensityColor(c), heatCol, Math.max(0.65, brightness));
+                        }
+                        return customCol;
+                    }
                 }
-                return Color.BLACK;
+                return getReliefAndDensityColor(c);
             }
             return getReliefAndDensityColor(c);
+        }
+
+        if (!isLand) {
+            return getReliefAndDensityColor(c); // Strict Ocean Masking for all cultural and derived layers
         }
 
         int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
@@ -5475,7 +5523,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     Color customCol = sampleImageColorAtLatLon(img, lat, lon);
                     if (customCol != null) return customCol;
                 }
-                return Color.BLACK;
+                return getReliefAndDensityColor(c);
             }
 
             double p1 = tensorParam1Sliders.containsKey(tIndex) ? tensorParam1Sliders.get(tIndex).getValue() : 1.0;
@@ -5485,7 +5533,7 @@ public class ScenarioSetupPanel extends BorderPane {
             if (tensorSeedFields.containsKey(tIndex)) {
                 try { seed = Long.parseLong(tensorSeedFields.get(tIndex).getText().trim()); } catch (Exception ignored) {}
             }
-            return evaluateProceduralTensorColor(tIndex, lat, lon, c.getElevation() != null ? c.getElevation() : 0.0, p1, p2, p3, seed);
+            return evaluateProceduralTensorColor(tIndex, lat, lon, elev, p1, p2, p3, seed);
         }
 
         // Calques déduits & physiques
@@ -6483,12 +6531,30 @@ public class ScenarioSetupPanel extends BorderPane {
             "• Si désactivé : AUCUN événement aléatoire ne survient spontanément (moins réaliste, mais garantit une trajectoire déterministe pure).")));
         randomEventsCheckBox.setOnAction(e -> notifyParamChange());
 
+        earthLeadersCheckBox = new CheckBox(org.ether.society.i18n.I18n.getOrDefault("scenario.events.earth_leaders_checkbox", "🏛️ Intégrer les événements de personnages historiques terrestres (Alexandre, Auguste, Hammourabi...)"));
+        earthLeadersCheckBox.setSelected(true);
+        earthLeadersCheckBox.setStyle("-fx-text-fill: #a78bfa; -fx-font-weight: bold;");
+        earthLeadersCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.earth_leaders",
+            "🏛️ PERSONNAGES HISTORIQUES & BIFURCATIONS TERRESTRES\n" +
+            "• Si activé : Le moteur injecte les figures historiques majeures réelles avec leurs modificateurs spatio-temporels exacts.\n" +
+            "• Si désactivé : Trajectoire structurelle pure sans chocs biographiques exogènes.")));
+        earthLeadersCheckBox.setOnAction(e -> notifyParamChange());
+
+        proceduralLeadersCheckBox = new CheckBox(org.ether.society.i18n.I18n.getOrDefault("scenario.events.procedural_leaders_checkbox", "🌟 Activer le générateur d'outliers historiques (Leaders émergents procéduraux)"));
+        proceduralLeadersCheckBox.setSelected(true);
+        proceduralLeadersCheckBox.setStyle("-fx-text-fill: #fbbf24; -fx-font-weight: bold;");
+        proceduralLeadersCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.procedural_leaders",
+            "🌟 GESTION DES LEADERS ÉMERGENTS PROCÉDURAUX\n" +
+            "• Si activé : Des génies militaires, réformateurs ou bâtisseurs émergent stochastiquement selon la complexité et le stress des populations.\n" +
+            "• Si désactivé : Aucun leader procédural n'émerge.")));
+        proceduralLeadersCheckBox.setOnAction(e -> notifyParamChange());
+
         Label randomEventsNote = new Label(I18n.getOrDefault("scenario.note.random_events", "💡 Note Réalisme & Graine : Les événements aléatoires utilisent la graine (Seed) du scénario pour une reproductibilité exacte. Les désactiver supprime toute crise spontanée imprévue."));
         randomEventsNote.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
         randomEventsNote.setWrapText(true);
 
-        VBox randomEventsBox = new VBox(4, randomEventsCheckBox, randomEventsNote);
-        randomEventsBox.setStyle("-fx-padding: 6 10; -fx-background-color: rgba(56, 189, 248, 0.06); -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 6;");
+        VBox randomEventsBox = new VBox(6, randomEventsCheckBox, earthLeadersCheckBox, proceduralLeadersCheckBox, randomEventsNote);
+        randomEventsBox.setStyle("-fx-padding: 8 12; -fx-background-color: rgba(56, 189, 248, 0.06); -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 6;");
 
         CheckBox eventsCheckBox = new CheckBox(org.ether.society.i18n.I18n.getOrDefault("scenario.events.enable", "📅 Planifier des événements climatiques & désastres datés (Tableau / Scénario)"));
         eventsCheckBox.setStyle("-fx-font-weight: bold;");
@@ -6666,6 +6732,20 @@ public class ScenarioSetupPanel extends BorderPane {
                     "• Si activé : Le moteur génère des crises émergentes (famines, pestes, sécheresses, éruptions) pilotées par la graine stochastique (Seed).\n" +
                     "• Si désactivé : AUCUN événement aléatoire ne survient spontanément (moins réaliste, mais garantit une trajectoire déterministe pure).")));
             }
+            if (earthLeadersCheckBox != null) {
+                earthLeadersCheckBox.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.earth_leaders_checkbox", "🏛️ Intégrer les événements de personnages historiques terrestres (Alexandre, Auguste, Hammourabi...)"));
+                earthLeadersCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.earth_leaders",
+                    "🏛️ PERSONNAGES HISTORIQUES & BIFURCATIONS TERRESTRES\n" +
+                    "• Si activé : Le moteur injecte les figures historiques majeures réelles avec leurs modificateurs spatio-temporels exacts.\n" +
+                    "• Si désactivé : Trajectoire structurelle pure sans chocs biographiques exogènes.")));
+            }
+            if (proceduralLeadersCheckBox != null) {
+                proceduralLeadersCheckBox.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.procedural_leaders_checkbox", "🌟 Activer le générateur d'outliers historiques (Leaders émergents procéduraux)"));
+                proceduralLeadersCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.procedural_leaders",
+                    "🌟 GESTION DES LEADERS ÉMERGENTS PROCÉDURAUX\n" +
+                    "• Si activé : Des génies militaires, réformateurs ou bâtisseurs émergent stochastiquement selon la complexité et le stress des populations.\n" +
+                    "• Si désactivé : Aucun leader procédural n'émerge.")));
+            }
 
             if (colType != null) colType.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.type", "Event Type"));
             if (colName != null) colName.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.name", "Event Name"));
@@ -6832,6 +6912,8 @@ public class ScenarioSetupPanel extends BorderPane {
         } catch (NumberFormatException ignored) {}
         s.setCulturalSeed(cultSeedVal);
         s.setRandomEventsEnabled(randomEventsCheckBox == null || randomEventsCheckBox.isSelected());
+        s.setEarthHistoricalLeadersEnabled(earthLeadersCheckBox == null || earthLeadersCheckBox.isSelected());
+        s.setProceduralLeadersEnabled(proceduralLeadersCheckBox == null || proceduralLeadersCheckBox.isSelected());
         if (clippingCheckBox != null) {
             s.setClippingEnabled(clippingCheckBox.isSelected());
             s.setMinLat(minLatSpinner.getValue());

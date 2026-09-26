@@ -7,6 +7,7 @@ package org.ether.society.events;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
+import org.ether.society.model.Nation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +15,13 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Manages historical and random events in the simulation.
+ * Manages historical milestones, contingency leader interventions, and stochastic events in the simulation.
  * 
  * Event Types:
- * - Historical: Pre-defined milestone events
- * - Random: Probability-based disasters and discoveries
- * - Triggered: Based on simulation state (famine, plague, etc.)
+ * - Historical Milestones: Pre-defined technological and civilizational markers
+ * - Earth Historical Leaders: Deterministic historical figures (Alexander, Augustus, Hammurabi, etc.)
+ * - Procedural Leader Outliers: Emergent high-sigma leaders and reformers in sandbox/procedural worlds
+ * - Geophysical & Natural Disasters: Volcanism, floods, earthquakes, famines, pandemics
  */
 public class EventSystem {
     private final List<HistoricalEvent> historicalEvents = new ArrayList<>();
@@ -28,6 +30,14 @@ public class EventSystem {
 
     private boolean enableHistoricalMilestones = true;
     private boolean enableRandomEvents = true;
+    private boolean enableEarthHistoricalLeaders = true;
+    private boolean enableProceduralLeaders = true;
+
+    // Catalogs and Generators
+    private final HistoricalInterventionCatalog historicalCatalog = HistoricalInterventionCatalog.getInstance();
+    private final ProceduralLeaderGenerator proceduralLeaderGenerator = new ProceduralLeaderGenerator();
+    private final List<HistoricalIntervention> activeInterventions = new CopyOnWriteArrayList<>();
+    private final java.util.Set<String> firedInterventionIds = new java.util.HashSet<>();
 
     // Cooldowns to prevent event spam
     private int lastPlagueYear = Integer.MIN_VALUE;
@@ -35,12 +45,18 @@ public class EventSystem {
     private int lastDroughtYear = Integer.MIN_VALUE;
     private int lastVolcanoYear = Integer.MIN_VALUE;
 
+    private final java.util.Set<String> firedHistoricalEvents = new java.util.HashSet<>();
+    private final List<ActiveEvent> activeEvents = new CopyOnWriteArrayList<>();
+    private final List<ActiveEvent> recentEventsHistory = new CopyOnWriteArrayList<>();
+    private final List<ActiveEvent> chronicleHistory = new CopyOnWriteArrayList<>();
+
     public EventSystem() {
         initializeHistoricalEvents();
     }
 
     public void setSeed(long seed) {
         this.random.setSeed(seed);
+        this.proceduralLeaderGenerator.setSeed(seed);
     }
 
     public boolean isEnableRandomEvents() {
@@ -49,6 +65,30 @@ public class EventSystem {
 
     public void setEnableRandomEvents(boolean enableRandomEvents) {
         this.enableRandomEvents = enableRandomEvents;
+    }
+
+    public boolean isEnableHistoricalMilestones() {
+        return enableHistoricalMilestones;
+    }
+
+    public void setEnableHistoricalMilestones(boolean enableHistoricalMilestones) {
+        this.enableHistoricalMilestones = enableHistoricalMilestones;
+    }
+
+    public boolean isEnableEarthHistoricalLeaders() {
+        return enableEarthHistoricalLeaders;
+    }
+
+    public void setEnableEarthHistoricalLeaders(boolean enableEarthHistoricalLeaders) {
+        this.enableEarthHistoricalLeaders = enableEarthHistoricalLeaders;
+    }
+
+    public boolean isEnableProceduralLeaders() {
+        return enableProceduralLeaders;
+    }
+
+    public void setEnableProceduralLeaders(boolean enableProceduralLeaders) {
+        this.enableProceduralLeaders = enableProceduralLeaders;
     }
 
     private void initializeHistoricalEvents() {
@@ -105,15 +145,14 @@ public class EventSystem {
                 "First nuclear weapons used.", 34.38, 132.45));
     }
 
-    private final java.util.Set<String> firedHistoricalEvents = new java.util.HashSet<>();
-    private final List<ActiveEvent> activeEvents = new CopyOnWriteArrayList<>();
-    private final List<ActiveEvent> recentEventsHistory = new CopyOnWriteArrayList<>();
-
     public void reset() {
         firedHistoricalEvents.clear();
+        firedInterventionIds.clear();
         eventQueue.clear();
         activeEvents.clear();
         recentEventsHistory.clear();
+        chronicleHistory.clear();
+        activeInterventions.clear();
     }
 
     public void recordSpatialEvent(ActiveEvent event) {
@@ -122,8 +161,12 @@ public class EventSystem {
         activeEvents.add(event);
         eventQueue.add(event.getFullMessage());
         recentEventsHistory.add(event);
+        chronicleHistory.add(event);
         while (recentEventsHistory.size() > 100) {
             recentEventsHistory.remove(0);
+        }
+        while (chronicleHistory.size() > 500) {
+            chronicleHistory.remove(0);
         }
     }
 
@@ -134,6 +177,21 @@ public class EventSystem {
 
     public List<ActiveEvent> getRecentEventsHistory() {
         return new ArrayList<>(recentEventsHistory);
+    }
+
+    public List<ActiveEvent> getChronicleHistory() {
+        return new ArrayList<>(chronicleHistory);
+    }
+
+    public List<HistoricalIntervention> getActiveInterventions() {
+        return new ArrayList<>(activeInterventions);
+    }
+
+    public void injectCustomIntervention(HistoricalIntervention intervention) {
+        if (intervention == null) return;
+        activeInterventions.add(intervention);
+        ActiveEvent ae = new ActiveEvent(intervention, intervention.getYearStart(), 0, 1);
+        recordSpatialEvent(ae);
     }
 
     private H3Cell findBestLandCell(List<H3Cell> cells, double targetLat, double targetLng) {
@@ -189,10 +247,10 @@ public class EventSystem {
     }
 
     /**
-     * Check for events occurring at the current state.
+     * Check for events occurring at the current simulation step.
      */
     public void checkEvents(int year, int month, long totalPopulation, double totalFood, List<H3Cell> cells) {
-        // Historical events (Earth milestone markers - purely informational)
+        // 1. Historical milestone markers
         if (enableHistoricalMilestones) {
             for (HistoricalEvent event : historicalEvents) {
                 if (event.year() == year && !firedHistoricalEvents.contains(event.title())) {
@@ -211,7 +269,34 @@ public class EventSystem {
             }
         }
 
-        // Stochastic and triggered events based on simulation state (guarded by enableRandomEvents)
+        // 2. Earth Historical Contingency Leaders
+        if (enableEarthHistoricalLeaders) {
+            List<HistoricalIntervention> starters = historicalCatalog.getInterventionsStartingInYear(year);
+            for (HistoricalIntervention hi : starters) {
+                if (!firedInterventionIds.contains(hi.getId())) {
+                    activeInterventions.add(hi);
+                    firedInterventionIds.add(hi.getId());
+                    ActiveEvent ae = new ActiveEvent(hi, year, month, 1);
+                    recordSpatialEvent(ae);
+                }
+            }
+        }
+
+        // 3. Procedural Leader Outliers (Emergence in Sandbox/Procedural Worlds)
+        if (enableProceduralLeaders) {
+            HistoricalIntervention procLeader = proceduralLeaderGenerator.evaluateEmergence(year, totalPopulation, cells);
+            if (procLeader != null && !firedInterventionIds.contains(procLeader.getId())) {
+                activeInterventions.add(procLeader);
+                firedInterventionIds.add(procLeader.getId());
+                ActiveEvent ae = new ActiveEvent(procLeader, year, month, 1);
+                recordSpatialEvent(ae);
+            }
+        }
+
+        // 4. Apply Active Interventions Effects to local cells and nations
+        applyActiveInterventions(year, cells);
+
+        // 5. Stochastic and triggered natural disasters
         if (enableRandomEvents) {
             checkFamine(year, month, totalPopulation, totalFood, cells);
             checkPlague(year, month, totalPopulation, cells);
@@ -220,21 +305,62 @@ public class EventSystem {
         checkAchievements(year, month, totalPopulation, cells);
     }
 
+    private void applyActiveInterventions(int year, List<H3Cell> cells) {
+        if (cells == null || cells.isEmpty()) return;
+
+        // Clean expired interventions
+        activeInterventions.removeIf(hi -> {
+            if (hi.isExpired(year)) {
+                hi.setCompleted(true);
+                return true;
+            }
+            return false;
+        });
+
+        for (HistoricalIntervention hi : activeInterventions) {
+            if (!hi.isActive(year)) continue;
+
+            for (H3Cell cell : cells) {
+                if (cell == null) continue;
+                if (hi.isInsideRadius(cell.getLatitude(), cell.getLongitude())) {
+                    // Apply physical cell modifiers
+                    if (hi.getMovementFrictionMultiplier() < 1.0) {
+                        cell.setMovementFriction(Math.max(0.2, cell.getMovementFriction() * hi.getMovementFrictionMultiplier()));
+                    }
+                    if (hi.getCapitalBonusGJ() > 0) {
+                        cell.setResourceCapital(cell.getResourceCapital() + (hi.getCapitalBonusGJ() / (hi.getDurationYears() * 12.0)));
+                    }
+                    if (hi.getCarryingCapacityMultiplier() > 1.0) {
+                        cell.setFoodResource(cell.getFoodResource() * (1.0 + (hi.getCarryingCapacityMultiplier() - 1.0) * 0.05));
+                    }
+
+                    // Apply nation socio-political modifiers if cell is owned
+                    Nation owner = cell.getOwner();
+                    if (owner != null) {
+                        if (hi.getStateCapacityDelta() != 0) {
+                            owner.setStateCapacity(Math.max(0.0, Math.min(1.0, owner.getStateCapacity() + (hi.getStateCapacityDelta() * 0.02))));
+                        }
+                        if (hi.getAsabiyyahDelta() != 0) {
+                            owner.setAsabiyyah(Math.max(0.0, Math.min(1.0, owner.getAsabiyyah() + (hi.getAsabiyyahDelta() * 0.02))));
+                        }
+                        if (hi.getPoliticalInstabilityDelta() != 0) {
+                            owner.setPoliticalInstability(Math.max(0.0, Math.min(1.0, owner.getPoliticalInstability() + (hi.getPoliticalInstabilityDelta() * 0.02))));
+                        }
+                        if (hi.getEliteOverproductionDelta() != 0) {
+                            owner.setEliteOverproduction(Math.max(0.0, Math.min(1.0, owner.getEliteOverproduction() + (hi.getEliteOverproductionDelta() * 0.02))));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void checkEvents(int year, long totalPopulation, double totalFood) {
         checkEvents(year, 0, totalPopulation, totalFood, null);
     }
 
-    public boolean isEnableHistoricalMilestones() {
-        return enableHistoricalMilestones;
-    }
-
-    public void setEnableHistoricalMilestones(boolean enableHistoricalMilestones) {
-        this.enableHistoricalMilestones = enableHistoricalMilestones;
-    }
-
     /**
      * Check for events based on cell-level data.
-     * Call this for more detailed event generation.
      */
     public void checkCellEvents(int year, int month, List<H3Cell> cells) {
         if (!enableRandomEvents || cells == null || cells.isEmpty()) return;
@@ -294,9 +420,8 @@ public class EventSystem {
     }
 
     private void checkFamine(int year, int month, long totalPopulation, double totalFood, List<H3Cell> cells) {
-        if (year - lastFamineYear < 10) return; // 10-year cooldown
+        if (year - lastFamineYear < 10) return;
 
-        // Famine triggered when food reserves fall below 3 months of annual consumption (0.25 * 3.362 GJ/hab)
         double minReserveThreshold = totalPopulation * (org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * 0.25);
         if (totalFood < minReserveThreshold && totalPopulation > 500) {
             double severity = 1.0 - (totalFood / Math.max(1.0, minReserveThreshold));
@@ -333,13 +458,13 @@ public class EventSystem {
         double lat = target != null ? target.getLatitude() : 0.0;
         double lng = target != null ? target.getLongitude() : 0.0;
 
-        // Drought (continental land)
+        // Drought
         if (year - lastDroughtYear > 20 && random.nextDouble() < 0.005) {
             recordSpatialEvent(new ActiveEvent("DROUGHT_" + year, "☀️ SÉCHERESSE : Stress hydrique prolongé et assèchement des nappes.", "DROUGHT", lat, lng, year, month, 1, 20.0, 5.5));
             lastDroughtYear = year;
         }
 
-        // Volcanic eruption (land or volcanic mountain cells)
+        // Volcanic eruption
         if (year - lastVolcanoYear > 100 && random.nextDouble() < 0.001) {
             H3Cell mCell = (cells != null) ? cells.stream().filter(c -> c.getBiome() == Biome.MOUNTAINS || c.getBiome() == Biome.HILLS).findAny().orElse(target) : target;
             double vLat = mCell != null ? mCell.getLatitude() : lat;
@@ -348,12 +473,12 @@ public class EventSystem {
             lastVolcanoYear = year;
         }
 
-        // Earthquake (continental tectonic faults / land cells)
+        // Earthquake
         if (random.nextDouble() < 0.002) {
             recordSpatialEvent(new ActiveEvent("EARTHQUAKE_" + year, "🌍 SÉISME / TREMBLEMENT DE TERRE : Secousse cataclysmique locale.", "EARTHQUAKE", lat, lng, year, month, 1, 20.0, 6.8));
         }
 
-        // Flood (strictly land cells: river valleys, coastal lowlands, or populated basins with water)
+        // Flood
         if (random.nextDouble() < 0.003) {
             H3Cell floodTarget = null;
             if (cells != null && !cells.isEmpty()) {
@@ -381,7 +506,6 @@ public class EventSystem {
         double lat = topCell != null ? topCell.getLatitude() : 0.0;
         double lng = topCell != null ? topCell.getLongitude() : 0.0;
 
-        // Population milestones
         if (totalPopulation >= 1_000_000 && totalPopulation < 1_100_000) {
             recordSpatialEvent(new ActiveEvent("MILESTONE_1M", "🎉 SEUIL DÉMOGRAPHIQUE : La population mondiale franchit 1 million d'habitants!", "MILESTONE", lat, lng, year, month, 1, 20.0, 5.0));
         } else if (totalPopulation >= 10_000_000 && totalPopulation < 10_500_000) {
@@ -393,25 +517,16 @@ public class EventSystem {
         }
     }
 
-    /**
-     * Trigger a specific event (for testing or scenario control).
-     */
     public void triggerEvent(String message) {
         eventQueue.add(message);
     }
 
-    /**
-     * Get and clear recent events.
-     */
     public List<String> flushEvents() {
         List<String> events = new ArrayList<>(eventQueue);
         eventQueue.clear();
         return events;
     }
 
-    /**
-     * Get events without clearing (for UI display).
-     */
     public List<String> peekEvents() {
         return new ArrayList<>(eventQueue);
     }

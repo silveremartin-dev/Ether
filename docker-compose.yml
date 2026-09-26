@@ -12,7 +12,7 @@ services:
       - "54320:5432"  # Host:Container (using non-standard port to avoid conflicts)
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./scripts:/docker-entrypoint-initdb.d
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ether"]
       interval: 10s

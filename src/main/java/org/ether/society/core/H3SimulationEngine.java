@@ -139,6 +139,8 @@ public class H3SimulationEngine implements ISimulationEngine {
                 eventSystem.setSeed(scenario.getSeed());
                 eventSystem.setEnableRandomEvents(scenario.isRandomEventsEnabled());
                 eventSystem.setEnableHistoricalMilestones(scenario.isRandomEventsEnabled());
+                eventSystem.setEnableEarthHistoricalLeaders(scenario.isEarthHistoricalLeadersEnabled());
+                eventSystem.setEnableProceduralLeaders(scenario.isProceduralLeadersEnabled());
             } else {
                 eventSystem.setEnableRandomEvents(true);
                 eventSystem.setEnableHistoricalMilestones(true);

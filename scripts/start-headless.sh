@@ -24,4 +24,4 @@ if [ ! -f "$JAR_PATH" ]; then
 fi
 
 echo "🚀 Executing Headless Batch Run..."
-java --add-modules jdk.incubator.vector -jar "$JAR_PATH" --headless --scenario="${SCENARIO}" --ticks="${TICKS}" --cells="${CELLS}" --profile
+java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "$JAR_PATH" --headless --scenario="${SCENARIO}" --ticks="${TICKS}" --cells="${CELLS}" --profile

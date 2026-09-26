@@ -87,9 +87,11 @@ public class CulturalAffinityMatrixDialog extends Stage {
     private final GridPane matrixGrid = new GridPane();
     private final ScrollPane matrixScroll = new ScrollPane(matrixGrid);
     private final Button btnExportCsv = new Button();
+    private final Button btnExportJson = new Button();
     private final Button btnClose = new Button();
 
     private List<CulturalEntity> activeEntities = new ArrayList<>();
+    private final java.util.Map<String, Double> customAffinityOverrides = new java.util.HashMap<>();
     private long currentEpoch = -100000L;
 
     public CulturalAffinityMatrixDialog(long initialEpoch) {
@@ -168,21 +170,26 @@ public class CulturalAffinityMatrixDialog extends Stage {
         HBox footer = new HBox(10);
         footer.setAlignment(Pos.CENTER_RIGHT);
 
-        btnExportCsv.setText(I18n.getOrDefault("cultural.matrix.btn_export", "💾 Export Matrix (CSV)"));
+        btnExportCsv.setText(I18n.getOrDefault("cultural.matrix.btn_export_csv", "💾 Export Matrix (CSV)"));
         btnExportCsv.getStyleClass().add("button-secondary");
-        btnExportCsv.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.export", "Export the complete N×N cultural affinity matrix as a standard CSV file.")));
+        btnExportCsv.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.export_csv", "Export the complete N×N cultural affinity matrix as a standard CSV file.")));
         btnExportCsv.setOnAction(e -> exportMatrixCsv());
+
+        btnExportJson.setText(I18n.getOrDefault("cultural.matrix.btn_export_json", "📄 Export Matrix (JSON)"));
+        btnExportJson.getStyleClass().add("button-secondary");
+        btnExportJson.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.export_json", "Export the complete cultural registry and affinity matrix as a JSON document.")));
+        btnExportJson.setOnAction(e -> exportMatrixJson());
 
         btnClose.setText(I18n.getOrDefault("common.btn.close", "Close"));
         btnClose.getStyleClass().add("button-secondary");
         btnClose.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.close", "Close the cultural affinity inspector.")));
         btnClose.setOnAction(e -> close());
 
-        footer.getChildren().addAll(btnExportCsv, btnClose);
+        footer.getChildren().addAll(btnExportCsv, btnExportJson, btnClose);
 
         root.getChildren().addAll(titleLabel, subtitleLabel, epochRow, tabPane, footer);
 
-        Scene scene = new Scene(root, 840, 640);
+        Scene scene = new Scene(root, 880, 660);
         setScene(scene);
         Theme.applyCurrentTheme(scene);
         Theme.themeProperty().addListener((obs, oldV, newV) -> Theme.applyCurrentTheme(scene));
@@ -218,9 +225,9 @@ public class CulturalAffinityMatrixDialog extends Stage {
     private void loadEpochRegistry(long epoch) {
         this.currentEpoch = epoch;
         activeEntities.clear();
+        customAffinityOverrides.clear();
         Path p = Paths.get("data", "maps", "ether", "earth", String.valueOf(epoch), "cultural_registry.json");
         if (!Files.exists(p)) {
-            // Try fallback to closest available registry
             long closest = closestSupportedEpoch(epoch);
             p = Paths.get("data", "maps", "ether", "earth", String.valueOf(closest), "cultural_registry.json");
         }
@@ -262,8 +269,49 @@ public class CulturalAffinityMatrixDialog extends Stage {
             }
         }
 
+        if (activeEntities.isEmpty()) {
+            buildProceduralEntitiesFallback(epoch);
+        }
+
         renderEntitiesTab();
         renderMatrixHeatmap();
+    }
+
+    private void buildProceduralEntitiesFallback(long epoch) {
+        activeEntities.clear();
+        String[] colors = {"#E67E22", "#D35400", "#F39C12", "#2980B9", "#1F4788", "#27AE60", "#8E44AD"};
+        int[][] rgb = {
+            {230, 126, 34}, {211, 84, 0}, {243, 156, 18}, {41, 128, 185}, {31, 71, 136}, {39, 174, 96}, {142, 68, 173}
+        };
+        String[] ids = {"clade_alpha", "clade_beta", "clade_gamma", "clade_delta", "clade_epsilon", "clade_zeta", "clade_eta"};
+        String[] namesEn = {"Equatorial Basin Clade", "Rift & Valley Lineage", "Maritime Coastal Foragers", "Highland Mountain Tribe", "Savanna Nomad Confederacy", "Lacustrine Forest Dwellers", "Arid Steppe Clan"};
+        String[] namesFr = {"Clade du Bassin Équatorial", "Lignée du Rift & Vallées", "Chasseurs-Cueilleurs Côtiers", "Tribu des Hauts Plateaux", "Confédération Nomade des Savanes", "Société Lacustre des Forêts", "Clan des Steppes Arides"};
+        double[][] traits = {
+            {0.10, 0.15, 0.20, 0.40},
+            {0.18, 0.22, 0.28, 0.48},
+            {0.30, 0.35, 0.50, 0.60},
+            {0.75, 0.68, 0.55, 0.20},
+            {0.82, 0.74, 0.62, 0.22},
+            {0.50, 0.45, 0.40, 0.30},
+            {0.62, 0.58, 0.48, 0.15}
+        };
+
+        for (int i = 0; i < ids.length; i++) {
+            activeEntities.add(new CulturalEntity(
+                ids[i], colors[i], rgb[i], traits[i],
+                namesEn[i], namesFr[i], namesEn[i], namesEn[i], namesEn[i],
+                "Bilateral Exogamous Bands", "Mode 3 Technocomplex"
+            ));
+        }
+    }
+
+    private double getAffinity(CulturalEntity e1, CulturalEntity e2) {
+        if (e1 == null || e2 == null) return 0.0;
+        String key1 = e1.id() + ":" + e2.id();
+        String key2 = e2.id() + ":" + e1.id();
+        if (customAffinityOverrides.containsKey(key1)) return customAffinityOverrides.get(key1);
+        if (customAffinityOverrides.containsKey(key2)) return customAffinityOverrides.get(key2);
+        return e1.affinityWith(e2);
     }
 
     private void renderEntitiesTab() {
@@ -380,12 +428,15 @@ public class CulturalAffinityMatrixDialog extends Stage {
 
             // Cells
             for (int j = 0; j < n; j++) {
+                final int finalI = i;
+                final int finalJ = j;
                 CulturalEntity colEnt = activeEntities.get(j);
-                double affinity = rowEnt.affinityWith(colEnt);
+                double affinity = getAffinity(rowEnt, colEnt);
                 double dist = rowEnt.distanceTo(colEnt);
 
                 StackPane cell = new StackPane();
                 cell.setPrefSize(90, 36);
+                cell.setCursor(javafx.scene.Cursor.HAND);
 
                 Color cellColor = computeHeatmapColor(affinity);
                 cell.setStyle(String.format("-fx-background-color: #%02X%02X%02X; -fx-background-radius: 4; -fx-border-color: #334155; -fx-border-radius: 4;",
@@ -400,14 +451,36 @@ public class CulturalAffinityMatrixDialog extends Stage {
                         "• %s : %.1f%%\n" +
                         "• %s : %.3f\n" +
                         "• %s : %.2f\n" +
-                        "• %s : %.2f",
+                        "• %s : %.2f\n\n" +
+                        "👉 %s",
                         rowEnt.getLocalizedName(), colEnt.getLocalizedName(),
-                        I18n.getOrDefault("cultural.tooltip.affinity", "Cultural Affinity"), affinity * 100.0,
-                        I18n.getOrDefault("cultural.tooltip.distance", "Euclidean Trait Distance"), dist,
-                        I18n.getOrDefault("cultural.tooltip.trade_flow", "Trade Contagion Factor"), affinity * 0.85,
-                        I18n.getOrDefault("cultural.tooltip.intermarriage", "Intermarriage Probability"), Math.pow(affinity, 1.5)
+                        I18n.getOrDefault("cultural.tooltip.affinity", "Affinité Culturelle"), affinity * 100.0,
+                        I18n.getOrDefault("cultural.tooltip.distance", "Distance Euclidienne"), dist,
+                        I18n.getOrDefault("cultural.tooltip.trade_flow", "Facteur Contagion Commerciale"), affinity * 0.85,
+                        I18n.getOrDefault("cultural.tooltip.intermarriage", "Probabilité d'Intermariage"), Math.pow(affinity, 1.5),
+                        I18n.getOrDefault("cultural.tooltip.click_edit", "Cliquez pour modifier manuellement l'affinité.")
                 );
                 Tooltip.install(cell, new Tooltip(tooltipText));
+
+                // Cell interactive edit
+                cell.setOnMouseClicked(e -> {
+                    TextInputDialog dlg = new TextInputDialog(String.format(java.util.Locale.ROOT, "%.1f", affinity * 100.0));
+                    dlg.setTitle(I18n.getOrDefault("cultural.edit.title", "Modifier l'Affinité"));
+                    dlg.setHeaderText(String.format("%s ↔ %s", rowEnt.getLocalizedName(), colEnt.getLocalizedName()));
+                    dlg.setContentText(I18n.getOrDefault("cultural.edit.prompt", "Affinité (0.0 à 100.0 %) :"));
+                    WindowUtils.applyWindowIcon(dlg);
+                    dlg.showAndWait().ifPresent(strVal -> {
+                        try {
+                            double newAff = Double.parseDouble(strVal.trim().replace(',', '.')) / 100.0;
+                            newAff = Math.clamp(newAff, 0.0, 1.0);
+                            String k1 = rowEnt.id() + ":" + colEnt.id();
+                            String k2 = colEnt.id() + ":" + rowEnt.id();
+                            customAffinityOverrides.put(k1, newAff);
+                            customAffinityOverrides.put(k2, newAff);
+                            renderMatrixHeatmap();
+                        } catch (NumberFormatException ignored) {}
+                    });
+                });
 
                 matrixGrid.add(cell, j + 1, i + 1);
             }
@@ -418,11 +491,9 @@ public class CulturalAffinityMatrixDialog extends Stage {
         val = Math.clamp(val, 0.0, 1.0);
         if (val < 0.5) {
             double t = val / 0.5;
-            // From dark indigo (20, 20, 55) to dark cyan (15, 100, 110)
             return Color.rgb((int)(20 + t * (15 - 20)), (int)(20 + t * (100 - 20)), (int)(55 + t * (110 - 55)));
         } else {
             double t = (val - 0.5) / 0.5;
-            // From dark cyan (15, 100, 110) to lush emerald/gold (16, 160, 95)
             return Color.rgb((int)(15 + t * (16 - 15)), (int)(100 + t * (160 - 100)), (int)(110 + t * (95 - 110)));
         }
     }
@@ -451,7 +522,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
                 for (CulturalEntity row : activeEntities) {
                     pw.print(row.id());
                     for (CulturalEntity col : activeEntities) {
-                        pw.printf(",%.4f", row.affinityWith(col));
+                        pw.printf(java.util.Locale.ROOT, ",%.4f", getAffinity(row, col));
                     }
                     pw.println();
                 }
@@ -461,4 +532,37 @@ public class CulturalAffinityMatrixDialog extends Stage {
             }
         }
     }
+
+    private void exportMatrixJson() {
+        if (activeEntities.isEmpty()) return;
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(I18n.getOrDefault("cultural.matrix.export_json_title", "Export Cultural Affinity Matrix (JSON)"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
+        chooser.setInitialFileName("cultural_affinity_matrix_" + Math.abs(currentEpoch) + ".json");
+        File file = chooser.showSaveDialog(this);
+        if (file != null) {
+            try {
+                java.util.Map<String, Object> root = new java.util.LinkedHashMap<>();
+                root.put("epoch", currentEpoch);
+                root.put("entitiesCount", activeEntities.size());
+                root.put("entities", activeEntities);
+
+                java.util.Map<String, java.util.Map<String, Double>> matrix = new java.util.LinkedHashMap<>();
+                for (CulturalEntity row : activeEntities) {
+                    java.util.Map<String, Double> rowMap = new java.util.LinkedHashMap<>();
+                    for (CulturalEntity col : activeEntities) {
+                        rowMap.put(col.id(), getAffinity(row, col));
+                    }
+                    matrix.put(row.id(), rowMap);
+                }
+                root.put("affinityMatrix", matrix);
+
+                MAPPER.writerWithDefaultPrettyPrinter().writeValue(file, root);
+                logger.info("Exported cultural affinity matrix to JSON: {}", file.getAbsolutePath());
+            } catch (Exception ex) {
+                logger.error("Failed to export matrix to JSON: {}", ex.getMessage());
+            }
+        }
+    }
 }
+

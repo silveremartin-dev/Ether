@@ -27,4 +27,4 @@ if [ ! -f "$JAR_PATH" ]; then
 fi
 
 echo "🚀 Launching Master Node Server..."
-java --add-modules jdk.incubator.vector -jar "$JAR_PATH" --headless --mode=cluster --role=master --port="${PORT}" --secret="${SECRET}" --scenario="${SCENARIO}" --ticks="${TICKS}" --cells="${CELLS}" --profile
+java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "$JAR_PATH" --headless --mode=cluster --role=master --port="${PORT}" --secret="${SECRET}" --scenario="${SCENARIO}" --ticks="${TICKS}" --cells="${CELLS}" --profile

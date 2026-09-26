@@ -67,7 +67,7 @@ public class HistoryManager {
          history.addSnapshot(snapshot);
      }
 
-    private int maxSnapshots = 2000;
+    private int maxSnapshots = 100;
 
     public int getMaxSnapshots() {
         return maxSnapshots;
