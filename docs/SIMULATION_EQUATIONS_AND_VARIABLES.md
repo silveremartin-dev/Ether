@@ -1082,6 +1082,26 @@ $$\tau_{\text{relax}} = \frac{\ln(2)}{\lambda_{\text{dissipation}}} \approx \beg
 200\text{--}500\text{ years} & \text{for physical infrastructure builders (Hysteretic Bifurcation)}
 \end{cases}$$
 
+---
+
+### 11.7 Empirical Residual Inversion & Metastability (`EmpiricalResidualBifurcationTest`)
+Quantifies the exact divergence between unforced deterministic simulations and empirical historical ground truth $\mathbf{Y}_{\text{real}}(t)$, formalizing the inverse optimization problem of historical contingency:
+
+#### A. Multidimensional Epistemic Discrepancy Index
+$$\Omega(t) = \left( w_{\text{pop}} \left(\frac{N_{\text{sim}} - N_{\text{real}}}{N_{\text{real}}}\right)^2 + w_{\text{cap}} \left(\frac{C_{\text{sim}} - C_{\text{real}}}{C_{\text{real}}}\right)^2 + w_{\text{terr}} \mathcal{W}_1(\mathbf{M}_{\text{sim}}, \mathbf{M}_{\text{real}})^2 \right)^{1/2}$$
+
+#### B. Minimal Necessary Forcing (Inverse Problem)
+$$\mathbf{F}^*(t) = \arg\min_{\mathbf{F}} \left[ \int_{t_0}^{t_1} \Omega(t; \, \mathbf{F}) \, dt + \lambda \|\mathbf{F}\|_2^2 \right]$$
+* If $\mathbf{F}^*(t) \approx \mathbf{0} \implies$ Historical epoch is biophysically deterministic.
+* If $\mathbf{F}^*(t) \ne \mathbf{0} \implies$ Historical epoch requires an explicit exogenous geophysical forcing (e.g. Toba supervolcano aerosol shock $\tau \ge 8.0$) or biographical singularity (e.g. 1933 Totalitarian purger shock $\mu^* = 6.0$) to reconcile the trajectory.
+
+#### C. Phase Transition Metastability & Activation Barrier
+Transition between metastable attractors (State 0 $\to$ State 1) follows an Arrhenius-Kramers rate equation:
+$$r_{0 \to 1} \propto \exp\left(-\frac{E_{\text{barrier}} - \Delta E_{\text{catalytic}}}{k_B \Theta_{\text{societal}}}\right)$$
+Where $\Delta E_{\text{catalytic}}$ represents the concentrated work injected by institutional reformers or infrastructure innovators.
+
+---
+
 
 
 

@@ -638,38 +638,55 @@ Where:
 
 ---
 
-### 4.8.6 Systematic Three-Tier Test Taxonomy in Ether
+## 4.9 The Empirical Residual Inversion & Metastability Framework
 
-Ether enforces a strict three-tier separation across its automated verification and falsification test suite:
+### 4.9.1 Overcoming the Epistemic Circularity Dilemma
+A fundamental vulnerability of computer simulations in macro-history is the **circularity problem** (*Garbage In, Axiom Out*): if an engine's Tier 1 equations postulate that geography and thermodynamic constraints determine society, a simulation running on those equations will tautologically conclude that individual agency is zero ($\eta^2 = 0.0000$).
+
+To eliminate this vulnerability, Ether implements the **Empirical Residual Inversion & Data Assimilation Framework**:
+1. The benchmark of truth is not the engine's internal equations, but the **empirical historical ground-truth trajectory** $\mathbf{Y}_{\text{real}}(t)$ compiled from archaeological, genetic, paleoclimatological (EPICA), and economic history databases (HYDE 3.4, Maddison 2020, Seshat).
+2. The unforced Tier 1 deterministic model $\mathbf{\hat{Y}}_{\text{sim}}(t)$ is integrated in free-running mode.
+3. The **Epistemic Discrepancy Index $\Omega(t)$** is evaluated continuously:
+   $$\Omega(t) = \frac{\| \mathbf{Y}_{\text{real}}(t) - \mathbf{\hat{Y}}_{\text{sim}}(t) \|_2}{\| \mathbf{Y}_{\text{real}}(t) \|_2}$$
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                ETHER AUTOMATED TEST SUITE TAXONOMY (140+ TESTS)                             │
+│                          THE EMPIRICAL RESIDUAL INVERSION PARADIGM                                          │
 ├─────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ 1. TIER 1: INTERNAL CONSISTENCY & NUMERICAL ENGINE VERIFICATION                                             │
-│    • PhysicalConservationMultiMillennialTest: 1st Law thermodynamics, mass conservation, water budget.      │
-│    • HighPrecisionDiscretizationAndDeterminismTest: 32-bit vs 64-bit RK4 truncation drift bounding.         │
-│    • PropertyBasedPhysicalVerificationTest: Metamorphic testing of monotonic relations & boundary bounds.  │
-│    • CompensatedSumTest, DeterministicPRNGTest, SimulationStateChecksumTest: Bit-identical replay parity.  │
+│  1. IF Ω(t) ≤ ε (Residual negligible) ⟹ Tier 1 Biophysical Determinism is SUFFICIENT.                      │
+│     • Examples: Holocene agricultural expansion, Malthusian wage-population traps, Medieval Climate Optimum. │
 ├─────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ 2. TIER 2: PLUGGABLE CLIODYNAMIC HYPOTHESIS FALSIFICATION                                                   │
-│    • ScientificModelFalsificationAndValidationSuite: Evaluates Debates 1–7 (Malthus vs Boserup, SDT vs     │
-│      Pinker, DICE vs Smil, Hardin vs Ostrom, Acemoglu vs Sachs-Diamond, Scott vs Olson, Henrich vs Static).│
-│    • StructuralDemographicBifurcationEngineTest: Turchin secular cycles, elite overproduction, fiscal crisis│
-│    • Tier2CliodynamicPluginsTestSuite & TypeBEnginesTestSuite: Domain validity bounds and parameter sweeps. │
-├─────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ 3. TIER 3: EXTERNAL EMPIRICAL GROUND-TRUTH & HISTORICAL CONTINGENCY FALSIFICATION                          │
-│    • 3.1 Empirical Dataset Calibration: HYDE 3.4, Maddison Project 2020, Seshat Databank, NOAA ETOPO.       │
-│    • 3.2 Great-Man / Cliodynamic Contingency Suite:                                                         │
-│        - VarianceDecompositionTest (Exp A): ANOVA η² effect size decomposition.                             │
-│        - TopologicalConvergenceTest (Exp B): 1-Wasserstein W₁ & Identity Invariance verification.           │
-│        - InformationEntropyLeaderTest (Exp C): Shannon entropy information gain ΔH.                         │
-│        - ArchetypeSubstitutionTest (Exp D): Name permutation invariance & archetype capital ranking.        │
-│        - InterStateSelectivePressureTest (Pillar 3): Selective advantage & Grand Canal delayed convergence. │
-│        - MalthusianWarRegulatorTest (Pillar 4): War as thermodynamic regulator & post-conquest recovery.    │
-│        - HistoricalLeaderBifurcationTest: A/B counterfactual & Loss of Strength Gradient spatial kernel.     │
+│  2. IF Ω(t) ≫ ε (Sharp residual explosion) ⟹ Pure Determinism FAILS; an unmodeled bifurcation occurred.    │
+│     • The engine solves the INVERSE PROBLEM to compute the Minimal Necessary Forcing F*(t):                 │
+│       F*(t) = argmin_F [ Ω(t; F) + λ ||F||₂ ]                                                               │
+│     • Type A: Geophysical Forcing (e.g. Mount Toba -74k BP, Tambora 1815, Younger Dryas).                   │
+│     • Type B: Totalitarian / Biographical Contingency (e.g. 1933 Fascist militarization, Genghis Khan 1206). │
 └─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### 4.9.2 Empirical Case Studies in Residual Inversion (`EmpiricalResidualBifurcationTest.java`)
+
+```
+╔══════════════════════════════════════════╦═══════════════════════╦═══════════════════════╦══════════════════════════════════════════╗
+║ Historical Epoch & Bifurcation Target    ║ Unforced Model Ω      ║ Forced Model Ω        ║ Epistemic Inversion Verdict              ║
+╠══════════════════════════════════════════╬═══════════════════════╬═══════════════════════╬══════════════════════════════════════════╣
+║ Toba Supervolcano Bottleneck (-74k BP)   ║ Ω = 566.67% (FAIL)    ║ Ω = 0.00% (MATCH)     ║ Volcanic aerosol optical depth τ ≥ 8.0   ║
+║                                          ║ Pop grows to 100k     ║ Bottleneck pop = 15k  ║ strictly required to reconcile history.  ║
+╠══════════════════════════════════════════╬═══════════════════════╬═══════════════════════╬══════════════════════════════════════════╣
+║ European Interwar & WWII (1920–1945)     ║ Ω = 53.85% (FAIL)     ║ Ω = 7.43% (MATCH)     ║ 1933 Totalitarian purger shock (μ* = 6.0)║
+║                                          ║ Smooth industrial rise║ War capital = 1.30M   ║ strictly required to match 1945 ruins.   ║
+╠══════════════════════════════════════════╬═══════════════════════╬═══════════════════════╬══════════════════════════════════════════╣
+║ Phase Transition Metastability           ║ Sub-barrier (40k GJ): ║ Super-barrier (150k): ║ Systems remain trapped in metastable     ║
+║ (Feudal ➔ Unified Hydraulic Regime)      ║ Trapped in State 0    ║ Transition to State 1 ║ local wells until activation energy ΔE   ║
+║                                          ║                       ║                       ║ exceeds potential barrier E_barrier.     ║
+╚══════════════════════════════════════════╩═══════════════════════╩═══════════════════════╩══════════════════════════════════════════╝
+```
+
+### 4.9.3 Metastability and the "Enzyme" Model of Leadership
+This framework resolves the Great Man vs. Determinism paradox through physical chemistry concepts:
+1. **The Energy Landscape (Potential Wells)**: Physical geography, climate, and thermodynamics define the topography of potential energy $V(\mathbf{X})$. A landscape may contain multiple metastable local minima (e.g. fragmented feudal states vs. canalized unified empire).
+2. **The Activation Energy Barrier ($E_{\text{barrier}}$)**: Transitioning between attractors requires overcoming an organizational, institutional, or capital hurdle. Without an impulse, a society remains trapped in a sub-optimal local well for centuries (e.g., fragmented pre-Sui China).
+3. **The Leader as Catalytic Enzyme**: An extreme biographical outlier does not create energy *ex nihilo*; rather, the leader acts as an **enzyme that lowers the activation energy barrier** or injects a concentrated pulse of political work ($\Delta E \ge E_{\text{barrier}}$), triggering the phase transition into the lower-energy global attractor.
 
 ---
 
