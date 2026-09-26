@@ -1041,6 +1041,48 @@ $$W_1(\mu_A, \mu_B) = \int_{-\infty}^{\infty} \left| \text{CDF}_A(x) - \text{CDF
 
 Constructs an ultrametric dendrogram matrix $D_{ij} = W_1(\text{Scenario}_i, \, \text{Scenario}_j)$ mapping the phylogenetic tree of divergent historical worlds.
 
+---
+
+### 11.6 Historical Contingency & Leader Bifurcation Dynamics (`HistoricalIntervention`)
+Evaluates the physical and institutional footprint of biographical outliers (conquerors, builders, reformers, prophets) against macro-historical physical baselines:
+
+#### A. Gaussian Spatial Attenuation Coupled with Cultural Isogloss & Watershed Topology
+$$\Delta \mathbf{X}_i(t) = \mathbf{M}_k(\mu_k) \cdot W_{\text{coupled}}(\mathbf{r}_i, \mathbf{r}_k)$$
+$$W_{\text{coupled}}(\mathbf{r}_i, \mathbf{r}_k) = W_{\text{spatial}}(\|\mathbf{r}_i - \mathbf{r}_k\|) \cdot \Phi_{\text{cultural}}(\mathcal{C}_i, \mathcal{C}_k) \cdot \Psi_{\text{watershed}}(\mathcal{W}_i, \mathcal{W}_k)$$
+
+1. **Boulding Loss of Strength Gradient Spatial Kernel**:
+   $$W_{\text{spatial}}(d) = \begin{cases} 
+   \exp\left(-\frac{d^2}{2 \sigma_{R,k}^2}\right) & \text{if } d \le R_k \\ 
+   0 & \text{if } d > R_k 
+   \end{cases} \quad \text{where } \sigma_{R,k} = \frac{R_k}{2.5}$$
+2. **Cultural Isogloss Tensor Attenuation (Tensor 0)**:
+   $$\Phi_{\text{cultural}}(\mathcal{C}_i, \mathcal{C}_k) = \begin{cases} 1.0 & \text{if } \mathcal{C}_i = \mathcal{C}_k \\ \alpha_{\text{archetype}} \in [0.20, 0.60] & \text{if } \mathcal{C}_i \ne \mathcal{C}_k \end{cases}$$
+3. **Hydrographic Drainage Basin Partitioning**:
+   $$\Psi_{\text{watershed}}(\mathcal{W}_i, \mathcal{W}_k) = \begin{cases} 1.0 & \text{if } \mathcal{W}_i = \mathcal{W}_k \\ \beta_{\text{archetype}} \in [0.35, 0.80] & \text{if } \mathcal{W}_i \ne \mathcal{W}_k \end{cases}$$
+
+#### B. Physical & Structural Couplings
+* **Movement Friction**: $\mu_{\text{friction}}(\mathbf{r}, t) = \mu_0 \cdot \max\left(0.20, \, 1.0 - 0.07 \cdot \mu_{\text{mag}} \cdot W_{\text{coupled}}(\mathbf{r})\right)$
+* **Infrastructure Capital Injection**: $C_{\text{infra}}(\mathbf{r}, t) = C_0 + \Delta C_{\text{bonus}} \cdot \frac{t - t_0}{T_{\text{reign}}} \cdot W_{\text{coupled}}(\mathbf{r})$
+* **Carrying Capacity Elevation**: $K_{\text{food}}(\mathbf{r}, t) = K_0 \cdot \left(1.0 + 0.08 \cdot \mu_{\text{mag}} \cdot W_{\text{coupled}}(\mathbf{r})\right)$
+* **Sovereign Cliodynamic Modifiers**: $\Delta A = +0.04 \mu_{\text{mag}} W(\mathbf{r})$ (Asabiyyah), $\Delta S_{\text{cap}} = +0.035 \mu_{\text{mag}} W(\mathbf{r})$ (State Capacity), $\Delta \Psi = -0.03 \mu_{\text{mag}}$ (Instability).
+
+#### C. Inter-State Selective Pressure & Delayed Convergence
+$$\frac{d C_B}{dt} = \lambda_{\text{diffusion}} \cdot (C_A(t) - C_B(t)) + \mathbb{I}_{\text{delayed\_adoption}} \cdot \dot{C}_{\text{builder}}$$
+$$\lim_{t \to \infty} |C_A(t) - C_B(t)| = 0 \quad (\text{Grand Canal Structural Inevitability})$$
+
+#### D. War as Malthusian Thermodynamic Regulator
+$$P_{\text{war/crisis}}(t) = \kappa_0 \cdot \max\left(0, \, \frac{N(t)}{K(t)} - 1.0\right) \cdot \left(1 + \Psi_{\text{instability}}(t)\right)$$
+Following a conquest shock $\Delta N = -c \cdot N$, carrying capacity $K$ is invariant, inducing logistic recovery:
+$$\frac{dN}{dt} = r N \left(1 - \frac{N}{K}\right) \implies \lim_{t \to t_{\text{death}} + 150} N(t) = K \quad (\text{100.0% Recovery})$$
+
+#### E. Normalized Trajectory Divergence & Relaxation Half-Life
+$$\mathcal{D}(t) = \frac{\|\mathbf{X}_{\text{counterfactual}}(t) - \mathbf{X}_{\text{baseline}}(t)\|_2}{\|\mathbf{X}_{\text{baseline}}(t)\|_2}$$
+$$\tau_{\text{relax}} = \frac{\ln(2)}{\lambda_{\text{dissipation}}} \approx \begin{cases}
+35\text{--}55\text{ years} & \text{for pure military conquerors (Dissipative Regime, } \eta^2 = 0.0000) \\
+200\text{--}500\text{ years} & \text{for physical infrastructure builders (Hysteretic Bifurcation)}
+\end{cases}$$
+
+
 
 
 

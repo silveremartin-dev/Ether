@@ -405,6 +405,17 @@ public record PlanetPreset(
         return waterLevelToMeters(waterLevel, minAltitudeMeters, maxAltitudeMeters);
     }
 
+    public PlanetPreset withResolution(int newResolution) {
+        return new PlanetPreset(name, newResolution, radiusKm, dayLengthHours, axialTiltDegrees, yearLengthDays,
+                distanceToSunAU, solarLuminosity, minAltitudeMeters, maxAltitudeMeters, averageTempC, seed,
+                noiseFrequency, noiseScale, waterLevel, temperatureGradient, oxygenPercentage, albedo,
+                atmospherePressureAtm, isSatellite, parentPlanetMassEarthMasses, orbitalDistanceToParentKm,
+                co2Ppm, seismicActivityLevel, volcanicActivityLevel, customElevBase64, customBiomeBase64,
+                customResourceBase64, customClimateBase64, customRainfallBase64, customSeasonalityBase64,
+                elevationUseImport, elevationMapSource, tempUseImport, tempSource, tempSeed,
+                precipUseImport, precipSource, precipSeed, seasonUseImport, seasonSource, seasonSeed);
+    }
+
     @Override
     public String toString() {
         return name;

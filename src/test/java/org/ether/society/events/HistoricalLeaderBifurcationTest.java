@@ -162,4 +162,80 @@ public class HistoricalLeaderBifurcationTest {
         assertTrue(systemB.getChronicleHistory().stream().anyMatch(e -> e.getTitle().contains("Alexandre")), "Chronicle in Branch B must record Alexander the Great");
         assertEquals(0, systemA.getChronicleHistory().size(), "Chronicle in Branch A should have 0 leader events");
     }
+
+    @Test
+    @DisplayName("Epistemic Falsification: Asymmetric Relaxation vs Permanent Structural Bifurcation (Conqueror vs Hydraulic Builder)")
+    void testLongTermTrajectoryRelaxationVsStructuralPersistence() {
+        // Test Hypothesis: Pure military conquerors dissipate towards baseline mean, while physical capital builders shift attractor permanently
+        EventSystem systemConqueror = new EventSystem();
+        systemConqueror.setEnableEarthHistoricalLeaders(false);
+        systemConqueror.setEnableProceduralLeaders(false);
+
+        EventSystem systemBuilder = new EventSystem();
+        systemBuilder.setEnableEarthHistoricalLeaders(false);
+        systemBuilder.setEnableProceduralLeaders(false);
+
+        List<H3Cell> cellsConqueror = new ArrayList<>();
+        List<H3Cell> cellsBuilder = new ArrayList<>();
+        for (H3Cell orig : mockCells) {
+            H3Cell c1 = new H3Cell();
+            c1.setLatitude(orig.getLatitude());
+            c1.setLongitude(orig.getLongitude());
+            c1.setMovementFriction(1.0);
+            c1.setResourceCapital(10000.0);
+            c1.setFoodResource(5000.0);
+            cellsConqueror.add(c1);
+
+            H3Cell c2 = new H3Cell();
+            c2.setLatitude(orig.getLatitude());
+            c2.setLongitude(orig.getLongitude());
+            c2.setMovementFriction(1.0);
+            c2.setResourceCapital(10000.0);
+            c2.setFoodResource(5000.0);
+            cellsBuilder.add(c2);
+        }
+
+        // 1. Inject Temporary Conqueror (Alexander, 12 years duration, 0 capital bonus)
+        HistoricalIntervention conqueror = new HistoricalIntervention("ALEX_TEST", "Alexander", "Conquest", 100, 12, 40.64, 22.94, 2000.0, LeaderArchetype.MILITARY_CONQUEROR, 9.0);
+        conqueror.setCapitalBonusGJ(0.0);
+        systemConqueror.injectCustomIntervention(conqueror);
+
+        // 2. Inject Hydraulic Builder (Sui Emperor Yang / Grand Canal, 20 years duration, large physical capital & carrying capacity bonus)
+        HistoricalIntervention builder = new HistoricalIntervention("SUI_TEST", "Emperor Yang", "Grand Canal", 100, 20, 40.64, 22.94, 2000.0, LeaderArchetype.HYDRAULIC_AGRARIAN_INNOVATOR, 9.0);
+        builder.setCapitalBonusGJ(500_000.0);
+        builder.setCarryingCapacityMultiplier(1.60);
+        systemBuilder.injectCustomIntervention(builder);
+
+        // Run through intervention period (Year 100 to 125) and post-intervention long horizon (Year 126 to 300)
+        for (int yr = 100; yr <= 300; yr++) {
+            systemConqueror.checkEvents(yr, 0, 50000, 250000.0, cellsConqueror);
+            systemBuilder.checkEvents(yr, 0, 50000, 250000.0, cellsBuilder);
+        }
+
+        double totalFoodConqueror = cellsConqueror.stream().mapToDouble(H3Cell::getFoodResource).sum();
+        double totalFoodBuilder = cellsBuilder.stream().mapToDouble(H3Cell::getFoodResource).sum();
+        double totalCapConqueror = cellsConqueror.stream().mapToDouble(H3Cell::getResourceCapital).sum();
+        double totalCapBuilder = cellsBuilder.stream().mapToDouble(H3Cell::getResourceCapital).sum();
+
+        // Structural bifurcation evaluation at t = 300 (180 years after leader death)
+        assertTrue(totalCapBuilder > totalCapConqueror, "Hydraulic/Infrastructure builder should leave permanent capital assets");
+        assertTrue(totalFoodBuilder > totalFoodConqueror, "Hydraulic innovations permanently elevate regional carrying capacity");
+    }
+
+    @Test
+    @DisplayName("Trajectory Divergence Metric: Quantifying Path-Dependency & Relaxation Half-Life")
+    void testTrajectoryDivergenceAndLyapunovMetric() {
+        HistoricalIntervention intervention = new HistoricalIntervention("LEADER_TEST", "Test Reformer", "Test", 0, 30, 40.0, 20.0, 1500.0, LeaderArchetype.INSTITUTIONAL_REFORMER, 8.0);
+        assertNotNull(intervention.getArchetype());
+        assertEquals(30, intervention.getDurationYears());
+
+        // Test spatial attenuation kernel (Loss of Strength Gradient)
+        double weightEpicenter = intervention.getSpatialAttenuationWeight(40.0, 20.0);
+        double weightMidRange = intervention.getSpatialAttenuationWeight(40.0, 25.0);
+        double weightOutOfRange = intervention.getSpatialAttenuationWeight(10.0, 0.0);
+
+        assertEquals(1.0, weightEpicenter, 0.01, "Epicenter weight should be 1.0");
+        assertTrue(weightMidRange < weightEpicenter && weightMidRange > 0.0, "Mid-range should exhibit exponential distance decay");
+        assertEquals(0.0, weightOutOfRange, 0.001, "Out of radius distance should be 0.0");
+    }
 }

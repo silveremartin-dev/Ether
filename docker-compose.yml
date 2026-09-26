@@ -1,23 +1,48 @@
+# ==============================================================================
+# Ether — Docker Compose Stack
+# Copyright (c) 2024-2026 Silvère Martin-Michiellot
+#
+# Profiles:
+#   (none)    — Local development: starts only postgres + redis (fast, lightweight)
+#   headless  — One-shot batch simulation run on the local machine
+#   cluster   — Master node + 1 worker node (scalable with --scale ether-worker=N)
+#
+# Usage examples:
+#   docker compose up                              # Local dev (postgres + redis only)
+#   docker compose --profile headless up          # Run one batch simulation
+#   docker compose --profile cluster up           # Start cluster (master + 1 worker)
+#   docker compose --profile cluster up --scale ether-worker=4  # 4 workers
+#
+# Copy .env.example to .env and edit before running.
+# ==============================================================================
+
 version: '3.8'
 
 services:
+
+  # ── Infrastructure ──────────────────────────────────────────────────────────
+
   postgres:
     image: postgis/postgis:15-3.3
     container_name: ether_postgres
+    env_file: .env
     environment:
-      POSTGRES_DB: ether_simulation
-      POSTGRES_USER: ether
-      POSTGRES_PASSWORD: dev_password
+      POSTGRES_DB: ${POSTGRES_DB:-ether_simulation}
+      POSTGRES_USER: ${POSTGRES_USER:-ether}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me_in_production}
     ports:
-      - "54320:5432"  # Host:Container (using non-standard port to avoid conflicts)
+      - "54320:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ether"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ether}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - ether-net
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
@@ -26,10 +51,122 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - ether-net
+    restart: unless-stopped
+
+  # ── Headless batch simulation (profile: headless) ───────────────────────────
+  # Runs a single simulation to completion and exits (no restart).
+  # Results are written to the ./saves volume.
+
+  ether-headless:
+    profiles: ["headless"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ether_headless
+    env_file: .env
+    environment:
+      MODE: headless
+      SCENARIO: ${SCENARIO:-OUT_OF_AFRICA}
+      TICKS: ${TICKS:-500}
+      CELLS: ${CELLS:-5000}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-ether_simulation}
+      DB_USER: ${POSTGRES_USER:-ether}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-change_me_in_production}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - ./saves:/app/saves
+      - ./logs:/app/logs
+      - ./data:/app/data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ether-net
+    restart: "no"
+
+  # ── Cluster Master node (profile: cluster) ──────────────────────────────────
+  # Orchestrates the spatial H3 cell work distribution to worker nodes.
+
+  ether-master:
+    profiles: ["cluster"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ether_master
+    env_file: .env
+    environment:
+      MODE: master
+      SCENARIO: ${SCENARIO:-OUT_OF_AFRICA}
+      TICKS: ${TICKS:-500}
+      CELLS: ${CELLS:-5000}
+      MASTER_PORT: 9090
+      CLUSTER_SECRET: ${CLUSTER_SECRET:-EtherClusterSecret2026}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-ether_simulation}
+      DB_USER: ${POSTGRES_USER:-ether}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-change_me_in_production}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./saves:/app/saves
+      - ./logs:/app/logs
+      - ./data:/app/data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ether-net
+    restart: unless-stopped
+
+  # ── Cluster Worker nodes (profile: cluster) ─────────────────────────────────
+  # Scale with: docker compose --profile cluster up --scale ether-worker=N
+
+  ether-worker:
+    profiles: ["cluster"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      MODE: worker
+      MASTER_HOST: ether-master
+      MASTER_PORT: 9090
+      CLUSTER_SECRET: ${CLUSTER_SECRET:-EtherClusterSecret2026}
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      - ether-master
+    networks:
+      - ether-net
+    restart: unless-stopped
+
+# ── Volumes ───────────────────────────────────────────────────────────────────
 
 volumes:
   postgres_data:
     driver: local
   redis_data:
     driver: local
+
+# ── Networks ──────────────────────────────────────────────────────────────────
+
+networks:
+  ether-net:
+    driver: bridge

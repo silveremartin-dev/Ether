@@ -9,6 +9,7 @@ PORT="${2:-9090}"
 SECRET="${3:-EtherClusterSecret2026}"
 TICKS="${4:-500}"
 CELLS="${5:-10000}"
+RES="${6:-}"
 
 echo "=========================================================="
 echo "     ETHER — STARTING CLUSTER MASTER SERVER (v1.0 b1)     "
@@ -17,6 +18,7 @@ echo "  Scenario Preset : ${SCENARIO}"
 echo "  Port            : ${PORT}"
 echo "  Target Ticks    : ${TICKS}"
 echo "  H3 Grid Cells   : ${CELLS}"
+echo "  H3 Resolution   : ${RES:-Default}"
 echo "----------------------------------------------------------"
 
 JAR_PATH="target/society-simulation-1.0.0-beta.1-executable.jar"
@@ -26,5 +28,10 @@ if [ ! -f "$JAR_PATH" ]; then
     mvn clean package -DskipTests
 fi
 
+RES_ARG=""
+if [ -n "$RES" ]; then
+    RES_ARG="--res=${RES}"
+fi
+
 echo "🚀 Launching Master Node Server..."
-java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "$JAR_PATH" --headless --mode=cluster --role=master --port="${PORT}" --secret="${SECRET}" --scenario="${SCENARIO}" --ticks="${TICKS}" --cells="${CELLS}" --profile
+java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "$JAR_PATH" --headless --mode=cluster --role=master --port="${PORT}" --secret="${SECRET}" --scenario="${SCENARIO}" --ticks="${TICKS}" --cells="${CELLS}" ${RES_ARG} --profile

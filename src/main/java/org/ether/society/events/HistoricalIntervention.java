@@ -107,25 +107,101 @@ public class HistoricalIntervention {
         return currentYear >= (yearStart + durationYears);
     }
 
-    public boolean isInsideRadius(double cellLat, double cellLng) {
+    public double getDistanceKm(double cellLat, double cellLng) {
         double dLat = Math.toRadians(cellLat - latitude);
         double dLng = Math.toRadians(cellLng - longitude);
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                    Math.cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(cellLat)) *
                    Math.sin(dLng / 2) * Math.sin(dLng / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distKm = 6371.0 * c;
-        return distKm <= radiusKm;
+        return 6371.0 * c;
+    }
+
+    public boolean isInsideRadius(double cellLat, double cellLng) {
+        return getDistanceKm(cellLat, cellLng) <= radiusKm;
+    }
+
+    public double getSpatialAttenuationWeight(double cellLat, double cellLng) {
+        double distKm = getDistanceKm(cellLat, cellLng);
+        if (distKm > radiusKm) return 0.0;
+        double sigma = Math.max(10.0, radiusKm / 2.5);
+        return Math.exp(-0.5 * (distKm * distKm) / (sigma * sigma));
+    }
+
+    /**
+     * Computes the anisotropic spatial attenuation weight coupled with the Cultural Isogloss
+     * tensor (Tensor 0) and Hydrographic Drainage Basin topology.
+     *
+     * @param cellLat Latitude of the target cell
+     * @param cellLng Longitude of the target cell
+     * @param cellCultureId Culture/isogloss tensor identifier of the target cell (-1 or null if unspecified)
+     * @param leaderCultureId Culture/isogloss tensor identifier of the leader's homeland (-1 or null if unspecified)
+     * @param cellWatershedId Hydrographic drainage basin identifier of the target cell (-1 or null if unspecified)
+     * @param leaderWatershedId Hydrographic drainage basin identifier of the leader's epicenter (-1 or null if unspecified)
+     * @return Effective weight in [0.0, 1.0] accounting for physical distance, cultural friction, and hydrographic alignment
+     */
+    public double getCulturalAndWatershedCoupledWeight(double cellLat, double cellLng,
+                                                       Integer cellCultureId, Integer leaderCultureId,
+                                                       Integer cellWatershedId, Integer leaderWatershedId) {
+        double spatialWeight = getSpatialAttenuationWeight(cellLat, cellLng);
+        if (spatialWeight <= 0.0) return 0.0;
+
+        // 1. Cultural Isogloss Coupling (Tensor 0)
+        double culturalFactor = 1.0;
+        if (cellCultureId != null && leaderCultureId != null && cellCultureId >= 0 && leaderCultureId >= 0) {
+            if (cellCultureId.equals(leaderCultureId)) {
+                culturalFactor = 1.0; // Same cultural sphere: full transmission
+            } else {
+                // Cross-cultural friction: conquerors project further across borders than sages/reformers
+                culturalFactor = switch (archetype) {
+                    case MILITARY_CONQUEROR -> 0.60;
+                    case INFRASTRUCTURE_BUILDER -> 0.45;
+                    case HYDRAULIC_AGRARIAN_INNOVATOR -> 0.50;
+                    case INSTITUTIONAL_REFORMER -> 0.35;
+                    case MORAL_RELIGIOUS_SAGE -> 0.30;
+                    case TOTALITARIAN_PURGER -> 0.20;
+                };
+            }
+        }
+
+        // 2. Hydrographic Watershed Drainage Basin Coupling
+        double watershedFactor = 1.0;
+        if (cellWatershedId != null && leaderWatershedId != null && cellWatershedId >= 0 && leaderWatershedId >= 0) {
+            if (cellWatershedId.equals(leaderWatershedId)) {
+                watershedFactor = 1.0; // Same river basin / corridor: full hydraulic propagation
+            } else {
+                // Trans-basin physical friction: hydraulic innovations and roads attenuate across mountain divides
+                watershedFactor = switch (archetype) {
+                    case HYDRAULIC_AGRARIAN_INNOVATOR -> 0.35; // Canal/irrigation benefits largely confined to drainage basin
+                    case INFRASTRUCTURE_BUILDER -> 0.60;      // Roads cross divides with elevated engineering cost
+                    default -> 0.80;                          // Other archetypes less constrained by river basins
+                };
+            }
+        }
+
+        return spatialWeight * culturalFactor * watershedFactor;
     }
 
     // Getters and Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public String getName() { return name; }
+    public String getName() {
+        if (id != null && !id.isBlank()) {
+            return org.ether.society.i18n.I18n.getOrDefault("leader.event." + id.toLowerCase() + ".name",
+                   org.ether.society.i18n.I18n.getOrDefault("leader.event." + id + ".name", name));
+        }
+        return name;
+    }
     public void setName(String name) { this.name = name; }
 
-    public String getDescription() { return description; }
+    public String getDescription() {
+        if (id != null && !id.isBlank()) {
+            return org.ether.society.i18n.I18n.getOrDefault("leader.event." + id.toLowerCase() + ".desc",
+                   org.ether.society.i18n.I18n.getOrDefault("leader.event." + id + ".desc", description));
+        }
+        return description;
+    }
     public void setDescription(String description) { this.description = description; }
 
     public int getYearStart() { return yearStart; }

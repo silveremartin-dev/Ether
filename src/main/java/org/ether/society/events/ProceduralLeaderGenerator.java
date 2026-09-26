@@ -65,8 +65,8 @@ public class ProceduralLeaderGenerator {
 
         String id = "PROC_LEADER_" + year + "_" + Math.abs(random.nextInt(10000));
         String title = generateTitle(archetype);
-        String name = title + " d'Émergence An " + year;
-        String desc = "Émergence d'une figure majeure (" + archetype.getDisplayName() + ") à impact continental.";
+        String name = String.format(org.ether.society.i18n.I18n.getOrDefault("leader.proc.name_format", "%s (Year %d)"), title, year);
+        String desc = String.format(org.ether.society.i18n.I18n.getOrDefault("leader.proc.desc_format", "Emergence of a major historical figure (%s) with macro-regional impact."), archetype.getDisplayName());
 
         HistoricalIntervention intervention = new HistoricalIntervention(
                 id, name, desc, year, duration,
@@ -109,13 +109,15 @@ public class ProceduralLeaderGenerator {
     }
 
     private String generateTitle(LeaderArchetype archetype) {
-        return switch (archetype) {
+        int idx = random.nextInt(5) + 1;
+        String key = "leader.title." + archetype.name().toLowerCase() + "." + idx;
+        return org.ether.society.i18n.I18n.getOrDefault(key, switch (archetype) {
             case MILITARY_CONQUEROR -> LEADER_TITLES_CONQUEROR[random.nextInt(LEADER_TITLES_CONQUEROR.length)];
             case INFRASTRUCTURE_BUILDER -> LEADER_TITLES_BUILDER[random.nextInt(LEADER_TITLES_BUILDER.length)];
             case INSTITUTIONAL_REFORMER -> LEADER_TITLES_REFORMER[random.nextInt(LEADER_TITLES_REFORMER.length)];
             case HYDRAULIC_AGRARIAN_INNOVATOR -> LEADER_TITLES_HYDRAULIC[random.nextInt(LEADER_TITLES_HYDRAULIC.length)];
             case MORAL_RELIGIOUS_SAGE -> LEADER_TITLES_SAGE[random.nextInt(LEADER_TITLES_SAGE.length)];
             case TOTALITARIAN_PURGER -> LEADER_TITLES_PURGER[random.nextInt(LEADER_TITLES_PURGER.length)];
-        };
+        });
     }
 }

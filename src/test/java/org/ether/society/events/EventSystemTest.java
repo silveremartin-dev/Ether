@@ -60,10 +60,10 @@ class EventSystemTest {
         assertEquals(2, history.size());
         assertEquals("Test Event 1", history.get(0).getTitle());
         assertEquals(7.5, history.get(0).getMagnitude());
-        assertEquals("Élevée", history.get(0).getIntensityLabel());
+        assertEquals(org.ether.society.i18n.I18n.getOrDefault("event.intensity.high", "High"), history.get(0).getIntensityLabel());
         assertTrue(history.get(0).getFormattedCoordinates().contains("12.50°N"));
 
-        assertEquals("Faible", history.get(1).getIntensityLabel());
+        assertEquals(org.ether.society.i18n.I18n.getOrDefault("event.intensity.low", "Low"), history.get(1).getIntensityLabel());
         assertTrue(history.get(1).getFormattedCoordinates().contains("8.20°S"));
     }
 }

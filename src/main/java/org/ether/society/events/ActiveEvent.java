@@ -87,19 +87,26 @@ public class ActiveEvent {
     public boolean isGeophysical() {
         if (type == null) return true;
         String upper = type.toUpperCase();
+        if (isHistoricalLeader() || isProceduralEmergence()) return false;
         return upper.contains("FLOOD") || upper.contains("VOLCANO") || upper.contains("FAMINE") ||
                upper.contains("PLAGUE") || upper.contains("PANDEMIC") || upper.contains("DROUGHT") ||
                upper.contains("EARTHQUAKE") || upper.contains("METEOR") || upper.contains("HEATWAVE") ||
                upper.contains("TSUNAMI") || upper.contains("ICE_AGE") || upper.contains("ECOLOGICAL") ||
-               upper.contains("DISASTER") || upper.contains("ECO_");
+               upper.contains("DISASTER") || upper.contains("ECO_") || upper.contains("NUCLEAR");
     }
 
     public boolean isHistoricalLeader() {
         if (type == null) return false;
         String upper = type.toUpperCase();
-        return upper.contains("HISTORICAL") || upper.contains("LEADER") || upper.contains("ARCHETYPE") ||
-               upper.contains("REFORM") || upper.contains("CONQUEST") || upper.contains("PROC_LEADER") ||
-               leaderArchetype != null || intervention != null;
+        return upper.contains("HISTORICAL_LEADER") || upper.contains("LEADER") || upper.contains("ARCHETYPE") ||
+               upper.contains("PROC_LEADER") || leaderArchetype != null || intervention != null;
+    }
+
+    public boolean isProceduralEmergence() {
+        if (type == null) return false;
+        String upper = type.toUpperCase();
+        return upper.contains("PROCEDURAL") || upper.contains("CHRONICLE") || upper.contains("EMERGENCE") ||
+               upper.contains("NARRATIVE") || upper.contains("MILESTONE") || upper.contains("POLITY_EMERGENCE");
     }
 
     public boolean isExpired() {
@@ -107,26 +114,33 @@ public class ActiveEvent {
     }
 
     public String getFormattedDate() {
-        return String.format("An %d - M.%02d D.%02d", year, month + 1, day);
+        String template = org.ether.society.i18n.I18n.getOrDefault("event.date_format", "Yr %d - M.%02d D.%02d");
+        return String.format(template, year, month + 1, day);
     }
 
     public String getFormattedLocation() {
+        if (Math.abs(latitude) < 0.001 && Math.abs(longitude) < 0.001) {
+            return "—";
+        }
         String latDir = latitude >= 0 ? "N" : "S";
         String lngDir = longitude >= 0 ? "E" : "W";
         return String.format("Lat: %.2f°%s, Lng: %.2f°%s", Math.abs(latitude), latDir, Math.abs(longitude), lngDir);
     }
 
     public String getIntensityLabel() {
-        if (magnitude >= 8.0) return "Critique";
-        if (magnitude >= 6.5) return "Élevée";
-        if (magnitude >= 4.5) return "Modérée";
-        return "Faible";
+        if (magnitude >= 8.0) return org.ether.society.i18n.I18n.getOrDefault("event.intensity.critical", "Critical");
+        if (magnitude >= 6.5) return org.ether.society.i18n.I18n.getOrDefault("event.intensity.high", "High");
+        if (magnitude >= 4.5) return org.ether.society.i18n.I18n.getOrDefault("event.intensity.moderate", "Moderate");
+        return org.ether.society.i18n.I18n.getOrDefault("event.intensity.low", "Low");
     }
 
     public String getIntensityBadgeColor() {
         if (isHistoricalLeader()) {
             if (magnitude >= 8.5) return "#8b5cf6"; // Purple for legendary leaders
             return "#3b82f6"; // Blue for leaders
+        }
+        if (isProceduralEmergence()) {
+            return "#10b981"; // Emerald green for world narrative emergences
         }
         if (magnitude >= 8.0) return "#ef4444";
         if (magnitude >= 6.5) return "#f97316";
@@ -135,6 +149,9 @@ public class ActiveEvent {
     }
 
     public String getFormattedCoordinates() {
+        if (Math.abs(latitude) < 0.001 && Math.abs(longitude) < 0.001) {
+            return "—";
+        }
         String latDir = latitude >= 0 ? "N" : "S";
         String lngDir = longitude >= 0 ? "E" : "W";
         return String.format(java.util.Locale.ROOT, "Lat: %.2f°%s, Lng: %.2f°%s", Math.abs(latitude), latDir, Math.abs(longitude), lngDir);

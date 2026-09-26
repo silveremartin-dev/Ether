@@ -5,6 +5,7 @@ import org.ether.society.model.Nation;
 import org.ether.society.h3.H3Service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -55,7 +56,10 @@ public class PoliticalSimulationEngine {
         Set<H3Cell> territory = nation.getTerritory();
         if (territory.isEmpty()) return;
 
-        for (H3Cell core : territory) {
+        List<H3Cell> currentTerritory = new ArrayList<>(territory);
+        List<H3Cell> newlyClaimed = new ArrayList<>();
+
+        for (H3Cell core : currentTerritory) {
             if (core.getPopulation() < 500) continue;
 
             List<Long> neighborIndices = h3Service.getNeighbors(core.getH3Index());
@@ -65,11 +69,15 @@ public class PoliticalSimulationEngine {
                     if (neighbor.getBiome() != org.ether.society.model.Biome.OCEAN &&
                         neighbor.getBiome() != org.ether.society.model.Biome.DEEP_OCEAN) {
                         if (Math.random() < expansionProbability) {
-                            nation.addCell(neighbor);
+                            newlyClaimed.add(neighbor);
                         }
                     }
                 }
             }
+        }
+
+        for (H3Cell cell : newlyClaimed) {
+            nation.addCell(cell);
         }
     }
 }

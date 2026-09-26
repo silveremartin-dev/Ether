@@ -108,7 +108,8 @@ public class VarianceDistributionPanel extends VBox {
 
         // Header
         headerTitle = new Label();
-        headerTitle.getStyleClass().add("label-title");
+        headerTitle.getStyleClass().add("label-section-header");
+        headerTitle.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
         headerTitle.setWrapText(true);
 
         subtitle = new Label();
@@ -222,6 +223,13 @@ public class VarianceDistributionPanel extends VBox {
         headerTitle.setText(I18n.getOrDefault("variance.title", "📊 STATISTIQUES DE VARIANCE ENTRE INDIVIDUS & DISTRIBUTION"));
         subtitle.setText(I18n.getOrDefault("variance.subtitle", "Évalue à quel point les individus / mailles s'éloignent du schéma standard (Moyenne μ ± Écart-type σ)"));
         comboPrompt.setText(I18n.getOrDefault("variance.prompt.variable", "Variable analysée :"));
+
+        kpiMeanTitle.setText(I18n.getOrDefault("variance.kpi.mean", "Moyenne (μ)"));
+        kpiVarTitle.setText(I18n.getOrDefault("variance.kpi.var", "Variance (σ²)"));
+        kpiStdTitle.setText(I18n.getOrDefault("variance.kpi.std", "Écart-Type (σ)"));
+        kpiGiniTitle.setText(I18n.getOrDefault("variance.kpi.gini", "Indice de Gini"));
+        kpiMinMaxTitle.setText(I18n.getOrDefault("variance.kpi.minmax", "Étendue (Min / Max)"));
+        kpiCvTitle.setText(I18n.getOrDefault("variance.kpi.cv", "Coeff. Variation (CV)"));
 
         String prevKey = (variableCombo.getValue() != null && !variableCombo.getValue().isHeader())
                 ? variableCombo.getValue().getKey()

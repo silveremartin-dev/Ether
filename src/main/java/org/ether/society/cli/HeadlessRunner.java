@@ -15,6 +15,7 @@ import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +37,7 @@ public class HeadlessRunner {
 
         int ticksToRun = 300; // 10 months default
         int cellCount = 3000;
+        int h3Resolution = -1;
         boolean showProfile = true;
         boolean isClusterMode = false;
         org.ether.society.network.ClusterManager.ClusterRole clusterRole = org.ether.society.network.ClusterManager.ClusterRole.MASTER;
@@ -78,6 +80,10 @@ public class HeadlessRunner {
                 port = Integer.parseInt(arg.substring("--port=".length()));
             } else if (arg.startsWith("--secret=")) {
                 secretToken = arg.substring("--secret=".length());
+            } else if (arg.startsWith("--res=") || arg.startsWith("--resolution=")) {
+                h3Resolution = Integer.parseInt(arg.substring(arg.indexOf('=') + 1));
+            } else if (("-r".equalsIgnoreCase(arg) || "--res".equalsIgnoreCase(arg) || "--resolution".equalsIgnoreCase(arg)) && i + 1 < args.length) {
+                h3Resolution = Integer.parseInt(args[++i]);
             }
         }
 
@@ -104,17 +110,19 @@ public class HeadlessRunner {
                         || preset.getDisplayName().equalsIgnoreCase(scenarioName)
                         || scenarioName.toLowerCase().contains(preset.getDisplayName().toLowerCase())) {
                     scenario.setStartDateYear(preset.getYear());
+                    scenario.setEndDateYear(preset.getYear() + Math.max(500, (long)(ticksToRun * scenario.getTemporalResolutionDays() / 365.25) + 50));
                     scenario.setInitialHumanCount(preset.getEstimatedPopulation());
                     scenario.setInitialTechLevel(preset.getEstimatedTechLevel());
                     scenario.setName(preset.getDisplayName());
-                    logger.info("Matched Historical Scenario Preset: '{}' (Start Year: {}, Initial Pop: {}, Tech Level: {})",
-                            preset.getDisplayName(), preset.getYear(), preset.getEstimatedPopulation(), preset.getEstimatedTechLevel());
+                    logger.info("Matched Historical Scenario Preset: '{}' (Start Year: {}, End Year: {}, Initial Pop: {}, Tech Level: {})",
+                            preset.getDisplayName(), preset.getYear(), scenario.getEndDateYear(), preset.getEstimatedPopulation(), preset.getEstimatedTechLevel());
                     matched = true;
                     break;
                 }
             }
 
             if (!matched) {
+                scenario.setEndDateYear(scenario.getStartDateYear() + Math.max(500, (long)(ticksToRun * scenario.getTemporalResolutionDays() / 365.25) + 50));
                 logger.info("Custom Scenario Name: '{}' (Using default start parameters)", scenarioName);
             }
 
@@ -125,10 +133,23 @@ public class HeadlessRunner {
                         ticksToRun, scenario.getStartDateYear(), scenario.getEndDateYear());
             }
 
-            logger.info("Initializing Headless Ether Engine (Scenario={}, ClusterMode={}, Role={}, Cells={}, Ticks={})...",
-                    scenario.getName(), isClusterMode, clusterRole, cellCount, ticksToRun);
+            logger.info("Initializing Headless Ether Engine (Scenario={}, ClusterMode={}, Role={}, Resolution={}, Cells={}, Ticks={})...",
+                    scenario.getName(), isClusterMode, clusterRole, h3Resolution, cellCount, ticksToRun);
 
-            List<H3Cell> cells = SampleDataGenerator.generateEuropeSample();
+            List<H3Cell> cells;
+            if (h3Resolution >= 0) {
+                logger.info("Generating planetary Earth grid at H3 Resolution {}...", h3Resolution);
+                org.ether.society.procedural.PlanetPreset planetPreset = org.ether.society.procedural.PlanetPreset.EARTH_LIKE.withResolution(h3Resolution);
+                List<H3Cell> generated = org.ether.society.procedural.ProceduralGenerator.getInstance().generatePlanet(planetPreset);
+                cells = (cellCount > 0 && cellCount < generated.size())
+                        ? new ArrayList<>(generated.subList(0, cellCount))
+                        : generated;
+            } else {
+                List<H3Cell> allCells = SampleDataGenerator.generateEuropeSample();
+                cells = (cellCount > 0 && cellCount < allCells.size())
+                        ? new ArrayList<>(allCells.subList(0, cellCount))
+                        : allCells;
+            }
 
             if (clusterManager != null) {
                 clusterManager.setTotalGridCellCount(cells.size());
@@ -136,7 +157,7 @@ public class HeadlessRunner {
                 engine.setClusterManager(clusterManager);
             }
 
-            System.out.printf("Initializing grid with %d cells...\n", cells.size());
+            System.out.printf("Initializing grid with %d cells (H3 Res: %s)...\n", cells.size(), h3Resolution >= 0 ? String.valueOf(h3Resolution) : "Default");
             engine.initializeFromScenario(scenario, cells);
 
             if (isClusterMode && clusterRole == org.ether.society.network.ClusterManager.ClusterRole.WORKER) {
@@ -171,6 +192,16 @@ public class HeadlessRunner {
                 System.out.println(profiler.generateReport());
             }
 
+            try {
+                System.out.println("💾 Persisting simulation save and database state...");
+                if (engine.getSimulationSaveManager() != null) {
+                    engine.getSimulationSaveManager().saveSimulation(engine, "Headless_" + scenarioName);
+                    System.out.println("✅ Simulation state successfully persisted to disk & database.");
+                }
+            } catch (Exception e) {
+                logger.warn("Could not persist simulation save: {}", e.getMessage());
+            }
+
             if (clusterManager != null) {
                 clusterManager.stop();
             }
@@ -191,6 +222,7 @@ public class HeadlessRunner {
         System.out.println("  --scenario=<NAME>, -s <NAME>  Scenario preset (e.g., OUT_OF_AFRICA, CLASSICAL, INDUSTRIAL, NEOLITHIZATION, YEAR_ZERO)");
         System.out.println("  --ticks=<N>, -t <N>          Target number of simulation ticks (Default: computed from scenario)");
         System.out.println("  --cells=<N>, -c <N>          Number of H3 grid cells for benchmark/world generation (Default: 3000)");
+        System.out.println("  --res=<N>, -r <N>            H3 resolution level for planetary grid (e.g. 3, 5, 7)");
         System.out.println("  --profile, -p                 Enable end-of-run profiling & performance diagnostics");
         System.out.println("  --mode=cluster, --cluster     Enable distributed cluster orchestration");
         System.out.println("  --role=<master|worker>        Node role in cluster mode (Default: master)");

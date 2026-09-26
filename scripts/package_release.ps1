@@ -86,7 +86,7 @@ if (Test-Path (Join-Path $RootDir "data")) {
 $DocFiles = @(
     "README.md",
     "LICENSE",
-    "AGENT.md",
+    "AGENTS.md",
     "docs\SIMULATION_EQUATIONS_AND_VARIABLES.md",
     "docs\ARCHITECTURE.md",
     "docs\PALEOCLIMATE_AND_PREHISTORY.md",

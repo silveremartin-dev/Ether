@@ -362,21 +362,29 @@ public class ClusterManager {
         // Prepare barrier for all active workers
         clockBarrier.prepareTickBarrier(tickId, activeWorkers.size());
 
-        // Dispatch compute orders to remote workers
+        // Dispatch compute orders to remote workers concurrently
         for (ClusterNodeRecord worker : activeWorkers) {
-            DataOutputStream out = workerSocketsOut.get(worker.getId());
+            final ClusterNodeRecord w = worker;
+            final DataOutputStream out = workerSocketsOut.get(w.getId());
             if (out != null) {
-                int start = worker.getAssignedChunkStart();
-                int count = Math.max(1, worker.getAssignedChunkEnd() - start + 1);
-                try {
-                    String payload = WorldBufferWireCodec.encodeAndEncryptChunk(buffer, start, count, tickId, securityManager);
-                    String cmd = String.format(Locale.ROOT, "EXECUTE_CHUNK:%d:%d:%d:%.4f:%s", tickId, start, count, dt, payload);
-                    synchronized (out) {
-                        writeEncryptedFrame(out, cmd, securityManager);
+                int start = w.getAssignedChunkStart();
+                int count = Math.max(1, w.getAssignedChunkEnd() - start + 1);
+                networkPool.execute(() -> {
+                    try {
+                        String payload = WorldBufferWireCodec.encodeAndEncryptChunk(buffer, start, count, tickId, securityManager);
+                        String cmd = String.format(Locale.ROOT, "EXECUTE_CHUNK:%d:%d:%d:%.4f:%s", tickId, start, count, dt, payload);
+                        synchronized (out) {
+                            writeEncryptedFrame(out, cmd, securityManager);
+                        }
+                    } catch (Exception e) {
+                        logger.error("Error dispatching chunk to worker {}: {}", w.getId(), e.getMessage());
+                        w.setStatus(NodeStatus.DISCONNECTED);
+                        workerSocketsOut.remove(w.getId());
+                        clockBarrier.acknowledgeWorkerTick(w.getId(), tickId);
                     }
-                } catch (Exception e) {
-                    logger.error("Error dispatching chunk to worker {}: {}", worker.getId(), e.getMessage());
-                }
+                });
+            } else {
+                clockBarrier.acknowledgeWorkerTick(w.getId(), tickId);
             }
         }
 
@@ -386,8 +394,8 @@ public class ClusterManager {
             localMasterCompute.accept(buffer);
         }
 
-        // Wait up to 5000ms for all workers to return their results
-        return clockBarrier.awaitBarrier(5000);
+        // Wait up to 3000ms for all workers to return their results
+        return clockBarrier.awaitBarrier(3000);
     }
 
     /**

@@ -65,12 +65,25 @@ public class H3CellRepository {
         }
         EntityManager em = emf.createEntityManager();
         try {
+            // Load existing h3Index -> id mappings to perform clean upsert without unique index collisions
+            java.util.Map<Long, Long> existingIndexMap = new java.util.HashMap<>();
+            List<Object[]> existingRows = em.createQuery("SELECT c.h3Index, c.id FROM H3Cell c", Object[].class).getResultList();
+            for (Object[] row : existingRows) {
+                if (row[0] != null && row[1] != null) {
+                    existingIndexMap.put((Long) row[0], (Long) row[1]);
+                }
+            }
+
             em.getTransaction().begin();
 
             int batchSize = 50;
             for (int i = 0; i < cells.size(); i++) {
                 H3Cell cell = cells.get(i);
-                em.persist(cell);
+                Long existingId = existingIndexMap.get(cell.getH3Index());
+                if (existingId != null) {
+                    cell.setId(existingId);
+                }
+                em.merge(cell);
 
                 if (i > 0 && i % batchSize == 0) {
                     em.flush();
@@ -79,7 +92,7 @@ public class H3CellRepository {
             }
 
             em.getTransaction().commit();
-            logger.info("Saved {} H3Cells", cells.size());
+            logger.info("Saved {} H3Cells to PostGIS database.", cells.size());
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

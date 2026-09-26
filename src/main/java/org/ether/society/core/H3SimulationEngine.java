@@ -1384,4 +1384,8 @@ public class H3SimulationEngine implements ISimulationEngine {
     public org.ether.society.core.dod.AgentBuffer getAgentBuffer() {
         return agentBuffer;
     }
+
+    public SimulationSaveManager getSimulationSaveManager() {
+        return simulationSaveManager;
+    }
 }

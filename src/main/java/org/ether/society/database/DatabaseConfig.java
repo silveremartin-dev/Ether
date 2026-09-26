@@ -53,7 +53,7 @@ public class DatabaseConfig {
         properties.put(Environment.JAKARTA_JDBC_USER, dbUser);
         properties.put(Environment.JAKARTA_JDBC_PASSWORD, dbPass);
         properties.put(Environment.JAKARTA_JDBC_DRIVER, "org.postgresql.Driver");
-        properties.put(Environment.DIALECT, "org.hibernate.spatial.dialect.postgis.PostgisDialect");
+        properties.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
 
         // HikariCP settings (fast connection check)
         properties.put("hibernate.hikari.minimumIdle", "1");

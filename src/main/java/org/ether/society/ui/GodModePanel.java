@@ -34,7 +34,8 @@ public class GodModePanel extends VBox {
         String nameI18nKey,
         String descI18nKey,
         int defaultDurationDays,
-        double defaultMagnitude
+        double defaultMagnitude,
+        boolean isLeader
     ) {
         public String getDisplayName() {
             return I18n.getOrDefault(typeI18nKey, id);
@@ -55,33 +56,34 @@ public class GodModePanel extends VBox {
     }
 
     private static final List<EventTypeItem> EVENT_TYPES = List.of(
-        new EventTypeItem("FLOOD", "godmode.type.flood", "godmode.event.flood", "godmode.event.flood.desc", 30, 6.0),
-        new EventTypeItem("DROUGHT", "godmode.type.drought", "godmode.event.drought", "godmode.event.drought.desc", 180, 5.5),
-        new EventTypeItem("VOLCANO", "godmode.type.volcano", "godmode.event.volcano", "godmode.event.volcano.desc", 365, 7.0),
-        new EventTypeItem("NUCLEAR_STRIKE", "godmode.type.nuclear_strike", "godmode.event.nuclear_strike", "godmode.event.nuclear_strike.desc", 0, 7.5),
-        new EventTypeItem("HEATWAVE", "godmode.type.heatwave", "godmode.event.heatwave", "godmode.event.heatwave.desc", 30, 5.0),
-        new EventTypeItem("SOLAR_EMP", "godmode.type.solar_emp", "godmode.event.solar_emp", "godmode.event.solar_emp.desc", 30, 8.5),
-        new EventTypeItem("PANDEMIC", "godmode.type.pandemic", "godmode.event.pandemic", "godmode.event.pandemic.desc", 730, 8.0),
-        new EventTypeItem("METEOR", "godmode.type.meteor", "godmode.event.meteor", "godmode.event.meteor.desc", 7, 9.0),
-        new EventTypeItem("NUCLEAR_WINTER", "godmode.type.nuclear_winter", "godmode.event.nuclear_winter", "godmode.event.nuclear_winter.desc", 3650, 7.5),
-        new EventTypeItem("FAMINE", "godmode.type.famine", "godmode.event.famine", "godmode.event.famine.desc", 180, 6.0),
-        new EventTypeItem("TSUNAMI", "godmode.type.tsunami", "godmode.event.tsunami", "godmode.event.tsunami.desc", 1, 8.5),
-        new EventTypeItem("EARTHQUAKE", "godmode.type.earthquake", "godmode.event.earthquake", "godmode.event.earthquake.desc", 3, 8.0),
-        new EventTypeItem("ICE_AGE", "godmode.type.ice_age", "godmode.event.ice_age", "godmode.event.ice_age.desc", 18250, 5.0),
-        new EventTypeItem("CYBER_ATTACK", "godmode.type.cyber_attack", "godmode.event.cyber_attack", "godmode.event.cyber_attack.desc", 14, 6.5),
-        new EventTypeItem("ECONOMIC_CRASH", "godmode.type.economic_crash", "godmode.event.economic_crash", "godmode.event.economic_crash.desc", 365, 7.0),
-        new EventTypeItem("BIODIVERSITY_COLLAPSE", "godmode.type.biodiversity_collapse", "godmode.event.biodiversity_collapse", "godmode.event.biodiversity_collapse.desc", 3650, 6.0),
-        new EventTypeItem("GEOENGINEERING", "godmode.type.geoengineering", "godmode.event.geoengineering", "godmode.event.geoengineering.desc", 730, 4.0),
-        new EventTypeItem("RENAISSANCE_BOOM", "godmode.type.renaissance_boom", "godmode.event.renaissance_boom", "godmode.event.renaissance_boom.desc", 7300, 8.0),
-        new EventTypeItem("TECH_SINGULARITY", "godmode.type.tech_singularity", "godmode.event.tech_singularity", "godmode.event.tech_singularity.desc", 3650, 9.5),
-        new EventTypeItem("ALIEN_CONTACT", "godmode.type.alien_contact", "godmode.event.alien_contact", "godmode.event.alien_contact.desc", 1825, 10.0),
-        // Historical Contingency Leaders & Reformers
-        new EventTypeItem("LEADER_MILITARY_CONQUEROR", "leader.archetype.military_conqueror", "leader.archetype.military_conqueror", "leader.archetype.military_conqueror.desc", 7300, 8.0),
-        new EventTypeItem("LEADER_INFRASTRUCTURE_BUILDER", "leader.archetype.infrastructure_builder", "leader.archetype.infrastructure_builder", "leader.archetype.infrastructure_builder.desc", 10950, 7.5),
-        new EventTypeItem("LEADER_INSTITUTIONAL_REFORMER", "leader.archetype.institutional_reformer", "leader.archetype.institutional_reformer", "leader.archetype.institutional_reformer.desc", 9125, 7.0),
-        new EventTypeItem("LEADER_HYDRAULIC_AGRARIAN_INNOVATOR", "leader.archetype.hydraulic_agrarian_innovator", "leader.archetype.hydraulic_agrarian_innovator", "leader.archetype.hydraulic_agrarian_innovator.desc", 12775, 7.5),
-        new EventTypeItem("LEADER_MORAL_RELIGIOUS_SAGE", "leader.archetype.moral_religious_sage", "leader.archetype.moral_religious_sage", "leader.archetype.moral_religious_sage.desc", 14600, 8.0),
-        new EventTypeItem("LEADER_TOTALITARIAN_PURGER", "leader.archetype.totalitarian_purger", "leader.archetype.totalitarian_purger", "leader.archetype.totalitarian_purger.desc", 5475, 8.5)
+        // Catégorie 1 : Événements Géophysiques & Catastrophes Naturelles
+        new EventTypeItem("FLOOD", "godmode.type.flood", "godmode.event.flood", "godmode.event.flood.desc", 30, 6.0, false),
+        new EventTypeItem("DROUGHT", "godmode.type.drought", "godmode.event.drought", "godmode.event.drought.desc", 180, 5.5, false),
+        new EventTypeItem("VOLCANO", "godmode.type.volcano", "godmode.event.volcano", "godmode.event.volcano.desc", 365, 7.0, false),
+        new EventTypeItem("TSUNAMI", "godmode.type.tsunami", "godmode.event.tsunami", "godmode.event.tsunami.desc", 1, 8.5, false),
+        new EventTypeItem("EARTHQUAKE", "godmode.type.earthquake", "godmode.event.earthquake", "godmode.event.earthquake.desc", 3, 8.0, false),
+        new EventTypeItem("METEOR", "godmode.type.meteor", "godmode.event.meteor", "godmode.event.meteor.desc", 7, 9.0, false),
+        new EventTypeItem("HEATWAVE", "godmode.type.heatwave", "godmode.event.heatwave", "godmode.event.heatwave.desc", 30, 5.0, false),
+        new EventTypeItem("ICE_AGE", "godmode.type.ice_age", "godmode.event.ice_age", "godmode.event.ice_age.desc", 18250, 5.0, false),
+        new EventTypeItem("FAMINE", "godmode.type.famine", "godmode.event.famine", "godmode.event.famine.desc", 180, 6.0, false),
+        new EventTypeItem("PANDEMIC", "godmode.type.pandemic", "godmode.event.pandemic", "godmode.event.pandemic.desc", 730, 8.0, false),
+        new EventTypeItem("BIODIVERSITY_COLLAPSE", "godmode.type.biodiversity_collapse", "godmode.event.biodiversity_collapse", "godmode.event.biodiversity_collapse.desc", 3650, 6.0, false),
+        new EventTypeItem("SOLAR_EMP", "godmode.type.solar_emp", "godmode.event.solar_emp", "godmode.event.solar_emp.desc", 30, 8.5, false),
+        new EventTypeItem("NUCLEAR_STRIKE", "godmode.type.nuclear_strike", "godmode.event.nuclear_strike", "godmode.event.nuclear_strike.desc", 0, 7.5, false),
+        new EventTypeItem("NUCLEAR_WINTER", "godmode.type.nuclear_winter", "godmode.event.nuclear_winter", "godmode.event.nuclear_winter.desc", 3650, 7.5, false),
+        new EventTypeItem("CYBER_ATTACK", "godmode.type.cyber_attack", "godmode.event.cyber_attack", "godmode.event.cyber_attack.desc", 14, 6.5, false),
+        new EventTypeItem("ECONOMIC_CRASH", "godmode.type.economic_crash", "godmode.event.economic_crash", "godmode.event.economic_crash.desc", 365, 7.0, false),
+        new EventTypeItem("GEOENGINEERING", "godmode.type.geoengineering", "godmode.event.geoengineering", "godmode.event.geoengineering.desc", 730, 4.0, false),
+        new EventTypeItem("RENAISSANCE_BOOM", "godmode.type.renaissance_boom", "godmode.event.renaissance_boom", "godmode.event.renaissance_boom.desc", 7300, 8.0, false),
+        new EventTypeItem("TECH_SINGULARITY", "godmode.type.tech_singularity", "godmode.event.tech_singularity", "godmode.event.tech_singularity.desc", 3650, 9.5, false),
+        new EventTypeItem("ALIEN_CONTACT", "godmode.type.alien_contact", "godmode.event.alien_contact", "godmode.event.alien_contact.desc", 1825, 10.0, false),
+        // Catégorie 2 : Personnages Historiques & Figures d'Impact (6 Archétypes)
+        new EventTypeItem("LEADER_MILITARY_CONQUEROR", "leader.archetype.military_conqueror", "leader.archetype.military_conqueror", "leader.archetype.military_conqueror.desc", 7300, 8.0, true),
+        new EventTypeItem("LEADER_INFRASTRUCTURE_BUILDER", "leader.archetype.infrastructure_builder", "leader.archetype.infrastructure_builder", "leader.archetype.infrastructure_builder.desc", 10950, 7.5, true),
+        new EventTypeItem("LEADER_INSTITUTIONAL_REFORMER", "leader.archetype.institutional_reformer", "leader.archetype.institutional_reformer", "leader.archetype.institutional_reformer.desc", 9125, 7.0, true),
+        new EventTypeItem("LEADER_HYDRAULIC_AGRARIAN_INNOVATOR", "leader.archetype.hydraulic_agrarian_innovator", "leader.archetype.hydraulic_agrarian_innovator", "leader.archetype.hydraulic_agrarian_innovator.desc", 12775, 7.5, true),
+        new EventTypeItem("LEADER_MORAL_RELIGIOUS_SAGE", "leader.archetype.moral_religious_sage", "leader.archetype.moral_religious_sage", "leader.archetype.moral_religious_sage.desc", 14600, 8.0, true),
+        new EventTypeItem("LEADER_TOTALITARIAN_PURGER", "leader.archetype.totalitarian_purger", "leader.archetype.totalitarian_purger", "leader.archetype.totalitarian_purger.desc", 5475, 8.5, true)
     );
 
     private final H3SimulationEngine engine;
@@ -106,6 +108,7 @@ public class GodModePanel extends VBox {
     private final Spinner<Double> lngSpinner;
     private final Spinner<Double> magnitudeSpinner;
     private final Spinner<Integer> durationDaysSpinner;
+    private final Spinner<Double> radiusKmSpinner;
 
     // Injector section labels & buttons
     private final Label injectorTitleLabel;
@@ -116,6 +119,7 @@ public class GodModePanel extends VBox {
     private final Label lblLng;
     private final Label lblMag;
     private final Label lblDurationDays;
+    private final Label lblRadius;
     private final Button scheduleBtn;
     private final Button triggerNowBtn;
 
@@ -178,14 +182,26 @@ public class GodModePanel extends VBox {
             @Override
             protected void updateItem(EventTypeItem item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? null : item.getDisplayName());
+                if (empty || item == null) {
+                    setText(null);
+                    setTooltip(null);
+                } else {
+                    setText(item.getDisplayName());
+                    setTooltip(new Tooltip(item.getDescription()));
+                }
             }
         });
         eventTypeCombo.setButtonCell(new ListCell<>() {
             @Override
             protected void updateItem(EventTypeItem item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? null : item.getDisplayName());
+                if (empty || item == null) {
+                    setText(null);
+                    setTooltip(null);
+                } else {
+                    setText(item.getDisplayName());
+                    setTooltip(new Tooltip(item.getDescription()));
+                }
             }
         });
 
@@ -250,6 +266,11 @@ public class GodModePanel extends VBox {
         durationDaysSpinner.setPrefWidth(95);
         durationDaysSpinner.setMaxWidth(110);
 
+        radiusKmSpinner = new Spinner<>(50.0, 5000.0, 1000.0, 50.0);
+        radiusKmSpinner.setEditable(true);
+        radiusKmSpinner.setPrefWidth(95);
+        radiusKmSpinner.setMaxWidth(110);
+
         // Update defaults when event type selection changes
         eventTypeCombo.valueProperty().addListener((obs, oldV, newV) -> {
             if (newV == null) return;
@@ -275,6 +296,7 @@ public class GodModePanel extends VBox {
         lblLng = createLabel();
         lblMag = createLabel();
         lblDurationDays = createLabel();
+        lblRadius = createLabel();
 
         scheduleBtn = new Button();
         scheduleBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 7 12; -fx-background-radius: 6;");
@@ -297,9 +319,9 @@ public class GodModePanel extends VBox {
         injectPopBtn.setStyle("-fx-background-color: #059669; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 10; -fx-background-radius: 4;");
         injectPopBtn.setMaxWidth(Double.MAX_VALUE);
         injectPopBtn.setOnAction(e -> {
+            double targetLat = latSpinner.getValue();
+            double targetLng = lngSpinner.getValue();
             if (engine != null && engine.getCells() != null) {
-                double targetLat = latSpinner.getValue();
-                double targetLng = lngSpinner.getValue();
                 H3Cell nearest = null;
                 double minDist = Double.MAX_VALUE;
                 for (H3Cell c : engine.getCells()) {
@@ -311,13 +333,19 @@ public class GodModePanel extends VBox {
                 }
                 if (nearest != null) {
                     nearest.setPopulation(nearest.getPopulation() + 100_000);
+                    targetLat = nearest.getLatitude();
+                    targetLng = nearest.getLongitude();
                     if (engine.getWorldBuffer() != null) {
                         org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
                     }
                 }
             }
-            recordIntervention("POP_INJECT", I18n.getOrDefault("godmode.spawner.pop_title", "Demographic Injection"),
-                    I18n.getOrDefault("godmode.spawner.pop_details", "Addition of +100,000 inhabitants at coordinates (Lat: ") + latSpinner.getValue() + ", Lng: " + lngSpinner.getValue() + ")");
+            recordIntervention(
+                "POP_INJECT",
+                I18n.getOrDefault("godmode.spawner.pop_title", "👥 Injection Démographique (+100k hab)"),
+                String.format(Locale.ROOT, "Ajout de +100 000 habitants à l'épicentre (Lat: %.2f°, Lng: %.2f°)", targetLat, targetLng),
+                targetLat, targetLng, 100000.0, 365
+            );
         });
 
         injectFoodBtn = new Button();
@@ -332,8 +360,12 @@ public class GodModePanel extends VBox {
                     org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
                 }
             }
-            recordIntervention("FOOD_INJECT", I18n.getOrDefault("godmode.spawner.food_title", "Injection Alimentaire"),
-                    I18n.getOrDefault("godmode.spawner.food_details", "Refilling global grain stocks (+12 months)"));
+            recordIntervention(
+                "FOOD_INJECT",
+                I18n.getOrDefault("godmode.spawner.food_title", "🌾 Ravitaillement Alimentaire Mondial (+1000 t)"),
+                I18n.getOrDefault("godmode.spawner.food_details", "Remplissage des silos céréaliers et réserves vivrières mondiales"),
+                0.0, 0.0, 1000.0, 365
+            );
         });
 
         massExtinctionBtn = new Button();
@@ -354,8 +386,12 @@ public class GodModePanel extends VBox {
                             org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
                         }
                     }
-                    recordIntervention("MASS_EXTINCTION", I18n.getOrDefault("godmode.spawner.extinction_title", "Extinction Cataclysmique"),
-                            I18n.getOrDefault("godmode.spawner.extinction_details", "Immediate 50% reduction in global human biomass"));
+                    recordIntervention(
+                        "MASS_EXTINCTION",
+                        I18n.getOrDefault("godmode.spawner.extinction_title", "💀 Extinction Cataclysmique (-50% Pop)"),
+                        I18n.getOrDefault("godmode.spawner.extinction_details", "Réduction instantanée de 50% de la biomasse humaine mondiale"),
+                        0.0, 0.0, 50.0, 365
+                    );
                 }
             });
         });
@@ -391,17 +427,61 @@ public class GodModePanel extends VBox {
             }
 
             if (nearest != null) {
+                String brushType;
+                String brushTitle;
+                String brushDesc;
+                double brushMag;
+
                 switch (selectedIdx) {
-                    case 0 -> nearest.setPopulation(nearest.getPopulation() + 50000);
-                    case 1 -> nearest.setFoodResource((nearest.getFoodResource() != null ? nearest.getFoodResource() : 0.0) + 500.0);
-                    case 2 -> nearest.setFreshwaterAquifer((nearest.getFreshwaterAquifer() != null ? nearest.getFreshwaterAquifer() : 0.0) + 2000.0);
-                    case 3 -> nearest.setTemperature((nearest.getTemperature() != null ? nearest.getTemperature() : 15.0) + 10.0);
-                    case 4 -> nearest.setTemperature((nearest.getTemperature() != null ? nearest.getTemperature() : 15.0) - 10.0);
-                    case 5 -> nearest.setPollutionLevel(0.0);
+                    case 0 -> {
+                        nearest.setPopulation(nearest.getPopulation() + 50000);
+                        brushType = "POP_BOOST";
+                        brushTitle = I18n.getOrDefault("godmode.brush.pop", "👥 Boost Population (+50 000 hab)");
+                        brushDesc = String.format(Locale.ROOT, "Ajout de +50 000 habitants à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
+                        brushMag = 50000.0;
+                    }
+                    case 1 -> {
+                        nearest.setFoodResource((nearest.getFoodResource() != null ? nearest.getFoodResource() : 0.0) + 500.0);
+                        brushType = "AGRI_BOOST";
+                        brushTitle = I18n.getOrDefault("godmode.brush.agri", "🌾 Injection Agricole & Silos (+500 t)");
+                        brushDesc = String.format(Locale.ROOT, "Apport de +500 t de céréales à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
+                        brushMag = 500.0;
+                    }
+                    case 2 -> {
+                        nearest.setFreshwaterAquifer((nearest.getFreshwaterAquifer() != null ? nearest.getFreshwaterAquifer() : 0.0) + 2000.0);
+                        brushType = "WATER_RECHARGE";
+                        brushTitle = I18n.getOrDefault("godmode.brush.water", "🚰 Recharge Aquifère (+2 000 m³)");
+                        brushDesc = String.format(Locale.ROOT, "Recharge de nappe phréatique (+2 000 m³) à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
+                        brushMag = 2000.0;
+                    }
+                    case 3 -> {
+                        nearest.setTemperature((nearest.getTemperature() != null ? nearest.getTemperature() : 15.0) + 10.0);
+                        brushType = "HEAT_INJECTION";
+                        brushTitle = I18n.getOrDefault("godmode.brush.heat", "🔥 Vague de Chaleur Locale (+10,0°C)");
+                        brushDesc = String.format(Locale.ROOT, "Hausse thermique locale (+10.0°C) à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
+                        brushMag = 10.0;
+                    }
+                    case 4 -> {
+                        nearest.setTemperature((nearest.getTemperature() != null ? nearest.getTemperature() : 15.0) - 10.0);
+                        brushType = "COLD_INJECTION";
+                        brushTitle = I18n.getOrDefault("godmode.brush.cold", "❄️ Refroidissement Local (-10,0°C)");
+                        brushDesc = String.format(Locale.ROOT, "Refroidissement local (-10.0°C) à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
+                        brushMag = 10.0;
+                    }
+                    default -> {
+                        nearest.setPollutionLevel(0.0);
+                        brushType = "CLEAN_ECO";
+                        brushTitle = I18n.getOrDefault("godmode.brush.clean", "🧼 Nettoyage Écologique Intégral");
+                        brushDesc = String.format(Locale.ROOT, "Dépollution intégrale à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
+                        brushMag = 1.0;
+                    }
                 }
 
-                recordIntervention("TERRAFORM_BRUSH", I18n.getOrDefault("godmode.brush.title", "Pinceau Spatial"),
-                        I18n.getOrDefault("godmode.brush.details", "Brush action applied on mesh Lat ") + String.format(Locale.ROOT, "%.2f", nearest.getLatitude()) + "°, Lng " + String.format(Locale.ROOT, "%.2f", nearest.getLongitude()) + "°");
+                if (engine.getWorldBuffer() != null) {
+                    org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
+                }
+
+                recordIntervention(brushType, brushTitle, brushDesc, nearest.getLatitude(), nearest.getLongitude(), brushMag, 365);
             }
         });
 
@@ -549,7 +629,8 @@ public class GodModePanel extends VBox {
         lblLat.setText(I18n.getOrDefault("godmode.label.lat", "Latitude (-90 à +90°) :"));
         lblLng.setText(I18n.getOrDefault("godmode.label.lng", "Longitude (-180 à +180°) :"));
         lblMag.setText(I18n.getOrDefault("godmode.label.magnitude", "Intensité / Magnitude :"));
-        lblDurationDays.setText(I18n.getOrDefault("godmode.label.duration_days", "Durée (en jours) :"));
+        lblRadius.setText(I18n.getOrDefault("godmode.label.radius", "Rayon d'action (km) :"));
+        radiusKmSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.radius", "Rayon géographique d'impact ou d'influence de l'événement (en km).")));
 
         scheduleBtn.setText(I18n.getOrDefault("godmode.btn.schedule", "📅 Programmer dans la Chronologie"));
         scheduleBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.schedule", "Planifie l'événement dans le calendrier du scénario pour un déclenchement automatique.")));
@@ -634,7 +715,8 @@ public class GodModePanel extends VBox {
         grid.addRow(4, lblLat, latSpinner);
         grid.addRow(5, lblLng, lngSpinner);
         grid.addRow(6, lblMag, magnitudeSpinner);
-        grid.addRow(7, lblDurationDays, durationDaysSpinner);
+        grid.addRow(7, lblRadius, radiusKmSpinner);
+        grid.addRow(8, lblDurationDays, durationDaysSpinner);
 
         HBox btnBox = new HBox(8, scheduleBtn, triggerNowBtn);
         HBox.setHgrow(scheduleBtn, Priority.ALWAYS);
@@ -715,12 +797,12 @@ public class GodModePanel extends VBox {
         int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
         int currentMonth = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() : 0;
         int currentDay = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentDay() : 1;
-        long currentTicks = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getTotalTicks() : 0;
         int targetYear = immediate ? currentYear : targetYearSpinner.getValue();
 
         double lat = latSpinner.getValue();
         double lng = lngSpinner.getValue();
         double mag = magnitudeSpinner.getValue();
+        double radiusKm = radiusKmSpinner != null ? radiusKmSpinner.getValue() : 1000.0;
         int durationDays = durationDaysSpinner.getValue();
 
         // Biome and spatial compatibility validation
@@ -755,14 +837,7 @@ public class GodModePanel extends VBox {
         }
 
         String daysUnit = durationDays > 1 ? "jours" : "jour";
-        String details = String.format(Locale.ROOT, "Lat: %.2f°, Lng: %.2f°, Mag: %.1f, Durée: %d %s", lat, lng, mag, durationDays, daysUnit);
-
-        if (immediate || targetYear <= currentYear) {
-            if (engine != null && engine.getHistoryManager() != null) {
-                engine.getHistoryManager().truncateAfter(currentYear, currentMonth, currentTicks);
-            }
-            timeline.truncateAfter(currentYear);
-        }
+        String details = String.format(Locale.ROOT, "Lat: %.2f°, Lng: %.2f°, Mag: %.1f, R: %.0fkm, Durée: %d %s", lat, lng, mag, radiusKm, durationDays, daysUnit);
 
         timeline.addEntry(targetYear, type, name, details, true, lat, lng, mag, durationDays);
         refreshTimelineView();
@@ -777,7 +852,7 @@ public class GodModePanel extends VBox {
         }
 
         if (immediate || targetYear <= currentYear) {
-            executePhysicalForcing(type, mag, lat, lng);
+            executePhysicalForcing(type, mag, lat, lng, radiusKm);
             if (engine != null && engine.getWorldBuffer() != null && engine.getCells() != null) {
                 org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
                 if (engine.getHistoryManager() != null) {
@@ -794,7 +869,7 @@ public class GodModePanel extends VBox {
         }
     }
 
-    private void executePhysicalForcing(String type, double mag, double lat, double lng) {
+    private void executePhysicalForcing(String type, double mag, double lat, double lng, double radiusKm) {
         if (type == null) return;
         switch (type) {
             case "VOLCANO" -> NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(mag);
@@ -909,10 +984,10 @@ public class GodModePanel extends VBox {
                 org.ether.society.events.HistoricalIntervention hi = new org.ether.society.events.HistoricalIntervention(
                     "GM_LEADER_" + System.currentTimeMillis(),
                     arch.getDisplayName() + " (God Mode)",
-                    "Intervention divine d'une figure majeure.",
+                    "Intervention divine d'une figure majeure sous mandat divin.",
                     currentYear,
                     arch.getDefaultDurationYears(),
-                    lat, lng, 1000.0, arch, mag
+                    lat, lng, radiusKm, arch, mag
                 );
                 if (engine != null && engine.getEventSystem() != null) {
                     engine.getEventSystem().injectCustomIntervention(hi);
@@ -922,26 +997,26 @@ public class GodModePanel extends VBox {
     }
 
     public void recordIntervention(String type, String title, String details) {
-        int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
-        int currentMonth = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() : 0;
-        int currentDay = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentDay() : 1;
-        long currentTicks = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getTotalTicks() : 0;
-
-        if (engine != null && engine.getHistoryManager() != null) {
-            engine.getHistoryManager().truncateAfter(currentYear, currentMonth, currentTicks);
-            if (engine.getWorldBuffer() != null && engine.getCells() != null) {
-                org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
-            }
-            engine.getHistoryManager().captureSnapshot(engine);
-            engine.getHistoryManager().captureWorldSnapshot(engine);
-        }
-
         double lat = latSpinner != null ? latSpinner.getValue() : 0.0;
         double lng = lngSpinner != null ? lngSpinner.getValue() : 0.0;
         double mag = magnitudeSpinner != null ? magnitudeSpinner.getValue() : 5.0;
         int durationDays = durationDaysSpinner != null ? durationDaysSpinner.getValue() : 30;
+        recordIntervention(type, title, details, lat, lng, mag, durationDays);
+    }
 
-        timeline.truncateAfter(currentYear);
+    public void recordIntervention(String type, String title, String details, double lat, double lng, double mag, int durationDays) {
+        int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
+        int currentMonth = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() : 0;
+        int currentDay = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentDay() : 1;
+
+        if (engine != null && engine.getWorldBuffer() != null && engine.getCells() != null) {
+            org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
+        }
+        if (engine != null && engine.getHistoryManager() != null) {
+            engine.getHistoryManager().captureSnapshot(engine);
+            engine.getHistoryManager().captureWorldSnapshot(engine);
+        }
+
         timeline.addEntry(currentYear, type, title, details, true, lat, lng, mag, durationDays);
         refreshTimelineView();
 
@@ -949,7 +1024,7 @@ public class GodModePanel extends VBox {
             org.ether.society.events.ActiveEvent ae = new org.ether.society.events.ActiveEvent(
                 "GM_" + System.currentTimeMillis(),
                 "⚡ GOD MODE: " + title,
-                "GOD_MODE", lat, lng, currentYear, currentMonth, currentDay, Math.max(15.0, durationDays * 0.5), mag, durationDays
+                type, lat, lng, currentYear, currentMonth, currentDay, Math.max(15.0, durationDays * 0.5), mag, durationDays
             );
             engine.getEventSystem().recordSpatialEvent(ae);
         }

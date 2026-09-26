@@ -92,6 +92,9 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         public String getRunId() { return runId; }
         public void setRunId(String runId) { this.runId = runId; }
         public String getStatusDisplay() { 
+            if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
+                return I18n.getOrDefault("analytics.status.ground_truth_ready", "🟢 Historical Ground Truth (HYDE / Maddison / Seshat)");
+            }
             return executed 
                 ? String.format(I18n.getOrDefault("analytics.status.executed", "🟢 Executed (%s)"), runId) 
                 : I18n.getOrDefault("analytics.status.not_executed", "🔴 Not executed (Pending)"); 

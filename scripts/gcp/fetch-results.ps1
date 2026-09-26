@@ -19,8 +19,9 @@ if (-not (Test-Path $LocalSavesDir)) {
     New-Item -ItemType Directory -Path $LocalSavesDir -Force | Out-Null
 }
 
-Write-Host "Downloading saves from ether-master..."
-gcloud compute scp --recurse --zone=$Zone --project=$ProjectId --quiet ether-master:/opt/ether/saves/* "$LocalSavesDir/"
+Write-Host "Downloading saves and logs from ether-master..."
+gcloud compute scp --recurse --zone=$Zone --project=$ProjectId --quiet ether-master:/opt/ether/saves .
+gcloud compute scp --recurse --zone=$Zone --project=$ProjectId --quiet ether-master:/opt/ether/logs .
 
-Write-Host "Saves synchronized to local directory: $LocalSavesDir"
+Write-Host "Saves and logs synchronized to local workspace."
 Write-Host "Launch Ether in local mode (run.bat or Ether_Windows.bat) to view the replay."

@@ -267,6 +267,7 @@ public class ScenarioSetupPanel extends BorderPane {
     // Labels for i18n
     private Label headerLabel;
     private Label title1;
+    private Label popHeader;
     private Label title3Events;
     private Label nameLabel;
     private Label startYearLabel;
@@ -997,7 +998,7 @@ public class ScenarioSetupPanel extends BorderPane {
         // --- 2. Demographics & Density Map Management (RadioButtons) ---
         VBox popSection = new VBox(10);
         popSection.getStyleClass().add("card-section");
-        Label popHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "👥 2. INITIAL POPULATION IDENTITY CARD"));
+        popHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "👥 2. INITIAL POPULATION IDENTITY CARD"));
         popHeader.getStyleClass().add("label-section-header");
         popHeader.setId("__popHeader");
 
@@ -6407,6 +6408,8 @@ public class ScenarioSetupPanel extends BorderPane {
             "disaster_volcano",
             "disaster_earthquake",
             "disaster_tsunami",
+            "disaster_flood",
+            "disaster_drought",
             "disaster_pandemic",
             "disaster_famine",
             "disaster_heatwave",
@@ -6424,6 +6427,8 @@ public class ScenarioSetupPanel extends BorderPane {
             "milestone",
             "historical",
             "volcano",
+            "flood",
+            "drought",
             "nuclear_strike",
             "nuclear_winter",
             "earthquake",
@@ -6461,15 +6466,37 @@ public class ScenarioSetupPanel extends BorderPane {
         colYear.setOnEditCommit(e -> e.getRowValue().setYear(e.getNewValue()));
         colYear.setPrefWidth(65);
 
+        javafx.util.StringConverter<Double> coordConverter = new javafx.util.StringConverter<Double>() {
+            @Override
+            public String toString(Double object) {
+                if (object == null || Math.abs(object) < 1e-6) {
+                    return "—";
+                }
+                return String.format(java.util.Locale.US, "%.1f", object);
+            }
+
+            @Override
+            public Double fromString(String string) {
+                if (string == null || string.trim().isEmpty() || "—".equals(string.trim()) || "-".equals(string.trim())) {
+                    return 0.0;
+                }
+                try {
+                    return Double.parseDouble(string.trim());
+                } catch (NumberFormatException e) {
+                    return 0.0;
+                }
+            }
+        };
+
         colLat = new TableColumn<>();
         colLat.setCellValueFactory(d -> d.getValue().latitudeProperty().asObject());
-        colLat.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.DoubleStringConverter()));
+        colLat.setCellFactory(TextFieldTableCell.forTableColumn(coordConverter));
         colLat.setOnEditCommit(e -> e.getRowValue().setLatitude(e.getNewValue()));
         colLat.setPrefWidth(55);
 
         colLon = new TableColumn<>();
         colLon.setCellValueFactory(d -> d.getValue().longitudeProperty().asObject());
-        colLon.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.DoubleStringConverter()));
+        colLon.setCellFactory(TextFieldTableCell.forTableColumn(coordConverter));
         colLon.setOnEditCommit(e -> e.getRowValue().setLongitude(e.getNewValue()));
         colLon.setPrefWidth(55);
 
@@ -6494,7 +6521,7 @@ public class ScenarioSetupPanel extends BorderPane {
         addEventBtn.getStyleClass().add("button-secondary");
         addEventBtn.setMinWidth(Region.USE_PREF_SIZE);
         addEventBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events.add", "➕ Add new event (choose among milestone_* or disaster_* types).")));
-        addEventBtn.setOnAction(e -> eventsList.add(new ClimateEvent("milestone_archaeology", "Nouvel Événement / Repère", 2026, 0.0, 0.0, 0.0, 5.0)));
+        addEventBtn.setOnAction(e -> eventsList.add(new ClimateEvent("milestone_archaeology", org.ether.society.i18n.I18n.getOrDefault("scenario.event.default_name", "New Event"), 2026, 0.0, 0.0, 0.0, 5.0)));
 
         removeEventBtn = new Button();
         removeEventBtn.getStyleClass().add("button-secondary");
@@ -6832,8 +6859,8 @@ public class ScenarioSetupPanel extends BorderPane {
                 cols[4].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.depth", "Profondeur (km)"));
                 cols[5].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.magnitude", "Magnitude"));
             }
-            if (getLeft() instanceof ScrollPane sp && sp.getContent() instanceof VBox root) {
-                root.lookupAll("#__popHeader").forEach(n -> { if (n instanceof Label l) l.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "👥 2. INITIAL POPULATION IDENTITY CARD")); });
+            if (popHeader != null) {
+                popHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "👥 2. INITIAL POPULATION IDENTITY CARD"));
             }
             if (engineSortLabel != null) {
                 engineSortLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.sort.label", "🔀 Engine Sorting:"));

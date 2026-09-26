@@ -224,6 +224,20 @@ public class ResourceDistributionPanel extends BorderPane {
     private Label climateSummaryLabel;
     private Label climateDomainSecHeader;
     private Label geologyDomainSecHeader;
+    private Label sec41Header;
+    private Label sec42Header;
+    private Label geoSeedLabel;
+    private Button geologyHelpBtn;
+    private Button btnExportGisMultiFormat;
+    private Button btnExportProvenanceManifest;
+    private Button autoDeriveMasterBtn;
+    private Button exportBiomeBtn;
+    private Button exportHydroBtn;
+    private Button exportGeologyBtn;
+    private Label biomeSourcePromptLabel;
+    private Label hydroSourcePromptLabel;
+    private Label climateSourcePromptLabel;
+    private Label geologySourcePromptLabel;
     private Label ecoCompatibilityLabel;
     private VBox validationWarningBanner;
     private Label validationWarningLabel;
@@ -432,7 +446,7 @@ public class ResourceDistributionPanel extends BorderPane {
             }
         });
 
-        Button autoDeriveMasterBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_all", "⚡ Auto-derive All from Physics (Biomes, Aquifers & Geology)"));
+        autoDeriveMasterBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_all", "⚡ Auto-derive All from Physics (Biomes, Aquifers & Geology)"));
         autoDeriveMasterBtn.getStyleClass().addAll("button-secondary", "button-accent-blue");
         autoDeriveMasterBtn.setMaxWidth(Double.MAX_VALUE);
         autoDeriveMasterBtn.setOnAction(e -> {
@@ -857,7 +871,7 @@ public class ResourceDistributionPanel extends BorderPane {
         HBox.setHgrow(biomeSeedField, Priority.ALWAYS);
         seedField = biomeSeedField; // EcologyPreset compat
 
-        Button exportBiomeBtn = new Button(I18n.getOrDefault("resource.btn.export_biome", "📤 Export Biome Map (PNG / JPEG)"));
+        exportBiomeBtn = new Button(I18n.getOrDefault("resource.btn.export_biome", "📤 Export Biome Map (PNG / JPEG)"));
         exportBiomeBtn.setMaxWidth(Double.MAX_VALUE);
         exportBiomeBtn.getStyleClass().add("button-secondary");
         exportBiomeBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_biome", "Export the active biome map as high-resolution raster (PNG / JPEG).")));
@@ -899,9 +913,10 @@ public class ResourceDistributionPanel extends BorderPane {
             }
         });
 
+        biomeSourcePromptLabel = new Label(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
         VBox biomeImportBox = new VBox(8,
-                createControlRow(new Label(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:")), biomeSourceCombo,
-                        "Sélectionner une source satellite prédéfinie"),
+                createControlRow(biomeSourcePromptLabel, biomeSourceCombo,
+                        I18n.getOrDefault("resource.desc.import_biome_map", "Select a preset satellite source")),
                 createControlRow(biomeMapRowLabel, new VBox(3, biomeBox, biomeFileLabel, biomeFormatHintLabel), I18n.getOrDefault("resource.desc.import_biome_map", "Import a biome map in PNG/JPEG format"))
         );
         biomeImportBox.getStyleClass().add("subcard-import-box");
@@ -963,7 +978,7 @@ public class ResourceDistributionPanel extends BorderPane {
         hydroStatusLabel.getStyleClass().add("subcard-status-label");
         hydroStatusLabel.setWrapText(true);
 
-        Button exportHydroBtn = new Button(I18n.getOrDefault("resource.btn.export_hydro", "📤 Export Hydrography Map (PNG / JPEG)"));
+        exportHydroBtn = new Button(I18n.getOrDefault("resource.btn.export_hydro", "📤 Export Hydrography Map (PNG / JPEG)"));
         exportHydroBtn.setMaxWidth(Double.MAX_VALUE);
         exportHydroBtn.getStyleClass().add("button-secondary");
         exportHydroBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_hydro", "Export the active hydrographic map as high-resolution raster (PNG / JPEG).")));
@@ -971,7 +986,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
         VBox hydroProcBox = new VBox(8,
                 createControlRow(new Label(I18n.getOrDefault("resource.seed.label", "Generation Seed:")), hydroSeedBox,
-                        "Graine aléatoire pour la génération procédurale des cours d'eau"),
+                        I18n.getOrDefault("resource.tooltip.seed_hydro", "Random seed for procedural rivers and watercourses")),
                 autoDeriveHydroBtn,
                 hydroStatusLabel,
                 createControlRow(freshwaterAquiferRowLabel, freshwaterAquiferSlider, "%.0f x10³ km³", I18n.getOrDefault("resource.desc.freshwater_aquifer", "Total volume of groundwater and continental aquifers")),
@@ -997,9 +1012,10 @@ public class ResourceDistributionPanel extends BorderPane {
             }
         });
 
+        hydroSourcePromptLabel = new Label(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
         VBox hydroImportBox = new VBox(8,
-                createControlRow(new Label(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:")), hydroSourceCombo,
-                        "Source satellite pour la carte hydrographique"),
+                createControlRow(hydroSourcePromptLabel, hydroSourceCombo,
+                        I18n.getOrDefault("resource.desc.import_hydro_map", "Satellite source for hydrographic map")),
                 createControlRow(hydroMapRowLabel, new VBox(3, hydroBox, hydroFileLabel, hydroFormatHintLabel), I18n.getOrDefault("resource.desc.import_hydro_map", "Import a hydrographic map and river network"))
         );
         hydroImportBox.getStyleClass().add("subcard-import-box");
@@ -1058,7 +1074,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
         VBox climateProcBox = new VBox(8,
                 createControlRow(new Label(I18n.getOrDefault("resource.seed.label", "Generation Seed:")), climateSeedBox,
-                        "Graine aléatoire pour la variation procédurale du modèle climatique"),
+                        I18n.getOrDefault("resource.tooltip.seed_climate", "Random seed for procedural climate model")),
                 climateSummaryLabel
         );
         climateProcBox.getStyleClass().add("subcard-procedural-box");
@@ -1066,11 +1082,7 @@ public class ResourceDistributionPanel extends BorderPane {
         climateSourceCombo = new ComboBox<>();
         climateSourceCombo.getItems().addAll(
                 "none",
-                "🌍 Terre — ERA5 Reanalysis & MODIS / IMERG (Composite) [Global, -100 000 BP à +2100 AD]",
-                "🔴 Mars — MGS TES & Subsurface MARSIS (Composite) [Planétaire (Mars), -4.1 Ga à Actuel]",
-                "🟡 Vénus — Magellan Radar & VIRTIS Thermal Model [Planétaire (Vénus), -500 Ma à Actuel]",
-                "⚪ Lune — LRO Diviner & LCROSS Cold Traps [Planétaire (Lune), -4.5 Ga à Actuel]",
-                "⚪ Mercure — MESSENGER MLA & Polar Ice Model [Planétaire (Mercure), -4.0 Ga à Actuel]"
+                "earth", "mars", "venus", "moon", "mercury"
         );
         climateSourceCombo.setValue("none");
         org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
@@ -1085,9 +1097,10 @@ public class ResourceDistributionPanel extends BorderPane {
             }
         });
 
+        climateSourcePromptLabel = new Label(I18n.getOrDefault("planet.climate.source_label", "Reference Source:"));
         VBox climateImportBox = new VBox(8,
-                createControlRow(new Label(I18n.getOrDefault("planet.climate.source_label", "Reference Source:")), climateSourceCombo,
-                        "Reference climate data source"),
+                createControlRow(climateSourcePromptLabel, climateSourceCombo,
+                        I18n.getOrDefault("planet.tooltip.climate_map", "Reference climate data source")),
                 createControlRow(climateMapRowLabel, new VBox(3, climateBox, climateFileLabel), I18n.getOrDefault("planet.tooltip.climate_map", "Thermal or combined RGB map import")),
                 createControlRow(rainfallMapRowLabel, new VBox(3, rainfallBox, rainfallFileLabel), I18n.getOrDefault("planet.tooltip.rainfall_map", "Precipitation / humidity map import")),
                 createControlRow(seasonalityMapRowLabel, new VBox(3, seasonalityBox, seasonalityFileLabel), I18n.getOrDefault("planet.tooltip.seasonality_map", "Import a seasonal variance map")),
@@ -1141,7 +1154,7 @@ public class ResourceDistributionPanel extends BorderPane {
         HBox geologySeedBox = new HBox(5, geologySeedField, geologyRandBtn);
         HBox.setHgrow(geologySeedField, Priority.ALWAYS);
 
-        Button exportGeologyBtn = new Button(I18n.getOrDefault("resource.btn.export_geology", "📤 Export Geological Map (PNG + WorldFile)"));
+        exportGeologyBtn = new Button(I18n.getOrDefault("resource.btn.export_geology", "📤 Export Geological Map (PNG + WorldFile)"));
         exportGeologyBtn.setMaxWidth(Double.MAX_VALUE);
         exportGeologyBtn.getStyleClass().add("button-secondary");
         exportGeologyBtn.setOnAction(e -> exportMapsWithWorldFiles());
@@ -1157,7 +1170,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
         VBox geologyProcBox = new VBox(8,
                 createControlRow(new Label(I18n.getOrDefault("resource.seed.label", "Generation Seed:")), geologySeedBox,
-                        "Graine aléatoire pour la distribution des gisements et structures tectoniques"),
+                        I18n.getOrDefault("resource.tooltip.seed_geology", "Random seed for geological deposit distribution")),
                 autoDeriveGeologyBtn,
                 geologyStatusLabel,
                 createControlRow(seismicRowLabel, seismicActivitySlider, "%.1f Mag", I18n.getOrDefault("resource.desc.seismic_activity", "Planetary seismicity level generating earthquakes")),
@@ -1184,9 +1197,10 @@ public class ResourceDistributionPanel extends BorderPane {
             }
         });
 
+        geologySourcePromptLabel = new Label(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
         VBox geologyImportBox = new VBox(8,
-                createControlRow(new Label(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:")), geologySourceCombo,
-                        "Source satellite pour la carte géologique"),
+                createControlRow(geologySourcePromptLabel, geologySourceCombo,
+                        I18n.getOrDefault("resource.desc.import_geology_map", "Satellite source for geological map")),
                 createControlRow(resourceMapRowLabel, new VBox(3, resourceBox, resourceFileLabel, geologyFormatHintLabel), I18n.getOrDefault("resource.desc.import_geology_map", "Import a multi-channel geological & ore map"))
         );
         geologyImportBox.getStyleClass().add("subcard-import-box");
@@ -3310,6 +3324,30 @@ public class ResourceDistributionPanel extends BorderPane {
                 }
             }
 
+            if (sec41Header != null) sec41Header.setText(I18n.getOrDefault("resource.section.geology_4_1.title", "⚙️ 4.1 Global Control, Seed & Formats"));
+            if (sec42Header != null) sec42Header.setText(I18n.getOrDefault("resource.section.geology_4_2.title", "🗺️ 4.2 CANONICAL GEOLOGICAL & ENERGY TENSORS (10 Sub-Blocks)"));
+            if (geoSeedLabel != null) geoSeedLabel.setText(I18n.getOrDefault("resource.label.geology_seed", "Seed:"));
+            if (geologyHelpBtn != null) {
+                geologyHelpBtn.setText(I18n.getOrDefault("resource.btn.geology_format_help", "❓ Layer Formats"));
+                geologyHelpBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.geology_specs", "Specifications of image formats and geological standards (PNG, GeoTIFF, NetCDF, ASC, GeoJSON).")));
+            }
+            if (btnExportGisMultiFormat != null) {
+                btnExportGisMultiFormat.setText(I18n.getOrDefault("resource.btn.export_gis", "🗺️ Multi-Format GIS Export"));
+                btnExportGisMultiFormat.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_gis", "Export all 10 geological tensors in professional GIS formats (GeoTIFF, NetCDF-4, GeoJSON).")));
+            }
+            if (btnExportProvenanceManifest != null) {
+                btnExportProvenanceManifest.setText(I18n.getOrDefault("resource.btn.provenance_manifest", "🔒 SHA-256 Provenance Manifest"));
+                btnExportProvenanceManifest.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.gen_provenance", "Generate a cryptographic JSON manifest (provenance.json) containing SHA-256 hashes of geological datasets.")));
+            }
+            if (autoDeriveMasterBtn != null) autoDeriveMasterBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_all", "⚡ Auto-derive All from Physics (Biomes, Aquifers & Geology)"));
+            if (exportBiomeBtn != null) exportBiomeBtn.setText(I18n.getOrDefault("resource.btn.export_biome", "📤 Export Biome Map (PNG + WorldFile)"));
+            if (exportHydroBtn != null) exportHydroBtn.setText(I18n.getOrDefault("resource.btn.export_hydro", "📤 Export Hydrographic Map (PNG + WorldFile)"));
+            if (exportGeologyBtn != null) exportGeologyBtn.setText(I18n.getOrDefault("resource.btn.export_geology", "📤 Export Geological Map (PNG + WorldFile)"));
+            if (biomeSourcePromptLabel != null) biomeSourcePromptLabel.setText(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
+            if (hydroSourcePromptLabel != null) hydroSourcePromptLabel.setText(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
+            if (climateSourcePromptLabel != null) climateSourcePromptLabel.setText(I18n.getOrDefault("planet.climate.source_label", "Reference Source:"));
+            if (geologySourcePromptLabel != null) geologySourcePromptLabel.setText(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
+
             updateSummary();
             updatePlanetContextDisplay();
             updateLegend();
@@ -3943,7 +3981,7 @@ public class ResourceDistributionPanel extends BorderPane {
         geologyDomainSecHeader = new Label(I18n.getOrDefault("resource.domain.geology", "4. DOMAINE GÉOLOGIE, TECTONIQUE & MINERAIS"));
 
         // Section 4.1 : Contrôle Global, Graine & Formats
-        Label sec41Header = new Label(I18n.getOrDefault("resource.section.geology_4_1.title", "⚙️ 4.1 Contrôle Global, Graine & Formats"));
+        sec41Header = new Label(I18n.getOrDefault("resource.section.geology_4_1.title", "⚙️ 4.1 Contrôle Global, Graine & Formats"));
         sec41Header.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
         btnGenerateProceduralGeologyTensors = new Button(I18n.getOrDefault("resource.btn.regen_tensors", "🪄 Régénérer tous les tenseurs géologiques"));
@@ -3972,27 +4010,28 @@ public class ResourceDistributionPanel extends BorderPane {
             generateProceduralGeologyTensors();
         });
 
-        HBox geoSeedBox = new HBox(4, new Label(I18n.getOrDefault("resource.label.geology_seed", "Graine :")), new Label("🎲"), geologySeedInput, geoRandSeedBtn);
+        geoSeedLabel = new Label(I18n.getOrDefault("resource.label.geology_seed", "Graine :"));
+        HBox geoSeedBox = new HBox(4, geoSeedLabel, new Label("🎲"), geologySeedInput, geoRandSeedBtn);
         geoSeedBox.setAlignment(Pos.CENTER_LEFT);
 
         HBox seedRow = new HBox(8, geoSeedBox, btnGenerateProceduralGeologyTensors);
         seedRow.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(btnGenerateProceduralGeologyTensors, Priority.ALWAYS);
 
-        Button geologyHelpBtn = new Button(I18n.getOrDefault("resource.btn.geology_format_help", "❓ Format Calques"));
+        geologyHelpBtn = new Button(I18n.getOrDefault("resource.btn.geology_format_help", "❓ Format Calques"));
         geologyHelpBtn.getStyleClass().add("button-secondary");
         geologyHelpBtn.setStyle("-fx-font-size: 11px;");
         geologyHelpBtn.setMinWidth(Region.USE_PREF_SIZE);
         geologyHelpBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.geology_specs", "Spécifications des formats d'image et standards géologiques (PNG, GeoTIFF, NetCDF, ASC, GeoJSON).")));
         geologyHelpBtn.setOnAction(e -> showGeologyImportFormatHelp());
 
-        Button btnExportGisMultiFormat = new Button(I18n.getOrDefault("resource.btn.export_gis", "🗺️ Export SIG Multi-Format"));
+        btnExportGisMultiFormat = new Button(I18n.getOrDefault("resource.btn.export_gis", "🗺️ Export SIG Multi-Format"));
         btnExportGisMultiFormat.getStyleClass().add("button-secondary");
         btnExportGisMultiFormat.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnExportGisMultiFormat.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_gis", "Exporter les 10 tenseurs géologiques sous formats SIG professionnels (GeoTIFF, NetCDF-4, GeoJSON).")));
         btnExportGisMultiFormat.setOnAction(e -> exportGisMultiFormat());
 
-        Button btnExportProvenanceManifest = new Button(I18n.getOrDefault("resource.btn.provenance_manifest", "🔒 Manifeste Provenance SHA-256"));
+        btnExportProvenanceManifest = new Button(I18n.getOrDefault("resource.btn.provenance_manifest", "🔒 Manifeste Provenance SHA-256"));
         btnExportProvenanceManifest.getStyleClass().add("button-secondary");
         btnExportProvenanceManifest.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnExportProvenanceManifest.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.gen_provenance", "Générer un manifeste cryptographique JSON (provenance.json) contenant les hashs SHA-256 des jeux de données géologiques.")));
@@ -4005,7 +4044,7 @@ public class ResourceDistributionPanel extends BorderPane {
         sec41Box.setStyle("-fx-padding: 8px 10px; -fx-background-color: rgba(148, 163, 184, 0.08); -fx-background-radius: 6px; -fx-border-color: rgba(148, 163, 184, 0.25); -fx-border-radius: 6px; -fx-border-width: 1px;");
 
         // Section 4.2 : Tenseurs Géologiques Canoniques
-        Label sec42Header = new Label(I18n.getOrDefault("resource.section.geology_4_2.title", "🗺️ 4.2 TENSEURS GÉOLOGIQUES & ÉNERGÉTIQUES CANONIQUES (10 Sous-Blocs)"));
+        sec42Header = new Label(I18n.getOrDefault("resource.section.geology_4_2.title", "🗺️ 4.2 TENSEURS GÉOLOGIQUES & ÉNERGÉTIQUES CANONIQUES (10 Sous-Blocs)"));
         sec42Header.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
         sec42Header.setWrapText(true);
 
@@ -4020,30 +4059,28 @@ public class ResourceDistributionPanel extends BorderPane {
 
     private void showGeologyImportFormatHelp() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(I18n.getOrDefault("resource.title.geology_help", "Spécifications & Formats des Calques Géologiques"));
-        alert.setHeaderText(I18n.getOrDefault("resource.header.geology_help", "🗺️ SPÉCIFICATIONS DES 10 TENSEURS GÉOLOGIQUES (SIG & RASTERS)"));
+        alert.setTitle(I18n.getOrDefault("resource.title.geology_help", "Geological Layer Specifications & Formats"));
+        alert.setHeaderText(I18n.getOrDefault("resource.header.geology_help", "🗺️ SPECIFICATIONS FOR 10 GEOLOGICAL TENSORS (GIS & RASTERS)"));
 
-        String content = """
-            📐 PROJECTION & RÉSOLUTION STANDARDISÉE :
-            • Projection : Équirectangulaire WGS84 standard (2:1, Longitude [-180°, +180°], Latitude [-90°, +90°]).
-            • Formats supportés : PNG (8/16-bit), GeoTIFF (.tif/.tiff), ESRI Arc/Info ASCII (.asc), GeoJSON (.geojson), NetCDF-4 (.nc.json).
-            • Résolution recommandée : 720×360 (rapide), 1440×720 (standard HD), ou 3600×1800 (ultra-précis).
-
-            💎 CANAUX & UNITÉS SCIENTIFIQUES DES 10 TENSEURS :
-            1. Charbon (COAL) : Gt/cellule (USGS MRDS / BGR Germany).
-            2. Pétrole Brut (CRUDE_OIL) : Gt/cellule (World Energy Projection / BGR).
-            3. Gaz Naturel (NATURAL_GAS) : 10¹² m³/cellule (WEP / BGR Germany).
-            4. Uranium & Fission (URANIUM) : ppm U (IAEA UDEPO / NFCIS).
-            5. Hélium-3 & Fusion (HELIUM_3) : ppb He-3 (NASA PDS / Lunar Prospector).
-            6. Métaux Fer BIF & Cuivre (IRON_COPPER) : Gt/cellule (USGS BIF Atlas).
-            7. Métaux Précieux Au/Ag/Pt (PRECIOUS_METALS) : kt/cellule (USGS MRDS).
-            8. Terres Rares & Lithium (CRITICAL_REE) : Mt/cellule (USGS REE / Salars).
-            9. Flux Thermique du Manteau (MANTLE_HEAT) : mW/m² (IHFC / Davies 2013).
-            10. Aquifères Profonds & Nappes (FRESHWATER_AQUIFERS) : 10³ km³/cellule (UNESCO WHYMAP).
-
-            🔒 TRAÇABILITÉ & PROVENANCE :
-            Chaque calque importé est vérifié par empreinte cryptographique SHA-256 et consigné dans le manifeste provenance.json.
-            """;
+        String content = I18n.getOrDefault("resource.help.geology_specs_body",
+            "📐 STANDARDIZED PROJECTION & RESOLUTION:\n" +
+            "• Projection: Standard WGS84 Equirectangular (2:1, Longitude [-180°, +180°], Latitude [-90°, +90°]).\n" +
+            "• Supported formats: PNG (8/16-bit), GeoTIFF (.tif/.tiff), ESRI Arc/Info ASCII (.asc), GeoJSON (.geojson), NetCDF-4 (.nc.json).\n" +
+            "• Recommended resolution: 720×360 (fast), 1440×720 (standard HD), or 3600×1800 (ultra-precise).\n\n" +
+            "💎 CHANNELS & SCIENTIFIC UNITS OF THE 10 TENSORS:\n" +
+            "1. Coal (COAL): Gt/cell (USGS MRDS / BGR Germany).\n" +
+            "2. Crude Oil (CRUDE_OIL): Gt/cell (World Energy Projection / BGR).\n" +
+            "3. Natural Gas (NATURAL_GAS): 10¹² m³/cell (WEP / BGR Germany).\n" +
+            "4. Uranium & Fission (URANIUM): ppm U (IAEA UDEPO / NFCIS).\n" +
+            "5. Helium-3 & Fusion (HELIUM_3): ppb He-3 (NASA PDS / Lunar Prospector).\n" +
+            "6. Iron BIF & Copper Metals (IRON_COPPER): Gt/cell (USGS BIF Atlas).\n" +
+            "7. Precious Metals Au/Ag/Pt (PRECIOUS_METALS): kt/cell (USGS MRDS).\n" +
+            "8. Rare Earths & Lithium (CRITICAL_REE): Mt/cell (USGS REE / Salars).\n" +
+            "9. Mantle Heat Flux (MANTLE_HEAT): mW/m² (IHFC / Davies 2013).\n" +
+            "10. Deep Aquifers & Groundwater (FRESHWATER_AQUIFERS): 10³ km³/cell (UNESCO WHYMAP).\n\n" +
+            "🔒 TRACEABILITY & PROVENANCE:\n" +
+            "Each imported layer is validated by SHA-256 cryptographic fingerprint and logged in the provenance.json manifest."
+        );
 
         alert.setContentText(content);
         alert.getDialogPane().setPrefWidth(650);
@@ -4053,7 +4090,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
     private void exportGisMultiFormat() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(I18n.getOrDefault("resource.title.export_gis_dialog", "Exporter les Calques Géologiques sous Format SIG"));
+        fileChooser.setTitle(I18n.getOrDefault("resource.title.export_gis_dialog", "Export Geological Layers in GIS Format"));
         fileChooser.getExtensionFilters().addAll(
             new FileChooser.ExtensionFilter("GeoJSON Vector File (*.geojson)", "*.geojson"),
             new FileChooser.ExtensionFilter("GeoTIFF Multi-Band Raster Metadata (*.json)", "*.json"),
@@ -4075,19 +4112,19 @@ public class ResourceDistributionPanel extends BorderPane {
                 mapper.writeValue(targetFile, gisData);
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(I18n.getOrDefault("resource.title.gis_success", "Export SIG Réussi"));
-                alert.setHeaderText(I18n.getOrDefault("resource.header.gis_success", "Fichier SIG Généré avec Succès"));
-                alert.setContentText("Les données géologiques ont été exportées sous format SIG compatible QGIS/ArcGIS : " + targetFile.getName());
+                alert.setTitle(I18n.getOrDefault("resource.title.gis_success", "GIS Export Successful"));
+                alert.setHeaderText(I18n.getOrDefault("resource.header.gis_success", "GIS File Successfully Generated"));
+                alert.setContentText(String.format(I18n.getOrDefault("resource.desc.gis_success", "Geological dataset successfully exported to QGIS/ArcGIS format: %s"), targetFile.getName()));
                 alert.showAndWait();
             } catch (Exception ex) {
-                logger.error("Erreur lors de l'exportation SIG de la géologie: {}", ex.getMessage(), ex);
+                logger.error("Error during GIS geology export: {}", ex.getMessage(), ex);
             }
         }
     }
 
     private void exportProvenanceManifest() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(I18n.getOrDefault("resource.title.export_provenance_dialog", "Générer et Exporter le Manifeste SHA-256 de Provenance"));
+        fileChooser.setTitle(I18n.getOrDefault("resource.title.export_provenance_dialog", "Generate & Export SHA-256 Provenance Manifest"));
         fileChooser.setInitialFileName("geology_provenance.json");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Manifest (*.json)", "*.json"));
         File targetFile = fileChooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
@@ -4112,12 +4149,12 @@ public class ResourceDistributionPanel extends BorderPane {
                 mapper.writeValue(targetFile, manifest);
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(I18n.getOrDefault("resource.title.provenance_success", "Manifeste de Provenance Généré"));
-                alert.setHeaderText(I18n.getOrDefault("resource.header.provenance_success", "Manifeste SHA-256 Sauvegardé"));
-                alert.setContentText("Le manifeste cryptographique a été enregistré sous : " + targetFile.getName());
+                alert.setTitle(I18n.getOrDefault("resource.title.provenance_success", "Provenance Manifest Generated"));
+                alert.setHeaderText(I18n.getOrDefault("resource.header.provenance_success", "SHA-256 Manifest Saved"));
+                alert.setContentText(String.format(I18n.getOrDefault("resource.desc.provenance_success", "Cryptographic manifest saved to: %s"), targetFile.getName()));
                 alert.showAndWait();
             } catch (Exception ex) {
-                logger.error("Erreur lors de l'exportation du manifeste géologique: {}", ex.getMessage(), ex);
+                logger.error("Error during provenance manifest export: {}", ex.getMessage(), ex);
             }
         }
     }

@@ -71,7 +71,9 @@ public class MetricDescriptor {
     }
     public Category getCategory() { return category; }
     public String getUnit() { return unit; }
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return org.ether.society.i18n.I18n.getOrDefault("metric." + id + ".desc", description);
+    }
     public Function<H3Cell, Double> getSpatialExtractor() { return spatialExtractor; }
     public Function<List<H3Cell>, Double> getSpatialAggregator() { return spatialAggregator; }
 

@@ -12,4 +12,4 @@ Write-Host "  Project ID : $ProjectId"
 Write-Host "  Zone       : $Zone"
 Write-Host "----------------------------------------------------------"
 
-gcloud compute instances list --project=$ProjectId --zone=$Zone
+gcloud compute instances list --project=$ProjectId --zones=$Zone
