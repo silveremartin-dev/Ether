@@ -220,4 +220,74 @@ $$\text{Cost}_{1\text{k}} = 1000 \times \text{Cost}_{\text{tick}} = \frac{C_{\te
 > 🔑 **Economic Insight**:
 > In Spot mode, simulating a full historical epoch of **1,000 Ticks** at **Resolution 4 (288,122 cells)** costs only **~$0.16 to $0.19** total. Simulating at **Resolution 5 (2 million cells)** costs only **~$1.11 to $1.19** per 1,000 ticks.
 
+---
+
+## 5. Multidimensional Matrix (Resolution $\times$ Historical Era) & Cluster Sizing Framework
+
+### 5.1 The 2D Computational Grid Matrix (Spatial Resolution $\times$ Demographic Scale)
+
+Computational throughput in Ether is governed by two orthogonal dimensions:
+1. **Spatial Grid Complexity** $N(r) = 2 + 120 \times 7^r$ (driving vectorized geophysical and transport work).
+2. **Demographic Agent Cohort Complexity** $N_{\text{cohorts}} = \frac{P_{\text{world}}}{150}$ (Dunbar anthropological cohesion limit driving age, labor, caloric, and cultural dynamics).
+
+#### Steady-State Throughput Matrix (TPS on Current 2x `e2-standard-4` Cluster, Dunbar Size = 150):
+
+| Historical Era & Scenario | Global Population | Active Agent Cohorts | Res 2 (5,882 cells) | Res 3 (41,162 cells) | Res 4 (288,122 cells) | Res 5 (2,016,842 cells) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Out of Africa** (-100,000 BP) | ~10,000 | ~3,500 cohorts | **~6.40 TPS** | **~0.85 TPS** | **~0.14 TPS** | **~0.02 TPS** *(RAM limit)* |
+| **Neolithic Rev.** (-10,000 BP) | ~5,000,000 | ~33,000 cohorts | **~4.80 TPS** | **~0.75 TPS** | **~0.12 TPS** | **~0.018 TPS** |
+| **Classical Era** (-500 BCE) | ~200,000,000 | ~160,000 cohorts | **~2.30 TPS** | **~0.48 TPS** | **~0.08 TPS** | *Req. 8+ Nodes* |
+| **Industrial Rev.** (+1800 CE) | ~1,000,000,000 | ~1,040,000 cohorts| **~0.95 TPS** | **~0.22 TPS** | **~0.035 TPS** | *Req. 8+ Nodes* |
+| **Modern Era** (+2026 CE) | ~2,500,000,000 | ~2,600,000 cohorts| **~0.42 TPS** | **~0.10 TPS** | **~0.015 TPS** | *Req. 16+ Nodes* |
+
+---
+
+### 5.2 Cluster Sizing & Financial Budgeting Formulas
+
+To determine the exact hardware configuration and calculate the dollar cost before launching a simulation run:
+
+#### Step 1: Compute Total Memory Footprint
+$$\text{Memory}_{\text{total}} = \left( N_{\text{cells}} \times 40\text{ kB} \right) + \left( \frac{P_{\text{world}}}{150} \times 2.5\text{ kB} \right) + 2.0\text{ GB (Base JVM + PostGIS)}$$
+
+#### Step 2: Determine Required Worker Nodes ($K$) on 16 GB VMs
+$$K = \left\lceil \frac{\text{Memory}_{\text{total}}}{12\text{ GB}} \right\rceil$$
+
+#### Step 3: Estimate Execution Time and Dollar Budget
+$$\text{Total Duration (Hours)} = \frac{\text{Target Ticks}}{3600 \times \text{TPS}(r, \text{Era}, K)}$$
+
+$$\text{Estimated Total Cost (\$) } = \text{Total Duration} \times \left( C_{\text{master}} + K \times C_{\text{worker}} \right)$$
+
+---
+
+### 5.3 Roadmap for Epistemic Historical Fidelity ($\mathcal{F}$) (Phases B & C)
+
+1. **Phase B (Historical Sovereignty Ingestion)**:
+   * Ingest GIS polygon boundaries from **Euratlas Historical GIS** and **CShapes 2.0 / Correlates of War (COW)** into `data/maps/historical_polities/`.
+   * At $t = t_0$, assign discrete sovereign polity IDs to all H3 cells inside historical sovereign polygons.
+2. **Phase C (Automated Epistemic Fidelity Index $\mathcal{F}(r)$)**:
+   * **Sovereignty IoU Fidelity $\mathcal{F}_{\text{pol}}(r)$**: Spatial Jaccard overlap of state frontiers.
+   * **Demographic Correlation $\mathcal{F}_{\text{demo}}(r)$**: $R^2$ against **HYDE 3.4** and **Maddison Project** series.
+   * **Biophysical Correlation $\mathcal{F}_{\text{bio}}(r)$**: $R^2$ against **PMIP4 / CMIP6** paleoclimate and agricultural yield records.
+
+---
+
+### 5.4 Reproducible Automated Benchmark Execution
+
+To execute the standardized multi-dimensional benchmark suite:
+
+* **Windows (PowerShell)**:
+  ```powershell
+  .\scripts\gcp\benchmark-matrix.ps1 -ProjectId "ether-509812" -Zone "europe-west1-b" -Ticks 24 -Resolutions @(2, 3, 4)
+  ```
+* **Linux / macOS (Bash)**:
+  ```bash
+  chmod +x scripts/gcp/benchmark-matrix.sh
+  ./scripts/gcp/benchmark-matrix.sh ether-509812 europe-west1-b 24
+  ```
+* **Windows (Batch)**:
+  ```cmd
+  scripts\gcp\benchmark-matrix.bat
+  ```
+
+
 

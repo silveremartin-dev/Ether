@@ -857,8 +857,43 @@ public class Scenario implements Serializable {
         s0Engines.put("SelfDomesticationEngine", true);
         s0Engines.put("TasmanianCulturalRegressionEngine", true);
         s0Engines.put("KinSelectionHamiltonEngine", true);
-        s0Engines.put("SexualSelectionMatingEngine", true);
         list.add(s0);
+
+        // --- SCÉNARIO : CATACLYSME DU SUPERVOLCAN TOBA (-74000) ---
+        Scenario sToba = new Scenario();
+        sToba.setPresetKey("toba_cataclysm_74k");
+        sToba.setName("Cataclysme du Supervolcan Toba & Goulot Démographique (-74000)");
+        sToba.setStartDateYear(-74000);
+        sToba.setEndDateYear(-50000);
+        sToba.setInitialHumanCount(100000);
+        sToba.setInitialCapitalPerCapita(2.0);
+        sToba.setInitialEnergyPerCapita(4.0);
+        sToba.setInitialFoodReserveMonths(1.0);
+        sToba.setInitialInformationPerCapita(2.0);
+        sToba.setPopulationDensityType("SPARSE");
+        sToba.setTargetCohortSize(30);
+        sToba.setPlanetPreset(PlanetPreset.EARTH_MIS3_50000BP);
+        sToba.setEcologyPreset(EcologyPreset.EARTH_MIS3_50000BP);
+        sToba.setDescription("""
+            🌋 SCÉNARIO PALÉOCLIMATIQUE : Super-Éruption du Mont Toba & Hiver Volcanique (-74 000 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise l'impact biosphérique de la super-éruption du Toba (Sumatra, VEI-8) ayant éjecté 2 800 km³ de téphras. Chute thermique globale de 3 à 5°C pendant plusieurs années, créant un goulot d'étranglement génétique majeur chez Homo sapiens.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Goulot d'étranglement démographique sévère (population reproductive mondiale réduite à quelques milliers d'individus).
+            • Réfuges écologiques côtiers en Afrique australe et en Inde méridionale.
+            • Rebond démographique et innovations techniques lithiques post-crise (Mode 3 / Middle Stone Age).
+            """);
+        java.util.Map<String, Boolean> sTobaEngines = sToba.getTypeBEngineStates();
+        sTobaEngines.put("VolcanicTephraRefugiaEngine", true);
+        sTobaEngines.put("BifurcationChaosEngine", true);
+        sTobaEngines.put("DemographicLifeTableEngine", true);
+        sTobaEngines.put("HomininCompetitiveExclusionEngine", true);
+        sTobaEngines.put("TasmanianCulturalRegressionEngine", true);
+        sTobaEngines.put("KinSelectionHamiltonEngine", true);
+        sToba.getClimateEvents().add(new ClimateEvent("VOLCANIC_ERUPTION", "Super-Éruption VEI-8 du Mont Toba", -74000, 2.58, 98.83, -5.0, 9.5));
+        list.add(sToba);
 
         // --- SCÉNARIO : SAHUL (-50000) ---
         Scenario sSahul = new Scenario();
@@ -1231,6 +1266,42 @@ public class Scenario implements Serializable {
         sMesoEngines.put("OstromCommonsPureEngine", true);
         list.add(sMeso);
 
+        // --- SCÉNARIO : EFFONDREMENT DE L'ÂGE DU BRONZE RÉCENT (-1200) ---
+        Scenario sBronzeCollapse = new Scenario();
+        sBronzeCollapse.setPresetKey("bronze_age_collapse_1200bc");
+        sBronzeCollapse.setName("Effondrement de l'Âge du Bronze Récent & Peuples de la Mer (-1200)");
+        sBronzeCollapse.setStartDateYear(-1200);
+        sBronzeCollapse.setEndDateYear(-900);
+        sBronzeCollapse.setInitialHumanCount(25000000);
+        sBronzeCollapse.setInitialCapitalPerCapita(120.0);
+        sBronzeCollapse.setInitialEnergyPerCapita(65.0);
+        sBronzeCollapse.setInitialFoodReserveMonths(3.0);
+        sBronzeCollapse.setInitialInformationPerCapita(80.0);
+        sBronzeCollapse.setPopulationDensityType("URBAN_CLUSTERS");
+        sBronzeCollapse.setTargetCohortSize(400);
+        sBronzeCollapse.setPlanetPreset(PlanetPreset.EARTH_BRONZE_1900BP);
+        sBronzeCollapse.setEcologyPreset(EcologyPreset.EARTH_BRONZE_1900BP);
+        sBronzeCollapse.setDescription("""
+            ⚔️ SCÉNARIO HISTORIQUE : La Grande Rupture Systémique de -1200 & Chute des Palais Mycéniens et Hittites
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise l'effondrement simultané en cascade des civilisations palatiales de Méditerranée orientale (Mycènes, Ugarit, Empire Hittite, affaiblissement de l'Égypte). Combinaison d'une méga-sécheresse centennale, de ruptures des routes de l'étain et des invasions des Peuples de la Mer.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Effondrement en chaîne des réseaux commerciaux interconnectés du bronze.
+            • Chute brutale de la complexité institutionnelle (disparition de l'écriture Linéaire B, dépopulation urbaine).
+            • Période d'Âges Sombres méditerranéens préparant la transition décentralisée vers le fer.
+            """);
+        java.util.Map<String, Boolean> sBronzeCollapseEngines = sBronzeCollapse.getTypeBEngineStates();
+        sBronzeCollapseEngines.put("TainterComplexityCollapseEngine", true);
+        sBronzeCollapseEngines.put("SpatialMetapopulationSEIREngine", true);
+        sBronzeCollapseEngines.put("FertileCrescentSalinizationEngine", true);
+        sBronzeCollapseEngines.put("TurchinGoldstoneSDTEngine", true);
+        sBronzeCollapseEngines.put("LanchesterKineticWarfareEngine", true);
+        sBronzeCollapseEngines.put("GranovetterThresholdCascadeEngine", true);
+        sBronzeCollapse.getClimateEvents().add(new ClimateEvent("MEGADROUGHT", "Méga-Sécheresse Centennale de Méditerranée Orientale", -1200, 35.0, 33.0, 0.0, 8.5));
+        list.add(sBronzeCollapse);
+
         // --- SCÉNARIO : DÉBUT ÂGE DU FER & MÉDITERRANÉE ANTIQUE (-1000) ---
         Scenario sIron = new Scenario();
         sIron.setPresetKey("early_iron_age");
@@ -1268,6 +1339,43 @@ public class Scenario implements Serializable {
         sIronEngines.put("KrugmanCorePeripheryEngine", true);
         sIronEngines.put("ArthurCombinatorialTechnologyEngine", true);
         list.add(sIron);
+
+        // --- SCÉNARIO : EXPANSION HELLÉNISTIQUE & CHOC D'ALEXANDRE (-334) ---
+        Scenario sAlexander = new Scenario();
+        sAlexander.setPresetKey("alexander_hellenistic_334bc");
+        sAlexander.setName("Expansion Hellénistique & Choc d'Alexandre le Grand (-334)");
+        sAlexander.setStartDateYear(-334);
+        sAlexander.setEndDateYear(-150);
+        sAlexander.setInitialHumanCount(45000000);
+        sAlexander.setInitialCapitalPerCapita(220.0);
+        sAlexander.setInitialEnergyPerCapita(95.0);
+        sAlexander.setInitialFoodReserveMonths(5.0);
+        sAlexander.setInitialInformationPerCapita(250.0);
+        sAlexander.setPopulationDensityType("URBAN_CLUSTERS");
+        sAlexander.setTargetCohortSize(800);
+        sAlexander.setPlanetPreset(PlanetPreset.EARTH_IRON_1000BP);
+        sAlexander.setEcologyPreset(EcologyPreset.EARTH_IRON_1000BP);
+        sAlexander.setDescription("""
+            ⚡ SCÉNARIO HISTORIQUE : Conquête Macédonienne & Mondialisation Hellénistique (-334 av. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise l'effondrement foudroyant de l'Empire Achéménide sous la phalange macédonienne d'Alexandre. Intégration d'un corridor urbain et monétaire unifié de la Grèce à l'Indus (fondation d'Alexandries, monétarisation de l'or perse, koinè grecque).
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Vitesse de projection militaire et réduction spectaculaire de la friction logistique le long des routes royales perses.
+            • Monétarisation massive et urbanisation grecque en Orient (Alexandrie, Séleucie, Antioche).
+            • Fragmentation politique immédiate post-Alexandre (guerres des Diadoques) sans destruction du réseau urbain commercial.
+            """);
+        java.util.Map<String, Boolean> sAlexEngines = sAlexander.getTypeBEngineStates();
+        sAlexEngines.put("MilitaryTechShockEngine", true);
+        sAlexEngines.put("FrontierAsabiyyahEngine", true);
+        sAlexEngines.put("DynamicMaritimeRoutingGraph", true);
+        sAlexEngines.put("MaritimeHighwayEngine", true);
+        sAlexEngines.put("SpatialCityFractalEngine", true);
+        sAlexEngines.put("KrugmanCorePeripheryEngine", true);
+        sAlexEngines.put("AcemogluRobinsonInstitutionsEngine", true);
+        sAlexEngines.put("LanchesterKineticWarfareEngine", true);
+        list.add(sAlexander);
 
         // --- SCÉNARIO : EMPIRE MAURYA & INDE (-300) ---
         Scenario sMaurya = new Scenario();
@@ -1391,8 +1499,45 @@ public class Scenario implements Serializable {
         s2Engines.put("TainterComplexityCollapseEngine", true);
         s2Engines.put("MaritimeHighwayEngine", true);
         s2Engines.put("DynamicMaritimeRoutingGraph", true);
-        s2Engines.put("GranovetterThresholdCascadeEngine", true);
         list.add(s2);
+
+        // --- SCÉNARIO : EXPANSION ISLAMIQUE & RÉVOLUTION COMMERCIALE CALIFALE (632) ---
+        Scenario sIslam = new Scenario();
+        sIslam.setPresetKey("islamic_expansion_632");
+        sIslam.setName("Expansion Islamique & Révolution Commerciale Califale (632)");
+        sIslam.setStartDateYear(632);
+        sIslam.setEndDateYear(900);
+        sIslam.setInitialHumanCount(70000000);
+        sIslam.setInitialCapitalPerCapita(320.0);
+        sIslam.setInitialEnergyPerCapita(140.0);
+        sIslam.setInitialFoodReserveMonths(6.0);
+        sIslam.setInitialInformationPerCapita(500.0);
+        sIslam.setPopulationDensityType("URBAN_CLUSTERS");
+        sIslam.setTargetCohortSize(1000);
+        sIslam.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sIslam.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
+        sIslam.setDescription("""
+            🌙 SCÉNARIO HISTORIQUE : Unification Califale & Révolution Agricole Arabe (632 ap. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise l'expansion foudroyante des Califats Omeyyade et Abbasside de l'Espagne à l'Indus. Effondrement de l'Empire Sassanide, diffusion massive des techniques d'irrigation (qanats, norias) et des cultures tropicales (canne à sucre, coton, agrumes), essor des réseaux maritimes de l'Océan Indien.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Vitesse d'unification géopolitique portée par la haute Asabiyyah bédouine et la doctrine califale.
+            • Révolution agricole arabe : diversification agronomique et maîtrise hydraulique des zones arides.
+            • Essor de Bagdad comme métropole mondiale (Maison de la Sagesse) et intégration commerciale transcontinentale.
+            """);
+        java.util.Map<String, Boolean> sIslamEngines = sIslam.getTypeBEngineStates();
+        sIslamEngines.put("FrontierAsabiyyahEngine", true);
+        sIslamEngines.put("HydrologicalEngineeringEngine", true);
+        sIslamEngines.put("DynamicMaritimeRoutingGraph", true);
+        sIslamEngines.put("MaritimeHighwayEngine", true);
+        sIslamEngines.put("SpatialCityFractalEngine", true);
+        sIslamEngines.put("KrugmanCorePeripheryEngine", true);
+        sIslamEngines.put("OstromCommonsPureEngine", true);
+        sIslamEngines.put("BoserupAgriculturalIntensificationEngine", true);
+        sIslamEngines.put("ArthurCombinatorialTechnologyEngine", true);
+        list.add(sIslam);
 
         Scenario s4 = new Scenario();
         s4.setPresetKey("song_dynasty");
@@ -1434,6 +1579,42 @@ public class Scenario implements Serializable {
         s4Engines.put("WestBettencourtAllometryEngine", true);
         list.add(s4);
 
+        // --- SCÉNARIO : L'EMPIRE MONGOL & LA GRANDE RUPTURE EURASIENNE (1206) ---
+        Scenario sMongol = new Scenario();
+        sMongol.setPresetKey("mongol_conquest_1206");
+        sMongol.setName("L'Empire Mongol & la Grande Rupture Eurasienne (1206)");
+        sMongol.setStartDateYear(1206);
+        sMongol.setEndDateYear(1368);
+        sMongol.setInitialHumanCount(110000000);
+        sMongol.setInitialCapitalPerCapita(400.0);
+        sMongol.setInitialEnergyPerCapita(250.0);
+        sMongol.setInitialFoodReserveMonths(5.0);
+        sMongol.setInitialInformationPerCapita(600.0);
+        sMongol.setPopulationDensityType("EURASIA_STEPPE");
+        sMongol.setTargetCohortSize(1500);
+        sMongol.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sMongol.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
+        sMongol.setDescription("""
+            🏹 SCÉNARIO HISTORIQUE : Conquête Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise le plus grand empire territorial contigu de l'histoire humaine. Choc cinétique et démographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sécurisée de la Route de la Soie (Pax Mongolica) qui servira de vecteur à la Peste Noire.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Projection militaire nomade ultra-rapide (cavalerie légère, réseau de relais de poste Yam).
+            • Choc de mortalité urbaine et désertification de certaines oasis irriguées de Perse/Transoxiane.
+            • Intégration économique trans-eurasienne de Pékin à Tabriz et la mer Noire.
+            """);
+        java.util.Map<String, Boolean> sMongolEngines = sMongol.getTypeBEngineStates();
+        sMongolEngines.put("MilitaryTechShockEngine", true);
+        sMongolEngines.put("FrontierAsabiyyahEngine", true);
+        sMongolEngines.put("TurchinGoldstoneSDTEngine", true);
+        sMongolEngines.put("KrugmanCorePeripheryEngine", true);
+        sMongolEngines.put("LanchesterKineticWarfareEngine", true);
+        sMongolEngines.put("SpatialMetapopulationSEIREngine", true);
+        sMongolEngines.put("BioMolecularEpidemiologyEngine", true);
+        list.add(sMongol);
+
         // --- SCÉNARIO : EMPIRE DU MALI (1324) ---
         Scenario sMali = new Scenario();
         sMali.setPresetKey("mali_empire");
@@ -1473,6 +1654,42 @@ public class Scenario implements Serializable {
         sMaliEngines.put("ArthurCombinatorialTechnologyEngine", true);
         sMaliEngines.put("GranovetterThresholdCascadeEngine", true);
         list.add(sMali);
+
+        // --- SCÉNARIO : LA PESTE NOIRE & INVERSION POST-FÉODALE (1347) ---
+        Scenario sBlackDeath = new Scenario();
+        sBlackDeath.setPresetKey("black_death_1347");
+        sBlackDeath.setName("La Peste Noire & Inversion Économique Post-Féodale (1347)");
+        sBlackDeath.setStartDateYear(1347);
+        sBlackDeath.setEndDateYear(1450);
+        sBlackDeath.setInitialHumanCount(375000000);
+        sBlackDeath.setInitialCapitalPerCapita(350.0);
+        sBlackDeath.setInitialEnergyPerCapita(150.0);
+        sBlackDeath.setInitialFoodReserveMonths(4.0);
+        sBlackDeath.setInitialInformationPerCapita(450.0);
+        sBlackDeath.setPopulationDensityType("URBAN_CLUSTERS");
+        sBlackDeath.setTargetCohortSize(2000);
+        sBlackDeath.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sBlackDeath.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
+        sBlackDeath.setDescription("""
+            💀 SCÉNARIO HISTORIQUE : La Pandémie de Peste Noire & Inversion du Rapport Capital/Travail (1347 ap. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Vague pandémique foudroyante de Yersinia pestis anéantissant 35% à 60% de la population européenne et moyen-orientale en moins de 5 ans. Choc démographique provoquant la rareté soudaine de la main-d'œuvre, la hausse spectaculaire des salaires réels et l'effondrement du servage.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Vitesse de contagion métapopulationnelle le long des routes de commerce génoises et vénitiennes.
+            • Inversion institutionnelle : émancipation paysanne en Europe occidentale vs second servage à l'Est.
+            • Déprise agricole temporaire, reforestation spontanée et baisse des rentes foncières seigneuriales.
+            """);
+        java.util.Map<String, Boolean> sBDEngines = sBlackDeath.getTypeBEngineStates();
+        sBDEngines.put("SpatialMetapopulationSEIREngine", true);
+        sBDEngines.put("BioMolecularEpidemiologyEngine", true);
+        sBDEngines.put("TurchinGoldstoneSDTEngine", true);
+        sBDEngines.put("AcemogluRobinsonInstitutionsEngine", true);
+        sBDEngines.put("GranovetterThresholdCascadeEngine", true);
+        sBDEngines.put("BoserupAgriculturalIntensificationEngine", true);
+        sBDEngines.put("DynamicMaritimeRoutingGraph", true);
+        list.add(sBlackDeath);
 
         // --- SCÉNARIO : AMÉRIQUES PRÉCOLOMBIENNES (1491) ---
         Scenario sAmericas1491 = new Scenario();
@@ -1627,8 +1844,45 @@ public class Scenario implements Serializable {
         sIndustrial1800Engines.put("WestBettencourtAllometryEngine", true);
         sIndustrial1800Engines.put("KrugmanCorePeripheryEngine", true);
         sIndustrial1800Engines.put("HotellingResourceDepletionEngine", true);
-        sIndustrial1800Engines.put("OreGradeThermodynamicsEngine", true);
         list.add(sIndustrial1800);
+
+        // --- SCÉNARIO : GUERRES MONDIALES, RUPTURE TOTALITAIRE & ÈRE NUCLÉAIRE (1914) ---
+        Scenario sWW = new Scenario();
+        sWW.setPresetKey("world_wars_totalitarian_1914");
+        sWW.setName("Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914)");
+        sWW.setStartDateYear(1914);
+        sWW.setEndDateYear(1960);
+        sWW.setInitialHumanCount(1750000000L);
+        sWW.setInitialCapitalPerCapita(3500.0);
+        sWW.setInitialEnergyPerCapita(4500.0);
+        sWW.setInitialFoodReserveMonths(5.0);
+        sWW.setInitialInformationPerCapita(80000.0);
+        sWW.setPopulationDensityType("URBAN_CLUSTERS");
+        sWW.setTargetCohortSize(8000);
+        sWW.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sWW.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
+        sWW.setDescription("""
+            ⚔️ SCÉNARIO HISTORIQUE : Guerre Industrielle Totale, Ruptures Idéologiques & Bombe Atomique (1914 ap. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Modélise la période de crise systémique paroxystique de la modernité industrielle (1914-1945). Mobilisation intégrale de l'exergie fossile et chimique (synthèse Haber-Bosch), ruptures totalitaires (1917, 1933), destruction massive de capital en Europe/Asie, et franchissement du seuil de destruction thermonucléaire (1945).
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Déploiement de la guerre industrielle et de la puissance de feu cinétique (artillerie lourde, aviation, blindés).
+            • Ruptures de régime idéologiques extrêmes (collectivisme soviétique, militarisme fasciste) et purges démographiques.
+            • Chute brutale du capital en 1939-1945 suivie de la reconstruction fordiste accélérée des Trente Glorieuses.
+            """);
+        java.util.Map<String, Boolean> sWWEngines = sWW.getTypeBEngineStates();
+        sWWEngines.put("LanchesterKineticWarfareEngine", true);
+        sWWEngines.put("SmilMaterialTransitionsPureEngine", true);
+        sWWEngines.put("KummelAyresExergyEngine", true);
+        sWWEngines.put("TurchinGoldstoneSDTEngine", true);
+        sWWEngines.put("BifurcationChaosEngine", true);
+        sWWEngines.put("AcemogluRobinsonInstitutionsEngine", true);
+        sWWEngines.put("NuclearSafetyRadiotoxicityEngine", true);
+        sWWEngines.put("JevonsParadoxEngine", true);
+        sWWEngines.put("WestBettencourtAllometryEngine", true);
+        list.add(sWW);
 
         // --- SCÉNARIO : ANTHROPOCÈNE (2000) ---
         Scenario sModern2000 = new Scenario();

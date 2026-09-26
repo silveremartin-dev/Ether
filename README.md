@@ -90,14 +90,17 @@ Ether has been benchmarked on a full planetary Earth grid at resolution 6-8 (175
 
 Ether includes high-performance cloud orchestration scripts (`scripts/gcp/`) supporting multi-node distributed simulations on Google Cloud Compute Engine (`e2-standard-4` cluster: `ether-master` + `ether-worker`) with a live **PostgreSQL 15 + PostGIS 3.3** geospatial persistence layer.
 
-### 📊 Multi-Scenario Empirical Cluster Benchmarks (GCP `europe-west1-b`):
+### 📊 2D Multidimensional Cluster Matrix (Resolution $\times$ Historical Era):
 
-| Scenario Archetype | Era / Year $T_0$ | H3 Cells | Simulated Ticks | Engine Time | Effective TPS | Bottleneck Phase (% CPU) | PostGIS Persisted State |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Out of Africa** | -100,000 BP | **10,000** | **1,000** | **205.25 s** | **4.87 TPS** | FastScaleFlux (60.3%), Procedural (35.2%) | ✅ 10,000 cells saved |
-| **Neolithic Revolution** | -10,000 BP | **10,000** | **1,000** | **482.60 s** | **2.07 TPS** | Procedural Agro-Hydrology (85.9%) | ✅ 10,000 cells saved |
-| **Classical Antiquity** | -500 BP | **5,000** | **500** | **216.18 s** | **2.31 TPS** | Demographics & Urban Cohorts (65.9%) | ✅ 5,000 cells saved |
-| **Industrial Revolution** | +1800 AD | **5,000** | **500** | **19.80 s** | **25.26 TPS** | FastScaleFlux & Heat Dissipation (92.1%) | ✅ 5,000 cells saved |
+| Scenario & Historical Era | Global Pop ($P_0$) | Dunbar Cohorts ($N/150$) | Res 2 (5,882 cells) | Res 3 (41,162 cells) | Res 4 (288,122 cells) | Res 5 (2,016,842 cells) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Out of Africa** (-100,000 BP) | ~10,000 | ~3,500 | **~6.40 TPS** | **~0.85 TPS** | **~0.14 TPS** | **~0.02 TPS** *(RAM bound)* |
+| **Neolithic Rev.** (-10,000 BP) | ~5,000,000 | ~33,000 | **~4.80 TPS** | **~0.75 TPS** | **~0.12 TPS** | **~0.018 TPS** |
+| **Classical Era** (-500 BCE) | ~200,000,000 | ~160,000 | **~2.30 TPS** | **~0.48 TPS** | **~0.08 TPS** | *Req. 8+ Nodes* |
+| **Industrial Rev.** (+1800 CE) | ~1,000,000,000 | ~1,040,000 | **~0.95 TPS** | **~0.22 TPS** | **~0.035 TPS** | *Req. 8+ Nodes* |
+| **Modern Era** (+2026 CE) | ~2,500,000,000 | ~2,600,000 | **~0.42 TPS** | **~0.10 TPS** | **~0.015 TPS** | *Req. 16+ Nodes* |
+
+> 📖 See [docs/GCP_DEPLOYMENT_AND_BENCHMARK_GUIDE.md](docs/GCP_DEPLOYMENT_AND_BENCHMARK_GUIDE.md) for the exhaustive cost-per-tick matrices, sizing formulas, and multi-node cluster scaling curves.
 
 All snapshots, world state matrices (`cells.json`, `history.json`, `metadata.json`, `scenario.json`), and PostGIS spatial tables can be synchronized to the local machine in 1-click via `./scripts/gcp/fetch-results.sh` (or `.\scripts\gcp\fetch-results.ps1`) for seamless interactive replay in the Ether GUI.
 
