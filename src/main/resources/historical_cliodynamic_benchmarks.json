@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "title": "Ether Macro-Historical & Cliodynamic 20-Variable Benchmark Suite",
-    "version": "4.0.0",
-    "description": "Standardized multi-metric historical time-series benchmarks covering 20 socio-economic, cliodynamic, demographic, ecological, and technological variables from 10,000 BCE to 2026 CE.",
+    "title": "Ether Macro-Historical & Cliodynamic 27-Variable Benchmark Suite",
+    "version": "4.1.0",
+    "description": "Standardized multi-metric historical time-series benchmarks covering 27 socio-economic, cliodynamic, demographic, ecological, and technological variables from -100,000 BCE to 2026 CE.",
     "author": "Silvere Martin-Michiellot",
     "lastUpdated": "2026-08-02"
   },
@@ -476,6 +476,175 @@
         "1950": 500000.0,
         "2000": 250000000.0,
         "2026": 300000000.0
+      }
+    },
+    "megafaunaIndex": {
+      "name": "Megafauna Biomass & Survival Index",
+      "unit": "Percentage (%) of Late Pleistocene Baseline Biomass",
+      "description": "Global terrestrial megafauna (>44 kg) biomass retention.",
+      "source": "Sandom et al. (2014), Barnosky (2004), WWF Living Planet Report (2024)",
+      "window": "DEEP_HORIZON",
+      "data": {
+        "-100000": 100.0,
+        "-50000": 95.0,
+        "-30000": 80.0,
+        "-15000": 45.0,
+        "-10000": 20.0,
+        "-5000": 16.0,
+        "-1000": 14.0,
+        "1": 13.0,
+        "1000": 12.0,
+        "1500": 11.0,
+        "1800": 9.5,
+        "1900": 6.5,
+        "1950": 4.5,
+        "1970": 3.8,
+        "2000": 2.2,
+        "2026": 1.5
+      }
+    },
+    "milankovitchInsolation": {
+      "name": "Milankovitch Summer Insolation 65°N",
+      "unit": "Watts per Square Meter (W/m²)",
+      "description": "Mid-June solar radiative forcing at 65°N driving Quaternary glacial-interglacial cycles.",
+      "source": "Laskar et al. (2004), Berger (1978)",
+      "window": "DEEP_HORIZON",
+      "data": {
+        "-100000": 472.0,
+        "-80000": 440.0,
+        "-50000": 465.0,
+        "-30000": 448.0,
+        "-20000": 460.0,
+        "-10000": 525.0,
+        "-8000": 515.0,
+        "-5000": 495.0,
+        "-3000": 485.0,
+        "-1000": 475.0,
+        "1": 470.0,
+        "1000": 465.0,
+        "1500": 463.0,
+        "1800": 461.0,
+        "1900": 460.0,
+        "2000": 459.0,
+        "2026": 458.5
+      }
+    },
+    "zeroContainmentScore": {
+      "name": "Biogeographical Isolation & Containment Score",
+      "unit": "Normalized Score (1.0 = Pristine Continental Isolation, 0.0 = Total Homogenization)",
+      "description": "Quantifies the degree of biogeographical barrier integrity against invasive pathogens and alien species.",
+      "source": "Crosby (1972) 'The Columbian Exchange', Diamond (1997), Seebens et al. (2017)",
+      "window": "DEEP_HORIZON",
+      "data": {
+        "-100000": 1.0,
+        "-10000": 0.98,
+        "-3000": 0.95,
+        "-1000": 0.90,
+        "1": 0.85,
+        "1000": 0.80,
+        "1492": 0.75,
+        "1600": 0.50,
+        "1750": 0.35,
+        "1850": 0.25,
+        "1950": 0.15,
+        "2000": 0.08,
+        "2026": 0.04
+      }
+    },
+    "lifeExpectancyAtBirth": {
+      "name": "Global Life Expectancy at Birth",
+      "unit": "Years (e_0)",
+      "description": "Mean cohort life expectancy at birth across human populations.",
+      "source": "Riley (2005), UN Population Division, HYDE 3.4",
+      "window": "DEEP_HORIZON",
+      "data": {
+        "-10000": 26.0,
+        "-3000": 28.0,
+        "-1000": 29.0,
+        "1": 25.0,
+        "1000": 26.0,
+        "1347": 19.0,
+        "1500": 27.0,
+        "1700": 28.5,
+        "1800": 30.0,
+        "1850": 33.0,
+        "1900": 32.0,
+        "1950": 46.5,
+        "1970": 56.5,
+        "1990": 64.0,
+        "2000": 67.0,
+        "2010": 70.5,
+        "2020": 72.8,
+        "2026": 73.5
+      }
+    },
+    "metalSmeltingPerCapita": {
+      "name": "Per Capita Metal Smelting Output",
+      "unit": "kg per capita per year",
+      "description": "Annual per capita output of smelted structural metals (copper, bronze, pig iron, raw steel).",
+      "source": "World Steel Association, Malandra (1990), USGS Historical Mineral Statistics",
+      "window": "DEEP_HORIZON",
+      "data": {
+        "-5000": 0.001,
+        "-3000": 0.02,
+        "-1000": 0.15,
+        "1": 1.2,
+        "1000": 1.8,
+        "1500": 2.5,
+        "1700": 3.2,
+        "1800": 6.5,
+        "1850": 18.0,
+        "1900": 42.0,
+        "1950": 85.0,
+        "1980": 160.0,
+        "2000": 140.0,
+        "2010": 210.0,
+        "2020": 240.0,
+        "2026": 255.0
+      }
+    },
+    "fossilSharePrimaryEnergy": {
+      "name": "Fossil Fuel Share in Primary Energy",
+      "unit": "Percentage (%) of Total Primary Energy Harvest",
+      "description": "Proportion of global energy consumption derived from coal, crude oil, and fossil gas.",
+      "source": "Vaclav Smil (2017) 'Energy and Civilization', Our World in Data (2024)",
+      "window": "EARLY_MODERN_500YR",
+      "data": {
+        "1500": 0.1,
+        "1700": 1.5,
+        "1800": 7.0,
+        "1850": 22.0,
+        "1900": 55.0,
+        "1950": 72.0,
+        "1973": 87.0,
+        "1990": 86.0,
+        "2000": 85.0,
+        "2010": 84.0,
+        "2020": 82.0,
+        "2026": 80.5
+      }
+    },
+    "shippingFreightCostIndex": {
+      "name": "Real Maritime Shipping Freight Cost Index",
+      "unit": "Index (100 = 1913 Level)",
+      "description": "Real cost of trans-oceanic dry bulk commodity transport adjusted for inflation.",
+      "source": "Harley (1988), Mohammed & Williamson (2004), UNCTAD (2024)",
+      "window": "EARLY_MODERN_500YR",
+      "data": {
+        "1500": 1200.0,
+        "1600": 950.0,
+        "1700": 800.0,
+        "1750": 650.0,
+        "1800": 500.0,
+        "1850": 280.0,
+        "1880": 160.0,
+        "1913": 100.0,
+        "1930": 85.0,
+        "1950": 60.0,
+        "1980": 35.0,
+        "2000": 28.0,
+        "2020": 22.0,
+        "2026": 20.0
       }
     }
   }

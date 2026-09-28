@@ -185,21 +185,33 @@ public class SimulationSaveManager {
         }
     }
 
+    private static final java.util.concurrent.ExecutorService asyncDbExecutor = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "ether-async-db-persistence");
+        t.setDaemon(true);
+        return t;
+    });
+
     /**
-     * Saves a 60-tick periodic simulation snapshot into the central database.
+     * Saves a 60-tick periodic simulation snapshot into the central database asynchronously without blocking the simulation loop.
      */
     public void saveCheckpoint(H3SimulationEngine engine, int tickCounter) {
         if (engine == null || engine.getCells() == null || engine.getCells().isEmpty()) return;
-        try {
-            if (DatabaseConfig.isDatabaseAvailable()) {
-                logger.info("Persisting 60-tick snapshot (tick {}) to database...", tickCounter);
-                cellRepository.saveAll(engine.getCells());
-            } else {
-                logger.debug("Database offline mode: 60-tick snapshot retained in HistoryManager memory.");
-            }
-        } catch (Exception ex) {
-            logger.error("Failed to save periodic DB checkpoint", ex);
+        if (!DatabaseConfig.isDatabaseAvailable()) {
+            logger.debug("Database offline mode: 60-tick snapshot retained in HistoryManager memory.");
+            return;
         }
+
+        // Clone/snapshot list reference for async safety
+        final List<H3Cell> snapshotCells = new java.util.ArrayList<>(engine.getCells());
+        asyncDbExecutor.submit(() -> {
+            try {
+                logger.info("Persisting 60-tick snapshot (tick {}) asynchronously to database ({} cells)...", tickCounter, snapshotCells.size());
+                cellRepository.saveAll(snapshotCells);
+                logger.info("✅ Asynchronous 60-tick snapshot persisted to database.");
+            } catch (Exception ex) {
+                logger.error("Failed to save periodic DB checkpoint asynchronously", ex);
+            }
+        });
     }
 
     /**

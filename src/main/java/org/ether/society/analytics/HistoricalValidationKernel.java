@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * Historical Telemetry Validation & Multi-Metric Empirical Benchmark Kernel.
- * Loads and validates 20 socio-economic, cliodynamic, ecological, and technological variables
+ * Loads and validates socio-economic, cliodynamic, ecological, and technological variables
  * from the standardized JSON resource ({@code historical_cliodynamic_benchmarks.json}).
  *
  * @author Silvere Martin-Michiellot
@@ -47,7 +47,7 @@ public class HistoricalValidationKernel {
         }
     }
 
-    /** 20 Multi-Metric Historical Benchmark Time Series (Map of Metric Name -> Time Series Data) */
+    /** Multi-Metric Historical Benchmark Time Series (Map of Metric Name -> Time Series Data) */
     private static final Map<String, Map<Integer, Double>> BENCHMARK_DATASETS = new HashMap<>();
 
     static {
@@ -80,7 +80,7 @@ public class HistoricalValidationKernel {
                         }
                         BENCHMARK_DATASETS.put(varKey, Collections.unmodifiableMap(timeSeries));
                     }
-                    logger.info("✅ Successfully loaded 20-Variable Historical Benchmarks from JSON resource.");
+                    logger.info("✅ Successfully loaded Historical Benchmarks ({} variables) from JSON resource.", BENCHMARK_DATASETS.size());
                 }
             } else {
                 logger.warn("⚠️ historical_cliodynamic_benchmarks.json resource not found, initializing fallback datasets.");

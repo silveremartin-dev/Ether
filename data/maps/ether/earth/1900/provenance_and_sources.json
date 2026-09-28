@@ -1,19 +1,19 @@
 {
   "epoch": 1900,
-  "era": "Epoch 1900",
+  "era": "Second Industrial Revolution & Belle Époque Imperial System (1900 AD)",
   "planet": "earth",
   "resolution": "2048x1024",
   "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
   "overview": {
-    "summary_en": "Global cartographic and tensor reconstruction of Earth for epoch 1900 (Epoch 1900). Includes empirical physical climate baselines (WorldClim v2.1 Bio1, Bio4, Bio12), ETOPO 2022 relief, HYDE 3.4 demographic grids, Seshat cultural dynamics, and USGS/BGS geological resource tensors.",
-    "summary_fr": "Reconstitution cartographique et tensorielle globale de la Terre pour l'époque 1900 (Epoch 1900). Intègre les références empiriques WorldClim v2.1, le relief ETOPO 2022, les grilles HYDE 3.4, la dynamique Seshat et les ressources géologiques USGS/BGS."
+    "summary_en": "Electrification, internal combustion engines, Bessemer steel, transcontinental railways, global telegraph cables, and High Imperialism.",
+    "summary_fr": "Électrification, moteurs à combustion interne, acier Bessemer, chemins de fer transcontinentaux, câbles télégraphiques et haut impérialisme."
   },
   "layers": {
     "elevation": {
       "filename": "earth_1900_elevation.png",
       "category": "geophysics",
       "data_sources": ["NOAA ETOPO 2022 15-arc-second Global Relief Model", "GEBCO 2023 Grid Bathymetric Model"],
-      "reconstitution_rationale": "High-fidelity elevation model calibrated against epoch eustatic sea level offset."
+      "reconstitution_rationale": "High-fidelity topography and bathymetry calibrated against epoch eustatic sea level offset."
     },
     "biomes": {
       "filename": "earth_1900_biomes.png",
@@ -43,36 +43,36 @@
       "filename": "earth_1900_density.png",
       "category": "demography",
       "data_sources": ["HYDE 3.4 History Database of the Global Environment", "Seshat Global History Databank"],
-      "reconstitution_rationale": "Authentic empirical demographic density field."
+      "reconstitution_rationale": "Empirical demographic density field."
     },
     "sovereignty": {
       "filename": "earth_1900_sovereignty.png",
       "category": "sociology",
-      "data_sources": ["Seshat Databank Polities", "Historical GIS Global Boundary Datasets"],
-      "reconstitution_rationale": "Multi-center polity sovereign domains."
+      "data_sources": ["Seshat Databank Polities (ClioPatria 2023)", "Historical GIS Global Boundary Datasets"],
+      "reconstitution_rationale": "Multi-center polity sovereign domains and political borders."
     },
     "isogloss": {
       "filename": "earth_1900_isogloss.png",
       "category": "linguistics",
-      "data_sources": ["WALS World Atlas of Language Structures", "D-PLACE Ethnolinguistic Database"],
-      "reconstitution_rationale": "Global ethnolinguistic phyla and language families."
+      "data_sources": ["WALS World Atlas of Language Structures", "Glottolog 4.8", "D-PLACE Ethnolinguistic Database"],
+      "reconstitution_rationale": "Global ethnolinguistic phyla, sub-branches, and dialectal zones."
     },
     "kinship": {
       "filename": "earth_1900_kinship.png",
       "category": "anthropology",
-      "data_sources": ["D-PLACE Murdock Ethnographic Atlas Kinship Codes"],
-      "reconstitution_rationale": "Spatial social structures and kinship organization modes."
+      "data_sources": ["D-PLACE Murdock Ethnographic Atlas Kinship Codes", "Todd Anthropological Family Systems Database"],
+      "reconstitution_rationale": "Spatial social structures, descent rules, and kinship organization modes."
     },
     "rituals": {
       "filename": "earth_1900_rituals.png",
       "category": "anthropology",
-      "data_sources": ["Archaeological Temple & Monumental Site Catalog"],
-      "reconstitution_rationale": "Sacred geography and monumental ritual intensity."
+      "data_sources": ["Archaeological Temple & Monumental Site Catalog", "World Religion Sacred Geography Datasets"],
+      "reconstitution_rationale": "Sacred geography, pilgrimage networks, and monumental ritual intensity."
     },
     "technology": {
       "filename": "earth_1900_technology.png",
       "category": "technology",
-      "data_sources": ["Archaeological Metallurgical & Innovation Datasets", "Maddison Project"],
+      "data_sources": ["Archaeological Metallurgical & Innovation Datasets", "Maddison Project Historical GDP/Tech"],
       "reconstitution_rationale": "Technological complexity index and diffusion fronts."
     },
     "institutional": {
@@ -84,19 +84,19 @@
     "ecological": {
       "filename": "earth_1900_ecological.png",
       "category": "ecology",
-      "data_sources": ["Global Land Use & Anthropogenic Deforestation Syntheses"],
-      "reconstitution_rationale": "Human ecological footprint and resource appropriation."
+      "data_sources": ["Global Land Use & Anthropogenic Deforestation Syntheses", "UN FAO Global Forest Resources"],
+      "reconstitution_rationale": "Human ecological footprint, agricultural clearing, and resource appropriation."
     },
     "pathogen": {
       "filename": "earth_1900_pathogen.png",
       "category": "epidemiology",
-      "data_sources": ["Paleoepidemiology & Ancient DNA Pathogen Catalogs"],
-      "reconstitution_rationale": "Endemic disease pressure, malaria/zoonotic zones, and immunity."
+      "data_sources": ["Paleoepidemiology & Ancient DNA Pathogen Catalogs", "WHO Global Infectious Disease Atlas"],
+      "reconstitution_rationale": "Endemic disease pressure, malaria/zoonotic vectors, and historical immunity."
     },
     "tradenetwork": {
       "filename": "earth_1900_tradenetwork.png",
       "category": "economics",
-      "data_sources": ["Historical Maritime & Overland Trade Route Atlases"],
+      "data_sources": ["Historical Maritime & Overland Trade Route Atlases", "Seshat Commercial Networks"],
       "reconstitution_rationale": "Commercial trade corridors, emporia, and maritime networks."
     },
     "coal": { "filename": "earth_1900_coal.png", "category": "geology", "data_sources": ["USGS World Coal Quality Inventory"] },

@@ -34,4 +34,4 @@ if [ -n "$RES" ]; then
 fi
 
 echo "🚀 Launching Master Node Server..."
-java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "$JAR_PATH" --headless --mode=cluster --role=master --port="${PORT}" --secret="${SECRET}" --scenario="${SCENARIO}" --ticks="${TICKS}" --cells="${CELLS}" ${RES_ARG} --profile
+java -Xms4g -Xmx12g -XX:+UseZGC --add-modules jdk.incubator.vector -XX:+UnlockDiagnosticVMOptions -XX:+UseSuperWord -XX:LoopUnrollLimit=1000 -jar "$JAR_PATH" --headless --mode=cluster --role=master --port="${PORT}" --secret="${SECRET}" --scenario="${SCENARIO}" --ticks="${TICKS}" --cells="${CELLS}" ${RES_ARG} --profile

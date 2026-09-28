@@ -1,0 +1,434 @@
+{
+  "_schema": "ether-historical-state-registry-v1.0",
+  "_description": "Piecewise-constant geopolitical transition registry. Each interval [t_start, t_end) defines a stable sovereign configuration epoch. Transitions are triggered by historically documented events (treaties, conquests, collapses, revolutions). NO interpolation between intervals is permitted — state is step-constant.",
+  "_sources": [
+    "Rein Taagepera (1978–1997) — Empire size and duration datasets",
+    "CShapes 2.0 (Schvitz et al. 2022) — Post-1886 state territory polygons",
+    "Seshat Global History Databank (Turchin et al. 2018) — Polity-level governance metrics",
+    "McEvedy & Jones (1978) — Atlas of World Population History",
+    "Josiah Cox Russell (1972) — Medieval Regions and their Cities",
+    "HYDE 3.4 (Klein Goldewijk et al. 2017) — Land use and population anchors"
+  ],
+  "transitions": [
+    {
+      "id": "T-3000_BRONZE_AGE_CORE",
+      "t_start": -3000,
+      "t_end": -2350,
+      "label": "Early Bronze Age — First City-States",
+      "trigger_event": "Emergence of Uruk IV proto-cuneiform administrative state and Egyptian Early Dynastic Period (~3100 BCE)",
+      "polity_states": [
+        {"name": "Uruk / Sumerian City-States",   "core_lon": 45.6,   "core_lat": 31.3,  "color": "#D97706", "radius_deg": 8.0},
+        {"name": "Early Dynastic Egypt",           "core_lon": 31.2,   "core_lat": 27.0,  "color": "#F59E0B", "radius_deg": 12.0},
+        {"name": "Indus Valley (Harappa)",         "core_lon": 72.9,   "core_lat": 30.6,  "color": "#16A085", "radius_deg": 10.0},
+        {"name": "Early Minoan Crete",             "core_lon": 25.0,   "core_lat": 35.2,  "color": "#8E44AD", "radius_deg": 4.0}
+      ]
+    },
+    {
+      "id": "T-2350_AKKADIAN_EMPIRE",
+      "t_start": -2350,
+      "t_end": -2100,
+      "label": "Akkadian Empire — First Territorial Conquest State",
+      "trigger_event": "Sargon of Akkad conquests (~2334 BCE) — first multi-ethnic administrative empire",
+      "polity_states": [
+        {"name": "Akkadian Empire",                "core_lon": 44.4,   "core_lat": 33.1,  "color": "#E67E22", "radius_deg": 14.0},
+        {"name": "Old Kingdom Egypt",              "core_lon": 31.2,   "core_lat": 29.5,  "color": "#F59E0B", "radius_deg": 12.0},
+        {"name": "Indus Valley Mature Phase",      "core_lon": 72.9,   "core_lat": 29.0,  "color": "#16A085", "radius_deg": 12.0}
+      ]
+    },
+    {
+      "id": "T-2100_UR_III",
+      "t_start": -2100,
+      "t_end": -1750,
+      "label": "Ur III / Middle Kingdom Egypt",
+      "trigger_event": "Ur III Neo-Sumerian renaissance (~2112 BCE) and Egyptian Middle Kingdom reunification (~2055 BCE)",
+      "polity_states": [
+        {"name": "Ur III Neo-Sumerian State",      "core_lon": 46.1,   "core_lat": 30.9,  "color": "#D97706", "radius_deg": 10.0},
+        {"name": "Middle Kingdom Egypt",           "core_lon": 32.5,   "core_lat": 27.0,  "color": "#F59E0B", "radius_deg": 14.0},
+        {"name": "Old Hittite Kingdom",            "core_lon": 34.0,   "core_lat": 40.0,  "color": "#95A5A6", "radius_deg": 8.0}
+      ]
+    },
+    {
+      "id": "T-1750_OLD_BABYLONIAN",
+      "t_start": -1750,
+      "t_end": -1500,
+      "label": "Old Babylonian / Hyksos / Shang Dynasty",
+      "trigger_event": "Hammurabi's Code (~1754 BCE), Hyksos invasion of Egypt (~1650 BCE), Shang Dynasty emergence (~1600 BCE)",
+      "polity_states": [
+        {"name": "Old Babylonian Empire",          "core_lon": 44.4,   "core_lat": 32.5,  "color": "#E67E22", "radius_deg": 12.0},
+        {"name": "New Kingdom Egypt (nascent)",    "core_lon": 32.6,   "core_lat": 25.7,  "color": "#F59E0B", "radius_deg": 14.0},
+        {"name": "Shang Dynasty China",            "core_lon": 114.3,  "core_lat": 34.7,  "color": "#EF4444", "radius_deg": 10.0},
+        {"name": "Minoan Palace Period",           "core_lon": 25.2,   "core_lat": 35.3,  "color": "#8E44AD", "radius_deg": 4.0}
+      ]
+    },
+    {
+      "id": "T-1500_LATE_BRONZE_AGE",
+      "t_start": -1500,
+      "t_end": -1200,
+      "label": "Late Bronze Age Palace Economies",
+      "trigger_event": "New Kingdom Egypt Thutmose III campaigns (~1479 BCE), Hittite Empire Suppiluliuma I (~1344 BCE), Mycenaean palace economy peak",
+      "polity_states": [
+        {"name": "New Kingdom Egypt",              "core_lon": 32.6,   "core_lat": 26.0,  "color": "#F59E0B", "radius_deg": 16.0},
+        {"name": "Hittite Empire",                 "core_lon": 34.6,   "core_lat": 39.9,  "color": "#95A5A6", "radius_deg": 14.0},
+        {"name": "Mycenaean Greece",               "core_lon": 22.4,   "core_lat": 37.7,  "color": "#8E44AD", "radius_deg": 6.0},
+        {"name": "Shang Dynasty",                  "core_lon": 114.3,  "core_lat": 34.7,  "color": "#EF4444", "radius_deg": 12.0},
+        {"name": "Vedic Culture (Indus Plains)",   "core_lon": 75.0,   "core_lat": 30.0,  "color": "#16A085", "radius_deg": 10.0}
+      ]
+    },
+    {
+      "id": "T-1200_BRONZE_AGE_COLLAPSE",
+      "t_start": -1200,
+      "t_end": -800,
+      "label": "Bronze Age Collapse — Post-Palatial Fragmentation",
+      "trigger_event": "Sea Peoples migrations (~1200 BCE), Hittite collapse, Mycenaean destruction — Eastern Mediterranean state vacuum",
+      "polity_states": [
+        {"name": "Egypt Third Intermediate Period","core_lon": 31.2,   "core_lat": 27.0,  "color": "#F39C12", "radius_deg": 10.0},
+        {"name": "Phoenician City-States",         "core_lon": 35.5,   "core_lat": 33.9,  "color": "#3498DB", "radius_deg": 5.0},
+        {"name": "Zhou Dynasty China",             "core_lon": 112.5,  "core_lat": 34.7,  "color": "#EF4444", "radius_deg": 14.0},
+        {"name": "Neo-Assyrian nascent",           "core_lon": 43.1,   "core_lat": 36.3,  "color": "#C0392B", "radius_deg": 8.0}
+      ]
+    },
+    {
+      "id": "T-800_IRON_AGE_EMPIRES",
+      "t_start": -800,
+      "t_end": -550,
+      "label": "Iron Age Imperial Consolidation",
+      "trigger_event": "Neo-Assyrian Empire peak (~750 BCE), Rome founding (~753 BCE), Greek polis network, Zhou Spring & Autumn period",
+      "polity_states": [
+        {"name": "Neo-Assyrian Empire",            "core_lon": 43.1,   "core_lat": 36.3,  "color": "#C0392B", "radius_deg": 18.0},
+        {"name": "Late Period Egypt",              "core_lon": 31.2,   "core_lat": 27.0,  "color": "#F39C12", "radius_deg": 10.0},
+        {"name": "Greek City-States Network",      "core_lon": 23.0,   "core_lat": 38.0,  "color": "#3498DB", "radius_deg": 8.0},
+        {"name": "Zhou Warring States",            "core_lon": 113.0,  "core_lat": 34.0,  "color": "#EF4444", "radius_deg": 18.0},
+        {"name": "Kingdom of Kush (Nubia)",        "core_lon": 32.5,   "core_lat": 18.0,  "color": "#E67E22", "radius_deg": 8.0}
+      ]
+    },
+    {
+      "id": "T-550_ACHAEMENID",
+      "t_start": -550,
+      "t_end": -334,
+      "label": "Achaemenid Persian Empire",
+      "trigger_event": "Cyrus the Great conquest of Media (-550 BCE), then Lydia (-547), Babylon (-539), Egypt (-525). Largest empire to date.",
+      "polity_states": [
+        {"name": "Achaemenid Persian Empire",      "core_lon": 53.7,   "core_lat": 32.7,  "color": "#F39C12", "radius_deg": 28.0},
+        {"name": "Greek City-States",              "core_lon": 23.0,   "core_lat": 38.0,  "color": "#3498DB", "radius_deg": 8.0},
+        {"name": "Nanda Empire (India nascent)",   "core_lon": 85.0,   "core_lat": 25.0,  "color": "#27AE60", "radius_deg": 10.0},
+        {"name": "Zhou Warring States",            "core_lon": 113.0,  "core_lat": 34.0,  "color": "#EF4444", "radius_deg": 18.0},
+        {"name": "Carthage",                       "core_lon": 10.2,   "core_lat": 36.8,  "color": "#8E44AD", "radius_deg": 8.0}
+      ]
+    },
+    {
+      "id": "T-334_ALEXANDER",
+      "t_start": -334,
+      "t_end": -280,
+      "label": "Macedonian Conquest — Alexander the Great",
+      "trigger_event": "Alexander III invasion of Persia (-334 BCE), conquest of Achaemenid Empire, extension to Bactria and Indus (-326 BCE)",
+      "polity_states": [
+        {"name": "Macedonian Empire",              "core_lon": 62.0,   "core_lat": 34.0,  "color": "#9B59B6", "radius_deg": 30.0},
+        {"name": "Qin / Chu China",                "core_lon": 108.0,  "core_lat": 33.0,  "color": "#EF4444", "radius_deg": 18.0},
+        {"name": "Maurya Empire (nascent)",        "core_lon": 80.0,   "core_lat": 25.0,  "color": "#27AE60", "radius_deg": 12.0}
+      ]
+    },
+    {
+      "id": "T-280_HELLENISTIC",
+      "t_start": -280,
+      "t_end": -30,
+      "label": "Hellenistic Successor Kingdoms & Roman Republic",
+      "trigger_event": "Diadochi fragmentation (-281 BCE): Seleucids, Ptolemies, Antigonids. Roman Republic expansion. Mauryan Empire peak.",
+      "polity_states": [
+        {"name": "Seleucid Empire",                "core_lon": 41.0,   "core_lat": 35.0,  "color": "#9B59B6", "radius_deg": 22.0},
+        {"name": "Ptolemaic Egypt",                "core_lon": 30.0,   "core_lat": 26.5,  "color": "#F39C12", "radius_deg": 12.0},
+        {"name": "Roman Republic",                 "core_lon": 12.5,   "core_lat": 41.9,  "color": "#C0392B", "radius_deg": 14.0},
+        {"name": "Mauryan Empire",                 "core_lon": 78.0,   "core_lat": 23.0,  "color": "#27AE60", "radius_deg": 18.0},
+        {"name": "Han Dynasty China",              "core_lon": 116.4,  "core_lat": 34.0,  "color": "#EF4444", "radius_deg": 22.0}
+      ]
+    },
+    {
+      "id": "T0_ROMAN_EMPIRE",
+      "t_start": -30,
+      "t_end": 284,
+      "label": "Roman Empire — Principate",
+      "trigger_event": "Battle of Actium (-31 BCE) ends Roman Republic; Augustus inaugurates Principate. Han China dominates East Asia. Parthia rules Mesopotamia.",
+      "polity_states": [
+        {"name": "Roman Empire",                   "core_lon": 12.5,   "core_lat": 41.9,  "color": "#C0392B", "radius_deg": 22.0},
+        {"name": "Parthian Empire",                "core_lon": 58.0,   "core_lat": 36.0,  "color": "#E67E22", "radius_deg": 18.0},
+        {"name": "Han Dynasty",                    "core_lon": 112.0,  "core_lat": 34.0,  "color": "#EF4444", "radius_deg": 24.0},
+        {"name": "Kushan Empire",                  "core_lon": 67.0,   "core_lat": 34.5,  "color": "#16A085", "radius_deg": 12.0}
+      ]
+    },
+    {
+      "id": "T284_LATE_ROME",
+      "t_start": 284,
+      "t_end": 476,
+      "label": "Late Roman Empire — Division & Tetrarchy",
+      "trigger_event": "Diocletian's tetrarchy reform (284 CE). Sassanid Persia replaces Parthians (224 CE). Western vs Eastern division deepens.",
+      "polity_states": [
+        {"name": "Western Roman Empire",           "core_lon": 7.0,    "core_lat": 43.0,  "color": "#C0392B", "radius_deg": 18.0},
+        {"name": "Eastern Roman Empire",           "core_lon": 28.9,   "core_lat": 41.0,  "color": "#E74C3C", "radius_deg": 14.0},
+        {"name": "Sassanid Empire",                "core_lon": 53.7,   "core_lat": 35.0,  "color": "#E67E22", "radius_deg": 18.0},
+        {"name": "Gupta Empire",                   "core_lon": 78.0,   "core_lat": 24.0,  "color": "#27AE60", "radius_deg": 14.0}
+      ]
+    },
+    {
+      "id": "T476_MIGRATIONS",
+      "t_start": 476,
+      "t_end": 632,
+      "label": "Migration Period — Germanic Successor Kingdoms",
+      "trigger_event": "Romulus Augustulus deposed (476 CE). Ostrogoths, Visigoths, Franks, Vandals partition Western Rome. Byzantine Empire persists.",
+      "polity_states": [
+        {"name": "Byzantine Empire",               "core_lon": 28.9,   "core_lat": 41.0,  "color": "#9B59B6", "radius_deg": 16.0},
+        {"name": "Sassanid Empire",                "core_lon": 51.4,   "core_lat": 35.7,  "color": "#E67E22", "radius_deg": 18.0},
+        {"name": "Frankish Kingdom",               "core_lon": 4.0,    "core_lat": 49.0,  "color": "#3498DB", "radius_deg": 10.0},
+        {"name": "Sui Dynasty China",              "core_lon": 108.9,  "core_lat": 34.3,  "color": "#EF4444", "radius_deg": 20.0},
+        {"name": "Gupta Decline / Harsha",         "core_lon": 80.0,   "core_lat": 26.0,  "color": "#27AE60", "radius_deg": 12.0}
+      ]
+    },
+    {
+      "id": "T632_ISLAMIC_EXPANSION",
+      "t_start": 632,
+      "t_end": 750,
+      "label": "Rashidun & Umayyad Caliphate — Arab Islamic Expansion",
+      "trigger_event": "Muhammad's death (632 CE) triggers Rashidun conquests. Umayyad Caliphate extends from Spain to Sindh by 711 CE.",
+      "polity_states": [
+        {"name": "Umayyad Caliphate",              "core_lon": 36.3,   "core_lat": 33.5,  "color": "#27AE60", "radius_deg": 30.0},
+        {"name": "Byzantine Empire",               "core_lon": 28.9,   "core_lat": 41.0,  "color": "#9B59B6", "radius_deg": 12.0},
+        {"name": "Tang Dynasty China",             "core_lon": 108.9,  "core_lat": 34.3,  "color": "#EF4444", "radius_deg": 24.0},
+        {"name": "Frankish Realm",                 "core_lon": 4.0,    "core_lat": 48.5,  "color": "#3498DB", "radius_deg": 12.0}
+      ]
+    },
+    {
+      "id": "T750_ABBASID",
+      "t_start": 750,
+      "t_end": 1000,
+      "label": "Abbasid Caliphate Golden Age & Carolingian Empire",
+      "trigger_event": "Abbasid revolution (750 CE), Baghdad founding (762 CE). Charlemagne crowned (800 CE). Tang China peaks then declines (907 CE).",
+      "polity_states": [
+        {"name": "Abbasid Caliphate",              "core_lon": 44.4,   "core_lat": 33.3,  "color": "#27AE60", "radius_deg": 28.0},
+        {"name": "Byzantine Empire",               "core_lon": 28.9,   "core_lat": 41.0,  "color": "#9B59B6", "radius_deg": 12.0},
+        {"name": "Carolingian / Holy Roman Empire","core_lon": 7.0,    "core_lat": 49.0,  "color": "#3498DB", "radius_deg": 14.0},
+        {"name": "Song Dynasty China (nascent)",   "core_lon": 120.2,  "core_lat": 30.3,  "color": "#EF4444", "radius_deg": 20.0},
+        {"name": "Pala Empire (India)",            "core_lon": 88.4,   "core_lat": 24.5,  "color": "#16A085", "radius_deg": 10.0}
+      ]
+    },
+    {
+      "id": "T1000_HIGH_MEDIEVAL",
+      "t_start": 1000,
+      "t_end": 1206,
+      "label": "High Medieval — Crusades, Song China, Seljuks",
+      "trigger_event": "Seljuk Turks defeat Byzantines at Manzikert (1071). First Crusade (1096). Song Dynasty commercial revolution. Norman expansion.",
+      "polity_states": [
+        {"name": "Seljuk Sultanate",               "core_lon": 36.0,   "core_lat": 37.5,  "color": "#E67E22", "radius_deg": 18.0},
+        {"name": "Byzantine Empire (reduced)",     "core_lon": 28.9,   "core_lat": 41.0,  "color": "#9B59B6", "radius_deg": 8.0},
+        {"name": "Holy Roman Empire",              "core_lon": 13.4,   "core_lat": 52.5,  "color": "#3498DB", "radius_deg": 14.0},
+        {"name": "Song Dynasty China",             "core_lon": 120.2,  "core_lat": 30.3,  "color": "#EF4444", "radius_deg": 20.0},
+        {"name": "Chola Empire",                   "core_lon": 79.1,   "core_lat": 11.0,  "color": "#D35400", "radius_deg": 8.0},
+        {"name": "Fatimid Caliphate (Egypt)",      "core_lon": 31.2,   "core_lat": 30.1,  "color": "#1ABC9C", "radius_deg": 10.0}
+      ]
+    },
+    {
+      "id": "T1206_MONGOL",
+      "t_start": 1206,
+      "t_end": 1368,
+      "label": "Mongol Empire — Pax Mongolica",
+      "trigger_event": "Genghis Khan proclaimed Khagan (1206). Mongol conquests: Persia (1219), Russia (1237), Poland/Hungary (1241), Baghdad (1258), Southern China (1279).",
+      "polity_states": [
+        {"name": "Mongol Empire / Il-Khanate",     "core_lon": 105.0,  "core_lat": 47.9,  "color": "#E74C3C", "radius_deg": 40.0},
+        {"name": "Golden Horde (Pontic Steppe)",   "core_lon": 45.0,   "core_lat": 48.0,  "color": "#C0392B", "radius_deg": 20.0},
+        {"name": "Delhi Sultanate",                "core_lon": 77.2,   "core_lat": 28.6,  "color": "#16A085", "radius_deg": 12.0},
+        {"name": "Mamluk Sultanate (Egypt)",       "core_lon": 31.2,   "core_lat": 30.1,  "color": "#F39C12", "radius_deg": 10.0},
+        {"name": "Kingdom of France",              "core_lon": 2.35,   "core_lat": 48.9,  "color": "#2563EB", "radius_deg": 10.0}
+      ]
+    },
+    {
+      "id": "T1368_EARLY_MODERN",
+      "t_start": 1368,
+      "t_end": 1492,
+      "label": "Ming China, Ottoman Rise, European Late Medieval",
+      "trigger_event": "Ming Dynasty founded (1368). Ottoman Mehmed II takes Constantinople (1453). Hundred Years War ends (1453). Aztec Empire consolidates.",
+      "polity_states": [
+        {"name": "Ming Dynasty China",             "core_lon": 116.4,  "core_lat": 39.9,  "color": "#EF4444", "radius_deg": 26.0},
+        {"name": "Ottoman Empire",                 "core_lon": 28.9,   "core_lat": 41.0,  "color": "#059669", "radius_deg": 18.0},
+        {"name": "Timurid Empire",                 "core_lon": 66.9,   "core_lat": 39.6,  "color": "#F39C12", "radius_deg": 16.0},
+        {"name": "Kingdom of France",              "core_lon": 2.35,   "core_lat": 48.9,  "color": "#2563EB", "radius_deg": 10.0},
+        {"name": "Crown of Castile",               "core_lon": -3.7,   "core_lat": 40.4,  "color": "#DC2626", "radius_deg": 10.0},
+        {"name": "Aztec Triple Alliance",          "core_lon": -99.1,  "core_lat": 19.4,  "color": "#D97706", "radius_deg": 8.0},
+        {"name": "Inca Empire (nascent)",          "core_lon": -71.5,  "core_lat": -13.5, "color": "#E67E22", "radius_deg": 10.0}
+      ]
+    },
+    {
+      "id": "T1492_COLUMBIAN",
+      "t_start": 1492,
+      "t_end": 1648,
+      "label": "Age of Exploration — Columbian Exchange & Global Empires",
+      "trigger_event": "Columbus reaches Americas (1492). Portuguese Estado da India (1505). Cortez conquers Aztecs (1521). Pizarro conquers Inca (1532). Treaty of Tordesillas (1494).",
+      "polity_states": [
+        {"name": "Spanish Empire",                 "core_lon": -3.7,   "core_lat": 40.4,  "color": "#DC2626", "radius_deg": 32.0},
+        {"name": "Portuguese Empire",              "core_lon": -9.1,   "core_lat": 38.7,  "color": "#10B981", "radius_deg": 28.0},
+        {"name": "Ottoman Empire",                 "core_lon": 28.9,   "core_lat": 41.0,  "color": "#059669", "radius_deg": 20.0},
+        {"name": "Safavid Empire",                 "core_lon": 51.4,   "core_lat": 35.7,  "color": "#0D9488", "radius_deg": 16.0},
+        {"name": "Ming Dynasty China",             "core_lon": 116.4,  "core_lat": 39.9,  "color": "#EF4444", "radius_deg": 24.0},
+        {"name": "Mughal Empire",                  "core_lon": 77.2,   "core_lat": 28.6,  "color": "#F59E0B", "radius_deg": 16.0}
+      ]
+    },
+    {
+      "id": "T1648_WESTPHALIA",
+      "t_start": 1648,
+      "t_end": 1789,
+      "label": "Westphalian State System — Sovereign Absolutism",
+      "trigger_event": "Peace of Westphalia (1648) establishes territorial sovereignty as international norm. End of 30 Years War / Eighty Years War. Rise of France under Louis XIV.",
+      "polity_states": [
+        {"name": "Kingdom of France",              "core_lon": 2.35,   "core_lat": 48.9,  "color": "#2563EB", "radius_deg": 14.0},
+        {"name": "Spanish Empire",                 "core_lon": -3.7,   "core_lat": 40.4,  "color": "#DC2626", "radius_deg": 28.0},
+        {"name": "Ottoman Empire",                 "core_lon": 28.9,   "core_lat": 41.0,  "color": "#059669", "radius_deg": 20.0},
+        {"name": "Russian Tsardom",                "core_lon": 37.6,   "core_lat": 55.8,  "color": "#7C3AED", "radius_deg": 30.0},
+        {"name": "Qing Dynasty China",             "core_lon": 116.4,  "core_lat": 39.9,  "color": "#EF4444", "radius_deg": 26.0},
+        {"name": "Mughal Empire",                  "core_lon": 77.2,   "core_lat": 28.6,  "color": "#F59E0B", "radius_deg": 18.0},
+        {"name": "British Isles",                  "core_lon": -0.1,   "core_lat": 51.5,  "color": "#B91C1C", "radius_deg": 6.0}
+      ]
+    },
+    {
+      "id": "T1789_REVOLUTIONS",
+      "t_start": 1789,
+      "t_end": 1815,
+      "label": "Revolutionary & Napoleonic Wars",
+      "trigger_event": "French Revolution (1789). Declaration of Rights of Man. Napoleonic Wars reshape European borders 1803–1815.",
+      "polity_states": [
+        {"name": "French Republic / Empire",       "core_lon": 2.35,   "core_lat": 48.9,  "color": "#2563EB", "radius_deg": 20.0},
+        {"name": "British Empire",                 "core_lon": -0.1,   "core_lat": 51.5,  "color": "#B91C1C", "radius_deg": 28.0},
+        {"name": "Russian Empire",                 "core_lon": 37.6,   "core_lat": 55.8,  "color": "#7C3AED", "radius_deg": 35.0},
+        {"name": "Qing Dynasty China",             "core_lon": 116.4,  "core_lat": 39.9,  "color": "#EF4444", "radius_deg": 26.0},
+        {"name": "Ottoman Empire (declining)",     "core_lon": 28.9,   "core_lat": 41.0,  "color": "#059669", "radius_deg": 16.0},
+        {"name": "United States of America",       "core_lon": -77.0,  "core_lat": 38.9,  "color": "#3B82F6", "radius_deg": 14.0}
+      ]
+    },
+    {
+      "id": "T1815_CONCERT_OF_EUROPE",
+      "t_start": 1815,
+      "t_end": 1871,
+      "label": "Concert of Europe — Congress of Vienna Balance of Power",
+      "trigger_event": "Congress of Vienna (1815) redraws European map. Pax Britannica global naval order. Industrial Revolution accelerates in Britain.",
+      "polity_states": [
+        {"name": "British Empire",                 "core_lon": -0.1,   "core_lat": 51.5,  "color": "#B91C1C", "radius_deg": 32.0},
+        {"name": "Russian Empire",                 "core_lon": 37.6,   "core_lat": 55.8,  "color": "#7C3AED", "radius_deg": 38.0},
+        {"name": "Austrian Empire / Habsburg",     "core_lon": 16.4,   "core_lat": 48.2,  "color": "#F59E0B", "radius_deg": 14.0},
+        {"name": "Kingdom of France (Bourbon)",    "core_lon": 2.35,   "core_lat": 48.9,  "color": "#2563EB", "radius_deg": 12.0},
+        {"name": "Qing Dynasty China",             "core_lon": 116.4,  "core_lat": 39.9,  "color": "#EF4444", "radius_deg": 26.0},
+        {"name": "United States of America",       "core_lon": -90.0,  "core_lat": 40.0,  "color": "#3B82F6", "radius_deg": 22.0},
+        {"name": "Ottoman Empire (Tanzimat)",      "core_lon": 28.9,   "core_lat": 41.0,  "color": "#059669", "radius_deg": 14.0}
+      ]
+    },
+    {
+      "id": "T1871_NEW_IMPERIALISM",
+      "t_start": 1871,
+      "t_end": 1914,
+      "label": "New Imperialism — German Unification & Scramble for Africa",
+      "trigger_event": "German Empire proclaimed (1871). Meiji Restoration industrialization. Berlin Conference Africa partition (1884). Sino-Japanese War (1895).",
+      "polity_states": [
+        {"name": "British Empire",                 "core_lon": -0.1,   "core_lat": 51.5,  "color": "#B91C1C", "radius_deg": 35.0},
+        {"name": "French Empire (Third Republic)", "core_lon": 2.35,   "core_lat": 48.9,  "color": "#2563EB", "radius_deg": 24.0},
+        {"name": "German Empire",                  "core_lon": 13.4,   "core_lat": 52.5,  "color": "#1E293B", "radius_deg": 16.0},
+        {"name": "Russian Empire",                 "core_lon": 37.6,   "core_lat": 55.8,  "color": "#7C3AED", "radius_deg": 38.0},
+        {"name": "United States of America",       "core_lon": -98.0,  "core_lat": 40.0,  "color": "#3B82F6", "radius_deg": 28.0},
+        {"name": "Meiji Japan",                    "core_lon": 139.7,  "core_lat": 35.7,  "color": "#E11D48", "radius_deg": 12.0},
+        {"name": "Qing Dynasty China (declining)", "core_lon": 116.4,  "core_lat": 39.9,  "color": "#EF4444", "radius_deg": 24.0},
+        {"name": "Ottoman Empire (terminal)",      "core_lon": 28.9,   "core_lat": 41.0,  "color": "#059669", "radius_deg": 12.0},
+        {"name": "Austro-Hungarian Empire",        "core_lon": 16.4,   "core_lat": 48.2,  "color": "#F59E0B", "radius_deg": 14.0}
+      ]
+    },
+    {
+      "id": "T1914_WWI",
+      "t_start": 1914,
+      "t_end": 1919,
+      "label": "World War I",
+      "trigger_event": "Assassination of Archduke Franz Ferdinand (28 June 1914). Entente vs Central Powers. Russian Revolution (1917). United States entry (1917).",
+      "polity_states": [
+        {"name": "British Empire (Entente)",       "core_lon": -0.1,   "core_lat": 51.5,  "color": "#B91C1C", "radius_deg": 35.0},
+        {"name": "French Republic (Entente)",      "core_lon": 2.35,   "core_lat": 48.9,  "color": "#2563EB", "radius_deg": 14.0},
+        {"name": "Russian Empire / Soviet (1917)", "core_lon": 37.6,   "core_lat": 55.8,  "color": "#7C3AED", "radius_deg": 36.0},
+        {"name": "German Empire (Central Powers)", "core_lon": 13.4,   "core_lat": 52.5,  "color": "#1E293B", "radius_deg": 16.0},
+        {"name": "Austria-Hungary",                "core_lon": 16.4,   "core_lat": 48.2,  "color": "#F59E0B", "radius_deg": 14.0},
+        {"name": "Ottoman Empire (Central Powers)","core_lon": 28.9,   "core_lat": 41.0,  "color": "#059669", "radius_deg": 12.0},
+        {"name": "United States (1917)",           "core_lon": -98.0,  "core_lat": 40.0,  "color": "#3B82F6", "radius_deg": 28.0},
+        {"name": "Japan (Entente)",                "core_lon": 139.7,  "core_lat": 35.7,  "color": "#E11D48", "radius_deg": 12.0}
+      ]
+    },
+    {
+      "id": "T1919_VERSAILLES",
+      "t_start": 1919,
+      "t_end": 1939,
+      "label": "Interwar Period — League of Nations & Mandates",
+      "trigger_event": "Treaty of Versailles (1919). League of Nations founded. New European states. Ottoman collapse → Atatürk's Turkey (1923). Soviet Union (1922). Weimar Republic.",
+      "polity_states": [
+        {"name": "British Empire",                 "core_lon": -0.1,   "core_lat": 51.5,  "color": "#B91C1C", "radius_deg": 35.0},
+        {"name": "French Empire (Mandates)",       "core_lon": 2.35,   "core_lat": 48.9,  "color": "#2563EB", "radius_deg": 26.0},
+        {"name": "Soviet Union (USSR)",            "core_lon": 37.6,   "core_lat": 55.8,  "color": "#DC2626", "radius_deg": 38.0},
+        {"name": "Weimar Germany",                 "core_lon": 13.4,   "core_lat": 52.5,  "color": "#374151", "radius_deg": 12.0},
+        {"name": "United States of America",       "core_lon": -98.0,  "core_lat": 40.0,  "color": "#3B82F6", "radius_deg": 28.0},
+        {"name": "Republic of China",              "core_lon": 116.4,  "core_lat": 39.9,  "color": "#EF4444", "radius_deg": 22.0},
+        {"name": "Empire of Japan",                "core_lon": 139.7,  "core_lat": 35.7,  "color": "#E11D48", "radius_deg": 16.0},
+        {"name": "Kingdom of Italy",               "core_lon": 12.5,   "core_lat": 41.9,  "color": "#10B981", "radius_deg": 12.0}
+      ]
+    },
+    {
+      "id": "T1939_WWII",
+      "t_start": 1939,
+      "t_end": 1945,
+      "label": "World War II",
+      "trigger_event": "German invasion of Poland (1 Sep 1939). Axis vs Allies. Pacific War (1941). Holocaust. Atomic bombs Hiroshima & Nagasaki (1945). UN Charter.",
+      "polity_states": [
+        {"name": "Allied Powers (UK/US/USSR)",     "core_lon": 0.0,    "core_lat": 50.0,  "color": "#2563EB", "radius_deg": 40.0},
+        {"name": "Nazi Germany",                   "core_lon": 13.4,   "core_lat": 52.5,  "color": "#374151", "radius_deg": 18.0},
+        {"name": "Imperial Japan",                 "core_lon": 139.7,  "core_lat": 35.7,  "color": "#E11D48", "radius_deg": 22.0},
+        {"name": "Soviet Union",                   "core_lon": 50.0,   "core_lat": 58.0,  "color": "#DC2626", "radius_deg": 40.0},
+        {"name": "United States of America",       "core_lon": -98.0,  "core_lat": 40.0,  "color": "#3B82F6", "radius_deg": 28.0},
+        {"name": "British Empire (at war)",        "core_lon": -0.1,   "core_lat": 51.5,  "color": "#B91C1C", "radius_deg": 30.0}
+      ]
+    },
+    {
+      "id": "T1945_COLD_WAR",
+      "t_start": 1945,
+      "t_end": 1991,
+      "label": "Cold War — Bipolar World Order",
+      "trigger_event": "Yalta (Feb 1945) and Potsdam (Jul 1945) conferences. UN founding. NATO (1949). Decolonization wave. Korean War (1950). Cuban Missile Crisis (1962). Non-Aligned Movement (Bandung 1955).",
+      "polity_states": [
+        {"name": "USA / NATO Western Bloc",        "core_lon": -77.0,  "core_lat": 38.9,  "color": "#2563EB", "radius_deg": 32.0},
+        {"name": "Soviet Union / Warsaw Pact",     "core_lon": 37.6,   "core_lat": 55.8,  "color": "#DC2626", "radius_deg": 40.0},
+        {"name": "People's Republic of China",     "core_lon": 116.4,  "core_lat": 39.9,  "color": "#EF4444", "radius_deg": 26.0},
+        {"name": "Republic of India",              "core_lon": 77.2,   "core_lat": 28.6,  "color": "#F59E0B", "radius_deg": 18.0},
+        {"name": "Non-Aligned Movement",           "core_lon": 106.8,  "core_lat": -6.2,  "color": "#10B981", "radius_deg": 22.0},
+        {"name": "European Community (EEC)",       "core_lon": 4.35,   "core_lat": 50.9,  "color": "#3B82F6", "radius_deg": 12.0}
+      ]
+    },
+    {
+      "id": "T1991_UNIPOLAR",
+      "t_start": 1991,
+      "t_end": 2008,
+      "label": "Post-Cold War — Unipolar Moment & Globalization",
+      "trigger_event": "Dissolution of the USSR (26 Dec 1991). Maastricht Treaty / EU (1993). WTO (1995). NATO expansion eastward. 9/11 (2001). Global Financial integration.",
+      "polity_states": [
+        {"name": "United States (Hyperpower)",     "core_lon": -77.0,  "core_lat": 38.9,  "color": "#2563EB", "radius_deg": 35.0},
+        {"name": "European Union",                 "core_lon": 4.35,   "core_lat": 50.9,  "color": "#3B82F6", "radius_deg": 14.0},
+        {"name": "Russian Federation",             "core_lon": 37.6,   "core_lat": 55.8,  "color": "#7C3AED", "radius_deg": 32.0},
+        {"name": "People's Republic of China",     "core_lon": 116.4,  "core_lat": 39.9,  "color": "#EF4444", "radius_deg": 26.0},
+        {"name": "Republic of India",              "core_lon": 77.2,   "core_lat": 28.6,  "color": "#F59E0B", "radius_deg": 18.0},
+        {"name": "Japan",                          "core_lon": 139.7,  "core_lat": 35.7,  "color": "#E11D48", "radius_deg": 10.0}
+      ]
+    },
+    {
+      "id": "T2008_MULTIPOLAR",
+      "t_start": 2008,
+      "t_end": 2060,
+      "label": "Emerging Multipolarity — Post-Financial Crisis",
+      "trigger_event": "Global Financial Crisis (2008). China surpasses Japan as 2nd largest economy (2010). Arab Spring (2011). Rise of BRICS. COVID-19 pandemic (2020). Ukraine War (2022). AI industrial revolution (2023+).",
+      "polity_states": [
+        {"name": "United States of America",       "core_lon": -77.0,  "core_lat": 38.9,  "color": "#2563EB", "radius_deg": 30.0},
+        {"name": "European Union",                 "core_lon": 4.35,   "core_lat": 50.9,  "color": "#3B82F6", "radius_deg": 14.0},
+        {"name": "People's Republic of China",     "core_lon": 116.4,  "core_lat": 39.9,  "color": "#DC2626", "radius_deg": 30.0},
+        {"name": "Russian Federation",             "core_lon": 37.6,   "core_lat": 55.8,  "color": "#7C3AED", "radius_deg": 32.0},
+        {"name": "Republic of India",              "core_lon": 77.2,   "core_lat": 28.6,  "color": "#F59E0B", "radius_deg": 22.0},
+        {"name": "Middle East / Gulf States",      "core_lon": 45.0,   "core_lat": 24.0,  "color": "#EA580C", "radius_deg": 16.0},
+        {"name": "Africa (AU)",                    "core_lon": 20.0,   "core_lat": 5.0,   "color": "#D97706", "radius_deg": 28.0},
+        {"name": "Latin America (CELAC)",          "core_lon": -58.0,  "core_lat": -15.0, "color": "#10B981", "radius_deg": 25.0},
+        {"name": "ASEAN Southeast Asia",           "core_lon": 106.8,  "core_lat": -6.2,  "color": "#06B6D4", "radius_deg": 20.0}
+      ]
+    }
+  ]
+}

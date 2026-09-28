@@ -24,9 +24,18 @@ public class H3ClimateSystem {
     private double elevationLapseRate = 0.006; // °C drop per meter
 
     private org.ether.society.gpu.GPUManager gpuManager;
+    private org.ether.society.gpu.GPUComputeShaderPipeline computePipeline;
 
     public void setGpuManager(org.ether.society.gpu.GPUManager gpuManager) {
         this.gpuManager = gpuManager;
+        this.computePipeline = new org.ether.society.gpu.GPUComputeShaderPipeline();
+    }
+
+    public org.ether.society.gpu.GPUComputeShaderPipeline getComputePipeline() {
+        if (computePipeline == null) {
+            computePipeline = new org.ether.society.gpu.GPUComputeShaderPipeline();
+        }
+        return computePipeline;
     }
 
     /**

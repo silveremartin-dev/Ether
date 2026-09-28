@@ -9,8 +9,8 @@ set -euo pipefail
 PROJECT_ID="${1:-ether-509812}"
 ZONE="${2:-europe-west1-b}"
 REGION="${3:-europe-west1}"
-MASTER_TYPE="${4:-e2-standard-4}"
-WORKER_TYPE="${5:-e2-standard-4}"
+MASTER_TYPE="${4:-c2-standard-4}"
+WORKER_TYPE="${5:-c2-standard-4}"
 CREATE_WORKER="${6:-true}"
 
 echo "=========================================================="

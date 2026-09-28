@@ -1,43 +1,54 @@
-# Earth Epoch 2035: Hiver Nucléaire & Ombre Stratosphérique (2035)
+# Earth Epoch 2035: Near-Future Demographic Transition & Clean Energy Scaling (2035 AD)
 
 ## 🌍 Overview
-This directory contains the standardized 25-layer cartographic raster tensor suite and cliodynamic registries for Earth at epoch **2035 BP** (Hiver Nucléaire & Ombre Stratosphérique (2035)).
+This directory contains the standardized 25-layer cartographic raster tensor suite and cliodynamic registries for Earth at epoch **2035** (Near-Future Demographic Transition & Clean Energy Scaling (2035 AD)).
 
 All raster layers are generated in equirectangular projection (Plate Carrée, EPSG:4326) at **2048x1024** resolution with bit-identical determinism.
+
+### Context & Archaeological/Historical Horizon
+* **Era**: Near-Future Demographic Transition & Clean Energy Scaling (2035 AD)
+* **Technocomplex**: Solid-State Storage, Fusion Pilot Plants, Autonomous Robotic Freight & Synthetic Biology Bioreactors
+* **Social / Family Horizon**: Flexible Urban Eco-Communities & Automated Labor Households
+* **Estimated Caloric Baseline**: 3400 kcal/capita/day
 
 ## 🗺️ Standard Cartographic Layers (25 PNG Rasters)
 
 ### Physical & Climate Layers
-* `earth_2035_elevation.png`: NOAA ETOPO 2022 / GEBCO Topography & Bathymetry.
+* `earth_2035_elevation.png`: NOAA ETOPO 2022 / GEBCO Topography & Bathymetry calibrated to epoch sea level.
 * `earth_2035_biomes.png`: Coupled Holdridge-Whittaker Bioclimatic Ecology.
-* `earth_2035_temperature.png`: WorldClim v2.1 Annual Mean Temperature (°C).
-* `earth_2035_precipitation.png`: WorldClim v2.1 Annual Precipitation (mm/year).
-* `earth_2035_seasonality.png`: Temperature Seasonality Amplitude (°C range).
+* `earth_2035_temperature.png`: WorldClim v2.1 Annual Mean Temperature (°C) modulated by epoch paleoclimate anomalies.
+* `earth_2035_precipitation.png`: WorldClim v2.1 Annual Precipitation (mm/year) with ITCZ/monsoonal shifts.
+* `earth_2035_seasonality.png`: Temperature Seasonality Amplitude (°C range) driven by Milankovitch orbital solutions.
 
 ### Cliodynamic & Cultural Tensors
-* `earth_2035_density.png`: HYDE 3.4 / Seshat Human Demographic Density.
-* `earth_2035_sovereignty.png`: Political Sovereignty & Territorial Polity Domains.
-* `earth_2035_isogloss.png`: Ethnolinguistic Phyla & Language Families.
-* `earth_2035_kinship.png`: Murdock D-PLACE Kinship & Social Organization Systems.
+* `earth_2035_density.png`: HYDE 3.4 / Seshat Human Demographic Density field.
+* `earth_2035_sovereignty.png`: Political Sovereignty & Territorial Polity Domains (Seshat ClioPatria / Historical GIS).
+* `earth_2035_isogloss.png`: Ethnolinguistic Phyla & Sub-Branch Dialectal Zones (Glottolog 4.8 / WALS).
+* `earth_2035_kinship.png`: Murdock D-PLACE & Emmanuel Todd Kinship & Social Organization Systems.
 * `earth_2035_rituals.png`: Monumental Ritual Centers & Sacred Traditions.
-* `earth_2035_technology.png`: Technology & Innovation Complexity Index.
-* `earth_2035_institutional.png`: Seshat Institutional Hierarchy & State Capacity.
-* `earth_2035_ecological.png`: Anthropogenic Ecological Footprint.
-* `earth_2035_pathogen.png`: Epidemiological & Endemic Pathogen Load.
-* `earth_2035_tradenetwork.png`: Commercial Trade Arteries, Emporia & Ports.
+* `earth_2035_technology.png`: Technology & Innovation Complexity Index (Maddison / Archaeological Catalogs).
+* `earth_2035_institutional.png`: Seshat Institutional Hierarchy & State Capacity Scales.
+* `earth_2035_ecological.png`: Anthropogenic Ecological Footprint & Land Transformation.
+* `earth_2035_pathogen.png`: Epidemiological & Endemic Pathogen Load (Paleoepidemiology & WHO).
+* `earth_2035_tradenetwork.png`: Commercial Trade Arteries, Emporia, Caravans & Ports.
 
 ### Geological & Energy Resources
 * `earth_2035_coal.png`: Coal Basins (USGS WoCQI).
-* `earth_2035_oil.png`: Conventional & Unconventional Petroleum Plays.
-* `earth_2035_gas.png`: Natural Gas Formations.
-* `earth_2035_uranium.png`: Uranium Mineral Deposits (IAEA).
-* `earth_2035_helium3.png`: Mantle Plume Helium-3 Sources.
+* `earth_2035_oil.png`: Conventional & Unconventional Petroleum Plays (USGS).
+* `earth_2035_gas.png`: Natural Gas Formations (USGS).
+* `earth_2035_uranium.png`: Uranium Mineral Deposits (IAEA / NEA Red Book).
+* `earth_2035_helium3.png`: Mantle Plume Helium-3 Outgassing Sources (USGS).
 * `earth_2035_iron_copper.png`: Iron & Copper Mineralization (USGS MRDS).
 * `earth_2035_precious_metals.png`: Gold, Silver & Platinum Group Deposits.
 * `earth_2035_rare_earths.png`: Critical Rare Earth Elements (REE).
 * `earth_2035_geothermal.png`: Terrestrial Heat Flow & Geothermal Gradients (IHFC).
 * `earth_2035_aquifers.png`: Deep Regional Groundwater Aquifers (UNESCO WHYMAP).
 
-## 📄 Associated Data Files
-* `cultural_registry.json`: Multilingual metadata for all polities and ethnocultural entities.
+## 🔬 Decoupling Rationale ($t = t_0$ vs Dynamical Ticks $t > t_0$)
+In strict accordance with `AGENTS.md` Directives:
+1. **Initial Conditions ($t = t_0$)**: The 25 raster layers define the empirically calibrated spatial state at initialization.
+2. **Dynamical Simulation Engine ($t > t_0$)**: Once launched, the physical engines (Energy Balance Climate Models, Darcy groundwater flow, Lotka metabolic energetics, and Turchin cliodynamics) dynamically evolve population, technology, culture, and sovereign borders without synthetic lock-in.
+
+## 📄 Associated Metadata Files
+* `cultural_registry.json`: Multilingual entity registry (EN, FR, DE, ES, ZH) with trait vectors and kinship metadata.
 * `provenance_and_sources.json`: Exhaustive academic citations, datasets, and physical calibration rationale.

@@ -113,35 +113,87 @@ All reference maps are stored as uncompressed 2:1 equirectangular rasters under 
 
 ---
 
-## 6. Global & Planetary Geospatial Datasets Attribution
+## 6. Cartographic Matrix Layer Pre-generation & Historical Epoch Standards
 
-| Dataset | Issuing Institution / Authors | Resolution / Coverage | License | Citation / URL |
-|---|---|---|---|---|
-| **ETOPO1 Global Relief Model** | NOAA National Centers for Environmental Information (NCEI) | 1 arc-minute (~1.8 km) global relief & bathymetry | Public Domain (U.S. Govt) | Amante & Eakins (2009), NOAA Tech Memo NESDIS NGDC-24. [DOI: 10.7289/V5C8276M](https://doi.org/10.7289/V5C8276M) |
-| **GEBCO 2023 / 2024 Grid** | General Bathymetric Chart of the Oceans / IHO-IOC | 15 arc-second sub-surface bathymetry & elevation | Public Domain / CC BY 4.0 | GEBCO Compilation Group (2023). [https://www.gebco.net](https://www.gebco.net) |
-| **WWF Terrestrial Ecoregions** | World Wildlife Fund (WWF) | Global biomes & 867 ecoregions | CC BY 4.0 | Olson, D. M., et al. (2001). *Terrestrial Ecoregions of the World: A New Map of Life on Earth*. BioScience, 51(11), 933-938. |
-| **USGS MRDS** | U.S. Geological Survey | Global mineral deposits, ores, and mines | Public Domain (USGS) | Mineral Resources Data System. [https://mrdata.usgs.gov/mrds/](https://mrdata.usgs.gov/mrds/) |
-| **PMIP4 / CMIP6 Paleoclimate** | World Climate Research Programme (WCRP) | Mid-Holocene, LGM, LIG climate grids | Open Access / CMIP6 terms | Kageyama, M., et al. (2018). *The PMIP4 contribution to CMIP6*. Geoscientific Model Development, 11, 1033-1057. [DOI: 10.5194/gmd-11-1033-2018](https://doi.org/10.5194/gmd-11-1033-2018) |
-| **HYDE 3.2 / 3.4** | Netherlands Environmental Assessment Agency (PBL) | Historical population, cropland, and pasture (-10,000 BC–Present) | CC BY 4.0 | Klein Goldewijk, K., et al. (2017). *Anthropogenic land use estimates for the Holocene*. Earth System Science Data, 9, 927-953. [DOI: 10.5194/essd-9-927-2017](https://doi.org/10.5194/essd-9-927-2017) |
-| **Natural Earth** | Natural Earth Contributors | Coastlines, boundaries, rivers, physical geography | Public Domain | [https://www.naturalearthdata.com](https://www.naturalearthdata.com) |
-| **NASA GIBS** | NASA Earth Science Data and Information System | Global near real-time & historical planetary imagery | Public Domain (NASA) | [https://wiki.earthdata.nasa.gov/display/GIBS](https://wiki.earthdata.nasa.gov/display/GIBS) |
-| **NASA PDS Planetary Cartography** | NASA Planetary Data System / USGS Astrogeology | Lunar LRO LOLA DEM, Mars MGS MOLA DEM, Venus Magellan SAR, Mercury MESSENGER MLA DEM | Public Domain (NASA) | [https://pds.nasa.gov](https://pds.nasa.gov) |
-| **IAEA PRIS** | International Atomic Energy Agency | Global nuclear power reactor database & operational safety data | Open Data (IAEA) | [https://pris.iaea.org](https://pris.iaea.org) |
-| **BGR World Energy Resources** | Federal Institute for Geosciences and Natural Resources (Germany) | Global fossil energy reserves, uranium, and geothermal flux | Open Access (BGR) | BGR (2022). *Energy Study: Reserves, Resources and Availability of Energy Raw Materials*. |
-| **PANGAEA** | Data Publisher for Earth & Environmental Science | Marine sediment cores, paleoclimate proxies, ice core $\delta^{18}\text{O}$ and $\text{CO}_2$ | CC BY 3.0 / CC BY 4.0 | [https://www.pangaea.de](https://www.pangaea.de) |
-| **WHYMAP Groundwater Data** | UNESCO / BGR | Global groundwater aquifer geometry, thickness & recharge rates | CC BY-NC-SA 3.0 IGO | Struckmeier, W., et al. (2008). *WHYMAP Groundwater Resources of the World*. |
+For every supported historical epoch (from -100,000 BP to present-day) in `data/maps/ether/<planet>/<year>/`:
+
+### 6.1 Standard 25-Channel Tensor Schema
+Every pre-generated epoch directory contains 25 standardized geospatial rasters (2:1 equirectangular PNG, 2048×1024 or higher) reprojected to the planetary Uber H3 discrete global mesh:
+
+1. **Geophysical & Topographic Tensors (Channels 1–6)**:
+   - `elevation.png` (Topography & Bathymetry, NOAA ETOPO 2022 / GEBCO).
+   - `temperature_annual.png` & `temperature_seasonality.png` (WorldClim v2.1 / Paleoclimate).
+   - `precipitation_annual.png` (Total annual moisture flux).
+   - `aquifers_groundwater.png` (UNESCO WHYMAP Piezometric water tables).
+   - `geothermal_heatflow.png` (IHFC Davies 2013 heat flow grid).
+2. **Pedological & Resource Tensors (Channels 7–13)**:
+   - `biomes_landcover.png` (NASA MODIS / Paleo-vegetation reconstructions).
+   - `soil_organic_carbon.png` & `soil_nitrogen_phosphorus.png` (Liebig nutrient stocks).
+   - `coal_deposits.png`, `oil_gas_reserves.png`, `iron_copper_ores.png`, `uranium_deposits.png` (USGS MRDS / BGR).
+3. **Cliodynamic & Anthropogenic Tensors (Channels 14–21)**:
+   - `demographic_density.png` (HYDE 3.4 log-density gradient).
+   - `political_sovereignty.png` (Polity territorial masks & border frontiers).
+   - `institutional_complexity.png` (Seshat administrative hierarchy index).
+   - `technology_metallurgy.png` (Lithic / Bronze / Iron / Industrial technology isochrones).
+   - `trade_corridors.png` (Caravan, riverine, and maritime commercial flux).
+   - `linguistic_isoglosses.png` (Glottolog dialect continua).
+   - `kinship_structures.png` (Murdock ethnographic descent systems).
+   - `sacred_rituals.png` (Sacred geography & ritual architectures).
+4. **Epidemiological & Ecological Impact Tensors (Channels 22–25)**:
+   - `pathogen_zoonotic_risk.png` (Endemic disease burden & vector suitability).
+   - `megafauna_density.png` (Late Pleistocene / Holocene megafauna biomass).
+   - `ecological_footprint.png` (Soil salinization, deforestation & degradation).
+   - `agricultural_carrying_capacity.png` (Agro-climatic caloric potential).
+
+### 6.2 Provenance Documentation Contract
+Each epoch directory MUST include:
+- `provenance_and_sources.json`: Machine-readable metadata specifying the exact data provider, DOI, spatial resolution, interpolation kernel (e.g. Kriging, PCHIP, Bilinear), and coordinate reference system.
+- `README.md`: English technical narrative detailing archaeological hearths, historical boundaries, paleoclimatic ice-sheet configurations, and methodological assumptions.
+
+### 6.3 Pre-generation Execution Workflow
+1. **Automated Rasterization**: Run the offline tensor generator (`HistoricalMapGenerator.java` / GIS ingest runner) to bake equirectangular rasters for keyframe anchor years:
+   ```bash
+   # Pre-render keyframe tensor layers for Earth scenarios
+   mvn test -Dtest=CartographicPreGenerationSuite
+   ```
+2. **H3 Discrete Mesh Packing**: Rasters are sampled onto H3 cell centroids ($O(N)$ lookup) and saved as packed binary `WorldBuffer` structures for sub-millisecond scenario loading.
+3. **Dynamic Scrubbing in Tab 6**: When scrubbing between keyframe anchors on the Comparative Analytics date slider, the engine applies real-time geodesic interpolation, enabling smooth continuous playback across 100,000 years.
 
 ---
 
-## 7. Macro-Historical & Cliodynamic Data Benchmarks
+## 7. Macro-Historical & Cliodynamic Data Benchmarks (27-Variable Suite)
 
-| Project / Archive | Lead Institution / Authors | Coverage | Benchmark Usage in Ether | Citation / URL |
+Ether maintains a standardized 27-variable ground truth benchmark suite (`historical_cliodynamic_benchmarks.json`) spanning 100,000 BCE to 2026 CE:
+
+| Benchmark Key | Variable Name | Physical / Macroeconomic Unit | Empirical Source Citation | Epoch Window |
 |---|---|---|---|---|
-| **Seshat: Global History Databank** | Seshat / Evolution Institute (Peter Turchin et al.) | 400+ historical polities across 10,000 years | Elite Overproduction, Sociopolitical Instability, Asabiyyah decay parameters | Turchin, P., et al. (2015). *Seshat: The Global History Databank*. Cliodynamics, 6(1), 77-107. [https://seshatdatabank.info](https://seshatdatabank.info) |
-| **Correlates of War (COW)** | University of Michigan (Singer & Small) | Interstate, intra-state, and non-state wars (1816–Present) | Conflict casualty baselines, sociopolitical violence escalation | Singer, J. D., & Small, M. (1972 / 2020). *The Wages of War*. Correlates of War Project. [https://correlatesofwar.org](https://correlatesofwar.org) |
-| **Maddison Project Database (2020)** | Groningen Growth and Development Centre (GGDC) | Historical GDP per capita & Gross World Product (GWP) | Real economic output calibration in 1990 International Geary-Khamis dollars | Bolt, J., & van Zanden, J. L. (2020). *Maddison Project Database 2020*. [https://www.rug.nl/ggdc/historicaldevelopment/maddison/](https://www.rug.nl/ggdc/historicaldevelopment/maddison/) |
-| **ORBIS Geospatial Network** | Stanford University (Walter Scheidel) | Roman transportation network, freight velocity, and travel costs | Historical information transmission velocity & transport friction | Scheidel, W. (2014). *ORBIS: The Stanford Geospatial Network Model of the Roman World*. [https://orbis.stanford.edu](https://orbis.stanford.edu) |
-| **World Bank & FAOSTAT** | World Bank & UN Food and Agriculture Organization | Agricultural crop yields, macronutrient production, fertilizer usage | Calibrating van Genuchten soil water, N-P-K harvest depletion & EROEI | [https://data.worldbank.org](https://data.worldbank.org) \| [https://www.fao.org/faostat](https://www.fao.org/faostat) |
+| `worldPopulation` | World Population | Millions of people | McEvedy & Jones (1978), HYDE 3.2, UN WPP (2024) | DEEP_HORIZON |
+| `grossWorldProduct` | Gross World Product (GWP) | Billion 1990 Geary-Khamis $ | Maddison Project Database (Bolt & van Zanden 2020) | EARLY_MODERN_500YR |
+| `primaryEnergy` | Primary Energy Consumption | Exajoules (EJ) | Vaclav Smil (2017) 'Energy and Civilization', IEA | DEEP_HORIZON |
+| `urbanizationRate` | Urbanization Rate | % in settlements > 5k hab. | Paul Bairoch (1988), Chandler (1987), UN Prospects | CLASSICAL_MEDIEVAL |
+| `co2Concentration` | Atmospheric $\text{CO}_2$ | Parts Per Million (ppm) | Law Dome / EPICA Dome C Ice Cores, NOAA Mauna Loa | DEEP_HORIZON |
+| `temperatureAnomaly` | Surface Temp Anomaly | °C (relative to 1850–1900) | PAGES 2k Consortium (2019), NASA GISS, HadCRUT5 | DEEP_HORIZON |
+| `milankovitchInsolation` | Summer Insolation 65°N | $\text{W/m}^2$ | Laskar et al. (2004), Berger (1978) | DEEP_HORIZON |
+| `megafaunaIndex` | Megafauna Biomass Index | % of Late Pleistocene Baseline | Sandom et al. (2014), Barnosky (2004), WWF (2024) | DEEP_HORIZON |
+| `zeroContainmentScore` | Biogeographical Isolation | Normalized Score [0.0, 1.0] | Crosby (1972) 'Columbian Exchange', Diamond (1997) | DEEP_HORIZON |
+| `lifeExpectancyAtBirth` | Life Expectancy ($e_0$) | Years | Riley (2005), UN Population Division, HYDE 3.4 | DEEP_HORIZON |
+| `literacyRate` | Adult Literacy Rate | % of adult population | Buringh & van Zanden (2009), UNESCO (2024) | EARLY_MODERN_500YR |
+| `currencyDebasement` | Coinage Silver Purity | % pure silver in standard coin | Butcher & Ponting (2014) 'Roman Silver Coinage' | CLASSICAL_MEDIEVAL |
+| `eliteOverproductionIndex` | Elite Overproduction | Normalized Index (1.0 = Base) | Peter Turchin (2016) 'Ages of Discord', Seshat DB | CLASSICAL_MEDIEVAL |
+| `politicalStressIndex` | Political Stress Index (PSI) | Composite Index [0, 100] | Turchin & Nefedov (2009) 'Secular Cycles' | CLASSICAL_MEDIEVAL |
+| `asabiyyahSocialCohesion` | Asabiyyah Solidarity | Normalized Score [0.0, 1.0] | Ibn Khaldun (1377), Turchin (2003) | CLASSICAL_MEDIEVAL |
+| `sociopoliticalInstability`| Conflict & Violence Index | Events / Decade | Seshat Global History Databank, COW Project | DEEP_HORIZON |
+| `giniInequality` | Wealth & Land Gini | Gini Coefficient [0.0, 1.0] | Walter Scheidel (2017) 'The Great Leveler' | EARLY_MODERN_500YR |
+| `realUnskilledWage` | Real Unskilled Wage | Basket Index (100 = Baseline) | Robert C. Allen (2001) 'The Great Divergence' | EARLY_MODERN_500YR |
+| `sovereignDebtBurden` | Sovereign Debt / Revenue | % of Gross Revenue | Reinhart & Rogoff (2009), IMF Global Debt DB | EARLY_MODERN_500YR |
+| `metalSmeltingPerCapita` | Metal Smelting Output | kg / capita / year | World Steel Association, USGS Mineral Statistics | DEEP_HORIZON |
+| `fossilSharePrimaryEnergy`| Fossil Energy Share | % of Total Primary Energy | Vaclav Smil (2017), Our World in Data (2024) | EARLY_MODERN_500YR |
+| `globalTradeVolume` | Global Trade Volume | Index (100 = 1913 level) | Federico & Tena-Junguito (2017), WTO (2024) | EARLY_MODERN_500YR |
+| `shippingFreightCostIndex`| Real Maritime Freight Cost | Index (100 = 1913 level) | Harley (1988), Mohammed & Williamson (2004) | EARLY_MODERN_500YR |
+| `soilErosionRate` | Cumulative Topsoil Loss | % loss relative to Holocene | Montgomery (2007) 'Dirt: Erosion of Civilizations' | DEEP_HORIZON |
+| `agriculturalEroei` | Agricultural EROEI | Ratio (Caloric Out / In) | Vaclav Smil (2008), Giampietro et al. (2013) | DEEP_HORIZON |
+| `deforestationRate` | Forest Cover Remaining | % of original post-glacial | HYDE 3.2, FAO Global Forest Resources | DEEP_HORIZON |
+| `informationSpeed` | Information Travel Speed | Kilometers / day (km/day) | Scheidel (2014) 'Stanford ORBIS Roman Network' | DEEP_HORIZON |
 
 ---
 

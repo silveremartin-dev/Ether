@@ -54,14 +54,23 @@ When browsing reference maps in **Tab 1 (Planet Generator)**, **Tab 2 (Resources
 |---|---|---|---|
 | **Demographic Density (HYDE 3.4)** | `data/cache/*_density.png` | Utrecht University HYDE 3.4 (`hyde34/`) | Klein Goldewijk et al. (2017) Anthropogenic land use and population density (-10,000 BC to 2024 AD). |
 | **Institutional Complexity** | `data/cache/*_institutional.png` | Seshat Global History Databank (`seshat/`) | Turchin et al. (2018) Quantitative historical polity governance and administrative hierarchy. |
-| **Linguistic & Isogloss Boundaries**| `data/cache/*_isogloss.png` | Ethnologue / Glottolog / Natural Earth | Global linguistic family distribution and dialect continua. |
-| **Kinship & Social Organization** | `data/cache/*_kinship.png` | Seshat Global History Databank (`seshat/`) | Murdock Ethnographic Atlas & Seshat social structural typologies. |
-| **Rituals & Sacred Centers** | `data/cache/*_rituals.png` | Seshat / D-PLACE Databank | Religious architectures, ritual practice intensity, and sacred geographic nodes. |
-| **Sovereignty & State Power** | `data/cache/*_sovereignty.png` | Centennia Historical Atlas / Seshat | Territorial control, sovereign frontiers, and tributary state boundaries. |
+| **Linguistic & Isogloss Boundaries**| `data/cache/*_isogloss.png` | Ethnologue / Glottolog / Natural Earth / D-PLACE (`dplace/`) | Global linguistic family distribution. Orographic Dijkstra propagation via ETOPO friction grid. Uncertain zones rendered in neutral slate-gray `#374151`. |
+| **Kinship & Social Organization** | `data/cache/*_kinship.png` | D-PLACE v3.0 (`dplace/`) / Seshat Global History Databank | Murdock Ethnographic Atlas, D-PLACE cross-cultural dataset (Kirby et al. 2016), Seshat social structural typologies. |
+| **Rituals & Sacred Centers** | `data/cache/*_rituals.png` | Seshat / D-PLACE Databank (`dplace/`) | Religious architectures, ritual practice intensity, and sacred geographic nodes. |
+| **Sovereignty & State Power** | `data/cache/*_sovereignty.png` | **CShapes 2.0** (1886–2019) + `HistoricalStateRegistry` (pre-1886) | Schvitz et al. (2022) *Journal of Conflict Resolution*. Territorial control, sovereign frontiers, and tributary state boundaries. Step-constant piecewise function — NO linear interpolation. Uncertain land → `#374151`. |
 | **Technology & Metallurgy Level** | `data/cache/*_technology.png` | Seshat / Archaeoglobe Project (`archaeoglobe/`) | Stephens et al. (2019) Archaeological milestone diffusion (Iron, Bronze, Agriculture). |
-| **Trade Networks & Silk Routes** | `data/cache/*_tradenetwork.png` | Seshat / Ancient World Mapping Center | Maritime, caravan, and riverine commercial conduits. |
-| **Pathogen & Epidemic Risk** | `data/cache/*_pathogen.png` | GBD / Historical Epidemiology Databank | Biome-specific vector burdens, zoonotic reservoirs, and epidemic corridors. |
+| **Trade Networks & Silk Routes** | `data/cache/*_tradenetwork.png` | Seshat / Ancient World Mapping Center | Maritime, caravan, and riverine commercial conduits. Era-coded vivid colors: ochre (Paleolithic), amber (Neolithic), turquoise (maritime), gold (Silk Road). |
+| **Pathogen & Epidemic Risk** | `data/cache/*_pathogen.png` | IHFC Davies 2013 (`ihfc_davies2013/`) / GBD / Historical Epidemiology | Davies (2013) global heat flow (doi:10.1002/ggge.20271). Mordecai thermal curves for vector-borne disease, altitude barriers, epidemic pulses (Justinian 536, Black Death 1347, Columbian 1492). |
 | **Historical GDP & Production** | Maddison Project Database (`maddison/`) | Maddison Historical Statistics (Bolt & van Zanden, 2020) | Per capita output and regional economic productivity over time. |
+
+### New Data Sources Added (September 2026)
+
+| Dataset | File Location | Temporal Scope | Citation |
+|---|---|---|---|
+| **CShapes 2.0** | `data/maps/cshapes/cshapes_2.0.geojson` (26.3 MB) | 1886–2019, 200+ polities, Gleditsch–Ward codes | Schvitz et al. (2022). *Journal of Conflict Resolution* 66(3). doi:10.1177/00220027211013 |
+| **D-PLACE v3.0** | `data/maps/dplace/` | Ethnographic present, 1500+ societies | Kirby et al. (2016). *PLoS ONE* 11(9): e0158391. doi:10.1371/journal.pone.0158391 |
+| **IHFC Davies 2013** | `data/maps/ihfc_davies2013/heat_flow_2deg.csv` | Global, present | Davies (2013). *Geochemistry, Geophysics, Geosystems* 14(10). doi:10.1002/ggge.20271 |
+| **HistoricalStateRegistry** | `data/history/treaties_and_transitions.json` | −3000 to 2060 CE (36 intervals) | Taagepera (1978–1997), McEvedy & Jones (1978), CShapes 2.0, Seshat Databank |
 
 ---
 
@@ -91,6 +100,7 @@ data/maps/
 │
 ├── ether/                             # Clean Authoritative Spatial Map Repository
 │   ├── earth/                         # Earth (Terre) Reference Layers (14 uncompressed rasters)
+│   │   └── <year>/                    # Per-epoch cartographic tensors (sovereignty, isogloss, kinship…)
 │   ├── moon/                          # Moon (Lune) Reference Layers (6 uncompressed rasters)
 │   ├── mars/                          # Mars Reference Layers (6 uncompressed rasters)
 │   ├── venus/                         # Venus Reference Layers (4 uncompressed rasters)
@@ -100,10 +110,13 @@ data/maps/
 │
 ├── archaeoglobe/                      # Land Use Archaeological Survey
 ├── bgr_germany/                       # Federal Institute for Geosciences (Germany)
+├── cshapes/                           # CShapes 2.0 — State Territory Polygons 1886–2019 (Schvitz et al. 2022)
+│   └── cshapes_2.0.geojson            # 26.3 MB GeoJSON with Gleditsch-Ward codes and date ranges
+├── dplace/                            # D-PLACE v3.0 — Cross-Cultural Linguistic & Kinship Database (Kirby 2016)
 ├── gebco/                             # General Bathymetric Chart of the Oceans
 ├── hyde34/                            # HYDE 3.4 Historical Demographics
 ├── iaea_nfcis/                        # IAEA Uranium & Thorium Database
-├── ihfc_davies2013/                   # International Heat Flow Commission
+├── ihfc_davies2013/                   # International Heat Flow Commission (Davies 2013)
 ├── lpi_lunar/                         # Lunar and Planetary Institute
 ├── maddison/                          # Maddison Historical Economic Statistics
 ├── nasa_pds/                          # NASA Planetary Data System (Moon, Mars, Venus, Mercury)
@@ -117,6 +130,9 @@ data/maps/
 ├── wep_world_energy/                  # World Energy Council Energy Reserves
 ├── whymap_groundwater/                # UNESCO WHYMAP Groundwater
 └── worldclim/                         # WorldClim v2.1 GeoTIFF Climatology
+
+data/history/
+└── treaties_and_transitions.json      # Piecewise-constant geopolitical epochs registry (-3000 to 2060 CE)
 ```
 
 ---

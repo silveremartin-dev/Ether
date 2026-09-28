@@ -1220,6 +1220,7 @@ public class HistoricalMapGenerator {
             if (imgAquifer != null)         ImageIO.write(imgAquifer,         "PNG", earthDir.resolve("earth_" + year + "_aquifers.png").toFile());
 
             // 2. Save authentic paleoclimatic biomes map
+
             java.nio.file.Path biomesPath = earthDir.resolve("earth_" + year + "_biomes.png");
             BufferedImage biomesImg = rasterizeBiomesMap(year);
             if (biomesImg != null) {
@@ -1262,7 +1263,58 @@ public class HistoricalMapGenerator {
         }
     }
 
+    public static void saveCulturalTensorsToYearDirectory(long year, BufferedImage imgSovereignty,
+            BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech,
+            BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen) {
+        try {
+            java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
+            java.nio.file.Files.createDirectories(earthDir);
+
+            if (imgIsogloss != null)        ImageIO.write(imgIsogloss,        "PNG", earthDir.resolve("earth_" + year + "_isogloss.png").toFile());
+            if (imgKinship != null)         ImageIO.write(imgKinship,         "PNG", earthDir.resolve("earth_" + year + "_kinship.png").toFile());
+            if (imgRituals != null)         ImageIO.write(imgRituals,         "PNG", earthDir.resolve("earth_" + year + "_rituals.png").toFile());
+            if (imgSovereignty != null)     ImageIO.write(imgSovereignty,     "PNG", earthDir.resolve("earth_" + year + "_sovereignty.png").toFile());
+            if (imgTech != null)            ImageIO.write(imgTech,            "PNG", earthDir.resolve("earth_" + year + "_technology.png").toFile());
+            if (imgTrade != null)           ImageIO.write(imgTrade,           "PNG", earthDir.resolve("earth_" + year + "_tradenetwork.png").toFile());
+            if (imgInst != null)            ImageIO.write(imgInst,            "PNG", earthDir.resolve("earth_" + year + "_institutional.png").toFile());
+            if (imgEco != null)             ImageIO.write(imgEco,             "PNG", earthDir.resolve("earth_" + year + "_ecological.png").toFile());
+            if (imgPathogen != null)        ImageIO.write(imgPathogen,        "PNG", earthDir.resolve("earth_" + year + "_pathogen.png").toFile());
+
+            logger.info("Persisted 9 authentic cultural tensors into 'data/maps/ether/earth/{}/'", year);
+        } catch (Exception e) {
+            logger.error("Failed to save cultural tensors for year {}", year, e);
+        }
+    }
+
+    public static void forceGenerateCulturalTensorsOnly(Scenario scenario) {
+        if (scenario == null) return;
+        try {
+            String type = scenario.getPopulationDensityType();
+            if (type == null) type = "URBAN_CLUSTERS";
+            long year = scenario.getStartDateYear();
+
+            BufferedImage imgIsogloss = rasterizeIsoglossMap(type, scenario);
+            BufferedImage imgKinship = rasterizeKinshipMap(type, scenario);
+            BufferedImage imgRituals = rasterizeRitualsMap(type, scenario);
+            BufferedImage imgSovereignty = rasterizeSovereigntyMap(type, scenario);
+            BufferedImage imgTechnology = rasterizeTechnologyMap(type, scenario);
+            BufferedImage imgTrade = rasterizeTradeNetworkMap(type, scenario);
+            BufferedImage imgInstitutional = rasterizeInstitutionalComplexityMap(type, scenario);
+            BufferedImage imgEcological = rasterizeEcologicalFootprintMap(type, scenario);
+            BufferedImage imgPathogen = rasterizePathogenImmunityMap(type, scenario);
+
+            saveCulturalTensorsToYearDirectory(year, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
+            saveImagesToDiskCache(scenario.getName(), null, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
+
+            logger.info("Successfully regenerated and persisted ONLY the 9 cultural tensors for scenario '{}' (Year {}).",
+                    scenario.getName(), year);
+        } catch (Exception e) {
+            logger.error("Failed to generate cultural tensors for scenario {}", scenario.getName(), e);
+        }
+    }
+
     public static BufferedImage applyPrehistoricGeographicMask(String scenarioKey, long year, BufferedImage src) {
+
         if (src == null) return null;
         if (year >= -10000) return src;
 
@@ -2050,8 +2102,26 @@ public class HistoricalMapGenerator {
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
 
+        // 1. Ingest authentic sovereign vector boundaries from Natural Earth for modern / contemporary epochs (1900-2060)
+        if (year >= 1900L) {
+            BufferedImage modernImg = NaturalEarthVectorIngestor.rasterizeModernSovereigntyMap(year, WIDTH, HEIGHT, mask);
+            if (modernImg != null) {
+                return applyAltimetryCoastlineMask(modernImg);
+            }
+        }
+
+        // 2. Ingest authentic vector boundaries from Seshat ClioPatria for historical years
+        if (year >= -3400L) {
+            BufferedImage seshatImg = CliopatriaPolityVectorReader.rasterizeSeshatSovereigntyMap(year, WIDTH, HEIGHT, mask);
+            if (seshatImg != null) {
+                return applyAltimetryCoastlineMask(seshatImg);
+            }
+        }
+
         // (lon, lat, colorRGB, sigma)
         List<double[]> empireCores = new ArrayList<>();
+
+
         if (year <= -70000L) {
             // Handled via computeHomininCladeWeights
         } else if (year <= -40000L) {
@@ -2287,17 +2357,51 @@ public class HistoricalMapGenerator {
             empireCores.add(new double[]{-99.13, 19.43, 0xD97706, 18.0});// Viceroyalty of New Spain (#D97706)
             empireCores.add(new double[]{-77.04, -12.05, 0xEA580C, 18.0});// Viceroyalty of Peru (#EA580C)
         } else if (year <= 1850L) {
-            // 1800 (Industrial Revolution & Napoleonic Era)
-            empireCores.add(new double[]{-0.13, 51.51, 0xDC2626, 22.0}); // British Empire & Royal Navy (#DC2626)
-            empireCores.add(new double[]{2.35, 48.86, 0x2563EB, 18.0});  // Napoleonic France (#2563EB)
-            empireCores.add(new double[]{116.41, 39.90, 0xEF4444, 25.0});// Qing Empire China Jiaqing (#EF4444)
-            empireCores.add(new double[]{30.32, 59.93, 0x7C3AED, 26.0}); // Russian Empire Saint Petersburg (#7C3AED)
-            empireCores.add(new double[]{16.37, 48.21, 0xF59E0B, 16.0}); // Austrian Habsburg Empire (#F59E0B)
+            // 1800 (Industrial Revolution & Global Napoleonic / Sovereign Era)
+            empireCores.add(new double[]{-0.13, 51.51, 0xDC2626, 22.0}); // British Empire (Great Britain & Ireland) (#DC2626)
+            empireCores.add(new double[]{88.36, 22.57, 0xDC2626, 20.0}); // British East India Company (Bengal & India) (#DC2626)
+            empireCores.add(new double[]{-71.21, 46.81, 0xDC2626, 22.0}); // British North America: Canada & Quebec (#DC2626)
+            empireCores.add(new double[]{-97.0, 54.0, 0xDC2626, 28.0});  // British Rupert's Land & Hudson's Bay Company (#DC2626)
+            empireCores.add(new double[]{18.42, -33.92, 0xDC2626, 18.0}); // British / Dutch Cape Colony (South Africa) (#DC2626)
+            empireCores.add(new double[]{151.21, -33.87, 0xDC2626, 18.0});// British Colony of New South Wales (Sydney) (#DC2626)
+            empireCores.add(new double[]{2.35, 48.86, 0x2563EB, 18.0});  // French Republic & Sister Republics (#2563EB)
+            empireCores.add(new double[]{116.41, 39.90, 0xEF4444, 28.0});// Qing Empire China Jiaqing (#EF4444)
+            empireCores.add(new double[]{30.32, 59.93, 0x7C3AED, 26.0}); // Russian Empire Saint Petersburg & European Russia (#7C3AED)
+            empireCores.add(new double[]{73.0, 55.0, 0x7C3AED, 30.0});   // Russian Empire: Siberia & Urals (#7C3AED)
+            empireCores.add(new double[]{129.7, 62.0, 0x7C3AED, 35.0});  // Russian Empire: Far East & Yakutsk (#7C3AED)
+            empireCores.add(new double[]{-135.33, 57.05, 0x7C3AED, 24.0});// Russian America: Alaska, Sitka & Kodiak (#7C3AED)
+            empireCores.add(new double[]{16.37, 48.21, 0xF59E0B, 16.0}); // Austrian Habsburg Monarchy (#F59E0B)
             empireCores.add(new double[]{13.40, 52.52, 0x1E293B, 15.0}); // Kingdom of Prussia (#1E293B)
-            empireCores.add(new double[]{-77.04, 38.91, 0x3B82F6, 20.0}); // United States Washington (#3B82F6)
-            empireCores.add(new double[]{28.98, 41.01, 0x059669, 18.0}); // Ottoman Empire Selim III (#059669)
+            empireCores.add(new double[]{-77.04, 38.91, 0x3B82F6, 22.0}); // United States of America (#3B82F6)
+            empireCores.add(new double[]{28.98, 41.01, 0x059669, 22.0}); // Sublime Ottoman Empire (#059669)
+            empireCores.add(new double[]{-6.8, 34.0, 0x059669, 18.0});   // Alaouite Sultanate of Morocco (#059669)
+            empireCores.add(new double[]{-3.70, 40.42, 0xEA580C, 16.0});  // Spanish Crown Spain (#EA580C)
+            empireCores.add(new double[]{-99.13, 19.43, 0xEA580C, 24.0}); // Spanish Empire: Viceroyalty of New Spain (#EA580C)
+            empireCores.add(new double[]{-77.04, -12.05, 0xEA580C, 22.0});// Spanish Empire: Viceroyalty of Peru (#EA580C)
+            empireCores.add(new double[]{-58.38, -34.60, 0xEA580C, 20.0});// Spanish Empire: Viceroyalty of Rio de la Plata (#EA580C)
+            empireCores.add(new double[]{121.0, 14.6, 0xEA580C, 18.0});  // Spanish Captaincy General of the Philippines (#EA580C)
+            empireCores.add(new double[]{-9.14, 38.72, 0x10B981, 14.0});  // Kingdom of Portugal (#10B981)
+            empireCores.add(new double[]{-43.17, -22.90, 0x10B981, 26.0});// Portuguese State of Brazil (#10B981)
+            empireCores.add(new double[]{106.85, -6.21, 0x10B981, 24.0}); // Dutch East Indies / VOC Java & Nusantara (#10B981)
             empireCores.add(new double[]{73.86, 18.52, 0xD97706, 18.0}); // Maratha Confederacy Pune (#D97706)
-            empireCores.add(new double[]{139.69, 35.69, 0xE11D48, 14.0});// Tokugawa Japan (#E11D48)
+            empireCores.add(new double[]{139.69, 35.69, 0xE11D48, 14.0});// Tokugawa Shogunate Japan (#E11D48)
+            empireCores.add(new double[]{126.98, 37.57, 0x8B5CF6, 12.0});// Joseon Dynasty Korea (#8B5CF6)
+            empireCores.add(new double[]{51.39, 35.69, 0x0D9488, 16.0}); // Qajar Dynasty Persia (#0D9488)
+            empireCores.add(new double[]{69.17, 34.53, 0x0284C7, 16.0}); // Durrani Afghan Empire (#0284C7)
+            empireCores.add(new double[]{69.0, 41.0, 0x0284C7, 22.0});   // Central Asian Khanates: Bukhara, Kokand, Khiva (#0284C7)
+            empireCores.add(new double[]{100.50, 13.75, 0xF97316, 15.0});// Kingdom of Siam Rattanakosin (#F97316)
+            empireCores.add(new double[]{105.8, 21.0, 0x16A085, 16.0});  // Nguyen Dynasty Vietnam (#16A085)
+            empireCores.add(new double[]{96.1, 16.8, 0xD97706, 16.0});   // Konbaung Dynasty Burma (#D97706)
+            empireCores.add(new double[]{5.23, 13.06, 0x15803D, 18.0});  // Sokoto Caliphate Sahel (#15803D)
+            empireCores.add(new double[]{15.0, -5.0, 0x15803D, 22.0});   // Kingdom of Kongo & Central Africa (#15803D)
+            empireCores.add(new double[]{37.47, 12.60, 0x84CC16, 15.0}); // Ethiopian Solomonic Empire Gondar (#84CC16)
+            empireCores.add(new double[]{47.0, -19.0, 0x84CC16, 18.0});  // Merina Kingdom Madagascar (#84CC16)
+            empireCores.add(new double[]{28.5, -31.5, 0xF59E0B, 18.0});  // Southern African Kingdoms: Xhosa, Zulu, Khoisan (#F59E0B)
+            empireCores.add(new double[]{39.0, -6.0, 0x0D9488, 18.0});   // Omani Swahili Sultanate Zanzibar (#0D9488)
+            empireCores.add(new double[]{133.5, -24.0, 0xC0392B, 32.0}); // Indigenous Australian Domains (#C0392B)
+            empireCores.add(new double[]{175.0, -39.0, 0xE67E22, 16.0}); // Maori Iwi Domains New Zealand (#E67E22)
+            empireCores.add(new double[]{-105.0, 45.0, 0x06B6D4, 25.0}); // Great Plains Indigenous Nations: Lakota / Comanche (#06B6D4)
+            empireCores.add(new double[]{-90.0, 68.0, 0x607D8B, 30.0});  // Arctic Inuit / Thule Domain (#607D8B)
         } else if (year <= 1925L) {
             // 1900 (Belle Époque & Global Empires)
             empireCores.add(new double[]{-0.13, 51.51, 0xDC2626, 26.0}); // British Empire Global (#DC2626)
@@ -2331,65 +2435,47 @@ public class HistoricalMapGenerator {
             empireCores.add(new double[]{149.1, -35.3, 0x14B8A6, 24.0}); // Oceania / Australia (#14B8A6)
         }
 
+        // Handle -100,000 BP paleolithic tier via hominid clade weights
+        if (year <= -70000L) {
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                    int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                    int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (land == 0 || occWeight <= 0.001) {
+                        img.setRGB(x, y, 0x000000);
+                        continue;
+                    }
+                    double[] w = computeHomininCladeWeights(lon, lat);
+                    int rgb = blendCladeRgb(w, COLORS_SOVEREIGNTY_100K, occWeight);
+                    img.setRGB(x, y, rgb);
+                }
+            }
+            return applyAltimetryCoastlineMask(img);
+        }
+
+        // Orographic cost-distance propagation — no hard gaussian cutoffs, no circular holes
+        // Uncovered inhabited land pixels receive neutral slate-gray #374151
+        List<OrographicGlottologPropagator.CulturalSeed> sovSeeds = new ArrayList<>();
+        for (double[] ec : empireCores) {
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(ec[0], ec[1], (int) ec[2], ec[3] / 18.0, "Polity"));
+        }
+        BufferedImage sovImg = OrographicGlottologPropagator.propagateCulturalSeeds(sovSeeds, WIDTH, HEIGHT, mask);
+        // Apply hominin occupancy: unpopulated land -> black, populated uncovered -> gray #374151
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
-
-                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
-                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
-                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
                 double occWeight = getHomininOccupancyWeight(lon, lat, year);
-                if (land == 0 || occWeight <= 0.001) {
-                    img.setRGB(x, y, 0x000000);
-                    continue;
-                }
-
-                if (year <= -70000L) {
-                    double[] w = computeHomininCladeWeights(lon, lat);
-                    int rgb = blendCladeRgb(w, COLORS_SOVEREIGNTY_100K, occWeight);
-                    img.setRGB(x, y, rgb);
-                    continue;
-                }
-
-                double wSum = 0.0;
-                double rSum = 0.0, gSum = 0.0, bSum = 0.0;
-                for (double[] ec : empireCores) {
-                    double d2 = distSq(lon, lat, ec[0], ec[1]);
-                    double sigma = ec[3];
-                    double w = Math.exp(-d2 / (2.0 * sigma * sigma));
-                    int col = (int) ec[2];
-                    wSum += w;
-                    rSum += w * ((col >> 16) & 0xFF);
-                    gSum += w * ((col >> 8) & 0xFF);
-                    bSum += w * (col & 0xFF);
-                }
-
-                if (wSum > 0.0001) {
-                    int ir = Math.clamp((int) Math.round((rSum / wSum) * occWeight), 0, 255);
-                    int ig = Math.clamp((int) Math.round((gSum / wSum) * occWeight), 0, 255);
-                    int ib = Math.clamp((int) Math.round((bSum / wSum) * occWeight), 0, 255);
-                    img.setRGB(x, y, (ir << 16) | (ig << 8) | ib);
-                } else if (!empireCores.isEmpty()) {
-                    double minDist2 = Double.MAX_VALUE;
-                    int nearestCol = (int) empireCores.get(0)[2];
-                    for (double[] ec : empireCores) {
-                        double d2 = distSq(lon, lat, ec[0], ec[1]);
-                        if (d2 < minDist2) {
-                            minDist2 = d2;
-                            nearestCol = (int) ec[2];
-                        }
-                    }
-                    int ir = Math.clamp((int) Math.round(((nearestCol >> 16) & 0xFF) * occWeight), 0, 255);
-                    int ig = Math.clamp((int) Math.round(((nearestCol >> 8) & 0xFF) * occWeight), 0, 255);
-                    int ib = Math.clamp((int) Math.round((nearestCol & 0xFF) * occWeight), 0, 255);
-                    img.setRGB(x, y, (ir << 16) | (ig << 8) | ib);
-                } else {
-                    img.setRGB(x, y, 0x000000);
+                if (occWeight <= 0.001) {
+                    sovImg.setRGB(x, y, 0x000000);
                 }
             }
         }
-        return applyAltimetryCoastlineMask(img);
+        return applyAltimetryCoastlineMask(sovImg);
     }
 
     // --- 3. ISOGLOSS TENSOR MAP ---
@@ -2397,6 +2483,22 @@ public class HistoricalMapGenerator {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
+
+        // 1. Ingest authentic linguistic vector boundaries for modern / contemporary epochs (1900-2060)
+        if (year >= 1900L) {
+            BufferedImage modernImg = NaturalEarthVectorIngestor.rasterizeModernIsoglossMap(year, WIDTH, HEIGHT, mask);
+            if (modernImg != null) {
+                return applyAltimetryCoastlineMask(modernImg);
+            }
+        }
+
+        // 2. Ingest authentic vector boundaries from Seshat ClioPatria for historical years
+        if (year >= -3400L) {
+            BufferedImage seshatImg = CliopatriaPolityVectorReader.rasterizeSeshatIsoglossMap(year, WIDTH, HEIGHT, mask);
+            if (seshatImg != null) {
+                return applyAltimetryCoastlineMask(seshatImg);
+            }
+        }
 
         // (lon, lat, colorRGB, sigma)
         List<double[]> languageCenters = new ArrayList<>();
@@ -2453,65 +2555,34 @@ public class HistoricalMapGenerator {
             languageCenters.add(new double[]{-55.0, -15.0, 0x4CAF50, 28.0}); // Tupi-Guarani (#4CAF50)
         }
 
-        for (int y = 0; y < HEIGHT; y++) {
-            double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
-            for (int x = 0; x < WIDTH; x++) {
-                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
-
-                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
-                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
-                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                double occWeight = getHomininOccupancyWeight(lon, lat, year);
-                if (land == 0 || occWeight <= 0.001) {
-                    img.setRGB(x, y, 0x000000);
-                    continue;
-                }
-
-                if (year <= -70000L) {
+        if (year <= -70000L) {
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                    int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                    int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (land == 0 || occWeight <= 0.001) {
+                        img.setRGB(x, y, 0x000000);
+                        continue;
+                    }
                     double[] w = computeHomininCladeWeights(lon, lat);
                     int rgb = blendCladeRgb(w, COLORS_ISOGLOSS_100K, occWeight);
                     img.setRGB(x, y, rgb);
-                    continue;
-                }
-
-                double wSum = 0.0;
-                double rSum = 0.0, gSum = 0.0, bSum = 0.0;
-                for (double[] lc : languageCenters) {
-                    double d2 = distSq(lon, lat, lc[0], lc[1]);
-                    double sigma = lc[3];
-                    double w = Math.exp(-d2 / (2.0 * sigma * sigma));
-                    int col = (int) lc[2];
-                    wSum += w;
-                    rSum += w * ((col >> 16) & 0xFF);
-                    gSum += w * ((col >> 8) & 0xFF);
-                    bSum += w * (col & 0xFF);
-                }
-
-                if (wSum > 0.0001) {
-                    int ir = Math.clamp((int) Math.round((rSum / wSum) * occWeight), 0, 255);
-                    int ig = Math.clamp((int) Math.round((gSum / wSum) * occWeight), 0, 255);
-                    int ib = Math.clamp((int) Math.round((bSum / wSum) * occWeight), 0, 255);
-                    img.setRGB(x, y, (ir << 16) | (ig << 8) | ib);
-                } else if (!languageCenters.isEmpty()) {
-                    double minDist2 = Double.MAX_VALUE;
-                    int nearestCol = (int) languageCenters.get(0)[2];
-                    for (double[] lc : languageCenters) {
-                        double d2 = distSq(lon, lat, lc[0], lc[1]);
-                        if (d2 < minDist2) {
-                            minDist2 = d2;
-                            nearestCol = (int) lc[2];
-                        }
-                    }
-                    int ir = Math.clamp((int) Math.round(((nearestCol >> 16) & 0xFF) * occWeight), 0, 255);
-                    int ig = Math.clamp((int) Math.round(((nearestCol >> 8) & 0xFF) * occWeight), 0, 255);
-                    int ib = Math.clamp((int) Math.round((nearestCol & 0xFF) * occWeight), 0, 255);
-                    img.setRGB(x, y, (ir << 16) | (ig << 8) | ib);
-                } else {
-                    img.setRGB(x, y, 0x000000);
                 }
             }
+            return applyAltimetryCoastlineMask(img);
         }
-        return applyAltimetryCoastlineMask(img);
+
+        // Orographic Glottolog DEM cost-distance propagation for ancient & prehistoric clades
+        List<OrographicGlottologPropagator.CulturalSeed> seeds = new ArrayList<>();
+        for (double[] lc : languageCenters) {
+            seeds.add(new OrographicGlottologPropagator.CulturalSeed(lc[0], lc[1], (int) lc[2], lc[3] / 20.0, "Clade"));
+        }
+        BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(seeds, WIDTH, HEIGHT, mask);
+        return applyAltimetryCoastlineMask(orographicImg);
     }
 
     // --- 4. KINSHIP TENSOR MAP ---
@@ -2519,6 +2590,22 @@ public class HistoricalMapGenerator {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
+
+        // 1. Ingest authentic Murdock/Todd anthropological kinship structures for modern / contemporary epochs (1900-2060)
+        if (year >= 1900L) {
+            BufferedImage modernImg = NaturalEarthVectorIngestor.rasterizeModernKinshipMap(year, WIDTH, HEIGHT, mask);
+            if (modernImg != null) {
+                return applyAltimetryCoastlineMask(modernImg);
+            }
+        }
+
+        // 2. Ingest authentic vector boundaries from Seshat ClioPatria for historical years
+        if (year >= -3400L) {
+            BufferedImage seshatImg = CliopatriaPolityVectorReader.rasterizeSeshatKinshipMap(year, WIDTH, HEIGHT, mask);
+            if (seshatImg != null) {
+                return applyAltimetryCoastlineMask(seshatImg);
+            }
+        }
 
         // (lon, lat, colorRGB, sigma)
         List<double[]> kinshipCenters = new ArrayList<>();
@@ -2568,65 +2655,47 @@ public class HistoricalMapGenerator {
             kinshipCenters.add(new double[]{175.0, -20.0, 0x1ABC9C, 25.0}); // Polynesian Ramage (#1ABC9C)
         }
 
+        // Handle -100,000 BP paleolithic tier via hominid clade weights
+        if (year <= -70000L) {
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                    int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                    int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (land == 0 || occWeight <= 0.001) {
+                        img.setRGB(x, y, 0x000000);
+                        continue;
+                    }
+                    double[] w = computeHomininCladeWeights(lon, lat);
+                    int rgb = blendCladeRgb(w, COLORS_KINSHIP_100K, occWeight);
+                    img.setRGB(x, y, rgb);
+                }
+            }
+            return applyAltimetryCoastlineMask(img);
+        }
+
+        // Orographic cost-distance propagation for kinship structures
+        // Uncovered inhabited land pixels receive neutral slate-gray #374151
+        List<OrographicGlottologPropagator.CulturalSeed> kinSeeds = new ArrayList<>();
+        for (double[] kc : kinshipCenters) {
+            kinSeeds.add(new OrographicGlottologPropagator.CulturalSeed(kc[0], kc[1], (int) kc[2], kc[3] / 20.0, "Kinship"));
+        }
+        BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(kinSeeds, WIDTH, HEIGHT, mask);
+        // Apply hominin occupancy filter
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
-
-                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
-                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
-                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
                 double occWeight = getHomininOccupancyWeight(lon, lat, year);
-                if (land == 0 || occWeight <= 0.001) {
-                    img.setRGB(x, y, 0x000000);
-                    continue;
-                }
-
-                if (year <= -70000L) {
-                    double[] w = computeHomininCladeWeights(lon, lat);
-                    int rgb = blendCladeRgb(w, COLORS_KINSHIP_100K, occWeight);
-                    img.setRGB(x, y, rgb);
-                    continue;
-                }
-
-                double wSum = 0.0;
-                double rSum = 0.0, gSum = 0.0, bSum = 0.0;
-                for (double[] kc : kinshipCenters) {
-                    double d2 = distSq(lon, lat, kc[0], kc[1]);
-                    double sigma = kc[3];
-                    double w = Math.exp(-d2 / (2.0 * sigma * sigma));
-                    int col = (int) kc[2];
-                    wSum += w;
-                    rSum += w * ((col >> 16) & 0xFF);
-                    gSum += w * ((col >> 8) & 0xFF);
-                    bSum += w * (col & 0xFF);
-                }
-
-                if (wSum > 0.0001) {
-                    int ir = Math.clamp((int) Math.round((rSum / wSum) * occWeight), 0, 255);
-                    int ig = Math.clamp((int) Math.round((gSum / wSum) * occWeight), 0, 255);
-                    int ib = Math.clamp((int) Math.round((bSum / wSum) * occWeight), 0, 255);
-                    img.setRGB(x, y, (ir << 16) | (ig << 8) | ib);
-                } else if (!kinshipCenters.isEmpty()) {
-                    double minDist2 = Double.MAX_VALUE;
-                    int nearestCol = (int) kinshipCenters.get(0)[2];
-                    for (double[] kc : kinshipCenters) {
-                        double d2 = distSq(lon, lat, kc[0], kc[1]);
-                        if (d2 < minDist2) {
-                            minDist2 = d2;
-                            nearestCol = (int) kc[2];
-                        }
-                    }
-                    int ir = Math.clamp((int) Math.round(((nearestCol >> 16) & 0xFF) * occWeight), 0, 255);
-                    int ig = Math.clamp((int) Math.round(((nearestCol >> 8) & 0xFF) * occWeight), 0, 255);
-                    int ib = Math.clamp((int) Math.round((nearestCol & 0xFF) * occWeight), 0, 255);
-                    img.setRGB(x, y, (ir << 16) | (ig << 8) | ib);
-                } else {
-                    img.setRGB(x, y, 0x000000);
+                if (occWeight <= 0.001) {
+                    kinImg.setRGB(x, y, 0x000000);
                 }
             }
         }
-        return applyAltimetryCoastlineMask(img);
+        return applyAltimetryCoastlineMask(kinImg);
     }
 
     // --- 5. RITUALS TENSOR MAP ---
@@ -2634,6 +2703,14 @@ public class HistoricalMapGenerator {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
+
+        // 1. Ingest authentic religious & confessional systems for modern / contemporary epochs (1900-2060)
+        if (year >= 1900L) {
+            BufferedImage modernImg = NaturalEarthVectorIngestor.rasterizeModernRitualsMap(year, WIDTH, HEIGHT, mask);
+            if (modernImg != null) {
+                return applyAltimetryCoastlineMask(modernImg);
+            }
+        }
 
         List<double[]> ritualCenters = new ArrayList<>();
         if (year <= -70000L) {
@@ -2746,6 +2823,14 @@ public class HistoricalMapGenerator {
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
 
+        // 1. Ingest authentic capital intensity & innovation index for modern / contemporary epochs (1900-2060)
+        if (year >= 1900L) {
+            BufferedImage modernImg = NaturalEarthVectorIngestor.rasterizeModernTechnologyMap(year, WIDTH, HEIGHT, mask);
+            if (modernImg != null) {
+                return applyAltimetryCoastlineMask(modernImg);
+            }
+        }
+
         double baseTech = 25.0;
         if (year <= -10000L) baseTech = 35.0;
         else if (year <= -7000L) baseTech = 55.0;
@@ -2813,6 +2898,16 @@ public class HistoricalMapGenerator {
     // --- 7. TRADE NETWORK TENSOR MAP ---
     private static BufferedImage rasterizeTradeNetworkMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
+        BufferedImage mask = loadElevationMask();
+
+        // 1. Ingest authentic global maritime shipping corridors & intermodal supply chains for modern / contemporary epochs (1900-2060)
+        if (year >= 1900L) {
+            BufferedImage modernImg = NaturalEarthVectorIngestor.rasterizeModernTradeNetworkMap(year, WIDTH, HEIGHT, mask);
+            if (modernImg != null) {
+                return modernImg;
+            }
+        }
+
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
         g.setColor(Color.BLACK);
@@ -2821,88 +2916,88 @@ public class HistoricalMapGenerator {
 
         if (year <= -70000L) {
             // -100,000 BP Paleolithic Raw Material Circuits
-            drawTradeRoute(g, new double[][]{{36.1, 2.5}, {36.5, 0.5}, {36.4, -1.5}, {38.5, 8.5}}, new Color(175, 175, 175), 2.0);
-            drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}}, new Color(165, 165, 165), 2.0);
-            drawTradeRoute(g, new double[][]{{35.0, 32.7}, {35.3, 32.7}, {35.6, 33.0}}, new Color(170, 170, 170), 2.0);
-            drawTradeRoute(g, new double[][]{{31.5, 26.0}, {32.6, 25.7}, {32.9, 24.1}}, new Color(155, 155, 155), 2.0);
-            drawTradeRoute(g, new double[][]{{-4.0, 43.4}, {-1.5, 43.5}, {1.0, 45.0}, {0.3, 45.2}}, new Color(160, 160, 160), 2.0);
-            drawTradeRoute(g, new double[][]{{9.5, 48.5}, {13.0, 47.8}, {15.8, 46.1}, {17.1, 49.2}}, new Color(160, 160, 160), 2.0);
-            drawTradeRoute(g, new double[][]{{34.2, 44.9}, {38.5, 44.5}, {40.2, 44.2}}, new Color(150, 150, 150), 2.0);
-            drawTradeRoute(g, new double[][]{{44.2, 36.8}, {47.1, 34.4}}, new Color(150, 150, 150), 2.0);
-            drawTradeRoute(g, new double[][]{{83.9, 51.4}, {85.5, 51.7}}, new Color(150, 150, 150), 2.0);
-            drawTradeRoute(g, new double[][]{{114.5, 40.2}, {115.9, 39.7}}, new Color(150, 150, 150), 2.0);
+            drawTradeRoute(g, new double[][]{{36.1, 2.5}, {36.5, 0.5}, {36.4, -1.5}, {38.5, 8.5}}, new Color(180, 120, 40), 2.0);   // East African Rift Obsidian – ochre
+            drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}}, new Color(180, 120, 40), 2.0);             // South African Silcrete – ochre
+            drawTradeRoute(g, new double[][]{{35.0, 32.7}, {35.3, 32.7}, {35.6, 33.0}}, new Color(160, 70, 50), 2.0);                 // Levant Flint – red sienna
+            drawTradeRoute(g, new double[][]{{31.5, 26.0}, {32.6, 25.7}, {32.9, 24.1}}, new Color(160, 70, 50), 2.0);                 // Levant / Nile Flint – red sienna
+            drawTradeRoute(g, new double[][]{{-4.0, 43.4}, {-1.5, 43.5}, {1.0, 45.0}, {0.3, 45.2}}, new Color(200, 140, 30), 2.0);   // Franco-Cantabrian – amber
+            drawTradeRoute(g, new double[][]{{9.5, 48.5}, {13.0, 47.8}, {15.8, 46.1}, {17.1, 49.2}}, new Color(200, 140, 30), 2.0);  // Danube / Balkans – amber
+            drawTradeRoute(g, new double[][]{{34.2, 44.9}, {38.5, 44.5}, {40.2, 44.2}}, new Color(200, 140, 30), 2.0);                // Caucasus – amber
+            drawTradeRoute(g, new double[][]{{44.2, 36.8}, {47.1, 34.4}}, new Color(200, 140, 30), 2.0);                              // Zagros – amber
+            drawTradeRoute(g, new double[][]{{83.9, 51.4}, {85.5, 51.7}}, new Color(200, 140, 30), 2.0);                              // Altai – amber
+            drawTradeRoute(g, new double[][]{{114.5, 40.2}, {115.9, 39.7}}, new Color(200, 140, 30), 2.0);                            // North China – amber
         } else if (year <= -40000L) {
             // -50,000 BP: MIS 3 Sahul Crossing, Levantine IUP, African Ochre & European Keilmesser
-            drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}, {31.9, -27.0}}, new Color(180, 180, 180), 2.5); // South African Silcrete & Ochre
-            drawTradeRoute(g, new double[][]{{36.1, 2.5}, {36.5, 0.5}, {36.4, -1.5}, {38.5, 8.5}}, new Color(180, 180, 180), 2.5); // East African Rift Obsidian
-            drawTradeRoute(g, new double[][]{{35.0, 32.7}, {35.3, 32.7}, {35.6, 33.0}, {36.2, 34.0}}, new Color(180, 180, 180), 2.5); // Levant IUP Flint Corridors
-            drawTradeRoute(g, new double[][]{{31.5, 26.0}, {32.6, 25.7}, {32.9, 24.1}}, new Color(170, 170, 170), 2.0); // Nile Valley
-            drawTradeRoute(g, new double[][]{{-4.0, 43.4}, {-1.5, 43.5}, {1.0, 45.0}, {3.5, 47.5}}, new Color(175, 175, 175), 2.5); // Franco-Cantabrian Châtelperronian Silex
-            drawTradeRoute(g, new double[][]{{9.5, 48.5}, {13.0, 47.8}, {15.8, 46.1}, {17.1, 49.2}, {25.0, 43.0}}, new Color(175, 175, 175), 2.5); // Danube/Balkans IUP Radiolarite
-            drawTradeRoute(g, new double[][]{{44.2, 36.8}, {47.1, 34.4}}, new Color(165, 165, 165), 2.0); // Zagros
-            drawTradeRoute(g, new double[][]{{83.9, 51.4}, {85.5, 51.7}}, new Color(165, 165, 165), 2.0); // Denisova / Altai
-            drawTradeRoute(g, new double[][]{{132.9, -12.5}, {130.0, -14.0}, {125.0, -16.0}}, new Color(180, 180, 180), 2.5); // Sahul Northern Ochre & Baler Shells
-            drawTradeRoute(g, new double[][]{{143.0, -33.7}, {138.5, -34.5}, {134.0, -24.0}}, new Color(180, 180, 180), 2.5); // Willandra Lakes / Lake Mungo Ochre
-            drawTradeRoute(g, new double[][]{{111.5, 25.5}, {108.0, 23.0}, {102.0, 20.0}}, new Color(170, 170, 170), 2.0); // South China / Indochina Quartz
+            drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}, {31.9, -27.0}}, new Color(204, 120, 40), 2.5);  // South African Silcrete & Ochre – ochre
+            drawTradeRoute(g, new double[][]{{36.1, 2.5}, {36.5, 0.5}, {36.4, -1.5}, {38.5, 8.5}}, new Color(204, 120, 40), 2.5);          // East African Rift Obsidian – ochre
+            drawTradeRoute(g, new double[][]{{35.0, 32.7}, {35.3, 32.7}, {35.6, 33.0}, {36.2, 34.0}}, new Color(200, 100, 80), 2.5);       // Levant IUP Flint Corridors – coral
+            drawTradeRoute(g, new double[][]{{31.5, 26.0}, {32.6, 25.7}, {32.9, 24.1}}, new Color(204, 120, 40), 2.0);                     // Nile Valley – ochre
+            drawTradeRoute(g, new double[][]{{-4.0, 43.4}, {-1.5, 43.5}, {1.0, 45.0}, {3.5, 47.5}}, new Color(200, 100, 80), 2.5);         // Franco-Cantabrian Châtelperronian Silex – coral
+            drawTradeRoute(g, new double[][]{{9.5, 48.5}, {13.0, 47.8}, {15.8, 46.1}, {17.1, 49.2}, {25.0, 43.0}}, new Color(200, 100, 80), 2.5); // Danube/Balkans IUP Radiolarite – coral
+            drawTradeRoute(g, new double[][]{{44.2, 36.8}, {47.1, 34.4}}, new Color(200, 100, 80), 2.0);                                   // Zagros – coral
+            drawTradeRoute(g, new double[][]{{83.9, 51.4}, {85.5, 51.7}}, new Color(200, 100, 80), 2.0);                                   // Denisova / Altai – coral
+            drawTradeRoute(g, new double[][]{{132.9, -12.5}, {130.0, -14.0}, {125.0, -16.0}}, new Color(30, 150, 140), 2.5);               // Sahul Northern Ochre & Baler Shells – teal
+            drawTradeRoute(g, new double[][]{{143.0, -33.7}, {138.5, -34.5}, {134.0, -24.0}}, new Color(30, 150, 140), 2.5);               // Willandra Lakes / Lake Mungo Ochre – teal
+            drawTradeRoute(g, new double[][]{{111.5, 25.5}, {108.0, 23.0}, {102.0, 20.0}}, new Color(200, 100, 80), 2.0);                  // South China / Indochina Quartz – coral
         } else if (year <= -22000L) {
             // -25,000 BP: Gravettian Mammoth Ivory Highway, Western European Marine Shells, Beringia Standstill
-            drawTradeRoute(g, new double[][]{{16.5, 48.8}, {17.5, 49.5}, {19.9, 50.0}, {30.5, 50.5}, {39.0, 51.4}}, new Color(190, 190, 190), 3.0); // Willendorf -> Pavlov -> Kraków -> Kostenki
-            drawTradeRoute(g, new double[][]{{-4.5, 43.4}, {0.5, 44.8}, {1.0, 45.0}, {7.5, 43.7}}, new Color(185, 185, 185), 2.5); // Cantabria -> Dordogne -> Grimaldi Shell Route
-            drawTradeRoute(g, new double[][]{{39.0, 51.4}, {40.5, 56.2}}, new Color(180, 180, 180), 2.5); // Kostenki -> Sungir Ivory Route
-            drawTradeRoute(g, new double[][]{{135.4, 70.7}, {145.0, 71.0}}, new Color(180, 180, 180), 2.5); // Yana RHS / Berelekh Mammoth Ivory
-            drawTradeRoute(g, new double[][]{{-168.0, 65.0}, {-140.7, 67.1}}, new Color(180, 180, 180), 2.5); // Beringian Standstill Tool Tracks
-            drawTradeRoute(g, new double[][]{{35.2, 32.7}, {35.6, 32.8}, {36.0, 31.5}}, new Color(180, 180, 180), 2.5); // Levant Ohalo II Marine Shells
-            drawTradeRoute(g, new double[][]{{134.0, -24.0}, {143.0, -33.7}, {140.0, -37.0}}, new Color(180, 180, 180), 2.5); // Sahul Red Ochre Circuits
-            drawTradeRoute(g, new double[][]{{21.5, -34.2}, {25.0, -33.8}, {29.0, -31.0}}, new Color(180, 180, 180), 2.5); // South African LSA Beads
+            drawTradeRoute(g, new double[][]{{16.5, 48.8}, {17.5, 49.5}, {19.9, 50.0}, {30.5, 50.5}, {39.0, 51.4}}, new Color(210, 160, 30), 3.0);  // Gravettian Ivory Highway – amber gold
+            drawTradeRoute(g, new double[][]{{-4.5, 43.4}, {0.5, 44.8}, {1.0, 45.0}, {7.5, 43.7}}, new Color(220, 100, 80), 2.5);                   // Atlantic Shell Route – coral
+            drawTradeRoute(g, new double[][]{{39.0, 51.4}, {40.5, 56.2}}, new Color(210, 160, 30), 2.5);                                            // Kostenki -> Sungir Ivory Route – amber gold
+            drawTradeRoute(g, new double[][]{{135.4, 70.7}, {145.0, 71.0}}, new Color(20, 140, 130), 2.5);                                          // Yana RHS / Berelekh Arctic Ivory – deep teal
+            drawTradeRoute(g, new double[][]{{-168.0, 65.0}, {-140.7, 67.1}}, new Color(20, 140, 130), 2.5);                                        // Beringian Standstill Tool Tracks – deep teal
+            drawTradeRoute(g, new double[][]{{35.2, 32.7}, {35.6, 32.8}, {36.0, 31.5}}, new Color(220, 100, 80), 2.5);                              // Levant Ohalo II Marine Shells – coral
+            drawTradeRoute(g, new double[][]{{134.0, -24.0}, {143.0, -33.7}, {140.0, -37.0}}, new Color(20, 140, 130), 2.5);                        // Sahul Red Ochre Circuits – deep teal
+            drawTradeRoute(g, new double[][]{{21.5, -34.2}, {25.0, -33.8}, {29.0, -31.0}}, new Color(220, 100, 80), 2.5);                           // South African LSA Beads – coral
         } else if (year <= -15000L) {
             // -20,000 BP: Solutrean Leaf-Point & Pressure-Flaked Flint Network, LGM Refugia Exchanges
-            drawTradeRoute(g, new double[][]{{0.5, 44.8}, {0.7, 46.9}, {-1.0, 44.5}, {-4.5, 43.4}, {-8.5, 37.1}}, new Color(190, 190, 190), 3.0); // Solutrean Silex & Grand-Pressigny Route
-            drawTradeRoute(g, new double[][]{{15.5, 41.7}, {12.5, 41.9}, {23.0, 38.5}}, new Color(185, 185, 185), 2.5); // Epigravettian Mediterranean Shell & Obsidian
-            drawTradeRoute(g, new double[][]{{31.0, 50.5}, {35.0, 50.5}, {39.0, 51.4}}, new Color(185, 185, 185), 2.5); // Mezhirich -> Mezin -> Kostenki Mammoth Architecture
-            drawTradeRoute(g, new double[][]{{35.5, 32.7}, {36.0, 31.8}, {36.5, 34.0}}, new Color(180, 180, 180), 2.5); // Kebaran Levant
-            drawTradeRoute(g, new double[][]{{-140.7, 67.1}, {-150.0, 65.0}, {-165.0, 65.0}}, new Color(180, 180, 180), 2.5); // Beringia Standstill
-            drawTradeRoute(g, new double[][]{{132.9, -12.5}, {143.0, -33.7}}, new Color(180, 180, 180), 2.5); // Sahul Ochre
-            drawTradeRoute(g, new double[][]{{22.0, -34.0}, {24.0, -33.5}, {26.0, -32.5}}, new Color(180, 180, 180), 2.5); // South Africa Boomplaas / Nelson Bay
+            drawTradeRoute(g, new double[][]{{0.5, 44.8}, {0.7, 46.9}, {-1.0, 44.5}, {-4.5, 43.4}, {-8.5, 37.1}}, new Color(220, 150, 40), 3.0);  // Solutrean Silex – amber
+            drawTradeRoute(g, new double[][]{{15.5, 41.7}, {12.5, 41.9}, {23.0, 38.5}}, new Color(60, 100, 180), 2.5);                             // Epigravettian Mediterranean maritime – slate blue
+            drawTradeRoute(g, new double[][]{{31.0, 50.5}, {35.0, 50.5}, {39.0, 51.4}}, new Color(184, 115, 51), 2.5);                             // Mezhirich -> Mezin -> Kostenki Mammoth Architecture – copper
+            drawTradeRoute(g, new double[][]{{35.5, 32.7}, {36.0, 31.8}, {36.5, 34.0}}, new Color(184, 115, 51), 2.5);                             // Kebaran Levant – copper
+            drawTradeRoute(g, new double[][]{{-140.7, 67.1}, {-150.0, 65.0}, {-165.0, 65.0}}, new Color(184, 115, 51), 2.5);                       // Beringia Standstill – copper
+            drawTradeRoute(g, new double[][]{{132.9, -12.5}, {143.0, -33.7}}, new Color(184, 115, 51), 2.5);                                       // Sahul Ochre – copper
+            drawTradeRoute(g, new double[][]{{22.0, -34.0}, {24.0, -33.5}, {26.0, -32.5}}, new Color(184, 115, 51), 2.5);                          // South Africa Boomplaas / Nelson Bay – copper
         } else if (year <= -10500L) {
             // -10,900 BP: Younger Dryas / Natufian Flint & Marine Shell Transfers / Clovis Chert & Obsidian
-            drawTradeRoute(g, new double[][]{{34.5, 38.0}, {36.5, 34.2}, {35.6, 33.1}, {35.2, 32.9}, {37.0, 32.0}}, new Color(190, 190, 190), 3.0); // Göllü Dağ Obsidian to Ain Mallaha / Natufian Dentalium
-            drawTradeRoute(g, new double[][]{{-103.3, 34.3}, {-101.5, 35.5}, {-97.7, 30.9}}, new Color(185, 185, 185), 2.5); // Clovis Alibates / Texas Chert
-            drawTradeRoute(g, new double[][]{{-110.7, 44.6}, {-103.0, 36.0}}, new Color(180, 180, 180), 2.5); // Obsidian Cliff Yellowstone to Plains
-            drawTradeRoute(g, new double[][]{{-75.1, 41.0}, {-77.0, 38.0}}, new Color(180, 180, 180), 2.5); // Shawnee-Minisink Jasper
-            drawTradeRoute(g, new double[][]{{-73.2, -41.5}, {-71.0, -45.0}, {-70.0, -52.0}}, new Color(180, 180, 180), 2.5); // Monte Verde to Fell's Cave Fishtail Projectile Transfers
-            drawTradeRoute(g, new double[][]{{-77.7, -9.2}, {-79.0, -7.0}}, new Color(180, 180, 180), 2.5); // Guitarrero Cave Quartz Network
-            drawTradeRoute(g, new double[][]{{-1.0, 44.5}, {1.0, 45.0}, {3.0, 46.5}, {15.5, 41.7}}, new Color(185, 185, 185), 2.5); // Magdalenian / Azilian Pyrenean Silex
-            drawTradeRoute(g, new double[][]{{138.5, 35.0}, {139.5, 35.7}, {140.5, 36.5}}, new Color(180, 180, 180), 2.5); // Incipient Jomon Kozushima Obsidian
-            drawTradeRoute(g, new double[][]{{32.5, 25.5}, {32.9, 24.1}, {31.5, 30.0}}, new Color(180, 180, 180), 2.5); // Nile Valley Qadan Exchange
-            drawTradeRoute(g, new double[][]{{134.0, -24.0}, {138.0, -28.0}, {143.0, -33.7}}, new Color(180, 180, 180), 2.5); // Australian Desert Ochre Tracks
+            drawTradeRoute(g, new double[][]{{34.5, 38.0}, {36.5, 34.2}, {35.6, 33.1}, {35.2, 32.9}, {37.0, 32.0}}, new Color(220, 170, 50), 3.0); // Anatolian Obsidian / Natufian Dentalium – warm gold
+            drawTradeRoute(g, new double[][]{{-103.3, 34.3}, {-101.5, 35.5}, {-97.7, 30.9}}, new Color(200, 90, 60), 2.5);                          // Clovis Americas – terracotta
+            drawTradeRoute(g, new double[][]{{-110.7, 44.6}, {-103.0, 36.0}}, new Color(200, 90, 60), 2.5);                                         // Obsidian Cliff Americas – terracotta
+            drawTradeRoute(g, new double[][]{{-75.1, 41.0}, {-77.0, 38.0}}, new Color(200, 90, 60), 2.5);                                           // Shawnee-Minisink Americas – terracotta
+            drawTradeRoute(g, new double[][]{{-73.2, -41.5}, {-71.0, -45.0}, {-70.0, -52.0}}, new Color(200, 90, 60), 2.5);                         // Monte Verde to Fell's Cave Americas – terracotta
+            drawTradeRoute(g, new double[][]{{-77.7, -9.2}, {-79.0, -7.0}}, new Color(200, 90, 60), 2.5);                                           // Guitarrero Cave Americas – terracotta
+            drawTradeRoute(g, new double[][]{{-1.0, 44.5}, {1.0, 45.0}, {3.0, 46.5}, {15.5, 41.7}}, new Color(210, 150, 50), 2.5);                 // Magdalenian / Azilian Pyrenean Silex – warm amber
+            drawTradeRoute(g, new double[][]{{138.5, 35.0}, {139.5, 35.7}, {140.5, 36.5}}, new Color(210, 150, 50), 2.5);                          // Incipient Jomon Kozushima Obsidian – warm amber
+            drawTradeRoute(g, new double[][]{{32.5, 25.5}, {32.9, 24.1}, {31.5, 30.0}}, new Color(210, 150, 50), 2.5);                             // Nile Valley Qadan Exchange – warm amber
+            drawTradeRoute(g, new double[][]{{134.0, -24.0}, {138.0, -28.0}, {143.0, -33.7}}, new Color(210, 150, 50), 2.5);                       // Australian Desert Ochre Tracks – warm amber
         } else if (year <= -9000L) {
             // -10,000 BP: Göbekli Tepe Anatolian Obsidian & PPNA Exchange
-            drawTradeRoute(g, new double[][]{{34.5, 38.0}, {38.9, 37.2}, {38.1, 35.9}, {35.4, 31.9}}, new Color(195, 195, 195), 3.0); // Göllü Dağ Obsidian to Göbekli & Jericho
-            drawTradeRoute(g, new double[][]{{41.5, 38.8}, {39.7, 38.2}, {44.0, 36.0}}, new Color(185, 185, 185), 2.5); // Bingöl Obsidian to Tigris/Zagros
-            drawTradeRoute(g, new double[][]{{24.4, 36.7}, {23.1, 37.4}}, new Color(180, 180, 180), 2.5); // Melos Obsidian to Franchthi Cave (Aegean maritime)
-            drawTradeRoute(g, new double[][]{{113.6, 34.4}, {116.0, 35.0}}, new Color(175, 175, 175), 2.5); // Peiligang Jade & Stone
+            drawTradeRoute(g, new double[][]{{34.5, 38.0}, {38.9, 37.2}, {38.1, 35.9}, {35.4, 31.9}}, new Color(230, 175, 40), 3.0);  // Göllü Dağ Obsidian to Göbekli & Jericho – bright amber
+            drawTradeRoute(g, new double[][]{{41.5, 38.8}, {39.7, 38.2}, {44.0, 36.0}}, new Color(230, 175, 40), 2.5);                 // Bingöl Obsidian to Tigris/Zagros – bright amber
+            drawTradeRoute(g, new double[][]{{24.4, 36.7}, {23.1, 37.4}}, new Color(30, 130, 200), 2.5);                              // Melos Obsidian – Aegean maritime – sea blue
+            drawTradeRoute(g, new double[][]{{113.6, 34.4}, {116.0, 35.0}}, new Color(230, 175, 40), 2.5);                            // Peiligang Jade & Stone – bright amber
         } else if (year <= -7000L) {
             // -8,000 BP: Early Neolithic Çatalhöyük Obsidian, Spondylus Shells, Mehrgarh Lapis
-            drawTradeRoute(g, new double[][]{{34.5, 38.0}, {32.8, 37.7}, {35.0, 34.0}, {35.9, 32.0}}, new Color(210, 210, 210), 3.0); // Çatalhöyük Obsidian Corridor
-            drawTradeRoute(g, new double[][]{{24.4, 36.7}, {22.8, 39.3}, {20.5, 44.8}, {16.0, 48.5}}, new Color(200, 200, 200), 3.0); // Spondylus Shell Route (Aegean to Danube/LBK)
-            drawTradeRoute(g, new double[][]{{70.7, 36.2}, {68.0, 29.3}, {66.0, 26.0}}, new Color(195, 195, 195), 2.5); // Badakhshan Lapis Lazuli & Turquoise to Mehrgarh
-            drawTradeRoute(g, new double[][]{{113.6, 33.6}, {120.2, 30.1}}, new Color(190, 190, 190), 2.5); // Jiahu - Yangtze Exchange
-            drawTradeRoute(g, new double[][]{{30.6, 22.5}, {32.5, 25.5}}, new Color(185, 185, 185), 2.5); // Nabta Playa - Nile Valley
+            drawTradeRoute(g, new double[][]{{34.5, 38.0}, {32.8, 37.7}, {35.0, 34.0}, {35.9, 32.0}}, new Color(235, 185, 45), 3.0);  // Çatalhöyük Obsidian Corridor – warm gold
+            drawTradeRoute(g, new double[][]{{24.4, 36.7}, {22.8, 39.3}, {20.5, 44.8}, {16.0, 48.5}}, new Color(30, 180, 170), 3.0);  // Spondylus Shell Route – turquoise
+            drawTradeRoute(g, new double[][]{{70.7, 36.2}, {68.0, 29.3}, {66.0, 26.0}}, new Color(40, 80, 200), 2.5);                 // Badakhshan Lapis Lazuli – lapis blue
+            drawTradeRoute(g, new double[][]{{113.6, 33.6}, {120.2, 30.1}}, new Color(235, 185, 45), 2.5);                            // Jiahu - Yangtze Exchange – warm gold
+            drawTradeRoute(g, new double[][]{{30.6, 22.5}, {32.5, 25.5}}, new Color(235, 185, 45), 2.5);                              // Nabta Playa - Nile Valley – warm gold
         } else if (year <= -4500L) {
             // -6,000 BP: Ubaid Maritime Gulf Routes, Vinča Copper, European Spondylus & Flint
-            drawTradeRoute(g, new double[][]{{45.99, 30.82}, {48.5, 29.5}, {50.5, 26.0}, {56.0, 24.0}}, new Color(225, 225, 225), 3.5); // Ubaid Persian Gulf Maritime
-            drawTradeRoute(g, new double[][]{{21.36, 43.20}, {20.62, 44.76}, {16.5, 48.2}, {8.5, 50.0}, {2.5, 49.0}}, new Color(215, 215, 215), 3.0); // Vinča Copper & Spondylus Network to Rhine
-            drawTradeRoute(g, new double[][]{{-0.1, 46.4}, {-3.0, 47.6}, {-3.9, 48.7}}, new Color(205, 205, 205), 3.0); // Atlantic Megalithic Coastal Exchange
-            drawTradeRoute(g, new double[][]{{109.06, 34.27}, {111.3, 34.7}, {121.4, 30.0}}, new Color(210, 210, 210), 3.0); // Yangshao - Hemudu Jade & Pottery
-            drawTradeRoute(g, new double[][]{{31.37, 26.99}, {33.5, 28.0}, {34.5, 29.0}}, new Color(200, 200, 200), 2.5); // Badarian Red Sea Shell & Malachite
+            drawTradeRoute(g, new double[][]{{45.99, 30.82}, {48.5, 29.5}, {50.5, 26.0}, {56.0, 24.0}}, new Color(240, 190, 50), 3.5); // Ubaid Persian Gulf Maritime – bright gold
+            drawTradeRoute(g, new double[][]{{21.36, 43.20}, {20.62, 44.76}, {16.5, 48.2}, {8.5, 50.0}, {2.5, 49.0}}, new Color(184, 115, 51), 3.0); // Vinča Copper – copper
+            drawTradeRoute(g, new double[][]{{-0.1, 46.4}, {-3.0, 47.6}, {-3.9, 48.7}}, new Color(50, 190, 170), 3.0);                 // Atlantic Megalithic Coastal Exchange – seafoam
+            drawTradeRoute(g, new double[][]{{109.06, 34.27}, {111.3, 34.7}, {121.4, 30.0}}, new Color(240, 190, 50), 3.0);            // Yangshao - Hemudu Jade & Pottery – bright gold
+            drawTradeRoute(g, new double[][]{{31.37, 26.99}, {33.5, 28.0}, {34.5, 29.0}}, new Color(240, 190, 50), 2.5);              // Badarian Red Sea Shell & Malachite – bright gold
         } else {
             // Historical Trade Arteries
-            drawTradeRoute(g, new double[][]{{115, 34}, {100, 38}, {75, 39}, {62, 37}, {44, 33}, {28, 41}}, new Color(240, 240, 240), 4.0); // Silk Road
-            drawTradeRoute(g, new double[][]{{-4, 12}, {-1, 18}, {3, 27}, {10, 36}}, new Color(220, 220, 220), 3.5); // Trans-Saharan Gold & Salt
-            drawTradeRoute(g, new double[][]{{45, 12}, {55, 24}, {75, 12}, {102, 2}, {115, -6}}, new Color(210, 210, 210), 3.5); // Indian Ocean Maritime
-            drawTradeRoute(g, new double[][]{{6, 53}, {12, 48}, {24, 50}, {30, 60}}, new Color(200, 200, 200), 3.0); // Amber & Fur Corridors
-            drawTradeRoute(g, new double[][]{{-77, -12}, {-72, -14}, {-68, -17}, {-65, -20}}, new Color(210, 210, 210), 3.5); // Inca Qhapaq Ñan
-            drawTradeRoute(g, new double[][]{{-99, 19}, {-96, 17}, {-92, 15}, {-88, 14}}, new Color(200, 200, 200), 3.0); // Mesoamerican Trade Network
+            drawTradeRoute(g, new double[][]{{115, 34}, {100, 38}, {75, 39}, {62, 37}, {44, 33}, {28, 41}}, new Color(255, 200, 50), 4.0);  // Silk Road – golden yellow
+            drawTradeRoute(g, new double[][]{{-4, 12}, {-1, 18}, {3, 27}, {10, 36}}, new Color(230, 160, 40), 3.5);                         // Trans-Saharan Gold & Salt – amber orange
+            drawTradeRoute(g, new double[][]{{45, 12}, {55, 24}, {75, 12}, {102, 2}, {115, -6}}, new Color(30, 180, 210), 3.5);             // Indian Ocean Maritime – ocean blue
+            drawTradeRoute(g, new double[][]{{6, 53}, {12, 48}, {24, 50}, {30, 60}}, new Color(180, 210, 100), 3.0);                        // Amber & Fur Corridors – yellow-green
+            drawTradeRoute(g, new double[][]{{-77, -12}, {-72, -14}, {-68, -17}, {-65, -20}}, new Color(200, 80, 60), 3.5);                 // Inca Qhapaq Ñan – terracotta red
+            drawTradeRoute(g, new double[][]{{-99, 19}, {-96, 17}, {-92, 15}, {-88, 14}}, new Color(80, 200, 120), 3.0);                    // Mesoamerican Trade Network – jade green
         }
 
         g.dispose();
@@ -2945,6 +3040,15 @@ public class HistoricalMapGenerator {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
+
+        // 1. Ingest authentic state capacity & administrative centralization for modern / contemporary epochs (1900-2060)
+        if (year >= 1900L) {
+            BufferedImage modernImg = NaturalEarthVectorIngestor.rasterizeModernInstitutionalMap(year, WIDTH, HEIGHT, mask);
+            if (modernImg != null) {
+                return applyAltimetryCoastlineMask(modernImg);
+            }
+        }
+
         List<CityPoint> cities = getCitiesForScenario(type, scenario);
 
         for (int y = 0; y < HEIGHT; y++) {
@@ -2996,6 +3100,14 @@ public class HistoricalMapGenerator {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
+
+        // 1. Ingest authentic agricultural & industrial exergy footprint for modern / contemporary epochs (1900-2060)
+        if (year >= 1900L) {
+            BufferedImage modernImg = NaturalEarthVectorIngestor.rasterizeModernEcologicalMap(year, WIDTH, HEIGHT, mask);
+            if (modernImg != null) {
+                return applyAltimetryCoastlineMask(modernImg);
+            }
+        }
 
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
@@ -3053,78 +3165,8 @@ public class HistoricalMapGenerator {
     // --- 10. PATHOGEN IMMUNITY TENSOR MAP ---
     public static BufferedImage rasterizePathogenImmunityMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
-        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
-
-        for (int y = 0; y < HEIGHT; y++) {
-            double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
-            for (int x = 0; x < WIDTH; x++) {
-                double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
-
-                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
-                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
-                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                double occWeight = getHomininOccupancyWeight(lon, lat, year);
-                if (land == 0 || occWeight <= 0.001) {
-                    img.setRGB(x, y, 0x000000);
-                    continue;
-                }
-
-                if (year <= -70000L) {
-                    double absLat = Math.abs(lat);
-                    double tropicalFactor = Math.max(0.0, Math.cos(Math.toRadians(Math.min(90.0, absLat * 2.8))));
-                    double speciesBaseline = blendPaleoTraits(lon, lat, 38.0, 22.0, 26.0);
-                    double pathogenVal = speciesBaseline + tropicalFactor * 135.0;
-                    int gray = Math.clamp((int) (pathogenVal * occWeight), 0, 255);
-                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
-                    continue;
-                }
-
-                // 1. Vector-borne tropical reservoir component (Malaria, Dengue, Yellow Fever, Trypanosomiasis)
-                double absLat = Math.abs(lat);
-                double tropicalFactor = Math.max(0.0, Math.cos(Math.toRadians(Math.min(90.0, absLat * 3.2))));
-                double tropicalIntensity = tropicalFactor * 160.0;
-
-                double amazon = Math.exp(-(Math.pow(lat - (-3.0), 2) + Math.pow(lon - (-60.0), 2)) / 180.0);
-                double congo = Math.exp(-(Math.pow(lat - (0.0), 2) + Math.pow(lon - (22.0), 2)) / 140.0);
-                double ganges = Math.exp(-(Math.pow(lat - (24.0), 2) + Math.pow(lon - (85.0), 2)) / 80.0);
-                double niger = Math.exp(-(Math.pow(lat - (10.0), 2) + Math.pow(lon - (5.0), 2)) / 90.0);
-                double mekong = Math.exp(-(Math.pow(lat - (14.0), 2) + Math.pow(lon - (105.0), 2)) / 80.0);
-                tropicalIntensity += (amazon * 55.0 + congo * 65.0 + ganges * 60.0 + niger * 60.0 + mekong * 50.0);
-
-                // 2. Old World Zoonotic Crowd Disease Reservoir (Smallpox, Measles, Plague, Cholera)
-                boolean isOldWorld = lon >= -20.0 && lon <= 150.0 && lat >= -35.0 && lat <= 68.0;
-                double crowdIntensity = 0.0;
-                if (isOldWorld) {
-                    double medit = Math.exp(-(Math.pow(lat - 38.0, 2) + Math.pow(lon - 15.0, 2)) / 160.0);
-                    double china = Math.exp(-(Math.pow(lat - 34.0, 2) + Math.pow(lon - 114.0, 2)) / 140.0);
-                    double india = Math.exp(-(Math.pow(lat - 22.0, 2) + Math.pow(lon - 78.0, 2)) / 120.0);
-                    double mideast = Math.exp(-(Math.pow(lat - 32.0, 2) + Math.pow(lon - 44.0, 2)) / 100.0);
-                    double europe = Math.exp(-(Math.pow(lat - 48.0, 2) + Math.pow(lon - 10.0, 2)) / 120.0);
-                    crowdIntensity = (medit * 75.0 + china * 90.0 + india * 85.0 + mideast * 80.0 + europe * 75.0);
-                }
-
-                // 3. Historical Pre-1492 Isolation of Americas & Oceania
-                boolean isAmericas = lon <= -30.0 && lon >= -170.0;
-                boolean isAustralasia = lat <= -10.0 && lon >= 110.0 && lon <= 180.0;
-                double finalPathogen = 20.0;
-
-                if (isAmericas || isAustralasia) {
-                    if (year < 1492L) {
-                        finalPathogen = 15.0 + (isAmericas ? amazon * 40.0 : 0.0);
-                    } else {
-                        double timeSinceContact = Math.min(100.0, year - 1492L);
-                        double shockFactor = Math.min(1.0, timeSinceContact / 30.0);
-                        finalPathogen = 15.0 + shockFactor * 210.0;
-                    }
-                } else {
-                    finalPathogen = Math.min(255.0, 25.0 + tropicalIntensity * 0.6 + crowdIntensity * 0.7);
-                }
-
-                int gray = Math.clamp((int) (finalPathogen * occWeight), 0, 255);
-                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
-            }
-        }
+        BufferedImage img = AnalyticalEpidemiologyModel.generatePathogenMap(year, WIDTH, HEIGHT, mask);
         return applyAltimetryCoastlineMask(img);
     }
 
@@ -3673,8 +3715,8 @@ public class HistoricalMapGenerator {
     }
 
     private static double distSq(double lng1, double lat1, double lng2, double lat2) {
-        double dlng = lng1 - lng2;
         double dlat = lat1 - lat2;
+        double dlng = (lng1 - lng2) * Math.cos(Math.toRadians((lat1 + lat2) * 0.5));
         return dlng * dlng + dlat * dlat;
     }
 

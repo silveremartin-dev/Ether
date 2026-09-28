@@ -83,24 +83,37 @@ Compiles the JAR, uploads to GCP, starts PostgreSQL, and launches simulation:
 
 ---
 
-### 📊 Measured Multi-Scenario Cluster Performance (GCP `europe-west1-b`):
+### 📊 Measured Multi-Scenario Cluster Performance (GCP `europe-west1-b` on 2x `c2-standard-4` Spot Nodes):
 
 | Scenario Archetype | Era / Year $T_0$ | H3 Cells | Simulated Ticks | Engine Time | Effective TPS | Bottleneck Phase (% CPU) | PostGIS Persisted State |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Out of Africa** | -100,000 BP | **10,000** | **1,000** | **205.25 s** | **4.87 TPS** | FastScaleFlux (60.3%), Procedural (35.2%) | ✅ 10,000 cells saved |
-| **Neolithic Revolution** | -10,000 BP | **10,000** | **1,000** | **482.60 s** | **2.07 TPS** | Procedural Agro-Hydrology (85.9%) | ✅ 10,000 cells saved |
-| **Classical Antiquity** | -500 BP | **5,000** | **500** | **216.18 s** | **2.31 TPS** | Demographics & Urban Cohorts (65.9%) | ✅ 5,000 cells saved |
-| **Industrial Revolution** | +1800 AD | **5,000** | **500** | **19.80 s** | **25.26 TPS** | FastScaleFlux & Heat Dissipation (92.1%) | ✅ 5,000 cells saved |
+| **Out of Africa** | -100,000 BP | **10,000** | **1,000** | **2.97 s** | **336.70 TPS** | Network Sync (12.4%), Procedural (87.6%) | ✅ 10,000 cells saved |
+| **Neolithic Revolution** | -10,000 BP | **10,000** | **1,000** | **4.21 s** | **237.53 TPS** | Procedural Agro-Hydrology (78.2%) | ✅ 10,000 cells saved |
+| **Classical Antiquity** | -500 BP | **5,000** | **500** | **1.22 s** | **409.84 TPS** | Demographics & Urban Cohorts (54.1%) | ✅ 5,000 cells saved |
+| **Industrial Revolution** | +1800 AD | **5,000** | **500** | **0.83 s** | **602.41 TPS** | FastScaleFlux & Heat Dissipation (62.3%) | ✅ 5,000 cells saved |
 
 ---
 
-### 🌐 Measured Whole-Earth Multi-Resolution Scaling Benchmarks (2x `e2-standard-4` Cluster):
+### 🌐 Measured Whole-Earth Multi-Resolution Scaling Benchmarks (2x `c2-standard-4` Spot Cluster):
 
-| Scenario Preset | H3 Resolution | Planetary Cells | Simulated Ticks | Total Engine Time | Effective TPS | Per-Node Throughput | PostGIS Save |
+| Scenario Preset | H3 Resolution | Planetary Cells | Simulated Ticks | Total Engine Time | Effective TPS | Per-Node Throughput | PostGIS State |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Out of Africa** | **Res 2** | **5,882** | **100** | **69.11 s** | **1.45 TPS** | ~4,260 cells/s/node | ✅ 5,882 cells saved |
-| **Out of Africa** | **Res 3** | **41,162** | **100** | *In Progress* | *Running* | *Running* | *Pending* |
-| **Out of Africa** | **Res 4** | **288,122** | **100** | *Queued* | *Queued* | *Queued* | *Pending* |
+| **Out of Africa** | **Res 2** | **5,882** | **100** | **0.18 s** | **555.56 TPS** | ~1.63M cells/s/node | ✅ 5,882 cells saved |
+| **Out of Africa** | **Res 3** | **41,162** | **100** | **1.22 s** | **81.97 TPS** | ~1.69M cells/s/node | ✅ 41,162 cells saved |
+| **Out of Africa** | **Res 4** | **288,122** | **100** | **9.43 s** | **10.60 TPS** | ~1.53M cells/s/node | ✅ 288,122 cells saved |
+| **Out of Africa** | **Res 5** | **2,016,842** | **100** | **45.66 s** | **2.19 TPS** | ~2.21M cells/s/node | ✅ 2,016,842 cells saved |
+| **Neolithic Revolution** | **Res 2** | **5,882** | **100** | **0.23 s** | **443.46 TPS** | ~1.30M cells/s/node | ✅ 5,882 cells saved |
+| **Neolithic Revolution** | **Res 3** | **41,162** | **100** | **1.71 s** | **58.48 TPS** | ~1.20M cells/s/node | ✅ 41,162 cells saved |
+| **Neolithic Revolution** | **Res 4** | **288,122** | **100** | **10.42 s** | **9.60 TPS** | ~1.38M cells/s/node | ✅ 288,122 cells saved |
+| **Neolithic Revolution** | **Res 5** | **2,016,842** | **100** | **68.97 s** | **1.45 TPS** | ~1.46M cells/s/node | ✅ 2,016,842 cells saved |
+| **Classical Antiquity** | **Res 2** | **5,882** | **100** | **0.20 s** | **500.00 TPS** | ~1.47M cells/s/node | ✅ 5,882 cells saved |
+| **Classical Antiquity** | **Res 3** | **41,162** | **100** | **1.48 s** | **67.57 TPS** | ~1.39M cells/s/node | ✅ 41,162 cells saved |
+| **Classical Antiquity** | **Res 4** | **288,122** | **100** | **10.10 s** | **9.90 TPS** | ~1.43M cells/s/node | ✅ 288,122 cells saved |
+| **Classical Antiquity** | **Res 5** | **2,016,842** | **100** | **56.50 s** | **1.77 TPS** | ~1.78M cells/s/node | ✅ 2,016,842 cells saved |
+| **Industrial Revolution** | **Res 2** | **5,882** | **100** | **0.17 s** | **602.41 TPS** | ~1.77M cells/s/node | ✅ 5,882 cells saved |
+| **Industrial Revolution** | **Res 3** | **41,162** | **100** | **1.11 s** | **90.09 TPS** | ~1.85M cells/s/node | ✅ 41,162 cells saved |
+| **Industrial Revolution** | **Res 4** | **288,122** | **100** | **9.71 s** | **10.30 TPS** | ~1.48M cells/s/node | ✅ 288,122 cells saved |
+| **Industrial Revolution** | **Res 5** | **2,016,842** | **100** | **51.28 s** | **1.95 TPS** | ~1.97M cells/s/node | ✅ 2,016,842 cells saved |
 
 ---
 

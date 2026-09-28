@@ -1,54 +1,54 @@
-# Cartographic & Cultural Tensor Provenance: Earth (-10,000 BP)
+# Earth Epoch -10000: Early Holocene & Fertile Crescent Pre-Pottery Neolithic (-10,000 BP / 8000 BC)
 
-## 🌍 1. Overview & Geophysical Context
-The epoch **-10,000 BP** (c. 8000 BCE, Early Holocene Preboreal) marks the conclusion of Pleistocene glacial conditions and humanity's entry into the **Holocene**. This period witnesses the earliest monumental megalithic architecture and the decisive beginnings of sedentary farming communities.
+## 🌍 Overview
+This directory contains the standardized 25-layer cartographic raster tensor suite and cliodynamic registries for Earth at epoch **-10000** (Early Holocene & Fertile Crescent Pre-Pottery Neolithic (-10,000 BP / 8000 BC)).
 
-* **Eustatic Sea Level**: $-45\text{ m}$ below present-day datum (Doggerland forms a vast, fertile forested lowland bridging the British Isles to continental Europe).
-* **Climate & Vegetation**:
-  * Rapid post-glacial warming and enhanced northern hemisphere summer insolation driven by Milankovitch orbital mechanics (obliquity of $24.23^\circ$).
-  * Inception of the **African Humid Period** (Green Sahara): northward displacement of the Intertropical Convergence Zone (ITCZ), bringing heavy monsoon rainfall to the Sahara and Arabian Peninsula.
-  * Rapid reforestation of temperate Europe (oak, hazel, birch canopy).
-* **Human Dynamics**:
-  * **Fertile Crescent (Pre-Pottery Neolithic A / PPNA)**: Construction of monumental T-shaped pillar megalithic sanctuaries at **Göbekli Tepe** and **Karahan Tepe**; permanent walled settlements at Jericho (Tell es-Sultan with stone tower), Mureybet, and Çayönü.
-  * **East Asia**: Early millet cultivation in the Yellow River basin (Peiligang precursors) and early wetland rice gathering/cultivation in the Yangtze basin (Shangshan, Yuchanyan).
-  * **Europe (Mesolithic)**: Forest hunter-gatherer aggregations along river corridors and coasts (Lepenski Vir on the Danube, Star Carr in Doggerland).
-  * **Americas**: Paleoindian Folsom and Plano horizons in North America; Paiján coastal and Andean traditions in Peru, Las Vegas culture in Ecuador.
-  * **Strict Uninhabited Masks**: Antarctica, central Greenland ice sheet, Madagascar, Iceland, New Zealand, and remote oceanic islands are strictly uninhabited ($D = 0.0\text{ hab/km}^2$).
+All raster layers are generated in equirectangular projection (Plate Carrée, EPSG:4326) at **2048x1024** resolution with bit-identical determinism.
 
----
+### Context & Archaeological/Historical Horizon
+* **Era**: Early Holocene & Fertile Crescent Pre-Pottery Neolithic (-10,000 BP / 8000 BC)
+* **Technocomplex**: Pre-Pottery Neolithic A/B (PPNA/PPNBP) Ground Stone Axes, Mudbrick Architecture & Cult Centers
+* **Social / Family Horizon**: Patrilocal Extended Peasant Households & Shrine Sodalities
+* **Estimated Caloric Baseline**: 2500 kcal/capita/day
 
-## 🗺️ 2. 25-Layer Cartographic Tensor Inventory ($2048 \times 1024$)
+## 🗺️ Standard Cartographic Layers (25 PNG Rasters)
 
-| Layer Name | File Name | Category | Primary Empirical Sources | Detailed Reconstitution Method & Rationale |
-|---|---|---|---|---|
-| **Elevation & Bathymetry** | `earth_-10000_elevation.png` | Geophysics | NOAA ETOPO 2022 / GEBCO 2023 | Adjusted to $-45\text{ m}$ eustatic sea level offset. |
-| **Biomes** | `earth_-10000_biomes.png` | Ecology | CHELSA-Trace21k | Deglaciated terrain, temperate mixed forests, Sahelian and Arabian savannas. |
-| **Surface Temperature** | `earth_-10000_temperature.png` | Climate | Milankovitch + NGRIP / Marcott et al. 2013 | Rapid early Holocene warming baseline ($T_{\text{mean}} \approx 13.5^\circ\text{C}$). |
-| **Precipitation** | `earth_-10000_precipitation.png` | Climate | Dongge & Hulu Cave speleothems | Major intensification of African and Asian monsoon systems ($+800\text{ mm/yr}$). |
-| **Seasonality** | `earth_-10000_seasonality.png` | Climate | Milankovitch orbital calculations | Obliquity of $24.23^\circ$ creating strong summer/winter contrast. |
-| **Population Density** | `earth_-10000_density.png` | Demographics | HYDE 3.4 & PPNA Megasites | High-density Neolithic hearths in Göbekli Tepe, Jericho, and Peiligang ($0 - 15\text{ hab/km}^2$). |
-| **Sovereignty / Territory** | `earth_-10000_sovereignty.png` | Politics | Ritual Sanctuary Networks | Supralocal ritual confederations and communal sanctuary ranges. |
-| **Isoglosses / Linguistics** | `earth_-10000_isogloss.png` | Linguistics | Proto-Language Macro-Nodes | Early roots of Proto-Afroasiatic, Proto-Sino-Tibetan, and Proto-Austric. |
-| **Kinship Structure** | `earth_-10000_kinship.png` | Sociology | PPNA Mortuary & Murdock EA | Corporate sedentary houses and ancestral skull cults. |
-| **Ritual Traditions** | `earth_-10000_rituals.png` | Culture | Göbekli Tepe T-pillars & Jericho skulls | Anthropomorphic zoomorphic monumental pillars, plastered skulls, and Lepenski Vir boulder sculptures. |
-| **Technology / Tools** | `earth_-10000_technology.png` | Technology | Pre-Pottery Neolithic Lithics | Megalithic dry-stone architecture, lime plaster, polished stone axes, early einkorn/emmer harvesting. |
-| **Institutional Complexity**| `earth_-10000_institutional.png` | Institutions | Carneiro Scale Level 1-2 | Monument builder sodalities and ceremonial leadership. |
-| **Ecological Footprint** | `earth_-10000_ecological.png` | Environment | Anthrome Baseline | Localized land clearing for early cultivation, lime burning, and selective hunting. |
-| **Pathogen Pressure** | `earth_-10000_pathogen.png` | Epidemiology | Paleopathology Records | Village sanitation penalty: commensal rodents (*Mus musculus*), early zoonotic pathogens. |
-| **Trade Networks** | `earth_-10000_tradenetwork.png`| Economy | Obsidian Sourcing (Cappadocia/Milos) | Göllü Dağ and Bingöl obsidian distribution, Aegean obsidian maritime exchange. |
-| **Aquifers / Water Tables** | `earth_-10000_aquifers.png` | Resources | UNESCO WHYMAP | $100\%$ virgin fossil groundwater storage. |
-| **Coal Reserves** | `earth_-10000_coal.png` | Resources | USGS World Coal Inventory | $100\%$ untouched reserves. |
-| **Oil Reserves** | `earth_-10000_oil.png` | Resources | USGS Petroleum Assessment | $100\%$ virgin hydrocarbons with active surface seeps. |
-| **Natural Gas** | `earth_-10000_gas.png` | Resources | USGS Global Gas Survey | $100\%$ untouched natural gas. |
-| **Iron & Copper Ore** | `earth_-10000_iron_copper.png` | Resources | USGS MRDS, BGR Germany | Pristine metallic mineral deposits. |
-| **Precious Metals** | `earth_-10000_precious_metals.png` | Resources | USGS MRDS Placers | Intact placer gold and silver beds. |
-| **Uranium Ore** | `earth_-10000_uranium.png` | Resources | IAEA NFCIS | Untouched uranium deposits. |
-| **Rare Earth Elements** | `earth_-10000_rare_earths.png` | Resources | USGS REE Global Database | Untouched carbonatite and alkaline complexes. |
-| **Geothermal Heat Flux** | `earth_-10000_geothermal.png` | Geophysics | IHFC Davies 2013 | Crustal heat flow along active margins. |
-| **Helium-3** | `earth_-10000_helium3.png` | Resources | Solar Wind Volatiles Model | Terrestrial background near zero ($\approx 0.0\text{ ppb}$). |
+### Physical & Climate Layers
+* `earth_-10000_elevation.png`: NOAA ETOPO 2022 / GEBCO Topography & Bathymetry calibrated to epoch sea level.
+* `earth_-10000_biomes.png`: Coupled Holdridge-Whittaker Bioclimatic Ecology.
+* `earth_-10000_temperature.png`: WorldClim v2.1 Annual Mean Temperature (°C) modulated by epoch paleoclimate anomalies.
+* `earth_-10000_precipitation.png`: WorldClim v2.1 Annual Precipitation (mm/year) with ITCZ/monsoonal shifts.
+* `earth_-10000_seasonality.png`: Temperature Seasonality Amplitude (°C range) driven by Milankovitch orbital solutions.
 
----
+### Cliodynamic & Cultural Tensors
+* `earth_-10000_density.png`: HYDE 3.4 / Seshat Human Demographic Density field.
+* `earth_-10000_sovereignty.png`: Political Sovereignty & Territorial Polity Domains (Seshat ClioPatria / Historical GIS).
+* `earth_-10000_isogloss.png`: Ethnolinguistic Phyla & Sub-Branch Dialectal Zones (Glottolog 4.8 / WALS).
+* `earth_-10000_kinship.png`: Murdock D-PLACE & Emmanuel Todd Kinship & Social Organization Systems.
+* `earth_-10000_rituals.png`: Monumental Ritual Centers & Sacred Traditions.
+* `earth_-10000_technology.png`: Technology & Innovation Complexity Index (Maddison / Archaeological Catalogs).
+* `earth_-10000_institutional.png`: Seshat Institutional Hierarchy & State Capacity Scales.
+* `earth_-10000_ecological.png`: Anthropogenic Ecological Footprint & Land Transformation.
+* `earth_-10000_pathogen.png`: Epidemiological & Endemic Pathogen Load (Paleoepidemiology & WHO).
+* `earth_-10000_tradenetwork.png`: Commercial Trade Arteries, Emporia, Caravans & Ports.
 
-## 🔬 3. Initial Static Decoupling $t = t_0$ vs Dynamical Engines $t > t_0$
-* **Initial Conditions ($t = -10,000$)**: Tensors establish the baseline sedentary, architectural, and demographic state of the Early Holocene.
-* **Dynamical Simulation ($t > t_0$)**: Simulation engines (`SeasonalAggregationSanctuaryEngine`, `WildCerealGrindingEngine`, `OstromCommonsPureEngine`, `ScottAgainstTheGrainPureEngine`) model agricultural expansion, population growth, and the rise of collective communal institutions.
+### Geological & Energy Resources
+* `earth_-10000_coal.png`: Coal Basins (USGS WoCQI).
+* `earth_-10000_oil.png`: Conventional & Unconventional Petroleum Plays (USGS).
+* `earth_-10000_gas.png`: Natural Gas Formations (USGS).
+* `earth_-10000_uranium.png`: Uranium Mineral Deposits (IAEA / NEA Red Book).
+* `earth_-10000_helium3.png`: Mantle Plume Helium-3 Outgassing Sources (USGS).
+* `earth_-10000_iron_copper.png`: Iron & Copper Mineralization (USGS MRDS).
+* `earth_-10000_precious_metals.png`: Gold, Silver & Platinum Group Deposits.
+* `earth_-10000_rare_earths.png`: Critical Rare Earth Elements (REE).
+* `earth_-10000_geothermal.png`: Terrestrial Heat Flow & Geothermal Gradients (IHFC).
+* `earth_-10000_aquifers.png`: Deep Regional Groundwater Aquifers (UNESCO WHYMAP).
+
+## 🔬 Decoupling Rationale ($t = t_0$ vs Dynamical Ticks $t > t_0$)
+In strict accordance with `AGENTS.md` Directives:
+1. **Initial Conditions ($t = t_0$)**: The 25 raster layers define the empirically calibrated spatial state at initialization.
+2. **Dynamical Simulation Engine ($t > t_0$)**: Once launched, the physical engines (Energy Balance Climate Models, Darcy groundwater flow, Lotka metabolic energetics, and Turchin cliodynamics) dynamically evolve population, technology, culture, and sovereign borders without synthetic lock-in.
+
+## 📄 Associated Metadata Files
+* `cultural_registry.json`: Multilingual entity registry (EN, FR, DE, ES, ZH) with trait vectors and kinship metadata.
+* `provenance_and_sources.json`: Exhaustive academic citations, datasets, and physical calibration rationale.

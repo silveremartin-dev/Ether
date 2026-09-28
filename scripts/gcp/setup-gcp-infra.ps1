@@ -2,8 +2,8 @@ param(
     [string]$ProjectId = "ether-509812",
     [string]$Region = "europe-west1",
     [string]$Zone = "europe-west1-b",
-    [string]$MasterMachineType = "e2-standard-4",
-    [string]$WorkerMachineType = "e2-standard-4",
+    [string]$MasterMachineType = "c2-standard-4",
+    [string]$WorkerMachineType = "c2-standard-4",
     [switch]$CreateWorker = $true
 )
 

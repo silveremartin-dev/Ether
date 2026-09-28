@@ -1,0 +1,3092 @@
+{
+  "epoch": 1206,
+  "era": "Mongol World Empire Formation & High Medieval Crusades (1206 AD)",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch 1206 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "alodia",
+      "colorHex": "#13CF45",
+      "colorRgb": [19, 207, 69],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Alodia",
+        "fr": "Alodia",
+        "de": "Alodia",
+        "es": "Alodia",
+        "zh": "Alodia"
+      },
+      "seshatId": "sd_alodia",
+      "fromYear": 602,
+      "toYear": 1501,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "tamna",
+      "colorHex": "#EB2A54",
+      "colorRgb": [235, 42, 84],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tamna",
+        "fr": "Tamna",
+        "de": "Tamna",
+        "es": "Tamna",
+        "zh": "Tamna"
+      },
+      "seshatId": "",
+      "fromYear": 936,
+      "toYear": 1271,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "icelandic_commonwealth",
+      "colorHex": "#3AEB1E",
+      "colorRgb": [58, 235, 30],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Icelandic Commonwealth",
+        "fr": "Icelandic Commonwealth",
+        "de": "Icelandic Commonwealth",
+        "es": "Icelandic Commonwealth",
+        "zh": "Icelandic Commonwealth"
+      },
+      "seshatId": "is_icelandic_commonwealth",
+      "fromYear": 936,
+      "toYear": 1259,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "later_mayan_city-states",
+      "colorHex": "#DE33D8",
+      "colorRgb": [222, 51, 216],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Later Mayan City-States",
+        "fr": "Later Mayan City-States",
+        "de": "Later Mayan City-States",
+        "es": "Later Mayan City-States",
+        "zh": "Later Mayan City-States"
+      },
+      "seshatId": "gt_tikal_early_postclassic",
+      "fromYear": 960,
+      "toYear": 1259,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "viking_settlements",
+      "colorHex": "#39E6E6",
+      "colorRgb": [57, 230, 230],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Viking settlements",
+        "fr": "Viking settlements",
+        "de": "Viking settlements",
+        "es": "Viking settlements",
+        "zh": "Viking settlements"
+      },
+      "seshatId": "",
+      "fromYear": 1028,
+      "toYear": 1325,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "sunda_kingdom",
+      "colorHex": "#1AC4AE",
+      "colorRgb": [26, 196, 174],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sunda Kingdom",
+        "fr": "Sunda Kingdom",
+        "de": "Sunda Kingdom",
+        "es": "Sunda Kingdom",
+        "zh": "Sunda Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1028,
+      "toYear": 1293,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kievan_rus_",
+      "colorHex": "#2FC262",
+      "colorRgb": [47, 194, 98],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kievan Rus'",
+        "fr": "Kievan Rus'",
+        "de": "Kievan Rus'",
+        "es": "Kievan Rus'",
+        "zh": "Kievan Rus'"
+      },
+      "seshatId": "ua_kievan_rus",
+      "fromYear": 1040,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "early_balinese_kingdoms",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Early Balinese Kingdoms",
+        "fr": "Early Balinese Kingdoms",
+        "de": "Early Balinese Kingdoms",
+        "es": "Early Balinese Kingdoms",
+        "zh": "Early Balinese Kingdoms"
+      },
+      "seshatId": "",
+      "fromYear": 1046,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_dali",
+      "colorHex": "#E68422",
+      "colorRgb": [230, 132, 34],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Dali",
+        "fr": "Kingdom of Dali",
+        "de": "Kingdom of Dali",
+        "es": "Kingdom of Dali",
+        "zh": "Kingdom of Dali"
+      },
+      "seshatId": "cn_dali_k",
+      "fromYear": 1056,
+      "toYear": 1249,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_polonnaruwa",
+      "colorHex": "#7E32F0",
+      "colorRgb": [126, 50, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Polonnaruwa",
+        "fr": "Kingdom of Polonnaruwa",
+        "de": "Kingdom of Polonnaruwa",
+        "es": "Kingdom of Polonnaruwa",
+        "zh": "Kingdom of Polonnaruwa"
+      },
+      "seshatId": "sl_polonnaruva",
+      "fromYear": 1072,
+      "toYear": 1249,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "giudicato_of_arborea",
+      "colorHex": "#18D6C3",
+      "colorRgb": [24, 214, 195],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Giudicato of Arborea",
+        "fr": "Giudicato of Arborea",
+        "de": "Giudicato of Arborea",
+        "es": "Giudicato of Arborea",
+        "zh": "Giudicato of Arborea"
+      },
+      "seshatId": "",
+      "fromYear": 1072,
+      "toYear": 1325,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_pereyaslavl",
+      "colorHex": "#6C23C4",
+      "colorRgb": [108, 35, 196],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Pereyaslavl",
+        "fr": "Principality of Pereyaslavl",
+        "de": "Principality of Pereyaslavl",
+        "es": "Principality of Pereyaslavl",
+        "zh": "Principality of Pereyaslavl"
+      },
+      "seshatId": "",
+      "fromYear": 1072,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "volga_bulgaria",
+      "colorHex": "#33DE39",
+      "colorRgb": [51, 222, 57],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Volga Bulgaria",
+        "fr": "Volga Bulgaria",
+        "de": "Volga Bulgaria",
+        "es": "Volga Bulgaria",
+        "zh": "Volga Bulgaria"
+      },
+      "seshatId": "",
+      "fromYear": 1072,
+      "toYear": 1226,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "empire_of_kanem",
+      "colorHex": "#E30E58",
+      "colorRgb": [227, 14, 88],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Empire of Kanem",
+        "fr": "Empire of Kanem",
+        "de": "Empire of Kanem",
+        "es": "Empire of Kanem",
+        "zh": "Empire of Kanem"
+      },
+      "seshatId": "td_kanem",
+      "fromYear": 1072,
+      "toYear": 1374,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "norse_greenland",
+      "colorHex": "#94A3B8",
+      "colorRgb": [148, 163, 184],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Norse Greenland",
+        "fr": "Norse Greenland",
+        "de": "Norse Greenland",
+        "es": "Norse Greenland",
+        "zh": "Norse Greenland"
+      },
+      "seshatId": "",
+      "fromYear": 1072,
+      "toYear": 1271,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "giudicato_of_logudoro",
+      "colorHex": "#D4EB2A",
+      "colorRgb": [212, 235, 42],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Giudicato of Logudoro",
+        "fr": "Giudicato of Logudoro",
+        "de": "Giudicato of Logudoro",
+        "es": "Giudicato of Logudoro",
+        "zh": "Giudicato of Logudoro"
+      },
+      "seshatId": "",
+      "fromYear": 1072,
+      "toYear": 1249,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_chernigov",
+      "colorHex": "#30E377",
+      "colorRgb": [48, 227, 119],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Chernigov",
+        "fr": "Principality of Chernigov",
+        "de": "Principality of Chernigov",
+        "es": "Principality of Chernigov",
+        "zh": "Principality of Chernigov"
+      },
+      "seshatId": "",
+      "fromYear": 1094,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_alba",
+      "colorHex": "#34B31B",
+      "colorRgb": [52, 179, 27],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Alba",
+        "fr": "Kingdom of Alba",
+        "de": "Kingdom of Alba",
+        "es": "Kingdom of Alba",
+        "zh": "Kingdom of Alba"
+      },
+      "seshatId": "gb_alba_k",
+      "fromYear": 1099,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "brythons",
+      "colorHex": "#67D916",
+      "colorRgb": [103, 217, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Brythons",
+        "fr": "Brythons",
+        "de": "Brythons",
+        "es": "Brythons",
+        "zh": "Brythons"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 1099,
+      "toYear": 1226,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_ryazan",
+      "colorHex": "#30CCD1",
+      "colorRgb": [48, 204, 209],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Ryazan",
+        "fr": "Principality of Ryazan",
+        "de": "Principality of Ryazan",
+        "es": "Principality of Ryazan",
+        "zh": "Principality of Ryazan"
+      },
+      "seshatId": "ru_ryazan_principality",
+      "fromYear": 1099,
+      "toYear": 1226,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_drutsk",
+      "colorHex": "#CC1FAF",
+      "colorRgb": [204, 31, 175],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Drutsk",
+        "fr": "Principality of Drutsk",
+        "de": "Principality of Drutsk",
+        "es": "Principality of Drutsk",
+        "zh": "Principality of Drutsk"
+      },
+      "seshatId": "",
+      "fromYear": 1111,
+      "toYear": 1240,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "classic_veracruz_culture",
+      "colorHex": "#26BD15",
+      "colorRgb": [38, 189, 21],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Classic Veracruz Culture",
+        "fr": "Classic Veracruz Culture",
+        "de": "Classic Veracruz Culture",
+        "es": "Classic Veracruz Culture",
+        "zh": "Classic Veracruz Culture"
+      },
+      "seshatId": "",
+      "fromYear": 1111,
+      "toYear": 1226,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "makuria",
+      "colorHex": "#28D3ED",
+      "colorRgb": [40, 211, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Makuria",
+        "fr": "Makuria",
+        "de": "Makuria",
+        "es": "Makuria",
+        "zh": "Makuria"
+      },
+      "seshatId": "",
+      "fromYear": 1111,
+      "toYear": 1278,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_rostov-suzdal",
+      "colorHex": "#B31B34",
+      "colorRgb": [179, 27, 52],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Rostov-Suzdal",
+        "fr": "Principality of Rostov-Suzdal",
+        "de": "Principality of Rostov-Suzdal",
+        "es": "Principality of Rostov-Suzdal",
+        "zh": "Principality of Rostov-Suzdal"
+      },
+      "seshatId": "",
+      "fromYear": 1126,
+      "toYear": 1226,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "southern_song",
+      "colorHex": "#0FC90C",
+      "colorRgb": [15, 201, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Southern Song",
+        "fr": "Southern Song",
+        "de": "Southern Song",
+        "es": "Southern Song",
+        "zh": "Southern Song"
+      },
+      "seshatId": "cn_southern_song_dyn",
+      "fromYear": 1139,
+      "toYear": 1240,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "shirvan",
+      "colorHex": "#B2C423",
+      "colorRgb": [178, 196, 35],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Shirvan",
+        "fr": "Shirvan",
+        "de": "Shirvan",
+        "es": "Shirvan",
+        "zh": "Shirvan"
+      },
+      "seshatId": "",
+      "fromYear": 1139,
+      "toYear": 1226,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "tibetans",
+      "colorHex": "#27CF70",
+      "colorRgb": [39, 207, 112],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tibetans",
+        "fr": "Tibetans",
+        "de": "Tibetans",
+        "es": "Tibetans",
+        "zh": "Tibetans"
+      },
+      "seshatId": "",
+      "fromYear": 1139,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "takrur",
+      "colorHex": "#3163E0",
+      "colorRgb": [49, 99, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Takrur",
+        "fr": "Takrur",
+        "de": "Takrur",
+        "es": "Takrur",
+        "zh": "Takrur"
+      },
+      "seshatId": "",
+      "fromYear": 1139,
+      "toYear": 1226,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "zagwe_dynasty",
+      "colorHex": "#ABED11",
+      "colorRgb": [171, 237, 17],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Zagwe dynasty",
+        "fr": "Zagwe dynasty",
+        "de": "Zagwe dynasty",
+        "es": "Zagwe dynasty",
+        "zh": "Zagwe dynasty"
+      },
+      "seshatId": "et_zagwe",
+      "fromYear": 1139,
+      "toYear": 1259,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "sultanate_of_kedah",
+      "colorHex": "#67C718",
+      "colorRgb": [103, 199, 24],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Kedah",
+        "fr": "Sultanate of Kedah",
+        "de": "Sultanate of Kedah",
+        "es": "Sultanate of Kedah",
+        "zh": "Sultanate of Kedah"
+      },
+      "seshatId": "",
+      "fromYear": 1139,
+      "toYear": 1293,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kediri_kingdom",
+      "colorHex": "#ABD419",
+      "colorRgb": [171, 212, 25],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kediri Kingdom",
+        "fr": "Kediri Kingdom",
+        "de": "Kediri Kingdom",
+        "es": "Kediri Kingdom",
+        "zh": "Kediri Kingdom"
+      },
+      "seshatId": "id_kediri_k",
+      "fromYear": 1139,
+      "toYear": 1219,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "goryeo",
+      "colorHex": "#F0268E",
+      "colorRgb": [240, 38, 142],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Goryeo",
+        "fr": "Goryeo",
+        "de": "Goryeo",
+        "es": "Goryeo",
+        "zh": "Goryeo"
+      },
+      "seshatId": "kr_goryeo_k",
+      "fromYear": 1139,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kimek-kipchak_confederation",
+      "colorHex": "#38BF1D",
+      "colorRgb": [56, 191, 29],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kimek-Kipchak confederation",
+        "fr": "Kimek-Kipchak confederation",
+        "de": "Kimek-Kipchak confederation",
+        "es": "Kimek-Kipchak confederation",
+        "zh": "Kimek-Kipchak confederation"
+      },
+      "seshatId": "kz_kimek_conf",
+      "fromYear": 1147,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "eastern_ganga_kingdom",
+      "colorHex": "#D4196D",
+      "colorRgb": [212, 25, 109],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Eastern Ganga Kingdom",
+        "fr": "Eastern Ganga Kingdom",
+        "de": "Eastern Ganga Kingdom",
+        "es": "Eastern Ganga Kingdom",
+        "zh": "Eastern Ganga Kingdom"
+      },
+      "seshatId": "in_ganga_k",
+      "fromYear": 1152,
+      "toYear": 1259,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "puebloans_-_aztec_regional_system",
+      "colorHex": "#5AD111",
+      "colorRgb": [90, 209, 17],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Puebloans - Aztec Regional System",
+        "fr": "Puebloans - Aztec Regional System",
+        "de": "Puebloans - Aztec Regional System",
+        "es": "Puebloans - Aztec Regional System",
+        "zh": "Puebloans - Aztec Regional System"
+      },
+      "seshatId": "us_aztec_puebloan",
+      "fromYear": 1152,
+      "toYear": 1293,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "uyunid_emirate",
+      "colorHex": "#3F0FB8",
+      "colorRgb": [63, 15, 184],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Uyunid Emirate",
+        "fr": "Uyunid Emirate",
+        "de": "Uyunid Emirate",
+        "es": "Uyunid Emirate",
+        "zh": "Uyunid Emirate"
+      },
+      "seshatId": "",
+      "fromYear": 1169,
+      "toYear": 1226,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "sena_dynasty",
+      "colorHex": "#E0461B",
+      "colorRgb": [224, 70, 27],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sena Dynasty",
+        "fr": "Sena Dynasty",
+        "de": "Sena Dynasty",
+        "es": "Sena Dynasty",
+        "zh": "Sena Dynasty"
+      },
+      "seshatId": "bd_sena_dyn",
+      "fromYear": 1169,
+      "toYear": 1226,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_brythonic_kingdoms_",
+      "colorHex": "#2BB589",
+      "colorRgb": [43, 181, 137],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Brythonic Kingdoms)",
+        "fr": "(Brythonic Kingdoms)",
+        "de": "(Brythonic Kingdoms)",
+        "es": "(Brythonic Kingdoms)",
+        "zh": "(Brythonic Kingdoms)"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 1169,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "mahdids",
+      "colorHex": "#7730E3",
+      "colorRgb": [119, 48, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Mahdids",
+        "fr": "Mahdids",
+        "de": "Mahdids",
+        "es": "Mahdids",
+        "zh": "Mahdids"
+      },
+      "seshatId": "",
+      "fromYear": 1169,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_gwynedd",
+      "colorHex": "#15E894",
+      "colorRgb": [21, 232, 148],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Gwynedd",
+        "fr": "Kingdom of Gwynedd",
+        "de": "Kingdom of Gwynedd",
+        "es": "Kingdom of Gwynedd",
+        "zh": "Kingdom of Gwynedd"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 1169,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_powys_fadog",
+      "colorHex": "#D94616",
+      "colorRgb": [217, 70, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Powys Fadog",
+        "fr": "Kingdom of Powys Fadog",
+        "de": "Kingdom of Powys Fadog",
+        "es": "Kingdom of Powys Fadog",
+        "zh": "Kingdom of Powys Fadog"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 1169,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "chola_empire",
+      "colorHex": "#38E875",
+      "colorRgb": [56, 232, 117],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chola Empire",
+        "fr": "Chola Empire",
+        "de": "Chola Empire",
+        "es": "Chola Empire",
+        "zh": "Chola Empire"
+      },
+      "seshatId": "in_chola_emp",
+      "fromYear": 1177,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_mann",
+      "colorHex": "#C24011",
+      "colorRgb": [194, 64, 17],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Mann",
+        "fr": "Kingdom of Mann",
+        "de": "Kingdom of Mann",
+        "es": "Kingdom of Mann",
+        "zh": "Kingdom of Mann"
+      },
+      "seshatId": "",
+      "fromYear": 1177,
+      "toYear": 1259,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "pagan_kingdom",
+      "colorHex": "#E3192D",
+      "colorRgb": [227, 25, 45],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Pagan Kingdom",
+        "fr": "Pagan Kingdom",
+        "de": "Pagan Kingdom",
+        "es": "Pagan Kingdom",
+        "zh": "Pagan Kingdom"
+      },
+      "seshatId": "mm_bagan",
+      "fromYear": 1188,
+      "toYear": 1284,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_ampuria",
+      "colorHex": "#4ECF27",
+      "colorRgb": [78, 207, 39],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Ampuria",
+        "fr": "County of Ampuria",
+        "de": "County of Ampuria",
+        "es": "County of Ampuria",
+        "zh": "County of Ampuria"
+      },
+      "seshatId": "",
+      "fromYear": 1188,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "shunten_dynasty",
+      "colorHex": "#A01EBD",
+      "colorRgb": [160, 30, 189],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Shunten Dynasty",
+        "fr": "Shunten Dynasty",
+        "de": "Shunten Dynasty",
+        "es": "Shunten Dynasty",
+        "zh": "Shunten Dynasty"
+      },
+      "seshatId": "",
+      "fromYear": 1188,
+      "toYear": 1304,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_turov_and_pinsk",
+      "colorHex": "#BD1EA5",
+      "colorRgb": [189, 30, 165],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Turov and Pinsk",
+        "fr": "Principality of Turov and Pinsk",
+        "de": "Principality of Turov and Pinsk",
+        "es": "Principality of Turov and Pinsk",
+        "zh": "Principality of Turov and Pinsk"
+      },
+      "seshatId": "",
+      "fromYear": 1188,
+      "toYear": 1219,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_tripoli",
+      "colorHex": "#CF139C",
+      "colorRgb": [207, 19, 156],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Tripoli",
+        "fr": "County of Tripoli",
+        "de": "County of Tripoli",
+        "es": "County of Tripoli",
+        "zh": "County of Tripoli"
+      },
+      "seshatId": "",
+      "fromYear": 1188,
+      "toYear": 1271,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "haripu_jaya",
+      "colorHex": "#46C423",
+      "colorRgb": [70, 196, 35],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Haripuñjaya",
+        "fr": "Haripuñjaya",
+        "de": "Haripuñjaya",
+        "es": "Haripuñjaya",
+        "zh": "Haripuñjaya"
+      },
+      "seshatId": "th_haribhunjaya_k",
+      "fromYear": 1188,
+      "toYear": 1284,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_flanders",
+      "colorHex": "#D11BAD",
+      "colorRgb": [209, 27, 173],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Flanders",
+        "fr": "County of Flanders",
+        "de": "County of Flanders",
+        "es": "County of Flanders",
+        "zh": "County of Flanders"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1188,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "hoysala_kingdom",
+      "colorHex": "#E6AC39",
+      "colorRgb": [230, 172, 57],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Hoysala Kingdom",
+        "fr": "Hoysala Kingdom",
+        "de": "Hoysala Kingdom",
+        "es": "Hoysala Kingdom",
+        "zh": "Hoysala Kingdom"
+      },
+      "seshatId": "in_hoysala_k",
+      "fromYear": 1188,
+      "toYear": 1240,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_vermandois",
+      "colorHex": "#52BA29",
+      "colorRgb": [82, 186, 41],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Vermandois",
+        "fr": "County of Vermandois",
+        "de": "County of Vermandois",
+        "es": "County of Vermandois",
+        "zh": "County of Vermandois"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1188,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "yadava_dynasty",
+      "colorHex": "#B8182D",
+      "colorRgb": [184, 24, 45],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Yadava Dynasty",
+        "fr": "Yadava Dynasty",
+        "de": "Yadava Dynasty",
+        "es": "Yadava Dynasty",
+        "zh": "Yadava Dynasty"
+      },
+      "seshatId": "in_yadava_dyn",
+      "fromYear": 1188,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kakatiya_dynasty",
+      "colorHex": "#C4237C",
+      "colorRgb": [196, 35, 124],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kakatiya Dynasty",
+        "fr": "Kakatiya Dynasty",
+        "de": "Kakatiya Dynasty",
+        "es": "Kakatiya Dynasty",
+        "zh": "Kakatiya Dynasty"
+      },
+      "seshatId": "in_kakatiya_dyn",
+      "fromYear": 1188,
+      "toYear": 1259,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_antioch",
+      "colorHex": "#1BA3C2",
+      "colorRgb": [27, 163, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Antioch",
+        "fr": "Principality of Antioch",
+        "de": "Principality of Antioch",
+        "es": "Principality of Antioch",
+        "zh": "Principality of Antioch"
+      },
+      "seshatId": "",
+      "fromYear": 1188,
+      "toYear": 1259,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_berga",
+      "colorHex": "#E82C58",
+      "colorRgb": [232, 44, 88],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Berga",
+        "fr": "County of Berga",
+        "de": "County of Berga",
+        "es": "County of Berga",
+        "zh": "County of Berga"
+      },
+      "seshatId": "",
+      "fromYear": 1188,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_boulogne",
+      "colorHex": "#1B99B3",
+      "colorRgb": [27, 153, 179],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Boulogne",
+        "fr": "County of Boulogne",
+        "de": "County of Boulogne",
+        "es": "County of Boulogne",
+        "zh": "County of Boulogne"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1188,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "old_kingdom_of_norway",
+      "colorHex": "#D419AB",
+      "colorRgb": [212, 25, 171],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Old Kingdom of Norway",
+        "fr": "Old Kingdom of Norway",
+        "de": "Old Kingdom of Norway",
+        "es": "Old Kingdom of Norway",
+        "zh": "Old Kingdom of Norway"
+      },
+      "seshatId": "no_norway_k_1",
+      "fromYear": 1188,
+      "toYear": 1271,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_jerusalem",
+      "colorHex": "#BD2881",
+      "colorRgb": [189, 40, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Jerusalem",
+        "fr": "Kingdom of Jerusalem",
+        "de": "Kingdom of Jerusalem",
+        "es": "Kingdom of Jerusalem",
+        "zh": "Kingdom of Jerusalem"
+      },
+      "seshatId": "il_jerusalem_k_2",
+      "fromYear": 1192,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_cyprus",
+      "colorHex": "#257EC2",
+      "colorRgb": [37, 126, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Cyprus",
+        "fr": "Kingdom of Cyprus",
+        "de": "Kingdom of Cyprus",
+        "es": "Kingdom of Cyprus",
+        "zh": "Kingdom of Cyprus"
+      },
+      "seshatId": "cy_cyprus_k",
+      "fromYear": 1192,
+      "toYear": 1362,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kamakura_shogunate",
+      "colorHex": "#D14711",
+      "colorRgb": [209, 71, 17],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kamakura Shogunate",
+        "fr": "Kamakura Shogunate",
+        "de": "Kamakura Shogunate",
+        "es": "Kamakura Shogunate",
+        "zh": "Kamakura Shogunate"
+      },
+      "seshatId": "jp_kamakura",
+      "fromYear": 1192,
+      "toYear": 1325,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "republic_of_genoa",
+      "colorHex": "#D622BB",
+      "colorRgb": [214, 34, 187],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Genoa",
+        "fr": "Republic of Genoa",
+        "de": "Republic of Genoa",
+        "es": "Republic of Genoa",
+        "zh": "Republic of Genoa"
+      },
+      "seshatId": "it_genoa_rep_1",
+      "fromYear": 1202,
+      "toYear": 1249,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "armenian_kingdom_of_cilicia",
+      "colorHex": "#99E62E",
+      "colorRgb": [153, 230, 46],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Armenian Kingdom of Cilicia",
+        "fr": "Armenian Kingdom of Cilicia",
+        "de": "Armenian Kingdom of Cilicia",
+        "es": "Armenian Kingdom of Cilicia",
+        "zh": "Armenian Kingdom of Cilicia"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1249,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_sicily",
+      "colorHex": "#A91BC2",
+      "colorRgb": [169, 27, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Sicily",
+        "fr": "Kingdom of Sicily",
+        "de": "Kingdom of Sicily",
+        "es": "Kingdom of Sicily",
+        "zh": "Kingdom of Sicily"
+      },
+      "seshatId": "it_sicily_k_2",
+      "fromYear": 1202,
+      "toYear": 1259,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "chandela_kingdom",
+      "colorHex": "#A5BD1E",
+      "colorRgb": [165, 189, 30],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chandela Kingdom",
+        "fr": "Chandela Kingdom",
+        "de": "Chandela Kingdom",
+        "es": "Chandela Kingdom",
+        "zh": "Chandela Kingdom"
+      },
+      "seshatId": "in_chandela_k",
+      "fromYear": 1202,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kathmandu",
+      "colorHex": "#A735DB",
+      "colorRgb": [167, 53, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kathmandu",
+        "fr": "Kathmandu",
+        "de": "Kathmandu",
+        "es": "Kathmandu",
+        "zh": "Kathmandu"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1743,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_portugal",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Portugal",
+        "fr": "Kingdom of Portugal",
+        "de": "Kingdom of Portugal",
+        "es": "Kingdom of Portugal",
+        "zh": "Kingdom of Portugal"
+      },
+      "seshatId": "pt_portugal_k",
+      "fromYear": 1202,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "texcoco",
+      "colorHex": "#A123C4",
+      "colorRgb": [161, 35, 196],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Texcoco",
+        "fr": "Texcoco",
+        "de": "Texcoco",
+        "es": "Texcoco",
+        "zh": "Texcoco"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1325,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_kingdom_of_bohemia_",
+      "colorHex": "#4016C9",
+      "colorRgb": [64, 22, 201],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Kingdom of Bohemia)",
+        "fr": "(Kingdom of Bohemia)",
+        "de": "(Kingdom of Bohemia)",
+        "es": "(Kingdom of Bohemia)",
+        "zh": "(Kingdom of Bohemia)"
+      },
+      "seshatId": "cz_bohemian_k_1",
+      "fromYear": 1202,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_minsk",
+      "colorHex": "#742BD9",
+      "colorRgb": [116, 43, 217],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Minsk",
+        "fr": "Principality of Minsk",
+        "de": "Principality of Minsk",
+        "es": "Principality of Minsk",
+        "zh": "Principality of Minsk"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1219,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_kiev",
+      "colorHex": "#1E3AEB",
+      "colorRgb": [30, 58, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Kiev",
+        "fr": "Principality of Kiev",
+        "de": "Principality of Kiev",
+        "es": "Principality of Kiev",
+        "zh": "Principality of Kiev"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kashmir",
+      "colorHex": "#9B2CC7",
+      "colorRgb": [155, 44, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kashmir",
+        "fr": "Kashmir",
+        "de": "Kashmir",
+        "es": "Kashmir",
+        "zh": "Kashmir"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_castile",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Castile",
+        "fr": "Kingdom of Castile",
+        "de": "Kingdom of Castile",
+        "es": "Kingdom of Castile",
+        "zh": "Kingdom of Castile"
+      },
+      "seshatId": "es_castile_k",
+      "fromYear": 1202,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "chaulukya_dynasty",
+      "colorHex": "#23C4A1",
+      "colorRgb": [35, 196, 161],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chaulukya Dynasty",
+        "fr": "Chaulukya Dynasty",
+        "de": "Chaulukya Dynasty",
+        "es": "Chaulukya Dynasty",
+        "zh": "Chaulukya Dynasty"
+      },
+      "seshatId": "in_chaulukya_dyn",
+      "fromYear": 1202,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "zengid_dynasty",
+      "colorHex": "#38CF1D",
+      "colorRgb": [56, 207, 29],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Zengid dynasty",
+        "fr": "Zengid dynasty",
+        "de": "Zengid dynasty",
+        "es": "Zengid dynasty",
+        "zh": "Zengid dynasty"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "papal_states",
+      "colorHex": "#EAB308",
+      "colorRgb": [234, 179, 8],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Papal States",
+        "fr": "Papal States",
+        "de": "Papal States",
+        "es": "Papal States",
+        "zh": "Papal States"
+      },
+      "seshatId": "it_papal_state_1",
+      "fromYear": 1202,
+      "toYear": 1259,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "paramara_dynasty",
+      "colorHex": "#A8D916",
+      "colorRgb": [168, 217, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Paramara Dynasty",
+        "fr": "Paramara Dynasty",
+        "de": "Paramara Dynasty",
+        "es": "Paramara Dynasty",
+        "zh": "Paramara Dynasty"
+      },
+      "seshatId": "in_paramara_dyn",
+      "fromYear": 1202,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_smolensk",
+      "colorHex": "#B52E2B",
+      "colorRgb": [181, 46, 43],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Smolensk",
+        "fr": "Principality of Smolensk",
+        "de": "Principality of Smolensk",
+        "es": "Principality of Smolensk",
+        "zh": "Principality of Smolensk"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1240,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "ayyubid_sultanate",
+      "colorHex": "#D11B70",
+      "colorRgb": [209, 27, 112],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ayyubid Sultanate",
+        "fr": "Ayyubid Sultanate",
+        "de": "Ayyubid Sultanate",
+        "es": "Ayyubid Sultanate",
+        "zh": "Ayyubid Sultanate"
+      },
+      "seshatId": "eg_ayyubid_sultanate",
+      "fromYear": 1202,
+      "toYear": 1219,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_navarre",
+      "colorHex": "#8014CC",
+      "colorRgb": [128, 20, 204],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Navarre",
+        "fr": "Kingdom of Navarre",
+        "de": "Kingdom of Navarre",
+        "es": "Kingdom of Navarre",
+        "zh": "Kingdom of Navarre"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1284,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "chimu_empire",
+      "colorHex": "#39E639",
+      "colorRgb": [57, 230, 57],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chimu Empire",
+        "fr": "Chimu Empire",
+        "de": "Chimu Empire",
+        "es": "Chimu Empire",
+        "zh": "Chimu Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1343,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "srivijaya",
+      "colorHex": "#D6A92D",
+      "colorRgb": [214, 169, 45],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Srivijaya",
+        "fr": "Srivijaya",
+        "de": "Srivijaya",
+        "es": "Srivijaya",
+        "zh": "Srivijaya"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1284,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "sosso_empire",
+      "colorHex": "#5BBF13",
+      "colorRgb": [91, 191, 19],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sosso Empire",
+        "fr": "Sosso Empire",
+        "de": "Sosso Empire",
+        "es": "Sosso Empire",
+        "zh": "Sosso Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1226,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "novgorod_republic",
+      "colorHex": "#2DBFC4",
+      "colorRgb": [45, 191, 196],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Novgorod Republic",
+        "fr": "Novgorod Republic",
+        "de": "Novgorod Republic",
+        "es": "Novgorod Republic",
+        "zh": "Novgorod Republic"
+      },
+      "seshatId": "ru_novgorod_rep",
+      "fromYear": 1202,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "republic_of_pisa",
+      "colorHex": "#3C30E3",
+      "colorRgb": [60, 48, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Pisa",
+        "fr": "Republic of Pisa",
+        "de": "Republic of Pisa",
+        "es": "Republic of Pisa",
+        "zh": "Republic of Pisa"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_bohemia",
+      "colorHex": "#CB26F0",
+      "colorRgb": [203, 38, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Bohemia",
+        "fr": "Kingdom of Bohemia",
+        "de": "Kingdom of Bohemia",
+        "es": "Kingdom of Bohemia",
+        "zh": "Kingdom of Bohemia"
+      },
+      "seshatId": "cz_bohemian_k_1",
+      "fromYear": 1202,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_polotsky",
+      "colorHex": "#4D15E8",
+      "colorRgb": [77, 21, 232],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Polotsky",
+        "fr": "Principality of Polotsky",
+        "de": "Principality of Polotsky",
+        "es": "Principality of Polotsky",
+        "zh": "Principality of Polotsky"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_urgell",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Urgell",
+        "fr": "County of Urgell",
+        "de": "County of Urgell",
+        "es": "County of Urgell",
+        "zh": "County of Urgell"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_le_n",
+      "colorHex": "#1AC475",
+      "colorRgb": [26, 196, 117],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of León",
+        "fr": "Kingdom of León",
+        "de": "Kingdom of León",
+        "es": "Kingdom of León",
+        "zh": "Kingdom of León"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "namayan",
+      "colorHex": "#BA1697",
+      "colorRgb": [186, 22, 151],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Namayan",
+        "fr": "Namayan",
+        "de": "Namayan",
+        "es": "Namayan",
+        "zh": "Namayan"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1374,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "duchy_of_brittany",
+      "colorHex": "#0D10D6",
+      "colorRgb": [13, 16, 214],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Brittany",
+        "fr": "Duchy of Brittany",
+        "de": "Duchy of Brittany",
+        "es": "Duchy of Brittany",
+        "zh": "Duchy of Brittany"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1219,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_duchies_of_poland_",
+      "colorHex": "#1CEDD5",
+      "colorRgb": [28, 237, 213],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Duchies of Poland)",
+        "fr": "(Duchies of Poland)",
+        "de": "(Duchies of Poland)",
+        "es": "(Duchies of Poland)",
+        "zh": "(Duchies of Poland)"
+      },
+      "seshatId": "pl_piast_dyn_2",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "despotate_of_epirus",
+      "colorHex": "#CC1F75",
+      "colorRgb": [204, 31, 117],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Despotate of Epirus",
+        "fr": "Despotate of Epirus",
+        "de": "Despotate of Epirus",
+        "es": "Despotate of Epirus",
+        "zh": "Despotate of Epirus"
+      },
+      "seshatId": "gr_epirus_despot",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "latin_empire",
+      "colorHex": "#CF135E",
+      "colorRgb": [207, 19, 94],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Latin Empire",
+        "fr": "Latin Empire",
+        "de": "Latin Empire",
+        "es": "Latin Empire",
+        "zh": "Latin Empire"
+      },
+      "seshatId": "tr_latin_emp",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_arles",
+      "colorHex": "#22BBD6",
+      "colorRgb": [34, 187, 214],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Arles",
+        "fr": "Kingdom of Arles",
+        "de": "Kingdom of Arles",
+        "es": "Kingdom of Arles",
+        "zh": "Kingdom of Arles"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1259,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "byzantine_empire",
+      "colorHex": "#15E8DA",
+      "colorRgb": [21, 232, 218],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Byzantine Empire",
+        "fr": "Byzantine Empire",
+        "de": "Byzantine Empire",
+        "es": "Byzantine Empire",
+        "zh": "Byzantine Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1226,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "yenisei_kyrgyz",
+      "colorHex": "#1FCF13",
+      "colorRgb": [31, 207, 19],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Yenisei Kyrgyz",
+        "fr": "Yenisei Kyrgyz",
+        "de": "Yenisei Kyrgyz",
+        "es": "Yenisei Kyrgyz",
+        "zh": "Yenisei Kyrgyz"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "negroponte",
+      "colorHex": "#D17326",
+      "colorRgb": [209, 115, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Negroponte",
+        "fr": "Negroponte",
+        "de": "Negroponte",
+        "es": "Negroponte",
+        "zh": "Negroponte"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "ghaznavid_empire",
+      "colorHex": "#3399CC",
+      "colorRgb": [51, 153, 204],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ghaznavid Empire",
+        "fr": "Ghaznavid Empire",
+        "de": "Ghaznavid Empire",
+        "es": "Ghaznavid Empire",
+        "zh": "Ghaznavid Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "mongol_empire",
+      "colorHex": "#2243C7",
+      "colorRgb": [34, 67, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Mongol Empire",
+        "fr": "Mongol Empire",
+        "de": "Mongol Empire",
+        "es": "Mongol Empire",
+        "zh": "Mongol Empire"
+      },
+      "seshatId": "mn_mongol_emp",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "duchy_of_silesia",
+      "colorHex": "#CE14DB",
+      "colorRgb": [206, 20, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Silesia",
+        "fr": "Duchy of Silesia",
+        "de": "Duchy of Silesia",
+        "es": "Duchy of Silesia",
+        "zh": "Duchy of Silesia"
+      },
+      "seshatId": "pl_piast_dyn_2",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_armagnac",
+      "colorHex": "#ABD419",
+      "colorRgb": [171, 212, 25],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Armagnac",
+        "fr": "County of Armagnac",
+        "de": "County of Armagnac",
+        "es": "County of Armagnac",
+        "zh": "County of Armagnac"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1271,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "khwarezmid_empire",
+      "colorHex": "#9BE330",
+      "colorRgb": [155, 227, 48],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Khwarezmid Empire",
+        "fr": "Khwarezmid Empire",
+        "de": "Khwarezmid Empire",
+        "es": "Khwarezmid Empire",
+        "zh": "Khwarezmid Empire"
+      },
+      "seshatId": "tm_khwarezmid_emp",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "ghurid_dynasty",
+      "colorHex": "#E83B38",
+      "colorRgb": [232, 59, 56],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ghurid Dynasty",
+        "fr": "Ghurid Dynasty",
+        "de": "Ghurid Dynasty",
+        "es": "Ghurid Dynasty",
+        "zh": "Ghurid Dynasty"
+      },
+      "seshatId": "af_ghur_principality",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "western_xia",
+      "colorHex": "#BF1D6E",
+      "colorRgb": [191, 29, 110],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Western Xia",
+        "fr": "Western Xia",
+        "de": "Western Xia",
+        "es": "Western Xia",
+        "zh": "Western Xia"
+      },
+      "seshatId": "cn_xixia",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_sweden",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Sweden",
+        "fr": "Kingdom of Sweden",
+        "de": "Kingdom of Sweden",
+        "es": "Kingdom of Sweden",
+        "zh": "Kingdom of Sweden"
+      },
+      "seshatId": "sv_swedish_k_1",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "abbasid_caliphate",
+      "colorHex": "#B32477",
+      "colorRgb": [179, 36, 119],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Abbasid Caliphate",
+        "fr": "Abbasid Caliphate",
+        "de": "Abbasid Caliphate",
+        "es": "Abbasid Caliphate",
+        "zh": "Abbasid Caliphate"
+      },
+      "seshatId": "iq_abbasid_cal_2",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_champagne",
+      "colorHex": "#BECC29",
+      "colorRgb": [190, 204, 41],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Champagne",
+        "fr": "County of Champagne",
+        "de": "County of Champagne",
+        "es": "County of Champagne",
+        "zh": "County of Champagne"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_p_rigord",
+      "colorHex": "#4BD126",
+      "colorRgb": [75, 209, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Périgord",
+        "fr": "County of Périgord",
+        "de": "County of Périgord",
+        "es": "County of Périgord",
+        "zh": "County of Périgord"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1271,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_poitou",
+      "colorHex": "#BD1EA5",
+      "colorRgb": [189, 30, 165],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Poitou",
+        "fr": "County of Poitou",
+        "de": "County of Poitou",
+        "es": "County of Poitou",
+        "zh": "County of Poitou"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1240,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_france",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of France",
+        "fr": "Kingdom of France",
+        "de": "Kingdom of France",
+        "es": "Kingdom of France",
+        "zh": "Kingdom of France"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_toulouse",
+      "colorHex": "#DE9012",
+      "colorRgb": [222, 144, 18],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Toulouse",
+        "fr": "County of Toulouse",
+        "de": "County of Toulouse",
+        "es": "County of Toulouse",
+        "zh": "County of Toulouse"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "livonian_brothers_of_the_sword",
+      "colorHex": "#3B24D4",
+      "colorRgb": [59, 36, 212],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Livonian Brothers of the Sword",
+        "fr": "Livonian Brothers of the Sword",
+        "de": "Livonian Brothers of the Sword",
+        "es": "Livonian Brothers of the Sword",
+        "zh": "Livonian Brothers of the Sword"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_achaea",
+      "colorHex": "#B611C2",
+      "colorRgb": [182, 17, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Achaea",
+        "fr": "Principality of Achaea",
+        "de": "Principality of Achaea",
+        "es": "Principality of Achaea",
+        "zh": "Principality of Achaea"
+      },
+      "seshatId": "gr_achaea_principality",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_auvergne",
+      "colorHex": "#1017E0",
+      "colorRgb": [16, 23, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Auvergne",
+        "fr": "County of Auvergne",
+        "de": "County of Auvergne",
+        "es": "County of Auvergne",
+        "zh": "County of Auvergne"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_hungary",
+      "colorHex": "#1A30F0",
+      "colorRgb": [26, 48, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Hungary",
+        "fr": "Kingdom of Hungary",
+        "de": "Kingdom of Hungary",
+        "es": "Kingdom of Hungary",
+        "zh": "Kingdom of Hungary"
+      },
+      "seshatId": "hu_arpad_dyn",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_allegiance_of_sultanate_of_rum_to_abbasid_caliphate_",
+      "colorHex": "#1BE0C9",
+      "colorRgb": [27, 224, 201],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Allegiance of Sultanate of Rum to Abbasid Caliphate)",
+        "fr": "(Allegiance of Sultanate of Rum to Abbasid Caliphate)",
+        "de": "(Allegiance of Sultanate of Rum to Abbasid Caliphate)",
+        "es": "(Allegiance of Sultanate of Rum to Abbasid Caliphate)",
+        "zh": "(Allegiance of Sultanate of Rum to Abbasid Caliphate)"
+      },
+      "seshatId": "tr_rum_sultanate;iq_abbasid_cal_2",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_georgia",
+      "colorHex": "#84CC16",
+      "colorRgb": [132, 204, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Georgia",
+        "fr": "Kingdom of Georgia",
+        "de": "Kingdom of Georgia",
+        "es": "Kingdom of Georgia",
+        "zh": "Kingdom of Georgia"
+      },
+      "seshatId": "ge_georgia_k_2",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "duchy_of_opole",
+      "colorHex": "#2F5DC2",
+      "colorRgb": [47, 93, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Opole",
+        "fr": "Duchy of Opole",
+        "de": "Duchy of Opole",
+        "es": "Duchy of Opole",
+        "zh": "Duchy of Opole"
+      },
+      "seshatId": "pl_piast_dyn_2",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "duchy_of_athens",
+      "colorHex": "#D92BCA",
+      "colorRgb": [217, 43, 202],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Athens",
+        "fr": "Duchy of Athens",
+        "de": "Duchy of Athens",
+        "es": "Duchy of Athens",
+        "zh": "Duchy of Athens"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "great_jin",
+      "colorHex": "#10B573",
+      "colorRgb": [16, 181, 115],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Great Jin",
+        "fr": "Great Jin",
+        "de": "Great Jin",
+        "es": "Great Jin",
+        "zh": "Great Jin"
+      },
+      "seshatId": "cn_later_great_jin",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "holy_roman_empire",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Holy Roman Empire",
+        "fr": "Holy Roman Empire",
+        "de": "Holy Roman Empire",
+        "es": "Holy Roman Empire",
+        "zh": "Holy Roman Empire"
+      },
+      "seshatId": "de_empire_2",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_kingdom_of_england_",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Kingdom of England)",
+        "fr": "(Kingdom of England)",
+        "de": "(Kingdom of England)",
+        "es": "(Kingdom of England)",
+        "zh": "(Kingdom of England)"
+      },
+      "seshatId": "gb_england_plantagenet",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kara-khitans",
+      "colorHex": "#BA0D86",
+      "colorRgb": [186, 13, 134],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kara-Khitans",
+        "fr": "Kara-Khitans",
+        "de": "Kara-Khitans",
+        "es": "Kara-Khitans",
+        "zh": "Kara-Khitans"
+      },
+      "seshatId": "tm_kara_khitai_khanate",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "empire_of_trebizond",
+      "colorHex": "#1421DB",
+      "colorRgb": [20, 33, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Empire of Trebizond",
+        "fr": "Empire of Trebizond",
+        "de": "Empire of Trebizond",
+        "es": "Empire of Trebizond",
+        "zh": "Empire of Trebizond"
+      },
+      "seshatId": "tr_trebizond_emp",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "republic_of_venice",
+      "colorHex": "#14CCBD",
+      "colorRgb": [20, 204, 189],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Venice",
+        "fr": "Republic of Venice",
+        "de": "Republic of Venice",
+        "es": "Republic of Venice",
+        "zh": "Republic of Venice"
+      },
+      "seshatId": "it_venetian_rep_3",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "hamdanid_emirates",
+      "colorHex": "#8EDB2A",
+      "colorRgb": [142, 219, 42],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Hamdanid Emirates",
+        "fr": "Hamdanid Emirates",
+        "de": "Hamdanid Emirates",
+        "es": "Hamdanid Emirates",
+        "zh": "Hamdanid Emirates"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "sultanate_of_rum",
+      "colorHex": "#C7450E",
+      "colorRgb": [199, 69, 14],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Rum",
+        "fr": "Sultanate of Rum",
+        "de": "Sultanate of Rum",
+        "es": "Sultanate of Rum",
+        "zh": "Sultanate of Rum"
+      },
+      "seshatId": "tr_rum_sultanate",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_allegiance_of_southern_song_to_great_jin_",
+      "colorHex": "#EB13AD",
+      "colorRgb": [235, 19, 173],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Allegiance of Southern Song to Great Jin)",
+        "fr": "(Allegiance of Southern Song to Great Jin)",
+        "de": "(Allegiance of Southern Song to Great Jin)",
+        "es": "(Allegiance of Southern Song to Great Jin)",
+        "zh": "(Allegiance of Southern Song to Great Jin)"
+      },
+      "seshatId": "cn_southern_song_dyn;cn_later_great_jin",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_vassalage_of_kingdom_of_bohemia_to_holy_roman_empire_",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Vassalage of Kingdom of Bohemia to Holy Roman Empire)",
+        "fr": "(Vassalage of Kingdom of Bohemia to Holy Roman Empire)",
+        "de": "(Vassalage of Kingdom of Bohemia to Holy Roman Empire)",
+        "es": "(Vassalage of Kingdom of Bohemia to Holy Roman Empire)",
+        "zh": "(Vassalage of Kingdom of Bohemia to Holy Roman Empire)"
+      },
+      "seshatId": "cz_bohemian_k_1;de_empire_2",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_nevers",
+      "colorHex": "#C4652D",
+      "colorRgb": [196, 101, 45],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Nevers",
+        "fr": "County of Nevers",
+        "de": "County of Nevers",
+        "es": "County of Nevers",
+        "zh": "County of Nevers"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1219,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_serbia",
+      "colorHex": "#E319B4",
+      "colorRgb": [227, 25, 180],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Serbia",
+        "fr": "Kingdom of Serbia",
+        "de": "Kingdom of Serbia",
+        "es": "Kingdom of Serbia",
+        "zh": "Kingdom of Serbia"
+      },
+      "seshatId": "rs_serbia_k",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_allegiance_of_ayyubid_sultanate_to_abbasid_caliphate_",
+      "colorHex": "#0EE398",
+      "colorRgb": [14, 227, 152],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Allegiance of Ayyubid Sultanate to Abbasid Caliphate)",
+        "fr": "(Allegiance of Ayyubid Sultanate to Abbasid Caliphate)",
+        "de": "(Allegiance of Ayyubid Sultanate to Abbasid Caliphate)",
+        "es": "(Allegiance of Ayyubid Sultanate to Abbasid Caliphate)",
+        "zh": "(Allegiance of Ayyubid Sultanate to Abbasid Caliphate)"
+      },
+      "seshatId": "eg_ayyubid_sultanate;iq_abbasid_cal_2",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "duchy_of_aquitaine",
+      "colorHex": "#32CF69",
+      "colorRgb": [50, 207, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Aquitaine",
+        "fr": "Duchy of Aquitaine",
+        "de": "Duchy of Aquitaine",
+        "es": "Duchy of Aquitaine",
+        "zh": "Duchy of Aquitaine"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_bl_is",
+      "colorHex": "#0EF0A1",
+      "colorRgb": [14, 240, 161],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Blôis",
+        "fr": "County of Blôis",
+        "de": "County of Blôis",
+        "es": "County of Blôis",
+        "zh": "County of Blôis"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1219,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "nicaean_empire",
+      "colorHex": "#2AEB81",
+      "colorRgb": [42, 235, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Nicaean Empire",
+        "fr": "Nicaean Empire",
+        "de": "Nicaean Empire",
+        "es": "Nicaean Empire",
+        "zh": "Nicaean Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_thessalonica",
+      "colorHex": "#28EDC6",
+      "colorRgb": [40, 237, 198],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Thessalonica",
+        "fr": "Kingdom of Thessalonica",
+        "de": "Kingdom of Thessalonica",
+        "es": "Kingdom of Thessalonica",
+        "zh": "Kingdom of Thessalonica"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "angevin_empire",
+      "colorHex": "#6820BA",
+      "colorRgb": [104, 32, 186],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Angevin Empire",
+        "fr": "Angevin Empire",
+        "de": "Angevin Empire",
+        "es": "Angevin Empire",
+        "zh": "Angevin Empire"
+      },
+      "seshatId": "gb_england_plantagenet",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "khmer_empire",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Khmer Empire",
+        "fr": "Khmer Empire",
+        "de": "Khmer Empire",
+        "es": "Khmer Empire",
+        "zh": "Khmer Empire"
+      },
+      "seshatId": "kh_angkor_2",
+      "fromYear": 1206,
+      "toYear": 1219,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_allegiance_of_goryeo_to_great_jin_",
+      "colorHex": "#D6B522",
+      "colorRgb": [214, 181, 34],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Allegiance of Goryeo to Great Jin)",
+        "fr": "(Allegiance of Goryeo to Great Jin)",
+        "de": "(Allegiance of Goryeo to Great Jin)",
+        "es": "(Allegiance of Goryeo to Great Jin)",
+        "zh": "(Allegiance of Goryeo to Great Jin)"
+      },
+      "seshatId": "kr_goryeo_k;cn_later_great_jin",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "ng__dynasty",
+      "colorHex": "#2447E3",
+      "colorRgb": [36, 71, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ngô Dynasty",
+        "fr": "Ngô Dynasty",
+        "de": "Ngô Dynasty",
+        "es": "Ngô Dynasty",
+        "zh": "Ngô Dynasty"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1219,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_vassalage_of_western_xia_to_great_jin_",
+      "colorHex": "#D9213F",
+      "colorRgb": [217, 33, 63],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Vassalage of Western Xia to Great Jin)",
+        "fr": "(Vassalage of Western Xia to Great Jin)",
+        "de": "(Vassalage of Western Xia to Great Jin)",
+        "es": "(Vassalage of Western Xia to Great Jin)",
+        "zh": "(Vassalage of Western Xia to Great Jin)"
+      },
+      "seshatId": "cn_xixia;cn_later_great_jin",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "second_bulgarian_empire",
+      "colorHex": "#B6E01B",
+      "colorRgb": [182, 224, 27],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Second Bulgarian Empire",
+        "fr": "Second Bulgarian Empire",
+        "de": "Second Bulgarian Empire",
+        "es": "Second Bulgarian Empire",
+        "zh": "Second Bulgarian Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_holy_roman_empire_",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Holy Roman Empire)",
+        "fr": "(Holy Roman Empire)",
+        "de": "(Holy Roman Empire)",
+        "es": "(Holy Roman Empire)",
+        "zh": "(Holy Roman Empire)"
+      },
+      "seshatId": "de_empire_2",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "banate_of_bosnia",
+      "colorHex": "#1B70D1",
+      "colorRgb": [27, 112, 209],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Banate of Bosnia",
+        "fr": "Banate of Bosnia",
+        "de": "Banate of Bosnia",
+        "es": "Banate of Bosnia",
+        "zh": "Banate of Bosnia"
+      },
+      "seshatId": "ba_bosnia_banate",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "duchy_of_greater_poland",
+      "colorHex": "#E639E6",
+      "colorRgb": [230, 57, 230],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Greater Poland",
+        "fr": "Duchy of Greater Poland",
+        "de": "Duchy of Greater Poland",
+        "es": "Duchy of Greater Poland",
+        "zh": "Duchy of Greater Poland"
+      },
+      "seshatId": "pl_piast_dyn_2",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_jersika",
+      "colorHex": "#AFCC1F",
+      "colorRgb": [175, 204, 31],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Jersika",
+        "fr": "Principality of Jersika",
+        "de": "Principality of Jersika",
+        "es": "Principality of Jersika",
+        "zh": "Principality of Jersika"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_kingdom_of_france_",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Kingdom of France)",
+        "fr": "(Kingdom of France)",
+        "de": "(Kingdom of France)",
+        "es": "(Kingdom of France)",
+        "zh": "(Kingdom of France)"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "_kingdom_of_denmark_",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Kingdom of Denmark)",
+        "fr": "(Kingdom of Denmark)",
+        "de": "(Kingdom of Denmark)",
+        "es": "(Kingdom of Denmark)",
+        "zh": "(Kingdom of Denmark)"
+      },
+      "seshatId": "dk_danish_k",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "domain_of_rhodes",
+      "colorHex": "#0F57D4",
+      "colorRgb": [15, 87, 212],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Domain of Rhodes",
+        "fr": "Domain of Rhodes",
+        "de": "Domain of Rhodes",
+        "es": "Domain of Rhodes",
+        "zh": "Domain of Rhodes"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1240,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "duchy_of_masovia",
+      "colorHex": "#C7450E",
+      "colorRgb": [199, 69, 14],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Masovia",
+        "fr": "Duchy of Masovia",
+        "de": "Duchy of Masovia",
+        "es": "Duchy of Masovia",
+        "zh": "Duchy of Masovia"
+      },
+      "seshatId": "pl_piast_dyn_2",
+      "fromYear": 1206,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "giudicato_of_gallura",
+      "colorHex": "#CC3399",
+      "colorRgb": [204, 51, 153],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Giudicato of Gallura",
+        "fr": "Giudicato of Gallura",
+        "de": "Giudicato of Gallura",
+        "es": "Giudicato of Gallura",
+        "zh": "Giudicato of Gallura"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "county_of_touraine",
+      "colorHex": "#C4972D",
+      "colorRgb": [196, 151, 45],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Touraine",
+        "fr": "County of Touraine",
+        "de": "County of Touraine",
+        "es": "County of Touraine",
+        "zh": "County of Touraine"
+      },
+      "seshatId": "fr_capetian_k_2",
+      "fromYear": 1206,
+      "toYear": 1271,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "duchy_of_sandomierz",
+      "colorHex": "#7233DE",
+      "colorRgb": [114, 51, 222],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Sandomierz",
+        "fr": "Duchy of Sandomierz",
+        "de": "Duchy of Sandomierz",
+        "es": "Duchy of Sandomierz",
+        "zh": "Duchy of Sandomierz"
+      },
+      "seshatId": "pl_piast_dyn_2",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "crown_of_aragon",
+      "colorHex": "#2A8EDB",
+      "colorRgb": [42, 142, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Crown of Aragon",
+        "fr": "Crown of Aragon",
+        "de": "Crown of Aragon",
+        "es": "Crown of Aragon",
+        "zh": "Crown of Aragon"
+      },
+      "seshatId": "es_aragon_crown",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "halych-volhynia_occupation",
+      "colorHex": "#B33A12",
+      "colorRgb": [179, 58, 18],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Halych-Volhynia occupation",
+        "fr": "Halych-Volhynia occupation",
+        "de": "Halych-Volhynia occupation",
+        "es": "Halych-Volhynia occupation",
+        "zh": "Halych-Volhynia occupation"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1235,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "almohad_caliphate",
+      "colorHex": "#2F94D4",
+      "colorRgb": [47, 148, 212],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Almohad Caliphate",
+        "fr": "Almohad Caliphate",
+        "de": "Almohad Caliphate",
+        "es": "Almohad Caliphate",
+        "zh": "Almohad Caliphate"
+      },
+      "seshatId": "ma_almohad_emp",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_denmark",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Denmark",
+        "fr": "Kingdom of Denmark",
+        "de": "Kingdom of Denmark",
+        "es": "Kingdom of Denmark",
+        "zh": "Kingdom of Denmark"
+      },
+      "seshatId": "dk_danish_k",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "lohara_dynasty",
+      "colorHex": "#B38F24",
+      "colorRgb": [179, 143, 36],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Lohara Dynasty",
+        "fr": "Lohara Dynasty",
+        "de": "Lohara Dynasty",
+        "es": "Lohara Dynasty",
+        "zh": "Lohara Dynasty"
+      },
+      "seshatId": "in_lohara_dyn",
+      "fromYear": 1206,
+      "toYear": 1215,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_galicia-volhynia",
+      "colorHex": "#3818B8",
+      "colorRgb": [56, 24, 184],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Galicia-Volhynia",
+        "fr": "Principality of Galicia-Volhynia",
+        "de": "Principality of Galicia-Volhynia",
+        "es": "Principality of Galicia-Volhynia",
+        "zh": "Principality of Galicia-Volhynia"
+      },
+      "seshatId": "ua_galicia_volhynia_principality",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "kingdom_of_powys_wenwynwyn",
+      "colorHex": "#84E622",
+      "colorRgb": [132, 230, 34],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Powys Wenwynwyn",
+        "fr": "Kingdom of Powys Wenwynwyn",
+        "de": "Kingdom of Powys Wenwynwyn",
+        "es": "Kingdom of Powys Wenwynwyn",
+        "zh": "Kingdom of Powys Wenwynwyn"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    },
+    {
+      "id": "principality_of_koknese",
+      "colorHex": "#D48019",
+      "colorRgb": [212, 128, 25],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Koknese",
+        "fr": "Principality of Koknese",
+        "de": "Principality of Koknese",
+        "es": "Principality of Koknese",
+        "zh": "Principality of Koknese"
+      },
+      "seshatId": "",
+      "fromYear": 1206,
+      "toYear": 1209,
+      "kinshipType": "Nomadic Steppe Clan Federations (Otog) & Feudal Estates",
+      "lithicTechnocomplex": "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)",
+      "caloricIntakePerCapitaKcal": 2850
+    }
+  ]
+}

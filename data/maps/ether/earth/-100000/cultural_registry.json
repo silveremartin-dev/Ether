@@ -1,7 +1,7 @@
 {
   "epoch": -100000,
-  "era": "Late Pleistocene / MIS 5c-d Transition (Early Out-of-Africa Inception)",
-  "description": "Cliodynamic Cultural, Linguistic & Demographic Registry for -100,000 BP",
+  "era": "Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP)",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -100000 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
   "encoding": "ID_RGB_24BIT",
   "traitDimensions": [
     "linguisticBranch",
@@ -9,168 +9,86 @@
     "subsistenceMode",
     "ritualTradition"
   ],
-  "globalDemographics": {
-    "totalWorldPopulationRange": [85000, 150000],
-    "homininSpecies": {
-      "homoSapiens": {
-        "sharePercent": 65.0,
-        "focalRegions": ["Sub-Saharan Africa", "Nile Valley", "Maghreb", "Levant", "Southern Arabia"],
-        "meanCarryingCapacityHabKm2": 0.035,
-        "dailyCaloricRequirementKcal": 2400,
-        "socialOrganization": "Bilateral exogamous forager multi-band networks (50-150 individuals)",
-        "archaeologicalHearths": ["Omo Kibish", "Herto", "Jebel Irhoud", "Blombos", "Klasies River", "Skhul", "Qafzeh", "Jebel Faya"]
-      },
-      "homoNeanderthalensis": {
-        "sharePercent": 20.0,
-        "focalRegions": ["Western & Southern Europe", "Crimea", "Caucasus", "Zagros Mountains", "Levant"],
-        "meanCarryingCapacityHabKm2": 0.010,
-        "dailyCaloricRequirementKcal": 4500,
-        "socialOrganization": "Small patrilocal kin-groups with high genetic inbreeding (15-30 individuals)",
-        "archaeologicalHearths": ["La Ferrassie", "Neander Valley", "Gorham's Cave", "Atapuerca", "Krapina", "Shanidar", "Bisitun"]
-      },
-      "denisovansAndArchaicClades": {
-        "sharePercent": 15.0,
-        "focalRegions": ["Altai Mountains", "Tibetan Plateau", "Northern China", "Indochina", "Sundaland"],
-        "meanCarryingCapacityHabKm2": 0.014,
-        "dailyCaloricRequirementKcal": 3200,
-        "socialOrganization": "Cold-adapted & tropical forest nomadic foraging bands (20-50 individuals)",
-        "archaeologicalHearths": ["Denisova Cave", "Baishiya Karst Cave", "Nihewan", "Narmada Valley", "Tam Pa Ling", "Ngandong"]
-      }
-    },
-    "strictlyUninhabitedContinentsAndIslands": [
-      "North America", "South America", "Mesoamerica", "Caribbean Archipelagos",
-      "Australia (Sahul)", "New Guinea", "Tasmania", "New Zealand",
-      "Madagascar", "Mascarene Islands (Mauritius, Réunion)", "Seychelles",
-      "Antarctica", "Iceland", "Polynesia / Micronesia / Melanesia",
-      "Atlantic isolated archipelagos (Canaries, Azores, Cape Verde, Madeira, St Helena, Ascension)"
-    ]
-  },
   "entities": [
     {
-      "id": "sapiens_african_core",
-      "colorHex": "#E67E22",
-      "colorRgb": [230, 126, 34],
-      "traits": [0.10, 0.15, 0.20, 0.40],
+      "id": "core_polity_east_asia",
+      "colorHex": "#EF4444",
+      "colorRgb": [239, 68, 68],
+      "traits": [0.70, 0.85, 0.90, 0.85],
       "name": {
-        "en": "Proto-Sapiens Core Dialects (Sub-Saharan Africa)",
-        "fr": "Dialectes Proto-Sapiens Centraux (Afrique subsaharienne)",
-        "de": "Proto-Sapiens Kerndialekte (Subsahara-Afrika)",
-        "es": "Dialectos Proto-Sapiens Centrales (África subsahariana)",
-        "zh": "智人核心方言群（撒哈拉以南非洲）"
+        "en": "East Asian Core (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "fr": "Foyer Est-Asiatique (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "de": "Ostasietischer Zivilisationsraum (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "es": "Núcleo de Asia Oriental (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "zh": "东亚核心区（Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP)）"
       },
-      "species": "Homo sapiens",
-      "kinshipType": "Bilateral / Multi-Band Forager",
-      "lithicTechnocomplex": "Middle Stone Age (MSA / Mode 3)",
-      "ecologicalNiche": "Savanna, tropical woodland & coastal foraging",
-      "caloricIntakePerCapitaKcal": 2350
+      "kinshipType": "Egalitarian Forager Multi-Family Band",
+      "lithicTechnocomplex": "Middle Stone Age (MSA) Blade & Point Technocomplex, Pigment Use & Marine Foraging",
+      "caloricIntakePerCapitaKcal": 2300
     },
     {
-      "id": "sapiens_east_horn",
-      "colorHex": "#D35400",
-      "colorRgb": [211, 84, 0],
-      "traits": [0.15, 0.18, 0.25, 0.45],
+      "id": "core_polity_west_eurasia",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.75, 0.80, 0.88, 0.80],
       "name": {
-        "en": "Proto-Sapiens Horn & Rift Lineages (Omo / Herto)",
-        "fr": "Lignées Sapiens de la Corne & du Rift (Omo / Herto)",
-        "de": "Proto-Sapiens Horn- & Rift-Linien (Omo / Herto)",
-        "es": "Linajes Sapiens del Cuerno y Rift (Omo / Herto)",
-        "zh": "智人裂谷与非洲之角谱系（奥莫/赫托）"
+        "en": "Western Eurasian Core (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "fr": "Foyer Ouest-Eurasien (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "de": "Westeurasischer Zivilisationsraum (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "es": "Núcleo Euroasiático Occidental (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "zh": "西欧亚核心区（Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP)）"
       },
-      "species": "Homo sapiens",
-      "kinshipType": "Bilateral Forager Bands",
-      "lithicTechnocomplex": "MSA Advanced Bladelet & Ochre",
-      "ecologicalNiche": "Rift Valley lacustrine & riverine hunting/gathering",
-      "caloricIntakePerCapitaKcal": 2400
+      "kinshipType": "Egalitarian Forager Multi-Family Band",
+      "lithicTechnocomplex": "Middle Stone Age (MSA) Blade & Point Technocomplex, Pigment Use & Marine Foraging",
+      "caloricIntakePerCapitaKcal": 2300
     },
     {
-      "id": "sapiens_out_of_africa_pioneers",
-      "colorHex": "#F39C12",
-      "colorRgb": [243, 156, 18],
-      "traits": [0.22, 0.20, 0.35, 0.50],
+      "id": "core_polity_south_asia",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.65, 0.85, 0.92, 0.90],
       "name": {
-        "en": "Out-of-Africa Pioneers (Sinai / Levant Skhul-Qafzeh & Jebel Faya)",
-        "fr": "Pionniers Sortie d'Afrique (Sinaï / Levant Skhul-Qafzeh & Jebel Faya)",
-        "de": "Out-of-Africa Pioniere (Sinai / Levante Skhul-Qafzeh & Dschabal Faya)",
-        "es": "Pioneros Salida de África (Sinaí / Levante Skhul-Qafzeh y Jebel Faya)",
-        "zh": "出非洲先锋群体（西奈/黎凡特斯库尔-卡夫泽与法亚）"
+        "en": "South Asian Core (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "fr": "Foyer Sud-Asiatique (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "de": "Südasiatischer Zivilisationsraum (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "es": "Núcleo de Asia del Sur (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "zh": "南亚核心区（Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP)）"
       },
-      "species": "Homo sapiens",
-      "kinshipType": "Pioneer Coastal Dispersal Bands",
-      "lithicTechnocomplex": "Early Levant Middle Paleolithic & Arabian Nubian Complex",
-      "ecologicalNiche": "Semi-arid oasis & coastal marine gathering",
-      "caloricIntakePerCapitaKcal": 2500
+      "kinshipType": "Egalitarian Forager Multi-Family Band",
+      "lithicTechnocomplex": "Middle Stone Age (MSA) Blade & Point Technocomplex, Pigment Use & Marine Foraging",
+      "caloricIntakePerCapitaKcal": 2300
     },
     {
-      "id": "neanderthal_western_mousterian",
-      "colorHex": "#2980B9",
-      "colorRgb": [41, 128, 185],
-      "traits": [0.75, 0.70, 0.60, 0.15],
+      "id": "core_polity_americas",
+      "colorHex": "#06B6D4",
+      "colorRgb": [6, 182, 212],
+      "traits": [0.55, 0.75, 0.82, 0.88],
       "name": {
-        "en": "Western Classical Mousterian (Europe & Iberia)",
-        "fr": "Moustérien Occidental Classique (Europe & Ibérie)",
-        "de": "Westliches Klassisches Moustérien (Europa & Iberien)",
-        "es": "Musteriense Occidental Clásico (Europa e Iberia)",
-        "zh": "西欧经典莫斯特文化（欧洲与伊比利亚）"
+        "en": "Americas Core (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "fr": "Foyer des Amériques (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "de": "Amerikanischer Zivilisationsraum (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "es": "Núcleo de las Américas (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "zh": "美洲核心区（Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP)）"
       },
-      "species": "Homo neanderthalensis",
-      "kinshipType": "Patrilocal Small Neanderthal Clades",
-      "lithicTechnocomplex": "Mousterian of Acheulean Tradition / Levallois Flakes",
-      "ecologicalNiche": "Periglacial mammoth steppe & temperate woodland hunting",
-      "caloricIntakePerCapitaKcal": 4600
+      "kinshipType": "Egalitarian Forager Multi-Family Band",
+      "lithicTechnocomplex": "Middle Stone Age (MSA) Blade & Point Technocomplex, Pigment Use & Marine Foraging",
+      "caloricIntakePerCapitaKcal": 2300
     },
     {
-      "id": "neanderthal_zagros_shanidar",
-      "colorHex": "#1F4788",
-      "colorRgb": [31, 71, 136],
-      "traits": [0.80, 0.72, 0.65, 0.18],
+      "id": "core_polity_africa",
+      "colorHex": "#22C55E",
+      "colorRgb": [34, 197, 94],
+      "traits": [0.60, 0.70, 0.75, 0.80],
       "name": {
-        "en": "Zagros & Near East Mousterian (Shanidar / Bisitun / Anatolia)",
-        "fr": "Moustérien du Zagros & Proche-Orient (Shanidar / Bisitun / Anatolie)",
-        "de": "Zagros- & Nahost-Moustérien (Schanidar / Bisitun / Anatolien)",
-        "es": "Musteriense de Zagros y Oriente Próximo (Shanidar / Bisitún / Anatolia)",
-        "zh": "扎格罗斯与近东莫斯特文化（沙尼达尔/贝希斯敦/安纳托利亚）"
+        "en": "African Core (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "fr": "Foyer Africain (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "de": "Afrikanischer Zivilisationsraum (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "es": "Núcleo Africano (Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP))",
+        "zh": "非洲核心区（Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP)）"
       },
-      "species": "Homo neanderthalensis",
-      "kinshipType": "Zagros Highland Cave Kin-Groups",
-      "lithicTechnocomplex": "Zagros Mousterian Point / Side-Scraper Complex",
-      "ecologicalNiche": "Highland plateau & mountain karst valley hunting",
-      "caloricIntakePerCapitaKcal": 4200
-    },
-    {
-      "id": "denisovan_altai_siberian",
-      "colorHex": "#27AE60",
-      "colorRgb": [39, 174, 96],
-      "traits": [0.60, 0.55, 0.50, 0.12],
-      "name": {
-        "en": "Altai Denisovans & Siberian Archaic Lineages",
-        "fr": "Dénisoviens de l'Altaï & Lignées Archaïques Sibériennes",
-        "de": "Altai-Denisova & Sibirische Archaische Linien",
-        "es": "Denisovanos de Altái y Linajes Arcaicos Siberianos",
-        "zh": "阿尔泰丹尼索瓦人与西伯利亚古老谱系"
-      },
-      "species": "Denisova hominin / Archaic Asian",
-      "kinshipType": "Cold-Adapted Steppe Foragers",
-      "lithicTechnocomplex": "Altai Middle Paleolithic Laminar Complex",
-      "ecologicalNiche": "High-altitude cold steppe & subarctic taiga",
-      "caloricIntakePerCapitaKcal": 3800
-    },
-    {
-      "id": "eastern_archaic_sunda",
-      "colorHex": "#8E44AD",
-      "colorRgb": [142, 68, 173],
-      "traits": [0.45, 0.40, 0.30, 0.08],
-      "name": {
-        "en": "East Asian & Sundaland Archaic Hominins (Late Erectus / Denisovan Clades)",
-        "fr": "Hominines Archaïques d'Asie Orientale & du Sunda (Erectus tardif / Dénisoviens)",
-        "de": "Ostasiatische & Sundaland Archaische Homininen (Später Erectus / Denisova)",
-        "es": "Homínidos Arcaicos de Asia Oriental y Sondalandia (Erectus tardío / Denisovanos)",
-        "zh": "东亚与巽他古人类群（晚期直立人/丹尼索瓦支系）"
-      },
-      "species": "Late Homo erectus / Sundaland Denisovan clades",
-      "kinshipType": "Tropical Forest & Bamboo Technocomplex Bands",
-      "lithicTechnocomplex": "East Asian Core-and-Flake / Chopper Industry",
-      "ecologicalNiche": "Tropical rainforest, mangrove & riverine gathering",
-      "caloricIntakePerCapitaKcal": 2200
+      "kinshipType": "Egalitarian Forager Multi-Family Band",
+      "lithicTechnocomplex": "Middle Stone Age (MSA) Blade & Point Technocomplex, Pigment Use & Marine Foraging",
+      "caloricIntakePerCapitaKcal": 2300
     }
   ]
 }

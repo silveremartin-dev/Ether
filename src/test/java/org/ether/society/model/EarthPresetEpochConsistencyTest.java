@@ -64,12 +64,12 @@ class EarthPresetEpochConsistencyTest {
 
             long year = sc.getStartDateYear();
 
-            if (year <= -70000) {
+            if (year <= -80000) {
                 // Out of Africa / Paleolithic (-100,000 BP)
                 assertEquals(PlanetPreset.EARTH_LIG_100000BP.name(), planet.name());
                 assertEquals(EcologyPreset.EARTH_LIG_100000BP.name(), ecology.name());
             } else if (year <= -40000) {
-                // Sahul (-50,000 BP)
+                // Toba Cataclysm (-74,000 BP) & Sahul (-50,000 BP)
                 assertEquals(PlanetPreset.EARTH_MIS3_50000BP.name(), planet.name());
                 assertEquals(EcologyPreset.EARTH_MIS3_50000BP.name(), ecology.name());
             } else if (year <= -22000) {

@@ -23,4 +23,4 @@ if [ ! -f "$JAR_PATH" ]; then
 fi
 
 echo "🔗 Connecting Worker Node to Master at ${MASTER_HOST}:${PORT}..."
-java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "$JAR_PATH" --headless --mode=cluster --role=worker --master-host="${MASTER_HOST}" --port="${PORT}" --secret="${SECRET}"
+java -Xms4g -Xmx12g -XX:+UseZGC --add-modules jdk.incubator.vector -XX:+UnlockDiagnosticVMOptions -XX:+UseSuperWord -XX:LoopUnrollLimit=1000 -jar "$JAR_PATH" --headless --mode=cluster --role=worker --master-host="${MASTER_HOST}" --port="${PORT}" --secret="${SECRET}"

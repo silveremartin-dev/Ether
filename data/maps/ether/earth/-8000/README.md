@@ -1,55 +1,54 @@
-# Cartographic & Cultural Tensor Provenance: Earth (-8000 BP)
+# Earth Epoch -8000: Neolithic Agricultural Expansion & Green Sahara (-8,000 BP / 6000 BC)
 
-## 🌍 1. Overview & Geophysical Context
-The epoch **-8000 BP** (c. 6000 BCE, Boreal/Atlantic transition) marks the full hemispheric deployment of the **Neolithic Revolution** across Eurasia and North Africa, characterized by the emergence of the first dense farming mega-villages and early native copper metallurgy.
+## 🌍 Overview
+This directory contains the standardized 25-layer cartographic raster tensor suite and cliodynamic registries for Earth at epoch **-8000** (Neolithic Agricultural Expansion & Green Sahara (-8,000 BP / 6000 BC)).
 
-* **Eustatic Sea Level**: $-20\text{ m}$ below present-day datum (the drowning of Doggerland culminates around 8150 BP with the Storegga tsunami; the Black Sea is fully reconnected to the Mediterranean).
-* **8.2 ka Climate Event**: A brief, sharp northern hemisphere cooling anomaly of $-1.5^\circ\text{C}$, stimulating farming adaptations and agricultural dispersal.
-* **Green Sahara & Climate**:
-  * Climax of the **African Humid Period**: the Sahara and Arabian Peninsula are covered in lush savanna grasslands, acacia forests, and vast mega-lakes (Lake Mega-Chad exceeding $350,000\text{ km}^2$).
-  * Dense climax temperate broadleaf forest covering central and western Europe.
-* **Major Archaeological Hearths**:
-  * **Anatolia & Levant**: Neolithic mega-settlement of **Çatalhöyük** (dense streetless agglomeration, roof access, bucrania shrines); Ain Ghazal and Hacilar.
-  * **Europe (Neolithic Pioneer Waves)**: Expansion of Early European Farmers (*EEF*) via Cardial/Impressed Ware in the Mediterranean, Starčevo-Körös-Criş culture in the Balkans, and Linear Pottery Culture (LBK) in Central Europe.
-  * **East Asia**: Fully established millet farming at **Jiahu** (Henan, China: seven-hole crane bone flutes, fermented rice/honey wine, early proto-script incised symbols) and rice farming at Kuahuqiao.
-  * **Indian Subcontinent**: Period I-II of **Mehrgarh** (Balochistan) featuring zebu cattle pastoralism, mudbrick granaries, and wheat/barley agriculture.
-  * **Sahara Pastoralists**: Ceremonial megalithic cattle burial and astronomical stone calendar circle at **Nabta Playa**.
-  * **Strict Uninhabited Masks**: Antarctica, Madagascar, Iceland, New Zealand, and isolated Polynesian islands are strictly uninhabited ($D = 0.0\text{ hab/km}^2$).
+All raster layers are generated in equirectangular projection (Plate Carrée, EPSG:4326) at **2048x1024** resolution with bit-identical determinism.
 
----
+### Context & Archaeological/Historical Horizon
+* **Era**: Neolithic Agricultural Expansion & Green Sahara (-8,000 BP / 6000 BC)
+* **Technocomplex**: Cardial / LBK Pottery, Polished Stone Adzes, Pastoral Cattle Corrals & Longhouses
+* **Social / Family Horizon**: Segmentary Peasant Lineages & Village Communes
+* **Estimated Caloric Baseline**: 2550 kcal/capita/day
 
-## 🗺️ 2. 25-Layer Cartographic Tensor Inventory ($2048 \times 1024$)
+## 🗺️ Standard Cartographic Layers (25 PNG Rasters)
 
-| Layer Name | File Name | Category | Primary Empirical Sources | Detailed Reconstitution Method & Rationale |
-|---|---|---|---|---|
-| **Elevation & Bathymetry** | `earth_-8000_elevation.png` | Geophysics | NOAA ETOPO 2022 / GEBCO 2023 | Adjusted to $-20\text{ m}$ eustatic sea level offset. |
-| **Biomes** | `earth_-8000_biomes.png` | Ecology | CHELSA-Trace21k | Green Sahara tropical savanna, European primary broadleaf forests. |
-| **Surface Temperature** | `earth_-8000_temperature.png` | Climate | Milankovitch + NGRIP/EPICA 8.2 ka signal | Mean global temperature $\approx 14.2^\circ\text{C}$ with brief 8.2 ka cold perturbation. |
-| **Precipitation** | `earth_-8000_precipitation.png` | Climate | Sanbao & Hulu Cave speleothems | Peak African and Asian monsoon precipitation ($+950\text{ mm/yr}$). |
-| **Seasonality** | `earth_-8000_seasonality.png` | Climate | Milankovitch orbital calculations | Maximum Holocene obliquity of $24.28^\circ$: high seasonal contrast. |
-| **Population Density** | `earth_-8000_density.png` | Demographics | HYDE 3.4 & Farming Mega-Hearths | High-density agricultural centers at Çatalhöyük, Jiahu, Mehrgarh, and Thessaly ($0 - 30\text{ hab/km}^2$). |
-| **Sovereignty / Territory** | `earth_-8000_sovereignty.png` | Politics | Autonomous Village Domains | Egalitarian mega-villages and nascent ritual chiefdoms. |
-| **Isoglosses / Linguistics** | `earth_-8000_isogloss.png` | Linguistics | Agricultural Language Dispersals | Proto-Indo-European, Proto-Sino-Tibetan, Proto-Dravidian, and Proto-Afroasiatic roots. |
-| **Kinship Structure** | `earth_-8000_kinship.png` | Sociology | Segmentary Lineages | Segmentary corporate lineages controlling land tenure, herds, and collective granaries. |
-| **Ritual Traditions** | `earth_-8000_rituals.png` | Culture | Bucrania shrines & Nabta stones | Çatalhöyük bull horn shrines, Nabta Playa stone alignment, Jiahu ritual bone flutes. |
-| **Technology / Tools** | `earth_-8000_technology.png` | Technology | Early Neolithic Toolkit | Fired ceramic pottery, sheep/goat/cattle/pig domestication, mudbrick architecture, polished sickles. |
-| **Institutional Complexity**| `earth_-8000_institutional.png` | Institutions | Carneiro Scale Level 1-2 | Corporate village councils, collective water and storage management. |
-| **Ecological Footprint** | `earth_-8000_ecological.png` | Environment | Anthrome Baseline | Slash-and-burn woodland clearing, heavy caprine grazing in Fertile Crescent foothills. |
-| **Pathogen Pressure** | `earth_-8000_pathogen.png` | Epidemiology | Paleopathology Records | Major zoonotic surge linked to livestock (*Mycobacterium bovis*, ancestral variola, high-density parasites). |
-| **Trade Networks** | `earth_-8000_tradenetwork.png`| Economy | Long-Distance Trade Routes | Anatolian obsidian corridor, European Spondylus shell routes, Badakhshan lapis lazuli to Mehrgarh. |
-| **Aquifers / Water Tables** | `earth_-8000_aquifers.png` | Resources | UNESCO WHYMAP | $100\%$ virgin fossil groundwater storage. |
-| **Coal Reserves** | `earth_-8000_coal.png` | Resources | USGS World Coal Inventory | $100\%$ untouched reserves. |
-| **Oil Reserves** | `earth_-8000_oil.png` | Resources | USGS Petroleum Assessment | $100\%$ virgin hydrocarbons with active natural seeps. |
-| **Natural Gas** | `earth_-8000_gas.png` | Resources | USGS Global Gas Survey | $100\%$ untouched natural gas. |
-| **Iron & Copper Ore** | `earth_-8000_iron_copper.png` | Resources | USGS MRDS, BGR Germany | Pristine metallic mineral resources; earliest native copper cold-hammering. |
-| **Precious Metals** | `earth_-8000_precious_metals.png` | Resources | USGS MRDS Placers | Intact placer gold and silver beds. |
-| **Uranium Ore** | `earth_-8000_uranium.png` | Resources | IAEA NFCIS | Untouched uranium reserves. |
-| **Rare Earth Elements** | `earth_-8000_rare_earths.png` | Resources | USGS REE Global Database | Untouched carbonatite and alkaline complexes. |
-| **Geothermal Heat Flux** | `earth_-8000_geothermal.png` | Geophysics | IHFC Davies 2013 | Crustal heat flow along active margins. |
-| **Helium-3** | `earth_-8000_helium3.png` | Resources | Solar Wind Volatiles Model | Terrestrial background near zero ($\approx 0.0\text{ ppb}$). |
+### Physical & Climate Layers
+* `earth_-8000_elevation.png`: NOAA ETOPO 2022 / GEBCO Topography & Bathymetry calibrated to epoch sea level.
+* `earth_-8000_biomes.png`: Coupled Holdridge-Whittaker Bioclimatic Ecology.
+* `earth_-8000_temperature.png`: WorldClim v2.1 Annual Mean Temperature (°C) modulated by epoch paleoclimate anomalies.
+* `earth_-8000_precipitation.png`: WorldClim v2.1 Annual Precipitation (mm/year) with ITCZ/monsoonal shifts.
+* `earth_-8000_seasonality.png`: Temperature Seasonality Amplitude (°C range) driven by Milankovitch orbital solutions.
 
----
+### Cliodynamic & Cultural Tensors
+* `earth_-8000_density.png`: HYDE 3.4 / Seshat Human Demographic Density field.
+* `earth_-8000_sovereignty.png`: Political Sovereignty & Territorial Polity Domains (Seshat ClioPatria / Historical GIS).
+* `earth_-8000_isogloss.png`: Ethnolinguistic Phyla & Sub-Branch Dialectal Zones (Glottolog 4.8 / WALS).
+* `earth_-8000_kinship.png`: Murdock D-PLACE & Emmanuel Todd Kinship & Social Organization Systems.
+* `earth_-8000_rituals.png`: Monumental Ritual Centers & Sacred Traditions.
+* `earth_-8000_technology.png`: Technology & Innovation Complexity Index (Maddison / Archaeological Catalogs).
+* `earth_-8000_institutional.png`: Seshat Institutional Hierarchy & State Capacity Scales.
+* `earth_-8000_ecological.png`: Anthropogenic Ecological Footprint & Land Transformation.
+* `earth_-8000_pathogen.png`: Epidemiological & Endemic Pathogen Load (Paleoepidemiology & WHO).
+* `earth_-8000_tradenetwork.png`: Commercial Trade Arteries, Emporia, Caravans & Ports.
 
-## 🔬 3. Initial Static Decoupling $t = t_0$ vs Dynamical Engines $t > t_0$
-* **Initial Conditions ($t = -8000$)**: Cartographic matrices capture the sedentary agricultural, technological, and demographic patterns of the Early Neolithic.
-* **Dynamical Simulation ($t > t_0$)**: Simulation engines (`BoserupAgriculturalIntensificationEngine`, `DeforestationErosionEngine`, `ScottAgainstTheGrainPureEngine`, `CanidDomesticationEngine`) drive agricultural intensification, soil erosion, and the rise of Chalcolithic chiefdoms.
+### Geological & Energy Resources
+* `earth_-8000_coal.png`: Coal Basins (USGS WoCQI).
+* `earth_-8000_oil.png`: Conventional & Unconventional Petroleum Plays (USGS).
+* `earth_-8000_gas.png`: Natural Gas Formations (USGS).
+* `earth_-8000_uranium.png`: Uranium Mineral Deposits (IAEA / NEA Red Book).
+* `earth_-8000_helium3.png`: Mantle Plume Helium-3 Outgassing Sources (USGS).
+* `earth_-8000_iron_copper.png`: Iron & Copper Mineralization (USGS MRDS).
+* `earth_-8000_precious_metals.png`: Gold, Silver & Platinum Group Deposits.
+* `earth_-8000_rare_earths.png`: Critical Rare Earth Elements (REE).
+* `earth_-8000_geothermal.png`: Terrestrial Heat Flow & Geothermal Gradients (IHFC).
+* `earth_-8000_aquifers.png`: Deep Regional Groundwater Aquifers (UNESCO WHYMAP).
+
+## 🔬 Decoupling Rationale ($t = t_0$ vs Dynamical Ticks $t > t_0$)
+In strict accordance with `AGENTS.md` Directives:
+1. **Initial Conditions ($t = t_0$)**: The 25 raster layers define the empirically calibrated spatial state at initialization.
+2. **Dynamical Simulation Engine ($t > t_0$)**: Once launched, the physical engines (Energy Balance Climate Models, Darcy groundwater flow, Lotka metabolic energetics, and Turchin cliodynamics) dynamically evolve population, technology, culture, and sovereign borders without synthetic lock-in.
+
+## 📄 Associated Metadata Files
+* `cultural_registry.json`: Multilingual entity registry (EN, FR, DE, ES, ZH) with trait vectors and kinship metadata.
+* `provenance_and_sources.json`: Exhaustive academic citations, datasets, and physical calibration rationale.

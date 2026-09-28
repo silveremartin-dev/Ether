@@ -1,67 +1,54 @@
-# Cartographic & Cultural Tensor Provenance: Earth (-50,000 BP)
+# Earth Epoch -50000: Upper Paleolithic Revolution & Sahul Colonization (-50,000 BP)
 
-## 🌍 1. Overview & Historical Scope
-* **Epoch**: $-50\,000\text{ BP}$ (Marine Isotope Stage 3 / MIS 3 Interstadial, Sahul Maritime Crossing, Initial Upper Paleolithic Inception)
-* **Planet**: Earth (*Terre*)
-* **Grid Resolution**: $2048 \times 1024$ Equirectangular ($0.175^\circ \times 0.175^\circ$ per pixel, $\approx 19.5\text{ km}$ at equator)
-* **Global Population**: $\approx 120\,000 \text{ to } 250\,000$ individuals across Africa, Europe, Asia, and Sahul.
-* **Major Anthropological Milestone**: First maritime deep-sea crossing across Wallacea and intentional human settlement of the Australian continent (Sahul).
+## 🌍 Overview
+This directory contains the standardized 25-layer cartographic raster tensor suite and cliodynamic registries for Earth at epoch **-50000** (Upper Paleolithic Revolution & Sahul Colonization (-50,000 BP)).
 
----
+All raster layers are generated in equirectangular projection (Plate Carrée, EPSG:4326) at **2048x1024** resolution with bit-identical determinism.
 
-## 👥 2. Anthropological Clades & Cultural Tensors (-50,000 BP)
+### Context & Archaeological/Historical Horizon
+* **Era**: Upper Paleolithic Revolution & Sahul Colonization (-50,000 BP)
+* **Technocomplex**: Early Upper Paleolithic Blade & Bone Tool Industries, Ochre Art & Ocean Crossings
+* **Social / Family Horizon**: Exogamous Clan Bands & Subsection Systems
+* **Estimated Caloric Baseline**: 2400 kcal/capita/day
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                           HOMININ CLADES & SETTLEMENT PATTERNS (-50k BP)                        │
-├────────────────────────────────┬──────────────────────┬──────────────────────┬──────────────────┤
-│ Clade ID                       │ Species & Lineage    │ Key Excavated Sites  │ Density Range    │
-├────────────────────────────────┼──────────────────────┼──────────────────────┼──────────────────┤
-│ `sapiens_sahul_aboriginal`     │ Homo sapiens (Sahul) │ Madjedbebe, Nauwalab.│ 0.015 - 0.035    │
-│ `sapiens_african_core`         │ Homo sapiens (Africa)│ Howiesons Poort, Sib.│ 0.025 - 0.050    │
-│ `sapiens_eurasian_initial_up`  │ Homo sapiens (Euras) │ Bacho Kiro, Bohunice │ 0.010 - 0.025    │
-│ `neanderthal_late_classic`     │ Late Neanderthals    │ St Césaire, Grotte R.│ 0.005 - 0.012    │
-│ `denisovan_east_asia`          │ High-Alt. Denisovans │ Baishiya, Xiahe Cave │ 0.006 - 0.015    │
-└────────────────────────────────┴──────────────────────┴──────────────────────┴──────────────────┘
-```
+## 🗺️ Standard Cartographic Layers (25 PNG Rasters)
 
-### 2.1 The Sahul Maritime Expansion
-* **The Wallacean Deep-Sea Barrier**: At $-50\,000\text{ BP}$, sea level was $\approx -75\text{ m}$ lower than today. While the Sunda shelf connected Indochina to Java/Borneo, and the Sahul shelf joined Australia to New Guinea, open ocean straits ($50 - 90\text{ km}$) remained between them.
-* **Intentional Navigation**: Reaching Sahul required sophisticated ocean-going bamboo/wood watercraft and coordinated group crossings ($\ge 1\,000$ individuals over multiple waves, Bird et al. 2019).
-* **Earliest Sites**: Madjedbebe (Kakadu, Arnhem Land, $65\text{ ka / } 50\text{ ka BP}$), Carpenter's Gap (Kimberley), Devil's Lair (SW Australia).
+### Physical & Climate Layers
+* `earth_-50000_elevation.png`: NOAA ETOPO 2022 / GEBCO Topography & Bathymetry calibrated to epoch sea level.
+* `earth_-50000_biomes.png`: Coupled Holdridge-Whittaker Bioclimatic Ecology.
+* `earth_-50000_temperature.png`: WorldClim v2.1 Annual Mean Temperature (°C) modulated by epoch paleoclimate anomalies.
+* `earth_-50000_precipitation.png`: WorldClim v2.1 Annual Precipitation (mm/year) with ITCZ/monsoonal shifts.
+* `earth_-50000_seasonality.png`: Temperature Seasonality Amplitude (°C range) driven by Milankovitch orbital solutions.
 
-### 2.2 Strict Uninhabited Masks ($0.0\text{ hab/km}^2$)
-* **The Americas (North, Central, South)**: Completely uninhabited.
-* **Madagascar, Caribbean, Polynesia, New Zealand**: Uninhabited.
+### Cliodynamic & Cultural Tensors
+* `earth_-50000_density.png`: HYDE 3.4 / Seshat Human Demographic Density field.
+* `earth_-50000_sovereignty.png`: Political Sovereignty & Territorial Polity Domains (Seshat ClioPatria / Historical GIS).
+* `earth_-50000_isogloss.png`: Ethnolinguistic Phyla & Sub-Branch Dialectal Zones (Glottolog 4.8 / WALS).
+* `earth_-50000_kinship.png`: Murdock D-PLACE & Emmanuel Todd Kinship & Social Organization Systems.
+* `earth_-50000_rituals.png`: Monumental Ritual Centers & Sacred Traditions.
+* `earth_-50000_technology.png`: Technology & Innovation Complexity Index (Maddison / Archaeological Catalogs).
+* `earth_-50000_institutional.png`: Seshat Institutional Hierarchy & State Capacity Scales.
+* `earth_-50000_ecological.png`: Anthropogenic Ecological Footprint & Land Transformation.
+* `earth_-50000_pathogen.png`: Epidemiological & Endemic Pathogen Load (Paleoepidemiology & WHO).
+* `earth_-50000_tradenetwork.png`: Commercial Trade Arteries, Emporia, Caravans & Ports.
 
----
+### Geological & Energy Resources
+* `earth_-50000_coal.png`: Coal Basins (USGS WoCQI).
+* `earth_-50000_oil.png`: Conventional & Unconventional Petroleum Plays (USGS).
+* `earth_-50000_gas.png`: Natural Gas Formations (USGS).
+* `earth_-50000_uranium.png`: Uranium Mineral Deposits (IAEA / NEA Red Book).
+* `earth_-50000_helium3.png`: Mantle Plume Helium-3 Outgassing Sources (USGS).
+* `earth_-50000_iron_copper.png`: Iron & Copper Mineralization (USGS MRDS).
+* `earth_-50000_precious_metals.png`: Gold, Silver & Platinum Group Deposits.
+* `earth_-50000_rare_earths.png`: Critical Rare Earth Elements (REE).
+* `earth_-50000_geothermal.png`: Terrestrial Heat Flow & Geothermal Gradients (IHFC).
+* `earth_-50000_aquifers.png`: Deep Regional Groundwater Aquifers (UNESCO WHYMAP).
 
-## 📊 3. 25-Layer Cartographic Tensor Inventory (-50,000 BP)
+## 🔬 Decoupling Rationale ($t = t_0$ vs Dynamical Ticks $t > t_0$)
+In strict accordance with `AGENTS.md` Directives:
+1. **Initial Conditions ($t = t_0$)**: The 25 raster layers define the empirically calibrated spatial state at initialization.
+2. **Dynamical Simulation Engine ($t > t_0$)**: Once launched, the physical engines (Energy Balance Climate Models, Darcy groundwater flow, Lotka metabolic energetics, and Turchin cliodynamics) dynamically evolve population, technology, culture, and sovereign borders without synthetic lock-in.
 
-| Layer Name | File Name | Category | Primary Empirical Sources | Detailed Reconstitution Method & Rationale |
-| :--- | :--- | :--- | :--- | :--- |
-| **Elevation & Bathymetry** | `earth_-50000_elevation.png` | Geophysics | NOAA ETOPO 2022, GEBCO 2023 | Adjusted for MIS 3 eustatic sea level offset ($\approx -75\text{ m}$), exposing Sunda and Sahul land bridges. |
-| **Biomes** | `earth_-50000_biomes.png` | Ecology | PaleoView v1.2, CHELSA-Trace21k | Semi-arid eucalyptus savanna in Sahul; open mammoth steppe across Central Eurasia. |
-| **Surface Temperature** | `earth_-50000_temperature.png` | Climate | EPICA Dome C, NGRIP DO-14/13 | Moderate interstadial cooling ($T_{\text{mean}} = 11.8^\circ\text{C}$), milder than the full glacial maximum. |
-| **Precipitation** | `earth_-50000_precipitation.png` | Climate | Lynch's Crater, Hulu Cave speleothem | Active tropical monsoon in Northern Australia feeding Lake Mungo precursors. |
-| **Seasonality** | `earth_-50000_seasonality.png` | Climate | Milankovitch orbital calculations | Obliquity at $23.45^\circ$, moderate mid-latitude seasonality. |
-| **Population Density** | `earth_-50000_density.png` | Demographics | Clarkson et al. (2017), Tallavaara (2015) | Active carrying capacity in Sahul ($0.015 - 0.035\text{ hab/km}^2$); zero density in Americas. |
-| **Isogloss / Linguistics** | `earth_-50000_isogloss.png` | Linguistics | Dixon (2002), Atkinson (2011), Glottolog | Separates ancestral Australian/Papuan language nodes from IUP Eurasian lineages. |
-| **Sovereignty / Polity** | `earth_-50000_sovereignty.png` | Politics | Tindale (1974), Boehm (1999) | Autonomous forager band ranges ($500 - 2500\text{ km}^2$) defined by waterholes and songlines. |
-| **Kinship Structure** | `earth_-50000_kinship.png` | Sociology | Murdock EA, Keen (2004) | Totemic section/moiety skin systems in Sahul; exogamous multi-band networks in Eurasia. |
-| **Ritual Traditions** | `earth_-50000_rituals.png` | Culture | Lake Mungo 3 ochre burial, Bacho Kiro ornaments | Widespread grave goods, cremation, and ochre pigment body ornamentation. |
-| **Technology / Lithics** | `earth_-50000_technology.png` | Technology | Davidson & Noble (1992), Hublin et al. (2020) | Edge-ground axes in Sahul; prismatic blade cores and bone projectile points in Eurasia. |
-| **Institutions** | `earth_-50000_institutional.png` | Institutions | Carneiro Scale Level 0 | Egalitarian clan councils with elder ritual authority. |
-| **Ecological Footprint** | `earth_-50000_ecological.png` | Environment | Miller et al. (2005) Fire-stick farming | Systematic anthropogenic mosaic burning in Australia altering vegetation dynamics. |
-| **Pathogen Pressure** | `earth_-50000_pathogen.png` | Epidemiology | Wolfe et al. (2007) | Sahul isolated from Eurasian herd zoonoses; moderate tropical endemic arbovirus load. |
-| **Trade Networks** | `earth_-50000_tradenetwork.png` | Economy | Mulvaney & Kamminga (1999) | Long-distance ceremonial exchange of ochre, chert, and pearl shells up to $300\text{ km}$. |
-| **Aquifers / Water Tables** | `earth_-50000_aquifers.png` | Resources | UNESCO WHYMAP | $100\%$ virgin fossil groundwater storage. |
-| **Coal Reserves** | `earth_-50000_coal.png` | Resources | USGS World Coal, GEM | $100\%$ untouched reserves. |
-| **Oil Reserves** | `earth_-50000_oil.png` | Resources | USGS Petroleum Assessment | $100\%$ virgin hydrocarbons with active surface seeps. |
-| **Natural Gas** | `earth_-50000_gas.png` | Resources | USGS Global Gas Survey | $100\%$ untouched gas fields. |
-| **Iron & Copper Ore** | `earth_-50000_iron_copper.png` | Resources | USGS MRDS, BGR Germany | Pristine metallic mineral deposits and surface gossans. |
-| **Precious Metals** | `earth_-50000_precious_metals.png` | Resources | USGS MRDS Placers | Intact placer gold and silver beds across all continents. |
-| **Uranium Ore** | `earth_-50000_uranium.png` | Resources | IAEA NFCIS | Untouched high-grade uranium deposits. |
-| **Rare Earth Elements** | `earth_-50000_rare_earths.png` | Resources | USGS REE Database | Untouched carbonatite and alkaline complexes. |
-| **Geothermal Heat Flux** | `earth_-50000_geothermal.png` | Geophysics | IHFC Davies 2013 | Crustal heat dissipation along active tectonic margins. |
-| **Helium-3** | `earth_-50000_helium3.png` | Resources | Solar Wind Volatiles Model | Terrestrial background near zero ($\approx 0.0\text{ ppb}$). |
+## 📄 Associated Metadata Files
+* `cultural_registry.json`: Multilingual entity registry (EN, FR, DE, ES, ZH) with trait vectors and kinship metadata.
+* `provenance_and_sources.json`: Exhaustive academic citations, datasets, and physical calibration rationale.

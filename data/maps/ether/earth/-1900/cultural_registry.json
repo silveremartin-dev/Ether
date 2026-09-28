@@ -1,6 +1,7 @@
 {
   "epoch": -1900,
-  "description": "Cliodynamic Cultural & Linguistic Registry for -1900 BCE (Middle Bronze Age / Hammurabi, Indus-Sarasvati, Middle Kingdom Egypt & Erlitou/Shang)",
+  "era": "Middle Bronze Age & Indus Valley Urban Peak / Harappan Epoch (-1900 BC)",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -1900 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
   "encoding": "ID_RGB_24BIT",
   "traitDimensions": [
     "linguisticBranch",
@@ -10,79 +11,80 @@
   ],
   "entities": [
     {
-      "id": "old_babylonian_amorite",
-      "colorHex": "#D35400",
-      "colorRgb": [211, 84, 0],
-      "traits": [0.65, 0.85, 0.90, 0.85],
+      "id": "indus_valley_civilization",
+      "colorHex": "#B324A7",
+      "colorRgb": [179, 36, 167],
+      "traits": [0.85, 0.88, 0.90, 0.85],
       "name": {
-        "en": "Old Babylonian Empire & Amorite Cuneiform State (Hammurabi)",
-        "fr": "Empire Paléo-Babylonien & Amorrite (Code d'Hammurabi)",
-        "de": "Altbabylonisches Reich & Amoriter-Keilschriftstaat (Hammurapi)",
-        "es": "Imperio Paleobabilónico y Estado Amorreo (Código de Hammurabi)",
-        "zh": "古巴比伦帝国与阿摩利人楔形文字城邦（汉谟拉比）"
+        "en": "Indus Valley Civilization",
+        "fr": "Indus Valley Civilization",
+        "de": "Indus Valley Civilization",
+        "es": "Indus Valley Civilization",
+        "zh": "Indus Valley Civilization"
       },
-      "kinshipType": "Patriarchal Hydraulic Monarchy",
-      "lithicTechnocomplex": "Tin-Bronze Metallurgy & Cuneiform Bureaucracy"
+      "seshatId": "pk_kachi_urban_2",
+      "fromYear": -2000,
+      "toYear": -1801,
+      "kinshipType": "Civic Guilds, Corporate Priesthoods & Extended Joint Families",
+      "lithicTechnocomplex": "Standardized Mudbrick Urban Architecture, Bronze Casting & Maritime Trade Docks",
+      "caloricIntakePerCapitaKcal": 2650
     },
     {
-      "id": "egypt_middle_kingdom",
-      "colorHex": "#F39C12",
-      "colorRgb": [243, 156, 18],
-      "traits": [0.60, 0.90, 0.92, 0.90],
+      "id": "sumerian_city-states",
+      "colorHex": "#D13096",
+      "colorRgb": [209, 48, 150],
+      "traits": [0.85, 0.88, 0.90, 0.85],
       "name": {
-        "en": "Middle Kingdom Egypt (12th Dynasty / Thebes & Itjtawy)",
-        "fr": "Moyen Empire Égyptien (12e Dynastie / Thèbes & Itjtaouy)",
-        "de": "Mittleres Reich Ägypten (12. Dynastie / Theben & Itjtawy)",
-        "es": "Imperio Medio de Egipto (Dinastía XII / Tebas e Ity-tauy)",
-        "zh": "埃及中王国时期（第十二王朝 / 底比斯与伊塔威）"
+        "en": "Sumerian City-States",
+        "fr": "Sumerian City-States",
+        "de": "Sumerian City-States",
+        "es": "Sumerian City-States",
+        "zh": "Sumerian City-States"
       },
-      "kinshipType": "Pharaonic Divine Dynasty & Nomarch Administration",
-      "lithicTechnocomplex": "Bronze Saws, Monumental Masonry & Hieratic Scripts"
+      "seshatId": "",
+      "fromYear": -2000,
+      "toYear": -1801,
+      "kinshipType": "Civic Guilds, Corporate Priesthoods & Extended Joint Families",
+      "lithicTechnocomplex": "Standardized Mudbrick Urban Architecture, Bronze Casting & Maritime Trade Docks",
+      "caloricIntakePerCapitaKcal": 2650
     },
     {
-      "id": "indus_late_harappan",
-      "colorHex": "#27AE60",
-      "colorRgb": [39, 174, 96],
-      "traits": [0.55, 0.75, 0.85, 0.70],
+      "id": "elam",
+      "colorHex": "#C72C8B",
+      "colorRgb": [199, 44, 139],
+      "traits": [0.85, 0.88, 0.90, 0.85],
       "name": {
-        "en": "Late Harappan Civilization (Cemetery H / Indus Drainage)",
-        "fr": "Civilisation de l'Indus Tardive (Harappéen Tardif / Mohenjo-daro)",
-        "de": "Späte Indus-Zivilisation (Spät-Harappa / Friedhof H)",
-        "es": "Civilización Tardía del Indo (Fase Harappa Tardía)",
-        "zh": "后哈拉帕文明（印度河晚期城市与H墓地文化）"
+        "en": "Elam",
+        "fr": "Elam",
+        "de": "Elam",
+        "es": "Elam",
+        "zh": "Elam"
       },
-      "kinshipType": "Urban Guilds & Standardized Metrological Clan System",
-      "lithicTechnocomplex": "Lost-Wax Bronze Casting, Faience & Steatite Seals"
+      "seshatId": "ir_elam_2",
+      "fromYear": -2000,
+      "toYear": -1801,
+      "kinshipType": "Civic Guilds, Corporate Priesthoods & Extended Joint Families",
+      "lithicTechnocomplex": "Standardized Mudbrick Urban Architecture, Bronze Casting & Maritime Trade Docks",
+      "caloricIntakePerCapitaKcal": 2650
     },
     {
-      "id": "erlitou_early_bronze_china",
-      "colorHex": "#C0392B",
-      "colorRgb": [192, 57, 43],
-      "traits": [0.70, 0.80, 0.88, 0.80],
+      "id": "middle_kingdom_of_egypt",
+      "colorHex": "#C4652D",
+      "colorRgb": [196, 101, 45],
+      "traits": [0.85, 0.88, 0.90, 0.85],
       "name": {
-        "en": "Erlitou Culture / Proto-Shang Dynastic Core (Yellow River)",
-        "fr": "Culture d'Erlitou / Berceau Dynastique Xia-Shang (Fleuve Jaune)",
-        "de": "Erlitou-Kultur / Proto-Shang Dynastischer Kern (Gelber Fluss)",
-        "es": "Cultura de Erlitou y Núcleo Dinástico Proto-Shang (Río Amarillo)",
-        "zh": "二里头文化 / 夏商早期青铜王朝核心（黄河流域）"
+        "en": "Middle Kingdom of Egypt",
+        "fr": "Middle Kingdom of Egypt",
+        "de": "Middle Kingdom of Egypt",
+        "es": "Middle Kingdom of Egypt",
+        "zh": "Middle Kingdom of Egypt"
       },
-      "kinshipType": "Ancestral Patriarchal Lineage (Zongfa System)",
-      "lithicTechnocomplex": "Piece-Mold Bronze Vessel Casting & Oracle Scapulimancy"
-    },
-    {
-      "id": "minoan_protopalatial",
-      "colorHex": "#2980B9",
-      "colorRgb": [41, 128, 185],
-      "traits": [0.50, 0.70, 0.80, 0.75],
-      "name": {
-        "en": "Protopalatial Minoan Civilization (Knossos / Phaistos / Crete)",
-        "fr": "Civilisation Minoenne Protopalatiale (Cnossos / Phaistos / Crète)",
-        "de": "Altpalastzeitliche Minoische Kultur (Knossos / Phaistos / Kreta)",
-        "es": "Civilización Minoica Protopalacial (Cnosos / Festo / Creta)",
-        "zh": "前宫殿期米诺斯文明（克诺索斯/费斯托斯/克里特岛）"
-      },
-      "kinshipType": "Thalassocratic Matrifocal Palatial Elites",
-      "lithicTechnocomplex": "Cycladic/Minoan Bronze Metallurgy & Linear A Administration"
+      "seshatId": "eg_middle_k",
+      "fromYear": -2000,
+      "toYear": -1801,
+      "kinshipType": "Civic Guilds, Corporate Priesthoods & Extended Joint Families",
+      "lithicTechnocomplex": "Standardized Mudbrick Urban Architecture, Bronze Casting & Maritime Trade Docks",
+      "caloricIntakePerCapitaKcal": 2650
     }
   ]
 }

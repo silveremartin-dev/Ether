@@ -1,50 +1,52 @@
 /*
  * MIT License
- *
- * Copyright (c) 2024 Gemini AI Assistant
- * Copyright (c) 2024 Silvere Martin-Michiellot
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Author: Silvere Martin-Michiellot (silvere.martin@gmail.com)
- * Contributors: AI Assistant (Antigravity/Claude)
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
 package org.ether.society;
 
+import org.ether.society.ui.ExecutionContextPanel;
+import java.util.prefs.Preferences;
+
 /**
- * Main entry point that delegates to the JavaFX Application.
- * Required for proper JavaFX module initialization.
+ * Main application entry point for Ether.
+ * Parses CLI configuration options (Single-Core, Multi-Core, CPU, GPU, Cluster, Java/Rust engine)
+ * and dispatches to HeadlessRunner or JavaFX GUI.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1-beta.1
- * @since 1.0.0
+ * @version 1.0.0-beta.1
  */
 public class Main {
     public static void main(String[] args) {
         boolean headless = false;
         if (args != null) {
+            Preferences prefs = Preferences.userNodeForPackage(ExecutionContextPanel.class);
             for (String arg : args) {
-                if ("--headless".equalsIgnoreCase(arg) || "-h".equalsIgnoreCase(arg)
-                        || "--mode=cluster".equalsIgnoreCase(arg) || "--cluster".equalsIgnoreCase(arg)
-                        || arg.startsWith("--role=") || "--help".equalsIgnoreCase(arg) || "-help".equalsIgnoreCase(arg)) {
+                String a = arg.trim().toLowerCase();
+                if (a.equals("--headless") || a.equals("-h")
+                        || a.equals("--mode=cluster") || a.equals("--cluster")
+                        || a.startsWith("--role=") || a.equals("--help") || a.equals("-help") || a.equals("-?")) {
                     headless = true;
-                    break;
+                } else if (a.equals("--rust") || a.equals("--native") || a.equals("--engine=rust")) {
+                    prefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.NATIVE_RUST.name());
+                    prefs.putBoolean("ether_gpu_enabled", false);
+                } else if (a.equals("--gpu") || a.equals("--opencl") || a.equals("--engine=gpu")) {
+                    prefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.GPU_SHADERS.name());
+                    prefs.putBoolean("ether_gpu_enabled", true);
+                } else if (a.equals("--simd") || a.equals("--vector") || a.equals("--engine=simd")) {
+                    prefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.JAVA_VECTOR_SIMD.name());
+                    prefs.putBoolean("ether_gpu_enabled", false);
+                } else if (a.equals("--cpu") || a.equals("--engine=cpu")) {
+                    prefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.CPU_JIT.name());
+                    prefs.putBoolean("ether_gpu_enabled", false);
+                } else if (a.equals("--safe") || a.equals("--fallback") || a.equals("--engine=safe")) {
+                    prefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.GPU_OFF.name());
+                    prefs.putBoolean("ether_gpu_enabled", false);
+                    System.setProperty("prism.order", "sw");
+                } else if (a.equals("--single-core") || a.equals("--monocoeur")) {
+                    System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "1");
+                } else if (a.startsWith("--threads=") || a.startsWith("--cores=")) {
+                    int threads = Integer.parseInt(a.substring(a.indexOf('=') + 1));
+                    System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", String.valueOf(threads));
                 }
             }
         }
@@ -56,4 +58,3 @@ public class Main {
         }
     }
 }
-
