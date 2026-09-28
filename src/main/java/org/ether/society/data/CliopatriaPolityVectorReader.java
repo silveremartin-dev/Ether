@@ -418,23 +418,49 @@ public class CliopatriaPolityVectorReader {
                     int currentRgb = img.getRGB(x, y) & 0xFFFFFF;
                     boolean isUnassigned = (currentRgb == 0x000000);
 
-                    // Refine all land cells using distance-weighted localized linguistic centers
+                    // Refine all land cells using distance-weighted localized linguistic centers with stochastic contact-zone dithering
                     double maxInfl = 0.0;
+                    double secondInfl = 0.0;
                     int bestCol = isUnassigned ? 0x2563EB : currentRgb;
+                    int secondCol = bestCol;
+
                     for (double[] lc : linguisticCenters) {
                         double dLat = lat - lc[1];
                         double dLon = (lon - lc[0]) * Math.cos(Math.toRadians((lat + lc[1]) * 0.5));
                         double d2 = dLat * dLat + dLon * dLon;
                         double sigma = lc[3];
                         double infl = Math.exp(-d2 / (2.0 * sigma * sigma));
+                        int col = (int) lc[2];
                         if (infl > maxInfl) {
+                            if (col != bestCol) {
+                                secondInfl = maxInfl;
+                                secondCol = bestCol;
+                            }
                             maxInfl = infl;
-                            bestCol = (int) lc[2];
+                            bestCol = col;
+                        } else if (infl > secondInfl && col != bestCol) {
+                            secondInfl = infl;
+                            secondCol = col;
+                        }
+                    }
+
+                    int finalCol = bestCol;
+                    if (secondCol != bestCol && maxInfl > 0.0) {
+                        double ratio = secondInfl / maxInfl; // 0.0 to 1.0
+                        if (ratio > 0.40) {
+                            // Contact zone: calculate probability of secondary language pixel (0.0 to 0.45)
+                            double pSecond = (ratio - 0.40) / (1.0 - 0.40) * 0.45;
+                            // Deterministic high-entropy spatial hash
+                            int hash = (x * 0x1F1F1F1F) ^ (y * 0x3D3D3D3D) ^ (int) (targetYear * 1013904223L);
+                            double rndVal = ((hash & 0x7FFFFFFF) % 10000) / 10000.0;
+                            if (rndVal < pSecond) {
+                                finalCol = secondCol;
+                            }
                         }
                     }
 
                     if (isUnassigned || maxInfl >= 0.15) {
-                        img.setRGB(x, y, bestCol);
+                        img.setRGB(x, y, finalCol);
                     }
                 }
             }
