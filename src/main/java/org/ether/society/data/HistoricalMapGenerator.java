@@ -1246,18 +1246,17 @@ public class HistoricalMapGenerator {
                 ImageIO.write(seasImg, "PNG", seasPath.toFile());
             }
 
-            // 4. Ensure invariant NOAA ETOPO relief elevation map is present across all epochs
+            // 4. Ensure invariant NOAA ETOPO relief elevation map is present across all epochs with updated timestamp
             java.nio.file.Path elevPath = earthDir.resolve("earth_" + year + "_elevation.png");
-            if (!java.nio.file.Files.exists(elevPath)) {
-                java.io.File srcElev = new java.io.File("data/maps/ether/earth/earth_elevation.png");
-                if (!srcElev.exists()) srcElev = new java.io.File("data/maps/ether/earth/2026/earth_2026_elevation.png");
-                if (!srcElev.exists()) srcElev = new java.io.File("data/maps/ether/earth/-100000/earth_-100000_elevation.png");
-                if (srcElev.exists()) {
-                    java.nio.file.Files.copy(srcElev.toPath(), elevPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                } else {
-                    BufferedImage mask = loadElevationMask();
-                    if (mask != null) ImageIO.write(mask, "PNG", elevPath.toFile());
-                }
+            java.io.File srcElev = new java.io.File("data/maps/ether/earth/earth_elevation.png");
+            if (!srcElev.exists()) srcElev = new java.io.File("data/maps/ether/earth/2026/earth_2026_elevation.png");
+            if (!srcElev.exists()) srcElev = new java.io.File("data/maps/ether/earth/-100000/earth_-100000_elevation.png");
+            if (srcElev.exists()) {
+                java.nio.file.Files.copy(srcElev.toPath(), elevPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                elevPath.toFile().setLastModified(System.currentTimeMillis());
+            } else {
+                BufferedImage mask = loadElevationMask();
+                if (mask != null) ImageIO.write(mask, "PNG", elevPath.toFile());
             }
 
             logger.info("Persisted standard scenario cartographic maps into 'data/maps/ether/earth/{}/'", year);
@@ -1326,6 +1325,12 @@ public class HistoricalMapGenerator {
                     imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
 
             saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
+            saveGeologyTensorsToDiskCache(scenario.getName(), imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
+
+            if (year == 0L) {
+                saveImagesToDiskCache("Empire Romain & Pax Romana (An 0)", imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
+                saveGeologyTensorsToDiskCache("Empire Romain & Pax Romana (An 0)", imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
+            }
 
             logger.info("Successfully regenerated and persisted the COMPLETE 25-raster suite for scenario '{}' (Year {}).",
                     scenario.getName(), year);
