@@ -70,6 +70,62 @@ public class ExecutionContextPanel extends BorderPane {
         GPU_OFF
     }
 
+    public static HardwareMode getActiveHardwareMode() {
+        String savedMode = prefs.get(PREF_HARDWARE_MODE_KEY, null);
+        if (savedMode != null) {
+            try {
+                return HardwareMode.valueOf(savedMode);
+            } catch (Exception ignored) {}
+        }
+        if (NativeRustBridge.isNativeAvailable()) return HardwareMode.NATIVE_RUST;
+        if (prefs.getBoolean(PREF_GPU_KEY, true)) return HardwareMode.GPU_SHADERS;
+        return HardwareMode.JAVA_VECTOR_SIMD;
+    }
+
+    public static double getEstimatedCellTicksThroughput(HardwareMode mode) {
+        if (mode == null) mode = getActiveHardwareMode();
+        switch (mode) {
+            case NATIVE_RUST:
+                return 1_200_000.0;
+            case GPU_SHADERS:
+                return 850_000.0;
+            case JAVA_VECTOR_SIMD:
+                return 350_000.0;
+            case CPU_JIT:
+                return 150_000.0;
+            case GPU_OFF:
+            default:
+                return 50_000.0;
+        }
+    }
+
+    public static double estimateExecutionTimeSeconds(long startYear, long endYear, int cellCount, HardwareMode mode) {
+        long durationYears = Math.max(1, endYear - startYear);
+        if (cellCount <= 0) cellCount = 4096;
+        int step = (int) Math.max(1, durationYears / 20);
+        long ticks = (durationYears / step) + 1;
+        double totalOperations = (double) ticks * (double) cellCount * 80.0;
+        double throughput = getEstimatedCellTicksThroughput(mode);
+        double seconds = totalOperations / throughput;
+        return Math.max(0.1, seconds);
+    }
+
+    public static String formatDuration(double seconds) {
+        if (seconds < 1.0) {
+            return "< 1 s";
+        } else if (seconds < 60.0) {
+            return String.format(java.util.Locale.US, "~%.0f s", seconds);
+        } else if (seconds < 3600.0) {
+            int mins = (int) (seconds / 60.0);
+            int secs = (int) (seconds % 60.0);
+            return secs > 0 ? String.format("~%d min %d s", mins, secs) : String.format("~%d min", mins);
+        } else {
+            int hours = (int) (seconds / 3600.0);
+            int mins = (int) ((seconds % 3600.0) / 60.0);
+            return mins > 0 ? String.format("~%d h %d min", hours, mins) : String.format("~%d h", hours);
+        }
+    }
+
     public enum ExecutionTopology {
         LOCAL,
         CLUSTER
@@ -201,7 +257,9 @@ public class ExecutionContextPanel extends BorderPane {
 
     // 5. Right Sidebar Summary & Launch Panel Controls
     private Label titleHeader;
+    private Label liveBannerLabel;
     private Button launchBtn;
+    private java.util.function.Consumer<HardwareMode> onLiveConfigChangedCallback;
     private Label summaryHardwareLabel;
     private Label summaryTopologyLabel;
     private Label summaryRenderingLabel;
@@ -246,6 +304,10 @@ public class ExecutionContextPanel extends BorderPane {
 
         titleHeader = new Label();
         titleHeader.getStyleClass().add("label-title");
+
+        liveBannerLabel = new Label();
+        liveBannerLabel.setStyle("-fx-background-color: rgba(56, 189, 248, 0.15); -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-padding: 8 14; -fx-background-radius: 6; -fx-border-color: #38bdf8; -fx-border-radius: 6; -fx-border-width: 1;");
+        liveBannerLabel.setWrapText(true);
 
         // --- SECTION 1: Hardware Compute Engine ---
         hardwareSectionHeader = createSectionHeader("");
@@ -318,6 +380,7 @@ public class ExecutionContextPanel extends BorderPane {
             logger.info("Hardware acceleration mode set to NATIVE RUST (Rayon + AVX-512)");
             updateHardwareBadges();
             updateRightSummary();
+            notifyLiveConfigChange(HardwareMode.NATIVE_RUST);
         });
 
         gpuShadersRadio.setOnAction(e -> {
@@ -327,6 +390,7 @@ public class ExecutionContextPanel extends BorderPane {
             logger.info("Hardware acceleration mode set to GPU COMPUTE SHADERS (OpenCL)");
             updateHardwareBadges();
             updateRightSummary();
+            notifyLiveConfigChange(HardwareMode.GPU_SHADERS);
         });
 
         javaVectorSimdRadio.setOnAction(e -> {
@@ -336,6 +400,7 @@ public class ExecutionContextPanel extends BorderPane {
             logger.info("Hardware acceleration mode set to JAVA 21 VECTOR SIMD");
             updateHardwareBadges();
             updateRightSummary();
+            notifyLiveConfigChange(HardwareMode.JAVA_VECTOR_SIMD);
         });
 
         cpuJitRadio.setOnAction(e -> {
@@ -345,6 +410,7 @@ public class ExecutionContextPanel extends BorderPane {
             logger.info("Hardware acceleration mode set to CPU JIT");
             updateHardwareBadges();
             updateRightSummary();
+            notifyLiveConfigChange(HardwareMode.CPU_JIT);
         });
 
         gpuOffRadio.setOnAction(e -> {
@@ -354,6 +420,7 @@ public class ExecutionContextPanel extends BorderPane {
             logger.info("Hardware acceleration mode set to GPU OFF (Software Prism Safe Fallback)");
             updateHardwareBadges();
             updateRightSummary();
+            notifyLiveConfigChange(HardwareMode.GPU_OFF);
         });
 
         VBox rustNativeCard = new VBox(6, rustNativeRadio, rustNativeDescLabel);
@@ -585,7 +652,7 @@ public class ExecutionContextPanel extends BorderPane {
 
         VBox auditSection = createCardSection(auditSectionHeader, new VBox(12, systemInfoLabel, runAuditBtn, auditResultLabel));
 
-        leftColumn.getChildren().addAll(titleHeader, hardwareSection, topologySection, renderingSection, auditSection);
+        leftColumn.getChildren().addAll(titleHeader, liveBannerLabel, hardwareSection, topologySection, renderingSection, auditSection);
 
         // --- RIGHT COLUMN: 2nd Column Sidebar for Summary & Simulation Launch ---
         VBox rightColumn = new VBox(16);
@@ -1122,8 +1189,21 @@ public class ExecutionContextPanel extends BorderPane {
         updateRightSummary();
     }
 
+    public void setOnLiveConfigChangedCallback(java.util.function.Consumer<HardwareMode> callback) {
+        this.onLiveConfigChangedCallback = callback;
+    }
+
+    private void notifyLiveConfigChange(HardwareMode mode) {
+        if (onLiveConfigChangedCallback != null) {
+            onLiveConfigChangedCallback.accept(mode);
+        }
+    }
+
     public void updateTexts() {
         titleHeader.setText(I18n.getOrDefault("exec.title", "⚡ Execution Context & Compute Infrastructure"));
+        if (liveBannerLabel != null) {
+            liveBannerLabel.setText(I18n.getOrDefault("exec.live_notice", "⚡ MODIFICATIONS EN DIRECT : Tout changement de moteur de calcul ou de configuration s'applique instantanément à la simulation en cours sans interruption."));
+        }
         if (sidebarTitleLabel != null) sidebarTitleLabel.setText(I18n.getOrDefault("exec.sidebar.title", "🚀 SUMMARY & LAUNCH"));
         if (hdrEngineLabel != null) hdrEngineLabel.setText(I18n.getOrDefault("exec.sidebar.header.engine", "🖥️ Compute Engine:"));
         if (hdrTopologyLabel != null) hdrTopologyLabel.setText(I18n.getOrDefault("exec.sidebar.header.topology", "🌐 Network Topology:"));

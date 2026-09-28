@@ -142,23 +142,45 @@ public class MainView extends StackPane {
         setupTab.setContent(setupPanel);
         setupTab.setClosable(false);
 
-        // 4. Execution Context Tab (between Setup and Simulation)
-        executionContextPanel = new ExecutionContextPanel(this::launchSimulationFromContext);
-        executionContextTab = new Tab();
-        executionContextTab.setContent(executionContextPanel);
-        executionContextTab.setDisable(true); // Disabled until scenario setup is completed
-        executionContextTab.setClosable(false);
-
-        // 5. Simulation Tab
+        // 4. Simulation Tab
         simulationTab = new Tab();
         simulationTab.setContent(createSimulationView());
         simulationTab.setDisable(true); // Disabled until started
 
-        // 6. Comparative Analytics Tab (Offline Benchmark & Sensitivity Analytics)
+        // 5. Comparative Analytics Tab (Offline Benchmark & Sensitivity Analytics)
         comparativeAnalyticsPanel = new ComparativeAnalyticsPanel();
+        comparativeAnalyticsPanel.setInteractiveSimulationControllers(
+            () -> engine != null && engine.isRunning(),
+            () -> {
+                if (engine != null && engine.isRunning()) {
+                    engine.pause();
+                    if (controlPanel != null) {
+                        controlPanel.updatePlayPauseVisuals(false);
+                    }
+                    if (notificationOverlay != null) {
+                        notificationOverlay.showWarning(I18n.getOrDefault("mainview.interactive_paused_for_batch", "⏸️ Simulation interactive mise en pause pour prioriser les calculs comparatifs"));
+                    }
+                }
+            }
+        );
         comparativeAnalyticsTab = new Tab();
         comparativeAnalyticsTab.setContent(comparativeAnalyticsPanel);
         comparativeAnalyticsTab.setClosable(false);
+
+        // 6. Execution Context Tab (Hardware Acceleration & Infrastructure Settings)
+        executionContextPanel = new ExecutionContextPanel(this::launchSimulationFromContext);
+        executionContextPanel.setOnLiveConfigChangedCallback(mode -> {
+            logger.info("Live execution context hardware mode changed: {}", mode);
+            if (comparativeAnalyticsPanel != null) {
+                comparativeAnalyticsPanel.recalculateAllEstimates();
+            }
+            if (notificationOverlay != null) {
+                notificationOverlay.showInfo("⚡ " + String.format(I18n.getOrDefault("exec.live_applied_notice", "Moteur de calcul actualisé en direct : %s"), mode.name()));
+            }
+        });
+        executionContextTab = new Tab();
+        executionContextTab.setContent(executionContextPanel);
+        executionContextTab.setClosable(false);
 
         // 7. Preferences Tab
         preferencesPanel = new PreferencesPanel();
@@ -217,7 +239,7 @@ public class MainView extends StackPane {
             }
         });
 
-        tabPane.getTabs().addAll(planetTab, resourcesTab, setupTab, executionContextTab, simulationTab, comparativeAnalyticsTab, preferencesTab);
+        tabPane.getTabs().addAll(planetTab, resourcesTab, setupTab, simulationTab, comparativeAnalyticsTab, executionContextTab, preferencesTab);
 
         getChildren().add(tabPane);
     }
@@ -226,9 +248,9 @@ public class MainView extends StackPane {
         planetTab.setText("1. " + org.ether.society.i18n.I18n.get("tab.planet_generator"));
         resourcesTab.setText("2. " + org.ether.society.i18n.I18n.get("tab.resources"));
         setupTab.setText("3. " + org.ether.society.i18n.I18n.get("tab.scenario"));
-        executionContextTab.setText("4. " + org.ether.society.i18n.I18n.getOrDefault("tab.execution_context", "⚡ Execution Context"));
-        simulationTab.setText("5. " + org.ether.society.i18n.I18n.get("tab.simulation"));
-        comparativeAnalyticsTab.setText("6. " + org.ether.society.i18n.I18n.getOrDefault("tab.comparative_analytics", "📊 Analyse Comparative"));
+        simulationTab.setText("4. " + org.ether.society.i18n.I18n.get("tab.simulation"));
+        comparativeAnalyticsTab.setText("5. " + org.ether.society.i18n.I18n.getOrDefault("tab.comparative_analytics", "📊 Analyse Comparative"));
+        executionContextTab.setText("6. " + org.ether.society.i18n.I18n.getOrDefault("tab.execution_context", "⚡ Execution Context"));
         preferencesTab.setText("7. " + org.ether.society.i18n.I18n.get("tab.preferences"));
         if (controlTab != null) {
             controlTab.setText(org.ether.society.i18n.I18n.getOrDefault("sim.tab.controls", "🎛️ 3D Render & Controls"));
@@ -502,10 +524,10 @@ public class MainView extends StackPane {
                     statsPanel.resetChartSeries();
                 }
 
-                // Move systematically from Tab 3 to Tab 4 (Execution Context) for review
-                executionContextTab.setDisable(false);
-                tabPane.getSelectionModel().select(executionContextTab);
-                logger.info("Transitioned to Execution Context Tab (4) following snapshot restore for review before launch");
+                // Move directly to Tab 4 (Simulation)
+                simulationTab.setDisable(false);
+                tabPane.getSelectionModel().select(simulationTab);
+                logger.info("Transitioned directly to Simulation Tab (4) following snapshot restore in ready/paused mode");
                 return;
             }
         }
@@ -515,6 +537,15 @@ public class MainView extends StackPane {
         if (newCells == null || newCells.isEmpty()) {
             logger.warn("Cannot start simulation: no cells generated");
             return;
+        }
+
+        // Auto-pause background batch execution if running in Comparative Analytics (Tab 5)
+        if (comparativeAnalyticsPanel != null && comparativeAnalyticsPanel.isBatchRunning()) {
+            logger.info("Auto-pausing background comparative batch execution as a new simulation is starting");
+            comparativeAnalyticsPanel.pauseOrCancelBatchForInteractiveSimulation();
+            if (notificationOverlay != null) {
+                notificationOverlay.showWarning(I18n.getOrDefault("mainview.batch_paused_notice", "⏸️ Calculs comparatifs en tâche de fond mis en pause pour allouer les ressources à la nouvelle simulation"));
+            }
         }
 
         logger.info("Starting simulation with scenario: {}", scenario.getName());
@@ -548,10 +579,10 @@ public class MainView extends StackPane {
             mapCanvas.setCurrentDateStr(String.format("An %d", scenario.getStartDateYear()));
         }
 
-        // Move systematically from Tab 3 to Tab 4 (Execution Context)
-        executionContextTab.setDisable(false);
-        tabPane.getSelectionModel().select(executionContextTab);
-        logger.info("Transitioned to Execution Context Tab (4) for review before launch with {} cells", newCells.size());
+        // Move directly to Tab 4 (Simulation) in ready/paused mode
+        simulationTab.setDisable(false);
+        tabPane.getSelectionModel().select(simulationTab);
+        logger.info("Transitioned directly to Simulation Tab (4) with {} cells in ready/paused mode", newCells.size());
     }
 
     private void launchSimulationFromContext() {
@@ -573,8 +604,7 @@ public class MainView extends StackPane {
             }
         }
         
-        // Disable execution context tab once running to prevent illegal state mutation
-        executionContextTab.setDisable(true);
+        // Keep execution context tab enabled for live adjustments
         simulationTab.setDisable(false);
         tabPane.getSelectionModel().select(simulationTab);
         if (statsPanel != null) {
@@ -590,7 +620,7 @@ public class MainView extends StackPane {
         if (controlPanel != null) {
             controlPanel.updatePlayPauseVisuals(false);
         }
-        logger.info("Simulation initialized from Execution Context Panel and switched to Simulation Tab (5) in ready/paused mode");
+        logger.info("Simulation initialized from Execution Context Panel and switched to Simulation Tab (4) in ready/paused mode");
     }
 
     public void toggleFullScreen() {

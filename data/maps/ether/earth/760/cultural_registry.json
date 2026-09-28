@@ -1,0 +1,1572 @@
+{
+  "epoch": 760,
+  "era": "Late Antique 760 AD",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch 760 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "pyu_city-states",
+      "colorHex": "#1A30C4",
+      "colorRgb": [26, 48, 196],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Pyu City-States",
+        "fr": "Pyu City-States",
+        "de": "Pyu City-States",
+        "es": "Pyu City-States",
+        "zh": "Pyu City-States"
+      },
+      "seshatId": "",
+      "fromYear": 84,
+      "toYear": 849,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "scandinavian_minor_kingdoms",
+      "colorHex": "#1AF04C",
+      "colorRgb": [26, 240, 76],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Scandinavian minor kingdoms",
+        "fr": "Scandinavian minor kingdoms",
+        "de": "Scandinavian minor kingdoms",
+        "es": "Scandinavian minor kingdoms",
+        "zh": "Scandinavian minor kingdoms"
+      },
+      "seshatId": "sv_scandinavian_minor_k",
+      "fromYear": 523,
+      "toYear": 792,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_brycheiniog",
+      "colorHex": "#1055C4",
+      "colorRgb": [16, 85, 196],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Brycheiniog",
+        "fr": "Kingdom of Brycheiniog",
+        "de": "Kingdom of Brycheiniog",
+        "es": "Kingdom of Brycheiniog",
+        "zh": "Kingdom of Brycheiniog"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 540,
+      "toYear": 946,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_morgannwg",
+      "colorHex": "#BF6E1D",
+      "colorRgb": [191, 110, 29],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Morgannwg",
+        "fr": "Kingdom of Morgannwg",
+        "de": "Kingdom of Morgannwg",
+        "es": "Kingdom of Morgannwg",
+        "zh": "Kingdom of Morgannwg"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 540,
+      "toYear": 946,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "mayan_city-states",
+      "colorHex": "#22B562",
+      "colorRgb": [34, 181, 98],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Mayan City-States",
+        "fr": "Mayan City-States",
+        "de": "Mayan City-States",
+        "es": "Mayan City-States",
+        "zh": "Mayan City-States"
+      },
+      "seshatId": "mx_maya_classic",
+      "fromYear": 555,
+      "toYear": 839,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "pandya_dynasty",
+      "colorHex": "#1EBDA0",
+      "colorRgb": [30, 189, 160],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Pandya Dynasty",
+        "fr": "Pandya Dynasty",
+        "de": "Pandya Dynasty",
+        "es": "Pandya Dynasty",
+        "zh": "Pandya Dynasty"
+      },
+      "seshatId": "in_pandya_emp_2",
+      "fromYear": 592,
+      "toYear": 910,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "zapotec_civilization",
+      "colorHex": "#1091C4",
+      "colorRgb": [16, 145, 196],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Zapotec Civilization",
+        "fr": "Zapotec Civilization",
+        "de": "Zapotec Civilization",
+        "es": "Zapotec Civilization",
+        "zh": "Zapotec Civilization"
+      },
+      "seshatId": "mx_monte_alban_3_b_4",
+      "fromYear": 602,
+      "toYear": 891,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "alodia",
+      "colorHex": "#13CF45",
+      "colorRgb": [19, 207, 69],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Alodia",
+        "fr": "Alodia",
+        "de": "Alodia",
+        "es": "Alodia",
+        "zh": "Alodia"
+      },
+      "seshatId": "sd_alodia",
+      "fromYear": 602,
+      "toYear": 1501,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "breton_kingdoms",
+      "colorHex": "#84E622",
+      "colorRgb": [132, 230, 34],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Breton Kingdoms",
+        "fr": "Breton Kingdoms",
+        "de": "Breton Kingdoms",
+        "es": "Breton Kingdoms",
+        "zh": "Breton Kingdoms"
+      },
+      "seshatId": "",
+      "fromYear": 602,
+      "toYear": 771,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_axum",
+      "colorHex": "#C7342C",
+      "colorRgb": [199, 52, 44],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Axum",
+        "fr": "Kingdom of Axum",
+        "de": "Kingdom of Axum",
+        "es": "Kingdom of Axum",
+        "zh": "Kingdom of Axum"
+      },
+      "seshatId": "et_aksum_emp_3",
+      "fromYear": 602,
+      "toYear": 805,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "anur_dhapura",
+      "colorHex": "#CF7027",
+      "colorRgb": [207, 112, 39],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Anurādhapura",
+        "fr": "Anurādhapura",
+        "de": "Anurādhapura",
+        "es": "Anurādhapura",
+        "zh": "Anurādhapura"
+      },
+      "seshatId": "sl_anuradhapura_4",
+      "fromYear": 617,
+      "toYear": 1014,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "ch_mpa",
+      "colorHex": "#2DE319",
+      "colorRgb": [45, 227, 25],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chámpa",
+        "fr": "Chámpa",
+        "de": "Chámpa",
+        "es": "Chámpa",
+        "zh": "Chámpa"
+      },
+      "seshatId": "",
+      "fromYear": 641,
+      "toYear": 874,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "brythons",
+      "colorHex": "#67D916",
+      "colorRgb": [103, 217, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Brythons",
+        "fr": "Brythons",
+        "de": "Brythons",
+        "es": "Brythons",
+        "zh": "Brythons"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 644,
+      "toYear": 859,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "late_pallava_empire",
+      "colorHex": "#C73E18",
+      "colorRgb": [199, 62, 24],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Late Pallava Empire",
+        "fr": "Late Pallava Empire",
+        "de": "Late Pallava Empire",
+        "es": "Late Pallava Empire",
+        "zh": "Late Pallava Empire"
+      },
+      "seshatId": "in_pallava_emp_2",
+      "fromYear": 656,
+      "toYear": 771,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "haripu_jaya",
+      "colorHex": "#46C423",
+      "colorRgb": [70, 196, 35],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Haripuñjaya",
+        "fr": "Haripuñjaya",
+        "de": "Haripuñjaya",
+        "es": "Haripuñjaya",
+        "zh": "Haripuñjaya"
+      },
+      "seshatId": "th_haribhunjaya_k",
+      "fromYear": 666,
+      "toYear": 1065,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_east_anglia",
+      "colorHex": "#B3BF26",
+      "colorRgb": [179, 191, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of East Anglia",
+        "fr": "Kingdom of East Anglia",
+        "de": "Kingdom of East Anglia",
+        "es": "Kingdom of East Anglia",
+        "zh": "Kingdom of East Anglia"
+      },
+      "seshatId": "gb_anglo_saxon_1",
+      "fromYear": 666,
+      "toYear": 799,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "unified_silla",
+      "colorHex": "#C9C60C",
+      "colorRgb": [201, 198, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Unified Silla",
+        "fr": "Unified Silla",
+        "de": "Unified Silla",
+        "es": "Unified Silla",
+        "zh": "Unified Silla"
+      },
+      "seshatId": "",
+      "fromYear": 682,
+      "toYear": 891,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "volga_bulgaria",
+      "colorHex": "#33DE39",
+      "colorRgb": [51, 222, 57],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Volga Bulgaria",
+        "fr": "Volga Bulgaria",
+        "de": "Volga Bulgaria",
+        "es": "Volga Bulgaria",
+        "zh": "Volga Bulgaria"
+      },
+      "seshatId": "",
+      "fromYear": 682,
+      "toYear": 1071,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "cyprus_condominium",
+      "colorHex": "#BECF27",
+      "colorRgb": [190, 207, 39],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Cyprus Condominium",
+        "fr": "Cyprus Condominium",
+        "de": "Cyprus Condominium",
+        "es": "Cyprus Condominium",
+        "zh": "Cyprus Condominium"
+      },
+      "seshatId": "",
+      "fromYear": 692,
+      "toYear": 874,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "yenisei_kyrgyz",
+      "colorHex": "#1FCF13",
+      "colorRgb": [31, 207, 19],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Yenisei Kyrgyz",
+        "fr": "Yenisei Kyrgyz",
+        "de": "Yenisei Kyrgyz",
+        "es": "Yenisei Kyrgyz",
+        "zh": "Yenisei Kyrgyz"
+      },
+      "seshatId": "",
+      "fromYear": 692,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "makuria",
+      "colorHex": "#28D3ED",
+      "colorRgb": [40, 211, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Makuria",
+        "fr": "Makuria",
+        "de": "Makuria",
+        "es": "Makuria",
+        "zh": "Makuria"
+      },
+      "seshatId": "sd_makuria_k_2",
+      "fromYear": 692,
+      "toYear": 849,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_powys",
+      "colorHex": "#36EB78",
+      "colorRgb": [54, 235, 120],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Powys",
+        "fr": "Kingdom of Powys",
+        "de": "Kingdom of Powys",
+        "es": "Kingdom of Powys",
+        "zh": "Kingdom of Powys"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 705,
+      "toYear": 859,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "first_bulgarian_empire",
+      "colorHex": "#EDD51C",
+      "colorRgb": [237, 213, 28],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "First Bulgarian Empire",
+        "fr": "First Bulgarian Empire",
+        "de": "First Bulgarian Empire",
+        "es": "First Bulgarian Empire",
+        "zh": "First Bulgarian Empire"
+      },
+      "seshatId": "bg_bulgaria_early",
+      "fromYear": 705,
+      "toYear": 805,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "republic_of_venice",
+      "colorHex": "#14CCBD",
+      "colorRgb": [20, 204, 189],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Venice",
+        "fr": "Republic of Venice",
+        "de": "Republic of Venice",
+        "es": "Republic of Venice",
+        "zh": "Republic of Venice"
+      },
+      "seshatId": "",
+      "fromYear": 705,
+      "toYear": 859,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_gwynedd",
+      "colorHex": "#15E894",
+      "colorRgb": [21, 232, 148],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Gwynedd",
+        "fr": "Kingdom of Gwynedd",
+        "de": "Kingdom of Gwynedd",
+        "es": "Kingdom of Gwynedd",
+        "zh": "Kingdom of Gwynedd"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 705,
+      "toYear": 859,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "classic_veracruz_culture",
+      "colorHex": "#26BD15",
+      "colorRgb": [38, 189, 21],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Classic Veracruz Culture",
+        "fr": "Classic Veracruz Culture",
+        "de": "Classic Veracruz Culture",
+        "es": "Classic Veracruz Culture",
+        "zh": "Classic Veracruz Culture"
+      },
+      "seshatId": "",
+      "fromYear": 705,
+      "toYear": 1110,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "nara_japan",
+      "colorHex": "#E11D48",
+      "colorRgb": [225, 29, 72],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Nara Japan",
+        "fr": "Nara Japan",
+        "de": "Nara Japan",
+        "es": "Nara Japan",
+        "zh": "Nara Japan"
+      },
+      "seshatId": "jp_nara",
+      "fromYear": 710,
+      "toYear": 787,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "cornwall",
+      "colorHex": "#C9B816",
+      "colorRgb": [201, 184, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Cornwall",
+        "fr": "Cornwall",
+        "de": "Cornwall",
+        "es": "Cornwall",
+        "zh": "Cornwall"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 710,
+      "toYear": 935,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "water_chenla",
+      "colorHex": "#D11B70",
+      "colorRgb": [209, 27, 112],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Water Chenla",
+        "fr": "Water Chenla",
+        "de": "Water Chenla",
+        "es": "Water Chenla",
+        "zh": "Water Chenla"
+      },
+      "seshatId": "kh_chenla",
+      "fromYear": 718,
+      "toYear": 799,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_sussex",
+      "colorHex": "#1B34C2",
+      "colorRgb": [27, 52, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Sussex",
+        "fr": "Kingdom of Sussex",
+        "de": "Kingdom of Sussex",
+        "es": "Kingdom of Sussex",
+        "zh": "Kingdom of Sussex"
+      },
+      "seshatId": "gb_anglo_saxon_1",
+      "fromYear": 718,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "srivijaya",
+      "colorHex": "#D6A92D",
+      "colorRgb": [214, 169, 45],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Srivijaya",
+        "fr": "Srivijaya",
+        "de": "Srivijaya",
+        "es": "Srivijaya",
+        "zh": "Srivijaya"
+      },
+      "seshatId": "",
+      "fromYear": 718,
+      "toYear": 859,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "lavo_kingdom",
+      "colorHex": "#3469ED",
+      "colorRgb": [52, 105, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Lavo Kingdom",
+        "fr": "Lavo Kingdom",
+        "de": "Lavo Kingdom",
+        "es": "Lavo Kingdom",
+        "zh": "Lavo Kingdom"
+      },
+      "seshatId": "th_lavo_k_1",
+      "fromYear": 718,
+      "toYear": 805,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "land_chenla",
+      "colorHex": "#2DB386",
+      "colorRgb": [45, 179, 134],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Land Chenla",
+        "fr": "Land Chenla",
+        "de": "Land Chenla",
+        "es": "Land Chenla",
+        "zh": "Land Chenla"
+      },
+      "seshatId": "kh_chenla",
+      "fromYear": 718,
+      "toYear": 799,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "turk_shahis",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Turk Shahis",
+        "fr": "Turk Shahis",
+        "de": "Turk Shahis",
+        "es": "Turk Shahis",
+        "zh": "Turk Shahis"
+      },
+      "seshatId": "",
+      "fromYear": 718,
+      "toYear": 849,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "saxons",
+      "colorHex": "#CC1FAF",
+      "colorRgb": [204, 31, 175],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Saxons",
+        "fr": "Saxons",
+        "de": "Saxons",
+        "es": "Saxons",
+        "zh": "Saxons"
+      },
+      "seshatId": "",
+      "fromYear": 724,
+      "toYear": 771,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "georgia",
+      "colorHex": "#84CC16",
+      "colorRgb": [132, 204, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Georgia",
+        "fr": "Georgia",
+        "de": "Georgia",
+        "es": "Georgia",
+        "zh": "Georgia"
+      },
+      "seshatId": "",
+      "fromYear": 724,
+      "toYear": 777,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "balhae",
+      "colorHex": "#C72CBF",
+      "colorRgb": [199, 44, 191],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Balhae",
+        "fr": "Balhae",
+        "de": "Balhae",
+        "es": "Balhae",
+        "zh": "Balhae"
+      },
+      "seshatId": "kr_balhae_k",
+      "fromYear": 741,
+      "toYear": 824,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_lazica",
+      "colorHex": "#DB2A53",
+      "colorRgb": [219, 42, 83],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Lazica",
+        "fr": "Kingdom of Lazica",
+        "de": "Kingdom of Lazica",
+        "es": "Kingdom of Lazica",
+        "zh": "Kingdom of Lazica"
+      },
+      "seshatId": "",
+      "fromYear": 741,
+      "toYear": 774,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "magna_frisia",
+      "colorHex": "#E84D15",
+      "colorRgb": [232, 77, 21],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Magna Frisia",
+        "fr": "Magna Frisia",
+        "de": "Magna Frisia",
+        "es": "Magna Frisia",
+        "zh": "Magna Frisia"
+      },
+      "seshatId": "",
+      "fromYear": 741,
+      "toYear": 767,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "galuh_kingdom",
+      "colorHex": "#28EDC6",
+      "colorRgb": [40, 237, 198],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Galuh Kingdom",
+        "fr": "Galuh Kingdom",
+        "de": "Galuh Kingdom",
+        "es": "Galuh Kingdom",
+        "zh": "Galuh Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 741,
+      "toYear": 824,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "mataram_kingdom",
+      "colorHex": "#9B20BA",
+      "colorRgb": [155, 32, 186],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Mataram Kingdom",
+        "fr": "Mataram Kingdom",
+        "de": "Mataram Kingdom",
+        "es": "Mataram Kingdom",
+        "zh": "Mataram Kingdom"
+      },
+      "seshatId": "id_medang_k",
+      "fromYear": 741,
+      "toYear": 1002,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "sunda_kingdom",
+      "colorHex": "#1AC4AE",
+      "colorRgb": [26, 196, 174],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sunda Kingdom",
+        "fr": "Sunda Kingdom",
+        "de": "Sunda Kingdom",
+        "es": "Sunda Kingdom",
+        "zh": "Sunda Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 741,
+      "toYear": 824,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "avar_khaganate",
+      "colorHex": "#2689E0",
+      "colorRgb": [38, 137, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Avar Khaganate",
+        "fr": "Avar Khaganate",
+        "de": "Avar Khaganate",
+        "es": "Avar Khaganate",
+        "zh": "Avar Khaganate"
+      },
+      "seshatId": "hu_avar_khaganate",
+      "fromYear": 750,
+      "toYear": 787,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "oghuz_turks",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Oghuz Turks",
+        "fr": "Oghuz Turks",
+        "de": "Oghuz Turks",
+        "es": "Oghuz Turks",
+        "zh": "Oghuz Turks"
+      },
+      "seshatId": "",
+      "fromYear": 750,
+      "toYear": 767,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_northumbria",
+      "colorHex": "#52CC29",
+      "colorRgb": [82, 204, 41],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Northumbria",
+        "fr": "Kingdom of Northumbria",
+        "de": "Kingdom of Northumbria",
+        "es": "Kingdom of Northumbria",
+        "zh": "Kingdom of Northumbria"
+      },
+      "seshatId": "gb_anglo_saxon_1",
+      "fromYear": 750,
+      "toYear": 865,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "bavarians",
+      "colorHex": "#38BDF8",
+      "colorRgb": [56, 189, 248],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Bavarians",
+        "fr": "Bavarians",
+        "de": "Bavarians",
+        "es": "Bavarians",
+        "zh": "Bavarians"
+      },
+      "seshatId": "",
+      "fromYear": 750,
+      "toYear": 774,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "emirate_of_nekor",
+      "colorHex": "#14CC7F",
+      "colorRgb": [20, 204, 127],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Emirate of Nekor",
+        "fr": "Emirate of Nekor",
+        "de": "Emirate of Nekor",
+        "es": "Emirate of Nekor",
+        "zh": "Emirate of Nekor"
+      },
+      "seshatId": "",
+      "fromYear": 750,
+      "toYear": 792,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "gurjara-pratihara_dynasty",
+      "colorHex": "#742BD9",
+      "colorRgb": [116, 43, 217],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Gurjara-Pratihara Dynasty",
+        "fr": "Gurjara-Pratihara Dynasty",
+        "de": "Gurjara-Pratihara Dynasty",
+        "es": "Gurjara-Pratihara Dynasty",
+        "zh": "Gurjara-Pratihara Dynasty"
+      },
+      "seshatId": "in_gurjara_pratihara_dyn",
+      "fromYear": 750,
+      "toYear": 771,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kimek-kipchak_confederation",
+      "colorHex": "#38BF1D",
+      "colorRgb": [56, 191, 29],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kimek-Kipchak confederation",
+        "fr": "Kimek-Kipchak confederation",
+        "de": "Kimek-Kipchak confederation",
+        "es": "Kimek-Kipchak confederation",
+        "zh": "Kimek-Kipchak confederation"
+      },
+      "seshatId": "",
+      "fromYear": 750,
+      "toYear": 792,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "strathclyde",
+      "colorHex": "#BD1EA5",
+      "colorRgb": [189, 30, 165],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Strathclyde",
+        "fr": "Strathclyde",
+        "de": "Strathclyde",
+        "es": "Strathclyde",
+        "zh": "Strathclyde"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 750,
+      "toYear": 869,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "d_l_riata",
+      "colorHex": "#ABED11",
+      "colorRgb": [171, 237, 17],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Dál Riata",
+        "fr": "Dál Riata",
+        "de": "Dál Riata",
+        "es": "Dál Riata",
+        "zh": "Dál Riata"
+      },
+      "seshatId": "gb_dal_riata",
+      "fromYear": 750,
+      "toYear": 839,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "khazaria",
+      "colorHex": "#1366EB",
+      "colorRgb": [19, 102, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Khazaria",
+        "fr": "Khazaria",
+        "de": "Khazaria",
+        "es": "Khazaria",
+        "zh": "Khazaria"
+      },
+      "seshatId": "ru_khazar_emp",
+      "fromYear": 750,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "pala_empire",
+      "colorHex": "#E622C5",
+      "colorRgb": [230, 34, 197],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Pala Empire",
+        "fr": "Pala Empire",
+        "de": "Pala Empire",
+        "es": "Pala Empire",
+        "zh": "Pala Empire"
+      },
+      "seshatId": "in_pala_emp",
+      "fromYear": 751,
+      "toYear": 777,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kannauj-varman_dynasty",
+      "colorHex": "#8B1EEB",
+      "colorRgb": [139, 30, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kannauj-Varman Dynasty",
+        "fr": "Kannauj-Varman Dynasty",
+        "de": "Kannauj-Varman Dynasty",
+        "es": "Kannauj-Varman Dynasty",
+        "zh": "Kannauj-Varman Dynasty"
+      },
+      "seshatId": "in_kannauj_varman_dyn",
+      "fromYear": 751,
+      "toYear": 767,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "_alliance_between_byzantine_empire_and_khazaria_",
+      "colorHex": "#33DEAB",
+      "colorRgb": [51, 222, 171],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Alliance between Byzantine Empire and Khazaria)",
+        "fr": "(Alliance between Byzantine Empire and Khazaria)",
+        "de": "(Alliance between Byzantine Empire and Khazaria)",
+        "es": "(Alliance between Byzantine Empire and Khazaria)",
+        "zh": "(Alliance between Byzantine Empire and Khazaria)"
+      },
+      "seshatId": "tr_byzantine_emp_1;ru_khazar_emp",
+      "fromYear": 751,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "byzantine_empire",
+      "colorHex": "#15E8DA",
+      "colorRgb": [21, 232, 218],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Byzantine Empire",
+        "fr": "Byzantine Empire",
+        "de": "Byzantine Empire",
+        "es": "Byzantine Empire",
+        "zh": "Byzantine Empire"
+      },
+      "seshatId": "tr_byzantine_emp_1",
+      "fromYear": 751,
+      "toYear": 767,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "duchy_of_croatia",
+      "colorHex": "#21B833",
+      "colorRgb": [33, 184, 51],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Croatia",
+        "fr": "Duchy of Croatia",
+        "de": "Duchy of Croatia",
+        "es": "Duchy of Croatia",
+        "zh": "Duchy of Croatia"
+      },
+      "seshatId": "",
+      "fromYear": 751,
+      "toYear": 787,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "karkota_dynasty",
+      "colorHex": "#29BA30",
+      "colorRgb": [41, 186, 48],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Karkota Dynasty",
+        "fr": "Karkota Dynasty",
+        "de": "Karkota Dynasty",
+        "es": "Karkota Dynasty",
+        "zh": "Karkota Dynasty"
+      },
+      "seshatId": "in_karkota_dyn",
+      "fromYear": 751,
+      "toYear": 771,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kamarupa_kingdom",
+      "colorHex": "#DB3735",
+      "colorRgb": [219, 55, 53],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kamarupa Kingdom",
+        "fr": "Kamarupa Kingdom",
+        "de": "Kamarupa Kingdom",
+        "es": "Kamarupa Kingdom",
+        "zh": "Kamarupa Kingdom"
+      },
+      "seshatId": "in_kamarupa_k",
+      "fromYear": 751,
+      "toYear": 824,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_asturias",
+      "colorHex": "#ED2891",
+      "colorRgb": [237, 40, 145],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Asturias",
+        "fr": "Kingdom of Asturias",
+        "de": "Kingdom of Asturias",
+        "es": "Kingdom of Asturias",
+        "zh": "Kingdom of Asturias"
+      },
+      "seshatId": "es_asturias_k",
+      "fromYear": 755,
+      "toYear": 824,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "_carolingian_empire_",
+      "colorHex": "#CC1FAF",
+      "colorRgb": [204, 31, 175],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Carolingian Empire)",
+        "fr": "(Carolingian Empire)",
+        "de": "(Carolingian Empire)",
+        "es": "(Carolingian Empire)",
+        "zh": "(Carolingian Empire)"
+      },
+      "seshatId": "fr_carolingian_emp_1",
+      "fromYear": 755,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_the_franks",
+      "colorHex": "#309BE3",
+      "colorRgb": [48, 155, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of the Franks",
+        "fr": "Kingdom of the Franks",
+        "de": "Kingdom of the Franks",
+        "es": "Kingdom of the Franks",
+        "zh": "Kingdom of the Franks"
+      },
+      "seshatId": "fr_carolingian_emp_1",
+      "fromYear": 755,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "aquitaine",
+      "colorHex": "#7431E0",
+      "colorRgb": [116, 49, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Aquitaine",
+        "fr": "Aquitaine",
+        "de": "Aquitaine",
+        "es": "Aquitaine",
+        "zh": "Aquitaine"
+      },
+      "seshatId": "fr_aquitaine_duc_1",
+      "fromYear": 755,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "_brythonic_kingdoms_",
+      "colorHex": "#2BB589",
+      "colorRgb": [43, 181, 137],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Brythonic Kingdoms)",
+        "fr": "(Brythonic Kingdoms)",
+        "de": "(Brythonic Kingdoms)",
+        "es": "(Brythonic Kingdoms)",
+        "zh": "(Brythonic Kingdoms)"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 755,
+      "toYear": 787,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_mercia",
+      "colorHex": "#4D0DD6",
+      "colorRgb": [77, 13, 214],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Mercia",
+        "fr": "Kingdom of Mercia",
+        "de": "Kingdom of Mercia",
+        "es": "Kingdom of Mercia",
+        "zh": "Kingdom of Mercia"
+      },
+      "seshatId": "gb_anglo_saxon_1",
+      "fromYear": 755,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "_kingdom_of_the_franks_",
+      "colorHex": "#560EF0",
+      "colorRgb": [86, 14, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Kingdom of the Franks)",
+        "fr": "(Kingdom of the Franks)",
+        "de": "(Kingdom of the Franks)",
+        "es": "(Kingdom of the Franks)",
+        "zh": "(Kingdom of the Franks)"
+      },
+      "seshatId": "",
+      "fromYear": 755,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "_anglo-saxon_england_",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Anglo-Saxon England)",
+        "fr": "(Anglo-Saxon England)",
+        "de": "(Anglo-Saxon England)",
+        "es": "(Anglo-Saxon England)",
+        "zh": "(Anglo-Saxon England)"
+      },
+      "seshatId": "gb_anglo_saxon_1",
+      "fromYear": 755,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_gwent",
+      "colorHex": "#34ED7B",
+      "colorRgb": [52, 237, 123],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Gwent",
+        "fr": "Kingdom of Gwent",
+        "de": "Kingdom of Gwent",
+        "es": "Kingdom of Gwent",
+        "zh": "Kingdom of Gwent"
+      },
+      "seshatId": "gb_brythonic_k",
+      "fromYear": 755,
+      "toYear": 787,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_wessex",
+      "colorHex": "#2FD437",
+      "colorRgb": [47, 212, 55],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Wessex",
+        "fr": "Kingdom of Wessex",
+        "de": "Kingdom of Wessex",
+        "es": "Kingdom of Wessex",
+        "zh": "Kingdom of Wessex"
+      },
+      "seshatId": "gb_anglo_saxon_1",
+      "fromYear": 755,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "nanzhao",
+      "colorHex": "#E0881B",
+      "colorRgb": [224, 136, 27],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Nanzhao",
+        "fr": "Nanzhao",
+        "de": "Nanzhao",
+        "es": "Nanzhao",
+        "zh": "Nanzhao"
+      },
+      "seshatId": "",
+      "fromYear": 755,
+      "toYear": 799,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "papal_states",
+      "colorHex": "#EAB308",
+      "colorRgb": [234, 179, 8],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Papal States",
+        "fr": "Papal States",
+        "de": "Papal States",
+        "es": "Papal States",
+        "zh": "Papal States"
+      },
+      "seshatId": "it_st_peter_rep_1",
+      "fromYear": 757,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "tang_dynasty",
+      "colorHex": "#DB3B2A",
+      "colorRgb": [219, 59, 42],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tang Dynasty",
+        "fr": "Tang Dynasty",
+        "de": "Tang Dynasty",
+        "es": "Tang Dynasty",
+        "zh": "Tang Dynasty"
+      },
+      "seshatId": "cn_tang_dyn_1",
+      "fromYear": 757,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "_allegiance_of_papal_states_to_byzantine_empire_",
+      "colorHex": "#EAB308",
+      "colorRgb": [234, 179, 8],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Allegiance of Papal States to Byzantine Empire)",
+        "fr": "(Allegiance of Papal States to Byzantine Empire)",
+        "de": "(Allegiance of Papal States to Byzantine Empire)",
+        "es": "(Allegiance of Papal States to Byzantine Empire)",
+        "zh": "(Allegiance of Papal States to Byzantine Empire)"
+      },
+      "seshatId": "it_st_peter_rep_1;tr_byzantine_emp_1",
+      "fromYear": 757,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "tibetan_empire",
+      "colorHex": "#13BF78",
+      "colorRgb": [19, 191, 120],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tibetan Empire",
+        "fr": "Tibetan Empire",
+        "de": "Tibetan Empire",
+        "es": "Tibetan Empire",
+        "zh": "Tibetan Empire"
+      },
+      "seshatId": "cn_tibet_k",
+      "fromYear": 757,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kharijites",
+      "colorHex": "#7E32F0",
+      "colorRgb": [126, 50, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kharijites",
+        "fr": "Kharijites",
+        "de": "Kharijites",
+        "es": "Kharijites",
+        "zh": "Kharijites"
+      },
+      "seshatId": "",
+      "fromYear": 757,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "rashtrakuta_dynasty",
+      "colorHex": "#45B522",
+      "colorRgb": [69, 181, 34],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Rashtrakuta Dynasty",
+        "fr": "Rashtrakuta Dynasty",
+        "de": "Rashtrakuta Dynasty",
+        "es": "Rashtrakuta Dynasty",
+        "zh": "Rashtrakuta Dynasty"
+      },
+      "seshatId": "in_rashtrakuta_emp",
+      "fromYear": 757,
+      "toYear": 771,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_kent",
+      "colorHex": "#A4F032",
+      "colorRgb": [164, 240, 50],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Kent",
+        "fr": "Kingdom of Kent",
+        "de": "Kingdom of Kent",
+        "es": "Kingdom of Kent",
+        "zh": "Kingdom of Kent"
+      },
+      "seshatId": "gb_anglo_saxon_1",
+      "fromYear": 757,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "abbasid_caliphate",
+      "colorHex": "#B32477",
+      "colorRgb": [179, 36, 119],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Abbasid Caliphate",
+        "fr": "Abbasid Caliphate",
+        "de": "Abbasid Caliphate",
+        "es": "Abbasid Caliphate",
+        "zh": "Abbasid Caliphate"
+      },
+      "seshatId": "iq_abbasid_cal_1",
+      "fromYear": 757,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "emirate_of_c_rdoba",
+      "colorHex": "#2AB85E",
+      "colorRgb": [42, 184, 94],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Emirate of Córdoba",
+        "fr": "Emirate of Córdoba",
+        "de": "Emirate of Córdoba",
+        "es": "Emirate of Córdoba",
+        "zh": "Emirate of Córdoba"
+      },
+      "seshatId": "es_cordoba_emirate",
+      "fromYear": 757,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "uyghur_khaganate",
+      "colorHex": "#36D96C",
+      "colorRgb": [54, 217, 108],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Uyghur Khaganate",
+        "fr": "Uyghur Khaganate",
+        "de": "Uyghur Khaganate",
+        "es": "Uyghur Khaganate",
+        "zh": "Uyghur Khaganate"
+      },
+      "seshatId": "mn_uygur_khaganate",
+      "fromYear": 757,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_italy",
+      "colorHex": "#DB1F3B",
+      "colorRgb": [219, 31, 59],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Italy",
+        "fr": "Kingdom of Italy",
+        "de": "Kingdom of Italy",
+        "es": "Kingdom of Italy",
+        "zh": "Kingdom of Italy"
+      },
+      "seshatId": "",
+      "fromYear": 757,
+      "toYear": 762,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kashmir",
+      "colorHex": "#9B2CC7",
+      "colorRgb": [155, 44, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kashmir",
+        "fr": "Kashmir",
+        "de": "Kashmir",
+        "es": "Kashmir",
+        "zh": "Kashmir"
+      },
+      "seshatId": "",
+      "fromYear": 757,
+      "toYear": 771,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Moldboard Plows, Watermills & Blast-Furnace Cast Iron",
+      "caloricIntakePerCapitaKcal": 2750
+    }
+  ]
+}

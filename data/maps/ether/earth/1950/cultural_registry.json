@@ -72,8 +72,8 @@
     },
     {
       "id": "vnm",
-      "colorHex": "#EF4444",
-      "colorRgb": [239, 68, 68],
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
       "traits": [0.51, 0.71, 0.55, 0.29],
       "name": {
         "en": "Vietnam",
@@ -152,8 +152,8 @@
     },
     {
       "id": "uzb",
-      "colorHex": "#1E13B0",
-      "colorRgb": [30, 19, 176],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Uzbekistan",
@@ -672,8 +672,8 @@
     },
     {
       "id": "ukr",
-      "colorHex": "#0284C7",
-      "colorRgb": [2, 132, 199],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.51, 0.55, 0.55, 0.65],
       "name": {
         "en": "Ukraine",
@@ -692,8 +692,8 @@
     },
     {
       "id": "uga",
-      "colorHex": "#E32497",
-      "colorRgb": [227, 36, 151],
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
       "traits": [0.31, 0.37, 0.31, 0.18],
       "name": {
         "en": "Uganda",
@@ -712,8 +712,8 @@
     },
     {
       "id": "tkm",
-      "colorHex": "#8E42EB",
-      "colorRgb": [142, 66, 235],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Turkmenistan",
@@ -892,8 +892,8 @@
     },
     {
       "id": "tjk",
-      "colorHex": "#23A4C4",
-      "colorRgb": [35, 164, 196],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Tajikistan",
@@ -1332,8 +1332,8 @@
     },
     {
       "id": "sen",
-      "colorHex": "#2D64B3",
-      "colorRgb": [45, 100, 179],
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
       "traits": [0.31, 0.37, 0.31, 0.18],
       "name": {
         "en": "Senegal",
@@ -1512,8 +1512,8 @@
     },
     {
       "id": "rus",
-      "colorHex": "#7C3AED",
-      "colorRgb": [124, 58, 237],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.69, 0.71, 0.94, 0.84],
       "name": {
         "en": "Russia",
@@ -1812,8 +1812,8 @@
     },
     {
       "id": "nga",
-      "colorHex": "#15803D",
-      "colorRgb": [21, 128, 61],
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
       "traits": [0.31, 0.55, 0.55, 0.18],
       "name": {
         "en": "Nigeria",
@@ -2152,8 +2152,8 @@
     },
     {
       "id": "mda",
-      "colorHex": "#A61919",
-      "colorRgb": [166, 25, 25],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Moldova",
@@ -2272,8 +2272,8 @@
     },
     {
       "id": "mli",
-      "colorHex": "#42EBE2",
-      "colorRgb": [66, 235, 226],
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
       "traits": [0.31, 0.37, 0.31, 0.18],
       "name": {
         "en": "Mali",
@@ -2312,8 +2312,8 @@
     },
     {
       "id": "mys",
-      "colorHex": "#2D26AD",
-      "colorRgb": [45, 38, 173],
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
       "traits": [0.69, 0.71, 0.55, 0.57],
       "name": {
         "en": "Malaysia",
@@ -2352,8 +2352,8 @@
     },
     {
       "id": "mdg",
-      "colorHex": "#2BB57E",
-      "colorRgb": [43, 181, 126],
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
       "traits": [0.31, 0.37, 0.31, 0.18],
       "name": {
         "en": "Madagascar",
@@ -2412,8 +2412,8 @@
     },
     {
       "id": "ltu",
-      "colorHex": "#0CAD65",
-      "colorRgb": [12, 173, 101],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Lithuania",
@@ -2532,8 +2532,8 @@
     },
     {
       "id": "lva",
-      "colorHex": "#3366B8",
-      "colorRgb": [51, 102, 184],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Latvia",
@@ -2552,8 +2552,8 @@
     },
     {
       "id": "lao",
-      "colorHex": "#BD361E",
-      "colorRgb": [189, 54, 30],
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Laos",
@@ -2572,8 +2572,8 @@
     },
     {
       "id": "kgz",
-      "colorHex": "#AB2C27",
-      "colorRgb": [171, 44, 39],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Kyrgyzstan",
@@ -2652,8 +2652,8 @@
     },
     {
       "id": "ken",
-      "colorHex": "#0E8EE3",
-      "colorRgb": [14, 142, 227],
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
       "traits": [0.31, 0.55, 0.31, 0.18],
       "name": {
         "en": "Kenya",
@@ -2672,8 +2672,8 @@
     },
     {
       "id": "kaz",
-      "colorHex": "#46C916",
-      "colorRgb": [70, 201, 22],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.31, 0.55, 0.31, 0.65],
       "name": {
         "en": "Kazakhstan",
@@ -3112,8 +3112,8 @@
     },
     {
       "id": "gha",
-      "colorHex": "#ED3EF0",
-      "colorRgb": [237, 62, 240],
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
       "traits": [0.31, 0.37, 0.31, 0.18],
       "name": {
         "en": "Ghana",
@@ -3152,8 +3152,8 @@
     },
     {
       "id": "geo",
-      "colorHex": "#61C437",
-      "colorRgb": [97, 196, 55],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Georgia",
@@ -3452,8 +3452,8 @@
     },
     {
       "id": "est",
-      "colorHex": "#5EAD1D",
-      "colorRgb": [94, 173, 29],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.69, 0.88, 0.31, 0.65],
       "name": {
         "en": "Estonia",
@@ -3732,8 +3732,8 @@
     },
     {
       "id": "cyp",
-      "colorHex": "#A313CF",
-      "colorRgb": [163, 19, 207],
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Cyprus",
@@ -3952,8 +3952,8 @@
     },
     {
       "id": "hkg",
-      "colorHex": "#CC9E14",
-      "colorRgb": [204, 158, 20],
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Hong Kong",
@@ -4092,8 +4092,8 @@
     },
     {
       "id": "khm",
-      "colorHex": "#2CE8DC",
-      "colorRgb": [44, 232, 220],
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
       "traits": [0.31, 0.37, 0.31, 0.29],
       "name": {
         "en": "Cambodia",
@@ -4372,8 +4372,8 @@
     },
     {
       "id": "blr",
-      "colorHex": "#1646C9",
-      "colorRgb": [22, 70, 201],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Belarus",
@@ -4472,8 +4472,8 @@
     },
     {
       "id": "aze",
-      "colorHex": "#CCA83D",
-      "colorRgb": [204, 168, 61],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Azerbaijan",
@@ -4612,8 +4612,8 @@
     },
     {
       "id": "arm",
-      "colorHex": "#424AEB",
-      "colorRgb": [66, 74, 235],
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
       "traits": [0.31, 0.37, 0.31, 0.65],
       "name": {
         "en": "Armenia",
@@ -4712,8 +4712,8 @@
     },
     {
       "id": "dza",
-      "colorHex": "#B522D6",
-      "colorRgb": [181, 34, 214],
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
       "traits": [0.31, 0.55, 0.31, 0.18],
       "name": {
         "en": "Algeria",

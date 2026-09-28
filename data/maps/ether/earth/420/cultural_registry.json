@@ -1,0 +1,1135 @@
+{
+  "epoch": 420,
+  "era": "Classical 420 AD",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch 420 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "byeonhan",
+      "colorHex": "#C2EB1E",
+      "colorRgb": [194, 235, 30],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Byeonhan",
+        "fr": "Byeonhan",
+        "de": "Byeonhan",
+        "es": "Byeonhan",
+        "zh": "Byeonhan"
+      },
+      "seshatId": "",
+      "fromYear": -91,
+      "toYear": 533,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "anur_dhapura",
+      "colorHex": "#CF7027",
+      "colorRgb": [207, 112, 39],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Anurādhapura",
+        "fr": "Anurādhapura",
+        "de": "Anurādhapura",
+        "es": "Anurādhapura",
+        "zh": "Anurādhapura"
+      },
+      "seshatId": "sl_anuradhapura_2",
+      "fromYear": 78,
+      "toYear": 438,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "pyu_city-states",
+      "colorHex": "#1A30C4",
+      "colorRgb": [26, 48, 196],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Pyu City-States",
+        "fr": "Pyu City-States",
+        "de": "Pyu City-States",
+        "es": "Pyu City-States",
+        "zh": "Pyu City-States"
+      },
+      "seshatId": "",
+      "fromYear": 84,
+      "toYear": 849,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "teotihuacan",
+      "colorHex": "#D12684",
+      "colorRgb": [209, 38, 132],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Teotihuacan",
+        "fr": "Teotihuacan",
+        "de": "Teotihuacan",
+        "es": "Teotihuacan",
+        "zh": "Teotihuacan"
+      },
+      "seshatId": "mx_basin_of_mexico_7",
+      "fromYear": 106,
+      "toYear": 655,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "ch_mpa",
+      "colorHex": "#2DE319",
+      "colorRgb": [45, 227, 25],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chámpa",
+        "fr": "Chámpa",
+        "de": "Chámpa",
+        "es": "Chámpa",
+        "zh": "Chámpa"
+      },
+      "seshatId": "",
+      "fromYear": 207,
+      "toYear": 545,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "zapotec_civilization",
+      "colorHex": "#1091C4",
+      "colorRgb": [16, 145, 196],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Zapotec Civilization",
+        "fr": "Zapotec Civilization",
+        "de": "Zapotec Civilization",
+        "es": "Zapotec Civilization",
+        "zh": "Zapotec Civilization"
+      },
+      "seshatId": "mx_monte_alban_3_a",
+      "fromYear": 207,
+      "toYear": 509,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "funan",
+      "colorHex": "#E3309B",
+      "colorRgb": [227, 48, 155],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Funan",
+        "fr": "Funan",
+        "de": "Funan",
+        "es": "Funan",
+        "zh": "Funan"
+      },
+      "seshatId": "kh_funan_1",
+      "fromYear": 238,
+      "toYear": 545,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "tamna",
+      "colorHex": "#EB2A54",
+      "colorRgb": [235, 42, 84],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tamna",
+        "fr": "Tamna",
+        "de": "Tamna",
+        "es": "Tamna",
+        "zh": "Tamna"
+      },
+      "seshatId": "",
+      "fromYear": 263,
+      "toYear": 681,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "saxons",
+      "colorHex": "#CC1FAF",
+      "colorRgb": [204, 31, 175],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Saxons",
+        "fr": "Saxons",
+        "de": "Saxons",
+        "es": "Saxons",
+        "zh": "Saxons"
+      },
+      "seshatId": "",
+      "fromYear": 283,
+      "toYear": 454,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "mayan_city-states",
+      "colorHex": "#22B562",
+      "colorRgb": [34, 181, 98],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Mayan City-States",
+        "fr": "Mayan City-States",
+        "de": "Mayan City-States",
+        "es": "Mayan City-States",
+        "zh": "Mayan City-States"
+      },
+      "seshatId": "gt_tikal_early_classic",
+      "fromYear": 299,
+      "toYear": 554,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "alodia",
+      "colorHex": "#13CF45",
+      "colorRgb": [19, 207, 69],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Alodia",
+        "fr": "Alodia",
+        "de": "Alodia",
+        "es": "Alodia",
+        "zh": "Alodia"
+      },
+      "seshatId": "",
+      "fromYear": 347,
+      "toYear": 601,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "makuria",
+      "colorHex": "#28D3ED",
+      "colorRgb": [40, 211, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Makuria",
+        "fr": "Makuria",
+        "de": "Makuria",
+        "es": "Makuria",
+        "zh": "Makuria"
+      },
+      "seshatId": "",
+      "fromYear": 347,
+      "toYear": 568,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "nobatia",
+      "colorHex": "#36D96C",
+      "colorRgb": [54, 217, 108],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Nobatia",
+        "fr": "Nobatia",
+        "de": "Nobatia",
+        "es": "Nobatia",
+        "zh": "Nobatia"
+      },
+      "seshatId": "",
+      "fromYear": 347,
+      "toYear": 646,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kadamba_empire",
+      "colorHex": "#E3DF0E",
+      "colorRgb": [227, 223, 14],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kadamba Empire",
+        "fr": "Kadamba Empire",
+        "de": "Kadamba Empire",
+        "es": "Kadamba Empire",
+        "zh": "Kadamba Empire"
+      },
+      "seshatId": "in_kadamba_emp",
+      "fromYear": 353,
+      "toYear": 450,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "late_pallava_empire",
+      "colorHex": "#C73E18",
+      "colorRgb": [199, 62, 24],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Late Pallava Empire",
+        "fr": "Late Pallava Empire",
+        "de": "Late Pallava Empire",
+        "es": "Late Pallava Empire",
+        "zh": "Late Pallava Empire"
+      },
+      "seshatId": "in_pallava_emp_2",
+      "fromYear": 353,
+      "toYear": 450,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kalabhra_dynasty",
+      "colorHex": "#E6AC39",
+      "colorRgb": [230, 172, 57],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kalabhra Dynasty",
+        "fr": "Kalabhra Dynasty",
+        "de": "Kalabhra Dynasty",
+        "es": "Kalabhra Dynasty",
+        "zh": "Kalabhra Dynasty"
+      },
+      "seshatId": "in_kalabhra_dyn",
+      "fromYear": 353,
+      "toYear": 591,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_axum",
+      "colorHex": "#C7342C",
+      "colorRgb": [199, 52, 44],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Axum",
+        "fr": "Kingdom of Axum",
+        "de": "Kingdom of Axum",
+        "es": "Kingdom of Axum",
+        "zh": "Kingdom of Axum"
+      },
+      "seshatId": "et_aksum_emp_2",
+      "fromYear": 353,
+      "toYear": 533,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kamarupa_kingdom",
+      "colorHex": "#DB3735",
+      "colorRgb": [219, 55, 53],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kamarupa Kingdom",
+        "fr": "Kamarupa Kingdom",
+        "de": "Kamarupa Kingdom",
+        "es": "Kamarupa Kingdom",
+        "zh": "Kamarupa Kingdom"
+      },
+      "seshatId": "in_kamarupa_k",
+      "fromYear": 353,
+      "toYear": 450,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "salian_franks",
+      "colorHex": "#CF3298",
+      "colorRgb": [207, 50, 152],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Salian Franks",
+        "fr": "Salian Franks",
+        "de": "Salian Franks",
+        "es": "Salian Franks",
+        "zh": "Salian Franks"
+      },
+      "seshatId": "",
+      "fromYear": 358,
+      "toYear": 438,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "tarumanagara",
+      "colorHex": "#13CFC2",
+      "colorRgb": [19, 207, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tarumanagara",
+        "fr": "Tarumanagara",
+        "de": "Tarumanagara",
+        "es": "Tarumanagara",
+        "zh": "Tarumanagara"
+      },
+      "seshatId": "",
+      "fromYear": 367,
+      "toYear": 533,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "himyarite_kingdom",
+      "colorHex": "#0C8DC9",
+      "colorRgb": [12, 141, 201],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Himyarite Kingdom",
+        "fr": "Himyarite Kingdom",
+        "de": "Himyarite Kingdom",
+        "es": "Himyarite Kingdom",
+        "zh": "Himyarite Kingdom"
+      },
+      "seshatId": "ye_himyar_2",
+      "fromYear": 378,
+      "toYear": 533,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "silla",
+      "colorHex": "#A91BC2",
+      "colorRgb": [169, 27, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Silla",
+        "fr": "Silla",
+        "de": "Silla",
+        "es": "Silla",
+        "zh": "Silla"
+      },
+      "seshatId": "",
+      "fromYear": 378,
+      "toYear": 533,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "angles",
+      "colorHex": "#C4751A",
+      "colorRgb": [196, 117, 26],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Angles",
+        "fr": "Angles",
+        "de": "Angles",
+        "es": "Angles",
+        "zh": "Angles"
+      },
+      "seshatId": "",
+      "fromYear": 387,
+      "toYear": 475,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "caucasian_albania",
+      "colorHex": "#14A6DB",
+      "colorRgb": [20, 166, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Caucasian Albania",
+        "fr": "Caucasian Albania",
+        "de": "Caucasian Albania",
+        "es": "Caucasian Albania",
+        "zh": "Caucasian Albania"
+      },
+      "seshatId": "",
+      "fromYear": 387,
+      "toYear": 438,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "baekje",
+      "colorHex": "#22C738",
+      "colorRgb": [34, 199, 56],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Baekje",
+        "fr": "Baekje",
+        "de": "Baekje",
+        "es": "Baekje",
+        "zh": "Baekje"
+      },
+      "seshatId": "",
+      "fromYear": 395,
+      "toYear": 475,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_armenia",
+      "colorHex": "#29BECC",
+      "colorRgb": [41, 190, 204],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Armenia",
+        "fr": "Kingdom of Armenia",
+        "de": "Kingdom of Armenia",
+        "es": "Kingdom of Armenia",
+        "zh": "Kingdom of Armenia"
+      },
+      "seshatId": "",
+      "fromYear": 402,
+      "toYear": 438,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "wusun",
+      "colorHex": "#3122B5",
+      "colorRgb": [49, 34, 181],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Wusun",
+        "fr": "Wusun",
+        "de": "Wusun",
+        "es": "Wusun",
+        "zh": "Wusun"
+      },
+      "seshatId": "",
+      "fromYear": 402,
+      "toYear": 442,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "caucasian_iberia",
+      "colorHex": "#2A55B8",
+      "colorRgb": [42, 85, 184],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Caucasian Iberia",
+        "fr": "Caucasian Iberia",
+        "de": "Caucasian Iberia",
+        "es": "Caucasian Iberia",
+        "zh": "Caucasian Iberia"
+      },
+      "seshatId": "",
+      "fromYear": 402,
+      "toYear": 509,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kidarites",
+      "colorHex": "#E8DA15",
+      "colorRgb": [232, 218, 21],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kidarites",
+        "fr": "Kidarites",
+        "de": "Kidarites",
+        "es": "Kidarites",
+        "zh": "Kidarites"
+      },
+      "seshatId": "af_kidarite_k",
+      "fromYear": 402,
+      "toYear": 442,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "lakhmid_kingdom",
+      "colorHex": "#17E6D4",
+      "colorRgb": [23, 230, 212],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Lakhmid Kingdom",
+        "fr": "Lakhmid Kingdom",
+        "de": "Lakhmid Kingdom",
+        "es": "Lakhmid Kingdom",
+        "zh": "Lakhmid Kingdom"
+      },
+      "seshatId": "iq_lakhmid_k",
+      "fromYear": 402,
+      "toYear": 438,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "lazica",
+      "colorHex": "#3CCC1F",
+      "colorRgb": [60, 204, 31],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Lazica",
+        "fr": "Lazica",
+        "de": "Lazica",
+        "es": "Lazica",
+        "zh": "Lazica"
+      },
+      "seshatId": "",
+      "fromYear": 402,
+      "toYear": 533,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "protectorate_of_the_western_regions",
+      "colorHex": "#A8F00E",
+      "colorRgb": [168, 240, 14],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Protectorate of the Western Regions",
+        "fr": "Protectorate of the Western Regions",
+        "de": "Protectorate of the Western Regions",
+        "es": "Protectorate of the Western Regions",
+        "zh": "Protectorate of the Western Regions"
+      },
+      "seshatId": "",
+      "fromYear": 402,
+      "toYear": 468,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "northern_liang",
+      "colorHex": "#742BD9",
+      "colorRgb": [116, 43, 217],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Northern Liang",
+        "fr": "Northern Liang",
+        "de": "Northern Liang",
+        "es": "Northern Liang",
+        "zh": "Northern Liang"
+      },
+      "seshatId": "",
+      "fromYear": 402,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "norse",
+      "colorHex": "#4EC90C",
+      "colorRgb": [78, 201, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Norse",
+        "fr": "Norse",
+        "de": "Norse",
+        "es": "Norse",
+        "zh": "Norse"
+      },
+      "seshatId": "",
+      "fromYear": 402,
+      "toYear": 489,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "eastern_roman_empire",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Eastern Roman Empire",
+        "fr": "Eastern Roman Empire",
+        "de": "Eastern Roman Empire",
+        "es": "Eastern Roman Empire",
+        "zh": "Eastern Roman Empire"
+      },
+      "seshatId": "tr_east_roman_emp",
+      "fromYear": 407,
+      "toYear": 438,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "sasanian_empire",
+      "colorHex": "#841DDE",
+      "colorRgb": [132, 29, 222],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sasanian Empire",
+        "fr": "Sasanian Empire",
+        "de": "Sasanian Empire",
+        "es": "Sasanian Empire",
+        "zh": "Sasanian Empire"
+      },
+      "seshatId": "ir_sassanid_emp_1",
+      "fromYear": 410,
+      "toYear": 438,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "_allegiance_of_kidarites_to_sasanian_empire_",
+      "colorHex": "#1158C2",
+      "colorRgb": [17, 88, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Allegiance of Kidarites to Sasanian Empire)",
+        "fr": "(Allegiance of Kidarites to Sasanian Empire)",
+        "de": "(Allegiance of Kidarites to Sasanian Empire)",
+        "es": "(Allegiance of Kidarites to Sasanian Empire)",
+        "zh": "(Allegiance of Kidarites to Sasanian Empire)"
+      },
+      "seshatId": "af_kidarite_k;ir_sassanid_emp_1",
+      "fromYear": 410,
+      "toYear": 438,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "northern_yan",
+      "colorHex": "#13BA0D",
+      "colorRgb": [19, 186, 13],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Northern Yan",
+        "fr": "Northern Yan",
+        "de": "Northern Yan",
+        "es": "Northern Yan",
+        "zh": "Northern Yan"
+      },
+      "seshatId": "",
+      "fromYear": 410,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "white_huns",
+      "colorHex": "#0E12F0",
+      "colorRgb": [14, 18, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "White Huns",
+        "fr": "White Huns",
+        "de": "White Huns",
+        "es": "White Huns",
+        "zh": "White Huns"
+      },
+      "seshatId": "af_hephthalite_emp",
+      "fromYear": 410,
+      "toYear": 450,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "goguryeo",
+      "colorHex": "#DB1FB9",
+      "colorRgb": [219, 31, 185],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Goguryeo",
+        "fr": "Goguryeo",
+        "de": "Goguryeo",
+        "es": "Goguryeo",
+        "zh": "Goguryeo"
+      },
+      "seshatId": "kr_goguryeo_k",
+      "fromYear": 410,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "vakataka_kingdom",
+      "colorHex": "#2F8EC2",
+      "colorRgb": [47, 142, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Vakataka Kingdom",
+        "fr": "Vakataka Kingdom",
+        "de": "Vakataka Kingdom",
+        "es": "Vakataka Kingdom",
+        "zh": "Vakataka Kingdom"
+      },
+      "seshatId": "in_vakataka_k",
+      "fromYear": 410,
+      "toYear": 450,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "_alliance_between_white_huns_and_sasanian_empire_",
+      "colorHex": "#C628ED",
+      "colorRgb": [198, 40, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Alliance between White Huns and Sasanian Empire)",
+        "fr": "(Alliance between White Huns and Sasanian Empire)",
+        "de": "(Alliance between White Huns and Sasanian Empire)",
+        "es": "(Alliance between White Huns and Sasanian Empire)",
+        "zh": "(Alliance between White Huns and Sasanian Empire)"
+      },
+      "seshatId": "af_hephthalite_emp;ir_sassanid_emp_1",
+      "fromYear": 410,
+      "toYear": 438,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "burgundian_kingdom",
+      "colorHex": "#E010A2",
+      "colorRgb": [224, 16, 162],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Burgundian Kingdom",
+        "fr": "Burgundian Kingdom",
+        "de": "Burgundian Kingdom",
+        "es": "Burgundian Kingdom",
+        "zh": "Burgundian Kingdom"
+      },
+      "seshatId": "fr_burgundian_k",
+      "fromYear": 414,
+      "toYear": 438,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "ripuarian_franks",
+      "colorHex": "#5ECF13",
+      "colorRgb": [94, 207, 19],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ripuarian Franks",
+        "fr": "Ripuarian Franks",
+        "de": "Ripuarian Franks",
+        "es": "Ripuarian Franks",
+        "zh": "Ripuarian Franks"
+      },
+      "seshatId": "",
+      "fromYear": 414,
+      "toYear": 438,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "tuyuhun",
+      "colorHex": "#70D11B",
+      "colorRgb": [112, 209, 27],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tuyuhun",
+        "fr": "Tuyuhun",
+        "de": "Tuyuhun",
+        "es": "Tuyuhun",
+        "zh": "Tuyuhun"
+      },
+      "seshatId": "cn_tuyuhun",
+      "fromYear": 414,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "western_jin",
+      "colorHex": "#227FD6",
+      "colorRgb": [34, 127, 214],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Western Jin",
+        "fr": "Western Jin",
+        "de": "Western Jin",
+        "es": "Western Jin",
+        "zh": "Western Jin"
+      },
+      "seshatId": "",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "xia",
+      "colorHex": "#ACE639",
+      "colorRgb": [172, 230, 57],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Xia",
+        "fr": "Xia",
+        "de": "Xia",
+        "es": "Xia",
+        "zh": "Xia"
+      },
+      "seshatId": "",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "visigoths",
+      "colorHex": "#E62284",
+      "colorRgb": [230, 34, 132],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Visigoths",
+        "fr": "Visigoths",
+        "de": "Visigoths",
+        "es": "Visigoths",
+        "zh": "Visigoths"
+      },
+      "seshatId": "",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "rouran_khaganate",
+      "colorHex": "#D412DE",
+      "colorRgb": [212, 18, 222],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Rouran Khaganate",
+        "fr": "Rouran Khaganate",
+        "de": "Rouran Khaganate",
+        "es": "Rouran Khaganate",
+        "zh": "Rouran Khaganate"
+      },
+      "seshatId": "mn_rouran_khaganate",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "alans",
+      "colorHex": "#CC149E",
+      "colorRgb": [204, 20, 158],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Alans",
+        "fr": "Alans",
+        "de": "Alans",
+        "es": "Alans",
+        "zh": "Alans"
+      },
+      "seshatId": "",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "kingdom_of_the_suebi",
+      "colorHex": "#D6227F",
+      "colorRgb": [214, 34, 127],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of the Suebi",
+        "fr": "Kingdom of the Suebi",
+        "de": "Kingdom of the Suebi",
+        "es": "Kingdom of the Suebi",
+        "zh": "Kingdom of the Suebi"
+      },
+      "seshatId": "pt_suebi_k",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "gupta_empire",
+      "colorHex": "#73CF1D",
+      "colorRgb": [115, 207, 29],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Gupta Empire",
+        "fr": "Gupta Empire",
+        "de": "Gupta Empire",
+        "es": "Gupta Empire",
+        "zh": "Gupta Empire"
+      },
+      "seshatId": "in_gupta_emp",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "western_qin",
+      "colorHex": "#64DB14",
+      "colorRgb": [100, 219, 20],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Western Qin",
+        "fr": "Western Qin",
+        "de": "Western Qin",
+        "es": "Western Qin",
+        "zh": "Western Qin"
+      },
+      "seshatId": "",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "northern_wei",
+      "colorHex": "#2FC231",
+      "colorRgb": [47, 194, 49],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Northern Wei",
+        "fr": "Northern Wei",
+        "de": "Northern Wei",
+        "es": "Northern Wei",
+        "zh": "Northern Wei"
+      },
+      "seshatId": "cn_northern_wei_dyn",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "_alliance_between_gupta_empire_and_vakataka_kingdom_",
+      "colorHex": "#28DE3D",
+      "colorRgb": [40, 222, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Alliance between Gupta Empire and Vakataka Kingdom)",
+        "fr": "(Alliance between Gupta Empire and Vakataka Kingdom)",
+        "de": "(Alliance between Gupta Empire and Vakataka Kingdom)",
+        "es": "(Alliance between Gupta Empire and Vakataka Kingdom)",
+        "zh": "(Alliance between Gupta Empire and Vakataka Kingdom)"
+      },
+      "seshatId": "in_gupta_emp;in_vakataka_k",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "western_roman_empire",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Western Roman Empire",
+        "fr": "Western Roman Empire",
+        "de": "Western Roman Empire",
+        "es": "Western Roman Empire",
+        "zh": "Western Roman Empire"
+      },
+      "seshatId": "it_western_roman_emp",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "vandals",
+      "colorHex": "#B31255",
+      "colorRgb": [179, 18, 85],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Vandals",
+        "fr": "Vandals",
+        "de": "Vandals",
+        "es": "Vandals",
+        "zh": "Vandals"
+      },
+      "seshatId": "",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "_alliance_between_northern_wei_and_rouran_khaganate_",
+      "colorHex": "#B89721",
+      "colorRgb": [184, 151, 33],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Alliance between Northern Wei and Rouran Khaganate)",
+        "fr": "(Alliance between Northern Wei and Rouran Khaganate)",
+        "de": "(Alliance between Northern Wei and Rouran Khaganate)",
+        "es": "(Alliance between Northern Wei and Rouran Khaganate)",
+        "zh": "(Alliance between Northern Wei and Rouran Khaganate)"
+      },
+      "seshatId": "cn_northern_wei_dyn;mn_rouran_khaganate",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "huns",
+      "colorHex": "#2BD618",
+      "colorRgb": [43, 214, 24],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Huns",
+        "fr": "Huns",
+        "de": "Huns",
+        "es": "Huns",
+        "zh": "Huns"
+      },
+      "seshatId": "",
+      "fromYear": 417,
+      "toYear": 425,
+      "kinshipType": "Paterfamilias Households & Confucian Patrilineal Clans",
+      "lithicTechnocomplex": "Roman Concrete, Aqueducts & Silk Road Caravans",
+      "caloricIntakePerCapitaKcal": 2750
+    }
+  ]
+}

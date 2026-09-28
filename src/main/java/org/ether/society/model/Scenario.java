@@ -125,13 +125,14 @@ public class Scenario implements Serializable {
     private boolean proceduralLeadersEnabled = true;
     private String customDensityBase64;
     // Cultural Vector & Multi-Field Layers (Persisted per Scenario)
-    private int cultureVectorDimensions = 8; // 4D to 32D culture vector dimensions
+    private int cultureVectorDimensions = 9; // 4D to 32D culture vector dimensions (9D baseline on Earth)
     private double culturalDiffusionRate = 0.05; // Free-energy cultural diffusion conductance
     private double culturalMutationRate = 0.01; // Mutation & innovation noise rate
     private java.util.List<String> customTensorMapsBase64 = new java.util.ArrayList<>();
     private java.util.List<Boolean> tensorProceduralModes = new java.util.ArrayList<>();
     private java.util.Map<Integer, Long> tensorSeeds = new java.util.HashMap<>();
     private java.util.Map<Integer, java.util.Map<String, Double>> tensorProceduralParameters = new java.util.HashMap<>();
+    private java.util.Map<Integer, String> customTensorNames = new java.util.HashMap<>();
 
     // Geological & Mineral Energy Extensible Tensor Layers (Persisted per Scenario)
     private int resourceVectorDimensions = 10; // Extensible resource dimensions (COAL, OIL, GAS, URANIUM, HELIUM_3, IRON_COPPER, PRECIOUS_METALS, CRITICAL_REE, MANTLE_HEAT, AQUIFERS...)
@@ -625,6 +626,8 @@ public class Scenario implements Serializable {
         org.ether.society.procedural.SimulationPerformanceConfig config = new org.ether.society.procedural.SimulationPerformanceConfig();
         config.setStrictDeterminism(strictDeterminism);
         config.setEnableSparseCellSkipping(!strictDeterminism && sparseCellSkippingEnabled);
+        config.setEnableOceanMacroAggregation(!strictDeterminism && oceanMacroAggregationEnabled);
+        config.setEnableCoastalNavigationOnly(!strictDeterminism && coastalNavigationOnlyEnabled);
         config.setEnableMultiFreqClimateTicks(!strictDeterminism && oceanMultiRateTickingEnabled);
         config.setClimateTickFrequency(strictDeterminism ? 1 : climateTickFrequency);
         config.setEnableParallelExecution(!strictDeterminism && parallelExecutionEnabled);
@@ -671,6 +674,27 @@ public class Scenario implements Serializable {
 
     public void setCultureVectorDimensions(int cultureVectorDimensions) {
         this.cultureVectorDimensions = cultureVectorDimensions;
+    }
+
+    public java.util.Map<Integer, String> getCustomTensorNames() {
+        return customTensorNames;
+    }
+
+    public void setCustomTensorNames(java.util.Map<Integer, String> customTensorNames) {
+        this.customTensorNames = customTensorNames != null ? customTensorNames : new java.util.HashMap<>();
+    }
+
+    public String getCustomTensorName(int index) {
+        return customTensorNames != null ? customTensorNames.get(index) : null;
+    }
+
+    public void setCustomTensorName(int index, String name) {
+        if (this.customTensorNames == null) this.customTensorNames = new java.util.HashMap<>();
+        if (name == null || name.isBlank()) {
+            this.customTensorNames.remove(index);
+        } else {
+            this.customTensorNames.put(index, name.trim());
+        }
     }
 
     public double getCulturalDiffusionRate() {

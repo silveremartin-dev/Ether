@@ -29,6 +29,12 @@ public class SimulationPerformanceConfig implements Serializable {
     /** Enable sparse cell skipping (skip updates for empty deep ocean/desert cells without events) */
     private boolean enableSparseCellSkipping = false;
 
+    /** Enable ocean macro aggregation (group deep abyssal cells z < -200m) */
+    private boolean enableOceanMacroAggregation = false;
+
+    /** Enable exclusive coastal navigation (pathfinding focused on coasts & straits) */
+    private boolean enableCoastalNavigationOnly = false;
+
     /** Enable multi-frequency climate ticks (e.g. run climate diffusion every N ticks instead of every tick) */
     private boolean enableMultiFreqClimateTicks = false;
     private int climateTickFrequency = 5;
@@ -53,6 +59,8 @@ public class SimulationPerformanceConfig implements Serializable {
         this.strictDeterminism = strictDeterminism;
         if (strictDeterminism) {
             this.enableSparseCellSkipping = false;
+            this.enableOceanMacroAggregation = false;
+            this.enableCoastalNavigationOnly = false;
             this.enableMultiFreqClimateTicks = false;
             this.enableParallelExecution = false;
             this.enableSpatialRangeTruncation = false;
@@ -70,6 +78,28 @@ public class SimulationPerformanceConfig implements Serializable {
     public void setEnableSparseCellSkipping(boolean enableSparseCellSkipping) {
         this.enableSparseCellSkipping = enableSparseCellSkipping;
         if (enableSparseCellSkipping) {
+            this.strictDeterminism = false;
+        }
+    }
+
+    public boolean isEnableOceanMacroAggregation() {
+        return enableOceanMacroAggregation;
+    }
+
+    public void setEnableOceanMacroAggregation(boolean enableOceanMacroAggregation) {
+        this.enableOceanMacroAggregation = enableOceanMacroAggregation;
+        if (enableOceanMacroAggregation) {
+            this.strictDeterminism = false;
+        }
+    }
+
+    public boolean isEnableCoastalNavigationOnly() {
+        return enableCoastalNavigationOnly;
+    }
+
+    public void setEnableCoastalNavigationOnly(boolean enableCoastalNavigationOnly) {
+        this.enableCoastalNavigationOnly = enableCoastalNavigationOnly;
+        if (enableCoastalNavigationOnly) {
             this.strictDeterminism = false;
         }
     }

@@ -77,21 +77,7 @@ public class CliopatriaPolityVectorReader {
         }
         g.dispose();
 
-        // Regional fallback cores for frontier land cells outside recorded state boundaries (lon, lat, hexColor, sigma)
-        double[][] frontierCores = {
-            {-95.0, 56.0, 0xDC2626, 30.0},  // British Rupert's Land / Northern Canada (#DC2626)
-            {-150.0, 64.0, 0x7C3AED, 25.0}, // Russian America / Alaska (#7C3AED)
-            {-105.0, 45.0, 0x06B6D4, 25.0}, // North American Indigenous Plains (#06B6D4)
-            {-90.0, 68.0, 0x607D8B, 30.0},  // Arctic Inuit / Thule Domain (#607D8B)
-            {-60.0, -5.0, 0x4CAF50, 30.0},  // Amazonian Indigenous Domain (#4CAF50)
-            {133.5, -25.0, 0xC0392B, 30.0}, // Indigenous Australian Domains (#C0392B)
-            {175.0, -39.0, 0xE67E22, 16.0}, // Maori Iwi Domains New Zealand (#E67E22)
-            {28.5, -31.5, 0xF59E0B, 22.0},  // Southern African Kingdoms (Xhosa, Zulu, Khoisan) (#F59E0B)
-            {15.0, -5.0, 0x15803D, 22.0},   // Central African / Congo Domain (#15803D)
-            {120.0, 62.0, 0x7C3AED, 35.0}   // Siberian Russian Frontier (#7C3AED)
-        };
-
-        // Apply elevation coastline mask and fill unassigned inhabited land cells
+        // Apply elevation coastline mask and assign neutral slate-gray to stateless/unclaimed land
         if (elevationMask != null) {
             for (int y = 0; y < height; y++) {
                 double lat = 90.0 - (y + 0.5) / height * 180.0;
@@ -100,26 +86,12 @@ public class CliopatriaPolityVectorReader {
                     int mx = Math.clamp(x * elevationMask.getWidth() / width, 0, elevationMask.getWidth() - 1);
                     int my = Math.clamp(y * elevationMask.getHeight() / height, 0, elevationMask.getHeight() - 1);
                     int land = elevationMask.getRaster().getSample(mx, my, 0);
-                    if (land == 0) {
+                    if (land == 0 || lat < -60.0) {
+                        // Ocean or uninhabited Antarctic ice sheet
                         img.setRGB(x, y, 0x000000);
                     } else if (img.getRGB(x, y) == 0xFF000000 || img.getRGB(x, y) == 0x000000) {
-                        // Unassigned land cell -> fill with closest frontier core using spherical metric
-                        double maxInfl = 0.0;
-                        int bestCol = 0x64748B;
-                        for (double[] fc : frontierCores) {
-                            double dLat = lat - fc[1];
-                            double dLon = (lon - fc[0]) * Math.cos(Math.toRadians(lat));
-                            double d2 = dLat * dLat + dLon * dLon;
-                            double sigma = fc[3];
-                            double infl = Math.exp(-d2 / (2.0 * sigma * sigma));
-                            if (infl > maxInfl) {
-                                maxInfl = infl;
-                                bestCol = (int) fc[2];
-                            }
-                        }
-                        if (maxInfl > 0.01) {
-                            img.setRGB(x, y, bestCol);
-                        }
+                        // Unclaimed / stateless territorial frontier -> clean neutral slate-gray
+                        img.setRGB(x, y, 0x374151);
                     }
                 }
             }
@@ -375,7 +347,8 @@ public class CliopatriaPolityVectorReader {
                     int mx = Math.clamp(x * elevationMask.getWidth() / width, 0, elevationMask.getWidth() - 1);
                     int my = Math.clamp(y * elevationMask.getHeight() / height, 0, elevationMask.getHeight() - 1);
                     int land = elevationMask.getRaster().getSample(mx, my, 0);
-                    if (land == 0) {
+                    double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, targetYear);
+                    if (land == 0 || lat < -60.0 || occWeight <= 0.001) {
                         img.setRGB(x, y, 0x000000);
                         continue;
                     }
@@ -565,7 +538,8 @@ public class CliopatriaPolityVectorReader {
                     int mx = Math.clamp(x * elevationMask.getWidth() / width, 0, elevationMask.getWidth() - 1);
                     int my = Math.clamp(y * elevationMask.getHeight() / height, 0, elevationMask.getHeight() - 1);
                     int land = elevationMask.getRaster().getSample(mx, my, 0);
-                    if (land == 0) {
+                    double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, targetYear);
+                    if (land == 0 || lat < -60.0 || occWeight <= 0.001) {
                         img.setRGB(x, y, 0x000000);
                         continue;
                     }

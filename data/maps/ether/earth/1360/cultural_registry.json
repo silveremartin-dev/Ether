@@ -1,0 +1,2883 @@
+{
+  "epoch": 1360,
+  "era": "Medieval 1360 AD",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch 1360 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "alodia",
+      "colorHex": "#13CF45",
+      "colorRgb": [19, 207, 69],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Alodia",
+        "fr": "Alodia",
+        "de": "Alodia",
+        "es": "Alodia",
+        "zh": "Alodia"
+      },
+      "seshatId": "sd_alodia",
+      "fromYear": 602,
+      "toYear": 1501,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "empire_of_kanem",
+      "colorHex": "#E30E58",
+      "colorRgb": [227, 14, 88],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Empire of Kanem",
+        "fr": "Empire of Kanem",
+        "de": "Empire of Kanem",
+        "es": "Empire of Kanem",
+        "zh": "Empire of Kanem"
+      },
+      "seshatId": "td_kanem",
+      "fromYear": 1072,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_cyprus",
+      "colorHex": "#257EC2",
+      "colorRgb": [37, 126, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Cyprus",
+        "fr": "Kingdom of Cyprus",
+        "de": "Kingdom of Cyprus",
+        "es": "Kingdom of Cyprus",
+        "zh": "Kingdom of Cyprus"
+      },
+      "seshatId": "cy_cyprus_k",
+      "fromYear": 1192,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kathmandu",
+      "colorHex": "#A735DB",
+      "colorRgb": [167, 53, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kathmandu",
+        "fr": "Kathmandu",
+        "de": "Kathmandu",
+        "es": "Kathmandu",
+        "zh": "Kathmandu"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1743,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "namayan",
+      "colorHex": "#BA1697",
+      "colorRgb": [186, 22, 151],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Namayan",
+        "fr": "Namayan",
+        "de": "Namayan",
+        "es": "Namayan",
+        "zh": "Namayan"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "rasulid_dynasty",
+      "colorHex": "#B82A84",
+      "colorRgb": [184, 42, 132],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Rasulid Dynasty",
+        "fr": "Rasulid Dynasty",
+        "de": "Rasulid Dynasty",
+        "es": "Rasulid Dynasty",
+        "zh": "Rasulid Dynasty"
+      },
+      "seshatId": "ye_rasulid_dyn",
+      "fromYear": 1236,
+      "toYear": 1452,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "mali_empire",
+      "colorHex": "#16BAA7",
+      "colorRgb": [22, 186, 167],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Mali Empire",
+        "fr": "Mali Empire",
+        "de": "Mali Empire",
+        "es": "Mali Empire",
+        "zh": "Mali Empire"
+      },
+      "seshatId": "ml_mali_emp",
+      "fromYear": 1241,
+      "toYear": 1414,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_portugal",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Portugal",
+        "fr": "Kingdom of Portugal",
+        "de": "Kingdom of Portugal",
+        "es": "Kingdom of Portugal",
+        "zh": "Kingdom of Portugal"
+      },
+      "seshatId": "pt_portugal_k",
+      "fromYear": 1250,
+      "toYear": 1414,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "mahdids",
+      "colorHex": "#7730E3",
+      "colorRgb": [119, 48, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Mahdids",
+        "fr": "Mahdids",
+        "de": "Mahdids",
+        "es": "Mahdids",
+        "zh": "Mahdids"
+      },
+      "seshatId": "",
+      "fromYear": 1260,
+      "toYear": 1474,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "county_of_savoy",
+      "colorHex": "#C711D1",
+      "colorRgb": [199, 17, 209],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Savoy",
+        "fr": "County of Savoy",
+        "de": "County of Savoy",
+        "es": "County of Savoy",
+        "zh": "County of Savoy"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1260,
+      "toYear": 1384,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "later_mayan_city-states",
+      "colorHex": "#DE33D8",
+      "colorRgb": [222, 51, 216],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Later Mayan City-States",
+        "fr": "Later Mayan City-States",
+        "de": "Later Mayan City-States",
+        "es": "Later Mayan City-States",
+        "zh": "Later Mayan City-States"
+      },
+      "seshatId": "",
+      "fromYear": 1260,
+      "toYear": 1428,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "bahrani_dynasty",
+      "colorHex": "#CA20E8",
+      "colorRgb": [202, 32, 232],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Bahrani Dynasty",
+        "fr": "Bahrani Dynasty",
+        "de": "Bahrani Dynasty",
+        "es": "Bahrani Dynasty",
+        "zh": "Bahrani Dynasty"
+      },
+      "seshatId": "",
+      "fromYear": 1260,
+      "toYear": 1439,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "republic_of_pisa",
+      "colorHex": "#3C30E3",
+      "colorRgb": [60, 48, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Pisa",
+        "fr": "Republic of Pisa",
+        "de": "Republic of Pisa",
+        "es": "Republic of Pisa",
+        "zh": "Republic of Pisa"
+      },
+      "seshatId": "",
+      "fromYear": 1260,
+      "toYear": 1394,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "duchy_of_styria",
+      "colorHex": "#1BB367",
+      "colorRgb": [27, 179, 103],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Styria",
+        "fr": "Duchy of Styria",
+        "de": "Duchy of Styria",
+        "es": "Duchy of Styria",
+        "zh": "Duchy of Styria"
+      },
+      "seshatId": "",
+      "fromYear": 1272,
+      "toYear": 1421,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "principality_of_orange",
+      "colorHex": "#23C436",
+      "colorRgb": [35, 196, 54],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Orange",
+        "fr": "Principality of Orange",
+        "de": "Principality of Orange",
+        "es": "Principality of Orange",
+        "zh": "Principality of Orange"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1272,
+      "toYear": 1458,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "republic_of_florence",
+      "colorHex": "#2487E3",
+      "colorRgb": [36, 135, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Florence",
+        "fr": "Republic of Florence",
+        "de": "Republic of Florence",
+        "es": "Republic of Florence",
+        "zh": "Republic of Florence"
+      },
+      "seshatId": "it_florence_rep",
+      "fromYear": 1279,
+      "toYear": 1401,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "pskov_republic",
+      "colorHex": "#E0AF31",
+      "colorRgb": [224, 175, 49],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Pskov Republic",
+        "fr": "Pskov Republic",
+        "de": "Pskov Republic",
+        "es": "Pskov Republic",
+        "zh": "Pskov Republic"
+      },
+      "seshatId": "",
+      "fromYear": 1285,
+      "toYear": 1421,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_naples",
+      "colorHex": "#B45309",
+      "colorRgb": [180, 83, 9],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Naples",
+        "fr": "Kingdom of Naples",
+        "de": "Kingdom of Naples",
+        "es": "Kingdom of Naples",
+        "zh": "Kingdom of Naples"
+      },
+      "seshatId": "it_naples_k",
+      "fromYear": 1285,
+      "toYear": 1449,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "cuzco",
+      "colorHex": "#B57310",
+      "colorRgb": [181, 115, 16],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Cuzco",
+        "fr": "Cuzco",
+        "de": "Cuzco",
+        "es": "Cuzco",
+        "zh": "Cuzco"
+      },
+      "seshatId": "pe_cuzco_6",
+      "fromYear": 1294,
+      "toYear": 1401,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "nizhny_novgorod",
+      "colorHex": "#27CF38",
+      "colorRgb": [39, 207, 56],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Nizhny Novgorod",
+        "fr": "Nizhny Novgorod",
+        "de": "Nizhny Novgorod",
+        "es": "Nizhny Novgorod",
+        "zh": "Nizhny Novgorod"
+      },
+      "seshatId": "",
+      "fromYear": 1294,
+      "toYear": 1384,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "makuria",
+      "colorHex": "#28D3ED",
+      "colorRgb": [40, 211, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Makuria",
+        "fr": "Makuria",
+        "de": "Makuria",
+        "es": "Makuria",
+        "zh": "Makuria"
+      },
+      "seshatId": "",
+      "fromYear": 1294,
+      "toYear": 1406,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "hanthawaddy_kingdom",
+      "colorHex": "#D9213F",
+      "colorRgb": [217, 33, 63],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Hanthawaddy Kingdom",
+        "fr": "Hanthawaddy Kingdom",
+        "de": "Hanthawaddy Kingdom",
+        "es": "Hanthawaddy Kingdom",
+        "zh": "Hanthawaddy Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1294,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sunda_kingdom",
+      "colorHex": "#1AC4AE",
+      "colorRgb": [26, 196, 174],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sunda Kingdom",
+        "fr": "Sunda Kingdom",
+        "de": "Sunda Kingdom",
+        "es": "Sunda Kingdom",
+        "zh": "Sunda Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1294,
+      "toYear": 1474,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_kedah",
+      "colorHex": "#67C718",
+      "colorRgb": [103, 199, 24],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Kedah",
+        "fr": "Sultanate of Kedah",
+        "de": "Sultanate of Kedah",
+        "es": "Sultanate of Kedah",
+        "zh": "Sultanate of Kedah"
+      },
+      "seshatId": "",
+      "fromYear": 1294,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "house_of_luxembourg",
+      "colorHex": "#115AD1",
+      "colorRgb": [17, 90, 209],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "House of Luxembourg",
+        "fr": "House of Luxembourg",
+        "de": "House of Luxembourg",
+        "es": "House of Luxembourg",
+        "zh": "House of Luxembourg"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1294,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_singapura",
+      "colorHex": "#155EBD",
+      "colorRgb": [21, 94, 189],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Singapura",
+        "fr": "Kingdom of Singapura",
+        "de": "Kingdom of Singapura",
+        "es": "Kingdom of Singapura",
+        "zh": "Kingdom of Singapura"
+      },
+      "seshatId": "",
+      "fromYear": 1305,
+      "toYear": 1394,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "michoac_n",
+      "colorHex": "#16BA3A",
+      "colorRgb": [22, 186, 58],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Michoacán",
+        "fr": "Michoacán",
+        "de": "Michoacán",
+        "es": "Michoacán",
+        "zh": "Michoacán"
+      },
+      "seshatId": "",
+      "fromYear": 1305,
+      "toYear": 1428,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "beylik_of_menteshe",
+      "colorHex": "#70E319",
+      "colorRgb": [112, 227, 25],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Beylik of Menteshe",
+        "fr": "Beylik of Menteshe",
+        "de": "Beylik of Menteshe",
+        "es": "Beylik of Menteshe",
+        "zh": "Beylik of Menteshe"
+      },
+      "seshatId": "",
+      "fromYear": 1305,
+      "toYear": 1406,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_sicily",
+      "colorHex": "#A91BC2",
+      "colorRgb": [169, 27, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Sicily",
+        "fr": "Kingdom of Sicily",
+        "de": "Kingdom of Sicily",
+        "es": "Kingdom of Sicily",
+        "zh": "Kingdom of Sicily"
+      },
+      "seshatId": "",
+      "fromYear": 1305,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "county_of_brabant",
+      "colorHex": "#10C47F",
+      "colorRgb": [16, 196, 127],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Brabant",
+        "fr": "County of Brabant",
+        "de": "County of Brabant",
+        "es": "County of Brabant",
+        "zh": "County of Brabant"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1305,
+      "toYear": 1401,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ng__dynasty",
+      "colorHex": "#2447E3",
+      "colorRgb": [36, 71, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ngô Dynasty",
+        "fr": "Ngô Dynasty",
+        "de": "Ngô Dynasty",
+        "es": "Ngô Dynasty",
+        "zh": "Ngô Dynasty"
+      },
+      "seshatId": "",
+      "fromYear": 1314,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "nanzan",
+      "colorHex": "#70D11B",
+      "colorRgb": [112, 209, 27],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Nanzan",
+        "fr": "Nanzan",
+        "de": "Nanzan",
+        "es": "Nanzan",
+        "zh": "Nanzan"
+      },
+      "seshatId": "",
+      "fromYear": 1314,
+      "toYear": 1394,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ch_zan",
+      "colorHex": "#DE841D",
+      "colorRgb": [222, 132, 29],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chüzan",
+        "fr": "Chüzan",
+        "de": "Chüzan",
+        "es": "Chüzan",
+        "zh": "Chüzan"
+      },
+      "seshatId": "",
+      "fromYear": 1314,
+      "toYear": 1401,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "hokuzan",
+      "colorHex": "#7DD921",
+      "colorRgb": [125, 217, 33],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Hokuzan",
+        "fr": "Hokuzan",
+        "de": "Hokuzan",
+        "es": "Hokuzan",
+        "zh": "Hokuzan"
+      },
+      "seshatId": "",
+      "fromYear": 1314,
+      "toYear": 1414,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "papal_states",
+      "colorHex": "#EAB308",
+      "colorRgb": [234, 179, 8],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Papal States",
+        "fr": "Papal States",
+        "de": "Papal States",
+        "es": "Papal States",
+        "zh": "Papal States"
+      },
+      "seshatId": "it_papal_state_2",
+      "fromYear": 1314,
+      "toYear": 1462,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_scotland",
+      "colorHex": "#1089B5",
+      "colorRgb": [16, 137, 181],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Scotland",
+        "fr": "Kingdom of Scotland",
+        "de": "Kingdom of Scotland",
+        "es": "Kingdom of Scotland",
+        "zh": "Kingdom of Scotland"
+      },
+      "seshatId": "gb_scotland_k",
+      "fromYear": 1314,
+      "toYear": 1474,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ch_mpa",
+      "colorHex": "#2DE319",
+      "colorRgb": [45, 227, 25],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chámpa",
+        "fr": "Chámpa",
+        "de": "Chámpa",
+        "es": "Chámpa",
+        "zh": "Chámpa"
+      },
+      "seshatId": "",
+      "fromYear": 1314,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "texcoco",
+      "colorHex": "#A123C4",
+      "colorRgb": [161, 35, 196],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Texcoco",
+        "fr": "Texcoco",
+        "de": "Texcoco",
+        "es": "Texcoco",
+        "zh": "Texcoco"
+      },
+      "seshatId": "",
+      "fromYear": 1326,
+      "toYear": 1421,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "tenochtitlan",
+      "colorHex": "#B56A19",
+      "colorRgb": [181, 106, 25],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tenochtitlan",
+        "fr": "Tenochtitlan",
+        "de": "Tenochtitlan",
+        "es": "Tenochtitlan",
+        "zh": "Tenochtitlan"
+      },
+      "seshatId": "mx_basin_of_mexico_10",
+      "fromYear": 1326,
+      "toYear": 1421,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sagaing_kingdom",
+      "colorHex": "#1B74E0",
+      "colorRgb": [27, 116, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sagaing Kingdom",
+        "fr": "Sagaing Kingdom",
+        "de": "Sagaing Kingdom",
+        "es": "Sagaing Kingdom",
+        "zh": "Sagaing Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1326,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "beylik_of_saruhan",
+      "colorHex": "#B59E19",
+      "colorRgb": [181, 158, 25],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Beylik of Saruhan",
+        "fr": "Beylik of Saruhan",
+        "de": "Beylik of Saruhan",
+        "es": "Beylik of Saruhan",
+        "zh": "Beylik of Saruhan"
+      },
+      "seshatId": "",
+      "fromYear": 1326,
+      "toYear": 1406,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "beylik_of_aydin",
+      "colorHex": "#2482D4",
+      "colorRgb": [36, 130, 212],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Beylik of Aydin",
+        "fr": "Beylik of Aydin",
+        "de": "Beylik of Aydin",
+        "es": "Beylik of Aydin",
+        "zh": "Beylik of Aydin"
+      },
+      "seshatId": "",
+      "fromYear": 1326,
+      "toYear": 1414,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "shan_states",
+      "colorHex": "#BF3030",
+      "colorRgb": [191, 48, 48],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Shan States",
+        "fr": "Shan States",
+        "de": "Shan States",
+        "es": "Shan States",
+        "zh": "Shan States"
+      },
+      "seshatId": "",
+      "fromYear": 1326,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_pinya",
+      "colorHex": "#AA20C9",
+      "colorRgb": [170, 32, 201],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Pinya",
+        "fr": "Kingdom of Pinya",
+        "de": "Kingdom of Pinya",
+        "es": "Kingdom of Pinya",
+        "zh": "Kingdom of Pinya"
+      },
+      "seshatId": "",
+      "fromYear": 1326,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "principality_of_wallachia",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Wallachia",
+        "fr": "Principality of Wallachia",
+        "de": "Principality of Wallachia",
+        "es": "Principality of Wallachia",
+        "zh": "Principality of Wallachia"
+      },
+      "seshatId": "ro_wallachia_principality_1",
+      "fromYear": 1333,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "county_of_bl_is",
+      "colorHex": "#0EF0A1",
+      "colorRgb": [14, 240, 161],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Blôis",
+        "fr": "County of Blôis",
+        "de": "County of Blôis",
+        "es": "County of Blôis",
+        "zh": "County of Blôis"
+      },
+      "seshatId": "fr_valois_k_1",
+      "fromYear": 1333,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ifat_sultanate",
+      "colorHex": "#2C8BC7",
+      "colorRgb": [44, 139, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ifat Sultanate",
+        "fr": "Ifat Sultanate",
+        "de": "Ifat Sultanate",
+        "es": "Ifat Sultanate",
+        "zh": "Ifat Sultanate"
+      },
+      "seshatId": "",
+      "fromYear": 1333,
+      "toYear": 1406,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ethiopian_empire",
+      "colorHex": "#84CC16",
+      "colorRgb": [132, 204, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ethiopian Empire",
+        "fr": "Ethiopian Empire",
+        "de": "Ethiopian Empire",
+        "es": "Ethiopian Empire",
+        "zh": "Ethiopian Empire"
+      },
+      "seshatId": "et_ethiopian_k",
+      "fromYear": 1333,
+      "toYear": 1414,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "duchy_of_aquitaine",
+      "colorHex": "#32CF69",
+      "colorRgb": [50, 207, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Aquitaine",
+        "fr": "Duchy of Aquitaine",
+        "de": "Duchy of Aquitaine",
+        "es": "Duchy of Aquitaine",
+        "zh": "Duchy of Aquitaine"
+      },
+      "seshatId": "fr_valois_k_1",
+      "fromYear": 1333,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "county_of_flanders",
+      "colorHex": "#D11BAD",
+      "colorRgb": [209, 27, 173],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Flanders",
+        "fr": "County of Flanders",
+        "de": "County of Flanders",
+        "es": "County of Flanders",
+        "zh": "County of Flanders"
+      },
+      "seshatId": "fr_valois_k_1",
+      "fromYear": 1333,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "principality_of_theodoro",
+      "colorHex": "#1CC0ED",
+      "colorRgb": [28, 192, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Theodoro",
+        "fr": "Principality of Theodoro",
+        "de": "Principality of Theodoro",
+        "es": "Principality of Theodoro",
+        "zh": "Principality of Theodoro"
+      },
+      "seshatId": "",
+      "fromYear": 1333,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "county_of_foix",
+      "colorHex": "#DE7A28",
+      "colorRgb": [222, 122, 40],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Foix",
+        "fr": "County of Foix",
+        "de": "County of Foix",
+        "es": "County of Foix",
+        "zh": "County of Foix"
+      },
+      "seshatId": "fr_valois_k_1",
+      "fromYear": 1333,
+      "toYear": 1406,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "banate_of_bosnia",
+      "colorHex": "#1B70D1",
+      "colorRgb": [27, 112, 209],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Banate of Bosnia",
+        "fr": "Banate of Bosnia",
+        "de": "Banate of Bosnia",
+        "es": "Banate of Bosnia",
+        "zh": "Banate of Bosnia"
+      },
+      "seshatId": "ba_bosnia_banate",
+      "fromYear": 1333,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_navarre",
+      "colorHex": "#8014CC",
+      "colorRgb": [128, 20, 204],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Navarre",
+        "fr": "Kingdom of Navarre",
+        "de": "Kingdom of Navarre",
+        "es": "Kingdom of Navarre",
+        "zh": "Kingdom of Navarre"
+      },
+      "seshatId": "",
+      "fromYear": 1333,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "county_of_p_rigord",
+      "colorHex": "#4BD126",
+      "colorRgb": [75, 209, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Périgord",
+        "fr": "County of Périgord",
+        "de": "County of Périgord",
+        "es": "County of Périgord",
+        "zh": "County of Périgord"
+      },
+      "seshatId": "fr_valois_k_1",
+      "fromYear": 1333,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "county_of_armagnac",
+      "colorHex": "#ABD419",
+      "colorRgb": [171, 212, 25],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Armagnac",
+        "fr": "County of Armagnac",
+        "de": "County of Armagnac",
+        "es": "County of Armagnac",
+        "zh": "County of Armagnac"
+      },
+      "seshatId": "fr_valois_k_1",
+      "fromYear": 1333,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "capetian_house_of_anjou",
+      "colorHex": "#7538E8",
+      "colorRgb": [117, 56, 232],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Capetian House of Anjou",
+        "fr": "Capetian House of Anjou",
+        "de": "Capetian House of Anjou",
+        "es": "Capetian House of Anjou",
+        "zh": "Capetian House of Anjou"
+      },
+      "seshatId": "fr_valois_k_1",
+      "fromYear": 1333,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_arles",
+      "colorHex": "#22BBD6",
+      "colorRgb": [34, 187, 214],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Arles",
+        "fr": "Kingdom of Arles",
+        "de": "Kingdom of Arles",
+        "es": "Kingdom of Arles",
+        "zh": "Kingdom of Arles"
+      },
+      "seshatId": "fr_valois_k_1",
+      "fromYear": 1333,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "armenian_kingdom_of_cilicia",
+      "colorHex": "#99E62E",
+      "colorRgb": [153, 230, 46],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Armenian Kingdom of Cilicia",
+        "fr": "Armenian Kingdom of Cilicia",
+        "de": "Armenian Kingdom of Cilicia",
+        "es": "Armenian Kingdom of Cilicia",
+        "zh": "Armenian Kingdom of Cilicia"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "lan_na_kingdom",
+      "colorHex": "#D9DB35",
+      "colorRgb": [217, 219, 53],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Lan Na Kingdom",
+        "fr": "Lan Na Kingdom",
+        "de": "Lan Na Kingdom",
+        "es": "Lan Na Kingdom",
+        "zh": "Lan Na Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "shirvan",
+      "colorHex": "#B2C423",
+      "colorRgb": [178, 196, 35],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Shirvan",
+        "fr": "Shirvan",
+        "de": "Shirvan",
+        "es": "Shirvan",
+        "zh": "Shirvan"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1384,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "republic_of_venice",
+      "colorHex": "#14CCBD",
+      "colorRgb": [20, 204, 189],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Venice",
+        "fr": "Republic of Venice",
+        "de": "Republic of Venice",
+        "es": "Republic of Venice",
+        "zh": "Republic of Venice"
+      },
+      "seshatId": "it_venetian_rep_3",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "isle_of_man",
+      "colorHex": "#8B0FD4",
+      "colorRgb": [139, 15, 212],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Isle of Man",
+        "fr": "Isle of Man",
+        "de": "Isle of Man",
+        "es": "Isle of Man",
+        "zh": "Isle of Man"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1394,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "county_of_ampuria",
+      "colorHex": "#4ECF27",
+      "colorRgb": [78, 207, 39],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Ampuria",
+        "fr": "County of Ampuria",
+        "de": "County of Ampuria",
+        "es": "County of Ampuria",
+        "zh": "County of Ampuria"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1394,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "crown_of_aragon",
+      "colorHex": "#2A8EDB",
+      "colorRgb": [42, 142, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Crown of Aragon",
+        "fr": "Crown of Aragon",
+        "de": "Crown of Aragon",
+        "es": "Crown of Aragon",
+        "zh": "Crown of Aragon"
+      },
+      "seshatId": "es_aragon_crown",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "tver",
+      "colorHex": "#84D126",
+      "colorRgb": [132, 209, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tver",
+        "fr": "Tver",
+        "de": "Tver",
+        "es": "Tver",
+        "zh": "Tver"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1394,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "beylik_of_isfendiyar",
+      "colorHex": "#3F0FB8",
+      "colorRgb": [63, 15, 184],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Beylik of Isfendiyar",
+        "fr": "Beylik of Isfendiyar",
+        "de": "Beylik of Isfendiyar",
+        "es": "Beylik of Isfendiyar",
+        "zh": "Beylik of Isfendiyar"
+      },
+      "seshatId": "tr_candar_bey",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_sweden",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Sweden",
+        "fr": "Kingdom of Sweden",
+        "de": "Kingdom of Sweden",
+        "es": "Kingdom of Sweden",
+        "zh": "Kingdom of Sweden"
+      },
+      "seshatId": "sv_swedish_k_1",
+      "fromYear": 1344,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "principality_of_smolensk",
+      "colorHex": "#B52E2B",
+      "colorRgb": [181, 46, 43],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Smolensk",
+        "fr": "Principality of Smolensk",
+        "de": "Principality of Smolensk",
+        "es": "Principality of Smolensk",
+        "zh": "Principality of Smolensk"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "chimu_empire",
+      "colorHex": "#39E639",
+      "colorRgb": [57, 230, 57],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chimu Empire",
+        "fr": "Chimu Empire",
+        "de": "Chimu Empire",
+        "es": "Chimu Empire",
+        "zh": "Chimu Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "duchy_of_brittany",
+      "colorHex": "#0D10D6",
+      "colorRgb": [13, 16, 214],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Brittany",
+        "fr": "Duchy of Brittany",
+        "de": "Duchy of Brittany",
+        "es": "Duchy of Brittany",
+        "zh": "Duchy of Brittany"
+      },
+      "seshatId": "fr_valois_k_1",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "novgorod_republic",
+      "colorHex": "#2DBFC4",
+      "colorRgb": [45, 191, 196],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Novgorod Republic",
+        "fr": "Novgorod Republic",
+        "de": "Novgorod Republic",
+        "es": "Novgorod Republic",
+        "zh": "Novgorod Republic"
+      },
+      "seshatId": "ru_novgorod_rep",
+      "fromYear": 1344,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "house_of_ascania",
+      "colorHex": "#8F17E6",
+      "colorRgb": [143, 23, 230],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "House of Ascania",
+        "fr": "House of Ascania",
+        "de": "House of Ascania",
+        "es": "House of Ascania",
+        "zh": "House of Ascania"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "patriarchate_of_aquileia",
+      "colorHex": "#39E6AC",
+      "colorRgb": [57, 230, 172],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Patriarchate of Aquileia",
+        "fr": "Patriarchate of Aquileia",
+        "de": "Patriarchate of Aquileia",
+        "es": "Patriarchate of Aquileia",
+        "zh": "Patriarchate of Aquileia"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_georgia",
+      "colorHex": "#84CC16",
+      "colorRgb": [132, 204, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Georgia",
+        "fr": "Kingdom of Georgia",
+        "de": "Kingdom of Georgia",
+        "es": "Kingdom of Georgia",
+        "zh": "Kingdom of Georgia"
+      },
+      "seshatId": "ge_georgia_k_3",
+      "fromYear": 1344,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ashikaga_shogunate",
+      "colorHex": "#B3A512",
+      "colorRgb": [179, 165, 18],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ashikaga Shogunate",
+        "fr": "Ashikaga Shogunate",
+        "de": "Ashikaga Shogunate",
+        "es": "Ashikaga Shogunate",
+        "zh": "Ashikaga Shogunate"
+      },
+      "seshatId": "jp_ashikaga",
+      "fromYear": 1344,
+      "toYear": 1458,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "county_of_urgell",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Urgell",
+        "fr": "County of Urgell",
+        "de": "County of Urgell",
+        "es": "County of Urgell",
+        "zh": "County of Urgell"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1515,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "principality_of_vladimir-suzdal",
+      "colorHex": "#20B0C9",
+      "colorRgb": [32, 176, 201],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Vladimir-Suzdal",
+        "fr": "Principality of Vladimir-Suzdal",
+        "de": "Principality of Vladimir-Suzdal",
+        "es": "Principality of Vladimir-Suzdal",
+        "zh": "Principality of Vladimir-Suzdal"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "house_of_habsburg",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "House of Habsburg",
+        "fr": "House of Habsburg",
+        "de": "House of Habsburg",
+        "es": "House of Habsburg",
+        "zh": "House of Habsburg"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "empire_of_trebizond",
+      "colorHex": "#1421DB",
+      "colorRgb": [20, 33, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Empire of Trebizond",
+        "fr": "Empire of Trebizond",
+        "de": "Empire of Trebizond",
+        "es": "Empire of Trebizond",
+        "zh": "Empire of Trebizond"
+      },
+      "seshatId": "tr_trebizond_emp",
+      "fromYear": 1344,
+      "toYear": 1384,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "jalayirid_sultanate",
+      "colorHex": "#14DB8B",
+      "colorRgb": [20, 219, 139],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Jalayirid Sultanate",
+        "fr": "Jalayirid Sultanate",
+        "de": "Jalayirid Sultanate",
+        "es": "Jalayirid Sultanate",
+        "zh": "Jalayirid Sultanate"
+      },
+      "seshatId": "ir_jayarid_khanate",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "grand_principality_of_moscow",
+      "colorHex": "#7818C7",
+      "colorRgb": [120, 24, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Grand Principality of Moscow",
+        "fr": "Grand Principality of Moscow",
+        "de": "Grand Principality of Moscow",
+        "es": "Grand Principality of Moscow",
+        "zh": "Grand Principality of Moscow"
+      },
+      "seshatId": "ru_moskva_mongolian_period",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "beylik_of_dulkadir",
+      "colorHex": "#19C410",
+      "colorRgb": [25, 196, 16],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Beylik of Dulkadir",
+        "fr": "Beylik of Dulkadir",
+        "de": "Beylik of Dulkadir",
+        "es": "Beylik of Dulkadir",
+        "zh": "Beylik of Dulkadir"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "giudicato_of_arborea",
+      "colorHex": "#18D6C3",
+      "colorRgb": [24, 214, 195],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Giudicato of Arborea",
+        "fr": "Giudicato of Arborea",
+        "de": "Giudicato of Arborea",
+        "es": "Giudicato of Arborea",
+        "zh": "Giudicato of Arborea"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "old_kingdom_of_norway",
+      "colorHex": "#D419AB",
+      "colorRgb": [212, 25, 171],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Old Kingdom of Norway",
+        "fr": "Old Kingdom of Norway",
+        "de": "Old Kingdom of Norway",
+        "es": "Old Kingdom of Norway",
+        "zh": "Old Kingdom of Norway"
+      },
+      "seshatId": "no_norway_k_2",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "muzaffarids",
+      "colorHex": "#712DD6",
+      "colorRgb": [113, 45, 214],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Muzaffarids",
+        "fr": "Muzaffarids",
+        "de": "Muzaffarids",
+        "es": "Muzaffarids",
+        "zh": "Muzaffarids"
+      },
+      "seshatId": "",
+      "fromYear": 1344,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "yuan_dynasty",
+      "colorHex": "#61CC14",
+      "colorRgb": [97, 204, 20],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Yuan Dynasty",
+        "fr": "Yuan Dynasty",
+        "de": "Yuan Dynasty",
+        "es": "Yuan Dynasty",
+        "zh": "Yuan Dynasty"
+      },
+      "seshatId": "cn_yuan_dyn",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "grand_duchy_of_lithuania",
+      "colorHex": "#2BD974",
+      "colorRgb": [43, 217, 116],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Grand Duchy of Lithuania",
+        "fr": "Grand Duchy of Lithuania",
+        "de": "Grand Duchy of Lithuania",
+        "es": "Grand Duchy of Lithuania",
+        "zh": "Grand Duchy of Lithuania"
+      },
+      "seshatId": "lt_lithuania_grand_duc",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "emirate_of_granada",
+      "colorHex": "#E815B0",
+      "colorRgb": [232, 21, 176],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Emirate of Granada",
+        "fr": "Emirate of Granada",
+        "de": "Emirate of Granada",
+        "es": "Emirate of Granada",
+        "zh": "Emirate of Granada"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_france",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of France",
+        "fr": "Kingdom of France",
+        "de": "Kingdom of France",
+        "es": "Kingdom of France",
+        "zh": "Kingdom of France"
+      },
+      "seshatId": "fr_valois_k_1",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_england",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of England",
+        "fr": "Kingdom of England",
+        "de": "Kingdom of England",
+        "es": "Kingdom of England",
+        "zh": "Kingdom of England"
+      },
+      "seshatId": "gb_england_plantagenet",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "holy_roman_empire_minor_states",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Holy Roman Empire Minor States",
+        "fr": "Holy Roman Empire Minor States",
+        "de": "Holy Roman Empire Minor States",
+        "es": "Holy Roman Empire Minor States",
+        "zh": "Holy Roman Empire Minor States"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "serbian_empire",
+      "colorHex": "#E37730",
+      "colorRgb": [227, 119, 48],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Serbian Empire",
+        "fr": "Serbian Empire",
+        "de": "Serbian Empire",
+        "es": "Serbian Empire",
+        "zh": "Serbian Empire"
+      },
+      "seshatId": "rs_serbia_k",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_personal_union_of_kingdom_of_sweden_with_old_kingdom_of_norway_",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Personal union of Kingdom of Sweden with Old Kingdom of Norway)",
+        "fr": "(Personal union of Kingdom of Sweden with Old Kingdom of Norway)",
+        "de": "(Personal union of Kingdom of Sweden with Old Kingdom of Norway)",
+        "es": "(Personal union of Kingdom of Sweden with Old Kingdom of Norway)",
+        "zh": "(Personal union of Kingdom of Sweden with Old Kingdom of Norway)"
+      },
+      "seshatId": "sv_swedish_k_1;no_norway_k_2",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "germiyanids",
+      "colorHex": "#105CE0",
+      "colorRgb": [16, 92, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Germiyanids",
+        "fr": "Germiyanids",
+        "de": "Germiyanids",
+        "es": "Germiyanids",
+        "zh": "Germiyanids"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "comtat_venaissin",
+      "colorHex": "#A41DBF",
+      "colorRgb": [164, 29, 191],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Comtat Venaissin",
+        "fr": "Comtat Venaissin",
+        "de": "Comtat Venaissin",
+        "es": "Comtat Venaissin",
+        "zh": "Comtat Venaissin"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1384,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_allegiance_of_golden_horde_to_yuan_dynasty_",
+      "colorHex": "#33D11B",
+      "colorRgb": [51, 209, 27],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Allegiance of Golden Horde to Yuan Dynasty)",
+        "fr": "(Allegiance of Golden Horde to Yuan Dynasty)",
+        "de": "(Allegiance of Golden Horde to Yuan Dynasty)",
+        "es": "(Allegiance of Golden Horde to Yuan Dynasty)",
+        "zh": "(Allegiance of Golden Horde to Yuan Dynasty)"
+      },
+      "seshatId": "ru_golden_horde;cn_yuan_dyn",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sind-samma_dynasty",
+      "colorHex": "#7DD921",
+      "colorRgb": [125, 217, 33],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sind-Samma Dynasty",
+        "fr": "Sind-Samma Dynasty",
+        "de": "Sind-Samma Dynasty",
+        "es": "Sind-Samma Dynasty",
+        "zh": "Sind-Samma Dynasty"
+      },
+      "seshatId": "pk_samma_dyn",
+      "fromYear": 1352,
+      "toYear": 1520,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "electorate_of_trier",
+      "colorHex": "#12DED4",
+      "colorRgb": [18, 222, 212],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Electorate of Trier",
+        "fr": "Electorate of Trier",
+        "de": "Electorate of Trier",
+        "es": "Electorate of Trier",
+        "zh": "Electorate of Trier"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "duchy_of_bavaria",
+      "colorHex": "#38BDF8",
+      "colorRgb": [56, 189, 248],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Bavaria",
+        "fr": "Duchy of Bavaria",
+        "de": "Duchy of Bavaria",
+        "es": "Duchy of Bavaria",
+        "zh": "Duchy of Bavaria"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_bohemia",
+      "colorHex": "#CB26F0",
+      "colorRgb": [203, 38, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Bohemia",
+        "fr": "Kingdom of Bohemia",
+        "de": "Kingdom of Bohemia",
+        "es": "Kingdom of Bohemia",
+        "zh": "Kingdom of Bohemia"
+      },
+      "seshatId": "cz_bohemian_k_2",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "house_of_bourbon",
+      "colorHex": "#B56222",
+      "colorRgb": [181, 98, 34],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "House of Bourbon",
+        "fr": "House of Bourbon",
+        "de": "House of Bourbon",
+        "es": "House of Bourbon",
+        "zh": "House of Bourbon"
+      },
+      "seshatId": "fr_valois_k_1",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "catalan_company",
+      "colorHex": "#29CCA3",
+      "colorRgb": [41, 204, 163],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Catalan Company",
+        "fr": "Catalan Company",
+        "de": "Catalan Company",
+        "es": "Catalan Company",
+        "zh": "Catalan Company"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "byzantine_empire",
+      "colorHex": "#15E8DA",
+      "colorRgb": [21, 232, 218],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Byzantine Empire",
+        "fr": "Byzantine Empire",
+        "de": "Byzantine Empire",
+        "es": "Byzantine Empire",
+        "zh": "Byzantine Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ceylon",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ceylon",
+        "fr": "Ceylon",
+        "de": "Ceylon",
+        "es": "Ceylon",
+        "zh": "Ceylon"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1501,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ayutthaya_kingdom",
+      "colorHex": "#DE3D28",
+      "colorRgb": [222, 61, 40],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ayutthaya Kingdom",
+        "fr": "Ayutthaya Kingdom",
+        "de": "Ayutthaya Kingdom",
+        "es": "Ayutthaya Kingdom",
+        "zh": "Ayutthaya Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_kingdom_of_poland_",
+      "colorHex": "#3326BF",
+      "colorRgb": [51, 38, 191],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Kingdom of Poland)",
+        "fr": "(Kingdom of Poland)",
+        "de": "(Kingdom of Poland)",
+        "es": "(Kingdom of Poland)",
+        "zh": "(Kingdom of Poland)"
+      },
+      "seshatId": "pl_piast_dyn_2",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "lavo_kingdom",
+      "colorHex": "#3469ED",
+      "colorRgb": [52, 105, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Lavo Kingdom",
+        "fr": "Lavo Kingdom",
+        "de": "Lavo Kingdom",
+        "es": "Lavo Kingdom",
+        "zh": "Lavo Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_kingdom_of_england_",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Kingdom of England)",
+        "fr": "(Kingdom of England)",
+        "de": "(Kingdom of England)",
+        "es": "(Kingdom of England)",
+        "zh": "(Kingdom of England)"
+      },
+      "seshatId": "gb_england_plantagenet",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "vijayanagara_empire",
+      "colorHex": "#49C225",
+      "colorRgb": [73, 194, 37],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Vijayanagara Empire",
+        "fr": "Vijayanagara Empire",
+        "de": "Vijayanagara Empire",
+        "es": "Vijayanagara Empire",
+        "zh": "Vijayanagara Empire"
+      },
+      "seshatId": "in_vijayanagara_emp",
+      "fromYear": 1352,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "principality_of_valona",
+      "colorHex": "#C4972D",
+      "colorRgb": [196, 151, 45],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Valona",
+        "fr": "Principality of Valona",
+        "de": "Principality of Valona",
+        "es": "Principality of Valona",
+        "zh": "Principality of Valona"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "crown_of_castile",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Crown of Castile",
+        "fr": "Crown of Castile",
+        "de": "Crown of Castile",
+        "es": "Crown of Castile",
+        "zh": "Crown of Castile"
+      },
+      "seshatId": "es_castile_crown",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "jaffna_kingdom",
+      "colorHex": "#3D2EE6",
+      "colorRgb": [61, 46, 230],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Jaffna kingdom",
+        "fr": "Jaffna kingdom",
+        "de": "Jaffna kingdom",
+        "es": "Jaffna kingdom",
+        "zh": "Jaffna kingdom"
+      },
+      "seshatId": "sl_jaffa_k",
+      "fromYear": 1352,
+      "toYear": 1587,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_hungary",
+      "colorHex": "#1A30F0",
+      "colorRgb": [26, 48, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Hungary",
+        "fr": "Kingdom of Hungary",
+        "de": "Kingdom of Hungary",
+        "es": "Kingdom of Hungary",
+        "zh": "Kingdom of Hungary"
+      },
+      "seshatId": "hu_later_dyn",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_allegiance_of_swiss_confederation_to_holy_roman_empire_",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Allegiance of Swiss Confederation to Holy Roman Empire)",
+        "fr": "(Allegiance of Swiss Confederation to Holy Roman Empire)",
+        "de": "(Allegiance of Swiss Confederation to Holy Roman Empire)",
+        "es": "(Allegiance of Swiss Confederation to Holy Roman Empire)",
+        "zh": "(Allegiance of Swiss Confederation to Holy Roman Empire)"
+      },
+      "seshatId": "ch_swiss_conf_1;de_empire_3",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sukhothai_kingdom",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sukhothai Kingdom",
+        "fr": "Sukhothai Kingdom",
+        "de": "Sukhothai Kingdom",
+        "es": "Sukhothai Kingdom",
+        "zh": "Sukhothai Kingdom"
+      },
+      "seshatId": "th_sukhotai",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "majapahit",
+      "colorHex": "#C93A20",
+      "colorRgb": [201, 58, 32],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Majapahit",
+        "fr": "Majapahit",
+        "de": "Majapahit",
+        "es": "Majapahit",
+        "zh": "Majapahit"
+      },
+      "seshatId": "id_majapahit_k",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_allegiance_of_teutonic_order_to_holy_roman_empire_",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Allegiance of Teutonic Order to Holy Roman Empire)",
+        "fr": "(Allegiance of Teutonic Order to Holy Roman Empire)",
+        "de": "(Allegiance of Teutonic Order to Holy Roman Empire)",
+        "es": "(Allegiance of Teutonic Order to Holy Roman Empire)",
+        "zh": "(Allegiance of Teutonic Order to Holy Roman Empire)"
+      },
+      "seshatId": "pl_teutonic_order;de_empire_3",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kartids",
+      "colorHex": "#11C240",
+      "colorRgb": [17, 194, 64],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kartids",
+        "fr": "Kartids",
+        "de": "Kartids",
+        "es": "Kartids",
+        "zh": "Kartids"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "republic_of_genoa",
+      "colorHex": "#D622BB",
+      "colorRgb": [214, 34, 187],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Genoa",
+        "fr": "Republic of Genoa",
+        "de": "Republic of Genoa",
+        "es": "Republic of Genoa",
+        "zh": "Republic of Genoa"
+      },
+      "seshatId": "it_genoa_rep_2",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "second_bulgarian_empire",
+      "colorHex": "#B6E01B",
+      "colorRgb": [182, 224, 27],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Second Bulgarian Empire",
+        "fr": "Second Bulgarian Empire",
+        "de": "Second Bulgarian Empire",
+        "es": "Second Bulgarian Empire",
+        "zh": "Second Bulgarian Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kashmiri_sultanate",
+      "colorHex": "#52BA29",
+      "colorRgb": [82, 186, 41],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kashmiri Sultanate",
+        "fr": "Kashmiri Sultanate",
+        "de": "Kashmiri Sultanate",
+        "es": "Kashmiri Sultanate",
+        "zh": "Kashmiri Sultanate"
+      },
+      "seshatId": "in_kashmiri_sultanate",
+      "fromYear": 1352,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sarbadars",
+      "colorHex": "#2C58C7",
+      "colorRgb": [44, 88, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sarbadars",
+        "fr": "Sarbadars",
+        "de": "Sarbadars",
+        "es": "Sarbadars",
+        "zh": "Sarbadars"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ottoman_empire",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ottoman Empire",
+        "fr": "Ottoman Empire",
+        "de": "Ottoman Empire",
+        "es": "Ottoman Empire",
+        "zh": "Ottoman Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "khmer_empire",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Khmer Empire",
+        "fr": "Khmer Empire",
+        "de": "Khmer Empire",
+        "es": "Khmer Empire",
+        "zh": "Khmer Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "beylik_of_karaman",
+      "colorHex": "#BF30BF",
+      "colorRgb": [191, 48, 191],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Beylik of Karaman",
+        "fr": "Beylik of Karaman",
+        "de": "Beylik of Karaman",
+        "es": "Beylik of Karaman",
+        "zh": "Beylik of Karaman"
+      },
+      "seshatId": "tr_karaman_bey",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "beylik_of_teke",
+      "colorHex": "#382DD6",
+      "colorRgb": [56, 45, 214],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Beylik of Teke",
+        "fr": "Beylik of Teke",
+        "de": "Beylik of Teke",
+        "es": "Beylik of Teke",
+        "zh": "Beylik of Teke"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "tughlaq_dynasty",
+      "colorHex": "#58E82C",
+      "colorRgb": [88, 232, 44],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tughlaq Dynasty",
+        "fr": "Tughlaq Dynasty",
+        "de": "Tughlaq Dynasty",
+        "es": "Tughlaq Dynasty",
+        "zh": "Tughlaq Dynasty"
+      },
+      "seshatId": "in_delhi_sultanate",
+      "fromYear": 1352,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "chobanids",
+      "colorHex": "#EDD51C",
+      "colorRgb": [237, 213, 28],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chobanids",
+        "fr": "Chobanids",
+        "de": "Chobanids",
+        "es": "Chobanids",
+        "zh": "Chobanids"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_delhi_sultanate_",
+      "colorHex": "#BD1596",
+      "colorRgb": [189, 21, 150],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Delhi Sultanate)",
+        "fr": "(Delhi Sultanate)",
+        "de": "(Delhi Sultanate)",
+        "es": "(Delhi Sultanate)",
+        "zh": "(Delhi Sultanate)"
+      },
+      "seshatId": "in_delhi_sultanate",
+      "fromYear": 1352,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "swiss_confederation",
+      "colorHex": "#EF4444",
+      "colorRgb": [239, 68, 68],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Swiss Confederation",
+        "fr": "Swiss Confederation",
+        "de": "Swiss Confederation",
+        "es": "Swiss Confederation",
+        "zh": "Swiss Confederation"
+      },
+      "seshatId": "ch_swiss_conf_1",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_poland",
+      "colorHex": "#27BECF",
+      "colorRgb": [39, 190, 207],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Poland",
+        "fr": "Kingdom of Poland",
+        "de": "Kingdom of Poland",
+        "es": "Kingdom of Poland",
+        "zh": "Kingdom of Poland"
+      },
+      "seshatId": "pl_piast_dyn_2",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_vassalage_of_kingdom_of_bohemia_to_holy_roman_empire_",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Vassalage of Kingdom of Bohemia to Holy Roman Empire)",
+        "fr": "(Vassalage of Kingdom of Bohemia to Holy Roman Empire)",
+        "de": "(Vassalage of Kingdom of Bohemia to Holy Roman Empire)",
+        "es": "(Vassalage of Kingdom of Bohemia to Holy Roman Empire)",
+        "zh": "(Vassalage of Kingdom of Bohemia to Holy Roman Empire)"
+      },
+      "seshatId": "cz_bohemian_k_2;de_empire_3",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "injuids",
+      "colorHex": "#E6AC39",
+      "colorRgb": [230, 172, 57],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Injuids",
+        "fr": "Injuids",
+        "de": "Injuids",
+        "es": "Injuids",
+        "zh": "Injuids"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "golden_horde",
+      "colorHex": "#3029BA",
+      "colorRgb": [48, 41, 186],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Golden Horde",
+        "fr": "Golden Horde",
+        "de": "Golden Horde",
+        "es": "Golden Horde",
+        "zh": "Golden Horde"
+      },
+      "seshatId": "ru_golden_horde",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "marinid_sultanate",
+      "colorHex": "#C024E3",
+      "colorRgb": [192, 36, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Marinid Sultanate",
+        "fr": "Marinid Sultanate",
+        "de": "Marinid Sultanate",
+        "es": "Marinid Sultanate",
+        "zh": "Marinid Sultanate"
+      },
+      "seshatId": "ma_marinid_dyn",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "bahmani_sultanate",
+      "colorHex": "#BD1E3B",
+      "colorRgb": [189, 30, 59],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Bahmani Sultanate",
+        "fr": "Bahmani Sultanate",
+        "de": "Bahmani Sultanate",
+        "es": "Bahmani Sultanate",
+        "zh": "Bahmani Sultanate"
+      },
+      "seshatId": "in_bahmani_sultanate",
+      "fromYear": 1352,
+      "toYear": 1374,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_allegiance_of_chagatai_khanate_to_yuan_dynasty_",
+      "colorHex": "#CF1DAE",
+      "colorRgb": [207, 29, 174],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Allegiance of Chagatai Khanate to Yuan Dynasty)",
+        "fr": "(Allegiance of Chagatai Khanate to Yuan Dynasty)",
+        "de": "(Allegiance of Chagatai Khanate to Yuan Dynasty)",
+        "es": "(Allegiance of Chagatai Khanate to Yuan Dynasty)",
+        "zh": "(Allegiance of Chagatai Khanate to Yuan Dynasty)"
+      },
+      "seshatId": "uz_chagatai_khanate;cn_yuan_dyn",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "teutonic_order",
+      "colorHex": "#801FDB",
+      "colorRgb": [128, 31, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Teutonic Order",
+        "fr": "Teutonic Order",
+        "de": "Teutonic Order",
+        "es": "Teutonic Order",
+        "zh": "Teutonic Order"
+      },
+      "seshatId": "pl_teutonic_order",
+      "fromYear": 1352,
+      "toYear": 1401,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_bengal",
+      "colorHex": "#B82EE6",
+      "colorRgb": [184, 46, 230],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Bengal",
+        "fr": "Sultanate of Bengal",
+        "de": "Sultanate of Bengal",
+        "es": "Sultanate of Bengal",
+        "zh": "Sultanate of Bengal"
+      },
+      "seshatId": "bd_bengal_sultanate",
+      "fromYear": 1352,
+      "toYear": 1394,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "mamluk_sultanate",
+      "colorHex": "#BD2881",
+      "colorRgb": [189, 40, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Mamluk Sultanate",
+        "fr": "Mamluk Sultanate",
+        "de": "Mamluk Sultanate",
+        "es": "Mamluk Sultanate",
+        "zh": "Mamluk Sultanate"
+      },
+      "seshatId": "eg_mamluk_sultanate_2",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "earldom_of_desmond",
+      "colorHex": "#E838E5",
+      "colorRgb": [232, 56, 229],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Earldom of Desmond",
+        "fr": "Earldom of Desmond",
+        "de": "Earldom of Desmond",
+        "es": "Earldom of Desmond",
+        "zh": "Earldom of Desmond"
+      },
+      "seshatId": "gb_england_plantagenet",
+      "fromYear": 1352,
+      "toYear": 1384,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "county_of_holland",
+      "colorHex": "#B2E617",
+      "colorRgb": [178, 230, 23],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Holland",
+        "fr": "County of Holland",
+        "de": "County of Holland",
+        "es": "County of Holland",
+        "zh": "County of Holland"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_kingdom_of_bohemia_",
+      "colorHex": "#4016C9",
+      "colorRgb": [64, 22, 201],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Kingdom of Bohemia)",
+        "fr": "(Kingdom of Bohemia)",
+        "de": "(Kingdom of Bohemia)",
+        "es": "(Kingdom of Bohemia)",
+        "zh": "(Kingdom of Bohemia)"
+      },
+      "seshatId": "cz_bohemian_k_2",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_denmark",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Denmark",
+        "fr": "Kingdom of Denmark",
+        "de": "Kingdom of Denmark",
+        "es": "Kingdom of Denmark",
+        "zh": "Kingdom of Denmark"
+      },
+      "seshatId": "dk_danish_k",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_kingdom_of_france_",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Kingdom of France)",
+        "fr": "(Kingdom of France)",
+        "de": "(Kingdom of France)",
+        "es": "(Kingdom of France)",
+        "zh": "(Kingdom of France)"
+      },
+      "seshatId": "fr_valois_k_1",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_kingdom_of_denmark_",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Kingdom of Denmark)",
+        "fr": "(Kingdom of Denmark)",
+        "de": "(Kingdom of Denmark)",
+        "es": "(Kingdom of Denmark)",
+        "zh": "(Kingdom of Denmark)"
+      },
+      "seshatId": "dk_danish_k",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ahi_republic",
+      "colorHex": "#10E04E",
+      "colorRgb": [16, 224, 78],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ahi Republic",
+        "fr": "Ahi Republic",
+        "de": "Ahi Republic",
+        "es": "Ahi Republic",
+        "zh": "Ahi Republic"
+      },
+      "seshatId": "",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "free_county_of_burgundy",
+      "colorHex": "#E84520",
+      "colorRgb": [232, 69, 32],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Free County of Burgundy",
+        "fr": "Free County of Burgundy",
+        "de": "Free County of Burgundy",
+        "es": "Free County of Burgundy",
+        "zh": "Free County of Burgundy"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_holy_roman_empire_",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Holy Roman Empire)",
+        "fr": "(Holy Roman Empire)",
+        "de": "(Holy Roman Empire)",
+        "es": "(Holy Roman Empire)",
+        "zh": "(Holy Roman Empire)"
+      },
+      "seshatId": "de_empire_3",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "chagatai_khanate",
+      "colorHex": "#22C5E6",
+      "colorRgb": [34, 197, 230],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chagatai Khanate",
+        "fr": "Chagatai Khanate",
+        "de": "Chagatai Khanate",
+        "es": "Chagatai Khanate",
+        "zh": "Chagatai Khanate"
+      },
+      "seshatId": "uz_chagatai_khanate",
+      "fromYear": 1352,
+      "toYear": 1362,
+      "kinshipType": "Manorial Feudal Serfdom & Stem Households",
+      "lithicTechnocomplex": "Movable Type Printing, Compass & Gunpowder Artillery",
+      "caloricIntakePerCapitaKcal": 2900
+    }
+  ]
+}

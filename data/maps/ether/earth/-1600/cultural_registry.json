@@ -1,0 +1,223 @@
+{
+  "epoch": -1600,
+  "era": "Bronze Age 1 600 BC",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -1600 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "assyria",
+      "colorHex": "#D910E0",
+      "colorRgb": [217, 16, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Assyria",
+        "fr": "Assyria",
+        "de": "Assyria",
+        "es": "Assyria",
+        "zh": "Assyria"
+      },
+      "seshatId": "",
+      "fromYear": -1700,
+      "toYear": -1501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "fifteenth_dynasty_of_egypt",
+      "colorHex": "#135BBF",
+      "colorRgb": [19, 91, 191],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Fifteenth Dynasty of Egypt",
+        "fr": "Fifteenth Dynasty of Egypt",
+        "de": "Fifteenth Dynasty of Egypt",
+        "es": "Fifteenth Dynasty of Egypt",
+        "zh": "Fifteenth Dynasty of Egypt"
+      },
+      "seshatId": "eg_thebes_hyksos",
+      "fromYear": -1600,
+      "toYear": -1501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "seventeenth_dynasty_of_egypt",
+      "colorHex": "#D1AC26",
+      "colorRgb": [209, 172, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Seventeenth Dynasty of Egypt",
+        "fr": "Seventeenth Dynasty of Egypt",
+        "de": "Seventeenth Dynasty of Egypt",
+        "es": "Seventeenth Dynasty of Egypt",
+        "zh": "Seventeenth Dynasty of Egypt"
+      },
+      "seshatId": "eg_thebes_hyksos",
+      "fromYear": -1600,
+      "toYear": -1501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "babylonia",
+      "colorHex": "#411FDB",
+      "colorRgb": [65, 31, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Babylonia",
+        "fr": "Babylonia",
+        "de": "Babylonia",
+        "es": "Babylonia",
+        "zh": "Babylonia"
+      },
+      "seshatId": "iq_babylonia_1",
+      "fromYear": -1600,
+      "toYear": -1501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "sixteenth_dynasty_of_egypt",
+      "colorHex": "#BAB40D",
+      "colorRgb": [186, 180, 13],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sixteenth Dynasty of Egypt",
+        "fr": "Sixteenth Dynasty of Egypt",
+        "de": "Sixteenth Dynasty of Egypt",
+        "es": "Sixteenth Dynasty of Egypt",
+        "zh": "Sixteenth Dynasty of Egypt"
+      },
+      "seshatId": "eg_thebes_hyksos",
+      "fromYear": -1600,
+      "toYear": -1501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "minoan_civilization",
+      "colorHex": "#2BCAD9",
+      "colorRgb": [43, 202, 217],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Minoan civilization",
+        "fr": "Minoan civilization",
+        "de": "Minoan civilization",
+        "es": "Minoan civilization",
+        "zh": "Minoan civilization"
+      },
+      "seshatId": "gr_crete_new_palace",
+      "fromYear": -1600,
+      "toYear": -1501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "elam",
+      "colorHex": "#C72C8B",
+      "colorRgb": [199, 44, 139],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Elam",
+        "fr": "Elam",
+        "de": "Elam",
+        "es": "Elam",
+        "zh": "Elam"
+      },
+      "seshatId": "ir_elam_4",
+      "fromYear": -1600,
+      "toYear": -1401,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "hittites",
+      "colorHex": "#15D40F",
+      "colorRgb": [21, 212, 15],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Hittites",
+        "fr": "Hittites",
+        "de": "Hittites",
+        "es": "Hittites",
+        "zh": "Hittites"
+      },
+      "seshatId": "tr_hatti_old_k",
+      "fromYear": -1600,
+      "toYear": -1501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "shang_dynasty",
+      "colorHex": "#2EE6B8",
+      "colorRgb": [46, 230, 184],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Shang Dynasty",
+        "fr": "Shang Dynasty",
+        "de": "Shang Dynasty",
+        "es": "Shang Dynasty",
+        "zh": "Shang Dynasty"
+      },
+      "seshatId": "cn_erligang",
+      "fromYear": -1600,
+      "toYear": -1241,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "first_sealand_dynasty",
+      "colorHex": "#5311ED",
+      "colorRgb": [83, 17, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "First Sealand Dynasty",
+        "fr": "First Sealand Dynasty",
+        "de": "First Sealand Dynasty",
+        "es": "First Sealand Dynasty",
+        "zh": "First Sealand Dynasty"
+      },
+      "seshatId": "",
+      "fromYear": -1600,
+      "toYear": -1501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "hyksos",
+      "colorHex": "#12B370",
+      "colorRgb": [18, 179, 112],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Hyksos",
+        "fr": "Hyksos",
+        "de": "Hyksos",
+        "es": "Hyksos",
+        "zh": "Hyksos"
+      },
+      "seshatId": "",
+      "fromYear": -1600,
+      "toYear": -1501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    }
+  ]
+}

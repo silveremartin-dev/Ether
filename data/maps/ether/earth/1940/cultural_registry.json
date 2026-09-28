@@ -1,0 +1,4854 @@
+{
+  "epoch": 1940,
+  "era": "Contemporary 1940 AD",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch 1940 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "zwe",
+      "colorHex": "#B8770F",
+      "colorRgb": [184, 119, 15],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Zimbabwe",
+        "fr": "Zimbabwe",
+        "de": "Zimbabwe",
+        "es": "Zimbabwe",
+        "zh": "Zimbabwe"
+      },
+      "isoA3": "ZWE",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "zmb",
+      "colorHex": "#16D957",
+      "colorRgb": [22, 217, 87],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Zambia",
+        "fr": "Zambia",
+        "de": "Zambia",
+        "es": "Zambia",
+        "zh": "Zambia"
+      },
+      "isoA3": "ZMB",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "yem",
+      "colorHex": "#A6326C",
+      "colorRgb": [166, 50, 108],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Yemen",
+        "fr": "Yemen",
+        "de": "Yemen",
+        "es": "Yemen",
+        "zh": "Yemen"
+      },
+      "isoA3": "YEM",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "vnm",
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
+      "traits": [0.51, 0.71, 0.55, 0.29],
+      "name": {
+        "en": "Vietnam",
+        "fr": "Vietnam",
+        "de": "Vietnam",
+        "es": "Vietnam",
+        "zh": "Vietnam"
+      },
+      "isoA3": "VNM",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ven",
+      "colorHex": "#39E681",
+      "colorRgb": [57, 230, 129],
+      "traits": [0.31, 0.37, 0.31, 0.45],
+      "name": {
+        "en": "Venezuela",
+        "fr": "Venezuela",
+        "de": "Venezuela",
+        "es": "Venezuela",
+        "zh": "Venezuela"
+      },
+      "isoA3": "VEN",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "vat",
+      "colorHex": "#AB6D27",
+      "colorRgb": [171, 109, 39],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Vatican",
+        "fr": "Vatican",
+        "de": "Vatican",
+        "es": "Vatican",
+        "zh": "Vatican"
+      },
+      "isoA3": "VAT",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "vut",
+      "colorHex": "#0EAB61",
+      "colorRgb": [14, 171, 97],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Vanuatu",
+        "fr": "Vanuatu",
+        "de": "Vanuatu",
+        "es": "Vanuatu",
+        "zh": "Vanuatu"
+      },
+      "isoA3": "VUT",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "uzb",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Uzbekistan",
+        "fr": "Uzbekistan",
+        "de": "Uzbekistan",
+        "es": "Uzbekistan",
+        "zh": "Uzbekistan"
+      },
+      "isoA3": "UZB",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ury",
+      "colorHex": "#CFA51D",
+      "colorRgb": [207, 165, 29],
+      "traits": [0.31, 0.37, 0.31, 0.45],
+      "name": {
+        "en": "Uruguay",
+        "fr": "Uruguay",
+        "de": "Uruguay",
+        "es": "Uruguay",
+        "zh": "Uruguay"
+      },
+      "isoA3": "URY",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "fsm",
+      "colorHex": "#3BE37E",
+      "colorRgb": [59, 227, 126],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Micronesia",
+        "fr": "Micronesia",
+        "de": "Micronesia",
+        "es": "Micronesia",
+        "zh": "Micronesia"
+      },
+      "isoA3": "FSM",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mhl",
+      "colorHex": "#D4602F",
+      "colorRgb": [212, 96, 47],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Marshall Is.",
+        "fr": "Marshall Is.",
+        "de": "Marshall Is.",
+        "es": "Marshall Is.",
+        "zh": "Marshall Is."
+      },
+      "isoA3": "MHL",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mnp",
+      "colorHex": "#D60D32",
+      "colorRgb": [214, 13, 50],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "N. Mariana Is.",
+        "fr": "N. Mariana Is.",
+        "de": "N. Mariana Is.",
+        "es": "N. Mariana Is.",
+        "zh": "N. Mariana Is."
+      },
+      "isoA3": "MNP",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "vir",
+      "colorHex": "#1C15AD",
+      "colorRgb": [28, 21, 173],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "U.S. Virgin Is.",
+        "fr": "U.S. Virgin Is.",
+        "de": "U.S. Virgin Is.",
+        "es": "U.S. Virgin Is.",
+        "zh": "U.S. Virgin Is."
+      },
+      "isoA3": "VIR",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "gum",
+      "colorHex": "#1CB070",
+      "colorRgb": [28, 176, 112],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Guam",
+        "fr": "Guam",
+        "de": "Guam",
+        "es": "Guam",
+        "zh": "Guam"
+      },
+      "isoA3": "GUM",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "asm",
+      "colorHex": "#A82220",
+      "colorRgb": [168, 34, 32],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "American Samoa",
+        "fr": "American Samoa",
+        "de": "American Samoa",
+        "es": "American Samoa",
+        "zh": "American Samoa"
+      },
+      "isoA3": "ASM",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "pri",
+      "colorHex": "#16AB1B",
+      "colorRgb": [22, 171, 27],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Puerto Rico",
+        "fr": "Puerto Rico",
+        "de": "Puerto Rico",
+        "es": "Puerto Rico",
+        "zh": "Puerto Rico"
+      },
+      "isoA3": "PRI",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "usa",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.98, 0.96, 0.94, 0.84],
+      "name": {
+        "en": "United States of America",
+        "fr": "United States of America",
+        "de": "United States of America",
+        "es": "United States of America",
+        "zh": "United States of America"
+      },
+      "isoA3": "USA",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "sgs",
+      "colorHex": "#BF41D9",
+      "colorRgb": [191, 65, 217],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "S. Geo. and the Is.",
+        "fr": "S. Geo. and the Is.",
+        "de": "S. Geo. and the Is.",
+        "es": "S. Geo. and the Is.",
+        "zh": "S. Geo. and the Is."
+      },
+      "isoA3": "SGS",
+      "continent": "Seven seas (open ocean)",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "iot",
+      "colorHex": "#5CB01C",
+      "colorRgb": [92, 176, 28],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Br. Indian Ocean Ter.",
+        "fr": "Br. Indian Ocean Ter.",
+        "de": "Br. Indian Ocean Ter.",
+        "es": "Br. Indian Ocean Ter.",
+        "zh": "Br. Indian Ocean Ter."
+      },
+      "isoA3": "IOT",
+      "continent": "Seven seas (open ocean)",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "shn",
+      "colorHex": "#3232A6",
+      "colorRgb": [50, 50, 166],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Saint Helena",
+        "fr": "Saint Helena",
+        "de": "Saint Helena",
+        "es": "Saint Helena",
+        "zh": "Saint Helena"
+      },
+      "isoA3": "SHN",
+      "continent": "Seven seas (open ocean)",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "pcn",
+      "colorHex": "#9339BF",
+      "colorRgb": [147, 57, 191],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Pitcairn Is.",
+        "fr": "Pitcairn Is.",
+        "de": "Pitcairn Is.",
+        "es": "Pitcairn Is.",
+        "zh": "Pitcairn Is."
+      },
+      "isoA3": "PCN",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "aia",
+      "colorHex": "#1B9ED1",
+      "colorRgb": [27, 158, 209],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Anguilla",
+        "fr": "Anguilla",
+        "de": "Anguilla",
+        "es": "Anguilla",
+        "zh": "Anguilla"
+      },
+      "isoA3": "AIA",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "flk",
+      "colorHex": "#E03D50",
+      "colorRgb": [224, 61, 80],
+      "traits": [0.31, 0.37, 0.31, 0.45],
+      "name": {
+        "en": "Falkland Is.",
+        "fr": "Falkland Is.",
+        "de": "Falkland Is.",
+        "es": "Falkland Is.",
+        "zh": "Falkland Is."
+      },
+      "isoA3": "FLK",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "cym",
+      "colorHex": "#9822C7",
+      "colorRgb": [152, 34, 199],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Cayman Is.",
+        "fr": "Cayman Is.",
+        "de": "Cayman Is.",
+        "es": "Cayman Is.",
+        "zh": "Cayman Is."
+      },
+      "isoA3": "CYM",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "bmu",
+      "colorHex": "#A6A632",
+      "colorRgb": [166, 166, 50],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Bermuda",
+        "fr": "Bermuda",
+        "de": "Bermuda",
+        "es": "Bermuda",
+        "zh": "Bermuda"
+      },
+      "isoA3": "BMU",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "vgb",
+      "colorHex": "#EDE728",
+      "colorRgb": [237, 231, 40],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "British Virgin Is.",
+        "fr": "British Virgin Is.",
+        "de": "British Virgin Is.",
+        "es": "British Virgin Is.",
+        "zh": "British Virgin Is."
+      },
+      "isoA3": "VGB",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "tca",
+      "colorHex": "#5427CF",
+      "colorRgb": [84, 39, 207],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Turks and Caicos Is.",
+        "fr": "Turks and Caicos Is.",
+        "de": "Turks and Caicos Is.",
+        "es": "Turks and Caicos Is.",
+        "zh": "Turks and Caicos Is."
+      },
+      "isoA3": "TCA",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "msr",
+      "colorHex": "#5DC22F",
+      "colorRgb": [93, 194, 47],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Montserrat",
+        "fr": "Montserrat",
+        "de": "Montserrat",
+        "es": "Montserrat",
+        "zh": "Montserrat"
+      },
+      "isoA3": "MSR",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "jey",
+      "colorHex": "#D92B9F",
+      "colorRgb": [217, 43, 159],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Jersey",
+        "fr": "Jersey",
+        "de": "Jersey",
+        "es": "Jersey",
+        "zh": "Jersey"
+      },
+      "isoA3": "JEY",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ggy",
+      "colorHex": "#41D974",
+      "colorRgb": [65, 217, 116],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Guernsey",
+        "fr": "Guernsey",
+        "de": "Guernsey",
+        "es": "Guernsey",
+        "zh": "Guernsey"
+      },
+      "isoA3": "GGY",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "imn",
+      "colorHex": "#8120BA",
+      "colorRgb": [129, 32, 186],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Isle of Man",
+        "fr": "Isle of Man",
+        "de": "Isle of Man",
+        "es": "Isle of Man",
+        "zh": "Isle of Man"
+      },
+      "isoA3": "IMN",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "gbr",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.98, 0.96, 0.75, 0.84],
+      "name": {
+        "en": "United Kingdom",
+        "fr": "United Kingdom",
+        "de": "United Kingdom",
+        "es": "United Kingdom",
+        "zh": "United Kingdom"
+      },
+      "isoA3": "GBR",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "are",
+      "colorHex": "#0F59A8",
+      "colorRgb": [15, 89, 168],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "United Arab Emirates",
+        "fr": "United Arab Emirates",
+        "de": "United Arab Emirates",
+        "es": "United Arab Emirates",
+        "zh": "United Arab Emirates"
+      },
+      "isoA3": "ARE",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ukr",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.51, 0.55, 0.55, 0.65],
+      "name": {
+        "en": "Ukraine",
+        "fr": "Ukraine",
+        "de": "Ukraine",
+        "es": "Ukraine",
+        "zh": "Ukraine"
+      },
+      "isoA3": "UKR",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "uga",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Uganda",
+        "fr": "Uganda",
+        "de": "Uganda",
+        "es": "Uganda",
+        "zh": "Uganda"
+      },
+      "isoA3": "UGA",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "tkm",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Turkmenistan",
+        "fr": "Turkmenistan",
+        "de": "Turkmenistan",
+        "es": "Turkmenistan",
+        "zh": "Turkmenistan"
+      },
+      "isoA3": "TKM",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "tur",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.69, 0.71, 0.75, 0.65],
+      "name": {
+        "en": "Turkey",
+        "fr": "Turkey",
+        "de": "Turkey",
+        "es": "Turkey",
+        "zh": "Turkey"
+      },
+      "isoA3": "TUR",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "tun",
+      "colorHex": "#D845E6",
+      "colorRgb": [216, 69, 230],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Tunisia",
+        "fr": "Tunisia",
+        "de": "Tunisia",
+        "es": "Tunisia",
+        "zh": "Tunisia"
+      },
+      "isoA3": "TUN",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "tto",
+      "colorHex": "#A5B510",
+      "colorRgb": [165, 181, 16],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Trinidad and Tobago",
+        "fr": "Trinidad and Tobago",
+        "de": "Trinidad and Tobago",
+        "es": "Trinidad and Tobago",
+        "zh": "Trinidad and Tobago"
+      },
+      "isoA3": "TTO",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ton",
+      "colorHex": "#2294E6",
+      "colorRgb": [34, 148, 230],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Tonga",
+        "fr": "Tonga",
+        "de": "Tonga",
+        "es": "Tonga",
+        "zh": "Tonga"
+      },
+      "isoA3": "TON",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "tgo",
+      "colorHex": "#5418D6",
+      "colorRgb": [84, 24, 214],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Togo",
+        "fr": "Togo",
+        "de": "Togo",
+        "es": "Togo",
+        "zh": "Togo"
+      },
+      "isoA3": "TGO",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "tls",
+      "colorHex": "#B80F4F",
+      "colorRgb": [184, 15, 79],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Timor-Leste",
+        "fr": "Timor-Leste",
+        "de": "Timor-Leste",
+        "es": "Timor-Leste",
+        "zh": "Timor-Leste"
+      },
+      "isoA3": "TLS",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "tha",
+      "colorHex": "#8B5CF6",
+      "colorRgb": [139, 92, 246],
+      "traits": [0.51, 0.71, 0.55, 0.57],
+      "name": {
+        "en": "Thailand",
+        "fr": "Thailand",
+        "de": "Thailand",
+        "es": "Thailand",
+        "zh": "Thailand"
+      },
+      "isoA3": "THA",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "tza",
+      "colorHex": "#DE1293",
+      "colorRgb": [222, 18, 147],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Tanzania",
+        "fr": "Tanzania",
+        "de": "Tanzania",
+        "es": "Tanzania",
+        "zh": "Tanzania"
+      },
+      "isoA3": "TZA",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "tjk",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Tajikistan",
+        "fr": "Tajikistan",
+        "de": "Tajikistan",
+        "es": "Tajikistan",
+        "zh": "Tajikistan"
+      },
+      "isoA3": "TJK",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "twn",
+      "colorHex": "#13A6B0",
+      "colorRgb": [19, 166, 176],
+      "traits": [0.98, 0.88, 0.31, 0.65],
+      "name": {
+        "en": "Taiwan",
+        "fr": "Taiwan",
+        "de": "Taiwan",
+        "es": "Taiwan",
+        "zh": "Taiwan"
+      },
+      "isoA3": "TWN",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "syr",
+      "colorHex": "#2659BF",
+      "colorRgb": [38, 89, 191],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Syria",
+        "fr": "Syria",
+        "de": "Syria",
+        "es": "Syria",
+        "zh": "Syria"
+      },
+      "isoA3": "SYR",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "che",
+      "colorHex": "#EF4444",
+      "colorRgb": [239, 68, 68],
+      "traits": [0.98, 0.96, 0.31, 0.84],
+      "name": {
+        "en": "Switzerland",
+        "fr": "Switzerland",
+        "de": "Switzerland",
+        "es": "Switzerland",
+        "zh": "Switzerland"
+      },
+      "isoA3": "CHE",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "swe",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.98, 0.96, 0.31, 0.84],
+      "name": {
+        "en": "Sweden",
+        "fr": "Sweden",
+        "de": "Sweden",
+        "es": "Sweden",
+        "zh": "Sweden"
+      },
+      "isoA3": "SWE",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "swz",
+      "colorHex": "#E3630E",
+      "colorRgb": [227, 99, 14],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "eSwatini",
+        "fr": "eSwatini",
+        "de": "eSwatini",
+        "es": "eSwatini",
+        "zh": "eSwatini"
+      },
+      "isoA3": "SWZ",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "sur",
+      "colorHex": "#B57E2B",
+      "colorRgb": [181, 126, 43],
+      "traits": [0.31, 0.37, 0.31, 0.45],
+      "name": {
+        "en": "Suriname",
+        "fr": "Suriname",
+        "de": "Suriname",
+        "es": "Suriname",
+        "zh": "Suriname"
+      },
+      "isoA3": "SUR",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "sds",
+      "colorHex": "#1D97DE",
+      "colorRgb": [29, 151, 222],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "S. Sudan",
+        "fr": "S. Sudan",
+        "de": "S. Sudan",
+        "es": "S. Sudan",
+        "zh": "S. Sudan"
+      },
+      "isoA3": "SDS",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "sdn",
+      "colorHex": "#3699EB",
+      "colorRgb": [54, 153, 235],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Sudan",
+        "fr": "Sudan",
+        "de": "Sudan",
+        "es": "Sudan",
+        "zh": "Sudan"
+      },
+      "isoA3": "SDN",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "lka",
+      "colorHex": "#42EBE2",
+      "colorRgb": [66, 235, 226],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Sri Lanka",
+        "fr": "Sri Lanka",
+        "de": "Sri Lanka",
+        "es": "Sri Lanka",
+        "zh": "Sri Lanka"
+      },
+      "isoA3": "LKA",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "esp",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.86, 0.88, 0.75, 0.84],
+      "name": {
+        "en": "Spain",
+        "fr": "Spain",
+        "de": "Spain",
+        "es": "Spain",
+        "zh": "Spain"
+      },
+      "isoA3": "ESP",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "kor",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.98, 0.88, 0.94, 0.84],
+      "name": {
+        "en": "South Korea",
+        "fr": "South Korea",
+        "de": "South Korea",
+        "es": "South Korea",
+        "zh": "South Korea"
+      },
+      "isoA3": "KOR",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "zaf",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.51, 0.71, 0.75, 0.18],
+      "name": {
+        "en": "South Africa",
+        "fr": "South Africa",
+        "de": "South Africa",
+        "es": "South Africa",
+        "zh": "South Africa"
+      },
+      "isoA3": "ZAF",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "som",
+      "colorHex": "#8428ED",
+      "colorRgb": [132, 40, 237],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Somalia",
+        "fr": "Somalia",
+        "de": "Somalia",
+        "es": "Somalia",
+        "zh": "Somalia"
+      },
+      "isoA3": "SOM",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "sol",
+      "colorHex": "#97ED34",
+      "colorRgb": [151, 237, 52],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Somaliland",
+        "fr": "Somaliland",
+        "de": "Somaliland",
+        "es": "Somaliland",
+        "zh": "Somaliland"
+      },
+      "isoA3": "SOL",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "slb",
+      "colorHex": "#D15626",
+      "colorRgb": [209, 86, 38],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Solomon Is.",
+        "fr": "Solomon Is.",
+        "de": "Solomon Is.",
+        "es": "Solomon Is.",
+        "zh": "Solomon Is."
+      },
+      "isoA3": "SLB",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "svk",
+      "colorHex": "#C9380C",
+      "colorRgb": [201, 56, 12],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Slovakia",
+        "fr": "Slovakia",
+        "de": "Slovakia",
+        "es": "Slovakia",
+        "zh": "Slovakia"
+      },
+      "isoA3": "SVK",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "svn",
+      "colorHex": "#B84333",
+      "colorRgb": [184, 67, 51],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Slovenia",
+        "fr": "Slovenia",
+        "de": "Slovenia",
+        "es": "Slovenia",
+        "zh": "Slovenia"
+      },
+      "isoA3": "SVN",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "sgp",
+      "colorHex": "#D4193F",
+      "colorRgb": [212, 25, 63],
+      "traits": [0.98, 0.96, 0.31, 0.65],
+      "name": {
+        "en": "Singapore",
+        "fr": "Singapore",
+        "de": "Singapore",
+        "es": "Singapore",
+        "zh": "Singapore"
+      },
+      "isoA3": "SGP",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "sle",
+      "colorHex": "#1F4ACC",
+      "colorRgb": [31, 74, 204],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Sierra Leone",
+        "fr": "Sierra Leone",
+        "de": "Sierra Leone",
+        "es": "Sierra Leone",
+        "zh": "Sierra Leone"
+      },
+      "isoA3": "SLE",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "syc",
+      "colorHex": "#8D1BC2",
+      "colorRgb": [141, 27, 194],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Seychelles",
+        "fr": "Seychelles",
+        "de": "Seychelles",
+        "es": "Seychelles",
+        "zh": "Seychelles"
+      },
+      "isoA3": "SYC",
+      "continent": "Seven seas (open ocean)",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "srb",
+      "colorHex": "#9FD424",
+      "colorRgb": [159, 212, 36],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Serbia",
+        "fr": "Serbia",
+        "de": "Serbia",
+        "es": "Serbia",
+        "zh": "Serbia"
+      },
+      "isoA3": "SRB",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "sen",
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Senegal",
+        "fr": "Senegal",
+        "de": "Senegal",
+        "es": "Senegal",
+        "zh": "Senegal"
+      },
+      "isoA3": "SEN",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "sau",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.69, 0.71, 0.94, 0.65],
+      "name": {
+        "en": "Saudi Arabia",
+        "fr": "Saudi Arabia",
+        "de": "Saudi Arabia",
+        "es": "Saudi Arabia",
+        "zh": "Saudi Arabia"
+      },
+      "isoA3": "SAU",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "stp",
+      "colorHex": "#4D2CC7",
+      "colorRgb": [77, 44, 199],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "São Tomé and Principe",
+        "fr": "São Tomé and Principe",
+        "de": "São Tomé and Principe",
+        "es": "São Tomé and Principe",
+        "zh": "São Tomé and Principe"
+      },
+      "isoA3": "STP",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "smr",
+      "colorHex": "#ED8A34",
+      "colorRgb": [237, 138, 52],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "San Marino",
+        "fr": "San Marino",
+        "de": "San Marino",
+        "es": "San Marino",
+        "zh": "San Marino"
+      },
+      "isoA3": "SMR",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "wsm",
+      "colorHex": "#5E30D1",
+      "colorRgb": [94, 48, 209],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Samoa",
+        "fr": "Samoa",
+        "de": "Samoa",
+        "es": "Samoa",
+        "zh": "Samoa"
+      },
+      "isoA3": "WSM",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "vct",
+      "colorHex": "#5FB324",
+      "colorRgb": [95, 179, 36],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "St. Vin. and Gren.",
+        "fr": "St. Vin. and Gren.",
+        "de": "St. Vin. and Gren.",
+        "es": "St. Vin. and Gren.",
+        "zh": "St. Vin. and Gren."
+      },
+      "isoA3": "VCT",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "lca",
+      "colorHex": "#48E639",
+      "colorRgb": [72, 230, 57],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Saint Lucia",
+        "fr": "Saint Lucia",
+        "de": "Saint Lucia",
+        "es": "Saint Lucia",
+        "zh": "Saint Lucia"
+      },
+      "isoA3": "LCA",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "kna",
+      "colorHex": "#BE36D9",
+      "colorRgb": [190, 54, 217],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "St. Kitts and Nevis",
+        "fr": "St. Kitts and Nevis",
+        "de": "St. Kitts and Nevis",
+        "es": "St. Kitts and Nevis",
+        "zh": "St. Kitts and Nevis"
+      },
+      "isoA3": "KNA",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "rwa",
+      "colorHex": "#932FC2",
+      "colorRgb": [147, 47, 194],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Rwanda",
+        "fr": "Rwanda",
+        "de": "Rwanda",
+        "es": "Rwanda",
+        "zh": "Rwanda"
+      },
+      "isoA3": "RWA",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "rus",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.69, 0.71, 0.94, 0.84],
+      "name": {
+        "en": "Russia",
+        "fr": "Russia",
+        "de": "Russia",
+        "es": "Russia",
+        "zh": "Russia"
+      },
+      "isoA3": "RUS",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "rou",
+      "colorHex": "#13EB74",
+      "colorRgb": [19, 235, 116],
+      "traits": [0.51, 0.71, 0.31, 0.65],
+      "name": {
+        "en": "Romania",
+        "fr": "Romania",
+        "de": "Romania",
+        "es": "Romania",
+        "zh": "Romania"
+      },
+      "isoA3": "ROU",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "qat",
+      "colorHex": "#45A3E6",
+      "colorRgb": [69, 163, 230],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Qatar",
+        "fr": "Qatar",
+        "de": "Qatar",
+        "es": "Qatar",
+        "zh": "Qatar"
+      },
+      "isoA3": "QAT",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "prt",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.69, 0.88, 0.31, 0.65],
+      "name": {
+        "en": "Portugal",
+        "fr": "Portugal",
+        "de": "Portugal",
+        "es": "Portugal",
+        "zh": "Portugal"
+      },
+      "isoA3": "PRT",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "pol",
+      "colorHex": "#BE185D",
+      "colorRgb": [190, 24, 93],
+      "traits": [0.69, 0.88, 0.75, 0.65],
+      "name": {
+        "en": "Poland",
+        "fr": "Poland",
+        "de": "Poland",
+        "es": "Poland",
+        "zh": "Poland"
+      },
+      "isoA3": "POL",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "phl",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.51, 0.55, 0.55, 0.29],
+      "name": {
+        "en": "Philippines",
+        "fr": "Philippines",
+        "de": "Philippines",
+        "es": "Philippines",
+        "zh": "Philippines"
+      },
+      "isoA3": "PHL",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "per",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.55, 0.31, 0.45],
+      "name": {
+        "en": "Peru",
+        "fr": "Peru",
+        "de": "Peru",
+        "es": "Peru",
+        "zh": "Peru"
+      },
+      "isoA3": "PER",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "pry",
+      "colorHex": "#BA8529",
+      "colorRgb": [186, 133, 41],
+      "traits": [0.31, 0.37, 0.31, 0.45],
+      "name": {
+        "en": "Paraguay",
+        "fr": "Paraguay",
+        "de": "Paraguay",
+        "es": "Paraguay",
+        "zh": "Paraguay"
+      },
+      "isoA3": "PRY",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "png",
+      "colorHex": "#DEC733",
+      "colorRgb": [222, 199, 51],
+      "traits": [0.31, 0.37, 0.31, 0.29],
+      "name": {
+        "en": "Papua New Guinea",
+        "fr": "Papua New Guinea",
+        "de": "Papua New Guinea",
+        "es": "Papua New Guinea",
+        "zh": "Papua New Guinea"
+      },
+      "isoA3": "PNG",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "pan",
+      "colorHex": "#E8DD43",
+      "colorRgb": [232, 221, 67],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Panama",
+        "fr": "Panama",
+        "de": "Panama",
+        "es": "Panama",
+        "zh": "Panama"
+      },
+      "isoA3": "PAN",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "plw",
+      "colorHex": "#D6189A",
+      "colorRgb": [214, 24, 154],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Palau",
+        "fr": "Palau",
+        "de": "Palau",
+        "es": "Palau",
+        "zh": "Palau"
+      },
+      "isoA3": "PLW",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "pak",
+      "colorHex": "#A5BD1E",
+      "colorRgb": [165, 189, 30],
+      "traits": [0.31, 0.55, 0.55, 0.29],
+      "name": {
+        "en": "Pakistan",
+        "fr": "Pakistan",
+        "de": "Pakistan",
+        "es": "Pakistan",
+        "zh": "Pakistan"
+      },
+      "isoA3": "PAK",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "omn",
+      "colorHex": "#B37B2D",
+      "colorRgb": [179, 123, 45],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Oman",
+        "fr": "Oman",
+        "de": "Oman",
+        "es": "Oman",
+        "zh": "Oman"
+      },
+      "isoA3": "OMN",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "nor",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.86, 0.96, 0.31, 0.84],
+      "name": {
+        "en": "Norway",
+        "fr": "Norway",
+        "de": "Norway",
+        "es": "Norway",
+        "zh": "Norway"
+      },
+      "isoA3": "NOR",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "prk",
+      "colorHex": "#AA1BD1",
+      "colorRgb": [170, 27, 209],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "North Korea",
+        "fr": "North Korea",
+        "de": "North Korea",
+        "es": "North Korea",
+        "zh": "North Korea"
+      },
+      "isoA3": "PRK",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "nga",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.31, 0.55, 0.55, 0.18],
+      "name": {
+        "en": "Nigeria",
+        "fr": "Nigeria",
+        "de": "Nigeria",
+        "es": "Nigeria",
+        "zh": "Nigeria"
+      },
+      "isoA3": "NGA",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ner",
+      "colorHex": "#95DB14",
+      "colorRgb": [149, 219, 20],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Niger",
+        "fr": "Niger",
+        "de": "Niger",
+        "es": "Niger",
+        "zh": "Niger"
+      },
+      "isoA3": "NER",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "nic",
+      "colorHex": "#DB5A14",
+      "colorRgb": [219, 90, 20],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Nicaragua",
+        "fr": "Nicaragua",
+        "de": "Nicaragua",
+        "es": "Nicaragua",
+        "zh": "Nicaragua"
+      },
+      "isoA3": "NIC",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "nzl",
+      "colorHex": "#0F766E",
+      "colorRgb": [15, 118, 110],
+      "traits": [0.86, 0.96, 0.31, 0.84],
+      "name": {
+        "en": "New Zealand",
+        "fr": "New Zealand",
+        "de": "New Zealand",
+        "es": "New Zealand",
+        "zh": "New Zealand"
+      },
+      "isoA3": "NZL",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "niu",
+      "colorHex": "#2FC24A",
+      "colorRgb": [47, 194, 74],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Niue",
+        "fr": "Niue",
+        "de": "Niue",
+        "es": "Niue",
+        "zh": "Niue"
+      },
+      "isoA3": "NIU",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "cok",
+      "colorHex": "#3CA7CF",
+      "colorRgb": [60, 167, 207],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Cook Is.",
+        "fr": "Cook Is.",
+        "de": "Cook Is.",
+        "es": "Cook Is.",
+        "zh": "Cook Is."
+      },
+      "isoA3": "COK",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "nld",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.98, 0.96, 0.75, 0.84],
+      "name": {
+        "en": "Netherlands",
+        "fr": "Netherlands",
+        "de": "Netherlands",
+        "es": "Netherlands",
+        "zh": "Netherlands"
+      },
+      "isoA3": "NLD",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "abw",
+      "colorHex": "#4225C2",
+      "colorRgb": [66, 37, 194],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Aruba",
+        "fr": "Aruba",
+        "de": "Aruba",
+        "es": "Aruba",
+        "zh": "Aruba"
+      },
+      "isoA3": "ABW",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "cuw",
+      "colorHex": "#7719B5",
+      "colorRgb": [119, 25, 181],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Curaçao",
+        "fr": "Curaçao",
+        "de": "Curaçao",
+        "es": "Curaçao",
+        "zh": "Curaçao"
+      },
+      "isoA3": "CUW",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "npl",
+      "colorHex": "#CF3CA7",
+      "colorRgb": [207, 60, 167],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Nepal",
+        "fr": "Nepal",
+        "de": "Nepal",
+        "es": "Nepal",
+        "zh": "Nepal"
+      },
+      "isoA3": "NPL",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "nru",
+      "colorHex": "#5536C7",
+      "colorRgb": [85, 54, 199],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Nauru",
+        "fr": "Nauru",
+        "de": "Nauru",
+        "es": "Nauru",
+        "zh": "Nauru"
+      },
+      "isoA3": "NRU",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "nam",
+      "colorHex": "#1559AD",
+      "colorRgb": [21, 89, 173],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Namibia",
+        "fr": "Namibia",
+        "de": "Namibia",
+        "es": "Namibia",
+        "zh": "Namibia"
+      },
+      "isoA3": "NAM",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "moz",
+      "colorHex": "#DE5D12",
+      "colorRgb": [222, 93, 18],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Mozambique",
+        "fr": "Mozambique",
+        "de": "Mozambique",
+        "es": "Mozambique",
+        "zh": "Mozambique"
+      },
+      "isoA3": "MOZ",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mar",
+      "colorHex": "#11A611",
+      "colorRgb": [17, 166, 17],
+      "traits": [0.31, 0.55, 0.31, 0.18],
+      "name": {
+        "en": "Morocco",
+        "fr": "Morocco",
+        "de": "Morocco",
+        "es": "Morocco",
+        "zh": "Morocco"
+      },
+      "isoA3": "MAR",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "sah",
+      "colorHex": "#BD8928",
+      "colorRgb": [189, 137, 40],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "W. Sahara",
+        "fr": "W. Sahara",
+        "de": "W. Sahara",
+        "es": "W. Sahara",
+        "zh": "W. Sahara"
+      },
+      "isoA3": "SAH",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mne",
+      "colorHex": "#630EE3",
+      "colorRgb": [99, 14, 227],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Montenegro",
+        "fr": "Montenegro",
+        "de": "Montenegro",
+        "es": "Montenegro",
+        "zh": "Montenegro"
+      },
+      "isoA3": "MNE",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mng",
+      "colorHex": "#8F30BF",
+      "colorRgb": [143, 48, 191],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Mongolia",
+        "fr": "Mongolia",
+        "de": "Mongolia",
+        "es": "Mongolia",
+        "zh": "Mongolia"
+      },
+      "isoA3": "MNG",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mda",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Moldova",
+        "fr": "Moldova",
+        "de": "Moldova",
+        "es": "Moldova",
+        "zh": "Moldova"
+      },
+      "isoA3": "MDA",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mco",
+      "colorHex": "#2FA7C2",
+      "colorRgb": [47, 167, 194],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Monaco",
+        "fr": "Monaco",
+        "de": "Monaco",
+        "es": "Monaco",
+        "zh": "Monaco"
+      },
+      "isoA3": "MCO",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mex",
+      "colorHex": "#16A34A",
+      "colorRgb": [22, 163, 74],
+      "traits": [0.69, 0.71, 0.75, 0.57],
+      "name": {
+        "en": "Mexico",
+        "fr": "Mexico",
+        "de": "Mexico",
+        "es": "Mexico",
+        "zh": "Mexico"
+      },
+      "isoA3": "MEX",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mus",
+      "colorHex": "#3855D6",
+      "colorRgb": [56, 85, 214],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Mauritius",
+        "fr": "Mauritius",
+        "de": "Mauritius",
+        "es": "Mauritius",
+        "zh": "Mauritius"
+      },
+      "isoA3": "MUS",
+      "continent": "Seven seas (open ocean)",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mrt",
+      "colorHex": "#C28A11",
+      "colorRgb": [194, 138, 17],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Mauritania",
+        "fr": "Mauritania",
+        "de": "Mauritania",
+        "es": "Mauritania",
+        "zh": "Mauritania"
+      },
+      "isoA3": "MRT",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mlt",
+      "colorHex": "#3DCCA8",
+      "colorRgb": [61, 204, 168],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Malta",
+        "fr": "Malta",
+        "de": "Malta",
+        "es": "Malta",
+        "zh": "Malta"
+      },
+      "isoA3": "MLT",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mli",
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Mali",
+        "fr": "Mali",
+        "de": "Mali",
+        "es": "Mali",
+        "zh": "Mali"
+      },
+      "isoA3": "MLI",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mdv",
+      "colorHex": "#18B82B",
+      "colorRgb": [24, 184, 43],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Maldives",
+        "fr": "Maldives",
+        "de": "Maldives",
+        "es": "Maldives",
+        "zh": "Maldives"
+      },
+      "isoA3": "MDV",
+      "continent": "Seven seas (open ocean)",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mys",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.69, 0.71, 0.55, 0.57],
+      "name": {
+        "en": "Malaysia",
+        "fr": "Malaysia",
+        "de": "Malaysia",
+        "es": "Malaysia",
+        "zh": "Malaysia"
+      },
+      "isoA3": "MYS",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mwi",
+      "colorHex": "#C73E18",
+      "colorRgb": [199, 62, 24],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Malawi",
+        "fr": "Malawi",
+        "de": "Malawi",
+        "es": "Malawi",
+        "zh": "Malawi"
+      },
+      "isoA3": "MWI",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mdg",
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Madagascar",
+        "fr": "Madagascar",
+        "de": "Madagascar",
+        "es": "Madagascar",
+        "zh": "Madagascar"
+      },
+      "isoA3": "MDG",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mkd",
+      "colorHex": "#2CE87E",
+      "colorRgb": [44, 232, 126],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "North Macedonia",
+        "fr": "North Macedonia",
+        "de": "North Macedonia",
+        "es": "North Macedonia",
+        "zh": "North Macedonia"
+      },
+      "isoA3": "MKD",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "lux",
+      "colorHex": "#38E884",
+      "colorRgb": [56, 232, 132],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Luxembourg",
+        "fr": "Luxembourg",
+        "de": "Luxembourg",
+        "es": "Luxembourg",
+        "zh": "Luxembourg"
+      },
+      "isoA3": "LUX",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ltu",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Lithuania",
+        "fr": "Lithuania",
+        "de": "Lithuania",
+        "es": "Lithuania",
+        "zh": "Lithuania"
+      },
+      "isoA3": "LTU",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "lie",
+      "colorHex": "#B72DD6",
+      "colorRgb": [183, 45, 214],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Liechtenstein",
+        "fr": "Liechtenstein",
+        "de": "Liechtenstein",
+        "es": "Liechtenstein",
+        "zh": "Liechtenstein"
+      },
+      "isoA3": "LIE",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "lby",
+      "colorHex": "#D13BA6",
+      "colorRgb": [209, 59, 166],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Libya",
+        "fr": "Libya",
+        "de": "Libya",
+        "es": "Libya",
+        "zh": "Libya"
+      },
+      "isoA3": "LBY",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "lbr",
+      "colorHex": "#36D9BE",
+      "colorRgb": [54, 217, 190],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Liberia",
+        "fr": "Liberia",
+        "de": "Liberia",
+        "es": "Liberia",
+        "zh": "Liberia"
+      },
+      "isoA3": "LBR",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "lso",
+      "colorHex": "#18ED11",
+      "colorRgb": [24, 237, 17],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Lesotho",
+        "fr": "Lesotho",
+        "de": "Lesotho",
+        "es": "Lesotho",
+        "zh": "Lesotho"
+      },
+      "isoA3": "LSO",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "lbn",
+      "colorHex": "#1E29EB",
+      "colorRgb": [30, 41, 235],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Lebanon",
+        "fr": "Lebanon",
+        "de": "Lebanon",
+        "es": "Lebanon",
+        "zh": "Lebanon"
+      },
+      "isoA3": "LBN",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "lva",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Latvia",
+        "fr": "Latvia",
+        "de": "Latvia",
+        "es": "Latvia",
+        "zh": "Latvia"
+      },
+      "isoA3": "LVA",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "lao",
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Laos",
+        "fr": "Laos",
+        "de": "Laos",
+        "es": "Laos",
+        "zh": "Laos"
+      },
+      "isoA3": "LAO",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "kgz",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Kyrgyzstan",
+        "fr": "Kyrgyzstan",
+        "de": "Kyrgyzstan",
+        "es": "Kyrgyzstan",
+        "zh": "Kyrgyzstan"
+      },
+      "isoA3": "KGZ",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "kwt",
+      "colorHex": "#D14711",
+      "colorRgb": [209, 71, 17],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Kuwait",
+        "fr": "Kuwait",
+        "de": "Kuwait",
+        "es": "Kuwait",
+        "zh": "Kuwait"
+      },
+      "isoA3": "KWT",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "kos",
+      "colorHex": "#245FB3",
+      "colorRgb": [36, 95, 179],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Kosovo",
+        "fr": "Kosovo",
+        "de": "Kosovo",
+        "es": "Kosovo",
+        "zh": "Kosovo"
+      },
+      "isoA3": "KOS",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "kir",
+      "colorHex": "#AD2FA7",
+      "colorRgb": [173, 47, 167],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Kiribati",
+        "fr": "Kiribati",
+        "de": "Kiribati",
+        "es": "Kiribati",
+        "zh": "Kiribati"
+      },
+      "isoA3": "KIR",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ken",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.31, 0.55, 0.31, 0.18],
+      "name": {
+        "en": "Kenya",
+        "fr": "Kenya",
+        "de": "Kenya",
+        "es": "Kenya",
+        "zh": "Kenya"
+      },
+      "isoA3": "KEN",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "kaz",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.55, 0.31, 0.65],
+      "name": {
+        "en": "Kazakhstan",
+        "fr": "Kazakhstan",
+        "de": "Kazakhstan",
+        "es": "Kazakhstan",
+        "zh": "Kazakhstan"
+      },
+      "isoA3": "KAZ",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "jor",
+      "colorHex": "#BF3966",
+      "colorRgb": [191, 57, 102],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Jordan",
+        "fr": "Jordan",
+        "de": "Jordan",
+        "es": "Jordan",
+        "zh": "Jordan"
+      },
+      "isoA3": "JOR",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "jpn",
+      "colorHex": "#E11D48",
+      "colorRgb": [225, 29, 72],
+      "traits": [0.98, 0.96, 0.94, 0.84],
+      "name": {
+        "en": "Japan",
+        "fr": "Japan",
+        "de": "Japan",
+        "es": "Japan",
+        "zh": "Japan"
+      },
+      "isoA3": "JPN",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "jam",
+      "colorHex": "#8A34ED",
+      "colorRgb": [138, 52, 237],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Jamaica",
+        "fr": "Jamaica",
+        "de": "Jamaica",
+        "es": "Jamaica",
+        "zh": "Jamaica"
+      },
+      "isoA3": "JAM",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ita",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.86, 0.88, 0.75, 0.84],
+      "name": {
+        "en": "Italy",
+        "fr": "Italy",
+        "de": "Italy",
+        "es": "Italy",
+        "zh": "Italy"
+      },
+      "isoA3": "ITA",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "isr",
+      "colorHex": "#4432BA",
+      "colorRgb": [68, 50, 186],
+      "traits": [0.98, 0.88, 0.31, 0.65],
+      "name": {
+        "en": "Israel",
+        "fr": "Israel",
+        "de": "Israel",
+        "es": "Israel",
+        "zh": "Israel"
+      },
+      "isoA3": "ISR",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "psx",
+      "colorHex": "#9518C7",
+      "colorRgb": [149, 24, 199],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Palestine",
+        "fr": "Palestine",
+        "de": "Palestine",
+        "es": "Palestine",
+        "zh": "Palestine"
+      },
+      "isoA3": "PSX",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "irl",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.86, 0.88, 0.31, 0.65],
+      "name": {
+        "en": "Ireland",
+        "fr": "Ireland",
+        "de": "Ireland",
+        "es": "Ireland",
+        "zh": "Ireland"
+      },
+      "isoA3": "IRL",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "irq",
+      "colorHex": "#B81855",
+      "colorRgb": [184, 24, 85],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Iraq",
+        "fr": "Iraq",
+        "de": "Iraq",
+        "es": "Iraq",
+        "zh": "Iraq"
+      },
+      "isoA3": "IRQ",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "irn",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.31, 0.37, 0.75, 0.65],
+      "name": {
+        "en": "Iran",
+        "fr": "Iran",
+        "de": "Iran",
+        "es": "Iran",
+        "zh": "Iran"
+      },
+      "isoA3": "IRN",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "idn",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.51, 0.71, 0.75, 0.29],
+      "name": {
+        "en": "Indonesia",
+        "fr": "Indonesia",
+        "de": "Indonesia",
+        "es": "Indonesia",
+        "zh": "Indonesia"
+      },
+      "isoA3": "IDN",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ind",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.69, 0.71, 0.94, 0.29],
+      "name": {
+        "en": "India",
+        "fr": "India",
+        "de": "India",
+        "es": "India",
+        "zh": "India"
+      },
+      "isoA3": "IND",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "isl",
+      "colorHex": "#4A0FD4",
+      "colorRgb": [74, 15, 212],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Iceland",
+        "fr": "Iceland",
+        "de": "Iceland",
+        "es": "Iceland",
+        "zh": "Iceland"
+      },
+      "isoA3": "ISL",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "hun",
+      "colorHex": "#27A6AB",
+      "colorRgb": [39, 166, 171],
+      "traits": [0.69, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Hungary",
+        "fr": "Hungary",
+        "de": "Hungary",
+        "es": "Hungary",
+        "zh": "Hungary"
+      },
+      "isoA3": "HUN",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "hnd",
+      "colorHex": "#1992E3",
+      "colorRgb": [25, 146, 227],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Honduras",
+        "fr": "Honduras",
+        "de": "Honduras",
+        "es": "Honduras",
+        "zh": "Honduras"
+      },
+      "isoA3": "HND",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "hti",
+      "colorHex": "#9E14CC",
+      "colorRgb": [158, 20, 204],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Haiti",
+        "fr": "Haiti",
+        "de": "Haiti",
+        "es": "Haiti",
+        "zh": "Haiti"
+      },
+      "isoA3": "HTI",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "guy",
+      "colorHex": "#C722A3",
+      "colorRgb": [199, 34, 163],
+      "traits": [0.31, 0.37, 0.31, 0.45],
+      "name": {
+        "en": "Guyana",
+        "fr": "Guyana",
+        "de": "Guyana",
+        "es": "Guyana",
+        "zh": "Guyana"
+      },
+      "isoA3": "GUY",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "gnb",
+      "colorHex": "#36EBE2",
+      "colorRgb": [54, 235, 226],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Guinea-Bissau",
+        "fr": "Guinea-Bissau",
+        "de": "Guinea-Bissau",
+        "es": "Guinea-Bissau",
+        "zh": "Guinea-Bissau"
+      },
+      "isoA3": "GNB",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "gin",
+      "colorHex": "#5E0FA8",
+      "colorRgb": [94, 15, 168],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Guinea",
+        "fr": "Guinea",
+        "de": "Guinea",
+        "es": "Guinea",
+        "zh": "Guinea"
+      },
+      "isoA3": "GIN",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "gtm",
+      "colorHex": "#0BA2BD",
+      "colorRgb": [11, 162, 189],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Guatemala",
+        "fr": "Guatemala",
+        "de": "Guatemala",
+        "es": "Guatemala",
+        "zh": "Guatemala"
+      },
+      "isoA3": "GTM",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "grd",
+      "colorHex": "#A6115B",
+      "colorRgb": [166, 17, 91],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Grenada",
+        "fr": "Grenada",
+        "de": "Grenada",
+        "es": "Grenada",
+        "zh": "Grenada"
+      },
+      "isoA3": "GRD",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "grc",
+      "colorHex": "#06B6D4",
+      "colorRgb": [6, 182, 212],
+      "traits": [0.51, 0.71, 0.31, 0.65],
+      "name": {
+        "en": "Greece",
+        "fr": "Greece",
+        "de": "Greece",
+        "es": "Greece",
+        "zh": "Greece"
+      },
+      "isoA3": "GRC",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "gha",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Ghana",
+        "fr": "Ghana",
+        "de": "Ghana",
+        "es": "Ghana",
+        "zh": "Ghana"
+      },
+      "isoA3": "GHA",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "deu",
+      "colorHex": "#1E293B",
+      "colorRgb": [30, 41, 59],
+      "traits": [0.98, 0.96, 0.94, 0.84],
+      "name": {
+        "en": "Germany",
+        "fr": "Germany",
+        "de": "Germany",
+        "es": "Germany",
+        "zh": "Germany"
+      },
+      "isoA3": "DEU",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "geo",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Georgia",
+        "fr": "Georgia",
+        "de": "Georgia",
+        "es": "Georgia",
+        "zh": "Georgia"
+      },
+      "isoA3": "GEO",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "gmb",
+      "colorHex": "#2AB83B",
+      "colorRgb": [42, 184, 59],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Gambia",
+        "fr": "Gambia",
+        "de": "Gambia",
+        "es": "Gambia",
+        "zh": "Gambia"
+      },
+      "isoA3": "GMB",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "gab",
+      "colorHex": "#0FB822",
+      "colorRgb": [15, 184, 34],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Gabon",
+        "fr": "Gabon",
+        "de": "Gabon",
+        "es": "Gabon",
+        "zh": "Gabon"
+      },
+      "isoA3": "GAB",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "fra",
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
+      "traits": [0.98, 0.96, 0.75, 0.84],
+      "name": {
+        "en": "France",
+        "fr": "France",
+        "de": "France",
+        "es": "France",
+        "zh": "France"
+      },
+      "isoA3": "FRA",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "spm",
+      "colorHex": "#33CCA6",
+      "colorRgb": [51, 204, 166],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "St. Pierre and Miquelon",
+        "fr": "St. Pierre and Miquelon",
+        "de": "St. Pierre and Miquelon",
+        "es": "St. Pierre and Miquelon",
+        "zh": "St. Pierre and Miquelon"
+      },
+      "isoA3": "SPM",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "wlf",
+      "colorHex": "#2765AB",
+      "colorRgb": [39, 101, 171],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Wallis and Futuna Is.",
+        "fr": "Wallis and Futuna Is.",
+        "de": "Wallis and Futuna Is.",
+        "es": "Wallis and Futuna Is.",
+        "zh": "Wallis and Futuna Is."
+      },
+      "isoA3": "WLF",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "maf",
+      "colorHex": "#2A60B8",
+      "colorRgb": [42, 96, 184],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "St-Martin",
+        "fr": "St-Martin",
+        "de": "St-Martin",
+        "es": "St-Martin",
+        "zh": "St-Martin"
+      },
+      "isoA3": "MAF",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "blm",
+      "colorHex": "#E01090",
+      "colorRgb": [224, 16, 144],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "St-Barthélemy",
+        "fr": "St-Barthélemy",
+        "de": "St-Barthélemy",
+        "es": "St-Barthélemy",
+        "zh": "St-Barthélemy"
+      },
+      "isoA3": "BLM",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "pyf",
+      "colorHex": "#339FDE",
+      "colorRgb": [51, 159, 222],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Fr. Polynesia",
+        "fr": "Fr. Polynesia",
+        "de": "Fr. Polynesia",
+        "es": "Fr. Polynesia",
+        "zh": "Fr. Polynesia"
+      },
+      "isoA3": "PYF",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ncl",
+      "colorHex": "#ED7811",
+      "colorRgb": [237, 120, 17],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "New Caledonia",
+        "fr": "New Caledonia",
+        "de": "New Caledonia",
+        "es": "New Caledonia",
+        "zh": "New Caledonia"
+      },
+      "isoA3": "NCL",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "atf",
+      "colorHex": "#16D957",
+      "colorRgb": [22, 217, 87],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Fr. S. Antarctic Lands",
+        "fr": "Fr. S. Antarctic Lands",
+        "de": "Fr. S. Antarctic Lands",
+        "es": "Fr. S. Antarctic Lands",
+        "zh": "Fr. S. Antarctic Lands"
+      },
+      "isoA3": "ATF",
+      "continent": "Seven seas (open ocean)",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ald",
+      "colorHex": "#A2C41A",
+      "colorRgb": [162, 196, 26],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Åland",
+        "fr": "Åland",
+        "de": "Åland",
+        "es": "Åland",
+        "zh": "Åland"
+      },
+      "isoA3": "ALD",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "fin",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.86, 0.96, 0.31, 0.84],
+      "name": {
+        "en": "Finland",
+        "fr": "Finland",
+        "de": "Finland",
+        "es": "Finland",
+        "zh": "Finland"
+      },
+      "isoA3": "FIN",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "fji",
+      "colorHex": "#20E877",
+      "colorRgb": [32, 232, 119],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Fiji",
+        "fr": "Fiji",
+        "de": "Fiji",
+        "es": "Fiji",
+        "zh": "Fiji"
+      },
+      "isoA3": "FJI",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "eth",
+      "colorHex": "#E07431",
+      "colorRgb": [224, 116, 49],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Ethiopia",
+        "fr": "Ethiopia",
+        "de": "Ethiopia",
+        "es": "Ethiopia",
+        "zh": "Ethiopia"
+      },
+      "isoA3": "ETH",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "est",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.69, 0.88, 0.31, 0.65],
+      "name": {
+        "en": "Estonia",
+        "fr": "Estonia",
+        "de": "Estonia",
+        "es": "Estonia",
+        "zh": "Estonia"
+      },
+      "isoA3": "EST",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "eri",
+      "colorHex": "#9CE838",
+      "colorRgb": [156, 232, 56],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Eritrea",
+        "fr": "Eritrea",
+        "de": "Eritrea",
+        "es": "Eritrea",
+        "zh": "Eritrea"
+      },
+      "isoA3": "ERI",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "gnq",
+      "colorHex": "#8E32F0",
+      "colorRgb": [142, 50, 240],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Eq. Guinea",
+        "fr": "Eq. Guinea",
+        "de": "Eq. Guinea",
+        "es": "Eq. Guinea",
+        "zh": "Eq. Guinea"
+      },
+      "isoA3": "GNQ",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "slv",
+      "colorHex": "#2FA7C2",
+      "colorRgb": [47, 167, 194],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "El Salvador",
+        "fr": "El Salvador",
+        "de": "El Salvador",
+        "es": "El Salvador",
+        "zh": "El Salvador"
+      },
+      "isoA3": "SLV",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "egy",
+      "colorHex": "#D97706",
+      "colorRgb": [217, 119, 6],
+      "traits": [0.51, 0.55, 0.55, 0.18],
+      "name": {
+        "en": "Egypt",
+        "fr": "Egypt",
+        "de": "Egypt",
+        "es": "Egypt",
+        "zh": "Egypt"
+      },
+      "isoA3": "EGY",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ecu",
+      "colorHex": "#FBBF24",
+      "colorRgb": [251, 191, 36],
+      "traits": [0.31, 0.37, 0.31, 0.45],
+      "name": {
+        "en": "Ecuador",
+        "fr": "Ecuador",
+        "de": "Ecuador",
+        "es": "Ecuador",
+        "zh": "Ecuador"
+      },
+      "isoA3": "ECU",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "dom",
+      "colorHex": "#0EF0EC",
+      "colorRgb": [14, 240, 236],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Dominican Rep.",
+        "fr": "Dominican Rep.",
+        "de": "Dominican Rep.",
+        "es": "Dominican Rep.",
+        "zh": "Dominican Rep."
+      },
+      "isoA3": "DOM",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "dma",
+      "colorHex": "#1111A6",
+      "colorRgb": [17, 17, 166],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Dominica",
+        "fr": "Dominica",
+        "de": "Dominica",
+        "es": "Dominica",
+        "zh": "Dominica"
+      },
+      "isoA3": "DMA",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "dji",
+      "colorHex": "#1652BA",
+      "colorRgb": [22, 82, 186],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Djibouti",
+        "fr": "Djibouti",
+        "de": "Djibouti",
+        "es": "Djibouti",
+        "zh": "Djibouti"
+      },
+      "isoA3": "DJI",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "grl",
+      "colorHex": "#7425B0",
+      "colorRgb": [116, 37, 176],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Greenland",
+        "fr": "Greenland",
+        "de": "Greenland",
+        "es": "Greenland",
+        "zh": "Greenland"
+      },
+      "isoA3": "GRL",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "fro",
+      "colorHex": "#5039BF",
+      "colorRgb": [80, 57, 191],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Faeroe Is.",
+        "fr": "Faeroe Is.",
+        "de": "Faeroe Is.",
+        "es": "Faeroe Is.",
+        "zh": "Faeroe Is."
+      },
+      "isoA3": "FRO",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "dnk",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.86, 0.96, 0.31, 0.84],
+      "name": {
+        "en": "Denmark",
+        "fr": "Denmark",
+        "de": "Denmark",
+        "es": "Denmark",
+        "zh": "Denmark"
+      },
+      "isoA3": "DNK",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "cze",
+      "colorHex": "#E62294",
+      "colorRgb": [230, 34, 148],
+      "traits": [0.69, 0.88, 0.31, 0.65],
+      "name": {
+        "en": "Czechia",
+        "fr": "Czechia",
+        "de": "Czechia",
+        "es": "Czechia",
+        "zh": "Czechia"
+      },
+      "isoA3": "CZE",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "cyn",
+      "colorHex": "#B06C13",
+      "colorRgb": [176, 108, 19],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "N. Cyprus",
+        "fr": "N. Cyprus",
+        "de": "N. Cyprus",
+        "es": "N. Cyprus",
+        "zh": "N. Cyprus"
+      },
+      "isoA3": "CYN",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "cyp",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Cyprus",
+        "fr": "Cyprus",
+        "de": "Cyprus",
+        "es": "Cyprus",
+        "zh": "Cyprus"
+      },
+      "isoA3": "CYP",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "cub",
+      "colorHex": "#18D6B3",
+      "colorRgb": [24, 214, 179],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Cuba",
+        "fr": "Cuba",
+        "de": "Cuba",
+        "es": "Cuba",
+        "zh": "Cuba"
+      },
+      "isoA3": "CUB",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "hrv",
+      "colorHex": "#22C746",
+      "colorRgb": [34, 199, 70],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Croatia",
+        "fr": "Croatia",
+        "de": "Croatia",
+        "es": "Croatia",
+        "zh": "Croatia"
+      },
+      "isoA3": "HRV",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "civ",
+      "colorHex": "#C79518",
+      "colorRgb": [199, 149, 24],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Côte d'Ivoire",
+        "fr": "Côte d'Ivoire",
+        "de": "Côte d'Ivoire",
+        "es": "Côte d'Ivoire",
+        "zh": "Côte d'Ivoire"
+      },
+      "isoA3": "CIV",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "cri",
+      "colorHex": "#B82B18",
+      "colorRgb": [184, 43, 24],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Costa Rica",
+        "fr": "Costa Rica",
+        "de": "Costa Rica",
+        "es": "Costa Rica",
+        "zh": "Costa Rica"
+      },
+      "isoA3": "CRI",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "cod",
+      "colorHex": "#C28D1B",
+      "colorRgb": [194, 141, 27],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Dem. Rep. Congo",
+        "fr": "Dem. Rep. Congo",
+        "de": "Dem. Rep. Congo",
+        "es": "Dem. Rep. Congo",
+        "zh": "Dem. Rep. Congo"
+      },
+      "isoA3": "COD",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "cog",
+      "colorHex": "#DE1293",
+      "colorRgb": [222, 18, 147],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Congo",
+        "fr": "Congo",
+        "de": "Congo",
+        "es": "Congo",
+        "zh": "Congo"
+      },
+      "isoA3": "COG",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "com",
+      "colorHex": "#37A8C4",
+      "colorRgb": [55, 168, 196],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Comoros",
+        "fr": "Comoros",
+        "de": "Comoros",
+        "es": "Comoros",
+        "zh": "Comoros"
+      },
+      "isoA3": "COM",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "col",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.51, 0.55, 0.55, 0.45],
+      "name": {
+        "en": "Colombia",
+        "fr": "Colombia",
+        "de": "Colombia",
+        "es": "Colombia",
+        "zh": "Colombia"
+      },
+      "isoA3": "COL",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "chn",
+      "colorHex": "#EF4444",
+      "colorRgb": [239, 68, 68],
+      "traits": [0.98, 0.71, 0.94, 0.57],
+      "name": {
+        "en": "China",
+        "fr": "China",
+        "de": "China",
+        "es": "China",
+        "zh": "China"
+      },
+      "isoA3": "CHN",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mac",
+      "colorHex": "#A831A6",
+      "colorRgb": [168, 49, 166],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Macao",
+        "fr": "Macao",
+        "de": "Macao",
+        "es": "Macao",
+        "zh": "Macao"
+      },
+      "isoA3": "MAC",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "hkg",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Hong Kong",
+        "fr": "Hong Kong",
+        "de": "Hong Kong",
+        "es": "Hong Kong",
+        "zh": "Hong Kong"
+      },
+      "isoA3": "HKG",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "chl",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.51, 0.71, 0.31, 0.45],
+      "name": {
+        "en": "Chile",
+        "fr": "Chile",
+        "de": "Chile",
+        "es": "Chile",
+        "zh": "Chile"
+      },
+      "isoA3": "CHL",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "tcd",
+      "colorHex": "#240DBA",
+      "colorRgb": [36, 13, 186],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Chad",
+        "fr": "Chad",
+        "de": "Chad",
+        "es": "Chad",
+        "zh": "Chad"
+      },
+      "isoA3": "TCD",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "caf",
+      "colorHex": "#D4AE19",
+      "colorRgb": [212, 174, 25],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Central African Rep.",
+        "fr": "Central African Rep.",
+        "de": "Central African Rep.",
+        "es": "Central African Rep.",
+        "zh": "Central African Rep."
+      },
+      "isoA3": "CAF",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "cpv",
+      "colorHex": "#5FB324",
+      "colorRgb": [95, 179, 36],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Cabo Verde",
+        "fr": "Cabo Verde",
+        "de": "Cabo Verde",
+        "es": "Cabo Verde",
+        "zh": "Cabo Verde"
+      },
+      "isoA3": "CPV",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "can",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.86, 0.96, 0.94, 0.84],
+      "name": {
+        "en": "Canada",
+        "fr": "Canada",
+        "de": "Canada",
+        "es": "Canada",
+        "zh": "Canada"
+      },
+      "isoA3": "CAN",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "cmr",
+      "colorHex": "#51D936",
+      "colorRgb": [81, 217, 54],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Cameroon",
+        "fr": "Cameroon",
+        "de": "Cameroon",
+        "es": "Cameroon",
+        "zh": "Cameroon"
+      },
+      "isoA3": "CMR",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "khm",
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
+      "traits": [0.31, 0.37, 0.31, 0.29],
+      "name": {
+        "en": "Cambodia",
+        "fr": "Cambodia",
+        "de": "Cambodia",
+        "es": "Cambodia",
+        "zh": "Cambodia"
+      },
+      "isoA3": "KHM",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "mmr",
+      "colorHex": "#EB8736",
+      "colorRgb": [235, 135, 54],
+      "traits": [0.31, 0.37, 0.31, 0.29],
+      "name": {
+        "en": "Myanmar",
+        "fr": "Myanmar",
+        "de": "Myanmar",
+        "es": "Myanmar",
+        "zh": "Myanmar"
+      },
+      "isoA3": "MMR",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "bdi",
+      "colorHex": "#A3E645",
+      "colorRgb": [163, 230, 69],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Burundi",
+        "fr": "Burundi",
+        "de": "Burundi",
+        "es": "Burundi",
+        "zh": "Burundi"
+      },
+      "isoA3": "BDI",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "bfa",
+      "colorHex": "#1EEBE0",
+      "colorRgb": [30, 235, 224],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Burkina Faso",
+        "fr": "Burkina Faso",
+        "de": "Burkina Faso",
+        "es": "Burkina Faso",
+        "zh": "Burkina Faso"
+      },
+      "isoA3": "BFA",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "bgr",
+      "colorHex": "#A83331",
+      "colorRgb": [168, 51, 49],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Bulgaria",
+        "fr": "Bulgaria",
+        "de": "Bulgaria",
+        "es": "Bulgaria",
+        "zh": "Bulgaria"
+      },
+      "isoA3": "BGR",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "brn",
+      "colorHex": "#5536C7",
+      "colorRgb": [85, 54, 199],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Brunei",
+        "fr": "Brunei",
+        "de": "Brunei",
+        "es": "Brunei",
+        "zh": "Brunei"
+      },
+      "isoA3": "BRN",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "bra",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.69, 0.71, 0.75, 0.45],
+      "name": {
+        "en": "Brazil",
+        "fr": "Brazil",
+        "de": "Brazil",
+        "es": "Brazil",
+        "zh": "Brazil"
+      },
+      "isoA3": "BRA",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "bwa",
+      "colorHex": "#44DB2A",
+      "colorRgb": [68, 219, 42],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Botswana",
+        "fr": "Botswana",
+        "de": "Botswana",
+        "es": "Botswana",
+        "zh": "Botswana"
+      },
+      "isoA3": "BWA",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "bih",
+      "colorHex": "#CF633C",
+      "colorRgb": [207, 99, 60],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Bosnia and Herz.",
+        "fr": "Bosnia and Herz.",
+        "de": "Bosnia and Herz.",
+        "es": "Bosnia and Herz.",
+        "zh": "Bosnia and Herz."
+      },
+      "isoA3": "BIH",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "bol",
+      "colorHex": "#22B57A",
+      "colorRgb": [34, 181, 122],
+      "traits": [0.31, 0.37, 0.31, 0.45],
+      "name": {
+        "en": "Bolivia",
+        "fr": "Bolivia",
+        "de": "Bolivia",
+        "es": "Bolivia",
+        "zh": "Bolivia"
+      },
+      "isoA3": "BOL",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "btn",
+      "colorHex": "#BF381D",
+      "colorRgb": [191, 56, 29],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Bhutan",
+        "fr": "Bhutan",
+        "de": "Bhutan",
+        "es": "Bhutan",
+        "zh": "Bhutan"
+      },
+      "isoA3": "BTN",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ben",
+      "colorHex": "#A8C437",
+      "colorRgb": [168, 196, 55],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Benin",
+        "fr": "Benin",
+        "de": "Benin",
+        "es": "Benin",
+        "zh": "Benin"
+      },
+      "isoA3": "BEN",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "blz",
+      "colorHex": "#AD352F",
+      "colorRgb": [173, 53, 47],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Belize",
+        "fr": "Belize",
+        "de": "Belize",
+        "es": "Belize",
+        "zh": "Belize"
+      },
+      "isoA3": "BLZ",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "bel",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.86, 0.88, 0.55, 0.65],
+      "name": {
+        "en": "Belgium",
+        "fr": "Belgium",
+        "de": "Belgium",
+        "es": "Belgium",
+        "zh": "Belgium"
+      },
+      "isoA3": "BEL",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "blr",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Belarus",
+        "fr": "Belarus",
+        "de": "Belarus",
+        "es": "Belarus",
+        "zh": "Belarus"
+      },
+      "isoA3": "BLR",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "brb",
+      "colorHex": "#A6B522",
+      "colorRgb": [166, 181, 34],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Barbados",
+        "fr": "Barbados",
+        "de": "Barbados",
+        "es": "Barbados",
+        "zh": "Barbados"
+      },
+      "isoA3": "BRB",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "bgd",
+      "colorHex": "#28A6A8",
+      "colorRgb": [40, 166, 168],
+      "traits": [0.31, 0.55, 0.55, 0.29],
+      "name": {
+        "en": "Bangladesh",
+        "fr": "Bangladesh",
+        "de": "Bangladesh",
+        "es": "Bangladesh",
+        "zh": "Bangladesh"
+      },
+      "isoA3": "BGD",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "bhr",
+      "colorHex": "#D62243",
+      "colorRgb": [214, 34, 67],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Bahrain",
+        "fr": "Bahrain",
+        "de": "Bahrain",
+        "es": "Bahrain",
+        "zh": "Bahrain"
+      },
+      "isoA3": "BHR",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "bhs",
+      "colorHex": "#2FA7C2",
+      "colorRgb": [47, 167, 194],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Bahamas",
+        "fr": "Bahamas",
+        "de": "Bahamas",
+        "es": "Bahamas",
+        "zh": "Bahamas"
+      },
+      "isoA3": "BHS",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "aze",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Azerbaijan",
+        "fr": "Azerbaijan",
+        "de": "Azerbaijan",
+        "es": "Azerbaijan",
+        "zh": "Azerbaijan"
+      },
+      "isoA3": "AZE",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "aut",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.86, 0.88, 0.31, 0.65],
+      "name": {
+        "en": "Austria",
+        "fr": "Austria",
+        "de": "Austria",
+        "es": "Austria",
+        "zh": "Austria"
+      },
+      "isoA3": "AUT",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "aus",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.86, 0.96, 0.94, 0.84],
+      "name": {
+        "en": "Australia",
+        "fr": "Australia",
+        "de": "Australia",
+        "es": "Australia",
+        "zh": "Australia"
+      },
+      "isoA3": "AUS",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ioa",
+      "colorHex": "#E37124",
+      "colorRgb": [227, 113, 36],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Indian Ocean Ter.",
+        "fr": "Indian Ocean Ter.",
+        "de": "Indian Ocean Ter.",
+        "es": "Indian Ocean Ter.",
+        "zh": "Indian Ocean Ter."
+      },
+      "isoA3": "IOA",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "hmd",
+      "colorHex": "#40EDE7",
+      "colorRgb": [64, 237, 231],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Heard I. and McDonald Is.",
+        "fr": "Heard I. and McDonald Is.",
+        "de": "Heard I. and McDonald Is.",
+        "es": "Heard I. and McDonald Is.",
+        "zh": "Heard I. and McDonald Is."
+      },
+      "isoA3": "HMD",
+      "continent": "Seven seas (open ocean)",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "nfk",
+      "colorHex": "#193FD4",
+      "colorRgb": [25, 63, 212],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Norfolk Island",
+        "fr": "Norfolk Island",
+        "de": "Norfolk Island",
+        "es": "Norfolk Island",
+        "zh": "Norfolk Island"
+      },
+      "isoA3": "NFK",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "atc",
+      "colorHex": "#B0261C",
+      "colorRgb": [176, 38, 28],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Ashmore and Cartier Is.",
+        "fr": "Ashmore and Cartier Is.",
+        "de": "Ashmore and Cartier Is.",
+        "es": "Ashmore and Cartier Is.",
+        "zh": "Ashmore and Cartier Is."
+      },
+      "isoA3": "ATC",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "arm",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Armenia",
+        "fr": "Armenia",
+        "de": "Armenia",
+        "es": "Armenia",
+        "zh": "Armenia"
+      },
+      "isoA3": "ARM",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "arg",
+      "colorHex": "#38BDF8",
+      "colorRgb": [56, 189, 248],
+      "traits": [0.51, 0.71, 0.55, 0.45],
+      "name": {
+        "en": "Argentina",
+        "fr": "Argentina",
+        "de": "Argentina",
+        "es": "Argentina",
+        "zh": "Argentina"
+      },
+      "isoA3": "ARG",
+      "continent": "South America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "atg",
+      "colorHex": "#1442CC",
+      "colorRgb": [20, 66, 204],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Antigua and Barb.",
+        "fr": "Antigua and Barb.",
+        "de": "Antigua and Barb.",
+        "es": "Antigua and Barb.",
+        "zh": "Antigua and Barb."
+      },
+      "isoA3": "ATG",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ago",
+      "colorHex": "#2437E3",
+      "colorRgb": [36, 55, 227],
+      "traits": [0.31, 0.37, 0.31, 0.18],
+      "name": {
+        "en": "Angola",
+        "fr": "Angola",
+        "de": "Angola",
+        "es": "Angola",
+        "zh": "Angola"
+      },
+      "isoA3": "AGO",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "and",
+      "colorHex": "#B81855",
+      "colorRgb": [184, 24, 85],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Andorra",
+        "fr": "Andorra",
+        "de": "Andorra",
+        "es": "Andorra",
+        "zh": "Andorra"
+      },
+      "isoA3": "AND",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "dza",
+      "colorHex": "#1D4ED8",
+      "colorRgb": [29, 78, 216],
+      "traits": [0.31, 0.55, 0.31, 0.18],
+      "name": {
+        "en": "Algeria",
+        "fr": "Algeria",
+        "de": "Algeria",
+        "es": "Algeria",
+        "zh": "Algeria"
+      },
+      "isoA3": "DZA",
+      "continent": "Africa",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "alb",
+      "colorHex": "#35B582",
+      "colorRgb": [53, 181, 130],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Albania",
+        "fr": "Albania",
+        "de": "Albania",
+        "es": "Albania",
+        "zh": "Albania"
+      },
+      "isoA3": "ALB",
+      "continent": "Europe",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "afg",
+      "colorHex": "#4423C4",
+      "colorRgb": [68, 35, 196],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Afghanistan",
+        "fr": "Afghanistan",
+        "de": "Afghanistan",
+        "es": "Afghanistan",
+        "zh": "Afghanistan"
+      },
+      "isoA3": "AFG",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "kas",
+      "colorHex": "#1958B5",
+      "colorRgb": [25, 88, 181],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Siachen Glacier",
+        "fr": "Siachen Glacier",
+        "de": "Siachen Glacier",
+        "es": "Siachen Glacier",
+        "zh": "Siachen Glacier"
+      },
+      "isoA3": "KAS",
+      "continent": "Asia",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "ata",
+      "colorHex": "#16AB1B",
+      "colorRgb": [22, 171, 27],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Antarctica",
+        "fr": "Antarctica",
+        "de": "Antarctica",
+        "es": "Antarctica",
+        "zh": "Antarctica"
+      },
+      "isoA3": "ATA",
+      "continent": "Antarctica",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "sxm",
+      "colorHex": "#5CAB16",
+      "colorRgb": [92, 171, 22],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Sint Maarten",
+        "fr": "Sint Maarten",
+        "de": "Sint Maarten",
+        "es": "Sint Maarten",
+        "zh": "Sint Maarten"
+      },
+      "isoA3": "SXM",
+      "continent": "North America",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    },
+    {
+      "id": "tuv",
+      "colorHex": "#7724B3",
+      "colorRgb": [119, 36, 179],
+      "traits": [0.31, 0.37, 0.31, 0.65],
+      "name": {
+        "en": "Tuvalu",
+        "fr": "Tuvalu",
+        "de": "Tuvalu",
+        "es": "Tuvalu",
+        "zh": "Tuvalu"
+      },
+      "isoA3": "TUV",
+      "continent": "Oceania",
+      "fromYear": 1900,
+      "toYear": 1990,
+      "kinshipType": "Post-Industrial Nuclear & Globalized Urban Households",
+      "lithicTechnocomplex": "Electric Dynamos, Bessemer Steel & Internal Combustion Engines",
+      "caloricIntakePerCapitaKcal": 3200
+    }
+  ]
+}

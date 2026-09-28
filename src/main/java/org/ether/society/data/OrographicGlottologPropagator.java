@@ -49,13 +49,20 @@ public class OrographicGlottologPropagator {
             int targetWidth,
             int targetHeight,
             BufferedImage elevationMask) {
+        return propagateCulturalSeeds(seeds, targetWidth, targetHeight, elevationMask, 1e5f);
+    }
+
+    public static BufferedImage propagateCulturalSeeds(
+            List<CulturalSeed> seeds,
+            int targetWidth,
+            int targetHeight,
+            BufferedImage elevationMask,
+            float maxReachCost) {
 
         if (seeds == null || seeds.isEmpty()) {
             return new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
         }
 
-        // We run the fast Dijkstra cost-distance propagation on a working grid (e.g. 360x180 or 720x360)
-        // and upscale bilinearly to target resolution for ultra-fast $O(N \log N)$ execution.
         int gridW = 720;
         int gridH = 360;
 
@@ -67,7 +74,6 @@ public class OrographicGlottologPropagator {
             Arrays.fill(seedOwner[y], -1);
         }
 
-        // Priority queue for multi-source Dijkstra: [cost, y, x, seedIdx]
         PriorityQueue<float[]> pq = new PriorityQueue<>(Comparator.comparingDouble(a -> a[0]));
 
         for (int i = 0; i < seeds.size(); i++) {
@@ -75,54 +81,43 @@ public class OrographicGlottologPropagator {
             int sx = (int) Math.clamp(Math.round(((s.lon() + 180.0) / 360.0) * (gridW - 1)), 0, gridW - 1);
             int sy = (int) Math.clamp(Math.round(((90.0 - s.lat()) / 180.0) * (gridH - 1)), 0, gridH - 1);
 
-            // Seed initial cost inversely proportional to expansion weight
             float initCost = 0.0f;
             minCost[sy][sx] = initCost;
             seedOwner[sy][sx] = i;
             pq.add(new float[]{initCost, sy, sx, i});
         }
 
-        // Precompute land and mountain friction
         float[][] frictionGrid = new float[gridH][gridW];
         for (int y = 0; y < gridH; y++) {
             double lat = 90.0 - (y + 0.5) / gridH * 180.0;
-            double latRad = Math.toRadians(lat);
-            double cosLat = Math.max(0.15, Math.cos(latRad));
-
             for (int x = 0; x < gridW; x++) {
                 double lon = -180.0 + (x + 0.5) / gridW * 360.0;
-                boolean isLand = HistoricalMapGenerator.isLand(lon, lat);
+                boolean isLand = HistoricalMapGenerator.isLand(lon, lat) && lat >= -60.0;
                 if (!isLand) {
-                    frictionGrid[y][x] = 1e6f; // Impassable ocean
+                    frictionGrid[y][x] = 1e6f; // Impassable ocean or Antarctic ice sheet
                     continue;
                 }
 
-                // Base friction
                 float baseFriction = 1.0f;
 
-                // High altitude / mountain friction (Himalayas, Andes, Alps, Tibetan Plateau)
+                // Mountain friction
                 if (lat >= 26.0 && lat <= 38.0 && lon >= 74.0 && lon <= 102.0) {
-                    // Tibetan Plateau / Himalayas
                     baseFriction += 8.0f;
                 } else if (lat >= -50.0 && lat <= 10.0 && lon >= -80.0 && lon <= -65.0) {
-                    // Andes Cordillera
                     baseFriction += 5.0f;
                 } else if (lat >= 42.0 && lat <= 48.0 && lon >= 5.0 && lon <= 16.0) {
-                    // European Alps
                     baseFriction += 4.0f;
                 } else if (lat >= 30.0 && lat <= 40.0 && lon >= 44.0 && lon <= 55.0) {
-                    // Zagros / Caucasus
                     baseFriction += 4.5f;
                 }
 
-                // Hyper-arid desert friction (Sahara core, Rub' al Khali)
+                // Desert friction
                 if (lat >= 18.0 && lat <= 28.0 && lon >= -10.0 && lon <= 30.0) {
-                    baseFriction += 3.5f; // Sahara
+                    baseFriction += 3.5f;
                 } else if (lat >= 18.0 && lat <= 26.0 && lon >= 42.0 && lon <= 56.0) {
-                    baseFriction += 4.0f; // Arabian Desert
+                    baseFriction += 4.0f;
                 }
 
-                // River valleys reduce friction (Nile, Tigris, Euphrates, Indus, Ganges, Yangtze, Yellow, Danube, Rhine)
                 if (isRiverCorridor(lon, lat)) {
                     baseFriction = Math.max(0.4f, baseFriction * 0.4f);
                 }
@@ -131,7 +126,6 @@ public class OrographicGlottologPropagator {
             }
         }
 
-        // 8-neighbor offsets
         int[] dx = {-1, 1, 0, 0, -1, 1, -1, 1};
         int[] dy = {0, 0, -1, 1, -1, -1, 1, 1};
         float[] distMult = {1.0f, 1.0f, 1.0f, 1.0f, 1.414f, 1.414f, 1.414f, 1.414f};
@@ -150,14 +144,13 @@ public class OrographicGlottologPropagator {
 
             for (int k = 0; k < 8; k++) {
                 int ny = cy + dy[k];
-                int nx = (cx + dx[k] + gridW) % gridW; // Periodic longitude wrapping
+                int nx = (cx + dx[k] + gridW) % gridW;
 
                 if (ny < 0 || ny >= gridH) continue;
 
                 float f = frictionGrid[ny][nx];
-                if (f >= 1e5f) continue; // Ocean
+                if (f >= 1e5f) continue;
 
-                // Distance adjusted for latitude metric scale
                 float stepDist = (float) (distMult[k] * (k < 2 ? (1.0 / cosLat) : 1.0));
                 CulturalSeed s = seeds.get(owner);
                 float speedWeight = (float) Math.max(0.2, s.expansionWeight());
@@ -171,7 +164,6 @@ public class OrographicGlottologPropagator {
             }
         }
 
-        // Generate output raster with elevation mask applied
         BufferedImage img = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
 
         for (int y = 0; y < targetHeight; y++) {
@@ -186,16 +178,16 @@ public class OrographicGlottologPropagator {
                 int my = Math.clamp((int) ((y + 0.5) * (elevationMask != null ? elevationMask.getHeight() : targetHeight) / targetHeight), 0, (elevationMask != null ? elevationMask.getHeight() : targetHeight) - 1);
                 int landSample = (elevationMask != null) ? elevationMask.getRaster().getSample(mx, my, 0) : 255;
 
-                if (landSample == 0 || !HistoricalMapGenerator.isLand(lon, lat)) {
+                if (landSample == 0 || lat < -60.0 || !HistoricalMapGenerator.isLand(lon, lat)) {
                     img.setRGB(x, y, 0x000000);
                     continue;
                 }
 
                 int owner = seedOwner[gy][gx];
-                if (owner >= 0 && owner < seeds.size() && minCost[gy][gx] < 1e5f) {
+                if (owner >= 0 && owner < seeds.size() && minCost[gy][gx] <= maxReachCost) {
                     img.setRGB(x, y, seeds.get(owner).rgbColor());
                 } else {
-                    // Neutral uncertainty gray — land with no assigned seed owner
+                    // Neutral uncertainty gray — stateless or out of state logistical reach
                     img.setRGB(x, y, 0x374151);
                 }
             }

@@ -92,4 +92,21 @@ public class NotificationOverlay extends VBox {
 
         showSpatialNotification(eventText, color, onClickAction);
     }
+
+    public void showWarning(String message) {
+        showNotification(message, "#f59e0b");
+    }
+
+    public void showInfo(String message) {
+        showNotification(message, "#38bdf8");
+    }
+
+    public void showError(String message) {
+        showNotification(message, "#ef4444");
+    }
+
+    public void showSuccess(String message) {
+        showNotification(message, "#10b981");
+    }
 }
+

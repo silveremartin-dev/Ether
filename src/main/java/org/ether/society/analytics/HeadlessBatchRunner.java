@@ -22,17 +22,37 @@ import java.util.Random;
 public class HeadlessBatchRunner {
     private static final Logger logger = LoggerFactory.getLogger(HeadlessBatchRunner.class);
 
+    @FunctionalInterface
+    public interface BatchProgressListener {
+        void onProgress(Scenario scenario, double progress, int currentYear, int endYear);
+    }
+
     public static List<SimulationRunRecord> executeBatch(List<Scenario> scenarios) {
+        return executeBatch(scenarios, null, null);
+    }
+
+    public static List<SimulationRunRecord> executeBatch(List<Scenario> scenarios, BatchProgressListener listener, java.util.function.BooleanSupplier cancelSupplier) {
         List<SimulationRunRecord> results = new ArrayList<>();
         if (scenarios != null) {
             for (Scenario s : scenarios) {
-                results.add(executeScenarioHeadless(s));
+                if (cancelSupplier != null && cancelSupplier.getAsBoolean()) {
+                    logger.info("Batch execution was cancelled by user.");
+                    break;
+                }
+                SimulationRunRecord r = executeScenarioHeadless(s, listener, cancelSupplier);
+                if (r != null) {
+                    results.add(r);
+                }
             }
         }
         return results;
     }
 
     public static SimulationRunRecord executeScenarioHeadless(Scenario scenario) {
+        return executeScenarioHeadless(scenario, null, null);
+    }
+
+    public static SimulationRunRecord executeScenarioHeadless(Scenario scenario, BatchProgressListener listener, java.util.function.BooleanSupplier cancelSupplier) {
         logger.info("Starting Headless execution for scenario: '{}' (Years {} -> {})",
             scenario.getName(), scenario.getStartDateYear(), scenario.getEndDateYear());
 
@@ -79,6 +99,23 @@ public class HeadlessBatchRunner {
         Random rand = new Random(scenario.getSeed());
 
         for (long yr = startYear; yr <= endYear; yr += step) {
+            if (cancelSupplier != null && cancelSupplier.getAsBoolean()) {
+                logger.info("Scenario execution '{}' cancelled during tick loop at year {}.", scenario.getName(), yr);
+                return null;
+            }
+            if (listener != null) {
+                double prog = Math.min(1.0, (double) (yr - startYear) / (double) Math.max(1, durationYears));
+                listener.onProgress(scenario, prog, (int) yr, (int) endYear);
+            }
+
+            // Sleep briefly to simulate compute throughput and allow UI animation rendering
+            try {
+                Thread.sleep(15);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return null;
+            }
+
             int elapsed = (int) (yr - startYear);
 
             // Simulation formula reflecting scenario parameters

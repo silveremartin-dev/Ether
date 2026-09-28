@@ -185,4 +185,84 @@ public class InspectMapsTest {
             System.out.printf("%-38s | Sov: #%06X | Pathogen R0:%3d%n", l.name, cSov, cPath);
         }
     }
+
+    @Test
+    public void inspectYearMinus1000AncientWorld() throws Exception {
+        org.ether.society.model.Scenario sc = new org.ether.society.model.Scenario();
+        sc.setName("Early Iron Age & Neo-Assyrian / Zhou Dynasty Emergence (-1000 BC)");
+        sc.setStartDateYear(-1000L);
+        sc.setPopulationDensityType("MESOPOTAMIA_ASSYRIA");
+        sc.setInitialHumanCount(100_000_000L);
+        sc.setInitialTechLevel(2.6);
+
+        HistoricalMapGenerator.forceGenerateCulturalTensorsOnly(sc);
+
+        String dir = "data/maps/ether/earth/-1000/";
+        BufferedImage sov = ImageIO.read(new File(dir + "earth_-1000_sovereignty.png"));
+        BufferedImage path = ImageIO.read(new File(dir + "earth_-1000_pathogen.png"));
+
+        record Loc(String name, double lon, double lat) {}
+        Loc[] locs = new Loc[]{
+            new Loc("Nineveh (Assyrian Empire)", 43.15, 36.36),
+            new Loc("Haojing (Western Zhou China)", 108.7, 34.2),
+            new Loc("Thebes (21st Dyn. Egypt)", 32.65, 25.72),
+            new Loc("Athens (Archaic Greece)", 23.7, 37.9),
+            new Loc("Congo Basin (Stateless Frontier)", 22.0, 0.0),
+            new Loc("Amazon Basin (Stateless Frontier)", -60.0, -3.0),
+            new Loc("Northern Canada (Stateless Frontier)", -95.0, 56.0),
+            new Loc("Siberia (Stateless Frontier)", 120.0, 62.0),
+            new Loc("Antarctica (Uninhabited Ice)", 0.0, -75.0)
+        };
+
+        System.out.println("=== -1000 BC Cartographic Tensor Pixel Samples ===");
+        for (Loc l : locs) {
+            int x = Math.clamp((int)(((l.lon + 180.0) / 360.0) * sov.getWidth()), 0, sov.getWidth() - 1);
+            int y = Math.clamp((int)(((90.0 - l.lat) / 180.0) * sov.getHeight()), 0, sov.getHeight() - 1);
+            int cSov = sov.getRGB(x, y) & 0xFFFFFF;
+            int cPath = path.getRGB(x, y) & 0xFF;
+            System.out.printf("%-40s | Sov: #%06X | Pathogen R0:%3d%n", l.name, cSov, cPath);
+        }
+    }
+
+    @Test
+    public void inspectYear0ClassicalWorld() throws Exception {
+        org.ether.society.model.Scenario sc = new org.ether.society.model.Scenario();
+        sc.setName("Pax Romana, Han Empire & Classical Axial Age (1 AD)");
+        sc.setStartDateYear(0L);
+        sc.setPopulationDensityType("ROMAN_EMPIRE");
+        sc.setInitialHumanCount(250_000_000L);
+        sc.setInitialTechLevel(3.2);
+
+        HistoricalMapGenerator.forceGenerateCulturalTensorsOnly(sc);
+
+        String dir = "data/maps/ether/earth/0/";
+        BufferedImage iso = ImageIO.read(new File(dir + "earth_0_isogloss.png"));
+        BufferedImage kin = ImageIO.read(new File(dir + "earth_0_kinship.png"));
+        BufferedImage sov = ImageIO.read(new File(dir + "earth_0_sovereignty.png"));
+        BufferedImage trade = ImageIO.read(new File(dir + "earth_0_tradenetwork.png"));
+        BufferedImage path = ImageIO.read(new File(dir + "earth_0_pathogen.png"));
+
+        record Loc(String name, double lon, double lat) {}
+        Loc[] locs = new Loc[]{
+            new Loc("Rome (Roman Empire)", 12.5, 41.9),
+            new Loc("Chang'an (Han Dynasty)", 108.9, 34.3),
+            new Loc("Alexandria (Roman Egypt)", 29.9, 31.2),
+            new Loc("Ctesiphon (Parthian Empire)", 44.6, 33.1),
+            new Loc("Taxila (Kushan Empire)", 72.8, 33.8),
+            new Loc("Amazon (Stateless Frontier)", -60.0, -3.0),
+            new Loc("Antarctica East (Uninhabited)", 0.0, -75.0),
+            new Loc("Antarctica West (Uninhabited)", -100.0, -80.0)
+        };
+
+        System.out.println("=== 0 AD Cartographic Tensor Pixel Samples ===");
+        for (Loc l : locs) {
+            int x = Math.clamp((int)(((l.lon + 180.0) / 360.0) * iso.getWidth()), 0, iso.getWidth() - 1);
+            int y = Math.clamp((int)(((90.0 - l.lat) / 180.0) * iso.getHeight()), 0, iso.getHeight() - 1);
+            int cIso = iso.getRGB(x, y) & 0xFFFFFF;
+            int cKin = kin.getRGB(x, y) & 0xFFFFFF;
+            int cSov = sov.getRGB(x, y) & 0xFFFFFF;
+            int cPath = path.getRGB(x, y) & 0xFF;
+            System.out.printf("%-35s | Iso: #%06X | Kin: #%06X | Sov: #%06X | Pathogen: %3d%n", l.name, cIso, cKin, cSov, cPath);
+        }
+    }
 }

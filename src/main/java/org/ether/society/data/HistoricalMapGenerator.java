@@ -1249,11 +1249,14 @@ public class HistoricalMapGenerator {
             // 4. Ensure invariant NOAA ETOPO relief elevation map is present across all epochs
             java.nio.file.Path elevPath = earthDir.resolve("earth_" + year + "_elevation.png");
             if (!java.nio.file.Files.exists(elevPath)) {
-                java.io.File srcElev = new java.io.File("data/maps/reference_earth_elevation.png");
-                if (!srcElev.exists()) srcElev = new java.io.File("data/maps/ether/earth/-100000/earth_-100000_elevation.png");
+                java.io.File srcElev = new java.io.File("data/maps/ether/earth/earth_elevation.png");
                 if (!srcElev.exists()) srcElev = new java.io.File("data/maps/ether/earth/2026/earth_2026_elevation.png");
+                if (!srcElev.exists()) srcElev = new java.io.File("data/maps/ether/earth/-100000/earth_-100000_elevation.png");
                 if (srcElev.exists()) {
                     java.nio.file.Files.copy(srcElev.toPath(), elevPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                } else {
+                    BufferedImage mask = loadElevationMask();
+                    if (mask != null) ImageIO.write(mask, "PNG", elevPath.toFile());
                 }
             }
 
@@ -1293,6 +1296,8 @@ public class HistoricalMapGenerator {
             if (type == null) type = "URBAN_CLUSTERS";
             long year = scenario.getStartDateYear();
 
+            // 1. Cliodynamic & Cultural Tensors (10 rasters)
+            BufferedImage imgDensity = rasterizeDensityMap(type, scenario);
             BufferedImage imgIsogloss = rasterizeIsoglossMap(type, scenario);
             BufferedImage imgKinship = rasterizeKinshipMap(type, scenario);
             BufferedImage imgRituals = rasterizeRitualsMap(type, scenario);
@@ -1303,13 +1308,29 @@ public class HistoricalMapGenerator {
             BufferedImage imgEcological = rasterizeEcologicalFootprintMap(type, scenario);
             BufferedImage imgPathogen = rasterizePathogenImmunityMap(type, scenario);
 
-            saveCulturalTensorsToYearDirectory(year, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
-            saveImagesToDiskCache(scenario.getName(), null, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
+            // 2. Geological & Energy Resource Tensors (10 rasters)
+            BufferedImage imgCoal = rasterizeCoalMap(type, scenario);
+            BufferedImage imgOil = rasterizeOilMap(type, scenario);
+            BufferedImage imgGas = rasterizeGasMap(type, scenario);
+            BufferedImage imgUranium = rasterizeUraniumMap(type, scenario);
+            BufferedImage imgHe3 = rasterizeHelium3Map(type, scenario);
+            BufferedImage imgIronCopper = rasterizeIronCopperMap(type, scenario);
+            BufferedImage imgPreciousMetals = rasterizePreciousMetalsMap(type, scenario);
+            BufferedImage imgRareEarths = rasterizeRareEarthsMap(type, scenario);
+            BufferedImage imgMantleHeat = rasterizeMantleHeatMap(type, scenario);
+            BufferedImage imgAquifer = rasterizeAquiferMap(type, scenario);
 
-            logger.info("Successfully regenerated and persisted ONLY the 9 cultural tensors for scenario '{}' (Year {}).",
+            // 3. Save all 25 standard rasters (Physical + Cliodynamic + Resources) to year directory
+            saveImagesToYearDirectory(year, imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology,
+                    imgTrade, imgInstitutional, imgEcological, imgPathogen, imgCoal, imgOil, imgGas, imgUranium,
+                    imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
+
+            saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
+
+            logger.info("Successfully regenerated and persisted the COMPLETE 25-raster suite for scenario '{}' (Year {}).",
                     scenario.getName(), year);
         } catch (Exception e) {
-            logger.error("Failed to generate cultural tensors for scenario {}", scenario.getName(), e);
+            logger.error("Failed to generate complete raster suite for scenario {}", scenario.getName(), e);
         }
     }
 
@@ -2019,14 +2040,15 @@ public class HistoricalMapGenerator {
         BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 
         for (int y = 0; y < h; y++) {
+            double lat = 90.0 - (y + 0.5) / h * 180.0;
             for (int x = 0; x < w; x++) {
                 int mx = (int) ((x + 0.5) * (mask != null ? mask.getWidth() : w) / w);
                 int my = (int) ((y + 0.5) * (mask != null ? mask.getHeight() : h) / h);
                 mx = Math.clamp(mx, 0, (mask != null ? mask.getWidth() : w) - 1);
                 my = Math.clamp(my, 0, (mask != null ? mask.getHeight() : h) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                if (land == 0) {
-                    // Ocean pixel -> strictly pure black
+                if (land == 0 || lat < -60.0) {
+                    // Ocean pixel or uninhabited Antarctic ice cap -> strictly pure black
                     out.setRGB(x, y, 0x000000);
                 } else {
                     out.setRGB(x, y, src.getRGB(x, y));
@@ -2457,20 +2479,20 @@ public class HistoricalMapGenerator {
             return applyAltimetryCoastlineMask(img);
         }
 
-        // Orographic cost-distance propagation — no hard gaussian cutoffs, no circular holes
-        // Uncovered inhabited land pixels receive neutral slate-gray #374151
+        // Orographic cost-distance propagation with finite sovereign reach limit (38.0)
+        // Land outside state logistical projection capacity remains neutral slate-gray #374151
         List<OrographicGlottologPropagator.CulturalSeed> sovSeeds = new ArrayList<>();
         for (double[] ec : empireCores) {
             sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(ec[0], ec[1], (int) ec[2], ec[3] / 18.0, "Polity"));
         }
-        BufferedImage sovImg = OrographicGlottologPropagator.propagateCulturalSeeds(sovSeeds, WIDTH, HEIGHT, mask);
-        // Apply hominin occupancy: unpopulated land -> black, populated uncovered -> gray #374151
+        BufferedImage sovImg = OrographicGlottologPropagator.propagateCulturalSeeds(sovSeeds, WIDTH, HEIGHT, mask, 38.0f);
+        // Apply hominin occupancy: unpopulated land or Antarctica -> black
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
                 double occWeight = getHomininOccupancyWeight(lon, lat, year);
-                if (occWeight <= 0.001) {
+                if (lat < -60.0 || occWeight <= 0.001) {
                     sovImg.setRGB(x, y, 0x000000);
                 }
             }
@@ -2684,13 +2706,13 @@ public class HistoricalMapGenerator {
             kinSeeds.add(new OrographicGlottologPropagator.CulturalSeed(kc[0], kc[1], (int) kc[2], kc[3] / 20.0, "Kinship"));
         }
         BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(kinSeeds, WIDTH, HEIGHT, mask);
-        // Apply hominin occupancy filter
+        // Apply hominin occupancy filter and black out Antarctica
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
                 double occWeight = getHomininOccupancyWeight(lon, lat, year);
-                if (occWeight <= 0.001) {
+                if (lat < -60.0 || occWeight <= 0.001) {
                     kinImg.setRGB(x, y, 0x000000);
                 }
             }
@@ -2990,14 +3012,111 @@ public class HistoricalMapGenerator {
             drawTradeRoute(g, new double[][]{{-0.1, 46.4}, {-3.0, 47.6}, {-3.9, 48.7}}, new Color(50, 190, 170), 3.0);                 // Atlantic Megalithic Coastal Exchange – seafoam
             drawTradeRoute(g, new double[][]{{109.06, 34.27}, {111.3, 34.7}, {121.4, 30.0}}, new Color(240, 190, 50), 3.0);            // Yangshao - Hemudu Jade & Pottery – bright gold
             drawTradeRoute(g, new double[][]{{31.37, 26.99}, {33.5, 28.0}, {34.5, 29.0}}, new Color(240, 190, 50), 2.5);              // Badarian Red Sea Shell & Malachite – bright gold
+        } else if (year <= 500L) {
+            // Classical Antiquity & Axial Age (-3000 BC to 500 AD)
+            // 1. Overland Silk Road (Chang'an -> Dunhuang -> Kashgar -> Samarkand -> Merv -> Ctesiphon -> Palmyra -> Antioch -> Rome)
+            drawTradeRoute(g, new double[][]{{108.9, 34.3}, {94.7, 40.1}, {75.9, 39.5}, {66.9, 39.6}, {62.2, 37.6}, {44.4, 33.1}, {38.3, 34.6}, {36.2, 36.2}, {28.9, 41.0}, {12.5, 41.9}}, new Color(255, 200, 50), 4.2);
+            // 2. Erythraean Sea / Periplus Monsoon Maritime Route (Alexandria -> Berenike -> Bab-el-Mandeb -> Muziris/Malabar -> Sri Lanka)
+            drawTradeRoute(g, new double[][]{{29.9, 31.2}, {32.5, 27.5}, {35.5, 23.9}, {43.3, 12.6}, {54.0, 14.5}, {76.2, 10.2}, {80.2, 6.9}}, new Color(30, 180, 210), 3.8);
+            // 3. Incense Route (Southern Arabia -> Petra -> Gaza)
+            drawTradeRoute(g, new double[][]{{49.2, 14.9}, {45.3, 15.4}, {40.0, 21.4}, {35.4, 30.3}, {34.4, 31.5}}, new Color(230, 160, 40), 3.0);
+            // 4. Roman Mare Nostrum Mediterranean Arteries (Ostia -> Alexandria, Gades, Carthage, Narbo)
+            drawTradeRoute(g, new double[][]{{12.2, 41.8}, {9.5, 38.0}, {10.2, 36.8}, {15.0, 35.0}, {25.0, 33.0}, {29.9, 31.2}}, new Color(50, 190, 170), 3.5);
+            drawTradeRoute(g, new double[][]{{12.2, 41.8}, {5.0, 42.0}, {3.0, 43.1}, {-0.5, 38.5}, {-6.2, 36.5}}, new Color(50, 190, 170), 3.0);
+            // 5. Phoenician / Punic Atlantic & Mediterranean Circuit through Gibraltar
+            drawTradeRoute(g, new double[][]{{35.2, 33.2}, {24.0, 35.0}, {12.4, 37.8}, {10.2, 36.8}, {1.4, 38.9}, {-5.5, 36.0}, {-6.2, 36.5}, {-9.1, 38.7}}, new Color(200, 100, 80), 3.0);
+            // 6. Amber Road (Baltic -> Carnuntum -> Aquileia / Rome)
+            drawTradeRoute(g, new double[][]{{20.5, 54.7}, {18.5, 53.1}, {16.8, 51.1}, {16.9, 48.1}, {13.4, 45.7}, {12.5, 41.9}}, new Color(180, 210, 100), 2.8);
+            // 7. Grand Canal & Yangtze internal waterways (China)
+            drawTradeRoute(g, new double[][]{{117.2, 39.1}, {117.0, 36.6}, {119.4, 32.4}, {121.5, 31.2}, {114.3, 30.6}, {106.5, 29.5}}, new Color(255, 180, 40), 3.5);
+            // 8. Mesoamerican Preclassic Obsidian & Jade Routes (El Mirador / San Lorenzo)
+            drawTradeRoute(g, new double[][]{{-94.8, 17.8}, {-92.5, 15.0}, {-89.8, 17.8}, {-88.5, 15.5}}, new Color(80, 200, 120), 2.5);
+            // 9. Early Andean Exchange Circuit (Chavin -> Coast -> Altiplano)
+            drawTradeRoute(g, new double[][]{{-77.2, -9.6}, {-77.0, -12.0}, {-75.0, -14.0}, {-68.7, -16.5}}, new Color(200, 80, 60), 2.5);
+        } else if (year <= 1491L) {
+            // Post-Classical & Medieval (500 to 1491 AD)
+            // 1. Pax Mongolica Northern & Southern Silk Roads
+            drawTradeRoute(g, new double[][]{{116.4, 39.9}, {102.0, 38.0}, {88.0, 43.8}, {76.0, 43.0}, {60.0, 45.0}, {47.3, 47.2}, {35.3, 45.0}, {28.9, 41.0}, {12.3, 45.4}}, new Color(255, 200, 50), 4.5); // Northern Steppe Route to Venice
+            drawTradeRoute(g, new double[][]{{108.9, 34.3}, {94.7, 40.1}, {75.9, 39.5}, {66.9, 39.6}, {51.6, 35.7}, {44.4, 33.3}, {36.2, 36.2}, {28.9, 41.0}}, new Color(255, 200, 50), 4.0); // Transoxiana / Silk Road
+            // 2. Trans-Saharan Gold & Salt Caravan Routes (Mali Empire / Mansa Musa Pilgrimage)
+            drawTradeRoute(g, new double[][]{{-8.3, 11.4}, {-3.0, 16.8}, {-0.1, 16.3}, {4.5, 24.0}, {13.0, 27.0}, {21.0, 29.0}, {31.2, 30.0}}, new Color(230, 160, 40), 3.8); // Timbuktu -> Cairo
+            drawTradeRoute(g, new double[][]{{-8.3, 11.4}, {-4.0, 17.0}, {-5.0, 22.5}, {-4.5, 31.5}, {-7.5, 33.5}}, new Color(230, 160, 40), 3.2); // Timbuktu -> Taghaza -> Marrakech
+            // 3. Indian Ocean Monsoon Maritime Network (Swahili Coast -> Arabia -> India -> Malacca -> China)
+            drawTradeRoute(g, new double[][]{{39.5, -4.0}, {45.0, 2.0}, {45.0, 12.8}, {55.0, 17.0}, {56.3, 26.5}, {72.8, 19.0}, {76.2, 10.0}, {80.2, 6.9}, {98.0, 4.0}, {103.8, 1.3}, {108.0, 12.0}, {113.5, 22.2}, {118.6, 24.9}}, new Color(30, 180, 210), 4.2);
+            // 4. Hanseatic League & Baltic Maritime Network
+            drawTradeRoute(g, new double[][]{{-0.1, 51.5}, {3.2, 51.2}, {10.0, 53.5}, {10.7, 53.9}, {18.6, 54.4}, {24.1, 56.9}, {31.3, 58.5}}, new Color(180, 210, 100), 3.5);
+            // 5. Route from the Varangians to the Greeks (Baltic -> Dnieper -> Black Sea -> Constantinople)
+            drawTradeRoute(g, new double[][]{{30.3, 59.9}, {31.3, 58.5}, {32.0, 54.8}, {30.5, 50.4}, {31.5, 46.5}, {28.9, 41.0}}, new Color(180, 210, 100), 3.0);
+            // 6. Venetian & Genoese Levant Maritime Conduits
+            drawTradeRoute(g, new double[][]{{12.3, 45.4}, {16.0, 41.0}, {22.0, 37.0}, {25.0, 35.0}, {35.0, 33.0}, {35.5, 34.0}}, new Color(255, 140, 50), 3.2);
+            drawTradeRoute(g, new double[][]{{8.9, 44.4}, {9.5, 38.0}, {15.0, 36.0}, {24.0, 37.5}, {29.0, 41.0}, {35.3, 45.0}}, new Color(255, 140, 50), 3.2);
+            // 7. Inca Imperial Highway (Qhapaq Ñan: Quito -> Cajamarca -> Cusco -> Lake Titicaca -> Tucuman)
+            drawTradeRoute(g, new double[][]{{-78.5, -0.2}, {-78.5, -7.1}, {-77.0, -12.0}, {-71.9, -13.5}, {-69.0, -16.0}, {-65.3, -24.8}}, new Color(200, 80, 60), 3.5);
+            // 8. Mesoamerican Pochteca Merchant Arteries (Tenochtitlan -> Soconusco -> Maya Highlands)
+            drawTradeRoute(g, new double[][]{{-99.1, 19.4}, {-96.1, 19.2}, {-93.0, 16.5}, {-92.5, 15.0}, {-90.5, 14.6}, {-89.0, 20.0}}, new Color(80, 200, 120), 3.0);
+        } else if (year <= 1850L) {
+            // Early Modern & Age of Discovery (1492 to 1850 AD)
+            // 1. ATLANTIC TRIANGULAR TRADE (Commerce Triangulaire)
+            // Leg 1: Europe -> West Africa (Manufactures, arms, textiles)
+            drawTradeRoute(g, new double[][]{{-3.0, 53.4}, {-4.0, 48.0}, {-12.0, 35.0}, {-17.5, 14.5}, {-1.5, 5.0}, {2.5, 6.0}, {13.0, -8.8}}, new Color(230, 60, 40), 4.2);
+            // Leg 2: West Africa -> Caribbean & Brazil (Middle Passage)
+            drawTradeRoute(g, new double[][]{{2.5, 6.0}, {-15.0, 0.0}, {-38.5, -12.9}, {-34.8, -8.0}}, new Color(230, 60, 40), 3.8); // To Brazil (Bahia / Recife)
+            drawTradeRoute(g, new double[][]{{2.5, 6.0}, {-25.0, 8.0}, {-55.0, 12.0}, {-61.0, 14.0}, {-72.5, 19.5}, {-77.0, 18.0}, {-82.3, 23.1}}, new Color(230, 60, 40), 4.2); // To Caribbean (Saint-Domingue, Jamaica, Cuba)
+            // Leg 3: Caribbean / North America -> Western Europe (Sugar, tobacco, cotton, coffee, rum)
+            drawTradeRoute(g, new double[][]{{-82.3, 23.1}, {-75.0, 28.0}, {-65.0, 35.0}, {-40.0, 43.0}, {-15.0, 47.0}, {-3.0, 47.5}, {-0.5, 45.0}, {-3.0, 53.4}}, new Color(255, 200, 50), 4.2);
+
+            // 2. PORTUGUESE CAPE ROUTE (Carreira da Índia: Lisbon -> Cape -> Goa -> Malacca -> Macau -> Nagasaki)
+            drawTradeRoute(g, new double[][]{{-9.1, 38.7}, {-16.0, 28.0}, {-25.0, 12.0}, {-30.0, -10.0}, {-20.0, -28.0}, {18.5, -34.8}, {40.5, -15.0}, {55.0, -2.0}, {73.8, 15.5}, {80.2, 6.9}, {98.0, 4.0}, {103.8, 1.3}, {113.5, 22.2}, {129.8, 32.7}}, new Color(30, 180, 210), 4.2);
+
+            // 3. SPANISH MANILA GALLEONS (Acapulco <-> Manila Transpacific Circuit)
+            // Westbound: Acapulco -> Guam -> Manila
+            drawTradeRoute(g, new double[][]{{-99.9, 16.8}, {-130.0, 14.0}, {-160.0, 13.5}, {144.7, 13.4}, {125.0, 13.0}, {120.9, 14.6}}, new Color(255, 180, 40), 3.8);
+            // Eastbound (Urdaneta Route): Manila -> North Pacific Kuroshio -> Cape Mendocino -> Acapulco
+            drawTradeRoute(g, new double[][]{{120.9, 14.6}, {125.0, 20.0}, {140.0, 33.0}, {170.0, 38.0}, {-160.0, 40.0}, {-130.0, 38.0}, {-124.0, 38.0}, {-118.0, 33.0}, {-99.9, 16.8}}, new Color(255, 180, 40), 3.8);
+
+            // 4. SPANISH FLOTA DE INDIAS (Veracruz / Cartagena -> Havana -> Seville / Cadiz)
+            drawTradeRoute(g, new double[][]{{-96.1, 19.2}, {-88.0, 22.0}, {-82.3, 23.1}, {-79.0, 27.0}, {-60.0, 34.0}, {-35.0, 38.0}, {-15.0, 36.5}, {-6.2, 36.5}}, new Color(240, 190, 50), 4.0);
+            drawTradeRoute(g, new double[][]{{-75.5, 10.4}, {-79.5, 9.5}, {-82.3, 23.1}}, new Color(240, 190, 50), 3.5); // Cartagena/Portobelo to Havana
+
+            // 5. DUTCH VOC SPICE ROUTE (Amsterdam -> Cape Town -> Sunda Strait -> Batavia)
+            drawTradeRoute(g, new double[][]{{4.9, 52.4}, {-5.0, 49.0}, {-20.0, 20.0}, {-28.0, -10.0}, {18.5, -34.5}, {60.0, -38.0}, {90.0, -38.0}, {105.8, -6.0}, {106.8, -6.2}}, new Color(255, 140, 30), 4.0);
+
+            // 6. Trans-Saharan Caravan Network (Tripoli / Marrakech -> Timbuktu / Kano)
+            drawTradeRoute(g, new double[][]{{-7.5, 33.5}, {-5.0, 25.0}, {-3.0, 16.8}, {8.5, 12.0}}, new Color(230, 160, 40), 3.2);
+            drawTradeRoute(g, new double[][]{{13.2, 32.9}, {14.0, 26.0}, {13.0, 18.0}, {8.5, 12.0}, {31.2, 30.0}}, new Color(230, 160, 40), 3.0);
+
+            // 7. Siberian Fur & Tea Road (Moscow -> Kazan -> Tobolsk -> Irkutsk -> Kyakhta -> Beijing)
+            drawTradeRoute(g, new double[][]{{37.6, 55.7}, {49.1, 55.8}, {68.2, 58.2}, {82.9, 55.0}, {104.3, 52.3}, {106.5, 50.3}, {116.4, 39.9}}, new Color(180, 210, 100), 3.5);
+
+            // 8. North American Fur Trade (Montreal / Hudson Bay -> Great Lakes)
+            drawTradeRoute(g, new double[][]{{-73.5, 45.5}, {-79.4, 43.6}, {-84.5, 45.8}, {-89.2, 48.4}, {-97.1, 49.9}}, new Color(180, 210, 100), 2.8);
         } else {
-            // Historical Trade Arteries
-            drawTradeRoute(g, new double[][]{{115, 34}, {100, 38}, {75, 39}, {62, 37}, {44, 33}, {28, 41}}, new Color(255, 200, 50), 4.0);  // Silk Road – golden yellow
-            drawTradeRoute(g, new double[][]{{-4, 12}, {-1, 18}, {3, 27}, {10, 36}}, new Color(230, 160, 40), 3.5);                         // Trans-Saharan Gold & Salt – amber orange
-            drawTradeRoute(g, new double[][]{{45, 12}, {55, 24}, {75, 12}, {102, 2}, {115, -6}}, new Color(30, 180, 210), 3.5);             // Indian Ocean Maritime – ocean blue
-            drawTradeRoute(g, new double[][]{{6, 53}, {12, 48}, {24, 50}, {30, 60}}, new Color(180, 210, 100), 3.0);                        // Amber & Fur Corridors – yellow-green
-            drawTradeRoute(g, new double[][]{{-77, -12}, {-72, -14}, {-68, -17}, {-65, -20}}, new Color(200, 80, 60), 3.5);                 // Inca Qhapaq Ñan – terracotta red
-            drawTradeRoute(g, new double[][]{{-99, 19}, {-96, 17}, {-92, 15}, {-88, 14}}, new Color(80, 200, 120), 3.0);                    // Mesoamerican Trade Network – jade green
+            // Industrial, Imperial & Contemporary (1850 to 2026+ AD)
+            // 1. SUEZ MARITIME TRUNK (Europe <-> Asia via Suez Canal & Strait of Malacca)
+            drawTradeRoute(g, new double[][]{{4.4, 51.9}, {-5.0, 49.0}, {-9.5, 38.0}, {-5.5, 36.0}, {15.0, 35.0}, {32.3, 31.2}, {32.5, 29.9}, {35.5, 23.9}, {43.3, 12.6}, {55.0, 14.5}, {72.8, 19.0}, {80.2, 6.9}, {98.0, 4.0}, {103.8, 1.3}, {113.5, 22.2}, {121.5, 31.2}, {139.7, 35.6}}, new Color(255, 200, 50), 4.8);
+
+            // 2. TRANSPACIFIC CONTAINER HIGHWAY (East Asia <-> US West Coast)
+            drawTradeRoute(g, new double[][]{{121.5, 31.2}, {129.0, 35.0}, {140.0, 35.0}, {170.0, 40.0}, {-160.0, 42.0}, {-130.0, 38.0}, {-118.2, 33.7}}, new Color(30, 180, 210), 4.8); // Shanghai -> Los Angeles
+            drawTradeRoute(g, new double[][]{{114.1, 22.3}, {140.0, 30.0}, {-150.0, 40.0}, {-123.1, 49.3}}, new Color(30, 180, 210), 4.2); // Hong Kong -> Vancouver
+
+            // 3. TRANSATLANTIC CONTAINER & FREIGHT TRUNK
+            drawTradeRoute(g, new double[][]{{4.4, 51.9}, {-10.0, 50.0}, {-35.0, 45.0}, {-60.0, 42.0}, {-74.0, 40.7}}, new Color(30, 180, 210), 4.5); // Rotterdam -> New York
+            drawTradeRoute(g, new double[][]{{-5.5, 36.0}, {-35.0, 30.0}, {-75.0, 32.0}, {-80.2, 25.8}}, new Color(30, 180, 210), 4.0); // Mediterranean -> Florida/Savannah
+
+            // 4. PANAMA CANAL TRANSOCEANIC ARTERY
+            drawTradeRoute(g, new double[][]{{-74.0, 40.7}, {-75.0, 25.0}, {-79.5, 9.3}, {-79.5, 8.9}, {-85.0, 5.0}, {-118.2, 33.7}}, new Color(50, 190, 170), 4.2);
+            drawTradeRoute(g, new double[][]{{4.4, 51.9}, {-40.0, 30.0}, {-70.0, 15.0}, {-79.5, 9.3}, {-79.5, 8.9}, {-85.0, -5.0}, {-77.0, -12.0}, {-71.6, -33.0}}, new Color(50, 190, 170), 4.0); // Europe -> Panama -> Peru/Chile
+
+            // 5. TRANSCONTINENTAL RAILWAYS
+            drawTradeRoute(g, new double[][]{{37.6, 55.7}, {61.4, 55.1}, {73.4, 54.9}, {82.9, 55.0}, {92.9, 56.0}, {104.3, 52.3}, {120.0, 52.0}, {131.9, 43.1}}, new Color(255, 140, 30), 4.2); // Trans-Siberian (Moscow -> Vladivostok)
+            drawTradeRoute(g, new double[][]{{-74.0, 40.7}, {-87.6, 41.8}, {-95.9, 41.2}, {-104.9, 41.1}, {-111.9, 40.7}, {-121.5, 38.5}, {-122.4, 37.8}}, new Color(255, 140, 30), 4.0); // US Transcontinental (NYC -> Chicago -> SF)
+
+            // 6. CAPE BULK FREIGHT ROUTE (Large oil/ore tankers bypassing Suez)
+            drawTradeRoute(g, new double[][]{{55.0, 25.0}, {55.0, 10.0}, {45.0, -15.0}, {20.0, -35.0}, {-15.0, -10.0}, {-15.0, 20.0}, {4.4, 51.9}}, new Color(200, 100, 80), 3.8);
+
+            // 7. LATIN AMERICAN & OCEANIC TRADE CONDUITS
+            drawTradeRoute(g, new double[][]{{-43.2, -22.9}, {-38.5, -12.9}, {-15.0, 15.0}, {4.4, 51.9}}, new Color(200, 100, 80), 3.5); // Santos/Rio -> Europe
+            drawTradeRoute(g, new double[][]{{151.2, -33.8}, {145.0, -20.0}, {130.0, -5.0}, {115.0, 10.0}, {121.5, 31.2}}, new Color(30, 180, 210), 3.8); // Australia -> China (Iron Ore)
         }
 
         g.dispose();

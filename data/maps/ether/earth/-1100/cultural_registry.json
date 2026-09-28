@@ -1,0 +1,204 @@
+{
+  "epoch": -1100,
+  "era": "Bronze Age 1 100 BC",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -1100 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "new_kingdom_of_egypt",
+      "colorHex": "#881BE0",
+      "colorRgb": [136, 27, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "New Kingdom of Egypt",
+        "fr": "New Kingdom of Egypt",
+        "de": "New Kingdom of Egypt",
+        "es": "New Kingdom of Egypt",
+        "zh": "New Kingdom of Egypt"
+      },
+      "seshatId": "eg_new_k_2",
+      "fromYear": -1150,
+      "toYear": -1001,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "neo-hittite_states",
+      "colorHex": "#21D97D",
+      "colorRgb": [33, 217, 125],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Neo-Hittite states",
+        "fr": "Neo-Hittite states",
+        "de": "Neo-Hittite states",
+        "es": "Neo-Hittite states",
+        "zh": "Neo-Hittite states"
+      },
+      "seshatId": "tr_neo_hittite_k",
+      "fromYear": -1150,
+      "toYear": -1001,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "phoenicia",
+      "colorHex": "#22B562",
+      "colorRgb": [34, 181, 98],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Phoenicia",
+        "fr": "Phoenicia",
+        "de": "Phoenicia",
+        "es": "Phoenicia",
+        "zh": "Phoenicia"
+      },
+      "seshatId": "lb_phoenician_emp",
+      "fromYear": -1150,
+      "toYear": -1001,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "_phoenician_empire_",
+      "colorHex": "#D46E2F",
+      "colorRgb": [212, 110, 47],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Phoenician Empire)",
+        "fr": "(Phoenician Empire)",
+        "de": "(Phoenician Empire)",
+        "es": "(Phoenician Empire)",
+        "zh": "(Phoenician Empire)"
+      },
+      "seshatId": "",
+      "fromYear": -1150,
+      "toYear": -1001,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "philistia",
+      "colorHex": "#742BD9",
+      "colorRgb": [116, 43, 217],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Philistia",
+        "fr": "Philistia",
+        "de": "Philistia",
+        "es": "Philistia",
+        "zh": "Philistia"
+      },
+      "seshatId": "",
+      "fromYear": -1150,
+      "toYear": -1001,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "babylonia",
+      "colorHex": "#411FDB",
+      "colorRgb": [65, 31, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Babylonia",
+        "fr": "Babylonia",
+        "de": "Babylonia",
+        "es": "Babylonia",
+        "zh": "Babylonia"
+      },
+      "seshatId": "iq_isin_dynasty2",
+      "fromYear": -1100,
+      "toYear": -1001,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "greek_dark_ages",
+      "colorHex": "#38BF1D",
+      "colorRgb": [56, 191, 29],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Greek Dark Ages",
+        "fr": "Greek Dark Ages",
+        "de": "Greek Dark Ages",
+        "es": "Greek Dark Ages",
+        "zh": "Greek Dark Ages"
+      },
+      "seshatId": "",
+      "fromYear": -1100,
+      "toYear": -1001,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "elam",
+      "colorHex": "#C72C8B",
+      "colorRgb": [199, 44, 139],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Elam",
+        "fr": "Elam",
+        "de": "Elam",
+        "es": "Elam",
+        "zh": "Elam"
+      },
+      "seshatId": "ir_elam_7",
+      "fromYear": -1100,
+      "toYear": -1001,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "assyria",
+      "colorHex": "#D910E0",
+      "colorRgb": [217, 16, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Assyria",
+        "fr": "Assyria",
+        "de": "Assyria",
+        "es": "Assyria",
+        "zh": "Assyria"
+      },
+      "seshatId": "iq_middle_assyrian_emp",
+      "fromYear": -1100,
+      "toYear": -1001,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "shang_dynasty",
+      "colorHex": "#2EE6B8",
+      "colorRgb": [46, 230, 184],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Shang Dynasty",
+        "fr": "Shang Dynasty",
+        "de": "Shang Dynasty",
+        "es": "Shang Dynasty",
+        "zh": "Shang Dynasty"
+      },
+      "seshatId": "cn_late_shang_dyn",
+      "fromYear": -1100,
+      "toYear": -1001,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    }
+  ]
+}

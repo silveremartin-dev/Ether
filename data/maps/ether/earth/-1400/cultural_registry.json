@@ -1,0 +1,166 @@
+{
+  "epoch": -1400,
+  "era": "Bronze Age 1 400 BC",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -1400 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "shang_dynasty",
+      "colorHex": "#2EE6B8",
+      "colorRgb": [46, 230, 184],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Shang Dynasty",
+        "fr": "Shang Dynasty",
+        "de": "Shang Dynasty",
+        "es": "Shang Dynasty",
+        "zh": "Shang Dynasty"
+      },
+      "seshatId": "cn_erligang",
+      "fromYear": -1600,
+      "toYear": -1241,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "mycenaean_greece",
+      "colorHex": "#1193C2",
+      "colorRgb": [17, 147, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Mycenaean Greece",
+        "fr": "Mycenaean Greece",
+        "de": "Mycenaean Greece",
+        "es": "Mycenaean Greece",
+        "zh": "Mycenaean Greece"
+      },
+      "seshatId": "",
+      "fromYear": -1400,
+      "toYear": -1301,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "mitanni",
+      "colorHex": "#18B86D",
+      "colorRgb": [24, 184, 109],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Mitanni",
+        "fr": "Mitanni",
+        "de": "Mitanni",
+        "es": "Mitanni",
+        "zh": "Mitanni"
+      },
+      "seshatId": "sy_mitanni_k",
+      "fromYear": -1400,
+      "toYear": -1301,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "hittites",
+      "colorHex": "#15D40F",
+      "colorRgb": [21, 212, 15],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Hittites",
+        "fr": "Hittites",
+        "de": "Hittites",
+        "es": "Hittites",
+        "zh": "Hittites"
+      },
+      "seshatId": "tr_hatti_new_k",
+      "fromYear": -1400,
+      "toYear": -1301,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "assyria",
+      "colorHex": "#D910E0",
+      "colorRgb": [217, 16, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Assyria",
+        "fr": "Assyria",
+        "de": "Assyria",
+        "es": "Assyria",
+        "zh": "Assyria"
+      },
+      "seshatId": "",
+      "fromYear": -1400,
+      "toYear": -1301,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "elam",
+      "colorHex": "#C72C8B",
+      "colorRgb": [199, 44, 139],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Elam",
+        "fr": "Elam",
+        "de": "Elam",
+        "es": "Elam",
+        "zh": "Elam"
+      },
+      "seshatId": "ir_elam_5",
+      "fromYear": -1400,
+      "toYear": -1301,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "babylonia",
+      "colorHex": "#411FDB",
+      "colorRgb": [65, 31, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Babylonia",
+        "fr": "Babylonia",
+        "de": "Babylonia",
+        "es": "Babylonia",
+        "zh": "Babylonia"
+      },
+      "seshatId": "iq_babylonia_2",
+      "fromYear": -1400,
+      "toYear": -1301,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "new_kingdom_of_egypt",
+      "colorHex": "#881BE0",
+      "colorRgb": [136, 27, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "New Kingdom of Egypt",
+        "fr": "New Kingdom of Egypt",
+        "de": "New Kingdom of Egypt",
+        "es": "New Kingdom of Egypt",
+        "zh": "New Kingdom of Egypt"
+      },
+      "seshatId": "eg_new_k_1",
+      "fromYear": -1400,
+      "toYear": -1301,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    }
+  ]
+}

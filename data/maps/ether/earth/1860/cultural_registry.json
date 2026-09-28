@@ -1,0 +1,2788 @@
+{
+  "epoch": 1860,
+  "era": "Industrial 1860 AD",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch 1860 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "sultanate_of_bima",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Bima",
+        "fr": "Sultanate of Bima",
+        "de": "Sultanate of Bima",
+        "es": "Sultanate of Bima",
+        "zh": "Sultanate of Bima"
+      },
+      "seshatId": "",
+      "fromYear": 1626,
+      "toYear": 1865,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "wadai_empire",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Wadai Empire",
+        "fr": "Wadai Empire",
+        "de": "Wadai Empire",
+        "es": "Wadai Empire",
+        "zh": "Wadai Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1889,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sultanate_of_aceh",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Aceh",
+        "fr": "Sultanate of Aceh",
+        "de": "Sultanate of Aceh",
+        "es": "Sultanate of Aceh",
+        "zh": "Sultanate of Aceh"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1861,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sultanate_of_terengganu",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Terengganu",
+        "fr": "Sultanate of Terengganu",
+        "de": "Sultanate of Terengganu",
+        "es": "Sultanate of Terengganu",
+        "zh": "Sultanate of Terengganu"
+      },
+      "seshatId": "",
+      "fromYear": 1727,
+      "toYear": 1899,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kelantan",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kelantan",
+        "fr": "Kelantan",
+        "de": "Kelantan",
+        "es": "Kelantan",
+        "zh": "Kelantan"
+      },
+      "seshatId": "",
+      "fromYear": 1762,
+      "toYear": 1889,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "morocco",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Morocco",
+        "fr": "Morocco",
+        "de": "Morocco",
+        "es": "Morocco",
+        "zh": "Morocco"
+      },
+      "seshatId": "",
+      "fromYear": 1769,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "ethiopian_empire",
+      "colorHex": "#84CC16",
+      "colorRgb": [132, 204, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ethiopian Empire",
+        "fr": "Ethiopian Empire",
+        "de": "Ethiopian Empire",
+        "es": "Ethiopian Empire",
+        "zh": "Ethiopian Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1769,
+      "toYear": 1889,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "negeri_sembilan",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Negeri Sembilan",
+        "fr": "Negeri Sembilan",
+        "de": "Negeri Sembilan",
+        "es": "Negeri Sembilan",
+        "zh": "Negeri Sembilan"
+      },
+      "seshatId": "",
+      "fromYear": 1775,
+      "toYear": 1872,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sultanate_of_selangor",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Selangor",
+        "fr": "Sultanate of Selangor",
+        "de": "Sultanate of Selangor",
+        "es": "Sultanate of Selangor",
+        "zh": "Sultanate of Selangor"
+      },
+      "seshatId": "",
+      "fromYear": 1775,
+      "toYear": 1872,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "house_of_khalifa",
+      "colorHex": "#770FB8",
+      "colorRgb": [119, 15, 184],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "House of Khalifa",
+        "fr": "House of Khalifa",
+        "de": "House of Khalifa",
+        "es": "House of Khalifa",
+        "zh": "House of Khalifa"
+      },
+      "seshatId": "",
+      "fromYear": 1803,
+      "toYear": 1889,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sultanate_of_malacca",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Malacca",
+        "fr": "Sultanate of Malacca",
+        "de": "Sultanate of Malacca",
+        "es": "Sultanate of Malacca",
+        "zh": "Sultanate of Malacca"
+      },
+      "seshatId": "",
+      "fromYear": 1803,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "napoleonic_batavia_republic",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Napoleonic Batavia Republic",
+        "fr": "Napoleonic Batavia Republic",
+        "de": "Napoleonic Batavia Republic",
+        "es": "Napoleonic Batavia Republic",
+        "zh": "Napoleonic Batavia Republic"
+      },
+      "seshatId": "",
+      "fromYear": 1805,
+      "toYear": 1867,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_w_rttemberg",
+      "colorHex": "#FBBF24",
+      "colorRgb": [251, 191, 36],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Württemberg",
+        "fr": "Kingdom of Württemberg",
+        "de": "Kingdom of Württemberg",
+        "es": "Kingdom of Württemberg",
+        "zh": "Kingdom of Württemberg"
+      },
+      "seshatId": "",
+      "fromYear": 1811,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "free_city_of_l_beck",
+      "colorHex": "#EC0EF0",
+      "colorRgb": [236, 14, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Free City of Lübeck",
+        "fr": "Free City of Lübeck",
+        "de": "Free City of Lübeck",
+        "es": "Free City of Lübeck",
+        "zh": "Free City of Lübeck"
+      },
+      "seshatId": "",
+      "fromYear": 1814,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "imamate_of_yemen",
+      "colorHex": "#1B34C2",
+      "colorRgb": [27, 52, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Imamate of Yemen",
+        "fr": "Imamate of Yemen",
+        "de": "Imamate of Yemen",
+        "es": "Imamate of Yemen",
+        "zh": "Imamate of Yemen"
+      },
+      "seshatId": "",
+      "fromYear": 1815,
+      "toYear": 1869,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "principality_of_schwarzburg-sonderhausen",
+      "colorHex": "#C97220",
+      "colorRgb": [201, 114, 32],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Schwarzburg-Sonderhausen",
+        "fr": "Principality of Schwarzburg-Sonderhausen",
+        "de": "Principality of Schwarzburg-Sonderhausen",
+        "es": "Principality of Schwarzburg-Sonderhausen",
+        "zh": "Principality of Schwarzburg-Sonderhausen"
+      },
+      "seshatId": "",
+      "fromYear": 1820,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "principality_of_waldeck_and_pyrmont",
+      "colorHex": "#57D40F",
+      "colorRgb": [87, 212, 15],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Waldeck and Pyrmont",
+        "fr": "Principality of Waldeck and Pyrmont",
+        "de": "Principality of Waldeck and Pyrmont",
+        "es": "Principality of Waldeck and Pyrmont",
+        "zh": "Principality of Waldeck and Pyrmont"
+      },
+      "seshatId": "",
+      "fromYear": 1820,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kuwait",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kuwait",
+        "fr": "Kuwait",
+        "de": "Kuwait",
+        "es": "Kuwait",
+        "zh": "Kuwait"
+      },
+      "seshatId": "",
+      "fromYear": 1820,
+      "toYear": 1872,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "duchy_of_nassau",
+      "colorHex": "#FBBF24",
+      "colorRgb": [251, 191, 36],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Nassau",
+        "fr": "Duchy of Nassau",
+        "de": "Duchy of Nassau",
+        "es": "Duchy of Nassau",
+        "zh": "Duchy of Nassau"
+      },
+      "seshatId": "",
+      "fromYear": 1820,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "duchy_of_warsaw",
+      "colorHex": "#16BAA7",
+      "colorRgb": [22, 186, 167],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Warsaw",
+        "fr": "Duchy of Warsaw",
+        "de": "Duchy of Warsaw",
+        "es": "Duchy of Warsaw",
+        "zh": "Duchy of Warsaw"
+      },
+      "seshatId": "",
+      "fromYear": 1820,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "duchy_of_anhalt",
+      "colorHex": "#FBBF24",
+      "colorRgb": [251, 191, 36],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Anhalt",
+        "fr": "Duchy of Anhalt",
+        "de": "Duchy of Anhalt",
+        "es": "Duchy of Anhalt",
+        "zh": "Duchy of Anhalt"
+      },
+      "seshatId": "",
+      "fromYear": 1820,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "duchy_of_brunswick",
+      "colorHex": "#FBBF24",
+      "colorRgb": [251, 191, 36],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Brunswick",
+        "fr": "Duchy of Brunswick",
+        "de": "Duchy of Brunswick",
+        "es": "Duchy of Brunswick",
+        "zh": "Duchy of Brunswick"
+      },
+      "seshatId": "",
+      "fromYear": 1820,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "free_city_of_frankfurt",
+      "colorHex": "#ED3D34",
+      "colorRgb": [237, 61, 52],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Free City of Frankfurt",
+        "fr": "Free City of Frankfurt",
+        "de": "Free City of Frankfurt",
+        "es": "Free City of Frankfurt",
+        "zh": "Free City of Frankfurt"
+      },
+      "seshatId": "",
+      "fromYear": 1820,
+      "toYear": 1864,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "united_kingdoms_of_sweden_and_norway",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "United Kingdoms of Sweden and Norway",
+        "fr": "United Kingdoms of Sweden and Norway",
+        "de": "United Kingdoms of Sweden and Norway",
+        "es": "United Kingdoms of Sweden and Norway",
+        "zh": "United Kingdoms of Sweden and Norway"
+      },
+      "seshatId": "sv_united_k_sweden_and_norway",
+      "fromYear": 1820,
+      "toYear": 1899,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "principality_of_reuss-gera",
+      "colorHex": "#C9870C",
+      "colorRgb": [201, 135, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Reuss-Gera",
+        "fr": "Principality of Reuss-Gera",
+        "de": "Principality of Reuss-Gera",
+        "es": "Principality of Reuss-Gera",
+        "zh": "Principality of Reuss-Gera"
+      },
+      "seshatId": "",
+      "fromYear": 1820,
+      "toYear": 1869,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "grand_duchy_of_hesse",
+      "colorHex": "#FBBF24",
+      "colorRgb": [251, 191, 36],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Grand Duchy of Hesse",
+        "fr": "Grand Duchy of Hesse",
+        "de": "Grand Duchy of Hesse",
+        "es": "Grand Duchy of Hesse",
+        "zh": "Grand Duchy of Hesse"
+      },
+      "seshatId": "",
+      "fromYear": 1820,
+      "toYear": 1865,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_hawa__i",
+      "colorHex": "#E67E22",
+      "colorRgb": [230, 126, 34],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Hawaï'i",
+        "fr": "Kingdom of Hawaï'i",
+        "de": "Kingdom of Hawaï'i",
+        "es": "Kingdom of Hawaï'i",
+        "zh": "Kingdom of Hawaï'i"
+      },
+      "seshatId": "us_hawaii_k",
+      "fromYear": 1820,
+      "toYear": 1889,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "netherlands_antilles",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Netherlands Antilles",
+        "fr": "Netherlands Antilles",
+        "de": "Netherlands Antilles",
+        "es": "Netherlands Antilles",
+        "zh": "Netherlands Antilles"
+      },
+      "seshatId": "",
+      "fromYear": 1820,
+      "toYear": 1876,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "principality_of_lippe",
+      "colorHex": "#28DEB6",
+      "colorRgb": [40, 222, 182],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Lippe",
+        "fr": "Principality of Lippe",
+        "de": "Principality of Lippe",
+        "es": "Principality of Lippe",
+        "zh": "Principality of Lippe"
+      },
+      "seshatId": "",
+      "fromYear": 1820,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sultanate_of_darfur",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Darfur",
+        "fr": "Sultanate of Darfur",
+        "de": "Sultanate of Darfur",
+        "es": "Sultanate of Darfur",
+        "zh": "Sultanate of Darfur"
+      },
+      "seshatId": "",
+      "fromYear": 1822,
+      "toYear": 1872,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sultanate_of_perak",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Perak",
+        "fr": "Sultanate of Perak",
+        "de": "Sultanate of Perak",
+        "es": "Sultanate of Perak",
+        "zh": "Sultanate of Perak"
+      },
+      "seshatId": "",
+      "fromYear": 1822,
+      "toYear": 1872,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sultanate_of_jambi",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Jambi",
+        "fr": "Sultanate of Jambi",
+        "de": "Sultanate of Jambi",
+        "es": "Sultanate of Jambi",
+        "zh": "Sultanate of Jambi"
+      },
+      "seshatId": "",
+      "fromYear": 1822,
+      "toYear": 1894,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "emirate_of_bukhara",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Emirate of Bukhara",
+        "fr": "Emirate of Bukhara",
+        "de": "Emirate of Bukhara",
+        "es": "Emirate of Bukhara",
+        "zh": "Emirate of Bukhara"
+      },
+      "seshatId": "",
+      "fromYear": 1822,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "paraguay",
+      "colorHex": "#C7830E",
+      "colorRgb": [199, 131, 14],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Paraguay",
+        "fr": "Paraguay",
+        "de": "Paraguay",
+        "es": "Paraguay",
+        "zh": "Paraguay"
+      },
+      "seshatId": "",
+      "fromYear": 1822,
+      "toYear": 1864,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "massina_empire",
+      "colorHex": "#2243C7",
+      "colorRgb": [34, 67, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Massina Empire",
+        "fr": "Massina Empire",
+        "de": "Massina Empire",
+        "es": "Massina Empire",
+        "zh": "Massina Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1822,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "republic_of_chile",
+      "colorHex": "#BFC92A",
+      "colorRgb": [191, 201, 42],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Chile",
+        "fr": "Republic of Chile",
+        "de": "Republic of Chile",
+        "es": "Republic of Chile",
+        "zh": "Republic of Chile"
+      },
+      "seshatId": "ch_chile_rep_1",
+      "fromYear": 1828,
+      "toYear": 1865,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_champasak",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Champasak",
+        "fr": "Kingdom of Champasak",
+        "de": "Kingdom of Champasak",
+        "es": "Kingdom of Champasak",
+        "zh": "Kingdom of Champasak"
+      },
+      "seshatId": "",
+      "fromYear": 1828,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_luang_phrabang",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Luang Phrabang",
+        "fr": "Kingdom of Luang Phrabang",
+        "de": "Kingdom of Luang Phrabang",
+        "es": "Kingdom of Luang Phrabang",
+        "zh": "Kingdom of Luang Phrabang"
+      },
+      "seshatId": "",
+      "fromYear": 1828,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "grand_duchy_of_saxe-weimar-eisenach",
+      "colorHex": "#2DC432",
+      "colorRgb": [45, 196, 50],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Grand Duchy of Saxe-Weimar-Eisenach",
+        "fr": "Grand Duchy of Saxe-Weimar-Eisenach",
+        "de": "Grand Duchy of Saxe-Weimar-Eisenach",
+        "es": "Grand Duchy of Saxe-Weimar-Eisenach",
+        "zh": "Grand Duchy of Saxe-Weimar-Eisenach"
+      },
+      "seshatId": "",
+      "fromYear": 1828,
+      "toYear": 1865,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "oriental_republic_of_uruguay",
+      "colorHex": "#CC6D29",
+      "colorRgb": [204, 109, 41],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Oriental Republic of Uruguay",
+        "fr": "Oriental Republic of Uruguay",
+        "de": "Oriental Republic of Uruguay",
+        "es": "Oriental Republic of Uruguay",
+        "zh": "Oriental Republic of Uruguay"
+      },
+      "seshatId": "",
+      "fromYear": 1828,
+      "toYear": 1864,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sultanate_of_sulu",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Sulu",
+        "fr": "Sultanate of Sulu",
+        "de": "Sultanate of Sulu",
+        "es": "Sultanate of Sulu",
+        "zh": "Sultanate of Sulu"
+      },
+      "seshatId": "",
+      "fromYear": 1830,
+      "toYear": 1876,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "republic_of_ecuador",
+      "colorHex": "#2D2DB3",
+      "colorRgb": [45, 45, 179],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Ecuador",
+        "fr": "Republic of Ecuador",
+        "de": "Republic of Ecuador",
+        "es": "Republic of Ecuador",
+        "zh": "Republic of Ecuador"
+      },
+      "seshatId": "",
+      "fromYear": 1834,
+      "toYear": 1904,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "duchy_of_mecklenburg",
+      "colorHex": "#2487E3",
+      "colorRgb": [36, 135, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Mecklenburg",
+        "fr": "Duchy of Mecklenburg",
+        "de": "Duchy of Mecklenburg",
+        "es": "Duchy of Mecklenburg",
+        "zh": "Duchy of Mecklenburg"
+      },
+      "seshatId": "",
+      "fromYear": 1836,
+      "toYear": 1862,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "ashanti_empire",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ashanti Empire",
+        "fr": "Ashanti Empire",
+        "de": "Ashanti Empire",
+        "es": "Ashanti Empire",
+        "zh": "Ashanti Empire"
+      },
+      "seshatId": "gh_ashanti_emp",
+      "fromYear": 1836,
+      "toYear": 1867,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sokoto_caliphate",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sokoto Caliphate",
+        "fr": "Sokoto Caliphate",
+        "de": "Sokoto Caliphate",
+        "es": "Sokoto Caliphate",
+        "zh": "Sokoto Caliphate"
+      },
+      "seshatId": "",
+      "fromYear": 1840,
+      "toYear": 1894,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "electorate_of_hesse",
+      "colorHex": "#FBBF24",
+      "colorRgb": [251, 191, 36],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Electorate of Hesse",
+        "fr": "Electorate of Hesse",
+        "de": "Electorate of Hesse",
+        "es": "Electorate of Hesse",
+        "zh": "Electorate of Hesse"
+      },
+      "seshatId": "",
+      "fromYear": 1840,
+      "toYear": 1865,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "principality_of_andorra",
+      "colorHex": "#BF8F30",
+      "colorRgb": [191, 143, 48],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Andorra",
+        "fr": "Principality of Andorra",
+        "de": "Principality of Andorra",
+        "es": "Principality of Andorra",
+        "zh": "Principality of Andorra"
+      },
+      "seshatId": "",
+      "fromYear": 1840,
+      "toYear": 1935,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "bolivia",
+      "colorHex": "#13CF83",
+      "colorRgb": [19, 207, 131],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Bolivia",
+        "fr": "Bolivia",
+        "de": "Bolivia",
+        "es": "Bolivia",
+        "zh": "Bolivia"
+      },
+      "seshatId": "bo_bolivia_rep",
+      "fromYear": 1840,
+      "toYear": 1864,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "merina_kingdom",
+      "colorHex": "#84CC16",
+      "colorRgb": [132, 204, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Merina Kingdom",
+        "fr": "Merina Kingdom",
+        "de": "Merina Kingdom",
+        "es": "Merina Kingdom",
+        "zh": "Merina Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1840,
+      "toYear": 1894,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_belgium",
+      "colorHex": "#7016BA",
+      "colorRgb": [112, 22, 186],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Belgium",
+        "fr": "Kingdom of Belgium",
+        "de": "Kingdom of Belgium",
+        "es": "Kingdom of Belgium",
+        "zh": "Kingdom of Belgium"
+      },
+      "seshatId": "",
+      "fromYear": 1840,
+      "toYear": 1869,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "republic_of_costa_rica",
+      "colorHex": "#B436EB",
+      "colorRgb": [180, 54, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Costa Rica",
+        "fr": "Republic of Costa Rica",
+        "de": "Republic of Costa Rica",
+        "es": "Republic of Costa Rica",
+        "zh": "Republic of Costa Rica"
+      },
+      "seshatId": "cr_costa_rica_rep",
+      "fromYear": 1840,
+      "toYear": 1904,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "saxe-altenburg",
+      "colorHex": "#ADD11B",
+      "colorRgb": [173, 209, 27],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Saxe-Altenburg",
+        "fr": "Saxe-Altenburg",
+        "de": "Saxe-Altenburg",
+        "es": "Saxe-Altenburg",
+        "zh": "Saxe-Altenburg"
+      },
+      "seshatId": "",
+      "fromYear": 1840,
+      "toYear": 1869,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "netherlands",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Netherlands",
+        "fr": "Netherlands",
+        "de": "Netherlands",
+        "es": "Netherlands",
+        "zh": "Netherlands"
+      },
+      "seshatId": "nl_dutch_emp_2",
+      "fromYear": 1840,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "saxe-meiningen",
+      "colorHex": "#F032A4",
+      "colorRgb": [240, 50, 164],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Saxe-Meiningen",
+        "fr": "Saxe-Meiningen",
+        "de": "Saxe-Meiningen",
+        "es": "Saxe-Meiningen",
+        "zh": "Saxe-Meiningen"
+      },
+      "seshatId": "",
+      "fromYear": 1840,
+      "toYear": 1865,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "republic_of_el_salvador",
+      "colorHex": "#0F99D4",
+      "colorRgb": [15, 153, 212],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of El Salvador",
+        "fr": "Republic of El Salvador",
+        "de": "Republic of El Salvador",
+        "es": "Republic of El Salvador",
+        "zh": "Republic of El Salvador"
+      },
+      "seshatId": "",
+      "fromYear": 1840,
+      "toYear": 1978,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "duchy_of_oldenburg",
+      "colorHex": "#E67339",
+      "colorRgb": [230, 115, 57],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Oldenburg",
+        "fr": "Duchy of Oldenburg",
+        "de": "Duchy of Oldenburg",
+        "es": "Duchy of Oldenburg",
+        "zh": "Duchy of Oldenburg"
+      },
+      "seshatId": "",
+      "fromYear": 1840,
+      "toYear": 1869,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "free_city_of_bremen",
+      "colorHex": "#C72C58",
+      "colorRgb": [199, 44, 88],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Free City of Bremen",
+        "fr": "Free City of Bremen",
+        "de": "Free City of Bremen",
+        "es": "Free City of Bremen",
+        "zh": "Free City of Bremen"
+      },
+      "seshatId": "",
+      "fromYear": 1840,
+      "toYear": 1869,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "guatemala",
+      "colorHex": "#26D1F0",
+      "colorRgb": [38, 209, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Guatemala",
+        "fr": "Guatemala",
+        "de": "Guatemala",
+        "es": "Guatemala",
+        "zh": "Guatemala"
+      },
+      "seshatId": "",
+      "fromYear": 1842,
+      "toYear": 1912,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_bhutan",
+      "colorHex": "#D97706",
+      "colorRgb": [217, 119, 6],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Bhutan",
+        "fr": "Kingdom of Bhutan",
+        "de": "Kingdom of Bhutan",
+        "es": "Kingdom of Bhutan",
+        "zh": "Kingdom of Bhutan"
+      },
+      "seshatId": "",
+      "fromYear": 1842,
+      "toYear": 1889,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sultanate_of_kedah",
+      "colorHex": "#67C718",
+      "colorRgb": [103, 199, 24],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Kedah",
+        "fr": "Sultanate of Kedah",
+        "de": "Sultanate of Kedah",
+        "es": "Sultanate of Kedah",
+        "zh": "Sultanate of Kedah"
+      },
+      "seshatId": "",
+      "fromYear": 1842,
+      "toYear": 1894,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kedah-perlis_district",
+      "colorHex": "#10C443",
+      "colorRgb": [16, 196, 67],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kedah-Perlis District",
+        "fr": "Kedah-Perlis District",
+        "de": "Kedah-Perlis District",
+        "es": "Kedah-Perlis District",
+        "zh": "Kedah-Perlis District"
+      },
+      "seshatId": "",
+      "fromYear": 1842,
+      "toYear": 1907,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_hanover",
+      "colorHex": "#FB923C",
+      "colorRgb": [251, 146, 60],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Hanover",
+        "fr": "Kingdom of Hanover",
+        "de": "Kingdom of Hanover",
+        "es": "Kingdom of Hanover",
+        "zh": "Kingdom of Hanover"
+      },
+      "seshatId": "",
+      "fromYear": 1842,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "empire_of_haiti",
+      "colorHex": "#3B82F6",
+      "colorRgb": [59, 130, 246],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Empire of Haiti",
+        "fr": "Empire of Haiti",
+        "de": "Empire of Haiti",
+        "es": "Empire of Haiti",
+        "zh": "Empire of Haiti"
+      },
+      "seshatId": "",
+      "fromYear": 1846,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "dominican_republic",
+      "colorHex": "#3B1FCC",
+      "colorRgb": [59, 31, 204],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Dominican Republic",
+        "fr": "Dominican Republic",
+        "de": "Dominican Republic",
+        "es": "Dominican Republic",
+        "zh": "Dominican Republic"
+      },
+      "seshatId": "",
+      "fromYear": 1846,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "republic_of_liberia",
+      "colorHex": "#1B74E0",
+      "colorRgb": [27, 116, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Liberia",
+        "fr": "Republic of Liberia",
+        "de": "Republic of Liberia",
+        "es": "Republic of Liberia",
+        "zh": "Republic of Liberia"
+      },
+      "seshatId": "",
+      "fromYear": 1848,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_monaco",
+      "colorHex": "#BDD126",
+      "colorRgb": [189, 209, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Monaco",
+        "fr": "Kingdom of Monaco",
+        "de": "Kingdom of Monaco",
+        "es": "Kingdom of Monaco",
+        "zh": "Kingdom of Monaco"
+      },
+      "seshatId": "",
+      "fromYear": 1848,
+      "toYear": 1935,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "muhammad_ali_dynasty",
+      "colorHex": "#30F01A",
+      "colorRgb": [48, 240, 26],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Muhammad Ali dynasty",
+        "fr": "Muhammad Ali dynasty",
+        "de": "Muhammad Ali dynasty",
+        "es": "Muhammad Ali dynasty",
+        "zh": "Muhammad Ali dynasty"
+      },
+      "seshatId": "eg_egypt_modern_1",
+      "fromYear": 1848,
+      "toYear": 1864,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "bornu_empire",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Bornu Empire",
+        "fr": "Bornu Empire",
+        "de": "Bornu Empire",
+        "es": "Bornu Empire",
+        "zh": "Bornu Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1848,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "bali",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Bali",
+        "fr": "Bali",
+        "de": "Bali",
+        "es": "Bali",
+        "zh": "Bali"
+      },
+      "seshatId": "",
+      "fromYear": 1849,
+      "toYear": 1904,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "empire_of_brazil",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Empire of Brazil",
+        "fr": "Empire of Brazil",
+        "de": "Empire of Brazil",
+        "es": "Empire of Brazil",
+        "zh": "Empire of Brazil"
+      },
+      "seshatId": "br_brazil_emp",
+      "fromYear": 1853,
+      "toYear": 1864,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "pahang_sultanate",
+      "colorHex": "#BA7B0D",
+      "colorRgb": [186, 123, 13],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Pahang Sultanate",
+        "fr": "Pahang Sultanate",
+        "de": "Pahang Sultanate",
+        "es": "Pahang Sultanate",
+        "zh": "Pahang Sultanate"
+      },
+      "seshatId": "",
+      "fromYear": 1853,
+      "toYear": 1876,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_bavaria",
+      "colorHex": "#38BDF8",
+      "colorRgb": [56, 189, 248],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Bavaria",
+        "fr": "Kingdom of Bavaria",
+        "de": "Kingdom of Bavaria",
+        "es": "Kingdom of Bavaria",
+        "zh": "Kingdom of Bavaria"
+      },
+      "seshatId": "",
+      "fromYear": 1853,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sultanate_of_johor",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Johor",
+        "fr": "Sultanate of Johor",
+        "de": "Sultanate of Johor",
+        "es": "Sultanate of Johor",
+        "zh": "Sultanate of Johor"
+      },
+      "seshatId": "",
+      "fromYear": 1853,
+      "toYear": 1879,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "german_confederation",
+      "colorHex": "#8716D9",
+      "colorRgb": [135, 22, 217],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "German Confederation",
+        "fr": "German Confederation",
+        "de": "German Confederation",
+        "es": "German Confederation",
+        "zh": "German Confederation"
+      },
+      "seshatId": "",
+      "fromYear": 1853,
+      "toYear": 1862,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "denmark-norway",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Denmark-Norway",
+        "fr": "Denmark-Norway",
+        "de": "Denmark-Norway",
+        "es": "Denmark-Norway",
+        "zh": "Denmark-Norway"
+      },
+      "seshatId": "",
+      "fromYear": 1853,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "montenegro",
+      "colorHex": "#7E32F0",
+      "colorRgb": [126, 50, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Montenegro",
+        "fr": "Montenegro",
+        "de": "Montenegro",
+        "es": "Montenegro",
+        "zh": "Montenegro"
+      },
+      "seshatId": "",
+      "fromYear": 1853,
+      "toYear": 1879,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "rattanakosin_kingdom",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Rattanakosin Kingdom",
+        "fr": "Rattanakosin Kingdom",
+        "de": "Rattanakosin Kingdom",
+        "es": "Rattanakosin Kingdom",
+        "zh": "Rattanakosin Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1853,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "free_city_of_hamburg",
+      "colorHex": "#BCD424",
+      "colorRgb": [188, 212, 36],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Free City of Hamburg",
+        "fr": "Free City of Hamburg",
+        "de": "Free City of Hamburg",
+        "es": "Free City of Hamburg",
+        "zh": "Free City of Hamburg"
+      },
+      "seshatId": "",
+      "fromYear": 1853,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "venezuela",
+      "colorHex": "#26BF66",
+      "colorRgb": [38, 191, 102],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Venezuela",
+        "fr": "Venezuela",
+        "de": "Venezuela",
+        "es": "Venezuela",
+        "zh": "Venezuela"
+      },
+      "seshatId": "ve_venezuela_rep_1",
+      "fromYear": 1853,
+      "toYear": 1876,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "republic_of_peru",
+      "colorHex": "#D62243",
+      "colorRgb": [214, 34, 67],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Peru",
+        "fr": "Republic of Peru",
+        "de": "Republic of Peru",
+        "es": "Republic of Peru",
+        "zh": "Republic of Peru"
+      },
+      "seshatId": "",
+      "fromYear": 1853,
+      "toYear": 1879,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "grand_duchy_of_baden",
+      "colorHex": "#FBBF24",
+      "colorRgb": [251, 191, 36],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Grand Duchy of Baden",
+        "fr": "Grand Duchy of Baden",
+        "de": "Grand Duchy of Baden",
+        "es": "Grand Duchy of Baden",
+        "zh": "Grand Duchy of Baden"
+      },
+      "seshatId": "",
+      "fromYear": 1853,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "chiangmai",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chiangmai",
+        "fr": "Chiangmai",
+        "de": "Chiangmai",
+        "es": "Chiangmai",
+        "zh": "Chiangmai"
+      },
+      "seshatId": "",
+      "fromYear": 1853,
+      "toYear": 1879,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "nepal",
+      "colorHex": "#D97706",
+      "colorRgb": [217, 119, 6],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Nepal",
+        "fr": "Nepal",
+        "de": "Nepal",
+        "es": "Nepal",
+        "zh": "Nepal"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1889,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_lunda",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Lunda",
+        "fr": "Kingdom of Lunda",
+        "de": "Kingdom of Lunda",
+        "es": "Kingdom of Lunda",
+        "zh": "Kingdom of Lunda"
+      },
+      "seshatId": "cg_lunda_k",
+      "fromYear": 1856,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "federated_republic_of_mexico",
+      "colorHex": "#8B19E3",
+      "colorRgb": [139, 25, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Federated Republic of Mexico",
+        "fr": "Federated Republic of Mexico",
+        "de": "Federated Republic of Mexico",
+        "es": "Federated Republic of Mexico",
+        "zh": "Federated Republic of Mexico"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1861,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "zululand",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Zululand",
+        "fr": "Zululand",
+        "de": "Zululand",
+        "es": "Zululand",
+        "zh": "Zululand"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "natalia_republic",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Natalia Republic",
+        "fr": "Natalia Republic",
+        "de": "Natalia Republic",
+        "es": "Natalia Republic",
+        "zh": "Natalia Republic"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1876,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "majeerteen_sultanate",
+      "colorHex": "#52CC29",
+      "colorRgb": [82, 204, 41],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Majeerteen Sultanate",
+        "fr": "Majeerteen Sultanate",
+        "de": "Majeerteen Sultanate",
+        "es": "Majeerteen Sultanate",
+        "zh": "Majeerteen Sultanate"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1879,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sultanate_of_oman",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Oman",
+        "fr": "Sultanate of Oman",
+        "de": "Sultanate of Oman",
+        "es": "Sultanate of Oman",
+        "zh": "Sultanate of Oman"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1869,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "khanate_of_kokand",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Khanate of Kokand",
+        "fr": "Khanate of Kokand",
+        "de": "Khanate of Kokand",
+        "es": "Khanate of Kokand",
+        "zh": "Khanate of Kokand"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "greenland",
+      "colorHex": "#94A3B8",
+      "colorRgb": [148, 163, 184],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Greenland",
+        "fr": "Greenland",
+        "de": "Greenland",
+        "es": "Greenland",
+        "zh": "Greenland"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "free_orange_state",
+      "colorHex": "#4BF026",
+      "colorRgb": [75, 240, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Free Orange State",
+        "fr": "Free Orange State",
+        "de": "Free Orange State",
+        "es": "Free Orange State",
+        "zh": "Free Orange State"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1870,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "south_african_republic",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "South African Republic",
+        "fr": "South African Republic",
+        "de": "South African Republic",
+        "es": "South African Republic",
+        "zh": "South African Republic"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1876,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "people_s_republic_of_zanzibar",
+      "colorHex": "#0BBD7F",
+      "colorRgb": [11, 189, 127],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "People's Republic of Zanzibar",
+        "fr": "People's Republic of Zanzibar",
+        "de": "People's Republic of Zanzibar",
+        "es": "People's Republic of Zanzibar",
+        "zh": "People's Republic of Zanzibar"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "emirate_of_nejd",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Emirate of Nejd",
+        "fr": "Emirate of Nejd",
+        "de": "Emirate of Nejd",
+        "es": "Emirate of Nejd",
+        "zh": "Emirate of Nejd"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1865,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "trucial_states",
+      "colorHex": "#30D16B",
+      "colorRgb": [48, 209, 107],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Trucial States",
+        "fr": "Trucial States",
+        "de": "Trucial States",
+        "es": "Trucial States",
+        "zh": "Trucial States"
+      },
+      "seshatId": "gb_british_emp_2",
+      "fromYear": 1856,
+      "toYear": 1869,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_portugal",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Portugal",
+        "fr": "Kingdom of Portugal",
+        "de": "Kingdom of Portugal",
+        "es": "Kingdom of Portugal",
+        "zh": "Kingdom of Portugal"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "british_cape_colony",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "British Cape Colony",
+        "fr": "British Cape Colony",
+        "de": "British Cape Colony",
+        "es": "British Cape Colony",
+        "zh": "British Cape Colony"
+      },
+      "seshatId": "gb_british_emp_2",
+      "fromYear": 1856,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "qatar_dynasty",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Qatar Dynasty",
+        "fr": "Qatar Dynasty",
+        "de": "Qatar Dynasty",
+        "es": "Qatar Dynasty",
+        "zh": "Qatar Dynasty"
+      },
+      "seshatId": "",
+      "fromYear": 1856,
+      "toYear": 1894,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "tokugawa_shogunate",
+      "colorHex": "#E11D48",
+      "colorRgb": [225, 29, 72],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tokugawa Shogunate",
+        "fr": "Tokugawa Shogunate",
+        "de": "Tokugawa Shogunate",
+        "es": "Tokugawa Shogunate",
+        "zh": "Tokugawa Shogunate"
+      },
+      "seshatId": "jp_tokugawa_shogunate",
+      "fromYear": 1856,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "serbs",
+      "colorHex": "#DB3735",
+      "colorRgb": [219, 55, 53],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Serbs",
+        "fr": "Serbs",
+        "de": "Serbs",
+        "es": "Serbs",
+        "zh": "Serbs"
+      },
+      "seshatId": "",
+      "fromYear": 1857,
+      "toYear": 1876,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "argentine_confederation",
+      "colorHex": "#5FE330",
+      "colorRgb": [95, 227, 48],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Argentine Confederation",
+        "fr": "Argentine Confederation",
+        "de": "Argentine Confederation",
+        "es": "Argentine Confederation",
+        "zh": "Argentine Confederation"
+      },
+      "seshatId": "",
+      "fromYear": 1857,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "emirate_of_afghanistan",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Emirate of Afghanistan",
+        "fr": "Emirate of Afghanistan",
+        "de": "Emirate of Afghanistan",
+        "es": "Emirate of Afghanistan",
+        "zh": "Emirate of Afghanistan"
+      },
+      "seshatId": "af_afghanistan_emirate",
+      "fromYear": 1857,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "khanate_of_khiva",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Khanate of Khiva",
+        "fr": "Khanate of Khiva",
+        "de": "Khanate of Khiva",
+        "es": "Khanate of Khiva",
+        "zh": "Khanate of Khiva"
+      },
+      "seshatId": "",
+      "fromYear": 1857,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_spain",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Spain",
+        "fr": "Kingdom of Spain",
+        "de": "Kingdom of Spain",
+        "es": "Kingdom of Spain",
+        "zh": "Kingdom of Spain"
+      },
+      "seshatId": "es_spanish_emp_3",
+      "fromYear": 1859,
+      "toYear": 1872,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "_spanish_empire_",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Spanish Empire)",
+        "fr": "(Spanish Empire)",
+        "de": "(Spanish Empire)",
+        "es": "(Spanish Empire)",
+        "zh": "(Spanish Empire)"
+      },
+      "seshatId": "es_spanish_emp_3",
+      "fromYear": 1859,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "beylik_of_tunis",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Beylik of Tunis",
+        "fr": "Beylik of Tunis",
+        "de": "Beylik of Tunis",
+        "es": "Beylik of Tunis",
+        "zh": "Beylik of Tunis"
+      },
+      "seshatId": "",
+      "fromYear": 1859,
+      "toYear": 1869,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "portuguese_colonies",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Portuguese Colonies",
+        "fr": "Portuguese Colonies",
+        "de": "Portuguese Colonies",
+        "es": "Portuguese Colonies",
+        "zh": "Portuguese Colonies"
+      },
+      "seshatId": "",
+      "fromYear": 1859,
+      "toYear": 1894,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "first_hellenic_republic",
+      "colorHex": "#B51089",
+      "colorRgb": [181, 16, 137],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "First Hellenic Republic",
+        "fr": "First Hellenic Republic",
+        "de": "First Hellenic Republic",
+        "es": "First Hellenic Republic",
+        "zh": "First Hellenic Republic"
+      },
+      "seshatId": "",
+      "fromYear": 1859,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "panthay_rebellion",
+      "colorHex": "#3A16BA",
+      "colorRgb": [58, 22, 186],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Panthay Rebellion",
+        "fr": "Panthay Rebellion",
+        "de": "Panthay Rebellion",
+        "es": "Panthay Rebellion",
+        "zh": "Panthay Rebellion"
+      },
+      "seshatId": "",
+      "fromYear": 1859,
+      "toYear": 1867,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "united_principalities_of_moldavia_and_wallachia",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "United Principalities of Moldavia and Wallachia",
+        "fr": "United Principalities of Moldavia and Wallachia",
+        "de": "United Principalities of Moldavia and Wallachia",
+        "es": "United Principalities of Moldavia and Wallachia",
+        "zh": "United Principalities of Moldavia and Wallachia"
+      },
+      "seshatId": "",
+      "fromYear": 1859,
+      "toYear": 1879,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "sultanate_of_brunei",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Brunei",
+        "fr": "Sultanate of Brunei",
+        "de": "Sultanate of Brunei",
+        "es": "Sultanate of Brunei",
+        "zh": "Sultanate of Brunei"
+      },
+      "seshatId": "",
+      "fromYear": 1859,
+      "toYear": 1867,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_great_britain",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Great Britain",
+        "fr": "Kingdom of Great Britain",
+        "de": "Kingdom of Great Britain",
+        "es": "Kingdom of Great Britain",
+        "zh": "Kingdom of Great Britain"
+      },
+      "seshatId": "gb_british_emp_2",
+      "fromYear": 1859,
+      "toYear": 1869,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "khmer_empire",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Khmer Empire",
+        "fr": "Khmer Empire",
+        "de": "Khmer Empire",
+        "es": "Khmer Empire",
+        "zh": "Khmer Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1859,
+      "toYear": 1865,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "ottoman_empire",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ottoman Empire",
+        "fr": "Ottoman Empire",
+        "de": "Ottoman Empire",
+        "es": "Ottoman Empire",
+        "zh": "Ottoman Empire"
+      },
+      "seshatId": "tr_ottoman_emp_4",
+      "fromYear": 1859,
+      "toYear": 1865,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_sarawak",
+      "colorHex": "#305FE3",
+      "colorRgb": [48, 95, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Sarawak",
+        "fr": "Kingdom of Sarawak",
+        "de": "Kingdom of Sarawak",
+        "es": "Kingdom of Sarawak",
+        "zh": "Kingdom of Sarawak"
+      },
+      "seshatId": "",
+      "fromYear": 1859,
+      "toYear": 1867,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "qajar_dynasty",
+      "colorHex": "#0891B2",
+      "colorRgb": [8, 145, 178],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Qajar Dynasty",
+        "fr": "Qajar Dynasty",
+        "de": "Qajar Dynasty",
+        "es": "Qajar Dynasty",
+        "zh": "Qajar Dynasty"
+      },
+      "seshatId": "ir_qajar_dyn",
+      "fromYear": 1859,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "granadine_confederation",
+      "colorHex": "#1AF0DA",
+      "colorRgb": [26, 240, 218],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Granadine Confederation",
+        "fr": "Granadine Confederation",
+        "de": "Granadine Confederation",
+        "es": "Granadine Confederation",
+        "zh": "Granadine Confederation"
+      },
+      "seshatId": "",
+      "fromYear": 1859,
+      "toYear": 1861,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "spanish_empire",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Spanish Empire",
+        "fr": "Spanish Empire",
+        "de": "Spanish Empire",
+        "es": "Spanish Empire",
+        "zh": "Spanish Empire"
+      },
+      "seshatId": "es_spanish_emp_3",
+      "fromYear": 1859,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "burma",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Burma",
+        "fr": "Burma",
+        "de": "Burma",
+        "es": "Burma",
+        "zh": "Burma"
+      },
+      "seshatId": "",
+      "fromYear": 1859,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "ottoman_tripolitania",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ottoman Tripolitania",
+        "fr": "Ottoman Tripolitania",
+        "de": "Ottoman Tripolitania",
+        "es": "Ottoman Tripolitania",
+        "zh": "Ottoman Tripolitania"
+      },
+      "seshatId": "",
+      "fromYear": 1859,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "united_states_of_america",
+      "colorHex": "#3B82F6",
+      "colorRgb": [59, 130, 246],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "United States of America",
+        "fr": "United States of America",
+        "de": "United States of America",
+        "es": "United States of America",
+        "zh": "United States of America"
+      },
+      "seshatId": "us_antebellum",
+      "fromYear": 1859,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "nguy_n_dynasty",
+      "colorHex": "#16A085",
+      "colorRgb": [22, 160, 133],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Nguyễn dynasty",
+        "fr": "Nguyễn dynasty",
+        "de": "Nguyễn dynasty",
+        "es": "Nguyễn dynasty",
+        "zh": "Nguyễn dynasty"
+      },
+      "seshatId": "",
+      "fromYear": 1859,
+      "toYear": 1867,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "swiss_confederation",
+      "colorHex": "#EF4444",
+      "colorRgb": [239, 68, 68],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Swiss Confederation",
+        "fr": "Swiss Confederation",
+        "de": "Swiss Confederation",
+        "es": "Swiss Confederation",
+        "zh": "Swiss Confederation"
+      },
+      "seshatId": "ch_swiss_conf_4",
+      "fromYear": 1860,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "dutch_east_indies",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Dutch East Indies",
+        "fr": "Dutch East Indies",
+        "de": "Dutch East Indies",
+        "es": "Dutch East Indies",
+        "zh": "Dutch East Indies"
+      },
+      "seshatId": "nl_dutch_emp_2",
+      "fromYear": 1860,
+      "toYear": 1861,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "joseon",
+      "colorHex": "#8B5CF6",
+      "colorRgb": [139, 92, 246],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Joseon",
+        "fr": "Joseon",
+        "de": "Joseon",
+        "es": "Joseon",
+        "zh": "Joseon"
+      },
+      "seshatId": "",
+      "fromYear": 1860,
+      "toYear": 1894,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_the_two_sicilies",
+      "colorHex": "#B45309",
+      "colorRgb": [180, 83, 9],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of the Two Sicilies",
+        "fr": "Kingdom of the Two Sicilies",
+        "de": "Kingdom of the Two Sicilies",
+        "es": "Kingdom of the Two Sicilies",
+        "zh": "Kingdom of the Two Sicilies"
+      },
+      "seshatId": "it_two_sicilies_k",
+      "fromYear": 1860,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kashmir_and_jammu",
+      "colorHex": "#BA2072",
+      "colorRgb": [186, 32, 114],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kashmir and Jammu",
+        "fr": "Kashmir and Jammu",
+        "de": "Kashmir and Jammu",
+        "es": "Kashmir and Jammu",
+        "zh": "Kashmir and Jammu"
+      },
+      "seshatId": "",
+      "fromYear": 1860,
+      "toYear": 1884,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "british_raj",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "British Raj",
+        "fr": "British Raj",
+        "de": "British Raj",
+        "es": "British Raj",
+        "zh": "British Raj"
+      },
+      "seshatId": "gb_british_emp_2",
+      "fromYear": 1860,
+      "toYear": 1867,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "russian_empire",
+      "colorHex": "#7C3AED",
+      "colorRgb": [124, 58, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Russian Empire",
+        "fr": "Russian Empire",
+        "de": "Russian Empire",
+        "es": "Russian Empire",
+        "zh": "Russian Empire"
+      },
+      "seshatId": "ru_romanov_dyn_2",
+      "fromYear": 1860,
+      "toYear": 1861,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "honduras",
+      "colorHex": "#309BE3",
+      "colorRgb": [48, 155, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Honduras",
+        "fr": "Honduras",
+        "de": "Honduras",
+        "es": "Honduras",
+        "zh": "Honduras"
+      },
+      "seshatId": "",
+      "fromYear": 1860,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "_second_french_empire_",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Second French Empire)",
+        "fr": "(Second French Empire)",
+        "de": "(Second French Empire)",
+        "es": "(Second French Empire)",
+        "zh": "(Second French Empire)"
+      },
+      "seshatId": "fr_france_napoleonic",
+      "fromYear": 1860,
+      "toYear": 1861,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "republic_of_nicaragua",
+      "colorHex": "#6AD618",
+      "colorRgb": [106, 214, 24],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Nicaragua",
+        "fr": "Republic of Nicaragua",
+        "de": "Republic of Nicaragua",
+        "es": "Republic of Nicaragua",
+        "zh": "Republic of Nicaragua"
+      },
+      "seshatId": "",
+      "fromYear": 1860,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "taiping_heavenly_kingdom",
+      "colorHex": "#CFB41D",
+      "colorRgb": [207, 180, 29],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Taiping Heavenly Kingdom",
+        "fr": "Taiping Heavenly Kingdom",
+        "de": "Taiping Heavenly Kingdom",
+        "es": "Taiping Heavenly Kingdom",
+        "zh": "Taiping Heavenly Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1860,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "qing_dynasty",
+      "colorHex": "#EF4444",
+      "colorRgb": [239, 68, 68],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Qing Dynasty",
+        "fr": "Qing Dynasty",
+        "de": "Qing Dynasty",
+        "es": "Qing Dynasty",
+        "zh": "Qing Dynasty"
+      },
+      "seshatId": "cn_qing_dyn_2",
+      "fromYear": 1860,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "french_indochina",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "French Indochina",
+        "fr": "French Indochina",
+        "de": "French Indochina",
+        "es": "French Indochina",
+        "zh": "French Indochina"
+      },
+      "seshatId": "fr_france_napoleonic",
+      "fromYear": 1860,
+      "toYear": 1867,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "papal_states",
+      "colorHex": "#EAB308",
+      "colorRgb": [234, 179, 8],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Papal States",
+        "fr": "Papal States",
+        "de": "Papal States",
+        "es": "Papal States",
+        "zh": "Papal States"
+      },
+      "seshatId": "",
+      "fromYear": 1860,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "_british_empire_",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(British Empire)",
+        "fr": "(British Empire)",
+        "de": "(British Empire)",
+        "es": "(British Empire)",
+        "zh": "(British Empire)"
+      },
+      "seshatId": "gb_british_emp_2",
+      "fromYear": 1860,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "talpur_dynasty",
+      "colorHex": "#EB366C",
+      "colorRgb": [235, 54, 108],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Talpur Dynasty",
+        "fr": "Talpur Dynasty",
+        "de": "Talpur Dynasty",
+        "es": "Talpur Dynasty",
+        "zh": "Talpur Dynasty"
+      },
+      "seshatId": "",
+      "fromYear": 1860,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "french_africa",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "French Africa",
+        "fr": "French Africa",
+        "de": "French Africa",
+        "es": "French Africa",
+        "zh": "French Africa"
+      },
+      "seshatId": "fr_france_napoleonic",
+      "fromYear": 1860,
+      "toYear": 1869,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "austrian_empire",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Austrian Empire",
+        "fr": "Austrian Empire",
+        "de": "Austrian Empire",
+        "es": "Austrian Empire",
+        "zh": "Austrian Empire"
+      },
+      "seshatId": "at_habsburg_2",
+      "fromYear": 1860,
+      "toYear": 1863,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "second_french_empire",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Second French Empire",
+        "fr": "Second French Empire",
+        "de": "Second French Empire",
+        "es": "Second French Empire",
+        "zh": "Second French Empire"
+      },
+      "seshatId": "fr_france_napoleonic",
+      "fromYear": 1860,
+      "toYear": 1861,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "british_colonial_empire",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "British Colonial Empire",
+        "fr": "British Colonial Empire",
+        "de": "British Colonial Empire",
+        "es": "British Colonial Empire",
+        "zh": "British Colonial Empire"
+      },
+      "seshatId": "gb_british_emp_2",
+      "fromYear": 1860,
+      "toYear": 1861,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "kingdom_of_sardinia",
+      "colorHex": "#EC4899",
+      "colorRgb": [236, 72, 153],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Sardinia",
+        "fr": "Kingdom of Sardinia",
+        "de": "Kingdom of Sardinia",
+        "es": "Kingdom of Sardinia",
+        "zh": "Kingdom of Sardinia"
+      },
+      "seshatId": "",
+      "fromYear": 1860,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "_netherlands_",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Netherlands)",
+        "fr": "(Netherlands)",
+        "de": "(Netherlands)",
+        "es": "(Netherlands)",
+        "zh": "(Netherlands)"
+      },
+      "seshatId": "nl_dutch_emp_2",
+      "fromYear": 1860,
+      "toYear": 1861,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    },
+    {
+      "id": "state_of_buenos_aires",
+      "colorHex": "#BC2CE8",
+      "colorRgb": [188, 44, 232],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "State of Buenos Aires",
+        "fr": "State of Buenos Aires",
+        "de": "State of Buenos Aires",
+        "es": "State of Buenos Aires",
+        "zh": "State of Buenos Aires"
+      },
+      "seshatId": "",
+      "fromYear": 1860,
+      "toYear": 1860,
+      "kinshipType": "Industrial Wage-Labor Proletariat & Nuclear Families",
+      "lithicTechnocomplex": "Steam Engines, Puddling Iron & Power Looms",
+      "caloricIntakePerCapitaKcal": 3100
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "epoch": -1700,
+  "era": "Bronze Age 1 700 BC",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -1700 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "elam",
+      "colorHex": "#C72C8B",
+      "colorRgb": [199, 44, 139],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Elam",
+        "fr": "Elam",
+        "de": "Elam",
+        "es": "Elam",
+        "zh": "Elam"
+      },
+      "seshatId": "ir_elam_3",
+      "fromYear": -1760,
+      "toYear": -1601,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "babylonia",
+      "colorHex": "#411FDB",
+      "colorRgb": [65, 31, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Babylonia",
+        "fr": "Babylonia",
+        "de": "Babylonia",
+        "es": "Babylonia",
+        "zh": "Babylonia"
+      },
+      "seshatId": "iq_babylonia_1",
+      "fromYear": -1700,
+      "toYear": -1601,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "assyria",
+      "colorHex": "#D910E0",
+      "colorRgb": [217, 16, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Assyria",
+        "fr": "Assyria",
+        "de": "Assyria",
+        "es": "Assyria",
+        "zh": "Assyria"
+      },
+      "seshatId": "",
+      "fromYear": -1700,
+      "toYear": -1501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "middle_kingdom_of_egypt",
+      "colorHex": "#C4652D",
+      "colorRgb": [196, 101, 45],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Middle Kingdom of Egypt",
+        "fr": "Middle Kingdom of Egypt",
+        "de": "Middle Kingdom of Egypt",
+        "es": "Middle Kingdom of Egypt",
+        "zh": "Middle Kingdom of Egypt"
+      },
+      "seshatId": "eg_middle_k",
+      "fromYear": -1700,
+      "toYear": -1601,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "hyksos",
+      "colorHex": "#12B370",
+      "colorRgb": [18, 179, 112],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Hyksos",
+        "fr": "Hyksos",
+        "de": "Hyksos",
+        "es": "Hyksos",
+        "zh": "Hyksos"
+      },
+      "seshatId": "",
+      "fromYear": -1700,
+      "toYear": -1601,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "first_sealand_dynasty",
+      "colorHex": "#5311ED",
+      "colorRgb": [83, 17, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "First Sealand Dynasty",
+        "fr": "First Sealand Dynasty",
+        "de": "First Sealand Dynasty",
+        "es": "First Sealand Dynasty",
+        "zh": "First Sealand Dynasty"
+      },
+      "seshatId": "",
+      "fromYear": -1700,
+      "toYear": -1601,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    }
+  ]
+}

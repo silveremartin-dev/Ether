@@ -988,11 +988,12 @@ public class NaturalEarthVectorIngestor {
         int eh = elevationMask.getHeight();
 
         for (int y = 0; y < h; y++) {
+            double lat = 90.0 - (y + 0.5) / h * 180.0;
             int my = Math.clamp(y * eh / h, 0, eh - 1);
             for (int x = 0; x < w; x++) {
                 int mx = Math.clamp(x * ew / w, 0, ew - 1);
                 int land = elevationMask.getRaster().getSample(mx, my, 0);
-                if (land == 0) {
+                if (land == 0 || lat < -60.0) {
                     img.setRGB(x, y, 0x000000);
                 }
             }

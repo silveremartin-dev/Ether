@@ -1,0 +1,147 @@
+{
+  "epoch": -1800,
+  "era": "Bronze Age 1 800 BC",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -1800 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "middle_kingdom_of_egypt",
+      "colorHex": "#C4652D",
+      "colorRgb": [196, 101, 45],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Middle Kingdom of Egypt",
+        "fr": "Middle Kingdom of Egypt",
+        "de": "Middle Kingdom of Egypt",
+        "es": "Middle Kingdom of Egypt",
+        "zh": "Middle Kingdom of Egypt"
+      },
+      "seshatId": "eg_middle_k",
+      "fromYear": -1800,
+      "toYear": -1701,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "assyria",
+      "colorHex": "#D910E0",
+      "colorRgb": [217, 16, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Assyria",
+        "fr": "Assyria",
+        "de": "Assyria",
+        "es": "Assyria",
+        "zh": "Assyria"
+      },
+      "seshatId": "",
+      "fromYear": -1800,
+      "toYear": -1761,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "hyksos",
+      "colorHex": "#12B370",
+      "colorRgb": [18, 179, 112],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Hyksos",
+        "fr": "Hyksos",
+        "de": "Hyksos",
+        "es": "Hyksos",
+        "zh": "Hyksos"
+      },
+      "seshatId": "",
+      "fromYear": -1800,
+      "toYear": -1701,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "babylonia",
+      "colorHex": "#411FDB",
+      "colorRgb": [65, 31, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Babylonia",
+        "fr": "Babylonia",
+        "de": "Babylonia",
+        "es": "Babylonia",
+        "zh": "Babylonia"
+      },
+      "seshatId": "iq_babylonia_1",
+      "fromYear": -1800,
+      "toYear": -1761,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "indus_valley_civilization",
+      "colorHex": "#B324A7",
+      "colorRgb": [179, 36, 167],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Indus Valley Civilization",
+        "fr": "Indus Valley Civilization",
+        "de": "Indus Valley Civilization",
+        "es": "Indus Valley Civilization",
+        "zh": "Indus Valley Civilization"
+      },
+      "seshatId": "pk_kachi_urban_2",
+      "fromYear": -1800,
+      "toYear": -1761,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "elam",
+      "colorHex": "#C72C8B",
+      "colorRgb": [199, 44, 139],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Elam",
+        "fr": "Elam",
+        "de": "Elam",
+        "es": "Elam",
+        "zh": "Elam"
+      },
+      "seshatId": "ir_elam_3",
+      "fromYear": -1800,
+      "toYear": -1761,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "sumerian_city-states",
+      "colorHex": "#D13096",
+      "colorRgb": [209, 48, 150],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sumerian City-States",
+        "fr": "Sumerian City-States",
+        "de": "Sumerian City-States",
+        "es": "Sumerian City-States",
+        "zh": "Sumerian City-States"
+      },
+      "seshatId": "",
+      "fromYear": -1800,
+      "toYear": -1761,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    }
+  ]
+}

@@ -112,3 +112,94 @@ java --add-modules=jdk.incubator.vector \
      -Xms4g -Xmx8g \
      -jar bin/ether.jar
 ```
+
+---
+
+## 7. Distributed Multi-Node Cluster CLI Orchestration & Optimization
+
+Ether features a fully decentralized, lock-step distributed computing architecture powered by AES-256 encrypted frames, 2D Hilbert space-filling curve domain partitioning, and barrier synchronization.
+
+### 7.1 Starting the Master Server Node
+
+Launch the central master server orchestrator with custom spatial partitioning, barrier timeout, and snapshot intervals:
+
+```bash
+# Start Master Cluster Server
+java -jar bin/ether.jar --role=master \
+     --port=9090 \
+     --secret=EtherClusterSecret2026 \
+     --partition-strategy=LOAD_AWARE \
+     --barrier-timeout=5000 \
+     --snapshots --snapshot-interval=50 \
+     --scenario=OUT_OF_AFRICA \
+     --res=4 --ticks=1000 \
+     --threads=16
+```
+
+### 7.2 Launching Multiple Worker Nodes with Custom Acceleration & Hardware Profiles
+
+You can scale horizontally by launching as many heterogeneous worker nodes as desired across local or remote machines:
+
+```bash
+# Node 1: Dedicated GPU Compute Worker (OpenCL Shaders)
+java -jar bin/ether.jar --role=worker \
+     --master-host=192.168.1.100 --port=9090 \
+     --secret=EtherClusterSecret2026 \
+     --node-id=worker-gpu-01 \
+     --worker-capacity="NVIDIA RTX 4090 (24GB VRAM)" \
+     --engine=gpu --worker-gpu
+
+# Node 2: Native Rust Multi-Core Worker (Rayon + AVX-512)
+java -jar bin/ether.jar --role=worker \
+     --master-host=192.168.1.100 --port=9090 \
+     --secret=EtherClusterSecret2026 \
+     --node-id=worker-rust-02 \
+     --worker-capacity="AMD EPYC 64-Core Native Rust" \
+     --engine=rust --threads=64
+
+# Node 3: Java 21 SIMD Vector Worker
+java -jar bin/ether.jar --role=worker \
+     --master-host=192.168.1.100 --port=9090 \
+     --secret=EtherClusterSecret2026 \
+     --node-id=worker-simd-03 \
+     --worker-capacity="Intel Xeon 32-Core SIMD" \
+     --engine=simd --threads=32
+
+# Node 4: Ultra-Deterministic Batch Node (Single-Thread SW Fallback)
+java -jar bin/ether.jar --role=worker \
+     --master-host=192.168.1.100 --port=9090 \
+     --secret=EtherClusterSecret2026 \
+     --node-id=worker-safe-04 \
+     --engine=safe --single-core
+```
+
+### 7.3 Complete CLI Flag Reference
+
+| Category | Parameter | Description |
+|---|---|---|
+| **Topology** | `--role=<master\|worker>` | Set node role (`--server` / `--node` / `--master` / `--worker`) |
+| | `--master-host=<IP>` | Master hostname or IP for worker nodes |
+| | `--port=<PORT>`, `-P <PORT>` | Port for cluster communication (Default: `9090`) |
+| | `--secret=<TOKEN>` | AES-256 handshake token |
+| | `--node-id=<ID>` | Unique identity tag for the worker node |
+| | `--worker-capacity=<DESC>` | Human-readable node capacity description |
+| | `--partition-strategy=<TYPE>` | `HILBERT`, `LOAD_AWARE`, `EQUAL_SLICES` |
+| | `--barrier-timeout=<MS>` | Lock-step barrier wait timeout in ms (Default: `3000`) |
+| | `--heartbeat-interval=<SEC>` | Worker ping frequency (Default: `2s`) |
+| | `--heartbeat-timeout=<SEC>` | Node disconnection timeout (Default: `8s`) |
+| | `--snapshots` / `--snapshot-interval=<N>` | Automated snapshot checkpointing |
+| **Engine** | `--engine=<rust\|gpu\|simd\|cpu\|safe>` | Compute backend engine |
+| | `--threads=<N>`, `--cores=<N>` | CPU worker threads allocation |
+| | `--single-core` / `--multi-core` | Single-threaded vs multi-threaded execution |
+| **Performance** | `--strict-determinism[=true\|false]` | Strict bit-identical Tier-1 physical conservation |
+| | `--sparse-skipping[=true\|false]` | Skip updates on uninhabited desert/ocean cells |
+| | `--multi-freq-climate` / `--climate-freq=<N>` | Sub-sampled climate calculation frequency |
+| | `--spatial-truncation` | Truncate long-range spatial dispersion tails |
+| **Scenario** | `--scenario=<NAME>`, `-s <NAME>` | Preset epoch scenario |
+| | `--res=<2..6>`, `-r <N>` | Planetary H3 grid resolution |
+| | `--cells=<N>`, `-c <N>` | Number of simulated H3 cells |
+| | `--ticks=<N>`, `-t <N>` | Simulation tick duration |
+| | `--start-year=<Y>`, `--end-year=<Y>` | Custom historical epoch span |
+| **Preferences** | `--lang=<EN\|FR\|DE\|ES\|ZH>`, `-l <LANG>` | Global UI / CLI language preference |
+| | `--theme=<dark\|light\|presentation>` | Visual display theme |
+

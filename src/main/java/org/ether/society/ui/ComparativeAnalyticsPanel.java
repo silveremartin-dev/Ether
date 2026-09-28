@@ -59,17 +59,35 @@ import java.util.*;
 public class ComparativeAnalyticsPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ComparativeAnalyticsPanel.class);
 
+    public enum BatchState {
+        NOT_EXECUTED,
+        QUEUED,
+        RUNNING,
+        EXECUTED,
+        PAUSED
+    }
+
     public static class ScenarioSelectableItem {
         private final Scenario scenario;
         private final BooleanProperty selected = new SimpleBooleanProperty(false);
         private boolean executed;
         private String runId;
+        private BatchState batchState = BatchState.NOT_EXECUTED;
+        private double progress = 0.0;
+        private int queueIndex = 0;
+        private double estimatedDurationSec = 0.0;
 
         public ScenarioSelectableItem(Scenario scenario, boolean isSelected, boolean executed, String runId) {
             this.scenario = scenario;
             this.selected.set(isSelected);
             this.executed = executed;
             this.runId = runId;
+            if (executed || "HISTORICAL_GROUND_TRUTH".equals(runId)) {
+                this.batchState = BatchState.EXECUTED;
+            } else {
+                this.batchState = BatchState.NOT_EXECUTED;
+                recalculateEstimate();
+            }
         }
 
         public Scenario getScenario() { return scenario; }
@@ -88,9 +106,44 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         public BooleanProperty selectedProperty() { return selected; }
 
         public boolean isExecuted() { return executed; }
-        public void setExecuted(boolean executed) { this.executed = executed; }
+        public void setExecuted(boolean executed) { 
+            this.executed = executed; 
+            if (executed) this.batchState = BatchState.EXECUTED;
+        }
         public String getRunId() { return runId; }
         public void setRunId(String runId) { this.runId = runId; }
+
+        public BatchState getBatchState() { return batchState; }
+        public void setBatchState(BatchState batchState) { this.batchState = batchState; }
+
+        public double getProgress() { return progress; }
+        public void setProgress(double progress) { this.progress = progress; }
+
+        public int getQueueIndex() { return queueIndex; }
+        public void setQueueIndex(int queueIndex) { this.queueIndex = queueIndex; }
+
+        public double getEstimatedDurationSec() { return estimatedDurationSec; }
+        public void recalculateEstimate() {
+            if ("HISTORICAL_GROUND_TRUTH".equals(runId) || executed) {
+                this.estimatedDurationSec = 0.0;
+                return;
+            }
+            if (scenario != null) {
+                int cellCount = scenario.getInitialHumanCount() > 0 ? (int) Math.min(5000, 50 + scenario.getInitialHumanCount() / 2000) : 4096;
+                this.estimatedDurationSec = ExecutionContextPanel.estimateExecutionTimeSeconds(
+                    scenario.getStartDateYear(),
+                    scenario.getEndDateYear(),
+                    cellCount,
+                    ExecutionContextPanel.getActiveHardwareMode()
+                );
+            }
+        }
+
+        public String getEstimatedDurationDisplay() {
+            if ("HISTORICAL_GROUND_TRUTH".equals(runId) || executed) return "-";
+            return ExecutionContextPanel.formatDuration(estimatedDurationSec);
+        }
+
         public String getStatusDisplay() { 
             if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
                 return I18n.getOrDefault("analytics.status.ground_truth_ready", "🟢 Historical Ground Truth (HYDE / Maddison / Seshat)");
@@ -104,6 +157,13 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private final SimulationRunRepository runRepository;
     private final ScenarioRepository scenarioRepository;
     private final RootCauseAnalyzer analyzer;
+
+    private final java.util.concurrent.atomic.AtomicBoolean isBatchRunning = new java.util.concurrent.atomic.AtomicBoolean(false);
+    private final java.util.concurrent.atomic.AtomicBoolean isBatchCancelled = new java.util.concurrent.atomic.AtomicBoolean(false);
+    private final java.util.concurrent.atomic.AtomicBoolean isBatchPaused = new java.util.concurrent.atomic.AtomicBoolean(false);
+    private Thread batchWorkerThread = null;
+    private Runnable onPauseInteractiveSimulationCallback = null;
+    private java.util.function.BooleanSupplier isInteractiveSimulationRunningSupplier = null;
 
     private TableView<ScenarioSelectableItem> scenarioTable;
     private ObservableList<ScenarioSelectableItem> scenarioList;
@@ -124,6 +184,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private boolean isUpdatingTexts = false;
     private TableColumn<ScenarioSelectableItem, String> nameCol;
     private TableColumn<ScenarioSelectableItem, String> yearsCol;
+    private TableColumn<ScenarioSelectableItem, String> estDurationCol;
     private TableColumn<ScenarioSelectableItem, String> statusCol;
 
     private TabPane analyticsTabPane;
@@ -135,6 +196,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private LineChart<Number, Number> chart;
     private Label warningLabel;
     private Button executeMissingBtn;
+    private Button cancelBatchBtn;
 
     // 2D Spatial Tensor Comparison Controls
     private ComboBox<String> spatialChannelCombo;
@@ -265,21 +327,82 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         nameCol = new TableColumn<>();
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-        nameCol.setPrefWidth(240);
+        nameCol.setPrefWidth(220);
 
         yearsCol = new TableColumn<>();
         yearsCol.setCellValueFactory(new PropertyValueFactory<>("yearRange"));
-        yearsCol.setPrefWidth(140);
+        yearsCol.setPrefWidth(130);
+
+        estDurationCol = new TableColumn<>();
+        estDurationCol.setCellValueFactory(new PropertyValueFactory<>("estimatedDurationDisplay"));
+        estDurationCol.setPrefWidth(110);
+        estDurationCol.setStyle("-fx-alignment: CENTER;");
 
         statusCol = new TableColumn<>();
         statusCol.setCellValueFactory(new PropertyValueFactory<>("statusDisplay"));
-        statusCol.setPrefWidth(220);
+        statusCol.setPrefWidth(240);
+        statusCol.setCellFactory(col -> new TableCell<>() {
+            private final ProgressIndicator spinner = new ProgressIndicator();
+            private final Label label = new Label();
+            private final HBox container = new HBox(6, spinner, label);
+            {
+                spinner.setMaxSize(16, 16);
+                spinner.setPrefSize(16, 16);
+                container.setAlignment(Pos.CENTER_LEFT);
+                setAlignment(Pos.CENTER_LEFT);
+            }
 
-        scenarioTable.getColumns().addAll(selectCol, nameCol, yearsCol, statusCol);
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    ScenarioSelectableItem scItem = getTableRow().getItem();
+                    switch (scItem.getBatchState()) {
+                        case RUNNING -> {
+                            spinner.setProgress(scItem.getProgress() > 0 ? scItem.getProgress() : -1);
+                            label.setText(String.format(I18n.getOrDefault("analytics.status.running_fmt", "🔄 Running (%d%%)"), (int) (scItem.getProgress() * 100)));
+                            label.setStyle("-fx-text-fill: #3b82f6; -fx-font-weight: bold;");
+                            setGraphic(container);
+                            setText(null);
+                        }
+                        case QUEUED -> {
+                            label.setText(String.format(I18n.getOrDefault("analytics.status.queued_fmt", "⏳ Queued (#%d)"), scItem.getQueueIndex()));
+                            label.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
+                            setGraphic(label);
+                            setText(null);
+                        }
+                        case PAUSED -> {
+                            label.setText(I18n.getOrDefault("analytics.status.paused", "⏸️ Paused"));
+                            label.setStyle("-fx-text-fill: #94a3b8; -fx-font-weight: bold;");
+                            setGraphic(label);
+                            setText(null);
+                        }
+                        case EXECUTED -> {
+                            label.setText(scItem.getStatusDisplay());
+                            label.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
+                            setGraphic(label);
+                            setText(null);
+                        }
+                        default -> {
+                            label.setText(scItem.getStatusDisplay());
+                            label.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
+                            setGraphic(label);
+                            setText(null);
+                        }
+                    }
+                }
+            }
+        });
+
+        scenarioTable.getColumns().addAll(selectCol, nameCol, yearsCol, estDurationCol, statusCol);
 
         selectCol.setComparator((a, b) -> Boolean.compare(a, b));
         nameCol.setComparator(String.CASE_INSENSITIVE_ORDER);
         yearsCol.setComparator((a, b) -> a.compareTo(b));
+        estDurationCol.setComparator((a, b) -> a.compareTo(b));
         statusCol.setComparator(String.CASE_INSENSITIVE_ORDER);
 
         scenarioList = FXCollections.observableArrayList();
@@ -338,7 +461,13 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         executeMissingBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #ef4444; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
         executeMissingBtn.setOnAction(e -> executeMissingScenarios());
 
-        HBox executionBox = new HBox(12, warningLabel, executeMissingBtn);
+        cancelBatchBtn = new Button(I18n.getOrDefault("analytics.btn.cancel_batch", "🛑 Cancel Batch"));
+        cancelBatchBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #64748b; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
+        cancelBatchBtn.setVisible(false);
+        cancelBatchBtn.setManaged(false);
+        cancelBatchBtn.setOnAction(e -> cancelBatchExecution());
+
+        HBox executionBox = new HBox(12, warningLabel, executeMissingBtn, cancelBatchBtn);
         executionBox.setAlignment(Pos.CENTER_LEFT);
 
         leftPane.getChildren().addAll(filterBox, scenarioTable, executionBox);
@@ -594,79 +723,206 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         updateChartAndAnalysis();
     }
 
+    public void recalculateAllEstimates() {
+        for (ScenarioSelectableItem item : scenarioList) {
+            item.recalculateEstimate();
+        }
+        if (scenarioTable != null) {
+            scenarioTable.refresh();
+        }
+        checkExecutionStatus();
+    }
+
+    public void setInteractiveSimulationControllers(
+        java.util.function.BooleanSupplier isRunningSupplier,
+        Runnable pauseCallback
+    ) {
+        this.isInteractiveSimulationRunningSupplier = isRunningSupplier;
+        this.onPauseInteractiveSimulationCallback = pauseCallback;
+    }
+
+    public boolean isBatchRunning() {
+        return isBatchRunning.get();
+    }
+
+    public void pauseOrCancelBatchForInteractiveSimulation() {
+        if (isBatchRunning.get()) {
+            logger.info("Pausing background comparative batch execution for interactive simulation");
+            isBatchPaused.set(true);
+            isBatchCancelled.set(true);
+            javafx.application.Platform.runLater(() -> {
+                for (ScenarioSelectableItem item : scenarioList) {
+                    if (item.getBatchState() == BatchState.RUNNING || item.getBatchState() == BatchState.QUEUED) {
+                        item.setBatchState(BatchState.PAUSED);
+                    }
+                }
+                scenarioTable.refresh();
+                checkExecutionStatus();
+            });
+        }
+    }
+
+    private void cancelBatchExecution() {
+        if (isBatchRunning.get()) {
+            logger.info("User requested cancellation of batch execution queue");
+            isBatchCancelled.set(true);
+            cancelBatchBtn.setDisable(true);
+            cancelBatchBtn.setText(I18n.getOrDefault("analytics.btn.cancelling", "⏳ Stopping..."));
+        }
+    }
+
     private void checkExecutionStatus() {
         List<ScenarioSelectableItem> selected = scenarioList.stream()
             .filter(ScenarioSelectableItem::isSelected)
             .toList();
 
-        long unexecutedCount = selected.stream().filter(i -> !i.isExecuted()).count();
+        long unexecutedCount = selected.stream().filter(i -> !i.isExecuted() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId())).count();
 
         if (selected.isEmpty()) {
             warningLabel.setText(I18n.getOrDefault("analytics.warning.none_selected", "ℹ️ No scenario selected for comparison."));
             warningLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #64748b; -fx-padding: 6 10; -fx-background-color: rgba(226, 232, 240, 0.5); -fx-background-radius: 4;");
             executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.execute_scenarios", "🚀 Execute Scenarios"));
             executeMissingBtn.setDisable(true);
+            cancelBatchBtn.setVisible(false);
+            cancelBatchBtn.setManaged(false);
         } else if (unexecutedCount > 0) {
+            long totalUnexecutedYears = selected.stream()
+                .filter(i -> !i.isExecuted() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
+                .mapToLong(i -> Math.max(1, i.getScenario().getEndDateYear() - i.getScenario().getStartDateYear()))
+                .sum();
+            double totalEstSeconds = selected.stream()
+                .filter(i -> !i.isExecuted() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
+                .mapToDouble(ScenarioSelectableItem::getEstimatedDurationSec)
+                .sum();
+            String durStr = ExecutionContextPanel.formatDuration(totalEstSeconds);
+            String hwName = ExecutionContextPanel.getActiveHardwareMode().name();
+
             if (unexecutedCount == 1) {
-                warningLabel.setText(I18n.getOrDefault("analytics.warning.unexecuted_single", "⚠️ 1 selected scenario does not have execution data recorded."));
+                warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.unexecuted_single_est", "⚠️ 1 selected scenario uncalculated | %,d yrs | Est. Time: %s (%s)"), totalUnexecutedYears, durStr, hwName));
             } else {
-                warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.unexecuted_plural", "⚠️ %d selected scenarios do not have execution data recorded."), unexecutedCount));
+                warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.unexecuted_plural_est", "⚠️ %d selected scenarios uncalculated | Total Horizon: %,d yrs | ⏱️ Total Est. Time: %s (%s)"), unexecutedCount, totalUnexecutedYears, durStr, hwName));
             }
             warningLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #b45309; -fx-padding: 6 10; -fx-background-color: rgba(254, 243, 199, 0.8); -fx-background-radius: 4;");
-            executeMissingBtn.setText(unexecutedCount == 1
-                ? I18n.getOrDefault("analytics.btn.execute_missing_single", "🚀 Execute Missing Scenario")
-                : String.format(I18n.getOrDefault("analytics.btn.execute_missing_plural", "🚀 Execute %d Missing Scenarios"), unexecutedCount));
-            executeMissingBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #ef4444; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
-            executeMissingBtn.setDisable(false);
+            
+            if (!isBatchRunning.get()) {
+                executeMissingBtn.setText(unexecutedCount == 1
+                    ? String.format(I18n.getOrDefault("analytics.btn.execute_missing_single_fmt", "🚀 Execute Missing Scenario (%s)"), durStr)
+                    : String.format(I18n.getOrDefault("analytics.btn.execute_missing_plural_fmt", "🚀 Execute %d Scenarios in Queue (%s)"), unexecutedCount, durStr));
+                executeMissingBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #ef4444; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
+                executeMissingBtn.setDisable(false);
+                cancelBatchBtn.setVisible(false);
+                cancelBatchBtn.setManaged(false);
+            }
         } else {
             warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.ready", "✅ All selected scenarios (%d) are ready for audit and comparison."), selected.size()));
             warningLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #15803d; -fx-padding: 6 10; -fx-background-color: rgba(220, 252, 231, 0.8); -fx-background-radius: 4;");
             long simulatedCount = selected.stream().filter(i -> !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId())).count();
-            executeMissingBtn.setText(simulatedCount == 1
-                ? I18n.getOrDefault("analytics.btn.reexecute_single", "🔄 Re-execute Simulated Scenario")
-                : String.format(I18n.getOrDefault("analytics.btn.reexecute_plural", "🔄 Re-execute %d Simulated Scenarios"), simulatedCount));
-            executeMissingBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
-            executeMissingBtn.setDisable(false);
+            if (!isBatchRunning.get()) {
+                executeMissingBtn.setText(simulatedCount == 1
+                    ? I18n.getOrDefault("analytics.btn.reexecute_single", "🔄 Re-execute Simulated Scenario")
+                    : String.format(I18n.getOrDefault("analytics.btn.reexecute_plural", "🔄 Re-execute %d Simulated Scenarios"), simulatedCount));
+                executeMissingBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
+                executeMissingBtn.setDisable(false);
+                cancelBatchBtn.setVisible(false);
+                cancelBatchBtn.setManaged(false);
+            }
         }
     }
 
     private void executeMissingScenarios() {
+        if (isBatchRunning.get()) return;
+
         List<ScenarioSelectableItem> targetItems = scenarioList.stream()
             .filter(i -> i.isSelected() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
             .toList();
 
         if (targetItems.isEmpty()) return;
 
-        List<Scenario> scenariosToRun = targetItems.stream()
-            .map(ScenarioSelectableItem::getScenario)
-            .toList();
+        // Auto-pause interactive simulation if running to prevent compute conflict
+        if (isInteractiveSimulationRunningSupplier != null && isInteractiveSimulationRunningSupplier.getAsBoolean()) {
+            if (onPauseInteractiveSimulationCallback != null) {
+                logger.info("Auto-pausing interactive simulation to prioritize comparative batch execution");
+                onPauseInteractiveSimulationCallback.run();
+            }
+        }
+
+        isBatchRunning.set(true);
+        isBatchCancelled.set(false);
+        isBatchPaused.set(false);
 
         executeMissingBtn.setDisable(true);
-        executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.executing", "⏳ Execution en cours..."));
+        executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.executing", "⏳ Processing Batch Queue..."));
+        cancelBatchBtn.setVisible(true);
+        cancelBatchBtn.setManaged(true);
+        cancelBatchBtn.setDisable(false);
+        cancelBatchBtn.setText(I18n.getOrDefault("analytics.btn.cancel_batch", "🛑 Cancel Batch"));
 
-        new Thread(() -> {
-            logger.info("Starting headless batch execution for {} scenarios...", scenariosToRun.size());
-            HeadlessBatchRunner runner = new HeadlessBatchRunner();
-            List<SimulationRunRecord> newRuns = runner.executeBatch(scenariosToRun);
+        int queuePos = 1;
+        for (ScenarioSelectableItem item : targetItems) {
+            item.setBatchState(BatchState.QUEUED);
+            item.setQueueIndex(queuePos++);
+            item.setProgress(0.0);
+        }
+        scenarioTable.refresh();
 
-            for (SimulationRunRecord run : newRuns) {
-                runRepository.saveRun(run);
+        batchWorkerThread = new Thread(() -> {
+            logger.info("Starting sequential queue execution for {} scenarios...", targetItems.size());
+            
+            for (ScenarioSelectableItem item : targetItems) {
+                if (isBatchCancelled.get()) {
+                    logger.info("Batch execution interrupted before running scenario: {}", item.getName());
+                    javafx.application.Platform.runLater(() -> {
+                        item.setBatchState(BatchState.NOT_EXECUTED);
+                    });
+                    continue;
+                }
+
+                javafx.application.Platform.runLater(() -> {
+                    item.setBatchState(BatchState.RUNNING);
+                    scenarioTable.refresh();
+                });
+
+                SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(
+                    item.getScenario(),
+                    (sc, prog, yr, endYr) -> {
+                        javafx.application.Platform.runLater(() -> {
+                            item.setProgress(prog);
+                            scenarioTable.refresh();
+                        });
+                    },
+                    isBatchCancelled::get
+                );
+
+                if (record != null && !isBatchCancelled.get()) {
+                    runRepository.saveRun(record);
+                    javafx.application.Platform.runLater(() -> {
+                        item.setExecuted(true);
+                        item.setRunId(record.getRunId());
+                        item.setBatchState(BatchState.EXECUTED);
+                        item.setProgress(1.0);
+                        scenarioTable.refresh();
+                    });
+                } else {
+                    javafx.application.Platform.runLater(() -> {
+                        if (!item.isExecuted()) {
+                            item.setBatchState(BatchState.NOT_EXECUTED);
+                        }
+                        scenarioTable.refresh();
+                    });
+                }
             }
 
             javafx.application.Platform.runLater(() -> {
-                for (ScenarioSelectableItem item : targetItems) {
-                    Optional<SimulationRunRecord> rOpt = runRepository.getRunByScenarioName(item.getName());
-                    if (rOpt.isPresent()) {
-                        item.setExecuted(true);
-                        item.setRunId(rOpt.get().getRunId());
-                    }
-                }
+                isBatchRunning.set(false);
                 scenarioTable.refresh();
                 checkExecutionStatus();
                 runAnalysis();
-                logger.info("Batch execution completed and UI refreshed.");
+                logger.info("Batch execution sequence completed.");
             });
-        }).start();
+        }, "ComparativeAnalyticsBatchQueueWorker");
+
+        batchWorkerThread.setDaemon(true);
+        batchWorkerThread.start();
     }
 
     private void runAnalysis() {
@@ -1204,7 +1460,9 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             if (selectCol != null) selectCol.setText(I18n.getOrDefault("analytics.col.compare", "Comparer"));
             if (nameCol != null) nameCol.setText(I18n.getOrDefault("analytics.col.name", "Scenario Name"));
             if (yearsCol != null) yearsCol.setText(I18n.getOrDefault("analytics.col.years", "Plage Chronologique"));
+            if (estDurationCol != null) estDurationCol.setText(I18n.getOrDefault("analytics.col.est_duration", "⏱️ Durée Estimée"));
             if (statusCol != null) statusCol.setText(I18n.getOrDefault("analytics.col.status", "DB Execution Status"));
+            if (cancelBatchBtn != null) cancelBatchBtn.setText(I18n.getOrDefault("analytics.btn.cancel_batch", "🛑 Cancel Batch"));
             if (xAxis != null) xAxis.setLabel(I18n.getOrDefault("analytics.axis.x", "Simulation Years (Ticks)"));
             if (yAxis != null) yAxis.setLabel(I18n.getOrDefault("analytics.axis.y", "Valeur de l'Indicateur"));
             if (chart != null) chart.setTitle(I18n.getOrDefault("analytics.chart.title", "Multi-Scenario Chronological Overlay (💡 CTRL + Scroll to Zoom, CTRL + Drag to Pan)"));

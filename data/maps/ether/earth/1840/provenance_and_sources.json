@@ -1,0 +1,113 @@
+{
+  "epoch": 1840,
+  "era": "Industrial 1840 AD",
+  "planet": "earth",
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "overview": {
+    "summary_en": "Industrial 1840 AD witnesses coal-powered steam factories, transcontinental railways, and telegraph networks reshaping the global economic order.",
+    "summary_fr": "L'industrialisation de 1840 ap. J.-C. voit les usines à vapeur alimentées au charbon, les chemins de fer transcontinentaux et le télégraphe remodeler l'ordre économique mondial."
+  },
+  "layers": {
+    "elevation": {
+      "filename": "earth_1840_elevation.png",
+      "category": "geophysics",
+      "data_sources": ["NOAA ETOPO 2022 15-arc-second Global Relief Model", "GEBCO 2023 Grid Bathymetric Model"],
+      "reconstitution_rationale": "High-fidelity topography and bathymetry calibrated against epoch eustatic sea level offset."
+    },
+    "biomes": {
+      "filename": "earth_1840_biomes.png",
+      "category": "ecology",
+      "data_sources": ["WorldClim v2.1 Bioclimatic Indicators", "Biome 6000 Project", "CHELSA-Trace21k"],
+      "reconstitution_rationale": "Coupled Holdridge-Whittaker bioclimatic classification driven by empirical temperature and precipitation."
+    },
+    "temperature": {
+      "filename": "earth_1840_temperature.png",
+      "category": "climate",
+      "data_sources": ["WorldClim v2.1 Bio1 (Annual Mean Temperature)", "PMIP4 Paleoclimate Synthesis"],
+      "reconstitution_rationale": "Empirical baseline modulated by continuous 2D orbital and continental paleoclimatic anomaly field."
+    },
+    "precipitation": {
+      "filename": "earth_1840_precipitation.png",
+      "category": "climate",
+      "data_sources": ["WorldClim v2.1 Bio12 (Annual Precipitation)", "Speleothem & Lake Core Records"],
+      "reconstitution_rationale": "Empirical precipitation grid with dynamic ITCZ, monsoonal, and glacial humidity corrections."
+    },
+    "seasonality": {
+      "filename": "earth_1840_seasonality.png",
+      "category": "climate",
+      "data_sources": ["WorldClim v2.1 Bio4 (Temperature Seasonality)", "Milankovitch Astronomical Solutions"],
+      "reconstitution_rationale": "Continuous seasonality amplitude accounting for axial tilt, obliquity, and ocean thermal inertia."
+    },
+    "density": {
+      "filename": "earth_1840_density.png",
+      "category": "demography",
+      "data_sources": ["HYDE 3.4 History Database of the Global Environment", "Seshat Global History Databank"],
+      "reconstitution_rationale": "Empirical demographic density field."
+    },
+    "sovereignty": {
+      "filename": "earth_1840_sovereignty.png",
+      "category": "sociology",
+      "data_sources": ["Seshat Databank Polities (ClioPatria 2023)", "Historical GIS Global Boundary Datasets"],
+      "reconstitution_rationale": "Multi-center polity sovereign domains and political borders."
+    },
+    "isogloss": {
+      "filename": "earth_1840_isogloss.png",
+      "category": "linguistics",
+      "data_sources": ["WALS World Atlas of Language Structures", "Glottolog 4.8", "D-PLACE Ethnolinguistic Database"],
+      "reconstitution_rationale": "Global ethnolinguistic phyla, sub-branches, and dialectal zones."
+    },
+    "kinship": {
+      "filename": "earth_1840_kinship.png",
+      "category": "anthropology",
+      "data_sources": ["D-PLACE Murdock Ethnographic Atlas Kinship Codes", "Todd Anthropological Family Systems Database"],
+      "reconstitution_rationale": "Spatial social structures, descent rules, and kinship organization modes."
+    },
+    "rituals": {
+      "filename": "earth_1840_rituals.png",
+      "category": "anthropology",
+      "data_sources": ["Archaeological Temple & Monumental Site Catalog", "World Religion Sacred Geography Datasets"],
+      "reconstitution_rationale": "Sacred geography, pilgrimage networks, and monumental ritual intensity."
+    },
+    "technology": {
+      "filename": "earth_1840_technology.png",
+      "category": "technology",
+      "data_sources": ["Archaeological Metallurgical & Innovation Datasets", "Maddison Project Historical GDP/Tech"],
+      "reconstitution_rationale": "Technological complexity index and diffusion fronts."
+    },
+    "institutional": {
+      "filename": "earth_1840_institutional.png",
+      "category": "sociology",
+      "data_sources": ["Seshat Global History Databank Institutional Hierarchy Scales"],
+      "reconstitution_rationale": "Administrative, legal, and bureaucratic state capacity."
+    },
+    "ecological": {
+      "filename": "earth_1840_ecological.png",
+      "category": "ecology",
+      "data_sources": ["Global Land Use & Anthropogenic Deforestation Syntheses", "UN FAO Global Forest Resources"],
+      "reconstitution_rationale": "Human ecological footprint, agricultural clearing, and resource appropriation."
+    },
+    "pathogen": {
+      "filename": "earth_1840_pathogen.png",
+      "category": "epidemiology",
+      "data_sources": ["Paleoepidemiology & Ancient DNA Pathogen Catalogs", "WHO Global Infectious Disease Atlas"],
+      "reconstitution_rationale": "Endemic disease pressure, malaria/zoonotic vectors, and historical immunity."
+    },
+    "tradenetwork": {
+      "filename": "earth_1840_tradenetwork.png",
+      "category": "economics",
+      "data_sources": ["Historical Maritime & Overland Trade Route Atlases", "Seshat Commercial Networks"],
+      "reconstitution_rationale": "Commercial trade corridors, emporia, and maritime networks."
+    },
+    "coal": { "filename": "earth_1840_coal.png", "category": "geology", "data_sources": ["USGS World Coal Quality Inventory"] },
+    "oil": { "filename": "earth_1840_oil.png", "category": "geology", "data_sources": ["USGS World Petroleum Assessment"] },
+    "gas": { "filename": "earth_1840_gas.png", "category": "geology", "data_sources": ["USGS Global Gas Assessment"] },
+    "uranium": { "filename": "earth_1840_uranium.png", "category": "geology", "data_sources": ["IAEA / NEA Red Book"] },
+    "helium3": { "filename": "earth_1840_helium3.png", "category": "geology", "data_sources": ["USGS Mantle Volatiles Survey"] },
+    "iron_copper": { "filename": "earth_1840_iron_copper.png", "category": "geology", "data_sources": ["USGS MRDS Mineral Database"] },
+    "precious_metals": { "filename": "earth_1840_precious_metals.png", "category": "geology", "data_sources": ["USGS Mineral Assessment"] },
+    "rare_earths": { "filename": "earth_1840_rare_earths.png", "category": "geology", "data_sources": ["USGS REE Database"] },
+    "geothermal": { "filename": "earth_1840_geothermal.png", "category": "geology", "data_sources": ["IHFC Terrestrial Heat Flow Database"] },
+    "aquifers": { "filename": "earth_1840_aquifers.png", "category": "geology", "data_sources": ["UNESCO WHYMAP Global Groundwater"] }
+  }
+}

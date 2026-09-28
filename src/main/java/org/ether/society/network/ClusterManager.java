@@ -40,6 +40,12 @@ public class ClusterManager {
         WORKER
     }
 
+    public enum PartitionStrategy {
+        HILBERT,
+        LOAD_AWARE,
+        EQUAL_SLICES
+    }
+
     public enum NodeStatus {
         CONNECTED,
         ACTIVE,
@@ -87,8 +93,8 @@ public class ClusterManager {
 
         @Override
         public String toString() {
-            return String.format("Node[%s @ %s:%d, role=%s, status=%s, chunks=%d..%d]",
-                    id, host, port, role, status, assignedChunkStart, assignedChunkEnd);
+            return String.format("Node[%s @ %s:%d, role=%s, status=%s, capacity=%s, chunks=%d..%d]",
+                    id, host, port, role, status, capacity, assignedChunkStart, assignedChunkEnd);
         }
     }
 
@@ -118,6 +124,18 @@ public class ClusterManager {
     private Scenario currentActiveScenario;
     private WorldBuffer currentWorldBuffer;
     private Consumer<WorldBuffer> workerComputeDelegate;
+
+    // Configurable Multi-Node & Optimization Parameters
+    private PartitionStrategy partitionStrategy = PartitionStrategy.HILBERT;
+    private String customWorkerId = null;
+    private String customWorkerCapacity = "Compute Core Worker";
+    private long barrierTimeoutMs = 3000;
+    private int syncInterval = 5;
+    private int heartbeatIntervalSec = 2;
+    private int heartbeatTimeoutSec = 8;
+    private boolean haloExchangeEnabled = false;
+    private org.ether.society.network.cluster.ClusterSnapshotManager snapshotManager = null;
+    private int snapshotIntervalTicks = 0;
 
     public ClusterManager(ClusterRole role, String masterHost, int port, String secretToken) {
         this.localRole = role;
@@ -264,18 +282,24 @@ public class ClusterManager {
                     DataOutputStream out = new DataOutputStream(workerClientSocket.getOutputStream());
                     DataInputStream in = new DataInputStream(workerClientSocket.getInputStream());
 
-                    String workerId = "worker-" + UUID.randomUUID().toString().substring(0, 6);
-                    String registerMsg = "REGISTER_WORKER:" + workerId + ":Compute Core Worker";
+                    String workerId = (customWorkerId != null && !customWorkerId.isBlank())
+                            ? customWorkerId
+                            : "worker-" + UUID.randomUUID().toString().substring(0, 6);
+                    String capacity = (customWorkerCapacity != null && !customWorkerCapacity.isBlank())
+                            ? customWorkerCapacity
+                            : "Compute Core Worker";
+                    String registerMsg = "REGISTER_WORKER:" + workerId + ":" + capacity;
                     writeEncryptedFrame(out, registerMsg, securityManager);
 
                     String decryptedResp = readEncryptedFrame(in, securityManager);
                     logger.info("Cluster Master Response: {}", decryptedResp);
 
                     // Start background heartbeat sender
+                    final int hbSec = heartbeatIntervalSec;
                     Thread hbThread = new Thread(() -> {
                         while (running.get() && !workerClientSocket.isClosed()) {
                             try {
-                                Thread.sleep(2000);
+                                Thread.sleep(hbSec * 1000L);
                                 synchronized (out) {
                                     writeEncryptedFrame(out, "HEARTBEAT:" + workerId, securityManager);
                                 }
@@ -344,6 +368,15 @@ public class ClusterManager {
         if (localRole != ClusterRole.MASTER || buffer == null) return false;
         this.currentWorldBuffer = buffer;
 
+        // Periodic snapshot capture if configured
+        if (snapshotIntervalTicks > 0 && snapshotManager != null && (tickId % snapshotIntervalTicks == 0)) {
+            try {
+                snapshotManager.saveSnapshot(tickId, buffer);
+            } catch (Exception e) {
+                logger.warn("Cluster Snapshot capture failed at Tick {}: {}", tickId, e.getMessage());
+            }
+        }
+
         List<ClusterNodeRecord> activeWorkers = new ArrayList<>();
         for (ClusterNodeRecord node : nodeRegistry.values()) {
             if (node.getRole() == ClusterRole.WORKER && (node.getStatus() == NodeStatus.ACTIVE || node.getStatus() == NodeStatus.CONNECTED)) {
@@ -394,8 +427,8 @@ public class ClusterManager {
             localMasterCompute.accept(buffer);
         }
 
-        // Wait up to 3000ms for all workers to return their results
-        return clockBarrier.awaitBarrier(3000);
+        // Wait up to barrierTimeoutMs for all workers to return their results
+        return clockBarrier.awaitBarrier(barrierTimeoutMs);
     }
 
     /**
@@ -413,19 +446,26 @@ public class ClusterManager {
 
         activeNodes.sort(Comparator.comparing((ClusterNodeRecord n) -> n.getRole() == ClusterRole.MASTER ? 0 : 1).thenComparing(ClusterNodeRecord::getId));
 
-        List<H3SpatialPartitioner.SpatialPartition> partitions = H3SpatialPartitioner.partition(totalGridCellCount, activeNodes.size());
+        List<H3SpatialPartitioner.SpatialPartition> partitions;
+        if (partitionStrategy == PartitionStrategy.LOAD_AWARE && currentWorldBuffer != null) {
+            float[] weights = H3SpatialPartitioner.calculateWeights(currentWorldBuffer);
+            partitions = H3SpatialPartitioner.partitionByComputationalWeights(weights, activeNodes.size());
+        } else {
+            partitions = H3SpatialPartitioner.partition(totalGridCellCount, activeNodes.size());
+        }
+
         for (int i = 0; i < activeNodes.size() && i < partitions.size(); i++) {
             ClusterNodeRecord node = activeNodes.get(i);
             H3SpatialPartitioner.SpatialPartition part = partitions.get(i);
             node.setAssignedChunks(part.getStartIndex(), part.getEndIndex());
-            logger.info("Reassigned Spatial Partition [Hilbert] for {}: cells {}..{} (total {})",
-                    node.getId(), part.getStartIndex(), part.getEndIndex(), part.getCellCount());
+            logger.info("Reassigned Spatial Partition [{}] for {}: cells {}..{} (total {})",
+                    partitionStrategy, node.getId(), part.getStartIndex(), part.getEndIndex(), part.getCellCount());
         }
     }
 
     private void checkNodeHealthAndResilience() {
         long now = System.nanoTime();
-        long timeoutNanos = TimeUnit.SECONDS.toNanos(8);
+        long timeoutNanos = TimeUnit.SECONDS.toNanos(heartbeatTimeoutSec);
         boolean changed = false;
 
         for (ClusterNodeRecord node : nodeRegistry.values()) {
@@ -460,6 +500,39 @@ public class ClusterManager {
     public int getTotalGridCellCount() { return totalGridCellCount; }
 
     public ConcurrentHashMap<String, ClusterNodeRecord> getNodeRegistry() { return nodeRegistry; }
+
+    public PartitionStrategy getPartitionStrategy() { return partitionStrategy; }
+    public void setPartitionStrategy(PartitionStrategy strategy) {
+        this.partitionStrategy = strategy != null ? strategy : PartitionStrategy.HILBERT;
+        rebalanceSpatialChunks();
+    }
+
+    public String getCustomWorkerId() { return customWorkerId; }
+    public void setCustomWorkerId(String customWorkerId) { this.customWorkerId = customWorkerId; }
+
+    public String getCustomWorkerCapacity() { return customWorkerCapacity; }
+    public void setCustomWorkerCapacity(String customWorkerCapacity) { this.customWorkerCapacity = customWorkerCapacity; }
+
+    public long getBarrierTimeoutMs() { return barrierTimeoutMs; }
+    public void setBarrierTimeoutMs(long barrierTimeoutMs) { this.barrierTimeoutMs = Math.max(100, barrierTimeoutMs); }
+
+    public int getSyncInterval() { return syncInterval; }
+    public void setSyncInterval(int syncInterval) { this.syncInterval = Math.max(1, syncInterval); }
+
+    public int getHeartbeatIntervalSec() { return heartbeatIntervalSec; }
+    public void setHeartbeatIntervalSec(int sec) { this.heartbeatIntervalSec = Math.max(1, sec); }
+
+    public int getHeartbeatTimeoutSec() { return heartbeatTimeoutSec; }
+    public void setHeartbeatTimeoutSec(int sec) { this.heartbeatTimeoutSec = Math.max(2, sec); }
+
+    public boolean isHaloExchangeEnabled() { return haloExchangeEnabled; }
+    public void setHaloExchangeEnabled(boolean haloExchangeEnabled) { this.haloExchangeEnabled = haloExchangeEnabled; }
+
+    public org.ether.society.network.cluster.ClusterSnapshotManager getSnapshotManager() { return snapshotManager; }
+    public void setSnapshotManager(org.ether.society.network.cluster.ClusterSnapshotManager snapshotManager) { this.snapshotManager = snapshotManager; }
+
+    public int getSnapshotIntervalTicks() { return snapshotIntervalTicks; }
+    public void setSnapshotIntervalTicks(int snapshotIntervalTicks) { this.snapshotIntervalTicks = Math.max(0, snapshotIntervalTicks); }
 
     public synchronized void stop() {
         running.set(false);

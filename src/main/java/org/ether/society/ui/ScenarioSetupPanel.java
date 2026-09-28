@@ -70,6 +70,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label snapshotHeader;
     private Label bundleHeader;
     private PresetControlBar<Scenario> scenarioPresetBar;
+    private Button btnAutoEpochScenario;
     private VBox bottomActionBox;
 
     // Form Controls
@@ -144,7 +145,7 @@ public class ScenarioSetupPanel extends BorderPane {
         highlightControlIfModified(temporalResolutionCombo, false);
         highlightControlIfModified(initialHumanCountSpinner, false);
 
-        highlightControlIfModified(cultureVectorDimSpinner, cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null && cultureVectorDimSpinner.getValue() != 8);
+        highlightControlIfModified(cultureVectorDimSpinner, cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null && cultureVectorDimSpinner.getValue() != 9);
         highlightControlIfModified(culturalDiffusionRateSpinner, culturalDiffusionRateSpinner != null && culturalDiffusionRateSpinner.getValue() != null && Math.abs(culturalDiffusionRateSpinner.getValue() - 0.05) > 0.001);
         highlightControlIfModified(culturalMutationRateSpinner, culturalMutationRateSpinner != null && culturalMutationRateSpinner.getValue() != null && Math.abs(culturalMutationRateSpinner.getValue() - 0.01) > 0.001);
         highlightControlIfModified(strictDeterminismCheckBox, strictDeterminismCheckBox != null && strictDeterminismCheckBox.isSelected());
@@ -238,8 +239,8 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label isoglossFileLabel;
     private Label kinshipFileLabel;
     private Label ritualsFileLabel;
-    private Label sovereigntyFileLabel;
     private final java.util.Map<Integer, Image> customTensorImages = new java.util.HashMap<>();
+    private final java.util.Map<Integer, String> customTensorNames = new java.util.HashMap<>();
     private VBox layersDynamicContainer;
     private Button culturalHelpBtn;
 
@@ -1312,8 +1313,14 @@ public class ScenarioSetupPanel extends BorderPane {
         scenarioDescriptionArea.setStyle("-fx-font-size: 11px; -fx-text-fill: #e2e8f0; -fx-background-color: rgba(15, 23, 42, 0.6); -fx-border-color: rgba(255, 255, 255, 0.15); -fx-border-radius: 4; -fx-background-radius: 4;");
         scenarioDescriptionArea.textProperty().addListener((obs, oldV, newV) -> notifyParamChange());
 
+        btnAutoEpochScenario = new Button(I18n.getOrDefault("scenario.btn.auto_epoch_wizard", "✨ Créer un Scénario Automatique par Date..."));
+        btnAutoEpochScenario.setMaxWidth(Double.MAX_VALUE);
+        btnAutoEpochScenario.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 6; -fx-cursor: hand;");
+        btnAutoEpochScenario.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.auto_epoch_wizard", "Ouvre l'assistant de scénario temporel pour configurer en un clic les cartes d'élévation, biomes, ressources, démographie et moteurs de Type B compatibles pour n'importe quelle date.")));
+        btnAutoEpochScenario.setOnAction(e -> openAutoEpochScenarioDialog());
+
         scenarioPresetHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "🎛️ GLOBAL PRESETS & SCENARIO SAVE"));
-        VBox scenarioPresetSection = createSection(scenarioPresetHeader, new VBox(8, scenarioPresetBar, scenarioDescLabel, scenarioDescriptionArea));
+        VBox scenarioPresetSection = createSection(scenarioPresetHeader, new VBox(8, scenarioPresetBar, btnAutoEpochScenario, scenarioDescLabel, scenarioDescriptionArea));
 
         VBox snapshotSection = createSnapshotSection();
         VBox bundleSection = createBundleSection();
@@ -1802,7 +1809,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
 
         // C. Cultural Tensors vs Ocean Immersion
-        int dimsCount = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 8;
+        int dimsCount = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
         boolean tensorOceanWarn = false;
         for (int i = 0; i < dimsCount; i++) {
             Image tImg = customTensorImages.get(i);
@@ -2010,8 +2017,16 @@ public class ScenarioSetupPanel extends BorderPane {
                 scenarioDescriptionArea.setText(s.getDescription() != null ? s.getDescription() : "");
             }
             
-            // Lazy populate cartographic buffer maps if not already generated
-            if (s.getCustomDensityBase64() == null) {
+            // Determine if planet is Earth
+            boolean isEarth = true;
+            if (s.getPlanetPreset() != null) {
+                isEarth = "earth".equalsIgnoreCase(s.getPlanetPreset().getCanonicalPlanet());
+            } else if (activePlanetPreset != null) {
+                isEarth = "earth".equalsIgnoreCase(activePlanetPreset.getCanonicalPlanet());
+            }
+
+            // Lazy populate cartographic buffer maps if not already generated (only for Earth)
+            if (isEarth && s.getCustomDensityBase64() == null) {
                 org.ether.society.data.HistoricalMapGenerator.populateScenarioHistoricalMaps(s);
             }
             
@@ -2179,6 +2194,16 @@ public class ScenarioSetupPanel extends BorderPane {
                 culturalMutationRateSpinner.getValueFactory().setValue(s.getCulturalMutationRate());
             }
             int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
+            customTensorImages.clear();
+            customTensorNames.clear();
+            if (s.getCustomTensorNames() != null) {
+                customTensorNames.putAll(s.getCustomTensorNames());
+            }
+            customIsoglossImage = null;
+            customKinshipImage = null;
+            customRitualsImage = null;
+            customSovereigntyImage = null;
+
             for (int i = 0; i < dims; i++) {
                 String b64 = s.getCustomTensorMapBase64(i);
                 if (b64 != null && !b64.isBlank()) {
@@ -3557,7 +3582,7 @@ public class ScenarioSetupPanel extends BorderPane {
         // 1. Vector Dimension (M)
         Label dimLbl = new Label(I18n.getOrDefault("scenario.label.cultural_dim", "Taille Tenseur Culturel (M dims) :"));
         dimLbl.getStyleClass().add("control-label");
-        cultureVectorDimSpinner = new Spinner<>(4, 32, 9, 1);
+        cultureVectorDimSpinner = new Spinner<>(0, 32, 9, 1);
         cultureVectorDimSpinner.setEditable(true);
         cultureVectorDimSpinner.setMaxWidth(Double.MAX_VALUE);
         cultureVectorDimSpinner.valueProperty().addListener((obs, o, n) -> {
@@ -3565,6 +3590,7 @@ public class ScenarioSetupPanel extends BorderPane {
             if (n != null) {
                 rebuildCulturalTensorSubBlocks(n);
                 updatePreviewModesCombo();
+                drawPreview();
             }
         });
         Tooltip.install(cultureVectorDimSpinner, new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_dim", "Nombre de composantes N-dimensionnelles du vecteur d'information culturelle (ex: 9D, 16D, 32D).")));
@@ -3849,6 +3875,9 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private String getCulturalTensorTitle(int index) {
+        if (customTensorNames.containsKey(index) && !customTensorNames.get(index).isBlank()) {
+            return "🧬 3.2." + (index + 1) + " " + I18n.getOrDefault("scenario.tensor.label_prefix", "Tenseur ") + (index + 1) + " : " + customTensorNames.get(index);
+        }
         return switch (index) {
             case 0 -> I18n.getOrDefault("scenario.tensor.title.0", "📜 3.2.1 Tensor 1: Isoglosses & Linguistic Continua (Languages)");
             case 1 -> I18n.getOrDefault("scenario.tensor.title.1", "🏛 3.2.2 Tensor 2: Kinship & Clan Structures (Lineage)");
@@ -3859,7 +3888,7 @@ public class ScenarioSetupPanel extends BorderPane {
             case 6 -> I18n.getOrDefault("scenario.tensor.title.6", "⚖ 3.2.7 Tensor 7: Institutional Complexity & Norms (Seshat & Law)");
             case 7 -> I18n.getOrDefault("scenario.tensor.title.7", "⚠️ 3.2.8 Tensor 8: Ecological Footprint & Malthusian Stress (Degradation)");
             case 8 -> I18n.getOrDefault("scenario.tensor.title.8", "🧬 3.2.9 Tensor 9: Pathogen Immunity & Health Memory (Epidemiology)");
-            default -> String.format(I18n.getOrDefault("scenario.tensor.title.ext", "🧬 3.2.%d Tenseur %d : Substrat Multichamp N°%d"), (index + 1), (index + 1), (index + 1));
+            default -> I18n.getOrDefault("scenario.tensor.title.ext", "🧬 3.2.{0} Tensor {0}: Extensible Cultural Substrate {0}", (index + 1));
         };
     }
 
@@ -4433,6 +4462,80 @@ public class ScenarioSetupPanel extends BorderPane {
         return row;
     }
 
+    private void deleteCulturalTensor(int indexToDelete) {
+        int curDims = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
+        if (indexToDelete < 0 || indexToDelete >= curDims) return;
+
+        // Shift all configurations from indexToDelete up to curDims - 2
+        for (int j = indexToDelete; j < curDims - 1; j++) {
+            // Names
+            if (customTensorNames.containsKey(j + 1)) {
+                customTensorNames.put(j, customTensorNames.get(j + 1));
+            } else {
+                customTensorNames.remove(j);
+            }
+            // Images
+            if (customTensorImages.containsKey(j + 1)) {
+                customTensorImages.put(j, customTensorImages.get(j + 1));
+            } else {
+                customTensorImages.remove(j);
+            }
+            // Seeds
+            if (tensorSeedFields.containsKey(j + 1)) {
+                String s = tensorSeedFields.get(j + 1).getText();
+                if (tensorSeedFields.containsKey(j)) tensorSeedFields.get(j).setText(s);
+                else tensorSeedFields.put(j, new TextField(s));
+            }
+            // Sliders & Values
+            if (tensorParam1Sliders.containsKey(j + 1) && tensorParam1Sliders.containsKey(j)) {
+                tensorParam1Sliders.get(j).setValue(tensorParam1Sliders.get(j + 1).getValue());
+            }
+            if (tensorParam2Sliders.containsKey(j + 1) && tensorParam2Sliders.containsKey(j)) {
+                tensorParam2Sliders.get(j).setValue(tensorParam2Sliders.get(j + 1).getValue());
+            }
+            if (tensorParam3Sliders.containsKey(j + 1) && tensorParam3Sliders.containsKey(j)) {
+                tensorParam3Sliders.get(j).setValue(tensorParam3Sliders.get(j + 1).getValue());
+            }
+            // Radio proc vs import
+            if (tensorImportRadios.containsKey(j + 1) && tensorImportRadios.get(j + 1).isSelected()) {
+                if (tensorImportRadios.containsKey(j)) tensorImportRadios.get(j).setSelected(true);
+            } else {
+                if (tensorProcRadios.containsKey(j)) tensorProcRadios.get(j).setSelected(true);
+            }
+        }
+
+        // Clean up the last index
+        int lastIdx = curDims - 1;
+        customTensorNames.remove(lastIdx);
+        customTensorImages.remove(lastIdx);
+        tensorSeedFields.remove(lastIdx);
+        tensorParam1Sliders.remove(lastIdx);
+        tensorParam2Sliders.remove(lastIdx);
+        tensorParam3Sliders.remove(lastIdx);
+        tensorParam1ValueLabels.remove(lastIdx);
+        tensorParam2ValueLabels.remove(lastIdx);
+        tensorParam3ValueLabels.remove(lastIdx);
+        tensorProcRadios.remove(lastIdx);
+        tensorImportRadios.remove(lastIdx);
+        tensorSourceCombos.remove(lastIdx);
+        tensorSourceLabels.remove(lastIdx);
+        tensorFileLabels.remove(lastIdx);
+        tensorLoadBtns.remove(lastIdx);
+        tensorFormatLabels.remove(lastIdx);
+        tensorGenSingleBtns.remove(lastIdx);
+        tensorSubTitles.remove(lastIdx);
+
+        int newDims = Math.max(0, curDims - 1);
+        if (cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValueFactory() != null) {
+            cultureVectorDimSpinner.getValueFactory().setValue(newDims);
+        } else {
+            rebuildCulturalTensorSubBlocks(newDims);
+            updatePreviewModesCombo();
+            notifyParamChange();
+            drawPreview();
+        }
+    }
+
     private void rebuildCulturalTensorSubBlocks(int dimCount) {
         if (btnGenerateProceduralTensorsSection != null) {
             btnGenerateProceduralTensorsSection.setText(I18n.getOrDefault("scenario.btn.regen_tensors", "🪄 Régénérer les Tenseurs"));
@@ -4447,12 +4550,47 @@ public class ScenarioSetupPanel extends BorderPane {
             VBox subBlock = new VBox(6);
             subBlock.setStyle("-fx-padding: 10; -fx-background-color: rgba(167,139,250,0.04); -fx-background-radius: 6; -fx-border-color: rgba(167,139,250,0.15); -fx-border-radius: 6;");
 
+            HBox titleRow = new HBox(8);
+            titleRow.setAlignment(Pos.CENTER_LEFT);
+
             Label subTitle = new Label(getCulturalTensorTitle(i));
             subTitle.getStyleClass().add("control-label");
             subTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;");
             subTitle.setWrapText(true);
+            HBox.setHgrow(subTitle, Priority.ALWAYS);
             Tooltip.install(subTitle, new Tooltip(getCulturalTensorTooltip(i)));
             tensorSubTitles.put(tensorIdx, subTitle);
+
+            Button renameBtn = new Button(I18n.getOrDefault("scenario.tensor.btn.rename", "✏️ Renommer"));
+            renameBtn.getStyleClass().add("button-secondary");
+            renameBtn.setStyle("-fx-font-size: 10px; -fx-padding: 2 6;");
+            renameBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tensor.btn.rename_tooltip", "Cliquez pour personnaliser le nom de ce calque de tenseur culturel.")));
+            renameBtn.setOnAction(e -> {
+                String cur = customTensorNames.getOrDefault(tensorIdx, "");
+                TextInputDialog dlg = new TextInputDialog(cur);
+                dlg.setTitle(I18n.getOrDefault("scenario.tensor.rename.title", "Personnaliser le Nom du Tenseur"));
+                dlg.setHeaderText(I18n.getOrDefault("scenario.tensor.rename.prompt", "Nom personnalisé du Tenseur N°{0} :", (tensorIdx + 1)));
+                WindowUtils.applyWindowIcon(dlg);
+                dlg.showAndWait().ifPresent(strVal -> {
+                    if (strVal.isBlank()) {
+                        customTensorNames.remove(tensorIdx);
+                    } else {
+                        customTensorNames.put(tensorIdx, strVal.trim());
+                    }
+                    subTitle.setText(getCulturalTensorTitle(tensorIdx));
+                    updatePreviewModesCombo();
+                    notifyParamChange();
+                });
+            });
+
+            Button deleteBtn = new Button(I18n.getOrDefault("scenario.tensor.btn.delete", "✖"));
+            deleteBtn.getStyleClass().add("button-secondary");
+            deleteBtn.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 11px; -fx-padding: 2 6; -fx-font-weight: bold; -fx-cursor: hand;");
+            deleteBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tensor.btn.delete_tooltip", "Supprimer ce tenseur culturel (décrémente le nombre total de tenseurs).")));
+            deleteBtn.setOnAction(e -> deleteCulturalTensor(tensorIdx));
+
+            titleRow.getChildren().addAll(subTitle, renameBtn, deleteBtn);
+            subBlock.getChildren().add(titleRow);
 
             ToggleGroup tg = new ToggleGroup();
             RadioButton radioProc = new RadioButton(I18n.getOrDefault("scenario.mode.procedural_sde", "▶ Mode Procédural (Paramètres adaptatifs & Graine)"));
@@ -4964,6 +5102,9 @@ public class ScenarioSetupPanel extends BorderPane {
         if (s == null) return;
         if (btnGenerateProceduralTensorsSection != null) btnGenerateProceduralTensorsSection.setDisable(true);
         java.util.concurrent.CompletableFuture.runAsync(() -> {
+            // Persist maps to disk for the exact scenario year (on-demand epoch generation)
+            org.ether.society.data.HistoricalMapGenerator.forceGenerateCulturalTensorsOnly(s);
+            // Also generate base64 tensors for the UI preview
             org.ether.society.data.HistoricalMapGenerator.generateProceduralMapsForScenario(s);
         }).thenRun(() -> javafx.application.Platform.runLater(() -> {
             if (btnGenerateProceduralTensorsSection != null) btnGenerateProceduralTensorsSection.setDisable(false);
@@ -5018,6 +5159,9 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private String getCulturalTensorPreviewName(int index) {
+        if (customTensorNames.containsKey(index) && !customTensorNames.get(index).isBlank()) {
+            return "🧬 " + I18n.getOrDefault("scenario.tensor.custom.preview_prefix", "Tensor ") + (index + 1) + " : " + customTensorNames.get(index);
+        }
         return switch (index) {
             case 0 -> I18n.getOrDefault("scenario.tensor.1.preview", "📜 Tensor 1: Isoglosses & Linguistic Continua (Languages)");
             case 1 -> I18n.getOrDefault("scenario.tensor.2.preview", "🏛 Tensor 2: Kinship & Clan Structures (Kinship)");
@@ -5042,13 +5186,14 @@ public class ScenarioSetupPanel extends BorderPane {
         legendItemsContainer.getChildren().clear();
 
         int idx = previewModeCombo != null ? previewModeCombo.getSelectionModel().getSelectedIndex() : 0;
-        String mode = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue() : "";
+        String mode = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue().toLowerCase() : "";
 
         Color[] colors;
         String[] labels;
         String[] fullTooltips;
 
-        if (idx == 1 || mode.contains("Isoglosses") || mode.contains("Linguistiques")) {
+        if (idx == 1 || mode.contains("isoglosses") || mode.contains("linguistiques")) {
+            // Tensor 1: Isoglosses & Languages
             colors = new Color[]{
                 Color.rgb(30, 95, 165), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68)
             };
@@ -5066,7 +5211,8 @@ public class ScenarioSetupPanel extends BorderPane {
                 I18n.getOrDefault("setup.legend.dialect.3.desc", "Innovations Substratiques : Lexique technique ou grammatical rénové"),
                 I18n.getOrDefault("setup.legend.dialect.4.desc", "Dialecte Exogène / Innovant : Standard de communication émergent")
             };
-        } else if (idx == 2 || mode.contains("Kinship") || mode.contains("Clans")) {
+        } else if (idx == 2 || mode.contains("kinship") || mode.contains("clans") || mode.contains("parenté")) {
+            // Tensor 2: Kinship & Clan Structures
             colors = new Color[]{
                 Color.rgb(56, 189, 248), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(167, 139, 250)
             };
@@ -5084,7 +5230,8 @@ public class ScenarioSetupPanel extends BorderPane {
                 I18n.getOrDefault("setup.legend.kinship.3.desc", "Patriarcat Hiérarchique : Structure agnatique et chefferies martiales"),
                 I18n.getOrDefault("setup.legend.kinship.4.desc", "Confédération Tribale : Assemblée de clans fédérés à grande échelle")
             };
-        } else if (idx == 3 || mode.contains("Rituels") || mode.contains("Asabiyyah")) {
+        } else if (idx == 3 || mode.contains("rituels") || mode.contains("rituals") || mode.contains("asabiyyah")) {
+            // Tensor 3: Rituals & Asabiyyah
             colors = new Color[]{
                 Color.rgb(14, 165, 233), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(225, 29, 72)
             };
@@ -5102,9 +5249,10 @@ public class ScenarioSetupPanel extends BorderPane {
                 I18n.getOrDefault("setup.legend.rituals.3.desc", "Asabiyyah Élevée : Forte solidarité tribale (Cohésion d'Ibn Khaldoun)"),
                 I18n.getOrDefault("setup.legend.rituals.4.desc", "Dogme Transcendant : Monothéisme ou idéologie universaliste")
             };
-        } else if (idx == 4 || mode.contains("Souveraineté") || mode.contains("Politiques")) {
+        } else if (idx == 4 || mode.contains("souveraineté") || mode.contains("sovereignty") || mode.contains("politiques")) {
+            // Tensor 4: Sovereignty & Polities
             colors = new Color[]{
-                Color.rgb(30, 95, 165), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68)
+                Color.rgb(30, 95, 165), Color.rgb(16, 185, 129), Color.rgb(245, 158, 11), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68)
             };
             labels = new String[]{
                 I18n.getOrDefault("setup.legend.sovereignty.0", "Zone Franche (C₃=0)"),
@@ -5120,7 +5268,179 @@ public class ScenarioSetupPanel extends BorderPane {
                 I18n.getOrDefault("setup.legend.sovereignty.3.desc", "Empire Centralisé : Administration unifiée et prélèvement fiscal"),
                 I18n.getOrDefault("setup.legend.sovereignty.4.desc", "Capitale Core : Foyer du pouvoir politique et militaire suprême")
             };
-        } else if (idx == 7 || mode.contains("Friction")) {
+        } else if (idx == 5 || mode.contains("outillage") || mode.contains("tooling") || mode.contains("technologie") || mode.contains("artifacts")) {
+            // Tensor 5: Tooling, Materiality & Technologies (Monochrome / Bronze / Steel progression)
+            colors = new Color[]{
+                Color.rgb(51, 65, 85), Color.rgb(180, 83, 9), Color.rgb(217, 119, 6), Color.rgb(100, 116, 139), Color.rgb(226, 232, 240)
+            };
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.tech.0", "Lithique / Paléo (C₄=0)"),
+                I18n.getOrDefault("setup.legend.tech.1", "Céramique / Néolithique (0.25)"),
+                I18n.getOrDefault("setup.legend.tech.2", "Bronze / Métallurgie (0.50)"),
+                I18n.getOrDefault("setup.legend.tech.3", "Fer & Mécanique (0.75)"),
+                I18n.getOrDefault("setup.legend.tech.4", "Industrie & Numérique (1.0)")
+            };
+            fullTooltips = new String[]{
+                I18n.getOrDefault("setup.legend.tech.0.desc", "Industrie Lithique : Taille du silex, os poli, bois et cuir"),
+                I18n.getOrDefault("setup.legend.tech.1.desc", "Céramique & Néolithisation : Poteaux, cuisson de terre, faux et meules"),
+                I18n.getOrDefault("setup.legend.tech.2.desc", "Métallurgie du Cuivre et Bronze : Fours de réduction, alliages, soc d'araire"),
+                I18n.getOrDefault("setup.legend.tech.3.desc", "Âge du Fer & Machines Simples : Hauts fourneaux, moulins, engrenages"),
+                I18n.getOrDefault("setup.legend.tech.4.desc", "Révolution Industrielle & Digitale : Vapeur, réseaux électriques, automates")
+            };
+        } else if (idx == 6 || mode.contains("commerce") || mode.contains("trade") || mode.contains("corridors") || mode.contains("routes")) {
+            // Tensor 6: Corridors & Trade Networks (Dark Slate, Amber, Coral, Teal, Cyan)
+            colors = new Color[]{
+                Color.rgb(30, 41, 59), Color.rgb(180, 83, 9), Color.rgb(217, 119, 6), Color.rgb(234, 88, 12), Color.rgb(13, 148, 136)
+            };
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.trade.0", "Enclave Isolée (C₅=0)"),
+                I18n.getOrDefault("setup.legend.trade.1", "Pistes Locales (0.25)"),
+                I18n.getOrDefault("setup.legend.trade.2", "Caravanes Terrestres (0.50)"),
+                I18n.getOrDefault("setup.legend.trade.3", "Voies Fluviales (0.75)"),
+                I18n.getOrDefault("setup.legend.trade.4", "Hubs Maritimes (1.0)")
+            };
+            fullTooltips = new String[]{
+                I18n.getOrDefault("setup.legend.trade.0.desc", "Enclave Isolée : Autarcie locale sans axe d'échange pérenne"),
+                I18n.getOrDefault("setup.legend.trade.1.desc", "Pistes Pédestres Locales : Sentiers de troc de proximité"),
+                I18n.getOrDefault("setup.legend.trade.2.desc", "Caravanes Terrestres : Routes de la Soie, pistes trans-sahariennes"),
+                I18n.getOrDefault("setup.legend.trade.3.desc", "Voies Navigables & Fluviales : Transports massifs par fleuves et canaux"),
+                I18n.getOrDefault("setup.legend.trade.4.desc", "Hubs Maritimes & Mondiaux : Ports hauturiers et corridors mondialisés")
+            };
+        } else if (idx == 7 || mode.contains("institutions") || mode.contains("institutionnelle") || mode.contains("seshat") || mode.contains("law")) {
+            // Tensor 7: Institutional Complexity & Norms
+            colors = new Color[]{
+                Color.rgb(129, 140, 248), Color.rgb(99, 102, 241), Color.rgb(79, 70, 229), Color.rgb(124, 58, 237), Color.rgb(245, 158, 11)
+            };
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.inst.0", "Coutume Orale (C₆=0)"),
+                I18n.getOrDefault("setup.legend.inst.1", "Tribunaux Locaux (0.25)"),
+                I18n.getOrDefault("setup.legend.inst.2", "Code Juridique (0.50)"),
+                I18n.getOrDefault("setup.legend.inst.3", "Bureaucratie Fiscale (0.75)"),
+                I18n.getOrDefault("setup.legend.inst.4", "État de Droit (1.0)")
+            };
+            fullTooltips = new String[]{
+                I18n.getOrDefault("setup.legend.inst.0.desc", "Coutume Orale : Résolution informelle des conflits par les anciens"),
+                I18n.getOrDefault("setup.legend.inst.1.desc", "Juridictions Locales : Assemblées coutumières et magistrats de cité"),
+                I18n.getOrDefault("setup.legend.inst.2.desc", "Code Écrit : Corpus légal unifié (ex: Code d'Hammurabi, Droit Romain)"),
+                I18n.getOrDefault("setup.legend.inst.3.desc", "Bureaucratie Centralisée : Prélèvement cadastral, ministères et fonction publique"),
+                I18n.getOrDefault("setup.legend.inst.4.desc", "État de Droit Constitutionnel : Séparation des pouvoirs, institutions impersonnelles")
+            };
+        } else if (idx == 8 || mode.contains("écologique") || mode.contains("ecological") || mode.contains("degradation")) {
+            // Tensor 8: Ecological Footprint & Environmental Tension
+            colors = new Color[]{
+                Color.rgb(16, 185, 129), Color.rgb(132, 204, 22), Color.rgb(245, 158, 11), Color.rgb(239, 68, 68), Color.rgb(127, 29, 29)
+            };
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.eco.0", "Biome Vierge (C₇=0)"),
+                I18n.getOrDefault("setup.legend.eco.1", "Pression Modérée (0.25)"),
+                I18n.getOrDefault("setup.legend.eco.2", "Surexploitation (0.50)"),
+                I18n.getOrDefault("setup.legend.eco.3", "Tension Critique (0.75)"),
+                I18n.getOrDefault("setup.legend.eco.4", "Effondrement (1.0)")
+            };
+            fullTooltips = new String[]{
+                I18n.getOrDefault("setup.legend.eco.0.desc", "Biome Intact : Écosystèmes à l'équilibre sans perturbation anthropique"),
+                I18n.getOrDefault("setup.legend.eco.1.desc", "Pression Légère : Forêt gérée, chasse et élevage durable"),
+                I18n.getOrDefault("setup.legend.eco.2.desc", "Surexploitation Agricole : Déforestation, érosion des sols, baisse des rendements"),
+                I18n.getOrDefault("setup.legend.eco.3.desc", "Tension Malthusienne Sévère : Pénuries de bois, raréfaction du gibier et des nappes"),
+                I18n.getOrDefault("setup.legend.eco.4.desc", "Effondrement Écologique : Désertification irréversible et disette systémique")
+            };
+        } else if (idx == 9 || mode.contains("pathogène") || mode.contains("pathogen") || mode.contains("immunité") || mode.contains("immunity")) {
+            // Tensor 9: Pathogen Immunity & Health Memory
+            colors = new Color[]{
+                Color.rgb(76, 29, 149), Color.rgb(37, 99, 235), Color.rgb(6, 182, 212), Color.rgb(16, 185, 129), Color.rgb(245, 158, 11)
+            };
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.pathogen.0", "Naïf / Vulnérable (C₈=0)"),
+                I18n.getOrDefault("setup.legend.pathogen.1", "Endémie Locale (0.25)"),
+                I18n.getOrDefault("setup.legend.pathogen.2", "Résistance Acquise (0.50)"),
+                I18n.getOrDefault("setup.legend.pathogen.3", "Mémoire Élevée (0.75)"),
+                I18n.getOrDefault("setup.legend.pathogen.4", "Bouclier Immunitaire (1.0)")
+            };
+            fullTooltips = new String[]{
+                I18n.getOrDefault("setup.legend.pathogen.0.desc", "Population Naïve : Aucune immunité préalable (vulnérabilité maximale aux chocs microbiens)"),
+                I18n.getOrDefault("setup.legend.pathogen.1.desc", "Endémie Modérée : Présence de zoonoses locales stabilisées"),
+                I18n.getOrDefault("setup.legend.pathogen.2.desc", "Résistance Acquise : Sélection adaptative et résilience immunitaire face aux épidémies courantes"),
+                I18n.getOrDefault("setup.legend.pathogen.3.desc", "Mémoire Épidémique Élevée : Forte diversité d'anticorps dans les grands réseaux urbains"),
+                I18n.getOrDefault("setup.legend.pathogen.4.desc", "Bouclier Sanitaire & Médical : Mesures prophylactiques, vaccins et structures hospitalières")
+            };
+        } else if (mode.contains("capital") || mode.contains("k(x)")) {
+            // Derived Capital K(x)
+            colors = new Color[]{
+                Color.rgb(30, 58, 138), Color.rgb(6, 182, 212), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(239, 68, 68)
+            };
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.cap.0", "Lithique (< 10 kg/hab)"),
+                I18n.getOrDefault("setup.legend.cap.1", "Artisanal (10-100 kg)"),
+                I18n.getOrDefault("setup.legend.cap.2", "Manufacturier (100-1k)"),
+                I18n.getOrDefault("setup.legend.cap.3", "Industriel (1k-10k)"),
+                I18n.getOrDefault("setup.legend.cap.4", "Haute Densité (> 10k)")
+            };
+            fullTooltips = new String[]{
+                I18n.getOrDefault("setup.legend.cap.0.desc", "Capital Physique Primitif : Outils individuels légers"),
+                I18n.getOrDefault("setup.legend.cap.1.desc", "Capital Artisanal : Ateliers, animaux de trait, charrues"),
+                I18n.getOrDefault("setup.legend.cap.2.desc", "Capital Manufacturier : Forges, moulins hydrauliques, navires"),
+                I18n.getOrDefault("setup.legend.cap.3.desc", "Capital Industriel : Machines à vapeur, voies ferrées, usines"),
+                I18n.getOrDefault("setup.legend.cap.4.desc", "Infrastructures Avancées : Réseaux électriques, télécoms, centres logistiques")
+            };
+        } else if (mode.contains("énergétique") || mode.contains("energy") || mode.contains("e(x)")) {
+            // Derived Energy E(x)
+            colors = new Color[]{
+                Color.rgb(69, 26, 3), Color.rgb(180, 83, 9), Color.rgb(234, 88, 12), Color.rgb(250, 204, 21), Color.rgb(254, 240, 138)
+            };
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.energy.0", "Biomasse (< 10 MJ/hab)"),
+                I18n.getOrDefault("setup.legend.energy.1", "Traction (10-50 MJ)"),
+                I18n.getOrDefault("setup.legend.energy.2", "Hydraulique/Charbon (50-200)"),
+                I18n.getOrDefault("setup.legend.energy.3", "Fossile (200-500 MJ)"),
+                I18n.getOrDefault("setup.legend.energy.4", "Électrique (> 500 MJ)")
+            };
+            fullTooltips = new String[]{
+                I18n.getOrDefault("setup.legend.energy.0.desc", "Régime Biomasse : Chaleur du bois et travail musculaire"),
+                I18n.getOrDefault("setup.legend.energy.1.desc", "Régime Traction Animale : Attelages, bœufs et chevaux"),
+                I18n.getOrDefault("setup.legend.energy.2.desc", "Régime Mécanique : Énergie hydraulique, éolienne et débuts du charbon"),
+                I18n.getOrDefault("setup.legend.energy.3.desc", "Régime Hydrocarbures : Pétrole, gaz et thermodynamique industrielle"),
+                I18n.getOrDefault("setup.legend.energy.4.desc", "Régime Électrique Massif : Réseaux de puissance et transition énergétique")
+            };
+        } else if (mode.contains("alimentaires") || mode.contains("food") || mode.contains("f(x)")) {
+            // Derived Food F(x)
+            colors = new Color[]{
+                Color.rgb(163, 230, 53), Color.rgb(132, 204, 22), Color.rgb(34, 197, 94), Color.rgb(5, 150, 105), Color.rgb(6, 78, 59)
+            };
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.food.0", "< 1 Mois (Critique)"),
+                I18n.getOrDefault("setup.legend.food.1", "1–3 Mois (Faible)"),
+                I18n.getOrDefault("setup.legend.food.2", "3–6 Mois (Moyen)"),
+                I18n.getOrDefault("setup.legend.food.3", "6–12 Mois (Sécurisé)"),
+                I18n.getOrDefault("setup.legend.food.4", "> 12 Mois (Abondance)")
+            };
+            fullTooltips = new String[]{
+                I18n.getOrDefault("setup.legend.food.0.desc", "Réserves Critiques : Vulnérabilité immédiate à la moindre mauvaise récolte"),
+                I18n.getOrDefault("setup.legend.food.1.desc", "Réserves de Subsistance : Stocks saisonniers d'appoint"),
+                I18n.getOrDefault("setup.legend.food.2.desc", "Greniers Traditionnels : Capacité de soudure inter-annuelle"),
+                I18n.getOrDefault("setup.legend.food.3.desc", "Réserves Stratégiques : Silos régionaux prévenant toute disette"),
+                I18n.getOrDefault("setup.legend.food.4.desc", "Surplus Systémique : Chaînes logistiques agroalimentaires pérennes")
+            };
+        } else if (mode.contains("informationnel") || mode.contains("info") || mode.contains("i(x)")) {
+            // Derived Info I(x)
+            colors = new Color[]{
+                Color.rgb(55, 48, 163), Color.rgb(124, 58, 237), Color.rgb(219, 39, 119), Color.rgb(6, 182, 212), Color.rgb(224, 242, 254)
+            };
+            labels = new String[]{
+                I18n.getOrDefault("setup.legend.info.0", "Oral (< 10 bits/hab)"),
+                I18n.getOrDefault("setup.legend.info.1", "Écrit & Parchemin (10-100)"),
+                I18n.getOrDefault("setup.legend.info.2", "Imprimerie (100-1k)"),
+                I18n.getOrDefault("setup.legend.info.3", "Médias Masse (1k-10k)"),
+                I18n.getOrDefault("setup.legend.info.4", "Numérique (> 10k)")
+            };
+            fullTooltips = new String[]{
+                I18n.getOrDefault("setup.legend.info.0.desc", "Tradition Orale : Savoirs transmis par la mémoire et le chant"),
+                I18n.getOrDefault("setup.legend.info.1.desc", "Écrit & Manuscrits : Enregistrement sur argile, papyrus et parchemins"),
+                I18n.getOrDefault("setup.legend.info.2.desc", "Imprimerie Mécanique : Diffusion élargie des traités et encyclopédies"),
+                I18n.getOrDefault("setup.legend.info.3.desc", "Télécommunications : Presse quotidienne, télégraphe, radio et cinéma"),
+                I18n.getOrDefault("setup.legend.info.4.desc", "Société Numérique : Internet, calcul haute performance et bases de données")
+            };
+        } else if (mode.contains("friction")) {
+            // Border Friction
             colors = new Color[]{
                 Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68), Color.rgb(167, 139, 250)
             };
@@ -5139,6 +5459,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 I18n.getOrDefault("setup.legend.friction.4.desc", "Haute Altitude / Falaise : Barrière infranchissable pour les armées")
             };
         } else {
+            // Default: Relief & Demographic Density
             colors = new Color[]{
                 Color.rgb(30, 95, 165), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68)
             };
@@ -5727,6 +6048,127 @@ public class ScenarioSetupPanel extends BorderPane {
             gc.setFill(Color.rgb(56, 189, 248));
             gc.setFont(javafx.scene.text.Font.font("System", javafx.scene.text.FontWeight.BOLD, 11));
             gc.fillText(String.format("✂️ Zone: Lat[%.1f°, %.1f°] Lng[%.1f°, %.1f°]", cMinLat, cMaxLat, cMinLng, cMaxLng), rx + 4, ry - 6);
+        }
+        updateMapInfoSummary();
+    }
+
+    private double sampleCulturalTensorValue(int tIdx, H3Cell cell) {
+        if (cell == null) return 0.5;
+        Image img = customTensorImages.get(tIdx);
+        if (img != null && img.getPixelReader() != null) {
+            double normLat = (cell.getLatitude() + 90.0) / 180.0;
+            double normLon = (cell.getLongitude() + 180.0) / 360.0;
+            int px = (int) Math.min(img.getWidth() - 1, Math.max(0, normLon * img.getWidth()));
+            int py = (int) Math.min(img.getHeight() - 1, Math.max(0, (1.0 - normLat) * img.getHeight()));
+            return img.getPixelReader().getColor(px, py).getBrightness();
+        }
+        double p1 = tensorParam1Sliders.containsKey(tIdx) ? tensorParam1Sliders.get(tIdx).getValue() : 1.0;
+        double p2 = tensorParam2Sliders.containsKey(tIdx) ? tensorParam2Sliders.get(tIdx).getValue() : 1.0;
+        double p3 = tensorParam3Sliders.containsKey(tIdx) ? tensorParam3Sliders.get(tIdx).getValue() : 1.0;
+        long seed = 11235L + tIdx * 11111L;
+        if (tensorSeedFields.containsKey(tIdx)) {
+            try { seed = Long.parseLong(tensorSeedFields.get(tIdx).getText().trim()); } catch (Exception ignored) {}
+        }
+        double elev = cell.getElevation() != null ? cell.getElevation() : 500.0;
+        Color col = evaluateProceduralTensorColor(tIdx, cell.getLatitude(), cell.getLongitude(), elev, p1, p2, p3, seed);
+        return col.getBrightness();
+    }
+
+    private void updateMapInfoSummary() {
+        if (previewStatusLabel == null) return;
+        if (currentPreviewCells == null || currentPreviewCells.isEmpty()) {
+            previewStatusLabel.setText(I18n.getOrDefault("scenario.label.preview_precalc", "Aperçu de la distribution démographique pré-calculée"));
+            return;
+        }
+
+        int curSel = previewModeCombo != null ? previewModeCombo.getSelectionModel().getSelectedIndex() : 0;
+        int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
+
+        if (curSel <= 0) {
+            // Mode 0: Demography & Density
+            long totalPop = initialHumanCountSpinner != null && initialHumanCountSpinner.getValue() != null ? initialHumanCountSpinner.getValue() : 1_000_000L;
+            int activeCells = 0;
+            double maxDensity = 0.0;
+            double sumDensity = 0.0;
+            for (H3Cell c : currentPreviewCells) {
+                if (c == null) continue;
+                boolean isLand = (c.getElevation() != null && c.getElevation() > 0.0) || (c.getBiome() != null && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN);
+                if (isLand) {
+                    activeCells++;
+                    double dens = c.getPopulation() != null ? c.getPopulation().doubleValue() : 0.0;
+                    if (dens > maxDensity) maxDensity = dens;
+                    sumDensity += dens;
+                }
+            }
+            double avgDensity = activeCells > 0 ? (sumDensity / activeCells) : 0.0;
+            int res = h3ResolutionCombo != null && h3ResolutionCombo.getValue() != null ? h3ResolutionCombo.getValue() : 3;
+            previewStatusLabel.setText(String.format(
+                I18n.getOrDefault("scenario.map_info.density", "👥 Démographie T₀ : %s hab.  |  📍 %s cellules H3 actives (Res %d)  |  📈 Densité max : %.1f hab/km² (Moy : %.1f)"),
+                String.format(java.util.Locale.FRANCE, "%,d", totalPop),
+                String.format(java.util.Locale.FRANCE, "%,d", activeCells),
+                res,
+                maxDensity,
+                avgDensity
+            ));
+        } else if (curSel >= 1 && curSel <= dims) {
+            // Mode 1..dims: Cultural Tensor (curSel - 1)
+            int tIdx = curSel - 1;
+            String title = getCulturalTensorTitle(tIdx);
+            boolean isProc = tensorProcRadios.containsKey(tIdx) && tensorProcRadios.get(tIdx).isSelected();
+            String modeStr = isProc ? (I18n.getOrDefault("scenario.mode.procedural", "Procédural") + " (" + I18n.getOrDefault("scenario.label.seed", "Graine") + ": " + (tensorSeedFields.containsKey(tIdx) ? tensorSeedFields.get(tIdx).getText() : getDefaultTensorSeed(tIdx)) + ")")
+                                    : (I18n.getOrDefault("scenario.mode.imported", "Import SIG / Empirique"));
+            double diff = culturalDiffusionRateSpinner != null && culturalDiffusionRateSpinner.getValue() != null ? culturalDiffusionRateSpinner.getValue() : 0.05;
+            double mut = culturalMutationRateSpinner != null && culturalMutationRateSpinner.getValue() != null ? culturalMutationRateSpinner.getValue() : 0.01;
+
+            double minVal = 1.0, maxVal = 0.0, sumVal = 0.0, sumSq = 0.0;
+            int count = 0;
+            for (H3Cell c : currentPreviewCells) {
+                if (c == null) continue;
+                boolean isLand = (c.getElevation() != null && c.getElevation() > 0.0) || (c.getBiome() != null && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN);
+                if (isLand) {
+                    double val = sampleCulturalTensorValue(tIdx, c);
+                    if (val < minVal) minVal = val;
+                    if (val > maxVal) maxVal = val;
+                    sumVal += val;
+                    sumSq += val * val;
+                    count++;
+                }
+            }
+            double mean = count > 0 ? (sumVal / count) : 0.5;
+            double variance = count > 1 ? Math.max(0.0, (sumSq - (sumVal * sumVal) / count) / (count - 1)) : 0.0;
+            double stdDev = Math.sqrt(variance);
+            if (count == 0) { minVal = 0.0; maxVal = 1.0; }
+
+            previewStatusLabel.setText(String.format(
+                I18n.getOrDefault("scenario.map_info.tensor", "🗺️ %s  |  ⚙️ Mode : %s  |  📊 Dispersion : μ=%.2f ± %.2f [min=%.2f, max=%.2f]  |  🌀 Diffusion D=%.3f  |  🎲 Bruit=%.3f"),
+                title, modeStr, mean, stdDev, minVal, maxVal, diff, mut
+            ));
+        } else {
+            // Derived layers (Capital, Energy, Food, Info, Footprint, Friction)
+            String layerName = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue() : "";
+            double sum = 0.0;
+            int count = 0;
+            for (H3Cell c : currentPreviewCells) {
+                if (c == null) continue;
+                boolean isLand = (c.getElevation() != null && c.getElevation() > 0.0) || (c.getBiome() != null && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN);
+                if (isLand) {
+                    count++;
+                    if (layerName.contains("Capital") || layerName.contains("K(x)")) sum += (c.getResourceCapital() != null ? c.getResourceCapital() : 0.0);
+                    else if (layerName.contains("Energy") || layerName.contains("E(x)") || layerName.contains("énergétique")) sum += (c.getEnergyFire() != null ? c.getEnergyFire() : 0.0);
+                    else if (layerName.contains("Food") || layerName.contains("F(x)") || layerName.contains("alimentaires")) sum += (c.getFoodResource() != null ? c.getFoodResource() : 0.0);
+                    else if (layerName.contains("Info") || layerName.contains("I(x)") || layerName.contains("informationnel")) sum += (c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 0.0);
+                    else if (layerName.contains("Friction") || layerName.contains("friction")) sum += (c.getMovementFriction() != null ? c.getMovementFriction() : 1.0);
+                    else sum += computeCellCarryingCapacity(c);
+                }
+            }
+            double mean = count > 0 ? (sum / count) : 0.0;
+            previewStatusLabel.setText(String.format(
+                I18n.getOrDefault("scenario.map_info.derived", "📈 Calque Déduit : %s  |  📊 Moyenne : %.2f  |  ⚡ Stock global : %s  |  📍 Cellules actives : %s"),
+                layerName,
+                mean,
+                String.format(java.util.Locale.FRANCE, "%,.0f", sum),
+                String.format(java.util.Locale.FRANCE, "%,d", count)
+            ));
         }
     }
 
@@ -6729,6 +7171,10 @@ public class ScenarioSetupPanel extends BorderPane {
         try {
             if (headerLabel != null) headerLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.panel.title", "📜 Scenario Configuration & Setup"));
             if (scenarioPresetHeader != null) scenarioPresetHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "🎛️ GLOBAL PRESETS & SCENARIO SAVE"));
+            if (btnAutoEpochScenario != null) {
+                btnAutoEpochScenario.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.auto_epoch_wizard", "✨ Créer un Scénario Automatique par Date..."));
+                btnAutoEpochScenario.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.auto_epoch_wizard", "Ouvre l'assistant de scénario temporel pour configurer en un clic les cartes d'élévation, biomes, ressources, démographie et moteurs de Type B compatibles pour n'importe quelle date.")));
+            }
             if (scenarioDescLabel != null) scenarioDescLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.description", "📖 Detailed Description, Initial Conditions & Key Observables:"));
             if (planetSectionHeader != null) planetSectionHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.inherited", "🪐 INHERITED CONTEXT (TABS 1 & 2)"));
             if (title1 != null) title1.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "🌐 EPOCH & SPATIOTEMPORAL DEFINITION"));
@@ -6981,8 +7427,9 @@ public class ScenarioSetupPanel extends BorderPane {
         }
 
         // Save Cultural Vector & Multi-Field Layers
-        int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 8;
+        int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
         s.setCultureVectorDimensions(dims);
+        s.setCustomTensorNames(new java.util.HashMap<>(customTensorNames));
         if (culturalDiffusionRateSpinner != null) {
             s.setCulturalDiffusionRate(culturalDiffusionRateSpinner.getValue());
         }
@@ -7305,11 +7752,11 @@ public class ScenarioSetupPanel extends BorderPane {
         }
         if (cultureVectorDimSpinner != null) {
             int dims = cultureVectorDimSpinner.getValue();
-            if (dims < 1 || dims > 32) {
-                errors.add(I18n.getOrDefault("scenario.validation.invalid_tensor_dim", "Cultural tensor dimension must be between 1 and 32 (Tab 3)."));
+            if (dims < 0 || dims > 32) {
+                errors.add(I18n.getOrDefault("scenario.validation.invalid_tensor_dim", "Cultural tensor dimension must be between 0 and 32 (Tab 3)."));
             }
         }
-        int dimsCount = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 8;
+        int dimsCount = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
         for (int i = 0; i < dimsCount; i++) {
             RadioButton importRadio = tensorImportRadios.get(i);
             if (importRadio != null && importRadio.isSelected()) {
@@ -7364,13 +7811,13 @@ public class ScenarioSetupPanel extends BorderPane {
         }
         if (cultureVectorDimSpinner != null) {
             int dims = cultureVectorDimSpinner.getValue();
-            if (dims < 1 || dims > 32) {
+            if (dims < 0 || dims > 32) {
                 cultureVectorDimSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
             } else {
                 cultureVectorDimSpinner.setStyle("");
             }
         }
-        int dimsCount = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 8;
+        int dimsCount = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
         for (int i = 0; i < dimsCount; i++) {
             RadioButton importRadio = tensorImportRadios.get(i);
             Button loadBtn = tensorLoadBtns.get(i);
@@ -7449,6 +7896,25 @@ public class ScenarioSetupPanel extends BorderPane {
             } catch (NumberFormatException ignored) {}
         }
         return Long.MAX_VALUE;
+    }
+
+    /**
+     * Opens the interactive Time-Travel & Automatic Epoch Scenario generation dialog.
+     */
+    public void openAutoEpochScenarioDialog() {
+        String currentPlanet = activePlanetPreset != null ? activePlanetPreset.getCanonicalPlanet() : "earth";
+        long currentYear = startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue().longValue() : -8000L;
+
+        AutoEpochScenarioDialog dialog = new AutoEpochScenarioDialog(currentPlanet, currentYear, generatedScenario -> {
+            applyScenarioToUI(generatedScenario);
+            if (scenarioPresetBar != null) {
+                scenarioPresetBar.getPresetCombo().setValue(null);
+                scenarioPresetBar.setNameText(generatedScenario.getName());
+                scenarioPresetBar.markClean(generatedScenario);
+            }
+            notifyParamChange();
+        });
+        dialog.show();
     }
 
 }

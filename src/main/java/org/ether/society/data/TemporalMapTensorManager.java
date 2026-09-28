@@ -26,6 +26,33 @@ import java.util.*;
 public class TemporalMapTensorManager {
     private static final Logger logger = LoggerFactory.getLogger(TemporalMapTensorManager.class);
 
+    /**
+     * Data resolution & fallback strategy when exact empirical measurements for a target date are missing.
+     */
+    public enum DataFallbackStrategy {
+        CONTINUOUS_INTERPOLATION("scenario.fallback.interpolation", "🔄 Interpolation temporelle continue (Fondu barycentrique)"),
+        PREVIOUS_EARLIER_EPOCH("scenario.fallback.earlier_epoch", "⏮️ Repli conservateur sur l'époque antérieure connue (Évite tout anachronisme)"),
+        CLOSEST_ANCHOR_EPOCH("scenario.fallback.closest_anchor", "🎯 Jalon étalonné le plus proche (Distance chronologique minimale)");
+
+        private final String i18nKey;
+        private final String defaultLabel;
+
+        DataFallbackStrategy(String i18nKey, String defaultLabel) {
+            this.i18nKey = i18nKey;
+            this.defaultLabel = defaultLabel;
+        }
+
+        public String getI18nKey() { return i18nKey; }
+        public String getDefaultLabel() { return defaultLabel; }
+        public String getLocalizedName() {
+            try {
+                return org.ether.society.i18n.I18n.getOrDefault(i18nKey, defaultLabel);
+            } catch (Exception ignored) {
+                return defaultLabel;
+            }
+        }
+    }
+
     public static final long[] STANDARD_EARTH_EPOCHS = {
         -100000L, // Out of Africa / Early Glacial Inception
         -50000L,  // MIS 3 / Sahul Colonization
@@ -152,14 +179,24 @@ public class TemporalMapTensorManager {
     }
 
     /**
-     * Loads a temporal map image for a given planet, requested year, and layer.
+     * Loads a temporal map image for a given planet, requested year, and layer using default continuous interpolation.
+     */
+    public static Image loadTemporalMapImage(String planet, long requestedYear, String layerName) {
+        return loadTemporalMapImage(planet, requestedYear, layerName, DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
+    }
+
+    /**
+     * Loads a temporal map image for a given planet, requested year, layer, and explicit data fallback strategy.
      * Performs automatic temporal fallback, causal forward step transitions for historical/epidemiological events,
      * or continuous bilinear cross-epoch interpolation for physical fields.
      */
-    public static Image loadTemporalMapImage(String planet, long requestedYear, String layerName) {
+    public static Image loadTemporalMapImage(String planet, long requestedYear, String layerName, DataFallbackStrategy strategy) {
+        if (strategy == null) {
+            strategy = DataFallbackStrategy.CONTINUOUS_INTERPOLATION;
+        }
         String p = normalizePlanet(planet);
         String tag = canonicalLayerTag(layerName);
-        String cacheKey = p + ":" + requestedYear + ":" + tag;
+        String cacheKey = p + ":" + requestedYear + ":" + tag + ":" + strategy.name();
 
         synchronized (memoryCache) {
             if (memoryCache.containsKey(cacheKey)) {
@@ -212,7 +249,18 @@ public class TemporalMapTensorManager {
             return loadExactEpochImage(p, prevYear, tag, cacheKey);
         }
 
-        // 5. Layer-Specific Interpolation Dynamics:
+        // 5. Strategy Evaluation:
+        if (strategy == DataFallbackStrategy.PREVIOUS_EARLIER_EPOCH) {
+            // Conservative fallback strictly to the earlier epoch known (prevents future anachronism / post-contact leak)
+            return loadExactEpochImage(p, prevYear, tag, cacheKey);
+        }
+
+        if (strategy == DataFallbackStrategy.CLOSEST_ANCHOR_EPOCH) {
+            long closest = Math.abs(requestedYear - prevYear) <= Math.abs(requestedYear - nextYear) ? prevYear : nextYear;
+            return loadExactEpochImage(p, closest, tag, cacheKey);
+        }
+
+        // 6. CONTINUOUS_INTERPOLATION (Default & Standard):
         // A. Categorical biomes: snap to nearest epoch
         if (tag.equals("biomes")) {
             long nearest = Math.abs(requestedYear - prevYear) <= Math.abs(requestedYear - nextYear) ? prevYear : nextYear;
