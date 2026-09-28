@@ -77,7 +77,7 @@ public class CliopatriaPolityVectorReader {
         }
         g.dispose();
 
-        // Apply elevation coastline mask and assign neutral slate-gray to stateless/unclaimed land
+        // Apply elevation coastline mask and assign authentic regional tribal domains to stateless/unclaimed land
         if (elevationMask != null) {
             for (int y = 0; y < height; y++) {
                 double lat = 90.0 - (y + 0.5) / height * 180.0;
@@ -86,12 +86,18 @@ public class CliopatriaPolityVectorReader {
                     int mx = Math.clamp(x * elevationMask.getWidth() / width, 0, elevationMask.getWidth() - 1);
                     int my = Math.clamp(y * elevationMask.getHeight() / height, 0, elevationMask.getHeight() - 1);
                     int land = elevationMask.getRaster().getSample(mx, my, 0);
-                    if (land == 0 || lat < -60.0) {
-                        // Ocean or uninhabited Antarctic ice sheet
+                    if (land == 0 || (lat < -60.0 && targetYear < 1900L)) {
+                        // Ocean or uninhabited prehistoric Antarctic ice sheet
                         img.setRGB(x, y, 0x000000);
                     } else if (img.getRGB(x, y) == 0xFF000000 || img.getRGB(x, y) == 0x000000) {
-                        // Unclaimed / stateless territorial frontier -> clean neutral slate-gray
-                        img.setRGB(x, y, 0x374151);
+                        double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, targetYear);
+                        if (occWeight <= 0.001 && targetYear < 1900L) {
+                            img.setRGB(x, y, 0x000000);
+                        } else {
+                            // Unclaimed / stateless inhabited frontier -> assign authentic regional tribal basin color
+                            int tribalColor = getTribalDomainColor(lon, lat, targetYear);
+                            img.setRGB(x, y, tribalColor);
+                        }
                     }
                 }
             }
@@ -100,6 +106,62 @@ public class CliopatriaPolityVectorReader {
         logger.info("Successfully rasterized {} Seshat ClioPatria authentic vector polities for year {} ({}x{}).",
                 polities.size(), targetYear, width, height);
         return img;
+    }
+
+    /**
+     * Determines the authentic regional tribal / clan domain color for stateless inhabited lands.
+     */
+    public static int getTribalDomainColor(double lon, double lat, long year) {
+        if (lat < -60.0) {
+            return 0x0284C7; // Antarctic Treaty / International Scientific Research Domain (#0284C7 Sky Blue)
+        }
+
+        record TribalDomain(double lon, double lat, int color) {}
+        TribalDomain[] domains = {
+            // Americas
+            new TribalDomain(-60.0, -3.0, 0x2E7D32),    // Amazonian Indigenous Nations (#2E7D32 Forest Green)
+            new TribalDomain(-62.0, -25.0, 0x5D4037),   // Gran Chaco & Pampas (#5D4037 Earth Brown)
+            new TribalDomain(-68.0, 6.0, 0x33691E),     // Orinoco & Caribbean Tribes (#33691E Olive Green)
+            new TribalDomain(-82.0, 38.0, 0x388E3C),    // North American Eastern Woodlands (#388E3C Woodland Green)
+            new TribalDomain(-100.0, 42.0, 0xC27803),   // North American Great Plains (#C27803 Prairie Amber)
+            new TribalDomain(-122.0, 48.0, 0x00796B),   // Pacific Northwest & Salish (#00796B Coastal Teal)
+            new TribalDomain(-110.0, 32.0, 0xB45309),   // Southwest / Aridoamerica (#B45309 Desert Bronze)
+            new TribalDomain(-105.0, 62.0, 0x455A64),   // Subarctic Dene & Athabaskan (#455A64 Taiga Slate)
+            new TribalDomain(-70.0, 70.0, 0x607D8B),    // Arctic Inuit / Thule Domain (#607D8B Arctic Slate)
+
+            // Africa
+            new TribalDomain(0.0, 10.0, 0xB45309),      // West African Savanna / Voltaic (#B45309 Savanna Ochre)
+            new TribalDomain(22.0, -1.0, 0x1B5E20),     // Congo Equatorial Forest Clans (#1B5E20 Jungle Dark Green)
+            new TribalDomain(38.0, 4.0, 0xC2410C),      // East African Pastoralists (#C2410C Terracotta)
+            new TribalDomain(24.0, -28.0, 0xA16207),    // Southern African Khoisan / San (#A16207 Kalahari Ochre)
+            new TribalDomain(47.0, -19.0, 0x4E342E),    // Malagasy Indigenous Domain (#4E342E Malagasy Brown)
+
+            // Eurasia & Siberia
+            new TribalDomain(10.0, 56.0, 0x4D7C0F),     // Northern European Germanic/Celtic Forest Clans (#4D7C0F Moss Green)
+            new TribalDomain(30.0, 64.0, 0x0F766E),     // Boreal Finno-Ugric & Samoyed (#0F766E Pine Teal)
+            new TribalDomain(65.0, 48.0, 0x9A3412),     // Eurasian Steppe Nomads (#9A3412 Steppe Rust)
+            new TribalDomain(100.0, 58.0, 0x37474F),    // Siberian Taiga & Evenki (#37474F Siberian Charcoal)
+            new TribalDomain(150.0, 65.0, 0x546E7A),    // Chukchi & Koryak Paleo-Siberian (#546E7A Tundra Blue-Gray)
+            new TribalDomain(100.0, 20.0, 0x4B6B40),    // Southeast Asian Zomia Highlands (#4B6B40 Highland Olive)
+
+            // Oceania & Australasia
+            new TribalDomain(134.0, -25.0, 0xA04000),   // Australian Aboriginal Nations (#A04000 Red Ochre)
+            new TribalDomain(140.0, -5.0, 0x15803D),    // Papuan Highland Clans (#15803D Papuan Emerald)
+            new TribalDomain(170.0, -15.0, 0x0284C7)    // Polynesian Oceanic Domain (#0284C7 Pacific Cyan)
+        };
+
+        double minDistSq = Double.MAX_VALUE;
+        int bestColor = 0x4B5563;
+        for (TribalDomain td : domains) {
+            double dLat = lat - td.lat;
+            double dLon = (lon - td.lon) * Math.cos(Math.toRadians((lat + td.lat) * 0.5));
+            double d2 = dLat * dLat + dLon * dLon;
+            if (d2 < minDistSq) {
+                minDistSq = d2;
+                bestColor = td.color;
+            }
+        }
+        return bestColor;
     }
 
     /**

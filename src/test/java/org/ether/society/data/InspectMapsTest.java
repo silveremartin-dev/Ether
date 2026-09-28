@@ -249,7 +249,12 @@ public class InspectMapsTest {
             new Loc("Alexandria (Roman Egypt)", 29.9, 31.2),
             new Loc("Ctesiphon (Parthian Empire)", 44.6, 33.1),
             new Loc("Taxila (Kushan Empire)", 72.8, 33.8),
-            new Loc("Amazon (Stateless Frontier)", -60.0, -3.0),
+            new Loc("Amazon Basin (Tribal)", -60.0, -3.0),
+            new Loc("Congo Basin (Tribal)", 22.0, -1.0),
+            new Loc("Siberian Taiga (Tribal)", 100.0, 58.0),
+            new Loc("North America Plains (Tribal)", -100.0, 42.0),
+            new Loc("Australian Outback (Tribal)", 134.0, -25.0),
+            new Loc("Germania Forest (Tribal)", 10.0, 52.0),
             new Loc("Antarctica East (Uninhabited)", 0.0, -75.0),
             new Loc("Antarctica West (Uninhabited)", -100.0, -80.0)
         };

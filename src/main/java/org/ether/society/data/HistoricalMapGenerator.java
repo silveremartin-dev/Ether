@@ -2047,8 +2047,8 @@ public class HistoricalMapGenerator {
                 mx = Math.clamp(mx, 0, (mask != null ? mask.getWidth() : w) - 1);
                 my = Math.clamp(my, 0, (mask != null ? mask.getHeight() : h) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                if (land == 0 || lat < -60.0) {
-                    // Ocean pixel or uninhabited Antarctic ice cap -> strictly pure black
+                if (land == 0) {
+                    // Ocean pixel -> strictly pure black
                     out.setRGB(x, y, 0x000000);
                 } else {
                     out.setRGB(x, y, src.getRGB(x, y));
@@ -2480,20 +2480,27 @@ public class HistoricalMapGenerator {
         }
 
         // Orographic cost-distance propagation with finite sovereign reach limit (38.0)
-        // Land outside state logistical projection capacity remains neutral slate-gray #374151
         List<OrographicGlottologPropagator.CulturalSeed> sovSeeds = new ArrayList<>();
         for (double[] ec : empireCores) {
             sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(ec[0], ec[1], (int) ec[2], ec[3] / 18.0, "Polity"));
         }
         BufferedImage sovImg = OrographicGlottologPropagator.propagateCulturalSeeds(sovSeeds, WIDTH, HEIGHT, mask, 38.0f);
-        // Apply hominin occupancy: unpopulated land or Antarctica -> black
+        // Apply hominin occupancy and assign authentic regional tribal domains outside imperial reach
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
                 double occWeight = getHomininOccupancyWeight(lon, lat, year);
-                if (lat < -60.0 || occWeight <= 0.001) {
+                if (lat < -60.0 && year < 1900L) {
                     sovImg.setRGB(x, y, 0x000000);
+                } else if (occWeight <= 0.001 && year < 1900L) {
+                    sovImg.setRGB(x, y, 0x000000);
+                } else {
+                    int currentRgb = sovImg.getRGB(x, y) & 0xFFFFFF;
+                    if (currentRgb == 0x374151 || currentRgb == 0x000000) {
+                        int tribalColor = CliopatriaPolityVectorReader.getTribalDomainColor(lon, lat, year);
+                        sovImg.setRGB(x, y, tribalColor);
+                    }
                 }
             }
         }
