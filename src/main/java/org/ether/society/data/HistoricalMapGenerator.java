@@ -2109,6 +2109,15 @@ public class HistoricalMapGenerator {
         0x9B59B6  // Clade 5: Tropical Forest & Bamboo Bands (#9B59B6)
     };
 
+    private static final int[] COLORS_RITUALS_100K = {
+        0x10B981, // Clade 0: Sapiens Pan-African Symbolic Ochre & Shell Ornamentation (#10B981)
+        0xF59E0B, // Clade 1: Pioneer Coastal Symbolic Caches (#F59E0B)
+        0x3B82F6, // Clade 2: Neanderthal Intentional Burials & Raptor Claw Cults (#3B82F6)
+        0x2563EB, // Clade 3: Shanidar Flower Burial Tradition (#2563EB)
+        0xD97706, // Clade 4: Denisovan Altai Chloritolite Jewelry & Bone Carving (#D97706)
+        0x8B5CF6  // Clade 5: Archaic Asian Megafauna & Ochre Traditions (#8B5CF6)
+    };
+
     public static int blendCladeRgb(double[] w, int[] cladeColors, double occWeight) {
         if (w == null || occWeight <= 0.001) return 0x000000;
         double r = 0.0, g = 0.0, b = 0.0;
@@ -2746,109 +2755,146 @@ public class HistoricalMapGenerator {
             }
         }
 
-        List<double[]> ritualCenters = new ArrayList<>();
+        // 2. Handle -100,000 BP paleolithic tier via hominid clade weights
         if (year <= -70000L) {
-            // Handled separately below via Paleolithic traits
-        } else if (year <= -10500L) {
-            // -10,900 BP: Natufian mortars/skulls, Magdalenian cave sanctuaries, Clovis ochre caches
-            ritualCenters.add(new double[]{35.58, 33.08, 210.0, 6.0}); // Ain Mallaha Natufian burials
-            ritualCenters.add(new double[]{35.22, 32.92, 195.0, 6.0}); // Hayonim Cave
-            ritualCenters.add(new double[]{1.0, 45.0, 190.0, 8.0});    // Lascaux / Laugerie late sanctuary
-            ritualCenters.add(new double[]{-4.5, 43.4, 185.0, 8.0});   // Altamira Late Magdalenian
-            ritualCenters.add(new double[]{-103.3, 34.3, 160.0, 10.0});// Clovis Anzick / Blackwater red ochre caches
-            ritualCenters.add(new double[]{-73.2, -41.5, 150.0, 8.0}); // Monte Verde hearths
-        } else if (year <= -9000L) {
-            // -10,000 BP: Göbekli Tepe & Karahan Tepe T-shaped pillar megalithic sanctuaries
-            ritualCenters.add(new double[]{38.92, 37.22, 255.0, 8.0}); // Göbekli Tepe Megalithic Sanctuary Core
-            ritualCenters.add(new double[]{39.50, 37.05, 240.0, 8.0}); // Karahan Tepe
-            ritualCenters.add(new double[]{35.44, 31.87, 220.0, 7.0}); // Jericho Plastered Skull Sanctuary
-            ritualCenters.add(new double[]{38.20, 36.40, 210.0, 7.0}); // Jerf el Ahmar Communal Rotunda
-            ritualCenters.add(new double[]{22.0, 44.5, 200.0, 8.0});   // Lepenski Vir Fish-God Shrines
-            ritualCenters.add(new double[]{113.6, 34.4, 180.0, 10.0}); // Peiligang ancestral burials
-        } else if (year <= -7000L) {
-            // -8,000 BP: Çatalhöyük Bull Shrines, Nabta Playa Megalithic Calendar, Jiahu Flutes
-            ritualCenters.add(new double[]{32.83, 37.67, 255.0, 9.0}); // Çatalhöyük Bucrania & Goddess Shrines
-            ritualCenters.add(new double[]{30.58, 22.53, 245.0, 9.0}); // Nabta Playa Megalithic Astronomical Stone Circle
-            ritualCenters.add(new double[]{113.6, 33.6, 230.0, 9.0});  // Jiahu Sacred Crane Bone Flutes & Burials
-            ritualCenters.add(new double[]{35.95, 31.98, 220.0, 7.0}); // Ain Ghazal Plaster Statues
-            ritualCenters.add(new double[]{22.8, 39.3, 210.0, 8.0});   // Sesklo Goddess Figurines
-            ritualCenters.add(new double[]{68.05, 29.28, 205.0, 8.0}); // Mehrgarh Terracotta Figurines
-        } else if (year <= -4500L) {
-            // -6,000 BP: Eridu Temple VII, Vinča Figurines, Carnac Megalithic Alignments
-            ritualCenters.add(new double[]{45.99, 30.82, 255.0, 10.0});// Eridu Enki Temple / Proto-Ziggurat
-            ritualCenters.add(new double[]{20.62, 44.76, 240.0, 9.0}); // Vinča Anthropomorphic Cult Statues
-            ritualCenters.add(new double[]{-3.00, 47.60, 245.0, 9.0}); // Carnac Megalithic Alignments & Bougon Tumulus
-            ritualCenters.add(new double[]{109.06, 34.27, 235.0, 9.0});// Yangshao Banpo Mortuary Complexes
-            ritualCenters.add(new double[]{119.50, 41.30, 240.0, 8.0});// Hongshan Niuheliang Goddess Temple & Jade Altars
-            ritualCenters.add(new double[]{31.37, 26.99, 220.0, 8.0}); // Badari Cosmetic Palettes & Burials
-        } else {
-            ritualCenters.add(new double[]{35.2, 31.8, 255.0, 20.0});  // Jerusalem
-            ritualCenters.add(new double[]{39.8, 21.4, 250.0, 20.0});  // Mecca
-            ritualCenters.add(new double[]{12.5, 41.9, 245.0, 18.0});  // Rome / Vatican
-            ritualCenters.add(new double[]{83.0, 25.3, 255.0, 20.0});  // Varanasi / Ganges
-            ritualCenters.add(new double[]{91.1, 29.6, 240.0, 18.0});  // Lhasa / Mount Kailash
-            ritualCenters.add(new double[]{117.1, 36.3, 240.0, 18.0}); // Mount Tai / Qufu
-            ritualCenters.add(new double[]{138.7, 35.4, 230.0, 15.0}); // Mount Fuji / Ise
-            ritualCenters.add(new double[]{32.6, 25.7, 245.0, 14.0});  // Karnak / Luxor
-            ritualCenters.add(new double[]{44.4, 32.5, 235.0, 14.0});  // Babylon / Eridu
-            ritualCenters.add(new double[]{103.9, 13.4, 240.0, 16.0}); // Angkor Wat
-            ritualCenters.add(new double[]{110.2, -7.6, 235.0, 14.0}); // Borobudur
-            ritualCenters.add(new double[]{131.0, -25.3, 245.0, 22.0});// Uluru / Kata Tjuta
-            ritualCenters.add(new double[]{-98.8, 19.7, 245.0, 16.0}); // Teotihuacan / Cholula
-            ritualCenters.add(new double[]{-71.9, -13.5, 245.0, 18.0});// Coricancha / Cuzco
-            ritualCenters.add(new double[]{-68.7, -16.5, 240.0, 16.0});// Tiwanaku
-            ritualCenters.add(new double[]{-1.8, 51.2, 230.0, 12.0});  // Stonehenge
-            ritualCenters.add(new double[]{22.5, 38.5, 235.0, 12.0});  // Delphi
-            ritualCenters.add(new double[]{30.9, -20.3, 225.0, 16.0}); // Great Zimbabwe
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                    int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                    int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (land == 0 || occWeight <= 0.001) {
+                        img.setRGB(x, y, 0x000000);
+                        continue;
+                    }
+                    double[] w = computeHomininCladeWeights(lon, lat);
+                    int rgb = blendCladeRgb(w, COLORS_RITUALS_100K, occWeight);
+                    img.setRGB(x, y, rgb);
+                }
+            }
+            return applyAltimetryCoastlineMask(img);
         }
 
+        // 3. Authentic Discrete Categorization & SESHAT Sacred Traditions with Orographic Propagation
+        List<OrographicGlottologPropagator.CulturalSeed> ritualSeeds = new ArrayList<>();
+
+        if (year <= -10500L) {
+            // Upper Paleolithic & Younger Dryas Cave Sanctuaries & Burials
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-4.5, 43.4, 0x4D7C0F, 1.2, "Franco-Cantabrian Cave Art Cults"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(35.58, 33.08, 0xB45309, 1.0, "Natufian Skull Burials"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(39.0, 51.4, 0x8B5CF6, 1.3, "Kostenki Mammoth Shrines"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(102.8, 52.8, 0xD97706, 1.4, "Siberian Ochre & Chloritolite Cults"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-103.3, 34.3, 0xC27803, 1.5, "Clovis Red Ochre Traditions"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-73.2, -41.5, 0x2E7D32, 1.4, "Andean Paleo Hearth Cults"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(133.0, -25.0, 0xA04000, 1.6, "Sahul Dreamtime Songlines"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(21.2, -34.4, 0x10B981, 1.5, "African LSA Symbolic Caches"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(32.6, 24.1, 0x15803D, 1.1, "Nile Qadan Cemetery Tradition"));
+        } else if (year <= -7000L) {
+            // Early Neolithic / Göbekli Tepe / Çatalhöyük / Mehrgarh
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(38.92, 37.22, 0xEA580C, 1.2, "Göbekli Pillar Megalithic Shrines"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(32.83, 37.67, 0xEA580C, 1.1, "Çatalhöyük Bucrania Cults"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(35.44, 31.87, 0xB45309, 1.0, "Jericho Plastered Skull Sanctuary"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(22.0, 44.5, 0x4D7C0F, 1.1, "Lepenski Vir Fish-God Cults"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(113.6, 33.6, 0xEF4444, 1.3, "Jiahu Ancestral Bone Flute Cults"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(68.05, 29.28, 0xF59E0B, 1.2, "Mehrgarh Terracotta Goddess Traditions"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(30.58, 22.53, 0x15803D, 1.2, "Nabta Playa Megalithic Solar Alignments"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-98.0, 19.0, 0xD97706, 1.4, "Mesoamerican Archaic Rituals"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-77.0, -10.0, 0xC27803, 1.4, "Early Andean Hearth Shrines"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(133.0, -25.0, 0xA04000, 1.6, "Australian Dreamtime"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(8.0, 9.0, 0x1B5E20, 1.5, "West African Traditional Animism"));
+        } else if (year <= -4500L) {
+            // Late Neolithic / Chalcolithic / Eridu / Vinča / Carnac
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(45.99, 30.82, 0xB45309, 1.2, "Eridu Enki Temple & Proto-Ziggurats"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(31.37, 26.99, 0x15803D, 1.1, "Badari / Pre-Dynastic Egyptian Cults"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(20.62, 44.76, 0x4D7C0F, 1.2, "Vinča Anthropomorphic Shrines"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-3.0, 47.6, 0x4D7C0F, 1.2, "Carnac Megalithic Alignments"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(109.06, 34.27, 0xEF4444, 1.3, "Yangshao Banpo Mortuary Complexes"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(68.05, 29.28, 0xF59E0B, 1.2, "Mehrgarh Proto-Indus Traditions"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-98.0, 19.0, 0xD97706, 1.4, "Mesoamerican Ceremonial Centers"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-77.0, -10.0, 0xC27803, 1.4, "Caral-Supe Sacred Plazas"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(133.0, -25.0, 0xA04000, 1.6, "Australian Dreamtime"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(8.0, 9.0, 0x1B5E20, 1.5, "African Ancestral Systems"));
+        } else if (year <= -500L) {
+            // Bronze & Early Iron Age Empires (Sumer, Egypt, Shang, Vedic)
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(44.4, 32.5, 0xB45309, 1.3, "Mesopotamian Ziggurat Pantheon"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(32.6, 25.7, 0x15803D, 1.3, "Egyptian Amun-Ra & Osiris Religion"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(22.5, 38.5, 0xEA580C, 1.2, "Aegean & Mycenaean Olympian Cult"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(83.0, 25.3, 0xF59E0B, 1.4, "Vedic Sacrificial Traditions"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(114.3, 36.1, 0xEF4444, 1.4, "Shang & Zhou Ancestral Oracle Cult"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-1.8, 51.2, 0x4D7C0F, 1.2, "Stonehenge Atlantic Sacred Complex"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-94.8, 17.8, 0xD97706, 1.3, "Olmec Jaguar & Sacred Centers"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-77.2, -9.6, 0xC27803, 1.3, "Chavin Staff God Traditions"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(8.5, 9.5, 0x1B5E20, 1.5, "Sub-Saharan Ancestral Traditions"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(133.0, -25.0, 0xA04000, 1.6, "Australian Aboriginal Songlines"));
+        } else if (year <= 500L) {
+            // Classical Axial Age (Rome, Han, Maurya, Parthia)
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(12.5, 41.9, 0xEA580C, 1.4, "Greco-Roman Civic Polytheism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(23.7, 37.9, 0xEA580C, 1.2, "Hellenistic Polytheism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(35.2, 31.8, 0x2563EB, 0.9, "Judaism & Second Temple Cult"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(44.4, 33.1, 0x0891B2, 1.3, "Zoroastrianism & Mazdeism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(85.1, 25.6, 0xF59E0B, 1.4, "Brahmanism & Classical Hinduism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(80.4, 8.3, 0xEAB308, 1.1, "Theravada Buddhism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(108.9, 34.3, 0xEF4444, 1.5, "Confucianism & Daoism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(29.9, 31.2, 0x15803D, 1.1, "Kemetic & Greco-Egyptian Serapis"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-2.0, 48.0, 0x4D7C0F, 1.2, "Celtic Druidic Polytheism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(10.0, 53.0, 0x3B82F6, 1.3, "Germanic & Norse Polytheism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(30.0, 50.0, 0x37474F, 1.4, "Slavic & Steppe Tengrism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-98.8, 19.7, 0xD97706, 1.3, "Teotihuacan Cosmic Religion"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-75.0, -14.0, 0xC27803, 1.3, "Andean Moche & Nazca Cults"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(8.5, 9.5, 0x1B5E20, 1.5, "Sub-Saharan Ancestral Systems"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(133.0, -25.0, 0xA04000, 1.6, "Australian Dreamtime"));
+        } else if (year <= 1491L) {
+            // Medieval Era (Catholicism, Orthodoxy, Islam, Hinduism, Buddhism)
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(12.5, 41.9, 0xEC4899, 1.5, "Roman Catholicism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(28.9, 41.0, 0x8B5CF6, 1.4, "Eastern Orthodoxy"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(30.5, 50.4, 0x8B5CF6, 1.4, "Rus Orthodoxy"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(39.8, 21.4, 0x10B981, 1.6, "Sunni Islam"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(44.3, 32.0, 0x0D9488, 1.3, "Shia Islam"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-4.8, 37.9, 0x10B981, 1.1, "Al-Andalus Islam"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(83.0, 25.3, 0xF59E0B, 1.5, "Hinduism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(103.9, 13.4, 0xEAB308, 1.3, "Theravada Buddhism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(114.3, 34.7, 0xEF4444, 1.5, "Mahayana & Neo-Confucianism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(135.7, 35.0, 0xF43F5E, 1.1, "Shinto & Buddhist Syncretism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(91.1, 29.6, 0xD97706, 1.3, "Vajrayana Buddhism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-99.1, 19.4, 0xD97706, 1.3, "Aztec & Maya Cosmic Religions"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-71.9, -13.5, 0xC27803, 1.3, "Inca Inti Sun Religion"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-3.0, 16.8, 0x10B981, 1.3, "West African Islam"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(8.5, 9.5, 0x1B5E20, 1.5, "African Traditional Religions"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(133.0, -25.0, 0xA04000, 1.6, "Australian Dreamtime"));
+        } else {
+            // Early Modern & Global Age of Faiths (1492-1900)
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(12.5, 41.9, 0xEC4899, 1.5, "Roman Catholicism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-0.1, 51.5, 0x3B82F6, 1.3, "Protestantism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(37.6, 55.7, 0x8B5CF6, 1.5, "Russian & Eastern Orthodoxy"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(39.8, 21.4, 0x10B981, 1.6, "Sunni Islam"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(51.4, 35.7, 0x0D9488, 1.4, "Shia Islam"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(83.0, 25.3, 0xF59E0B, 1.5, "Hinduism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(100.5, 13.7, 0xEAB308, 1.3, "Theravada Buddhism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(116.4, 39.9, 0xEF4444, 1.5, "Confucianism & Mahayana"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(139.7, 35.6, 0xF43F5E, 1.1, "Shintoism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(91.1, 29.6, 0xD97706, 1.3, "Vajrayana Buddhism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-99.1, 19.4, 0xEC4899, 1.4, "Catholicism (Latin America)"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-74.0, 40.7, 0x3B82F6, 1.3, "Protestantism (North America)"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(8.5, 9.5, 0x1B5E20, 1.5, "Sub-Saharan Traditional"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(133.0, -25.0, 0xA04000, 1.6, "Australian Dreamtime"));
+        }
+
+        BufferedImage ritImg = OrographicGlottologPropagator.propagateCulturalSeeds(ritualSeeds, WIDTH, HEIGHT, mask);
+
+        // Apply hominin occupancy filter and black out Antarctica
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
             for (int x = 0; x < WIDTH; x++) {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
-
-                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
-                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
-                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
                 double occWeight = getHomininOccupancyWeight(lon, lat, year);
-                if (land == 0 || occWeight <= 0.001) {
-                    img.setRGB(x, y, 0x000000);
-                    continue;
+                if (lat < -60.0 || occWeight <= 0.001) {
+                    ritImg.setRGB(x, y, 0x000000);
                 }
-
-                if (year <= -70000L) {
-                    double baseRitual = blendPaleoTraits(lon, lat, 55.0, 48.0, 38.0);
-                    double maxRitual = baseRitual;
-                    double[][] paleoSites = {
-                        {21.2, -34.4, 160.0, 10.0}, {22.1, -34.2, 155.0, 10.0}, {31.9, -27.0, 150.0, 10.0},
-                        {35.3, 32.7, 145.0, 8.0},   {-8.8, 31.6, 140.0, 8.0},   {-5.3, 36.1, 135.0, 8.0},
-                        {1.0, 45.0, 130.0, 8.0},    {15.8, 46.1, 125.0, 8.0},   {44.2, 36.8, 130.0, 8.0},
-                        {84.0, 51.4, 130.0, 8.0},   {102.8, 35.2, 120.0, 8.0}
-                    };
-                    for (double[] ss : paleoSites) {
-                        double d2 = distSq(lon, lat, ss[0], ss[1]);
-                        double sigma = ss[3];
-                        double val = ss[2] * Math.exp(-d2 / (2.0 * sigma * sigma));
-                        maxRitual = Math.max(maxRitual, val);
-                    }
-                    int gray = Math.clamp((int) (maxRitual * occWeight), 0, 255);
-                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
-                    continue;
-                }
-
-                double maxRitual = 30.0;
-                for (double[] ss : ritualCenters) {
-                    double d2 = distSq(lon, lat, ss[0], ss[1]);
-                    double sigma = ss[3];
-                    double val = ss[2] * Math.exp(-d2 / (2.0 * sigma * sigma));
-                    maxRitual = Math.max(maxRitual, val);
-                }
-
-                int gray = Math.clamp((int) (maxRitual * occWeight), 0, 255);
-                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
         }
-        return applyAltimetryCoastlineMask(img);
+        return applyAltimetryCoastlineMask(ritImg);
     }
 
     // --- 6. TECHNOLOGY & SUBSISTENCE TENSOR MAP ---
@@ -3131,8 +3177,45 @@ public class HistoricalMapGenerator {
             drawTradeRoute(g, new double[][]{{151.2, -33.8}, {145.0, -20.0}, {130.0, -5.0}, {115.0, 10.0}, {121.5, 31.2}}, new Color(30, 180, 210), 3.8); // Australia -> China (Iron Ore)
         }
 
+        // Draw Major Navigable River Trade Corridors (High Conductance Channels)
+        drawNavigableRiverCorridors(g, year);
+
         g.dispose();
         return img;
+    }
+
+    private static void drawNavigableRiverCorridors(Graphics2D g, long year) {
+        if (year <= -6000L) return; // Prior to Neolithic / Early Bronze, large-scale riverine trade arteries were nascent
+        Color riverCol = new Color(0, 210, 230); // Turquoise / Cyan navigable river artery
+
+        // 1. Nile Valley & Delta Artery (Aswan -> Luxor -> Memphis -> Alexandria)
+        drawTradeRoute(g, new double[][]{{32.9, 24.1}, {32.6, 25.7}, {31.3, 29.8}, {31.2, 31.2}}, riverCol, 3.2);
+
+        // 2. Tigris & Euphrates Mesopotamian Arteries (Cradle of Irrigation & Riverine Trade)
+        drawTradeRoute(g, new double[][]{{40.0, 37.9}, {43.1, 36.3}, {44.4, 33.3}, {47.8, 30.5}}, riverCol, 2.8);
+        drawTradeRoute(g, new double[][]{{38.5, 37.5}, {40.1, 35.3}, {42.4, 33.9}, {44.4, 32.5}, {47.8, 30.5}}, riverCol, 2.8);
+
+        // 3. Indus & Ganges-Brahmaputra South Asian Arteries
+        drawTradeRoute(g, new double[][]{{73.7, 33.7}, {71.5, 30.2}, {68.8, 27.5}, {68.1, 27.3}, {67.0, 24.8}}, riverCol, 2.8);
+        drawTradeRoute(g, new double[][]{{78.2, 29.9}, {81.8, 25.4}, {83.0, 25.3}, {85.1, 25.6}, {88.3, 22.5}, {90.4, 23.7}}, riverCol, 3.0);
+
+        // 4. Yellow River (Huang He) & Yangtze (Chang Jiang) Waterways
+        drawTradeRoute(g, new double[][]{{103.8, 36.0}, {108.9, 34.3}, {111.0, 34.8}, {114.3, 34.7}, {117.5, 37.5}}, riverCol, 2.8);
+        drawTradeRoute(g, new double[][]{{104.0, 28.7}, {106.5, 29.5}, {112.5, 30.3}, {114.3, 30.6}, {118.8, 32.0}, {121.5, 31.2}}, riverCol, 3.4);
+
+        // 5. European Riverine Arteries (Rhine, Danube & Rhône-Saône)
+        drawTradeRoute(g, new double[][]{{8.6, 47.6}, {7.6, 48.6}, {8.3, 50.0}, {6.9, 50.9}, {4.5, 51.9}}, riverCol, 2.6);
+        drawTradeRoute(g, new double[][]{{10.0, 48.5}, {12.1, 49.0}, {16.4, 48.2}, {19.0, 47.5}, {20.5, 44.8}, {24.0, 43.7}, {28.0, 45.2}}, riverCol, 3.0);
+        drawTradeRoute(g, new double[][]{{4.8, 47.3}, {4.8, 45.7}, {4.8, 43.9}, {5.4, 43.3}}, riverCol, 2.4);
+
+        // 6. Eastern European & Russian Waterways (Dnieper & Volga)
+        drawTradeRoute(g, new double[][]{{32.0, 54.8}, {30.5, 50.4}, {35.0, 47.8}, {32.6, 46.6}}, riverCol, 2.6);
+        drawTradeRoute(g, new double[][]{{33.0, 57.0}, {39.8, 57.6}, {49.1, 55.8}, {48.7, 51.5}, {44.5, 48.7}, {48.0, 46.3}}, riverCol, 3.0);
+
+        // 7. African & American Major Navigable Basins (Niger, Mississippi-Ohio, Amazon)
+        drawTradeRoute(g, new double[][]{{-10.7, 10.0}, {-8.3, 11.4}, {-3.0, 16.8}, {0.0, 16.2}, {6.5, 6.0}}, riverCol, 2.6);
+        drawTradeRoute(g, new double[][]{{-80.0, 40.4}, {-84.5, 39.1}, {-89.0, 37.0}, {-90.0, 35.0}, {-91.0, 32.5}, {-90.0, 29.9}}, riverCol, 3.0);
+        drawTradeRoute(g, new double[][]{{-73.2, -3.7}, {-60.0, -3.1}, {-54.7, -2.4}, {-50.0, -1.0}}, riverCol, 3.2);
     }
 
     private static void drawTradeRoute(Graphics2D g, double[][] coords, Color col, double strokeWidth) {
