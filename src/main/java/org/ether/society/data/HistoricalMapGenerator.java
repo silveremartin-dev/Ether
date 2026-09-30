@@ -3211,11 +3211,32 @@ public class HistoricalMapGenerator {
                     continue;
                 }
 
-                // Holocene & Historical Eras: Seshat hierarchy scaling
-                double maxInst = 25.0;
+                // Holocene & Historical Eras: Seshat hierarchy scaling with distance decay from imperial cores
+                // Calibrated scale:
+                // - Neolithic (-10k to -3500 BP): chiefdoms ~ 50-65
+                // - Bronze/Archaic Empires (-3500 to -500 BP): kingdoms ~ 90-120
+                // - Classical Axial Empires (-500 to 500 AD): Rome/Han ~ 150-165
+                // - Medieval / Early Modern (500 to 1800 AD): Song/Abbasid/Ottoman/W.Europe ~ 165-185
+                // - Industrial Era (1800 to 1900 AD): ~ 185-195
+                double eraMaxCap;
+                if (year <= -3500L) {
+                    eraMaxCap = 55.0;
+                } else if (year <= -500L) {
+                    eraMaxCap = 110.0;
+                } else if (year <= 600L) {
+                    eraMaxCap = 160.0;
+                } else if (year <= 1750L) {
+                    eraMaxCap = 175.0;
+                } else {
+                    eraMaxCap = 195.0;
+                }
+
+                double baselineInst = 20.0;
+                double maxInst = baselineInst;
                 for (CityPoint cp : cities) {
                     double d2 = distSq(lon, lat, cp.lng, cp.lat);
-                    double val = cp.weight * Math.exp(-d2 / (2.0 * cp.sigma * cp.sigma)) * 55.0;
+                    double cityPeak = Math.min(eraMaxCap, (cp.weight / 4.2) * eraMaxCap);
+                    double val = baselineInst + (cityPeak - baselineInst) * Math.exp(-d2 / (2.0 * cp.sigma * cp.sigma * 4.0));
                     maxInst = Math.max(maxInst, val);
                 }
 

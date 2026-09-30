@@ -909,10 +909,10 @@ public class NaturalEarthVectorIngestor {
     private static int computeInstitutionalLevel(String iso, String name) {
         String code = iso != null ? iso.toUpperCase(Locale.ROOT) : "";
         return switch (code) {
-            case "USA", "CAN", "GBR", "FRA", "DEU", "JPN", "CHE", "SWE", "NOR", "DNK", "FIN", "NLD", "AUS", "NZL", "SGP" -> 245;
-            case "ITA", "ESP", "PRT", "AUT", "BEL", "IRL", "KOR", "TWN", "ISR", "POL", "CZE", "EST" -> 225;
-            case "CHN", "RUS", "IND", "BRA", "MEX", "TUR", "SAU", "ZAF", "MYS", "CHL", "ARG", "ROU", "GRC", "IDN", "THA", "VNM" -> 180;
-            case "EGY", "NGA", "PAK", "BGD", "COL", "PER", "PHL", "UKR", "KAZ", "DZA", "MAR", "KEN" -> 140;
+            case "USA", "CAN", "GBR", "FRA", "DEU", "JPN", "CHE", "SWE", "NOR", "DNK", "FIN", "NLD", "AUS", "NZL", "SGP" -> 220;
+            case "ITA", "ESP", "PRT", "AUT", "BEL", "IRL", "KOR", "TWN", "ISR", "POL", "CZE", "EST" -> 205;
+            case "CHN", "RUS", "IND", "BRA", "MEX", "TUR", "SAU", "ZAF", "MYS", "CHL", "ARG", "ROU", "GRC", "IDN", "THA", "VNM" -> 175;
+            case "EGY", "NGA", "PAK", "BGD", "COL", "PER", "PHL", "UKR", "KAZ", "DZA", "MAR", "KEN" -> 135;
             default -> 95;
         };
     }
