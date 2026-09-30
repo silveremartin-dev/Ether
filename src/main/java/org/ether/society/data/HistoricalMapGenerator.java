@@ -5360,7 +5360,7 @@ public class HistoricalMapGenerator {
                     }
                 }
 
-                // 5. Apply stratigraphic bed variation texture and coastline mask
+                // 5. Apply clean linear scaling and altimetry coastline mask (no artificial diagonal lattice noise)
                 BufferedImage outImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
                 for (int y = 0; y < height; y++) {
                     double lat = 90.0 - (y + 0.5) / height * 180.0;
@@ -5371,8 +5371,7 @@ public class HistoricalMapGenerator {
                             continue;
                         }
                         float rawVal = blurred[y][x];
-                        double stratNoise = 0.94 + 0.12 * (Math.sin(lon * 5.0 + lat * 2.0) * Math.cos(lat * 5.0 - lon * 2.0) * 0.5 + 0.5);
-                        int lum = Math.clamp((int) Math.round(rawVal * stratNoise), 0, 255);
+                        int lum = Math.clamp((int) Math.round(rawVal), 0, 255);
                         outImg.setRGB(x, y, (lum << 16) | (lum << 8) | lum);
                     }
                 }
@@ -5401,8 +5400,7 @@ public class HistoricalMapGenerator {
                 double elevM = (mask != null) ? (land / 255.0) * 8848.0 : 200.0;
                 double orographicCapacityFactor = elevM <= 350.0 ? 1.0 : (elevM <= 1000.0 ? 1.0 - (elevM - 350.0) / 650.0 * 0.70 : Math.max(0.08, 0.30 - (elevM - 1000.0) / 2000.0 * 0.22));
                 double aquiferYield = 65.0 * orographicCapacityFactor;
-                double stratNoise = 0.92 + 0.16 * (Math.sin(lon * 5.0 + lat * 2.0) * Math.cos(lat * 5.0 - lon * 2.0) * 0.5 + 0.5);
-                int finalLuminance = Math.clamp((int) Math.round(aquiferYield * stratNoise), 0, 255);
+                int finalLuminance = Math.clamp((int) Math.round(aquiferYield), 0, 255);
                 img.setRGB(x, y, (finalLuminance << 16) | (finalLuminance << 8) | finalLuminance);
             }
         }
