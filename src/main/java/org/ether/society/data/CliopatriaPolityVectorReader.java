@@ -415,15 +415,16 @@ public class CliopatriaPolityVectorReader {
             {45.00, 5.00, 0x84CC16, 5.0},    // Somali (Horn of Africa) (#84CC16)
             {15.30, -4.3, 0x22C55E, 5.0},    // Kongo / Lingala (Congo Basin) (#22C55E Bantu)
             {36.82, -1.2, 0x22C55E, 4.0},    // Kikuyu / Swahili (East Africa) (#22C55E)
-            {31.00, -29.0, 0x22C55E, 4.0},   // Zulu / Xhosa (Southern Africa) (#22C55E)
-            {26.00, -26.0, 0x22C55E, 4.0},   // Sotho / Tswana (#22C55E)
-            {21.00, -25.0, 0xFACC15, 4.5},   // Khoisan / Ju|'hoan / Nama (Kalahari / Namib) (#FACC15 Yellow)
+            // Historical Bantu vs Khoisan demarcation based on epoch:
+            (targetYear < 500L ? new double[]{28.00, -28.0, 0xFACC15, 6.0} : new double[]{31.00, -29.0, 0x22C55E, 4.0}), // Southern Africa (Khoisan #FACC15 in Antiquity -> Nguni/Zulu in Medieval/Modern)
+            (targetYear < 500L ? new double[]{24.00, -32.0, 0xFACC15, 6.0} : new double[]{26.00, -26.0, 0x22C55E, 4.0}), // Highveld / Cape (Khoisan in Antiquity -> Sotho/Tswana)
+            {21.00, -25.0, 0xFACC15, 5.5},   // Khoisan / Ju|'hoan / Nama (Kalahari / Namib) (#FACC15 Yellow)
+            {18.00, -33.5, 0xFACC15, 4.5},   // Cape Khoekhoe (#FACC15)
 
             // --- Americas ---
-            {-75.0, 40.0, 0x2563EB, 4.5},    // English (American Atlantic Seaboard / Philadelphia) (#2563EB Anglic)
-            {-71.0, 46.8, 0xEC4899, 3.5},    // French Canadian (Quebec / Saint Lawrence) (#EC4899 Romance)
-            {-90.0, 30.0, 0xEC4899, 3.0},    // Louisiana French Creole (#EC4899)
-            {-76.0, 43.0, 0x3F51B5, 3.0},    // Iroquoian (Haudenosaunee) (#3F51B5 Indigo)
+            {-75.0, 40.0, (targetYear >= 1700L ? 0x2563EB : 0x3F51B5), 4.5}, // Mid-Atlantic (English in Modern / Lenape Amerind #3F51B5 in Antiquity)
+            {-71.0, 46.8, (targetYear >= 1700L ? 0xEC4899 : 0x3F51B5), 3.5}, // St. Lawrence (French in Modern / Abenaki Amerind in Antiquity)
+            {-76.0, 43.0, 0x3F51B5, 3.5},    // Iroquoian (Haudenosaunee) (#3F51B5 Indigo)
             {-85.0, 46.0, 0x3F51B5, 4.5},    // Algonquian (Ojibwe / Cree) (#3F51B5)
             {-100.0, 45.0, 0x3F51B5, 5.0},   // Siouan (Lakota / Dakota) (#3F51B5)
             {-102.0, 35.0, 0xFF9800, 4.5},   // Comanche / Shoshone (Uto-Aztecan) (#FF9800 Orange)
@@ -441,7 +442,14 @@ public class CliopatriaPolityVectorReader {
             {-72.0, -38.0, 0x8D6E63, 4.0}    // Mapuche (Araucanian / Chile & Patagonia) (#8D6E63 Earth Brown)
         };
 
-        // 3. Pixel refinement with elevation mask & sub-regional overlay
+        // 3. Pre-generate Orographic Glottolog cost-distance propagation for natural terrain-following boundaries
+        List<OrographicGlottologPropagator.CulturalSeed> isoglossSeeds = new ArrayList<>();
+        for (double[] lc : linguisticCenters) {
+            isoglossSeeds.add(new OrographicGlottologPropagator.CulturalSeed(lc[0], lc[1], (int) lc[2], lc[3] / 18.0, "Isogloss"));
+        }
+        BufferedImage isoglossBg = OrographicGlottologPropagator.propagateCulturalSeeds(isoglossSeeds, width, height, elevationMask);
+
+        // 4. Fill unassigned pixels with Orographic propagation and apply elevation coastline mask
         if (elevationMask != null) {
             for (int y = 0; y < height; y++) {
                 double lat = 90.0 - (y + 0.5) / height * 180.0;
@@ -451,57 +459,12 @@ public class CliopatriaPolityVectorReader {
                     int my = Math.clamp(y * elevationMask.getHeight() / height, 0, elevationMask.getHeight() - 1);
                     int land = elevationMask.getRaster().getSample(mx, my, 0);
                     double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, targetYear);
-                    if (land == 0 || lat < -60.0 || occWeight <= 0.001) {
+                    if (land == 0 || (lat < -60.0 && targetYear < 1900L) || (occWeight <= 0.001 && targetYear < 1900L)) {
                         img.setRGB(x, y, 0x000000);
-                        continue;
-                    }
-
-                    int currentRgb = img.getRGB(x, y) & 0xFFFFFF;
-                    boolean isUnassigned = (currentRgb == 0x000000);
-
-                    // Refine all land cells using distance-weighted localized linguistic centers with stochastic contact-zone dithering
-                    double maxInfl = 0.0;
-                    double secondInfl = 0.0;
-                    int bestCol = isUnassigned ? 0x2563EB : currentRgb;
-                    int secondCol = bestCol;
-
-                    for (double[] lc : linguisticCenters) {
-                        double dLat = lat - lc[1];
-                        double dLon = (lon - lc[0]) * Math.cos(Math.toRadians((lat + lc[1]) * 0.5));
-                        double d2 = dLat * dLat + dLon * dLon;
-                        double sigma = lc[3];
-                        double infl = Math.exp(-d2 / (2.0 * sigma * sigma));
-                        int col = (int) lc[2];
-                        if (infl > maxInfl) {
-                            if (col != bestCol) {
-                                secondInfl = maxInfl;
-                                secondCol = bestCol;
-                            }
-                            maxInfl = infl;
-                            bestCol = col;
-                        } else if (infl > secondInfl && col != bestCol) {
-                            secondInfl = infl;
-                            secondCol = col;
-                        }
-                    }
-
-                    int finalCol = bestCol;
-                    if (secondCol != bestCol && maxInfl > 0.0) {
-                        double ratio = secondInfl / maxInfl; // 0.0 to 1.0
-                        if (ratio > 0.40) {
-                            // Contact zone: calculate probability of secondary language pixel (0.0 to 0.45)
-                            double pSecond = (ratio - 0.40) / (1.0 - 0.40) * 0.45;
-                            // Deterministic high-entropy spatial hash
-                            int hash = (x * 0x1F1F1F1F) ^ (y * 0x3D3D3D3D) ^ (int) (targetYear * 1013904223L);
-                            double rndVal = ((hash & 0x7FFFFFFF) % 10000) / 10000.0;
-                            if (rndVal < pSecond) {
-                                finalCol = secondCol;
-                            }
-                        }
-                    }
-
-                    if (isUnassigned || maxInfl >= 0.15) {
-                        img.setRGB(x, y, finalCol);
+                    } else if (img.getRGB(x, y) == 0xFF000000 || img.getRGB(x, y) == 0x000000) {
+                        // Unassigned stateless/tribal land -> authentic orographic terrain propagation
+                        int orographicColor = (isoglossBg != null) ? isoglossBg.getRGB(x, y) : 0x2563EB;
+                        img.setRGB(x, y, orographicColor);
                     }
                 }
             }
@@ -564,7 +527,7 @@ public class CliopatriaPolityVectorReader {
             {-2.93, 43.26, 0x8B5CF6, 2.0},   // Basque Country (Etxea Stem Household) (#8B5CF6)
             {-8.61, 41.15, 0x8B5CF6, 3.5},   // Spain - Galicia (Stem Family) (#8B5CF6)
             {-9.14, 38.72, 0xEC4899, 4.0},   // Portugal (Egalitarian Nuclear) (#EC4899)
-            {-75.0, 40.0, 0x3B82F6, 5.0},    // United States - Atlantic Seaboard Homesteads (Absolute Nuclear) (#3B82F6)
+            {-75.0, 40.0, (targetYear >= 1700L ? 0x3B82F6 : 0xF43F5E), 5.0}, // Mid-Atlantic (Homestead Nuclear / Iroquois Matrilineal in Antiquity)
 
             // --- Central Europe, Scandinavia & Japan: Stem Family & Primogeniture (#8B5CF6) ---
             {13.40, 52.52, 0x8B5CF6, 4.5},   // Prussia / Northern Germany (Stammfamilie) (#8B5CF6)
@@ -637,7 +600,7 @@ public class CliopatriaPolityVectorReader {
             {3.50, 7.00, 0x15803D, 3.5},     // Yoruba Lineages & Compounds (#15803D)
             {7.00, 5.50, 0x15803D, 3.0},     // Igbo Umunna Patrilineages (#15803D)
             {15.30, -4.3, 0x15803D, 5.0},    // Kongo Lineages (#15803D)
-            {31.00, -29.0, 0x15803D, 4.0},   // Zulu / Xhosa Patrilineal Imizi (#15803D)
+            (targetYear < 500L ? new double[]{28.00, -28.0, 0x84CC16, 6.0} : new double[]{31.00, -29.0, 0x15803D, 4.0}), // Southern Africa (Khoisan bands #84CC16 in Antiquity)
             {37.00, 1.00, 0xFF9800, 4.0},    // East African Age-Set Organization (Maasai, Oromo Gadaa) (#FF9800)
 
             // --- Australia & Pacific: 8-Skin Subsection & Polynesian Ramage ---
@@ -658,7 +621,14 @@ public class CliopatriaPolityVectorReader {
             {21.00, -25.0, 0x84CC16, 4.5}    // Khoisan Egalitarian Band Networks (#84CC16)
         };
 
-        // 3. Pixel refinement with elevation mask & sub-regional overlay
+        // 3. Pre-generate Orographic cost-distance propagation for natural terrain-following kinship borders
+        List<OrographicGlottologPropagator.CulturalSeed> kinshipSeeds = new ArrayList<>();
+        for (double[] kc : kinshipCenters) {
+            kinshipSeeds.add(new OrographicGlottologPropagator.CulturalSeed(kc[0], kc[1], (int) kc[2], kc[3] / 18.0, "Kinship"));
+        }
+        BufferedImage kinshipBg = OrographicGlottologPropagator.propagateCulturalSeeds(kinshipSeeds, width, height, elevationMask);
+
+        // 4. Fill unassigned pixels with Orographic propagation and apply elevation coastline mask
         if (elevationMask != null) {
             for (int y = 0; y < height; y++) {
                 double lat = 90.0 - (y + 0.5) / height * 180.0;
@@ -668,31 +638,12 @@ public class CliopatriaPolityVectorReader {
                     int my = Math.clamp(y * elevationMask.getHeight() / height, 0, elevationMask.getHeight() - 1);
                     int land = elevationMask.getRaster().getSample(mx, my, 0);
                     double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, targetYear);
-                    if (land == 0 || lat < -60.0 || occWeight <= 0.001) {
+                    if (land == 0 || (lat < -60.0 && targetYear < 1900L) || (occWeight <= 0.001 && targetYear < 1900L)) {
                         img.setRGB(x, y, 0x000000);
-                        continue;
-                    }
-
-                    int currentRgb = img.getRGB(x, y) & 0xFFFFFF;
-                    boolean isUnassigned = (currentRgb == 0x000000);
-
-                    // Refine all land cells using distance-weighted localized kinship centers
-                    double maxInfl = 0.0;
-                    int bestCol = isUnassigned ? 0x8B5CF6 : currentRgb;
-                    for (double[] kc : kinshipCenters) {
-                        double dLat = lat - kc[1];
-                        double dLon = (lon - kc[0]) * Math.cos(Math.toRadians((lat + kc[1]) * 0.5));
-                        double d2 = dLat * dLat + dLon * dLon;
-                        double sigma = kc[3];
-                        double infl = Math.exp(-d2 / (2.0 * sigma * sigma));
-                        if (infl > maxInfl) {
-                            maxInfl = infl;
-                            bestCol = (int) kc[2];
-                        }
-                    }
-
-                    if (isUnassigned || maxInfl >= 0.15) {
-                        img.setRGB(x, y, bestCol);
+                    } else if (img.getRGB(x, y) == 0xFF000000 || img.getRGB(x, y) == 0x000000) {
+                        // Unassigned stateless/tribal land -> authentic orographic terrain propagation
+                        int orographicColor = (kinshipBg != null) ? kinshipBg.getRGB(x, y) : 0x8B5CF6;
+                        img.setRGB(x, y, orographicColor);
                     }
                 }
             }

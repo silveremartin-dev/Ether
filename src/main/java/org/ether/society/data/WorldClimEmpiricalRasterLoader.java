@@ -390,7 +390,32 @@ public class WorldClimEmpiricalRasterLoader {
         ensureInitialized();
         double baseT = sampleBilinear(sstTempBaseline, lat, lon);
         double deltaT = computePaleoTemperatureDelta(lat, lon, elevM, year);
-        return Math.clamp(baseT + deltaT, -60.0, 50.0);
+
+        // Bowen ratio: Sensible heat dominance over hyper-arid cloudless deserts vs. evaporative cooling over dense tropical rainforests
+        double sensibleDesertBoost = 0.0;
+        // Sahara & Arabian Peninsula Core
+        if (lat >= 14.0 && lat <= 32.0 && lon >= -16.0 && lon <= 58.0) {
+            double dSahara = Math.exp(-(Math.pow(lat - 23.0, 2) / 60.0 + Math.pow(lon - 20.0, 2) / 500.0));
+            double dArabia = Math.exp(-(Math.pow(lat - 22.0, 2) / 45.0 + Math.pow(lon - 48.0, 2) / 100.0));
+            sensibleDesertBoost += (dSahara * 5.5) + (dArabia * 5.0);
+        }
+        // Iranian Lut Desert & Thar Desert
+        if (lat >= 24.0 && lat <= 36.0 && lon >= 54.0 && lon <= 76.0) {
+            double dLut = Math.exp(-(Math.pow(lat - 30.0, 2) / 35.0 + Math.pow(lon - 62.0, 2) / 90.0));
+            sensibleDesertBoost += (dLut * 4.5);
+        }
+        // Evaporative Canopy Cooling & Cloud Albedo in Dense Tropical Rainforests
+        double evaporativeCooling = 0.0;
+        if (lat >= -10.0 && lat <= 6.0 && lon >= -78.0 && lon <= -48.0) { // Amazon
+            double dAmazon = Math.exp(-(Math.pow(lat - (-2.0), 2) / 45.0 + Math.pow(lon - (-63.0), 2) / 180.0));
+            evaporativeCooling -= (dAmazon * 3.5);
+        }
+        if (lat >= -6.0 && lat <= 6.0 && lon >= 10.0 && lon <= 30.0) { // Congo
+            double dCongo = Math.exp(-(Math.pow(lat - 0.0, 2) / 40.0 + Math.pow(lon - 20.0, 2) / 90.0));
+            evaporativeCooling -= (dCongo * 3.0);
+        }
+
+        return Math.clamp(baseT + deltaT + sensibleDesertBoost + evaporativeCooling, -60.0, 52.0);
     }
 
     /**
@@ -399,9 +424,25 @@ public class WorldClimEmpiricalRasterLoader {
     public static double getPrecipitation(double lat, double lon, double elevM, long year) {
         ensureInitialized();
         double baseP = sampleBilinear(precipBaseline, lat, lon);
+
+        // Orographic rain shadow and monsoon continental enhancement
+        // 1. Indian Monsoon & Indochina Monsoon orographic enhancement
+        if (lat >= 8.0 && lat <= 32.0 && lon >= 68.0 && lon <= 110.0) {
+            // Western Ghats & Meghalaya / Cherrapunji convective lifting
+            double dGhats = Math.exp(-(Math.pow(lat - 14.0, 2) / 35.0 + Math.pow(lon - 74.5, 2) / 10.0));
+            double dCherra = Math.exp(-(Math.pow(lat - 25.3, 2) / 12.0 + Math.pow(lon - 91.7, 2) / 18.0));
+            double dIndoGangetic = Math.exp(-(Math.pow(lat - 24.0, 2) / 40.0 + Math.pow(lon - 86.0, 2) / 70.0));
+            baseP += (dGhats * 1800.0) + (dCherra * 3200.0) + (dIndoGangetic * 800.0);
+        }
+        // 2. Central Asian & Tarim Basin rain shadow behind the Tibetan Plateau
+        if (lat >= 35.0 && lat <= 48.0 && lon >= 75.0 && lon <= 105.0) {
+            double dTarim = Math.exp(-(Math.pow(lat - 40.0, 2) / 30.0 + Math.pow(lon - 86.0, 2) / 90.0));
+            baseP *= (1.0 - dTarim * 0.75); // Strong continental desiccation behind Himalayas
+        }
+
         double factorP = computePaleoPrecipitationFactor(lat, lon, elevM, year);
         double deltaP = computePaleoPrecipitationDelta(lat, lon, elevM, year);
-        return Math.clamp(baseP * factorP + deltaP, 0.0, 4000.0);
+        return Math.clamp(baseP * factorP + deltaP, 0.0, 4500.0);
     }
 
     /**
