@@ -98,9 +98,10 @@ public class CliopatriaPolityVectorReader {
                         if (occWeight <= 0.001 && targetYear < 1900L) {
                             img.setRGB(x, y, 0x000000);
                         } else {
-                            // Unclaimed / stateless inhabited frontier -> assign authentic orographic tribal domain
-                            int tribalColor = (tribalBg != null) ? tribalBg.getRGB(x, y) : 0x374151;
-                            img.setRGB(x, y, tribalColor);
+                            // In antiquity and historical eras (<1900 AD), stateless and tribal territories lack Westphalian central sovereignty.
+                            // Render them in a neutral, dignified slate tone (#2D3748) so that authentic sovereign states (Rome, Han, Parthia, etc.) stand out sharply.
+                            int unassignedColor = (targetYear >= 1900L && tribalBg != null) ? tribalBg.getRGB(x, y) : 0x2D3748;
+                            img.setRGB(x, y, unassignedColor);
                         }
                     }
                 }

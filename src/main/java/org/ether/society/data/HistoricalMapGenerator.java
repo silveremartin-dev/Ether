@@ -2784,8 +2784,8 @@ public class HistoricalMapGenerator {
                 } else {
                     int currentRgb = sovImg.getRGB(x, y) & 0xFFFFFF;
                     if (currentRgb == 0x374151 || currentRgb == 0x000000) {
-                        int tribalColor = (tribalBg != null) ? tribalBg.getRGB(x, y) : 0x374151;
-                        sovImg.setRGB(x, y, tribalColor);
+                        int unassignedColor = (year >= 1900L && tribalBg != null) ? tribalBg.getRGB(x, y) : 0x2D3748;
+                        sovImg.setRGB(x, y, unassignedColor);
                     }
                 }
             }
@@ -4959,39 +4959,73 @@ public class HistoricalMapGenerator {
     }
 
     public static BufferedImage rasterizePreciousMetalsMap(String type, Scenario scenario) {
-        if (cachedPreciousMetalsMap != null) return cachedPreciousMetalsMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        // Dedicated authentic metallogeny for Gold, Silver & Platinum (Ancient + Global Giant Reserves)
+        // Dedicated authentic metallogeny for Gold, Silver & Platinum (Ancient Mines + Global Giant Metallogenic Provinces)
         double[][] majorPrecious = {
-            // Authentic Ancient Historical Gold & Silver Mines (Antiquity & Medieval)
-            {-6.77, 42.46, 28, 2.5},  // Las Médulas (Hispania / Rome - World's Largest Ancient Gold Mine)
-            {-6.56, 37.69, 26, 2.4},  // Rio Tinto (Hispania / Rome - Silver & Gold)
-            {24.06, 37.71, 24, 2.3},  // Laurion (Attica / Greece - Silver of Classical Athens)
-            {23.13, 46.30, 26, 2.4},  // Roșia Montană / Dacia (Roman Imperial Gold Mines)
-            {33.50, 22.00, 28, 2.4},  // Nubia / Wadi Allaqi (Pharaonic & Ptolemaic Gold)
-            {67.50, 39.50, 26, 2.3},  // Bactria / Zeravshan Valley Gold (Sogdia / Silk Road)
-            {78.27, 12.96, 25, 2.2},  // Kolar Gold Fields (India / Maurya Empire)
-            {85.00, 50.00, 28, 2.3},  // Altai Mountains Gold Placers (Scythian Gold)
-            {-76.60, 5.70, 26, 2.2},   // Chocó / Calima (Colombia - Pre-Columbian Gold)
-            {-70.20, -14.20, 26, 2.3}, // Carabaya / Lake Titicaca (Peru - Inca Gold)
-            {138.30, 38.00, 24, 2.2}, // Sado Island Gold Mine (Japan)
+            // --- 1. Roman Empire, Hellenistic & Mediterranean Ancient Districts (Au, Ag, PGE) ---
+            {-6.77, 42.46, 4.5, 4.0},   // Las Médulas (León, Hispania - World's Largest Roman Hydraulic Gold Mine)
+            {-6.56, 37.69, 4.2, 3.8},   // Rio Tinto / Tharsis (Baetica / Huelva - Roman Silver & Gold Smelting)
+            {-4.84, 38.77, 4.0, 3.4},   // Almadén / Sierra Morena (Hispania - Roman Cinnabar, Silver & Gold)
+            {-8.10, 42.15, 3.8, 3.0},   // Castromao / Galicia Roman Gold Placers
+            {-6.60, 40.20, 3.8, 3.0},   // Sierra de Gata / Tagus Auriferous Alluvium
+            {24.06, 37.71, 4.5, 4.0},   // Laurion (Attica, Greece - Classical Athenian Silver Mines / Owl Tetradrachms)
+            {24.20, 40.90, 4.2, 3.6},   // Mount Pangaeon / Philippi (Macedonian Gold of Philip II & Alexander)
+            {23.13, 46.30, 4.5, 4.0},   // Roșia Montană / Alburnus Major (Dacia / Apuseni Mountains - Roman Imperial Gold)
+            {21.43, 42.62, 4.0, 3.2},   // Novo Brdo / Trepča (Balkans Silver & Gold)
+            {22.18, 42.08, 3.8, 3.0},   // Kratovo / Osogovo (Thracian/Roman Gold)
+            {24.70, 36.97, 3.2, 2.8},   // Siphnos (Cyclades Archaic Gold & Silver)
+            {8.03, 45.55, 4.0, 3.2},    // Victimulae / Bessa (Piedmont, Italy - Roman Gold Placers)
+            {7.30, 45.74, 3.8, 3.0},    // Val d'Aosta Roman Gold Veins
 
-            // Giant Global Metallogenic Provinces
-            {27.0, -26.5, 45, 2.8},   // Witwatersrand (South Africa - Giant Conglomerate Gold)
-            {29.0, -24.5, 42, 2.6},   // Bushveld Complex Platinum (South Africa)
-            {-116.0, 40.8, 38, 2.5},  // Carlin Trend Nevada (USA - Epithermal Gold)
-            {-65.7, -19.6, 42, 2.7},  // Potosí Cerro Rico (Bolivia - Giant Silver Mountain)
-            {121.5, -30.7, 36, 2.4},  // Kalgoorlie Golden Mile (Australia)
-            {64.6, 41.5, 38, 2.5},    // Muruntau (Uzbekistan - World's Largest Open-Pit Gold)
-            {88.2, 69.3, 40, 2.6},    // Norilsk-Talnakh PGMs (Russia)
-            {-81.0, 46.5, 35, 2.3},   // Sudbury Basin (Canada - PGMs/Au)
-            {-78.5, -7.0, 36, 2.4},   // Yanacocha (Peru - Epithermal Gold)
-            {137.1, -4.0, 38, 2.5}    // Grasberg (Indonesia - Porphyry Au/Cu)
+            // --- 2. Egypt, Nubia, Arabia & Near East (Pharaonic, Ptolemaic, Lydian & Persian) ---
+            {33.50, 22.00, 4.5, 3.8},   // Wadi Allaqi / Nubian Gold Belt (Pharaonic & Ptolemaic Gold / Nub means Gold)
+            {33.58, 25.99, 4.2, 3.5},   // Wadi Hammamat / Coptos (Gold Road of Pharaohs)
+            {34.80, 24.95, 4.2, 3.5},   // Sukari / Eastern Desert Gold (Egypt)
+            {40.87, 23.50, 4.5, 3.6},   // Mahd adh Dhahab (Cradle of Gold, Hejaz, Arabia - Ancient Gold Mine)
+            {28.04, 38.49, 4.2, 3.8},   // Sardis / Pactolus River (Lydia Electrum - Birth of Coinage)
+            {42.60, 42.25, 4.0, 3.4},   // Colchis / Svaneti Gold Placers (Georgia - Golden Fleece)
+            {44.38, 41.38, 3.8, 3.2},   // Sakdrisi / Bolnisi (Georgia - World's Oldest Known Gold Mine)
+            {67.50, 39.50, 4.5, 3.6},   // Zeravshan Valley / Sogdia (Bactrian & Silk Road Gold)
+
+            // --- 3. India, Central Asia & East Asia ---
+            {78.27, 12.96, 4.5, 3.8},   // Kolar Gold Fields (Karnataka, India - Maurya / Satavahana Gold)
+            {76.65, 16.20, 4.0, 3.2},   // Hutti Gold Mines (Raichur, India)
+            {85.00, 50.00, 4.5, 3.6},   // Altai Mountains Auriferous Placers (Scythian Nomadic Gold)
+            {120.40, 37.36, 4.5, 3.8},  // Zhaoyuan / Jiaodong Peninsula (Shandong, China - China's Gold Capital)
+            {117.81, 30.93, 4.2, 3.4},  // Tongling / Yangtze Copper-Gold Belt (Han Dynasty)
+            {112.50, 23.00, 4.0, 3.2},  // Lingnan / Pearl River Gold Placers (Southern China)
+            {138.30, 38.00, 4.0, 3.2},  // Sado Island Gold Mine (Japan)
+
+            // --- 4. Sub-Saharan Africa ---
+            {-11.50, 13.50, 4.8, 3.6},  // Bambouk / Falémé Goldfields (West Africa - Ancient Trans-Saharan Gold)
+            {-9.50, 11.50, 4.8, 3.6},   // Bure Goldfields (Upper Niger River)
+            {-1.67, 6.20, 4.8, 3.8},    // Ashanti Gold Belt / Obuasi (Ghana - Gold Coast)
+            {30.00, -20.00, 4.5, 3.4},  // Great Zimbabwe / Shona Gold Belt
+
+            // --- 5. Americas (Pre-Columbian & Historic Mining Districts) ---
+            {-76.60, 5.70, 4.8, 3.8},   // Chocó & Calima (Colombia - Pre-Columbian Gold & Platinum Placers)
+            {-79.50, -6.70, 4.5, 3.5},  // Moche / Lambayeque Valley (Peru - Ancient Sican/Moche Gold)
+            {-70.20, -14.20, 4.5, 3.6}, // Carabaya & Lake Titicaca Gold Belt (Inca Coricancha Gold)
+            {-65.75, -19.58, 5.5, 4.2}, // Cerro Rico / Potosí (Bolivia - Giant Silver Mountain)
+            {-102.58, 22.77, 5.0, 3.8}, // Zacatecas / Guanajuato Silver Belt (Mexico)
+
+            // --- 6. Giant Global Metallogenic Provinces (In-situ Crustal Endowments) ---
+            {27.0, -26.5, 6.0, 4.5},    // Witwatersrand Basin (South Africa - Giant Conglomerate Au)
+            {29.0, -24.5, 5.5, 4.2},    // Bushveld Complex Platinum Group Elements (South Africa)
+            {64.6, 41.5, 5.5, 4.2},     // Muruntau (Uzbekistan - World's Largest Open-Pit Gold Deposit)
+            {-116.0, 40.8, 5.0, 4.0},   // Carlin Trend (Nevada, USA - Giant Epithermal Au)
+            {121.5, -30.7, 5.0, 4.0},   // Kalgoorlie Golden Mile (Western Australia)
+            {150.8, 62.5, 5.5, 4.0},    // Kolyma / Magadan Gold Belt (Russia)
+            {88.2, 69.3, 5.5, 4.2},     // Norilsk-Talnakh PGMs & Au (Siberia, Russia)
+            {-81.0, 46.5, 4.8, 3.6},    // Sudbury Basin (Ontario, Canada - PGMs/Au)
+            {-78.5, -7.0, 5.0, 3.8},    // Yanacocha (Cajamarca, Peru - Epithermal Au)
+            {137.1, -4.0, 5.2, 4.0},    // Grasberg (Papua, Indonesia - Supergiant Au/Cu)
+            {116.36, -32.8, 4.8, 3.6}   // Boddington (Western Australia)
         };
         var list = new java.util.ArrayList<double[]>();
         for (double[] p : majorPrecious) list.add(p);
-        rasterizeSpotListToAlpha(img, list, Color.WHITE, 6.0);
+        rasterizeSpotListToAlpha(img, list, Color.WHITE, 4.5);
         cachedPreciousMetalsMap = img;
         return img;
     }
@@ -5116,52 +5150,72 @@ public class HistoricalMapGenerator {
     }
 
     public static BufferedImage rasterizeAquiferMap(String type, Scenario scenario) {
-        if (cachedAquiferMap != null) return cachedAquiferMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
 
         // Authentic UNESCO WHYMAP 2022 Regional Sedimentary Basin Groundwater Formations
-        // {centerLon, centerLat, semiLon, semiLat, maxLuminance}
+        // {centerLon, centerLat, semiLon, semiLat, angleDeg, maxLuminance}
         double[][] sedimentaryAquiferBasins = {
             // Nubian Sandstone Aquifer System (NSAS - Egypt, Libya, Chad, Sudan: 2.2M km²)
-            {25.0, 22.0, 10.0, 8.5, 230.0},
+            {25.0, 22.0, 11.5, 9.0, 15.0, 240.0},
             // Ogallala / High Plains Aquifer (US Midwest: 450,000 km²)
-            {-100.5, 38.0, 4.5, 6.0, 215.0},
+            {-101.0, 38.0, 4.8, 6.5, -10.0, 230.0},
             // Guaraní Aquifer System (Paraná Basin - Brazil, Paraguay, Argentina, Uruguay: 1.2M km²)
-            {-54.0, -25.0, 7.5, 9.0, 225.0},
+            {-54.0, -25.0, 8.0, 10.0, 25.0, 235.0},
             // Great Artesian Basin (GAB - Eastern/Central Australia: 1.7M km²)
-            {139.0, -25.5, 9.0, 8.5, 230.0},
+            {140.0, -25.5, 9.5, 9.0, -15.0, 240.0},
             // Northwest Sahara Aquifer System (NWSAS / SASS - Algeria, Tunisia, Libya: 1.0M km²)
-            {6.0, 31.0, 8.0, 4.5, 210.0},
-            // Indo-Gangetic Alluvial Aquifer (Indus, Ganges, Brahmaputra Foreland Basin)
-            {78.0, 27.5, 12.0, 3.5, 220.0},
+            {6.0, 31.0, 8.5, 5.0, 10.0, 225.0},
+            // Indo-Gangetic Alluvial Foreland Basin (Indus, Ganges, Brahmaputra)
+            {79.0, 27.0, 14.0, 4.0, -20.0, 235.0},
             // North China Plain Cenozoic Aquifer (Huang-Huai-Hai Plain)
-            {116.5, 37.0, 4.5, 4.0, 210.0},
-            // West Siberian Artesian Basin (Vast Mesozoic-Cenozoic Sedimentary Basin)
-            {72.0, 59.0, 12.0, 7.0, 215.0},
+            {116.5, 36.5, 5.0, 4.5, 30.0, 225.0},
+            // Songliao Sedimentary Basin (Northeast China)
+            {124.5, 45.0, 4.5, 5.0, 15.0, 210.0},
+            // West Siberian Artesian Basin (Vast Mesozoic-Cenozoic Sedimentary Basin: 3.0M km²)
+            {72.0, 59.0, 14.0, 8.5, 0.0, 230.0},
             // Amazon Sedimentary Basin (Alter do Chão / Solimões Alluvial Trough)
-            {-62.0, -3.0, 12.0, 5.0, 235.0},
+            {-62.0, -3.5, 14.0, 5.5, -5.0, 245.0},
             // Congo Sedimentary Basin (Cuvette Centrale)
-            {21.5, -0.5, 6.5, 6.0, 215.0},
+            {21.5, -0.5, 7.5, 6.8, 0.0, 230.0},
             // Paris & Aquitaine Mesozoic Synclines (Western Europe)
-            {2.0, 47.5, 4.5, 3.5, 185.0},
+            {2.0, 47.5, 5.0, 4.0, 45.0, 205.0},
             // Canning Basin Sedimentary Aquifer (Western Australia)
-            {124.0, -19.0, 5.5, 4.0, 190.0},
+            {124.0, -19.0, 6.0, 4.5, -15.0, 210.0},
             // Tarim Basin Endorheic Aquifer (Taklamakan Basin)
-            {82.5, 39.0, 7.0, 3.0, 195.0},
+            {82.5, 39.0, 7.5, 3.5, 0.0, 215.0},
             // California Central Valley Forearc Alluvium
-            {-119.8, 36.8, 1.8, 4.0, 180.0},
+            {-119.8, 36.8, 2.0, 4.5, -35.0, 205.0},
             // Arabian Sedimentary Formations (Wajid, Wasia-Biyadh, Rub' al Khali)
-            {47.0, 23.5, 7.5, 6.5, 205.0},
+            {47.0, 23.5, 8.5, 7.0, 35.0, 220.0},
             // Chad Basin Continental Terminal
-            {16.0, 14.0, 6.5, 5.0, 200.0},
+            {16.0, 14.0, 7.5, 5.5, 0.0, 215.0},
             // Kalahari & Karoo Sandstone Basins (Southern Africa)
-            {22.5, -23.0, 6.0, 5.5, 195.0},
+            {22.5, -23.0, 7.0, 6.0, 15.0, 210.0},
             // Mississippi Embayment / Gulf Coastal Plain Aquifer
-            {-90.0, 32.5, 5.5, 4.5, 200.0},
+            {-90.0, 32.5, 6.0, 5.0, 25.0, 220.0},
             // Baltic & North German Sedimentary Basin
-            {16.0, 53.5, 7.0, 3.0, 180.0}
+            {16.0, 53.5, 8.0, 3.5, 10.0, 200.0},
+            // Pannonian Basin (Danube / Carpathian Foredeep)
+            {19.5, 46.5, 4.0, 3.0, 0.0, 195.0},
+            // Dzungarian Basin (Northwest China)
+            {86.0, 45.0, 4.5, 3.0, 15.0, 195.0}
+        };
+
+        // Major Continental Alluvial Floodplains (Groundwater recharge corridors)
+        double[][] majorAlluvials = {
+            {31.5, 26.0, 1.2, 5.5},    // Nile Valley Alluvium
+            {-90.5, 35.0, 2.0, 7.0},   // Mississippi Alluvial Valley
+            {-60.0, -3.0, 15.0, 3.0},  // Amazon River Trough
+            {-59.0, -32.0, 3.0, 6.0},  // Paraná-Río de la Plata Basin
+            {72.0, 29.0, 3.0, 6.0},    // Indus River Floodplain
+            {85.0, 25.5, 8.0, 2.5},    // Ganges-Brahmaputra Floodplain
+            {115.0, 32.0, 6.0, 3.0},   // Yangtze Lower Plain
+            {116.0, 36.0, 5.0, 3.0},   // Yellow River Alluvial Fan
+            {20.0, 45.0, 6.0, 2.5},    // Danube Plain Alluvium
+            {44.0, 33.0, 4.0, 4.0},    // Tigris-Euphrates Mesopotamia
+            {143.0, -34.0, 4.0, 3.0}   // Murray-Darling Basin
         };
 
         for (int y = 0; y < height; y++) {
@@ -5178,26 +5232,53 @@ public class HistoricalMapGenerator {
                     continue;
                 }
 
-                // Elevation screening: crystalline mountain crests (>1200m) have poor sedimentary storage
+                // Elevation screening: Lowland sedimentary plains have thick alluvial storage, high crests have poor retention
                 double elevM = (mask != null) ? (land / 255.0) * 8848.0 : 200.0;
-                double orographicCapacityFactor = (elevM > 1200.0) ? Math.max(0.1, 1.0 - (elevM - 1200.0) / 2000.0) : 1.0;
+                double orographicCapacityFactor;
+                if (elevM <= 400.0) {
+                    orographicCapacityFactor = 1.0;
+                } else if (elevM <= 1200.0) {
+                    orographicCapacityFactor = 1.0 - (elevM - 400.0) / 1000.0 * 0.60;
+                } else {
+                    orographicCapacityFactor = Math.max(0.12, 0.40 - (elevM - 1200.0) / 2500.0 * 0.30);
+                }
 
-                // Sum contribution across bounded sedimentary basin ellipses
-                double aquiferYield = 15.0; // Baseline continental minor groundwater
+                // Continental baseline groundwater for all sedimentary lowlands
+                double aquiferYield = 45.0 * orographicCapacityFactor;
+
+                // Alluvial floodplain recharge corridors
+                for (double[] al : majorAlluvials) {
+                    double dLon = (lon - al[0]) / al[2];
+                    double dLat = (lat - al[1]) / al[3];
+                    double d2 = dLon * dLon + dLat * dLat;
+                    if (d2 < 1.0) {
+                        double boost = (1.0 - d2) * 55.0 * orographicCapacityFactor;
+                        aquiferYield += boost;
+                    }
+                }
+
+                // Sum contribution across bounded sedimentary basin formations (anisotropic rotated ellipses)
                 for (double[] b : sedimentaryAquiferBasins) {
-                    double dLon = (lon - b[0]) / b[2];
-                    double dLat = (lat - b[1]) / b[3];
-                    double distNormSq = dLon * dLon + dLat * dLat;
-                    if (distNormSq < 2.25) { // 1.5 radius cutoff for crisp geological basin boundary
-                        double basinProfile = Math.max(0.0, 1.0 - (distNormSq / 2.25));
-                        double yield = b[4] * Math.pow(basinProfile, 0.65);
+                    double rad = Math.toRadians(b[4]);
+                    double cosA = Math.cos(rad);
+                    double sinA = Math.sin(rad);
+                    double dx = lon - b[0];
+                    double dy = lat - b[1];
+                    double rotX = (dx * cosA + dy * sinA) / b[2];
+                    double rotY = (-dx * sinA + dy * cosA) / b[3];
+                    double distNormSq = rotX * rotX + rotY * rotY;
+
+                    if (distNormSq < 1.0) {
+                        // Structural basin profile with realistic parabolic sediment compaction gradient
+                        double basinProfile = 1.0 - distNormSq;
+                        double yield = b[5] * Math.pow(basinProfile, 0.45) * orographicCapacityFactor;
                         aquiferYield = Math.max(aquiferYield, yield);
                     }
                 }
 
-                // Micro-lithological sandstone/alluvium texture (15% pseudo-random stratigraphic grain)
-                double stratNoise = 0.90 + 0.20 * (Math.sin(lon * 4.5) * Math.cos(lat * 4.5) * 0.5 + 0.5);
-                int finalLuminance = Math.clamp((int) Math.round(aquiferYield * orographicCapacityFactor * stratNoise), 0, 255);
+                // Micro-lithological sandstone/alluvium texture (12% realistic stratigraphic bed variation)
+                double stratNoise = 0.92 + 0.16 * (Math.sin(lon * 5.0 + lat * 2.0) * Math.cos(lat * 5.0 - lon * 2.0) * 0.5 + 0.5);
+                int finalLuminance = Math.clamp((int) Math.round(aquiferYield * stratNoise), 0, 255);
                 img.setRGB(x, y, (finalLuminance << 16) | (finalLuminance << 8) | finalLuminance);
             }
         }
