@@ -233,36 +233,36 @@ public class CliopatriaPolityVectorReader {
 
         // 2. High-precision sub-regional and frontier linguistic centers (lon, lat, hexColor, sigma)
         double[][] linguisticCenters = {
-            // --- Western & Central Europe: Romance Sub-branches ---
-            {2.35, 48.86, 0xEC4899, 4.5},    // French / Langue d'Oïl (Paris / Île-de-France) (#EC4899)
-            {3.06, 50.63, 0xEC4899, 3.0},    // Picard / Northern French (Lille) (#EC4899)
-            {-0.58, 44.84, 0xF43F5E, 4.0},   // Occitan / Gascon (Aquitaine / Bordeaux) (#F43F5E)
-            {1.44, 43.60, 0xF43F5E, 4.0},    // Occitan / Languedoc (Toulouse) (#F43F5E)
-            {5.37, 43.30, 0xF43F5E, 3.5},    // Provençal (Marseille / Nice) (#F43F5E)
-            {4.83, 45.76, 0xFB7185, 3.0},    // Franco-Provençal / Arpitan (Lyon) (#FB7185)
-            {-2.75, 48.10, 0x10B981, 2.5},   // Breton / Celtic (Brittany) (#10B981 Celtic Emerald)
-            {-3.70, 40.42, 0xE11D48, 4.5},   // Castilian Spanish (Madrid / Castile) (#E11D48)
-            {-5.99, 37.38, 0xE11D48, 4.0},   // Andalusian Spanish (Seville) (#E11D48)
-            {2.17, 41.38, 0xBE185D, 3.2},    // Catalan (Barcelona / Catalonia) (#BE185D)
-            {-0.38, 39.47, 0xBE185D, 3.0},   // Valencian / Balearic Catalan (#BE185D)
-            {-2.93, 43.26, 0xF59E0B, 2.0},   // Basque / Euskara (Isolate) (#F59E0B Amber)
-            {-9.14, 38.72, 0x9D174D, 3.5},   // Portuguese (Lisbon / Southern Portugal) (#9D174D)
-            {-8.61, 41.15, 0x9D174D, 3.5},   // Galician / Northern Portuguese (Porto / Santiago) (#9D174D)
-            {9.19, 45.46, 0xFB7185, 3.5},    // Gallo-Italic (Lombardy / Piedmont / Milan) (#FB7185)
-            {12.33, 45.44, 0xFB7185, 3.0},   // Venetian (Venice) (#FB7185)
-            {11.25, 43.77, 0xE879F9, 3.0},   // Tuscan Italian (Florence) (#E879F9)
-            {12.49, 41.90, 0xE879F9, 3.5},   // Roman / Central Italian (Rome) (#E879F9)
-            {14.26, 40.85, 0xC084FC, 3.5},   // Neapolitan / Southern Italian (Naples) (#C084FC)
-            {14.01, 37.59, 0xC084FC, 3.0},   // Sicilian (Palermo) (#C084FC)
-            {26.10, 44.43, 0xD946EF, 4.0},   // Romanian (Wallachia / Moldavia / Bucharest) (#D946EF)
-
+            // --- Western & Central Europe: Romance Sub-branches (or Celtic/Iberian in Antiquity) ---
+            {2.35, 48.86, (targetYear < 500L ? 0x10B981 : 0xEC4899), 4.5},    // French / Gaulish (#10B981 Celtic in Antiquity / #EC4899 French in Modern)
+            {3.06, 50.63, (targetYear < 500L ? 0x10B981 : 0xEC4899), 3.0},    // Picard / Belgic Gaulish
+            {-0.58, 44.84, (targetYear < 500L ? 0xF59E0B : 0xF43F5E), 4.0},   // Aquitanian / Proto-Basque (#F59E0B) in Antiquity / Gascon in Modern
+            {1.44, 43.60, (targetYear < 500L ? 0x10B981 : 0xF43F5E), 4.0},    // Occitan / Volcae Gaulish
+            {5.37, 43.30, (targetYear < 500L ? 0xE879F9 : 0xF43F5E), 3.5},    // Massalia (Greco-Roman Imperial Latin #E879F9) / Provençal in Modern
+            {4.83, 45.76, (targetYear < 500L ? 0xE879F9 : 0xFB7185), 3.0},    // Lugdunum / Arpitan (Roman Imperial Capital of Gaul #E879F9)
+            {-2.75, 48.10, 0x10B981, 2.5},   // Breton / Armorican Celtic (#10B981 Celtic Emerald)
+            {-3.70, 40.42, (targetYear < 500L ? 0x059669 : 0xE11D48), 4.5},   // Celtiberian (#059669) in Antiquity / Castilian Spanish in Modern
+            {-5.99, 37.38, (targetYear < 500L ? 0xE879F9 : 0xE11D48), 4.0},   // Baetica Roman Latin (#E879F9) in Antiquity / Andalusian Spanish in Modern
+            {2.17, 41.38, (targetYear < 500L ? 0xD97706 : 0xBE185D), 3.2},    // Iberian (#D97706) in Antiquity / Catalan in Modern
+            {-0.38, 39.47, (targetYear < 500L ? 0xD97706 : 0xBE185D), 3.0},   // Edetanian Iberian (#D97706) / Valencian in Modern
+            {-2.93, 43.26, 0xF59E0B, 2.0},   // Basque / Euskara / Vasconic (Isolate) (#F59E0B Amber)
+            {-9.14, 38.72, (targetYear < 500L ? 0x059669 : 0x9D174D), 3.5},   // Lusitanian (#059669) / Portuguese in Modern
+            {-8.61, 41.15, (targetYear < 500L ? 0x059669 : 0x9D174D), 3.5},   // Gallaecian Celtic (#059669) / Galician in Modern
+            {9.19, 45.46, (targetYear < 500L ? 0xE879F9 : 0xFB7185), 3.5},    // Cisalpine Gaul / Roman Latin (#E879F9) / Lombard in Modern
+            {12.33, 45.44, (targetYear < 500L ? 0xE879F9 : 0xFB7185), 3.0},   // Venetic / Roman Latin (#E879F9) / Venetian in Modern
+            {11.25, 43.77, (targetYear < 500L ? 0xE879F9 : 0xE879F9), 3.0},   // Etruscan / Roman Latin (Florence) (#E879F9)
+            {12.49, 41.90, 0xE879F9, 3.5},   // Roman Classical Latin (Rome) (#E879F9)
+            {14.26, 40.85, 0xE879F9, 3.5},   // Roman / Oscan / Magna Graecia (Naples) (#E879F9)
+            {14.01, 37.59, 0xE879F9, 3.0},   // Sicilian (Palermo) (#E879F9)
+            {26.10, 44.43, (targetYear < 500L ? 0x0284C7 : 0xD946EF), 4.0},   // Dacian / Thracian (#0284C7) in Antiquity / Romanian in Modern
+ 
             // --- Germanic Phyla ---
-            {-0.13, 51.51, 0x2563EB, 4.0},   // English (London / Southern England) (#2563EB Anglic Blue)
-            {-1.54, 53.80, 0x2563EB, 3.5},   // English (Midlands / Northern England) (#2563EB)
-            {-3.18, 55.95, 0x2563EB, 3.0},   // Lowland Scots / English (#2563EB)
-            {-4.25, 57.47, 0x059669, 2.8},   // Scottish Gaelic / Celtic (#059669 Goidelic Emerald)
-            {-7.50, 53.40, 0x059669, 3.0},   // Irish Gaelic / Celtic (#059669)
-            {-3.90, 52.41, 0x10B981, 2.2},   // Welsh / Celtic (#10B981 Brythonic)
+            {-0.13, 51.51, (targetYear < 500L ? 0x10B981 : 0x2563EB), 4.0},   // Common Brittonic / Celtic (#10B981) in Antiquity / English in Modern
+            {-1.54, 53.80, (targetYear < 500L ? 0x10B981 : 0x2563EB), 3.5},   // Brigantian Celtic (#10B981)
+            {-3.18, 55.95, (targetYear < 500L ? 0x10B981 : 0x2563EB), 3.0},   // Votadini Celtic (#10B981)
+            {-4.25, 57.47, (targetYear < 500L ? 0x059669 : 0x059669), 2.8},   // Pictish / Scottish Gaelic (#059669)
+            {-7.50, 53.40, 0x059669, 3.0},   // Primitive Irish / Goidelic Celtic (#059669)
+            {-3.90, 52.41, 0x10B981, 2.2},   // Welsh / Brythonic (#10B981)
             {4.90, 52.37, 0x60A5FA, 3.0},    // Dutch / Netherlandic (Amsterdam) (#60A5FA Low German/Dutch)
             {3.72, 51.05, 0x60A5FA, 2.5},    // Flemish (Ghent / Antwerp) (#60A5FA)
             {9.99, 53.55, 0x60A5FA, 3.5},    // Low German / Plattdüütsch (Hamburg / Bremen) (#60A5FA)
@@ -399,22 +399,26 @@ public class CliopatriaPolityVectorReader {
             {-172.0, -14.0, 0x06B6D4, 3.0},  // Samoan (#06B6D4)
             {-149.5, -17.5, 0x06B6D4, 3.0},  // Tahitian (#06B6D4)
 
-            // --- Sub-Saharan Africa ---
-            {5.23, 13.06, 0x22C55E, 4.0},    // Hausa (Sokoto / Northern Nigeria) (#22C55E Niger-Congo Green)
-            {3.50, 7.00, 0x22C55E, 3.5},     // Yoruba (Oyo / Gulf of Guinea) (#22C55E)
-            {7.00, 5.50, 0x22C55E, 3.0},     // Igbo (#22C55E)
-            {-1.50, 6.50, 0x22C55E, 3.0},    // Akan / Ashanti (Ghana) (#22C55E)
-            {-8.00, 12.0, 0x22C55E, 4.5},    // Manding / Bambara (Mali / Guinea) (#22C55E)
-            {-16.0, 14.5, 0x22C55E, 3.5},    // Wolof (Senegal) (#22C55E)
-            {12.00, 12.0, 0x22C55E, 4.0},    // Fulani / Fula (#22C55E)
-            {14.00, 13.0, 0xC0392B, 3.5},    // Kanuri (Bornu) (#C0392B Nilo-Saharan Brick Red)
-            {25.00, 13.0, 0xC0392B, 4.0},    // Fur (Darfur) (#C0392B)
-            {32.00, 10.0, 0xC0392B, 4.0},    // Dinka / Nuer / Nilotic (South Sudan) (#C0392B)
-            {38.74, 9.03, 0x166534, 3.5},    // Amharic (Ethiopian Highlands) (#166534 Semitic Green)
-            {39.00, 7.00, 0x84CC16, 4.0},    // Oromo (Cushitic) (#84CC16 Lime)
-            {45.00, 5.00, 0x84CC16, 5.0},    // Somali (Horn of Africa) (#84CC16)
-            {15.30, -4.3, 0x22C55E, 5.0},    // Kongo / Lingala (Congo Basin) (#22C55E Bantu)
-            {36.82, -1.2, 0x22C55E, 4.0},    // Kikuyu / Swahili (East Africa) (#22C55E)
+            // --- Sub-Saharan Africa: Niger-Congo, Nilo-Saharan, Cushitic, Ubangian & Khoisan Mosaic ---
+            {-8.00, 12.0, 0x16A34A, 4.0},    // Manding / Bambara (Upper Niger Mande #16A34A)
+            {-1.00, 10.0, 0x059669, 3.5},    // Gur / Voltaic (Burkina / Northern Ghana #059669)
+            {-1.50, 6.50, 0x15803D, 3.0},    // Akan / Kwa (Coastal Gold Coast #15803D)
+            {3.50, 7.00, 0x15803D, 3.5},     // Yoruba / Kwa (Lower Niger / Benin #15803D)
+            {7.00, 5.50, 0x16A34A, 3.0},     // Igbo (Niger Delta #16A34A)
+            {5.23, 13.06, 0x22C55E, 3.5},    // Hausa / Chadic / West African (#22C55E)
+            {-16.0, 14.5, 0x22C55E, 3.5},    // Wolof / Senegambian Atlantic (#22C55E)
+            {0.00, 15.0, 0xC0392B, 3.5},     // Songhay (Middle Niger / Sahel #C0392B Nilo-Saharan)
+            {14.00, 13.0, 0xC0392B, 4.0},    // Kanuri / Lake Chad Basin (#C0392B Nilo-Saharan)
+            {25.00, 13.0, 0xC0392B, 4.0},    // Fur / Darfur (#C0392B)
+            {32.00, 8.00, 0x0284C7, 4.0},    // Eastern Sudanic / Nilotic (Upper Nile / South Sudan #0284C7)
+            {20.00, 5.00, 0x0D9488, 4.0},    // Ubangian / Central Sudanic (Oubangui-Chari / CAR #0D9488)
+            {38.74, 9.03, 0x166534, 3.5},    // Ge'ez / Semitic Ethiopian Highlands (#166534)
+            {39.00, 7.00, 0x84CC16, 4.0},    // Cushitic (Horn of Africa / Oromo / Sidama #84CC16 Lime)
+            {45.00, 5.00, 0x84CC16, 5.0},    // Somali / Lowland Cushitic (#84CC16)
+            {35.50, -4.5, 0xEAB308, 3.0},    // Rift Valley Foragers (Hadza / Sandawe Click Isolates #EAB308)
+            {11.00, 4.50, 0x22C55E, 3.5},    // Grassfields / Proto-Bantu Cradle (Cameroon Highlands #22C55E)
+            {15.30, -4.3, (targetYear < 500L ? 0x0D9488 : 0x22C55E), 4.5}, // Congo Basin (Central Sudanic/Pygmy in Antiquity -> Kongo Bantu)
+            {36.82, -1.2, (targetYear < 500L ? 0x84CC16 : 0x22C55E), 4.0}, // East Africa (Southern Cushitic in Antiquity -> Swahili/Bantu)
             // Historical Bantu vs Khoisan demarcation based on epoch:
             (targetYear < 500L ? new double[]{28.00, -28.0, 0xFACC15, 6.0} : new double[]{31.00, -29.0, 0x22C55E, 4.0}), // Southern Africa (Khoisan #FACC15 in Antiquity -> Nguni/Zulu in Medieval/Modern)
             (targetYear < 500L ? new double[]{24.00, -32.0, 0xFACC15, 6.0} : new double[]{26.00, -26.0, 0x22C55E, 4.0}), // Highveld / Cape (Khoisan in Antiquity -> Sotho/Tswana)
@@ -584,9 +588,17 @@ public class CliopatriaPolityVectorReader {
             {76.27, 9.93, 0xB45309, 3.0},    // Kerala / Malabar Marumakkathayam Matrilineal Joint Household (#B45309)
 
             // --- Central Asia & Steppe: Nomadic Pastoral Clan Federations (#D97706) ---
-            {70.00, 48.00, 0xD97706, 8.0},   // Kazakh Zhuz Steppe Clans (#D97706)
-            {106.0, 47.00, 0xD97706, 7.0},   // Mongol Nomadic Lineages (Otog / Aimag) (#D97706)
-            {69.00, 41.00, 0x10B981, 4.5},   // Turkestani Oasis Clans (Mahalla) (#10B981)
+            {45.00, 48.00, 0xD97706, 4.5},   // Pontic-Caspian Steppe Nomadic Lineages (Scythians / Sarmatians) (#D97706)
+            {70.00, 48.00, 0xD97706, 5.0},   // Kazakh Steppe Zhuz Clans (Saka / Wusun) (#D97706)
+            {106.0, 47.00, 0xD97706, 5.0},   // Mongolian Steppe Pastoral Confederations (Xiongnu / Otog) (#D97706)
+            {69.00, 41.00, 0x10B981, 4.0},   // Turkestani / Sogdian Oasis Clan Networks (#10B981)
+
+            // --- Boreal Eurasia & Siberian Forager / Reindeer-Herder Kinship Networks ---
+            {55.00, 58.00, 0xA855F7, 4.0},   // Uralic / Finno-Ugric Forest Patrilocal Clans (Volga-Ural) (#A855F7)
+            {65.00, 62.00, 0xA855F7, 4.0},   // Ob-Ugric Khanty & Mansi Lineages (#A855F7)
+            {85.00, 66.00, 0x06B6D4, 4.5},   // Samoyedic / Yeniseian Bilateral Reindeer-Herder Bands (Taimyr/Yenisei) (#06B6D4)
+            {115.0, 60.00, 0x10B981, 5.0},   // Tungusic / Evenki Exogamous Hunting Bands (Lena/Amur) (#10B981)
+            {160.0, 64.00, 0x64748B, 5.0},   // Paleosiberian (Yukaghir, Chukchi, Koryak) Forager Composite Bands (#64748B)
 
             // --- Matrilineal Belt: Matrilineal Clan & Avunculocal Household (#F43F5E) ---
             {100.5, -0.50, 0xF43F5E, 3.5},   // Minangkabau Matrilineal Suku & Rumah Gadang (Sumatra) (#F43F5E)

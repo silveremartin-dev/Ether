@@ -397,25 +397,25 @@ public class WorldClimEmpiricalRasterLoader {
         if (lat >= 14.0 && lat <= 32.0 && lon >= -16.0 && lon <= 58.0) {
             double dSahara = Math.exp(-(Math.pow(lat - 23.0, 2) / 60.0 + Math.pow(lon - 20.0, 2) / 500.0));
             double dArabia = Math.exp(-(Math.pow(lat - 22.0, 2) / 45.0 + Math.pow(lon - 48.0, 2) / 100.0));
-            sensibleDesertBoost += (dSahara * 5.5) + (dArabia * 5.0);
+            sensibleDesertBoost += (dSahara * 6.5) + (dArabia * 5.8);
         }
         // Iranian Lut Desert & Thar Desert
         if (lat >= 24.0 && lat <= 36.0 && lon >= 54.0 && lon <= 76.0) {
             double dLut = Math.exp(-(Math.pow(lat - 30.0, 2) / 35.0 + Math.pow(lon - 62.0, 2) / 90.0));
-            sensibleDesertBoost += (dLut * 4.5);
+            sensibleDesertBoost += (dLut * 5.0);
         }
         // Evaporative Canopy Cooling & Cloud Albedo in Dense Tropical Rainforests
         double evaporativeCooling = 0.0;
         if (lat >= -10.0 && lat <= 6.0 && lon >= -78.0 && lon <= -48.0) { // Amazon
             double dAmazon = Math.exp(-(Math.pow(lat - (-2.0), 2) / 45.0 + Math.pow(lon - (-63.0), 2) / 180.0));
-            evaporativeCooling -= (dAmazon * 3.5);
+            evaporativeCooling -= (dAmazon * 4.0);
         }
         if (lat >= -6.0 && lat <= 6.0 && lon >= 10.0 && lon <= 30.0) { // Congo
             double dCongo = Math.exp(-(Math.pow(lat - 0.0, 2) / 40.0 + Math.pow(lon - 20.0, 2) / 90.0));
-            evaporativeCooling -= (dCongo * 3.0);
+            evaporativeCooling -= (dCongo * 3.5);
         }
 
-        return Math.clamp(baseT + deltaT + sensibleDesertBoost + evaporativeCooling, -60.0, 52.0);
+        return Math.clamp(baseT + deltaT + sensibleDesertBoost + evaporativeCooling, -60.0, 55.0);
     }
 
     /**
@@ -425,19 +425,46 @@ public class WorldClimEmpiricalRasterLoader {
         ensureInitialized();
         double baseP = sampleBilinear(precipBaseline, lat, lon);
 
-        // Orographic rain shadow and monsoon continental enhancement
-        // 1. Indian Monsoon & Indochina Monsoon orographic enhancement
-        if (lat >= 8.0 && lat <= 32.0 && lon >= 68.0 && lon <= 110.0) {
-            // Western Ghats & Meghalaya / Cherrapunji convective lifting
+        // 1. Indian & Indochina Monsoon windward orographic lifting (Western Ghats, Meghalaya/Cherrapunji, Assam)
+        if (lat >= 8.0 && lat <= 30.0 && lon >= 68.0 && lon <= 105.0) {
+            // Western Ghats convective marine lifting
             double dGhats = Math.exp(-(Math.pow(lat - 14.0, 2) / 35.0 + Math.pow(lon - 74.5, 2) / 10.0));
-            double dCherra = Math.exp(-(Math.pow(lat - 25.3, 2) / 12.0 + Math.pow(lon - 91.7, 2) / 18.0));
-            double dIndoGangetic = Math.exp(-(Math.pow(lat - 24.0, 2) / 40.0 + Math.pow(lon - 86.0, 2) / 70.0));
-            baseP += (dGhats * 1800.0) + (dCherra * 3200.0) + (dIndoGangetic * 800.0);
+            // Cherrapunji / Meghalaya funneling against Himalayan southern foothills
+            double dCherra = Math.exp(-(Math.pow(lat - 25.3, 2) / 12.0 + Math.pow(lon - 91.7, 2) / 20.0));
+            // Indo-Gangetic floodplain monsoon corridor
+            double dIndoGangetic = Math.exp(-(Math.pow(lat - 24.5, 2) / 35.0 + Math.pow(lon - 85.0, 2) / 60.0));
+            // Suppress monsoon boost if high above the crest on Tibetan Plateau side
+            double slopeAtten = (lat > 28.0 && elevM > 3500.0) ? 0.15 : 1.0;
+            baseP += ((dGhats * 1800.0) + (dCherra * 3200.0) + (dIndoGangetic * 800.0)) * slopeAtten;
         }
-        // 2. Central Asian & Tarim Basin rain shadow behind the Tibetan Plateau
-        if (lat >= 35.0 && lat <= 48.0 && lon >= 75.0 && lon <= 105.0) {
+
+        // 2. High Tibetan Plateau & Central Asian / Tarim Basin extreme alpine rain shadow
+        if (lat >= 28.0 && lat <= 48.0 && lon >= 75.0 && lon <= 105.0) {
+            // Tibetan Plateau alpine rain shadow (leeward of Himalayas)
+            if (elevM > 3200.0 && lat >= 29.0 && lat <= 36.5 && lon >= 78.0 && lon <= 100.0) {
+                baseP *= 0.22; // Extreme high-altitude continental desiccation
+            }
+            // Tarim Basin / Taklamakan dry depression
             double dTarim = Math.exp(-(Math.pow(lat - 40.0, 2) / 30.0 + Math.pow(lon - 86.0, 2) / 90.0));
-            baseP *= (1.0 - dTarim * 0.75); // Strong continental desiccation behind Himalayas
+            baseP *= (1.0 - dTarim * 0.80);
+        }
+
+        // 3. Atacama Desert & Coastal Peru Humboldt rain shadow (blocked by the High Andes)
+        if (lat >= -30.0 && lat <= -14.0 && lon >= -76.0 && lon <= -67.0) {
+            double dAtacama = Math.exp(-(Math.pow(lat - (-22.5), 2) / 40.0 + Math.pow(lon - (-70.0), 2) / 8.0));
+            baseP *= (1.0 - dAtacama * 0.90);
+        }
+
+        // 4. North American Great Basin & Colorado Plateau rain shadow (behind Sierra Nevada & Cascades)
+        if (lat >= 34.0 && lat <= 45.0 && lon >= -121.0 && lon <= -110.0) {
+            double dGreatBasin = Math.exp(-(Math.pow(lat - 39.5, 2) / 30.0 + Math.pow(lon - (-116.0), 2) / 30.0));
+            baseP *= (1.0 - dGreatBasin * 0.70);
+        }
+
+        // 5. Patagonian rain shadow (east of Southern Andes)
+        if (lat >= -52.0 && lat <= -38.0 && lon >= -72.0 && lon <= -64.0) {
+            double dPatagonia = Math.exp(-(Math.pow(lat - (-45.0), 2) / 40.0 + Math.pow(lon - (-68.0), 2) / 20.0));
+            baseP *= (1.0 - dPatagonia * 0.75);
         }
 
         double factorP = computePaleoPrecipitationFactor(lat, lon, elevM, year);

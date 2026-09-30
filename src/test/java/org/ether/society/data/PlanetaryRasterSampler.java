@@ -900,29 +900,11 @@ public class PlanetaryRasterSampler {
             saveMapImage(imgGeothermal, "earth_geothermal.png", "earth", epoch);
         }
 
-        // 10. Freshwater Aquifers & Groundwater Systems
-        BufferedImage imgAquifers = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        List<double[]> aqSpots = EmpiricalGeospatialDatasetIngestion.getEmpiricalAquiferOccurrences();
-        double[][] majorAquifers = {
-            {25.0, 22.0, 75, 2.5 * depletionMultiplier},   // Nubian Sandstone Aquifer
-            {-100.0, 38.0, 58, 2.2 * depletionMultiplier}, // Ogallala Aquifer
-            {-54.0, -25.0, 70, 2.4 * depletionMultiplier}, // Guaraní Aquifer
-            {138.0, -26.0, 75, 2.4 * depletionMultiplier}, // Great Artesian Basin
-            {10.0, 30.0, 65, 2.2 * depletionMultiplier},   // Northern Sahara Aquifer
-            {80.0, 27.0, 65, 2.2 * depletionMultiplier},   // Indo-Gangetic Basin
-            {2.0, 47.0, 48, 1.8 * depletionMultiplier},    // Paris / Aquitaine Basins
-            {-60.0, -3.0, 80, 2.5 * depletionMultiplier},  // Amazon Aquifer System
-            {22.0, -1.0, 70, 2.2 * depletionMultiplier},   // Congo Basin Aquifer
-            {75.0, 60.0, 75, 2.4 * depletionMultiplier},   // West Siberian Basin Aquifer
-            {122.0, -18.0, 58, 2.0 * depletionMultiplier}, // Canning Basin Australia
-            {82.0, 39.0, 52, 1.8 * depletionMultiplier},   // Tarim Basin Aquifer
-            {-48.0, -1.5, 48, 1.8 * depletionMultiplier},  // Marajó Aquifer System
-            {-118.0, 36.0, 42, 1.8 * depletionMultiplier}, // California Central Valley Aquifer
-            {45.0, 25.0, 52, 2.0 * depletionMultiplier}    // Arabian Aquifer System
-        };
-        for (double[] a : majorAquifers) aqSpots.add(a);
-        rasterizeAlphaDensity(imgAquifers, aqSpots, 8.0);
-        saveMapImage(imgAquifers, "earth_aquifers.png", "earth", epoch);
+        // 10. Freshwater Aquifers & Groundwater Systems (UNESCO WHYMAP Sedimentary Basins)
+        BufferedImage imgAquifers = HistoricalMapGenerator.rasterizeAquiferMap("EARTH", null);
+        if (imgAquifers != null) {
+            saveMapImage(imgAquifers, "earth_aquifers.png", "earth", epoch);
+        }
     }
 
     private void generateMoonMaps() {

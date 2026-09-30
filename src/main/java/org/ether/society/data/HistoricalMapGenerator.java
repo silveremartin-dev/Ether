@@ -2835,7 +2835,7 @@ public class HistoricalMapGenerator {
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(8.5, 9.5, 0x1B5E20, 1.5, "Sub-Saharan Ancestral Traditions"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(133.0, -25.0, 0xA04000, 1.6, "Australian Aboriginal Songlines"));
         } else if (year <= 500L) {
-            // Classical Axial Age (Rome, Han, Maurya, Parthia)
+            // Classical Axial Age & Antiquity (Rome, Han, Maurya, Parthia & Indigenous Cosmologies)
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(12.5, 41.9, 0xEA580C, 1.4, "Greco-Roman Civic Polytheism"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(23.7, 37.9, 0xEA580C, 1.2, "Hellenistic Polytheism"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(35.2, 31.8, 0x2563EB, 0.9, "Judaism & Second Temple Cult"));
@@ -2846,11 +2846,22 @@ public class HistoricalMapGenerator {
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(29.9, 31.2, 0x15803D, 1.1, "Kemetic & Greco-Egyptian Serapis"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-2.0, 48.0, 0x4D7C0F, 1.2, "Celtic Druidic Polytheism"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(10.0, 53.0, 0x3B82F6, 1.3, "Germanic & Norse Polytheism"));
-            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(30.0, 50.0, 0x37474F, 1.4, "Slavic & Steppe Tengrism"));
-            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-98.8, 19.7, 0xD97706, 1.3, "Teotihuacan Cosmic Religion"));
-            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-75.0, -14.0, 0xC27803, 1.3, "Andean Moche & Nazca Cults"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(30.0, 52.0, 0x64748B, 1.3, "Slavic Nature Cults"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(70.0, 48.0, 0x0284C7, 1.5, "Steppe Tengrism & Horse Sacrifices"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(106.0, 47.0, 0x0284C7, 1.5, "Xiongnu Celestial Tengrism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(90.0, 60.0, 0x7C3AED, 1.6, "Siberian Reindeer Shamanism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(130.0, 62.0, 0x7C3AED, 1.6, "Tungusic & Paleosiberian Spirit Flights"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-98.8, 19.7, 0xD97706, 1.2, "Teotihuacan Cosmic Pantheon"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-89.6, 17.2, 0xEA580C, 1.2, "Maya Solar & Underworld Cosmovision"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-83.0, 39.0, 0x8B5CF6, 1.3, "Hopewell Earthwork & Mortuary Cult"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-102.0, 44.0, 0x3B82F6, 1.4, "Great Plains Medicine Wheel Shamanism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-125.0, 52.0, 0x0D9488, 1.3, "Pacific Northwest Potlatch & Totemism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-100.0, 64.0, 0x64748B, 1.5, "Arctic Inuit & Dene Shamanism"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-75.0, -14.0, 0xC27803, 1.3, "Andean Paracas, Moche & Nazca Sacred Ceque"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-60.0, -3.0, 0x15803D, 1.5, "Amazonian Master of Animals Shamanism"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(8.5, 9.5, 0x1B5E20, 1.5, "Sub-Saharan Ancestral Systems"));
-            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(133.0, -25.0, 0xA04000, 1.6, "Australian Dreamtime"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(24.0, -28.0, 0xA16207, 1.4, "Khoisan Rock Art & Trance Dance"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(133.0, -25.0, 0xA04000, 1.6, "Australian Dreamtime Songlines"));
         } else if (year <= 1491L) {
             // Medieval Era (Catholicism, Orthodoxy, Islam, Hinduism, Buddhism)
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(12.5, 41.9, 0xEC4899, 1.5, "Roman Catholicism"));
@@ -4842,32 +4853,91 @@ public class HistoricalMapGenerator {
         if (cachedAquiferMap != null) return cachedAquiferMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        // Continuous sedimentary aquifer basins (UNESCO WHYMAP GWR)
-        double[][] majorAquifers = {
-            {26.0, 22.0, 120, 2.2},   // Nubian Sandstone Aquifer System (2.2M km2)
-            {-100.0, 38.0, 90, 1.8},  // Ogallala Aquifer High Plains USA
-            {-54.0, -25.0, 110, 2.0}, // Guaraní Aquifer South America (1.2M km2)
-            {138.0, -26.0, 120, 1.9}, // Great Artesian Basin Australia (1.7M km2)
-            {8.0, 30.0, 100, 1.8},    // Northern Sahara Aquifer System
-            {80.0, 27.0, 95, 2.0},    // Indo-Gangetic Basin Alluvium
-            {2.0, 47.0, 75, 1.6},     // Paris & Aquitaine Basins Europe
-            {-60.0, -3.0, 130, 2.0},  // Amazon Sedimentary Basin
-            {22.0, -1.0, 110, 1.8},   // Congo Basin Aquifers
-            {75.0, 60.0, 120, 1.9},   // West Siberian Basin Aquifer
-            {122.0, -18.0, 85, 1.5},  // Canning Basin Australia
-            {82.0, 39.0, 80, 1.5},    // Tarim Basin Aquifer
-            {-119.5, 36.5, 65, 1.6},  // California Central Valley Aquifer
-            {46.0, 24.0, 90, 1.7},    // Arabian Aquifer System
-            {16.0, 14.0, 90, 1.7},    // Chad Basin Aquifer
-            {23.0, -23.0, 85, 1.6},   // Kalahari / Karoo Aquifer
-            {116.0, 37.0, 90, 1.8},   // North China Plain Aquifer
-            {70.0, 30.0, 90, 1.8}     // Indus Basin Aquifer
+        BufferedImage mask = loadElevationMask();
+
+        // Authentic UNESCO WHYMAP 2022 Regional Sedimentary Basin Groundwater Formations
+        // {centerLon, centerLat, semiLon, semiLat, maxLuminance}
+        double[][] sedimentaryAquiferBasins = {
+            // Nubian Sandstone Aquifer System (NSAS - Egypt, Libya, Chad, Sudan: 2.2M km²)
+            {25.0, 22.0, 10.0, 8.5, 230.0},
+            // Ogallala / High Plains Aquifer (US Midwest: 450,000 km²)
+            {-100.5, 38.0, 4.5, 6.0, 215.0},
+            // Guaraní Aquifer System (Paraná Basin - Brazil, Paraguay, Argentina, Uruguay: 1.2M km²)
+            {-54.0, -25.0, 7.5, 9.0, 225.0},
+            // Great Artesian Basin (GAB - Eastern/Central Australia: 1.7M km²)
+            {139.0, -25.5, 9.0, 8.5, 230.0},
+            // Northwest Sahara Aquifer System (NWSAS / SASS - Algeria, Tunisia, Libya: 1.0M km²)
+            {6.0, 31.0, 8.0, 4.5, 210.0},
+            // Indo-Gangetic Alluvial Aquifer (Indus, Ganges, Brahmaputra Foreland Basin)
+            {78.0, 27.5, 12.0, 3.5, 220.0},
+            // North China Plain Cenozoic Aquifer (Huang-Huai-Hai Plain)
+            {116.5, 37.0, 4.5, 4.0, 210.0},
+            // West Siberian Artesian Basin (Vast Mesozoic-Cenozoic Sedimentary Basin)
+            {72.0, 59.0, 12.0, 7.0, 215.0},
+            // Amazon Sedimentary Basin (Alter do Chão / Solimões Alluvial Trough)
+            {-62.0, -3.0, 12.0, 5.0, 235.0},
+            // Congo Sedimentary Basin (Cuvette Centrale)
+            {21.5, -0.5, 6.5, 6.0, 215.0},
+            // Paris & Aquitaine Mesozoic Synclines (Western Europe)
+            {2.0, 47.5, 4.5, 3.5, 185.0},
+            // Canning Basin Sedimentary Aquifer (Western Australia)
+            {124.0, -19.0, 5.5, 4.0, 190.0},
+            // Tarim Basin Endorheic Aquifer (Taklamakan Basin)
+            {82.5, 39.0, 7.0, 3.0, 195.0},
+            // California Central Valley Forearc Alluvium
+            {-119.8, 36.8, 1.8, 4.0, 180.0},
+            // Arabian Sedimentary Formations (Wajid, Wasia-Biyadh, Rub' al Khali)
+            {47.0, 23.5, 7.5, 6.5, 205.0},
+            // Chad Basin Continental Terminal
+            {16.0, 14.0, 6.5, 5.0, 200.0},
+            // Kalahari & Karoo Sandstone Basins (Southern Africa)
+            {22.5, -23.0, 6.0, 5.5, 195.0},
+            // Mississippi Embayment / Gulf Coastal Plain Aquifer
+            {-90.0, 32.5, 5.5, 4.5, 200.0},
+            // Baltic & North German Sedimentary Basin
+            {16.0, 53.5, 7.0, 3.0, 180.0}
         };
-        var list = new java.util.ArrayList<double[]>();
-        for (double[] a : majorAquifers) list.add(a);
-        rasterizeSpotListToAlpha(img, list, Color.WHITE, 40.0);
+
+        for (int y = 0; y < height; y++) {
+            double lat = 90.0 - (y + 0.5) / height * 180.0;
+            for (int x = 0; x < width; x++) {
+                double lon = -180.0 + (x + 0.5) / width * 360.0;
+
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : width) / width), 0, (mask != null ? mask.getWidth() : width) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : height) / height), 0, (mask != null ? mask.getHeight() : height) - 1);
+                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+
+                if (land == 0 || !isLand(lon, lat)) {
+                    img.setRGB(x, y, 0x000000);
+                    continue;
+                }
+
+                // Elevation screening: crystalline mountain crests (>1200m) have poor sedimentary storage
+                double elevM = (mask != null) ? (land / 255.0) * 8848.0 : 200.0;
+                double orographicCapacityFactor = (elevM > 1200.0) ? Math.max(0.1, 1.0 - (elevM - 1200.0) / 2000.0) : 1.0;
+
+                // Sum contribution across bounded sedimentary basin ellipses
+                double aquiferYield = 15.0; // Baseline continental minor groundwater
+                for (double[] b : sedimentaryAquiferBasins) {
+                    double dLon = (lon - b[0]) / b[2];
+                    double dLat = (lat - b[1]) / b[3];
+                    double distNormSq = dLon * dLon + dLat * dLat;
+                    if (distNormSq < 2.25) { // 1.5 radius cutoff for crisp geological basin boundary
+                        double basinProfile = Math.max(0.0, 1.0 - (distNormSq / 2.25));
+                        double yield = b[4] * Math.pow(basinProfile, 0.65);
+                        aquiferYield = Math.max(aquiferYield, yield);
+                    }
+                }
+
+                // Micro-lithological sandstone/alluvium texture (15% pseudo-random stratigraphic grain)
+                double stratNoise = 0.90 + 0.20 * (Math.sin(lon * 4.5) * Math.cos(lat * 4.5) * 0.5 + 0.5);
+                int finalLuminance = Math.clamp((int) Math.round(aquiferYield * orographicCapacityFactor * stratNoise), 0, 255);
+                img.setRGB(x, y, (finalLuminance << 16) | (finalLuminance << 8) | finalLuminance);
+            }
+        }
+
         cachedAquiferMap = img;
-        return img;
+        return applyAltimetryCoastlineMask(img);
     }
 
     public static BufferedImage rasterizeExtensibleResourceTensorMap(int index, String type, Scenario scenario) {
