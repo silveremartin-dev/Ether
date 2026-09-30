@@ -17,6 +17,10 @@ import java.awt.*;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.EOFException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -5165,139 +5169,243 @@ public class HistoricalMapGenerator {
     }
 
     public static BufferedImage rasterizeAquiferMap(String type, Scenario scenario) {
+        if (cachedAquiferMap != null) {
+            return cachedAquiferMap;
+        }
+
         int width = 2048, height = 1024;
+        File shpFile = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_GW_aquifers_v1_poly.shp");
+        if (!shpFile.exists()) {
+            shpFile = new File("data/maps/whymap_groundwater/whymap_GW_aquifers_v1_poly.shp");
+        }
+        File dbfFile = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_GW_aquifers_v1_poly.dbf");
+        if (!dbfFile.exists()) {
+            dbfFile = new File("data/maps/whymap_groundwater/whymap_GW_aquifers_v1_poly.dbf");
+        }
+        File riversShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_rivers__v1_line.shp");
+        if (!riversShp.exists()) {
+            riversShp = new File("data/maps/whymap_groundwater/whymap_rivers__v1_line.shp");
+        }
+
+        if (shpFile.exists()) {
+            try {
+                // 1. Read DBF hydrogeological classification (HYGEO2)
+                int[] hygeoCodes = null;
+                if (dbfFile.exists()) {
+                    try (java.io.DataInputStream dis = new java.io.DataInputStream(new java.io.BufferedInputStream(new java.io.FileInputStream(dbfFile)))) {
+                        byte[] b32 = new byte[32];
+                        dis.readFully(b32);
+                        int numRecs = (b32[4] & 0xFF) | ((b32[5] & 0xFF) << 8) | ((b32[6] & 0xFF) << 16) | ((b32[7] & 0xFF) << 24);
+                        int headerLen = (b32[8] & 0xFF) | ((b32[9] & 0xFF) << 8);
+                        int recLen = (b32[10] & 0xFF) | ((b32[11] & 0xFF) << 8);
+                        dis.skipBytes(headerLen - 32);
+
+                        hygeoCodes = new int[numRecs];
+                        for (int r = 0; r < numRecs; r++) {
+                            byte del = dis.readByte();
+                            byte[] bHygeo = new byte[5];
+                            dis.readFully(bHygeo);
+                            if (recLen > 6) {
+                                dis.skipBytes(recLen - 6);
+                            }
+                            String sH = new String(bHygeo).trim();
+                            try {
+                                hygeoCodes[r] = Integer.parseInt(sH);
+                            } catch (Exception ignored) {
+                                hygeoCodes[r] = 33;
+                            }
+                        }
+                    }
+                }
+
+                // 2. Render WHYMAP aquifer polygons
+                BufferedImage whymapImg = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+                Graphics2D gw = whymapImg.createGraphics();
+                gw.setColor(new Color(60, 60, 60)); // Baseline
+                gw.fillRect(0, 0, width, height);
+                gw.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                try (java.io.DataInputStream disShp = new java.io.DataInputStream(new java.io.BufferedInputStream(new java.io.FileInputStream(shpFile), 65536))) {
+                    disShp.skipBytes(100);
+                    int curRec = 0;
+                    while (true) {
+                        try {
+                            int recNum = disShp.readInt();
+                            int contentLenWords = disShp.readInt();
+                            int contentLenBytes = contentLenWords * 2;
+                            if (contentLenBytes <= 0) { curRec++; continue; }
+                            byte[] recBytes = new byte[contentLenBytes];
+                            disShp.readFully(recBytes);
+                            ByteBuffer bb = ByteBuffer.wrap(recBytes).order(ByteOrder.LITTLE_ENDIAN);
+                            int recShapeType = bb.getInt(0);
+                            if (recShapeType == 5 || recShapeType == 15) {
+                                int code = (hygeoCodes != null && curRec < hygeoCodes.length) ? hygeoCodes[curRec] : 11;
+                                int colorVal;
+                                if (code >= 10 && code <= 19) {
+                                    // Major groundwater basins (sedimentary porous aquifers: NSAS, Ogallala, Guaraní, GAB, West Siberia, Paris basin...)
+                                    colorVal = 215 + (code % 5) * 5; // 215 - 240
+                                } else if (code >= 20 && code <= 29) {
+                                    // Complex hydrogeological structures (fissured / karst / layered)
+                                    colorVal = 135 + (code % 5) * 5; // 135 - 160
+                                } else if (code >= 80) {
+                                    // Ice sheets / Glaciers
+                                    colorVal = 20;
+                                } else {
+                                    // Local and shallow aquifers (low-permeability crystalline shields)
+                                    colorVal = 65 + (code % 5) * 4;  // 65 - 85
+                                }
+
+                                int numParts = bb.getInt(36);
+                                int numPoints = bb.getInt(40);
+                                int[] parts = new int[numParts];
+                                for (int p = 0; p < numParts; p++) {
+                                    parts[p] = bb.getInt(44 + p * 4);
+                                }
+                                int ptsOffset = 44 + numParts * 4;
+                                for (int p = 0; p < numParts; p++) {
+                                    int start = parts[p];
+                                    int end = (p + 1 < numParts) ? parts[p + 1] : numPoints;
+                                    if (end > start) {
+                                        Path2D.Double path = new Path2D.Double();
+                                        for (int pt = start; pt < end; pt++) {
+                                            double px = bb.getDouble(ptsOffset + pt * 16);
+                                            double py = bb.getDouble(ptsOffset + pt * 16 + 8);
+                                            double rx = (px + 180.0) / 360.0 * width;
+                                            double ry = (90.0 - py) / 180.0 * height;
+                                            if (pt == start) path.moveTo(rx, ry);
+                                            else path.lineTo(rx, ry);
+                                        }
+                                        path.closePath();
+                                        gw.setColor(new Color(colorVal, colorVal, colorVal));
+                                        gw.fill(path);
+                                    }
+                                }
+                            }
+                            curRec++;
+                        } catch (EOFException eof) {
+                            break;
+                        }
+                    }
+                }
+
+                // 3. Render WHYMAP rivers
+                if (riversShp.exists()) {
+                    gw.setColor(new Color(230, 230, 230));
+                    gw.setStroke(new BasicStroke(1.6f));
+                    try (java.io.DataInputStream disRiv = new java.io.DataInputStream(new java.io.BufferedInputStream(new java.io.FileInputStream(riversShp), 65536))) {
+                        disRiv.skipBytes(100);
+                        while (true) {
+                            try {
+                                int recNum = disRiv.readInt();
+                                int contentLenWords = disRiv.readInt();
+                                int contentLenBytes = contentLenWords * 2;
+                                if (contentLenBytes <= 0) continue;
+                                byte[] recBytes = new byte[contentLenBytes];
+                                disRiv.readFully(recBytes);
+                                ByteBuffer bb = ByteBuffer.wrap(recBytes).order(ByteOrder.LITTLE_ENDIAN);
+                                int recShapeType = bb.getInt(0);
+                                if (recShapeType == 3 || recShapeType == 13) {
+                                    int numParts = bb.getInt(36);
+                                    int numPoints = bb.getInt(40);
+                                    int[] parts = new int[numParts];
+                                    for (int p = 0; p < numParts; p++) parts[p] = bb.getInt(44 + p * 4);
+                                    int ptsOffset = 44 + numParts * 4;
+                                    for (int p = 0; p < numParts; p++) {
+                                        int start = parts[p];
+                                        int end = (p + 1 < numParts) ? parts[p + 1] : numPoints;
+                                        if (end > start) {
+                                            Path2D.Double path = new Path2D.Double();
+                                            for (int pt = start; pt < end; pt++) {
+                                                double px = bb.getDouble(ptsOffset + pt * 16);
+                                                double py = bb.getDouble(ptsOffset + pt * 16 + 8);
+                                                double rx = (px + 180.0) / 360.0 * width;
+                                                double ry = (90.0 - py) / 180.0 * height;
+                                                if (pt == start) path.moveTo(rx, ry);
+                                                else path.lineTo(rx, ry);
+                                            }
+                                            gw.draw(path);
+                                        }
+                                    }
+                                }
+                            } catch (EOFException eof) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                gw.dispose();
+
+                // 4. Apply Gaussian smoothing kernel
+                float[][] blurred = new float[height][width];
+                float[][] k = {
+                    {0.003f, 0.013f, 0.022f, 0.013f, 0.003f},
+                    {0.013f, 0.059f, 0.097f, 0.059f, 0.013f},
+                    {0.022f, 0.097f, 0.159f, 0.097f, 0.022f},
+                    {0.013f, 0.059f, 0.097f, 0.059f, 0.013f},
+                    {0.003f, 0.013f, 0.022f, 0.013f, 0.003f}
+                };
+
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        float sum = 0.0f;
+                        for (int dy = -2; dy <= 2; dy++) {
+                            int ny = Math.clamp(y + dy, 0, height - 1);
+                            for (int dx = -2; dx <= 2; dx++) {
+                                int nx = (x + dx + width) % width;
+                                int val = whymapImg.getRGB(nx, ny) & 0xFF;
+                                sum += val * k[dy + 2][dx + 2];
+                            }
+                        }
+                        blurred[y][x] = sum;
+                    }
+                }
+
+                // 5. Apply stratigraphic bed variation texture and coastline mask
+                BufferedImage outImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                for (int y = 0; y < height; y++) {
+                    double lat = 90.0 - (y + 0.5) / height * 180.0;
+                    for (int x = 0; x < width; x++) {
+                        double lon = -180.0 + (x + 0.5) / width * 360.0;
+                        if (!isLand(lon, lat)) {
+                            outImg.setRGB(x, y, 0x000000);
+                            continue;
+                        }
+                        float rawVal = blurred[y][x];
+                        double stratNoise = 0.94 + 0.12 * (Math.sin(lon * 5.0 + lat * 2.0) * Math.cos(lat * 5.0 - lon * 2.0) * 0.5 + 0.5);
+                        int lum = Math.clamp((int) Math.round(rawVal * stratNoise), 0, 255);
+                        outImg.setRGB(x, y, (lum << 16) | (lum << 8) | lum);
+                    }
+                }
+                BufferedImage finalMasked = applyAltimetryCoastlineMask(outImg);
+                cachedAquiferMap = finalMasked;
+                return finalMasked;
+            } catch (Exception e) {
+                logger.warn("WHYMAP shapefile ingestion notice: {}, using procedural aquifer model", e.getMessage());
+            }
+        }
+
+        // Procedural Fallback if shapefile is missing
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
-
-        // Authentic UNESCO WHYMAP 2022 Regional Sedimentary Basin Groundwater Formations
-        // {centerLon, centerLat, semiLon, semiLat, angleDeg, maxLuminance}
-        double[][] sedimentaryAquiferBasins = {
-            // Nubian Sandstone Aquifer System (NSAS - Egypt, Libya, Chad, Sudan: 2.2M km²)
-            {25.0, 22.0, 11.5, 9.0, 15.0, 240.0},
-            // Ogallala / High Plains Aquifer (US Midwest: 450,000 km²)
-            {-101.0, 38.0, 4.8, 6.5, -10.0, 230.0},
-            // Guaraní Aquifer System (Paraná Basin - Brazil, Paraguay, Argentina, Uruguay: 1.2M km²)
-            {-54.0, -25.0, 8.0, 10.0, 25.0, 235.0},
-            // Great Artesian Basin (GAB - Eastern/Central Australia: 1.7M km²)
-            {140.0, -25.5, 9.5, 9.0, -15.0, 240.0},
-            // Northwest Sahara Aquifer System (NWSAS / SASS - Algeria, Tunisia, Libya: 1.0M km²)
-            {6.0, 31.0, 8.5, 5.0, 10.0, 225.0},
-            // Indo-Gangetic Alluvial Foreland Basin (Indus, Ganges, Brahmaputra)
-            {79.0, 27.0, 14.0, 4.0, -20.0, 235.0},
-            // North China Plain Cenozoic Aquifer (Huang-Huai-Hai Plain)
-            {116.5, 36.5, 5.0, 4.5, 30.0, 225.0},
-            // Songliao Sedimentary Basin (Northeast China)
-            {124.5, 45.0, 4.5, 5.0, 15.0, 210.0},
-            // West Siberian Artesian Basin (Vast Mesozoic-Cenozoic Sedimentary Basin: 3.0M km²)
-            {72.0, 59.0, 14.0, 8.5, 0.0, 230.0},
-            // Amazon Sedimentary Basin (Alter do Chão / Solimões Alluvial Trough)
-            {-62.0, -3.5, 14.0, 5.5, -5.0, 245.0},
-            // Congo Sedimentary Basin (Cuvette Centrale)
-            {21.5, -0.5, 7.5, 6.8, 0.0, 230.0},
-            // Paris & Aquitaine Mesozoic Synclines (Western Europe)
-            {2.0, 47.5, 5.0, 4.0, 45.0, 205.0},
-            // Canning Basin Sedimentary Aquifer (Western Australia)
-            {124.0, -19.0, 6.0, 4.5, -15.0, 210.0},
-            // Tarim Basin Endorheic Aquifer (Taklamakan Basin)
-            {82.5, 39.0, 7.5, 3.5, 0.0, 215.0},
-            // California Central Valley Forearc Alluvium
-            {-119.8, 36.8, 2.0, 4.5, -35.0, 205.0},
-            // Arabian Sedimentary Formations (Wajid, Wasia-Biyadh, Rub' al Khali)
-            {47.0, 23.5, 8.5, 7.0, 35.0, 220.0},
-            // Chad Basin Continental Terminal
-            {16.0, 14.0, 7.5, 5.5, 0.0, 215.0},
-            // Kalahari & Karoo Sandstone Basins (Southern Africa)
-            {22.5, -23.0, 7.0, 6.0, 15.0, 210.0},
-            // Mississippi Embayment / Gulf Coastal Plain Aquifer
-            {-90.0, 32.5, 6.0, 5.0, 25.0, 220.0},
-            // Baltic & North German Sedimentary Basin
-            {16.0, 53.5, 8.0, 3.5, 10.0, 200.0},
-            // Pannonian Basin (Danube / Carpathian Foredeep)
-            {19.5, 46.5, 4.0, 3.0, 0.0, 195.0},
-            // Dzungarian Basin (Northwest China)
-            {86.0, 45.0, 4.5, 3.0, 15.0, 195.0}
-        };
-
-        // Major Continental Alluvial Floodplains (Groundwater recharge corridors)
-        double[][] majorAlluvials = {
-            {31.5, 26.0, 1.2, 5.5},    // Nile Valley Alluvium
-            {-90.5, 35.0, 2.0, 7.0},   // Mississippi Alluvial Valley
-            {-60.0, -3.0, 15.0, 3.0},  // Amazon River Trough
-            {-59.0, -32.0, 3.0, 6.0},  // Paraná-Río de la Plata Basin
-            {72.0, 29.0, 3.0, 6.0},    // Indus River Floodplain
-            {85.0, 25.5, 8.0, 2.5},    // Ganges-Brahmaputra Floodplain
-            {115.0, 32.0, 6.0, 3.0},   // Yangtze Lower Plain
-            {116.0, 36.0, 5.0, 3.0},   // Yellow River Alluvial Fan
-            {20.0, 45.0, 6.0, 2.5},    // Danube Plain Alluvium
-            {44.0, 33.0, 4.0, 4.0},    // Tigris-Euphrates Mesopotamia
-            {143.0, -34.0, 4.0, 3.0}   // Murray-Darling Basin
-        };
-
         for (int y = 0; y < height; y++) {
             double lat = 90.0 - (y + 0.5) / height * 180.0;
             for (int x = 0; x < width; x++) {
                 double lon = -180.0 + (x + 0.5) / width * 360.0;
-
                 int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : width) / width), 0, (mask != null ? mask.getWidth() : width) - 1);
                 int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : height) / height), 0, (mask != null ? mask.getHeight() : height) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-
                 if (land == 0 || !isLand(lon, lat)) {
                     img.setRGB(x, y, 0x000000);
                     continue;
                 }
-
-                // Elevation screening: Lowland sedimentary plains have thick alluvial storage, high crests have poor retention
                 double elevM = (mask != null) ? (land / 255.0) * 8848.0 : 200.0;
-                double orographicCapacityFactor;
-                if (elevM <= 350.0) {
-                    orographicCapacityFactor = 1.0;
-                } else if (elevM <= 1000.0) {
-                    orographicCapacityFactor = 1.0 - (elevM - 350.0) / 650.0 * 0.70;
-                } else {
-                    orographicCapacityFactor = Math.max(0.08, 0.30 - (elevM - 1000.0) / 2000.0 * 0.22);
-                }
-
-                // Continental baseline groundwater for all sedimentary lowlands (55-80)
+                double orographicCapacityFactor = elevM <= 350.0 ? 1.0 : (elevM <= 1000.0 ? 1.0 - (elevM - 350.0) / 650.0 * 0.70 : Math.max(0.08, 0.30 - (elevM - 1000.0) / 2000.0 * 0.22));
                 double aquiferYield = 65.0 * orographicCapacityFactor;
-
-                // Alluvial floodplain recharge corridors
-                for (double[] al : majorAlluvials) {
-                    double dLon = (lon - al[0]) / al[2];
-                    double dLat = (lat - al[1]) / al[3];
-                    double d2 = dLon * dLon + dLat * dLat;
-                    if (d2 < 1.0) {
-                        double boost = (1.0 - d2) * 85.0 * orographicCapacityFactor;
-                        aquiferYield += boost;
-                    }
-                }
-
-                // Sum contribution across bounded sedimentary basin formations (anisotropic rotated ellipses)
-                for (double[] b : sedimentaryAquiferBasins) {
-                    double rad = Math.toRadians(b[4]);
-                    double cosA = Math.cos(rad);
-                    double sinA = Math.sin(rad);
-                    double dx = lon - b[0];
-                    double dy = lat - b[1];
-                    double rotX = (dx * cosA + dy * sinA) / b[2];
-                    double rotY = (-dx * sinA + dy * cosA) / b[3];
-                    double distNormSq = rotX * rotX + rotY * rotY;
-
-                    if (distNormSq < 1.0) {
-                        // Structural basin profile with realistic parabolic sediment compaction gradient
-                        double basinProfile = 1.0 - distNormSq;
-                        double yield = b[5] * Math.pow(basinProfile, 0.35) * orographicCapacityFactor;
-                        aquiferYield = Math.max(aquiferYield, yield);
-                    }
-                }
-
-                // Micro-lithological sandstone/alluvium texture (12% realistic stratigraphic bed variation)
                 double stratNoise = 0.92 + 0.16 * (Math.sin(lon * 5.0 + lat * 2.0) * Math.cos(lat * 5.0 - lon * 2.0) * 0.5 + 0.5);
                 int finalLuminance = Math.clamp((int) Math.round(aquiferYield * stratNoise), 0, 255);
                 img.setRGB(x, y, (finalLuminance << 16) | (finalLuminance << 8) | finalLuminance);
             }
         }
-
         cachedAquiferMap = img;
         return applyAltimetryCoastlineMask(img);
     }
