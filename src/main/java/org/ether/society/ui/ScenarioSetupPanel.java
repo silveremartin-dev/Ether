@@ -3808,56 +3808,72 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox contentBox = new VBox(14);
         contentBox.setStyle("-fx-background-color: #0f172a;");
 
-        // Section 1: 24-bit RGB Entity ID Tensors
+        // Section 1: 24-bit RGB Categorical & Spatial Dithering Tensors
         VBox sec1 = new VBox(6);
         sec1.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #3b82f6; -fx-border-radius: 8;");
-        Label lblSec1 = new Label("🏷️ " + I18n.getOrDefault("scenario.layer_formats.rgb_title", "1. Tenseurs Catégoriels Discrets (Encodage RGB 24-bit Entité ID)"));
+        Label lblSec1 = new Label("🏷️ " + I18n.getOrDefault("scenario.layer_formats.rgb_title", "1. Tenseurs Catégoriels Discrets & Dithering Spatial (Encodage RGB 24-bit)"));
         lblSec1.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #60a5fa;");
         Label descSec1 = new Label(
-            "• Tenseur 0 (Isoglosses / Familles de Langues) : Couleur RGB unique par famille linguistique / clade archaïque (Glottolog 4.8 / ASJP).\n" +
-            "• Tenseur 1 (Structures de Parenté / Lignages) : Couleur RGB identifiant la règle de filiation et organisation clanique (Murdock Atlas).\n" +
-            "• Tenseur 3 (Souveraineté Politico-Militaire / Polities) : Couleur RGB de l'entité politique / tribu / empire (Centennia / CShapes / HGis).\n" +
+            "• Tenseur 0 (Isoglosses / Langues) : Couleur RGB pure par famille linguistique (Glottolog 5.0 / WALS) + Dithering stochastique aux zones de contact.\n" +
+            "• Tenseur 1 (Parenté / Filiation) : Typologie Todd & Murdock (Famille souche #8B5CF6, Nucléaire #2563EB, Communautaire #DC2626, Matrilinéaire #F43F5E).\n" +
+            "• Tenseur 2 (Rituels & Croyances) : Systèmes sacrés (Sunnisme #10B981, Catholicisme #EC4899, Orthodoxie #8B5CF6, Culte Gréco-Romain #EA580C, Hindouisme #F59E0B, Bouddhisme #EAB308, Judaïsme #2563EB) + Mosaïque multiconfessionnelle dans les grands carrefours sacrés.\n" +
+            "• Tenseur 3 (Souveraineté & Domaines) : Entités politiques étatiques (Seshat ClioPatria / CShapes) et 22 domaines claniques/tribaux régionaux.\n" +
             "↳ Référence d'association : data/maps/ether/earth/<année>/cultural_registry.json"
         );
         descSec1.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11.5px;");
         descSec1.setWrapText(true);
         sec1.getChildren().addAll(lblSec1, descSec1);
 
-        // Section 2: 8-bit Continuous Grayscale Tensors
+        // Section 2: Multi-Modal Network & Connectivity Tensor
         VBox sec2 = new VBox(6);
-        sec2.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #10b981; -fx-border-radius: 8;");
-        Label lblSec2 = new Label("📈 " + I18n.getOrDefault("scenario.layer_formats.gray_title", "2. Tenseurs Continus d'Intensité (Niveaux de Gris 8-bit [0..255])"));
-        lblSec2.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #34d399;");
+        sec2.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #06b6d4; -fx-border-radius: 8;");
+        Label lblSec2 = new Label("🌐 " + I18n.getOrDefault("scenario.layer_formats.network_title", "2. Tenseur de Réseau Multi-Modal & Flux (RGB 24-bit)"));
+        lblSec2.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #22d3ee;");
         Label descSec2 = new Label(
-            "• Démographie (Density) : [0..255] Échelle logarithmique normalisée de la densité de population (hab/km²).\n" +
-            "• Tenseur 2 (Rituels / Asabiyyah) : [0..255] Cohésion sacrée et solidarité de groupe (Seshat / Turchin).\n" +
-            "• Tenseur 4 (Matérialité & Technologies) : [0..255] Complexité outillage lithique / métallurgie (ArchaeoGLOBE).\n" +
-            "• Tenseur 5 (Réseaux Commerciaux / Routes) : [0..255] Connectivité et corridors marchands (ORBIS / Soirées).\n" +
-            "• Tenseur 6 (Complexité Institutionnelle / Droit) : [0..255] Hiérarchie et codification administrative (Seshat).\n" +
-            "• Tenseur 7 (Empreinte Écologique / Dégradation) : [0..255] Pression malthusienne et déforestation (HYDE 3.4).\n" +
-            "• Tenseur 8 (Immunité Pathogène / Épidémies) : [0..255] Mémoire immunitaire et résistance aux zoonoses.\n" +
-            "• 10 Tenseurs Géologiques : Charbon, Pétrole, Gaz, Uranium, Hélium-3, Fer/Cuivre, Métaux Précieux, Terres Rares, Géothermie, Aquifères (USGS MRDS / WHYMAP / GEM)."
+            "• Tenseur 5 (Réseau Commercial & Hydrographie) : Réseau multi-modal interconnecté :\n" +
+            "  - Corridors fluviaux navigables (Nil, Tigre-Euphrate, Indus, Gange, Yangtsé, Fleuve Jaune, Rhin, Danube, Dniepr, Volga, Niger, Mississippi, Amazone) en cyan (#00D2E6).\n" +
+            "  - Voies impériales antiques pavées (Voies romaines, Route royale perse, Chi Dao Qin-Han, Grand Trunk Road) en or/terracotta (#FFAA28).\n" +
+            "  - Routes transcontinentales (Soie, Encens, Ambre) en or éclatant (#FFC832).\n" +
+            "  - Voies maritimes (Méditerranée, Océan Indien, Atlantique, Galions de Manille) en bleu/sarcelle (#1EB4D2).\n" +
+            "  - Nœuds d'Emporia & Comptoirs marchands matérialisés par des disques blancs à halo luminescent hiérarchisé selon le tonnage de transit."
         );
         descSec2.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11.5px;");
         descSec2.setWrapText(true);
         sec2.getChildren().addAll(lblSec2, descSec2);
 
-        // Section 3: Temporal Validity of Datasets
+        // Section 3: 8-bit Continuous Grayscale Physical Intensity Tensors
         VBox sec3 = new VBox(6);
-        sec3.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #f59e0b; -fx-border-radius: 8;");
-        Label lblSec3 = new Label("⏳ " + I18n.getOrDefault("scenario.layer_formats.validity_title", "3. Plage de Validité Temporelle des Jeux de Données"));
-        lblSec3.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #fbbf24;");
+        sec3.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #10b981; -fx-border-radius: 8;");
+        Label lblSec3 = new Label("📈 " + I18n.getOrDefault("scenario.layer_formats.gray_title", "3. Tenseurs Continus d'Intensité Physique & Cliodynamique (Niveaux de Gris 8-bit [0..255])"));
+        lblSec3.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #34d399;");
         Label descSec3 = new Label(
-            "• SESHAT & HYDE 3.4 : Strictement valides pour t ≥ -10 000 BCE (Holocène et Histoire documentée).\n" +
-            "• Préhistoire Paléolithique (t < -10 000 BCE) : Modèles archéologiques soft-Voronoi orographiques multi-clades (Sapiens, Néandertaliens de l'Ouest et du Zagros, Denisoviens de l'Altaï, Archaïques est-asiatiques).\n" +
-            "• Forçages Paléoclimatiques : CHELSA-TraCE21k (LGM -20k, Holocène) et WorldClim / PaleoClim LIG (-100k BP).\n" +
-            "• Altimétrie & Bathymétrie : NOAA ETOPO 2022 (Niveau marin ajusté dynamiquement via le slider du scénario)."
+            "• Démographie (Density) : [0..255] Densité de population par km² calibrée sur HYDE 3.4.\n" +
+            "• Tenseur 4 (Matérialité & Technologies) : [0..255] EROEI, outillage, capital K₀ et intensité d'innovation (ArchaeoGLOBE).\n" +
+            "• Tenseur 6 (Complexité Institutionnelle) : [0..255] Hiérarchie administrative SESHAT (Rome/Han 160, 2026 à 220, headroom futur [226-255]) avec portée étendue le long des infrastructures.\n" +
+            "• Tenseur 7 (Empreinte Écologique) : [0..255] Consommation d'exergy agricole, déforestation et pression biotique.\n" +
+            "• Tenseur 8 (Pathogènes & R₀) : [0..255] Charge vectorielle tropicale, réservoirs zoonotiques et foyers épidémiques de promiscuité urbaine.\n" +
+            "• 10 Tenseurs Géologiques : Charbon, Pétrole, Gaz, Uranium, Hélium-3, Fer/Cuivre, Métaux Précieux, Terres Rares, Géothermie, Aquifères (USGS MRDS / WHYMAP / GEM)."
         );
         descSec3.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11.5px;");
         descSec3.setWrapText(true);
         sec3.getChildren().addAll(lblSec3, descSec3);
 
-        contentBox.getChildren().addAll(sec1, sec2, sec3);
+        // Section 4: Temporal Validity of Datasets
+        VBox sec4 = new VBox(6);
+        sec4.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #f59e0b; -fx-border-radius: 8;");
+        Label lblSec4 = new Label("⏳ " + I18n.getOrDefault("scenario.layer_formats.validity_title", "4. Plage de Validité Temporelle des Jeux de Données"));
+        lblSec4.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #fbbf24;");
+        Label descSec4 = new Label(
+            "• SESHAT & HYDE 3.4 : Strictement valides pour t ≥ -10 000 BCE (Holocène et Histoire documentée).\n" +
+            "• Préhistoire Paléolithique (t < -10 000 BCE) : Modèles archéologiques orographiques multi-clades (Sapiens, Néandertaliens, Denisoviens, Archaïques).\n" +
+            "• Forçages Paléoclimatiques : CHELSA-TraCE21k (LGM -20k, Holocène) et WorldClim / PaleoClim LIG (-100k BP).\n" +
+            "• Altimétrie & Bathymétrie : NOAA ETOPO 2022 (Niveau marin ajusté dynamiquement selon l'époque glaciaire)."
+        );
+        descSec4.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11.5px;");
+        descSec4.setWrapText(true);
+        sec4.getChildren().addAll(lblSec4, descSec4);
+
+        contentBox.getChildren().addAll(sec1, sec2, sec3, sec4);
         scroll.setContent(contentBox);
 
         Button btnClose = new Button(I18n.getOrDefault("common.close", "Fermer"));
@@ -3924,16 +3940,16 @@ public class ScenarioSetupPanel extends BorderPane {
 
     private String getCulturalFormatHint(int index) {
         return switch (index) {
-            case 0 -> I18n.getOrDefault("scenario.tensor.0.format", "Grayscale / Indexed PNG (2:1 equirectangular):\n  Values (0-255) = Language family IDs & dialect distance (Glottolog 4.8 / WALS)");
-            case 1 -> I18n.getOrDefault("scenario.tensor.1.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Exogamous bilateral | White (255) = Patrilineal clan clans (Murdock Atlas)");
-            case 2 -> I18n.getOrDefault("scenario.tensor.2.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Low ritual cohesion | White (255) = High Asabiyyah sacred (Seshat)");
-            case 3 -> I18n.getOrDefault("scenario.tensor.3.format", "Indexed PNG / GeoJSON (2:1 equirectangular):\n  Values = Polity sovereignty & capital allegiance domains (Centennia / CShapes)");
-            case 4 -> I18n.getOrDefault("scenario.tensor.4.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Lithic foraging | White (255) = Advanced metallurgy (ArchaeoGLOBE)");
-            case 5 -> I18n.getOrDefault("scenario.tensor.5.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Isolated | White (255) = Major trade corridor hub (ORBIS / Silk Road)");
-            case 6 -> I18n.getOrDefault("scenario.tensor.6.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Informal customs | White (255) = Codified legal bureaucracy (Seshat)");
-            case 7 -> I18n.getOrDefault("scenario.tensor.7.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Pristine biome | White (255) = Intensive Malthusian degradation (HYDE 3.4)");
-            case 8 -> I18n.getOrDefault("scenario.tensor.8.format", "Grayscale PNG (2:1 equirectangular):\n  Black (0) = Naive population | White (255) = Endemic pathogen immunity (GADM / Epi)");
-            default -> I18n.getOrDefault("scenario.hint.cultural_format", "PNG / GeoJSON in 2:1 equirectangular projection");
+            case 0 -> I18n.getOrDefault("scenario.tensor.0.format", "RGB 24-bit Catégoriel + Dithering Spatial (2:1 équirectangulaire) :\n  Valeurs RGB = Familles linguistiques pures & continuums dialectaux (Glottolog 5.0 / WALS)");
+            case 1 -> I18n.getOrDefault("scenario.tensor.1.format", "RGB 24-bit Catégoriel (2:1 équirectangulaire) :\n  Valeurs RGB = Organisation sociale & familiale (Todd / Murdock : Souche #8B5CF6, Nucléaire #2563EB, Communautaire #DC2626, Matrilinéaire #F43F5E)");
+            case 2 -> I18n.getOrDefault("scenario.tensor.2.format", "RGB 24-bit Catégoriel + Mosaïque Multiconfessionnelle (2:1 équirectangulaire) :\n  Valeurs RGB = Systèmes sacrés (Islam #10B981, Catholicisme #EC4899, Orthodoxie #8B5CF6, Culte Gréco-Romain #EA580C, Hindouisme #F59E0B, Bouddhisme #EAB308, Judaïsme #2563EB)");
+            case 3 -> I18n.getOrDefault("scenario.tensor.3.format", "RGB 24-bit Catégoriel (2:1 équirectangulaire) :\n  Valeurs RGB = Souveraineté politique étatique & 22 domaines claniques régionaux (Seshat ClioPatria / CShapes)");
+            case 4 -> I18n.getOrDefault("scenario.tensor.4.format", "Niveaux de Gris 8-bit Continu [0..255] (2:1 équirectangulaire) :\n  Noir (0) = Prélèvement / Faible capture exergétique | Blanc (255) = Métallurgie & outillage avancé (ArchaeoGLOBE)");
+            case 5 -> I18n.getOrDefault("scenario.tensor.5.format", "RGB 24-bit Réseau Multi-Modal & Emporia Hiérarchisés (2:1 équirectangulaire) :\n  Cyan = Fleuves navigables (#00D2E6) | Or = Routes de la Soie (#FFC832) | Terracotta = Voies Impériales (#FFAA28) | Bleu = Maritime (#1EB4D2) | Disques blancs = Emporia");
+            case 6 -> I18n.getOrDefault("scenario.tensor.6.format", "Niveaux de Gris 8-bit Continu [0..255] (2:1 équirectangulaire) :\n  Valeurs = Portée administrative SESHAT (Rome/Han 160, 2026 à 220, headroom [226-255]) avec extension infrastructurelle");
+            case 7 -> I18n.getOrDefault("scenario.tensor.7.format", "Niveaux de Gris 8-bit Continu [0..255] (2:1 équirectangulaire) :\n  Noir (0) = Biome intact | Blanc (255) = Dégradation malthusienne & empreinte agricole (HYDE 3.4)");
+            case 8 -> I18n.getOrDefault("scenario.tensor.8.format", "Niveaux de Gris 8-bit Continu [0..255] (2:1 équirectangulaire) :\n  Valeurs = Potentiel de transmission vectorielle R₀, foyers zoonotiques et promiscuité urbaine (Mordecai / CDC)");
+            default -> I18n.getOrDefault("scenario.hint.cultural_format", "PNG / GeoJSON en projection équirectangulaire 2:1 (RGB Catégoriel ou Niveaux de Gris 8-bit)");
         };
     }
 

@@ -2883,6 +2883,9 @@ public class HistoricalMapGenerator {
 
         BufferedImage ritImg = OrographicGlottologPropagator.propagateCulturalSeeds(ritualSeeds, WIDTH, HEIGHT, mask);
 
+        // Apply Multi-Confessional Coexistence Dithering in Historical Cosmopolises & Sacred Contact Hubs
+        applyMultiConfessionalDithering(ritImg, year, mask);
+
         // Apply hominin occupancy filter and black out Antarctica
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
@@ -2895,6 +2898,80 @@ public class HistoricalMapGenerator {
             }
         }
         return applyAltimetryCoastlineMask(ritImg);
+    }
+
+    private record ConfessionalPocket(double lon, double lat, double radiusDeg, int[] colors, double[] weights) {}
+
+    private static void applyMultiConfessionalDithering(BufferedImage img, long year, BufferedImage mask) {
+        List<ConfessionalPocket> pockets = new ArrayList<>();
+
+        if (year <= 500L && year >= -1000L) {
+            // Classical Antiquity & Axial Age (Year 0 / Pax Romana)
+            // Jerusalem: 65% Judaism (#2563EB), 25% Greco-Roman Paganism (#EA580C), 10% Semitic (#B45309)
+            pockets.add(new ConfessionalPocket(35.21, 31.77, 2.5, new int[]{0x2563EB, 0xEA580C, 0xB45309}, new double[]{0.65, 0.25, 0.10}));
+            // Alexandria: 50% Greco-Egyptian Isis/Serapis (#15803D), 35% Judaism (#2563EB), 15% Roman (#EA580C)
+            pockets.add(new ConfessionalPocket(29.92, 31.20, 2.8, new int[]{0x15803D, 0x2563EB, 0xEA580C}, new double[]{0.50, 0.35, 0.15}));
+            // Antioch: 60% Hellenistic (#EA580C), 25% Judaism/Early Christianity (#2563EB), 15% Syrian (#B45309)
+            pockets.add(new ConfessionalPocket(36.16, 36.20, 2.5, new int[]{0xEA580C, 0x2563EB, 0xB45309}, new double[]{0.60, 0.25, 0.15}));
+            // Rome: 80% Capitoline Polytheism (#EA580C), 12% Isis/Mithras (#15803D), 8% Jewish Quarter (#2563EB)
+            pockets.add(new ConfessionalPocket(12.49, 41.90, 2.8, new int[]{0xEA580C, 0x15803D, 0x2563EB}, new double[]{0.80, 0.12, 0.08}));
+            // Ctesiphon: 70% Zoroastrian (#0891B2), 20% Mesopotamian Polytheism (#B45309), 10% Judaism (#2563EB)
+            pockets.add(new ConfessionalPocket(44.58, 33.09, 2.5, new int[]{0x0891B2, 0xB45309, 0x2563EB}, new double[]{0.70, 0.20, 0.10}));
+            // Taxila: 55% Buddhism (#EAB308), 35% Vedic Hinduism (#F59E0B), 10% Indo-Greek Cults (#EA580C)
+            pockets.add(new ConfessionalPocket(72.82, 33.74, 2.8, new int[]{0xEAB308, 0xF59E0B, 0xEA580C}, new double[]{0.55, 0.35, 0.10}));
+            // Varanasi: 70% Hinduism (#F59E0B), 30% Buddhism (#EAB308)
+            pockets.add(new ConfessionalPocket(83.00, 25.31, 2.8, new int[]{0xF59E0B, 0xEAB308}, new double[]{0.70, 0.30}));
+            // Dunhuang: 65% Mahayana Buddhism (#EF4444), 25% Daoism (#EF4444), 10% Sogdian Zoroastrianism (#0891B2)
+            pockets.add(new ConfessionalPocket(94.66, 40.14, 2.5, new int[]{0xEF4444, 0x0891B2}, new double[]{0.85, 0.15}));
+        } else if (year > 500L && year <= 1491L) {
+            // Medieval Era
+            // Jerusalem: 50% Sunni Islam (#10B981), 30% Eastern Orthodoxy (#8B5CF6), 20% Judaism (#2563EB)
+            pockets.add(new ConfessionalPocket(35.21, 31.77, 2.5, new int[]{0x10B981, 0x8B5CF6, 0x2563EB}, new double[]{0.50, 0.30, 0.20}));
+            // Constantinople: 80% Orthodoxy (#8B5CF6), 12% Latin Catholicism (#EC4899), 8% Islam/Judaism (#10B981)
+            pockets.add(new ConfessionalPocket(28.97, 41.00, 2.8, new int[]{0x8B5CF6, 0xEC4899, 0x10B981}, new double[]{0.80, 0.12, 0.08}));
+            // Cordoba: 65% Islam (#10B981), 25% Mozarabic Catholicism (#EC4899), 10% Judaism (#2563EB)
+            pockets.add(new ConfessionalPocket(-4.77, 37.88, 2.8, new int[]{0x10B981, 0xEC4899, 0x2563EB}, new double[]{0.65, 0.25, 0.10}));
+            // Kerala / Malabar: 60% Hinduism (#F59E0B), 25% Saint Thomas Christianity (#6366F1), 15% Islam (#10B981)
+            pockets.add(new ConfessionalPocket(76.27, 9.93, 3.0, new int[]{0xF59E0B, 0x6366F1, 0x10B981}, new double[]{0.60, 0.25, 0.15}));
+            // Canton / Guangzhou: 75% Confucian/Mahayana (#EF4444), 15% Muslim Arab (#10B981), 10% Theravada (#EAB308)
+            pockets.add(new ConfessionalPocket(113.26, 23.12, 2.8, new int[]{0xEF4444, 0x10B981, 0xEAB308}, new double[]{0.75, 0.15, 0.10}));
+        }
+
+        for (ConfessionalPocket cp : pockets) {
+            double r2 = cp.radiusDeg * cp.radiusDeg;
+            int minX = (int) Math.clamp(((cp.lon - cp.radiusDeg + 180.0) / 360.0) * WIDTH, 0, WIDTH - 1);
+            int maxX = (int) Math.clamp(((cp.lon + cp.radiusDeg + 180.0) / 360.0) * WIDTH, 0, WIDTH - 1);
+            int minY = (int) Math.clamp(((90.0 - (cp.lat + cp.radiusDeg)) / 180.0) * HEIGHT, 0, HEIGHT - 1);
+            int maxY = (int) Math.clamp(((90.0 - (cp.lat - cp.radiusDeg)) / 180.0) * HEIGHT, 0, HEIGHT - 1);
+
+            for (int py = minY; py <= maxY; py++) {
+                double lat = 90.0 - (py + 0.5) / HEIGHT * 180.0;
+                for (int px = minX; px <= maxX; px++) {
+                    double lon = -180.0 + (px + 0.5) / WIDTH * 360.0;
+                    double d2 = distSq(lon, lat, cp.lon, cp.lat);
+                    if (d2 <= r2) {
+                        int mx = Math.clamp((int) ((px + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
+                        int my = Math.clamp((int) ((py + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
+                        int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                        if (land == 0) continue;
+
+                        // Deterministic high-entropy spatial dithering
+                        int h = ((px * 73856093) ^ (py * 19349663) ^ ((int) year * 83492791)) & 0x7FFFFFFF;
+                        double rnd = (h % 10000) / 10000.0;
+                        double cum = 0.0;
+                        int chosenCol = cp.colors[0];
+                        for (int k = 0; k < cp.weights.length; k++) {
+                            cum += cp.weights[k];
+                            if (rnd <= cum) {
+                                chosenCol = cp.colors[k];
+                                break;
+                            }
+                        }
+                        img.setRGB(px, py, chosenCol);
+                    }
+                }
+            }
+        }
     }
 
     // --- 6. TECHNOLOGY & SUBSISTENCE TENSOR MAP ---
@@ -3091,6 +3168,27 @@ public class HistoricalMapGenerator {
             drawTradeRoute(g, new double[][]{{-94.8, 17.8}, {-92.5, 15.0}, {-89.8, 17.8}, {-88.5, 15.5}}, new Color(80, 200, 120), 2.5);
             // 9. Early Andean Exchange Circuit (Chavin -> Coast -> Altiplano)
             drawTradeRoute(g, new double[][]{{-77.2, -9.6}, {-77.0, -12.0}, {-75.0, -14.0}, {-68.7, -16.5}}, new Color(200, 80, 60), 2.5);
+
+            // 10. Roman Imperial Highway Network (Viae Publicae: Appia, Flaminia, Domitia, Augusta, Egnatia, Militaris)
+            Color romanRoadCol = new Color(255, 175, 45); // Warm Terracotta Gold
+            drawTradeRoute(g, new double[][]{{12.5, 41.9}, {14.3, 41.1}, {16.9, 41.1}, {17.9, 40.6}}, romanRoadCol, 3.2); // Via Appia (Rome -> Capua -> Brundisium)
+            drawTradeRoute(g, new double[][]{{12.5, 41.9}, {12.6, 44.1}, {10.9, 44.7}, {9.2, 45.5}, {4.8, 45.7}, {6.6, 49.8}, {1.6, 50.7}}, romanRoadCol, 3.2); // Via Flaminia / Agrippa (Rome -> Milan -> Lyon -> Trier -> Boulogne)
+            drawTradeRoute(g, new double[][]{{4.8, 45.7}, {3.0, 43.2}, {1.2, 41.1}, {-0.4, 39.5}, {-4.8, 37.9}, {-6.2, 36.5}}, romanRoadCol, 3.0); // Via Domitia / Augusta (Lyon -> Narbo -> Tarraco -> Corduba -> Gades)
+            drawTradeRoute(g, new double[][]{{19.4, 41.3}, {21.3, 40.9}, {22.9, 40.6}, {26.6, 40.9}, {28.9, 41.0}}, romanRoadCol, 3.0); // Via Egnatia (Dyrrhachium -> Thessalonica -> Byzantium)
+            drawTradeRoute(g, new double[][]{{20.5, 44.8}, {21.9, 43.3}, {23.3, 42.7}, {24.7, 42.1}, {28.9, 41.0}}, romanRoadCol, 2.8); // Via Militaris (Belgrade -> Serdica -> Philippopolis -> Byzantium)
+            drawTradeRoute(g, new double[][]{{28.9, 41.0}, {32.8, 39.9}, {34.9, 36.9}, {36.2, 36.2}, {36.3, 33.5}, {35.2, 31.8}}, romanRoadCol, 2.8); // Anatolian-Levantine Trunk (Byzantium -> Tarsus -> Antioch -> Damascus -> Jerusalem)
+
+            // 11. Persian Royal Road & Iranian Highway (Susa -> Ctesiphon -> Nineveh -> Harran -> Sardis)
+            drawTradeRoute(g, new double[][]{{48.2, 32.2}, {44.4, 33.3}, {44.0, 36.2}, {43.1, 36.3}, {39.0, 36.9}, {38.3, 38.4}, {32.8, 39.9}, {28.1, 38.5}}, romanRoadCol, 2.8);
+
+            // 12. Qin & Han Imperial Postal & Military Highways (Chi Dao & Straight Roads)
+            drawTradeRoute(g, new double[][]{{108.9, 34.3}, {112.4, 34.6}, {114.3, 34.7}, {118.3, 36.8}}, romanRoadCol, 3.2); // Chang'an -> Luoyang -> Kaifeng -> Qi/Linzi
+            drawTradeRoute(g, new double[][]{{108.9, 34.3}, {112.5, 37.9}, {116.4, 39.9}}, romanRoadCol, 3.0); // Qin Northern Straight Road (Chang'an -> Ji/Beijing)
+            drawTradeRoute(g, new double[][]{{108.9, 34.3}, {107.0, 33.1}, {104.1, 30.7}}, romanRoadCol, 2.8); // Shudao Gallery Roads (Chang'an -> Hanzhong -> Chengdu)
+            drawTradeRoute(g, new double[][]{{108.9, 34.3}, {102.6, 37.9}, {100.5, 38.9}, {98.5, 39.7}, {94.7, 40.1}}, romanRoadCol, 3.0); // Hexi Corridor Highway (Chang'an -> Wuwei -> Dunhuang)
+
+            // 13. Mauryan Grand Trunk Road (Uttarapatha)
+            drawTradeRoute(g, new double[][]{{85.1, 25.6}, {83.0, 25.3}, {81.8, 25.4}, {77.7, 27.5}, {77.2, 28.6}, {73.7, 33.7}, {71.5, 34.0}}, romanRoadCol, 3.0); // Pataliputra -> Varanasi -> Mathura -> Delhi -> Taxila -> Peshawar
         } else if (year <= 1491L) {
             // Post-Classical & Medieval (500 to 1491 AD)
             // 1. Pax Mongolica Northern & Southern Silk Roads
