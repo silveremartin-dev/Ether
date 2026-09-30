@@ -351,6 +351,13 @@ public class WorldClimEmpiricalRasterLoader {
 
         double total = baseRain + stormNorth + stormSouth;
 
+        // Asian Monsoon Maritime Convective Pool & Western Pacific Warm Pool (TRMM / GPM empirical physics)
+        double dBayOfBengal = Math.exp(-(Math.pow(lat - 15.0, 2) / 80.0 + Math.pow(lon - 90.0, 2) / 180.0));
+        double dSouthChinaSea = Math.exp(-(Math.pow(lat - 12.0, 2) / 70.0 + Math.pow(lon - 115.0, 2) / 160.0));
+        double dWarmPool = Math.exp(-(Math.pow(lat - 4.0, 2) / 90.0 + Math.pow(lon - 145.0, 2) / 350.0));
+        double dIndoArabian = Math.exp(-(Math.pow(lat - 14.0, 2) / 70.0 + Math.pow(lon - 68.0, 2) / 140.0));
+        total += (dBayOfBengal * 1500.0) + (dSouthChinaSea * 1200.0) + (dWarmPool * 1300.0) + (dIndoArabian * 900.0);
+
         // Desiccated cold current marine upwellings (SE Pacific & South Atlantic)
         double dAtacamaOcean = Math.exp(-(Math.pow(lat - (-20.0), 2) / 100.0 + Math.pow(lon - (-85.0), 2) / 120.0));
         total *= (1.0 - dAtacamaOcean * 0.85);
@@ -589,22 +596,34 @@ public class WorldClimEmpiricalRasterLoader {
             return BIOME_HILLS;
         }
 
+        // Ancient Holocene Climax Override: Continuous Primary Forests in Western/Central Europe & Eastern North America
+        if (year < 1500L && elevM < 1600.0 && precipMm >= 350.0) {
+            // Western/Central Europe (Silva Hercynia, Silva Carbonaria, Atlantic Climax)
+            if (lat >= 42.0 && lat <= 60.0 && lon >= -10.0 && lon <= 28.0) {
+                return BIOME_FOREST;
+            }
+            // Eastern North American Primary Deciduous & Mixed Forest Climax
+            if (lat >= 30.0 && lat <= 52.0 && lon >= -95.0 && lon <= -60.0) {
+                return BIOME_FOREST;
+            }
+        }
+
         // Temperate & Boreal Zone (tempC < 15.0°C)
         if (tempC < 15.0) {
-            if (precipMm < 250.0) {
+            if (precipMm < 200.0) {
                 return BIOME_DESERT; // Cold continental desert (Gobi, Taklamakan, Patagonia)
-            } else if (precipMm < 600.0) {
-                return BIOME_PLAINS; // Steppe / Temperate Grassland / Prairie
+            } else if (precipMm < (year < 1500L ? 350.0 : 550.0)) {
+                return BIOME_PLAINS; // Steppe / Temperate Grassland
             } else {
-                return BIOME_FOREST; // Boreal Taiga & Temperate Deciduous Forest
+                return BIOME_FOREST; // Boreal Taiga & Temperate Deciduous Climax Forest
             }
         }
 
         // Subtropical & Tropical Zones (tempC >= 15.0°C)
-        if (precipMm < 250.0) {
+        if (precipMm < 150.0) {
             return BIOME_DESERT; // Hyper-arid desert (Sahara, Arabia, Namib, Australian Outback)
-        } else if (precipMm < 850.0) {
-            return BIOME_PLAINS; // Savanna / Sahel / Shrubland / Cerrado
+        } else if (precipMm < 750.0) {
+            return BIOME_PLAINS; // Savanna / Sahel / Shrubland / Cerrado (distinct Sahelian ribbon)
         } else if (tempC >= 19.0 && precipMm >= 1350.0) {
             return BIOME_JUNGLE; // Tropical Rainforest (Amazon, Congo, Sundaland, New Guinea)
         } else {

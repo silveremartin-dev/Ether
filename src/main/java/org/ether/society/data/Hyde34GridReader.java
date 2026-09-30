@@ -117,14 +117,12 @@ public class Hyde34GridReader {
                     srcC = Math.max(0, Math.min(meta.ncols - 1, srcC));
 
                     float val = grid[srcR][srcC];
-                    if (val < 0 || val == meta.nodataValue) {
-                        img.setRGB(x, y, 0x050811); // Deep Ocean Dark Background
-                    } else if (val == 0.0f) {
-                        img.setRGB(x, y, 0x182030); // Land Baseline (Uninhabited)
+                    if (val <= 0.25f || val == meta.nodataValue) {
+                        img.setRGB(x, y, 0x000000); // Pure Black for oceans, uninhabited land & statistical background noise floor
                     } else {
-                        // Logarithmic scale for smooth population density transition
-                        double logNorm = Math.log1p(val) / Math.log1p(maxVal);
-                        int gray = Math.min(255, Math.max(20, (int) (logNorm * 235.0) + 20));
+                        // Logarithmic scale for smooth population density transition above noise threshold
+                        double logNorm = Math.log1p(val - 0.25f) / Math.log1p(maxVal);
+                        int gray = (int) Math.clamp(logNorm * 240.0 + 15.0, 15.0, 255.0);
                         int rgb = (gray << 16) | (gray << 8) | gray;
                         img.setRGB(x, y, rgb);
                     }

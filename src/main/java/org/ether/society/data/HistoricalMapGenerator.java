@@ -1156,8 +1156,9 @@ public class HistoricalMapGenerator {
 
                 double rainMm = WorldClimEmpiricalRasterLoader.getPrecipitation(lat, lon, elevM, year);
 
-                // Encode rainfall [0, 3000 mm/yr] -> [0, 255]
-                double norm = Math.clamp(rainMm / 3000.0, 0.0, 1.0);
+                // Perceptual Square-Root Rain Normalization (0 to 4000 mm/yr)
+                // Using sqrt scaling gives high contrast across dry (<250mm), moderate (500-1000mm) and intense monsoon (>2500mm)
+                double norm = Math.clamp(Math.sqrt(rainMm / 4000.0), 0.0, 1.0);
                 int gray = (int) Math.round(norm * 255.0);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
@@ -1178,8 +1179,8 @@ public class HistoricalMapGenerator {
 
                 double ampC = WorldClimEmpiricalRasterLoader.getSeasonality(lat, lon, elevM, year);
 
-                // Encode seasonality [0, 50°C] -> [0, 255]
-                double norm = Math.clamp(ampC / 50.0, 0.0, 1.0);
+                // Encode seasonality [1°C to 65°C] -> [0, 255] with full linear dynamic range
+                double norm = Math.clamp((ampC - 1.0) / 60.0, 0.0, 1.0);
                 int gray = (int) Math.round(norm * 255.0);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
@@ -4490,47 +4491,95 @@ public class HistoricalMapGenerator {
     private static volatile BufferedImage cachedAquiferMap = null;
 
     public static BufferedImage rasterizeCoalMap(String type, Scenario scenario) {
-        if (cachedCoalMap != null) return cachedCoalMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        
+        // 1. Total In-Situ Lithospheric Crustal Reserve (Global Coal Basins & Measures)
         var spots = EmpiricalGeospatialDatasetIngestion.getEmpiricalCoalOccurrences();
         if (spots.isEmpty()) {
             spots = loadMRDSDeposits("coal", "lignite", "anthracite", "bituminous");
         }
+        
+        // 2. High-Accessibility Surface Outcrops & Ancient Historical Mining
+        double[][] surfaceCoalOutcrops = {
+            {113.0, 35.0, 34, 2.8},  // Henan & Shanxi (Han Dynasty High-Temperature Coal Smelting)
+            {123.9, 41.9, 30, 2.6},  // Fushun / Liaoning (Ancient Open-Pit Coal Outcrops)
+            {-2.5, 51.3, 26, 2.3},   // Somerset / Camerton (Roman Britain Hypocaust & Bath Heating)
+            {-1.6, 54.9, 26, 2.3},   // Newcastle / Northumberland (Hadrian's Wall Coal Outcrops)
+            {5.6, 50.6, 24, 2.2},    // Liège / Meuse Valley (Medieval Surface Coal Seams)
+            {7.0, 49.3, 24, 2.2},    // Sarre Basin Outcrops
+            {-79.5, 40.5, 36, 2.5},  // Appalachian Outcrops (Pittsburgh Coal Seam)
+            {7.2, 51.5, 32, 2.4}     // Ruhr Valley Outcrops
+        };
+        for (double[] s : surfaceCoalOutcrops) spots.add(s);
+        
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 8.0);
-        cachedCoalMap = img;
         return img;
     }
 
     public static BufferedImage rasterizeOilMap(String type, Scenario scenario) {
-        if (cachedOilMap != null) return cachedOilMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        var spots = EmpiricalGeospatialDatasetIngestion.getEmpiricalOilOccurrences();
-        if (spots.isEmpty()) {
-            spots = loadMRDSDeposits("petroleum", "oil", "hydrocarbon");
+        
+        // 1. Total In-Situ Lithospheric Crustal Reserve (Global Giant Sedimentary Petroleum Systems)
+        double[][] majorCrustalOilBasins = {
+            {49.5, 26.0, 42, 2.6},    // Ghawar / Rub' al Khali (Saudi Arabia - World's Largest Oilfield)
+            {48.0, 29.0, 38, 2.5},    // Burgan Field (Kuwait)
+            {49.0, 31.5, 38, 2.5},    // Marun / Ahvaz (Zagros Fold Belt, Iran)
+            {-102.5, 31.8, 38, 2.4},  // Permian Basin (Texas/New Mexico, USA)
+            {-92.0, 19.5, 36, 2.3},   // Cantarell / Campeche Basin (Gulf of Mexico)
+            {73.0, 61.0, 40, 2.5},    // Samotlor / West Siberian Oil Basin (Russia)
+            {2.0, 56.5, 32, 2.2},     // North Sea Central Graben (Brent / Forties)
+            {-149.0, 70.3, 34, 2.3},  // Prudhoe Bay (Alaska North Slope)
+            {-71.5, 10.0, 36, 2.4},   // Maracaibo Basin (Venezuela)
+            {119.0, 38.0, 35, 2.3}    // Shengli / Bohai Bay (China)
+        };
+        var spots = new java.util.ArrayList<double[]>();
+        for (double[] b : majorCrustalOilBasins) spots.add(b);
+        var empirical = EmpiricalGeospatialDatasetIngestion.getEmpiricalOilOccurrences();
+        if (!empirical.isEmpty()) {
+            for (double[] e : empirical) spots.add(e);
+        } else {
+            var mrds = loadMRDSDeposits("petroleum", "oil", "hydrocarbon");
+            spots.addAll(mrds);
         }
-        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 10.0);
-        cachedOilMap = img;
+
+        // 2. High-Accessibility Surface Bitumen, Pitch & Asphalt Seepages (Ancient/Early Historical Exploitation)
+        double[][] ancientBitumenSpots = {
+            {35.5, 31.5, 32, 2.8},   // Dead Sea / Lac Asphaltites (Judean Bitumen - Mummification & Caulking)
+            {42.8, 33.6, 34, 2.9},   // Hit / Is on Euphrates (Mesopotamian Bitumen Springs - Ur/Babylon)
+            {49.9, 40.4, 32, 2.7},   // Baku / Absheron Peninsula (Azerbaijan Eternal Flames & Oil Seeps)
+            {44.3, 35.5, 30, 2.6},   // Kirkuk / Baba Gurgur (Assyrian Bitumen Wells)
+            {48.2, 32.2, 28, 2.4},   // Susa / Elam & Khuzestan (Persian Pitch Springs)
+            {20.8, 37.7, 24, 2.2},   // Zakynthos / Keri (Herodotus IV.195 Pitch Springs)
+            {19.5, 40.7, 24, 2.2},   // Apollonia / Nymphaeum (Illyrian Asphalt & Fire)
+            {103.6, 31.0, 28, 2.4},  // Dujiangyan / Sichuan (Han Dynasty Oil & Gas Wells)
+            {-61.6, 10.2, 30, 2.6},  // Pitch Lake (Trinidad - World's Largest Natural Asphalt Lake)
+            {-70.9, 9.8, 30, 2.5},   // Mene Grande / Lake Maracaibo (Venezuelan Mene Seeps)
+            {-118.4, 34.1, 26, 2.2}  // La Brea / Carpinteria (California Indigenous Canoe Sealants)
+        };
+        for (double[] s : ancientBitumenSpots) spots.add(s);
+
+        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 9.0);
         return img;
     }
 
     public static BufferedImage rasterizeGasMap(String type, Scenario scenario) {
-        if (cachedGasMap != null) return cachedGasMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        // Primary non-associated and major global natural gas basins (decoupled from oil)
+        
+        // 1. Total In-Situ Lithospheric Crustal Reserve (Global Giant Gas Reservoirs)
         double[][] majorGasBasins = {
-            {52.0, 26.5, 38, 2.8},    // South Pars / North Dome (Qatar/Iran - World's Largest Gas Field)
+            {52.0, 26.5, 42, 2.8},    // South Pars / North Dome (Qatar/Iran - World's Largest Gas Field)
             {77.0, 66.0, 42, 2.6},    // Urengoy Field (West Siberia, Russia)
             {75.0, 67.5, 40, 2.5},    // Yamburg Field (West Siberia, Russia)
-            {6.8, 53.3, 30, 2.2},     // Groningen Giant Gas Field (Netherlands / North Sea)
-            {62.3, 36.5, 35, 2.4},    // Dauletabad / Galkynysh (Turkmenistan)
-            {3.3, 32.9, 34, 2.3},     // Hassi R'Mel Gas Field (Algeria)
+            {6.8, 53.3, 32, 2.3},     // Groningen Giant Gas Field (Netherlands / North Sea)
+            {62.3, 36.5, 36, 2.4},    // Dauletabad / Galkynysh (Turkmenistan)
+            {3.3, 32.9, 35, 2.3},     // Hassi R'Mel Gas Field (Algeria)
             {-79.5, 41.0, 36, 2.4},   // Marcellus Shale Gas Basin (Appalachian, USA)
             {-93.5, 32.0, 32, 2.2},   // Haynesville Shale Gas (USA)
-            {106.0, 30.5, 35, 2.3},   // Sichuan Gas Basin (China)
-            {34.0, 32.8, 28, 2.0},    // Leviathan & Tamar Basins (Eastern Mediterranean)
+            {106.0, 30.5, 36, 2.4},   // Sichuan Gas Basin (China)
+            {34.0, 32.8, 30, 2.1},    // Leviathan & Tamar Basins (Eastern Mediterranean)
             {44.0, 73.0, 35, 2.2},    // Shtokman Gas Field (Barents Sea)
             {116.0, -19.5, 32, 2.2},  // Northwest Shelf Gas Basin (Australia)
             {-120.0, 56.0, 32, 2.1},  // Montney Gas Basin (Western Canada)
@@ -4543,23 +4592,41 @@ public class HistoricalMapGenerator {
         if (!empirical.isEmpty()) {
             for (double[] e : empirical) spots.add(e);
         }
+
+        // 2. High-Accessibility Surface Gas Vents & Early Bamboo Drilling
+        double[][] ancientGasSpots = {
+            {104.5, 30.0, 34, 2.8},  // Sichuan Basin (Han Dynasty Bamboo Drilling to boil salt brine)
+            {50.0, 40.5, 32, 2.7},   // Baku / Yanar Dag (Absheron Peninsula Eternal Methane Flames)
+            {30.5, 36.4, 26, 2.2},   // Mount Chimaera / Phaselis (Lycia Methane Fires)
+            {44.3, 35.5, 28, 2.4}    // Baba Gurgur (Mesopotamian Burning Gas Seeps)
+        };
+        for (double[] s : ancientGasSpots) spots.add(s);
+
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 8.0);
-        cachedGasMap = img;
         return img;
     }
 
     public static BufferedImage rasterizeUraniumMap(String type, Scenario scenario) {
-        if (cachedUraniumMap != null) return cachedUraniumMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        
+        // Total In-Situ Lithospheric Crustal Reserve (IAEA NFCIS & USGS Uranium/Thorium Metallogenic Provinces)
+        // Invariant planetary crustal reserve available for future civilizational technological unlocking
         var spots = loadMRDSDeposits("uranium", "thorium");
         double[][] iaeaMajorDeposits = {
-            {-105.0, 58.0, 35, 1.4}, {136.9, -30.4, 30, 1.4}, {68.0, 44.0, 40, 1.5},
-            {7.4, 18.7, 30, 1.2}, {27.5, -26.2, 30, 1.2}, {118.0, 50.0, 30, 1.2}
+            {-105.0, 58.0, 38, 2.4},  // Athabasca Basin (Saskatchewan, Canada - High-Grade Unconformity U)
+            {136.9, -30.4, 36, 2.3},  // Olympic Dam (South Australia - Giant Fe-Oxide Cu-Au-U)
+            {68.0, 44.0, 42, 2.5},    // Chu-Sarysu Basin (Kazakhstan - Roll-front ISL Uranium)
+            {7.4, 18.7, 34, 2.2},     // Arlit / Tim Mersoï Basin (Niger - Sandstone U)
+            {27.5, -26.2, 34, 2.2},   // Witwatersrand Basin (South Africa - Conglomerate Au-U)
+            {118.0, 50.0, 34, 2.2},   // Streltsovskoye Caldera (Transbaikal, Russia - Volcanic U)
+            {15.0, -22.5, 32, 2.0},   // Rössing & Husab (Namibia - Alaskite U)
+            {-108.5, 35.5, 30, 2.0},  // Grants Mineral Belt (New Mexico, USA)
+            {132.8, -12.7, 32, 2.1},  // Ranger / Jabiluka (Northern Territory, Australia)
+            {119.5, -23.5, 30, 1.9}   // Yeelirrie (Western Australia - Calcrete U)
         };
         for (double[] b : iaeaMajorDeposits) spots.add(b);
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 6.0);
-        cachedUraniumMap = img;
         return img;
     }
 
@@ -4571,21 +4638,46 @@ public class HistoricalMapGenerator {
     }
 
     public static BufferedImage rasterizeIronCopperMap(String type, Scenario scenario) {
-        if (cachedIronCopperMap != null) return cachedIronCopperMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        
+        // 1. Total In-Situ Lithospheric Crustal Reserve (Global BIFs & Porphyry Giants)
         var spots = loadMRDSDeposits("iron", "copper", "magnetite", "hematite", "chalcopyrite");
-        // Major global Iron & Copper deposits with 3 tiered densities in grayscale
         double[][] majorMetals = {
-            {118.0, -22.5, 35, 1.5}, {120.5, -23.0, 32, 1.4}, {-50.0, -6.0, 38, 1.6}, {-43.5, -20.0, 32, 1.3},
-            {37.0, 51.5, 38, 1.5}, {33.5, 48.0, 34, 1.4}, {-91.5, 47.5, 32, 1.3}, {-66.5, 54.0, 35, 1.3},
-            {20.0, 67.8, 28, 1.3}, {85.5, 22.0, 34, 1.3}, {-69.0, -24.0, 38, 1.5}, {-69.5, -22.3, 35, 1.4},
-            {-70.5, -34.0, 35, 1.4}, {137.0, -4.0, 32, 1.4}, {-111.0, 33.5, 30, 1.2}, {28.0, -12.5, 35, 1.4},
-            {102.0, 25.0, 30, 1.2}, {88.0, 38.0, 25, 1.1}, {-108.0, 32.5, 25, 1.1}
+            {118.0, -22.5, 40, 2.2},  // Pilbara / Hamersley BIFs (Western Australia)
+            {120.5, -23.0, 36, 2.0},  // Mount Whaleback
+            {-50.0, -6.0, 42, 2.4},   // Carajás Iron Giant (Amazon, Brazil)
+            {-43.5, -20.0, 36, 1.8},  // Quadrilátero Ferrífero (Minas Gerais, Brazil)
+            {37.0, 51.5, 40, 2.2},    // Kursk Magnetic Anomaly (Russia)
+            {33.5, 48.0, 36, 2.0},    // Krivoy Rog (Ukraine)
+            {-91.5, 47.5, 36, 1.9},   // Mesabi Iron Range (Lake Superior, USA)
+            {-66.5, 54.0, 38, 2.0},   // Labrador Trough (Canada)
+            {20.0, 67.8, 34, 1.9},    // Kiruna Magnetite (Sweden)
+            {85.5, 22.0, 36, 1.9},    // Singhbhum Iron Ore Belt (India)
+            {-69.0, -24.0, 42, 2.3},  // Escondida (Chile - World's Largest Porphyry Cu)
+            {-69.5, -22.3, 40, 2.2},  // Chuquicamata (Chile)
+            {-70.5, -34.0, 38, 2.0},  // El Teniente (Chile)
+            {137.0, -4.0, 38, 2.1},   // Grasberg (Indonesia - Giant Cu/Au)
+            {-111.0, 33.5, 34, 1.8},  // Morenci & Arizona Copper Basin (USA)
+            {28.0, -12.5, 38, 2.1}    // Central African Copperbelt (Zambia/DRC)
         };
         for (double[] m : majorMetals) spots.add(m);
+
+        // 2. High-Accessibility Surface & Classical Ancient Metallurgy Centers
+        double[][] ancientMetals = {
+            {-6.56, 37.69, 34, 2.8},  // Rio Tinto (Hispania / Rome - Massive Copper/Iron Smelting)
+            {32.9, 35.0, 32, 2.7},    // Cyprus / Troodos Mountains (Classical Copper / Cuprum)
+            {10.3, 42.8, 30, 2.6},    // Elba & Populonia (Etruscan & Roman Iron Smelting)
+            {14.9, 47.5, 30, 2.6},    // Noricum / Erzberg (Ferrum Noricum / Celtic-Roman Steel)
+            {114.0, 34.5, 34, 2.8},   // Han Dynasty Iron Monopolies (Henan/Shandong Blast Furnaces)
+            {8.0, 9.5, 28, 2.4},      // Nok Culture / Taruga (Nigeria - Early African Iron Smelting)
+            {75.8, 28.0, 30, 2.5},    // Khetri Copper Belt (Rajasthan, India - Harappan to Mauryan)
+            {35.4, 30.6, 28, 2.4},    // Faynan & Timna (Levant - Ancient Copper Smelting)
+            {24.06, 37.71, 26, 2.2}   // Laurion / Attica (Greece - Iron & Base Metals)
+        };
+        for (double[] m : ancientMetals) spots.add(m);
+
         rasterizeTieredSpotList(img, spots, new Color(80, 80, 80), new Color(160, 160, 160), new Color(240, 240, 240), 6.0);
-        cachedIronCopperMap = img;
         return img;
     }
 
