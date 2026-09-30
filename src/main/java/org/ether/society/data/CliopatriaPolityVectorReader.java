@@ -77,7 +77,11 @@ public class CliopatriaPolityVectorReader {
         }
         g.dispose();
 
-        // Apply elevation coastline mask and assign authentic regional tribal domains to stateless/unclaimed land
+        // 2. Pre-generate orographic tribal domain background over NOAA ETOPO digital elevation model
+        List<OrographicGlottologPropagator.CulturalSeed> tribalSeeds = getTribalDomainSeeds(targetYear);
+        BufferedImage tribalBg = OrographicGlottologPropagator.propagateCulturalSeeds(tribalSeeds, width, height, elevationMask);
+
+        // Apply elevation coastline mask and assign authentic orographic tribal domains to stateless/unclaimed land
         if (elevationMask != null) {
             for (int y = 0; y < height; y++) {
                 double lat = 90.0 - (y + 0.5) / height * 180.0;
@@ -94,8 +98,8 @@ public class CliopatriaPolityVectorReader {
                         if (occWeight <= 0.001 && targetYear < 1900L) {
                             img.setRGB(x, y, 0x000000);
                         } else {
-                            // Unclaimed / stateless inhabited frontier -> assign authentic regional tribal basin color
-                            int tribalColor = getTribalDomainColor(lon, lat, targetYear);
+                            // Unclaimed / stateless inhabited frontier -> assign authentic orographic tribal domain
+                            int tribalColor = (tribalBg != null) ? tribalBg.getRGB(x, y) : 0x374151;
                             img.setRGB(x, y, tribalColor);
                         }
                     }
@@ -109,13 +113,50 @@ public class CliopatriaPolityVectorReader {
     }
 
     /**
+     * Builds authentic regional tribal / clan domain seeds for orographic cost-distance propagation.
+     */
+    public static List<OrographicGlottologPropagator.CulturalSeed> getTribalDomainSeeds(long year) {
+        List<OrographicGlottologPropagator.CulturalSeed> seeds = new ArrayList<>();
+        // Americas
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(-60.0, -3.0, 0x2E7D32, 1.4, "Amazonian Indigenous Nations"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(-62.0, -25.0, 0x5D4037, 1.3, "Gran Chaco & Pampas"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(-68.0, 6.0, 0x33691E, 1.2, "Orinoco & Caribbean Tribes"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(-82.0, 38.0, 0x388E3C, 1.4, "North American Eastern Woodlands"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(-100.0, 42.0, 0xC27803, 1.5, "North American Great Plains"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(-122.0, 48.0, 0x00796B, 1.3, "Pacific Northwest & Salish"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(-110.0, 32.0, 0xB45309, 1.3, "Southwest / Aridoamerica"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(-105.0, 62.0, 0x455A64, 1.5, "Subarctic Dene & Athabaskan"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(-70.0, 70.0, 0x607D8B, 1.6, "Arctic Inuit / Thule Domain"));
+
+        // Africa
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(0.0, 10.0, 0xB45309, 1.4, "West African Savanna & Voltaic"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(22.0, -1.0, 0x1B5E20, 1.5, "Congo Equatorial Forest Clans"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(38.0, 4.0, 0xC2410C, 1.3, "East African Pastoralists"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(24.0, -28.0, 0xA16207, 1.4, "Southern African Khoisan / San"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(47.0, -19.0, 0x4E342E, 1.2, "Malagasy Indigenous Domain"));
+
+        // Eurasia & Siberia
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(10.0, 56.0, 0x4D7C0F, 1.3, "Northern European Germanic & Celtic Forest Clans"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(30.0, 64.0, 0x0F766E, 1.4, "Boreal Finno-Ugric & Samoyed"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(65.0, 48.0, 0x9A3412, 1.6, "Eurasian Steppe Nomads"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(100.0, 58.0, 0x37474F, 1.5, "Siberian Taiga & Evenki"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(150.0, 65.0, 0x546E7A, 1.5, "Chukchi & Koryak Paleo-Siberian"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(100.0, 20.0, 0x4B6B40, 1.3, "Southeast Asian Zomia Highlands"));
+
+        // Oceania & Australasia
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(134.0, -25.0, 0xA04000, 1.6, "Australian Aboriginal Nations"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(140.0, -5.0, 0x15803D, 1.3, "Papuan Highland Clans"));
+        seeds.add(new OrographicGlottologPropagator.CulturalSeed(170.0, -15.0, 0x0284C7, 1.5, "Polynesian Oceanic Domain"));
+        return seeds;
+    }
+
+    /**
      * Determines the authentic regional tribal / clan domain color for stateless inhabited lands.
      */
     public static int getTribalDomainColor(double lon, double lat, long year) {
         if (lat < -60.0) {
             return 0x0284C7; // Antarctic Treaty / International Scientific Research Domain (#0284C7 Sky Blue)
         }
-
         record TribalDomain(double lon, double lat, int color) {}
         TribalDomain[] domains = {
             // Americas

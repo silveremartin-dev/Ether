@@ -2499,6 +2499,11 @@ public class HistoricalMapGenerator {
             sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(ec[0], ec[1], (int) ec[2], ec[3] / 18.0, "Polity"));
         }
         BufferedImage sovImg = OrographicGlottologPropagator.propagateCulturalSeeds(sovSeeds, WIDTH, HEIGHT, mask, 38.0f);
+
+        // Pre-generate orographic tribal background for stateless frontiers
+        List<OrographicGlottologPropagator.CulturalSeed> tribalSeeds = CliopatriaPolityVectorReader.getTribalDomainSeeds(year);
+        BufferedImage tribalBg = OrographicGlottologPropagator.propagateCulturalSeeds(tribalSeeds, WIDTH, HEIGHT, mask);
+
         // Apply hominin occupancy and assign authentic regional tribal domains outside imperial reach
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
@@ -2512,7 +2517,7 @@ public class HistoricalMapGenerator {
                 } else {
                     int currentRgb = sovImg.getRGB(x, y) & 0xFFFFFF;
                     if (currentRgb == 0x374151 || currentRgb == 0x000000) {
-                        int tribalColor = CliopatriaPolityVectorReader.getTribalDomainColor(lon, lat, year);
+                        int tribalColor = (tribalBg != null) ? tribalBg.getRGB(x, y) : 0x374151;
                         sovImg.setRGB(x, y, tribalColor);
                     }
                 }
@@ -2988,15 +2993,19 @@ public class HistoricalMapGenerator {
             }
         }
 
+        // 2. Ingest empirical HYDE 3.4 population density grid to derive urban agglomeration scaling (Boserup-Kremer effect)
+        BufferedImage densityGrid = (year >= -10000L && year <= 2024L) ? Hyde34GridReader.loadForYear(year) : null;
+
         double baseTech = 25.0;
         if (year <= -10000L) baseTech = 35.0;
         else if (year <= -7000L) baseTech = 55.0;
-        else if (year <= -4500L) baseTech = 80.0;
-        else if (year <= 0L) baseTech = 110.0;
-        else if (year <= 1400L) baseTech = 140.0;
+        else if (year <= -4500L) baseTech = 75.0;
+        else if (year <= 0L) baseTech = 95.0;
+        else if (year <= 1000L) baseTech = 120.0;
+        else if (year <= 1500L) baseTech = 150.0;
         else if (year <= 1800L) baseTech = 180.0;
-        else if (year <= 1950L) baseTech = 220.0;
-        else baseTech = 245.0;
+        else if (year <= 1950L) baseTech = 215.0;
+        else baseTech = 240.0;
 
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
@@ -3020,29 +3029,42 @@ public class HistoricalMapGenerator {
                 }
 
                 double tech = baseTech;
-                double fertCrescent = Math.exp(-(Math.pow(lat - 36.0, 2) + Math.pow(lon - 38.0, 2)) / 70.0);
-                double yellowRiver = Math.exp(-(Math.pow(lat - 34.0, 2) + Math.pow(lon - 113.0, 2)) / 80.0);
-                double yangtze = Math.exp(-(Math.pow(lat - 30.0, 2) + Math.pow(lon - 120.0, 2)) / 80.0);
-                double balkans = Math.exp(-(Math.pow(lat - 44.0, 2) + Math.pow(lon - 21.0, 2)) / 70.0);
-                double indus = Math.exp(-(Math.pow(lat - 29.0, 2) + Math.pow(lon - 68.0, 2)) / 70.0);
-                double meso = Math.exp(-(Math.pow(lat - 18.0, 2) + Math.pow(lon - (-97.0), 2)) / 60.0);
-                double andes = Math.exp(-(Math.pow(lat - (-8.0), 2) + Math.pow(lon - (-78.0), 2)) / 60.0);
+
+                // Boserup-Kremer urban agglomeration scaling derived from empirical HYDE 3.4 density
+                if (densityGrid != null) {
+                    int densSample = densityGrid.getRGB(x, y) & 0xFF;
+                    if (densSample > 0) {
+                        double urbanBonus = 42.0 * Math.log(1.0 + densSample * 2.0) / Math.log(512.0);
+                        tech += urbanBonus;
+                    }
+                }
+
+                // Authentic historical innovation hearths & metallurgical/agricultural cradle intensity
+                double medCore = Math.exp(-(Math.pow(lat - 38.0, 2) + Math.pow(lon - 15.0, 2)) / 140.0); // Greco-Roman Mediterranean & Alexandria
+                double fertCrescent = Math.exp(-(Math.pow(lat - 34.0, 2) + Math.pow(lon - 42.0, 2)) / 90.0);  // Fertile Crescent & Mesopotamia
+                double chinaCore = Math.exp(-(Math.pow(lat - 34.0, 2) + Math.pow(lon - 114.0, 2)) / 110.0); // Yellow River & Yangtze Sinic Core
+                double indiaCore = Math.exp(-(Math.pow(lat - 24.0, 2) + Math.pow(lon - 80.0, 2)) / 100.0);  // Indo-Gangetic & Deccan (Wootz Steel & Maurya)
+                double mesoCore = Math.exp(-(Math.pow(lat - 18.0, 2) + Math.pow(lon - (-96.0), 2)) / 70.0); // Mesoamerican Civilizations
+                double andesCore = Math.exp(-(Math.pow(lat - (-11.0), 2) + Math.pow(lon - (-76.0), 2)) / 70.0); // Central Andean Civilizations
 
                 if (year <= -4500L) {
-                    // Early agricultural / metallurgy emergence
-                    tech += (fertCrescent * 70.0 + yellowRiver * 60.0 + yangtze * 60.0 + balkans * 55.0 + indus * 50.0 + meso * 30.0 + andes * 30.0);
-                } else if (year <= 0) {
-                    double europe = Math.exp(-(Math.pow(lat - 50.0, 2) + Math.pow(lon - 6.0, 2)) / 100.0);
-                    tech += (fertCrescent * 50.0 + yellowRiver * 45.0 + europe * 30.0 + meso * 25.0 + andes * 25.0);
-                } else if (year <= 1400) {
-                    double europe = Math.exp(-(Math.pow(lat - 50.0, 2) + Math.pow(lon - 6.0, 2)) / 100.0);
-                    tech += (yellowRiver * 65.0 + fertCrescent * 50.0 + europe * 40.0 + meso * 30.0 + andes * 30.0);
-                } else if (year <= 1850) {
-                    double europe = Math.exp(-(Math.pow(lat - 50.0, 2) + Math.pow(lon - 6.0, 2)) / 100.0);
-                    tech += (europe * 70.0 + yellowRiver * 45.0);
+                    // Early agricultural / metallurgy emergence (Fertile Crescent, Vinča, Mehrgarh, Yangshao, Caral)
+                    tech += (fertCrescent * 55.0 + chinaCore * 45.0 + indiaCore * 40.0 + mesoCore * 25.0 + andesCore * 25.0);
+                } else if (year <= 500L) {
+                    // Classical Antiquity & Axial Age (Rome, Alexandria, Chang'an, Pataliputra, Ctesiphon)
+                    tech += (medCore * 50.0 + fertCrescent * 40.0 + chinaCore * 48.0 + indiaCore * 42.0 + mesoCore * 25.0 + andesCore * 25.0);
+                } else if (year <= 1500L) {
+                    // Post-Classical & Medieval (Song Dynasty, Islamic Golden Age, Medieval Europe, Chola)
+                    double europeCore = Math.exp(-(Math.pow(lat - 48.0, 2) + Math.pow(lon - 8.0, 2)) / 100.0);
+                    tech += (chinaCore * 55.0 + fertCrescent * 45.0 + indiaCore * 40.0 + europeCore * 40.0 + medCore * 35.0 + mesoCore * 25.0 + andesCore * 25.0);
+                } else if (year <= 1850L) {
+                    // Early Modern & First Industrial Revolution (Western Europe Atlantic Arc & East Asia)
+                    double europeCore = Math.exp(-(Math.pow(lat - 51.0, 2) + Math.pow(lon - 4.0, 2)) / 80.0);
+                    tech += (europeCore * 65.0 + chinaCore * 35.0 + medCore * 30.0 + indiaCore * 25.0);
                 } else {
-                    double europe = Math.exp(-(Math.pow(lat - 50.0, 2) + Math.pow(lon - 6.0, 2)) / 100.0);
-                    tech += (europe * 30.0 + yellowRiver * 30.0);
+                    // Modern Global Diffusion
+                    double europeCore = Math.exp(-(Math.pow(lat - 50.0, 2) + Math.pow(lon - 6.0, 2)) / 90.0);
+                    tech += (europeCore * 25.0 + chinaCore * 25.0);
                 }
 
                 int gray = Math.clamp((int) (tech * occWeight), 0, 255);
