@@ -4961,72 +4961,87 @@ public class HistoricalMapGenerator {
     public static BufferedImage rasterizePreciousMetalsMap(String type, Scenario scenario) {
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        // Dedicated authentic metallogeny for Gold, Silver & Platinum (Ancient Mines + Global Giant Metallogenic Provinces)
-        double[][] majorPrecious = {
-            // --- 1. Roman Empire, Hellenistic & Mediterranean Ancient Districts (Au, Ag, PGE) ---
-            {-6.77, 42.46, 4.5, 4.0},   // Las Médulas (León, Hispania - World's Largest Roman Hydraulic Gold Mine)
-            {-6.56, 37.69, 4.2, 3.8},   // Rio Tinto / Tharsis (Baetica / Huelva - Roman Silver & Gold Smelting)
-            {-4.84, 38.77, 4.0, 3.4},   // Almadén / Sierra Morena (Hispania - Roman Cinnabar, Silver & Gold)
-            {-8.10, 42.15, 3.8, 3.0},   // Castromao / Galicia Roman Gold Placers
-            {-6.60, 40.20, 3.8, 3.0},   // Sierra de Gata / Tagus Auriferous Alluvium
-            {24.06, 37.71, 4.5, 4.0},   // Laurion (Attica, Greece - Classical Athenian Silver Mines / Owl Tetradrachms)
-            {24.20, 40.90, 4.2, 3.6},   // Mount Pangaeon / Philippi (Macedonian Gold of Philip II & Alexander)
-            {23.13, 46.30, 4.5, 4.0},   // Roșia Montană / Alburnus Major (Dacia / Apuseni Mountains - Roman Imperial Gold)
-            {21.43, 42.62, 4.0, 3.2},   // Novo Brdo / Trepča (Balkans Silver & Gold)
-            {22.18, 42.08, 3.8, 3.0},   // Kratovo / Osogovo (Thracian/Roman Gold)
-            {24.70, 36.97, 3.2, 2.8},   // Siphnos (Cyclades Archaic Gold & Silver)
-            {8.03, 45.55, 4.0, 3.2},    // Victimulae / Bessa (Piedmont, Italy - Roman Gold Placers)
-            {7.30, 45.74, 3.8, 3.0},    // Val d'Aosta Roman Gold Veins
+        
+        // Comprehensive metallogenic provinces & ancient historical districts
+        // Each entry: {lon, lat, radiusPx, intensity}
+        var spots = new java.util.ArrayList<double[]>();
 
-            // --- 2. Egypt, Nubia, Arabia & Near East (Pharaonic, Ptolemaic, Lydian & Persian) ---
-            {33.50, 22.00, 4.5, 3.8},   // Wadi Allaqi / Nubian Gold Belt (Pharaonic & Ptolemaic Gold / Nub means Gold)
-            {33.58, 25.99, 4.2, 3.5},   // Wadi Hammamat / Coptos (Gold Road of Pharaohs)
-            {34.80, 24.95, 4.2, 3.5},   // Sukari / Eastern Desert Gold (Egypt)
-            {40.87, 23.50, 4.5, 3.6},   // Mahd adh Dhahab (Cradle of Gold, Hejaz, Arabia - Ancient Gold Mine)
-            {28.04, 38.49, 4.2, 3.8},   // Sardis / Pactolus River (Lydia Electrum - Birth of Coinage)
-            {42.60, 42.25, 4.0, 3.4},   // Colchis / Svaneti Gold Placers (Georgia - Golden Fleece)
-            {44.38, 41.38, 3.8, 3.2},   // Sakdrisi / Bolnisi (Georgia - World's Oldest Known Gold Mine)
-            {67.50, 39.50, 4.5, 3.6},   // Zeravshan Valley / Sogdia (Bactrian & Silk Road Gold)
+        // Ingest USGS MRDS empirical deposits for Gold, Silver and PGEs
+        var mrds = loadMRDSDeposits("gold", "silver", "platinum", "palladium", "electrum");
+        for (double[] m : mrds) {
+            spots.add(new double[]{m[0], m[1], 5.0, 1.2});
+        }
 
-            // --- 3. India, Central Asia & East Asia ---
-            {78.27, 12.96, 4.5, 3.8},   // Kolar Gold Fields (Karnataka, India - Maurya / Satavahana Gold)
-            {76.65, 16.20, 4.0, 3.2},   // Hutti Gold Mines (Raichur, India)
-            {85.00, 50.00, 4.5, 3.6},   // Altai Mountains Auriferous Placers (Scythian Nomadic Gold)
-            {120.40, 37.36, 4.5, 3.8},  // Zhaoyuan / Jiaodong Peninsula (Shandong, China - China's Gold Capital)
-            {117.81, 30.93, 4.2, 3.4},  // Tongling / Yangtze Copper-Gold Belt (Han Dynasty)
-            {112.50, 23.00, 4.0, 3.2},  // Lingnan / Pearl River Gold Placers (Southern China)
-            {138.30, 38.00, 4.0, 3.2},  // Sado Island Gold Mine (Japan)
+        double[][] metallogenicProvinces = {
+            // --- 1. Iberian Pyrite Belt & Roman Mining Districts (Spain & Portugal) ---
+            {-6.77, 42.46, 12.0, 4.2},  // Las Médulas (León - World's Largest Roman Hydraulic Gold Mine)
+            {-6.50, 42.55, 9.0, 3.5},   // El Teleno / Bierzo Gold Placers
+            {-8.10, 42.15, 8.0, 2.8},   // Galicia / Sil River Auriferous Alluvium
+            {-6.56, 37.69, 14.0, 4.0},  // Rio Tinto / Tharsis (Baetica / Huelva - Giant Silver & Gold Smelting)
+            {-6.20, 37.75, 10.0, 3.2},  // Aznalcóllar / Guadiamar River
+            {-4.84, 38.77, 11.0, 3.6},  // Almadén / Sierra Morena (Silver, Cinnabar & Gold)
+            {-5.90, 38.30, 9.0, 3.0},   // Ossa Morena Metallogenic Belt
+            {-6.60, 40.20, 8.0, 2.6},   // Tagus Basin Roman Gold Washings
 
-            // --- 4. Sub-Saharan Africa ---
-            {-11.50, 13.50, 4.8, 3.6},  // Bambouk / Falémé Goldfields (West Africa - Ancient Trans-Saharan Gold)
-            {-9.50, 11.50, 4.8, 3.6},   // Bure Goldfields (Upper Niger River)
-            {-1.67, 6.20, 4.8, 3.8},    // Ashanti Gold Belt / Obuasi (Ghana - Gold Coast)
-            {30.00, -20.00, 4.5, 3.4},  // Great Zimbabwe / Shona Gold Belt
+            // --- 2. Balkan-Carpathian-Hellenic Metallogenic Arc (Classical & Roman) ---
+            {24.06, 37.71, 12.0, 4.2},  // Laurion (Attica, Greece - Classical Athenian Silver Mines)
+            {24.20, 40.90, 11.0, 3.8},  // Mount Pangaeon / Philippi (Macedonian Gold of Philip II)
+            {23.13, 46.30, 14.0, 4.5},  // Roșia Montană / Alburnus Major (Dacia / Apuseni Golden Quadrilateral)
+            {22.85, 46.10, 10.0, 3.5},  // Brad / Săcărâmb Gold District
+            {21.43, 42.62, 11.0, 3.6},  // Novo Brdo / Trepča Silver-Lead-Gold Belt (Balkans)
+            {22.18, 42.08, 9.0, 3.0},   // Kratovo / Osogovo Thracian-Roman Gold
+            {24.70, 36.97, 7.0, 2.6},   // Siphnos (Archaic Aegean Silver & Gold)
+            {8.03, 45.55, 10.0, 3.4},   // Bessa / Victimulae (Piedmont, Italy - Roman Gold Placers)
+            {7.30, 45.74, 8.0, 2.8},    // Val d'Aosta Roman Gold Veins
 
-            // --- 5. Americas (Pre-Columbian & Historic Mining Districts) ---
-            {-76.60, 5.70, 4.8, 3.8},   // Chocó & Calima (Colombia - Pre-Columbian Gold & Platinum Placers)
-            {-79.50, -6.70, 4.5, 3.5},  // Moche / Lambayeque Valley (Peru - Ancient Sican/Moche Gold)
-            {-70.20, -14.20, 4.5, 3.6}, // Carabaya & Lake Titicaca Gold Belt (Inca Coricancha Gold)
-            {-65.75, -19.58, 5.5, 4.2}, // Cerro Rico / Potosí (Bolivia - Giant Silver Mountain)
-            {-102.58, 22.77, 5.0, 3.8}, // Zacatecas / Guanajuato Silver Belt (Mexico)
+            // --- 3. Nubian-Arabian Shield (Pharaonic, Ptolemaic & Ancient Arabian Gold) ---
+            {33.50, 22.00, 15.0, 4.5},  // Wadi Allaqi Nubian Gold Belt (Pharaonic "Nub" Goldmines)
+            {33.58, 25.99, 12.0, 3.8},  // Wadi Hammamat / Coptos Gold Corridor
+            {34.80, 24.95, 13.0, 4.0},  // Sukari / Eastern Desert Gold (Ptolemaic Gold)
+            {33.80, 24.20, 10.0, 3.2},  // Barramiya Gold District
+            {40.87, 23.50, 14.0, 4.2},  // Mahd adh Dhahab (Cradle of Gold, Hejaz, Arabia)
+            {42.50, 20.00, 10.0, 3.0},  // Asir Arabian Gold Belt
+            {28.04, 38.49, 12.0, 4.0},  // Sardis / Pactolus River (Lydia Electrum - Birth of Coinage)
+            {42.60, 42.25, 11.0, 3.6},  // Colchis / Svaneti (Georgia - Golden Fleece)
+            {44.38, 41.38, 9.0, 3.2},   // Sakdrisi / Bolnisi (Georgia - World's Oldest Gold Mine)
 
-            // --- 6. Giant Global Metallogenic Provinces (In-situ Crustal Endowments) ---
-            {27.0, -26.5, 6.0, 4.5},    // Witwatersrand Basin (South Africa - Giant Conglomerate Au)
-            {29.0, -24.5, 5.5, 4.2},    // Bushveld Complex Platinum Group Elements (South Africa)
-            {64.6, 41.5, 5.5, 4.2},     // Muruntau (Uzbekistan - World's Largest Open-Pit Gold Deposit)
-            {-116.0, 40.8, 5.0, 4.0},   // Carlin Trend (Nevada, USA - Giant Epithermal Au)
-            {121.5, -30.7, 5.0, 4.0},   // Kalgoorlie Golden Mile (Western Australia)
-            {150.8, 62.5, 5.5, 4.0},    // Kolyma / Magadan Gold Belt (Russia)
-            {88.2, 69.3, 5.5, 4.2},     // Norilsk-Talnakh PGMs & Au (Siberia, Russia)
-            {-81.0, 46.5, 4.8, 3.6},    // Sudbury Basin (Ontario, Canada - PGMs/Au)
-            {-78.5, -7.0, 5.0, 3.8},    // Yanacocha (Cajamarca, Peru - Epithermal Au)
-            {137.1, -4.0, 5.2, 4.0},    // Grasberg (Papua, Indonesia - Supergiant Au/Cu)
-            {116.36, -32.8, 4.8, 3.6}   // Boddington (Western Australia)
+            // --- 4. Central Asian, Indian & East Asian Metallogenic Belts ---
+            {64.60, 41.50, 18.0, 5.0},  // Muruntau (Kyzylkum / Uzbekistan - World's Largest Open-Pit Gold)
+            {67.50, 39.50, 14.0, 4.0},  // Zeravshan Valley / Sogdia & Bactria Gold Belt
+            {78.27, 12.96, 13.0, 4.2},  // Kolar Gold Fields (Karnataka, India - Maurya/Satavahana)
+            {76.65, 16.20, 10.0, 3.4},  // Hutti Gold Mines (Raichur, India)
+            {85.00, 50.00, 14.0, 4.0},  // Altai Mountains Gold Placers (Scythian Nomadic Gold)
+            {120.40, 37.36, 15.0, 4.5}, // Zhaoyuan / Jiaodong Peninsula (China's Gold Capital)
+            {117.81, 30.93, 12.0, 3.6}, // Tongling / Yangtze Copper-Gold Belt (Han Dynasty)
+            {112.50, 23.00, 10.0, 3.0}, // Lingnan / Pearl River Alluvial Gold
+            {138.30, 38.00, 9.0, 3.2},  // Sado Island Gold Mine (Japan)
+
+            // --- 5. Sub-Saharan African Gold Belts ---
+            {-11.50, 13.50, 14.0, 4.0}, // Bambouk / Falémé Goldfields (West Africa)
+            {-9.50, 11.50, 13.0, 3.8},  // Bure Goldfields (Upper Niger River)
+            {-1.67, 6.20, 16.0, 4.6},   // Ashanti Gold Belt / Obuasi (Ghana - Gold Coast)
+            {30.00, -20.00, 13.0, 3.8}, // Great Zimbabwe / Shona Gold Belt
+            {27.00, -26.50, 22.0, 5.5}, // Witwatersrand Basin (South Africa - Giant Conglomerate Gold)
+            {29.00, -24.50, 18.0, 4.8}, // Bushveld Complex Platinum Group Elements (South Africa)
+
+            // --- 6. Americas (Pre-Columbian & Supergiant Mineralized Belts) ---
+            {-76.60, 5.70, 14.0, 4.2},  // Chocó & Calima (Colombia - Pre-Columbian Gold & Platinum Placers)
+            {-79.50, -6.70, 12.0, 3.8}, // Lambayeque / Moche Valley (Peru - Ancient Sican/Moche Gold)
+            {-70.20, -14.20, 13.0, 4.0},// Carabaya & Lake Titicaca Gold Belt (Inca Coricancha)
+            {-65.75, -19.58, 18.0, 5.2},// Cerro Rico / Potosí (Bolivia - Giant Silver Mountain)
+            {-102.58, 22.77, 16.0, 4.6},// Zacatecas / Guanajuato Silver Belt (Mexico)
+            {-116.00, 40.80, 16.0, 4.5},// Carlin Trend (Nevada, USA - Giant Epithermal Gold)
+            {121.50, -30.75, 16.0, 4.5},// Kalgoorlie Golden Mile (Western Australia)
+            {150.80, 62.50, 16.0, 4.4}, // Kolyma / Magadan Gold Belt (Russia)
+            {88.20, 69.30, 18.0, 4.8},  // Norilsk-Talnakh PGMs & Au (Siberia, Russia)
+            {-81.00, 46.50, 14.0, 4.0}, // Sudbury Basin (Ontario, Canada - PGMs/Au)
+            {-78.50, -7.00, 15.0, 4.2}, // Yanacocha (Cajamarca, Peru - Epithermal Au)
+            {137.10, -4.05, 16.0, 4.5}  // Grasberg (Papua, Indonesia - Supergiant Au/Cu)
         };
-        var list = new java.util.ArrayList<double[]>();
-        for (double[] p : majorPrecious) list.add(p);
-        rasterizeSpotListToAlpha(img, list, Color.WHITE, 4.5);
-        cachedPreciousMetalsMap = img;
+
+        for (double[] p : metallogenicProvinces) spots.add(p);
+        
+        rasterizeTieredSpotList(img, spots, new Color(90, 90, 90), new Color(175, 175, 175), new Color(255, 255, 255), 8.0);
         return img;
     }
 
@@ -5235,16 +5250,16 @@ public class HistoricalMapGenerator {
                 // Elevation screening: Lowland sedimentary plains have thick alluvial storage, high crests have poor retention
                 double elevM = (mask != null) ? (land / 255.0) * 8848.0 : 200.0;
                 double orographicCapacityFactor;
-                if (elevM <= 400.0) {
+                if (elevM <= 350.0) {
                     orographicCapacityFactor = 1.0;
-                } else if (elevM <= 1200.0) {
-                    orographicCapacityFactor = 1.0 - (elevM - 400.0) / 1000.0 * 0.60;
+                } else if (elevM <= 1000.0) {
+                    orographicCapacityFactor = 1.0 - (elevM - 350.0) / 650.0 * 0.70;
                 } else {
-                    orographicCapacityFactor = Math.max(0.12, 0.40 - (elevM - 1200.0) / 2500.0 * 0.30);
+                    orographicCapacityFactor = Math.max(0.08, 0.30 - (elevM - 1000.0) / 2000.0 * 0.22);
                 }
 
-                // Continental baseline groundwater for all sedimentary lowlands
-                double aquiferYield = 45.0 * orographicCapacityFactor;
+                // Continental baseline groundwater for all sedimentary lowlands (55-80)
+                double aquiferYield = 65.0 * orographicCapacityFactor;
 
                 // Alluvial floodplain recharge corridors
                 for (double[] al : majorAlluvials) {
@@ -5252,7 +5267,7 @@ public class HistoricalMapGenerator {
                     double dLat = (lat - al[1]) / al[3];
                     double d2 = dLon * dLon + dLat * dLat;
                     if (d2 < 1.0) {
-                        double boost = (1.0 - d2) * 55.0 * orographicCapacityFactor;
+                        double boost = (1.0 - d2) * 85.0 * orographicCapacityFactor;
                         aquiferYield += boost;
                     }
                 }
@@ -5271,7 +5286,7 @@ public class HistoricalMapGenerator {
                     if (distNormSq < 1.0) {
                         // Structural basin profile with realistic parabolic sediment compaction gradient
                         double basinProfile = 1.0 - distNormSq;
-                        double yield = b[5] * Math.pow(basinProfile, 0.45) * orographicCapacityFactor;
+                        double yield = b[5] * Math.pow(basinProfile, 0.35) * orographicCapacityFactor;
                         aquiferYield = Math.max(aquiferYield, yield);
                     }
                 }

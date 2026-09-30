@@ -75,6 +75,45 @@ public class CliopatriaPolityVectorReader {
                 g.fill(path);
             }
         }
+
+        // 1b. Authentic Autonomous City-States & Oasis Kingdoms of Classical Antiquity (Year 0 / -500 to 500 AD)
+        if (targetYear >= -500L && targetYear <= 500L) {
+            record ClassicalPolity(double lon, double lat, double radiusDeg, int color) {}
+            ClassicalPolity[] classicalStates = {
+                // Tarim Basin Silk Road Oasis City-States (Distinct from Han Core)
+                new ClassicalPolity(79.92, 37.11, 2.2, 0xEAB308),  // Kingdom of Khotan (Yutian #EAB308 Gold)
+                new ClassicalPolity(82.96, 41.72, 2.2, 0xA855F7),  // Kingdom of Kucha (Qiuci #A855F7 Purple)
+                new ClassicalPolity(89.17, 39.03, 2.5, 0x06B6D4),  // Kingdom of Shanshan / Loulan (#06B6D4 Cyan)
+                new ClassicalPolity(75.98, 39.46, 2.0, 0x10B981),  // Kingdom of Kashgar (Shule #10B981 Emerald)
+                new ClassicalPolity(89.18, 42.95, 1.8, 0xF97316),  // Kingdom of Turpan / Jiaohe (#F97316 Amber)
+
+                // Near East, Caucasus & Black Sea Client / Independent States
+                new ClassicalPolity(35.44, 30.32, 2.5, 0xEA580C),  // Nabataean Kingdom (Petra #EA580C Terracotta)
+                new ClassicalPolity(44.50, 40.18, 3.5, 0x9333EA),  // Kingdom of Armenia (Artaxiad #9333EA Royal Purple)
+                new ClassicalPolity(44.72, 41.84, 2.0, 0x84CC16),  // Caucasian Iberia (#84CC16 Lime)
+                new ClassicalPolity(47.85, 40.98, 2.2, 0x14B8A6),  // Caucasian Albania (#14B8A6 Teal)
+                new ClassicalPolity(36.47, 45.35, 2.5, 0x0284C7),  // Bosporan Kingdom (Crimea #0284C7 Sky Blue)
+                new ClassicalPolity(2.25, 36.59, 3.0, 0xD97706),   // Kingdom of Mauretania (Juba II #D97706 Bronze)
+                new ClassicalPolity(13.06, 26.53, 3.2, 0xB45309),  // Garamantes Saharan Kingdom (#B45309 Ochre)
+
+                // Asia & Proto-States
+                new ClassicalPolity(105.15, 10.50, 3.0, 0x16A085), // Kingdom of Funan (Mekong Delta #16A085)
+                new ClassicalPolity(125.75, 39.03, 2.5, 0x8B5CF6), // Early Goguryeo (Korea #8B5CF6)
+                new ClassicalPolity(127.00, 37.50, 2.0, 0xEC4899), // Early Baekje / Mahan (#EC4899)
+                new ClassicalPolity(129.20, 35.80, 2.0, 0x3B82F6), // Early Silla / Jinhan (#3B82F6)
+                new ClassicalPolity(130.40, 33.60, 2.5, 0xF43F5E)  // Yayoi Chiefdoms of Japan (#F43F5E)
+            };
+
+            for (ClassicalPolity cp : classicalStates) {
+                g.setColor(new Color(cp.color));
+                int cx = (int) (((cp.lon + 180.0) / 360.0) * width);
+                int cy = (int) (((90.0 - cp.lat) / 180.0) * height);
+                int rx = (int) (cp.radiusDeg / 360.0 * width);
+                int ry = (int) (cp.radiusDeg / 180.0 * height);
+                g.fillOval(cx - rx, cy - ry, rx * 2, ry * 2);
+            }
+        }
+
         g.dispose();
 
         // 2. Pre-generate orographic tribal domain background over NOAA ETOPO digital elevation model
