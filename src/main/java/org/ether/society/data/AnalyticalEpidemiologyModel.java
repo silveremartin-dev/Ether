@@ -103,8 +103,8 @@ public class AnalyticalEpidemiologyModel {
 
                 if (isAmericas || isOceania) {
                     if (year < 1492L) {
-                        // Isolated endemic baseline: Amazonian/tropical arboviruses present, but NO Old World crowd diseases
-                        baseStress = 18.0 + (isAmericas ? (amazon * 45.0 + tropicalCore * 25.0) : (tropicalCore * 30.0));
+                        // Isolated endemic baseline: Amazonian/tropical arboviruses present, but NO Old World crowd zoonoses (smallpox, measles, plague)
+                        baseStress = 14.0 + (isAmericas ? (amazon * 25.0 + tropicalCore * 12.0) : (tropicalCore * 14.0));
                     } else {
                         // Virgin soil epidemic shock following 1492 contact
                         double timeSinceContact = Math.min(120.0, (double) (year - 1492L));

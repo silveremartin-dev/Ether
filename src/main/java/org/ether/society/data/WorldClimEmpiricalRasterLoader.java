@@ -95,13 +95,13 @@ public class WorldClimEmpiricalRasterLoader {
                             precipBaseline[y][x] = pv;
                         }
 
-                        // 3. Temperature Seasonality (WorldClim Bio4 = std dev * 100 -> convert to annual amplitude °C)
+                        // 3. Temperature Seasonality (WorldClim Bio4 = std dev * 100 -> convert to full annual peak-to-peak amplitude °C = 2 * sqrt(2) * SD)
                         float sv = sRaw[srcY][srcX];
                         if (Float.isNaN(sv) || sv < 0.0f || sv > 50000.0f) {
                             seasonBaseline[y][x] = (float) computePhysicalMarineSeasonality(lat, lon);
                         } else {
-                            double rangeC = (sv / 100.0) * 0.28;
-                            seasonBaseline[y][x] = (float) Math.clamp(rangeC, 0.5, 65.0);
+                            double rangeC = (sv / 100.0) * 2.8284;
+                            seasonBaseline[y][x] = (float) Math.clamp(rangeC, 1.5, 65.0);
                         }
                     }
                 }

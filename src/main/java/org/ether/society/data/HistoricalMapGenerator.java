@@ -3760,13 +3760,81 @@ public class HistoricalMapGenerator {
     }
 
     private static List<CityPoint> getCitiesForScenario(String type, Scenario scenario) {
-        if (scenario == null || scenario.getInitialHumanCount() <= 0) {
-            return getCitiesForScenario(type);
-        }
-        long pop = scenario.getInitialHumanCount();
+        long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         List<CityPoint> list = new ArrayList<>();
 
-        if (pop >= 1_000_000_000L) { // 10^9+ Global Megacities (high tech urban hubs)
+        if (year <= -3000L) {
+            // Early Bronze Age / Megalithic Civilizations
+            list.add(new CityPoint("Uruk", 31.3, 45.6, 3.8, 2.2));
+            list.add(new CityPoint("Memphis", 29.8, 31.2, 3.8, 2.2));
+            list.add(new CityPoint("Susa", 32.2, 48.3, 3.5, 2.0));
+            list.add(new CityPoint("Mohenjo-Daro", 27.3, 68.1, 3.5, 2.0));
+            list.add(new CityPoint("Caral-Supe", -10.9, -77.5, 3.2, 2.0));
+            list.add(new CityPoint("Liangzhu", 30.4, 120.0, 3.5, 2.0));
+            list.add(new CityPoint("Knossos", 35.3, 25.2, 3.0, 1.8));
+        } else if (year <= -500L) {
+            // Bronze & Early Iron Age Empires (Thebes, Babylon, Nineveh, Anyang, Tyre)
+            list.add(new CityPoint("Thebes", 25.7, 32.6, 4.0, 2.4));
+            list.add(new CityPoint("Babylon", 32.5, 44.4, 4.2, 2.5));
+            list.add(new CityPoint("Nineveh", 36.3, 43.1, 4.0, 2.4));
+            list.add(new CityPoint("Anyang", 36.1, 114.3, 4.0, 2.4));
+            list.add(new CityPoint("Tyre", 33.3, 35.2, 3.5, 2.0));
+            list.add(new CityPoint("Varanasi", 25.3, 83.0, 3.8, 2.2));
+            list.add(new CityPoint("San Lorenzo", 17.8, -94.8, 3.0, 2.0));
+        } else if (year <= 500L) {
+            // Classical Antiquity & Axial Age (Rome, Alexandria, Chang'an, Luoyang, Pataliputra, Ctesiphon, Teotihuacán)
+            list.add(new CityPoint("Rome", 41.9, 12.5, 4.5, 2.8));
+            list.add(new CityPoint("Alexandria", 31.2, 29.9, 4.2, 2.5));
+            list.add(new CityPoint("Chang'an", 34.2, 108.9, 4.5, 2.8));
+            list.add(new CityPoint("Luoyang", 34.6, 112.4, 4.2, 2.5));
+            list.add(new CityPoint("Pataliputra", 25.6, 85.1, 4.2, 2.5));
+            list.add(new CityPoint("Ctesiphon", 33.1, 44.6, 4.0, 2.4));
+            list.add(new CityPoint("Antioch", 36.2, 36.1, 3.8, 2.2));
+            list.add(new CityPoint("Carthage", 36.8, 10.3, 3.5, 2.0));
+            list.add(new CityPoint("Athens", 37.9, 23.7, 3.4, 2.0));
+            list.add(new CityPoint("Taxila", 33.7, 72.8, 3.5, 2.0));
+            list.add(new CityPoint("Teotihuacán", 19.7, -98.9, 3.8, 2.4));
+            list.add(new CityPoint("Tikal", 17.2, -89.6, 3.2, 2.0));
+        } else if (year <= 1500L) {
+            // Medieval Era (Constantinople, Baghdad, Kaifeng, Hangzhou, Cairo, Cordoba, Kyoto, Tenochtitlan, Cuzco)
+            list.add(new CityPoint("Constantinople", 41.0, 28.9, 4.6, 2.8));
+            list.add(new CityPoint("Baghdad", 33.3, 44.4, 4.8, 2.8));
+            list.add(new CityPoint("Kaifeng", 34.7, 114.3, 4.8, 2.8));
+            list.add(new CityPoint("Hangzhou", 30.2, 120.1, 4.8, 2.8));
+            list.add(new CityPoint("Cairo", 30.0, 31.2, 4.5, 2.5));
+            list.add(new CityPoint("Cordoba", 37.9, -4.8, 4.2, 2.2));
+            list.add(new CityPoint("Delhi", 28.6, 77.2, 4.2, 2.4));
+            list.add(new CityPoint("Kyoto", 35.0, 135.7, 4.0, 2.2));
+            list.add(new CityPoint("Tenochtitlan", 19.4, -99.1, 4.2, 2.4));
+            list.add(new CityPoint("Cuzco", -13.5, -71.9, 3.8, 2.2));
+            list.add(new CityPoint("Timbuktu", 16.7, -3.0, 3.5, 2.0));
+            list.add(new CityPoint("Angkor", 13.4, 103.9, 4.4, 2.5));
+            list.add(new CityPoint("Paris", 48.8, 2.35, 4.0, 2.2));
+        } else if (year <= 1800L) {
+            // Early Modern Era (Beijing, London, Paris, Edo, Istanbul, Delhi, Amsterdam, Mexico City)
+            list.add(new CityPoint("Beijing", 39.9, 116.4, 5.0, 2.8));
+            list.add(new CityPoint("London", 51.5, -0.1, 4.8, 2.6));
+            list.add(new CityPoint("Paris", 48.8, 2.35, 4.8, 2.6));
+            list.add(new CityPoint("Edo", 35.6, 139.7, 5.0, 2.8));
+            list.add(new CityPoint("Istanbul", 41.0, 28.9, 4.8, 2.6));
+            list.add(new CityPoint("Delhi", 28.6, 77.2, 4.6, 2.5));
+            list.add(new CityPoint("Amsterdam", 52.4, 4.9, 4.2, 2.2));
+            list.add(new CityPoint("Mexico City", 19.4, -99.1, 4.2, 2.2));
+            list.add(new CityPoint("Potosí", -19.6, -65.7, 3.8, 2.0));
+        } else if (year <= 1920L) {
+            // 19th - Early 20th C Industrial (London, New York, Paris, Berlin, Vienna, St Petersburg, Chicago, Tokyo)
+            list.add(new CityPoint("London", 51.5, -0.1, 5.4, 2.8));
+            list.add(new CityPoint("New York", 40.7, -74.0, 5.4, 2.8));
+            list.add(new CityPoint("Paris", 48.8, 2.35, 5.0, 2.6));
+            list.add(new CityPoint("Berlin", 52.5, 13.4, 4.8, 2.5));
+            list.add(new CityPoint("Vienna", 48.2, 16.4, 4.6, 2.4));
+            list.add(new CityPoint("Saint Petersburg", 59.9, 30.3, 4.8, 2.5));
+            list.add(new CityPoint("Chicago", 41.8, -87.6, 4.8, 2.5));
+            list.add(new CityPoint("Tokyo", 35.6, 139.7, 5.0, 2.6));
+            list.add(new CityPoint("Shanghai", 31.2, 121.5, 4.8, 2.5));
+            list.add(new CityPoint("Calcutta", 22.5, 88.3, 4.6, 2.4));
+        } else {
+            // Contemporary / Future (Global Megacities)
             list.add(new CityPoint("Tokyo Megacity", 35.6, 139.7, 5.5, 2.8));
             list.add(new CityPoint("New York Tri-State", 40.7, -74.0, 5.2, 2.6));
             list.add(new CityPoint("London Metro", 51.5, -0.1, 4.8, 2.4));
@@ -3779,41 +3847,6 @@ public class HistoricalMapGenerator {
             list.add(new CityPoint("Paris Isle Hub", 48.8, 2.35, 4.5, 2.2));
             list.add(new CityPoint("Mexico City Valley", 19.4, -99.1, 4.8, 2.4));
             list.add(new CityPoint("Sydney Pacific Hub", -33.8, 151.2, 4.0, 2.0));
-        } else if (pop >= 100_000_000L) { // 10^8 Industrial / Modern Urban Networks
-            list.add(new CityPoint("London", 51.5, -0.1, 4.5, 2.5));
-            list.add(new CityPoint("Paris", 48.8, 2.35, 4.2, 2.2));
-            list.add(new CityPoint("New York", 40.7, -74.0, 4.5, 2.5));
-            list.add(new CityPoint("Tokyo", 35.6, 139.7, 4.8, 2.5));
-            list.add(new CityPoint("Beijing", 39.9, 116.4, 4.5, 2.4));
-            list.add(new CityPoint("Calcutta", 22.5, 88.3, 4.2, 2.2));
-            list.add(new CityPoint("Cairo", 30.0, 31.2, 4.0, 2.0));
-        } else if (pop >= 1_000_000L) { // 10^7 Imperial / Agrarian Networks
-            list.add(new CityPoint("Rome", 41.9, 12.5, 4.2, 2.5));
-            list.add(new CityPoint("Alexandria", 31.2, 29.9, 3.8, 2.2));
-            list.add(new CityPoint("Chang'an", 34.2, 108.9, 4.2, 2.5));
-            list.add(new CityPoint("Pataliputra", 25.6, 85.1, 4.0, 2.2));
-            list.add(new CityPoint("Babylon", 32.5, 44.4, 3.8, 2.0));
-        } else if (pop >= 100_000L) { // Early Agricultural Settlements
-            list.add(new CityPoint("Uruk", 31.3, 45.6, 3.5, 2.0));
-            list.add(new CityPoint("Memphis", 29.8, 31.2, 3.5, 2.0));
-            list.add(new CityPoint("Mohenjo-Daro", 27.3, 68.1, 3.2, 2.0));
-        } else { // Low / Hunter-Gatherer Band Dispersal (< 100k)
-            list.add(new CityPoint("Omo", 4.5, 36.0, 2.0, 3.5));
-            list.add(new CityPoint("Blombos", -34.4, 21.2, 1.8, 3.0));
-            list.add(new CityPoint("Madjedbebe", -12.5, 132.9, 1.8, 3.0));
-        }
-
-        List<CityPoint> specific = getCitiesForScenario(type);
-        if (specific != null && !specific.isEmpty() && pop < 1_000_000_000L) {
-            for (CityPoint cp : specific) {
-                boolean exists = false;
-                for (CityPoint ex : list) {
-                    if (distSq(cp.lng, cp.lat, ex.lng, ex.lat) < 25.0) {
-                        exists = true; break;
-                    }
-                }
-                if (!exists) list.add(cp);
-            }
         }
         return list;
     }
@@ -4486,11 +4519,31 @@ public class HistoricalMapGenerator {
         if (cachedGasMap != null) return cachedGasMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        var spots = EmpiricalGeospatialDatasetIngestion.getEmpiricalGasOccurrences();
-        if (spots.isEmpty()) {
-            spots = loadMRDSDeposits("natural gas", "gas", "methane");
+        // Primary non-associated and major global natural gas basins (decoupled from oil)
+        double[][] majorGasBasins = {
+            {52.0, 26.5, 38, 2.8},    // South Pars / North Dome (Qatar/Iran - World's Largest Gas Field)
+            {77.0, 66.0, 42, 2.6},    // Urengoy Field (West Siberia, Russia)
+            {75.0, 67.5, 40, 2.5},    // Yamburg Field (West Siberia, Russia)
+            {6.8, 53.3, 30, 2.2},     // Groningen Giant Gas Field (Netherlands / North Sea)
+            {62.3, 36.5, 35, 2.4},    // Dauletabad / Galkynysh (Turkmenistan)
+            {3.3, 32.9, 34, 2.3},     // Hassi R'Mel Gas Field (Algeria)
+            {-79.5, 41.0, 36, 2.4},   // Marcellus Shale Gas Basin (Appalachian, USA)
+            {-93.5, 32.0, 32, 2.2},   // Haynesville Shale Gas (USA)
+            {106.0, 30.5, 35, 2.3},   // Sichuan Gas Basin (China)
+            {34.0, 32.8, 28, 2.0},    // Leviathan & Tamar Basins (Eastern Mediterranean)
+            {44.0, 73.0, 35, 2.2},    // Shtokman Gas Field (Barents Sea)
+            {116.0, -19.5, 32, 2.2},  // Northwest Shelf Gas Basin (Australia)
+            {-120.0, 56.0, 32, 2.1},  // Montney Gas Basin (Western Canada)
+            {49.0, 51.5, 34, 2.3},    // Karachaganak Gas Field (Kazakhstan)
+            {103.5, 6.0, 30, 2.0}     // Gulf of Thailand Gas Basin
+        };
+        var spots = new java.util.ArrayList<double[]>();
+        for (double[] gSpot : majorGasBasins) spots.add(gSpot);
+        var empirical = EmpiricalGeospatialDatasetIngestion.getEmpiricalGasOccurrences();
+        if (!empirical.isEmpty()) {
+            for (double[] e : empirical) spots.add(e);
         }
-        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 10.0);
+        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 8.0);
         cachedGasMap = img;
         return img;
     }
@@ -4540,21 +4593,36 @@ public class HistoricalMapGenerator {
         if (cachedPreciousMetalsMap != null) return cachedPreciousMetalsMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        var spots = loadMRDSDeposits("gold", "silver", "platinum", "palladium", "electrum");
+        // Dedicated authentic metallogeny for Gold, Silver & Platinum (Ancient + Global Giant Reserves)
         double[][] majorPrecious = {
-            {27.0, -26.5, 48, 2.8},   // Witwatersrand (South Africa - Giant Gold)
-            {29.0, -24.5, 45, 2.6},   // Bushveld Complex Platinum (South Africa)
-            {-116.0, 40.8, 42, 2.5},  // Carlin Trend Nevada (USA - Gold)
-            {-65.7, -19.6, 45, 2.7},  // Potosí Cerro Rico (Bolivia - Silver)
-            {121.5, -30.7, 40, 2.4},  // Kalgoorlie Super Pit (Australia - Gold)
-            {64.6, 41.5, 42, 2.5},    // Muruntau Gold (Uzbekistan)
-            {88.2, 69.3, 45, 2.6},    // Norilsk-Talnakh PGMs (Russia)
-            {-81.0, 46.5, 38, 2.3},   // Sudbury Basin (Canada - PGMs/Au)
-            {-78.5, -7.0, 40, 2.4},   // Yanacocha (Peru - Gold)
-            {137.1, -4.0, 42, 2.5}    // Grasberg (Indonesia - Gold/Copper)
+            // Authentic Ancient Historical Gold & Silver Mines (Antiquity & Medieval)
+            {-6.77, 42.46, 28, 2.5},  // Las Médulas (Hispania / Rome - World's Largest Ancient Gold Mine)
+            {-6.56, 37.69, 26, 2.4},  // Rio Tinto (Hispania / Rome - Silver & Gold)
+            {24.06, 37.71, 24, 2.3},  // Laurion (Attica / Greece - Silver of Classical Athens)
+            {23.13, 46.30, 26, 2.4},  // Roșia Montană / Dacia (Roman Imperial Gold Mines)
+            {33.50, 22.00, 28, 2.4},  // Nubia / Wadi Allaqi (Pharaonic & Ptolemaic Gold)
+            {67.50, 39.50, 26, 2.3},  // Bactria / Zeravshan Valley Gold (Sogdia / Silk Road)
+            {78.27, 12.96, 25, 2.2},  // Kolar Gold Fields (India / Maurya Empire)
+            {85.00, 50.00, 28, 2.3},  // Altai Mountains Gold Placers (Scythian Gold)
+            {-76.60, 5.70, 26, 2.2},   // Chocó / Calima (Colombia - Pre-Columbian Gold)
+            {-70.20, -14.20, 26, 2.3}, // Carabaya / Lake Titicaca (Peru - Inca Gold)
+            {138.30, 38.00, 24, 2.2}, // Sado Island Gold Mine (Japan)
+
+            // Giant Global Metallogenic Provinces
+            {27.0, -26.5, 45, 2.8},   // Witwatersrand (South Africa - Giant Conglomerate Gold)
+            {29.0, -24.5, 42, 2.6},   // Bushveld Complex Platinum (South Africa)
+            {-116.0, 40.8, 38, 2.5},  // Carlin Trend Nevada (USA - Epithermal Gold)
+            {-65.7, -19.6, 42, 2.7},  // Potosí Cerro Rico (Bolivia - Giant Silver Mountain)
+            {121.5, -30.7, 36, 2.4},  // Kalgoorlie Golden Mile (Australia)
+            {64.6, 41.5, 38, 2.5},    // Muruntau (Uzbekistan - World's Largest Open-Pit Gold)
+            {88.2, 69.3, 40, 2.6},    // Norilsk-Talnakh PGMs (Russia)
+            {-81.0, 46.5, 35, 2.3},   // Sudbury Basin (Canada - PGMs/Au)
+            {-78.5, -7.0, 36, 2.4},   // Yanacocha (Peru - Epithermal Gold)
+            {137.1, -4.0, 38, 2.5}    // Grasberg (Indonesia - Porphyry Au/Cu)
         };
-        for (double[] p : majorPrecious) spots.add(p);
-        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 5.0);
+        var list = new java.util.ArrayList<double[]>();
+        for (double[] p : majorPrecious) list.add(p);
+        rasterizeSpotListToAlpha(img, list, Color.WHITE, 6.0);
         cachedPreciousMetalsMap = img;
         return img;
     }
@@ -4682,33 +4750,30 @@ public class HistoricalMapGenerator {
         if (cachedAquiferMap != null) return cachedAquiferMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        var spots = EmpiricalGeospatialDatasetIngestion.getEmpiricalAquiferOccurrences();
-        if (spots.isEmpty()) {
-            // Fallback to major global sedimentary aquifer systems (UNESCO WHYMAP GWR)
-            double[][] majorAquifers = {
-                {25.0, 22.0, 85, 1.5},   // Nubian Sandstone Aquifer System (2.2M km2)
-                {-100.0, 38.0, 65, 1.3}, // Ogallala Aquifer USA
-                {-54.0, -25.0, 80, 1.5}, // Guaraní Aquifer South America (1.2M km2)
-                {138.0, -26.0, 85, 1.4}, // Great Artesian Basin Australia (1.7M km2)
-                {10.0, 30.0, 70, 1.3},   // Northern Sahara Aquifer System
-                {80.0, 27.0, 75, 1.4},   // Indo-Gangetic Basin
-                {2.0, 47.0, 55, 1.2},    // Paris / Aquitaine Basins Europe
-                {-60.0, -3.0, 90, 1.5},  // Amazon Basin Aquifers
-                {22.0, -1.0, 75, 1.3},   // Congo Basin Aquifer
-                {75.0, 60.0, 85, 1.4},   // West Siberian Basin Aquifer
-                {122.0, -18.0, 60, 1.2}, // Canning Basin Australia
-                {82.0, 39.0, 55, 1.2},   // Tarim Basin Aquifer
-                {-48.0, -1.5, 50, 1.2},  // Marajó Aquifer System
-                {-118.0, 36.0, 45, 1.2}, // California Central Valley Aquifer
-                {45.0, 25.0, 60, 1.3},   // Arabian Aquifer System
-                {16.0, 14.0, 65, 1.3},   // Chad Basin Aquifer
-                {23.0, -22.0, 60, 1.2},  // Kalahari / Karoo Aquifer
-                {116.0, 37.0, 65, 1.3},  // North China Plain Aquifer
-                {70.0, 30.0, 65, 1.3}    // Indus Basin Aquifer
-            };
-            for (double[] a : majorAquifers) spots.add(a);
-        }
-        rasterizeSpotListToAlpha(img, spots, Color.WHITE, 12.0);
+        // Continuous sedimentary aquifer basins (UNESCO WHYMAP GWR)
+        double[][] majorAquifers = {
+            {26.0, 22.0, 120, 2.2},   // Nubian Sandstone Aquifer System (2.2M km2)
+            {-100.0, 38.0, 90, 1.8},  // Ogallala Aquifer High Plains USA
+            {-54.0, -25.0, 110, 2.0}, // Guaraní Aquifer South America (1.2M km2)
+            {138.0, -26.0, 120, 1.9}, // Great Artesian Basin Australia (1.7M km2)
+            {8.0, 30.0, 100, 1.8},    // Northern Sahara Aquifer System
+            {80.0, 27.0, 95, 2.0},    // Indo-Gangetic Basin Alluvium
+            {2.0, 47.0, 75, 1.6},     // Paris & Aquitaine Basins Europe
+            {-60.0, -3.0, 130, 2.0},  // Amazon Sedimentary Basin
+            {22.0, -1.0, 110, 1.8},   // Congo Basin Aquifers
+            {75.0, 60.0, 120, 1.9},   // West Siberian Basin Aquifer
+            {122.0, -18.0, 85, 1.5},  // Canning Basin Australia
+            {82.0, 39.0, 80, 1.5},    // Tarim Basin Aquifer
+            {-119.5, 36.5, 65, 1.6},  // California Central Valley Aquifer
+            {46.0, 24.0, 90, 1.7},    // Arabian Aquifer System
+            {16.0, 14.0, 90, 1.7},    // Chad Basin Aquifer
+            {23.0, -23.0, 85, 1.6},   // Kalahari / Karoo Aquifer
+            {116.0, 37.0, 90, 1.8},   // North China Plain Aquifer
+            {70.0, 30.0, 90, 1.8}     // Indus Basin Aquifer
+        };
+        var list = new java.util.ArrayList<double[]>();
+        for (double[] a : majorAquifers) list.add(a);
+        rasterizeSpotListToAlpha(img, list, Color.WHITE, 40.0);
         cachedAquiferMap = img;
         return img;
     }
