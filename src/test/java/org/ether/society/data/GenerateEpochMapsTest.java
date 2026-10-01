@@ -533,6 +533,44 @@ public class GenerateEpochMapsTest {
     }
 
     @Test
+    public void validatePrehistoricCartographicDifferentiation() {
+        // 1. Validate Sahul (Australia) Wallace Line Crossing
+        double sahulLon = 133.0, sahulLat = -25.0;
+        double occ100k = HistoricalMapGenerator.getHomininOccupancyWeight(sahulLon, sahulLat, -100000L);
+        double occ74k  = HistoricalMapGenerator.getHomininOccupancyWeight(sahulLon, sahulLat, -74000L);
+        double occ50k  = HistoricalMapGenerator.getHomininOccupancyWeight(sahulLon, sahulLat, -50000L);
+        double occ20k  = HistoricalMapGenerator.getHomininOccupancyWeight(sahulLon, sahulLat, -20000L);
+
+        org.junit.jupiter.api.Assertions.assertEquals(0.0, occ100k, 1e-6, "Sahul must be strictly unoccupied at -100,000 BP");
+        org.junit.jupiter.api.Assertions.assertEquals(0.0, occ74k, 1e-6, "Sahul must be strictly unoccupied at -74,000 BP");
+        org.junit.jupiter.api.Assertions.assertTrue(occ50k > 0.5, "Sahul must be populated at -50,000 BP across Wallace Line");
+        org.junit.jupiter.api.Assertions.assertTrue(occ20k > 0.5, "Sahul must be populated at -20,000 BP");
+
+        // 2. Validate Toba Volcanic Winter Anomalies (-74k vs -100k)
+        double indiaLon = 78.0, indiaLat = 20.0;
+        double occIndia100k = HistoricalMapGenerator.getHomininOccupancyWeight(indiaLon, indiaLat, -100000L);
+        double occIndia74k = HistoricalMapGenerator.getHomininOccupancyWeight(indiaLon, indiaLat, -74000L);
+        org.junit.jupiter.api.Assertions.assertTrue(occIndia74k < occIndia100k * 0.3, "South Asia hominin occupancy must be severely depressed by Toba ash fall");
+
+        double tobaTempDelta = WorldClimEmpiricalRasterLoader.computePaleoTemperatureDelta(indiaLat, indiaLon, 200.0, -74000L);
+        double eemianTempDelta = WorldClimEmpiricalRasterLoader.computePaleoTemperatureDelta(indiaLat, indiaLon, 200.0, -100000L);
+        org.junit.jupiter.api.Assertions.assertTrue(tobaTempDelta < -4.0, "Toba volcanic winter must have <= -4.0°C cooling anomaly in South Asia");
+        org.junit.jupiter.api.Assertions.assertTrue(eemianTempDelta > 0.5, "Eemian must have positive warming anomaly");
+
+        // 3. Validate Dynamic Groundwater Aquifer Recharge
+        double saharaLon = 18.0, saharaLat = 21.0;
+        double rech100k = HistoricalMapGenerator.getPaleoAquiferRechargeFactor(saharaLon, saharaLat, -100000L);
+        double rech74k = HistoricalMapGenerator.getPaleoAquiferRechargeFactor(saharaLon, saharaLat, -74000L);
+        double rechSahul50k = HistoricalMapGenerator.getPaleoAquiferRechargeFactor(sahulLon, sahulLat, -50000L);
+        double rechLgm20k = HistoricalMapGenerator.getPaleoAquiferRechargeFactor(0.0, 50.0, -20000L);
+
+        org.junit.jupiter.api.Assertions.assertTrue(rech100k > 2.0, "Green Sahara MIS 5e must have > 2.0x aquifer recharge factor");
+        org.junit.jupiter.api.Assertions.assertTrue(rech74k < 0.70, "Toba tropical drought must have < 0.70x recharge factor");
+        org.junit.jupiter.api.Assertions.assertTrue(rechSahul50k >= 1.5, "MIS 3 Sahul megalakes must have >= 1.5x aquifer recharge factor");
+        org.junit.jupiter.api.Assertions.assertTrue(rechLgm20k <= 0.45, "LGM high-latitude permafrost lock-up must have <= 0.45x recharge factor");
+    }
+
+    @Test
     public void generateAll36EpochsCulturalData() throws Exception {
         File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
         File rootDir = new File("data/maps/ether/earth");
@@ -599,7 +637,7 @@ public class GenerateEpochMapsTest {
 
     private void writeEpochCulturalRegistry(File target, EpochMeta em, File seshatFile) throws Exception {
         long yr = em.year();
-        List<CliopatriaPolityVectorReader.HistoricalPolityFeature> polities = Collections.emptyList();
+        List<HistoricalPolityFeature> polities = Collections.emptyList();
         List<NaturalEarthVectorIngestor.CountryFeature> modernCountries = Collections.emptyList();
 
         if (yr >= 1900) {
@@ -661,7 +699,7 @@ public class GenerateEpochMapsTest {
         } else if (!polities.isEmpty()) {
             // Write authentic extracted Seshat polities
             for (int i = 0; i < polities.size(); i++) {
-                CliopatriaPolityVectorReader.HistoricalPolityFeature p = polities.get(i);
+                HistoricalPolityFeature p = polities.get(i);
                 java.awt.Color col = CliopatriaPolityVectorReader.getPolityColor(p.name, p.seshatId);
                 int rgb = col.getRGB() & 0xFFFFFF;
                 String hex = String.format("#%06X", rgb);

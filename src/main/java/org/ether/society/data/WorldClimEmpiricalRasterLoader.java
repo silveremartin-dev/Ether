@@ -523,16 +523,18 @@ public class WorldClimEmpiricalRasterLoader {
 
         // Global mean temperature anomaly relative to pre-industrial (EPICA / NGRIP delta18O)
         double globalAnom;
-        if (year <= -70000L) {
-            globalAnom = -1.8;
-        } else if (year <= -40000L) {
-            globalAnom = -3.8;
+        if (year <= -85000L) {
+            globalAnom = 1.2;  // MIS 5e Eemian Interglacial Warm Optimum (+1.2°C)
+        } else if (year <= -65000L) {
+            globalAnom = -4.5; // -74,000 BP: Youngest Toba Tuff Super-Eruption & MIS 4 Glacial stadial (-4.5°C)
+        } else if (year <= -35000L) {
+            globalAnom = -3.5; // -50,000 BP: MIS 3 Intermediate Glacial (-3.5°C)
         } else if (year <= -18000L) {
-            globalAnom = -5.8;
+            globalAnom = -6.0; // -20,000 BP: Last Glacial Maximum peak (-6.0°C)
         } else if (year <= -10500L) {
-            globalAnom = -2.2;
+            globalAnom = -2.8; // -10,900 BP: Younger Dryas abrupt hemispheric cooling (-2.8°C)
         } else if (year <= -5000L) {
-            globalAnom = 0.6; // Mid-Holocene thermal maximum
+            globalAnom = 0.8;  // Holocene Climate Optimum (+0.8°C)
         } else {
             globalAnom = -0.3; // Neoglacial late Holocene
         }
@@ -546,8 +548,14 @@ public class WorldClimEmpiricalRasterLoader {
 
         double deltaT = globalAnom * polarFactor * landAmplification;
 
+        // Toba Volcanic Aerosol Shielding (Concentrated in Northern Hemisphere and South/SE Asia at ~ -74,000 BP)
+        if (year <= -65000L && year > -85000L) {
+            double tobaPlume = Math.exp(-(Math.pow(lat - 15.0, 2) / 250.0 + Math.pow(lon - 85.0, 2) / 800.0));
+            deltaT -= (tobaPlume * 4.5);
+        }
+
         // Ice sheet albedo & topographic lapse rate cooling over ice domes
-        if (year <= -40000L && year > -70000L) {
+        if (year <= -35000L && year > -70000L) {
             double dFenno = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_FENNOSCANDIA_MIS3);
             double dLaur = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_LAURENTIDE_MIS3);
             if (dFenno <= 4.0) deltaT -= 8.0 * Math.exp(-Math.max(0, dFenno) / 2.0);
@@ -580,13 +588,19 @@ public class WorldClimEmpiricalRasterLoader {
 
         double absLat = Math.abs(lat);
 
-        if (year <= -18000L && year >= -25000L) {
-            return 1.0 - 0.35 * Math.sin(Math.toRadians(absLat));
+        if (year <= -65000L && year > -85000L) {
+            // Toba Volcanic Drought in Monsoon Tropics
+            if (lat >= -10.0 && lat <= 35.0 && lon >= 40.0 && lon <= 130.0) {
+                return 0.55; // 45% monsoon collapse
+            }
+            return 0.85;
+        } else if (year <= -18000L && year >= -25000L) {
+            return 1.0 - 0.38 * Math.sin(Math.toRadians(absLat));
         } else if (year <= -10500L && year > -12500L) {
             if (lat >= 5.0 && lat <= 35.0 && lon >= 60.0 && lon <= 130.0) {
-                return 0.75; // Asian monsoon drought
+                return 0.75; // Asian monsoon drought in Younger Dryas
             }
-            return 0.92;
+            return 0.90;
         }
         return 1.0;
     }
@@ -595,10 +609,10 @@ public class WorldClimEmpiricalRasterLoader {
         if (year >= 1950) return 0.0;
 
         // African Humid Period / Green Sahara & Arabian wet corridor (-100,000 BP & -10,000 to -5,000 BP)
-        if (year <= -70000L || (year <= -4500L && year >= -10500L)) {
+        if (year <= -85000L || (year <= -4500L && year >= -10500L)) {
             double greenSahara = Math.exp(-(Math.pow(lat - 21.0, 2) / 80.0 + Math.pow(lon - 15.0, 2) / 450.0));
             double greenArabia = Math.exp(-(Math.pow(lat - 22.0, 2) / 50.0 + Math.pow(lon - 48.0, 2) / 120.0));
-            return (greenSahara * 850.0) + (greenArabia * 550.0);
+            return (greenSahara * 950.0) + (greenArabia * 650.0);
         }
 
         return 0.0;
@@ -607,10 +621,12 @@ public class WorldClimEmpiricalRasterLoader {
     public static double computePaleoSeasonalityFactor(long year) {
         if (year >= 1950) return 1.0;
 
-        if (year <= -70000L || (year <= -6000L && year >= -11000L)) {
-            return 1.12;
+        if (year <= -85000L || (year <= -6000L && year >= -11000L)) {
+            return 1.15; // High obliquity / enhanced seasonality
+        } else if (year <= -65000L && year > -85000L) {
+            return 1.20; // Post-Toba severe winter extremes
         } else if (year <= -18000L && year >= -25000L) {
-            return 0.94;
+            return 0.92;
         }
         return 1.0;
     }

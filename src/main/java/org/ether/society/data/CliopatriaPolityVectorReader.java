@@ -35,16 +35,6 @@ public class CliopatriaPolityVectorReader {
 
     public static final String SESHAT_GEOJSON_PATH = "data/maps/seshat/cliopatria_polities_only.geojson";
 
-    public static class HistoricalPolityFeature {
-        public String name;
-        public int fromYear;
-        public int toYear;
-        public String seshatId;
-        public String wikipedia;
-        public List<Path2D> paths = new ArrayList<>();
-        public Color color;
-    }
-
     /**
      * Loads and rasterizes Seshat ClioPatria historical polity polygons for the specified year.
      */

@@ -418,8 +418,8 @@ public class HistoricalMapGenerator {
             return 0.0;
         }
 
-        if (year <= -70000L) {
-            // -100,000 BP (MIS 5c/5d): Smooth bioclimatic permafrost limit
+        if (year <= -85000L) {
+            // -100,000 BP (MIS 5e Eemian Interglacial): Confined to Africa & Eurasia, Sahul & Americas strictly 0
             int species = getHomininSpeciesType(lon, lat);
             if (species == 0) return 0.0;
             double maxLat = 56.0 + 3.0 * Math.sin((lon - 10.0) * Math.PI / 90.0) - (lon > 60.0 ? (lon - 60.0) * 0.05 : 0.0);
@@ -431,9 +431,35 @@ public class HistoricalMapGenerator {
                 return 1.0 - t * t * (3.0 - 2.0 * t);
             }
             return 1.0;
-        } else if (year <= -40000L) {
-            // -50,000 BP (MIS 3 / Sahul Colonization & IUP)
-            // Americas strictly uninhabited: smooth Atlantic & Pacific barrier
+        } else if (year <= -65000L) {
+            // -74,000 BP (Youngest Toba Tuff Super-Eruption & MIS 4 Glacial Stadial):
+            // Americas & Sahul strictly uninhabited
+            if ((lon < -25.0 && lon > -170.0) || (lon > 115.0 && lat < -5.0)) {
+                return 0.0;
+            }
+            int species = getHomininSpeciesType(lon, lat);
+            if (species == 0) return 0.0;
+
+            // Scandinavian glacier
+            double dFenno = signedDistanceToPolygon(lon, lat, POLY_FENNOSCANDIA_MIS3);
+            if (dFenno <= 0) return 0.0;
+            double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
+
+            // Toba Volcanic Ash Depopulation in South Asia (Jurreru/Narmada/Deccan severely depressed)
+            double dAsh = Math.exp(-(Math.pow(lat - 18.0, 2) / 120.0 + Math.pow(lon - 80.0, 2) / 220.0));
+            double ashFactor = Math.max(0.08, 1.0 - dAsh * 0.88);
+
+            // Cold permafrost clamp at 52°N in Eurasia
+            double maxLat = 52.0;
+            if (lat > maxLat) return 0.0;
+            if (lat > 46.0) {
+                double t = Math.clamp((lat - 46.0) / 6.0, 0.0, 1.0);
+                return Math.min(wFenno, (1.0 - t * t * (3.0 - 2.0 * t)) * ashFactor);
+            }
+            return wFenno * ashFactor;
+        } else if (year <= -35000L) {
+            // -50,000 BP (MIS 3 / Sahul Colonization across Wallace Line & IUP in Eurasia)
+            // Americas strictly uninhabited before LGM
             if (lon < -25.0 && lon > -170.0) {
                 return 0.0;
             }
@@ -1665,7 +1691,7 @@ public class HistoricalMapGenerator {
                 }
 
                 double dens = 0.0;
-                if (year <= -70000) {
+                if (year <= -85000) {
                     // -100,000 BP: Sapiens in Africa & Levant, Mousterian Neanderthals, Denisovans
                     double densSapiens = 1.8 +
                         5.5 * Math.exp(-distSq(lng, lat, 36.0, 0.0) / 450.0) +      // East African Rift
@@ -1692,7 +1718,28 @@ public class HistoricalMapGenerator {
                         0.40 * Math.exp(-distSq(lng, lat, 102.0, 35.0) / 250.0);    // Tibetan Plateau
 
                     dens = blendPaleoTraits(lng, lat, densSapiens, densNeanderthal, densDenisovan);
-                } else if (year <= -40000) {
+                } else if (year <= -65000) {
+                    // -74,000 BP (Toba Super-Eruption Bottleneck): Sapiens contracted to African Refugia, South Asian depopulation
+                    double densSapiensRefugia = 0.4 +
+                        3.2 * Math.exp(-distSq(lng, lat, 22.1, -34.2) / 120.0) +    // Pinnacle Point / Mossel Bay coastal refuge
+                        2.8 * Math.exp(-distSq(lng, lat, 24.0, -34.0) / 120.0) +    // Klasies River Mouth
+                        2.5 * Math.exp(-distSq(lng, lat, 36.0, 0.5) / 180.0) +      // East African Equatorial Highlands
+                        1.8 * Math.exp(-distSq(lng, lat, -2.4, 34.8) / 140.0) +     // Maghreb Taforalt refuge
+                        1.2 * Math.exp(-distSq(lng, lat, 35.3, 32.7) / 120.0);     // Skhul / Qafzeh Levant contact
+
+                    double densNeanderthalRefugia = 0.15 +
+                        0.55 * Math.exp(-distSq(lng, lat, -5.5, 36.1) / 150.0) +    // Gibraltar Gorham's Cave refuge
+                        0.50 * Math.exp(-distSq(lng, lat, 1.5, 43.5) / 180.0) +     // Aquitaine / Pyrenees refuge
+                        0.45 * Math.exp(-distSq(lng, lat, 15.0, 40.5) / 160.0) +    // Southern Italy / Mediterranean
+                        0.40 * Math.exp(-distSq(lng, lat, 44.0, 36.0) / 160.0);     // Zagros Shanidar
+
+                    double densDenisovanRefugia = 0.15 +
+                        0.45 * Math.exp(-distSq(lng, lat, 84.5, 51.4) / 120.0) +    // Denisova Cave Altai
+                        0.35 * Math.exp(-distSq(lng, lat, 102.5, 35.5) / 150.0) +   // Baishiya Tibetan Plateau
+                        0.30 * Math.exp(-distSq(lng, lat, 110.0, -7.5) / 180.0);    // Sundaland Ngandong
+
+                    dens = blendPaleoTraits(lng, lat, densSapiensRefugia, densNeanderthalRefugia, densDenisovanRefugia);
+                } else if (year <= -35000) {
                     // -50,000 BP (MIS 3): Sapiens expansion, initial IUP in Eurasia, maritime colonization of SAHUL
                     double densAfrica = 1.6 +
                         4.5 * Math.exp(-distSq(lng, lat, 36.0, 0.5) / 400.0) +      // East Africa
@@ -2749,9 +2796,11 @@ public class HistoricalMapGenerator {
             empireCores.add(new double[]{149.1, -35.3, 0x14B8A6, 24.0}); // Oceania / Australia (#14B8A6)
         }
 
-        // Handle -100,000 BP paleolithic tier via authentic hominin taxon hearths with Orographic propagation
-        if (year <= -70000L) {
-            // MIS 5 Paleolithic Hominin Bio-Geographical & Taxonomic Ranges
+        // ---------------------------------------------------------------------------
+        // PALEOLITHIC & DEEP-TIME SOVEREIGNTY / TAXONOMIC EXPANSION BRACKETS
+        // ---------------------------------------------------------------------------
+        if (year <= -85000L) {
+            // MIS 5e Paleolithic Hominin Bio-Geographical & Taxonomic Ranges (-100,000 BP)
             List<OrographicGlottologPropagator.CulturalSeed> sovSeeds = new ArrayList<>();
             // Homo sapiens: Pan-African Multiregional Domain (#D35400)
             sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(36.0, 0.5, 0xD35400, 1.5, "Homo sapiens African Rift Core (Omo/Herto)"));
@@ -2779,6 +2828,116 @@ public class HistoricalMapGenerator {
             sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(78.0, 22.0, 0x7D3C98, 1.4, "South Asian Archaic Narmada Range"));
 
             BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(sovSeeds, WIDTH, HEIGHT, mask);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        orographicImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(orographicImg);
+        } else if (year <= -65000L) {
+            // -74,000 BP: Youngest Toba Tuff Super-Eruption Bottleneck & MIS 4 Glacial Refugia
+            List<OrographicGlottologPropagator.CulturalSeed> tobaSeeds = new ArrayList<>();
+            // Sapiens Coastal & Highland African Refugia (#D35400 & #F39C12)
+            tobaSeeds.add(new OrographicGlottologPropagator.CulturalSeed(22.1, -34.2, 0xD35400, 1.2, "Pinnacle Point Coastal Refugium"));
+            tobaSeeds.add(new OrographicGlottologPropagator.CulturalSeed(24.0, -34.0, 0xD35400, 1.2, "Klasies River Mouth Refugium"));
+            tobaSeeds.add(new OrographicGlottologPropagator.CulturalSeed(36.0, 0.5, 0xD35400, 1.3, "East African Highland Refugium"));
+            tobaSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-2.4, 34.8, 0xD35400, 1.1, "Taforalt Maghreb Coastal Refugium"));
+            tobaSeeds.add(new OrographicGlottologPropagator.CulturalSeed(35.3, 32.7, 0xF39C12, 1.0, "Levantine Residual Contact (Qafzeh)"));
+            // Neanderthal Southern European & Zagros Refugia (#1F618D & #1A5276)
+            tobaSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-5.5, 36.1, 0x1F618D, 1.2, "Gibraltar Gorham's Cave Neanderthal Refugium"));
+            tobaSeeds.add(new OrographicGlottologPropagator.CulturalSeed(1.5, 43.5, 0x1F618D, 1.2, "Pyrenean / Aquitaine Mousterian Refugium"));
+            tobaSeeds.add(new OrographicGlottologPropagator.CulturalSeed(15.0, 40.5, 0x1F618D, 1.1, "Southern Italian / Mediterranean Mousterian"));
+            tobaSeeds.add(new OrographicGlottologPropagator.CulturalSeed(44.2, 36.8, 0x1A5276, 1.2, "Zagros Highland Shanidar Refugium"));
+            // Denisovan Altai & Tibetan Cold Refugia (#229954)
+            tobaSeeds.add(new OrographicGlottologPropagator.CulturalSeed(84.5, 51.4, 0x229954, 1.3, "Altai Denisova Cave Refugium"));
+            tobaSeeds.add(new OrographicGlottologPropagator.CulturalSeed(102.5, 35.5, 0x229954, 1.2, "Baishiya High-Altitude Plateau Refugium"));
+            // Sundaland Archaic (#7D3C98)
+            tobaSeeds.add(new OrographicGlottologPropagator.CulturalSeed(110.0, -7.5, 0x7D3C98, 1.3, "Solo River Late Erectus (Ngandong)"));
+
+            BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(tobaSeeds, WIDTH, HEIGHT, mask, 32.0f);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        orographicImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(orographicImg);
+        } else if (year <= -35000L) {
+            // -50,000 BP: MIS 3 Upper Paleolithic Revolution & Sahul Landfall across Wallace Line
+            List<OrographicGlottologPropagator.CulturalSeed> mis3Seeds = new ArrayList<>();
+            // Homo sapiens: Pan-African Early LSA (#D35400 & #E67E22)
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(36.0, 0.5, 0xD35400, 1.5, "Homo sapiens African Rift Core (Omo/Herto)"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(22.0, -34.0, 0xE67E22, 1.4, "Homo sapiens Southern African Howiesons Poort"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(-5.0, 34.0, 0xD35400, 1.3, "Homo sapiens Maghreb Bladelet Complex"));
+            // Homo sapiens: Initial Upper Paleolithic (IUP) Eurasian Expansion (#F39C12 & #E74C3C)
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(35.5, 32.5, 0xF39C12, 1.3, "Levant IUP Ahmarian / Ksar Akil Hub"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(25.4, 43.0, 0xF39C12, 1.3, "Balkan IUP Bacho Kiro Pioneer Front"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(71.2, 57.7, 0xF39C12, 1.4, "Siberian IUP Ust'-Ishim Mammoth Hunters"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(78.0, 15.3, 0xF39C12, 1.4, "South Asian Post-Toba Microblade Expansion (Jwalapuram)"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(115.9, 39.7, 0xF39C12, 1.4, "East Asian Modern Humans (Tianyuan)"));
+            // Homo sapiens: Sahul Aboriginal Colonization across Wallace Line (#C0392B & #EA580C)
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(132.9, -12.5, 0xC0392B, 1.6, "Sahul Pioneer Domain (Madjedbebe / Arnhem Land)"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(125.0, -16.0, 0xC0392B, 1.5, "Kimberley Early Edge-Ground Axe Domain"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(143.0, -33.7, 0xC0392B, 1.5, "Willandra Lakes / Lake Mungo Ancestral Domain"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(115.0, -34.0, 0xC0392B, 1.4, "Southwestern Sahul Domain (Devil's Lair)"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(143.0, -5.5, 0xEA580C, 1.5, "Papuan Highland Sahul Domain (Huon)"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(147.0, -42.0, 0xC0392B, 1.3, "Tasmanian Southern Sahul Foragers"));
+            // Neanderthal Late Châtelperronian & Regressing Mousterian (#1F618D & #1A5276)
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(1.2, 44.9, 0x1F618D, 1.3, "Western European Neanderthal (La Ferrassie/Spy)"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(16.0, 46.3, 0x1F618D, 1.2, "Central European Late Mousterian (Vindija)"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(40.0, 44.2, 0x1A5276, 1.2, "Caucasus Late Neanderthal (Mezmaiskaya)"));
+            // Denisovans (#229954)
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(84.5, 51.4, 0x229954, 1.4, "Denisovan Altai Domain"));
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(102.5, 35.5, 0x229954, 1.3, "Denisovan Tibetan Plateau Domain"));
+            // Sundaland Late Archaic (#7D3C98)
+            mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(110.0, -7.5, 0x7D3C98, 1.4, "Sundaland Ngandong / Solo River"));
+
+            BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(mis3Seeds, WIDTH, HEIGHT, mask);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        orographicImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(orographicImg);
+        } else if (year <= -18000L) {
+            // -25,000 to -18,000 BP: Gravettian Mammoth Steppe & Last Glacial Maximum (LGM) Refugia
+            List<OrographicGlottologPropagator.CulturalSeed> lgmSeeds = new ArrayList<>();
+            // Franco-Cantabrian Solutrean & Mediterranean Epigravettian (#E74C3C & #9B59B6)
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(1.0, 45.0, 0xE74C3C, 1.4, "Franco-Cantabrian Solutrean Refuge (Laugerie-Haute)"));
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-4.5, 43.4, 0xE74C3C, 1.3, "Cantabrian Cave Sanctuary Domain (Altamira)"));
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(15.5, 41.7, 0x9B59B6, 1.3, "Italian Epigravettian Refuge (Grotta Paglicci)"));
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(23.0, 38.5, 0x9B59B6, 1.2, "Balkan / Aegean Coastal Epigravettian"));
+            // Central & Eastern European Gravettian Mammoth Hunters (#3498DB & #1ABC9C)
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(16.5, 48.8, 0x3498DB, 1.4, "Pavlovian / Moravian Mammoth Camp (Dolni Vestonice)"));
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(39.0, 51.4, 0x1ABC9C, 1.4, "Don Steppe Mammoth Hunters (Kostenki)"));
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(35.0, 50.5, 0x1ABC9C, 1.3, "Dnepr River Mammoth Bone Dwellings (Mezhirich)"));
+            // Arctic Siberia & Beringian Standstill (#16A085 & #00BCD4)
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(135.4, 70.7, 0x16A085, 1.5, "Yana RHS Arctic Mammoth Hunters"));
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-140.7, 67.1, 0x00BCD4, 1.5, "Beringian Standstill Refugium (Bluefish Caves)"));
+            // Levant Kebaran & Nile Valley (#F39C12 & #D35400)
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(35.5, 32.7, 0xF39C12, 1.2, "Kebaran Epipaleolithic Encampments (Ohalo II)"));
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(32.5, 25.5, 0xD35400, 1.3, "Nile Valley Wadi Kubbaniya Foragers"));
+            // Asian & Sahul Domains
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(115.0, 30.0, 0x2ECC71, 1.5, "Yangtze / South China Paleolithic (Yuchanyan)"));
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(78.0, 22.0, 0xD35400, 1.4, "Indian Subcontinent Mesolithic Precursor"));
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(134.0, -24.0, 0xC0392B, 1.6, "Sahul Aboriginal Nations"));
+            lgmSeeds.add(new OrographicGlottologPropagator.CulturalSeed(22.0, -34.0, 0xF1C40F, 1.4, "South African Coastal Robberg LSA"));
+
+            BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(lgmSeeds, WIDTH, HEIGHT, mask);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
@@ -2904,8 +3063,8 @@ public class HistoricalMapGenerator {
             languageCenters.add(new double[]{-55.0, -15.0, 0x4CAF50, 28.0}); // Tupi-Guarani (#4CAF50)
         }
 
-        if (year <= -70000L) {
-            // MIS 5 Paleolithic Technocomplex & Communication Macro-Provinces
+        if (year <= -85000L) {
+            // MIS 5e Paleolithic Technocomplex & Communication Macro-Provinces (-100,000 BP)
             List<OrographicGlottologPropagator.CulturalSeed> paleoLangs = new ArrayList<>();
             paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(-1.0, 30.0, 0xE67E22, 2.2, "Pan-Saharan Aterian Technocomplex"));
             paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(35.0, 10.0, 0xF39C12, 2.0, "East African & Nilotic Bladelet Corridor"));
@@ -2920,6 +3079,122 @@ public class HistoricalMapGenerator {
             paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(105.0, 0.0, 0x8E44AD, 2.2, "Sundaland Pebble-Tool & Bamboo Communication Sphere"));
 
             BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(paleoLangs, WIDTH, HEIGHT, mask, 1e5f);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        orographicImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(orographicImg);
+        } else if (year <= -65000L) {
+            // -74,000 BP: Toba Volcanic Winter Refugial Technocomplexes
+            List<OrographicGlottologPropagator.CulturalSeed> tobaLangs = new ArrayList<>();
+            tobaLangs.add(new OrographicGlottologPropagator.CulturalSeed(22.1, -34.2, 0xC0392B, 1.6, "Southern African Coastal Pre-Howiesons Poort"));
+            tobaLangs.add(new OrographicGlottologPropagator.CulturalSeed(36.0, 0.5, 0xF39C12, 1.8, "East African Rift Bladelet Refugium"));
+            tobaLangs.add(new OrographicGlottologPropagator.CulturalSeed(-2.4, 34.8, 0xE67E22, 1.5, "Maghreb Aterian Refugial Technocomplex"));
+            tobaLangs.add(new OrographicGlottologPropagator.CulturalSeed(35.3, 32.7, 0xF59E0B, 1.4, "Levantine Mousterian/Sapiens Boundary Hub"));
+            tobaLangs.add(new OrographicGlottologPropagator.CulturalSeed(-5.5, 36.1, 0x2980B9, 1.6, "Iberian / Gorham's Mousterian Refugium"));
+            tobaLangs.add(new OrographicGlottologPropagator.CulturalSeed(1.5, 43.5, 0x1F4788, 1.6, "Franco-Cantabrian Denticulate Mousterian"));
+            tobaLangs.add(new OrographicGlottologPropagator.CulturalSeed(44.2, 36.8, 0x3B82F6, 1.5, "Zagros Highland Mousterian Refugium"));
+            tobaLangs.add(new OrographicGlottologPropagator.CulturalSeed(84.5, 51.4, 0x27AE60, 2.0, "Altai Denisovan Cold-Stadial Bladelet Complex"));
+            tobaLangs.add(new OrographicGlottologPropagator.CulturalSeed(110.0, -7.5, 0x8E44AD, 1.8, "Sundaland Late Soloensis Pebble-Tool Domain"));
+
+            BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(tobaLangs, WIDTH, HEIGHT, mask, 1e5f);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        orographicImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(orographicImg);
+        } else if (year <= -35000L) {
+            // -50,000 BP: MIS 3 Initial Upper Paleolithic & Sahul Edge-Ground Axe Traditions
+            List<OrographicGlottologPropagator.CulturalSeed> mis3Langs = new ArrayList<>();
+            // Sapiens Initial Upper Paleolithic (IUP) & African LSA
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(22.0, -34.0, 0xE67E22, 2.0, "Howiesons Poort Geometric Microlithic Complex"));
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(36.0, 0.5, 0xF39C12, 2.0, "East African Enkapune Ya Muto LSA Bladelets"));
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(-5.0, 34.0, 0xD35400, 1.8, "Maghreb Late Aterian / Dabban Precursor"));
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(35.5, 32.5, 0xE74C3C, 1.8, "Levant Early Ahmarian / Emiran Prismatic Blades"));
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(25.4, 43.0, 0xEF4444, 2.0, "Danube-Balkan IUP Bachokirian Blade Technocomplex"));
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(71.2, 57.7, 0xF97316, 2.2, "Siberian Ust'-Ishim Mammoth Hunter Blades"));
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(78.0, 15.3, 0xD97706, 2.2, "Indian Subcontinent Jwalapuram Microblade Tradition"));
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(115.9, 39.7, 0x10B981, 2.2, "East Asian Tianyuan Blade & Bone-Tool Complex"));
+            // Sahul Aboriginal Technocomplexes (crossing Wallace Line)
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(132.9, -12.5, 0xC0392B, 2.2, "Arnhem Land Madjedbebe Edge-Ground Axe Technocomplex"));
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(143.0, -33.7, 0x991B1B, 2.2, "Willandra Lakes Core & Scraper Tradition"));
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(143.0, -5.5, 0xDC2626, 2.0, "Papuan Highland Huon Waisted-Axe Technocomplex"));
+            // Neanderthal & Denisovan Technocomplexes
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(1.2, 44.9, 0x2980B9, 2.0, "Franco-Cantabrian Late Mousterian & Chatelperronian"));
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(16.0, 46.3, 0x1F4788, 1.8, "Central European Vindija Late Mousterian"));
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(84.5, 51.4, 0x27AE60, 2.2, "Denisovan Altai Bladelet & Polished Jewelry Complex"));
+            mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(105.0, -2.0, 0x8E44AD, 2.2, "Sundaland Late Archaic Flake Complex"));
+
+            BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(mis3Langs, WIDTH, HEIGHT, mask, 1e5f);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        orographicImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(orographicImg);
+        } else if (year <= -18000L) {
+            // -25,000 to -18,000 BP: Gravettian, Solutrean & LGM Technocomplexes
+            List<OrographicGlottologPropagator.CulturalSeed> lgmLangs = new ArrayList<>();
+            lgmLangs.add(new OrographicGlottologPropagator.CulturalSeed(1.0, 45.0, 0xE74C3C, 1.8, "Franco-Cantabrian Solutrean Pressure-Flaking Complex"));
+            lgmLangs.add(new OrographicGlottologPropagator.CulturalSeed(16.5, 48.8, 0x3498DB, 2.0, "Pavlovian / Central European Mammoth Hunter Blades"));
+            lgmLangs.add(new OrographicGlottologPropagator.CulturalSeed(39.0, 51.4, 0x1ABC9C, 2.0, "Eastern European Kostenki-Avdeevo Technocomplex"));
+            lgmLangs.add(new OrographicGlottologPropagator.CulturalSeed(15.5, 41.7, 0x9B59B6, 1.8, "Mediterranean Epigravettian Backed Bladelets"));
+            lgmLangs.add(new OrographicGlottologPropagator.CulturalSeed(35.5, 32.7, 0xF39C12, 1.6, "Levantine Kebaran Microlithic Bladelet Complex"));
+            lgmLangs.add(new OrographicGlottologPropagator.CulturalSeed(135.4, 70.7, 0x16A085, 2.2, "Arctic Siberian Yana Mammoth Hunter Complex"));
+            lgmLangs.add(new OrographicGlottologPropagator.CulturalSeed(-140.7, 67.1, 0x00BCD4, 2.2, "Beringian Standstill Microblade Tradition"));
+            lgmLangs.add(new OrographicGlottologPropagator.CulturalSeed(115.0, 30.0, 0x2ECC71, 2.2, "South China Paleolithic / Early Pottery Precursor"));
+            lgmLangs.add(new OrographicGlottologPropagator.CulturalSeed(78.0, 22.0, 0xD35400, 2.0, "Indian Mesolithic Precursor Microliths"));
+            lgmLangs.add(new OrographicGlottologPropagator.CulturalSeed(134.0, -24.0, 0xC0392B, 2.5, "Sahul Pan-Continental Core & Tool Technocomplex"));
+            lgmLangs.add(new OrographicGlottologPropagator.CulturalSeed(22.0, -34.0, 0xF1C40F, 2.0, "Southern African Robberg Bladelet Industry"));
+
+            BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(lgmLangs, WIDTH, HEIGHT, mask, 1e5f);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        orographicImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(orographicImg);
+        } else if (year <= -10500L) {
+            // -10,900 BP: Younger Dryas, Clovis & Natufian Epipaleolithic
+            List<OrographicGlottologPropagator.CulturalSeed> ydLangs = new ArrayList<>();
+            // Americas (Clovis & South America)
+            ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(-103.3, 34.3, 0x3498DB, 2.5, "North American Clovis Fluted Point Technocomplex"));
+            ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(-73.2, -41.5, 0x1ABC9C, 2.2, "South American Monte Verde / Fishtail Point Complex"));
+            ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(-42.5, -9.3, 0x00BCD4, 2.0, "Brazilian Itaparica Quartzite Industry"));
+            // Old World
+            ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(35.58, 33.08, 0xF39C12, 1.6, "Natufian Sickle Blade & Mortar Technocomplex"));
+            ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(1.0, 45.0, 0xE74C3C, 1.8, "Franco-Cantabrian Late Magdalenian / Azilian"));
+            ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(10.0, 53.5, 0x3B82F6, 1.8, "North European Ahrensburgian Reindeer Hunters"));
+            ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(139.5, 35.7, 0x9B59B6, 1.6, "Japanese Incipient Jomon Pottery Tradition"));
+            ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(114.0, 34.5, 0x2ECC71, 2.0, "Yellow River Microblade & Grindstone Complex"));
+            ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(77.6, 22.9, 0xD35400, 2.0, "Indian Mesolithic Bhimbetka Geometric Microliths"));
+            ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(-2.4, 34.8, 0xE67E22, 1.8, "Maghreb Iberomaurusian / Capsian Complex"));
+            ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(32.5, 25.5, 0xD35400, 1.8, "Nile Valley Qadan / Isnan Microblade Complex"));
+            ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(134.0, -24.0, 0xC0392B, 2.5, "Australian Core Tool & Scraper Tradition"));
+
+            BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(ydLangs, WIDTH, HEIGHT, mask, 1e5f);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
@@ -3012,8 +3287,8 @@ public class HistoricalMapGenerator {
             kinshipCenters.add(new double[]{175.0, -20.0, 0x1ABC9C, 25.0}); // Polynesian Ramage (#1ABC9C)
         }
 
-        if (year <= -70000L) {
-            // MIS 5 Paleolithic Kinship: Local Patrilocal Neanderthal Clans & African Fission-Fusion Bands (Finite Reach = 34.0f)
+        if (year <= -85000L) {
+            // MIS 5e Paleolithic Kinship: Local Patrilocal Neanderthal Clans & African Fission-Fusion Bands (Finite Reach = 34.0f)
             List<OrographicGlottologPropagator.CulturalSeed> paleoKin = new ArrayList<>();
             // Neanderthal Patrilocal Small Clans (very localized, reach ~30.0f)
             paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(-5.3, 43.3, 0x3498DB, 1.0, "Cantabrian Patrilocal Clan (El Sidron)"));
@@ -3047,6 +3322,107 @@ public class HistoricalMapGenerator {
             paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(120.4, -8.5, 0x8B5CF6, 0.8, "Flores Island Endemic Band (Liang Bua)"));
 
             BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(paleoKin, WIDTH, HEIGHT, mask, 34.0f);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        kinImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(kinImg);
+        } else if (year <= -65000L) {
+            // -74,000 BP: Toba Volcanic Winter Refugial Kinship Networks
+            List<OrographicGlottologPropagator.CulturalSeed> tobaKin = new ArrayList<>();
+            tobaKin.add(new OrographicGlottologPropagator.CulturalSeed(22.1, -34.2, 0xDC2626, 1.0, "Cape Coastal Refugium Multi-Family Band"));
+            tobaKin.add(new OrographicGlottologPropagator.CulturalSeed(36.0, 0.5, 0xEA580C, 1.2, "East African Highland Refugial Foragers"));
+            tobaKin.add(new OrographicGlottologPropagator.CulturalSeed(-2.4, 34.8, 0xFB923C, 1.0, "Maghreb Coastal Cave Lineage"));
+            tobaKin.add(new OrographicGlottologPropagator.CulturalSeed(-5.5, 36.1, 0x2980B9, 0.9, "Gorham's Cave Neanderthal Family"));
+            tobaKin.add(new OrographicGlottologPropagator.CulturalSeed(1.5, 43.5, 0x1E40AF, 1.0, "Pyrenean Neanderthal Patrilocal Band"));
+            tobaKin.add(new OrographicGlottologPropagator.CulturalSeed(44.2, 36.8, 0x60A5FA, 1.0, "Zagros Shanidar Mountain Clan"));
+            tobaKin.add(new OrographicGlottologPropagator.CulturalSeed(84.5, 51.4, 0x2ECC71, 1.1, "Altai Denisovan Winter Hearth Clan"));
+
+            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(tobaKin, WIDTH, HEIGHT, mask, 30.0f);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        kinImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(kinImg);
+        } else if (year <= -35000L) {
+            // -50,000 BP: MIS 3 Sahul Subsection Systems & Eurasian IUP Bands
+            List<OrographicGlottologPropagator.CulturalSeed> mis3Kin = new ArrayList<>();
+            // Sahul Subsection & Totemic Clan Systems (crossing Wallace Line)
+            mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(132.9, -12.5, 0xD35400, 1.6, "Arnhem Land 4-Section Clan System"));
+            mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(143.0, -33.7, 0xC0392B, 1.5, "Willandra Lakes Matrilineal Moiety Band"));
+            mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(125.0, -16.0, 0xE67E22, 1.5, "Kimberley Exogamous Foraging Network"));
+            mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(143.0, -5.5, 0x9B59B6, 1.4, "Papuan Highland Multi-Clan Coalition"));
+            // African Early LSA
+            mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(22.0, -34.0, 0xDC2626, 1.4, "Southern African Fission-Fusion Network"));
+            mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(36.0, 0.5, 0xEA580C, 1.5, "East African Rift Multi-Band Aggregations"));
+            // Eurasian IUP & Tianyuan
+            mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(35.5, 32.5, 0xF59E0B, 1.2, "Levantine Ahmarian Foraging Coalition"));
+            mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(25.4, 43.0, 0xEF4444, 1.3, "Danubian IUP Pioneer Macro-Bands"));
+            mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(71.2, 57.7, 0xF97316, 1.4, "Siberian Ust'-Ishim Extended Family"));
+            mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(115.9, 39.7, 0x10B981, 1.4, "East Asian Tianyuan Riverine Clan"));
+            // Late Neanderthal Clades
+            mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(1.2, 44.9, 0x3498DB, 1.2, "Perigord Late Neanderthal Cave Clan"));
+            mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(16.0, 46.3, 0x2563EB, 1.1, "Vindija Cave Foraging Group"));
+
+            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(mis3Kin, WIDTH, HEIGHT, mask, 36.0f);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        kinImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(kinImg);
+        } else if (year <= -18000L) {
+            // -25,000 to -18,000 BP: Gravettian Mammoth Hunter Macro-Bands & LGM Refugia
+            List<OrographicGlottologPropagator.CulturalSeed> lgmKin = new ArrayList<>();
+            lgmKin.add(new OrographicGlottologPropagator.CulturalSeed(16.5, 48.8, 0x3498DB, 1.5, "Pavlovian Mammoth Hunter Aggregation Camps"));
+            lgmKin.add(new OrographicGlottologPropagator.CulturalSeed(1.0, 45.0, 0xE74C3C, 1.4, "Solutrean Franco-Cantabrian Alliance Bands"));
+            lgmKin.add(new OrographicGlottologPropagator.CulturalSeed(15.5, 41.7, 0x9B59B6, 1.3, "Italian Coastal Epigravettian Kin-Groups"));
+            lgmKin.add(new OrographicGlottologPropagator.CulturalSeed(39.0, 51.4, 0x1ABC9C, 1.5, "Don River Kostenki Extended Family Lineages"));
+            lgmKin.add(new OrographicGlottologPropagator.CulturalSeed(135.4, 70.7, 0x16A085, 1.5, "Yana Arctic Siberian Exogamous Bands"));
+            lgmKin.add(new OrographicGlottologPropagator.CulturalSeed(-140.7, 67.1, 0x00BCD4, 1.5, "Beringian Standstill Refugial Households"));
+            lgmKin.add(new OrographicGlottologPropagator.CulturalSeed(35.5, 32.7, 0xF39C12, 1.2, "Kebaran Encampment Multi-Family Units"));
+            lgmKin.add(new OrographicGlottologPropagator.CulturalSeed(134.0, -24.0, 0xD35400, 1.6, "Sahul Pan-Continental Skin Section System"));
+
+            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(lgmKin, WIDTH, HEIGHT, mask, 36.0f);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        kinImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(kinImg);
+        } else if (year <= -10500L) {
+            // -10,900 BP: Younger Dryas / Natufian Co-Residential Lineages & Clovis Bands
+            List<OrographicGlottologPropagator.CulturalSeed> ydKin = new ArrayList<>();
+            ydKin.add(new OrographicGlottologPropagator.CulturalSeed(35.58, 33.08, 0xF39C12, 1.2, "Natufian Sedentary Hamlet Lineages (Ain Mallaha)"));
+            ydKin.add(new OrographicGlottologPropagator.CulturalSeed(-103.3, 34.3, 0x3F51B5, 1.6, "Clovis High Plains Mobile Foraging Bands"));
+            ydKin.add(new OrographicGlottologPropagator.CulturalSeed(-73.2, -41.5, 0x1ABC9C, 1.5, "Monte Verde Extended Family Base-Camp"));
+            ydKin.add(new OrographicGlottologPropagator.CulturalSeed(1.0, 45.0, 0xE74C3C, 1.4, "Late Magdalenian Riverine Aggregation Bands"));
+            ydKin.add(new OrographicGlottologPropagator.CulturalSeed(139.5, 35.7, 0x2ECC71, 1.3, "Incipient Jomon Coastal Extended Households"));
+            ydKin.add(new OrographicGlottologPropagator.CulturalSeed(134.0, -24.0, 0xD35400, 1.6, "Australian 8-Skin Subsection Networks"));
+
+            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(ydKin, WIDTH, HEIGHT, mask, 36.0f);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
@@ -3096,8 +3472,8 @@ public class HistoricalMapGenerator {
             }
         }
 
-        if (year <= -70000L) {
-            // MIS 5 Documented Symbolic Sanctuaries, Ochre Shrines & Intentional Burials (Finite Reach = 25.0f)
+        if (year <= -85000L) {
+            // MIS 5e Documented Symbolic Sanctuaries, Ochre Shrines & Intentional Burials (-100,000 BP)
             List<OrographicGlottologPropagator.CulturalSeed> paleoRituals = new ArrayList<>();
             // Levant Sapiens & Neanderthal Intentional Mortuary Sites (Qafzeh, Skhul, Tabun)
             paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(35.3, 32.7, 0x10B981, 1.2, "Levant Skhul/Qafzeh Ochre & Shell Burials"));
@@ -3120,6 +3496,84 @@ public class HistoricalMapGenerator {
 
             // Finite reach limit (25.0f): symbolic behaviour radiates around proven sanctuaries, remaining land is slate gray #2D3748
             BufferedImage ritImg = OrographicGlottologPropagator.propagateCulturalSeeds(paleoRituals, WIDTH, HEIGHT, mask, 25.0f);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        ritImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(ritImg);
+        } else if (year <= -65000L) {
+            // -74,000 BP: Toba Volcanic Winter Symbolic Refugia (Coastal & Highland Shrines)
+            List<OrographicGlottologPropagator.CulturalSeed> tobaRituals = new ArrayList<>();
+            tobaRituals.add(new OrographicGlottologPropagator.CulturalSeed(22.1, -34.2, 0x059669, 1.2, "Pinnacle Point Ochre Processing & Shellfish Shrines"));
+            tobaRituals.add(new OrographicGlottologPropagator.CulturalSeed(24.4, -34.1, 0x10B981, 1.1, "Klasies River Mortuary Deposition Focus"));
+            tobaRituals.add(new OrographicGlottologPropagator.CulturalSeed(-2.4, 34.8, 0x34D399, 1.2, "Taforalt Perforated Shell Adornment Tradition"));
+            tobaRituals.add(new OrographicGlottologPropagator.CulturalSeed(41.8, 9.6, 0x6EE7B7, 1.1, "Porc-Epic High-Altitude Ochre Cave"));
+            tobaRituals.add(new OrographicGlottologPropagator.CulturalSeed(-5.3, 36.1, 0x2563EB, 1.0, "Gorham's Cave Neanderthal Bedrock Engravings"));
+            tobaRituals.add(new OrographicGlottologPropagator.CulturalSeed(1.2, 44.9, 0x3B82F6, 1.1, "Perigord Neanderthal Burials (La Ferrassie)"));
+            tobaRituals.add(new OrographicGlottologPropagator.CulturalSeed(44.2, 36.8, 0x60A5FA, 1.1, "Shanidar Neanderthal Flower/Pollen Mortuary Cult"));
+            tobaRituals.add(new OrographicGlottologPropagator.CulturalSeed(84.5, 51.4, 0xD97706, 1.2, "Denisova Cave Hearth Pigments & Bone Personal Adornments"));
+
+            BufferedImage ritImg = OrographicGlottologPropagator.propagateCulturalSeeds(tobaRituals, WIDTH, HEIGHT, mask, 22.0f);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        ritImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(ritImg);
+        } else if (year <= -35000L) {
+            // -50,000 BP: MIS 3 Upper Paleolithic Cave Art & Sahul Dreamtime Landfall
+            List<OrographicGlottologPropagator.CulturalSeed> mis3Rituals = new ArrayList<>();
+            // Sahul Rock Art & Mortuary Shrines (Madjedbebe & Sulawesi)
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(119.8, -4.9, 0xA04000, 1.3, "Sulawesi Leang Tedongnge Warty Pig Cave Art"));
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(132.9, -12.5, 0xC0392B, 1.5, "Madjedbebe Ochre Palettes & Grinding Stones"));
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(125.0, -16.0, 0xD35400, 1.4, "Kimberley Gwion Gwion Rock Art Traditions"));
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(143.0, -33.7, 0xE67E22, 1.4, "Lake Mungo Red Ochre Intentional Burial"));
+            // African LSA ochre
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(21.2, -34.4, 0x10B981, 1.3, "Blombos/Diepkloof Engraved Ostrich Eggshell"));
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(36.0, 0.5, 0x059669, 1.3, "Enkapune Ya Muto Shell Bead Traditions"));
+            // European Aurignacian / IUP
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(4.4, 44.4, 0x4D7C0F, 1.4, "Chauvet Cave Megafauna Art"));
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(10.2, 48.5, 0x2E7D32, 1.3, "Swabian Jura Löwenmensch & Mammoth Ivory Flutes"));
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(25.4, 43.0, 0x8B5CF6, 1.3, "Bacho Kiro IUP Bone Ornaments"));
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(11.2, 45.6, 0x3B82F6, 1.2, "Fumane Cave Ochre Painted Stones"));
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(115.9, 39.7, 0xD97706, 1.3, "Tianyuan Cave Red Ochre Adornment"));
+
+            BufferedImage ritImg = OrographicGlottologPropagator.propagateCulturalSeeds(mis3Rituals, WIDTH, HEIGHT, mask, 30.0f);
+            for (int y = 0; y < HEIGHT; y++) {
+                double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
+                for (int x = 0; x < WIDTH; x++) {
+                    double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
+                    double occWeight = getHomininOccupancyWeight(lon, lat, year);
+                    if (occWeight <= 0.001) {
+                        ritImg.setRGB(x, y, 0x2D3748);
+                    }
+                }
+            }
+            return applyAltimetryCoastlineMask(ritImg);
+        } else if (year <= -18000L) {
+            // -25,000 to -18,000 BP: Gravettian & Solutrean Venus Cults & Mammoth Shrines
+            List<OrographicGlottologPropagator.CulturalSeed> lgmRituals = new ArrayList<>();
+            lgmRituals.add(new OrographicGlottologPropagator.CulturalSeed(15.4, 48.3, 0x4D7C0F, 1.5, "Willendorf & Dolni Vestonice Ceramic Venus Shrines"));
+            lgmRituals.add(new OrographicGlottologPropagator.CulturalSeed(1.0, 45.0, 0x2E7D32, 1.4, "Franco-Cantabrian Solutrean Bas-Relief & Polychrome Art"));
+            lgmRituals.add(new OrographicGlottologPropagator.CulturalSeed(39.0, 51.4, 0x8B5CF6, 1.5, "Kostenki Mammoth Bone Architectural Sanctuaries"));
+            lgmRituals.add(new OrographicGlottologPropagator.CulturalSeed(102.8, 52.8, 0xD97706, 1.4, "Mal'ta & Buret' Mammoth Ivory Figurine Traditions"));
+            lgmRituals.add(new OrographicGlottologPropagator.CulturalSeed(135.4, 70.7, 0x00BCD4, 1.4, "Yana RHS Rhinoceros Horn & Ivory Carvings"));
+            lgmRituals.add(new OrographicGlottologPropagator.CulturalSeed(35.5, 32.7, 0xB45309, 1.2, "Ohalo II Floral Caches & Kebaran Mortuary Tracks"));
+            lgmRituals.add(new OrographicGlottologPropagator.CulturalSeed(134.0, -24.0, 0xA04000, 1.6, "Sahul Panaramittee Petroglyphs & Sacred Trackways"));
+            lgmRituals.add(new OrographicGlottologPropagator.CulturalSeed(21.2, -34.4, 0x10B981, 1.4, "Boomplaas Cave Symbolic Caches"));
+
+            BufferedImage ritImg = OrographicGlottologPropagator.propagateCulturalSeeds(lgmRituals, WIDTH, HEIGHT, mask, 32.0f);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
@@ -3268,8 +3722,6 @@ public class HistoricalMapGenerator {
         return applyAltimetryCoastlineMask(ritImg);
     }
 
-    private record ConfessionalPocket(double lon, double lat, double radiusDeg, int[] colors, double[] weights) {}
-
     private static void applyMultiConfessionalDithering(BufferedImage img, long year, BufferedImage mask) {
         List<ConfessionalPocket> pockets = new ArrayList<>();
 
@@ -3306,17 +3758,17 @@ public class HistoricalMapGenerator {
         }
 
         for (ConfessionalPocket cp : pockets) {
-            double r2 = cp.radiusDeg * cp.radiusDeg;
-            int minX = (int) Math.clamp(((cp.lon - cp.radiusDeg + 180.0) / 360.0) * WIDTH, 0, WIDTH - 1);
-            int maxX = (int) Math.clamp(((cp.lon + cp.radiusDeg + 180.0) / 360.0) * WIDTH, 0, WIDTH - 1);
-            int minY = (int) Math.clamp(((90.0 - (cp.lat + cp.radiusDeg)) / 180.0) * HEIGHT, 0, HEIGHT - 1);
-            int maxY = (int) Math.clamp(((90.0 - (cp.lat - cp.radiusDeg)) / 180.0) * HEIGHT, 0, HEIGHT - 1);
+            double r2 = cp.radiusDeg() * cp.radiusDeg();
+            int minX = (int) Math.clamp(((cp.lon() - cp.radiusDeg() + 180.0) / 360.0) * WIDTH, 0, WIDTH - 1);
+            int maxX = (int) Math.clamp(((cp.lon() + cp.radiusDeg() + 180.0) / 360.0) * WIDTH, 0, WIDTH - 1);
+            int minY = (int) Math.clamp(((90.0 - (cp.lat() + cp.radiusDeg())) / 180.0) * HEIGHT, 0, HEIGHT - 1);
+            int maxY = (int) Math.clamp(((90.0 - (cp.lat() - cp.radiusDeg())) / 180.0) * HEIGHT, 0, HEIGHT - 1);
 
             for (int py = minY; py <= maxY; py++) {
                 double lat = 90.0 - (py + 0.5) / HEIGHT * 180.0;
                 for (int px = minX; px <= maxX; px++) {
                     double lon = -180.0 + (px + 0.5) / WIDTH * 360.0;
-                    double d2 = distSq(lon, lat, cp.lon, cp.lat);
+                    double d2 = distSq(lon, lat, cp.lon(), cp.lat());
                     if (d2 <= r2) {
                         int mx = Math.clamp((int) ((px + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
                         int my = Math.clamp((int) ((py + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
@@ -3327,11 +3779,11 @@ public class HistoricalMapGenerator {
                         int h = ((px * 73856093) ^ (py * 19349663) ^ ((int) year * 83492791)) & 0x7FFFFFFF;
                         double rnd = (h % 10000) / 10000.0;
                         double cum = 0.0;
-                        int chosenCol = cp.colors[0];
-                        for (int k = 0; k < cp.weights.length; k++) {
-                            cum += cp.weights[k];
+                        int chosenCol = cp.colors()[0];
+                        for (int k = 0; k < cp.weights().length; k++) {
+                            cum += cp.weights()[k];
                             if (rnd <= cum) {
-                                chosenCol = cp.colors[k];
+                                chosenCol = cp.colors()[k];
                                 break;
                             }
                         }
@@ -3456,7 +3908,7 @@ public class HistoricalMapGenerator {
         g.fillRect(0, 0, WIDTH, HEIGHT);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        if (year <= -70000L) {
+        if (year <= -85000L) {
             // -100,000 BP Paleolithic Raw Material Circuits
             drawTradeRoute(g, new double[][]{{36.1, 2.5}, {36.5, 0.5}, {36.4, -1.5}, {38.5, 8.5}}, new Color(180, 120, 40), 2.0);   // East African Rift Obsidian – ochre
             drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}}, new Color(180, 120, 40), 2.0);             // South African Silcrete – ochre
@@ -3468,6 +3920,13 @@ public class HistoricalMapGenerator {
             drawTradeRoute(g, new double[][]{{44.2, 36.8}, {47.1, 34.4}}, new Color(200, 140, 30), 2.0);                              // Zagros – amber
             drawTradeRoute(g, new double[][]{{83.9, 51.4}, {85.5, 51.7}}, new Color(200, 140, 30), 2.0);                              // Altai – amber
             drawTradeRoute(g, new double[][]{{114.5, 40.2}, {115.9, 39.7}}, new Color(200, 140, 30), 2.0);                            // North China – amber
+        } else if (year <= -65000L) {
+            // -74,000 BP: Toba Volcanic Winter Refugial Raw Material Corridors (Zero Asian Routes due to Ash Blanket)
+            drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}}, new Color(180, 100, 40), 2.0);             // Cape Coastal Refugium Silcrete
+            drawTradeRoute(g, new double[][]{{36.1, 2.5}, {36.5, 0.5}, {38.5, 8.5}}, new Color(180, 100, 40), 2.0);                    // East African Highland Obsidian
+            drawTradeRoute(g, new double[][]{{-2.4, 34.8}, {-4.0, 35.5}}, new Color(160, 70, 50), 2.0);                                // Maghreb Shell & Silex
+            drawTradeRoute(g, new double[][]{{-4.0, 43.4}, {-1.5, 43.5}, {1.0, 44.9}}, new Color(190, 130, 30), 2.0);                  // Franco-Cantabrian Neanderthal Refugia
+            drawTradeRoute(g, new double[][]{{44.2, 36.8}, {46.0, 35.5}}, new Color(190, 130, 30), 2.0);                               // Zagros Cave Corridor
         } else if (year <= -40000L) {
             // -50,000 BP: MIS 3 Sahul Crossing, Levantine IUP, African Ochre & European Keilmesser
             drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}, {31.9, -27.0}}, new Color(204, 120, 40), 2.5);  // South African Silcrete & Ochre – ochre
@@ -4497,67 +4956,6 @@ public class HistoricalMapGenerator {
         }
     }
 
-    // --- STRUCTS ---
-
-    public static class CityPoint {
-        public String name;
-        public double lat, lng, weight, sigma;
-
-        public CityPoint(String name, double lat, double lng, double weight, double sigma) {
-            this.name = name; this.lat = lat; this.lng = lng;
-            this.weight = weight; this.sigma = sigma;
-        }
-    }
-
-    public static class RiverRibbon {
-        public double lng1, lat1, lng2, lat2, weight, widthDeg;
-
-        public RiverRibbon(double lng1, double lat1, double lng2, double lat2, double weight, double widthDeg) {
-            this.lng1 = lng1; this.lat1 = lat1; this.lng2 = lng2; this.lat2 = lat2;
-            this.weight = weight; this.widthDeg = widthDeg;
-        }
-
-        public double distanceToPoint(double px, double py) {
-            double l2 = distSq(lng1, lat1, lng2, lat2);
-            if (l2 == 0) return Math.sqrt(distSq(px, py, lng1, lat1));
-            double t = Math.max(0, Math.min(1, ((px - lng1) * (lng2 - lng1) + (py - lat1) * (lat2 - lat1)) / l2));
-            double projX = lng1 + t * (lng2 - lng1);
-            double projY = lat1 + t * (lat2 - lat1);
-            return Math.sqrt(distSq(px, py, projX, projY));
-        }
-    }
-
-    public static class EmpireTerritory {
-        public String name;
-        public Color color;
-        public List<double[]> bounds = new ArrayList<>();
-
-        public EmpireTerritory(String name, Color color) {
-            this.name = name; this.color = color;
-        }
-
-        public void addBoundingBox(double minLng, double minLat, double maxLng, double maxLat) {
-            bounds.add(new double[]{minLng, minLat, maxLng, maxLat});
-        }
-
-        public boolean contains(double lng, double lat) {
-            for (double[] b : bounds) {
-                if (lng >= b[0] && lng <= b[2] && lat >= b[1] && lat <= b[3]) return true;
-            }
-            return false;
-        }
-    }
-
-    public static class LanguageZone {
-        public String name;
-        public double centerLng, centerLat;
-        public Color color;
-
-        public LanguageZone(String name, double centerLng, double centerLat, Color color) {
-            this.name = name; this.centerLng = centerLng; this.centerLat = centerLat; this.color = color;
-        }
-    }
-
     public static BufferedImage rasterizeExtensibleTensorMap(int tensorIndex, String type, Scenario scenario) {
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -4866,6 +5264,7 @@ public class HistoricalMapGenerator {
     private static volatile BufferedImage cachedRareEarthsMap = null;
     private static volatile BufferedImage cachedMantleHeatMap = null;
     private static volatile BufferedImage cachedAquiferMap = null;
+    private static volatile float[][] cachedWhymapBlurredGrid = null;
 
     public static BufferedImage rasterizeCoalMap(String type, Scenario scenario) {
         if (cachedCoalMap != null) return cachedCoalMap;
@@ -5276,10 +5675,53 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    public static BufferedImage rasterizeAquiferMap(String type, Scenario scenario) {
-        if (cachedAquiferMap != null) {
-            return cachedAquiferMap;
+    public static double getPaleoAquiferRechargeFactor(double lon, double lat, long year) {
+        if (year <= -85000L) {
+            // -100,000 BP: MIS 5e Eemian Interglacial & Green Sahara Pluvial Episode
+            if (lat >= 10.0 && lat <= 32.0 && lon >= -18.0 && lon <= 55.0) {
+                double centerDist = Math.hypot((lon - 18.0) / 36.0, (lat - 21.0) / 11.0);
+                double pluvial = Math.exp(-centerDist * centerDist);
+                return 1.0 + 1.25 * pluvial; // +125% groundwater recharge in mega-aquifers (NSAS, Chad, Arabian)
+            }
+            return 1.1; // Moderate global warm interglacial baseline
+        } else if (year <= -65000L) {
+            // -74,000 BP: Toba Volcanic Winter & MIS 4 Glacial Stadial
+            if (lat >= -10.0 && lat <= 30.0 && lon >= 60.0 && lon <= 110.0) {
+                return 0.55; // -45% recharge in South & SE Asia
+            }
+            if (lat >= -15.0 && lat <= 30.0 && lon >= -20.0 && lon <= 55.0) {
+                return 0.65; // -35% in African tropics
+            }
+            return 0.75;
+        } else if (year <= -35000L) {
+            // -50,000 BP: MIS 3 Pluvial Stage in Sahul (Megalakes Lake Eyre & Willandra)
+            if (lat >= -38.0 && lat <= -12.0 && lon >= 115.0 && lon <= 150.0) {
+                return 1.6; // +60% recharge in Sahul Great Artesian Basin
+            }
+            if (lat >= 25.0 && lat <= 45.0 && lon >= -10.0 && lon <= 45.0) {
+                return 1.25; // Mediterranean & Levant pluvial
+            }
+            return 0.85;
+        } else if (year <= -18000L) {
+            // -25,000 to -18,000 BP: LGM Glacial Aridity Peak
+            if (lat >= 45.0) {
+                return 0.40; // Permafrost lock-up & glacial inhibition
+            }
+            return 0.55; // Global -45% drop in recharge
+        } else if (year <= -5000L) {
+            // -10,000 to -5,000 BP: Holocene Humid Period / African Humid Period (Green Sahara)
+            if (lat >= 10.0 && lat <= 32.0 && lon >= -18.0 && lon <= 55.0) {
+                double centerDist = Math.hypot((lon - 18.0) / 36.0, (lat - 21.0) / 11.0);
+                double pluvial = Math.exp(-centerDist * centerDist);
+                return 1.0 + 1.15 * pluvial;
+            }
+            return 1.05;
         }
+        return 1.0;
+    }
+
+    private static synchronized float[][] getOrComputeBaseWhymapGrid() {
+        if (cachedWhymapBlurredGrid != null) return cachedWhymapBlurredGrid;
 
         int width = 2048, height = 1024;
         File shpFile = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_GW_aquifers_v1_poly.shp");
@@ -5294,6 +5736,8 @@ public class HistoricalMapGenerator {
         if (!riversShp.exists()) {
             riversShp = new File("data/maps/whymap_groundwater/whymap_rivers__v1_line.shp");
         }
+
+        float[][] blurred = new float[height][width];
 
         if (shpFile.exists()) {
             try {
@@ -5444,7 +5888,6 @@ public class HistoricalMapGenerator {
                 gw.dispose();
 
                 // 4. Apply Gaussian smoothing kernel
-                float[][] blurred = new float[height][width];
                 float[][] k = {
                     {0.003f, 0.013f, 0.022f, 0.013f, 0.003f},
                     {0.013f, 0.059f, 0.097f, 0.059f, 0.013f},
@@ -5467,53 +5910,51 @@ public class HistoricalMapGenerator {
                         blurred[y][x] = sum;
                     }
                 }
-
-                // 5. Apply clean linear scaling and altimetry coastline mask (no artificial diagonal lattice noise)
-                BufferedImage outImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-                for (int y = 0; y < height; y++) {
-                    double lat = 90.0 - (y + 0.5) / height * 180.0;
-                    for (int x = 0; x < width; x++) {
-                        double lon = -180.0 + (x + 0.5) / width * 360.0;
-                        if (!isLand(lon, lat)) {
-                            outImg.setRGB(x, y, 0x000000);
-                            continue;
-                        }
-                        float rawVal = blurred[y][x];
-                        int lum = Math.clamp((int) Math.round(rawVal), 0, 255);
-                        outImg.setRGB(x, y, (lum << 16) | (lum << 8) | lum);
-                    }
-                }
-                BufferedImage finalMasked = applyAltimetryCoastlineMask(outImg);
-                cachedAquiferMap = finalMasked;
-                return finalMasked;
+                cachedWhymapBlurredGrid = blurred;
+                return blurred;
             } catch (Exception e) {
                 logger.warn("WHYMAP shapefile ingestion notice: {}, using procedural aquifer model", e.getMessage());
             }
         }
 
         // Procedural Fallback if shapefile is missing
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = loadElevationMask();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : width) / width), 0, (mask != null ? mask.getWidth() : width) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : height) / height), 0, (mask != null ? mask.getHeight() : height) - 1);
+                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                double elevM = (mask != null) ? (land / 255.0) * 8848.0 : 200.0;
+                double orographicCapacityFactor = elevM <= 350.0 ? 1.0 : (elevM <= 1000.0 ? 1.0 - (elevM - 350.0) / 650.0 * 0.70 : Math.max(0.08, 0.30 - (elevM - 1000.0) / 2000.0 * 0.22));
+                blurred[y][x] = (float) (65.0 * orographicCapacityFactor);
+            }
+        }
+        cachedWhymapBlurredGrid = blurred;
+        return blurred;
+    }
+
+    public static BufferedImage rasterizeAquiferMap(String type, Scenario scenario) {
+        long year = (scenario != null) ? scenario.getStartDateYear() : 2000L;
+        int width = 2048, height = 1024;
+
+        float[][] baseGrid = getOrComputeBaseWhymapGrid();
+        BufferedImage outImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
         for (int y = 0; y < height; y++) {
             double lat = 90.0 - (y + 0.5) / height * 180.0;
             for (int x = 0; x < width; x++) {
                 double lon = -180.0 + (x + 0.5) / width * 360.0;
-                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : width) / width), 0, (mask != null ? mask.getWidth() : width) - 1);
-                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : height) / height), 0, (mask != null ? mask.getHeight() : height) - 1);
-                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                if (land == 0 || !isLand(lon, lat)) {
-                    img.setRGB(x, y, 0x000000);
+                if (!isLand(lon, lat)) {
+                    outImg.setRGB(x, y, 0x000000);
                     continue;
                 }
-                double elevM = (mask != null) ? (land / 255.0) * 8848.0 : 200.0;
-                double orographicCapacityFactor = elevM <= 350.0 ? 1.0 : (elevM <= 1000.0 ? 1.0 - (elevM - 350.0) / 650.0 * 0.70 : Math.max(0.08, 0.30 - (elevM - 1000.0) / 2000.0 * 0.22));
-                double aquiferYield = 65.0 * orographicCapacityFactor;
-                int finalLuminance = Math.clamp((int) Math.round(aquiferYield), 0, 255);
-                img.setRGB(x, y, (finalLuminance << 16) | (finalLuminance << 8) | finalLuminance);
+                float rawVal = baseGrid[y][x];
+                double rechargeFactor = getPaleoAquiferRechargeFactor(lon, lat, year);
+                int lum = Math.clamp((int) Math.round(rawVal * rechargeFactor), 0, 255);
+                outImg.setRGB(x, y, (lum << 16) | (lum << 8) | lum);
             }
         }
-        cachedAquiferMap = img;
-        return applyAltimetryCoastlineMask(img);
+        return applyAltimetryCoastlineMask(outImg);
     }
 
     public static BufferedImage rasterizeExtensibleResourceTensorMap(int index, String type, Scenario scenario) {
