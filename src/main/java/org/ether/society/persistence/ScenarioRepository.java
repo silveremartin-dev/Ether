@@ -20,21 +20,7 @@ public class ScenarioRepository extends JsonRepository<Scenario> {
     }
 
     public List<Scenario> getAllScenarios() {
-        List<Scenario> saved = findAll();
-        List<Scenario> builtIns = Scenario.getBuiltInScenarios();
-
-        java.util.Map<String, Scenario> scenarioMap = new java.util.LinkedHashMap<>();
-        for (Scenario b : builtIns) {
-            scenarioMap.put(b.getName(), b);
-        }
-        for (Scenario s : saved) {
-            if (s.getName() != null && !s.getName().isBlank()) {
-                scenarioMap.put(s.getName(), s);
-            }
-        }
-        List<Scenario> result = new java.util.ArrayList<>(scenarioMap.values());
-        result.sort(java.util.Comparator.comparingLong(Scenario::getStartDateYear));
-        return result;
+        return PresetStorageService.loadAllScenarios();
     }
 
     public void saveOrUpdate(Scenario scenario) {

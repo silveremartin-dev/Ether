@@ -20,6 +20,10 @@ public class PlanetPresetRepository extends JsonRepository<PlanetPreset> {
         super("planet_presets.json", PlanetPreset.class);
     }
 
+    public List<PlanetPreset> getAllPresets() {
+        return PresetStorageService.loadAllPlanetPresets();
+    }
+
     /**
      * seed defaults if empty.
      */

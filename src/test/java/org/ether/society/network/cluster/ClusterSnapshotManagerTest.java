@@ -69,7 +69,7 @@ public class ClusterSnapshotManagerTest {
             snapshotManager.saveSnapshot(i * 100L, buffer);
         }
 
-        File[] files = tempDir.toFile().listFiles((dir, name) -> name.endsWith(".gz"));
+        File[] files = tempDir.toFile().listFiles((dir, name) -> name.startsWith("snapshot_tick_") && name.endsWith(".gz"));
         assertNotNull(files);
         // maxRetainedSnapshots is 3
         assertEquals(3, files.length, "Should keep at most 3 latest snapshots");

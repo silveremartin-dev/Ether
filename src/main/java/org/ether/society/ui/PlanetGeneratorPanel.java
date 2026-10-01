@@ -262,7 +262,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         this.presetBar = topPresetBar;
         topPresetBar.setExportCategory("planetgenerator");
         presetCombo = topPresetBar.getPresetCombo();
-        topPresetBar.setPresets(PlanetPreset.getPresets(), PlanetPreset.EARTH_LIKE);
+        topPresetBar.setPresets(org.ether.society.persistence.PresetStorageService.loadAllPlanetPresets(), PlanetPreset.EARTH_LIKE);
         topPresetBar.setListener(new PresetControlBar.PresetActionsListener<PlanetPreset>() {
             @Override
             public void onPresetSelected(PlanetPreset preset) {

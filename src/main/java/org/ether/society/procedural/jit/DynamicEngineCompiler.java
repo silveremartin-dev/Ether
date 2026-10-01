@@ -121,7 +121,7 @@ public class DynamicEngineCompiler {
                 fullClassName = matcher.group(1) + "." + simpleClassName;
             }
 
-            Path outputDir = Paths.get("saves", "engines", "compiled");
+            Path outputDir = org.ether.society.config.EtherPaths.getEnginesCompiledDir();
             Files.createDirectories(outputDir);
 
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();

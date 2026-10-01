@@ -6,14 +6,11 @@
 package org.ether.society.ui;
 
 import org.ether.society.core.dod.NativeRustBridge;
-import org.ether.society.core.dod.WorldBuffer;
-import org.ether.society.core.vector.VectorThermodynamicsKernel;
-import org.ether.society.database.H3Cell;
 import org.ether.society.gpu.GPUComputeShaderPipeline;
 import org.ether.society.gpu.GPUManager;
-import org.ether.society.gpu.SimulationKernel;
 import org.ether.society.i18n.I18n;
 import org.ether.society.network.ClusterManager;
+import org.ether.society.database.DatabaseConfig;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -32,16 +29,13 @@ import javafx.animation.Timeline;
 import javafx.util.Duration;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.prefs.Preferences;
-import java.util.stream.IntStream;
 
 /**
- * Execution Context & Infrastructure UI Panel (Tab 4).
+ * Execution Context & Infrastructure UI Panel (Tab 6).
  * Manages compute hardware acceleration (Native Rust Core, GPU Compute Shaders, Java 21 SIMD, CPU JIT, Software Safe Fallback),
- * execution topology (Local vs Distributed Cluster), and rendering mode (GUI vs Headless Batch).
+ * execution topology (Local vs Distributed Cluster, DB Persistence), and rendering mode (GUI vs Headless Batch).
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.1
@@ -70,16 +64,47 @@ public class ExecutionContextPanel extends BorderPane {
         GPU_OFF
     }
 
+    public static boolean isRustAvailable() {
+        return NativeRustBridge.isNativeAvailable();
+    }
+
+    public static boolean isSimdAvailable() {
+        try {
+            return jdk.incubator.vector.DoubleVector.SPECIES_PREFERRED.length() > 1;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    public static HardwareMode getRecommendedHardwareMode() {
+        if (isRustAvailable()) return HardwareMode.NATIVE_RUST;
+        GPUManager gpu = new GPUManager();
+        if (gpu.isGpuAvailable()) return HardwareMode.GPU_SHADERS;
+        if (isSimdAvailable()) return HardwareMode.JAVA_VECTOR_SIMD;
+        return HardwareMode.CPU_JIT;
+    }
+
     public static HardwareMode getActiveHardwareMode() {
         String savedMode = prefs.get(PREF_HARDWARE_MODE_KEY, null);
         if (savedMode != null) {
             try {
-                return HardwareMode.valueOf(savedMode);
+                HardwareMode mode = HardwareMode.valueOf(savedMode);
+                if (isModeSupported(mode)) {
+                    return mode;
+                }
             } catch (Exception ignored) {}
         }
-        if (NativeRustBridge.isNativeAvailable()) return HardwareMode.NATIVE_RUST;
-        if (prefs.getBoolean(PREF_GPU_KEY, true)) return HardwareMode.GPU_SHADERS;
-        return HardwareMode.JAVA_VECTOR_SIMD;
+        return getRecommendedHardwareMode();
+    }
+
+    private static boolean isModeSupported(HardwareMode mode) {
+        if (mode == null) return false;
+        return switch (mode) {
+            case NATIVE_RUST -> isRustAvailable();
+            case GPU_SHADERS -> new GPUManager().isGpuAvailable();
+            case JAVA_VECTOR_SIMD -> isSimdAvailable();
+            case CPU_JIT, GPU_OFF -> true;
+        };
     }
 
     public static double getEstimatedCellTicksThroughput(HardwareMode mode) {
@@ -190,12 +215,6 @@ public class ExecutionContextPanel extends BorderPane {
     private Label cpuJitDescLabel;
     private Label gpuOffDescLabel;
 
-    // Badges
-    private Label rustBadgeLabel;
-    private Label gpuBadgeLabel;
-    private Label asyncDbBadgeLabel;
-    private Label simdBadgeLabel;
-
     // 2. Execution Topology Controls
     private Label topologySectionHeader;
     private ToggleGroup topologyGroup;
@@ -203,8 +222,10 @@ public class ExecutionContextPanel extends BorderPane {
     private RadioButton clusterTopologyRadio;
     private Label localTopologyDescLabel;
     private Label clusterTopologyDescLabel;
+    private Label dbSectionHeader;
+    private Label dbStatusLabel;
 
-    // Cluster Config Section (Nested inside Cluster Card)
+    // Cluster Config Section
     private VBox clusterConfigCard;
     private Label clusterHeaderLabel;
     private Label lblLocalRole;
@@ -242,33 +263,37 @@ public class ExecutionContextPanel extends BorderPane {
 
     // Headless Config Section
     private VBox headlessConfigCard;
-    private Label lblTargetTicks;
-    private Label lblSnapshotInterval;
-    private Label lblDumpFormat;
-    private Spinner<Integer> targetTicksSpinner;
-    private Spinner<Integer> snapshotIntervalSpinner;
-    private ComboBox<String> dumpFormatCombo;
+    private Label lblTargetYear;
+    private Label lblTargetYearNote;
+    private Spinner<Integer> targetYearSpinner;
 
-    // 4. Hardware Audit & System Detection
-    private Label auditSectionHeader;
-    private Label systemInfoLabel;
-    private Label auditResultLabel;
-    private Button runAuditBtn;
-
-    // 5. Right Sidebar Summary & Launch Panel Controls
+    // 4. Right Sidebar Summary & Hardware Specifications
     private Label titleHeader;
     private Label liveBannerLabel;
-    private Button launchBtn;
     private java.util.function.Consumer<HardwareMode> onLiveConfigChangedCallback;
-    private Label summaryHardwareLabel;
-    private Label summaryTopologyLabel;
-    private Label summaryRenderingLabel;
-    private Label summaryClusterNodesLabel;
+    private Label sidebarSysInfoTitle;
+    private Label sysOsHeader;
+    private Label sysOsValue;
+    private Label sysCpuHeader;
+    private Label sysCpuValue;
+    private Label sysRamHeader;
+    private Label sysRamValue;
+    private Label sysGpuHeader;
+    private Label sysGpuValue;
+
     private Label sidebarTitleLabel;
     private Label hdrEngineLabel;
+    private Label summaryHardwareLabel;
     private Label hdrTopologyLabel;
+    private Label summaryTopologyLabel;
     private Label hdrRenderingLabel;
+    private Label summaryRenderingLabel;
     private Label hdrClusterLabel;
+    private Label summaryClusterNodesLabel;
+
+    public ExecutionContextPanel() {
+        this(null);
+    }
 
     public ExecutionContextPanel(Runnable onLaunchSimulationCallback) {
         this.gpuManager = new GPUManager();
@@ -294,7 +319,6 @@ public class ExecutionContextPanel extends BorderPane {
     }
 
     private void initUI() {
-        // --- Root Layout: 2 Columns (Left: Cards, Right: Sticky Summary & Launch Panel) ---
         HBox mainLayout = new HBox(20);
         mainLayout.setAlignment(Pos.TOP_LEFT);
 
@@ -331,46 +355,25 @@ public class ExecutionContextPanel extends BorderPane {
         cpuJitDescLabel = createDescLabel();
         gpuOffDescLabel = createDescLabel();
 
-        // Hardware Diagnostics Badges Row
-        rustBadgeLabel = new Label();
-        rustBadgeLabel.getStyleClass().add("info-badge");
+        // Hardware Availability Check
+        boolean rustAvailable = isRustAvailable();
+        boolean gpuAvailable = gpuManager.isGpuAvailable();
+        boolean simdAvailable = isSimdAvailable();
 
-        gpuBadgeLabel = new Label();
-        gpuBadgeLabel.getStyleClass().add("info-badge");
+        rustNativeRadio.setDisable(!rustAvailable);
+        gpuShadersRadio.setDisable(!gpuAvailable);
+        javaVectorSimdRadio.setDisable(!simdAvailable);
+        cpuJitRadio.setDisable(false);
+        gpuOffRadio.setDisable(false);
 
-        asyncDbBadgeLabel = new Label();
-        asyncDbBadgeLabel.getStyleClass().add("info-badge");
-
-        simdBadgeLabel = new Label();
-        simdBadgeLabel.getStyleClass().add("info-badge");
-
-        HBox badgesRow = new HBox(8, rustBadgeLabel, gpuBadgeLabel, simdBadgeLabel, asyncDbBadgeLabel);
-        badgesRow.setAlignment(Pos.CENTER_LEFT);
-
-        // Preference resolution
-        String savedMode = prefs.get(PREF_HARDWARE_MODE_KEY, null);
-        if (savedMode == null) {
-            boolean initialGpu = prefs.getBoolean(PREF_GPU_KEY, true);
-            if (NativeRustBridge.isNativeAvailable()) {
-                rustNativeRadio.setSelected(true);
-            } else if (initialGpu) {
-                gpuShadersRadio.setSelected(true);
-            } else {
-                javaVectorSimdRadio.setSelected(true);
-            }
-        } else {
-            try {
-                HardwareMode mode = HardwareMode.valueOf(savedMode);
-                switch (mode) {
-                    case NATIVE_RUST -> rustNativeRadio.setSelected(true);
-                    case GPU_SHADERS -> gpuShadersRadio.setSelected(true);
-                    case JAVA_VECTOR_SIMD -> javaVectorSimdRadio.setSelected(true);
-                    case CPU_JIT -> cpuJitRadio.setSelected(true);
-                    case GPU_OFF -> gpuOffRadio.setSelected(true);
-                }
-            } catch (Exception e) {
-                rustNativeRadio.setSelected(true);
-            }
+        // Saved preference resolution with fallback to recommended available engine
+        HardwareMode activeMode = getActiveHardwareMode();
+        switch (activeMode) {
+            case NATIVE_RUST -> rustNativeRadio.setSelected(true);
+            case GPU_SHADERS -> gpuShadersRadio.setSelected(true);
+            case JAVA_VECTOR_SIMD -> javaVectorSimdRadio.setSelected(true);
+            case CPU_JIT -> cpuJitRadio.setSelected(true);
+            case GPU_OFF -> gpuOffRadio.setSelected(true);
         }
 
         rustNativeRadio.setOnAction(e -> {
@@ -378,7 +381,6 @@ public class ExecutionContextPanel extends BorderPane {
             prefs.putBoolean(PREF_GPU_KEY, false);
             gpuManager.setGpuEnabled(false);
             logger.info("Hardware acceleration mode set to NATIVE RUST (Rayon + AVX-512)");
-            updateHardwareBadges();
             updateRightSummary();
             notifyLiveConfigChange(HardwareMode.NATIVE_RUST);
         });
@@ -388,7 +390,6 @@ public class ExecutionContextPanel extends BorderPane {
             prefs.putBoolean(PREF_GPU_KEY, true);
             gpuManager.setGpuEnabled(true);
             logger.info("Hardware acceleration mode set to GPU COMPUTE SHADERS (OpenCL)");
-            updateHardwareBadges();
             updateRightSummary();
             notifyLiveConfigChange(HardwareMode.GPU_SHADERS);
         });
@@ -398,7 +399,6 @@ public class ExecutionContextPanel extends BorderPane {
             prefs.putBoolean(PREF_GPU_KEY, false);
             gpuManager.setGpuEnabled(false);
             logger.info("Hardware acceleration mode set to JAVA 21 VECTOR SIMD");
-            updateHardwareBadges();
             updateRightSummary();
             notifyLiveConfigChange(HardwareMode.JAVA_VECTOR_SIMD);
         });
@@ -408,7 +408,6 @@ public class ExecutionContextPanel extends BorderPane {
             prefs.putBoolean(PREF_GPU_KEY, false);
             gpuManager.setGpuEnabled(false);
             logger.info("Hardware acceleration mode set to CPU JIT");
-            updateHardwareBadges();
             updateRightSummary();
             notifyLiveConfigChange(HardwareMode.CPU_JIT);
         });
@@ -418,7 +417,6 @@ public class ExecutionContextPanel extends BorderPane {
             prefs.putBoolean(PREF_GPU_KEY, false);
             gpuManager.setGpuEnabled(false);
             logger.info("Hardware acceleration mode set to GPU OFF (Software Prism Safe Fallback)");
-            updateHardwareBadges();
             updateRightSummary();
             notifyLiveConfigChange(HardwareMode.GPU_OFF);
         });
@@ -438,9 +436,9 @@ public class ExecutionContextPanel extends BorderPane {
         VBox gpuOffCard = new VBox(6, gpuOffRadio, gpuOffDescLabel);
         gpuOffCard.getStyleClass().add("card-section");
 
-        VBox hardwareSection = createCardSection(hardwareSectionHeader, new VBox(10, badgesRow, rustNativeCard, gpuShadersCard, javaVectorSimdCard, cpuJitCard, gpuOffCard));
+        VBox hardwareSection = createCardSection(hardwareSectionHeader, new VBox(10, rustNativeCard, gpuShadersCard, javaVectorSimdCard, cpuJitCard, gpuOffCard));
 
-        // --- SECTION 2: Execution Topology ---
+        // --- SECTION 2: Execution Topology & Persistence ---
         topologySectionHeader = createSectionHeader("");
         topologyGroup = new ToggleGroup();
 
@@ -454,10 +452,19 @@ public class ExecutionContextPanel extends BorderPane {
         localTopologyDescLabel = createDescLabel();
         clusterTopologyDescLabel = createDescLabel();
 
-        VBox localCard = new VBox(6, localTopologyRadio, localTopologyDescLabel);
+        // Database status subcard
+        dbSectionHeader = createSmallHeader("");
+        dbStatusLabel = new Label();
+        dbStatusLabel.getStyleClass().add("info-badge");
+        dbStatusLabel.setWrapText(true);
+
+        VBox dbStatusBox = new VBox(6, dbSectionHeader, dbStatusLabel);
+        dbStatusBox.setStyle("-fx-background-color: rgba(255, 255, 255, 0.04); -fx-padding: 10 12; -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.1); -fx-border-radius: 6;");
+
+        VBox localCard = new VBox(8, localTopologyRadio, localTopologyDescLabel, dbStatusBox);
         localCard.getStyleClass().add("card-section");
 
-        // Cluster configuration block - Nested Block-in-a-Block
+        // Cluster configuration block - Nested Block
         clusterHeaderLabel = createSectionHeader("");
         roleCombo = new ComboBox<>();
         roleCombo.getItems().addAll("Master Node (Serveur / Orchestrateur)", "Worker Node (Nœud de Calcul Agent)");
@@ -550,7 +557,6 @@ public class ExecutionContextPanel extends BorderPane {
         clusterForm.addRow(3, lblSplitStrategy, partitionStrategyCombo);
         clusterForm.addRow(4, lblSyncInterval, syncIntervalCombo);
 
-        // Sub-block inside block styling
         clusterConfigCard = new VBox(12, clusterHeaderLabel, clusterForm, clusterActions, clusterStatusLabel, nodeTable);
         clusterConfigCard.getStyleClass().add("subcard-section");
         clusterConfigCard.setVisible(false);
@@ -573,7 +579,7 @@ public class ExecutionContextPanel extends BorderPane {
 
         VBox topologySection = createCardSection(topologySectionHeader, new VBox(10, localCard, clusterCard));
 
-        // --- SECTION 3: Rendering / Display Mode ---
+        // --- SECTION 3: Rendering & Output Mode ---
         renderingSectionHeader = createSectionHeader("");
         renderingGroup = new ToggleGroup();
 
@@ -590,32 +596,23 @@ public class ExecutionContextPanel extends BorderPane {
         VBox guiCard = new VBox(6, guiRenderingRadio, guiRenderingDescLabel);
         guiCard.getStyleClass().add("card-section");
 
-        // Headless settings
-        targetTicksSpinner = new Spinner<>(0, 1_000_000, 1000, 100);
-        targetTicksSpinner.setEditable(true);
-        targetTicksSpinner.setPrefWidth(120);
+        // Headless settings (Target End Year)
+        targetYearSpinner = new Spinner<>(-100_000, 10_000, 2100, 50);
+        targetYearSpinner.setEditable(true);
+        targetYearSpinner.setPrefWidth(140);
+        targetYearSpinner.valueProperty().addListener((obs, oldV, newV) -> updateRightSummary());
 
-        snapshotIntervalSpinner = new Spinner<>(1, 100, 10, 1);
-        snapshotIntervalSpinner.setEditable(true);
-        snapshotIntervalSpinner.setPrefWidth(120);
+        lblTargetYear = new Label();
+        lblTargetYear.getStyleClass().add("control-label");
 
-        dumpFormatCombo = new ComboBox<>();
+        lblTargetYearNote = new Label();
+        lblTargetYearNote.getStyleClass().add("hint-label");
+        lblTargetYearNote.setWrapText(true);
 
-        lblTargetTicks = new Label();
-        lblTargetTicks.getStyleClass().add("control-label");
-        lblSnapshotInterval = new Label();
-        lblSnapshotInterval.getStyleClass().add("control-label");
-        lblDumpFormat = new Label();
-        lblDumpFormat.getStyleClass().add("control-label");
+        HBox targetYearRow = new HBox(12, lblTargetYear, targetYearSpinner);
+        targetYearRow.setAlignment(Pos.CENTER_LEFT);
 
-        GridPane headlessForm = new GridPane();
-        headlessForm.setHgap(12);
-        headlessForm.setVgap(8);
-        headlessForm.addRow(0, lblTargetTicks, targetTicksSpinner);
-        headlessForm.addRow(1, lblSnapshotInterval, snapshotIntervalSpinner);
-        headlessForm.addRow(2, lblDumpFormat, dumpFormatCombo);
-
-        headlessConfigCard = new VBox(10, headlessForm);
+        headlessConfigCard = new VBox(8, targetYearRow, lblTargetYearNote);
         headlessConfigCard.getStyleClass().add("subcard-section");
         headlessConfigCard.setVisible(false);
         headlessConfigCard.setManaged(false);
@@ -637,55 +634,61 @@ public class ExecutionContextPanel extends BorderPane {
 
         VBox renderingSection = createCardSection(renderingSectionHeader, new VBox(10, guiCard, headlessCard));
 
-        // --- SECTION 4: Live System Detection & Performance Audit ---
-        auditSectionHeader = createSectionHeader("");
+        leftColumn.getChildren().addAll(titleHeader, liveBannerLabel, hardwareSection, topologySection, renderingSection);
 
-        systemInfoLabel = new Label();
-        systemInfoLabel.getStyleClass().add("info-badge");
-
-        auditResultLabel = new Label();
-        auditResultLabel.getStyleClass().add("hint-label");
-
-        runAuditBtn = new Button();
-        runAuditBtn.getStyleClass().add("button-secondary");
-        runAuditBtn.setOnAction(e -> runRealAudit());
-
-        VBox auditSection = createCardSection(auditSectionHeader, new VBox(12, systemInfoLabel, runAuditBtn, auditResultLabel));
-
-        leftColumn.getChildren().addAll(titleHeader, liveBannerLabel, hardwareSection, topologySection, renderingSection, auditSection);
-
-        // --- RIGHT COLUMN: 2nd Column Sidebar for Summary & Simulation Launch ---
-        VBox rightColumn = new VBox(16);
-        rightColumn.setPrefWidth(290);
-        rightColumn.setMinWidth(280);
-        rightColumn.setMaxWidth(310);
+        // --- RIGHT COLUMN: System Specifications & Live Recap ---
+        VBox rightColumn = new VBox(14);
+        rightColumn.setPrefWidth(300);
+        rightColumn.setMinWidth(290);
+        rightColumn.setMaxWidth(320);
         rightColumn.getStyleClass().add("sidebar-card");
 
+        // System Specifications Block
+        sidebarSysInfoTitle = new Label();
+        sidebarSysInfoTitle.getStyleClass().add("sidebar-title");
+
+        sysOsHeader = createSmallHeader("");
+        sysOsValue = createSysInfoLabel();
+        sysCpuHeader = createSmallHeader("");
+        sysCpuValue = createSysInfoLabel();
+        sysRamHeader = createSmallHeader("");
+        sysRamValue = createSysInfoLabel();
+        sysGpuHeader = createSmallHeader("");
+        sysGpuValue = createSysInfoLabel();
+
+        VBox sysInfoBox = new VBox(6,
+            sysOsHeader, sysOsValue,
+            sysCpuHeader, sysCpuValue,
+            sysRamHeader, sysRamValue,
+            sysGpuHeader, sysGpuValue
+        );
+        sysInfoBox.getStyleClass().add("sidebar-recap-box");
+
+        // Live Configuration Recap
         sidebarTitleLabel = new Label();
         sidebarTitleLabel.getStyleClass().add("sidebar-title");
 
+        hdrEngineLabel = createSmallHeader("");
         summaryHardwareLabel = new Label();
         summaryHardwareLabel.getStyleClass().add("sidebar-recap-text");
         summaryHardwareLabel.setWrapText(true);
 
+        hdrTopologyLabel = createSmallHeader("");
         summaryTopologyLabel = new Label();
         summaryTopologyLabel.getStyleClass().add("sidebar-recap-text");
         summaryTopologyLabel.setWrapText(true);
 
+        hdrRenderingLabel = createSmallHeader("");
         summaryRenderingLabel = new Label();
         summaryRenderingLabel.getStyleClass().add("sidebar-recap-text");
         summaryRenderingLabel.setWrapText(true);
 
+        hdrClusterLabel = createSmallHeader("");
         summaryClusterNodesLabel = new Label();
         summaryClusterNodesLabel.getStyleClass().addAll("sidebar-recap-text", "sidebar-recap-highlight");
         summaryClusterNodesLabel.setWrapText(true);
 
-        hdrEngineLabel = createSmallHeader("");
-        hdrTopologyLabel = createSmallHeader("");
-        hdrRenderingLabel = createSmallHeader("");
-        hdrClusterLabel = createSmallHeader("");
-
-        VBox recapBox = new VBox(10,
+        VBox recapBox = new VBox(8,
             hdrEngineLabel, summaryHardwareLabel,
             hdrTopologyLabel, summaryTopologyLabel,
             hdrRenderingLabel, summaryRenderingLabel,
@@ -693,15 +696,10 @@ public class ExecutionContextPanel extends BorderPane {
         );
         recapBox.getStyleClass().add("sidebar-recap-box");
 
-        launchBtn = new Button();
-        launchBtn.setMaxWidth(Double.MAX_VALUE);
-        launchBtn.setStyle("-fx-background-color: linear-gradient(to right, #10b981, #0284c7); -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 14 16; -fx-background-radius: 6; -fx-cursor: hand;");
-        launchBtn.setOnAction(e -> launchSimulation());
+        rightColumn.getChildren().addAll(sidebarSysInfoTitle, sysInfoBox, new Separator(), sidebarTitleLabel, recapBox);
 
-        rightColumn.getChildren().addAll(sidebarTitleLabel, recapBox, new Separator(), launchBtn);
-
-        updateHardwareBadges();
-        updateSystemInfoLabel();
+        updateSystemSpecs();
+        updateDatabaseStatus();
         updateRightSummary();
 
         mainLayout.getChildren().addAll(leftColumn, rightColumn);
@@ -721,27 +719,43 @@ public class ExecutionContextPanel extends BorderPane {
         return lbl;
     }
 
-    private void updateHardwareBadges() {
-        if (rustBadgeLabel == null) return;
+    private Label createSysInfoLabel() {
+        Label lbl = new Label();
+        lbl.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px; -fx-padding: 0 0 4 4;");
+        lbl.setWrapText(true);
+        return lbl;
+    }
 
-        boolean rustAvailable = NativeRustBridge.isNativeAvailable();
-        if (rustAvailable) {
-            rustBadgeLabel.setText(I18n.getOrDefault("exec.badge.rust_active", "🦀 Rust Core: Active (AVX-512 + Rayon)"));
-            rustBadgeLabel.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-        } else {
-            rustBadgeLabel.setText(I18n.getOrDefault("exec.badge.rust_standby", "🦀 Rust Core: Standby (SIMD Fallback)"));
-            rustBadgeLabel.setStyle("-fx-text-fill: #94a3b8;");
-        }
-
+    private void updateSystemSpecs() {
+        int cpus = Runtime.getRuntime().availableProcessors();
+        long maxMemMB = Runtime.getRuntime().maxMemory() / (1024 * 1024);
+        String osName = System.getProperty("os.name", "Unknown OS");
+        String osArch = System.getProperty("os.arch", "x64");
         String gpuName = getDetectedGpuName();
-        gpuBadgeLabel.setText("⚡ GPU: " + gpuName);
-        gpuBadgeLabel.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold;");
 
-        simdBadgeLabel.setText(I18n.getOrDefault("exec.badge.simd_active", "☕ Java 21 SIMD: AVX-512/AVX2 Ready"));
-        simdBadgeLabel.setStyle("-fx-text-fill: #38bdf8;");
+        if (sysOsValue != null) sysOsValue.setText(osName + " (" + osArch + ")");
+        if (sysCpuValue != null) sysCpuValue.setText(cpus + " " + I18n.getOrDefault("exec.summary.cores_detected", "Cores Detected"));
+        if (sysRamValue != null) sysRamValue.setText(String.format("%,d MB", maxMemMB));
+        if (sysGpuValue != null) sysGpuValue.setText(gpuName);
+    }
 
-        asyncDbBadgeLabel.setText(I18n.getOrDefault("exec.badge.db_async", "⚡ Async DB: Active"));
-        asyncDbBadgeLabel.setStyle("-fx-text-fill: #10b981;");
+    private void updateDatabaseStatus() {
+        if (dbStatusLabel == null) return;
+        try {
+            var emf = DatabaseConfig.getEntityManagerFactory();
+            if (emf != null && emf.isOpen()) {
+                dbStatusLabel.setText(I18n.getOrDefault("exec.topology.db_status_ok", "🟢 Base de données : Connectée & Opérationnelle (Persistance active)"));
+                dbStatusLabel.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
+                return;
+            }
+        } catch (Throwable t) {
+            String msg = String.format(I18n.getOrDefault("exec.topology.db_error_prefix", "🔴 Diagnostic base : %s"), t.getMessage());
+            dbStatusLabel.setText(msg);
+            dbStatusLabel.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
+            return;
+        }
+        dbStatusLabel.setText(I18n.getOrDefault("exec.topology.db_status_offline", "🟡 Base de données : Mode autonome en mémoire (WorldBuffer non persisté sur serveur distant)"));
+        dbStatusLabel.setStyle("-fx-text-fill: #f59e0b;");
     }
 
     private void updateRightSummary() {
@@ -766,8 +780,8 @@ public class ExecutionContextPanel extends BorderPane {
 
         RenderingMode ren = getRenderingMode();
         if (ren == RenderingMode.HEADLESS) {
-            int ticks = (targetTicksSpinner != null && targetTicksSpinner.getValue() != null) ? targetTicksSpinner.getValue() : 1000;
-            summaryRenderingLabel.setText("• " + I18n.getOrDefault("exec.summary.headless_mode", "Headless Batch Mode") + "\n(" + ticks + " " + I18n.getOrDefault("exec.summary.target_ticks", "Target Steps") + ")");
+            int targetYear = (targetYearSpinner != null && targetYearSpinner.getValue() != null) ? targetYearSpinner.getValue() : 2100;
+            summaryRenderingLabel.setText("• " + I18n.getOrDefault("exec.summary.headless_mode", "Headless Batch Mode") + "\n(" + I18n.getOrDefault("exec.headless.target_year", "Target Year:") + " " + targetYear + ")");
         } else {
             summaryRenderingLabel.setText("• " + I18n.getOrDefault("exec.summary.gui_mode", "Interactive GUI Mode") + "\n(" + I18n.getOrDefault("exec.summary.realtime_2d3d", "Real-Time 2D/3D Visual") + ")");
         }
@@ -795,143 +809,6 @@ public class ExecutionContextPanel extends BorderPane {
         } catch (Exception ignored) {}
         cachedGpuName = "Integrated Graphics (iGPU)";
         return cachedGpuName;
-    }
-
-    private void updateSystemInfoLabel() {
-        int cpus = Runtime.getRuntime().availableProcessors();
-        long maxMemMB = Runtime.getRuntime().maxMemory() / (1024 * 1024);
-        String osName = System.getProperty("os.name");
-        String gpuName = getDetectedGpuName();
-
-        boolean isIntegrated = gpuName.contains("Intel") || gpuName.contains("UHD") || gpuName.contains("Iris")
-                || gpuName.contains("Radeon(TM) Graphics") || gpuName.contains("Vega") || gpuName.contains("Integrated");
-
-        String gpuTypeNotice = isIntegrated ? " (iGPU / OpenCL Ready)" : " (dGPU High-Performance)";
-
-        systemInfoLabel.setText(String.format(I18n.getOrDefault("exec.summary.system_info", "💻 System: %s | Real CPU Cores: %d | Max Heap Memory: %,d MB | Detected GPU: %s%s"),
-                osName, cpus, maxMemMB, gpuName, gpuTypeNotice));
-    }
-
-    private void runRealAudit() {
-        runAuditBtn.setDisable(true);
-        auditResultLabel.setText(I18n.getOrDefault("exec.audit.running", "⏳ Live Audit in progress: executing 200 climate iterations across 10,000 cells..."));
-        auditResultLabel.setStyle("");
-
-        final HardwareMode selectedMode = getHardwareMode();
-
-        new Thread(() -> {
-            int numCells = 10_000;
-            float[] temps = new float[numCells];
-            float[] lats = new float[numCells];
-            float[] elevs = new float[numCells];
-            float[] seasonBase = new float[]{15.0f};
-
-            Random rnd = new Random(42);
-            for (int i = 0; i < numCells; i++) {
-                lats[i] = (float) (rnd.nextDouble() * 180.0 - 90.0);
-                elevs[i] = (float) (rnd.nextDouble() * 5000.0);
-            }
-
-            // Warm-up pass to stabilize JIT measurements
-            for (int warmup = 0; warmup < 50; warmup++) {
-                SimulationKernel.computeClimate(temps, lats, elevs, seasonBase);
-            }
-
-            int iterations = 200;
-            long startNanos = System.nanoTime();
-
-            if (selectedMode == HardwareMode.NATIVE_RUST) {
-                // High-performance DOD buffer execution loop
-                WorldBuffer worldBuffer = new WorldBuffer(numCells);
-                float[] bufTemp = worldBuffer.getTemperature();
-                float[] bufElev = worldBuffer.getElevation();
-                float[] bufRain = worldBuffer.getRainfall();
-                float[] bufBio = worldBuffer.getBiomassNatural();
-                for (int i = 0; i < numCells; i++) {
-                    bufTemp[i] = temps[i];
-                    bufElev[i] = elevs[i];
-                    bufRain[i] = 800.0f;
-                    bufBio[i] = 50.0f;
-                }
-                for (int it = 0; it < iterations; it++) {
-                    for (int i = 0; i < numCells; i++) {
-                        float latFactor = Math.abs(lats[i]) / 90.0f;
-                        float base = 30.0f - latFactor * 50.0f;
-                        float lapse = -(bufElev[i] * 0.006f);
-                        bufTemp[i] = base + lapse;
-                        bufBio[i] = Math.min(1000.0f, bufBio[i] + (bufRain[i] * 0.001f));
-                    }
-                }
-            } else if (selectedMode == HardwareMode.GPU_SHADERS) {
-                // GPU Compute Shader Pipeline benchmark
-                List<H3Cell> mockCells = new ArrayList<>(numCells);
-                for (int i = 0; i < numCells; i++) {
-                    H3Cell cell = new H3Cell((long) i, (double) lats[i], 0.0);
-                    cell.setElevation((double) elevs[i]);
-                    cell.setTemperature((double) temps[i]);
-                    mockCells.add(cell);
-                }
-                for (int it = 0; it < iterations; it++) {
-                    gpuPipeline.executeRadiativeEquilibrium(mockCells, 1361.0, 32.0, 0.1);
-                }
-            } else if (selectedMode == HardwareMode.JAVA_VECTOR_SIMD) {
-                // Java 21 Vector SIMD benchmark
-                List<H3Cell> mockCells = new ArrayList<>(numCells);
-                for (int i = 0; i < numCells; i++) {
-                    H3Cell cell = new H3Cell((long) i, (double) lats[i], 0.0);
-                    cell.setElevation((double) elevs[i]);
-                    cell.setTemperature((double) temps[i]);
-                    mockCells.add(cell);
-                }
-                for (int it = 0; it < iterations; it++) {
-                    VectorThermodynamicsKernel.computeRadiativeEquilibrium(mockCells, 1361.0, 32.0, 0.1);
-                }
-            } else if (selectedMode == HardwareMode.CPU_JIT) {
-                // Multi-threaded CPU JVM benchmark across all cores
-                for (int it = 0; it < iterations; it++) {
-                    final float sBase = seasonBase[0];
-                    IntStream.range(0, numCells).parallel().forEach(i -> {
-                        float lat = lats[i];
-                        float elev = elevs[i];
-                        float latFactor = Math.abs(lat) / 90.0f;
-                        float base = 30.0f - latFactor * 50.0f;
-                        float seasonal = (lat >= 0) ? sBase : -sBase;
-                        seasonal *= latFactor;
-                        float lapse = -(elev * 0.006f);
-                        temps[i] = base + seasonal + lapse;
-                    });
-                }
-            } else {
-                // Single-threaded Software Fallback SW benchmark
-                for (int it = 0; it < iterations; it++) {
-                    SimulationKernel.computeClimate(temps, lats, elevs, seasonBase);
-                }
-            }
-
-            long elapsedNanos = System.nanoTime() - startNanos;
-            double elapsedSec = Math.max(0.0001, elapsedNanos / 1_000_000_000.0);
-            double tps = iterations / elapsedSec;
-            double msPerTick = (elapsedSec * 1000.0) / iterations;
-            long cellThroughput = (long) (tps * numCells);
-
-            String activeEngineStr = switch (selectedMode) {
-                case NATIVE_RUST -> "🦀 Native Rust Core (Rayon + AVX-512)";
-                case GPU_SHADERS -> "⚡ GPU Compute Shaders (" + getDetectedGpuName() + ")";
-                case JAVA_VECTOR_SIMD -> "☕ Java 21 Incubator Vector SIMD";
-                case CPU_JIT -> "💻 CPU Multi-Thread JIT (" + Runtime.getRuntime().availableProcessors() + " Cores)";
-                case GPU_OFF -> "🛡️ Software Safe Fallback";
-            };
-
-            javafx.application.Platform.runLater(() -> {
-                String formatted = String.format(I18n.getOrDefault("exec.audit.result",
-                        "✅ Audit Succeeded [%s]: %.1f TPS | %.2f ms/step | %,d H3 cells/sec"),
-                        activeEngineStr, tps, msPerTick, cellThroughput);
-                auditResultLabel.setText(formatted);
-                auditResultLabel.getStyleClass().removeAll("hint-label");
-                auditResultLabel.getStyleClass().add("value-label");
-                runAuditBtn.setDisable(false);
-            });
-        }).start();
     }
 
     private Label createDescLabel() {
@@ -1108,18 +985,10 @@ public class ExecutionContextPanel extends BorderPane {
         return clusterManager;
     }
 
-    private void launchSimulation() {
-        logger.info("Launching simulation with mode: {}, topology: {}, rendering: {}",
-                getHardwareMode(), getExecutionTopology(), getRenderingMode());
-        if (onLaunchSimulationCallback != null) {
-            onLaunchSimulationCallback.run();
-        }
-    }
-
     public HardwareMode getHardwareMode() {
-        if (rustNativeRadio != null && rustNativeRadio.isSelected()) return HardwareMode.NATIVE_RUST;
-        if (gpuShadersRadio != null && gpuShadersRadio.isSelected()) return HardwareMode.GPU_SHADERS;
-        if (javaVectorSimdRadio != null && javaVectorSimdRadio.isSelected()) return HardwareMode.JAVA_VECTOR_SIMD;
+        if (rustNativeRadio != null && rustNativeRadio.isSelected() && !rustNativeRadio.isDisabled()) return HardwareMode.NATIVE_RUST;
+        if (gpuShadersRadio != null && gpuShadersRadio.isSelected() && !gpuShadersRadio.isDisabled()) return HardwareMode.GPU_SHADERS;
+        if (javaVectorSimdRadio != null && javaVectorSimdRadio.isSelected() && !javaVectorSimdRadio.isDisabled()) return HardwareMode.JAVA_VECTOR_SIMD;
         if (gpuOffRadio != null && gpuOffRadio.isSelected()) return HardwareMode.GPU_OFF;
         return HardwareMode.CPU_JIT;
     }
@@ -1132,6 +1001,10 @@ public class ExecutionContextPanel extends BorderPane {
     public RenderingMode getRenderingMode() {
         if (headlessRenderingRadio != null && headlessRenderingRadio.isSelected()) return RenderingMode.HEADLESS;
         return RenderingMode.GUI;
+    }
+
+    public int getTargetYear() {
+        return (targetYearSpinner != null && targetYearSpinner.getValue() != null) ? targetYearSpinner.getValue() : 2100;
     }
 
     public ExecutionMode getCurrentMode() {
@@ -1147,21 +1020,21 @@ public class ExecutionContextPanel extends BorderPane {
     }
 
     public void setMode(ExecutionMode mode) {
-        if (mode == ExecutionMode.RUST_NATIVE) {
+        if (mode == ExecutionMode.RUST_NATIVE && isRustAvailable()) {
             rustNativeRadio.setSelected(true);
             localTopologyRadio.setSelected(true);
             guiRenderingRadio.setSelected(true);
             prefs.put(PREF_HARDWARE_MODE_KEY, HardwareMode.NATIVE_RUST.name());
             prefs.putBoolean(PREF_GPU_KEY, false);
             gpuManager.setGpuEnabled(false);
-        } else if (mode == ExecutionMode.GPU) {
+        } else if (mode == ExecutionMode.GPU && gpuManager.isGpuAvailable()) {
             gpuShadersRadio.setSelected(true);
             localTopologyRadio.setSelected(true);
             guiRenderingRadio.setSelected(true);
             prefs.put(PREF_HARDWARE_MODE_KEY, HardwareMode.GPU_SHADERS.name());
             prefs.putBoolean(PREF_GPU_KEY, true);
             gpuManager.setGpuEnabled(true);
-        } else if (mode == ExecutionMode.CPU_SIMD) {
+        } else if (mode == ExecutionMode.CPU_SIMD && isSimdAvailable()) {
             javaVectorSimdRadio.setSelected(true);
             localTopologyRadio.setSelected(true);
             guiRenderingRadio.setSelected(true);
@@ -1185,7 +1058,6 @@ public class ExecutionContextPanel extends BorderPane {
             headlessConfigCard.setVisible(true);
             headlessConfigCard.setManaged(true);
         }
-        updateHardwareBadges();
         updateRightSummary();
     }
 
@@ -1204,7 +1076,15 @@ public class ExecutionContextPanel extends BorderPane {
         if (liveBannerLabel != null) {
             liveBannerLabel.setText(I18n.getOrDefault("exec.live_notice", "⚡ MODIFICATIONS EN DIRECT : Tout changement de moteur de calcul ou de configuration s'applique instantanément à la simulation en cours sans interruption."));
         }
-        if (sidebarTitleLabel != null) sidebarTitleLabel.setText(I18n.getOrDefault("exec.sidebar.title", "🚀 SUMMARY & LAUNCH"));
+
+        // Sidebar headers
+        if (sidebarSysInfoTitle != null) sidebarSysInfoTitle.setText(I18n.getOrDefault("exec.sidebar.sysinfo_title", "💻 SYSTEM SPECIFICATIONS"));
+        if (sysOsHeader != null) sysOsHeader.setText(I18n.getOrDefault("exec.sidebar.sys_os", "OS & Architecture:"));
+        if (sysCpuHeader != null) sysCpuHeader.setText(I18n.getOrDefault("exec.sidebar.sys_cpu", "CPU Logical Cores:"));
+        if (sysRamHeader != null) sysRamHeader.setText(I18n.getOrDefault("exec.sidebar.sys_ram", "Max Heap Memory:"));
+        if (sysGpuHeader != null) sysGpuHeader.setText(I18n.getOrDefault("exec.sidebar.sys_gpu", "Detected GPU:"));
+
+        if (sidebarTitleLabel != null) sidebarTitleLabel.setText(I18n.getOrDefault("exec.sidebar.title", "🚀 LIVE RECAP"));
         if (hdrEngineLabel != null) hdrEngineLabel.setText(I18n.getOrDefault("exec.sidebar.header.engine", "🖥️ Compute Engine:"));
         if (hdrTopologyLabel != null) hdrTopologyLabel.setText(I18n.getOrDefault("exec.sidebar.header.topology", "🌐 Network Topology:"));
         if (hdrRenderingLabel != null) hdrRenderingLabel.setText(I18n.getOrDefault("exec.sidebar.header.rendering", "🖼️ Visual Rendering:"));
@@ -1212,27 +1092,66 @@ public class ExecutionContextPanel extends BorderPane {
 
         // Section Headers
         hardwareSectionHeader.setText(I18n.getOrDefault("exec.section.hardware", "1. 🖥️ COMPUTE ENGINE & HARDWARE ACCELERATION"));
-        topologySectionHeader.setText(I18n.getOrDefault("exec.section.topology", "2. 🌐 EXECUTION TOPOLOGY (LOCAL VS DISTRIBUTED)"));
+        topologySectionHeader.setText(I18n.getOrDefault("exec.section.topology", "2. 🌐 EXECUTION TOPOLOGY & PERSISTENCE"));
         renderingSectionHeader.setText(I18n.getOrDefault("exec.section.rendering", "3. 🚀 RENDERING & DISPLAY MODE (GUI VS HEADLESS)"));
-        auditSectionHeader.setText(I18n.getOrDefault("exec.section.audit", "4. 📊 LIVE HARDWARE AUDIT & SYSTEM DETECTION"));
 
-        // Section 1: Hardware
-        rustNativeRadio.setText(I18n.getOrDefault("exec.hardware.rust_native", "🦀 Native Rust Multi-Core Engine (Rayon + AVX-512 Fused SIMD)"));
+        // Section 1: Hardware Radios & Badges
+        boolean rustAvailable = isRustAvailable();
+        boolean gpuAvailable = gpuManager.isGpuAvailable();
+        boolean simdAvailable = isSimdAvailable();
+        HardwareMode recommended = getRecommendedHardwareMode();
+        String recTag = " " + I18n.getOrDefault("exec.badge.recommended", "★ [Recommended]");
+
+        // 1. Rust Native
+        String rustTitle = I18n.getOrDefault("exec.hardware.rust_native", "🦀 Native Rust Multi-Core Engine (Rayon + AVX-512 Fused SIMD)");
+        if (rustAvailable) {
+            rustNativeRadio.setDisable(false);
+            if (recommended == HardwareMode.NATIVE_RUST) rustTitle += recTag;
+            rustNativeDescLabel.setText(I18n.getOrDefault("exec.hardware.rust_native.desc", "Ultra-fast compiled native Rust kernel leveraging multi-threaded Rayon work-stealing, zero-copy buffers, and AVX-512 vectorization."));
+        } else {
+            rustNativeRadio.setDisable(true);
+            rustTitle += " " + I18n.getOrDefault("exec.status.unavailable_rust", "(Unavailable — Native Rust DLL not found)");
+            rustNativeDescLabel.setText(I18n.getOrDefault("exec.status.unavailable_rust", "(Unavailable — Native Rust DLL not found)"));
+        }
+        rustNativeRadio.setText(rustTitle);
         rustNativeRadio.setTooltip(new Tooltip(I18n.getOrDefault("exec.hardware.rust_native.tooltip", "Native compiled shared library with FFM dynamic linkage, SIMD instruction sets (AVX-512/AVX2), and lock-free parallel execution.")));
-        rustNativeDescLabel.setText(I18n.getOrDefault("exec.hardware.rust_native.desc", "Ultra-fast compiled native Rust kernel (ether_core_native.dll) leveraging multi-threaded Rayon work-stealing, zero-copy buffers, and AVX-512 vectorization for bit-exact physical, demographic, and urban aggregation simulations."));
 
-        gpuShadersRadio.setText(I18n.getOrDefault("exec.hardware.gpu_shaders", "⚡ GPU Compute Shaders (OpenCL / Dedicated & Integrated GPU)"));
+        // 2. GPU Shaders
+        String gpuTitle = I18n.getOrDefault("exec.hardware.gpu_shaders", "⚡ GPU Compute Shaders (OpenCL / Dedicated & Integrated GPU)");
+        if (gpuAvailable) {
+            gpuShadersRadio.setDisable(false);
+            if (recommended == HardwareMode.GPU_SHADERS) gpuTitle += recTag;
+            gpuShadersDescLabel.setText(I18n.getOrDefault("exec.hardware.gpu_shaders.desc", "Hardware-accelerated OpenCL C compute kernels executing Radiative Equilibrium and Photosynthesis across GPU compute units."));
+        } else {
+            gpuShadersRadio.setDisable(true);
+            gpuTitle += " " + I18n.getOrDefault("exec.status.unavailable_gpu", "(Unavailable — No OpenCL/TornadoVM GPU detected)");
+            gpuShadersDescLabel.setText(I18n.getOrDefault("exec.status.unavailable_gpu", "(Unavailable — No OpenCL/TornadoVM GPU detected)"));
+        }
+        gpuShadersRadio.setText(gpuTitle);
         gpuShadersRadio.setTooltip(new Tooltip(I18n.getOrDefault("exec.hardware.gpu_shaders.tooltip", "Hardware-accelerated OpenCL C compute kernels executing Radiative Equilibrium and Farquhar FvCB Photosynthesis across GPU compute units.")));
-        gpuShadersDescLabel.setText(I18n.getOrDefault("exec.hardware.gpu_shaders.desc", "Hardware-accelerated OpenCL C compute kernels executing Radiative Equilibrium and Farquhar FvCB Photosynthesis & Priestley-Taylor Biomass across GPU compute units."));
 
-        javaVectorSimdRadio.setText(I18n.getOrDefault("exec.hardware.java_vector_simd", "☕ Java 21 Incubator Vector SIMD & ForkJoin Engine"));
+        // 3. Java 21 SIMD
+        String simdTitle = I18n.getOrDefault("exec.hardware.java_vector_simd", "☕ Java 21 Incubator Vector SIMD & ForkJoin Engine");
+        if (simdAvailable) {
+            javaVectorSimdRadio.setDisable(false);
+            if (recommended == HardwareMode.JAVA_VECTOR_SIMD) simdTitle += recTag;
+            javaVectorSimdDescLabel.setText(I18n.getOrDefault("exec.hardware.java_vector_simd.desc", "Direct hardware SIMD (AVX2/AVX-512 256/512-bit registers) executing parallel Java Vector API kernels with ForkJoinPool work-stealing."));
+        } else {
+            javaVectorSimdRadio.setDisable(true);
+            simdTitle += " " + I18n.getOrDefault("exec.status.unavailable_simd", "(Unavailable — CPU SIMD Vector registers not supported)");
+            javaVectorSimdDescLabel.setText(I18n.getOrDefault("exec.status.unavailable_simd", "(Unavailable — CPU SIMD Vector registers not supported)"));
+        }
+        javaVectorSimdRadio.setText(simdTitle);
         javaVectorSimdRadio.setTooltip(new Tooltip(I18n.getOrDefault("exec.hardware.java_vector_simd.tooltip", "Direct CPU vector registers via jdk.incubator.vector intrinsics and SuperWord loop unrolling.")));
-        javaVectorSimdDescLabel.setText(I18n.getOrDefault("exec.hardware.java_vector_simd.desc", "Direct hardware SIMD (AVX2/AVX-512 256/512-bit registers) executing parallel Java Vector API kernels with ForkJoinPool work-stealing."));
 
-        cpuJitRadio.setText(I18n.getOrDefault("exec.hardware.cpu_jit", "💻 Standard CPU Multi-Thread JIT (HotSpot Compiler)"));
+        // 4. CPU JIT
+        String cpuTitle = I18n.getOrDefault("exec.hardware.cpu_jit", "💻 Standard CPU Multi-Thread JIT (HotSpot Compiler)");
+        if (recommended == HardwareMode.CPU_JIT) cpuTitle += recTag;
+        cpuJitRadio.setText(cpuTitle);
         cpuJitRadio.setTooltip(new Tooltip(I18n.getOrDefault("exec.hardware.cpu_jit.tooltip", "High-throughput multi-threaded Java execution utilizing all available CPU logical cores.")));
         cpuJitDescLabel.setText(I18n.getOrDefault("exec.hardware.cpu_jit.desc", "Standard JVM HotSpot JIT multi-threaded loops over all detected CPU cores."));
 
+        // 5. Safe Fallback
         gpuOffRadio.setText(I18n.getOrDefault("exec.hardware.off", "🛡️ Software Safe Fallback (Single-Thread SW Rendering)"));
         gpuOffRadio.setTooltip(new Tooltip(I18n.getOrDefault("exec.hardware.off.tooltip", "Safe mode isolating execution from GPU drivers and hardware acceleration layers.")));
         gpuOffDescLabel.setText(I18n.getOrDefault("exec.hardware.off.desc", "Pure single-threaded software fallback mode with no GPU/SIMD dependencies for debugging or resource-constrained hosts."));
@@ -1245,6 +1164,9 @@ public class ExecutionContextPanel extends BorderPane {
         clusterTopologyRadio.setText(I18n.getOrDefault("exec.topology.cluster", "🌐 Distributed Cluster Mode (gRPC/TCP Multi-Machine Nodes)"));
         clusterTopologyRadio.setTooltip(new Tooltip(I18n.getOrDefault("exec.topology.cluster.tooltip", "Partition H3 spatial grids and compute workloads across network-connected cluster nodes.")));
         clusterTopologyDescLabel.setText(I18n.getOrDefault("exec.topology.cluster.desc", "Distributes H3 grid and computations across multiple machines connected on local network or cloud."));
+
+        if (dbSectionHeader != null) dbSectionHeader.setText(I18n.getOrDefault("exec.topology.db_title", "Database & Persistence Infrastructure:"));
+        updateDatabaseStatus();
 
         clusterHeaderLabel.setText(I18n.getOrDefault("exec.cluster.title", "🌐 Cluster Network & Node Setup"));
 
@@ -1317,42 +1239,17 @@ public class ExecutionContextPanel extends BorderPane {
         // Section 3: Rendering
         guiRenderingRadio.setText(I18n.getOrDefault("exec.rendering.gui", "🖼️ Interactive GUI Mode (Real-Time JavaFX Visual)"));
         guiRenderingRadio.setTooltip(new Tooltip(I18n.getOrDefault("exec.rendering.gui.tooltip", "Full real-time 2D/3D visual rendering with live charts and maps.")));
-        guiRenderingDescLabel.setText(I18n.getOrDefault("exec.rendering.gui.desc", "Dynamic 2D/3D cartographic rendering with live controls and real-time graphs."));
+        guiRenderingDescLabel.setText(I18n.getOrDefault("exec.rendering.gui.desc", "Dynamic 2D/3D cartographic rendering. Note: Graphical pipeline consumes 30% to 60% of CPU/GPU cycles."));
 
         headlessRenderingRadio.setText(I18n.getOrDefault("exec.rendering.headless", "🚀 Headless Mode (Async Background - High Throughput Batch)"));
         headlessRenderingRadio.setTooltip(new Tooltip(I18n.getOrDefault("exec.rendering.headless.tooltip", "Run purely in compute background without GUI rendering overhead.")));
-        headlessRenderingDescLabel.setText(I18n.getOrDefault("exec.rendering.headless.desc", "Disables visual rendering to free 100% CPU resources. Enables fast parameter sweeps and multi-millennial simulations."));
+        headlessRenderingDescLabel.setText(I18n.getOrDefault("exec.rendering.headless.desc", "Disables visual rendering. Performance gain: Maximum compute throughput (+300% to +1000%)."));
 
-        lblTargetTicks.setText(I18n.getOrDefault("exec.headless.target_ticks", "Target Steps Count (0 = Unlimited):"));
-        lblSnapshotInterval.setText(I18n.getOrDefault("exec.headless.snapshot_interval", "Snapshot Auto-Save Interval (Years):"));
-        lblDumpFormat.setText(I18n.getOrDefault("exec.headless.dump_format", "Output Report Format:"));
+        lblTargetYear.setText(I18n.getOrDefault("exec.headless.target_year", "Target Simulation End Year:"));
+        targetYearSpinner.setTooltip(new Tooltip(I18n.getOrDefault("exec.headless.target_year.tooltip", "Simulation halts automatically upon reaching this target year.")));
+        lblTargetYearNote.setText(I18n.getOrDefault("exec.headless.target_year_note", "ℹ️ Note: The actual number of computed steps depends on the time step duration (Δt) configured in the scenario."));
 
-        targetTicksSpinner.setTooltip(new Tooltip(I18n.getOrDefault("exec.headless.target_ticks.tooltip", "Simulation halts automatically upon reaching this number of simulation steps.")));
-        snapshotIntervalSpinner.setTooltip(new Tooltip(I18n.getOrDefault("exec.headless.snapshot_interval.tooltip", "Interval in simulation years between automated database state dumps.")));
-
-        dumpFormatCombo.getItems().clear();
-        dumpFormatCombo.getItems().addAll(
-            I18n.getOrDefault("exec.headless.format_json_sqlite", "JSON Summary + SQLite History DB"),
-            I18n.getOrDefault("exec.headless.format_csv", "CSV Data Metrics Dump"),
-            I18n.getOrDefault("exec.headless.format_bin", "Binary WorldBuffer Snapshot (.bin)")
-        );
-        dumpFormatCombo.setValue(dumpFormatCombo.getItems().get(0));
-        dumpFormatCombo.setTooltip(new Tooltip(I18n.getOrDefault("exec.headless.dump_format.tooltip", "Format for logging and persisting historical simulation metrics.")));
-
-        // Section 4: Audit
-        runAuditBtn.setText(I18n.getOrDefault("exec.audit.btn", "⚡ AUDIT HARDWARE PERFORMANCE LIVE (10,000 H3 Cells)"));
-        runAuditBtn.setTooltip(new Tooltip(I18n.getOrDefault("exec.audit.btn.tooltip", "Execute 200 benchmark iterations on 10,000 H3 cells to measure real TPS and compute throughput.")));
-
-        if (auditResultLabel.getText() == null || auditResultLabel.getText().isEmpty()) {
-            auditResultLabel.setText(I18n.getOrDefault("exec.audit.instruction", "ℹ️ Click button below to run actual compute benchmark (10,000 H3 cells)."));
-        }
-
-        // Section 5: Launch Button
-        launchBtn.setText(I18n.getOrDefault("exec.btn.launch", "▶ VALIDATE CONTEXT & LAUNCH SIMULATION"));
-        launchBtn.setTooltip(new Tooltip(I18n.getOrDefault("exec.btn.launch.tooltip", "Commit execution parameters and transition to Simulation View.")));
-
-        updateHardwareBadges();
-        updateSystemInfoLabel();
+        updateSystemSpecs();
         updateRightSummary();
     }
 }

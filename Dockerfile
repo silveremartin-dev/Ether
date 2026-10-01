@@ -68,6 +68,12 @@ ENV DB_PASSWORD=change_me_in_production
 # Redis connection (optional)
 ENV REDIS_HOST=redis
 ENV REDIS_PORT=6379
+# Ether directory paths (12-Factor App configurable storage)
+ENV ETHER_DATA_DIR=/app/data
+ENV ETHER_SAVES_DIR=/app/saves
+ENV ETHER_LOGS_DIR=/app/logs
+ENV ETHER_USER_PRESETS_DIR=/app/saves/user_presets
+ENV ETHER_CACHE_DIR=/tmp/ether_cache
 
 # Health check: verify the JVM process is running
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \

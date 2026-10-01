@@ -31,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 public class OnlineMapService {
     private static final Logger logger = LoggerFactory.getLogger(OnlineMapService.class);
 
-    private static final File CACHE_DIR = new File(System.getProperty("user.home"), ".ether/cache/maps");
+    private static final File CACHE_DIR = org.ether.society.config.EtherPaths.getCacheDir().resolve("maps").toFile();
     private final HttpClient httpClient;
 
     public OnlineMapService() {

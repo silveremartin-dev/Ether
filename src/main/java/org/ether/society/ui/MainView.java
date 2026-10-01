@@ -236,6 +236,7 @@ public class MainView extends StackPane {
             }
             if (newTab == setupTab && setupPanel != null) {
                 setupPanel.ensurePreviewGeneratedIfNeeded();
+                setupPanel.refreshSnapshotList();
             }
         });
 

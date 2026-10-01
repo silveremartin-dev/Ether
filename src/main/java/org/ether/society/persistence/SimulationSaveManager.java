@@ -3,33 +3,50 @@ package org.ether.society.persistence;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.ether.society.core.H3SimulationEngine;
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.H3CellRepository;
 import org.ether.society.database.DatabaseConfig;
+import org.ether.society.network.codec.CellTopologyWireCodec;
+import org.ether.society.network.codec.WorldBufferWireCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
- * Manages simulation persistence (Save/Load).
- * Orchestrates saving Metadata (JSON) and World State (Database).
+ * Unified High-Performance Simulation Persistence & Replay Manager.
+ * Orchestrates saving and loading of:
+ * 1. Topology (topology.bin.gz) — Static/cold spatial baselines via CellTopologyWireCodec
+ * 2. World State (state.bin.gz & snapshots/) — Dynamic simulation arrays via WorldBufferWireCodec
+ * 3. Metadata (metadata.json) — Scenario identification, timeline, and tick indexes
+ * 4. Telemetry (history.json) — Time series analytics and historical snapshots
+ *
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class SimulationSaveManager {
     private static final Logger logger = LoggerFactory.getLogger(SimulationSaveManager.class);
-    private static final String SAVE_DIR = "saves";
     private static final String METADATA_FILE = "metadata.json";
+    private static final String SCENARIO_FILE = "scenario.json";
+    private static final String TOPOLOGY_FILE = "topology.bin.gz";
+    private static final String STATE_FILE = "state.bin.gz";
+    private static final String HISTORY_FILE = "history.json";
+    private static final String SNAPSHOTS_DIR = "snapshots";
 
     private final H3CellRepository cellRepository;
     private final ObjectMapper objectMapper;
+
+    public static Path getSaveDirectory() {
+        return org.ether.society.config.EtherPaths.getSavesDir();
+    }
 
     public SimulationSaveManager() {
         this.cellRepository = new H3CellRepository(DatabaseConfig.getEntityManagerFactory());
@@ -37,24 +54,20 @@ public class SimulationSaveManager {
         this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.objectMapper.configure(com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        
-        // Ensure save directory exists
+
         try {
-            Files.createDirectories(Paths.get(SAVE_DIR));
+            Files.createDirectories(getSaveDirectory());
         } catch (IOException e) {
             logger.error("Failed to create save directory", e);
         }
     }
 
     /**
-     * Saves the current simulation state.
-     * 
-     * @param engine The simulation engine to save
-     * @param saveName User-friendly name for the save
+     * Saves full simulation state and initial topology to disk.
      */
     public void saveSimulation(H3SimulationEngine engine, String saveName) {
         String saveId = UUID.randomUUID().toString();
-        Path baseSaveDir = Paths.get(SAVE_DIR).toAbsolutePath().normalize();
+        Path baseSaveDir = getSaveDirectory();
         Path savePath = baseSaveDir.resolve(saveId).normalize();
 
         if (!savePath.startsWith(baseSaveDir)) {
@@ -63,57 +76,105 @@ public class SimulationSaveManager {
 
         try {
             Files.createDirectories(savePath);
+            Files.createDirectories(savePath.resolve(SNAPSHOTS_DIR));
 
-            // 1. Save Metadata (JSON)
-            SaveMetadata metadata = new SaveMetadata(
-                saveId,
-                saveName,
-                engine.getTimeManager().getCurrentYear(),
-                engine.getTimeManager().getCurrentMonth(),
-                engine.getCurrentScenario() != null ? engine.getCurrentScenario().getName() : "Unknown"
-            );
-            
-            objectMapper.writeValue(savePath.resolve(METADATA_FILE).toFile(), metadata);
-
-            // 2. Save Scenario Configuration (JSON)
-            if (engine.getCurrentScenario() != null) {
-                objectMapper.writeValue(savePath.resolve("scenario.json").toFile(), engine.getCurrentScenario());
+            List<H3Cell> cells = engine.getCells();
+            if (cells == null || cells.isEmpty()) {
+                logger.warn("Cannot save simulation with empty cells.");
+                return;
             }
 
-            // 3. Save World State (Self-contained JSON snapshot & DB)
-            File cellsFile = savePath.resolve("cells.json").toFile();
-            objectMapper.writeValue(cellsFile, engine.getCells());
+            // 1. Save Static Spatial Topology (topology.bin.gz)
+            Path topologyPath = savePath.resolve(TOPOLOGY_FILE);
+            CellTopologyWireCodec.saveToFile(topologyPath, cells);
 
-            // 4. Save Historical Telemetry & Analytics (JSON)
+            // 2. Save Active WorldBuffer State (state.bin.gz)
+            WorldBuffer worldBuffer = engine.getWorldBuffer();
+            if (worldBuffer == null || worldBuffer.getCapacity() == 0) {
+                worldBuffer = new WorldBuffer(cells.size());
+                org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
+            }
+
+            long currentTick = engine.getTickCounter();
+            byte[] stateBytes = WorldBufferWireCodec.encodeChunk(worldBuffer, 0, worldBuffer.getCapacity(), currentTick);
+            Path statePath = savePath.resolve(STATE_FILE);
+            try (OutputStream fos = Files.newOutputStream(statePath);
+                 GZIPOutputStream gzos = new GZIPOutputStream(fos)) {
+                gzos.write(stateBytes);
+                gzos.finish();
+            }
+
+            // Also copy initial/current state as a discrete replay snapshot
+            String snapFileName = String.format("snapshot_tick_%010d.bin.gz", currentTick);
+            Path snapPath = savePath.resolve(SNAPSHOTS_DIR).resolve(snapFileName);
+            Files.copy(statePath, snapPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            // 3. Save Scenario Configuration (scenario.json)
+            if (engine.getCurrentScenario() != null) {
+                objectMapper.writeValue(savePath.resolve(SCENARIO_FILE).toFile(), engine.getCurrentScenario());
+            }
+
+            // 4. Save Historical Telemetry & Analytics (history.json)
             if (engine.getHistoryManager() != null && engine.getHistoryManager().getHistory() != null) {
-                File historyFile = savePath.resolve("history.json").toFile();
+                File historyFile = savePath.resolve(HISTORY_FILE).toFile();
                 objectMapper.writeValue(historyFile, engine.getHistoryManager().getHistory().getSnapshots());
             }
 
+            // 5. Save Metadata (metadata.json)
+            SaveMetadata metadata = new SaveMetadata(
+                    saveId,
+                    saveName,
+                    engine.getTimeManager().getCurrentYear(),
+                    engine.getTimeManager().getCurrentMonth(),
+                    engine.getCurrentScenario() != null ? engine.getCurrentScenario().getName() : "Unknown"
+            );
+            objectMapper.writeValue(savePath.resolve(METADATA_FILE).toFile(), metadata);
+
+            // 6. Optional Database persistence
             if (DatabaseConfig.isDatabaseAvailable()) {
-                logger.info("Persisting {} cells to database...", engine.getCells().size());
-                cellRepository.saveAll(engine.getCells());
+                logger.info("Persisting {} cells to database...", cells.size());
+                cellRepository.saveAll(cells);
             }
-            
-            logger.info("Simulation saved successfully: {} ({})", saveName, saveId);
+
+            logger.info("✅ Simulation saved successfully: '{}' [{}] ({} cells, Tick {})",
+                    saveName, saveId, cells.size(), currentTick);
 
         } catch (Exception e) {
             logger.error("Failed to save simulation", e);
-            throw new RuntimeException("Save failed", e);
+            throw new RuntimeException("Save failed: " + e.getMessage(), e);
         }
     }
 
     /**
-     * Loads a simulation state.
-     * 
-     * @param saveId The ID of the save to load
-     * @param engine The engine to populate
+     * Loads simulation state and topology from disk into the target engine.
      */
     public void loadSimulation(String saveId, H3SimulationEngine engine) {
         try {
-            Path savePath = Paths.get(SAVE_DIR).resolve(saveId).normalize();
-            
-            // Restore Metadata & Time
+            Path savePath;
+            if (saveId == null || saveId.isBlank()) {
+                List<SaveMetadata> saves = listSaves();
+                if (saves.isEmpty()) {
+                    logger.warn("No existing saves available to load.");
+                    return;
+                }
+                savePath = getSaveDirectory().resolve(saves.get(0).getId()).normalize();
+            } else {
+                savePath = getSaveDirectory().resolve(saveId).normalize();
+            }
+
+            if (!Files.exists(savePath)) {
+                // Check if saveId is an absolute or relative directory path directly
+                Path directPath = Paths.get(saveId);
+                if (Files.exists(directPath)) {
+                    savePath = directPath;
+                } else {
+                    throw new FileNotFoundException("Save directory not found: " + savePath);
+                }
+            }
+
+            logger.info("Loading unified simulation save from: {}", savePath);
+
+            // 1. Restore Metadata & Time
             File metaFile = savePath.resolve(METADATA_FILE).toFile();
             if (metaFile.exists()) {
                 SaveMetadata metadata = objectMapper.readValue(metaFile, SaveMetadata.class);
@@ -127,8 +188,63 @@ public class SimulationSaveManager {
                 }
             }
 
-            // Restore Historical Telemetry
-            File historyFile = savePath.resolve("history.json").toFile();
+            // 2. Restore Spatial Topology (topology.bin.gz)
+            Path topologyPath = savePath.resolve(TOPOLOGY_FILE);
+            List<H3Cell> cells = null;
+            if (Files.exists(topologyPath)) {
+                cells = CellTopologyWireCodec.loadFromFile(topologyPath);
+            }
+
+            // 3. Fallback to database if topology file is missing
+            if (cells == null || cells.isEmpty()) {
+                logger.warn("No topology.bin.gz found, falling back to database...");
+                cells = cellRepository.findAll();
+            }
+
+            if (cells.isEmpty()) {
+                logger.warn("No saved world found in save directory or database.");
+                return;
+            }
+
+            // 4. Instantiate & populate WorldBuffer
+            engine.setCells(cells);
+            WorldBuffer worldBuffer = engine.getWorldBuffer();
+            if (worldBuffer != null) {
+                org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
+            }
+
+            // 5. Restore Dynamic State (state.bin.gz or latest snapshot)
+            Path statePath = savePath.resolve(STATE_FILE);
+            if (!Files.exists(statePath)) {
+                // Look for latest snapshot in snapshots/
+                Path snapDir = savePath.resolve(SNAPSHOTS_DIR);
+                if (Files.exists(snapDir)) {
+                    File[] snapFiles = snapDir.toFile().listFiles((d, n) -> n.endsWith(".bin.gz") || n.endsWith(".gz"));
+                    if (snapFiles != null && snapFiles.length > 0) {
+                        Arrays.sort(snapFiles, Comparator.comparing(File::getName).reversed());
+                        statePath = snapFiles[0].toPath();
+                    }
+                }
+            }
+
+            if (Files.exists(statePath)) {
+                try (InputStream fis = Files.newInputStream(statePath);
+                     GZIPInputStream gzis = new GZIPInputStream(fis);
+                     ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                    byte[] buf = new byte[8192];
+                    int r;
+                    while ((r = gzis.read(buf)) != -1) {
+                        baos.write(buf, 0, r);
+                    }
+                    byte[] rawState = baos.toByteArray();
+                    WorldBufferWireCodec.decodeChunkInto(rawState, worldBuffer);
+                    engine.syncBufferToCells();
+                    logger.info("Restored dynamic world state ({} cells) from {}", cells.size(), statePath.getFileName());
+                }
+            }
+
+            // 6. Restore Historical Telemetry (history.json)
+            File historyFile = savePath.resolve(HISTORY_FILE).toFile();
             if (historyFile.exists() && engine.getHistoryManager() != null) {
                 try {
                     List<org.ether.society.analytics.HistorySnapshot> loadedSnapshots = objectMapper.readValue(historyFile,
@@ -144,44 +260,49 @@ public class SimulationSaveManager {
                 }
             }
 
-            File cellsFile = savePath.resolve("cells.json").toFile();
-
-            if (cellsFile.exists()) {
-                logger.info("Loading cells from save snapshot: {}", cellsFile.getAbsolutePath());
-                byte[] rawBytes = Files.readAllBytes(cellsFile.toPath());
-                byte[] jsonBytes = org.ether.society.security.SaveEncryptionVault.isEncrypted(rawBytes)
-                        ? org.ether.society.security.SaveEncryptionVault.decrypt(rawBytes)
-                        : rawBytes;
-                List<H3Cell> cells = objectMapper.readValue(jsonBytes, 
-                        objectMapper.getTypeFactory().constructCollectionType(List.class, H3Cell.class));
-                if (cells != null && !cells.isEmpty()) {
-                    engine.setCells(cells);
-                    if (engine.getWorldBuffer() != null) {
-                        org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, engine.getWorldBuffer());
-                    }
-                    logger.info("World loaded from snapshot: {} cells.", cells.size());
-                    return;
-                }
-            }
-
-            // Fallback to database
-            logger.info("Loading world from database...");
-            List<H3Cell> cells = cellRepository.findAll();
-            
-            if (cells.isEmpty()) {
-                logger.warn("No saved world found in database or snapshot.");
-                return;
-            }
-
-            engine.setCells(cells);
-            if (engine.getWorldBuffer() != null) {
-                org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, engine.getWorldBuffer());
-            }
-            logger.info("World loaded from database: {} cells.", cells.size());
+            logger.info("World successfully loaded: {} cells.", cells.size());
 
         } catch (Exception e) {
             logger.error("Failed to load simulation", e);
-            throw new RuntimeException("Load failed", e);
+            throw new RuntimeException("Load failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Loads a specific tick snapshot from the save's snapshots/ directory into the engine.
+     */
+    public boolean loadTickSnapshot(Path savePath, long targetTick, H3SimulationEngine engine) {
+        try {
+            Path snapDir = savePath.resolve(SNAPSHOTS_DIR);
+            String snapFileName = String.format("snapshot_tick_%010d.bin.gz", targetTick);
+            Path snapPath = snapDir.resolve(snapFileName);
+
+            if (!Files.exists(snapPath)) {
+                // Fallback to searching matching tick in filename
+                File[] files = snapDir.toFile().listFiles((d, n) -> n.contains(String.valueOf(targetTick)) && (n.endsWith(".bin.gz") || n.endsWith(".gz")));
+                if (files != null && files.length > 0) {
+                    snapPath = files[0].toPath();
+                } else {
+                    return false;
+                }
+            }
+
+            try (InputStream fis = Files.newInputStream(snapPath);
+                 GZIPInputStream gzis = new GZIPInputStream(fis);
+                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                byte[] buf = new byte[8192];
+                int r;
+                while ((r = gzis.read(buf)) != -1) {
+                    baos.write(buf, 0, r);
+                }
+                byte[] rawState = baos.toByteArray();
+                WorldBufferWireCodec.decodeChunkInto(rawState, engine.getWorldBuffer());
+                engine.syncBufferToCells();
+                return true;
+            }
+        } catch (Exception ex) {
+            logger.error("Failed to load tick snapshot {}", targetTick, ex);
+            return false;
         }
     }
 
@@ -197,17 +318,13 @@ public class SimulationSaveManager {
     public void saveCheckpoint(H3SimulationEngine engine, int tickCounter) {
         if (engine == null || engine.getCells() == null || engine.getCells().isEmpty()) return;
         if (!DatabaseConfig.isDatabaseAvailable()) {
-            logger.debug("Database offline mode: 60-tick snapshot retained in HistoryManager memory.");
             return;
         }
 
-        // Clone/snapshot list reference for async safety
-        final List<H3Cell> snapshotCells = new java.util.ArrayList<>(engine.getCells());
+        final List<H3Cell> snapshotCells = new ArrayList<>(engine.getCells());
         asyncDbExecutor.submit(() -> {
             try {
-                logger.info("Persisting 60-tick snapshot (tick {}) asynchronously to database ({} cells)...", tickCounter, snapshotCells.size());
                 cellRepository.saveAll(snapshotCells);
-                logger.info("✅ Asynchronous 60-tick snapshot persisted to database.");
             } catch (Exception ex) {
                 logger.error("Failed to save periodic DB checkpoint asynchronously", ex);
             }
@@ -218,28 +335,27 @@ public class SimulationSaveManager {
      * Lists all available saved simulation snapshots across normal saves and auto-checkpoints.
      */
     public List<SaveMetadata> listSaves() {
-        List<SaveMetadata> list = new java.util.ArrayList<>();
-        Path baseSaveDir = Paths.get(SAVE_DIR);
+        List<SaveMetadata> list = new ArrayList<>();
+        Path baseSaveDir = getSaveDirectory();
         if (!Files.exists(baseSaveDir)) return list;
 
-        try (Stream<Path> stream = Files.walk(baseSaveDir, 3)) {
-            stream.filter(p -> p.getFileName().toString().endsWith(".json"))
-                  .forEach(jsonFile -> {
-                      try {
-                          SaveMetadata meta = objectMapper.readValue(jsonFile.toFile(), SaveMetadata.class);
-                          if (meta != null && meta.getId() != null) {
-                              boolean exists = list.stream().anyMatch(existing -> existing.getId().equals(meta.getId()));
-                              if (!exists) {
-                                  list.add(meta);
-                              }
-                          }
-                      } catch (Exception ignored) {}
-                  });
+        try (Stream<Path> stream = Files.walk(baseSaveDir, 2)) {
+            stream.filter(p -> p.getFileName().toString().equals(METADATA_FILE))
+                    .forEach(jsonFile -> {
+                        try {
+                            SaveMetadata meta = objectMapper.readValue(jsonFile.toFile(), SaveMetadata.class);
+                            if (meta != null && meta.getId() != null) {
+                                boolean exists = list.stream().anyMatch(existing -> existing.getId().equals(meta.getId()));
+                                if (!exists) {
+                                    list.add(meta);
+                                }
+                            }
+                        } catch (Exception ignored) {}
+                    });
         } catch (IOException e) {
             logger.error("Failed to list saves", e);
         }
 
-        // Sort newest first
         list.sort((a, b) -> {
             if (a.getTimestamp() == null) return 1;
             if (b.getTimestamp() == null) return -1;

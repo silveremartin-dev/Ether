@@ -176,7 +176,7 @@ Ether includes high-performance cloud orchestration scripts (`scripts/gcp/`) sup
 
 > 📖 See [docs/GCP_DEPLOYMENT_AND_BENCHMARK_GUIDE.md](docs/GCP_DEPLOYMENT_AND_BENCHMARK_GUIDE.md) for the exhaustive cost-per-tick matrices, sizing formulas, and multi-node cluster scaling curves.
 
-All snapshots, world state matrices (`cells.json`, `history.json`, `metadata.json`, `scenario.json`), and PostGIS spatial tables can be synchronized to the local machine in 1-click via `./scripts/gcp/fetch-results.sh` (or `.\scripts\gcp\fetch-results.ps1`) for seamless interactive replay in the Ether GUI.
+All snapshots, world state matrices (`topology.bin.gz`, `state.bin.gz`, `metadata.json`, `scenario.json`, `history.json`), and PostGIS spatial tables can be synchronized to the local machine in 1-click via `./scripts/gcp/fetch-results.sh` (or `.\scripts\gcp\fetch-results.ps1`) for seamless interactive replay in the Ether GUI.
 
 ---
 

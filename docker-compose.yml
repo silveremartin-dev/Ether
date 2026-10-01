@@ -83,6 +83,11 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD:-change_me_in_production}
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      ETHER_DATA_DIR: /app/data
+      ETHER_SAVES_DIR: /app/saves
+      ETHER_LOGS_DIR: /app/logs
+      ETHER_USER_PRESETS_DIR: /app/saves/user_presets
+      ETHER_CACHE_DIR: /tmp/ether_cache
     volumes:
       - ./saves:/app/saves
       - ./logs:/app/logs
@@ -120,6 +125,11 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD:-change_me_in_production}
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      ETHER_DATA_DIR: /app/data
+      ETHER_SAVES_DIR: /app/saves
+      ETHER_LOGS_DIR: /app/logs
+      ETHER_USER_PRESETS_DIR: /app/saves/user_presets
+      ETHER_CACHE_DIR: /tmp/ether_cache
     ports:
       - "9090:9090"
     volumes:

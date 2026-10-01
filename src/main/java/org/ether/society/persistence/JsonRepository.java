@@ -32,11 +32,12 @@ public abstract class JsonRepository<T> {
     private final Class<T> types;
 
     public JsonRepository(String filename, Class<T> type) {
+        this(org.ether.society.config.EtherPaths.getUserPresetsDir().resolve(Paths.get(filename).getFileName().toString()), type);
+    }
+
+    public JsonRepository(Path customPath, Class<T> type) {
         this.types = type;
-        // Store data in a user directory or relative to app
-        String appData = System.getProperty("user.home") + File.separator + ".ether_society" + File.separator + "data";
-        String safeFilename = Paths.get(filename).getFileName().toString();
-        this.filePath = Paths.get(appData, safeFilename);
+        this.filePath = customPath;
 
         this.mapper = new ObjectMapper();
         this.mapper.registerModule(new JavaTimeModule());

@@ -1381,6 +1381,10 @@ public class H3SimulationEngine implements ISimulationEngine {
         return worldBuffer;
     }
 
+    public void setWorldBuffer(org.ether.society.core.dod.WorldBuffer worldBuffer) {
+        this.worldBuffer = worldBuffer;
+    }
+
     public org.ether.society.core.dod.AgentBuffer getAgentBuffer() {
         return agentBuffer;
     }

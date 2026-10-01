@@ -29,13 +29,19 @@ class SimulationSaveManagerTest {
         // Create cell grid
         List<H3Cell> cells = new ArrayList<>();
         H3Cell capitalCell = new H3Cell(123456789L, 48.85, 2.35);
+        capitalCell.setElevation(150.0);
         capitalCell.setBiome(Biome.PLAINS);
         capitalCell.setPopulation(5000);
+        capitalCell.setFoodResource(25000.0);
+        capitalCell.setResourceCapital(12000.0);
         cells.add(capitalCell);
 
         H3Cell territoryCell = new H3Cell(987654321L, 48.86, 2.36);
+        territoryCell.setElevation(200.0);
         territoryCell.setBiome(Biome.FOREST);
         territoryCell.setPopulation(2000);
+        territoryCell.setFoodResource(10000.0);
+        territoryCell.setResourceCapital(5000.0);
         cells.add(territoryCell);
 
         // Create nation linking capital and territory
@@ -48,9 +54,28 @@ class SimulationSaveManagerTest {
 
         engine.setCells(cells);
 
-        // This must succeed without JsonMappingException / Document nesting depth (1001) exceeds maximum
+        // This must succeed without error
         assertDoesNotThrow(() -> {
-            saveManager.saveSimulation(engine, "Test_Save_Nation_Ownership");
+            saveManager.saveSimulation(engine, "Test_Save_Unified_Architecture");
         });
+
+        // Verify listSaves finds it
+        List<SaveMetadata> saves = saveManager.listSaves();
+        assertFalse(saves.isEmpty(), "Saved simulation should be listed in saves registry");
+
+        // Test loading back into a new engine
+        H3SimulationEngine loadedEngine = new H3SimulationEngine(config);
+        assertDoesNotThrow(() -> {
+            saveManager.loadSimulation(saves.get(0).getId(), loadedEngine);
+        });
+
+        assertNotNull(loadedEngine.getCells());
+        assertEquals(2, loadedEngine.getCells().size());
+
+        H3Cell loadedCapital = loadedEngine.getCells().get(0);
+        assertEquals(123456789L, loadedCapital.getH3Index());
+        assertEquals(48.85, loadedCapital.getLatitude(), 1e-4);
+        assertEquals(2.35, loadedCapital.getLongitude(), 1e-4);
+        assertEquals(5000, loadedCapital.getPopulation());
     }
 }

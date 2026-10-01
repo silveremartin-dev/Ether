@@ -1374,7 +1374,7 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
 
-        snapshotHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.header", "📸 RESUME FROM EXISTING SNAPSHOT (PREVIOUS SESSION)"));
+        snapshotHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.header", "📸 7. RESUME FROM EXISTING SNAPSHOT (PREVIOUS SESSION)"));
         snapshotHeader.getStyleClass().add("label-section-header");
 
         Label subtitle = new Label(I18n.getOrDefault("scenario.desc.snapshot", "If the simulation was previously run and snapshots or checkpoints exist, you can resume directly from that snapshot without starting over."));
@@ -1384,8 +1384,11 @@ public class ScenarioSetupPanel extends BorderPane {
         ToggleGroup modeGroup = new ToggleGroup();
         radioNewSimulation = new RadioButton(I18n.getOrDefault("scenario.radio.start_fresh", "🌱 Start a new simulation from scratch (Year T₀)"));
         radioNewSimulation.setStyle("-fx-font-weight: bold;");
+        radioNewSimulation.setTooltip(new Tooltip(I18n.getOrDefault("scenario.radio.start_fresh.tooltip", "Initialize a brand-new historical simulation from canonical T₀ initial conditions.")));
+
         radioResumeSnapshot = new RadioButton(I18n.getOrDefault("scenario.radio.start_snapshot", "📸 Resume from an existing Snapshot (Previous Session / Checkpoint)"));
         radioResumeSnapshot.setStyle("-fx-font-weight: bold; -fx-text-fill: #7c3aed;");
+        radioResumeSnapshot.setTooltip(new Tooltip(I18n.getOrDefault("scenario.radio.start_snapshot.tooltip", "Load a previously saved physical state or periodic checkpoint directly into memory.")));
 
         radioNewSimulation.setToggleGroup(modeGroup);
         radioResumeSnapshot.setToggleGroup(modeGroup);
@@ -1393,6 +1396,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
         snapshotCombo = new ComboBox<>();
         snapshotCombo.setMaxWidth(Double.MAX_VALUE);
+        snapshotCombo.setTooltip(new Tooltip(I18n.getOrDefault("scenario.snapshot.combo.tooltip", "Select an existing checkpoint or full simulation snapshot from the disk to resume execution.")));
         snapshotCombo.setConverter(new javafx.util.StringConverter<org.ether.society.persistence.SaveMetadata>() {
             @Override
             public String toString(org.ether.society.persistence.SaveMetadata item) {
@@ -1406,6 +1410,26 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         });
 
+        snapshotCombo.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(org.ether.society.persistence.SaveMetadata item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setTooltip(null);
+                } else {
+                    String timeStr = item.getTimestamp() != null ? item.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "N/A";
+                    String text = String.format("💾 [An %,d - M%02d] %s (%s) - %s", item.getYear(), item.getMonth(), item.getName(), item.getScenarioName(), timeStr);
+                    setText(text);
+                    setTooltip(new Tooltip(String.format("📁 ID: %s\n📜 Scénario: %s\n⏳ Année: %,d (Mois %02d)\n📅 Horodatage: %s",
+                            item.getId(), item.getScenarioName(), item.getYear(), item.getMonth(), timeStr)));
+                }
+            }
+        });
+
+        // Auto-refresh snapshot list when combo opens to ensure live synchronization with disk
+        snapshotCombo.setOnShowing(e -> refreshSnapshotList());
+
         snapshotDateLabel = new Label(I18n.getOrDefault("scenario.label.timestamp_null", "📅 Timestamp: -"));
         snapshotTimeLabel = new Label(I18n.getOrDefault("scenario.label.moment_null", "⏳ Time: -"));
         snapshotScenarioLabel = new Label(I18n.getOrDefault("scenario.info.scenario_empty", "📜 Scenario: -"));
@@ -1413,27 +1437,32 @@ public class ScenarioSetupPanel extends BorderPane {
 
         for (Label l : List.of(snapshotDateLabel, snapshotTimeLabel, snapshotScenarioLabel, snapshotPathLabel)) {
             l.setStyle("-fx-font-size: 11px;");
+            l.setWrapText(true);
+            l.setMaxWidth(Double.MAX_VALUE);
         }
 
-        GridPane detailsGrid = new GridPane();
-        detailsGrid.setHgap(12);
-        detailsGrid.setVgap(4);
-        detailsGrid.addRow(0, snapshotDateLabel, snapshotTimeLabel);
-        detailsGrid.addRow(1, snapshotScenarioLabel, snapshotPathLabel);
+        VBox detailsList = new VBox(5);
+        detailsList.setPadding(new Insets(6, 10, 8, 10));
+        detailsList.getChildren().addAll(snapshotDateLabel, snapshotTimeLabel, snapshotScenarioLabel, snapshotPathLabel);
 
-        VBox snapshotCard = new VBox(6, new Label(I18n.getOrDefault("scenario.section.snapshot_sheet", "📋 Technical-Historical Sheet of Selected Snapshot:")), detailsGrid);
-        snapshotCard.getStyleClass().add("opt-master-box");
-        snapshotCard.getChildren().get(0).getStyleClass().add("opt-sub-checkbox");
+        Label sheetHeader = new Label(I18n.getOrDefault("scenario.section.snapshot_sheet", "📋 Technical-Historical Sheet of Selected Snapshot:"));
+        sheetHeader.getStyleClass().add("opt-sub-checkbox");
+        sheetHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8;");
+
+        VBox snapshotCard = new VBox(6, sheetHeader, detailsList);
+        snapshotCard.getStyleClass().add("subcard-section");
 
         snapshotExplainBtn = new Button(I18n.getOrDefault("scenario.btn.snapshot_explain", "ℹ️ What is a Snapshot? (Explanations & Mechanics)"));
         snapshotExplainBtn.getStyleClass().add("button-secondary");
         snapshotExplainBtn.setMaxWidth(Double.MAX_VALUE);
         snapshotExplainBtn.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;");
+        snapshotExplainBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.snapshot_explain", "Open detailed technical guide explaining physical state capture, rolling checkpoints, and multiverse branching.")));
         snapshotExplainBtn.setOnAction(e -> showSnapshotExplanationDialog());
 
-        snapshotRefreshBtn = new Button(I18n.getOrDefault("scenario.btn.refresh", "🔄 Refresh"));
+        snapshotRefreshBtn = new Button(I18n.getOrDefault("scenario.btn.refresh", "🔄 Refresh Snapshots"));
         snapshotRefreshBtn.getStyleClass().add("button-secondary");
         snapshotRefreshBtn.setStyle("-fx-font-size: 11px;");
+        snapshotRefreshBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.snapshot_refresh", "Rescans the disk saves directory (saves/) to synchronize the list of real simulation snapshots and checkpoints.")));
         snapshotRefreshBtn.setOnAction(e -> refreshSnapshotList());
 
         HBox btnBox = new HBox(8, snapshotExplainBtn, snapshotRefreshBtn);
@@ -1447,17 +1476,14 @@ public class ScenarioSetupPanel extends BorderPane {
             boolean isResume = newV == radioResumeSnapshot;
             snapshotContainer.setVisible(isResume);
             snapshotContainer.setManaged(isResume);
+            if (isResume) {
+                refreshSnapshotList();
+            }
             updateStartButtonLabel();
         });
 
         snapshotCombo.valueProperty().addListener((obs, oldV, newV) -> {
-            if (newV != null) {
-                String timeStr = newV.getTimestamp() != null ? newV.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) : "N/A";
-                snapshotDateLabel.setText(I18n.getOrDefault("scenario.snapshot.timestamp", "📅 Horodatage : ") + timeStr);
-                snapshotTimeLabel.setText(String.format(I18n.getOrDefault("scenario.snapshot.time_format", "⏳ Moment: Year %,d (Month %d)"), newV.getYear(), newV.getMonth()));
-                snapshotScenarioLabel.setText(I18n.getOrDefault("scenario.snapshot.scenario_prefix", "📜 Scenario: ") + (newV.getScenarioName() != null ? newV.getScenarioName() : I18n.getOrDefault("scenario.unknown", "Unknown")));
-                snapshotPathLabel.setText(I18n.getOrDefault("scenario.snapshot.id", "📁 ID Snapshot : ") + newV.getId());
-            }
+            updateSnapshotDetailsDisplay(newV);
         });
 
         refreshSnapshotList();
@@ -1466,69 +1492,75 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
-    public void refreshSnapshotList() {
-        if (snapshotCombo == null) return;
-        String currentScenarioName = null;
-        if (scenarioPresetBar != null && scenarioPresetBar.getCurrentName() != null) {
-            currentScenarioName = scenarioPresetBar.getCurrentName();
-        }
-        List<org.ether.society.persistence.SaveMetadata> saves = getSaveManager().listSaves();
-        List<org.ether.society.persistence.SaveMetadata> filteredSaves = new ArrayList<>();
-        if (currentScenarioName != null && !currentScenarioName.isBlank()) {
-            final String targetName = currentScenarioName.trim();
-            for (var save : saves) {
-                if (save.getScenarioName() != null && (save.getScenarioName().trim().equalsIgnoreCase(targetName) 
-                        || targetName.toLowerCase().contains(save.getScenarioName().trim().toLowerCase()) 
-                        || save.getScenarioName().trim().toLowerCase().contains(targetName.toLowerCase()))) {
-                    filteredSaves.add(save);
-                }
+    private void updateSnapshotDetailsDisplay(org.ether.society.persistence.SaveMetadata newV) {
+        if (newV != null) {
+            String timeStr = newV.getTimestamp() != null ? newV.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) : "N/A";
+            String dateTxt = I18n.getOrDefault("scenario.snapshot.timestamp", "📅 Timestamp: ") + timeStr;
+            String timeTxt = String.format(I18n.getOrDefault("scenario.snapshot.time_format", "⏳ Moment: Year %,d (Month %02d)"), newV.getYear(), newV.getMonth());
+            String scName = newV.getScenarioName() != null ? newV.getScenarioName() : I18n.getOrDefault("scenario.unknown", "Unknown");
+            String scTxt = I18n.getOrDefault("scenario.snapshot.scenario_prefix", "📜 Scenario: ") + scName;
+            String idTxt = I18n.getOrDefault("scenario.snapshot.id", "📁 Snapshot ID: ") + newV.getId();
+
+            if (snapshotDateLabel != null) {
+                snapshotDateLabel.setText(dateTxt);
+                snapshotDateLabel.setTooltip(new Tooltip(dateTxt + "\n" + I18n.getOrDefault("scenario.snapshot.tooltip.timestamp", "Exact real-world date and time when this snapshot was captured.")));
+            }
+            if (snapshotTimeLabel != null) {
+                snapshotTimeLabel.setText(timeTxt);
+                snapshotTimeLabel.setTooltip(new Tooltip(timeTxt + "\n" + I18n.getOrDefault("scenario.snapshot.tooltip.time", "Precise chronological year and simulation month.")));
+            }
+            if (snapshotScenarioLabel != null) {
+                snapshotScenarioLabel.setText(scTxt);
+                snapshotScenarioLabel.setTooltip(new Tooltip(scTxt + "\n" + I18n.getOrDefault("scenario.snapshot.tooltip.scenario", "Origin scenario and initial physical parameters.")));
+            }
+            if (snapshotPathLabel != null) {
+                snapshotPathLabel.setText(idTxt);
+                snapshotPathLabel.setTooltip(new Tooltip(idTxt + "\n" + I18n.getOrDefault("scenario.snapshot.tooltip.id", "Unique UUID or save identifier on the filesystem.")));
             }
         } else {
-            filteredSaves.addAll(saves);
-        }
-
-        if (filteredSaves.isEmpty()) {
-            // If no exact match or saves list is empty, display a synthetic checkpoint matching current scenario
-            String secName = currentScenarioName != null ? currentScenarioName : "Scénario Courant";
-            org.ether.society.persistence.SaveMetadata demo = new org.ether.society.persistence.SaveMetadata(
-                "checkpoint_latest_" + secName.replaceAll("[^a-zA-Z0-9]", "_").toLowerCase(),
-                "Snapshot Restauration — " + secName,
-                2045, 6, secName
-            );
-            filteredSaves.add(demo);
-        }
-
-        snapshotCombo.getItems().setAll(filteredSaves);
-        if (!filteredSaves.isEmpty()) {
-            snapshotCombo.setValue(filteredSaves.get(0));
+            if (snapshotDateLabel != null) {
+                snapshotDateLabel.setText(I18n.getOrDefault("scenario.label.timestamp_null", "📅 Timestamp: -"));
+                snapshotDateLabel.setTooltip(null);
+            }
+            if (snapshotTimeLabel != null) {
+                snapshotTimeLabel.setText(I18n.getOrDefault("scenario.label.moment_null", "⏳ Time: -"));
+                snapshotTimeLabel.setTooltip(null);
+            }
+            if (snapshotScenarioLabel != null) {
+                snapshotScenarioLabel.setText(I18n.getOrDefault("scenario.info.scenario_empty", "📜 Scenario: -"));
+                snapshotScenarioLabel.setTooltip(null);
+            }
+            if (snapshotPathLabel != null) {
+                snapshotPathLabel.setText(I18n.getOrDefault("scenario.label.snapshot_id_null", "📁 Snapshot ID: -"));
+                snapshotPathLabel.setTooltip(null);
+            }
         }
     }
 
+    public void refreshSnapshotList() {
+        if (snapshotCombo == null) return;
+        List<org.ether.society.persistence.SaveMetadata> saves = getSaveManager().listSaves();
+        
+        org.ether.society.persistence.SaveMetadata currentSelected = snapshotCombo.getValue();
+        snapshotCombo.getItems().setAll(saves);
+
+        if (!saves.isEmpty()) {
+            // Preserve current selection if still in list, else select the newest one
+            if (currentSelected != null && saves.contains(currentSelected)) {
+                snapshotCombo.setValue(currentSelected);
+            } else {
+                snapshotCombo.setValue(saves.get(0));
+            }
+        } else {
+            snapshotCombo.setValue(null);
+            snapshotCombo.setPromptText(I18n.getOrDefault("scenario.snapshot.no_saves", "(No snapshots found on disk in saves/)"));
+            updateSnapshotDetailsDisplay(null);
+        }
+        logger.info("Refreshed snapshots list: {} real saves found on disk.", saves.size());
+    }
+
     private void showSnapshotExplanationDialog() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Fonctionnement des Snapshots dans Ether Simulation Engine");
-        alert.setHeaderText(I18n.getOrDefault("scenario.header.snapshot_help", "📸 WHAT IS A SNAPSHOT & HOW DOES IT WORK?"));
-
-        String content = """
-            💡 DÉFINITION D'UN SNAPSHOT :
-            Un Snapshot (ou instantané d'état) est une sauvegarde intégrale, fidèle et déterministe de la simulation Ether capturée à un tick ou une année T précise.
-
-            🧠 CE QUI EST CAPTURÉ & CONSERVÉ :
-            1. 🪐 ÉTATS DES CELLULES H3 : Biomasse humaine, stocks alimentaires, eau potable, nutriments du sol (NPK), capital physique (K₀), énergie (E₀), savoirs (I₀) et niveau technologique.
-            2. ⚡ REGISTRES DOD (Data-Oriented Design) : Buffers vectorisés des cohortes d'agents, tranches d'âges, pyramides démographiques et flux migratoires inter-cellulaires.
-            3. 🕒 DYNAMIQUE TEMPORELLE & CLIMAT : Année calendaire, mois, saison, température moyenne, forçage radiatif et bilan carbone stratosphérique.
-            4. 🏛️ NATIONS & ÉVÉNEMENTS HISTORIQUES : Entités géopolitiques formées, frontières territoriales et journal des événements planétaires.
-
-            🚀 COMMENT ÇA FONCTIONNE ?
-            • ⚡ Rolling Checkpoint (Tâche de Fond) : Le moteur de simulation génère automatiquement un checkpoint léger sur disque tous les 60 ticks sans blocage de l'interface utilisateur.
-            • 💾 Restauration Instantanée : Charger un snapshot réinsère directement les structures de données H3/DOD en mémoire, évitant de recalculer les millénaires ou siècles écoulés.
-            • 🔀 Exploration d'Arborescences (Branching / Forking) : Vous pouvez repartir d’un snapshot à l'an 2045, modifier les lois ou les événements (ex: guerre, vaccin, fusion nucléaire), et observer la divergence de la civilisation par rapport à la session initiale.
-            """;
-
-        alert.setContentText(content);
-        alert.getDialogPane().setPrefWidth(600);
-        alert.getDialogPane().setStyle("-fx-font-size: 12px;");
-        alert.showAndWait();
+        new SnapshotExplanationDialog(getScene() != null ? getScene().getWindow() : null).showAndWait();
     }
 
     public boolean isResumeFromSnapshotSelected() {
@@ -1989,7 +2021,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private List<Scenario> getBuiltInScenarios() {
-        return Scenario.getBuiltInScenarios();
+        return scenarioRepo != null ? scenarioRepo.getAllScenarios() : org.ether.society.persistence.PresetStorageService.loadAllScenarios();
     }
 
     private void updateInheritedContextDisplay(String ecologyName) {
@@ -7198,7 +7230,27 @@ public class ScenarioSetupPanel extends BorderPane {
             if (clippingHeader != null) clippingHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.header", "✂️ BORDERS & HISTORICAL SPATIAL CLIPPING"));
             if (oceanOptHeader != null) oceanOptHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.ocean_opt.header", "⚙️ ENGINE ARCHITECTURE & OPTIMIZATIONS (ETHER CORE & OPTIONAL)"));
             if (title3Events != null) title3Events.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events_section", "🌪️ HISTORICAL PLANETARY EVENTS & CLIMATE DRIFTS"));
-            if (snapshotHeader != null) snapshotHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.header", "📸 RESUME FROM EXISTING SNAPSHOT (PREVIOUS SESSION)"));
+            if (snapshotHeader != null) snapshotHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.header", "📸 7. RESUME FROM EXISTING SNAPSHOT (PREVIOUS SESSION)"));
+            if (radioNewSimulation != null) {
+                radioNewSimulation.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.start_fresh", "🌱 Start a new simulation from scratch (Year T₀)"));
+                radioNewSimulation.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.start_fresh.tooltip", "Initialize a brand-new historical simulation from canonical T₀ initial conditions.")));
+            }
+            if (radioResumeSnapshot != null) {
+                radioResumeSnapshot.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.start_snapshot", "📸 Resume from an existing Snapshot (Previous Session / Checkpoint)"));
+                radioResumeSnapshot.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.start_snapshot.tooltip", "Load a previously saved physical state or periodic checkpoint directly into memory.")));
+            }
+            if (snapshotExplainBtn != null) {
+                snapshotExplainBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.snapshot_explain", "ℹ️ What is a Snapshot? (Explanations & Mechanics)"));
+                snapshotExplainBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.snapshot_explain", "Open detailed technical guide explaining physical state capture, rolling checkpoints, and multiverse branching.")));
+            }
+            if (snapshotRefreshBtn != null) {
+                snapshotRefreshBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.refresh", "🔄 Refresh Snapshots"));
+                snapshotRefreshBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.snapshot_refresh", "Rescans the disk saves directory (saves/) to synchronize the list of real simulation snapshots and checkpoints.")));
+            }
+            if (snapshotCombo != null) {
+                snapshotCombo.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.combo.tooltip", "Select an existing checkpoint or full simulation snapshot from the disk to resume execution.")));
+                updateSnapshotDetailsDisplay(snapshotCombo.getValue());
+            }
             if (bundleHeader != null) bundleHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.bundle.header", "📦 UNIFIED BUNDLE MULTI-SCENARIO IMPORT/EXPORT (.ETHER)"));
             if (liveDiagnosticHeader != null) liveDiagnosticHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.diagnostic.header", "📋 CIVILIZATIONAL VIABILITY DIAGNOSTIC (REAL TIME)"));
             if (previewTitleLabel != null) previewTitleLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.title.right_view", "🗺️ Resource Cartography & Display"));
