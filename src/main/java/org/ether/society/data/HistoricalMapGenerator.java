@@ -419,11 +419,12 @@ public class HistoricalMapGenerator {
         }
 
         if (year <= -70000L) {
-            // -100,000 BP (MIS 5c/5d)
+            // -100,000 BP (MIS 5c/5d): Smooth bioclimatic permafrost limit
             int species = getHomininSpeciesType(lon, lat);
             if (species == 0) return 0.0;
-            double maxLat = (lon <= 40.0) ? 58.0 : (58.0 - Math.min(6.0, (lon - 40.0) / 15.0));
-            double fadeStart = maxLat - 4.0;
+            double maxLat = 56.0 + 3.0 * Math.sin((lon - 10.0) * Math.PI / 90.0) - (lon > 60.0 ? (lon - 60.0) * 0.05 : 0.0);
+            maxLat = Math.clamp(maxLat, 48.0, 58.5);
+            double fadeStart = maxLat - 5.0;
             if (lat > maxLat) return 0.0;
             if (lat > fadeStart) {
                 double t = Math.clamp((lat - fadeStart) / (maxLat - fadeStart), 0.0, 1.0);
@@ -1201,54 +1202,53 @@ public class HistoricalMapGenerator {
             java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
             java.nio.file.Files.createDirectories(earthDir);
 
-            // 1. Save standard earth_<year>_<layer>.png in ultra-high-definition 2048x1024
-            if (imgDensity != null)         ImageIO.write(imgDensity,         "PNG", earthDir.resolve("earth_" + year + "_density.png").toFile());
-            if (imgIsogloss != null)        ImageIO.write(imgIsogloss,        "PNG", earthDir.resolve("earth_" + year + "_isogloss.png").toFile());
-            if (imgKinship != null)         ImageIO.write(imgKinship,         "PNG", earthDir.resolve("earth_" + year + "_kinship.png").toFile());
-            if (imgRituals != null)         ImageIO.write(imgRituals,         "PNG", earthDir.resolve("earth_" + year + "_rituals.png").toFile());
-            if (imgSovereignty != null)     ImageIO.write(imgSovereignty,     "PNG", earthDir.resolve("earth_" + year + "_sovereignty.png").toFile());
-            if (imgTech != null)            ImageIO.write(imgTech,            "PNG", earthDir.resolve("earth_" + year + "_technology.png").toFile());
-            if (imgTrade != null)           ImageIO.write(imgTrade,           "PNG", earthDir.resolve("earth_" + year + "_tradenetwork.png").toFile());
-            if (imgInst != null)            ImageIO.write(imgInst,            "PNG", earthDir.resolve("earth_" + year + "_institutional.png").toFile());
-            if (imgEco != null)             ImageIO.write(imgEco,             "PNG", earthDir.resolve("earth_" + year + "_ecological.png").toFile());
-            if (imgPathogen != null)        ImageIO.write(imgPathogen,        "PNG", earthDir.resolve("earth_" + year + "_pathogen.png").toFile());
+            // 1. Save standard earth_<year>_<layer>.png in ultra-high-definition 2048x1024 with updated timestamp
+            writePngFile(imgDensity, earthDir.resolve("earth_" + year + "_density.png").toFile());
+            writePngFile(imgIsogloss, earthDir.resolve("earth_" + year + "_isogloss.png").toFile());
+            writePngFile(imgKinship, earthDir.resolve("earth_" + year + "_kinship.png").toFile());
+            writePngFile(imgRituals, earthDir.resolve("earth_" + year + "_rituals.png").toFile());
+            writePngFile(imgSovereignty, earthDir.resolve("earth_" + year + "_sovereignty.png").toFile());
+            writePngFile(imgTech, earthDir.resolve("earth_" + year + "_technology.png").toFile());
+            writePngFile(imgTrade, earthDir.resolve("earth_" + year + "_tradenetwork.png").toFile());
+            writePngFile(imgInst, earthDir.resolve("earth_" + year + "_institutional.png").toFile());
+            writePngFile(imgEco, earthDir.resolve("earth_" + year + "_ecological.png").toFile());
+            writePngFile(imgPathogen, earthDir.resolve("earth_" + year + "_pathogen.png").toFile());
 
-            if (imgCoal != null)            ImageIO.write(imgCoal,            "PNG", earthDir.resolve("earth_" + year + "_coal.png").toFile());
-            if (imgOil != null)             ImageIO.write(imgOil,             "PNG", earthDir.resolve("earth_" + year + "_oil.png").toFile());
-            if (imgGas != null)             ImageIO.write(imgGas,             "PNG", earthDir.resolve("earth_" + year + "_gas.png").toFile());
-            if (imgUranium != null)         ImageIO.write(imgUranium,         "PNG", earthDir.resolve("earth_" + year + "_uranium.png").toFile());
-            if (imgHe3 != null)             ImageIO.write(imgHe3,             "PNG", earthDir.resolve("earth_" + year + "_helium3.png").toFile());
-            if (imgIronCopper != null)      ImageIO.write(imgIronCopper,      "PNG", earthDir.resolve("earth_" + year + "_iron_copper.png").toFile());
-            if (imgPreciousMetals != null)  ImageIO.write(imgPreciousMetals,  "PNG", earthDir.resolve("earth_" + year + "_precious_metals.png").toFile());
-            if (imgRareEarths != null)      ImageIO.write(imgRareEarths,      "PNG", earthDir.resolve("earth_" + year + "_rare_earths.png").toFile());
-            if (imgMantleHeat != null)      ImageIO.write(imgMantleHeat,      "PNG", earthDir.resolve("earth_" + year + "_geothermal.png").toFile());
-            if (imgAquifer != null)         ImageIO.write(imgAquifer,         "PNG", earthDir.resolve("earth_" + year + "_aquifers.png").toFile());
+            writePngFile(imgCoal, earthDir.resolve("earth_" + year + "_coal.png").toFile());
+            writePngFile(imgOil, earthDir.resolve("earth_" + year + "_oil.png").toFile());
+            writePngFile(imgGas, earthDir.resolve("earth_" + year + "_gas.png").toFile());
+            writePngFile(imgUranium, earthDir.resolve("earth_" + year + "_uranium.png").toFile());
+            writePngFile(imgHe3, earthDir.resolve("earth_" + year + "_helium3.png").toFile());
+            writePngFile(imgIronCopper, earthDir.resolve("earth_" + year + "_iron_copper.png").toFile());
+            writePngFile(imgPreciousMetals, earthDir.resolve("earth_" + year + "_precious_metals.png").toFile());
+            writePngFile(imgRareEarths, earthDir.resolve("earth_" + year + "_rare_earths.png").toFile());
+            writePngFile(imgMantleHeat, earthDir.resolve("earth_" + year + "_geothermal.png").toFile());
+            writePngFile(imgAquifer, earthDir.resolve("earth_" + year + "_aquifers.png").toFile());
 
             // 2. Save authentic paleoclimatic biomes map
-
             java.nio.file.Path biomesPath = earthDir.resolve("earth_" + year + "_biomes.png");
             BufferedImage biomesImg = rasterizeBiomesMap(year);
             if (biomesImg != null) {
-                ImageIO.write(biomesImg, "PNG", biomesPath.toFile());
+                writePngFile(biomesImg, biomesPath.toFile());
             }
 
             // 3. Save authentic epoch paleoclimatic layers (Temperature, Precipitation, Seasonality)
             java.nio.file.Path tempPath = earthDir.resolve("earth_" + year + "_temperature.png");
             BufferedImage tempImg = rasterizeTemperatureMap(year);
             if (tempImg != null) {
-                ImageIO.write(tempImg, "PNG", tempPath.toFile());
+                writePngFile(tempImg, tempPath.toFile());
             }
 
             java.nio.file.Path rainPath = earthDir.resolve("earth_" + year + "_precipitation.png");
             BufferedImage rainImg = rasterizePrecipitationMap(year);
             if (rainImg != null) {
-                ImageIO.write(rainImg, "PNG", rainPath.toFile());
+                writePngFile(rainImg, rainPath.toFile());
             }
 
             java.nio.file.Path seasPath = earthDir.resolve("earth_" + year + "_seasonality.png");
             BufferedImage seasImg = rasterizeSeasonalityMap(year);
             if (seasImg != null) {
-                ImageIO.write(seasImg, "PNG", seasPath.toFile());
+                writePngFile(seasImg, seasPath.toFile());
             }
 
             // 4. Ensure invariant NOAA ETOPO relief elevation map is present across all epochs with updated timestamp
@@ -1261,7 +1261,7 @@ public class HistoricalMapGenerator {
                 elevPath.toFile().setLastModified(System.currentTimeMillis());
             } else {
                 BufferedImage mask = loadElevationMask();
-                if (mask != null) ImageIO.write(mask, "PNG", elevPath.toFile());
+                if (mask != null) writePngFile(mask, elevPath.toFile());
             }
 
             // 5. Generate / Update exhaustive academic provenance, cultural registry, and README.md (Rule 6 AGENTS.md)
@@ -1270,6 +1270,16 @@ public class HistoricalMapGenerator {
             logger.info("Persisted standard scenario cartographic maps and updated documentation into 'data/maps/ether/earth/{}/'", year);
         } catch (Exception e) {
             logger.warn("Failed to persist scenario maps to year directory 'data/maps/ether/earth/{}/': {}", year, e.getMessage());
+        }
+    }
+
+    public static void writePngFile(BufferedImage img, File targetFile) {
+        if (img == null || targetFile == null) return;
+        try {
+            ImageIO.write(img, "PNG", targetFile);
+            targetFile.setLastModified(System.currentTimeMillis());
+        } catch (Exception e) {
+            logger.warn("Failed to write image to {}: {}", targetFile.getAbsolutePath(), e.getMessage());
         }
     }
 
@@ -2390,18 +2400,15 @@ public class HistoricalMapGenerator {
     };
 
     public static int blendCladeRgb(double[] w, int[] cladeColors, double occWeight) {
-        if (w == null || occWeight <= 0.001) return 0x000000;
-        double r = 0.0, g = 0.0, b = 0.0;
-        for (int i = 0; i < 6; i++) {
-            int c = cladeColors[i];
-            r += w[i] * ((c >> 16) & 0xFF);
-            g += w[i] * ((c >> 8) & 0xFF);
-            b += w[i] * (c & 0xFF);
+        if (w == null || occWeight <= 0.001) return 0x2D3748; // uninhabited land
+        // Use dominant clade color (argmax) for discrete cultural zone boundaries
+        int dominantIdx = 0;
+        double maxW = w[0];
+        for (int i = 1; i < 6; i++) {
+            if (w[i] > maxW) { maxW = w[i]; dominantIdx = i; }
         }
-        int ir = Math.clamp((int) Math.round(r * occWeight), 0, 255);
-        int ig = Math.clamp((int) Math.round(g * occWeight), 0, 255);
-        int ib = Math.clamp((int) Math.round(b * occWeight), 0, 255);
-        return (ir << 16) | (ig << 8) | ib;
+        if (maxW <= 0.0) return 0x2D3748;
+        return cladeColors[dominantIdx];
     }
 
     public static BufferedImage rasterizeSovereigntyMap(String type, Scenario scenario) {
@@ -2742,26 +2749,47 @@ public class HistoricalMapGenerator {
             empireCores.add(new double[]{149.1, -35.3, 0x14B8A6, 24.0}); // Oceania / Australia (#14B8A6)
         }
 
-        // Handle -100,000 BP paleolithic tier via hominid clade weights
+        // Handle -100,000 BP paleolithic tier via authentic hominin taxon hearths with Orographic propagation
         if (year <= -70000L) {
+            // MIS 5 Paleolithic Hominin Bio-Geographical & Taxonomic Ranges
+            List<OrographicGlottologPropagator.CulturalSeed> sovSeeds = new ArrayList<>();
+            // Homo sapiens: Pan-African Multiregional Domain (#D35400)
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(36.0, 0.5, 0xD35400, 1.5, "Homo sapiens African Rift Core (Omo/Herto)"));
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-4.0, 31.5, 0xD35400, 1.4, "Homo sapiens North African Domain (Jebel Irhoud)"));
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(26.0, -28.0, 0xD35400, 1.4, "Homo sapiens Southern African Domain (Florisbad/Klasies)"));
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(5.0, 7.0, 0xD35400, 1.4, "Homo sapiens West African Domain (Iwo Eleru)"));
+            // Homo sapiens: Pioneer Out-of-Africa Dispersal (#F39C12)
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(35.3, 32.7, 0xF39C12, 1.2, "Homo sapiens Levantine Corridor (Skhul/Qafzeh)"));
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(48.0, 23.0, 0xF39C12, 1.3, "Homo sapiens Arabian Green Corridor (Jebel Faya)"));
+            // Homo neanderthalensis: Classical Western Mousterian Domain (#1F618D)
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(1.5, 45.0, 0x1F618D, 1.4, "Homo neanderthalensis Western European Core (La Ferrassie/Spy)"));
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-5.5, 40.0, 0x1F618D, 1.3, "Homo neanderthalensis Iberian Domain (El Sidron/Gibraltar)"));
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(16.0, 46.0, 0x1F618D, 1.3, "Homo neanderthalensis Central European Range (Krapina/Vindija)"));
+            // Homo neanderthalensis: Near East & Zagros Domain (#1A5276)
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(44.2, 36.8, 0x1A5276, 1.3, "Homo neanderthalensis Zagros-Taurus Highland Range (Shanidar)"));
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(67.0, 39.0, 0x1A5276, 1.3, "Homo neanderthalensis Central Asian Range (Teshik-Tash)"));
+            // Denisovans: Altai & Siberian High-Latitude Domain (#229954)
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(84.5, 51.4, 0x229954, 1.5, "Denisovan Altai-Siberian Range (Denisova Cave)"));
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(102.5, 35.5, 0x229954, 1.4, "Denisovan Tibetan Plateau Range (Baishiya Karst)"));
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(115.0, 40.0, 0x229954, 1.4, "Denisovan / Archaic North China Range (Xujiayao/Harbin)"));
+            // Eastern Archaic Hominins / Late Erectus & Floresiensis (#7D3C98)
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(110.0, -7.5, 0x7D3C98, 1.5, "Homo erectus soloensis / Sundaland Archaic (Ngandong/Java)"));
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(120.4, -8.5, 0x7D3C98, 1.2, "Homo floresiensis Island Endemic Domain (Liang Bua)"));
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(105.0, 18.0, 0x7D3C98, 1.4, "Eastern Archaic Indochina Range (Tam Pa Ling)"));
+            sovSeeds.add(new OrographicGlottologPropagator.CulturalSeed(78.0, 22.0, 0x7D3C98, 1.4, "South Asian Archaic Narmada Range"));
+
+            BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(sovSeeds, WIDTH, HEIGHT, mask);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
                     double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
-                    int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
-                    int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
-                    int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
                     double occWeight = getHomininOccupancyWeight(lon, lat, year);
-                    if (land == 0 || occWeight <= 0.001) {
-                        img.setRGB(x, y, 0x000000);
-                        continue;
+                    if (occWeight <= 0.001) {
+                        orographicImg.setRGB(x, y, 0x2D3748);
                     }
-                    double[] w = computeHomininCladeWeights(lon, lat);
-                    int rgb = blendCladeRgb(w, COLORS_SOVEREIGNTY_100K, occWeight);
-                    img.setRGB(x, y, rgb);
                 }
             }
-            return applyAltimetryCoastlineMask(img);
+            return applyAltimetryCoastlineMask(orographicImg);
         }
 
         // Orographic cost-distance propagation with finite sovereign reach limit (38.0)
@@ -2782,9 +2810,11 @@ public class HistoricalMapGenerator {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
                 double occWeight = getHomininOccupancyWeight(lon, lat, year);
                 if (lat < -60.0 && year < 1900L) {
-                    sovImg.setRGB(x, y, 0x000000);
+                    // Antarctica before modern era: uninhabited land → neutral gray
+                    sovImg.setRGB(x, y, 0x2D3748);
                 } else if (occWeight <= 0.001 && year < 1900L) {
-                    sovImg.setRGB(x, y, 0x000000);
+                    // Uninhabited land (remote tundra, uninhabited islands) → neutral gray
+                    sovImg.setRGB(x, y, 0x2D3748);
                 } else {
                     int currentRgb = sovImg.getRGB(x, y) & 0xFFFFFF;
                     if (currentRgb == 0x374151 || currentRgb == 0x000000) {
@@ -2875,24 +2905,32 @@ public class HistoricalMapGenerator {
         }
 
         if (year <= -70000L) {
+            // MIS 5 Paleolithic Technocomplex & Communication Macro-Provinces
+            List<OrographicGlottologPropagator.CulturalSeed> paleoLangs = new ArrayList<>();
+            paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(-1.0, 30.0, 0xE67E22, 2.2, "Pan-Saharan Aterian Technocomplex"));
+            paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(35.0, 10.0, 0xF39C12, 2.0, "East African & Nilotic Bladelet Corridor"));
+            paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(16.0, -1.0, 0xD35400, 2.0, "Equatorial Sangoan-Lupemban Core-Axe Domain"));
+            paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(25.0, -26.0, 0xC0392B, 2.0, "Southern African Stillbay/Pietersburg Lithic Sphere"));
+            paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(36.0, 34.0, 0xF59E0B, 1.8, "Levant Tabun/Qafzeh Levallois Communication Hub"));
+            paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(2.0, 47.0, 0x2980B9, 2.2, "Atlantic MTA / Acheulean Tradition Mousterian"));
+            paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(35.0, 50.0, 0x1F4788, 2.2, "Central & Eastern European Steppe Quina-Ferrassie Complex"));
+            paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(46.0, 35.0, 0x3B82F6, 1.8, "Zagros-Caucasus Highland Mousterian"));
+            paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(78.0, 50.0, 0x27AE60, 2.5, "Central Asian & Siberian Denisovan Bladelet Sphere"));
+            paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(110.0, 32.0, 0x059669, 2.5, "East Asian Core-Flake / Lingjing Sphere"));
+            paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(105.0, 0.0, 0x8E44AD, 2.2, "Sundaland Pebble-Tool & Bamboo Communication Sphere"));
+
+            BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(paleoLangs, WIDTH, HEIGHT, mask, 1e5f);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
                     double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
-                    int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
-                    int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
-                    int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
                     double occWeight = getHomininOccupancyWeight(lon, lat, year);
-                    if (land == 0 || occWeight <= 0.001) {
-                        img.setRGB(x, y, 0x000000);
-                        continue;
+                    if (occWeight <= 0.001) {
+                        orographicImg.setRGB(x, y, 0x2D3748);
                     }
-                    double[] w = computeHomininCladeWeights(lon, lat);
-                    int rgb = blendCladeRgb(w, COLORS_ISOGLOSS_100K, occWeight);
-                    img.setRGB(x, y, rgb);
                 }
             }
-            return applyAltimetryCoastlineMask(img);
+            return applyAltimetryCoastlineMask(orographicImg);
         }
 
         // Orographic Glottolog DEM cost-distance propagation for ancient & prehistoric clades
@@ -2974,26 +3012,52 @@ public class HistoricalMapGenerator {
             kinshipCenters.add(new double[]{175.0, -20.0, 0x1ABC9C, 25.0}); // Polynesian Ramage (#1ABC9C)
         }
 
-        // Handle -100,000 BP paleolithic tier via hominid clade weights
         if (year <= -70000L) {
+            // MIS 5 Paleolithic Kinship: Local Patrilocal Neanderthal Clans & African Fission-Fusion Bands (Finite Reach = 34.0f)
+            List<OrographicGlottologPropagator.CulturalSeed> paleoKin = new ArrayList<>();
+            // Neanderthal Patrilocal Small Clans (very localized, reach ~30.0f)
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(-5.3, 43.3, 0x3498DB, 1.0, "Cantabrian Patrilocal Clan (El Sidron)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(-5.3, 36.1, 0x2980B9, 0.9, "Gibraltar Neanderthal Coastal Band (Gorham)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(1.2, 44.9, 0x1E40AF, 1.0, "Perigord Cave Kin-Group (La Ferrassie)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(4.7, 50.5, 0x2563EB, 1.0, "Meuse Valley Mammoth Hunters (Spy)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(15.9, 46.2, 0x1D4ED8, 1.0, "Danubian Neanderthal Clan (Krapina)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(34.3, 45.0, 0x3B82F6, 1.0, "Crimean Steppe-Fringe Clan (Kiik-Koba)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(44.3, 36.8, 0x60A5FA, 1.0, "Zagros Highland Lineage (Shanidar)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(67.0, 38.5, 0x93C5FD, 1.0, "Central Asian Cave Band (Teshik-Tash)"));
+
+            // African MSA Fission-Fusion Bilateral Bands & Coastal Strandlopers
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(24.4, -34.1, 0xDC2626, 1.1, "Cape Coastal Strandloper Band (Klasies River)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(21.2, -34.4, 0xB91C1C, 1.0, "Southern Cape Estuary Cluster (Blombos/Pinnacle)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(26.1, -28.8, 0xEA580C, 1.2, "Highveld Savannah Big-Game Federation (Florisbad)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(36.0, 4.5, 0xE74C3C, 1.2, "Rift Valley Lacustrine Bands (Omo Kibish)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(41.8, 9.6, 0xF97316, 1.1, "Horn of Africa Highlands Band (Porc-Epic)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(-2.4, 34.8, 0xFB923C, 1.2, "Maghreb Mountain-Coast Band (Taforalt)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(5.3, 7.2, 0xEF4444, 1.1, "Guinean Forest Foraging Band (Iwo Eleru)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(20.0, 0.0, 0x991B1B, 1.2, "Congo Riverine Forest Band"));
+
+            // Levant Contact Hub
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(35.3, 32.7, 0xF59E0B, 1.0, "Levantine Caves Transitional Coalition (Qafzeh/Tabun)"));
+
+            // Denisovans & Eastern Archaics
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(84.7, 51.4, 0x2ECC71, 1.2, "Altai Denisovan Mountain Clan (Denisova)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(102.8, 35.5, 0x10B981, 1.1, "Tibetan High-Altitude Band (Baishiya)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(113.7, 34.1, 0x15803D, 1.2, "Central Plains Riverine Extended Family (Lingjing)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(111.6, 25.5, 0x047857, 1.1, "South China Karst Forest Band (Fuyan)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(111.5, -7.4, 0x9B59B6, 1.2, "Java Solo River Tropical Band (Ngandong)"));
+            paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(120.4, -8.5, 0x8B5CF6, 0.8, "Flores Island Endemic Band (Liang Bua)"));
+
+            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(paleoKin, WIDTH, HEIGHT, mask, 34.0f);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
                     double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
-                    int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
-                    int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
-                    int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
                     double occWeight = getHomininOccupancyWeight(lon, lat, year);
-                    if (land == 0 || occWeight <= 0.001) {
-                        img.setRGB(x, y, 0x000000);
-                        continue;
+                    if (occWeight <= 0.001) {
+                        kinImg.setRGB(x, y, 0x2D3748);
                     }
-                    double[] w = computeHomininCladeWeights(lon, lat);
-                    int rgb = blendCladeRgb(w, COLORS_KINSHIP_100K, occWeight);
-                    img.setRGB(x, y, rgb);
                 }
             }
-            return applyAltimetryCoastlineMask(img);
+            return applyAltimetryCoastlineMask(kinImg);
         }
 
         // Orographic cost-distance propagation for kinship structures
@@ -3010,7 +3074,8 @@ public class HistoricalMapGenerator {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
                 double occWeight = getHomininOccupancyWeight(lon, lat, year);
                 if (lat < -60.0 || occWeight <= 0.001) {
-                    kinImg.setRGB(x, y, 0x000000);
+                    // Antarctica and uninhabited land → neutral gray (not ocean black)
+                    kinImg.setRGB(x, y, 0x2D3748);
                 }
             }
         }
@@ -3031,26 +3096,41 @@ public class HistoricalMapGenerator {
             }
         }
 
-        // 2. Handle -100,000 BP paleolithic tier via hominid clade weights
         if (year <= -70000L) {
+            // MIS 5 Documented Symbolic Sanctuaries, Ochre Shrines & Intentional Burials (Finite Reach = 25.0f)
+            List<OrographicGlottologPropagator.CulturalSeed> paleoRituals = new ArrayList<>();
+            // Levant Sapiens & Neanderthal Intentional Mortuary Sites (Qafzeh, Skhul, Tabun)
+            paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(35.3, 32.7, 0x10B981, 1.2, "Levant Skhul/Qafzeh Ochre & Shell Burials"));
+            // South African Coastal Ochre Processing & Shellfish Shrines
+            paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(22.1, -34.2, 0x059669, 1.2, "Pinnacle Point Heat-Treated Silcrete & Ochre Shrines"));
+            paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(21.2, -34.4, 0x047857, 1.1, "Blombos Precursor Ochre Engravings"));
+            // North African Perforated Shell Adornment Tradition
+            paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(-2.4, 34.8, 0x34D399, 1.2, "Taforalt / Bizmoune Perforated Nassarius Beads"));
+            // East African Rift Ochre Processing
+            paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(41.8, 9.6, 0x6EE7B7, 1.1, "Porc-Epic Cave Ochre Processing Center"));
+            // European Neanderthal Symbolic Sanctuaries
+            paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(1.7, 44.1, 0x2563EB, 1.2, "Bruniquel Deep Cave Stalagmite Ring Sanctuary"));
+            paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(1.2, 44.9, 0x3B82F6, 1.1, "La Ferrassie Neanderthal Mortuary Shrines"));
+            paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(15.9, 46.2, 0x1D4ED8, 1.1, "Krapina Raptor Talon & Eagle Feather Cult"));
+            paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(44.2, 36.8, 0x60A5FA, 1.1, "Shanidar Zagros Mortuary Traditions"));
+            // Denisovan & Asian Archaic Art & Depositions
+            paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(84.5, 51.4, 0xD97706, 1.3, "Denisova Cave Chloritolite Jewelry & Polished Bone Art"));
+            paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(113.7, 34.1, 0xB45309, 1.2, "Lingjing Incised Bone Engravings & Red Pigments"));
+            paleoRituals.add(new OrographicGlottologPropagator.CulturalSeed(111.5, -7.4, 0x8B5CF6, 1.2, "Ngandong Solo River Megafauna Calvaria Depositions"));
+
+            // Finite reach limit (25.0f): symbolic behaviour radiates around proven sanctuaries, remaining land is slate gray #2D3748
+            BufferedImage ritImg = OrographicGlottologPropagator.propagateCulturalSeeds(paleoRituals, WIDTH, HEIGHT, mask, 25.0f);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
                     double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
-                    int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : WIDTH) / WIDTH), 0, (mask != null ? mask.getWidth() : WIDTH) - 1);
-                    int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HEIGHT) / HEIGHT), 0, (mask != null ? mask.getHeight() : HEIGHT) - 1);
-                    int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
                     double occWeight = getHomininOccupancyWeight(lon, lat, year);
-                    if (land == 0 || occWeight <= 0.001) {
-                        img.setRGB(x, y, 0x000000);
-                        continue;
+                    if (occWeight <= 0.001) {
+                        ritImg.setRGB(x, y, 0x2D3748);
                     }
-                    double[] w = computeHomininCladeWeights(lon, lat);
-                    int rgb = blendCladeRgb(w, COLORS_RITUALS_100K, occWeight);
-                    img.setRGB(x, y, rgb);
                 }
             }
-            return applyAltimetryCoastlineMask(img);
+            return applyAltimetryCoastlineMask(ritImg);
         }
 
         // 3. Authentic Discrete Categorization & SESHAT Sacred Traditions with Orographic Propagation
@@ -3180,7 +3260,8 @@ public class HistoricalMapGenerator {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
                 double occWeight = getHomininOccupancyWeight(lon, lat, year);
                 if (lat < -60.0 || occWeight <= 0.001) {
-                    ritImg.setRGB(x, y, 0x000000);
+                    // Antarctica and uninhabited land → neutral gray (not ocean black)
+                    ritImg.setRGB(x, y, 0x2D3748);
                 }
             }
         }
@@ -3969,18 +4050,33 @@ public class HistoricalMapGenerator {
         }));
 
         // INLAND SEAS & MAJOR GULFS
+        // Mediterranean Sea (corrected boundary — avoids rectangular clipping at Gibraltar/Iberia/Anatolia)
         SEA_POLYGONS.add(createPolygon(new double[][]{
-            {-5.0, 36.0}, {0.0, 36.0}, {10.0, 38.0}, {15.0, 39.0}, {22.0, 38.0}, {30.0, 32.0}, {35.0, 32.0},
-            {34.0, 35.0}, {26.0, 37.0}, {18.0, 40.0}, {12.0, 44.0}, {5.0, 43.0}, {0.0, 37.0}, {-5.0, 36.0}
+            {-5.4, 35.9}, {-1.8, 35.7}, {0.5, 37.5}, {3.2, 37.1}, {8.0, 37.5},
+            {10.5, 38.2}, {12.5, 38.1}, {15.5, 38.1}, {17.0, 39.4}, {19.5, 39.0},
+            {20.9, 37.0}, {23.5, 37.5}, {26.0, 36.2}, {28.2, 36.5}, {29.5, 36.2},
+            {30.5, 32.2}, {32.5, 32.1}, {34.8, 32.0}, {36.0, 33.5}, {36.3, 35.1},
+            {35.5, 36.5}, {36.5, 37.0}, {35.8, 37.8}, {28.0, 38.5}, {26.0, 40.5},
+            {23.5, 41.0}, {20.0, 40.5}, {16.5, 41.0}, {13.5, 44.0}, {12.0, 44.2},
+            {8.5, 44.3}, {3.5, 43.3}, {2.0, 42.5}, {-0.5, 40.5}, {-1.5, 38.5},
+            {-3.8, 36.8}, {-5.4, 35.9}
         }));
+        // Aegean Sea
         SEA_POLYGONS.add(createPolygon(new double[][]{
-            {28.0, 41.0}, {32.0, 46.0}, {38.0, 46.0}, {41.0, 43.0}, {35.0, 41.0}, {28.0, 41.0}
+            {22.5, 40.5}, {24.0, 41.5}, {26.5, 40.9}, {27.5, 39.0}, {26.5, 37.5},
+            {24.5, 37.0}, {22.5, 37.5}, {22.5, 38.5}, {23.5, 39.5}, {22.5, 40.5}
         }));
+        // Black Sea + Bosphorus connection
         SEA_POLYGONS.add(createPolygon(new double[][]{
-            {33.0, 27.0}, {35.0, 28.0}, {43.0, 12.0}, {40.0, 12.0}, {33.0, 27.0}
+            {28.0, 41.0}, {29.0, 41.2}, {30.0, 42.5}, {33.0, 44.0}, {36.0, 45.0},
+            {38.0, 46.0}, {41.0, 43.5}, {41.5, 41.5}, {38.0, 41.0}, {34.5, 41.5},
+            {31.0, 41.8}, {28.5, 41.3}, {28.0, 41.0}
         }));
+        // Red Sea
         SEA_POLYGONS.add(createPolygon(new double[][]{
-            {48.0, 30.0}, {56.0, 27.0}, {54.0, 25.0}, {48.0, 29.0}
+            {32.5, 29.5}, {34.0, 28.0}, {36.5, 25.0}, {38.0, 22.0}, {40.0, 18.0},
+            {41.5, 14.0}, {43.5, 12.5}, {43.0, 12.0}, {40.0, 12.5}, {36.5, 14.0},
+            {33.5, 17.0}, {32.0, 20.0}, {32.0, 24.0}, {32.5, 27.0}, {32.5, 29.5}
         }));
 
         // Precompute 720x360 boolean grid for O(1) instant land lookups
@@ -4772,6 +4868,7 @@ public class HistoricalMapGenerator {
     private static volatile BufferedImage cachedAquiferMap = null;
 
     public static BufferedImage rasterizeCoalMap(String type, Scenario scenario) {
+        if (cachedCoalMap != null) return cachedCoalMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         
@@ -4795,10 +4892,12 @@ public class HistoricalMapGenerator {
         for (double[] s : surfaceCoalOutcrops) spots.add(s);
         
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 8.0);
+        cachedCoalMap = img;
         return img;
     }
 
     public static BufferedImage rasterizeOilMap(String type, Scenario scenario) {
+        if (cachedOilMap != null) return cachedOilMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         
@@ -4842,10 +4941,12 @@ public class HistoricalMapGenerator {
         for (double[] s : ancientBitumenSpots) spots.add(s);
 
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 9.0);
+        cachedOilMap = img;
         return img;
     }
 
     public static BufferedImage rasterizeGasMap(String type, Scenario scenario) {
+        if (cachedGasMap != null) return cachedGasMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         
@@ -4884,10 +4985,12 @@ public class HistoricalMapGenerator {
         for (double[] s : ancientGasSpots) spots.add(s);
 
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 8.0);
+        cachedGasMap = img;
         return img;
     }
 
     public static BufferedImage rasterizeUraniumMap(String type, Scenario scenario) {
+        if (cachedUraniumMap != null) return cachedUraniumMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         
@@ -4908,6 +5011,7 @@ public class HistoricalMapGenerator {
         };
         for (double[] b : iaeaMajorDeposits) spots.add(b);
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 6.0);
+        cachedUraniumMap = img;
         return img;
     }
 
@@ -4919,6 +5023,7 @@ public class HistoricalMapGenerator {
     }
 
     public static BufferedImage rasterizeIronCopperMap(String type, Scenario scenario) {
+        if (cachedIronCopperMap != null) return cachedIronCopperMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         
@@ -4959,10 +5064,12 @@ public class HistoricalMapGenerator {
         for (double[] m : ancientMetals) spots.add(m);
 
         rasterizeTieredSpotList(img, spots, new Color(80, 80, 80), new Color(160, 160, 160), new Color(240, 240, 240), 6.0);
+        cachedIronCopperMap = img;
         return img;
     }
 
     public static BufferedImage rasterizePreciousMetalsMap(String type, Scenario scenario) {
+        if (cachedPreciousMetalsMap != null) return cachedPreciousMetalsMap;
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         
@@ -5046,6 +5153,7 @@ public class HistoricalMapGenerator {
         for (double[] p : metallogenicProvinces) spots.add(p);
         
         rasterizeTieredSpotList(img, spots, new Color(90, 90, 90), new Color(175, 175, 175), new Color(255, 255, 255), 8.0);
+        cachedPreciousMetalsMap = img;
         return img;
     }
 

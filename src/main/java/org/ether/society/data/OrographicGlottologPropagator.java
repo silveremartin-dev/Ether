@@ -122,6 +122,12 @@ public class OrographicGlottologPropagator {
                     baseFriction = Math.max(0.4f, baseFriction * 0.4f);
                 }
 
+                // Siberian & High-latitude permafrost friction (natural organic diffusion decay without geometric cuts)
+                if (lat >= 48.0 && lon >= 20.0) {
+                    double excessLat = lat - 48.0;
+                    baseFriction += (float) (Math.pow(excessLat / 2.2, 2.5) * (1.0 + Math.sin(lon * Math.PI / 45.0) * 0.25));
+                }
+
                 frictionGrid[y][x] = baseFriction;
             }
         }

@@ -74,7 +74,7 @@
       "id": "vnm",
       "colorHex": "#1D4ED8",
       "colorRgb": [29, 78, 216],
-      "traits": [0.51, 0.71, 0.55, 0.29],
+      "traits": [0.51, 0.69, 0.55, 0.29],
       "name": {
         "en": "Vietnam",
         "fr": "Vietnam",
@@ -334,7 +334,7 @@
       "id": "usa",
       "colorHex": "#2563EB",
       "colorRgb": [37, 99, 235],
-      "traits": [0.98, 0.96, 0.94, 0.84],
+      "traits": [0.98, 0.86, 0.94, 0.84],
       "name": {
         "en": "United States of America",
         "fr": "United States of America",
@@ -634,7 +634,7 @@
       "id": "gbr",
       "colorHex": "#B91C1C",
       "colorRgb": [185, 28, 28],
-      "traits": [0.98, 0.96, 0.75, 0.84],
+      "traits": [0.98, 0.86, 0.75, 0.84],
       "name": {
         "en": "United Kingdom",
         "fr": "United Kingdom",
@@ -674,7 +674,7 @@
       "id": "ukr",
       "colorHex": "#DC2626",
       "colorRgb": [220, 38, 38],
-      "traits": [0.51, 0.55, 0.55, 0.65],
+      "traits": [0.51, 0.53, 0.55, 0.65],
       "name": {
         "en": "Ukraine",
         "fr": "Ukraine",
@@ -734,7 +734,7 @@
       "id": "tur",
       "colorHex": "#DC2626",
       "colorRgb": [220, 38, 38],
-      "traits": [0.69, 0.71, 0.75, 0.65],
+      "traits": [0.69, 0.69, 0.75, 0.65],
       "name": {
         "en": "Turkey",
         "fr": "Turkey",
@@ -854,7 +854,7 @@
       "id": "tha",
       "colorHex": "#8B5CF6",
       "colorRgb": [139, 92, 246],
-      "traits": [0.51, 0.71, 0.55, 0.57],
+      "traits": [0.51, 0.69, 0.55, 0.57],
       "name": {
         "en": "Thailand",
         "fr": "Thailand",
@@ -914,7 +914,7 @@
       "id": "twn",
       "colorHex": "#13A6B0",
       "colorRgb": [19, 166, 176],
-      "traits": [0.98, 0.88, 0.31, 0.65],
+      "traits": [0.98, 0.80, 0.31, 0.65],
       "name": {
         "en": "Taiwan",
         "fr": "Taiwan",
@@ -954,7 +954,7 @@
       "id": "che",
       "colorHex": "#EF4444",
       "colorRgb": [239, 68, 68],
-      "traits": [0.98, 0.96, 0.31, 0.84],
+      "traits": [0.98, 0.86, 0.31, 0.84],
       "name": {
         "en": "Switzerland",
         "fr": "Switzerland",
@@ -974,7 +974,7 @@
       "id": "swe",
       "colorHex": "#0284C7",
       "colorRgb": [2, 132, 199],
-      "traits": [0.98, 0.96, 0.31, 0.84],
+      "traits": [0.98, 0.86, 0.31, 0.84],
       "name": {
         "en": "Sweden",
         "fr": "Sweden",
@@ -1094,7 +1094,7 @@
       "id": "esp",
       "colorHex": "#EA580C",
       "colorRgb": [234, 88, 12],
-      "traits": [0.86, 0.88, 0.75, 0.84],
+      "traits": [0.86, 0.80, 0.75, 0.84],
       "name": {
         "en": "Spain",
         "fr": "Spain",
@@ -1114,7 +1114,7 @@
       "id": "kor",
       "colorHex": "#0284C7",
       "colorRgb": [2, 132, 199],
-      "traits": [0.98, 0.88, 0.94, 0.84],
+      "traits": [0.98, 0.80, 0.94, 0.84],
       "name": {
         "en": "South Korea",
         "fr": "South Korea",
@@ -1134,7 +1134,7 @@
       "id": "zaf",
       "colorHex": "#F59E0B",
       "colorRgb": [245, 158, 11],
-      "traits": [0.51, 0.71, 0.75, 0.18],
+      "traits": [0.51, 0.69, 0.75, 0.18],
       "name": {
         "en": "South Africa",
         "fr": "South Africa",
@@ -1254,7 +1254,7 @@
       "id": "sgp",
       "colorHex": "#D4193F",
       "colorRgb": [212, 25, 63],
-      "traits": [0.98, 0.96, 0.31, 0.65],
+      "traits": [0.98, 0.86, 0.31, 0.65],
       "name": {
         "en": "Singapore",
         "fr": "Singapore",
@@ -1354,7 +1354,7 @@
       "id": "sau",
       "colorHex": "#15803D",
       "colorRgb": [21, 128, 61],
-      "traits": [0.69, 0.71, 0.94, 0.65],
+      "traits": [0.69, 0.69, 0.94, 0.65],
       "name": {
         "en": "Saudi Arabia",
         "fr": "Saudi Arabia",
@@ -1514,7 +1514,7 @@
       "id": "rus",
       "colorHex": "#DC2626",
       "colorRgb": [220, 38, 38],
-      "traits": [0.69, 0.71, 0.94, 0.84],
+      "traits": [0.69, 0.69, 0.94, 0.84],
       "name": {
         "en": "Russia",
         "fr": "Russia",
@@ -1534,7 +1534,7 @@
       "id": "rou",
       "colorHex": "#13EB74",
       "colorRgb": [19, 235, 116],
-      "traits": [0.51, 0.71, 0.31, 0.65],
+      "traits": [0.51, 0.69, 0.31, 0.65],
       "name": {
         "en": "Romania",
         "fr": "Romania",
@@ -1574,7 +1574,7 @@
       "id": "prt",
       "colorHex": "#047857",
       "colorRgb": [4, 120, 87],
-      "traits": [0.69, 0.88, 0.31, 0.65],
+      "traits": [0.69, 0.80, 0.31, 0.65],
       "name": {
         "en": "Portugal",
         "fr": "Portugal",
@@ -1594,7 +1594,7 @@
       "id": "pol",
       "colorHex": "#BE185D",
       "colorRgb": [190, 24, 93],
-      "traits": [0.69, 0.88, 0.75, 0.65],
+      "traits": [0.69, 0.80, 0.75, 0.65],
       "name": {
         "en": "Poland",
         "fr": "Poland",
@@ -1614,7 +1614,7 @@
       "id": "phl",
       "colorHex": "#0284C7",
       "colorRgb": [2, 132, 199],
-      "traits": [0.51, 0.55, 0.55, 0.29],
+      "traits": [0.51, 0.53, 0.55, 0.29],
       "name": {
         "en": "Philippines",
         "fr": "Philippines",
@@ -1634,7 +1634,7 @@
       "id": "per",
       "colorHex": "#DC2626",
       "colorRgb": [220, 38, 38],
-      "traits": [0.31, 0.55, 0.31, 0.45],
+      "traits": [0.31, 0.53, 0.31, 0.45],
       "name": {
         "en": "Peru",
         "fr": "Peru",
@@ -1734,7 +1734,7 @@
       "id": "pak",
       "colorHex": "#A5BD1E",
       "colorRgb": [165, 189, 30],
-      "traits": [0.31, 0.55, 0.55, 0.29],
+      "traits": [0.31, 0.53, 0.55, 0.29],
       "name": {
         "en": "Pakistan",
         "fr": "Pakistan",
@@ -1774,7 +1774,7 @@
       "id": "nor",
       "colorHex": "#DC2626",
       "colorRgb": [220, 38, 38],
-      "traits": [0.86, 0.96, 0.31, 0.84],
+      "traits": [0.86, 0.86, 0.31, 0.84],
       "name": {
         "en": "Norway",
         "fr": "Norway",
@@ -1814,7 +1814,7 @@
       "id": "nga",
       "colorHex": "#B91C1C",
       "colorRgb": [185, 28, 28],
-      "traits": [0.31, 0.55, 0.55, 0.18],
+      "traits": [0.31, 0.53, 0.55, 0.18],
       "name": {
         "en": "Nigeria",
         "fr": "Nigeria",
@@ -1874,7 +1874,7 @@
       "id": "nzl",
       "colorHex": "#0F766E",
       "colorRgb": [15, 118, 110],
-      "traits": [0.86, 0.96, 0.31, 0.84],
+      "traits": [0.86, 0.86, 0.31, 0.84],
       "name": {
         "en": "New Zealand",
         "fr": "New Zealand",
@@ -1934,7 +1934,7 @@
       "id": "nld",
       "colorHex": "#F97316",
       "colorRgb": [249, 115, 22],
-      "traits": [0.98, 0.96, 0.75, 0.84],
+      "traits": [0.98, 0.86, 0.75, 0.84],
       "name": {
         "en": "Netherlands",
         "fr": "Netherlands",
@@ -2074,7 +2074,7 @@
       "id": "mar",
       "colorHex": "#11A611",
       "colorRgb": [17, 166, 17],
-      "traits": [0.31, 0.55, 0.31, 0.18],
+      "traits": [0.31, 0.53, 0.31, 0.18],
       "name": {
         "en": "Morocco",
         "fr": "Morocco",
@@ -2194,7 +2194,7 @@
       "id": "mex",
       "colorHex": "#16A34A",
       "colorRgb": [22, 163, 74],
-      "traits": [0.69, 0.71, 0.75, 0.57],
+      "traits": [0.69, 0.69, 0.75, 0.57],
       "name": {
         "en": "Mexico",
         "fr": "Mexico",
@@ -2314,7 +2314,7 @@
       "id": "mys",
       "colorHex": "#B91C1C",
       "colorRgb": [185, 28, 28],
-      "traits": [0.69, 0.71, 0.55, 0.57],
+      "traits": [0.69, 0.69, 0.55, 0.57],
       "name": {
         "en": "Malaysia",
         "fr": "Malaysia",
@@ -2654,7 +2654,7 @@
       "id": "ken",
       "colorHex": "#B91C1C",
       "colorRgb": [185, 28, 28],
-      "traits": [0.31, 0.55, 0.31, 0.18],
+      "traits": [0.31, 0.53, 0.31, 0.18],
       "name": {
         "en": "Kenya",
         "fr": "Kenya",
@@ -2674,7 +2674,7 @@
       "id": "kaz",
       "colorHex": "#DC2626",
       "colorRgb": [220, 38, 38],
-      "traits": [0.31, 0.55, 0.31, 0.65],
+      "traits": [0.31, 0.53, 0.31, 0.65],
       "name": {
         "en": "Kazakhstan",
         "fr": "Kazakhstan",
@@ -2714,7 +2714,7 @@
       "id": "jpn",
       "colorHex": "#E11D48",
       "colorRgb": [225, 29, 72],
-      "traits": [0.98, 0.96, 0.94, 0.84],
+      "traits": [0.98, 0.86, 0.94, 0.84],
       "name": {
         "en": "Japan",
         "fr": "Japan",
@@ -2754,7 +2754,7 @@
       "id": "ita",
       "colorHex": "#059669",
       "colorRgb": [5, 150, 105],
-      "traits": [0.86, 0.88, 0.75, 0.84],
+      "traits": [0.86, 0.80, 0.75, 0.84],
       "name": {
         "en": "Italy",
         "fr": "Italy",
@@ -2774,7 +2774,7 @@
       "id": "isr",
       "colorHex": "#4432BA",
       "colorRgb": [68, 50, 186],
-      "traits": [0.98, 0.88, 0.31, 0.65],
+      "traits": [0.98, 0.80, 0.31, 0.65],
       "name": {
         "en": "Israel",
         "fr": "Israel",
@@ -2814,7 +2814,7 @@
       "id": "irl",
       "colorHex": "#10B981",
       "colorRgb": [16, 185, 129],
-      "traits": [0.86, 0.88, 0.31, 0.65],
+      "traits": [0.86, 0.80, 0.31, 0.65],
       "name": {
         "en": "Ireland",
         "fr": "Ireland",
@@ -2874,7 +2874,7 @@
       "id": "idn",
       "colorHex": "#DC2626",
       "colorRgb": [220, 38, 38],
-      "traits": [0.51, 0.71, 0.75, 0.29],
+      "traits": [0.51, 0.69, 0.75, 0.29],
       "name": {
         "en": "Indonesia",
         "fr": "Indonesia",
@@ -2894,7 +2894,7 @@
       "id": "ind",
       "colorHex": "#F59E0B",
       "colorRgb": [245, 158, 11],
-      "traits": [0.69, 0.71, 0.94, 0.29],
+      "traits": [0.69, 0.69, 0.94, 0.29],
       "name": {
         "en": "India",
         "fr": "India",
@@ -3094,7 +3094,7 @@
       "id": "grc",
       "colorHex": "#06B6D4",
       "colorRgb": [6, 182, 212],
-      "traits": [0.51, 0.71, 0.31, 0.65],
+      "traits": [0.51, 0.69, 0.31, 0.65],
       "name": {
         "en": "Greece",
         "fr": "Greece",
@@ -3134,7 +3134,7 @@
       "id": "deu",
       "colorHex": "#1E293B",
       "colorRgb": [30, 41, 59],
-      "traits": [0.98, 0.96, 0.94, 0.84],
+      "traits": [0.98, 0.86, 0.94, 0.84],
       "name": {
         "en": "Germany",
         "fr": "Germany",
@@ -3214,7 +3214,7 @@
       "id": "fra",
       "colorHex": "#1D4ED8",
       "colorRgb": [29, 78, 216],
-      "traits": [0.98, 0.96, 0.75, 0.84],
+      "traits": [0.98, 0.86, 0.75, 0.84],
       "name": {
         "en": "France",
         "fr": "France",
@@ -3394,7 +3394,7 @@
       "id": "fin",
       "colorHex": "#0D9488",
       "colorRgb": [13, 148, 136],
-      "traits": [0.86, 0.96, 0.31, 0.84],
+      "traits": [0.86, 0.86, 0.31, 0.84],
       "name": {
         "en": "Finland",
         "fr": "Finland",
@@ -3454,7 +3454,7 @@
       "id": "est",
       "colorHex": "#DC2626",
       "colorRgb": [220, 38, 38],
-      "traits": [0.69, 0.88, 0.31, 0.65],
+      "traits": [0.69, 0.80, 0.31, 0.65],
       "name": {
         "en": "Estonia",
         "fr": "Estonia",
@@ -3534,7 +3534,7 @@
       "id": "egy",
       "colorHex": "#D97706",
       "colorRgb": [217, 119, 6],
-      "traits": [0.51, 0.55, 0.55, 0.18],
+      "traits": [0.51, 0.53, 0.55, 0.18],
       "name": {
         "en": "Egypt",
         "fr": "Egypt",
@@ -3674,7 +3674,7 @@
       "id": "dnk",
       "colorHex": "#B91C1C",
       "colorRgb": [185, 28, 28],
-      "traits": [0.86, 0.96, 0.31, 0.84],
+      "traits": [0.86, 0.86, 0.31, 0.84],
       "name": {
         "en": "Denmark",
         "fr": "Denmark",
@@ -3694,7 +3694,7 @@
       "id": "cze",
       "colorHex": "#E62294",
       "colorRgb": [230, 34, 148],
-      "traits": [0.69, 0.88, 0.31, 0.65],
+      "traits": [0.69, 0.80, 0.31, 0.65],
       "name": {
         "en": "Czechia",
         "fr": "Czechia",
@@ -3894,7 +3894,7 @@
       "id": "col",
       "colorHex": "#F59E0B",
       "colorRgb": [245, 158, 11],
-      "traits": [0.51, 0.55, 0.55, 0.45],
+      "traits": [0.51, 0.53, 0.55, 0.45],
       "name": {
         "en": "Colombia",
         "fr": "Colombia",
@@ -3914,7 +3914,7 @@
       "id": "chn",
       "colorHex": "#EF4444",
       "colorRgb": [239, 68, 68],
-      "traits": [0.98, 0.71, 0.94, 0.57],
+      "traits": [0.98, 0.69, 0.94, 0.57],
       "name": {
         "en": "China",
         "fr": "China",
@@ -3974,7 +3974,7 @@
       "id": "chl",
       "colorHex": "#DC2626",
       "colorRgb": [220, 38, 38],
-      "traits": [0.51, 0.71, 0.31, 0.45],
+      "traits": [0.51, 0.69, 0.31, 0.45],
       "name": {
         "en": "Chile",
         "fr": "Chile",
@@ -4054,7 +4054,7 @@
       "id": "can",
       "colorHex": "#DC2626",
       "colorRgb": [220, 38, 38],
-      "traits": [0.86, 0.96, 0.94, 0.84],
+      "traits": [0.86, 0.86, 0.94, 0.84],
       "name": {
         "en": "Canada",
         "fr": "Canada",
@@ -4214,7 +4214,7 @@
       "id": "bra",
       "colorHex": "#10B981",
       "colorRgb": [16, 185, 129],
-      "traits": [0.69, 0.71, 0.75, 0.45],
+      "traits": [0.69, 0.69, 0.75, 0.45],
       "name": {
         "en": "Brazil",
         "fr": "Brazil",
@@ -4354,7 +4354,7 @@
       "id": "bel",
       "colorHex": "#F59E0B",
       "colorRgb": [245, 158, 11],
-      "traits": [0.86, 0.88, 0.55, 0.65],
+      "traits": [0.86, 0.80, 0.55, 0.65],
       "name": {
         "en": "Belgium",
         "fr": "Belgium",
@@ -4414,7 +4414,7 @@
       "id": "bgd",
       "colorHex": "#28A6A8",
       "colorRgb": [40, 166, 168],
-      "traits": [0.31, 0.55, 0.55, 0.29],
+      "traits": [0.31, 0.53, 0.55, 0.29],
       "name": {
         "en": "Bangladesh",
         "fr": "Bangladesh",
@@ -4494,7 +4494,7 @@
       "id": "aut",
       "colorHex": "#DC2626",
       "colorRgb": [220, 38, 38],
-      "traits": [0.86, 0.88, 0.31, 0.65],
+      "traits": [0.86, 0.80, 0.31, 0.65],
       "name": {
         "en": "Austria",
         "fr": "Austria",
@@ -4514,7 +4514,7 @@
       "id": "aus",
       "colorHex": "#0D9488",
       "colorRgb": [13, 148, 136],
-      "traits": [0.86, 0.96, 0.94, 0.84],
+      "traits": [0.86, 0.86, 0.94, 0.84],
       "name": {
         "en": "Australia",
         "fr": "Australia",
@@ -4634,7 +4634,7 @@
       "id": "arg",
       "colorHex": "#38BDF8",
       "colorRgb": [56, 189, 248],
-      "traits": [0.51, 0.71, 0.55, 0.45],
+      "traits": [0.51, 0.69, 0.55, 0.45],
       "name": {
         "en": "Argentina",
         "fr": "Argentina",
@@ -4714,7 +4714,7 @@
       "id": "dza",
       "colorHex": "#1D4ED8",
       "colorRgb": [29, 78, 216],
-      "traits": [0.31, 0.55, 0.31, 0.18],
+      "traits": [0.31, 0.53, 0.31, 0.18],
       "name": {
         "en": "Algeria",
         "fr": "Algeria",

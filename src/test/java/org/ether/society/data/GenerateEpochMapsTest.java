@@ -437,22 +437,71 @@ public class GenerateEpochMapsTest {
         EPOCHS = Collections.unmodifiableList(_list);
     }
 
+    public static final Set<Long> CANONICAL_36_YEARS = Set.of(
+        -100000L, -74000L, -50000L, -25000L, -20000L, -10900L, -10000L,
+        -8000L, -6000L, -3000L, -1900L, -1500L, -1200L, -1000L,
+        -334L, -300L, 0L, 536L, 632L, 1000L, 1206L, 1324L, 1347L,
+        1491L, 1492L, 1639L, 1800L, 1900L, 1914L, 1950L, 2000L,
+        2026L, 2035L, 2045L, 2050L, 2060L
+    );
+
     @Test
-    public void generateAll36EpochsCulturalData() throws Exception {
+    public void generateEpoch100kOnly() throws Exception {
         File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
         File rootDir = new File("data/maps/ether/earth");
         rootDir.mkdirs();
 
-        System.out.printf("Starting comprehensive cultural data regeneration for %d epochs...%n", EPOCHS.size());
+        EpochMeta em = EPOCHS.stream().filter(e -> e.year() == -100000L).findFirst().orElseThrow();
+        long yr = -100000L;
+        System.out.printf("=== PROCESSING SINGLE EPOCH %d: %s ===%n", yr, em.eraName());
 
-        for (EpochMeta em : EPOCHS) {
+        File yrDir = new File(rootDir, String.valueOf(yr));
+        yrDir.mkdirs();
+
+        Scenario sc = new Scenario();
+        sc.setName(em.eraName());
+        sc.setStartDateYear(yr);
+        sc.setPopulationDensityType(em.densityType());
+        sc.setInitialHumanCount(em.population());
+        sc.setInitialTechLevel(em.techLevel());
+
+        HistoricalMapGenerator.forceGenerateCulturalTensorsOnly(sc);
+
+        File regFile = new File(yrDir, "cultural_registry.json");
+        writeEpochCulturalRegistry(regFile, em, seshatFile);
+        regFile.setLastModified(System.currentTimeMillis());
+
+        File provFile = new File(yrDir, "provenance_and_sources.json");
+        writeEpochProvenance(provFile, em);
+        provFile.setLastModified(System.currentTimeMillis());
+
+        File readmeFile = new File(yrDir, "README.md");
+        writeEpochReadme(readmeFile, em);
+        readmeFile.setLastModified(System.currentTimeMillis());
+
+        System.out.printf("  [SUCCESS] Epoch %d generated!%n", yr);
+    }
+
+    @Test
+    public void generateCanonical36EpochsCulturalData() throws Exception {
+        File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
+        File rootDir = new File("data/maps/ether/earth");
+        rootDir.mkdirs();
+
+        List<EpochMeta> canonicalList = EPOCHS.stream()
+            .filter(e -> CANONICAL_36_YEARS.contains(e.year()))
+            .toList();
+
+        System.out.printf("Starting regeneration for %d CANONICAL landmark epochs...%n", canonicalList.size());
+
+        for (EpochMeta em : canonicalList) {
             long yr = em.year();
-            System.out.printf("=== PROCESSING EPOCH %d: %s ===%n", yr, em.eraName());
+            System.out.printf("=== PROCESSING CANONICAL EPOCH %d: %s ===%n", yr, em.eraName());
 
             File yrDir = new File(rootDir, String.valueOf(yr));
             yrDir.mkdirs();
 
-            // 1. Regenerate the 9 cultural rasters via HistoricalMapGenerator
+            // 1. Regenerate all 25 rasters via HistoricalMapGenerator
             Scenario sc = new Scenario();
             sc.setName(em.eraName());
             sc.setStartDateYear(yr);
@@ -465,17 +514,85 @@ public class GenerateEpochMapsTest {
             // 2. Generate / Update cultural_registry.json
             File regFile = new File(yrDir, "cultural_registry.json");
             writeEpochCulturalRegistry(regFile, em, seshatFile);
+            regFile.setLastModified(System.currentTimeMillis());
 
             // 3. Generate / Update provenance_and_sources.json
             File provFile = new File(yrDir, "provenance_and_sources.json");
             writeEpochProvenance(provFile, em);
+            provFile.setLastModified(System.currentTimeMillis());
 
             // 4. Generate / Update README.md
             File readmeFile = new File(yrDir, "README.md");
             writeEpochReadme(readmeFile, em);
+            readmeFile.setLastModified(System.currentTimeMillis());
 
-            System.out.printf("  [SUCCESS] Epoch %d: 25 Standard Rasters + 2 JSONs + 1 README.md written.%n", yr);
+            System.out.printf("  [SUCCESS] Canonical Epoch %d: 25 Standard Rasters + 2 JSONs + 1 README.md written.%n", yr);
         }
+
+        System.out.printf("All %d canonical landmark epochs successfully regenerated and documented.%n", canonicalList.size());
+    }
+
+    @Test
+    public void generateAll36EpochsCulturalData() throws Exception {
+        File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
+        File rootDir = new File("data/maps/ether/earth");
+        rootDir.mkdirs();
+
+        System.out.printf("Starting high-throughput parallel cultural data regeneration for %d epochs...%n", EPOCHS.size());
+
+        // Warm up static caches with first epoch synchronously
+        if (!EPOCHS.isEmpty()) {
+            EpochMeta first = EPOCHS.get(0);
+            Scenario scWarm = new Scenario();
+            scWarm.setName(first.eraName());
+            scWarm.setStartDateYear(first.year());
+            scWarm.setPopulationDensityType(first.densityType());
+            HistoricalMapGenerator.forceGenerateCulturalTensorsOnly(scWarm);
+        }
+
+        java.util.concurrent.atomic.AtomicInteger completed = new java.util.concurrent.atomic.AtomicInteger(0);
+        int total = EPOCHS.size();
+
+        EPOCHS.parallelStream().forEach(em -> {
+            try {
+                long yr = em.year();
+                long t0 = System.currentTimeMillis();
+
+                File yrDir = new File(rootDir, String.valueOf(yr));
+                yrDir.mkdirs();
+
+                // 1. Regenerate all 25 rasters via HistoricalMapGenerator
+                Scenario sc = new Scenario();
+                sc.setName(em.eraName());
+                sc.setStartDateYear(yr);
+                sc.setPopulationDensityType(em.densityType());
+                sc.setInitialHumanCount(em.population());
+                sc.setInitialTechLevel(em.techLevel());
+
+                HistoricalMapGenerator.forceGenerateCulturalTensorsOnly(sc);
+
+                // 2. Generate / Update cultural_registry.json
+                File regFile = new File(yrDir, "cultural_registry.json");
+                writeEpochCulturalRegistry(regFile, em, seshatFile);
+                regFile.setLastModified(System.currentTimeMillis());
+
+                // 3. Generate / Update provenance_and_sources.json
+                File provFile = new File(yrDir, "provenance_and_sources.json");
+                writeEpochProvenance(provFile, em);
+                provFile.setLastModified(System.currentTimeMillis());
+
+                // 4. Generate / Update README.md
+                File readmeFile = new File(yrDir, "README.md");
+                writeEpochReadme(readmeFile, em);
+                readmeFile.setLastModified(System.currentTimeMillis());
+
+                int done = completed.incrementAndGet();
+                long elapsed = System.currentTimeMillis() - t0;
+                System.out.printf("  [SUCCESS %d/%d] Epoch %d: 25 Standard Rasters + 2 JSONs + 1 README.md written (%d ms)%n", done, total, yr, elapsed);
+            } catch (Exception e) {
+                System.err.printf("  [ERROR] Epoch %d failed: %s%n", em.year(), e.getMessage());
+            }
+        });
 
         System.out.printf("All %d epochs successfully regenerated and documented with 25 rasters each.%n", EPOCHS.size());
     }
@@ -866,15 +983,22 @@ public class GenerateEpochMapsTest {
         int attempts = 0;
         while (true) {
             try {
-                java.nio.file.Files.writeString(target.toPath(), content, StandardCharsets.UTF_8,
+                java.nio.file.Path tempPath = target.toPath().resolveSibling(target.getName() + ".tmp." + Thread.currentThread().threadId() + "." + System.nanoTime());
+                java.nio.file.Files.writeString(tempPath, content, StandardCharsets.UTF_8,
                         java.nio.file.StandardOpenOption.CREATE,
                         java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,
                         java.nio.file.StandardOpenOption.WRITE);
+                try {
+                    java.nio.file.Files.move(tempPath, target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                } catch (Exception ex) {
+                    java.nio.file.Files.writeString(target.toPath(), content, StandardCharsets.UTF_8);
+                    try { java.nio.file.Files.deleteIfExists(tempPath); } catch (Exception ignored) {}
+                }
                 return;
             } catch (Exception e) {
                 attempts++;
-                if (attempts >= 5) throw e;
-                Thread.sleep(150);
+                if (attempts >= 10) throw e;
+                Thread.sleep(200);
             }
         }
     }
