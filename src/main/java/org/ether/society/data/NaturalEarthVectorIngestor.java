@@ -1002,7 +1002,7 @@ public class NaturalEarthVectorIngestor {
     }
 
     /**
-     * Attempts to load Natural Earth 1:10m vector map for a scenario (legacy backwards compatibility).
+     * Attempts to load Natural Earth 1:10m vector map for a scenario.
      */
     public static SvgMapIngestor.SvgIngestionResult loadNaturalEarthMap(String scenarioType) {
         String fileName = "ne_10m_" + (scenarioType != null ? scenarioType.toLowerCase() : "default") + ".svg";

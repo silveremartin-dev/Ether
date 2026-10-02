@@ -36,7 +36,7 @@ public class AlbedoClimateEngine {
     private static final Logger logger = LoggerFactory.getLogger(AlbedoClimateEngine.class);
 
     /**
-     * Legacy convenience method for updating albedo feedback.
+     * Convenience method for updating albedo feedback with baseline parameters.
      */
     public static void processAlbedoFeedback(List<H3Cell> cells) {
         processAlbedoAndClimateEvents(cells, 0L, 0.0);

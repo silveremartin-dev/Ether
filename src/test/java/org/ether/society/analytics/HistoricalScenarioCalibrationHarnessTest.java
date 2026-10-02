@@ -91,7 +91,7 @@ public class HistoricalScenarioCalibrationHarnessTest {
         String mdReport = HistoricalScenarioCalibrationHarness.generateMarkdownCalibrationReport(results, matrix);
 
         assertNotNull(mdReport, "Generated markdown report must not be null");
-        assertTrue(mdReport.contains("ETHER ENGINE HISTORICAL CALIBRATION"), "Report should contain main title");
-        assertTrue(mdReport.contains("Matrices de Sensibilité Multi-Échelles"), "Report should contain sensitivity section");
+        assertTrue(mdReport.contains("ETHER CLIODYNAMIC ENGINE"), "Report should contain main title");
+        assertTrue(mdReport.contains("Multi-Scale Discretization & Numerical Sensitivity Matrix"), "Report should contain sensitivity section");
     }
 }

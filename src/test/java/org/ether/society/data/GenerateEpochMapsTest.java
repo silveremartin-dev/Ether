@@ -564,16 +564,21 @@ public class GenerateEpochMapsTest {
 
     @Test
     public void validatePrehistoricCartographicDifferentiation() {
-        // 1. Validate Sahul (Australia) Wallace Line Crossing
+        // 1. Validate Sahul (Australia) Wallace Line Crossing & Tasmania
         double sahulLon = 133.0, sahulLat = -25.0;
+        double tasmaniaLon = 146.5, tasmaniaLat = -42.0;
         double occ100k = HistoricalMapGenerator.getHomininOccupancyWeight(sahulLon, sahulLat, -100000L);
         double occ74k  = HistoricalMapGenerator.getHomininOccupancyWeight(sahulLon, sahulLat, -74000L);
         double occ50k  = HistoricalMapGenerator.getHomininOccupancyWeight(sahulLon, sahulLat, -50000L);
         double occ20k  = HistoricalMapGenerator.getHomininOccupancyWeight(sahulLon, sahulLat, -20000L);
+        double occTasmania50k = HistoricalMapGenerator.getHomininOccupancyWeight(tasmaniaLon, tasmaniaLat, -50000L);
+        double occTasmania35k = HistoricalMapGenerator.getHomininOccupancyWeight(tasmaniaLon, tasmaniaLat, -35000L);
 
         org.junit.jupiter.api.Assertions.assertEquals(0.0, occ100k, 1e-6, "Sahul must be strictly unoccupied at -100,000 BP");
         org.junit.jupiter.api.Assertions.assertEquals(0.0, occ74k, 1e-6, "Sahul must be strictly unoccupied at -74,000 BP");
         org.junit.jupiter.api.Assertions.assertTrue(occ50k > 0.5, "Sahul must be populated at -50,000 BP across Wallace Line");
+        org.junit.jupiter.api.Assertions.assertEquals(0.0, occTasmania50k, 1e-6, "Tasmania must be strictly unoccupied at -50,000 BP");
+        org.junit.jupiter.api.Assertions.assertTrue(occTasmania35k > 0.3, "Tasmania must be populated at -35,000 BP via Bassian Plain");
         org.junit.jupiter.api.Assertions.assertTrue(occ20k > 0.5, "Sahul must be populated at -20,000 BP");
 
         // 1b. Validate Americas Peopling & Strict Ice Sheet Masking
@@ -616,6 +621,56 @@ public class GenerateEpochMapsTest {
         org.junit.jupiter.api.Assertions.assertTrue(rech74k < 0.70, "Toba tropical drought must have < 0.70x recharge factor");
         org.junit.jupiter.api.Assertions.assertTrue(rechSahul50k >= 1.5, "MIS 3 Sahul megalakes must have >= 1.5x aquifer recharge factor");
         org.junit.jupiter.api.Assertions.assertTrue(rechLgm20k <= 0.45, "LGM high-latitude permafrost lock-up must have <= 0.45x recharge factor");
+    }
+
+    @Test
+    public void computeAndValidateGlobalPopulationContinuity() throws Exception {
+        double rEarthKm = 6371.0;
+        int width = 2048;
+        int height = 1024;
+        double basePixelAreaKm2 = (2.0 * Math.PI * rEarthKm / width) * (Math.PI * rEarthKm / height);
+
+        System.out.println("==========================================================================");
+        System.out.println("  GLOBAL HUMAN POPULATION INTEGRAL EVALUATION ACROSS ALL LANDMARK EPOCHS  ");
+        System.out.println("==========================================================================");
+        System.out.printf("%-12s | %-45s | %-16s | %-16s%n", "Epoch (BP)", "Historical Context", "Integrated Pop", "Reference Target");
+        System.out.println("--------------------------------------------------------------------------");
+
+        long[] landmarkYears = {
+            -100000L, -74000L, -50000L, -40000L, -35000L, -30000L, -25000L, -20000L,
+            -15000L, -14000L, -12000L, -11000L, -10900L, -10000L
+        };
+
+        for (long yr : landmarkYears) {
+            EpochMeta em = EPOCHS.stream().filter(e -> e.year() == yr).findFirst().orElse(null);
+            String name = (em != null) ? em.eraName() : ("Epoch " + yr);
+            long targetPop = (em != null) ? em.population() : 0L;
+
+            java.awt.image.BufferedImage img = HistoricalMapGenerator.applyAltimetryCoastlineMask(
+                HistoricalMapGenerator.generatePrehistoricSyntheticDensityMap(yr, (em != null) ? em.densityType() : "ONE_CONTINENT")
+            );
+
+            double integratedPop = 0.0;
+            for (int y = 0; y < height; y++) {
+                double lat = 90.0 - (y + 0.5) / height * 180.0;
+                double cellArea = basePixelAreaKm2 * Math.cos(Math.toRadians(lat));
+                for (int x = 0; x < width; x++) {
+                    int rgb = img.getRGB(x, y);
+                    int gray = rgb & 0xFF;
+                    if (gray > 12) {
+                        double logNorm = (gray - 12.0) / 243.0;
+                        double dens = (Math.exp(logNorm * Math.log1p(2.5 * 35.0)) - 1.0) / 2.5;
+                        integratedPop += dens * cellArea;
+                    }
+                }
+            }
+
+            System.out.printf("%-12d | %-45s | %-16s | %-16s%n",
+                yr, name.length() > 45 ? name.substring(0, 42) + "..." : name,
+                String.format("%,d", (long) integratedPop),
+                String.format("%,d", targetPop));
+        }
+        System.out.println("==========================================================================");
     }
 
     @Test

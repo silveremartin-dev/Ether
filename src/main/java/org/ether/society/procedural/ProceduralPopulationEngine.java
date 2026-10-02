@@ -351,7 +351,7 @@ public class ProceduralPopulationEngine {
     }
 
     /**
-     * Legacy Earth-preset wrapper for Milankovitch summer insolation at 65°N.
+     * Standard Earth-preset wrapper for Milankovitch summer insolation at 65°N.
      */
     public static double calculateMilankovitchSummerInsolation65N(long startYearBP) {
         return calculatePlanetarySolarInsolation(65.0, 23.44, 0.0167, 1.0, startYearBP, true);

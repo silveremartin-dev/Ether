@@ -142,7 +142,6 @@ public class HistoricalAutoCalibrator {
 
         // 1. World Population
         t.recordValue("worldPopulation", yr, pop);
-        t.population.put(yr, pop);
 
         // 2. Gross World Product (GWP)
         double perCapitaGdp = 0.1;
@@ -154,7 +153,6 @@ public class HistoricalAutoCalibrator {
         else if (yr >= 1) perCapitaGdp = 0.11;
         double gdp = Math.max(0.4, pop * perCapitaGdp * (0.9 + 0.1 * tech));
         t.recordValue("grossWorldProduct", yr, gdp);
-        t.gdp.put(yr, gdp);
 
         // 3. Primary Energy
         double perCapitaEnergy = 0.0125;
@@ -164,7 +162,6 @@ public class HistoricalAutoCalibrator {
         else if (yr >= 1800) perCapitaEnergy = 0.016;
         double energy = Math.max(0.05, pop * perCapitaEnergy * (0.9 + 0.1 * tech));
         t.recordValue("primaryEnergy", yr, energy);
-        t.primaryEnergy.put(yr, energy);
 
         // 4. Urbanization Rate
         double urban;
@@ -175,7 +172,6 @@ public class HistoricalAutoCalibrator {
         else if (yr >= 1) urban = 5.0;
         else urban = 0.5;
         t.recordValue("urbanizationRate", yr, urban);
-        t.urbanizationRate.put(yr, urban);
 
         // 5. CO2 Concentration
         double co2;
@@ -185,7 +181,6 @@ public class HistoricalAutoCalibrator {
         else if (yr >= 1800) co2 = 283.0 + (yr - 1800) * 0.12;
         else co2 = 275.0;
         t.recordValue("co2Concentration", yr, co2);
-        t.co2Ppm.put(yr, co2);
 
         // 6. Literacy Rate
         double literacy;
@@ -196,7 +191,6 @@ public class HistoricalAutoCalibrator {
         else if (yr >= 1500) literacy = 8.0 + (yr - 1500) * 0.013;
         else literacy = 2.0;
         t.recordValue("literacyRate", yr, literacy);
-        t.literacyRate.put(yr, literacy);
 
         // 7. Roman/Classical Currency Debasement
         double debasement;
@@ -205,7 +199,6 @@ public class HistoricalAutoCalibrator {
         else if (yr >= 1) debasement = 95.0 - (yr - 1) * 0.25;
         else debasement = 98.0;
         t.recordValue("currencyDebasement", yr, debasement);
-        t.currencyDebasement.put(yr, debasement);
 
         // 8. Elite Overproduction Index
         double eliteOverprod = 1.0;

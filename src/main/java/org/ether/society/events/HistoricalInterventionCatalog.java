@@ -24,7 +24,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class HistoricalInterventionCatalog {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalInterventionCatalog.class);
     private static final String RESOURCE_PATH = "/data/presets/leaders/earth_historical_leaders.json";
-    private static final String LEGACY_RESOURCE_PATH = "/data/scenarios/earth_historical_leaders.json";
 
     private static final HistoricalInterventionCatalog INSTANCE = new HistoricalInterventionCatalog();
 
@@ -42,11 +41,8 @@ public class HistoricalInterventionCatalog {
     public synchronized void loadCatalog() {
         interventions.clear();
         try {
-            // 1. Try Classpath Resource (modern or legacy)
+            // 1. Try Classpath Resource
             InputStream is = getClass().getResourceAsStream(RESOURCE_PATH);
-            if (is == null) {
-                is = getClass().getResourceAsStream(LEGACY_RESOURCE_PATH);
-            }
             if (is != null) {
                 List<HistoricalIntervention> loaded = mapper.readValue(is, new TypeReference<List<HistoricalIntervention>>() {});
                 interventions.addAll(loaded);

@@ -28,7 +28,7 @@ public class I18nAndLocalizationTest {
     public static void setUp() {
         bundleEn = ResourceBundle.getBundle("i18n.messages", Locale.ENGLISH);
         bundleFr = ResourceBundle.getBundle("i18n.messages", Locale.FRENCH);
-        bundleEs = ResourceBundle.getBundle("i18n.messages", new Locale("es"));
+        bundleEs = ResourceBundle.getBundle("i18n.messages", Locale.of("es"));
         bundleDe = ResourceBundle.getBundle("i18n.messages", Locale.GERMAN);
         bundleZh = ResourceBundle.getBundle("i18n.messages", Locale.CHINESE);
     }

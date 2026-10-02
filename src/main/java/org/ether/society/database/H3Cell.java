@@ -241,7 +241,7 @@ public class H3Cell {
     @Column(nullable = false)
     private Integer pop80Plus = 0; // 80+ years (Vulnerable elderly cohort)
 
-    // Legacy cohort aggregations
+    // Demographic cohort aggregations
     @Column(nullable = false)
     private Integer popYouth = 0;   // 0-14 aggregate
     @Column(nullable = false)

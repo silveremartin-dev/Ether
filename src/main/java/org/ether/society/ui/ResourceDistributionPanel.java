@@ -213,9 +213,7 @@ public class ResourceDistributionPanel extends BorderPane {
     private ComboBox<String> geologySourceCombo;
 
 
-    // Legacy single RadioButtons kept for preset compatibility
-    private RadioButton radioProcEco;
-    private RadioButton radioImportEco;
+
 
     // Section header labels for live i18n update
     private Label seedSecHeader;
@@ -1219,9 +1217,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
         VBox geologyDomainSection = createGeologyVectorAndLayersSection();
 
-        // Legacy compatibility
-        radioProcEco = radioProcBiome;
-        radioImportEco = radioImportBiome;
+
 
         controlsBox.getChildren().addAll(
                 headerLabel,
@@ -3467,7 +3463,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
     public List<String> getValidationErrors() {
         List<String> errors = new ArrayList<>();
-        boolean isBiomeImport = (radioImportBiome != null && radioImportBiome.isSelected()) || (radioImportEco != null && radioImportEco.isSelected());
+        boolean isBiomeImport = radioImportBiome != null && radioImportBiome.isSelected();
         if (isBiomeImport) {
             if (customBiomeImage == null) {
                 errors.add(I18n.getOrDefault("resource.validation.missing_biome_map", "Missing biome distribution map in import mode (Tab 2)."));
@@ -3515,7 +3511,7 @@ public class ResourceDistributionPanel extends BorderPane {
         List<String> errors = getValidationErrors();
         boolean isValid = errors.isEmpty();
 
-        boolean isBiomeImport = (radioImportBiome != null && radioImportBiome.isSelected()) || (radioImportEco != null && radioImportEco.isSelected());
+        boolean isBiomeImport = radioImportBiome != null && radioImportBiome.isSelected();
         boolean biomeBad = isBiomeImport && (customBiomeImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customBiomeImage).valid());
         if (loadBiomeBtn != null) loadBiomeBtn.setStyle(biomeBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
 

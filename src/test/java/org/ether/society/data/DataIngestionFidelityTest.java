@@ -70,9 +70,9 @@ public class DataIngestionFidelityTest {
     @DisplayName("Verify Redundant Empty Providers Removed")
     public void testRedundantEmptyProvidersAbsence() {
         File mapsFolder = new File(MAPS_BASE_PATH);
-        String[] deprecatedProviders = {"pmip", "chelsa", "esa_geospatial"};
+        String[] obsoleteProviders = {"pmip", "chelsa", "esa_geospatial"};
 
-        for (String providerId : deprecatedProviders) {
+        for (String providerId : obsoleteProviders) {
             File providerDir = new File(mapsFolder, providerId);
             assertFalse(providerDir.exists(),
                     "Redundant empty directory data/maps/" + providerId + " should be removed");

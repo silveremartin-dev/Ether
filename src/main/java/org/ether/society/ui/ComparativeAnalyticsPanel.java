@@ -1555,8 +1555,14 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             List<org.ether.society.database.H3Cell> snapshotCellsA = runA != null ? runA.getSpatialSnapshotAt(targetYear) : null;
             List<org.ether.society.database.H3Cell> snapshotCellsB = runB != null ? runB.getSpatialSnapshotAt(targetYear) : null;
 
-            if (snapshotCellsA != null && !snapshotCellsA.isEmpty()) {
+            // 1. Channel A Raster Extraction
+            File diskRasterA = getDiskRasterForChannel(targetYear, channel);
+            if ("HISTORICAL_GROUND_TRUTH".equals(selectedItems.get(0).getRunId()) && diskRasterA != null && diskRasterA.exists()) {
+                bufA = ImageIO.read(diskRasterA);
+            } else if (snapshotCellsA != null && !snapshotCellsA.isEmpty()) {
                 bufA = rasterizeCellsToImage(snapshotCellsA, channel, 512, 256);
+            } else if (diskRasterA != null && diskRasterA.exists()) {
+                bufA = ImageIO.read(diskRasterA);
             } else if (channel.contains("Densité") || channel.contains("Demographic") || channel.contains("Density")) {
                 bufA = HistoricalMapGenerator.rasterizeDensityMapForYear(scA.getPopulationDensityType(), scA, targetYear);
             } else {
@@ -1564,7 +1570,11 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                 bufA = base64ToBufferedImage(extractChannelBase64(scA, channel));
             }
 
-            if (snapshotCellsB != null && !snapshotCellsB.isEmpty()) {
+            // 2. Channel B Raster Extraction
+            File diskRasterB = getDiskRasterForChannel(targetYear, channel);
+            if (selectedItems.size() > 1 && "HISTORICAL_GROUND_TRUTH".equals(selectedItems.get(1).getRunId()) && diskRasterB != null && diskRasterB.exists()) {
+                bufB = ImageIO.read(diskRasterB);
+            } else if (snapshotCellsB != null && !snapshotCellsB.isEmpty()) {
                 bufB = rasterizeCellsToImage(snapshotCellsB, channel, 512, 256);
             } else if (channel.contains("Densité") || channel.contains("Demographic") || channel.contains("Density")) {
                 bufB = HistoricalMapGenerator.rasterizeDensityMapForYear(scB.getPopulationDensityType(), scB, targetYear);
@@ -1719,6 +1729,51 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private java.awt.Color getPolityColor(long id) {
         if (id <= 0) return new java.awt.Color(100, 116, 139);
         return java.awt.Color.getHSBColor((float) ((id * 0.618033988749895) % 1.0), 0.75f, 0.85f);
+    }
+
+    private File getDiskRasterForChannel(int year, String channel) {
+        String baseMapDir = "data/maps/ether/earth/" + year + "/";
+        String channelKey = "density";
+        if (channel != null) {
+            if (channel.contains("Technologie") || channel.contains("Technology")) channelKey = "technology";
+            else if (channel.contains("Température") || channel.contains("Temperature") || channel.contains("Climat")) channelKey = "temperature";
+            else if (channel.contains("Aquifère") || channel.contains("Aquifer") || channel.contains("Eau")) channelKey = "aquifers";
+            else if (channel.contains("Biomasse") || channel.contains("Agriculture")) channelKey = "biomes";
+            else if (channel.contains("Souveraineté") || channel.contains("Sovereignty")) channelKey = "sovereignty";
+            else if (channel.contains("Isoglosses") || channel.contains("Linguistique") || channel.contains("Linguistic")) channelKey = "isogloss";
+            else if (channel.contains("Parenté") || channel.contains("Kinship")) channelKey = "kinship";
+            else if (channel.contains("Rituels") || channel.contains("Rituals")) channelKey = "rituals";
+            else if (channel.contains("Commerce") || channel.contains("Trade")) channelKey = "tradenetwork";
+            else if (channel.contains("Institution") || channel.contains("Institutional")) channelKey = "institutional";
+            else if (channel.contains("Écologique") || channel.contains("Ecological")) channelKey = "ecological";
+            else if (channel.contains("Pathogène") || channel.contains("Pathogen")) channelKey = "pathogen";
+        }
+        File rasterFile = new File(baseMapDir, "earth_" + year + "_" + channelKey + ".png");
+        if (rasterFile.exists()) return rasterFile;
+        // Check nearest available epoch
+        File earthDir = new File("data/maps/ether/earth/");
+        if (earthDir.exists() && earthDir.isDirectory()) {
+            File[] dirs = earthDir.listFiles(File::isDirectory);
+            if (dirs != null) {
+                int closestYear = -1;
+                int minDiff = Integer.MAX_VALUE;
+                for (File d : dirs) {
+                    try {
+                        int y = Integer.parseInt(d.getName());
+                        int diff = Math.abs(y - year);
+                        if (diff < minDiff && diff <= 30) {
+                            minDiff = diff;
+                            closestYear = y;
+                        }
+                    } catch (NumberFormatException ignored) {}
+                }
+                if (closestYear != -1) {
+                    File candidate = new File("data/maps/ether/earth/" + closestYear + "/earth_" + closestYear + "_" + channelKey + ".png");
+                    if (candidate.exists()) return candidate;
+                }
+            }
+        }
+        return null;
     }
 
     private String extractChannelBase64(Scenario sc, String channel) {

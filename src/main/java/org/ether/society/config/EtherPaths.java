@@ -90,10 +90,7 @@ public final class EtherPaths {
             userPresetsDir = Paths.get(envUserPresets).toAbsolutePath().normalize();
         } else {
             String userHome = System.getProperty("user.home", ".");
-            // Check if legacy ~/.ether_society/data exists
-            Path legacyPath = Paths.get(userHome, ".ether_society", "data").toAbsolutePath().normalize();
-            Path modernUserPath = Paths.get(userHome, ".ether_society", "user_presets").toAbsolutePath().normalize();
-            userPresetsDir = Files.exists(legacyPath) ? legacyPath : modernUserPath;
+            userPresetsDir = Paths.get(userHome, ".ether_society", "user_presets").toAbsolutePath().normalize();
         }
 
         // 5. Ephemeral cache directory

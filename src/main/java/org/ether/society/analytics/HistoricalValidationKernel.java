@@ -119,15 +119,6 @@ public class HistoricalValidationKernel {
         public Map<Integer, Double> getSeries(String metricKey) {
             return seriesMap.getOrDefault(metricKey, Collections.emptyMap());
         }
-
-        // Legacy accessors
-        public Map<Integer, Double> population = new TreeMap<>();
-        public Map<Integer, Double> gdp = new TreeMap<>();
-        public Map<Integer, Double> primaryEnergy = new TreeMap<>();
-        public Map<Integer, Double> urbanizationRate = new TreeMap<>();
-        public Map<Integer, Double> co2Ppm = new TreeMap<>();
-        public Map<Integer, Double> literacyRate = new TreeMap<>();
-        public Map<Integer, Double> currencyDebasement = new TreeMap<>();
     }
 
     public static Map<Integer, Double> filterByWindow(Map<Integer, Double> dataset, EpochWindow window) {
@@ -202,13 +193,6 @@ public class HistoricalValidationKernel {
             Map<Integer, Double> rawBenchmark = benchmarkEntry.getValue();
 
             Map<Integer, Double> simulated = trajectory.getSeries(metricKey);
-            if (simulated.isEmpty() && metricKey.equals("worldPopulation")) simulated = trajectory.population;
-            if (simulated.isEmpty() && metricKey.equals("grossWorldProduct")) simulated = trajectory.gdp;
-            if (simulated.isEmpty() && metricKey.equals("primaryEnergy")) simulated = trajectory.primaryEnergy;
-            if (simulated.isEmpty() && metricKey.equals("urbanizationRate")) simulated = trajectory.urbanizationRate;
-            if (simulated.isEmpty() && metricKey.equals("co2Concentration")) simulated = trajectory.co2Ppm;
-            if (simulated.isEmpty() && metricKey.equals("literacyRate")) simulated = trajectory.literacyRate;
-            if (simulated.isEmpty() && metricKey.equals("currencyDebasement")) simulated = trajectory.currencyDebasement;
 
             Map<Integer, Double> windowedBenchmark = filterByWindow(rawBenchmark, window);
             if (!simulated.isEmpty() && !windowedBenchmark.isEmpty()) {

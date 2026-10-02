@@ -501,9 +501,7 @@ public class ExecutionContextPanel extends BorderPane {
         nodeList = FXCollections.observableArrayList();
         nodeTable = new TableView<>(nodeList);
         nodeTable.setPrefHeight(160);
-        @SuppressWarnings("deprecation")
-        var policy = TableView.CONSTRAINED_RESIZE_POLICY;
-        nodeTable.setColumnResizePolicy(policy);
+        nodeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
         colId = new TableColumn<>("ID Nœud");
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));

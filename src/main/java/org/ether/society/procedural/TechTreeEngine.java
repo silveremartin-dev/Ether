@@ -50,7 +50,7 @@ public class TechTreeEngine {
 
             // Physical era transition based on per-capita power flux and material yield strength
             if (powerPerCapita >= INDUSTRIAL.minPowerWattsPerCapita() && capital > 8000.0) {
-                cell.setTechnologyLevel(8.0); // Derived scalar mapping for legacy getters
+                cell.setTechnologyLevel(8.0); // Derived scalar mapping for technologyLevel
                 eraUpgrades++;
             } else if (powerPerCapita >= MEDIEVAL.minPowerWattsPerCapita() && capital > 1500.0) {
                 cell.setTechnologyLevel(5.5);

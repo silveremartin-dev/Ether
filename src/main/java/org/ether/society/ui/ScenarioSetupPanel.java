@@ -6885,7 +6885,7 @@ public class ScenarioSetupPanel extends BorderPane {
         eventsTable = new TableView<>(eventsList);
         eventsTable.setEditable(true);
         eventsTable.setPrefHeight(170);
-        eventsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        eventsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
         List<String> eventTypes = List.of(
             // --- JALONS INFORMATIFS (Préfixe milestone_) ---

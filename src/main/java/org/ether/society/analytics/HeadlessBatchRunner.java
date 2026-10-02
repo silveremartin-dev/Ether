@@ -169,13 +169,14 @@ public class HeadlessBatchRunner {
 
         engine.initializeFromScenario(scenario, cells);
 
-        // 3. Determine telemetry sampling intervals (20 to 50 samples across scenario duration)
-        int sampleCount = (int) Math.min(50, Math.max(10, durationYears / 10));
-        long yearsPerStep = Math.max(1, durationYears / sampleCount);
-        
-        // Calibrate physics ticks per step (100-300 total physics ticks per run for high computational ROI)
-        int maxTotalTicks = 240;
-        int ticksPerStep = Math.max(1, maxTotalTicks / Math.max(1, sampleCount));
+        // 3. Determine real step-by-step physical integration parameters (Zero-Skip Integration)
+        double stepDays = (scenario.getTemporalResolutionDays() > 0) ? scenario.getTemporalResolutionDays() : 30.0; // default 30 days (monthly)
+        long totalDays = (long) (durationYears * 365.25);
+        long totalTicks = Math.max(1, (long) Math.ceil(totalDays / stepDays));
+
+        // Sample telemetry periodically across scenario duration (e.g. every 1 to 20 years)
+        long sampleIntervalYears = Math.max(1, Math.min(20, durationYears / 25));
+        int ticksPerSampleInterval = Math.max(1, (int) Math.round((sampleIntervalYears * 365.25) / stepDays));
 
         // Initial snapshot at startYear
         recordCurrentTelemetrySnapshot(record, engine, (int) startYear);
@@ -185,43 +186,52 @@ public class HeadlessBatchRunner {
             listener.onProgress(scenario, 0.0, (int) startYear, (int) endYear);
         }
 
-        long currentSimYear = startYear;
+        long ticksExecuted = 0;
+        long lastSampledYear = startYear;
 
-        while (currentSimYear < endYear) {
+        while (ticksExecuted < totalTicks) {
             if (cancelSupplier != null && cancelSupplier.getAsBoolean()) {
-                logger.info("Batch execution for '{}' cancelled by user at Year {}", scenario.getName(), currentSimYear);
+                logger.info("Batch execution for '{}' cancelled by user at Year {}", scenario.getName(), engine.getCurrentYear());
                 engine.shutdown();
                 return null;
             }
 
-            long nextYear = Math.min(endYear, currentSimYear + yearsPerStep);
+            long remainingTicks = totalTicks - ticksExecuted;
+            int ticksToStep = (int) Math.min(ticksPerSampleInterval, remainingTicks);
 
-            // Execute real physics kernel ticks on H3 cells
-            engine.stepForward(ticksPerStep);
-            
-            // Advance simulation time to next sampled milestone
-            engine.getTimeManager().setTime((int) nextYear, 0, 1, (nextYear - startYear) * 12);
-            currentSimYear = nextYear;
+            // Execute exact physical kernel ticks on H3 cells without time skipping
+            engine.stepForward(ticksToStep);
+            ticksExecuted += ticksToStep;
 
-            // Capture full telemetry
-            recordCurrentTelemetrySnapshot(record, engine, (int) currentSimYear);
+            long currentSimYear = engine.getCurrentYear();
 
-            // Capture spatial state snapshot at key points (approx every 25% or at end)
-            if (record.getSpatialSnapshots().size() < 10 || currentSimYear >= endYear) {
+            // Capture full telemetry at intermediate sample points
+            if (currentSimYear > lastSampledYear || ticksExecuted >= totalTicks) {
+                recordCurrentTelemetrySnapshot(record, engine, (int) currentSimYear);
+                
+                // Capture spatial state snapshot at intermediate milestones
                 record.addSpatialSnapshot((int) currentSimYear, engine.getCells());
+                lastSampledYear = currentSimYear;
             }
 
-            double progress = Math.min(1.0, (double) (currentSimYear - startYear) / (double) Math.max(1, durationYears));
+            double progress = Math.min(1.0, (double) ticksExecuted / (double) Math.max(1, totalTicks));
             if (listener != null) {
                 listener.onProgress(scenario, progress, (int) currentSimYear, (int) endYear);
             }
         }
 
+        // Ensure final state is captured at endYear
+        long finalSimYear = engine.getCurrentYear();
+        if (lastSampledYear < finalSimYear || !record.getTimeSeriesData().containsKey((int) finalSimYear)) {
+            recordCurrentTelemetrySnapshot(record, engine, (int) finalSimYear);
+            record.addSpatialSnapshot((int) finalSimYear, engine.getCells());
+        }
+
         engine.shutdown();
 
         SimulationRunRepository.getInstance().registerRun(record);
-        logger.info("✅ Finished Physical Headless execution for scenario: '{}'. Generated {} snapshots.", 
-            scenario.getName(), record.getTimeSeriesData().size());
+        logger.info("✅ Finished Physical Headless execution for scenario: '{}'. Real physics ticks: {}. Generated {} snapshots.", 
+            scenario.getName(), ticksExecuted, record.getTimeSeriesData().size());
 
         return record;
     }

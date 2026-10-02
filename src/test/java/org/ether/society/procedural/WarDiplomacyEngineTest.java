@@ -55,7 +55,6 @@ public class WarDiplomacyEngineTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testTechTreeDiffusion() {
         H3Cell hub = new H3Cell(613503380827930704L, 48.0, 2.0);
         hub.setPopulation(5000);
