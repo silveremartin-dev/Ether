@@ -1313,4 +1313,24 @@ $$\mathcal{D}(\mathbf{x}_i, \mathbf{x}_j) = \min_{\mathcal{P}} \sum_{k \in \math
   $$\text{Owner}(\mathbf{x}) = \arg\min_{s \in \mathcal{S}} \left( \frac{\mathcal{D}(\mathbf{x}, \mathbf{x}_s)}{\mathcal{W}_s} \right)$$
 * **Uninhabited Land Policy**: Land pixels with occupancy $w_{\text{occ}} \le 0.001$ (e.g. Antarctica, high-Arctic glaciated terrain) are rendered in neutral slate-gray (`#2D3748`), strictly distinguishing uninhabited land from open ocean black (`#000000`).
 
+---
+
+### 13.5 Sahul/Tasmania Colonization Chronology & Continuous Riverine Corridors
+
+#### 1. Sahul & Tasmania Empirical Chronology:
+- **Pioneer Coastal Ingress ($-65,000\text{ to } -55,000\text{ BP}$)**: Confined to northern Sahul shelf (Madjedbebe, Nauwalabila I, Kimberley $\sim 65\text{k}-50\text{k BP}$, Arnhem Land): $\rho \approx 0.06 - 0.12\text{ hab/km}^2$.
+- **Continental Radiance ($-50,000\text{ BP}$)**: Expansion across central and southern Australia (Lake Mungo, Devil's Lair, Boodie Cave, New Guinea highlands): $\rho \approx 0.10 - 0.22\text{ hab/km}^2$.
+- **Bassian Land Bridge & Tasmanian Ingress ($-40,000\text{ to } -35,000\text{ BP}$)**: Pioneer traversal of the subaerial Bassian Plain to southern Tasmania (Warreen Cave, Parmerpar Meethaner $\sim 39\text{k}-35\text{k BP}$): $\rho \approx 0.04 - 0.10\text{ hab/km}^2$.
+
+#### 2. Southern Coastal Dispersal Corridor (MIS 4 / Early MIS 3, $-60,000\text{ to } -50,000\text{ BP}$):
+Continuous marine-littoral and riverine foraging corridor stretching along South Arabia $\to$ Indus $\to$ Coastal India $\to$ Sri Lanka $\to$ Sundaland $\to$ Wallacea:
+$$\rho_{\text{SouthAsia}}(\mathbf{x}) \in [0.12, 0.30]\text{ hab/km}^2 \quad \gg \quad \rho_{\text{Siberia}}(\mathbf{x}) \in [0.01, 0.03]\text{ hab/km}^2$$
+
+#### 3. Continuous Hydrographic Corridors in the Americas:
+Replaces discrete Gaussian points with continuous polyline distance metrics along major continental waterways and savannas:
+- **North America**: Ice-Free Corridor ($\mathcal{L}_{\text{IFC}}$), Columbia-Snake ($\mathcal{L}_{\text{Columbia}}$), Missouri River ($\mathcal{L}_{\text{Missouri}}$), Mississippi-Ohio ($\mathcal{L}_{\text{Mississippi}}$), Lower Mississippi Delta ($\mathcal{L}_{\text{LowMiss}}$), Southeast/Florida Gulf Coast ($\mathcal{L}_{\text{Florida}}$).
+- **South America**: Pacific Kelp Highway ($\mathcal{L}_{\text{Pacific}}$), Andean Mountain Corridor ($\mathcal{L}_{\text{Andes}}$), Amazon River Mainstem ($\mathcal{L}_{\text{Amazon}}$), Madeira Basin ($\mathcal{L}_{\text{Madeira}}$), Brazilian Cerrado/Caatinga Corridor ($\mathcal{L}_{\text{Savanna}}$).
+- **Remote Oceanic Island Exclusion**: Explicit coordinates filter (`isRemoteOceanicIsland`) prevents uninhabited oceanic islands (Cocos, Malpelo, Clipperton, Revillagigedo, Juan Fernández, Desventuradas, Fernando de Noronha, Trindade) from receiving spurious distance hits or forming floating circular artifacts in the Pacific and Atlantic.
+
+
 
