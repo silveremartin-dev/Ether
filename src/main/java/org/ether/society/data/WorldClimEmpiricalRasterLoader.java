@@ -521,37 +521,57 @@ public class WorldClimEmpiricalRasterLoader {
         double radLat = Math.toRadians(lat);
         double sinLat = Math.sin(radLat);
 
-        // Global mean temperature anomaly relative to pre-industrial (EPICA / NGRIP delta18O)
-        double globalAnom;
-        if (year <= -85000L) {
-            globalAnom = 1.2;  // MIS 5e Eemian Interglacial Warm Optimum (+1.2°C)
-        } else if (year <= -65000L) {
-            globalAnom = -4.5; // -74,000 BP: Youngest Toba Tuff Super-Eruption & MIS 4 Glacial stadial (-4.5°C)
-        } else if (year <= -35000L) {
-            globalAnom = -3.5; // -50,000 BP: MIS 3 Intermediate Glacial (-3.5°C)
-        } else if (year <= -18000L) {
-            globalAnom = -6.0; // -20,000 BP: Last Glacial Maximum peak (-6.0°C)
-        } else if (year <= -10500L) {
-            globalAnom = -2.8; // -10,900 BP: Younger Dryas abrupt hemispheric cooling (-2.8°C)
-        } else if (year <= -5000L) {
-            globalAnom = 0.8;  // Holocene Climate Optimum (+0.8°C)
+        // Continuous Global Mean Temperature Anomaly (EPICA / NGRIP delta18O / TraCE-21ka)
+        double[][] climateAnchors = {
+            {-100000.0,  1.2}, // MIS 5e Eemian Warm Optimum (+1.2°C)
+            { -85000.0, -1.0}, // MIS 5a/5b stadial cooling
+            { -74000.0, -4.8}, // -74,000 BP: Toba Super-Eruption & MIS 4 Stadial
+            { -60000.0, -3.2}, // Early MIS 3
+            { -50000.0, -3.5}, // MIS 3 Interstadial
+            { -35000.0, -4.2}, // Late MIS 3
+            { -25000.0, -5.6}, // Early LGM
+            { -20000.0, -6.2}, // LGM Peak Glaciation
+            { -16000.0, -4.5}, // Heinrich Stadial 1
+            { -14500.0, -2.0}, // Bølling-Allerød Interstadial
+            { -12000.0, -3.5}, // Younger Dryas Cold Stadial
+            { -10000.0, -0.5}, // Early Holocene Preboreal
+            {  -7000.0,  0.8}, // Holocene Climate Optimum (+0.8°C)
+            {  -3000.0,  0.2}, // Neoglacial Transition
+            {      0.0,  0.0}, // Common Era baseline
+            {   1000.0,  0.3}, // Medieval Climate Optimum
+            {   1650.0, -0.5}, // Little Ice Age
+            {   1950.0,  0.0}  // 1950 baseline
+        };
+
+        double globalAnom = 0.0;
+        if (year <= climateAnchors[0][0]) {
+            globalAnom = climateAnchors[0][1];
+        } else if (year >= climateAnchors[climateAnchors.length - 1][0]) {
+            globalAnom = climateAnchors[climateAnchors.length - 1][1];
         } else {
-            globalAnom = -0.3; // Neoglacial late Holocene
+            for (int i = 0; i < climateAnchors.length - 1; i++) {
+                double y0 = climateAnchors[i][0];
+                double y1 = climateAnchors[i + 1][0];
+                if (year >= y0 && year <= y1) {
+                    double t = (year - y0) / (y1 - y0);
+                    // Smooth Hermite cubic interpolation
+                    double smoothT = t * t * (3.0 - 2.0 * t);
+                    globalAnom = climateAnchors[i][1] * (1.0 - smoothT) + climateAnchors[i + 1][1] * smoothT;
+                    break;
+                }
+            }
         }
 
         // 2D Smooth Polar & Continental Amplification (Smooth continuous spherical function):
-        // Polar amplification factor: 0.65 at equator -> 2.0 at poles (continuous smooth sin^2(lat))
         double polarFactor = 0.65 + 1.35 * (sinLat * sinLat);
-
-        // Continental land cooling factor: land cools 35% more than oceans during cold stadials
         double landAmplification = (elevM >= 0.0) ? 1.30 : 0.85;
-
         double deltaT = globalAnom * polarFactor * landAmplification;
 
-        // Toba Volcanic Aerosol Shielding (Concentrated in Northern Hemisphere and South/SE Asia at ~ -74,000 BP)
+        // Toba Volcanic Aerosol Shielding (Smooth Gaussian plume concentrated in South/SE Asia ~ -74,000 BP)
         if (year <= -65000L && year > -85000L) {
-            double tobaPlume = Math.exp(-(Math.pow(lat - 15.0, 2) / 250.0 + Math.pow(lon - 85.0, 2) / 800.0));
-            deltaT -= (tobaPlume * 4.5);
+            double timeWeight = Math.exp(-Math.pow((year - (-74000.0)) / 4500.0, 2));
+            double tobaPlume = Math.exp(-(Math.pow(lat - 15.0, 2) / 350.0 + Math.pow(lon - 85.0, 2) / 1000.0));
+            deltaT -= (tobaPlume * 4.5 * timeWeight);
         }
 
         // Ice sheet albedo & topographic lapse rate cooling over ice domes
@@ -560,7 +580,7 @@ public class WorldClimEmpiricalRasterLoader {
             double dLaur = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_LAURENTIDE_MIS3);
             if (dFenno <= 4.0) deltaT -= 8.0 * Math.exp(-Math.max(0, dFenno) / 2.0);
             if (dLaur <= 4.0) deltaT -= 9.0 * Math.exp(-Math.max(0, dLaur) / 2.0);
-        } else if (year <= -18000L) {
+        } else if (year <= -16000L) {
             double dLaur = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_LAURENTIDE_LGM);
             double dFenno = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_FENNOSCANDIA_LGM);
             double dAlps = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_ALPS_LGM);
@@ -589,18 +609,16 @@ public class WorldClimEmpiricalRasterLoader {
         double absLat = Math.abs(lat);
 
         if (year <= -65000L && year > -85000L) {
-            // Toba Volcanic Drought in Monsoon Tropics
-            if (lat >= -10.0 && lat <= 35.0 && lon >= 40.0 && lon <= 130.0) {
-                return 0.55; // 45% monsoon collapse
-            }
-            return 0.85;
+            // Toba Volcanic Drought in Monsoon Tropics (Smooth continuous 2D Gaussian plume — no rectangular clipping)
+            double timeWeight = Math.exp(-Math.pow((year - (-74000.0)) / 5000.0, 2));
+            double dMonsoon = Math.exp(-(Math.pow(lat - 15.0, 2) / 400.0 + Math.pow(lon - 85.0, 2) / 1200.0));
+            return 0.85 - (dMonsoon * 0.30 * timeWeight);
         } else if (year <= -18000L && year >= -25000L) {
             return 1.0 - 0.38 * Math.sin(Math.toRadians(absLat));
-        } else if (year <= -10500L && year > -12500L) {
-            if (lat >= 5.0 && lat <= 35.0 && lon >= 60.0 && lon <= 130.0) {
-                return 0.75; // Asian monsoon drought in Younger Dryas
-            }
-            return 0.90;
+        } else if (year <= -10500L && year > -12800L) {
+            // Asian monsoon drought in Younger Dryas (Smooth 2D Gaussian plume)
+            double dYdMonsoon = Math.exp(-(Math.pow(lat - 20.0, 2) / 350.0 + Math.pow(lon - 90.0, 2) / 1000.0));
+            return 0.90 - (dYdMonsoon * 0.15);
         }
         return 1.0;
     }
@@ -645,14 +663,14 @@ public class WorldClimEmpiricalRasterLoader {
                 HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_LAURENTIDE_MIS3) <= 0) {
                 return BIOME_GLACIER;
             }
-        } else if (year <= -18000L) {
+        } else if (year <= -16000L) {
             if (HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_LAURENTIDE_LGM) <= 0 ||
                 HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_FENNOSCANDIA_LGM) <= 0 ||
                 HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_ALPS_LGM) <= 0 ||
                 HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_PATAGONIA_LGM) <= 0) {
                 return BIOME_GLACIER;
             }
-        } else if (year <= -10500L && year > -18000L) {
+        } else if (year <= -10500L && year > -16000L) {
             if (HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_LAURENTIDE_YD) <= 0 ||
                 HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_FENNOSCANDIA_YD) <= 0) {
                 return BIOME_GLACIER;
@@ -681,7 +699,8 @@ public class WorldClimEmpiricalRasterLoader {
         }
 
         // Ancient Holocene Climax Override: Continuous Primary Forests in Western/Central Europe & Eastern North America
-        if (year < 1500L && elevM < 1600.0 && precipMm >= 350.0) {
+        // Strictly bounded to the Holocene (year >= -10000) and temperate regime (tempC >= 6.0°C)
+        if (year >= -10000L && year < 1500L && tempC >= 6.0 && elevM < 1600.0 && precipMm >= 350.0) {
             // Western/Central Europe (Silva Hercynia, Silva Carbonaria, Atlantic Climax)
             if (lat >= 42.0 && lat <= 60.0 && lon >= -10.0 && lon <= 28.0) {
                 return BIOME_FOREST;

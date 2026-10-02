@@ -8,6 +8,7 @@ package org.ether.society.analytics;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -77,6 +78,8 @@ public class SimulationRunRecord {
     private final Map<String, String> parameterMatrix;
     private final TreeMap<Integer, MetricSnapshot> timeSeriesData;
 
+    private final TreeMap<Integer, List<org.ether.society.database.H3Cell>> spatialSnapshots = new TreeMap<>();
+
     public SimulationRunRecord(String runId, String scenarioName, String variantDescription,
                                Map<String, String> parameterMatrix) {
         this.runId = runId;
@@ -93,6 +96,29 @@ public class SimulationRunRecord {
 
     public void addSnapshot(int year, long population, double food, double avgTech, double stability, int populatedCells, Map<String, Double> metricsMap) {
         timeSeriesData.put(year, new MetricSnapshot(population, food, avgTech, stability, populatedCells, metricsMap));
+    }
+
+    public void addSpatialSnapshot(int year, List<org.ether.society.database.H3Cell> cells) {
+        if (cells != null && !cells.isEmpty()) {
+            List<org.ether.society.database.H3Cell> snapshot = cells.stream()
+                .map(org.ether.society.database.H3Cell::snapshot)
+                .toList();
+            spatialSnapshots.put(year, snapshot);
+        }
+    }
+
+    public List<org.ether.society.database.H3Cell> getSpatialSnapshotAt(int year) {
+        if (spatialSnapshots.containsKey(year)) {
+            return spatialSnapshots.get(year);
+        }
+        Map.Entry<Integer, List<org.ether.society.database.H3Cell>> entry = spatialSnapshots.floorEntry(year);
+        if (entry != null) return entry.getValue();
+        entry = spatialSnapshots.ceilingEntry(year);
+        return entry != null ? entry.getValue() : null;
+    }
+
+    public TreeMap<Integer, List<org.ether.society.database.H3Cell>> getSpatialSnapshots() {
+        return spatialSnapshots;
     }
 
     public String getRunId() { return runId; }

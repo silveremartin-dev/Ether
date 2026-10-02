@@ -241,6 +241,60 @@ public class MapComparisonMetrics {
         return cat;
     }
 
+    /**
+     * Generates a 2D Discrepancy Heatmap highlighting spatial divergences between Map A and Map B.
+     * Color Legend:
+     * - Dark Slate: Neutral / Unpopulated matching areas
+     * - Bright Emerald / Cyan: High spatial agreement
+     * - Intense Amber / Red: Overestimation (A > B)
+     * - Intense Indigo / Blue: Underestimation (A < B)
+     */
+    public static BufferedImage generateDiscrepancyHeatmap(BufferedImage imgA, BufferedImage imgB) {
+        if (imgA == null || imgB == null) return null;
+
+        int width = Math.min(imgA.getWidth(), imgB.getWidth());
+        int height = Math.min(imgA.getHeight(), imgB.getHeight());
+
+        BufferedImage diffMap = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        double[] gridA = extractLuminanceGrid(imgA, width, height);
+        double[] gridB = extractLuminanceGrid(imgB, width, height);
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int idx = y * width + x;
+                double valA = gridA[idx];
+                double valB = gridB[idx];
+                double delta = valA - valB; // Range -255 to +255
+
+                int rgba;
+                if (Math.abs(valA) < 5.0 && Math.abs(valB) < 5.0) {
+                    // Ocean / Empty Cell: Dark Slate
+                    rgba = 0xFF0F172A;
+                } else if (Math.abs(delta) <= 12.0) {
+                    // Near perfect match: Emerald Green
+                    rgba = 0xFF10B981;
+                } else if (delta > 0) {
+                    // A is greater than B (Overestimation): Amber to Red gradient
+                    double norm = Math.min(1.0, delta / 180.0);
+                    int r = (int) (245 + norm * 10);
+                    int g = (int) (158 - norm * 110);
+                    int b = (int) (11 - norm * 11);
+                    rgba = (0xFF << 24) | (Math.min(255, r) << 16) | (Math.max(0, g) << 8) | Math.max(0, b);
+                } else {
+                    // A is less than B (Underestimation): Cyan to Royal Blue gradient
+                    double norm = Math.min(1.0, -delta / 180.0);
+                    int r = (int) (56 - norm * 40);
+                    int g = (int) (189 - norm * 120);
+                    int b = (int) (248 + norm * 7);
+                    rgba = (0xFF << 24) | (Math.max(0, r) << 16) | (Math.max(0, g) << 8) | Math.min(255, b);
+                }
+                diffMap.setRGB(x, y, rgba);
+            }
+        }
+        return diffMap;
+    }
+
     private static double calculateMean(double[] arr, int len) {
         double sum = 0.0;
         for (int i = 0; i < len; i++) {

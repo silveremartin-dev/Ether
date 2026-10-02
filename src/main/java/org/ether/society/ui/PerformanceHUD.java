@@ -80,6 +80,12 @@ public class PerformanceHUD extends VBox {
         }
     }
 
+    private double currentFps = 0.0;
+
+    public double getFps() {
+        return currentFps;
+    }
+
     private void updateStats(long now, long oldTime) {
         // 1. Calculate FPS
         if (arrayFilled) {
@@ -88,6 +94,7 @@ public class PerformanceHUD extends VBox {
             if (elapsedMillis > 0) {
                 // We have history for FRAME_HISTORY_SIZE frames
                 double fps = 1000.0 * FRAME_HISTORY_SIZE / elapsedMillis;
+                this.currentFps = fps;
                 double frameTime = (double) elapsedMillis / FRAME_HISTORY_SIZE;
                 fpsLabel.setText(String.format("%s %.1f (%.1f ms)", I18n.get("ui.hud.fps"), fps, frameTime));
 

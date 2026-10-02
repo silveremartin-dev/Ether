@@ -5,7 +5,15 @@
  */
 package org.ether.society.analytics;
 
+import org.ether.society.config.Configuration;
+import org.ether.society.config.ConfigurationLoader;
+import org.ether.society.core.H3SimulationEngine;
+import org.ether.society.database.H3Cell;
 import org.ether.society.model.Scenario;
+import org.ether.society.procedural.PlanetPreset;
+import org.ether.society.procedural.ProceduralGenerator;
+import org.ether.society.procedural.SimulationPerformanceConfig;
+import org.ether.society.ui.ExecutionContextPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +21,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * Headless simulation runner for executing background scenario campaigns,
- * generating telemetry snapshots, and populating the repository.
+ * generating telemetry snapshots, and populating the repository using
+ * the physical-based H3SimulationEngine and DOD pipelines.
  */
 public class HeadlessBatchRunner {
     private static final Logger logger = LoggerFactory.getLogger(HeadlessBatchRunner.class);
@@ -32,8 +40,17 @@ public class HeadlessBatchRunner {
     }
 
     public static List<SimulationRunRecord> executeBatch(List<Scenario> scenarios, BatchProgressListener listener, java.util.function.BooleanSupplier cancelSupplier) {
-        List<SimulationRunRecord> results = new ArrayList<>();
-        if (scenarios != null) {
+        return executeBatchParallel(scenarios, 1, listener, cancelSupplier);
+    }
+
+    public static List<SimulationRunRecord> executeBatchParallel(List<Scenario> scenarios, int threadCount, BatchProgressListener listener, java.util.function.BooleanSupplier cancelSupplier) {
+        List<SimulationRunRecord> results = new java.util.concurrent.CopyOnWriteArrayList<>();
+        if (scenarios == null || scenarios.isEmpty()) return results;
+
+        int threads = Math.max(1, Math.min(threadCount, Runtime.getRuntime().availableProcessors()));
+        logger.info("Starting Headless Batch Execution with {} worker threads for {} scenarios...", threads, scenarios.size());
+
+        if (threads == 1) {
             for (Scenario s : scenarios) {
                 if (cancelSupplier != null && cancelSupplier.getAsBoolean()) {
                     logger.info("Batch execution was cancelled by user.");
@@ -44,6 +61,28 @@ public class HeadlessBatchRunner {
                     results.add(r);
                 }
             }
+        } else {
+            java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newFixedThreadPool(threads);
+            List<java.util.concurrent.Future<?>> futures = new ArrayList<>();
+
+            for (Scenario s : scenarios) {
+                futures.add(executor.submit(() -> {
+                    if (cancelSupplier != null && cancelSupplier.getAsBoolean()) return;
+                    SimulationRunRecord r = executeScenarioHeadless(s, listener, cancelSupplier);
+                    if (r != null) {
+                        results.add(r);
+                    }
+                }));
+            }
+
+            executor.shutdown();
+            try {
+                for (var future : futures) {
+                    future.get();
+                }
+            } catch (Exception e) {
+                logger.warn("Batch execution encountered interruption or error: {}", e.getMessage());
+            }
         }
         return results;
     }
@@ -53,10 +92,12 @@ public class HeadlessBatchRunner {
     }
 
     public static SimulationRunRecord executeScenarioHeadless(Scenario scenario, BatchProgressListener listener, java.util.function.BooleanSupplier cancelSupplier) {
-        logger.info("Starting Headless execution for scenario: '{}' (Years {} -> {})",
+        if (scenario == null) return null;
+
+        logger.info("⚡ Starting Real Physics Headless Batch Execution for scenario: '{}' (Years {} -> {})",
             scenario.getName(), scenario.getStartDateYear(), scenario.getEndDateYear());
 
-        String runId = "RUN-" + scenario.getName().replaceAll("[^a-zA-Z0-9]", "-").toUpperCase() + "-" + System.currentTimeMillis() % 10000;
+        String runId = "RUN-" + scenario.getName().replaceAll("[^a-zA-Z0-9]", "-").toUpperCase() + "-" + (System.currentTimeMillis() % 10000);
 
         Map<String, String> parameterMatrix = new LinkedHashMap<>();
         parameterMatrix.put("Population Initiale", String.format("%,d", scenario.getInitialHumanCount()));
@@ -66,7 +107,9 @@ public class HeadlessBatchRunner {
         parameterMatrix.put("Préréglage Planétaire", scenario.getPlanetPreset() != null ? scenario.getPlanetPreset().name() : "EARTH_LIKE");
         parameterMatrix.put("Modèle de Densité", scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL");
 
-        // Add Type B engines state
+        ExecutionContextPanel.HardwareMode activeHw = org.ether.society.ui.ExecutionContextPanel.getActiveHardwareMode();
+        parameterMatrix.put("Contexte Matériel", activeHw != null ? activeHw.name() + " (Headless)" : "CPU_JIT (Headless)");
+
         if (scenario.getTypeBEngineStates() != null && !scenario.getTypeBEngineStates().isEmpty()) {
             for (var entry : scenario.getTypeBEngineStates().entrySet()) {
                 if (entry.getValue()) {
@@ -87,76 +130,142 @@ public class HeadlessBatchRunner {
         if (endYear <= startYear) {
             endYear = startYear + 100;
         }
-
         long durationYears = endYear - startYear;
-        int step = (int) Math.max(1, durationYears / 20);
 
-        long initialPop = scenario.getInitialHumanCount() > 0 ? scenario.getInitialHumanCount() : 1000;
-        double capital = scenario.getInitialCapitalPerCapita();
-        double tech = scenario.getInitialTechLevel() > 0 ? scenario.getInitialTechLevel() : 10.0;
-        double baseGrowth = 0.008 + (capital * 0.0001);
+        // 1. Generate real planetary cell grid
+        PlanetPreset preset = scenario.getPlanetPreset() != null 
+            ? scenario.getPlanetPreset().withResolution(1) 
+            : PlanetPreset.EARTH_LIKE.withResolution(1);
+        
+        List<H3Cell> cells = ProceduralGenerator.getInstance().generatePlanet(preset);
 
-        Random rand = new Random(scenario.getSeed());
-
-        for (long yr = startYear; yr <= endYear; yr += step) {
-            if (cancelSupplier != null && cancelSupplier.getAsBoolean()) {
-                logger.info("Scenario execution '{}' cancelled during tick loop at year {}.", scenario.getName(), yr);
-                return null;
-            }
-            if (listener != null) {
-                double prog = Math.min(1.0, (double) (yr - startYear) / (double) Math.max(1, durationYears));
-                listener.onProgress(scenario, prog, (int) yr, (int) endYear);
-            }
-
-            // Sleep briefly to simulate compute throughput and allow UI animation rendering
-            try {
-                Thread.sleep(15);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return null;
-            }
-
-            int elapsed = (int) (yr - startYear);
-
-            // Simulation formula reflecting scenario parameters
-            double growthMultiplier = 1.0 + baseGrowth;
-            long pop = (long) (initialPop * Math.pow(growthMultiplier, elapsed / 5.0) * (0.95 + rand.nextDouble() * 0.10));
-            double food = (pop * 0.8) + (elapsed * 500 * (1.0 + capital * 0.05));
-            double currentTech = tech + (elapsed * 0.25 * (1.0 + scenario.getInitialInformationPerCapita() * 0.001));
-            double stability = Math.max(20.0, Math.min(100.0, 85.0 - (elapsed * 0.05) + (rand.nextDouble() * 5.0 - 2.5)));
-            int cells = (int) Math.min(5000, 50 + (pop / 2000));
-
-            Map<String, Double> metricsMap = new LinkedHashMap<>();
-            metricsMap.put("population", (double) pop);
-            metricsMap.put("foodPerCapita", food / Math.max(1, pop));
-            metricsMap.put("avgTechLevel", currentTech);
-            metricsMap.put("asabiyyah", stability);
-            metricsMap.put("gini", Math.max(0.1, Math.min(0.85, 0.25 + (elapsed * 0.001) + (rand.nextDouble() * 0.04))));
-            metricsMap.put("gdp", pop * currentTech * 1.5);
-            metricsMap.put("energyCaptured", pop * (10.0 + currentTech * 0.5));
-            metricsMap.put("energyPerCapita", 10.0 + currentTech * 0.5);
-            metricsMap.put("resourceDepletion", Math.min(100.0, elapsed * 0.2));
-            metricsMap.put("potableWater", Math.max(1000.0, 50000.0 - elapsed * 10.0));
-            metricsMap.put("entropyPollution", elapsed * 1.2);
-            metricsMap.put("temperature", 15.0 + Math.sin(yr / 50.0) * 1.5);
-            metricsMap.put("precipitation", 800.0 + Math.cos(yr / 40.0) * 100.0);
-            metricsMap.put("fertilityRate", Math.max(1.2, 5.0 - (currentTech * 0.03)));
-            metricsMap.put("lifeExpectancy", Math.min(85.0, 30.0 + (currentTech * 0.4)));
-            metricsMap.put("educationLevel", Math.min(100.0, currentTech * 0.8));
-            metricsMap.put("happiness", Math.max(10.0, Math.min(95.0, stability * 0.8 + (food / Math.max(1, pop)) * 2.0)));
-            metricsMap.put("conflict", Math.max(0.0, 100.0 - stability));
-            metricsMap.put("kardashev", currentTech > 10.0 ? (Math.log10(pop * (10.0 + currentTech * 0.5) * 1e6) - 6.0) / 10.0 : 0.0);
-            metricsMap.put("builtCapital", capital * pop);
-            metricsMap.put("collectiveMemory", currentTech * 100.0);
-            metricsMap.put("eliteOverproduction", (100.0 - stability) * 0.1);
-            metricsMap.put("collapseRisk", Math.max(0.0, (100.0 - stability) * 0.8 + (elapsed * 0.05)));
-            metricsMap.put("systemInterdependence", Math.min(100.0, currentTech * 0.7));
-
-            record.addSnapshot((int) yr, pop, food, currentTech, stability, cells, metricsMap);
+        // 2. Initialize real H3SimulationEngine with DOD kernels
+        Configuration config;
+        try {
+            config = ConfigurationLoader.loadDefault();
+        } catch (Exception e) {
+            config = new Configuration(
+                new Configuration.WorldConfig(100, 100, 10, new Configuration.GenerationParams(4, 1.0, 4, 1.0)),
+                new Configuration.SimulationConfig(1000, 42, new int[] { 1, 2, 5 }),
+                new Configuration.AgentsConfig(100, java.util.Collections.emptyMap()),
+                new Configuration.ClimateConfig(0.01, 14.0, 0.05),
+                new Configuration.ResourcesConfig(100.0, 50.0, 1.0)
+            );
         }
 
+        H3SimulationEngine engine = new H3SimulationEngine(config);
+        SimulationPerformanceConfig perfConfig = scenario.toPerformanceConfig();
+        int cores = Runtime.getRuntime().availableProcessors();
+        perfConfig.setEnableParallelExecution(activeHw != org.ether.society.ui.ExecutionContextPanel.HardwareMode.GPU_OFF);
+        perfConfig.setParallelThreadCount(switch (activeHw) {
+            case NATIVE_RUST, JAVA_VECTOR_SIMD -> Math.max(1, cores);
+            case GPU_SHADERS -> 2;
+            case CPU_JIT -> Math.max(1, cores);
+            case GPU_OFF -> 1;
+            default -> Math.max(1, cores);
+        });
+        engine.setPerformanceConfig(perfConfig);
+        engine.setTemporalScale(H3SimulationEngine.TemporalScale.MONTHLY);
+
+        engine.initializeFromScenario(scenario, cells);
+
+        // 3. Determine telemetry sampling intervals (20 to 50 samples across scenario duration)
+        int sampleCount = (int) Math.min(50, Math.max(10, durationYears / 10));
+        long yearsPerStep = Math.max(1, durationYears / sampleCount);
+        
+        // Calibrate physics ticks per step (100-300 total physics ticks per run for high computational ROI)
+        int maxTotalTicks = 240;
+        int ticksPerStep = Math.max(1, maxTotalTicks / Math.max(1, sampleCount));
+
+        // Initial snapshot at startYear
+        recordCurrentTelemetrySnapshot(record, engine, (int) startYear);
+        record.addSpatialSnapshot((int) startYear, cells);
+
+        if (listener != null) {
+            listener.onProgress(scenario, 0.0, (int) startYear, (int) endYear);
+        }
+
+        long currentSimYear = startYear;
+
+        while (currentSimYear < endYear) {
+            if (cancelSupplier != null && cancelSupplier.getAsBoolean()) {
+                logger.info("Batch execution for '{}' cancelled by user at Year {}", scenario.getName(), currentSimYear);
+                engine.shutdown();
+                return null;
+            }
+
+            long nextYear = Math.min(endYear, currentSimYear + yearsPerStep);
+
+            // Execute real physics kernel ticks on H3 cells
+            engine.stepForward(ticksPerStep);
+            
+            // Advance simulation time to next sampled milestone
+            engine.getTimeManager().setTime((int) nextYear, 0, 1, (nextYear - startYear) * 12);
+            currentSimYear = nextYear;
+
+            // Capture full telemetry
+            recordCurrentTelemetrySnapshot(record, engine, (int) currentSimYear);
+
+            // Capture spatial state snapshot at key points (approx every 25% or at end)
+            if (record.getSpatialSnapshots().size() < 10 || currentSimYear >= endYear) {
+                record.addSpatialSnapshot((int) currentSimYear, engine.getCells());
+            }
+
+            double progress = Math.min(1.0, (double) (currentSimYear - startYear) / (double) Math.max(1, durationYears));
+            if (listener != null) {
+                listener.onProgress(scenario, progress, (int) currentSimYear, (int) endYear);
+            }
+        }
+
+        engine.shutdown();
+
         SimulationRunRepository.getInstance().registerRun(record);
-        logger.info("Finished Headless execution for scenario: '{}'. Generated {} snapshots.", scenario.getName(), record.getTimeSeriesData().size());
+        logger.info("✅ Finished Physical Headless execution for scenario: '{}'. Generated {} snapshots.", 
+            scenario.getName(), record.getTimeSeriesData().size());
+
         return record;
+    }
+
+    private static void recordCurrentTelemetrySnapshot(SimulationRunRecord record, H3SimulationEngine engine, int year) {
+        long pop = engine.getTotalPopulation();
+        double foodPerCap = engine.getFoodPerCapita();
+        double avgTech = engine.getAverageTechnology();
+        double stability = engine.getHappinessIndex();
+        int populatedCells = (int) engine.getPopulatedCellCount();
+
+        Map<String, Double> metricsMap = new LinkedHashMap<>();
+        metricsMap.put("population", (double) pop);
+        metricsMap.put("worldPopulation", (double) pop);
+        metricsMap.put("foodPerCapita", foodPerCap);
+        metricsMap.put("avgTechLevel", avgTech);
+        metricsMap.put("asabiyyah", stability);
+        metricsMap.put("populatedCellCount", (double) populatedCells);
+
+        // Extract complete physical & cliodynamic indicators from engine
+        metricsMap.put("gdp", (double) engine.getCurrentGDP());
+        metricsMap.put("grossWorldProduct", (double) engine.getCurrentGDP());
+        metricsMap.put("gini", (double) engine.getCurrentGini());
+        metricsMap.put("lifeExpectancy", (double) engine.getCurrentLifeExpectancy());
+        metricsMap.put("fertilityRate", (double) engine.getCurrentFertility());
+        metricsMap.put("energyCaptured", engine.getEnergyCaptured());
+        metricsMap.put("primaryEnergy", engine.getEnergyCaptured());
+        metricsMap.put("energyPerCapita", engine.getEnergyPerCapita());
+        metricsMap.put("potableWater", engine.getPotableWaterTotal());
+        metricsMap.put("resourceDepletion", engine.getResourceDepletionRate());
+        metricsMap.put("kardashev", engine.getKardashevScale());
+        metricsMap.put("builtCapital", engine.getBuiltCapitalTotal());
+        metricsMap.put("collectiveMemory", engine.getCollectiveMemoryStock());
+        metricsMap.put("eliteOverproduction", engine.getEliteOverproductionIndex());
+        metricsMap.put("collapseRisk", engine.getCollapseVulnerability());
+        metricsMap.put("systemInterdependence", engine.getSystemInterdependenceIndex());
+        metricsMap.put("urbanizationRate", Math.min(100.0, populatedCells > 0 ? (pop / (double) (populatedCells * 1000.0)) * 10.0 : 5.0));
+        metricsMap.put("literacyRate", Math.min(100.0, avgTech * 0.9));
+        metricsMap.put("currencyDebasement", Math.max(0.0, (100.0 - stability) * 0.5));
+        metricsMap.put("co2Concentration", Math.max(280.0, 280.0 + (avgTech > 50.0 ? (avgTech - 50.0) * 4.0 : 0.0)));
+        metricsMap.put("temperature", 14.5 + Math.sin(year / 200.0) * 0.8);
+        metricsMap.put("precipitation", 850.0 + Math.cos(year / 150.0) * 50.0);
+        metricsMap.put("conflict", engine.getConflictLevel());
+
+        record.addSnapshot(year, pop, foodPerCap, avgTech, stability, populatedCells, metricsMap);
     }
 }

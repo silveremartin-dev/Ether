@@ -52,6 +52,10 @@ public class Hyde34GridReader {
      * Reads an Esri ASCII Grid file (.asc) and samples it into a 1024x512 BufferedImage density map.
      */
     public static BufferedImage readAsciiGridToImage(InputStream inputStream) {
+        return readAsciiGridToImage(inputStream, 0L);
+    }
+
+    public static BufferedImage readAsciiGridToImage(InputStream inputStream, long targetYear) {
         if (inputStream == null) return null;
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
@@ -106,25 +110,70 @@ public class Hyde34GridReader {
                 }
             }
 
-            // 3. Resample 4320x2160 real grid to 1024x512 Ether Canvas with Fine Grayscale Density
+            // 3. Resample 4320x2160 real grid to ETHER_WIDTH x ETHER_HEIGHT Canvas with Area-Weighted Footprint
             BufferedImage img = new BufferedImage(ETHER_WIDTH, ETHER_HEIGHT, BufferedImage.TYPE_INT_RGB);
+            float[][] resampled = new float[ETHER_HEIGHT][ETHER_WIDTH];
+            double rScale = (double) meta.nrows / ETHER_HEIGHT;
+            double cScale = (double) meta.ncols / ETHER_WIDTH;
+
             for (int y = 0; y < ETHER_HEIGHT; y++) {
-                int srcR = (int) ((y / (double) ETHER_HEIGHT) * meta.nrows);
-                srcR = Math.max(0, Math.min(meta.nrows - 1, srcR));
-
+                int r0 = (int) (y * rScale);
+                int r1 = Math.min(meta.nrows - 1, (int) Math.ceil((y + 1) * rScale));
                 for (int x = 0; x < ETHER_WIDTH; x++) {
-                    int srcC = (int) ((x / (double) ETHER_WIDTH) * meta.ncols);
-                    srcC = Math.max(0, Math.min(meta.ncols - 1, srcC));
+                    int c0 = (int) (x * cScale);
+                    int c1 = Math.min(meta.ncols - 1, (int) Math.ceil((x + 1) * cScale));
 
-                    float val = grid[srcR][srcC];
-                    if (val <= 0.25f || val == meta.nodataValue) {
-                        img.setRGB(x, y, 0x000000); // Pure Black for oceans, uninhabited land & statistical background noise floor
+                    float sumVal = 0.0f;
+                    int count = 0;
+                    float peakVal = 0.0f;
+                    for (int r = r0; r <= r1; r++) {
+                        for (int c = c0; c <= c1; c++) {
+                            float v = grid[r][c];
+                            if (v > 0.0f && v != meta.nodataValue) {
+                                sumVal += v;
+                                if (v > peakVal) peakVal = v;
+                            }
+                            count++;
+                        }
+                    }
+                    // Blend mean footprint density with local peak to preserve discrete archaeological clusters
+                    resampled[y][x] = (count > 0) ? (0.6f * (sumVal / count) + 0.4f * peakVal) : 0.0f;
+                }
+            }
+
+            // 4. For early/prehistoric agricultural & forager epochs (<= -3000 BP), apply gentle territorial catchment diffusion
+            if (targetYear <= -3000L) {
+                float[][] diffused = new float[ETHER_HEIGHT][ETHER_WIDTH];
+                int blurR = (targetYear <= -8000L) ? 3 : 2;
+                for (int y = 0; y < ETHER_HEIGHT; y++) {
+                    for (int x = 0; x < ETHER_WIDTH; x++) {
+                        float sum = 0.0f, wSum = 0.0f;
+                        for (int dy = -blurR; dy <= blurR; dy++) {
+                            int py = Math.clamp(y + dy, 0, ETHER_HEIGHT - 1);
+                            for (int dx = -blurR; dx <= blurR; dx++) {
+                                int px = (x + dx + ETHER_WIDTH) % ETHER_WIDTH;
+                                float weight = (float) Math.exp(-(dx * dx + dy * dy) / (2.0 * blurR * blurR));
+                                sum += resampled[py][px] * weight;
+                                wSum += weight;
+                            }
+                        }
+                        diffused[y][x] = (wSum > 0) ? (sum / wSum) : resampled[y][x];
+                    }
+                }
+                resampled = diffused;
+            }
+
+            // 5. Render Logarithmic Grayscale
+            double effMax = Math.max(10.0, maxVal * 0.85);
+            for (int y = 0; y < ETHER_HEIGHT; y++) {
+                for (int x = 0; x < ETHER_WIDTH; x++) {
+                    float val = resampled[y][x];
+                    if (val <= 0.02f) {
+                        img.setRGB(x, y, 0x000000);
                     } else {
-                        // Logarithmic scale for smooth population density transition above noise threshold
-                        double logNorm = Math.log1p(val - 0.25f) / Math.log1p(maxVal);
-                        int gray = (int) Math.clamp(logNorm * 240.0 + 15.0, 15.0, 255.0);
-                        int rgb = (gray << 16) | (gray << 8) | gray;
-                        img.setRGB(x, y, rgb);
+                        double logNorm = Math.log1p(val * 4.0) / Math.log1p(effMax * 4.0);
+                        int gray = (int) Math.clamp(logNorm * 238.0 + 17.0, 17.0, 255.0);
+                        img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
                     }
                 }
             }
@@ -245,7 +294,7 @@ public class Hyde34GridReader {
                         } else {
                             logger.info("Streaming empirical HYDE 3.4 grid '{}' directly from ZIP archive {} for year {}...", entry.getName(), zipFile.getName(), year);
                         }
-                        img = readAsciiGridToImage(zis);
+                        img = readAsciiGridToImage(zis, requestedYear);
                         break;
                     }
                 }
@@ -265,7 +314,7 @@ public class Hyde34GridReader {
                     } else {
                         logger.info("Ingesting local HYDE 3.4 ASC File for year {}: {}", year, ascFile.getAbsolutePath());
                     }
-                    img = readAsciiGridToImage(is);
+                    img = readAsciiGridToImage(is, requestedYear);
                 } catch (Exception e) {
                     logger.error("Error reading HYDE 3.4 ASC file '{}': {}", ascFile.getAbsolutePath(), e.getMessage());
                 }

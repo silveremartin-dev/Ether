@@ -10,6 +10,7 @@ import org.ether.society.data.HistoricalMapGenerator;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
 import org.ether.society.persistence.ScenarioRepository;
+import org.ether.society.ui.util.MarkdownViewerPane;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -47,6 +48,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
+import org.ether.society.core.H3SimulationEngine;
+import org.ether.society.persistence.SimulationSaveManager;
+import org.ether.society.persistence.SaveMetadata;
+
 /**
  * 6th Tab UI Panel: Comparative Analytics & Sensitivity Benchmarks.
  * Supports multi-scenario selection, execution status validation, automated headless
@@ -76,14 +81,24 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         private double progress = 0.0;
         private int queueIndex = 0;
         private double estimatedDurationSec = 0.0;
+        private double remainingDurationSec = 0.0;
 
         public ScenarioSelectableItem(Scenario scenario, boolean isSelected, boolean executed, String runId) {
             this.scenario = scenario;
             this.selected.set(isSelected);
             this.executed = executed;
             this.runId = runId;
-            if (executed || "HISTORICAL_GROUND_TRUTH".equals(runId)) {
+            if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
+                this.progress = 1.0;
+                this.executed = true;
                 this.batchState = BatchState.EXECUTED;
+                this.estimatedDurationSec = 0.0;
+                this.remainingDurationSec = 0.0;
+            } else if (executed) {
+                this.progress = 1.0;
+                this.batchState = BatchState.EXECUTED;
+                this.estimatedDurationSec = 0.0;
+                this.remainingDurationSec = 0.0;
             } else {
                 this.batchState = BatchState.NOT_EXECUTED;
                 recalculateEstimate();
@@ -105,10 +120,14 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         public void setSelected(boolean val) { this.selected.set(val); }
         public BooleanProperty selectedProperty() { return selected; }
 
-        public boolean isExecuted() { return executed; }
+        public boolean isExecuted() { return executed || progress >= 1.0; }
         public void setExecuted(boolean executed) { 
             this.executed = executed; 
-            if (executed) this.batchState = BatchState.EXECUTED;
+            if (executed) {
+                this.batchState = BatchState.EXECUTED;
+                this.progress = 1.0;
+                this.remainingDurationSec = 0.0;
+            }
         }
         public String getRunId() { return runId; }
         public void setRunId(String runId) { this.runId = runId; }
@@ -117,15 +136,36 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         public void setBatchState(BatchState batchState) { this.batchState = batchState; }
 
         public double getProgress() { return progress; }
-        public void setProgress(double progress) { this.progress = progress; }
+        public void setProgress(double progress) { 
+            this.progress = Math.max(0.0, Math.min(1.0, progress));
+            if (this.progress >= 1.0) {
+                this.executed = true;
+                this.remainingDurationSec = 0.0;
+                if (this.batchState != BatchState.RUNNING) {
+                    this.batchState = BatchState.EXECUTED;
+                }
+            } else {
+                this.executed = false;
+                this.remainingDurationSec = Math.max(0.0, this.estimatedDurationSec * (1.0 - this.progress));
+            }
+        }
+
+        public String getProgressPercentDisplay() {
+            return String.format("%d%%", (int) Math.round(progress * 100.0));
+        }
 
         public int getQueueIndex() { return queueIndex; }
         public void setQueueIndex(int queueIndex) { this.queueIndex = queueIndex; }
 
         public double getEstimatedDurationSec() { return estimatedDurationSec; }
+        public double getRemainingDurationSec() { return remainingDurationSec; }
+
         public void recalculateEstimate() {
-            if ("HISTORICAL_GROUND_TRUTH".equals(runId) || executed) {
+            if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
                 this.estimatedDurationSec = 0.0;
+                this.remainingDurationSec = 0.0;
+                this.progress = 1.0;
+                this.executed = true;
                 return;
             }
             if (scenario != null) {
@@ -136,27 +176,42 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                     cellCount,
                     ExecutionContextPanel.getActiveHardwareMode()
                 );
+                if (progress >= 1.0 || executed) {
+                    this.remainingDurationSec = 0.0;
+                } else {
+                    this.remainingDurationSec = Math.max(0.0, this.estimatedDurationSec * (1.0 - this.progress));
+                }
             }
         }
 
         public String getEstimatedDurationDisplay() {
-            if ("HISTORICAL_GROUND_TRUTH".equals(runId) || executed) return "-";
-            return ExecutionContextPanel.formatDuration(estimatedDurationSec);
+            if ("HISTORICAL_GROUND_TRUTH".equals(runId) || (progress >= 1.0 && executed)) return "-";
+            return ExecutionContextPanel.formatDuration(remainingDurationSec);
         }
 
         public String getStatusDisplay() { 
             if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
                 return I18n.getOrDefault("analytics.status.ground_truth_ready", "🟢 Historical Ground Truth (HYDE / Maddison / Seshat)");
             }
-            return executed 
-                ? String.format(I18n.getOrDefault("analytics.status.executed", "🟢 Executed (%s)"), runId) 
-                : I18n.getOrDefault("analytics.status.not_executed", "🔴 Not executed (Pending)"); 
+            if (progress >= 1.0 || executed) {
+                return String.format(I18n.getOrDefault("analytics.status.executed", "🟢 Executed (%s)"), runId != null && !runId.equals("N/A") ? runId : "OK");
+            }
+            if (progress > 0.0) {
+                return String.format(I18n.getOrDefault("analytics.status.partial_fmt", "🟡 Partial (%d%%)"), (int) Math.round(progress * 100.0));
+            }
+            return I18n.getOrDefault("analytics.status.not_executed", "🔴 Not executed (Pending)"); 
         }
     }
 
     private final SimulationRunRepository runRepository;
     private final ScenarioRepository scenarioRepository;
+    private final SimulationSaveManager saveManager = new SimulationSaveManager();
     private final RootCauseAnalyzer analyzer;
+    private java.util.function.Supplier<H3SimulationEngine> engineSupplier;
+
+    public void setSimulationEngineSupplier(java.util.function.Supplier<H3SimulationEngine> engineSupplier) {
+        this.engineSupplier = engineSupplier;
+    }
 
     private final java.util.concurrent.atomic.AtomicBoolean isBatchRunning = new java.util.concurrent.atomic.AtomicBoolean(false);
     private final java.util.concurrent.atomic.AtomicBoolean isBatchCancelled = new java.util.concurrent.atomic.AtomicBoolean(false);
@@ -184,6 +239,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private boolean isUpdatingTexts = false;
     private TableColumn<ScenarioSelectableItem, String> nameCol;
     private TableColumn<ScenarioSelectableItem, String> yearsCol;
+    private TableColumn<ScenarioSelectableItem, Double> progressCol;
     private TableColumn<ScenarioSelectableItem, String> estDurationCol;
     private TableColumn<ScenarioSelectableItem, String> statusCol;
 
@@ -195,6 +251,9 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private NumberAxis yAxis;
     private LineChart<Number, Number> chart;
     private Label warningLabel;
+    private Label executionContextBadge;
+    private ProgressBar batchProgressBar;
+    private Label etaLabel;
     private Button executeMissingBtn;
     private Button cancelBatchBtn;
 
@@ -206,8 +265,10 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private Button playTimelineBtn;
     private ImageView mapImageViewA;
     private ImageView mapImageViewB;
+    private ImageView mapImageViewDiff;
     private Label mapLabelA;
     private Label mapLabelB;
+    private Label mapLabelDiff;
     private TextArea spatialMetricsReportArea;
     private Timeline timelineAnimation;
     private boolean isPlayingAnimation = false;
@@ -216,7 +277,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private Label divergenceLabel;
     private Label explanationLabel;
     private Label synthHeader;
-    private TextArea reportPreviewArea;
+    private MarkdownViewerPane reportPreviewPane;
 
     public ComparativeAnalyticsPanel() {
         this.runRepository = SimulationRunRepository.getInstance();
@@ -333,6 +394,48 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         yearsCol.setCellValueFactory(new PropertyValueFactory<>("yearRange"));
         yearsCol.setPrefWidth(130);
 
+        progressCol = new TableColumn<>();
+        progressCol.setCellValueFactory(p -> new javafx.beans.property.SimpleDoubleProperty(p.getValue().getProgress()).asObject());
+        progressCol.setPrefWidth(130);
+        progressCol.setCellFactory(col -> new TableCell<>() {
+            private final ProgressBar progressBar = new ProgressBar(0.0);
+            private final Label percentLabel = new Label("0%");
+            private final HBox container = new HBox(6, progressBar, percentLabel);
+            {
+                progressBar.setPrefWidth(65);
+                progressBar.setMaxWidth(65);
+                progressBar.setPrefHeight(10);
+                container.setAlignment(Pos.CENTER_LEFT);
+                setAlignment(Pos.CENTER_LEFT);
+            }
+
+            @Override
+            protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    ScenarioSelectableItem scItem = getTableRow().getItem();
+                    double prog = scItem.getProgress();
+                    progressBar.setProgress(prog);
+                    percentLabel.setText(scItem.getProgressPercentDisplay());
+                    if (prog >= 1.0) {
+                        progressBar.setStyle("-fx-accent: #10b981;");
+                        percentLabel.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-font-size: 11px;");
+                    } else if (prog > 0.0) {
+                        progressBar.setStyle("-fx-accent: #f59e0b;");
+                        percentLabel.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold; -fx-font-size: 11px;");
+                    } else {
+                        progressBar.setStyle("-fx-accent: #64748b;");
+                        percentLabel.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px;");
+                    }
+                    setGraphic(container);
+                    setText(null);
+                }
+            }
+        });
+
         estDurationCol = new TableColumn<>();
         estDurationCol.setCellValueFactory(new PropertyValueFactory<>("estimatedDurationDisplay"));
         estDurationCol.setPrefWidth(110);
@@ -397,11 +500,12 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
         });
 
-        scenarioTable.getColumns().addAll(selectCol, nameCol, yearsCol, estDurationCol, statusCol);
+        scenarioTable.getColumns().addAll(selectCol, nameCol, yearsCol, progressCol, estDurationCol, statusCol);
 
         selectCol.setComparator((a, b) -> Boolean.compare(a, b));
         nameCol.setComparator(String.CASE_INSENSITIVE_ORDER);
         yearsCol.setComparator((a, b) -> a.compareTo(b));
+        progressCol.setComparator(Double::compare);
         estDurationCol.setComparator((a, b) -> a.compareTo(b));
         statusCol.setComparator(String.CASE_INSENSITIVE_ORDER);
 
@@ -429,6 +533,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                 String lower = newVal.toLowerCase();
                 return item.getName().toLowerCase().contains(lower)
                     || item.getYearRange().toLowerCase().contains(lower)
+                    || item.getProgressPercentDisplay().toLowerCase().contains(lower)
                     || item.getStatusDisplay().toLowerCase().contains(lower);
             });
         });
@@ -457,6 +562,18 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         warningLabel.setStyle("-fx-font-weight: bold; -fx-padding: 6 10; -fx-background-radius: 4;");
         HBox.setHgrow(warningLabel, Priority.ALWAYS);
 
+        executionContextBadge = new Label();
+        executionContextBadge.setStyle("-fx-font-weight: bold; -fx-text-fill: #3b82f6; -fx-padding: 4 8; -fx-background-color: rgba(59, 130, 246, 0.12); -fx-background-radius: 4; -fx-border-color: #3b82f6; -fx-border-radius: 4;");
+        updateExecutionContextBadge();
+
+        batchProgressBar = new ProgressBar(0.0);
+        batchProgressBar.setPrefWidth(140);
+        batchProgressBar.setVisible(false);
+        batchProgressBar.setManaged(false);
+
+        etaLabel = new Label();
+        etaLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #3b82f6;");
+
         executeMissingBtn = new Button();
         executeMissingBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #ef4444; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
         executeMissingBtn.setOnAction(e -> executeMissingScenarios());
@@ -467,7 +584,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         cancelBatchBtn.setManaged(false);
         cancelBatchBtn.setOnAction(e -> cancelBatchExecution());
 
-        HBox executionBox = new HBox(12, warningLabel, executeMissingBtn, cancelBatchBtn);
+        HBox executionBox = new HBox(8, warningLabel, executionContextBadge, batchProgressBar, etaLabel, executeMissingBtn, cancelBatchBtn);
         executionBox.setAlignment(Pos.CENTER_LEFT);
 
         leftPane.getChildren().addAll(filterBox, scenarioTable, executionBox);
@@ -554,11 +671,14 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         spatialChannelCombo = new ComboBox<>();
         spatialChannelCombo.getItems().addAll(
             I18n.getOrDefault("analytics.spatial.density", "👥 Demographic Density"),
+            I18n.getOrDefault("analytics.spatial.technology", "🔬 Niveau Technologique (Outillage)"),
+            I18n.getOrDefault("analytics.spatial.temperature", "🌡️ Température & Climat"),
+            I18n.getOrDefault("analytics.spatial.aquifers", "💧 Aquifères & Eau Douce"),
+            I18n.getOrDefault("analytics.spatial.agriculture", "🌾 Biomasse & Terres Agricoles"),
             I18n.getOrDefault("analytics.spatial.sovereignty", "👑 Political Sovereignty"),
             I18n.getOrDefault("analytics.spatial.linguistic", "🗣️ Isoglosses Linguistiques (Langues)"),
             I18n.getOrDefault("analytics.spatial.kinship", "🧬 Kinship Structure (Parenté)"),
             I18n.getOrDefault("analytics.spatial.rituals", "🔮 Sacred Rituals & Beliefs (Rituels)"),
-            I18n.getOrDefault("analytics.spatial.technology", "🏺 Technology & Artefacts (Outillage)"),
             I18n.getOrDefault("analytics.spatial.trade", "🐫 Trade Corridors & Exchange (Commerce)"),
             I18n.getOrDefault("analytics.spatial.institutional", "⚖️ Institutional Complexity (Seshat)"),
             I18n.getOrDefault("analytics.spatial.ecological", "⚠️ Ecological Footprint (Empreinte)"),
@@ -591,12 +711,12 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         HBox spatialControlBox = new HBox(10, channelLabel, spatialChannelCombo, dateSlider, currentDateLabel, playTimelineBtn);
         spatialControlBox.setAlignment(Pos.CENTER_LEFT);
 
-        // Side-by-Side Spatial Map Viewers
+        // 3-Map Side-by-Side Spatial Map Viewers (A, B, and Difference Heatmap)
         mapLabelA = new Label(I18n.getOrDefault("analytics.label.scenario_a_ref", "Scenario A (Reference)"));
         mapLabelA.getStyleClass().add("label-section-header");
         mapImageViewA = new ImageView();
-        mapImageViewA.setFitWidth(320);
-        mapImageViewA.setFitHeight(160);
+        mapImageViewA.setFitWidth(230);
+        mapImageViewA.setFitHeight(125);
         mapImageViewA.setPreserveRatio(true);
         mapImageViewA.getStyleClass().add("card-section");
 
@@ -606,15 +726,27 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         mapLabelB = new Label(I18n.getOrDefault("analytics.label.scenario_b_target", "Scenario B (Target)"));
         mapLabelB.getStyleClass().add("label-section-header");
         mapImageViewB = new ImageView();
-        mapImageViewB.setFitWidth(320);
-        mapImageViewB.setFitHeight(160);
+        mapImageViewB.setFitWidth(230);
+        mapImageViewB.setFitHeight(125);
         mapImageViewB.setPreserveRatio(true);
         mapImageViewB.getStyleClass().add("card-section");
 
         VBox mapBoxB = new VBox(4, mapLabelB, mapImageViewB);
         mapBoxB.setAlignment(Pos.CENTER);
 
-        HBox mapPairBox = new HBox(20, mapBoxA, mapBoxB);
+        mapLabelDiff = new Label(I18n.getOrDefault("analytics.label.scenario_diff", "Discrepancy Heatmap Δ(A - B)"));
+        mapLabelDiff.getStyleClass().add("label-section-header");
+        mapLabelDiff.setStyle("-fx-text-fill: #f59e0b;");
+        mapImageViewDiff = new ImageView();
+        mapImageViewDiff.setFitWidth(230);
+        mapImageViewDiff.setFitHeight(125);
+        mapImageViewDiff.setPreserveRatio(true);
+        mapImageViewDiff.getStyleClass().add("card-section");
+
+        VBox mapBoxDiff = new VBox(4, mapLabelDiff, mapImageViewDiff);
+        mapBoxDiff.setAlignment(Pos.CENTER);
+
+        HBox mapPairBox = new HBox(12, mapBoxA, mapBoxB, mapBoxDiff);
         mapPairBox.setAlignment(Pos.CENTER);
 
         // Quantitative Spatial Comparison Metrics Area
@@ -649,10 +781,8 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         synthHeader = new Label();
         synthHeader.getStyleClass().add("label-section-header");
 
-        reportPreviewArea = new TextArea();
-        reportPreviewArea.setEditable(false);
-        reportPreviewArea.getStyleClass().add("scenario-description-area");
-        VBox.setVgrow(reportPreviewArea, Priority.ALWAYS);
+        reportPreviewPane = new MarkdownViewerPane();
+        VBox.setVgrow(reportPreviewPane, Priority.ALWAYS);
 
         // Export Buttons Bar
         analyzeBtn = new Button();
@@ -670,7 +800,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         HBox exportBox = new HBox(8, analyzeBtn, exportMdBtn, exportCsvBtn);
         exportBox.setAlignment(Pos.CENTER_LEFT);
 
-        diagBox.getChildren().addAll(diagHeader, divergenceLabel, explanationLabel, synthHeader, reportPreviewArea, exportBox);
+        diagBox.getChildren().addAll(diagHeader, divergenceLabel, explanationLabel, synthHeader, reportPreviewPane, exportBox);
 
         mainSplit.getItems().addAll(leftPane, diagBox);
         mainSplit.setDividerPositions(0.62);
@@ -681,6 +811,19 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     public void refreshRunList() {
+        Set<String> previousSelectedNames = new HashSet<>();
+        for (ScenarioSelectableItem it : scenarioList) {
+            if (it.isSelected()) {
+                previousSelectedNames.add(it.getName());
+                if (it.getScenario() != null && it.getScenario().getId() != null) {
+                    previousSelectedNames.add(String.valueOf(it.getScenario().getId()));
+                }
+                if (it.getRunId() != null) {
+                    previousSelectedNames.add(it.getRunId());
+                }
+            }
+        }
+
         scenarioList.clear();
 
         // Special Historical Ground Truth Baseline Item
@@ -688,28 +831,100 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         histScenario.setName(I18n.getOrDefault("analytics.scenario.ground_truth", "🌍 Historical Reality (Cliodynamic Ground Truth)"));
         histScenario.setStartDateYear(-100000);
         histScenario.setEndDateYear(2026);
-        ScenarioSelectableItem histItem = new ScenarioSelectableItem(histScenario, true, true, "HISTORICAL_GROUND_TRUTH");
+        boolean wasHistSelected = previousSelectedNames.isEmpty() || previousSelectedNames.contains("HISTORICAL_GROUND_TRUTH") || previousSelectedNames.contains(histScenario.getName());
+        ScenarioSelectableItem histItem = new ScenarioSelectableItem(histScenario, wasHistSelected, true, "HISTORICAL_GROUND_TRUTH");
         histItem.selectedProperty().addListener((obs, oldV, newV) -> {
             checkExecutionStatus();
             updateChartAndAnalysis();
         });
         scenarioList.add(histItem);
 
+        // 1. Available scenarios from repository
         List<Scenario> allScenarios = scenarioRepository.getAllScenarios();
+
+        // 2. Available simulation saves on disk
+        List<SaveMetadata> allSaves = Collections.emptyList();
+        try {
+            allSaves = saveManager.listSaves();
+        } catch (Exception e) {
+            logger.warn("Failed to list saves for analytics revalidation: {}", e.getMessage());
+        }
+
+        // 3. Active interactive simulation engine
+        H3SimulationEngine activeEngine = (engineSupplier != null) ? engineSupplier.get() : null;
 
         for (Scenario sc : allScenarios) {
             String scName = sc.getDisplayName();
             if (scName == null || scName.isBlank()) {
                 scName = "Scénario Sans Nom" + (sc.getId() != null ? " (#" + sc.getId() + ")" : "");
             }
+
+            // A. Check SimulationRunRepository for completed or partial runs
             Optional<SimulationRunRecord> recordOpt = runRepository.getRunByScenarioName(sc.getName());
             if (!recordOpt.isPresent()) {
                 recordOpt = runRepository.getRunByScenarioName(scName);
             }
-            boolean executed = recordOpt.isPresent();
-            String runId = recordOpt.map(SimulationRunRecord::getRunId).orElse("N/A");
+            if (!recordOpt.isPresent() && sc.getId() != null) {
+                recordOpt = Optional.ofNullable(runRepository.getRun(String.valueOf(sc.getId())));
+            }
 
-            ScenarioSelectableItem item = new ScenarioSelectableItem(sc, false, executed, runId);
+            // B. Check saved snapshots on disk matching scenario name
+            SaveMetadata matchingSave = null;
+            for (SaveMetadata save : allSaves) {
+                if (save.getScenarioName() != null && (save.getScenarioName().equalsIgnoreCase(sc.getName()) || save.getScenarioName().equalsIgnoreCase(scName))) {
+                    if (matchingSave == null || save.getYear() > matchingSave.getYear()) {
+                        matchingSave = save;
+                    }
+                }
+            }
+
+            // C. Check if currently active interactive simulation matches this scenario
+            boolean isInteractiveMatch = (activeEngine != null 
+                && activeEngine.getCurrentScenario() != null 
+                && (activeEngine.getCurrentScenario().getName().equalsIgnoreCase(sc.getName())
+                    || (sc.getId() != null && sc.getId().equals(activeEngine.getCurrentScenario().getId()))));
+
+            long startYear = sc.getStartDateYear();
+            long endYear = sc.getEndDateYear();
+            long totalYears = Math.max(1, endYear - startYear);
+
+            long maxYearReached = startYear;
+            String runId = "N/A";
+
+            if (recordOpt.isPresent()) {
+                SimulationRunRecord rec = recordOpt.get();
+                runId = rec.getRunId();
+                if (!rec.getTimeSeriesData().isEmpty()) {
+                    maxYearReached = Math.max(maxYearReached, rec.getEndYear());
+                }
+            }
+
+            if (matchingSave != null) {
+                maxYearReached = Math.max(maxYearReached, matchingSave.getYear());
+                if ("N/A".equals(runId)) {
+                    runId = "SAVE-" + matchingSave.getId().substring(0, Math.min(8, matchingSave.getId().length())).toUpperCase();
+                }
+            }
+
+            if (isInteractiveMatch) {
+                maxYearReached = Math.max(maxYearReached, activeEngine.getCurrentYear());
+            }
+
+            double progress = Math.min(1.0, Math.max(0.0, (double) (maxYearReached - startYear) / totalYears));
+            if (recordOpt.isPresent() && recordOpt.get().getEndYear() >= endYear) {
+                progress = 1.0;
+            }
+            boolean executed = (progress >= 1.0);
+
+            boolean isSelected = previousSelectedNames.contains(sc.getName())
+                || previousSelectedNames.contains(scName)
+                || (sc.getId() != null && previousSelectedNames.contains(String.valueOf(sc.getId())))
+                || ("N/A".equals(runId) ? false : previousSelectedNames.contains(runId));
+
+            ScenarioSelectableItem item = new ScenarioSelectableItem(sc, isSelected, executed, runId);
+            item.setProgress(progress);
+            item.recalculateEstimate();
+
             item.selectedProperty().addListener((obs, oldV, newV) -> {
                 checkExecutionStatus();
                 updateChartAndAnalysis();
@@ -718,7 +933,6 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             scenarioList.add(item);
         }
 
-        // Do not auto-select scenarios by default so charts start clean and virgin
         checkExecutionStatus();
         updateChartAndAnalysis();
     }
@@ -730,7 +944,20 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         if (scenarioTable != null) {
             scenarioTable.refresh();
         }
+        updateExecutionContextBadge();
         checkExecutionStatus();
+    }
+
+    private void updateExecutionContextBadge() {
+        if (executionContextBadge == null) return;
+        ExecutionContextPanel.HardwareMode mode = ExecutionContextPanel.getActiveHardwareMode();
+        int cores = Runtime.getRuntime().availableProcessors();
+        String modeName = mode != null ? mode.name() : "CPU_JIT";
+        executionContextBadge.setText(String.format("⚙️ Contexte : %s (%d cœurs, Headless)", modeName, cores));
+        executionContextBadge.setTooltip(new Tooltip(String.format(
+            "Exécution batch headless pilotée par le Contexte d'Exécution :\n• Moteur matériel actif : %s\n• Parallélisme alloué : %d cœurs\n• Débit estimé : %,.0f cellules/sec",
+            modeName, cores, ExecutionContextPanel.getEstimatedCellTicksThroughput(mode)
+        )));
     }
 
     public void setInteractiveSimulationControllers(
@@ -788,11 +1015,11 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         } else if (unexecutedCount > 0) {
             long totalUnexecutedYears = selected.stream()
                 .filter(i -> !i.isExecuted() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
-                .mapToLong(i -> Math.max(1, i.getScenario().getEndDateYear() - i.getScenario().getStartDateYear()))
+                .mapToLong(i -> Math.max(1, (long)((1.0 - i.getProgress()) * (i.getScenario().getEndDateYear() - i.getScenario().getStartDateYear()))))
                 .sum();
             double totalEstSeconds = selected.stream()
                 .filter(i -> !i.isExecuted() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
-                .mapToDouble(ScenarioSelectableItem::getEstimatedDurationSec)
+                .mapToDouble(ScenarioSelectableItem::getRemainingDurationSec)
                 .sum();
             String durStr = ExecutionContextPanel.formatDuration(totalEstSeconds);
             String hwName = ExecutionContextPanel.getActiveHardwareMode().name();
@@ -850,12 +1077,28 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         isBatchCancelled.set(false);
         isBatchPaused.set(false);
 
+        ExecutionContextPanel.HardwareMode activeHw = ExecutionContextPanel.getActiveHardwareMode();
+        int availableCores = Runtime.getRuntime().availableProcessors();
+        int threadCount = switch (activeHw) {
+            case NATIVE_RUST, JAVA_VECTOR_SIMD -> Math.max(1, availableCores);
+            case GPU_SHADERS -> 2;
+            case CPU_JIT -> Math.max(1, availableCores);
+            case GPU_OFF -> 1;
+        };
+
         executeMissingBtn.setDisable(true);
         executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.executing", "⏳ Processing Batch Queue..."));
         cancelBatchBtn.setVisible(true);
         cancelBatchBtn.setManaged(true);
         cancelBatchBtn.setDisable(false);
         cancelBatchBtn.setText(I18n.getOrDefault("analytics.btn.cancel_batch", "🛑 Cancel Batch"));
+
+        batchProgressBar.setProgress(0.0);
+        batchProgressBar.setVisible(true);
+        batchProgressBar.setManaged(true);
+        etaLabel.setText("⏱️ Calcul...");
+        etaLabel.setVisible(true);
+        etaLabel.setManaged(true);
 
         int queuePos = 1;
         for (ScenarioSelectableItem item : targetItems) {
@@ -865,64 +1108,107 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
         scenarioTable.refresh();
 
+        long startTimeMs = System.currentTimeMillis();
+
         batchWorkerThread = new Thread(() -> {
-            logger.info("Starting sequential queue execution for {} scenarios...", targetItems.size());
+            logger.info("Starting parallel batch execution with {} threads for {} scenarios...", threadCount, targetItems.size());
             
+            java.util.concurrent.ExecutorService pool = java.util.concurrent.Executors.newFixedThreadPool(Math.max(1, threadCount));
+            java.util.concurrent.atomic.AtomicInteger finishedCount = new java.util.concurrent.atomic.AtomicInteger(0);
+            List<java.util.concurrent.Future<?>> futures = new ArrayList<>();
+
             for (ScenarioSelectableItem item : targetItems) {
-                if (isBatchCancelled.get()) {
-                    logger.info("Batch execution interrupted before running scenario: {}", item.getName());
-                    javafx.application.Platform.runLater(() -> {
-                        item.setBatchState(BatchState.NOT_EXECUTED);
-                    });
-                    continue;
-                }
-
-                javafx.application.Platform.runLater(() -> {
-                    item.setBatchState(BatchState.RUNNING);
-                    scenarioTable.refresh();
-                });
-
-                SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(
-                    item.getScenario(),
-                    (sc, prog, yr, endYr) -> {
+                futures.add(pool.submit(() -> {
+                    if (isBatchCancelled.get()) {
                         javafx.application.Platform.runLater(() -> {
-                            item.setProgress(prog);
+                            item.setBatchState(BatchState.NOT_EXECUTED);
+                        });
+                        return;
+                    }
+
+                    javafx.application.Platform.runLater(() -> {
+                        item.setBatchState(BatchState.RUNNING);
+                        scenarioTable.refresh();
+                    });
+
+                    SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(
+                        item.getScenario(),
+                        (sc, prog, yr, endYr) -> {
+                            javafx.application.Platform.runLater(() -> {
+                                item.setProgress(prog);
+                                scenarioTable.refresh();
+                                updateLiveBatchProgressAndEta(targetItems, startTimeMs);
+                            });
+                        },
+                        isBatchCancelled::get
+                    );
+
+                    if (record != null && !isBatchCancelled.get()) {
+                        runRepository.saveRun(record);
+                        finishedCount.incrementAndGet();
+                        javafx.application.Platform.runLater(() -> {
+                            item.setExecuted(true);
+                            item.setRunId(record.getRunId());
+                            item.setBatchState(BatchState.EXECUTED);
+                            item.setProgress(1.0);
+                            scenarioTable.refresh();
+                            updateLiveBatchProgressAndEta(targetItems, startTimeMs);
+                        });
+                    } else {
+                        javafx.application.Platform.runLater(() -> {
+                            if (!item.isExecuted()) {
+                                item.setBatchState(BatchState.NOT_EXECUTED);
+                            }
                             scenarioTable.refresh();
                         });
-                    },
-                    isBatchCancelled::get
-                );
-
-                if (record != null && !isBatchCancelled.get()) {
-                    runRepository.saveRun(record);
-                    javafx.application.Platform.runLater(() -> {
-                        item.setExecuted(true);
-                        item.setRunId(record.getRunId());
-                        item.setBatchState(BatchState.EXECUTED);
-                        item.setProgress(1.0);
-                        scenarioTable.refresh();
-                    });
-                } else {
-                    javafx.application.Platform.runLater(() -> {
-                        if (!item.isExecuted()) {
-                            item.setBatchState(BatchState.NOT_EXECUTED);
-                        }
-                        scenarioTable.refresh();
-                    });
-                }
+                    }
+                }));
             }
+
+            pool.shutdown();
+            try {
+                for (var f : futures) {
+                    f.get();
+                }
+            } catch (Exception ex) {
+                logger.warn("Batch thread pool interrupted: {}", ex.getMessage());
+            }
+
+            long totalElapsedSec = Math.max(1, (System.currentTimeMillis() - startTimeMs) / 1000);
 
             javafx.application.Platform.runLater(() -> {
                 isBatchRunning.set(false);
+                batchProgressBar.setVisible(false);
+                batchProgressBar.setManaged(false);
+                etaLabel.setText(String.format(I18n.getOrDefault("analytics.status.batch_completed_fmt", "✅ Terminé en %ds (%d scénarios)"), totalElapsedSec, finishedCount.get()));
                 scenarioTable.refresh();
                 checkExecutionStatus();
                 runAnalysis();
-                logger.info("Batch execution sequence completed.");
+                logger.info("Batch execution sequence completed in {}s for {} scenarios.", totalElapsedSec, finishedCount.get());
             });
-        }, "ComparativeAnalyticsBatchQueueWorker");
+        }, "ComparativeAnalyticsBatchParallelWorker");
 
         batchWorkerThread.setDaemon(true);
         batchWorkerThread.start();
+    }
+
+    private void updateLiveBatchProgressAndEta(List<ScenarioSelectableItem> items, long startTimeMs) {
+        if (items == null || items.isEmpty()) return;
+        double sumProgress = 0.0;
+        for (ScenarioSelectableItem it : items) {
+            sumProgress += it.getProgress();
+        }
+        double overallProgress = sumProgress / items.size();
+        batchProgressBar.setProgress(overallProgress);
+
+        long elapsedMs = System.currentTimeMillis() - startTimeMs;
+        if (overallProgress > 0.02 && elapsedMs > 400) {
+            long totalEstMs = (long) (elapsedMs / overallProgress);
+            long remainingMs = Math.max(0, totalEstMs - elapsedMs);
+            String elapsedStr = ExecutionContextPanel.formatDuration(elapsedMs / 1000.0);
+            String remainingStr = ExecutionContextPanel.formatDuration(remainingMs / 1000.0);
+            etaLabel.setText(String.format("⏱️ %s | %s: %s (%.0f%%)", elapsedStr, I18n.getOrDefault("analytics.label.remaining", "Restant"), remainingStr, overallProgress * 100.0));
+        }
     }
 
     private void runAnalysis() {
@@ -934,7 +1220,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             divergenceLabel.setText(I18n.getOrDefault("analytics.divergence.break_point", "Break point: Select at least 2 executed scenarios"));
             divergenceLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #b45309; -fx-font-size: 13px;");
             explanationLabel.setText(I18n.getOrDefault("analytics.divergence.select_two_hint", "Check at least two scenarios in table (e.g. Historical Reality + Simulated Scenario) to analyze divergences."));
-            reportPreviewArea.setText(I18n.getOrDefault("analytics.divergence.prompt_report", "## Please select at least two executed scenarios to generate comparative summary and audit report."));
+            reportPreviewPane.setMarkdown(I18n.getOrDefault("analytics.divergence.prompt_report", "## Please select at least two executed scenarios to generate comparative summary and audit report."));
             return;
         }
 
@@ -958,7 +1244,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                 if (targetRun != null) {
                     generateHistoricalAuditReport(targetItem.getName(), targetRun);
                 } else {
-                    reportPreviewArea.setText(I18n.getOrDefault("analytics.error.sim_data_not_found", "⚠️ Simulated execution data not found for: ") + targetItem.getName());
+                    reportPreviewPane.setMarkdown(I18n.getOrDefault("analytics.error.sim_data_not_found", "⚠️ Simulated execution data not found for: ") + targetItem.getName());
                 }
             }
         } else {
@@ -970,7 +1256,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
 
             if (baseline == null) {
-                reportPreviewArea.setText(I18n.getOrDefault("analytics.error.no_telemetry", "⚠️ Unable to access base scenario telemetry data."));
+                reportPreviewPane.setMarkdown(I18n.getOrDefault("analytics.error.no_telemetry", "⚠️ Unable to access base scenario telemetry data."));
                 return;
             }
 
@@ -1008,7 +1294,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
 
             explanationLabel.setText(explanationSummary.toString());
-            reportPreviewArea.setText(multiReport.toString());
+            reportPreviewPane.setMarkdown(multiReport.toString());
         }
 
         updateChartAndAnalysis();
@@ -1018,7 +1304,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private void generateHistoricalAuditReport(String targetName, SimulationRunRecord targetRun) {
         Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries = targetRun.getTimeSeriesData();
         if (timeSeries == null || timeSeries.isEmpty()) {
-            reportPreviewArea.setText(I18n.getOrDefault("analytics.error.no_telemetry_for", "⚠️ No time telemetry data recorded for: ") + targetName);
+            reportPreviewPane.setMarkdown(I18n.getOrDefault("analytics.error.no_telemetry_for", "⚠️ No time telemetry data recorded for: ") + targetName);
             return;
         }
 
@@ -1114,7 +1400,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         sb.append(CalibrationDiagnosticRules.generateTuningSuggestions(mapes, rSquared, divergenceYear));
         sb.append("--- *Audit automatique généré par Ether Cliodynamic Benchmark Auditor v5.0* ---");
 
-        reportPreviewArea.setText(sb.toString());
+        reportPreviewPane.setMarkdown(sb.toString());
     }
 
     private String getEngineModuleForVariable(String varName) {
@@ -1211,8 +1497,10 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         if (selectedItems.isEmpty()) {
             if (mapLabelA != null) mapLabelA.setText(I18n.getOrDefault("analytics.label.scenario_a_none", "Scenario A (None selected)"));
             if (mapLabelB != null) mapLabelB.setText(I18n.getOrDefault("analytics.label.scenario_b_none", "Scenario B (None selected)"));
+            if (mapLabelDiff != null) mapLabelDiff.setText(I18n.getOrDefault("analytics.label.scenario_diff", "Discrepancy Heatmap Δ(A - B)"));
             if (mapImageViewA != null) mapImageViewA.setImage(null);
             if (mapImageViewB != null) mapImageViewB.setImage(null);
+            if (mapImageViewDiff != null) mapImageViewDiff.setImage(null);
             if (spatialMetricsReportArea != null) spatialMetricsReportArea.setText(I18n.getOrDefault("analytics.prompt.select_2d", "⚠️ Please select at least 2 scenarios in table to launch 2D map comparison."));
             return;
         }
@@ -1225,6 +1513,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         if (mapLabelA != null) mapLabelA.setText(I18n.getOrDefault("analytics.label.scenario_a_prefix", "Scenario A: ") + scA.getName());
         if (mapLabelB != null) mapLabelB.setText(I18n.getOrDefault("analytics.label.scenario_b_prefix", "Scenario B: ") + scB.getName());
+        if (mapLabelDiff != null) mapLabelDiff.setText(I18n.getOrDefault("analytics.label.scenario_diff", "Discrepancy Heatmap Δ(A - B)"));
 
         int startA = (int) scA.getStartDateYear();
         int endA = (int) scA.getEndDateYear();
@@ -1254,16 +1543,38 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         java.awt.image.BufferedImage bufA = null;
         java.awt.image.BufferedImage bufB = null;
+        java.awt.image.BufferedImage bufDiff = null;
 
         try {
-            if (channel.contains("Densité") || channel.contains("Demographic") || channel.contains("Density")) {
+            // Check if simulated spatial snapshots are available from execution records
+            SimulationRunRecord runA = (selectedItems.size() > 0 && selectedItems.get(0).getRunId() != null)
+                ? runRepository.getRun(selectedItems.get(0).getRunId()) : null;
+            SimulationRunRecord runB = (selectedItems.size() > 1 && selectedItems.get(1).getRunId() != null)
+                ? runRepository.getRun(selectedItems.get(1).getRunId()) : null;
+
+            List<org.ether.society.database.H3Cell> snapshotCellsA = runA != null ? runA.getSpatialSnapshotAt(targetYear) : null;
+            List<org.ether.society.database.H3Cell> snapshotCellsB = runB != null ? runB.getSpatialSnapshotAt(targetYear) : null;
+
+            if (snapshotCellsA != null && !snapshotCellsA.isEmpty()) {
+                bufA = rasterizeCellsToImage(snapshotCellsA, channel, 512, 256);
+            } else if (channel.contains("Densité") || channel.contains("Demographic") || channel.contains("Density")) {
                 bufA = HistoricalMapGenerator.rasterizeDensityMapForYear(scA.getPopulationDensityType(), scA, targetYear);
-                bufB = HistoricalMapGenerator.rasterizeDensityMapForYear(scB.getPopulationDensityType(), scB, targetYear);
             } else {
                 HistoricalMapGenerator.populateScenarioHistoricalMaps(scA);
-                HistoricalMapGenerator.populateScenarioHistoricalMaps(scB);
                 bufA = base64ToBufferedImage(extractChannelBase64(scA, channel));
+            }
+
+            if (snapshotCellsB != null && !snapshotCellsB.isEmpty()) {
+                bufB = rasterizeCellsToImage(snapshotCellsB, channel, 512, 256);
+            } else if (channel.contains("Densité") || channel.contains("Demographic") || channel.contains("Density")) {
+                bufB = HistoricalMapGenerator.rasterizeDensityMapForYear(scB.getPopulationDensityType(), scB, targetYear);
+            } else {
+                HistoricalMapGenerator.populateScenarioHistoricalMaps(scB);
                 bufB = base64ToBufferedImage(extractChannelBase64(scB, channel));
+            }
+
+            if (bufA != null && bufB != null) {
+                bufDiff = MapComparisonMetrics.generateDiscrepancyHeatmap(bufA, bufB);
             }
         } catch (Exception ex) {
             logger.warn("Could not generate 2D comparison maps for target year {}: {}", targetYear, ex.getMessage());
@@ -1271,9 +1582,11 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         Image imgFxA = bufferedImageToFxImage(bufA);
         Image imgFxB = bufferedImageToFxImage(bufB);
+        Image imgFxDiff = bufferedImageToFxImage(bufDiff);
 
         if (mapImageViewA != null) mapImageViewA.setImage(imgFxA);
         if (mapImageViewB != null) mapImageViewB.setImage(imgFxB);
+        if (mapImageViewDiff != null) mapImageViewDiff.setImage(imgFxDiff);
 
         if (bufA != null && bufB != null && spatialMetricsReportArea != null) {
             MapComparisonMetrics.MapComparisonResult metrics = MapComparisonMetrics.compareImages(bufA, bufB);
@@ -1306,6 +1619,106 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         } else if (spatialMetricsReportArea != null) {
             spatialMetricsReportArea.setText(I18n.getOrDefault("analytics.status.loading_tensors", "ℹ️ Loading cartographic tensors for selected scenarios..."));
         }
+    }
+
+    private java.awt.image.BufferedImage rasterizeCellsToImage(List<org.ether.society.database.H3Cell> cells, String channel, int width, int height) {
+        if (cells == null || cells.isEmpty()) return null;
+        java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+        java.awt.Graphics2D g2 = img.createGraphics();
+        g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Background ocean
+        g2.setColor(new java.awt.Color(15, 23, 42));
+        g2.fillRect(0, 0, width, height);
+
+        for (org.ether.society.database.H3Cell c : cells) {
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+            int x = (int) Math.round(((lng + 180.0) / 360.0) * width);
+            int y = (int) Math.round(((90.0 - lat) / 180.0) * height);
+            int r = Math.max(3, width / 200);
+
+            java.awt.Color col;
+            if (channel.contains("Densité") || channel.contains("Demographic") || channel.contains("Density")) {
+                long pop = c.getPopulation() != null ? c.getPopulation() : 0;
+                if (pop > 0) {
+                    double norm = Math.min(1.0, Math.log10(pop + 1.0) / 6.0);
+                    col = getDensityColor(norm);
+                } else {
+                    col = new java.awt.Color(30, 41, 59);
+                }
+            } else if (channel.contains("Technologie") || channel.contains("Technology") || channel.contains("Outillage")) {
+                double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
+                double norm = Math.min(1.0, tech / 100.0);
+                col = getTechColor(norm);
+            } else if (channel.contains("Température") || channel.contains("Temperature") || channel.contains("Climat")) {
+                double temp = c.getTemperature() != null ? c.getTemperature() : 15.0;
+                double norm = Math.max(0.0, Math.min(1.0, (temp + 20.0) / 60.0));
+                col = getTemperatureColor(norm);
+            } else if (channel.contains("Aquifère") || channel.contains("Aquifer") || channel.contains("Eau")) {
+                double aqua = c.getFreshwaterAquifer() != null ? c.getFreshwaterAquifer() : 50.0;
+                double norm = Math.max(0.0, Math.min(1.0, aqua / 100.0));
+                col = getAquiferColor(norm);
+            } else if (channel.contains("Biomasse") || channel.contains("Biomass") || channel.contains("Agricole") || channel.contains("Agriculture")) {
+                double bio = c.getBiomassAgriculture() != null ? c.getBiomassAgriculture() : 0.0;
+                double norm = Math.max(0.0, Math.min(1.0, bio / 1000.0));
+                col = getAgricultureColor(norm);
+            } else if (channel.contains("Souveraineté") || channel.contains("Sovereignty")) {
+                long polity = (c.getLanguageGroup() != null) ? (long) Math.abs(c.getLanguageGroup().hashCode()) : (c.getId() != null ? (long) Math.abs(c.getId().hashCode()) : 0L);
+                col = getPolityColor(polity);
+            } else {
+                long lang = (c.getLanguageGroup() != null) ? (long) Math.abs(c.getLanguageGroup().hashCode()) : 0L;
+                col = getPolityColor(lang);
+            }
+
+            g2.setColor(col);
+            g2.fillOval(x - r, y - r, r * 2, r * 2);
+        }
+        g2.dispose();
+        return img;
+    }
+
+    private java.awt.Color getTemperatureColor(double norm) {
+        int r = (int) (norm * 255);
+        int g = (int) ((1.0 - Math.abs(norm - 0.5) * 2.0) * 200);
+        int b = (int) ((1.0 - norm) * 255);
+        return new java.awt.Color(Math.max(0, Math.min(255, r)), Math.max(0, Math.min(255, g)), Math.max(0, Math.min(255, b)));
+    }
+
+    private java.awt.Color getAquiferColor(double norm) {
+        int r = (int) (20 + norm * 30);
+        int g = (int) (100 + norm * 140);
+        int b = (int) (200 + norm * 55);
+        return new java.awt.Color(Math.min(255, r), Math.min(255, g), Math.min(255, b));
+    }
+
+    private java.awt.Color getAgricultureColor(double norm) {
+        int r = (int) (120 - norm * 80);
+        int g = (int) (140 + norm * 100);
+        int b = (int) (30 + norm * 20);
+        return new java.awt.Color(Math.max(0, Math.min(255, r)), Math.max(0, Math.min(255, g)), Math.max(0, Math.min(255, b)));
+    }
+
+    private java.awt.Color getDensityColor(double norm) {
+        if (norm < 0.33) {
+            return new java.awt.Color(16, 185, 129);
+        } else if (norm < 0.66) {
+            return new java.awt.Color(245, 158, 11);
+        } else {
+            return new java.awt.Color(239, 68, 68);
+        }
+    }
+
+    private java.awt.Color getTechColor(double norm) {
+        int r = (int) (56 + norm * (245 - 56));
+        int g = (int) (189 - norm * 80);
+        int b = (int) (248 - norm * 150);
+        return new java.awt.Color(Math.max(0, Math.min(255, r)), Math.max(0, Math.min(255, g)), Math.max(0, Math.min(255, b)));
+    }
+
+    private java.awt.Color getPolityColor(long id) {
+        if (id <= 0) return new java.awt.Color(100, 116, 139);
+        return java.awt.Color.getHSBColor((float) ((id * 0.618033988749895) % 1.0), 0.75f, 0.85f);
     }
 
     private String extractChannelBase64(Scenario sc, String channel) {
@@ -1397,31 +1810,44 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     private void exportMarkdownReport() {
-        List<ScenarioSelectableItem> selectedExecuted = scenarioList.stream()
-            .filter(i -> i.isSelected() && i.isExecuted())
-            .toList();
+        String currentReport = (reportPreviewPane != null) ? reportPreviewPane.getMarkdown() : "";
 
-        if (selectedExecuted.size() < 2) return;
+        if (currentReport == null || currentReport.isBlank() || currentReport.startsWith("## Please select")) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle(I18n.getOrDefault("analytics.title.export_notice", "Export Report Notice"));
+            alert.setHeaderText(I18n.getOrDefault("analytics.header.export_notice", "Aucun rapport généré à exporter"));
+            alert.setContentText(I18n.getOrDefault("analytics.content.export_notice", "Veuillez d'abord sélectionner au moins deux scénarios dans le tableau (ou la Réalité Historique + un scénario simulé) et cliquer sur 'Recalculer les écarts' avant d'exporter."));
+            alert.showAndWait();
+            return;
+        }
 
-        SimulationRunRecord baseline = runRepository.getRun(selectedExecuted.get(0).getRunId());
-        SimulationRunRecord target = runRepository.getRun(selectedExecuted.get(1).getRunId());
-        if (baseline == null || target == null) return;
-
-        RootCauseAnalyzer.ComparisonResult result = analyzer.compareRuns(baseline, target);
-        String md = ComparativeReportGenerator.generateMarkdownReport(result);
+        String initialName = currentReport.contains("RAPPORT D'AUDIT ET CALIBRATION")
+            ? "Rapport_Audit_Historique_Cliodynamique.md"
+            : "Rapport_Analyse_Comparative.md";
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(I18n.getOrDefault("analytics.title.export_report_dialog", "Export Comparative Analysis Report"));
-        fileChooser.setInitialFileName("Rapport_Analyse_Comparative.md");
+        fileChooser.setInitialFileName(initialName);
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers Markdown (*.md)", "*.md"));
 
         File file = fileChooser.showSaveDialog(getScene().getWindow());
         if (file != null) {
             try (FileWriter writer = new FileWriter(file)) {
-                writer.write(md);
+                writer.write(currentReport);
                 logger.info("Exported comparative analysis report to {}", file.getAbsolutePath());
+
+                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                successAlert.setTitle(I18n.getOrDefault("analytics.title.export_success", "Export Successful"));
+                successAlert.setHeaderText(null);
+                successAlert.setContentText(I18n.getOrDefault("analytics.content.export_success", "Le rapport Markdown a été exporté avec succès vers :\n") + file.getAbsolutePath());
+                successAlert.showAndWait();
             } catch (IOException ex) {
                 logger.error("Error writing markdown report to file", ex);
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("Erreur d'export");
+                errorAlert.setHeaderText("Échec de l'écriture du fichier");
+                errorAlert.setContentText(ex.getMessage());
+                errorAlert.showAndWait();
             }
         }
     }
@@ -1449,20 +1875,40 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         isUpdatingTexts = true;
         try {
             if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("analytics.header", "📊 COMPARATIVE ANALYTICS & SCENARIO BATTLE (DEEP ANALYTICS)"));
+            if (selectCol != null) selectCol.setText(I18n.getOrDefault("analytics.col.compare", "Comparer"));
+            if (nameCol != null) nameCol.setText(I18n.getOrDefault("analytics.col.name", "Nom du Scénario"));
+            if (yearsCol != null) yearsCol.setText(I18n.getOrDefault("analytics.col.years", "Plage Chronologique"));
+            if (progressCol != null) progressCol.setText(I18n.getOrDefault("analytics.col.progress", "Progression"));
+            if (estDurationCol != null) estDurationCol.setText(I18n.getOrDefault("analytics.col.est_duration", "Temps Restant"));
+            if (statusCol != null) statusCol.setText(I18n.getOrDefault("analytics.col.status", "Statut Exécution BD"));
             if (metricLabel != null) metricLabel.setText(I18n.getOrDefault("analytics.metric_label", "Visualized Metric:"));
             if (interpolationLabel != null) interpolationLabel.setText(I18n.getOrDefault("analytics.interp_label", "Interpolation :"));
             if (channelLabel != null) channelLabel.setText(I18n.getOrDefault("analytics.channel_label", "Canal Tensoriel :"));
-            if (playTimelineBtn != null) playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Lecture Temporelle"));
-            if (analyzeBtn != null) analyzeBtn.setText(I18n.getOrDefault("analytics.btn.analyze", "⚡ Recalculate Divergences"));
-            if (exportMdBtn != null) exportMdBtn.setText(I18n.getOrDefault("analytics.btn.export_md", "📝 Export Report (.md)"));
-            if (exportCsvBtn != null) exportCsvBtn.setText(I18n.getOrDefault("analytics.btn.export_csv", "📥 Export Data (.csv)"));
-            if (tableTitle != null) tableTitle.setText(I18n.getOrDefault("analytics.table_title", "📋 Available Scenarios in Database:"));
-            if (selectCol != null) selectCol.setText(I18n.getOrDefault("analytics.col.compare", "Comparer"));
-            if (nameCol != null) nameCol.setText(I18n.getOrDefault("analytics.col.name", "Scenario Name"));
-            if (yearsCol != null) yearsCol.setText(I18n.getOrDefault("analytics.col.years", "Plage Chronologique"));
-            if (estDurationCol != null) estDurationCol.setText(I18n.getOrDefault("analytics.col.est_duration", "⏱️ Durée Estimée"));
-            if (statusCol != null) statusCol.setText(I18n.getOrDefault("analytics.col.status", "DB Execution Status"));
-            if (cancelBatchBtn != null) cancelBatchBtn.setText(I18n.getOrDefault("analytics.btn.cancel_batch", "🛑 Cancel Batch"));
+            updateExecutionContextBadge();
+            if (mapLabelDiff != null) mapLabelDiff.setText(I18n.getOrDefault("analytics.label.scenario_diff", "Discrepancy Heatmap Δ(A - B)"));
+            if (playTimelineBtn != null) {
+                playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Lecture Temporelle"));
+                playTimelineBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.play_timeline", "Animate chronological evolution of 2D cartographic tensors over historical centuries.")));
+            }
+            if (analyzeBtn != null) {
+                analyzeBtn.setText(I18n.getOrDefault("analytics.btn.analyze", "⚡ Recalculate Divergences"));
+                analyzeBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.analyze", "Calculate divergences across trajectories (T_divergence > 5%) and compute MAPE/R² vs Ground Truth.")));
+            }
+            if (exportMdBtn != null) {
+                exportMdBtn.setText(I18n.getOrDefault("analytics.btn.export_md", "📝 Export Report (.md)"));
+                exportMdBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.export_md", "Export complete markdown synthesis report including all diagnostics and equations.")));
+            }
+            if (exportCsvBtn != null) {
+                exportCsvBtn.setText(I18n.getOrDefault("analytics.btn.export_csv", "📥 Export Data (.csv)"));
+                exportCsvBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.export_csv", "Export raw multi-scenario chronological telemetry series into CSV format.")));
+            }
+            if (executeMissingBtn != null) {
+                executeMissingBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.execute", "Run physical headless simulation across queued scenarios using the H3SimulationEngine.")));
+            }
+            if (cancelBatchBtn != null) {
+                cancelBatchBtn.setText(I18n.getOrDefault("analytics.btn.cancel_batch", "🛑 Cancel Batch"));
+                cancelBatchBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.cancel", "Cancel pending background simulation batch.")));
+            }
             if (xAxis != null) xAxis.setLabel(I18n.getOrDefault("analytics.axis.x", "Simulation Years (Ticks)"));
             if (yAxis != null) yAxis.setLabel(I18n.getOrDefault("analytics.axis.y", "Valeur de l'Indicateur"));
             if (chart != null) chart.setTitle(I18n.getOrDefault("analytics.chart.title", "Multi-Scenario Chronological Overlay (💡 CTRL + Scroll to Zoom, CTRL + Drag to Pan)"));
@@ -1485,11 +1931,14 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                 spatialChannelCombo.getItems().clear();
                 spatialChannelCombo.getItems().addAll(
                     I18n.getOrDefault("analytics.spatial.density", "👥 Demographic Density"),
+                    I18n.getOrDefault("analytics.spatial.technology", "🔬 Niveau Technologique (Outillage)"),
+                    I18n.getOrDefault("analytics.spatial.temperature", "🌡️ Température & Climat"),
+                    I18n.getOrDefault("analytics.spatial.aquifers", "💧 Aquifères & Eau Douce"),
+                    I18n.getOrDefault("analytics.spatial.agriculture", "🌾 Biomasse & Terres Agricoles"),
                     I18n.getOrDefault("analytics.spatial.sovereignty", "👑 Political Sovereignty"),
                     I18n.getOrDefault("analytics.spatial.linguistic", "🗣️ Isoglosses Linguistiques (Langues)"),
                     I18n.getOrDefault("analytics.spatial.kinship", "🧬 Kinship Structure (Parenté)"),
                     I18n.getOrDefault("analytics.spatial.rituals", "🔮 Sacred Rituals & Beliefs (Rituels)"),
-                    I18n.getOrDefault("analytics.spatial.technology", "🏺 Technology & Artefacts (Outillage)"),
                     I18n.getOrDefault("analytics.spatial.trade", "🐫 Trade Corridors & Exchange (Commerce)"),
                     I18n.getOrDefault("analytics.spatial.institutional", "⚖️ Institutional Complexity (Seshat)"),
                     I18n.getOrDefault("analytics.spatial.ecological", "⚠️ Ecological Footprint (Empreinte)"),

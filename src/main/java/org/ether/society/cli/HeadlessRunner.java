@@ -418,21 +418,69 @@ public class HeadlessRunner {
             scenario.setName("Headless: " + scenarioName);
             scenario.setPopulationDensityType(scenarioName);
 
-            // Match StartDatePreset by enum key or full descriptive display name
+            // Match CalibrationScenarioDefinition, StartDatePreset, or Built-In Scenarios
             boolean matched = false;
-            for (org.ether.society.model.StartDatePreset preset : org.ether.society.model.StartDatePreset.values()) {
-                if (preset.name().equalsIgnoreCase(scenarioName)
-                        || preset.getDisplayName().equalsIgnoreCase(scenarioName)
-                        || scenarioName.toLowerCase().contains(preset.getDisplayName().toLowerCase())) {
-                    scenario.setStartDateYear(preset.getYear());
-                    scenario.setEndDateYear(preset.getYear() + Math.max(500, (long)(ticksToRun * scenario.getTemporalResolutionDays() / 365.25) + 50));
-                    scenario.setInitialHumanCount(preset.getEstimatedPopulation());
-                    scenario.setInitialTechLevel(preset.getEstimatedTechLevel());
-                    scenario.setName(preset.getDisplayName());
-                    logger.info("Matched Historical Scenario Preset: '{}' (Start Year: {}, End Year: {}, Initial Pop: {}, Tech Level: {})",
-                            preset.getDisplayName(), preset.getYear(), scenario.getEndDateYear(), preset.getEstimatedPopulation(), preset.getEstimatedTechLevel());
+
+            // 1. Check Historical Calibration Scenario Targets
+            for (org.ether.society.analytics.HistoricalScenarioCalibrationHarness.CalibrationScenarioDefinition calDef :
+                    org.ether.society.analytics.HistoricalScenarioCalibrationHarness.CALIBRATION_SCENARIOS) {
+                if (calDef.scenarioKey().equalsIgnoreCase(scenarioName)
+                        || calDef.displayName().equalsIgnoreCase(scenarioName)
+                        || scenarioName.toLowerCase().contains(calDef.scenarioKey().toLowerCase())) {
+                    scenario.setStartDateYear(calDef.startYear());
+                    scenario.setEndDateYear(calDef.endYear());
+                    scenario.setInitialHumanCount((long)(calDef.initialWorldPopMillions() * 1_000_000L));
+                    scenario.setInitialCapitalPerCapita(calDef.initialCapitalPerCapita());
+                    scenario.setInitialTechLevel((int) calDef.initialTechLevel());
+                    scenario.setTemporalResolutionDays(365.0);
+                    scenario.setName(calDef.displayName());
+                    scenario.setDescription(calDef.historicalRegimeDescription());
+                    logger.info("Matched Historical Calibration Scenario: '{}' (Years {} -> {}, Pop: {} M, Tech: {})",
+                            calDef.displayName(), calDef.startYear(), calDef.endYear(), calDef.initialWorldPopMillions(), calDef.initialTechLevel());
                     matched = true;
                     break;
+                }
+            }
+
+            // 2. Check Built-In Scenarios
+            if (!matched) {
+                for (Scenario builtIn : Scenario.getBuiltInScenarios()) {
+                    if ((builtIn.getPresetKey() != null && builtIn.getPresetKey().equalsIgnoreCase(scenarioName))
+                            || (builtIn.getName() != null && builtIn.getName().equalsIgnoreCase(scenarioName))
+                            || (builtIn.getPresetKey() != null && scenarioName.toLowerCase().contains(builtIn.getPresetKey().toLowerCase()))) {
+                        scenario.setStartDateYear(builtIn.getStartDateYear());
+                        scenario.setEndDateYear(builtIn.getEndDateYear());
+                        scenario.setInitialHumanCount(builtIn.getInitialHumanCount());
+                        scenario.setInitialCapitalPerCapita(builtIn.getInitialCapitalPerCapita());
+                        scenario.setInitialEnergyPerCapita(builtIn.getInitialEnergyPerCapita());
+                        scenario.setInitialTechLevel(builtIn.getInitialTechLevel());
+                        scenario.setTemporalResolutionDays(builtIn.getTemporalResolutionDays());
+                        scenario.setName(builtIn.getName());
+                        scenario.setDescription(builtIn.getDescription());
+                        logger.info("Matched Built-In Scenario: '{}' (Years {} -> {}, Initial Pop: {})",
+                                builtIn.getName(), builtIn.getStartDateYear(), builtIn.getEndDateYear(), builtIn.getInitialHumanCount());
+                        matched = true;
+                        break;
+                    }
+                }
+            }
+
+            // 3. Check StartDatePreset by enum key or full descriptive display name
+            if (!matched) {
+                for (org.ether.society.model.StartDatePreset preset : org.ether.society.model.StartDatePreset.values()) {
+                    if (preset.name().equalsIgnoreCase(scenarioName)
+                            || preset.getDisplayName().equalsIgnoreCase(scenarioName)
+                            || scenarioName.toLowerCase().contains(preset.getDisplayName().toLowerCase())) {
+                        scenario.setStartDateYear(preset.getYear());
+                        scenario.setEndDateYear(preset.getYear() + Math.max(500, (long)(ticksToRun * scenario.getTemporalResolutionDays() / 365.25) + 50));
+                        scenario.setInitialHumanCount(preset.getEstimatedPopulation());
+                        scenario.setInitialTechLevel(preset.getEstimatedTechLevel());
+                        scenario.setName(preset.getDisplayName());
+                        logger.info("Matched Historical Scenario Preset: '{}' (Start Year: {}, End Year: {}, Initial Pop: {}, Tech Level: {})",
+                                preset.getDisplayName(), preset.getYear(), scenario.getEndDateYear(), preset.getEstimatedPopulation(), preset.getEstimatedTechLevel());
+                        matched = true;
+                        break;
+                    }
                 }
             }
 

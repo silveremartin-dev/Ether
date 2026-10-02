@@ -420,6 +420,8 @@ public class HistoricalMapGenerator {
 
         if (year <= -85000L) {
             // -100,000 BP (MIS 5e Eemian Interglacial): Confined to Africa & Eurasia, Sahul & Americas strictly 0
+            if (lon < -25.0 && lon > -170.0) return 0.0; // Americas strictly unpopulated
+            if (lon > 110.0 && lat < -5.0) return 0.0;   // Sahul strictly pre-landfall
             int species = getHomininSpeciesType(lon, lat);
             if (species == 0) return 0.0;
             double maxLat = 56.0 + 3.0 * Math.sin((lon - 10.0) * Math.PI / 90.0) - (lon > 60.0 ? (lon - 60.0) * 0.05 : 0.0);
@@ -434,7 +436,7 @@ public class HistoricalMapGenerator {
         } else if (year <= -65000L) {
             // -74,000 BP (Youngest Toba Tuff Super-Eruption & MIS 4 Glacial Stadial):
             // Americas & Sahul strictly uninhabited
-            if ((lon < -25.0 && lon > -170.0) || (lon > 115.0 && lat < -5.0)) {
+            if ((lon < -25.0 && lon > -170.0) || (lon > 110.0 && lat < -5.0)) {
                 return 0.0;
             }
             int species = getHomininSpeciesType(lon, lat);
@@ -457,7 +459,7 @@ public class HistoricalMapGenerator {
                 return Math.min(wFenno, (1.0 - t * t * (3.0 - 2.0 * t)) * ashFactor);
             }
             return wFenno * ashFactor;
-        } else if (year <= -35000L) {
+        } else if (year <= -30000L) {
             // -50,000 BP (MIS 3 / Sahul Colonization across Wallace Line & IUP in Eurasia)
             // Americas strictly uninhabited before LGM
             if (lon < -25.0 && lon > -170.0) {
@@ -468,14 +470,14 @@ public class HistoricalMapGenerator {
             if (dFenno <= 0) return 0.0;
             double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
 
-            // High latitude boreal cutoff: northern Siberia and Arctic strictly uninhabited in MIS 3
-            if (lat >= 56.0) return 0.0;
-            if (lat > 48.0) {
-                double t = Math.clamp((lat - 48.0) / 8.0, 0.0, 1.0);
+            // High latitude boreal cutoff: northern Siberia and Arctic strictly uninhabited in MIS 3 (up to 58.5°N)
+            if (lat >= 58.5) return 0.0;
+            if (lat > 50.0) {
+                double t = Math.clamp((lat - 50.0) / 8.5, 0.0, 1.0);
                 return Math.min(wFenno, 1.0 - t * t * (3.0 - 2.0 * t));
             }
             return wFenno;
-        } else if (year <= -18000L) {
+        } else if (year <= -16000L) {
             // -25,000 & -20,000 BP (Gravettian / LGM Peak / Beringian Standstill)
             // 1. Laurentide / Cordilleran Ice Sheet
             double dLaurentide = signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_LGM);
@@ -489,7 +491,7 @@ public class HistoricalMapGenerator {
             double dAlps = signedDistanceToPolygon(lon, lat, POLY_ALPS_LGM);
             double wAlps = (dAlps <= 0) ? 0.0 : 1.0 / (1.0 + Math.exp(-dAlps / 1.2));
 
-            // 4. Americas south of Laurentide ice (strictly uninhabited before ~16k BP)
+            // 4. Americas south of Laurentide ice (strictly uninhabited during Beringian Standstill before ~16k BP)
             if (lon >= -130.0 && lon <= -30.0 && lat < 55.0) {
                 return 0.0;
             }
@@ -504,10 +506,37 @@ public class HistoricalMapGenerator {
 
             double occ = Math.min(wLaurentide, Math.min(wFenno, Math.min(wAlps, wArctic)));
             return Math.clamp(occ, 0.0, 1.0);
+        } else if (year <= -13500L) {
+            // -16,000 to -13,500 BP (Deglaciation & Pacific Coastal Kelp Highway Migration Route)
+            // Ice sheet constraints
+            double dLaurentide = signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_LGM);
+            if (dLaurentide <= 0) return 0.0;
+
+            // In the Americas: Pacific coastal corridor is open down to Chile (Monte Verde II ~14.5k BP)
+            // Interior North America (between remaining ice) is largely unpopulated
+            if (lon >= -130.0 && lon <= -30.0) {
+                if (lat >= 20.0 && lat <= 55.0) {
+                    // North America: restricted to Pacific margin and southern fringe
+                    boolean isPacificCoast = (lon <= -115.0 && lat <= 50.0) || (lat <= 30.0 && lon <= -85.0);
+                    if (!isPacificCoast) return 0.05; // very sparse interior
+                    return 0.65;
+                } else if (lat < 20.0) {
+                    // Mesoamerica & South America Pacific route
+                    boolean isWesternSouthAmerica = (lon <= -65.0) || (lat >= -15.0);
+                    return isWesternSouthAmerica ? 0.70 : 0.15;
+                }
+            }
+            return 1.0;
+        } else if (year <= -11500L) {
+            // -13,500 to -11,500 BP (Ice-Free Corridor Opening & Clovis Horizon / Fluted Point Expansion)
+            double dLaur = signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_YD);
+            if (dLaur <= 0) return 0.0;
+            double dFenno = signedDistanceToPolygon(lon, lat, POLY_FENNOSCANDIA_YD);
+            if (dFenno <= 0) return 0.0;
+            return 1.0;
         } else if (year <= -4500L) {
-            // -10,900 to -6,000 BP (Younger Dryas & Early/Middle Holocene)
-            // Greenland inland ice
-            if (lat > 60.0 && lon > -55.0 && lon < -18.0) return 0.0;
+            // -11,500 to -4,500 BP (Younger Dryas & Early/Middle Holocene Pan-American Settlement)
+            if (lat > 60.0 && lon > -55.0 && lon < -18.0) return 0.0; // Greenland inland ice
             if (lat > 75.0) return 0.0;
             return 1.0;
         } else {
@@ -1238,17 +1267,22 @@ public class HistoricalMapGenerator {
             writePngFile(imgTrade, earthDir.resolve("earth_" + year + "_tradenetwork.png").toFile());
             writePngFile(imgInst, earthDir.resolve("earth_" + year + "_institutional.png").toFile());
             writePngFile(imgEco, earthDir.resolve("earth_" + year + "_ecological.png").toFile());
-            writePngFile(imgPathogen, earthDir.resolve("earth_" + year + "_pathogen.png").toFile());
-
-            writePngFile(imgCoal, earthDir.resolve("earth_" + year + "_coal.png").toFile());
-            writePngFile(imgOil, earthDir.resolve("earth_" + year + "_oil.png").toFile());
-            writePngFile(imgGas, earthDir.resolve("earth_" + year + "_gas.png").toFile());
-            writePngFile(imgUranium, earthDir.resolve("earth_" + year + "_uranium.png").toFile());
-            writePngFile(imgHe3, earthDir.resolve("earth_" + year + "_helium3.png").toFile());
-            writePngFile(imgIronCopper, earthDir.resolve("earth_" + year + "_iron_copper.png").toFile());
-            writePngFile(imgPreciousMetals, earthDir.resolve("earth_" + year + "_precious_metals.png").toFile());
-            writePngFile(imgRareEarths, earthDir.resolve("earth_" + year + "_rare_earths.png").toFile());
-            writePngFile(imgMantleHeat, earthDir.resolve("earth_" + year + "_geothermal.png").toFile());
+            // Invariant Geological & Energy Resource Tensors (Static across epochs — copy baseline if not passed)
+            String[] staticMinerals = {"coal", "oil", "gas", "uranium", "helium3", "iron_copper", "precious_metals", "rare_earths", "geothermal"};
+            BufferedImage[] staticImgs = {imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat};
+            for (int i = 0; i < staticMinerals.length; i++) {
+                String min = staticMinerals[i];
+                java.nio.file.Path minPath = earthDir.resolve("earth_" + year + "_" + min + ".png");
+                if (staticImgs[i] != null) {
+                    writePngFile(staticImgs[i], minPath.toFile());
+                } else if (!minPath.toFile().exists()) {
+                    java.io.File srcMin = new java.io.File("data/maps/ether/earth/2026/earth_2026_" + min + ".png");
+                    if (!srcMin.exists()) srcMin = new java.io.File("data/maps/ether/earth/-100000/earth_-100000_" + min + ".png");
+                    if (srcMin.exists()) {
+                        java.nio.file.Files.copy(srcMin.toPath(), minPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+            }
             writePngFile(imgAquifer, earthDir.resolve("earth_" + year + "_aquifers.png").toFile());
 
             // 2. Save authentic paleoclimatic biomes map
@@ -1614,29 +1648,18 @@ public class HistoricalMapGenerator {
             BufferedImage imgEcological = rasterizeEcologicalFootprintMap(type, scenario);
             BufferedImage imgPathogen = rasterizePathogenImmunityMap(type, scenario);
 
-            // 2. Geological & Energy Resource Tensors (10 rasters)
-            BufferedImage imgCoal = rasterizeCoalMap(type, scenario);
-            BufferedImage imgOil = rasterizeOilMap(type, scenario);
-            BufferedImage imgGas = rasterizeGasMap(type, scenario);
-            BufferedImage imgUranium = rasterizeUraniumMap(type, scenario);
-            BufferedImage imgHe3 = rasterizeHelium3Map(type, scenario);
-            BufferedImage imgIronCopper = rasterizeIronCopperMap(type, scenario);
-            BufferedImage imgPreciousMetals = rasterizePreciousMetalsMap(type, scenario);
-            BufferedImage imgRareEarths = rasterizeRareEarthsMap(type, scenario);
-            BufferedImage imgMantleHeat = rasterizeMantleHeatMap(type, scenario);
+            // 2. Geological & Energy Resource Tensors: Aquifer is dynamic per epoch; static minerals are copied from baseline if missing
             BufferedImage imgAquifer = rasterizeAquiferMap(type, scenario);
 
             // 3. Save all 25 standard rasters (Physical + Cliodynamic + Resources) to year directory
             saveImagesToYearDirectory(year, imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology,
-                    imgTrade, imgInstitutional, imgEcological, imgPathogen, imgCoal, imgOil, imgGas, imgUranium,
-                    imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
+                    imgTrade, imgInstitutional, imgEcological, imgPathogen, null, null, null, null,
+                    null, null, null, null, null, imgAquifer);
 
             saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
-            saveGeologyTensorsToDiskCache(scenario.getName(), imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
 
             if (year == 0L) {
                 saveImagesToDiskCache("Empire Romain & Pax Romana (An 0)", imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
-                saveGeologyTensorsToDiskCache("Empire Romain & Pax Romana (An 0)", imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
             }
 
             logger.info("Successfully regenerated and persisted the COMPLETE 25-raster suite for scenario '{}' (Year {}).",
@@ -3321,7 +3344,7 @@ public class HistoricalMapGenerator {
             paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(111.5, -7.4, 0x9B59B6, 1.2, "Java Solo River Tropical Band (Ngandong)"));
             paleoKin.add(new OrographicGlottologPropagator.CulturalSeed(120.4, -8.5, 0x8B5CF6, 0.8, "Flores Island Endemic Band (Liang Bua)"));
 
-            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(paleoKin, WIDTH, HEIGHT, mask, 34.0f);
+            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(paleoKin, WIDTH, HEIGHT, mask, 1e5f);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
@@ -3344,7 +3367,7 @@ public class HistoricalMapGenerator {
             tobaKin.add(new OrographicGlottologPropagator.CulturalSeed(44.2, 36.8, 0x60A5FA, 1.0, "Zagros Shanidar Mountain Clan"));
             tobaKin.add(new OrographicGlottologPropagator.CulturalSeed(84.5, 51.4, 0x2ECC71, 1.1, "Altai Denisovan Winter Hearth Clan"));
 
-            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(tobaKin, WIDTH, HEIGHT, mask, 30.0f);
+            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(tobaKin, WIDTH, HEIGHT, mask, 1e5f);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
@@ -3376,7 +3399,7 @@ public class HistoricalMapGenerator {
             mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(1.2, 44.9, 0x3498DB, 1.2, "Perigord Late Neanderthal Cave Clan"));
             mis3Kin.add(new OrographicGlottologPropagator.CulturalSeed(16.0, 46.3, 0x2563EB, 1.1, "Vindija Cave Foraging Group"));
 
-            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(mis3Kin, WIDTH, HEIGHT, mask, 36.0f);
+            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(mis3Kin, WIDTH, HEIGHT, mask, 1e5f);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
@@ -3400,7 +3423,7 @@ public class HistoricalMapGenerator {
             lgmKin.add(new OrographicGlottologPropagator.CulturalSeed(35.5, 32.7, 0xF39C12, 1.2, "Kebaran Encampment Multi-Family Units"));
             lgmKin.add(new OrographicGlottologPropagator.CulturalSeed(134.0, -24.0, 0xD35400, 1.6, "Sahul Pan-Continental Skin Section System"));
 
-            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(lgmKin, WIDTH, HEIGHT, mask, 36.0f);
+            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(lgmKin, WIDTH, HEIGHT, mask, 1e5f);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
@@ -3422,7 +3445,7 @@ public class HistoricalMapGenerator {
             ydKin.add(new OrographicGlottologPropagator.CulturalSeed(139.5, 35.7, 0x2ECC71, 1.3, "Incipient Jomon Coastal Extended Households"));
             ydKin.add(new OrographicGlottologPropagator.CulturalSeed(134.0, -24.0, 0xD35400, 1.6, "Australian 8-Skin Subsection Networks"));
 
-            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(ydKin, WIDTH, HEIGHT, mask, 36.0f);
+            BufferedImage kinImg = OrographicGlottologPropagator.propagateCulturalSeeds(ydKin, WIDTH, HEIGHT, mask, 1e5f);
             for (int y = 0; y < HEIGHT; y++) {
                 double lat = 90.0 - (y + 0.5) / HEIGHT * 180.0;
                 for (int x = 0; x < WIDTH; x++) {
@@ -5678,44 +5701,28 @@ public class HistoricalMapGenerator {
     public static double getPaleoAquiferRechargeFactor(double lon, double lat, long year) {
         if (year <= -85000L) {
             // -100,000 BP: MIS 5e Eemian Interglacial & Green Sahara Pluvial Episode
-            if (lat >= 10.0 && lat <= 32.0 && lon >= -18.0 && lon <= 55.0) {
-                double centerDist = Math.hypot((lon - 18.0) / 36.0, (lat - 21.0) / 11.0);
-                double pluvial = Math.exp(-centerDist * centerDist);
-                return 1.0 + 1.25 * pluvial; // +125% groundwater recharge in mega-aquifers (NSAS, Chad, Arabian)
-            }
-            return 1.1; // Moderate global warm interglacial baseline
+            double centerDist = Math.hypot((lon - 18.0) / 36.0, (lat - 21.0) / 11.0);
+            double pluvial = Math.exp(-centerDist * centerDist);
+            return 1.10 + 1.15 * pluvial; // +125% groundwater recharge in mega-aquifers (NSAS, Chad, Arabian)
         } else if (year <= -65000L) {
-            // -74,000 BP: Toba Volcanic Winter & MIS 4 Glacial Stadial
-            if (lat >= -10.0 && lat <= 30.0 && lon >= 60.0 && lon <= 110.0) {
-                return 0.55; // -45% recharge in South & SE Asia
-            }
-            if (lat >= -15.0 && lat <= 30.0 && lon >= -20.0 && lon <= 55.0) {
-                return 0.65; // -35% in African tropics
-            }
-            return 0.75;
-        } else if (year <= -35000L) {
-            // -50,000 BP: MIS 3 Pluvial Stage in Sahul (Megalakes Lake Eyre & Willandra)
-            if (lat >= -38.0 && lat <= -12.0 && lon >= 115.0 && lon <= 150.0) {
-                return 1.6; // +60% recharge in Sahul Great Artesian Basin
-            }
-            if (lat >= 25.0 && lat <= 45.0 && lon >= -10.0 && lon <= 45.0) {
-                return 1.25; // Mediterranean & Levant pluvial
-            }
-            return 0.85;
-        } else if (year <= -18000L) {
-            // -25,000 to -18,000 BP: LGM Glacial Aridity Peak
-            if (lat >= 45.0) {
-                return 0.40; // Permafrost lock-up & glacial inhibition
-            }
-            return 0.55; // Global -45% drop in recharge
+            // -74,000 BP: Toba Volcanic Winter & MIS 4 Glacial Stadial (Smooth continuous Gaussian drought)
+            double dAsianDrought = Math.exp(-(Math.pow(lat - 12.0, 2) / 350.0 + Math.pow(lon - 85.0, 2) / 1000.0));
+            double dAfricanDrought = Math.exp(-(Math.pow(lat - 8.0, 2) / 350.0 + Math.pow(lon - 20.0, 2) / 600.0));
+            return 0.75 - (dAsianDrought * 0.20) - (dAfricanDrought * 0.10);
+        } else if (year <= -30000L) {
+            // -50,000 BP: MIS 3 Pluvial Stage in Sahul & Levant
+            double dSahul = Math.exp(-(Math.pow(lat - (-25.0), 2) / 200.0 + Math.pow(lon - 134.0, 2) / 350.0));
+            double dMed = Math.exp(-(Math.pow(lat - 35.0, 2) / 150.0 + Math.pow(lon - 20.0, 2) / 450.0));
+            return 0.85 + (dSahul * 0.75) + (dMed * 0.40);
+        } else if (year <= -16000L) {
+            // -25,000 to -16,000 BP: LGM Glacial Aridity Peak (Continuous Sigmoidal Permafrost curve — zero line artifacts)
+            double permafrostFactor = 1.0 / (1.0 + Math.exp(-(lat - 45.0) / 4.0));
+            return 0.55 - (permafrostFactor * 0.15);
         } else if (year <= -5000L) {
             // -10,000 to -5,000 BP: Holocene Humid Period / African Humid Period (Green Sahara)
-            if (lat >= 10.0 && lat <= 32.0 && lon >= -18.0 && lon <= 55.0) {
-                double centerDist = Math.hypot((lon - 18.0) / 36.0, (lat - 21.0) / 11.0);
-                double pluvial = Math.exp(-centerDist * centerDist);
-                return 1.0 + 1.15 * pluvial;
-            }
-            return 1.05;
+            double centerDist = Math.hypot((lon - 18.0) / 36.0, (lat - 21.0) / 11.0);
+            double pluvial = Math.exp(-centerDist * centerDist);
+            return 1.05 + 1.10 * pluvial;
         }
         return 1.0;
     }

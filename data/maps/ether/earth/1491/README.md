@@ -1,49 +1,54 @@
-# Cartographic & Cliodynamic Tensor Documentation — Epoch 1491
+# Earth Epoch 1491: Pre-Columbian Americas & Eurasian Renaissance Eve (1491 AD)
 
 ## 🌍 Overview
-* **Planet**: Earth
-* **Epoch Year**: 1491
-* **Resolution**: 2048 x 1024 (Equirectangular / Plate Carrée)
-* **Cartographic Standard**: 25 High-Definition Physical, Ecological, Cliodynamic, and Geological Resource Rasters.
+This directory contains the standardized 25-layer cartographic raster tensor suite and cliodynamic registries for Earth at epoch **1491** (Pre-Columbian Americas & Eurasian Renaissance Eve (1491 AD)).
 
----
+All raster layers are generated in equirectangular projection (Plate Carrée, EPSG:4326) at **2048x1024** resolution with bit-identical determinism.
 
-## 📐 Two-Tier Ontological Separation & Reconstitution
-In accordance with **Rule 6 of AGENTS.md**:
-1. **Static Initial Conditions ($t = t_0$)**: Initial state variables are ingested directly from peer-reviewed empirical datasets (NOAA ETOPO 2022, GEBCO 2023, WorldClim v2.1, UNESCO WHYMAP 2022, HYDE 3.4, Seshat ClioPatria, USGS MRDS, IAEA NFCIS, Davies 2013).
-2. **Dynamic Simulation Ticks ($t > t_0$)**: Simulation engines (Farquhar photosynthesis, Darcy groundwater recharge, Stull wet-bulb mortality, Turchin SDT demographic oscillations, technological diffusion) run dynamically from these base rasters.
+### Context & Archaeological/Historical Horizon
+* **Era**: Pre-Columbian Americas & Eurasian Renaissance Eve (1491 AD)
+* **Technocomplex**: Chinampa Intensive Wetland Farming, Incan Quipu & Road Network, Bronze/Arquebus Arms in Eurasia
+* **Social / Family Horizon**: Ayllu Dual Reciprocity, Calpulli Wards & European Manorial Households
+* **Estimated Caloric Baseline**: 2850 kcal/capita/day
 
----
+## 🗺️ Standard Cartographic Layers (25 PNG Rasters)
 
-## 🗺️ 25 Cartographic Layers & Academic Provenance
+### Physical & Climate Layers
+* `earth_1491_elevation.png`: NOAA ETOPO 2022 / GEBCO Topography & Bathymetry calibrated to epoch sea level.
+* `earth_1491_biomes.png`: Coupled Holdridge-Whittaker Bioclimatic Ecology.
+* `earth_1491_temperature.png`: WorldClim v2.1 Annual Mean Temperature (°C) modulated by epoch paleoclimate anomalies.
+* `earth_1491_precipitation.png`: WorldClim v2.1 Annual Precipitation (mm/year) with ITCZ/monsoonal shifts.
+* `earth_1491_seasonality.png`: Temperature Seasonality Amplitude (°C range) driven by Milankovitch orbital solutions.
 
-### A. Geophysical & Ecological Tensors (5 Rasters)
-1. `earth_1491_elevation.png`: Global Relief & Bathymetry (NOAA ETOPO 2022 / GEBCO 2023).
-2. `earth_1491_biomes.png`: Coupled Holdridge-Whittaker Bioclimatic Classification.
-3. `earth_1491_temperature.png`: Annual Mean Surface Temperature with Orographic Lapse Rate (WorldClim v2.1 Bio1).
-4. `earth_1491_precipitation.png`: Mean Annual Precipitation & Orographic Monsoons (WorldClim v2.1 Bio12).
-5. `earth_1491_seasonality.png`: Temperature Seasonality Amplitude (WorldClim v2.1 Bio4).
+### Cliodynamic & Cultural Tensors
+* `earth_1491_density.png`: HYDE 3.4 / Seshat Human Demographic Density field.
+* `earth_1491_sovereignty.png`: Political Sovereignty & Territorial Polity Domains (Seshat ClioPatria / Historical GIS).
+* `earth_1491_isogloss.png`: Ethnolinguistic Phyla & Sub-Branch Dialectal Zones (Glottolog 4.8 / WALS).
+* `earth_1491_kinship.png`: Murdock D-PLACE & Emmanuel Todd Kinship & Social Organization Systems.
+* `earth_1491_rituals.png`: Monumental Ritual Centers & Sacred Traditions.
+* `earth_1491_technology.png`: Technology & Innovation Complexity Index (Maddison / Archaeological Catalogs).
+* `earth_1491_institutional.png`: Seshat Institutional Hierarchy & State Capacity Scales.
+* `earth_1491_ecological.png`: Anthropogenic Ecological Footprint & Land Transformation.
+* `earth_1491_pathogen.png`: Epidemiological & Endemic Pathogen Load (Paleoepidemiology & WHO).
+* `earth_1491_tradenetwork.png`: Commercial Trade Arteries, Emporia, Caravans & Ports.
 
-### B. Cliodynamic & Anthropological Tensors (10 Rasters)
-6. `earth_1491_density.png`: Empirical Demographic Density (HYDE 3.4 / Seshat).
-7. `earth_1491_sovereignty.png`: Sovereign Polities & Autonomous Domains (Seshat ClioPatria / Natural Earth).
-8. `earth_1491_isogloss.png`: Ethnolinguistic Phyla & Dialectal Trees (Glottolog 4.8 / WALS).
-9. `earth_1491_kinship.png`: Spatial Kinship & Family Structures (Murdock D-PLACE / Todd).
-10. `earth_1491_rituals.png`: Sacred Geography & Religious Traditions (World Sacred Heritage).
-11. `earth_1491_technology.png`: Technological Complexity Index (Maddison / Archaeo-metallurgy).
-12. `earth_1491_institutional.png`: Institutional Complexity & State Capacity (Carneiro / Seshat).
-13. `earth_1491_ecological.png`: Anthropogenic Ecological Footprint & Agro-pastoral Modification.
-14. `earth_1491_pathogen.png`: Epidemiological Stress Field & Vector Habitats ($R_0$).
-15. `earth_1491_tradenetwork.png`: Commercial Arteries, Silk Road & Maritime Emporia.
+### Geological & Energy Resources
+* `earth_1491_coal.png`: Coal Basins (USGS WoCQI).
+* `earth_1491_oil.png`: Conventional & Unconventional Petroleum Plays (USGS).
+* `earth_1491_gas.png`: Natural Gas Formations (USGS).
+* `earth_1491_uranium.png`: Uranium Mineral Deposits (IAEA / NEA Red Book).
+* `earth_1491_helium3.png`: Mantle Plume Helium-3 Outgassing Sources (USGS).
+* `earth_1491_iron_copper.png`: Iron & Copper Mineralization (USGS MRDS).
+* `earth_1491_precious_metals.png`: Gold, Silver & Platinum Group Deposits.
+* `earth_1491_rare_earths.png`: Critical Rare Earth Elements (REE).
+* `earth_1491_geothermal.png`: Terrestrial Heat Flow & Geothermal Gradients (IHFC).
+* `earth_1491_aquifers.png`: Deep Regional Groundwater Aquifers (UNESCO WHYMAP).
 
-### C. Geological & Energy Resource Tensors (10 Rasters)
-16. `earth_1491_coal.png`: In-Situ Coal Basins & Surface Outcrops (USGS WCOAL).
-17. `earth_1491_oil.png`: Hydrocarbon Traps & Bitumen Seeps (USGS World Petroleum Assessment).
-18. `earth_1491_gas.png`: Natural Gas Sedimentary Reserves (USGS Natural Gas).
-19. `earth_1491_uranium.png`: Crustal Uranium Provinces (IAEA NFCIS / UDEPO).
-20. `earth_1491_helium3.png`: Terrestrial Helium-3 (Zero Abundance Baseline).
-21. `earth_1491_iron_copper.png`: Banded Iron Formations & Copper Belts (USGS MRDS).
-22. `earth_1491_precious_metals.png`: Historical Gold/Silver Mines & Giant Provinces (USGS MRDS).
-23. `earth_1491_rare_earths.png`: Critical Minerals, REE & Lithium Salars (USGS REE).
-24. `earth_1491_geothermal.png`: Terrestrial Mantle Heat Flow (Davies 2013 IHFC).
-25. `earth_1491_aquifers.png`: Deep Sedimentary Basin Groundwater Aquifers (UNESCO WHYMAP 2022).
+## 🔬 Decoupling Rationale ($t = t_0$ vs Dynamical Ticks $t > t_0$)
+In strict accordance with `AGENTS.md` Directives:
+1. **Initial Conditions ($t = t_0$)**: The 25 raster layers define the empirically calibrated spatial state at initialization.
+2. **Dynamical Simulation Engine ($t > t_0$)**: Once launched, the physical engines (Energy Balance Climate Models, Darcy groundwater flow, Lotka metabolic energetics, and Turchin cliodynamics) dynamically evolve population, technology, culture, and sovereign borders without synthetic lock-in.
+
+## 📄 Associated Metadata Files
+* `cultural_registry.json`: Multilingual entity registry (EN, FR, DE, ES, ZH) with trait vectors and kinship metadata.
+* `provenance_and_sources.json`: Exhaustive academic citations, datasets, and physical calibration rationale.

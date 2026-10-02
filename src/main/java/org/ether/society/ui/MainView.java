@@ -70,6 +70,17 @@ public class MainView extends StackPane {
     private ColorLegend colorLegend;
     private boolean isSwitchingTabs = false;
 
+    // Headless Mode Dashboard Overlay
+    private VBox headlessDashboard;
+    private Label lblHeadlessTitle;
+    private Label lblHeadlessDesc;
+    private Label lblHeadlessYearVal;
+    private Label lblHeadlessTicksVal;
+    private Label lblHeadlessPopVal;
+    private Label lblHeadlessTargetVal;
+    private Label lblHeadlessSpeedVal;
+    private Button btnHeadlessSwitchGui;
+
     // Full-Screen Map Mode
     private BorderPane simulationRoot;
     private StackPane mapStack;
@@ -163,6 +174,7 @@ public class MainView extends StackPane {
                 }
             }
         );
+        comparativeAnalyticsPanel.setSimulationEngineSupplier(() -> engine);
         comparativeAnalyticsTab = new Tab();
         comparativeAnalyticsTab.setContent(comparativeAnalyticsPanel);
         comparativeAnalyticsTab.setClosable(false);
@@ -178,6 +190,7 @@ public class MainView extends StackPane {
                 notificationOverlay.showInfo("⚡ " + String.format(I18n.getOrDefault("exec.live_applied_notice", "Moteur de calcul actualisé en direct : %s"), mode.name()));
             }
         });
+        executionContextPanel.setOnLiveRenderingModeChangedCallback(this::applyRenderingMode);
         executionContextTab = new Tab();
         executionContextTab.setContent(executionContextPanel);
         executionContextTab.setClosable(false);
@@ -262,6 +275,7 @@ public class MainView extends StackPane {
         if (godModeTab != null) {
             godModeTab.setText(org.ether.society.i18n.I18n.getOrDefault("sim.tab.godmode", "⚡ Mode Dieu"));
         }
+        updateHeadlessTexts();
     }
 
     private void onPlanetGenerated(List<H3Cell> cells) {
@@ -306,6 +320,10 @@ public class MainView extends StackPane {
         mapCanvas.widthProperty().bind(mapStack.widthProperty());
         mapCanvas.heightProperty().bind(mapStack.heightProperty());
         mapStack.getChildren().add(mapCanvas);
+
+        // 1.b Headless Dashboard (Replaces 2D/3D visual canvas during headless execution)
+        headlessDashboard = createHeadlessDashboard();
+        mapStack.getChildren().add(headlessDashboard);
 
         // 2. Notification Overlay
         notificationOverlay = new NotificationOverlay();
@@ -423,7 +441,112 @@ public class MainView extends StackPane {
         root.setLeft(leftSidebar);
         root.setCenter(mapStack);
 
+        if (executionContextPanel != null) {
+            applyRenderingMode(executionContextPanel.getRenderingMode());
+        }
+
         return root;
+    }
+
+    private VBox createHeadlessDashboard() {
+        lblHeadlessTitle = new Label();
+        lblHeadlessTitle.setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 20px; -fx-font-weight: bold;");
+
+        lblHeadlessDesc = new Label();
+        lblHeadlessDesc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-text-alignment: center;");
+        lblHeadlessDesc.setWrapText(true);
+        lblHeadlessDesc.setMaxWidth(680);
+
+        lblHeadlessYearVal = createMetricValLabel("An 0");
+        lblHeadlessTicksVal = createMetricValLabel("0");
+        lblHeadlessPopVal = createMetricValLabel("0");
+        lblHeadlessTargetVal = createMetricValLabel("-");
+        lblHeadlessSpeedVal = createMetricValLabel("0 pas/s");
+
+        VBox cardYear = createMetricCard(I18n.getOrDefault("headless.stat.year", "Année en cours :"), lblHeadlessYearVal);
+        VBox cardTicks = createMetricCard(I18n.getOrDefault("headless.stat.ticks", "Pas de simulation :"), lblHeadlessTicksVal);
+        VBox cardPop = createMetricCard(I18n.getOrDefault("headless.stat.pop", "Population mondiale :"), lblHeadlessPopVal);
+        VBox cardTarget = createMetricCard(I18n.getOrDefault("headless.stat.target", "Horizon cible :"), lblHeadlessTargetVal);
+        VBox cardSpeed = createMetricCard(I18n.getOrDefault("headless.stat.speed", "Vitesse de calcul :"), lblHeadlessSpeedVal);
+
+        HBox grid1 = new HBox(16, cardYear, cardTicks, cardPop);
+        grid1.setAlignment(Pos.CENTER);
+
+        HBox grid2 = new HBox(16, cardTarget, cardSpeed);
+        grid2.setAlignment(Pos.CENTER);
+
+        btnHeadlessSwitchGui = new Button();
+        btnHeadlessSwitchGui.getStyleClass().add("button-secondary");
+        btnHeadlessSwitchGui.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 10 22; -fx-cursor: hand;");
+        btnHeadlessSwitchGui.setOnAction(e -> {
+            if (executionContextPanel != null) {
+                executionContextPanel.setRenderingMode(ExecutionContextPanel.RenderingMode.GUI);
+            }
+        });
+
+        VBox dashboard = new VBox(24, lblHeadlessTitle, lblHeadlessDesc, grid1, grid2, btnHeadlessSwitchGui);
+        dashboard.setAlignment(Pos.CENTER);
+        dashboard.setStyle("-fx-background-color: radial-gradient(center 50% 50%, radius 70%, #0f172a, #020617); -fx-padding: 40;");
+        dashboard.setVisible(false);
+        dashboard.setManaged(false);
+
+        updateHeadlessTexts();
+
+        return dashboard;
+    }
+
+    private VBox createMetricCard(String title, Label valLabel) {
+        Label lblT = new Label(title);
+        lblT.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
+        VBox card = new VBox(6, lblT, valLabel);
+        card.setAlignment(Pos.CENTER);
+        card.setStyle("-fx-background-color: rgba(30, 41, 59, 0.85); -fx-padding: 14 20; -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.25); -fx-border-radius: 8; -fx-min-width: 170;");
+        return card;
+    }
+
+    private Label createMetricValLabel(String initial) {
+        Label lbl = new Label(initial);
+        lbl.setStyle("-fx-text-fill: #f8fafc; -fx-font-size: 16px; -fx-font-weight: bold;");
+        return lbl;
+    }
+
+    private void updateHeadlessTexts() {
+        if (lblHeadlessTitle != null) lblHeadlessTitle.setText(I18n.getOrDefault("headless.banner.title", "🚀 MODE HEADLESS ACTIF (ACCÉLÉRATION MAXIMALE)"));
+        if (lblHeadlessDesc != null) lblHeadlessDesc.setText(I18n.getOrDefault("headless.banner.desc", "L'affichage cartographique 2D/3D temps réel est désactivé pour allouer 100 % de la puissance de calcul CPU/GPU au moteur physique et démographique."));
+        if (btnHeadlessSwitchGui != null) btnHeadlessSwitchGui.setText(I18n.getOrDefault("headless.btn.switch_gui", "🖼️ Réactiver l'affichage visuel (Mode GUI)"));
+    }
+
+    private void applyRenderingMode(ExecutionContextPanel.RenderingMode mode) {
+        boolean isHeadless = (mode == ExecutionContextPanel.RenderingMode.HEADLESS);
+        if (mapCanvas != null) {
+            mapCanvas.setVisible(!isHeadless);
+        }
+        if (colorLegend != null) {
+            colorLegend.setVisible(!isHeadless);
+        }
+        if (headlessDashboard != null) {
+            headlessDashboard.setVisible(isHeadless);
+            headlessDashboard.setManaged(isHeadless);
+        }
+        if (!isHeadless && mapCanvas != null) {
+            mapCanvas.draw();
+        }
+        logger.info("Simulation visual rendering mode updated: {}", mode);
+    }
+
+    private void updateHeadlessTelemetry(String dateStr, long currentTick) {
+        if (lblHeadlessYearVal != null) lblHeadlessYearVal.setText(dateStr);
+        if (lblHeadlessTicksVal != null) lblHeadlessTicksVal.setText(String.format("%,d", currentTick));
+        if (lblHeadlessPopVal != null && engine instanceof org.ether.society.core.H3SimulationEngine h3) {
+            lblHeadlessPopVal.setText(String.format("%,d hab", h3.getTotalPopulation()));
+        }
+        if (lblHeadlessTargetVal != null && executionContextPanel != null) {
+            int targetYear = executionContextPanel.getTargetYear();
+            lblHeadlessTargetVal.setText(targetYear != 0 ? String.format("An %,d", targetYear) : "—");
+        }
+        if (lblHeadlessSpeedVal != null && hud != null) {
+            lblHeadlessSpeedVal.setText(String.format("%.1f it/s", hud.getFps()));
+        }
     }
 
     // --- Timelapse Recording State ---
@@ -753,21 +876,42 @@ public class MainView extends StackPane {
                 double resDays = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getTemporalResolutionDays() : 1.0;
                 String dateStr = engine.getTimeManager().formatContextualDate(resDays);
 
+                boolean isHeadless = executionContextPanel != null && executionContextPanel.getRenderingMode() == ExecutionContextPanel.RenderingMode.HEADLESS;
+
+                if (isHeadless) {
+                    int targetYear = executionContextPanel.getTargetYear();
+                    long curYear = engine.getTimeManager().getCurrentYear();
+                    if (targetYear != 0 && curYear >= targetYear && engine.isRunning()) {
+                        engine.pause();
+                        javafx.application.Platform.runLater(() -> {
+                            if (controlPanel != null) controlPanel.updatePlayPauseVisuals(false);
+                            if (notificationOverlay != null) {
+                                notificationOverlay.showInfo(String.format(I18n.getOrDefault("headless.target_reached", "🏁 Horizon cible atteint (An %d) — Simulation en pause"), targetYear));
+                            }
+                        });
+                    }
+                }
+
                 if (isRecording && mapCanvas != null) {
                     mapCanvas.setCurrentDateStr(dateStr);
                 }
 
-                if (now - lastUiUpdateNanos.get() >= 33_000_000L) {
+                long updateInterval = isHeadless ? 100_000_000L : 33_000_000L;
+                if (now - lastUiUpdateNanos.get() >= updateInterval) {
                     if (renderPending.compareAndSet(false, true)) {
                         javafx.application.Platform.runLater(() -> {
                             try {
-                                if (mapCanvas != null) {
-                                    mapCanvas.setCurrentDateStr(dateStr);
-                                    mapCanvas.invalidateSmoothCache();
-                                    mapCanvas.draw();
-                                }
-                                if (colorLegend != null && mapCanvas != null) {
-                                    colorLegend.updateFromCanvas(mapCanvas);
+                                if (isHeadless) {
+                                    updateHeadlessTelemetry(dateStr, currentTick);
+                                } else {
+                                    if (mapCanvas != null) {
+                                        mapCanvas.setCurrentDateStr(dateStr);
+                                        mapCanvas.invalidateSmoothCache();
+                                        mapCanvas.draw();
+                                    }
+                                    if (colorLegend != null && mapCanvas != null) {
+                                        colorLegend.updateFromCanvas(mapCanvas);
+                                    }
                                 }
                                 if (controlPanel != null) {
                                     controlPanel.updateYear(dateStr);
@@ -801,7 +945,8 @@ public class MainView extends StackPane {
                         controlPanel.updateRecentEvents(engine.getEventSystem().getRecentEventsHistory());
                     }
 
-                    if (mapCanvas != null && mapCanvas.getEventSystem() != null && !mapCanvas.getEventSystem().getActiveEvents().isEmpty()) {
+                    boolean isHeadless = executionContextPanel != null && executionContextPanel.getRenderingMode() == ExecutionContextPanel.RenderingMode.HEADLESS;
+                    if (!isHeadless && mapCanvas != null && mapCanvas.getEventSystem() != null && !mapCanvas.getEventSystem().getActiveEvents().isEmpty()) {
                         mapCanvas.draw();
                     }
 

@@ -271,6 +271,7 @@ public class ExecutionContextPanel extends BorderPane {
     private Label titleHeader;
     private Label liveBannerLabel;
     private java.util.function.Consumer<HardwareMode> onLiveConfigChangedCallback;
+    private java.util.function.Consumer<RenderingMode> onLiveRenderingModeChangedCallback;
     private Label sidebarSysInfoTitle;
     private Label sysOsHeader;
     private Label sysOsValue;
@@ -624,12 +625,14 @@ public class ExecutionContextPanel extends BorderPane {
             headlessConfigCard.setVisible(false);
             headlessConfigCard.setManaged(false);
             updateRightSummary();
+            notifyLiveRenderingModeChange(RenderingMode.GUI);
         });
 
         headlessRenderingRadio.setOnAction(e -> {
             headlessConfigCard.setVisible(true);
             headlessConfigCard.setManaged(true);
             updateRightSummary();
+            notifyLiveRenderingModeChange(RenderingMode.HEADLESS);
         });
 
         VBox renderingSection = createCardSection(renderingSectionHeader, new VBox(10, guiCard, headlessCard));
@@ -1061,13 +1064,37 @@ public class ExecutionContextPanel extends BorderPane {
         updateRightSummary();
     }
 
+    public void setRenderingMode(RenderingMode mode) {
+        if (mode == RenderingMode.HEADLESS) {
+            headlessRenderingRadio.setSelected(true);
+            headlessConfigCard.setVisible(true);
+            headlessConfigCard.setManaged(true);
+        } else {
+            guiRenderingRadio.setSelected(true);
+            headlessConfigCard.setVisible(false);
+            headlessConfigCard.setManaged(false);
+        }
+        updateRightSummary();
+        notifyLiveRenderingModeChange(mode);
+    }
+
     public void setOnLiveConfigChangedCallback(java.util.function.Consumer<HardwareMode> callback) {
         this.onLiveConfigChangedCallback = callback;
+    }
+
+    public void setOnLiveRenderingModeChangedCallback(java.util.function.Consumer<RenderingMode> callback) {
+        this.onLiveRenderingModeChangedCallback = callback;
     }
 
     private void notifyLiveConfigChange(HardwareMode mode) {
         if (onLiveConfigChangedCallback != null) {
             onLiveConfigChangedCallback.accept(mode);
+        }
+    }
+
+    private void notifyLiveRenderingModeChange(RenderingMode mode) {
+        if (onLiveRenderingModeChangedCallback != null) {
+            onLiveRenderingModeChangedCallback.accept(mode);
         }
     }
 

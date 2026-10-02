@@ -60,48 +60,71 @@ public class CultureKernel {
 
     /**
      * Diffusion mémétique inter-hexagones et ancrage thermodynamique aux tenseurs de référence.
+     * Complexité strictement linéaire O(N_agents + 6 * N_cells) via agrégation spatiale par cellule.
      */
     private void diffuseAndForce(WorldBuffer world, AgentBuffer agents, float dt) {
         float[][] culture = agents.getCulture();
         int[] hexIds = agents.getHexIds();
+        int worldCapacity = world != null ? world.getCapacity() : 0;
+        if (worldCapacity == 0) return;
+
         int[][] neighbors = world.getNeighborIndexes();
-        
-        float[][] delta = new float[4][agents.getCapacity()];
-        
-        for (int i = 0; i < agents.getCapacity(); i++) {
-            if (hexIds[i] == -1) continue;
-            
-            int myHex = hexIds[i];
-            
-            // 1. Diffusion spatiale avec les cohortes des hexagones voisins
-            for (int j = 0; j < 6; j++) {
-                int nHex = neighbors[myHex][j];
-                if (nHex == -1) continue;
-                
-                for (int targetIdx = 0; targetIdx < agents.getCapacity(); targetIdx++) {
-                    if (agents.getHexIds()[targetIdx] == nHex) {
-                        for (int d = 0; d < 4; d++) {
-                            float diff = culture[d][targetIdx] - culture[d][i];
-                            delta[d][i] += diff * diffusionRate * dt;
-                        }
-                    }
+
+        // 1. Agréger la moyenne culturelle par cellule hexagone : O(N_agents)
+        float[][] hexCultureSum = new float[4][worldCapacity];
+        int[] hexAgentCount = new int[worldCapacity];
+        int agentCapacity = agents.getCapacity();
+
+        for (int i = 0; i < agentCapacity; i++) {
+            int h = hexIds[i];
+            if (h >= 0 && h < worldCapacity) {
+                hexAgentCount[h]++;
+                for (int d = 0; d < 4; d++) {
+                    hexCultureSum[d][h] += culture[d][i];
                 }
             }
+        }
 
-            // 2. Terme de forçage thermodynamique lambda (rappel vers la matrice géographique régionale)
-            // Dimension 0: Isoglosse, 1: Kinship, 2: Rituels, 3: Souveraineté
-            for (int d = 0; d < 4; d++) {
-                float targetSpatialVal = getSpatialTensorAnchor(world, myHex, d);
-                float forcingDiff = targetSpatialVal - culture[d][i];
-                delta[d][i] += forcingDiff * forcingRate * dt;
+        // Calculer les moyennes par cellule
+        float[][] hexCultureMean = new float[4][worldCapacity];
+        for (int h = 0; h < worldCapacity; h++) {
+            int count = hexAgentCount[h];
+            if (count > 0) {
+                for (int d = 0; d < 4; d++) {
+                    hexCultureMean[d][h] = hexCultureSum[d][h] / count;
+                }
+            } else {
+                // Ancrage par défaut si aucun agent sur la cellule
+                for (int d = 0; d < 4; d++) {
+                    hexCultureMean[d][h] = getSpatialTensorAnchor(world, h, d);
+                }
             }
         }
-        
-        // Appliquer les deltas
-        for (int i = 0; i < agents.getCapacity(); i++) {
-            if (hexIds[i] == -1) continue;
+
+        // 2. Appliquer la diffusion spatiale avec les voisins et le forçage tensoriel : O(N_agents)
+        for (int i = 0; i < agentCapacity; i++) {
+            int myHex = hexIds[i];
+            if (myHex < 0 || myHex >= worldCapacity) continue;
+
             for (int d = 0; d < 4; d++) {
-                culture[d][i] = Math.max(0.0f, Math.min(1.0f, culture[d][i] + delta[d][i]));
+                float myVal = culture[d][i];
+                float delta = 0.0f;
+
+                // Diffusion avec les 6 voisins hexagones
+                for (int j = 0; j < 6; j++) {
+                    int nHex = neighbors[myHex][j];
+                    if (nHex >= 0 && nHex < worldCapacity) {
+                        float neighborMean = hexCultureMean[d][nHex];
+                        delta += (neighborMean - myVal) * (diffusionRate / 6.0f) * dt;
+                    }
+                }
+
+                // Forçage thermodynamique lambda vers le tenseur régional
+                float targetSpatialVal = getSpatialTensorAnchor(world, myHex, d);
+                delta += (targetSpatialVal - myVal) * forcingRate * dt;
+
+                // Mise à jour bornée dans [0.0, 1.0]
+                culture[d][i] = Math.max(0.0f, Math.min(1.0f, myVal + delta));
             }
         }
     }
