@@ -1244,22 +1244,27 @@ where $w_{\text{occ}}(\mathbf{x}, t) \in [0.0, 1.0]$ is the hominin bioclimatic 
 #### Calibrated Logarithmic Transfer Function:
 Rasters map physical density $\rho$ to 8-bit luminance $[0, 255]$ matching the dynamic range of HYDE 3.4:
 
-$$\text{logNorm} = \frac{\ln(1 + 4.0 \times \rho)}{\ln(1 + 4.0 \times \rho_{\text{ref}})}, \quad \rho_{\text{ref}} = 6.0\text{ hab/km}^2$$
+$$\text{logNorm} = \frac{\ln(1 + 2.5 \times \rho)}{\ln(1 + 2.5 \times \rho_{\text{ref}})}, \quad \rho_{\text{ref}} = 35.0\text{ hab/km}^2$$
 
 $$\text{Luminance}(\rho) = \begin{cases} 
 0 & \text{if } \rho \le 0.0005\text{ hab/km}^2 \\
-\text{clamp}\left(15.0 + 240.0 \times \text{logNorm}, \, 15.0, \, 255.0\right) & \text{if } \rho > 0.0005\text{ hab/km}^2
+\text{clamp}\left(12.0 + 243.0 \times \text{logNorm}, \, 12.0, \, 255.0\right) & \text{if } \rho > 0.0005\text{ hab/km}^2
 \end{cases}$$
 
-This guarantees that Paleolithic hunter-gatherer presence is visually subtle ($\text{RGB } 20-45$), LGM aggregation sites are distinct ($\text{RGB } 50-85$), and Natufian/Neolithic agricultural revolutions emerge as brilliant hubs ($\text{RGB } 175-255$).
+This guarantees that Paleolithic hunter-gatherer presence is visually subtle ($\text{RGB } 15-40$), LGM aggregation sites are distinct ($\text{RGB } 45-75$), and Natufian/PPNA proto-agricultural hamlets ($\rho \approx 0.5 - 1.4\text{ hab/km}^2$) blend smoothly into the textured HYDE 3.4 early Holocene baseline ($\text{RGB } 65-110$) without oversaturated white glare blooms.
 
 ---
 
 ### 13.2 Dual-Vector Americas Peopling & Glacial Corridor Kinetics
 
-The settlement of the Americas is formalized as a coupled dual-vector migration process combining marine littoral navigation and continental terrestrial corridors:
+The settlement of the Americas is formalized as a coupled multi-vector migration process combining Beringian steppe corridors, marine littoral navigation, and continental terrestrial river networks:
 
-#### 1. Pacific Kelp Highway Vector ($\mathcal{V}_{\text{Pacific}}$)
+#### 1. Beringian Steppe Corridor ($\mathcal{V}_{\text{Beringia}}$)
+Continuous subaerial steppe-tundra corridor across the exposed Bering Land Bridge with antimeridian longitude wrapping ($\Delta \lambda \in [-180^\circ, 180^\circ]$):
+$$\mathcal{L}_{\text{Beringia}} = \left[ (130.0, 71.0) \to (150.0, 68.5) \to (165.0, 67.0) \to (179.0, 66.0) \to (-175.0, 65.5) \to (-165.0, 65.0) \to (-152.0, 65.0) \to (-138.0, 64.0) \right]$$
+Eliminates synthetic rectangular longitude boundaries and circular disc artifacts in Eastern Siberia, Alaska, and Yukon.
+
+#### 2. Pacific Kelp Highway Vector ($\mathcal{V}_{\text{Pacific}}$)
 Modeled as an orographic-maritime geodesic polyline spanning from Beringia to Patagonia along the rich kelp forest biome (*Macrocystis pyrifera*):
 $$\mathcal{L}_{\text{Pacific}} = \left[ (-168.0, 65.0) \to (-135.0, 57.0) \to (-124.0, 48.0) \to (-120.0, 34.0) \to (-105.0, 20.0) \to (-80.0, 8.0) \to (-78.0, -2.0) \to (-75.0, -35.0) \to (-73.2, -41.5) \to (-70.0, -53.0) \right]$$
 
@@ -1268,7 +1273,7 @@ $$\rho_{\text{Kelp}}(\mathbf{x}) = \rho_{\text{coast0}} \cdot \exp\left(-\frac{d
 
 Attested early coastal landfall includes Monte Verde II (Chile, $-14,500\text{ BP}$), Huaca Prieta (Peru, $-14,000\text{ BP}$), and Paisley Caves (Oregon, $-14,300\text{ BP}$).
 
-#### 2. Continental Interior Corridor & Pre-LGM Attested Enclaves ($\mathcal{V}_{\text{Interior}}$)
+#### 3. Continental Interior Corridor & Pre-LGM Attested Enclaves ($\mathcal{V}_{\text{Interior}}$)
 * **Pre-LGM Footprints & Pioneer Bands ($-30,000\text{ to } -20,000\text{ BP}$)**: Attested archaeological enclaves south of the ice sheets:
   - White Sands National Park trackways ($-106.3^\circ\text{W}, 32.8^\circ\text{N}$, $23,000-21,000\text{ BP}$): $\rho \approx 0.09\text{ hab/km}^2$.
   - Chiquihuite Cave ($-103.5^\circ\text{W}, 24.2^\circ\text{N}$): $\rho \approx 0.04\text{ hab/km}^2$.

@@ -380,6 +380,13 @@ public class HistoricalMapGenerator {
         {-42.5, -9.0}, {-43.5, -12.5}, {-44.5, -16.0}, {-44.0, -19.5}, {-48.0, -25.0}
     };
 
+    // 5. Beringia Mammoth Steppe Corridor (Eastern Siberia -> Chukotka -> Bering Land Bridge -> Alaska -> Yukon)
+    public static final double[][] ROUTE_BERINGIA_STEPPE_CORRIDOR = {
+        {130.0, 71.0}, {140.0, 70.5}, {150.0, 69.5}, {160.0, 68.0}, {170.0, 66.5},
+        {179.0, 66.0}, {-175.0, 65.5}, {-168.0, 65.0}, {-160.0, 64.5}, {-150.0, 64.5},
+        {-142.0, 64.0}, {-138.0, 64.0}
+    };
+
     public static double distToPolyline(double lon, double lat, double[][] line) {
         if (line == null || line.length < 2) return Double.MAX_VALUE;
         double minD2 = Double.MAX_VALUE;
@@ -387,10 +394,19 @@ public class HistoricalMapGenerator {
             double x1 = line[i][0], y1 = line[i][1];
             double x2 = line[i + 1][0], y2 = line[i + 1][1];
             double dx = x2 - x1;
+            if (dx > 180.0) dx -= 360.0;
+            else if (dx < -180.0) dx += 360.0;
             double dy = y2 - y1;
+
+            double plon = lon - x1;
+            if (plon > 180.0) plon -= 360.0;
+            else if (plon < -180.0) plon += 360.0;
+
             double len2 = dx * dx + dy * dy;
-            double t = (len2 > 0) ? Math.clamp(((lon - x1) * dx + (lat - y1) * dy) / len2, 0.0, 1.0) : 0.0;
+            double t = (len2 > 0) ? Math.clamp((plon * dx + (lat - y1) * dy) / len2, 0.0, 1.0) : 0.0;
             double px = x1 + t * dx;
+            if (px > 180.0) px -= 360.0;
+            else if (px < -180.0) px += 360.0;
             double py = y1 + t * dy;
             double d2 = distSq(lon, lat, px, py);
             if (d2 < minD2) minD2 = d2;
@@ -597,8 +613,8 @@ public class HistoricalMapGenerator {
                 return Math.min(wFenno, 1.0 - t * t * (3.0 - 2.0 * t));
             }
             return wFenno;
-        } else if (year <= -30000L) {
-            // -42,000 to -30,000 BP (Late MIS 3 / Aurignacian / Tasmania firmly established):
+        } else if (year <= -32000L) {
+            // -42,000 to -32,000 BP (Late MIS 3 / Aurignacian / Tasmania firmly established):
             // Americas strictly uninhabited before LGM
             if (lon < -25.0 && lon > -170.0) return 0.0;
 
@@ -606,7 +622,6 @@ public class HistoricalMapGenerator {
             if (dFenno <= 0) return 0.0;
             double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
 
-            // High latitude boreal cutoff: northern Siberia and Arctic strictly uninhabited in MIS 3 (up to 58.5°N)
             if (lat >= 58.5) return 0.0;
             if (lat > 50.0) {
                 double t = Math.clamp((lat - 50.0) / 8.5, 0.0, 1.0);
@@ -614,34 +629,62 @@ public class HistoricalMapGenerator {
             }
             return wFenno;
         } else if (year <= -24000L) {
-            // -32,000 to -24,000 BP (Pre-LGM Beringian Standstill & Earliest American Pioneers: Chiquihuite, White Sands precursors)
+            // -32,000 to -24,000 BP (Pre-LGM Beringian Standstill & Earliest American Pioneers)
             double dLaur = signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_MIS3);
             if (dLaur <= 0) return 0.0;
+            double wLaur = 1.0 / (1.0 + Math.exp(-dLaur / 1.5));
+
             double dFenno = signedDistanceToPolygon(lon, lat, POLY_FENNOSCANDIA_MIS3);
             if (dFenno <= 0) return 0.0;
+            double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
 
-            if (lon >= -135.0 && lon <= -30.0) {
-                // Americas: Pacific coastal maritime route + attested pioneer interior enclaves
-                double dPacific = distToPolyline(lon, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
-                double dWhiteSands = Math.sqrt(distSq(lon, lat, -106.3, 32.8));
-                double dChiquihuite = Math.sqrt(distSq(lon, lat, -103.5, 24.2));
-                double dMeadowcroft = Math.sqrt(distSq(lon, lat, -80.4, 40.3));
-                if (dPacific <= 4.0) return 0.35;
-                if (dWhiteSands <= 4.5 || dChiquihuite <= 4.5 || dMeadowcroft <= 3.5) return 0.30;
-                return 0.0; // Unpopulated interior elsewhere
+            // Beringia mammoth steppe corridor (Siberia -> Alaska -> Yukon)
+            double dBeringia = distToPolyline(lon, lat, ROUTE_BERINGIA_STEPPE_CORRIDOR);
+            if (dBeringia <= 5.5) {
+                return Math.min(wLaur, 0.85);
             }
 
-            if (lat >= 68.0 && lon > -135.0 && lon < -20.0) return 0.0;
-            return 1.0;
+            // Pacific Coastal Kelp Highway
+            double dPacific = distToPolyline(lon, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
+            if (dPacific <= 4.0) {
+                return 0.50 * wLaur;
+            }
+
+            // Pre-LGM Americas attested enclaves (White Sands, Chiquihuite, Meadowcroft, Pedra Furada)
+            double dWhiteSands = Math.sqrt(distSq(lon, lat, -106.3, 32.8));
+            double dChiquihuite = Math.sqrt(distSq(lon, lat, -103.5, 24.2));
+            double dMeadowcroft = Math.sqrt(distSq(lon, lat, -80.4, 40.3));
+            double dFurada = Math.sqrt(distSq(lon, lat, -42.5, -9.3));
+            if (dWhiteSands <= 6.0 || dChiquihuite <= 6.0 || dMeadowcroft <= 5.0 || dFurada <= 6.0) {
+                return 0.35 * wLaur;
+            }
+
+            // Unpopulated glaciated interior of Americas (Canada and northern US)
+            if (lon >= -135.0 && lon <= -30.0) {
+                if (lat <= 36.0 && lat >= -54.0) {
+                    return 0.10 * wLaur; // Sparse pioneer background
+                }
+                return 0.0; // Barren periglacial tundra
+            }
+
+            // Eurasia high arctic cutoff
+            if (lat >= 72.0) return 0.0;
+            if (lat > 66.0) {
+                double t = Math.clamp((lat - 66.0) / 6.0, 0.0, 1.0);
+                return Math.min(wFenno, 1.0 - t * t * (3.0 - 2.0 * t));
+            }
+            return wFenno;
         } else if (year <= -16000L) {
             // -24,000 to -16,000 BP (LGM Peak, Solutrean, Kebaran & White Sands Footprints ~23k-21k BP)
             // 1. Laurentide / Cordilleran Ice Sheet
             double dLaurentide = signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_LGM);
             if (dLaurentide <= 0) return 0.0;
+            double wLaur = 1.0 / (1.0 + Math.exp(-dLaurentide / 1.5));
 
             // 2. Fennoscandian / British Ice Sheet
             double dFenno = signedDistanceToPolygon(lon, lat, POLY_FENNOSCANDIA_LGM);
             if (dFenno <= 0) return 0.0;
+            double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
 
             // 3. Alpine & Patagonian Ice Caps
             double dAlps = signedDistanceToPolygon(lon, lat, POLY_ALPS_LGM);
@@ -649,53 +692,87 @@ public class HistoricalMapGenerator {
             double dPatagonia = signedDistanceToPolygon(lon, lat, POLY_PATAGONIA_LGM);
             if (dPatagonia <= 0) return 0.0;
 
-            // 4. Americas: Pacific Coastal Kelp Highway + Southern Interior Foraging Enclaves (White Sands, Cactus Hill, Page-Ladson)
-            if (lon >= -135.0 && lon <= -30.0) {
-                double dPacific = distToPolyline(lon, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
-                if (dPacific <= 4.5) return 0.65; // Active Pacific maritime highway
-                // Southern US, Mexico, Central & South America south of LGM periglacial barrier (<38°N)
-                if (lat <= 38.0 && lat >= -50.0) {
-                    double dWhiteSands = Math.sqrt(distSq(lon, lat, -106.3, 32.8));
-                    double dCactus = Math.sqrt(distSq(lon, lat, -77.3, 36.8));
-                    double dPageLadson = Math.sqrt(distSq(lon, lat, -83.9, 30.1));
-                    double dCapivara = Math.sqrt(distSq(lon, lat, -42.5, -9.3));
-                    if (dWhiteSands <= 6.0 || dCactus <= 5.0 || dPageLadson <= 5.0 || dCapivara <= 6.0) return 0.45;
-                    return 0.15; // Low-density transhumant interior forager bands
-                }
-                return 0.0; // Periglacial desert immediately south of ice sheet
+            // 4. Beringia mammoth steppe corridor (Siberia -> Alaska -> Yukon)
+            double dBeringia = distToPolyline(lon, lat, ROUTE_BERINGIA_STEPPE_CORRIDOR);
+            if (dBeringia <= 6.0) {
+                return Math.min(wLaur, 0.85);
             }
 
-            // 5. High Arctic extreme (beyond 72°N)
+            // 5. Americas: Pacific Coastal Kelp Highway + Southern Interior Corridors & Enclaves
+            double dPacific = distToPolyline(lon, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
+            if (dPacific <= 4.5) {
+                return 0.70 * wLaur;
+            }
+
+            double dAndes = distToPolyline(lon, lat, ROUTE_ANDES_CORRIDOR);
+            if (dAndes <= 4.0) return 0.55;
+            double dAmazon = distToPolyline(lon, lat, ROUTE_AMAZON_MAINSTEM);
+            if (dAmazon <= 4.0) return 0.45;
+            double dSavanna = distToPolyline(lon, lat, ROUTE_BRAZIL_SAVANNA);
+            if (dSavanna <= 4.0) return 0.50;
+
+            double dWhiteSands = Math.sqrt(distSq(lon, lat, -106.3, 32.8));
+            double dCactus = Math.sqrt(distSq(lon, lat, -77.3, 36.8));
+            double dPageLadson = Math.sqrt(distSq(lon, lat, -83.9, 30.1));
+            if (dWhiteSands <= 6.5 || dCactus <= 5.5 || dPageLadson <= 5.5) {
+                return 0.45 * wLaur;
+            }
+
+            if (lon >= -135.0 && lon <= -30.0) {
+                if (lat <= 38.0 && lat >= -54.0) {
+                    return 0.15 * wLaur; // Diffuse southern interior foragers
+                }
+                return 0.0; // Barren periglacial desert immediately south of Laurentide
+            }
+
+            // High Arctic extreme (beyond 72°N)
             if (lat >= 72.0) return 0.0;
             double wArctic = 1.0;
             if (lat > 68.0) {
                 double t = Math.clamp((lat - 68.0) / 4.0, 0.0, 1.0);
                 wArctic = 1.0 - t * t * (3.0 - 2.0 * t);
             }
-            return Math.clamp(wArctic, 0.0, 1.0);
+            return Math.min(wFenno, wArctic);
         } else if (year <= -13500L) {
             // -16,000 to -13,500 BP (Deglaciation, Pacific Coastal Route Expansion & Monte Verde II ~14.5k BP)
             double dLaurentide = signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_LGM);
             if (dLaurentide <= 0) return 0.0;
+            double wLaur = 1.0 / (1.0 + Math.exp(-dLaurentide / 1.5));
+
             double dFenno = signedDistanceToPolygon(lon, lat, POLY_FENNOSCANDIA_LGM);
             if (dFenno <= 0) return 0.0;
+            double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
+
+            double dBeringia = distToPolyline(lon, lat, ROUTE_BERINGIA_STEPPE_CORRIDOR);
+            if (dBeringia <= 6.0) return Math.min(wLaur, 0.90);
+
+            double dPacific = distToPolyline(lon, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
+            if (dPacific <= 5.5) return 0.85 * wLaur;
+
+            double dAndes = distToPolyline(lon, lat, ROUTE_ANDES_CORRIDOR);
+            if (dAndes <= 4.0) return 0.65;
+            double dAmazon = distToPolyline(lon, lat, ROUTE_AMAZON_MAINSTEM);
+            if (dAmazon <= 4.0) return 0.55;
+            double dSavanna = distToPolyline(lon, lat, ROUTE_BRAZIL_SAVANNA);
+            if (dSavanna <= 4.0) return 0.60;
 
             if (lon >= -135.0 && lon <= -30.0) {
-                double dPacific = distToPolyline(lon, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
-                if (dPacific <= 5.5) return 0.85; // Primary coastal highway
-                if (lat <= 44.0 && lat >= -52.0) return 0.50; // Expanding interior foragers
+                if (lat <= 44.0 && lat >= -54.0) return 0.35 * wLaur;
                 return 0.0;
             }
-            return 1.0;
+            return Math.min(wFenno, 1.0);
         } else if (year <= -10500L) {
             // -13,500 to -10,500 BP (Younger Dryas, Ice-Free Corridor Open, Clovis/Folsom & Late Magdalenian)
             double dLaur = signedDistanceToPolygon(lon, lat, POLY_LAURENTIDE_YD);
             if (dLaur <= 0) return 0.0;
+            double wLaur = 1.0 / (1.0 + Math.exp(-dLaur / 1.5));
+
             double dFenno = signedDistanceToPolygon(lon, lat, POLY_FENNOSCANDIA_YD);
             if (dFenno <= 0) return 0.0;
+            double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
 
             if (lat > 60.0 && lon > -55.0 && lon < -18.0) return 0.0; // Greenland inland ice
-            return 1.0;
+            return Math.min(wLaur, wFenno);
         } else if (year <= -8000L) {
             // -10,500 to -8,000 BP (Early Holocene Deglaciation / Maglemosian / PPNA)
             double dFenno = signedDistanceToPolygon(lon, lat, POLY_FENNOSCANDIA_EARLY_HOLOCENE);
@@ -1881,218 +1958,212 @@ public class HistoricalMapGenerator {
                 double dens = 0.0;
                 if (year <= -85000) {
                     // -100,000 BP: Sapiens in Africa & Levant, Mousterian Neanderthals, Denisovans (hab/km2)
-                    double densSapiens = 0.02 +
-                        0.16 * Math.exp(-distSq(lng, lat, 36.0, 0.0) / 450.0) +      // East African Rift
-                        0.14 * Math.exp(-distSq(lng, lat, 22.0, -34.0) / 300.0) +    // South African Coast
-                        0.10 * Math.exp(-distSq(lng, lat, 32.0, 26.0) / 300.0) +     // Nile Corridor
-                        0.07 * Math.exp(-distSq(lng, lat, 10.0, 14.0) / 400.0) +     // Sahel / West Africa
-                        0.08 * Math.exp(-distSq(lng, lat, 35.0, 31.5) / 250.0) +     // Levant
-                        0.05 * Math.exp(-distSq(lng, lat, 50.0, 16.0) / 300.0);      // Southern Arabia
+                    double densSapiens = 0.008 +
+                        0.060 * Math.exp(-distSq(lng, lat, 36.0, 0.0) / 300.0) +      // East African Rift
+                        0.050 * Math.exp(-distSq(lng, lat, 22.0, -34.0) / 250.0) +    // South African Coast
+                        0.040 * Math.exp(-distSq(lng, lat, 32.0, 26.0) / 250.0) +     // Nile Corridor
+                        0.030 * Math.exp(-distSq(lng, lat, 10.0, 14.0) / 300.0) +     // Sahel / West Africa
+                        0.035 * Math.exp(-distSq(lng, lat, 35.0, 31.5) / 200.0) +     // Levant
+                        0.025 * Math.exp(-distSq(lng, lat, 50.0, 16.0) / 250.0);      // Southern Arabia
 
-                    double densNeanderthal = 0.01 +
-                        0.045 * Math.exp(-distSq(lng, lat, 2.0, 44.0) / 350.0) +     // France / Cantabria
-                        0.035 * Math.exp(-distSq(lng, lat, -4.0, 40.0) / 300.0) +    // Iberia
-                        0.030 * Math.exp(-distSq(lng, lat, 16.0, 47.0) / 350.0) +    // Central Europe / Balkans
-                        0.025 * Math.exp(-distSq(lng, lat, 40.0, 44.0) / 300.0) +    // Caucasus / Crimea
-                        0.025 * Math.exp(-distSq(lng, lat, 44.0, 36.0) / 300.0) +    // Zagros
-                        0.020 * Math.exp(-distSq(lng, lat, 85.0, 51.0) / 250.0);     // Altai
+                    double densNeanderthal = 0.006 +
+                        0.030 * Math.exp(-distSq(lng, lat, 2.0, 44.0) / 250.0) +     // France / Cantabria
+                        0.025 * Math.exp(-distSq(lng, lat, -4.0, 40.0) / 200.0) +    // Iberia
+                        0.020 * Math.exp(-distSq(lng, lat, 16.0, 47.0) / 250.0) +    // Central Europe / Balkans
+                        0.020 * Math.exp(-distSq(lng, lat, 40.0, 44.0) / 200.0) +    // Caucasus / Crimea
+                        0.020 * Math.exp(-distSq(lng, lat, 44.0, 36.0) / 200.0) +    // Zagros
+                        0.015 * Math.exp(-distSq(lng, lat, 85.0, 51.0) / 180.0);     // Altai
 
-                    double densDenisovan = 0.01 +
-                        0.050 * Math.exp(-distSq(lng, lat, 112.0, 34.0) / 400.0) +   // Yellow River / North China
-                        0.040 * Math.exp(-distSq(lng, lat, 110.0, 26.0) / 400.0) +   // South China
-                        0.035 * Math.exp(-distSq(lng, lat, 105.0, -2.0) / 500.0) +   // Sundaland
-                        0.030 * Math.exp(-distSq(lng, lat, 102.0, 16.0) / 350.0) +   // Indochina
-                        0.035 * Math.exp(-distSq(lng, lat, 78.0, 20.0) / 400.0) +    // Indian Subcontinent
-                        0.015 * Math.exp(-distSq(lng, lat, 102.0, 35.0) / 250.0);    // Tibetan Plateau
+                    double densDenisovan = 0.006 +
+                        0.035 * Math.exp(-distSq(lng, lat, 112.0, 34.0) / 300.0) +   // Yellow River / North China
+                        0.030 * Math.exp(-distSq(lng, lat, 110.0, 26.0) / 300.0) +   // South China
+                        0.025 * Math.exp(-distSq(lng, lat, 105.0, -2.0) / 350.0) +   // Sundaland
+                        0.020 * Math.exp(-distSq(lng, lat, 102.0, 16.0) / 250.0) +   // Indochina
+                        0.025 * Math.exp(-distSq(lng, lat, 78.0, 20.0) / 300.0) +    // Indian Subcontinent
+                        0.012 * Math.exp(-distSq(lng, lat, 102.0, 35.0) / 180.0);    // Tibetan Plateau
 
                     dens = blendPaleoTraits(lng, lat, densSapiens, densNeanderthal, densDenisovan);
                 } else if (year <= -65000) {
                     // -74,000 BP (Toba Super-Eruption Bottleneck): Sapiens contracted to African Refugia, South Asian depopulation
-                    double densSapiensRefugia = 0.008 +
-                        0.10 * Math.exp(-distSq(lng, lat, 22.1, -34.2) / 120.0) +    // Pinnacle Point / Mossel Bay coastal refuge
-                        0.08 * Math.exp(-distSq(lng, lat, 24.0, -34.0) / 120.0) +    // Klasies River Mouth
-                        0.07 * Math.exp(-distSq(lng, lat, 36.0, 0.5) / 180.0) +      // East African Equatorial Highlands
-                        0.05 * Math.exp(-distSq(lng, lat, -2.4, 34.8) / 140.0) +     // Maghreb Taforalt refuge
-                        0.03 * Math.exp(-distSq(lng, lat, 35.3, 32.7) / 120.0);     // Skhul / Qafzeh Levant contact
+                    double densSapiensRefugia = 0.005 +
+                        0.050 * Math.exp(-distSq(lng, lat, 22.1, -34.2) / 100.0) +    // Pinnacle Point / Mossel Bay coastal refuge
+                        0.040 * Math.exp(-distSq(lng, lat, 24.0, -34.0) / 100.0) +    // Klasies River Mouth
+                        0.035 * Math.exp(-distSq(lng, lat, 36.0, 0.5) / 140.0) +      // East African Equatorial Highlands
+                        0.025 * Math.exp(-distSq(lng, lat, -2.4, 34.8) / 120.0) +     // Maghreb Taforalt refuge
+                        0.020 * Math.exp(-distSq(lng, lat, 35.3, 32.7) / 100.0);     // Skhul / Qafzeh Levant contact
 
-                    double densNeanderthalRefugia = 0.005 +
-                        0.025 * Math.exp(-distSq(lng, lat, -5.5, 36.1) / 150.0) +    // Gibraltar Gorham's Cave refuge
-                        0.020 * Math.exp(-distSq(lng, lat, 1.5, 43.5) / 180.0) +     // Aquitaine / Pyrenees refuge
-                        0.018 * Math.exp(-distSq(lng, lat, 15.0, 40.5) / 160.0) +    // Southern Italy / Mediterranean
-                        0.015 * Math.exp(-distSq(lng, lat, 44.0, 36.0) / 160.0);     // Zagros Shanidar
+                    double densNeanderthalRefugia = 0.004 +
+                        0.018 * Math.exp(-distSq(lng, lat, -5.5, 36.1) / 120.0) +    // Gibraltar Gorham's Cave refuge
+                        0.015 * Math.exp(-distSq(lng, lat, 1.5, 43.5) / 140.0) +     // Aquitaine / Pyrenees refuge
+                        0.014 * Math.exp(-distSq(lng, lat, 15.0, 40.5) / 120.0) +    // Southern Italy / Mediterranean
+                        0.012 * Math.exp(-distSq(lng, lat, 44.0, 36.0) / 120.0);     // Zagros Shanidar
 
-                    double densDenisovanRefugia = 0.005 +
-                        0.020 * Math.exp(-distSq(lng, lat, 84.5, 51.4) / 120.0) +    // Denisova Cave Altai
-                        0.015 * Math.exp(-distSq(lng, lat, 102.5, 35.5) / 150.0) +   // Baishiya Tibetan Plateau
-                        0.012 * Math.exp(-distSq(lng, lat, 110.0, -7.5) / 180.0);    // Sundaland Ngandong
+                    double densDenisovanRefugia = 0.004 +
+                        0.015 * Math.exp(-distSq(lng, lat, 84.5, 51.4) / 100.0) +    // Denisova Cave Altai
+                        0.012 * Math.exp(-distSq(lng, lat, 102.5, 35.5) / 120.0) +   // Baishiya Tibetan Plateau
+                        0.010 * Math.exp(-distSq(lng, lat, 110.0, -7.5) / 140.0);    // Sundaland Ngandong
 
                     dens = blendPaleoTraits(lng, lat, densSapiensRefugia, densNeanderthalRefugia, densDenisovanRefugia);
                 } else if (year <= -52000) {
                     // -60,000 to -55,000 BP (MIS 4/3): Out-of-Africa Indian Ocean Coastal Highway & Northern Sahul Pioneer Landfall
-                    double densAfrica = 0.02 +
-                        0.18 * Math.exp(-distSq(lng, lat, 36.0, 0.5) / 400.0) +      // East Africa
-                        0.14 * Math.exp(-distSq(lng, lat, 21.5, -34.0) / 300.0) +    // South Africa (Blombos/Klasies)
-                        0.12 * Math.exp(-distSq(lng, lat, 32.5, 26.0) / 280.0) +     // Nile
-                        0.08 * Math.exp(-distSq(lng, lat, 8.0, 12.0) / 350.0) +      // West Africa
-                        0.09 * Math.exp(-distSq(lng, lat, -7.0, 32.0) / 300.0);      // Maghreb (Taforalt)
+                    double densAfrica = 0.008 +
+                        0.080 * Math.exp(-distSq(lng, lat, 36.0, 0.5) / 300.0) +      // East Africa
+                        0.065 * Math.exp(-distSq(lng, lat, 21.5, -34.0) / 250.0) +    // South Africa (Blombos/Klasies)
+                        0.055 * Math.exp(-distSq(lng, lat, 32.5, 26.0) / 220.0) +     // Nile
+                        0.040 * Math.exp(-distSq(lng, lat, 8.0, 12.0) / 250.0) +      // West Africa
+                        0.045 * Math.exp(-distSq(lng, lat, -7.0, 32.0) / 220.0);      // Maghreb (Taforalt)
 
                     // Active Indian Ocean Southern Coastal Highway
-                    double densIndianOceanHighway = 0.015 +
-                        0.14 * Math.exp(-distSq(lng, lat, 50.0, 15.0) / 150.0) +     // Southern Arabia (Jebel Faya / Dhofar)
-                        0.15 * Math.exp(-distSq(lng, lat, 65.0, 25.0) / 180.0) +     // Makran / Indus Delta
-                        0.18 * Math.exp(-distSq(lng, lat, 78.0, 15.0) / 220.0) +     // South India / Jwalapuram / Attirampakkam
-                        0.16 * Math.exp(-distSq(lng, lat, 80.5, 7.5) / 150.0) +      // Sri Lanka Fa Hien
-                        0.15 * Math.exp(-distSq(lng, lat, 90.0, 22.0) / 200.0) +     // Bengal Delta
-                        0.16 * Math.exp(-distSq(lng, lat, 105.0, -2.0) / 280.0) +    // Sundaland (Niah, Sumatra, Java)
-                        0.13 * Math.exp(-distSq(lng, lat, 120.0, -4.5) / 180.0);     // Wallacea / Sulawesi (Maros-Pangkep)
+                    double densIndianOceanHighway = 0.008 +
+                        0.070 * Math.exp(-distSq(lng, lat, 50.0, 15.0) / 120.0) +     // Southern Arabia (Jebel Faya / Dhofar)
+                        0.075 * Math.exp(-distSq(lng, lat, 65.0, 25.0) / 140.0) +     // Makran / Indus Delta
+                        0.090 * Math.exp(-distSq(lng, lat, 78.0, 15.0) / 180.0) +     // South India / Jwalapuram / Attirampakkam
+                        0.080 * Math.exp(-distSq(lng, lat, 80.5, 7.5) / 120.0) +      // Sri Lanka Fa Hien
+                        0.075 * Math.exp(-distSq(lng, lat, 90.0, 22.0) / 150.0) +     // Bengal Delta
+                        0.080 * Math.exp(-distSq(lng, lat, 105.0, -2.0) / 200.0) +    // Sundaland (Niah, Sumatra, Java)
+                        0.065 * Math.exp(-distSq(lng, lat, 120.0, -4.5) / 140.0);     // Wallacea / Sulawesi (Maros-Pangkep)
 
                     double densSahulNorth =
-                        0.12 * Math.exp(-distSq(lng, lat, 132.9, -12.5) / 100.0) +   // Madjedbebe / Arnhem Land pioneer landfall
-                        0.10 * Math.exp(-distSq(lng, lat, 125.0, -16.0) / 100.0);    // Kimberley Carpenter's Gap
+                        0.060 * Math.exp(-distSq(lng, lat, 132.9, -12.5) / 80.0) +    // Madjedbebe / Arnhem Land pioneer landfall
+                        0.050 * Math.exp(-distSq(lng, lat, 125.0, -16.0) / 80.0);     // Kimberley Carpenter's Gap
 
-                    double densEurasiaInland = 0.01 +
-                        0.06 * Math.exp(-distSq(lng, lat, 35.5, 32.5) / 180.0) +     // Levant
-                        0.04 * Math.exp(-distSq(lng, lat, 2.0, 44.0) / 220.0) +      // Neanderthal Europe
-                        0.04 * Math.exp(-distSq(lng, lat, 112.0, 32.0) / 250.0);     // Tianyuan China
+                    double densEurasiaInland = 0.006 +
+                        0.035 * Math.exp(-distSq(lng, lat, 35.5, 32.5) / 140.0) +     // Levant
+                        0.025 * Math.exp(-distSq(lng, lat, 2.0, 44.0) / 180.0) +      // Neanderthal Europe
+                        0.025 * Math.exp(-distSq(lng, lat, 112.0, 32.0) / 200.0);     // Tianyuan China
 
                     dens = Math.max(densAfrica, Math.max(densIndianOceanHighway, Math.max(densSahulNorth, densEurasiaInland)));
                 } else if (year <= -42000) {
                     // -50,000 BP (MIS 3): Full Sahul Radiation across interior & Initial Upper Paleolithic (IUP)
-                    double densAfrica = 0.02 +
-                        0.18 * Math.exp(-distSq(lng, lat, 36.0, 0.5) / 400.0) +
-                        0.14 * Math.exp(-distSq(lng, lat, 21.5, -34.0) / 300.0) +
-                        0.12 * Math.exp(-distSq(lng, lat, 32.5, 26.0) / 280.0) +
-                        0.08 * Math.exp(-distSq(lng, lat, 8.0, 12.0) / 350.0);
+                    double densAfrica = 0.010 +
+                        0.090 * Math.exp(-distSq(lng, lat, 36.0, 0.5) / 300.0) +
+                        0.070 * Math.exp(-distSq(lng, lat, 21.5, -34.0) / 220.0) +
+                        0.060 * Math.exp(-distSq(lng, lat, 32.5, 26.0) / 200.0) +
+                        0.040 * Math.exp(-distSq(lng, lat, 8.0, 12.0) / 250.0);
 
-                    double densSahul = 0.015 +
-                        0.16 * Math.exp(-distSq(lng, lat, 132.9, -12.5) / 120.0) +   // Madjedbebe
-                        0.14 * Math.exp(-distSq(lng, lat, 125.0, -16.0) / 150.0) +   // Kimberley
-                        0.12 * Math.exp(-distSq(lng, lat, 115.3, -20.8) / 120.0) +   // Barrow Island Boodie Cave
-                        0.13 * Math.exp(-distSq(lng, lat, 143.0, -33.7) / 160.0) +   // Lake Mungo / Willandra Lakes
-                        0.11 * Math.exp(-distSq(lng, lat, 116.0, -32.0) / 140.0) +   // Swan River / Devil's Lair
-                        0.11 * Math.exp(-distSq(lng, lat, 143.0, -5.5) / 150.0);     // New Guinea Highlands
+                    double densSahul = 0.008 +
+                        0.080 * Math.exp(-distSq(lng, lat, 132.9, -12.5) / 90.0) +   // Madjedbebe
+                        0.070 * Math.exp(-distSq(lng, lat, 125.0, -16.0) / 100.0) +  // Kimberley
+                        0.060 * Math.exp(-distSq(lng, lat, 115.3, -20.8) / 90.0) +   // Barrow Island Boodie Cave
+                        0.065 * Math.exp(-distSq(lng, lat, 143.0, -33.7) / 110.0) +  // Lake Mungo / Willandra Lakes
+                        0.055 * Math.exp(-distSq(lng, lat, 116.0, -32.0) / 100.0) +  // Swan River / Devil's Lair
+                        0.055 * Math.exp(-distSq(lng, lat, 143.0, -5.5) / 110.0);    // New Guinea Highlands
 
-                    double densEurasiaIUP = 0.015 +
-                        0.12 * Math.exp(-distSq(lng, lat, 35.5, 32.5) / 180.0) +     // Levant (Ksar Akil / Boker Tachtit)
-                        0.09 * Math.exp(-distSq(lng, lat, 25.0, 43.0) / 200.0) +     // Bacho Kiro Balkans IUP
-                        0.07 * Math.exp(-distSq(lng, lat, 1.5, 45.0) / 220.0) +      // Franco-Cantabrian
-                        0.14 * Math.exp(-distSq(lng, lat, 78.0, 20.0) / 260.0) +     // India
-                        0.15 * Math.exp(-distSq(lng, lat, 105.0, -2.0) / 300.0) +    // Sundaland
-                        0.09 * Math.exp(-distSq(lng, lat, 112.0, 32.0) / 250.0) +    // Tianyuan China
-                        0.05 * Math.exp(-distSq(lng, lat, 84.5, 51.4) / 150.0);      // Denisova Altai
+                    double densEurasiaIUP = 0.008 +
+                        0.060 * Math.exp(-distSq(lng, lat, 35.5, 32.5) / 130.0) +     // Levant (Ksar Akil / Boker Tachtit)
+                        0.045 * Math.exp(-distSq(lng, lat, 25.0, 43.0) / 140.0) +     // Bacho Kiro Balkans IUP
+                        0.040 * Math.exp(-distSq(lng, lat, 1.5, 45.0) / 150.0) +      // Franco-Cantabrian
+                        0.070 * Math.exp(-distSq(lng, lat, 78.0, 20.0) / 200.0) +     // India
+                        0.075 * Math.exp(-distSq(lng, lat, 105.0, -2.0) / 220.0) +    // Sundaland
+                        0.045 * Math.exp(-distSq(lng, lat, 112.0, 32.0) / 180.0) +    // Tianyuan China
+                        0.030 * Math.exp(-distSq(lng, lat, 84.5, 51.4) / 120.0);      // Denisova Altai
 
                     dens = Math.max(densAfrica, Math.max(densSahul, densEurasiaIUP));
                 } else if (year <= -32000) {
                     // -40,000 to -35,000 BP (Late MIS 3 / Aurignacian / Tasmania Settled)
-                    double densEuropeAurignacian = 0.02 +
-                        0.18 * Math.exp(-distSq(lng, lat, 4.4, 44.4) / 100.0) +      // Chauvet Cave / Ardèche
-                        0.15 * Math.exp(-distSq(lng, lat, 10.2, 48.6) / 100.0) +     // Vogelherd / Swabian Jura
-                        0.14 * Math.exp(-distSq(lng, lat, 1.0, 45.0) / 120.0) +      // Dordogne Aurignacian
-                        0.12 * Math.exp(-distSq(lng, lat, 24.5, 45.5) / 140.0);     // Peștera cu Oase Romania
+                    double densEuropeAurignacian = 0.010 +
+                        0.090 * Math.exp(-distSq(lng, lat, 4.4, 44.4) / 80.0) +      // Chauvet Cave / Ardèche
+                        0.075 * Math.exp(-distSq(lng, lat, 10.2, 48.6) / 80.0) +     // Vogelherd / Swabian Jura
+                        0.070 * Math.exp(-distSq(lng, lat, 1.0, 45.0) / 90.0) +      // Dordogne Aurignacian
+                        0.060 * Math.exp(-distSq(lng, lat, 24.5, 45.5) / 100.0);     // Peștera cu Oase Romania
 
-                    double densSahulTasmania = 0.015 +
-                        0.14 * Math.exp(-distSq(lng, lat, 132.9, -12.5) / 120.0) +
-                        0.13 * Math.exp(-distSq(lng, lat, 143.0, -33.7) / 160.0) +
-                        0.11 * Math.exp(-distSq(lng, lat, 116.0, -32.0) / 140.0) +
-                        0.08 * Math.exp(-distSq(lng, lat, 145.8, -42.5) / 100.0);    // Tasmania Warreen Cave / Parmerpar Meethaner
+                    double densSahulTasmania = 0.008 +
+                        0.070 * Math.exp(-distSq(lng, lat, 132.9, -12.5) / 90.0) +
+                        0.065 * Math.exp(-distSq(lng, lat, 143.0, -33.7) / 110.0) +
+                        0.055 * Math.exp(-distSq(lng, lat, 116.0, -32.0) / 100.0) +
+                        0.045 * Math.exp(-distSq(lng, lat, 145.8, -42.5) / 70.0);    // Tasmania Warreen Cave / Parmerpar Meethaner
 
-                    double densAsiaAfricaLateMIS3 = 0.02 +
-                        0.14 * Math.exp(-distSq(lng, lat, 35.5, 32.5) / 140.0) +
-                        0.14 * Math.exp(-distSq(lng, lat, 78.0, 20.0) / 250.0) +
-                        0.14 * Math.exp(-distSq(lng, lat, 105.0, -2.0) / 300.0) +
-                        0.10 * Math.exp(-distSq(lng, lat, 114.0, 34.0) / 250.0) +
-                        0.16 * Math.exp(-distSq(lng, lat, 36.0, 0.5) / 350.0);
+                    double densAsiaAfricaLateMIS3 = 0.010 +
+                        0.070 * Math.exp(-distSq(lng, lat, 35.5, 32.5) / 100.0) +
+                        0.070 * Math.exp(-distSq(lng, lat, 78.0, 20.0) / 180.0) +
+                        0.070 * Math.exp(-distSq(lng, lat, 105.0, -2.0) / 220.0) +
+                        0.055 * Math.exp(-distSq(lng, lat, 114.0, 34.0) / 180.0) +
+                        0.080 * Math.exp(-distSq(lng, lat, 36.0, 0.5) / 250.0);
 
                     dens = Math.max(densEuropeAurignacian, Math.max(densSahulTasmania, densAsiaAfricaLateMIS3));
                 } else if (year <= -22000) {
                     // -25,000 BP: Gravettian Horizon, Beringian Standstill, Early Americas Pioneers
-                    double densEurope = 0.015 +
-                        0.22 * Math.exp(-distSq(lng, lat, 16.5, 48.8) / 120.0) +     // Pavlovian / Dolní Věstonice / Willendorf
-                        0.20 * Math.exp(-distSq(lng, lat, 1.0, 45.0) / 140.0) +      // Franco-Cantabrian Gravettian (Laugerie, Abri Pataud)
-                        0.18 * Math.exp(-distSq(lng, lat, 39.0, 51.4) / 150.0) +     // Kostenki-Borshchevo / Don
-                        0.15 * Math.exp(-distSq(lng, lat, 40.5, 56.2) / 120.0) +     // Sungir / Upper Volga
-                        0.14 * Math.exp(-distSq(lng, lat, 15.5, 41.7) / 120.0) +     // Paglicci / Italian Gravettian
-                        0.12 * Math.exp(-distSq(lng, lat, -7.5, 37.5) / 120.0);      // Vale Boi / Iberian Gravettian
+                    double densEurope = 0.010 +
+                        0.110 * Math.exp(-distSq(lng, lat, 16.5, 48.8) / 80.0) +     // Pavlovian / Dolní Věstonice / Willendorf
+                        0.100 * Math.exp(-distSq(lng, lat, 1.0, 45.0) / 90.0) +      // Franco-Cantabrian Gravettian (Laugerie, Abri Pataud)
+                        0.090 * Math.exp(-distSq(lng, lat, 39.0, 51.4) / 100.0) +    // Kostenki-Borshchevo / Don
+                        0.075 * Math.exp(-distSq(lng, lat, 40.5, 56.2) / 80.0) +     // Sungir / Upper Volga
+                        0.070 * Math.exp(-distSq(lng, lat, 15.5, 41.7) / 80.0) +     // Paglicci / Italian Gravettian
+                        0.060 * Math.exp(-distSq(lng, lat, -7.5, 37.5) / 80.0);      // Vale Boi / Iberian Gravettian
 
-                    double densBeringia = 0.01 +
-                        0.12 * Math.exp(-distSq(lng, lat, 135.4, 70.7) / 120.0) +   // Yana RHS (Arctic Siberia mammoth hunters)
-                        0.10 * Math.exp(-distSq(lng, lat, 145.0, 71.0) / 120.0) +   // Berelekh mammoth graveyard
-                        0.08 * Math.exp(-distSq(lng, lat, -140.7, 67.1) / 140.0) + // Bluefish Caves (Yukon / Beringia standstill)
-                        0.06 * Math.exp(-distSq(lng, lat, -168.0, 65.0) / 180.0);  // Central Beringian Land Bridge
-
-                    double densAmericasPreLGM = 0.0;
-                    if (lng >= -135.0 && lng <= -30.0) {
-                        double dPac = distToPolyline(lng, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
-                        if (dPac <= 3.5) densAmericasPreLGM = Math.max(densAmericasPreLGM, 0.035 * Math.exp(-dPac / 1.8));
-                        densAmericasPreLGM = Math.max(densAmericasPreLGM,
-                            0.045 * Math.exp(-distSq(lng, lat, -106.3, 32.8) / 60.0) + // White Sands precursor
-                            0.035 * Math.exp(-distSq(lng, lat, -103.5, 24.2) / 60.0) + // Chiquihuite
-                            0.030 * Math.exp(-distSq(lng, lat, -80.4, 40.3) / 60.0)    // Meadowcroft
-                        );
+                    double densBeringia = 0.0;
+                    double dBeringia = distToPolyline(lng, lat, ROUTE_BERINGIA_STEPPE_CORRIDOR);
+                    if (dBeringia <= 5.0) {
+                        densBeringia = 0.045 * Math.exp(-dBeringia / 2.0);
                     }
 
-                    double densAsiaAfrica = 0.02 +
-                        0.16 * Math.exp(-distSq(lng, lat, 35.5, 32.7) / 140.0) +     // Ohalo II / Early Epipaleolithic Levant
-                        0.12 * Math.exp(-distSq(lng, lat, 32.0, 26.0) / 200.0) +     // Nile Valley
-                        0.10 * Math.exp(-distSq(lng, lat, 22.0, -34.0) / 250.0) +    // South African LSA
-                        0.10 * Math.exp(-distSq(lng, lat, 78.0, 22.0) / 250.0) +     // India
-                        0.12 * Math.exp(-distSq(lng, lat, 115.0, 30.0) / 250.0) +    // Yangtze / South China
-                        0.08 * Math.exp(-distSq(lng, lat, 135.0, -25.0) / 300.0);    // Sahul forager network
+                    double densAmericasPreLGM = 0.0;
+                    double dPac = distToPolyline(lng, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
+                    if (dPac <= 4.0) densAmericasPreLGM = Math.max(densAmericasPreLGM, 0.035 * Math.exp(-dPac / 2.0));
+                    densAmericasPreLGM = Math.max(densAmericasPreLGM,
+                        0.045 * Math.exp(-distSq(lng, lat, -106.3, 32.8) / 40.0) + // White Sands precursor
+                        0.035 * Math.exp(-distSq(lng, lat, -103.5, 24.2) / 40.0) + // Chiquihuite
+                        0.030 * Math.exp(-distSq(lng, lat, -80.4, 40.3) / 40.0)    // Meadowcroft
+                    );
+
+                    double densAsiaAfrica = 0.010 +
+                        0.080 * Math.exp(-distSq(lng, lat, 35.5, 32.7) / 100.0) +     // Ohalo II / Early Epipaleolithic Levant
+                        0.060 * Math.exp(-distSq(lng, lat, 32.0, 26.0) / 150.0) +     // Nile Valley
+                        0.050 * Math.exp(-distSq(lng, lat, 22.0, -34.0) / 180.0) +    // South African LSA
+                        0.055 * Math.exp(-distSq(lng, lat, 78.0, 22.0) / 180.0) +     // India
+                        0.060 * Math.exp(-distSq(lng, lat, 115.0, 30.0) / 180.0) +    // Yangtze / South China
+                        0.045 * Math.exp(-distSq(lng, lat, 135.0, -25.0) / 220.0);    // Sahul forager network
 
                     dens = Math.max(densEurope, Math.max(densBeringia, Math.max(densAmericasPreLGM, densAsiaAfrica)));
                 } else if (year <= -15000) {
                     // -20,000 BP: LGM Paroxysm Refugia & White Sands Peak
                     double densSolutrean =
-                        0.25 * Math.exp(-distSq(lng, lat, 0.5, 44.8) / 90.0) +    // Dordogne & Aquitaine Solutrean Core (Laugerie-Haute, Solutré)
-                        0.22 * Math.exp(-distSq(lng, lat, -4.5, 43.4) / 80.0) +   // Cantabrian / Altamira Solutrean
-                        0.18 * Math.exp(-distSq(lng, lat, -3.5, 38.0) / 100.0) +   // Iberian Mediterranean (Parpalló)
-                        0.16 * Math.exp(-distSq(lng, lat, -8.5, 37.1) / 90.0);    // Portuguese Estremadura (Vale Almoinha)
+                        0.130 * Math.exp(-distSq(lng, lat, 0.5, 44.8) / 60.0) +    // Dordogne & Aquitaine Solutrean Core (Laugerie-Haute, Solutré)
+                        0.115 * Math.exp(-distSq(lng, lat, -4.5, 43.4) / 50.0) +   // Cantabrian / Altamira Solutrean
+                        0.090 * Math.exp(-distSq(lng, lat, -3.5, 38.0) / 60.0) +   // Iberian Mediterranean (Parpalló)
+                        0.080 * Math.exp(-distSq(lng, lat, -8.5, 37.1) / 60.0);    // Portuguese Estremadura (Vale Almoinha)
 
                     double densMedEpigravettian =
-                        0.18 * Math.exp(-distSq(lng, lat, 15.5, 41.7) / 90.0) +   // Grotta Paglicci / Italian Epigravettian
-                        0.15 * Math.exp(-distSq(lng, lat, 23.0, 38.5) / 100.0);    // Franchthi / Greek refuge
+                        0.095 * Math.exp(-distSq(lng, lat, 15.5, 41.7) / 60.0) +   // Grotta Paglicci / Italian Epigravettian
+                        0.080 * Math.exp(-distSq(lng, lat, 23.0, 38.5) / 60.0);    // Franchthi / Greek refuge
 
                     double densEasternRefugia =
-                        0.16 * Math.exp(-distSq(lng, lat, 35.0, 50.5) / 110.0) +  // Mezhirich / Dnepr mammoth bone settlements
-                        0.14 * Math.exp(-distSq(lng, lat, 39.0, 51.4) / 100.0);    // Kostenki
+                        0.085 * Math.exp(-distSq(lng, lat, 35.0, 50.5) / 70.0) +   // Mezhirich / Dnepr mammoth bone settlements
+                        0.075 * Math.exp(-distSq(lng, lat, 39.0, 51.4) / 70.0);    // Kostenki
 
-                    double densLevantAfrica = 0.015 +
-                        0.28 * Math.exp(-distSq(lng, lat, 35.5, 32.7) / 90.0) +      // Kebaran Levant (Ohalo II / Sea of Galilee)
-                        0.18 * Math.exp(-distSq(lng, lat, 32.5, 25.5) / 180.0) +     // Nile valley (Wadi Kubbaniya)
-                        0.10 * Math.exp(-distSq(lng, lat, 22.0, -34.0) / 200.0) +    // South Africa
-                        0.09 * Math.exp(-distSq(lng, lat, 80.0, 22.0) / 250.0) +     // India
-                        0.12 * Math.exp(-distSq(lng, lat, 114.0, 28.0) / 250.0);     // South China
+                    double densLevantAfrica = 0.010 +
+                        0.140 * Math.exp(-distSq(lng, lat, 35.5, 32.7) / 60.0) +      // Kebaran Levant (Ohalo II / Sea of Galilee)
+                        0.090 * Math.exp(-distSq(lng, lat, 32.5, 25.5) / 120.0) +     // Nile valley (Wadi Kubbaniya)
+                        0.050 * Math.exp(-distSq(lng, lat, 22.0, -34.0) / 150.0) +    // South Africa
+                        0.050 * Math.exp(-distSq(lng, lat, 80.0, 22.0) / 180.0) +     // India
+                        0.060 * Math.exp(-distSq(lng, lat, 114.0, 28.0) / 180.0);     // South China
 
                     double densAmericasLGM = 0.0;
-                    if (lng >= -135.0 && lng <= -30.0) {
-                        double dPac = distToPolyline(lng, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
-                        if (dPac <= 4.0) densAmericasLGM = Math.max(densAmericasLGM, 0.065 * Math.exp(-dPac / 2.0));
-                        if (lat <= 38.0 && lat >= -54.0) {
-                            double dAndes = distToPolyline(lng, lat, ROUTE_ANDES_CORRIDOR);
-                            if (dAndes <= 3.5) densAmericasLGM = Math.max(densAmericasLGM, 0.050 * Math.exp(-dAndes / 2.0));
-                            double dAmazon = distToPolyline(lng, lat, ROUTE_AMAZON_MAINSTEM);
-                            if (dAmazon <= 3.5) densAmericasLGM = Math.max(densAmericasLGM, 0.040 * Math.exp(-dAmazon / 2.2));
-                            double dSavanna = distToPolyline(lng, lat, ROUTE_BRAZIL_SAVANNA);
-                            if (dSavanna <= 3.5) densAmericasLGM = Math.max(densAmericasLGM, 0.045 * Math.exp(-dSavanna / 2.2));
+                    double dPac = distToPolyline(lng, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
+                    if (dPac <= 4.0) densAmericasLGM = Math.max(densAmericasLGM, 0.050 * Math.exp(-dPac / 2.0));
+                    double dAndes = distToPolyline(lng, lat, ROUTE_ANDES_CORRIDOR);
+                    if (dAndes <= 3.5) densAmericasLGM = Math.max(densAmericasLGM, 0.040 * Math.exp(-dAndes / 2.0));
+                    double dAmazon = distToPolyline(lng, lat, ROUTE_AMAZON_MAINSTEM);
+                    if (dAmazon <= 3.5) densAmericasLGM = Math.max(densAmericasLGM, 0.035 * Math.exp(-dAmazon / 2.2));
+                    double dSavanna = distToPolyline(lng, lat, ROUTE_BRAZIL_SAVANNA);
+                    if (dSavanna <= 3.5) densAmericasLGM = Math.max(densAmericasLGM, 0.038 * Math.exp(-dSavanna / 2.2));
 
-                            densAmericasLGM = Math.max(densAmericasLGM,
-                                0.09 * Math.exp(-distSq(lng, lat, -106.3, 32.8) / 50.0) + // White Sands trackways (attested 23k-21k BP)
-                                0.05 * Math.exp(-distSq(lng, lat, -77.3, 36.8) / 50.0) +   // Cactus Hill
-                                0.05 * Math.exp(-distSq(lng, lat, -83.9, 30.1) / 50.0)    // Page-Ladson
-                            );
-                            densAmericasLGM = Math.max(densAmericasLGM, 0.015); // Diffuse southern interior foragers
-                        }
+                    densAmericasLGM = Math.max(densAmericasLGM,
+                        0.065 * Math.exp(-distSq(lng, lat, -106.3, 32.8) / 35.0) + // White Sands trackways (attested 23k-21k BP)
+                        0.040 * Math.exp(-distSq(lng, lat, -77.3, 36.8) / 35.0) +   // Cactus Hill
+                        0.040 * Math.exp(-distSq(lng, lat, -83.9, 30.1) / 35.0)    // Page-Ladson
+                    );
+
+                    double densBeringiaLGM = 0.0;
+                    double dBeringia = distToPolyline(lng, lat, ROUTE_BERINGIA_STEPPE_CORRIDOR);
+                    if (dBeringia <= 5.0) {
+                        densBeringiaLGM = 0.045 * Math.exp(-dBeringia / 2.0);
                     }
 
-                    double densBeringiaLGM =
-                        0.08 * Math.exp(-distSq(lng, lat, -140.7, 67.1) / 110.0) + // Bluefish Caves
-                        0.08 * Math.exp(-distSq(lng, lat, 135.4, 70.7) / 110.0) +  // Yana RHS
-                        0.06 * Math.exp(-distSq(lng, lat, -165.0, 65.0) / 140.0); // Beringia Standstill
-
                     double densSahulLGM =
-                        0.10 * Math.exp(-distSq(lng, lat, 132.9, -12.5) / 140.0) + // Madjedbebe
-                        0.09 * Math.exp(-distSq(lng, lat, 143.0, -33.7) / 160.0) + // Lake Mungo
-                        0.08 * Math.exp(-distSq(lng, lat, 145.8, -42.5) / 100.0);  // Tasmania
+                        0.060 * Math.exp(-distSq(lng, lat, 132.9, -12.5) / 100.0) + // Madjedbebe
+                        0.055 * Math.exp(-distSq(lng, lat, 143.0, -33.7) / 120.0) + // Lake Mungo
+                        0.045 * Math.exp(-distSq(lng, lat, 145.8, -42.5) / 70.0);   // Tasmania
 
                     dens = Math.max(densSolutrean, Math.max(densMedEpigravettian,
                            Math.max(densEasternRefugia, Math.max(densLevantAfrica,
@@ -2100,236 +2171,223 @@ public class HistoricalMapGenerator {
                 } else if (year <= -12500) {
                     // -14,000 BP: Deglaciation, Active Pacific Kelp Highway & Pre-Clovis Landfalls (Monte Verde II ~14.5k BP)
                     double densKelpHighway = 0.0;
-                    if (lng >= -135.0 && lng <= -30.0) {
-                        double dPac = distToPolyline(lng, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
-                        if (dPac <= 4.5) densKelpHighway = Math.max(densKelpHighway, 0.12 * Math.exp(-dPac / 2.2));
-                        double dAndes = distToPolyline(lng, lat, ROUTE_ANDES_CORRIDOR);
-                        if (dAndes <= 3.5) densKelpHighway = Math.max(densKelpHighway, 0.08 * Math.exp(-dAndes / 2.0));
-                        double dAmazon = distToPolyline(lng, lat, ROUTE_AMAZON_MAINSTEM);
-                        if (dAmazon <= 3.5) densKelpHighway = Math.max(densKelpHighway, 0.06 * Math.exp(-dAmazon / 2.2));
-                        double dSavanna = distToPolyline(lng, lat, ROUTE_BRAZIL_SAVANNA);
-                        if (dSavanna <= 3.5) densKelpHighway = Math.max(densKelpHighway, 0.06 * Math.exp(-dSavanna / 2.2));
+                    double dPac = distToPolyline(lng, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
+                    if (dPac <= 4.5) densKelpHighway = Math.max(densKelpHighway, 0.075 * Math.exp(-dPac / 2.0));
+                    double dAndes = distToPolyline(lng, lat, ROUTE_ANDES_CORRIDOR);
+                    if (dAndes <= 3.5) densKelpHighway = Math.max(densKelpHighway, 0.060 * Math.exp(-dAndes / 2.0));
+                    double dAmazon = distToPolyline(lng, lat, ROUTE_AMAZON_MAINSTEM);
+                    if (dAmazon <= 3.5) densKelpHighway = Math.max(densKelpHighway, 0.045 * Math.exp(-dAmazon / 2.2));
+                    double dSavanna = distToPolyline(lng, lat, ROUTE_BRAZIL_SAVANNA);
+                    if (dSavanna <= 3.5) densKelpHighway = Math.max(densKelpHighway, 0.050 * Math.exp(-dSavanna / 2.2));
 
-                        densKelpHighway = Math.max(densKelpHighway,
-                            0.12 * Math.exp(-distSq(lng, lat, -73.8, -41.8) / 40.0) +   // Monte Verde II Chile (14.5k BP)
-                            0.10 * Math.exp(-distSq(lng, lat, -79.0, -8.0) / 40.0) +    // Huaca Prieta / Paiján Peru
-                            0.09 * Math.exp(-distSq(lng, lat, -120.5, 42.7) / 40.0) +   // Paisley Caves OR
-                            0.10 * Math.exp(-distSq(lng, lat, -119.8, 34.2) / 40.0) +   // Channel Islands CA
-                            0.06 * Math.exp(-distSq(lng, lat, -80.4, 40.3) / 50.0) +    // Meadowcroft PA
-                            0.06 * Math.exp(-distSq(lng, lat, -77.3, 36.8) / 50.0)     // Cactus Hill VA
-                        );
-                        if (lat <= 44.0 && lat >= -54.0) {
-                            densKelpHighway = Math.max(densKelpHighway, 0.020);
-                        }
-                    }
+                    densKelpHighway = Math.max(densKelpHighway,
+                        0.080 * Math.exp(-distSq(lng, lat, -73.8, -41.8) / 30.0) +   // Monte Verde II Chile (14.5k BP)
+                        0.065 * Math.exp(-distSq(lng, lat, -79.0, -8.0) / 30.0) +    // Huaca Prieta / Paiján Peru
+                        0.060 * Math.exp(-distSq(lng, lat, -120.5, 42.7) / 30.0) +   // Paisley Caves OR
+                        0.065 * Math.exp(-distSq(lng, lat, -119.8, 34.2) / 30.0) +   // Channel Islands CA
+                        0.045 * Math.exp(-distSq(lng, lat, -80.4, 40.3) / 35.0) +    // Meadowcroft PA
+                        0.045 * Math.exp(-distSq(lng, lat, -77.3, 36.8) / 35.0)     // Cactus Hill VA
+                    );
 
-                    double densEuropeLateGlacial = 0.02 +
-                        0.26 * Math.exp(-distSq(lng, lat, 1.0, 45.0) / 120.0) +      // Magdalenian France
-                        0.20 * Math.exp(-distSq(lng, lat, 15.5, 41.7) / 100.0) +     // Epigravettian Italy
-                        0.16 * Math.exp(-distSq(lng, lat, 22.0, 44.5) / 100.0);     // Iron Gates
+                    double densEuropeLateGlacial = 0.015 +
+                        0.140 * Math.exp(-distSq(lng, lat, 1.0, 45.0) / 80.0) +      // Magdalenian France
+                        0.110 * Math.exp(-distSq(lng, lat, 15.5, 41.7) / 70.0) +     // Epigravettian Italy
+                        0.090 * Math.exp(-distSq(lng, lat, 22.0, 44.5) / 70.0);     // Iron Gates
 
-                    double densLevantLate = 0.04 +
-                        1.20 * Math.exp(-distSq(lng, lat, 35.58, 33.08) / 80.0) +    // Early Natufian pioneers
-                        0.25 * Math.exp(-distSq(lng, lat, 32.5, 25.5) / 160.0);
+                    double densLevantLate = 0.020 +
+                        0.350 * Math.exp(-distSq(lng, lat, 35.58, 33.08) / 40.0) +    // Early Natufian pioneers
+                        0.120 * Math.exp(-distSq(lng, lat, 32.5, 25.5) / 100.0);
 
-                    double densAsiaAfricaLate = 0.02 +
-                        0.20 * Math.exp(-distSq(lng, lat, 114.0, 34.5) / 160.0) +
-                        0.18 * Math.exp(-distSq(lng, lat, 139.5, 35.7) / 120.0) +
-                        0.16 * Math.exp(-distSq(lng, lat, 77.6, 22.9) / 160.0);
+                    double densAsiaAfricaLate = 0.015 +
+                        0.110 * Math.exp(-distSq(lng, lat, 114.0, 34.5) / 120.0) +
+                        0.100 * Math.exp(-distSq(lng, lat, 139.5, 35.7) / 90.0) +
+                        0.090 * Math.exp(-distSq(lng, lat, 77.6, 22.9) / 120.0);
 
                     dens = Math.max(densKelpHighway, Math.max(densEuropeLateGlacial, Math.max(densLevantLate, densAsiaAfricaLate)));
                 } else if (year <= -10500) {
-                    // -10,900 BP: Younger Dryas & Clovis Horizon / Natufian Epipaleolithic Apex
-                    double densNatufian = 0.05 +
-                        3.5 * Math.exp(-distSq(lng, lat, 35.58, 33.08) / 80.0) +    // Ain Mallaha / Hula Valley Natufian core
-                        3.0 * Math.exp(-distSq(lng, lat, 35.22, 32.92) / 80.0) +    // Hayonim Cave
-                        2.5 * Math.exp(-distSq(lng, lat, 37.00, 32.00) / 90.0) +    // Shubayqa 1 (Black Desert / early bread)
-                        2.0 * Math.exp(-distSq(lng, lat, 41.50, 38.10) / 100.0);   // Hallan Çemi / Upper Tigris proto-sedentism
+                    // -10,900 BP: Younger Dryas & Clovis Horizon / Natufian Epipaleolithic
+                    double densNatufian = 0.030 +
+                        0.55 * Math.exp(-distSq(lng, lat, 35.58, 33.08) / 25.0) +    // Ain Mallaha / Hula Valley Natufian core
+                        0.45 * Math.exp(-distSq(lng, lat, 35.22, 32.92) / 25.0) +    // Hayonim Cave
+                        0.40 * Math.exp(-distSq(lng, lat, 37.00, 32.00) / 30.0) +    // Shubayqa 1 (Black Desert / early bread)
+                        0.35 * Math.exp(-distSq(lng, lat, 41.50, 38.10) / 35.0);   // Hallan Çemi / Upper Tigris proto-sedentism
 
-                    // Americas: Continuous structured riverine networks & Ice-Free Corridor
+                    // Americas: Structured riverine networks & Ice-Free Corridor
                     double densAmericasYD = 0.0;
-                    if (lng >= -135.0 && lng <= -30.0) {
-                        // North American Riverine Networks & Ice-Free Corridor
-                        double dPac = distToPolyline(lng, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
-                        if (dPac <= 4.0) densAmericasYD = Math.max(densAmericasYD, 0.10 * Math.exp(-dPac / 2.0));
-                        double dIFC = distToPolyline(lng, lat, ROUTE_ICE_FREE_CORRIDOR);
-                        if (dIFC <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.12 * Math.exp(-dIFC / 2.0));
-                        double dCol = distToPolyline(lng, lat, ROUTE_COLUMBIA_SNAKE);
-                        if (dCol <= 3.0) densAmericasYD = Math.max(densAmericasYD, 0.12 * Math.exp(-dCol / 2.0));
-                        double dMiss = distToPolyline(lng, lat, ROUTE_MISSISSIPPI_OHIO);
-                        if (dMiss <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.14 * Math.exp(-dMiss / 2.0));
-                        double dLowMiss = distToPolyline(lng, lat, ROUTE_LOWER_MISSISSIPPI);
-                        if (dLowMiss <= 3.0) densAmericasYD = Math.max(densAmericasYD, 0.14 * Math.exp(-dLowMiss / 2.0));
-                        double dSE = distToPolyline(lng, lat, ROUTE_SOUTHEAST_FLORIDA);
-                        if (dSE <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.12 * Math.exp(-dSE / 2.0));
+                    double dPac = distToPolyline(lng, lat, ROUTE_PACIFIC_KELP_HIGHWAY);
+                    if (dPac <= 4.0) densAmericasYD = Math.max(densAmericasYD, 0.075 * Math.exp(-dPac / 2.0));
+                    double dIFC = distToPolyline(lng, lat, ROUTE_ICE_FREE_CORRIDOR);
+                    if (dIFC <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.080 * Math.exp(-dIFC / 2.0));
+                    double dCol = distToPolyline(lng, lat, ROUTE_COLUMBIA_SNAKE);
+                    if (dCol <= 3.0) densAmericasYD = Math.max(densAmericasYD, 0.080 * Math.exp(-dCol / 2.0));
+                    double dMiss = distToPolyline(lng, lat, ROUTE_MISSISSIPPI_OHIO);
+                    if (dMiss <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.090 * Math.exp(-dMiss / 2.0));
+                    double dLowMiss = distToPolyline(lng, lat, ROUTE_LOWER_MISSISSIPPI);
+                    if (dLowMiss <= 3.0) densAmericasYD = Math.max(densAmericasYD, 0.090 * Math.exp(-dLowMiss / 2.0));
+                    double dSE = distToPolyline(lng, lat, ROUTE_SOUTHEAST_FLORIDA);
+                    if (dSE <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.080 * Math.exp(-dSE / 2.0));
 
-                        // South American Riverine & Andean Corridors
-                        double dAndes = distToPolyline(lng, lat, ROUTE_ANDES_CORRIDOR);
-                        if (dAndes <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.14 * Math.exp(-dAndes / 2.0));
-                        double dAmazon = distToPolyline(lng, lat, ROUTE_AMAZON_MAINSTEM);
-                        if (dAmazon <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.12 * Math.exp(-dAmazon / 2.2));
-                        double dMadeira = distToPolyline(lng, lat, ROUTE_AMAZON_MADEIRA);
-                        if (dMadeira <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.10 * Math.exp(-dMadeira / 2.2));
-                        double dSavanna = distToPolyline(lng, lat, ROUTE_BRAZIL_SAVANNA);
-                        if (dSavanna <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.12 * Math.exp(-dSavanna / 2.2));
+                    double dAndes = distToPolyline(lng, lat, ROUTE_ANDES_CORRIDOR);
+                    if (dAndes <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.090 * Math.exp(-dAndes / 2.0));
+                    double dAmazon = distToPolyline(lng, lat, ROUTE_AMAZON_MAINSTEM);
+                    if (dAmazon <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.080 * Math.exp(-dAmazon / 2.2));
+                    double dMadeira = distToPolyline(lng, lat, ROUTE_AMAZON_MADEIRA);
+                    if (dMadeira <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.070 * Math.exp(-dMadeira / 2.2));
+                    double dSavanna = distToPolyline(lng, lat, ROUTE_BRAZIL_SAVANNA);
+                    if (dSavanna <= 3.5) densAmericasYD = Math.max(densAmericasYD, 0.080 * Math.exp(-dSavanna / 2.2));
 
-                        // Key Type Sites
-                        densAmericasYD = Math.max(densAmericasYD,
-                            0.18 * Math.exp(-distSq(lng, lat, -103.3, 34.3) / 60.0) +   // Blackwater Draw Clovis type site
-                            0.16 * Math.exp(-distSq(lng, lat, -97.7, 30.9) / 60.0) +    // Gault Site TX
-                            0.14 * Math.exp(-distSq(lng, lat, -110.2, 31.6) / 50.0) +   // Murray Springs AZ
-                            0.12 * Math.exp(-distSq(lng, lat, -75.1, 41.0) / 60.0) +    // Shawnee-Minisink PA
-                            0.14 * Math.exp(-distSq(lng, lat, -73.8, -41.8) / 50.0) +   // Monte Verde II Chile
-                            0.12 * Math.exp(-distSq(lng, lat, -77.7, -9.2) / 50.0) +    // Guitarrero Cave Peru
-                            0.12 * Math.exp(-distSq(lng, lat, -54.5, -2.4) / 50.0) +    // Caverna da Pedra Pintada Amazonia
-                            0.10 * Math.exp(-distSq(lng, lat, -44.0, -19.5) / 50.0) +   // Lapa do Santo Brazil
-                            0.08 * Math.exp(-distSq(lng, lat, -70.0, -52.0) / 50.0)     // Fell's Cave Patagonia
-                        );
-                        if (lat <= 48.0 && lat >= -54.0) {
-                            densAmericasYD = Math.max(densAmericasYD, 0.025); // Subtle baseline
-                        }
-                    }
+                    densAmericasYD = Math.max(densAmericasYD,
+                        0.100 * Math.exp(-distSq(lng, lat, -103.3, 34.3) / 35.0) +   // Blackwater Draw Clovis type site
+                        0.090 * Math.exp(-distSq(lng, lat, -97.7, 30.9) / 35.0) +    // Gault Site TX
+                        0.080 * Math.exp(-distSq(lng, lat, -110.2, 31.6) / 30.0) +   // Murray Springs AZ
+                        0.070 * Math.exp(-distSq(lng, lat, -75.1, 41.0) / 35.0) +    // Shawnee-Minisink PA
+                        0.085 * Math.exp(-distSq(lng, lat, -73.8, -41.8) / 30.0) +   // Monte Verde II Chile
+                        0.075 * Math.exp(-distSq(lng, lat, -77.7, -9.2) / 30.0) +    // Guitarrero Cave Peru
+                        0.075 * Math.exp(-distSq(lng, lat, -54.5, -2.4) / 30.0) +    // Caverna da Pedra Pintada Amazonia
+                        0.065 * Math.exp(-distSq(lng, lat, -44.0, -19.5) / 30.0) +   // Lapa do Santo Brazil
+                        0.055 * Math.exp(-distSq(lng, lat, -70.0, -52.0) / 30.0)     // Fell's Cave Patagonia
+                    );
 
-                    double densEuropeYD = 0.02 +
-                        0.30 * Math.exp(-distSq(lng, lat, 1.0, 45.0) / 120.0) +      // Franco-Cantabrian Late Magdalenian/Azilian
-                        0.22 * Math.exp(-distSq(lng, lat, 3.0, 49.5) / 120.0) +      // Federmesser / Ahrensburgian Paris/Rhine
-                        0.20 * Math.exp(-distSq(lng, lat, 15.5, 41.7) / 100.0) +     // Epigravettian Italy
-                        0.16 * Math.exp(-distSq(lng, lat, 35.0, 50.5) / 120.0);     // Dnepr mammoth/reindeer camp
+                    double densEuropeYD = 0.015 +
+                        0.160 * Math.exp(-distSq(lng, lat, 1.0, 45.0) / 80.0) +      // Franco-Cantabrian Late Magdalenian/Azilian
+                        0.120 * Math.exp(-distSq(lng, lat, 3.0, 49.5) / 80.0) +      // Federmesser / Ahrensburgian Paris/Rhine
+                        0.110 * Math.exp(-distSq(lng, lat, 15.5, 41.7) / 70.0) +     // Epigravettian Italy
+                        0.090 * Math.exp(-distSq(lng, lat, 35.0, 50.5) / 80.0);     // Dnepr mammoth/reindeer camp
 
-                    double densAsiaAfricaYD = 0.02 +
-                        0.25 * Math.exp(-distSq(lng, lat, 114.0, 34.5) / 160.0) +    // Yellow River Late Paleolithic
-                        0.22 * Math.exp(-distSq(lng, lat, 117.2, 28.7) / 140.0) +    // Xianrendong early pottery
-                        0.20 * Math.exp(-distSq(lng, lat, 139.5, 35.7) / 120.0) +    // Incipient Jomon Japan
-                        0.18 * Math.exp(-distSq(lng, lat, 77.6, 22.9) / 160.0) +     // Bhimbetka India
-                        0.25 * Math.exp(-distSq(lng, lat, 32.5, 25.5) / 160.0) +     // Nile Valley
-                        0.16 * Math.exp(-distSq(lng, lat, -2.4, 34.8) / 120.0) +     // Taforalt Maghreb
-                        0.10 * Math.exp(-distSq(lng, lat, 143.0, -33.7) / 180.0);   // Sahul
+                    double densAsiaAfricaYD = 0.015 +
+                        0.130 * Math.exp(-distSq(lng, lat, 114.0, 34.5) / 100.0) +    // Yellow River Late Paleolithic
+                        0.120 * Math.exp(-distSq(lng, lat, 117.2, 28.7) / 90.0) +     // Xianrendong early pottery
+                        0.110 * Math.exp(-distSq(lng, lat, 139.5, 35.7) / 80.0) +     // Incipient Jomon Japan
+                        0.100 * Math.exp(-distSq(lng, lat, 77.6, 22.9) / 100.0) +     // Bhimbetka India
+                        0.140 * Math.exp(-distSq(lng, lat, 32.5, 25.5) / 100.0) +     // Nile Valley
+                        0.090 * Math.exp(-distSq(lng, lat, -2.4, 34.8) / 80.0) +      // Taforalt Maghreb
+                        0.060 * Math.exp(-distSq(lng, lat, 143.0, -33.7) / 120.0);   // Sahul
 
                     dens = Math.max(densNatufian, Math.max(densAmericasYD,
                            Math.max(densEuropeYD, densAsiaAfricaYD)));
                 } else if (year <= -9000) {
                     // -10,000 BP: Early Holocene / Pre-Pottery Neolithic A (Göbekli Tepe, Jericho, Folsom)
-                    double densPPNA = 0.08 +
-                        7.5 * Math.exp(-distSq(lng, lat, 38.92, 37.22) / 70.0) +    // Göbekli Tepe / Karahan Tepe Monumental Core
-                        6.5 * Math.exp(-distSq(lng, lat, 35.44, 31.87) / 70.0) +    // Jericho PPNA (Tell es-Sultan)
-                        5.5 * Math.exp(-distSq(lng, lat, 38.10, 35.90) / 80.0) +    // Mureybet / Jerf el Ahmar
-                        5.0 * Math.exp(-distSq(lng, lat, 39.70, 38.20) / 80.0) +    // Çayönü Tepesi
-                        4.0 * Math.exp(-distSq(lng, lat, 47.40, 32.50) / 90.0);     // Ali Kosh Zagros
+                    double densPPNA = 0.040 +
+                        1.10 * Math.exp(-distSq(lng, lat, 38.92, 37.22) / 30.0) +    // Göbekli Tepe / Karahan Tepe Monumental Core
+                        0.95 * Math.exp(-distSq(lng, lat, 35.44, 31.87) / 30.0) +    // Jericho PPNA (Tell es-Sultan)
+                        0.80 * Math.exp(-distSq(lng, lat, 38.10, 35.90) / 35.0) +    // Mureybet / Jerf el Ahmar
+                        0.75 * Math.exp(-distSq(lng, lat, 39.70, 38.20) / 35.0) +    // Çayönü Tepesi
+                        0.60 * Math.exp(-distSq(lng, lat, 47.40, 32.50) / 40.0);     // Ali Kosh Zagros
 
-                    double densChinaPPN = 0.04 +
-                        3.5 * Math.exp(-distSq(lng, lat, 113.6, 34.4) / 120.0) +    // Peiligang / Yellow River proto-millet
-                        3.0 * Math.exp(-distSq(lng, lat, 120.0, 29.5) / 120.0) +    // Shangshan Yangtze rice foragers
-                        2.5 * Math.exp(-distSq(lng, lat, 111.5, 25.5) / 120.0) +    // Yuchanyan
-                        2.0 * Math.exp(-distSq(lng, lat, 139.5, 35.7) / 100.0);     // Initial Jomon Japan
+                    double densChinaPPN = 0.025 +
+                        0.50 * Math.exp(-distSq(lng, lat, 113.6, 34.4) / 60.0) +    // Peiligang / Yellow River proto-millet
+                        0.45 * Math.exp(-distSq(lng, lat, 120.0, 29.5) / 60.0) +    // Shangshan Yangtze rice foragers
+                        0.35 * Math.exp(-distSq(lng, lat, 111.5, 25.5) / 60.0) +    // Yuchanyan
+                        0.30 * Math.exp(-distSq(lng, lat, 139.5, 35.7) / 50.0);     // Initial Jomon Japan
 
-                    double densEuropeMeso = 0.03 +
-                        0.60 * Math.exp(-distSq(lng, lat, 22.0, 44.5) / 100.0) +     // Lepenski Vir / Danube Iron Gates
-                        0.45 * Math.exp(-distSq(lng, lat, 23.1, 37.4) / 90.0) +      // Franchthi Cave Greece
-                        0.40 * Math.exp(-distSq(lng, lat, 0.5, 54.2) / 110.0) +      // Star Carr / Doggerland Mesolithic
-                        0.35 * Math.exp(-distSq(lng, lat, 12.0, 55.5) / 110.0) +     // Maglemosian Scandinavia
-                        0.35 * Math.exp(-distSq(lng, lat, -4.0, 43.4) / 100.0);     // Cantabrian Mesolithic
+                    double densEuropeMeso = 0.020 +
+                        0.25 * Math.exp(-distSq(lng, lat, 22.0, 44.5) / 50.0) +     // Lepenski Vir / Danube Iron Gates
+                        0.20 * Math.exp(-distSq(lng, lat, 23.1, 37.4) / 45.0) +     // Franchthi Cave Greece
+                        0.18 * Math.exp(-distSq(lng, lat, 0.5, 54.2) / 55.0) +      // Star Carr / Doggerland Mesolithic
+                        0.15 * Math.exp(-distSq(lng, lat, 12.0, 55.5) / 55.0) +     // Maglemosian Scandinavia
+                        0.15 * Math.exp(-distSq(lng, lat, -4.0, 43.4) / 50.0);     // Cantabrian Mesolithic
 
-                    double densAmericasEarly = 0.02 +
-                        0.22 * Math.exp(-distSq(lng, lat, -103.0, 36.0) / 120.0) +   // Folsom type site NM
-                        0.20 * Math.exp(-distSq(lng, lat, -99.5, 18.0) / 100.0) +    // Balsas Valley Mesoamerica
-                        0.18 * Math.exp(-distSq(lng, lat, -79.3, -7.7) / 100.0) +    // Paiján complex Peru
-                        0.15 * Math.exp(-distSq(lng, lat, -80.8, -2.2) / 100.0) +    // Las Vegas Ecuador
-                        0.14 * Math.exp(-distSq(lng, lat, -42.5, -8.8) / 120.0);    // Serra da Capivara Brazil
+                    double densAmericasEarly = 0.015 +
+                        0.12 * Math.exp(-distSq(lng, lat, -103.0, 36.0) / 60.0) +   // Folsom type site NM
+                        0.11 * Math.exp(-distSq(lng, lat, -99.5, 18.0) / 50.0) +    // Balsas Valley Mesoamerica
+                        0.10 * Math.exp(-distSq(lng, lat, -79.3, -7.7) / 50.0) +    // Paiján complex Peru
+                        0.09 * Math.exp(-distSq(lng, lat, -80.8, -2.2) / 50.0) +    // Las Vegas Ecuador
+                        0.08 * Math.exp(-distSq(lng, lat, -42.5, -8.8) / 60.0);    // Serra da Capivara Brazil
 
-                    double densAfricaSaharaEarly = 0.03 +
-                        0.60 * Math.exp(-distSq(lng, lat, 32.5, 25.5) / 140.0) +     // Nile Valley Epipaleolithic
-                        0.45 * Math.exp(-distSq(lng, lat, 14.0, 13.0) / 160.0) +     // Lake Mega-Chad aquatic foragers
-                        0.40 * Math.exp(-distSq(lng, lat, 8.0, 35.0) / 120.0) +      // Capsian culture Maghreb
-                        0.35 * Math.exp(-distSq(lng, lat, 68.0, 29.3) / 120.0) +     // Mehrgarh precursor Pakistan
-                        0.30 * Math.exp(-distSq(lng, lat, 77.6, 22.9) / 140.0) +     // Bhimbetka India
-                        0.25 * Math.exp(-distSq(lng, lat, 144.3, -5.8) / 120.0);    // Kuk Swamp Highlands proto-horticulture
+                    double densAfricaSaharaEarly = 0.020 +
+                        0.25 * Math.exp(-distSq(lng, lat, 32.5, 25.5) / 70.0) +     // Nile Valley Epipaleolithic
+                        0.20 * Math.exp(-distSq(lng, lat, 14.0, 13.0) / 80.0) +     // Lake Mega-Chad aquatic foragers
+                        0.18 * Math.exp(-distSq(lng, lat, 8.0, 35.0) / 60.0) +      // Capsian culture Maghreb
+                        0.16 * Math.exp(-distSq(lng, lat, 68.0, 29.3) / 60.0) +     // Mehrgarh precursor Pakistan
+                        0.14 * Math.exp(-distSq(lng, lat, 77.6, 22.9) / 70.0) +     // Bhimbetka India
+                        0.12 * Math.exp(-distSq(lng, lat, 144.3, -5.8) / 60.0);    // Kuk Swamp Highlands proto-horticulture
 
                     dens = Math.max(densPPNA, Math.max(densChinaPPN,
                            Math.max(densEuropeMeso, Math.max(densAmericasEarly, densAfricaSaharaEarly))));
                 } else if (year <= -7000) {
                     // -8,000 BP: Early Neolithic / 8.2 ka Event (Çatalhöyük, Jiahu, Mehrgarh, Early European Farmers)
-                    double densAnatoliaNeolithic = 0.15 +
-                        14.0 * Math.exp(-distSq(lng, lat, 32.83, 37.67) / 60.0) +   // Çatalhöyük Mega-Village Core
-                        11.0 * Math.exp(-distSq(lng, lat, 30.10, 37.60) / 60.0) +   // Hacilar
-                        10.5 * Math.exp(-distSq(lng, lat, 35.95, 31.98) / 70.0) +   // Ain Ghazal Jordan
-                        9.5 * Math.exp(-distSq(lng, lat, 39.10, 36.50) / 80.0) +    // Tell Sabi Abyad / Halaf
-                        9.0 * Math.exp(-distSq(lng, lat, 44.90, 35.60) / 80.0) +    // Jarmo Zagros
-                        8.5 * Math.exp(-distSq(lng, lat, 47.20, 34.40) / 80.0);     // Ganj Dareh
+                    double densAnatoliaNeolithic = 0.08 +
+                        3.20 * Math.exp(-distSq(lng, lat, 32.83, 37.67) / 40.0) +   // Çatalhöyük Mega-Village Core
+                        2.50 * Math.exp(-distSq(lng, lat, 30.10, 37.60) / 40.0) +   // Hacilar
+                        2.40 * Math.exp(-distSq(lng, lat, 35.95, 31.98) / 45.0) +   // Ain Ghazal Jordan
+                        2.20 * Math.exp(-distSq(lng, lat, 39.10, 36.50) / 50.0) +   // Tell Sabi Abyad / Halaf
+                        2.00 * Math.exp(-distSq(lng, lat, 44.90, 35.60) / 50.0) +   // Jarmo Zagros
+                        1.80 * Math.exp(-distSq(lng, lat, 47.20, 34.40) / 50.0);   // Ganj Dareh
 
-                    double densChinaNeolithic = 0.10 +
-                        11.5 * Math.exp(-distSq(lng, lat, 113.6, 33.6) / 80.0) +    // Jiahu (Henan - flutes, fermented rice)
-                        10.0 * Math.exp(-distSq(lng, lat, 114.2, 36.7) / 90.0) +    // Cishan / Peiligang millet
-                        9.5 * Math.exp(-distSq(lng, lat, 120.2, 30.1) / 80.0) +     // Kuahuqiao wet rice
-                        8.0 * Math.exp(-distSq(lng, lat, 105.9, 35.0) / 90.0);     // Dadiwan Gansu
+                    double densChinaNeolithic = 0.06 +
+                        2.60 * Math.exp(-distSq(lng, lat, 113.6, 33.6) / 50.0) +    // Jiahu (Henan - flutes, fermented rice)
+                        2.20 * Math.exp(-distSq(lng, lat, 114.2, 36.7) / 60.0) +    // Cishan / Peiligang millet
+                        2.00 * Math.exp(-distSq(lng, lat, 120.2, 30.1) / 50.0) +    // Kuahuqiao wet rice
+                        1.80 * Math.exp(-distSq(lng, lat, 105.9, 35.0) / 60.0);     // Dadiwan Gansu
 
-                    double densEuropeEEF = 0.08 +
-                        8.5 * Math.exp(-distSq(lng, lat, 22.8, 39.3) / 70.0) +      // Sesklo / Thessaly Early Neolithic
-                        7.5 * Math.exp(-distSq(lng, lat, 20.5, 44.8) / 80.0) +      // Starčevo-Körös-Criş Danube basin
-                        6.5 * Math.exp(-distSq(lng, lat, 9.0, 44.0) / 80.0) +       // Cardial / Impressed Ware Liguria/Provence
-                        6.0 * Math.exp(-distSq(lng, lat, 16.0, 48.5) / 90.0) +      // Early LBK pioneers Austria/Moravia
-                        5.5 * Math.exp(-distSq(lng, lat, 3.0, 41.5) / 80.0);       // Cardial Catalonia
+                    double densEuropeEEF = 0.05 +
+                        1.80 * Math.exp(-distSq(lng, lat, 22.8, 39.3) / 50.0) +      // Sesklo / Thessaly Early Neolithic
+                        1.60 * Math.exp(-distSq(lng, lat, 20.5, 44.8) / 55.0) +      // Starčevo-Körös-Criş Danube basin
+                        1.40 * Math.exp(-distSq(lng, lat, 9.0, 44.0) / 55.0) +       // Cardial / Impressed Ware Liguria/Provence
+                        1.30 * Math.exp(-distSq(lng, lat, 16.0, 48.5) / 60.0) +      // Early LBK pioneers Austria/Moravia
+                        1.20 * Math.exp(-distSq(lng, lat, 3.0, 41.5) / 55.0);       // Cardial Catalonia
 
-                    double densMehrgarhIndus = 0.08 +
-                        9.5 * Math.exp(-distSq(lng, lat, 68.05, 29.28) / 70.0) +    // Mehrgarh Period I-II Neolithic
-                        4.5 * Math.exp(-distSq(lng, lat, 81.5, 25.0) / 100.0);     // Vindhya / Ganges early farming
+                    double densMehrgarhIndus = 0.05 +
+                        2.10 * Math.exp(-distSq(lng, lat, 68.05, 29.28) / 45.0) +    // Mehrgarh Period I-II Neolithic
+                        1.00 * Math.exp(-distSq(lng, lat, 81.5, 25.0) / 70.0);     // Vindhya / Ganges early farming
 
-                    double densGreenSaharaPastoral = 0.06 +
-                        7.0 * Math.exp(-distSq(lng, lat, 30.58, 22.53) / 80.0) +    // Nabta Playa Megalithic Calendar Center
-                        6.5 * Math.exp(-distSq(lng, lat, 30.85, 29.35) / 80.0) +    // Faiyum A Early Agriculture
-                        5.0 * Math.exp(-distSq(lng, lat, 14.5, 13.5) / 120.0) +     // Lake Mega-Chad Pastoralists
-                        4.5 * Math.exp(-distSq(lng, lat, 21.5, 17.0) / 120.0);     // Ennedi / Tibesti Cattle Herders
+                    double densGreenSaharaPastoral = 0.04 +
+                        1.50 * Math.exp(-distSq(lng, lat, 30.58, 22.53) / 55.0) +    // Nabta Playa Megalithic Calendar Center
+                        1.40 * Math.exp(-distSq(lng, lat, 30.85, 29.35) / 55.0) +    // Faiyum A Early Agriculture
+                        1.10 * Math.exp(-distSq(lng, lat, 14.5, 13.5) / 80.0) +     // Lake Mega-Chad Pastoralists
+                        0.95 * Math.exp(-distSq(lng, lat, 21.5, 17.0) / 80.0);     // Ennedi / Tibesti Cattle Herders
 
-                    double densAmericasArchaic = 0.03 +
-                        0.55 * Math.exp(-distSq(lng, lat, -79.2, -6.9) / 80.0) +     // Nanchoc Valley Peru (early irrigation)
-                        0.45 * Math.exp(-distSq(lng, lat, -96.4, 16.9) / 80.0) +     // Guila Naquitz Oaxaca
-                        0.40 * Math.exp(-distSq(lng, lat, -97.4, 18.4) / 80.0) +     // Tehuacan Valley
-                        0.30 * Math.exp(-distSq(lng, lat, -88.0, 37.0) / 120.0);    // Eastern North America Archaic
+                    double densAmericasArchaic = 0.02 +
+                        0.25 * Math.exp(-distSq(lng, lat, -79.2, -6.9) / 55.0) +     // Nanchoc Valley Peru (early irrigation)
+                        0.20 * Math.exp(-distSq(lng, lat, -96.4, 16.9) / 55.0) +     // Guila Naquitz Oaxaca
+                        0.18 * Math.exp(-distSq(lng, lat, -97.4, 18.4) / 55.0) +     // Tehuacan Valley
+                        0.15 * Math.exp(-distSq(lng, lat, -88.0, 37.0) / 80.0);    // Eastern North America Archaic
 
                     dens = Math.max(densAnatoliaNeolithic, Math.max(densChinaNeolithic,
                            Math.max(densEuropeEEF, Math.max(densMehrgarhIndus,
                            Math.max(densGreenSaharaPastoral, densAmericasArchaic)))));
                 } else if (year <= -4500) {
                     // -6,000 BP: Middle Neolithic / Ubaid Period & Green Sahara Optimum (Eridu, Yangshao, Vinča)
-                    double densUbaid = 0.25 +
-                        24.0 * Math.exp(-distSq(lng, lat, 45.99, 30.82) / 60.0) +   // Eridu Temple Core (Proto-Urban Ubaid)
-                        20.0 * Math.exp(-distSq(lng, lat, 45.88, 31.25) / 60.0) +   // Tell el-'Oueili
-                        18.0 * Math.exp(-distSq(lng, lat, 48.26, 32.19) / 70.0) +   // Susa I Susiana
-                        16.0 * Math.exp(-distSq(lng, lat, 43.27, 36.52) / 70.0);   // Tepe Gawra Northern Ubaid
+                    double densUbaid = 0.12 +
+                        6.50 * Math.exp(-distSq(lng, lat, 45.99, 30.82) / 40.0) +   // Eridu Temple Core (Proto-Urban Ubaid)
+                        5.50 * Math.exp(-distSq(lng, lat, 45.88, 31.25) / 40.0) +   // Tell el-'Oueili
+                        5.00 * Math.exp(-distSq(lng, lat, 48.26, 32.19) / 45.0) +   // Susa I Susiana
+                        4.50 * Math.exp(-distSq(lng, lat, 43.27, 36.52) / 45.0);   // Tepe Gawra Northern Ubaid
 
-                    double densEgyptPredynastic = 0.20 +
-                        18.0 * Math.exp(-distSq(lng, lat, 31.37, 26.99) / 70.0) +   // Badari Upper Egypt
-                        16.5 * Math.exp(-distSq(lng, lat, 30.82, 30.33) / 70.0) +   // Merimde Beni Salama Delta
-                        15.0 * Math.exp(-distSq(lng, lat, 32.78, 25.10) / 70.0);   // Hierakonpolis precursor
+                    double densEgyptPredynastic = 0.10 +
+                        5.00 * Math.exp(-distSq(lng, lat, 31.37, 26.99) / 45.0) +   // Badari Upper Egypt
+                        4.50 * Math.exp(-distSq(lng, lat, 30.82, 30.33) / 45.0) +   // Merimde Beni Salama Delta
+                        4.00 * Math.exp(-distSq(lng, lat, 32.78, 25.10) / 45.0);   // Hierakonpolis precursor
 
-                    double densChinaYangshao = 0.20 +
-                        18.5 * Math.exp(-distSq(lng, lat, 109.06, 34.27) / 70.0) +  // Banpo / Yangshao painted pottery
-                        17.0 * Math.exp(-distSq(lng, lat, 111.30, 34.70) / 70.0) +  // Miaodigou Core
-                        17.5 * Math.exp(-distSq(lng, lat, 121.38, 29.96) / 70.0) +  // Hemudu mature rice agriculture
-                        14.0 * Math.exp(-distSq(lng, lat, 120.60, 30.80) / 80.0) +  // Majiabang
-                        12.0 * Math.exp(-distSq(lng, lat, 119.50, 41.30) / 90.0);   // Hongshan Niuheliang
+                    double densChinaYangshao = 0.10 +
+                        5.00 * Math.exp(-distSq(lng, lat, 109.06, 34.27) / 45.0) +  // Banpo / Yangshao painted pottery
+                        4.50 * Math.exp(-distSq(lng, lat, 111.30, 34.70) / 45.0) +  // Miaodigou Core
+                        4.80 * Math.exp(-distSq(lng, lat, 121.38, 29.96) / 45.0) +  // Hemudu mature rice agriculture
+                        3.80 * Math.exp(-distSq(lng, lat, 120.60, 30.80) / 50.0) +  // Majiabang
+                        3.20 * Math.exp(-distSq(lng, lat, 119.50, 41.30) / 60.0);   // Hongshan Niuheliang
 
-                    double densEuropeVinca = 0.15 +
-                        16.0 * Math.exp(-distSq(lng, lat, 20.62, 44.76) / 60.0) +   // Vinča-Belo Brdo proto-urban tell
-                        14.5 * Math.exp(-distSq(lng, lat, 21.36, 43.20) / 60.0) +   // Pločnik copper metallurgy
-                        14.0 * Math.exp(-distSq(lng, lat, 27.00, 47.00) / 80.0) +   // Cucuteni-Trypillia early mega-sites
-                        13.0 * Math.exp(-distSq(lng, lat, 16.50, 48.20) / 80.0) +   // Lengyel / mature LBK
-                        12.0 * Math.exp(-distSq(lng, lat, -3.00, 47.60) / 70.0);   // Carnac / Atlantic Megalithic builders
+                    double densEuropeVinca = 0.08 +
+                        4.20 * Math.exp(-distSq(lng, lat, 20.62, 44.76) / 40.0) +   // Vinča-Belo Brdo proto-urban tell
+                        3.80 * Math.exp(-distSq(lng, lat, 21.36, 43.20) / 40.0) +   // Pločnik copper metallurgy
+                        3.60 * Math.exp(-distSq(lng, lat, 27.00, 47.00) / 50.0) +   // Cucuteni-Trypillia early mega-sites
+                        3.40 * Math.exp(-distSq(lng, lat, 16.50, 48.20) / 50.0) +   // Lengyel / mature LBK
+                        3.00 * Math.exp(-distSq(lng, lat, -3.00, 47.60) / 45.0);   // Carnac / Atlantic Megalithic builders
 
-                    double densIndusMehrgarh = 0.15 +
-                        15.0 * Math.exp(-distSq(lng, lat, 68.05, 29.28) / 70.0) +   // Mehrgarh Period III-IV
-                        12.0 * Math.exp(-distSq(lng, lat, 71.50, 28.50) / 80.0);   // Hakra Ware proto-Harappan
+                    double densIndusMehrgarh = 0.08 +
+                        4.00 * Math.exp(-distSq(lng, lat, 68.05, 29.28) / 45.0) +   // Mehrgarh Period III-IV
+                        3.20 * Math.exp(-distSq(lng, lat, 71.50, 28.50) / 50.0);   // Hakra Ware proto-Harappan
 
-                    double densGreenSaharaOptimum = 0.12 +
-                        10.0 * Math.exp(-distSq(lng, lat, 14.00, 13.50) / 100.0) +  // Lake Mega-Chad fishing & pastoralism
-                        8.5 * Math.exp(-distSq(lng, lat, 9.00, 25.50) / 100.0) +   // Tassili n'Ajjer Bovidian rock art
-                        7.5 * Math.exp(-distSq(lng, lat, 8.50, 18.00) / 100.0) +    // Air Mountains
-                        7.0 * Math.exp(-distSq(lng, lat, -9.50, 18.50) / 100.0);   // Dhar Tichitt precursor
+                    double densGreenSaharaOptimum = 0.06 +
+                        2.80 * Math.exp(-distSq(lng, lat, 14.00, 13.50) / 65.0) +  // Lake Mega-Chad fishing & pastoralism
+                        2.40 * Math.exp(-distSq(lng, lat, 9.00, 25.50) / 65.0) +   // Tassili n'Ajjer Bovidian rock art
+                        2.00 * Math.exp(-distSq(lng, lat, 8.50, 18.00) / 65.0) +    // Air Mountains
+                        1.80 * Math.exp(-distSq(lng, lat, -9.50, 18.50) / 65.0);   // Dhar Tichitt precursor
 
-                    double densAmericasMiddle = 0.05 +
-                        1.2 * Math.exp(-distSq(lng, lat, -77.50, -10.90) / 70.0) +  // Norte Chico / Caral precursor Peru
-                        0.9 * Math.exp(-distSq(lng, lat, -92.10, 32.30) / 80.0) +   // Watson Brake earthen mounds Louisiana
-                        0.8 * Math.exp(-distSq(lng, lat, -92.80, 15.20) / 80.0) +   // Chantuto shellmounds Chiapas
-                        0.8 * Math.exp(-distSq(lng, lat, -80.70, -2.00) / 80.0);   // Valdivia precursor Ecuador
+                    double densAmericasMiddle = 0.03 +
+                        0.45 * Math.exp(-distSq(lng, lat, -77.50, -10.90) / 45.0) +  // Norte Chico / Caral precursor Peru
+                        0.35 * Math.exp(-distSq(lng, lat, -92.10, 32.30) / 55.0) +   // Watson Brake earthen mounds Louisiana
+                        0.30 * Math.exp(-distSq(lng, lat, -92.80, 15.20) / 55.0) +   // Chantuto shellmounds Chiapas
+                        0.30 * Math.exp(-distSq(lng, lat, -80.70, -2.00) / 55.0);   // Valdivia precursor Ecuador
 
                     dens = Math.max(densUbaid, Math.max(densEgyptPredynastic,
                            Math.max(densChinaYangshao, Math.max(densEuropeVinca,
@@ -2338,8 +2396,8 @@ public class HistoricalMapGenerator {
 
                 dens *= weight;
                 if (dens > 0.0005) {
-                    double logNorm = Math.log1p(4.0 * dens) / Math.log1p(24.0); // reference 6.0 hab/km2
-                    int gray = (int) Math.clamp(15.0 + logNorm * 240.0, 15.0, 255.0);
+                    double logNorm = Math.log1p(2.5 * dens) / Math.log1p(2.5 * 35.0); // reference 35.0 hab/km2
+                    int gray = (int) Math.clamp(12.0 + logNorm * 243.0, 12.0, 255.0);
                     img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
                 } else {
                     img.setRGB(x, y, 0x000000);
@@ -5282,7 +5340,10 @@ public class HistoricalMapGenerator {
 
     private static double distSq(double lng1, double lat1, double lng2, double lat2) {
         double dlat = lat1 - lat2;
-        double dlng = (lng1 - lng2) * Math.cos(Math.toRadians((lat1 + lat2) * 0.5));
+        double dlng = lng1 - lng2;
+        if (dlng > 180.0) dlng -= 360.0;
+        else if (dlng < -180.0) dlng += 360.0;
+        dlng *= Math.cos(Math.toRadians((lat1 + lat2) * 0.5));
         return dlng * dlng + dlat * dlat;
     }
 
