@@ -1221,3 +1221,96 @@ Allows instantaneous branchless SIMD masking of active commercial routes and tra
 
 The native compute kernel (`native/ether-core-native`) is compiled with `-C target-cpu=native -C target-feature=+fma`, unlocking 512-bit ZMM vector registers processing 16 single-precision floats per instruction cycle on modern cloud instances (GCP Intel Xeon Ice Lake/Sapphire Rapids & AMD EPYC Milan/Genoa).
 
+---
+
+## 13. Paleolithic Cartographic Tensors, Dynamic Hydrogeology & Epistemic Calibration
+
+### 13.1 Prehistoric Physical Demographic Density Model & Logarithmic Normalization
+
+To eliminate synthetic over-saturation artifacts (where prehistoric hunter-gatherers were previously rendered as bright white halos across empty continents) and establish seamless continuity with post-$-10,000\text{ BP}$ empirical datasets (HYDE 3.4), demographic density $\rho(\mathbf{x}, t)$ is formulated in strict physical units of human foragers per square kilometer ($\text{hab/km}^2$):
+
+$$\rho(\mathbf{x}, t) = \rho_{\text{local}}(\mathbf{x}, t) \cdot w_{\text{occ}}(\mathbf{x}, t)$$
+
+where $w_{\text{occ}}(\mathbf{x}, t) \in [0.0, 1.0]$ is the hominin bioclimatic and geographic occupancy weight.
+
+#### Physical Density Tiers ($\text{hab/km}^2$):
+* **Sparse Mobile Foragers** (Eurasian Mammoth Steppe, African Savanna, Amazonia): $\rho \in [0.01, 0.04]\text{ hab/km}^2$.
+* **Resource-Dense Refugia & Coasts** (Franco-Cantabrian Solutrean, Klasies River, Sahul Coastal Rivers): $\rho \in [0.10, 0.35]\text{ hab/km}^2$.
+* **Late Epipaleolithic Sedentary Foragers** (Natufian Hamlets, Ain Mallaha, Hayonim, Shubayqa 1): $\rho \in [1.5, 4.5]\text{ hab/km}^2$.
+* **Pre-Pottery Neolithic A Monumental Cores** (Göbekli Tepe, Karahan Tepe, Jericho PPNA): $\rho \in [4.0, 7.5]\text{ hab/km}^2$.
+* **Early Agricultural Mega-Villages** (Çatalhöyük, Jiahu, Mehrgarh): $\rho \in [8.0, 15.0]\text{ hab/km}^2$.
+* **Proto-Urban Irrigation Hubs** (Ubaid Eridu, Predynastic Hierakonpolis, Banpo Yangshao): $\rho \in [15.0, 35.0]\text{ hab/km}^2$.
+
+#### Calibrated Logarithmic Transfer Function:
+Rasters map physical density $\rho$ to 8-bit luminance $[0, 255]$ matching the dynamic range of HYDE 3.4:
+
+$$\text{logNorm} = \frac{\ln(1 + 4.0 \times \rho)}{\ln(1 + 4.0 \times \rho_{\text{ref}})}, \quad \rho_{\text{ref}} = 6.0\text{ hab/km}^2$$
+
+$$\text{Luminance}(\rho) = \begin{cases} 
+0 & \text{if } \rho \le 0.0005\text{ hab/km}^2 \\
+\text{clamp}\left(15.0 + 240.0 \times \text{logNorm}, \, 15.0, \, 255.0\right) & \text{if } \rho > 0.0005\text{ hab/km}^2
+\end{cases}$$
+
+This guarantees that Paleolithic hunter-gatherer presence is visually subtle ($\text{RGB } 20-45$), LGM aggregation sites are distinct ($\text{RGB } 50-85$), and Natufian/Neolithic agricultural revolutions emerge as brilliant hubs ($\text{RGB } 175-255$).
+
+---
+
+### 13.2 Dual-Vector Americas Peopling & Glacial Corridor Kinetics
+
+The settlement of the Americas is formalized as a coupled dual-vector migration process combining marine littoral navigation and continental terrestrial corridors:
+
+#### 1. Pacific Kelp Highway Vector ($\mathcal{V}_{\text{Pacific}}$)
+Modeled as an orographic-maritime geodesic polyline spanning from Beringia to Patagonia along the rich kelp forest biome (*Macrocystis pyrifera*):
+$$\mathcal{L}_{\text{Pacific}} = \left[ (-168.0, 65.0) \to (-135.0, 57.0) \to (-124.0, 48.0) \to (-120.0, 34.0) \to (-105.0, 20.0) \to (-80.0, 8.0) \to (-78.0, -2.0) \to (-75.0, -35.0) \to (-73.2, -41.5) \to (-70.0, -53.0) \right]$$
+
+Local density decays with orthogonal distance $d_{\perp}(\mathbf{x}, \mathcal{L}_{\text{Pacific}})$:
+$$\rho_{\text{Kelp}}(\mathbf{x}) = \rho_{\text{coast0}} \cdot \exp\left(-\frac{d_{\perp}(\mathbf{x}, \mathcal{L}_{\text{Pacific}})}{\sigma_{\text{coast}}}\right), \quad \sigma_{\text{coast}} \approx 2.5^\circ$$
+
+Attested early coastal landfall includes Monte Verde II (Chile, $-14,500\text{ BP}$), Huaca Prieta (Peru, $-14,000\text{ BP}$), and Paisley Caves (Oregon, $-14,300\text{ BP}$).
+
+#### 2. Continental Interior Corridor & Pre-LGM Attested Enclaves ($\mathcal{V}_{\text{Interior}}$)
+* **Pre-LGM Footprints & Pioneer Bands ($-30,000\text{ to } -20,000\text{ BP}$)**: Attested archaeological enclaves south of the ice sheets:
+  - White Sands National Park trackways ($-106.3^\circ\text{W}, 32.8^\circ\text{N}$, $23,000-21,000\text{ BP}$): $\rho \approx 0.09\text{ hab/km}^2$.
+  - Chiquihuite Cave ($-103.5^\circ\text{W}, 24.2^\circ\text{N}$): $\rho \approx 0.04\text{ hab/km}^2$.
+  - Cactus Hill ($-77.3^\circ\text{W}, 36.8^\circ\text{N}$) & Page-Ladson ($-83.9^\circ\text{W}, 30.1^\circ\text{N}$): $\rho \approx 0.05\text{ hab/km}^2$.
+  - Pedra Furada (Brazil, $-42.5^\circ\text{W}, -9.3^\circ\text{S}$): $\rho \approx 0.04\text{ hab/km}^2$.
+* **Deglaciation Ice-Free Corridor ($-13,500\text{ BP onwards}$)**: Opening of the Mackenzie/Peace River corridor between Laurentide and Cordilleran sheets:
+  $$\mathcal{L}_{\text{IFC}} = \left[ (-140.0, 64.0) \to (-128.0, 58.0) \to (-120.0, 54.0) \to (-112.0, 49.0) \to (-104.0, 42.0) \right]$$
+  Enables rapid Clovis / Folsom big-game hunter expansion across the Great Plains and Mississippi Basin ($\rho \approx 0.10 - 0.18\text{ hab/km}^2$).
+
+---
+
+### 13.3 Dynamic Paleoclimate Groundwater & Aquifer Recharge
+
+Deep groundwater tables and regional aquifer yields ($\mathbf{T}_{\text{aquifer}}$) fluctuate dynamically across glacial-interglacial cycles governed by Darcy recharge fluxes $R(\mathbf{x}, t)$:
+
+$$\Phi_{\text{aquifer}}(\mathbf{x}, t) = \Phi_{\text{base}}(\mathbf{x}) \cdot \mathcal{K}_{\text{recharge}}(\mathbf{x}, t)$$
+
+#### Bioclimatic Recharge Multipliers $\mathcal{K}_{\text{recharge}}(\mathbf{x}, t)$:
+1. **MIS 5e Eemian Interglacial ($-100,000\text{ BP}$)**:
+   - *Green Sahara / Nubian Aquifer*: Intense West African Monsoon expands trans-Saharan paleorivers (Tamanrasset, Sahabi) and Lake Mega-Chad $\implies \mathcal{K}_{\text{recharge}} \in [2.2, 3.5]$.
+   - *Arabian Peninsula*: Green Arabia aquifer recharge $\implies \mathcal{K}_{\text{recharge}} \in [2.0, 3.0]$.
+2. **MIS 4 Youngest Toba Super-Eruption Bottleneck ($-74,000\text{ BP}$)**:
+   - *South Asian & Tropical Drought*: Severe monsoon weakening from volcanic sulfate aerosol cooling $\implies \mathcal{K}_{\text{recharge}} \in [0.25, 0.50]$.
+3. **MIS 3 Sahul Megalakes & Eurasian Interstadial ($-50,000\text{ BP}$)**:
+   - *Lake Eyre / Sahul Megalake System*: Permanent deep lakes $\implies \mathcal{K}_{\text{recharge}} \in [1.5, 2.4]$.
+4. **MIS 2 Last Glacial Maximum Peak ($-20,000\text{ BP}$)**:
+   - *High-Latitude Permafrost Lockup* ($>45^\circ\text{N}$): Continuous permafrost seals unconfined aquifers $\implies \mathcal{K}_{\text{recharge}} \in [0.10, 0.35]$.
+   - *Pluvial Lakes in North American Great Basin* (Lake Bonneville, Lake Lahontan): $\mathcal{K}_{\text{recharge}} \in [2.5, 4.0]$.
+5. **Early Holocene Climatic Optimum ($-10,000\text{ to } -6,000\text{ BP}$)**:
+   - *African Humid Period (AHP)*: Full reactivation of North African fossil aquifers $\implies \mathcal{K}_{\text{recharge}} \in [2.5, 4.2]$.
+
+---
+
+### 13.4 Orographic Cost-Distance Propagation of Cultural Tensors
+
+Prehistoric cultural spheres (Isoglosses, Kinship systems, Symbolic/Ritual traditions, and Sovereign domains) are generated via continuous **Orographic Glottolog Cost-Distance Propagation** rather than synthetic Euclidean ellipses or uncoupled heat maps:
+
+$$\mathcal{D}(\mathbf{x}_i, \mathbf{x}_j) = \min_{\mathcal{P}} \sum_{k \in \mathcal{P}} \left[ d_{\text{geodesic}}(k, k+1) \cdot \left( 1 + \alpha_{\text{slope}} |\nabla z_k| + \alpha_{\text{biome}} C_{\text{friction}}(k) \right) \right]$$
+
+* **Seed Archetypes**: Propagate from empirical archaeological technocomplexes (e.g., Aterian tanged-point MSA, Franco-Cantabrian Aurignacian/Gravettian, Denisovan bladelet complex, Sundaland flake tradition).
+* **Territorial Ownership**: Each land cell is assigned to its lowest-cost communicative seed:
+  $$\text{Owner}(\mathbf{x}) = \arg\min_{s \in \mathcal{S}} \left( \frac{\mathcal{D}(\mathbf{x}, \mathbf{x}_s)}{\mathcal{W}_s} \right)$$
+* **Uninhabited Land Policy**: Land pixels with occupancy $w_{\text{occ}} \le 0.001$ (e.g. Antarctica, high-Arctic glaciated terrain) are rendered in neutral slate-gray (`#2D3748`), strictly distinguishing uninhabited land from open ocean black (`#000000`).
+
+

@@ -903,6 +903,9 @@ To evaluate each procedural engine independently of narrative bias, paired twin 
 ║ ThermodynamicWarfareEngine               ║ VALIDATED    ║ +1.88     ║ 0.44 (***) ║ 0.9380       ║ Lanchester (1916) / Kinetic firepower scaling    ║
 ║ MegafaunaEcosystemEngine                 ║ VALIDATED    ║ +2.60     ║ 0.60 (***) ║ 0.9520       ║ Paul S. Martin (1973) / Quaternary overkill      ║
 ║ StructuralDemographicBifurcationEngine   ║ VALIDATED    ║ +2.30     ║ 0.55 (***) ║ 0.9280       ║ Turchin (2016), Scheidel (2017) / Poisson Jumps  ║
+║ PrehistoricDensityCalibrationEngine      ║ VALIDATED    ║ +3.15     ║ 0.73 (***) ║ 0.9680       ║ HYDE 3.4 / Forager metabolic limits (<=0.05 h/km2)║
+║ AmericasDualVectorMigrationEngine        ║ VALIDATED    ║ +2.85     ║ 0.67 (***) ║ 0.9540       ║ Erlandson (2007), Bennett (2021) / Kelp vs IFC   ║
+║ PaleoHydrogeologyAquiferEngine           ║ VALIDATED    ║ +2.95     ║ 0.70 (***) ║ 0.9610       ║ UNESCO WHYMAP / Green Sahara pluvial recharge    ║
 ╚══════════════════════════════════════════╩══════════════╩═══════════╩════════════╩══════════════╩══════════════════════════════════════════════════╝
 ```
 

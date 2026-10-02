@@ -1095,19 +1095,32 @@ where instantaneous orbital distance $r(t) = \frac{a(1-e^2)}{1+e \cos \theta(t)}
 ---
 
 
-## 5. Cartographic Generation & Persistent Disk Caching
+## 5. Cartographic Generation, Dynamic Hydrogeology & Calibration
 
 ### 5.1 Dual-Mode Cartographic Architecture
 
 1. **Empirical Ingestion Mode ($T_0 \ge -10,000$ BCE)**:
    - Streams 5-arc-minute Esri ASCII grids from `data/maps/hyde34/` using `Hyde34GridReader` and `DataDownloaderService`.
-2. **On-Demand 3-Layer Hybrid Mode ($T_0 < -10,000$ BP)**:
-   - **Layer 1 - Fossil & Archaeological Cluster Ingestion (`HistoricalMapGenerator`)**: Coordinates and spatial sigmas ($\sigma$) for known palaeoanthropological sites (Omo Kibish, Jebel Irhoud, Blombos, Atapuerca, Denisova, Madjedbebe, Yana RHS, Clovis, Monte Verde).
-   - **Layer 2 - Paleoclimate NPP & Habitability (`ProceduralPopulationEngine`)**: CHELSA-Trace21k / PaleoCLIM temperature, precipitation, and biome suitability filtering.
-   - **Layer 3 - Biogeographical Containment Guards**: Strict zero-population rules (`geoWeight = 0.0`) for uncolonized landmasses.
+2. **On-Demand Calibrated Physical Density Mode ($T_0 < -10,000$ BP)**:
+   - **Layer 1 - Fossil & Archaeological Cluster Ingestion (`HistoricalMapGenerator`)**: Formulated in physical human density units ($\text{hab/km}^2$) for authenticated palaeoanthropological sites (Omo Kibish, Jebel Irhoud, Klasies River, Blombos, Shanidar, Denisova, Madjedbebe, Yana RHS, Ain Mallaha, Clovis, Monte Verde, White Sands).
+   - **Layer 2 - Calibrated Logarithmic Transfer Function**: Continuous normalization matching HYDE 3.4 dynamic range ($\rho_{\text{ref}} = 6.0\text{ hab/km}^2$):
+     $$\text{logNorm} = \frac{\ln(1 + 4.0 \cdot \rho)}{\ln(1 + 4.0 \cdot 6.0)}, \quad \text{Luminance} = \text{clamp}(15.0 + 240.0 \cdot \text{logNorm}, 15.0, 255.0)$$
+   - **Layer 3 - Biogeographical & Ice Sheet Containment Masks**: Strict zero-population signed-distance polygon clipping (`geoWeight = 0.0`) for glaciated sheets (Laurentide, Cordilleran, Fennoscandia, Greenland) and uncolonized continents across each epoch.
 
-### 5.2 Disk Cache Plumbing
-Once calculated for an epoch or custom year $T_0$, density maps and tensor layers are serialized to disk under `data/maps/cache/` (Base64 PNG + binary rasters). Subsequent requests for the same year reload directly from cache without recomputation.
+### 5.2 Americas Dual-Vector Peopling Model
+- **Pacific Kelp Highway Polyline**: Modeled as an orographic-maritime geodesic corridor along the Pacific rim, supporting pre-Clovis coastal migrations (Haida Gwaii, Channel Islands, Monte Verde II at $-14,500\text{ BP}$).
+- **Pre-LGM & LGM Attested Pioneer Footprints**: Direct spatial embedding of the White Sands National Park trackways ($-106.3^\circ\text{W}, 32.8^\circ\text{N}$, dated to $23,000-21,000\text{ BP}$), Chiquihuite Cave, Cactus Hill, and Page-Ladson.
+- **Ice-Free Corridor (IFC)**: Dynamically opens post-$-13,500\text{ BP}$ between retreating Laurentide and Cordilleran glaciers, enabling rapid Clovis big-game hunter expansion across the Great Plains and Mississippi Basin.
+
+### 5.3 Dynamic Groundwater Aquifer Recharge Across Palaeoclimates
+Aquifer yields and piezometric water tables ($\mathbf{T}_{\text{aquifer}}$) are dynamically coupled to orbitally forced climate variations:
+- **MIS 5e Green Sahara ($-100,000\text{ BP}$)**: Aquifer recharge multiplied by $\times 2.2 - 3.5$ across North Africa and Arabia.
+- **MIS 4 Toba Super-Eruption Drought ($-74,000\text{ BP}$)**: Tropical aquifer recharge reduced to $0.25 - 0.50\times$ baseline.
+- **MIS 3 Sahul Megalakes ($-50,000\text{ BP}$)**: Pluvial recharge factor $\times 1.5 - 2.4$ across central Australia.
+- **MIS 2 LGM Permafrost Lockup ($-20,000\text{ BP}$)**: Sub-permafrost recharge suppressed to $0.10 - 0.35\times$ above $45^\circ\text{N}$, with enhanced Great Basin pluvial recharge ($\times 2.5 - 4.0$).
+
+### 5.4 Decoupled Cultural Tensor Propagation
+Prehistoric cultural tensors (Isoglosses, Kinship systems, Ritual traditions, Sovereignty domains) are computed via continuous **Orographic Glottolog Cost-Distance Propagation** initialized from authentic technocomplex archetypes, with unpopulated land pixels mapped to neutral slate-gray (`#2D3748`) to cleanly distinguish empty land from ocean black (`#000000`).
 
 ---
 
@@ -1116,6 +1129,7 @@ Once calculated for an epoch or custom year $T_0$, density maps and tensor layer
 To ensure project-wide persistence across development sessions:
 1. **Repository Document**: Saved directly at `docs/PALEOCLIMATE_AND_PREHISTORY.md` within the `Ether` codebase.
 2. **Local Knowledge Item**: Bound in `<appDataDir>/knowledge/deep_prehistoric_population_tensor_infrastructure/metadata.json` to ensure automated AI assistant contextual loading.
+
 
 
 
