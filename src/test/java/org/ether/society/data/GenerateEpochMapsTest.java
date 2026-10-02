@@ -533,6 +533,36 @@ public class GenerateEpochMapsTest {
     }
 
     @Test
+    public void regeneratePrehistoricDensityMapsOnly() throws Exception {
+        File rootDir = new File("data/maps/ether/earth");
+        rootDir.mkdirs();
+
+        List<EpochMeta> prehistoricEpochs = EPOCHS.stream()
+            .filter(e -> e.year() <= -10000L)
+            .toList();
+
+        System.out.printf("Starting targeted density regeneration for %d prehistoric epochs (<= -10,000 BP)...%n", prehistoricEpochs.size());
+
+        for (EpochMeta em : prehistoricEpochs) {
+            long yr = em.year();
+            File yrDir = new File(rootDir, String.valueOf(yr));
+            yrDir.mkdirs();
+
+            java.awt.image.BufferedImage imgDensity = HistoricalMapGenerator.applyAltimetryCoastlineMask(
+                HistoricalMapGenerator.generatePrehistoricSyntheticDensityMap(yr, em.densityType())
+            );
+
+            File targetPng = new File(yrDir, String.format("earth_%d_density.png", yr));
+            javax.imageio.ImageIO.write(imgDensity, "PNG", targetPng);
+            targetPng.setLastModified(System.currentTimeMillis());
+
+            System.out.printf("  [DENSITY UPDATED] Prehistoric Epoch %d: %s (%s)%n", yr, em.eraName(), targetPng.getName());
+        }
+
+        System.out.printf("Successfully regenerated calibrated physical density maps for all %d prehistoric epochs.%n", prehistoricEpochs.size());
+    }
+
+    @Test
     public void validatePrehistoricCartographicDifferentiation() {
         // 1. Validate Sahul (Australia) Wallace Line Crossing
         double sahulLon = 133.0, sahulLat = -25.0;
@@ -545,6 +575,24 @@ public class GenerateEpochMapsTest {
         org.junit.jupiter.api.Assertions.assertEquals(0.0, occ74k, 1e-6, "Sahul must be strictly unoccupied at -74,000 BP");
         org.junit.jupiter.api.Assertions.assertTrue(occ50k > 0.5, "Sahul must be populated at -50,000 BP across Wallace Line");
         org.junit.jupiter.api.Assertions.assertTrue(occ20k > 0.5, "Sahul must be populated at -20,000 BP");
+
+        // 1b. Validate Americas Peopling & Strict Ice Sheet Masking
+        double laurentideLon = -85.0, laurentideLat = 55.0;
+        double fennoLon = 20.0, fennoLat = 65.0;
+        double whiteSandsLon = -106.3, whiteSandsLat = 32.8;
+        double pacificKelpLon = -125.0, pacificKelpLat = 48.0;
+
+        double occLaurYD = HistoricalMapGenerator.getHomininOccupancyWeight(laurentideLon, laurentideLat, -10900L);
+        double occFennoYD = HistoricalMapGenerator.getHomininOccupancyWeight(fennoLon, fennoLat, -10900L);
+        double occWhiteSands20k = HistoricalMapGenerator.getHomininOccupancyWeight(whiteSandsLon, whiteSandsLat, -20000L);
+        double occKelp20k = HistoricalMapGenerator.getHomininOccupancyWeight(pacificKelpLon, pacificKelpLat, -20000L);
+        double occAmericas100k = HistoricalMapGenerator.getHomininOccupancyWeight(-100.0, 40.0, -100000L);
+
+        org.junit.jupiter.api.Assertions.assertEquals(0.0, occLaurYD, 1e-6, "Laurentide Ice Sheet must be strictly unpopulated at Younger Dryas");
+        org.junit.jupiter.api.Assertions.assertEquals(0.0, occFennoYD, 1e-6, "Fennoscandian Ice Sheet must be strictly unpopulated at Younger Dryas");
+        org.junit.jupiter.api.Assertions.assertTrue(occWhiteSands20k > 0.1, "White Sands must be populated at -20,000 BP LGM");
+        org.junit.jupiter.api.Assertions.assertTrue(occKelp20k > 0.1, "Pacific Kelp Highway must be populated at -20,000 BP LGM");
+        org.junit.jupiter.api.Assertions.assertEquals(0.0, occAmericas100k, 1e-6, "Americas must be strictly unpopulated at -100,000 BP");
 
         // 2. Validate Toba Volcanic Winter Anomalies (-74k vs -100k)
         double indiaLon = 78.0, indiaLat = 20.0;
