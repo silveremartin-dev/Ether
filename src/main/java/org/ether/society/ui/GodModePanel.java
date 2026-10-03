@@ -609,8 +609,8 @@ public class GodModePanel extends VBox {
     }
 
     public void updateTexts() {
-        headerLabel.setText(I18n.getOrDefault("godmode.title", "⚡ 5. MODE DIEU & CHRONOLOGIE"));
-        pauseNoticeLabel.setText(I18n.getOrDefault("godmode.pause_notice", "⏸️ La simulation est automatiquement mise en pause sur cet onglet pour vous permettre de configurer et programmer sereinement vos événements climatiques et interventions sans décalage temporel."));
+        headerLabel.setText(I18n.getOrDefault("godmode.title", "⚡ 5. GOD MODE & CHRONOLOGY"));
+        pauseNoticeLabel.setText(I18n.getOrDefault("godmode.pause_notice", "⏸️ Simulation is automatically paused on this tab to allow peaceful configuration of climatic disturbances without temporal drift."));
 
         eventTypeCombo.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.event_type", "Type of physical or climate disturbance to inject into ecosystem.")));
         eventNameField.setPromptText(I18n.getOrDefault("godmode.prompt.event_title", "Event Title or Name..."));
@@ -622,49 +622,49 @@ public class GodModePanel extends VBox {
         magnitudeSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.magnitude", "Shock intensity / magnitude (determines depth and spatial impact of perturbation).")));
         durationDaysSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.duration_days", "Active duration of the physical phenomenon in simulation days.")));
 
-        injectorTitleLabel.setText(I18n.getOrDefault("godmode.injector.title", "🛠️ ÉDITION & PROGRAMMATION D'ÉVÉNEMENTS CLIMATIQUES :"));
-        lblEventType.setText(I18n.getOrDefault("godmode.label.event_type", "Type d'Événement :"));
-        lblEventTitle.setText(I18n.getOrDefault("godmode.label.event_title", "Nom / Titre :"));
-        lblTargetYear.setText(I18n.getOrDefault("godmode.label.target_year", "Année Cible (Date) :"));
-        lblLat.setText(I18n.getOrDefault("godmode.label.lat", "Latitude (-90 à +90°) :"));
-        lblLng.setText(I18n.getOrDefault("godmode.label.lng", "Longitude (-180 à +180°) :"));
-        lblMag.setText(I18n.getOrDefault("godmode.label.magnitude", "Intensité / Magnitude :"));
-        lblRadius.setText(I18n.getOrDefault("godmode.label.radius", "Rayon d'action (km) :"));
-        radiusKmSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.radius", "Rayon géographique d'impact ou d'influence de l'événement (en km).")));
+        injectorTitleLabel.setText(I18n.getOrDefault("godmode.injector.title", "🛠️ CLIMATE EVENT EDITING & PROGRAMMING:"));
+        lblEventType.setText(I18n.getOrDefault("godmode.label.event_type", "Event Type:"));
+        lblEventTitle.setText(I18n.getOrDefault("godmode.label.event_title", "Name / Title:"));
+        lblTargetYear.setText(I18n.getOrDefault("godmode.label.target_year", "Target Year (Date):"));
+        lblLat.setText(I18n.getOrDefault("godmode.label.lat", "Latitude (-90 to +90°):"));
+        lblLng.setText(I18n.getOrDefault("godmode.label.lng", "Longitude (-180 to +180°):"));
+        lblMag.setText(I18n.getOrDefault("godmode.label.magnitude", "Intensity / Magnitude:"));
+        lblRadius.setText(I18n.getOrDefault("godmode.label.radius", "Action Radius (km):"));
+        radiusKmSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.radius", "Geographical impact or influence radius of the event (in km).")));
 
-        scheduleBtn.setText(I18n.getOrDefault("godmode.btn.schedule", "📅 Programmer dans la Chronologie"));
-        scheduleBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.schedule", "Planifie l'événement dans le calendrier du scénario pour un déclenchement automatique.")));
-        triggerNowBtn.setText(I18n.getOrDefault("godmode.btn.trigger_now", "⚡ Déclencher Immédiatement"));
-        triggerNowBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.trigger_now", "Applique instantanément les perturbations physiques et climatiques au monde actuel en temps réel.")));
+        scheduleBtn.setText(I18n.getOrDefault("godmode.btn.schedule", "📅 Schedule in Timeline"));
+        scheduleBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.schedule", "Schedules event in the scenario calendar for automatic triggering.")));
+        triggerNowBtn.setText(I18n.getOrDefault("godmode.btn.trigger_now", "⚡ Trigger Immediately"));
+        triggerNowBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.trigger_now", "Instantly applies physical and climate disturbances to the current world in real time.")));
 
-        spawnerTitleLabel.setText(I18n.getOrDefault("godmode.spawner.header", "🌱 INJECTION DIRECTE DE POPULATION & RESSOURCES :"));
-        injectPopBtn.setText(I18n.getOrDefault("godmode.btn.inject_pop", "👥 Injecter 100 000 Habitants (Épicentre)"));
-        injectPopBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.inject_pop", "Injecte une cohorte de 100 000 habitants à la position géographique spécifiée.")));
-        injectFoodBtn.setText(I18n.getOrDefault("godmode.btn.inject_food", "🌾 Injecter Stock Alimentaire (Silos)"));
-        injectFoodBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.inject_food", "Remplit les silos céréaliers à 100% pour prévenir les famines immédiates.")));
-        massExtinctionBtn.setText(I18n.getOrDefault("godmode.btn.mass_extinction", "💀 Déclencher Extinction Massive (-50% Population)"));
-        massExtinctionBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.mass_extinction", "Réduit instantanément de 50% la population mondiale active (Choc Cataclysmique).")));
+        spawnerTitleLabel.setText(I18n.getOrDefault("godmode.spawner.header", "🌱 DIRECT POPULATION & RESOURCE INJECTION:"));
+        injectPopBtn.setText(I18n.getOrDefault("godmode.btn.inject_pop", "👥 Inject 100,000 Inhabitants (Epicenter)"));
+        injectPopBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.inject_pop", "Injects a cohort of 100,000 inhabitants at the specified geographical position.")));
+        injectFoodBtn.setText(I18n.getOrDefault("godmode.btn.inject_food", "🌾 Inject Food Stock (Silos)"));
+        injectFoodBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.inject_food", "Fills grain silos to 100% to prevent immediate famines.")));
+        massExtinctionBtn.setText(I18n.getOrDefault("godmode.btn.mass_extinction", "💀 Trigger Mass Extinction (-50% Population)"));
+        massExtinctionBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.mass_extinction", "Instantly reduces active world population by 50% (Cataclysmic Shock).")));
 
-        terraformTitleLabel.setText(I18n.getOrDefault("godmode.terraform.header", "🖌️ PINCEAU SPATIAL & DYNAMIQUES LOCALES :"));
+        terraformTitleLabel.setText(I18n.getOrDefault("godmode.terraform.header", "🖌️ SPATIAL BRUSH & LOCAL DYNAMICS:"));
         int selIdx = brushModeCombo.getSelectionModel().getSelectedIndex();
         brushModeCombo.getItems().clear();
         brushModeCombo.getItems().addAll(
-            I18n.getOrDefault("godmode.brush.pop", "👥 Boost Population (+50 000 hab)"),
-            I18n.getOrDefault("godmode.brush.agri", "🌾 Injection Agricole & Silos (+500 t)"),
-            I18n.getOrDefault("godmode.brush.water", "🚰 Recharge Aquifère (+2 000 m³)"),
-            I18n.getOrDefault("godmode.brush.heat", "🔥 Vague de Chaleur Locale (+10,0°C)"),
-            I18n.getOrDefault("godmode.brush.cold", "❄️ Refroidissement Local (-10,0°C)"),
-            I18n.getOrDefault("godmode.brush.clean", "🧼 Nettoyage Écologique Intégral (0.0)")
+            I18n.getOrDefault("godmode.brush.pop", "👥 Population Boost (+50,000 cap)"),
+            I18n.getOrDefault("godmode.brush.agri", "🌾 Agricultural & Silo Boost (+500 t)"),
+            I18n.getOrDefault("godmode.brush.water", "🚰 Aquifer Recharge (+2,000 m³)"),
+            I18n.getOrDefault("godmode.brush.heat", "🔥 Local Heatwave (+10.0°C)"),
+            I18n.getOrDefault("godmode.brush.cold", "❄️ Local Cooling (-10.0°C)"),
+            I18n.getOrDefault("godmode.brush.clean", "🧼 Complete Ecological Cleanup (0.0)")
         );
         brushModeCombo.getSelectionModel().select(selIdx >= 0 ? selIdx : 0);
-        brushModeCombo.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.brush_mode", "Sélectionnez l'effet local à appliquer.")));
+        brushModeCombo.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.brush_mode", "Select local effect to apply.")));
 
-        applyBrushBtn.setText(I18n.getOrDefault("godmode.btn.apply_brush", "🖌️ Appliquer aux Coordonnées de l'Épicentre"));
-        applyBrushBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.apply_brush", "Applique l'action sélectionnée directement sur la maille H3 ciblée.")));
+        applyBrushBtn.setText(I18n.getOrDefault("godmode.btn.apply_brush", "🖌️ Apply to Epicenter Coordinates"));
+        applyBrushBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.apply_brush", "Applies selected action directly to the targeted H3 cell.")));
 
-        resetTitleLabel.setText(I18n.getOrDefault("godmode.reset.header", "🛑 NORMALISATION & RÉINITIALISATION PHYSIQUE :"));
-        resetDisastersBtn.setText(I18n.getOrDefault("godmode.btn.reset_disasters", "🛑 Stopper Tous les Désastres & Dissiper les Suies"));
-        resetDisastersBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.reset_disasters", "Réinitialise la profondeur optique des suies (τ = 0.0) et annule les perturbations actives.")));
+        resetTitleLabel.setText(I18n.getOrDefault("godmode.reset.header", "🛑 PHYSICAL NORMALIZATION & RESET:"));
+        resetDisastersBtn.setText(I18n.getOrDefault("godmode.btn.reset_disasters", "🛑 Stop All Disasters & Dissipate Soot"));
+        resetDisastersBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.reset_disasters", "Resets soot optical depth (τ = 0.0) and cancels active perturbations.")));
 
         int minYr = engine != null && engine.getCurrentScenario() != null ? (int) engine.getCurrentScenario().getStartDateYear() : -100000;
         int maxYr = engine != null && engine.getCurrentScenario() != null ? (int) engine.getCurrentScenario().getEndDateYear() : 2100;
@@ -680,9 +680,9 @@ public class GodModePanel extends VBox {
             eventDescriptionLabel.setText(currentType.getDescription());
         }
 
-        timelineHeaderLabel.setText(I18n.getOrDefault("godmode.timeline.title", "📜 CHRONOLOGIE DU SCÉNARIO & AUDIT TRAIL :"));
-        timelineHintLabel.setText(I18n.getOrDefault("godmode.timeline.click_hint", "💡 Cliquez sur un événement de la chronologie pour recentrer la vue 2D / 3D sur ses coordonnées."));
-        timelineListView.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.timeline", "Piste d'audit temporel : Liste chronologique de tous les forçages et événements du scénario.")));
+        timelineHeaderLabel.setText(I18n.getOrDefault("godmode.timeline.title", "📜 SCENARIO CHRONOLOGY & AUDIT TRAIL:"));
+        timelineHintLabel.setText(I18n.getOrDefault("godmode.timeline.click_hint", "💡 Click on a timeline event to recenter 2D / 3D camera view on its coordinates."));
+        timelineListView.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.timeline", "Chronological audit log of all scenario events and divine interventions.")));
 
         refreshTimelineView();
     }
@@ -1037,8 +1037,10 @@ public class GodModePanel extends VBox {
         int selected = timelineListView.getSelectionModel().getSelectedIndex();
         timelineListView.getItems().clear();
         String yearPrefix = I18n.getOrDefault("godmode.timeline.year_prefix", "Year");
+        String godBadge = I18n.getOrDefault("godmode.timeline.godmode_badge", "⚡ [GOD MODE]");
+        String histBadge = I18n.getOrDefault("godmode.timeline.historical_badge", "📜 [HISTORICAL]");
         for (ScenarioTimeline.TimelineEntry entry : timeline.getEntries()) {
-            String badge = entry.isGodModeIntervention() ? "⚡ [GOD MODE]" : "📜 [HISTORIQUE]";
+            String badge = entry.isGodModeIntervention() ? godBadge : histBadge;
             timelineListView.getItems().add(String.format("%s %5d | %s %s : %s", yearPrefix, entry.year(), badge, entry.title(), entry.details()));
         }
         if (selected >= 0 && selected < timelineListView.getItems().size()) {

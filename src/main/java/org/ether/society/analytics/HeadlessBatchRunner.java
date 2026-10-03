@@ -133,11 +133,35 @@ public class HeadlessBatchRunner {
         long durationYears = endYear - startYear;
 
         // 1. Generate real planetary cell grid
+        int h3Res = scenario.getH3Resolution() > 0 ? scenario.getH3Resolution() : 1;
         PlanetPreset preset = scenario.getPlanetPreset() != null 
-            ? scenario.getPlanetPreset().withResolution(1) 
-            : PlanetPreset.EARTH_LIKE.withResolution(1);
+            ? scenario.getPlanetPreset().withResolution(h3Res) 
+            : PlanetPreset.EARTH_LIKE.withResolution(h3Res);
         
         List<H3Cell> cells = ProceduralGenerator.getInstance().generatePlanet(preset);
+
+        if (scenario.isClippingEnabled()) {
+            double cMinLat = scenario.getMinLat();
+            double cMaxLat = scenario.getMaxLat();
+            double cMinLng = scenario.getMinLng();
+            double cMaxLng = scenario.getMaxLng();
+            double marginLat = Math.max(1.0, (cMaxLat - cMinLat) * 0.08);
+            double marginLng = Math.max(1.0, (cMaxLng - cMinLng) * 0.08);
+
+            List<H3Cell> clippedCells = new ArrayList<>();
+            for (H3Cell c : cells) {
+                if (c.getLatitude() >= cMinLat && c.getLatitude() <= cMaxLat &&
+                    c.getLongitude() >= cMinLng && c.getLongitude() <= cMaxLng) {
+                    if (c.getLatitude() <= cMinLat + marginLat || c.getLatitude() >= cMaxLat - marginLat ||
+                        c.getLongitude() <= cMinLng + marginLng || c.getLongitude() >= cMaxLng - marginLng) {
+                        c.setBoundaryCell(true);
+                    }
+                    clippedCells.add(c);
+                }
+            }
+            cells = clippedCells;
+            logger.info("HeadlessBatchRunner: Applied spatial clipping with {} cells retained.", cells.size());
+        }
 
         // 2. Initialize real H3SimulationEngine with DOD kernels
         Configuration config;

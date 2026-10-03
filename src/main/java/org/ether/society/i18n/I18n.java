@@ -307,10 +307,56 @@ public class I18n {
             case TUNDRA -> getOrDefault("biome.tundra", "Toundra");
             case HILLS -> getOrDefault("biome.hills", "Collines");
             case MOUNTAINS -> getOrDefault("biome.mountains", "Montagnes");
-            case JUNGLE -> getOrDefault("biome.jungle", "Jungle");
-            case BEACH -> getOrDefault("biome.beach", "Plage");
             default -> biome.name();
         };
+    }
+
+    /**
+     * Get localized display name for a scenario.
+     */
+    public static String getScenarioDisplayName(org.ether.society.model.Scenario s) {
+        if (s == null) return "";
+        return s.getDisplayName();
+    }
+
+    /**
+     * Get localized description for a scenario.
+     */
+    public static String getScenarioDescription(org.ether.society.model.Scenario s) {
+        if (s == null) return "";
+        return s.getDisplayDescription();
+    }
+
+    /**
+     * Get localized title for a simulation engine.
+     */
+    public static String getEngineTitle(String engineId, String defaultTitle) {
+        if (engineId == null) return defaultTitle;
+        return getOrDefault("engine." + engineId + ".title", defaultTitle);
+    }
+
+    /**
+     * Get localized description for a simulation engine.
+     */
+    public static String getEngineDescription(String engineId, String defaultDesc) {
+        if (engineId == null) return defaultDesc;
+        return getOrDefault("engine." + engineId + ".desc", defaultDesc);
+    }
+
+    /**
+     * Get localized scientific reference for a simulation engine.
+     */
+    public static String getEngineReference(String engineId, String defaultRef) {
+        if (engineId == null) return defaultRef;
+        return getOrDefault("engine." + engineId + ".ref", defaultRef);
+    }
+
+    /**
+     * Get localized state equation for a simulation engine.
+     */
+    public static String getEngineEquation(String engineId, String defaultEq) {
+        if (engineId == null) return defaultEq;
+        return getOrDefault("engine." + engineId + ".eq", defaultEq);
     }
 }
 

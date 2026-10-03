@@ -1337,5 +1337,33 @@ Replaces discrete Gaussian points with continuous polyline distance metrics alon
 - **South America**: Pacific Kelp Highway ($\mathcal{L}_{\text{Pacific}}$), Andean Mountain Corridor ($\mathcal{L}_{\text{Andes}}$), Amazon River Mainstem ($\mathcal{L}_{\text{Amazon}}$), Madeira Basin ($\mathcal{L}_{\text{Madeira}}$), Brazilian Cerrado/Caatinga Corridor ($\mathcal{L}_{\text{Savanna}}$).
 - **Remote Oceanic Island Exclusion**: Explicit coordinates filter (`isRemoteOceanicIsland`) prevents uninhabited oceanic islands (Cocos, Malpelo, Clipperton, Revillagigedo, Juan Fernández, Desventuradas, Fernando de Noronha, Trindade) from receiving spurious distance hits or forming floating circular artifacts in the Pacific and Atlantic.
 
+---
+
+## 14. Spatial Truncation, Boundary Layer Physics & Cliodynamic Sponge Layers
+
+### 14.1 Governing Reaction-Diffusion-Advection Equation on Bounded Sub-Grids
+
+On a bounded sub-grid $\Omega_{\text{window}} \subset \mathbb{S}^2$ bounded by $\partial \Omega$, the state vector $\mathbf{\Phi} = (\rho, M_{\text{food}}, \vec{C}, T, K_{\text{cap}})^T$ evolves according to:
+
+$$\frac{\partial \mathbf{\Phi}}{\partial t} = \mathcal{R}(\mathbf{\Phi}) - \nabla \cdot \mathbf{J}_{\mathbf{\Phi}} - \mathcal{S}_{\text{sponge}}(\mathbf{x}, t)$$
+
+where $\mathbf{J}_{\mathbf{\Phi}} = -\mathbf{K}_{\text{Onsager}} \nabla \mathbf{\Phi} + \mathbf{v}_{\text{advect}} \mathbf{\Phi}$ is the coupled Onsager flux tensor and $\mathcal{S}_{\text{sponge}}$ is the boundary absorbing sink.
+
+### 14.2 Mathematical Formulations of the Three Boundary Value Regimes
+
+1. **`CLOSED_BARRIER` (Homogeneous Neumann Zero-Flux)**:
+   $$\mathbf{J}_{\mathbf{\Phi}} \cdot \mathbf{n} \Big|_{\partial \Omega} = 0 \implies \int_{\Omega} \frac{\partial \rho}{\partial t} d\Omega = \int_{\Omega} \mathcal{R}(\rho) d\Omega$$
+   *Strict mass and demographic conservation. Generates reflective boundary waves $I_{\text{refl}} = \bar{\rho}(\Gamma_{\text{margin}}) / \bar{\rho}(\Omega_{\text{core}}) > 1.30$.*
+
+2. **`DYNAMIC_RESERVOIR` (Quadratic Absorbing Sponge Layer / PML)**:
+   For cells $k \in \Gamma_{\text{margin}}$ within border margin width $W_{\text{margin}} = 0.08 \times \min(L_{\text{lat}}, L_{\text{lon}})$:
+   $$\mathcal{S}_{\text{sponge}}(k, t) = \frac{\gamma(d_k)}{\tau_{\text{relax}}} \left( \mathbf{\Phi}_k(t) - \mathbf{\Phi}_{\text{macro}}(t) \right), \quad \gamma(d_k) = \left( 1 - \frac{\text{dist}(k, \partial \Omega)}{W_{\text{margin}}} \right)^2$$
+   *Absorbs outgoing expansion waves without unphysical acoustic bounce-back ($r_{\text{spatial}} \ge 0.88$, $\text{MAPE}_{\text{core}} \le 12\%$).*
+
+3. **`PERIODIC_WRAP` (Toroidal Periodic Boundary)**:
+   $$\mathbf{\Phi}(\theta + \Delta \theta, \phi) = \mathbf{\Phi}(\theta, \phi), \quad \mathbf{\Phi}(\theta, \phi + \Delta \phi) = \mathbf{\Phi}(\theta, \phi)$$
+   *Preserves global mass but introduces spatial distortion penalties on non-homogeneous real Earth topography.*
+
+
 
 

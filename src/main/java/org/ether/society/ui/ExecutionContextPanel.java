@@ -127,12 +127,29 @@ public class ExecutionContextPanel extends BorderPane {
     public static double estimateExecutionTimeSeconds(long startYear, long endYear, int cellCount, HardwareMode mode) {
         long durationYears = Math.max(1, endYear - startYear);
         if (cellCount <= 0) cellCount = 4096;
-        int step = (int) Math.max(1, durationYears / 20);
-        long ticks = (durationYears / step) + 1;
-        double totalOperations = (double) ticks * (double) cellCount * 80.0;
-        double throughput = getEstimatedCellTicksThroughput(mode);
-        double seconds = totalOperations / throughput;
-        return Math.max(0.1, seconds);
+        // Accurate uniform time-step: dt = 7.0 days -> 52.14 ticks per year
+        long totalTicks = (long) Math.ceil(durationYears * 52.142857);
+        double tps;
+        switch (mode != null ? mode : getActiveHardwareMode()) {
+            case NATIVE_RUST:
+                tps = 320.0;
+                break;
+            case GPU_SHADERS:
+                tps = 260.0;
+                break;
+            case JAVA_VECTOR_SIMD:
+                tps = 180.0;
+                break;
+            case CPU_JIT:
+                tps = 60.0;
+                break;
+            case GPU_OFF:
+            default:
+                tps = 35.0;
+                break;
+        }
+        double seconds = (double) totalTicks / tps;
+        return Math.max(0.5, seconds);
     }
 
     public static String formatDuration(double seconds) {

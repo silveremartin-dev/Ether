@@ -636,74 +636,240 @@ public class StatsPanel extends VBox {
         reloadChartData();
     }
 
+    public record MetricCardMeta(String key, String defaultTitle, String defaultCategory, String defaultUnit, String defaultTooltip) {}
+
+    private static final List<MetricCardMeta> METRIC_CARD_METAS = List.of(
+        // Category 1: Energy & Matter
+        new MetricCardMeta("energyCaptured", "Captured Energy (Global Power)", "⚡ Energy & Matter", "MW",
+            "P_tot = ∑ (P_solar + P_biomass + P_geothermal). Gross primary power extracted from the physical environment by society."),
+        new MetricCardMeta("resourceDepletion", "Resource Depletion Rate", "⚡ Energy & Matter", "%",
+            "D = (Stock_initial - Stock_actual) / Stock_initial. Cumulative percentage of non-renewable mineral reserve consumption."),
+        new MetricCardMeta("energyPerCapita", "Energy / Capita (Power)", "⚡ Energy & Matter", "W/cap",
+            "P_cap = P_tot / N_pop. Continuous per-capita power availability (Leslie White law: Culture = E × T)."),
+        new MetricCardMeta("foodPerCapita", "Food Stocks / Capita", "⚡ Energy & Matter", "GJ/cap",
+            "F_cap = Food_Stocks / N_pop in Gigajoules. Trophic energy stock available per individual."),
+        new MetricCardMeta("eroiAlim", "Food EROI (Net Yield)", "⚡ Energy & Matter", "Ratio",
+            "EROI = E_out / E_in. Ratio of energy acquired compared to the energetic cost of subsistence."),
+        new MetricCardMeta("netSurplus", "Net Energy Surplus", "⚡ Energy & Matter", "%",
+            "Phi = 1 - 1/EROI. Fraction of energy available for non-agricultural structures, crafts, cities, and complex institutions."),
+        new MetricCardMeta("trophicMultiplier", "Trophic Multiplier", "⚡ Energy & Matter", "x",
+            "Multiplier of gross biomass mobilized relative to metabolic ingestion."),
+        new MetricCardMeta("biomassMobilized", "Mobilized Biomass / Capita", "⚡ Energy & Matter", "kg/yr",
+            "Gross annual biomass mobilized per individual (direct food, draft/pasture livestock feed, and losses)."),
+        new MetricCardMeta("pibMaterialFlow", "Material Metabolic Flow", "⚡ Energy & Matter", "Mt/yr",
+            "Total volume of biomass and ores displaced by societal metabolism."),
+        new MetricCardMeta("biomassNatural", "Natural Biomass", "⚡ Energy & Matter", "GtC",
+            "Total stock of preserved wild plant and faunal carbon."),
+        new MetricCardMeta("biomassDomesticated", "Domesticated Biomass", "⚡ Energy & Matter", "GtC",
+            "Total biomass of agricultural crops and livestock."),
+        new MetricCardMeta("potableWater", "Freshwater & Aquifers", "⚡ Energy & Matter", "10³ km³",
+            "Global potable freshwater and continental aquifer reserves."),
+        new MetricCardMeta("remainingResources", "Remaining Geological Resources", "⚡ Energy & Matter", "%",
+            "Unextracted mineral and geological capital remaining in the ground."),
+        new MetricCardMeta("entropyPollution", "Thermodynamic Entropy & Pollution", "⚡ Energy & Matter", "Idx",
+            "Thermodynamic entropy generation and pollutant emissions."),
+        new MetricCardMeta("energyEroi", "Global Energy EROI", "⚡ Energy & Matter", "Ratio",
+            "Average Energy Return On Investment across all exploited primary energy sources."),
+        new MetricCardMeta("occupiedTerritory", "Subsistence Territory & Footprint", "⚡ Energy & Matter", "km²",
+            "Ecological foraging / production surface area (Home Range of Binford, Kelly, Hassan)."),
+
+        // Category 2: Demography & Health
+        new MetricCardMeta("population", "Human Population", "👥 Demography & Health", "cap",
+            "Total living human population on the planet."),
+        new MetricCardMeta("fertilityRate", "Total Fertility Rate", "👥 Demography & Health", "ch/woman",
+            "Average number of children born to a woman during her reproductive years."),
+        new MetricCardMeta("offspringPct", "Adults with Offspring", "👥 Demography & Health", "%",
+            "Proportion of adult population with at least one surviving descendant."),
+        new MetricCardMeta("ageFirstChild", "Age at First Childbirth", "👥 Demography & Health", "yrs",
+            "Average maternal age at the birth of the first child."),
+        new MetricCardMeta("immigrationRate", "Net Migration Rate", "👥 Demography & Health", "‰",
+            "Net inter-regional demographic flow per thousand inhabitants."),
+        new MetricCardMeta("lifeExpectancy", "Life Expectancy at Birth", "👥 Demography & Health", "yrs",
+            "Mean projected lifespan at birth based on current age-specific mortality."),
+        new MetricCardMeta("healthIndex", "Global Health & Immunity Index", "👥 Demography & Health", "%",
+            "Composite index of epidemiological resistance, nutrition, and sanitary resilience."),
+        new MetricCardMeta("educationLevel", "Education & Knowledge Capital", "👥 Demography & Health", "%",
+            "Literacy rate, apprenticeship level, and cumulative knowledge transmission."),
+
+        // Category 3: Society & Institutions
+        new MetricCardMeta("happinessIndex", "Subjective Well-Being / Happiness", "🏛️ Society & Institutions", "%",
+            "Aggregated index of societal life satisfaction, caloric security, and social cohesion."),
+        new MetricCardMeta("conflictLevel", "Societal Conflict & Warfare Intensity", "🏛️ Society & Institutions", "%",
+            "Friction level, internal civil strife, rebellion, and external warfare intensity."),
+        new MetricCardMeta("cityStates", "Independent Polities & City-States", "🏛️ Society & Institutions", "polities",
+            "Number of autonomous administrative centers, poleis, and state institutions."),
+        new MetricCardMeta("institutionalMaturity", "Institutional & Bureaucratic Maturity", "🏛️ Society & Institutions", "Idx",
+            "Legal codification, fiscal administration, and state capacity index."),
+        new MetricCardMeta("divisionLabor", "Division of Labor & Specialization", "🏛️ Society & Institutions", "Idx",
+            "Structural diversity of specialized occupational niches (Durkheimian differentiation)."),
+        new MetricCardMeta("maxHierarchy", "Maximum Jurisdictional Hierarchy", "🏛️ Society & Institutions", "Lvl",
+            "Peak institutional layering depth (1 = Tribe/Band to 6 = Transnational Empire)."),
+        new MetricCardMeta("largestCulture", "Largest Cultural Entity Size", "🏛️ Society & Institutions", "cap",
+            "Population of the single largest unified cultural/political entity."),
+        new MetricCardMeta("largestOrgComplexity", "Largest Polity Structural Complexity", "🏛️ Society & Institutions", "Idx",
+            "Structural complexity of the largest organization (Population × Tech × State × Hierarchy)."),
+        new MetricCardMeta("largestOrgEntropy", "Largest Polity Thermodynamic Entropy", "⚡ Energy & Matter", "J/K",
+            "Rate of thermodynamic entropy and waste heat production of the largest polity."),
+        new MetricCardMeta("avgTechLevel", "Average Technology Level", "🏛️ Society & Institutions", "Lvl",
+            "Global population-weighted average of scientific knowledge and technological tier."),
+        new MetricCardMeta("kardashevScale", "Kardashev Energy Mastery Scale", "🏛️ Society & Institutions", "Type K",
+            "K = (log10(P_watts) - 6) / 10. Planetary civilizational energy mastery index (Type 0.0 to 1.0+)."),
+
+        // Category 4: Economy & Wealth
+        new MetricCardMeta("giniIndex", "Gini Income Inequality", "💎 Economy & Wealth", "Coeff",
+            "G = A / (A + B). Measure of wealth/income dispersion (0 = total equality, 1 = maximum inequality)."),
+        new MetricCardMeta("landGini", "Land Tenure Inequality (Land Gini)", "💎 Economy & Wealth", "Coeff",
+            "Gini coefficient of agricultural land ownership and natural resource tenure."),
+        new MetricCardMeta("gdpTotal", "Gross Domestic Product (GDP)", "💎 Economy & Wealth", "G$",
+            "Total gross economic output converted to constant purchasing power units."),
+        new MetricCardMeta("builtCapital", "Built Capital & Tooling Stock", "💎 Economy & Wealth", "kg/cap",
+            "Total physical infrastructure, building mass, and machinery stock per inhabitant."),
+        new MetricCardMeta("eliteFormation", "Elite Aspirant Ratio", "💎 Economy & Wealth", "%",
+            "Fraction of population holding leadership, administrative, and command positions."),
+        new MetricCardMeta("elderCapitalShare", "Senior Wealth Concentration", "💎 Economy & Wealth", "%",
+            "Share of accumulated landed and financial wealth controlled by senior cohorts."),
+        new MetricCardMeta("landRent", "Land & Urban Economic Rent", "💎 Economy & Wealth", "Idx",
+            "Ricardian differential rent value driven by spatial demographic density and infrastructure."),
+        new MetricCardMeta("toolsCount", "Operational Tooling Units", "💎 Economy & Wealth", "units",
+            "Total quantity of productive tools, machinery, and craft instruments."),
+        new MetricCardMeta("productsCount", "Product Catalog Diversity", "💎 Economy & Wealth", "types",
+            "Distinct technical variety count of manufactured goods in the civilizational catalogue."),
+
+        // Category 5: Cognition & Information
+        new MetricCardMeta("shannonBandwidth", "Shannon Informational Bandwidth", "🧠 Cognition & Information", "Gbps",
+            "Maximum informational transmission channel capacity across the inter-regional network."),
+        new MetricCardMeta("collectiveMemory", "Cumulative Collective Knowledge Stock", "🧠 Cognition & Information", "TB",
+            "Aggregated volume of preserved written records, scientific treatises, and cultural data."),
+        new MetricCardMeta("innovationDiffusion", "Innovation Diffusion Wavefront Speed", "🧠 Cognition & Information", "km/yr",
+            "Spatial propagation velocity of newly invented techniques across trade routes."),
+        new MetricCardMeta("knowledgeDecay", "Historical Amnesia / Knowledge Decay", "🧠 Cognition & Information", "%/dec",
+            "Loss rate of accumulated technical and institutional knowledge during systemic disruptions."),
+
+        // Category 6: Ecology & Planetary Boundaries
+        new MetricCardMeta("soilNPK", "Arable Soil N-P-K Fertility", "🌍 Ecology & Planetary Boundaries", "%",
+            "Macro-nutrient stoichiometric fertility index (Nitrogen, Phosphorus, Potassium) in arable soils."),
+        new MetricCardMeta("carryingCapacitySat", "Carrying Capacity Saturation (N/K)", "🌍 Ecology & Planetary Boundaries", "Ratio",
+            "Ratio of human population to sustainable local carrying capacity (N/K). Critical threshold at 1.0."),
+        new MetricCardMeta("planetaryOvershoot", "Planetary Boundary Overshoot", "🌍 Ecology & Planetary Boundaries", "x",
+            "Overshoot factor across the 9 planetary boundaries (Stockholm Resilience Centre)."),
+        new MetricCardMeta("carbonFootprint", "Atmospheric Carbon Footprint", "🌍 Ecology & Planetary Boundaries", "GtCO₂",
+            "Annual global greenhouse gas and fossil carbon emissions to the atmosphere."),
+        new MetricCardMeta("wildBiodiversity", "Wild Biodiversity Intactness", "🌍 Ecology & Planetary Boundaries", "%",
+            "Proportion of preserved wild flora and fauna biomass relative to pre-anthropic baseline."),
+        new MetricCardMeta("wetBulbSafety", "Wet-Bulb Temperature Safety Margin", "🌍 Ecology & Planetary Boundaries", "°C",
+            "Thermal buffer margin below the human physiological lethal wet-bulb threshold (Tw = 35°C)."),
+
+        // Category 7: Cliodynamics & Systemic Risks
+        new MetricCardMeta("turchinPsi", "Political Stress Index (PSI)", "⏳ Cliodynamics & Systemic Risks", "Idx",
+            "PSI = W × E × S. Turchin Structural-Demographic stress index (Popular immiseration × Elite overproduction × State fiscal distress)."),
+        new MetricCardMeta("asabiyyah", "Ibn Khaldun Asabiyyah Cohesion", "⏳ Cliodynamics & Systemic Risks", "%",
+            "Social group solidarity, mutual trust, and collective action capacity (Ibn Khaldoun 1377)."),
+        new MetricCardMeta("eliteOverproduction", "Elite Overproduction Ratio", "⏳ Cliodynamics & Systemic Risks", "Idx",
+            "Ratio of elite position contenders relative to available institutional offices (Turchin SDT)."),
+        new MetricCardMeta("fiscalStress", "Fiscal & Public Treasury Distress", "⏳ Cliodynamics & Systemic Risks", "%",
+            "Public debt burden and treasury extraction stress required to sustain administrative hierarchy."),
+        new MetricCardMeta("geopoliticalTension", "Geopolitical Friction & War Tension", "⏳ Cliodynamics & Systemic Risks", "%",
+            "Inter-polity balance of power friction and systemic escalation probability."),
+        new MetricCardMeta("collapseVulnerability", "Systemic Collapse Vulnerability", "⏳ Cliodynamics & Systemic Risks", "%",
+            "Instantaneous probability of institutional unraveling or cascade feedback failure."),
+
+        // Category 8: System Complexity
+        new MetricCardMeta("systemComplexity", "Systemic Structural Complexity", "⚙️ Systemic Complexity", "Idx",
+            "Tainter-Joseph civilizational complexity index: number of interrelated social and economic parts."),
+        new MetricCardMeta("reconstructionCapability", "Civilizational Reboot / Recovery Potential", "⚙️ Systemic Complexity", "%",
+            "Capacity to reconstruct complex infrastructure and institutional memory following catastrophic shock."),
+        new MetricCardMeta("systemInterdependence", "Supply Chain Interdependence Fragility", "⚙️ Systemic Complexity", "%",
+            "Systemic vulnerability stemming from deep supply-chain and division-of-labor hyper-specialization."),
+
+        // Category 9: Engine Performance
+        new MetricCardMeta("engineTPS", "Engine Simulation Rate", "💻 Technical Performance", "steps/s",
+            "Actual real-time compute frequency of the simulation engine in simulation steps per second."),
+        new MetricCardMeta("ramMemory", "Heap RAM Utilization", "💻 Technical Performance", "MB",
+            "Live JVM heap memory consumption of the H3 simulation state."),
+        new MetricCardMeta("cellCount", "Loaded H3 Hexagonal Cells", "💻 Technical Performance", "hex",
+            "Total count of active hexagonal spatial cells loaded in memory.")
+    );
+
     public void updateTexts() {
         isUpdatingTexts = true;
         try {
-            headerTitle.setText(I18n.getOrDefault("stats.header", "📊 TABLEAU DE BORD STATISTIQUE & CLIODYNAMIQUE"));
+            headerTitle.setText(I18n.getOrDefault("stats.header", "📊 CLIODYNAMIC & PHYSICALIST STATISTICS DASHBOARD"));
             cpuNoticeLabel.setText(I18n.getOrDefault("stats.notice.cpu",
-                "⚠️ EXPLICATION PERFORMANCE CPU : L'agrégation statistique en temps réel (indices Gini, entropie thermodynamique, " +
-                "analyse Turchin, variances et maillages H3) effectue des calculs intensifs sur chaque cellule à chaque cycle. " +
-                "Si la simulation ralentit, réduisez la fréquence d'échantillonnage ci-dessous (ex: 5 ou 20 ticks) ou mettez la collecte en pause."));
+                "⚠️ CPU PERFORMANCE NOTICE: Real-time statistical aggregation (Gini indices, thermodynamic entropy, " +
+                "Turchin structural-demographic analysis, variance and H3 spatial meshes) runs intensive per-cell compute cycles. " +
+                "If simulation rate drops, decrease sampling frequency below (e.g. 5 or 20 ticks) or pause live collection."));
 
             btnLiveCollection.setText(isLiveCollectionActive
-                    ? I18n.getOrDefault("stats.btn.live_collection_active", "⚡ Collecte Stats : ACTIF")
-                    : I18n.getOrDefault("stats.btn.live_collection_paused", "⏸️ Collecte Stats : EN PAUSE"));
-            btnLiveCollection.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.live_collection", "Activer/Désactiver le calcul des statistiques dynamiques pour économiser le CPU.")));
+                    ? I18n.getOrDefault("stats.btn.live_collection_active", "⚡ Live Stats: ACTIVE")
+                    : I18n.getOrDefault("stats.btn.live_collection_paused", "⏸️ Live Stats: PAUSED"));
+            btnLiveCollection.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.live_collection", "Toggle dynamic statistics computation to conserve CPU resources.")));
 
             int selectedSampling = samplingCombo.getSelectionModel().getSelectedIndex();
             samplingCombo.getItems().clear();
             samplingCombo.getItems().addAll(
-                I18n.getOrDefault("stats.sampling.1tick", "1 Tick (Chaque Cycle)"),
+                I18n.getOrDefault("stats.sampling.1tick", "1 Tick (Every Cycle)"),
                 I18n.getOrDefault("stats.sampling.5ticks", "5 Ticks"),
                 I18n.getOrDefault("stats.sampling.20ticks", "20 Ticks"),
                 I18n.getOrDefault("stats.sampling.100ticks", "100 Ticks")
             );
             samplingCombo.getSelectionModel().select(selectedSampling >= 0 ? selectedSampling : 0);
-            samplingCombo.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.sampling", "Fréquence d'échantillonnage et de rafraîchissement des métriques.")));
+            samplingCombo.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.sampling", "Sampling and refresh rate for all spatial metrics.")));
 
-            btnFormulaEditor.setText(I18n.getOrDefault("stats.btn.formula_editor", "🧮 Éditeur de Formules & Variables"));
-            btnFormulaEditor.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.formula_editor", "Ouvrir l'éditeur de formules cliodynamiques personnalisées (SUM, AVG, GINI, etc.).")));
+            btnFormulaEditor.setText(I18n.getOrDefault("stats.btn.formula_editor", "🧮 Custom Formulas & Variables"));
+            btnFormulaEditor.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.formula_editor", "Open pluggable formula editor (SUM, AVG, GINI, etc.).")));
 
-            chartHeaderLabel.setText(I18n.getOrDefault("stats.section.time_evolution", "📈 Évolution temporelle des indicateurs"));
-            comboLabel.setText(I18n.getOrDefault("stats.label.traced_stat", "Indicateur tracé :"));
-            windowLabel.setText(I18n.getOrDefault("stats.label.window", "Fenêtre :"));
+            chartHeaderLabel.setText(I18n.getOrDefault("stats.section.time_evolution", "📈 Indicator Temporal Evolution"));
+            comboLabel.setText(I18n.getOrDefault("stats.label.traced_stat", "Traced indicator:"));
+            windowLabel.setText(I18n.getOrDefault("stats.label.window", "Time Window:"));
 
-            btn1Yr.setText(I18n.getOrDefault("stats.window.1yr", "1 An"));
-            btn10Yr.setText(I18n.getOrDefault("stats.window.10yr", "10 Ans"));
-            btn100Yr.setText(I18n.getOrDefault("stats.window.100yr", "100 Ans"));
-            btn1000Yr.setText(I18n.getOrDefault("stats.window.1000yr", "1000 Ans"));
-            btnAll.setText(I18n.getOrDefault("stats.window.all", "Tout"));
+            btn1Yr.setText(I18n.getOrDefault("stats.window.1yr", "1 Yr"));
+            btn10Yr.setText(I18n.getOrDefault("stats.window.10yr", "10 Yrs"));
+            btn100Yr.setText(I18n.getOrDefault("stats.window.100yr", "100 Yrs"));
+            btn1000Yr.setText(I18n.getOrDefault("stats.window.1000yr", "1000 Yrs"));
+            btnAll.setText(I18n.getOrDefault("stats.window.all", "All"));
 
-            xAxis.setLabel(I18n.getOrDefault("stats.chart.time_axis", "Temps (Années)"));
-            lineChart.setTitle(I18n.getOrDefault("stats.chart.title", "Courbe d'Évolution Temporelle (💡 [CTRL] + Molette pour Zoomer | [CTRL] + Glisser pour Déplacer | Double-Clic pour Réinitialiser)"));
+            xAxis.setLabel(I18n.getOrDefault("stats.chart.time_axis", "Time (Years)"));
+            lineChart.setTitle(I18n.getOrDefault("stats.chart.title", "Temporal Trend Curve (💡 [CTRL] + Scroll to Zoom | [CTRL] + Drag to Pan | Double-Click to Reset)"));
 
-            barHeaderLabel.setText(I18n.getOrDefault("stats.section.age_pyramid", "📊 RÉPARTITION DÉMOGRAPHIQUE (Pyramide des Âges)"));
-            barChart.setTitle(I18n.getOrDefault("stats.chart.age_pyramid_title", "Pyramide des Âges"));
+            barHeaderLabel.setText(I18n.getOrDefault("stats.section.age_pyramid", "📊 DEMOGRAPHIC DISTRIBUTION (Age Pyramid)"));
+            barChart.setTitle(I18n.getOrDefault("stats.chart.age_pyramid_title", "Age Pyramid"));
 
-            metricsHeaderLabel.setText(I18n.getOrDefault("stats.section.detailed_metrics", "📋 INDICATEURS CLIODYNAMIQUES & MÉTRIQUES DÉTAILLÉES"));
-            metricInspectorTitle.setText(I18n.getOrDefault("stats.label.metric_explanation", "🔎 Explication de la Métrique Cliodynamique :"));
-            metricInspectorText.setText(I18n.getOrDefault("stats.desc.hover_metric", "Survolez ou cliquez sur une carte statistique ci-dessous pour afficher sa formule mathématique, son mode de calcul et sa signification sociétale."));
+            metricsHeaderLabel.setText(I18n.getOrDefault("stats.section.detailed_metrics", "📋 CLIODYNAMIC INDICATORS & DETAILED METRICS"));
+            metricInspectorTitle.setText(I18n.getOrDefault("stats.label.metric_explanation", "🔎 Cliodynamic Metric Explanation:"));
+            metricInspectorText.setText(I18n.getOrDefault("stats.desc.hover_metric", "Hover or click on any statistic card below to view its mathematical formula, underlying parameters, and sociological interpretation."));
 
             int catIdx = categoryFilterCombo.getSelectionModel().getSelectedIndex();
             categoryFilterCombo.getItems().clear();
             categoryFilterCombo.getItems().addAll(
-                I18n.getOrDefault("stats.cat.all", "Toutes les Catégories"),
-                I18n.getOrDefault("stats.cat.energy", "⚡ Énergie & Matière"),
-                I18n.getOrDefault("stats.cat.demography", "👥 Démographie & Santé"),
-                I18n.getOrDefault("stats.cat.society", "🏛️ Société & Institutions"),
-                I18n.getOrDefault("stats.cat.economy", "💎 Économie & Richesse"),
+                I18n.getOrDefault("stats.cat.all", "All Categories"),
+                I18n.getOrDefault("stats.cat.energy", "⚡ Energy & Matter"),
+                I18n.getOrDefault("stats.cat.demography", "👥 Demography & Health"),
+                I18n.getOrDefault("stats.cat.society", "🏛️ Society & Institutions"),
+                I18n.getOrDefault("stats.cat.economy", "💎 Economy & Wealth"),
                 I18n.getOrDefault("stats.cat.cognition", "🧠 Cognition & Information"),
-                I18n.getOrDefault("stats.cat.ecology", "🌍 Écologie & Frontières Planétaires"),
-                I18n.getOrDefault("stats.cat.cliodynamics", "⏳ Cliodynamique & Risques Systémiques"),
-                I18n.getOrDefault("stats.cat.complexity", "⚙️ Complexité Systémique"),
-                I18n.getOrDefault("stats.cat.performance", "💻 Performances Techniques")
+                I18n.getOrDefault("stats.cat.ecology", "🌍 Ecology & Planetary Boundaries"),
+                I18n.getOrDefault("stats.cat.cliodynamics", "⏳ Cliodynamics & Systemic Risks"),
+                I18n.getOrDefault("stats.cat.complexity", "⚙️ Systemic Complexity"),
+                I18n.getOrDefault("stats.cat.performance", "💻 Technical Performance")
             );
             categoryFilterCombo.getSelectionModel().select(catIdx >= 0 ? catIdx : 0);
 
-            searchField.setPromptText(I18n.getOrDefault("stats.prompt.filter", "🔍 Filtrer une statistique (ex: Kardashev, Gini, Effondrement, NPK)..."));
+            searchField.setPromptText(I18n.getOrDefault("stats.prompt.filter", "🔍 Filter metric (e.g. Kardashev, Gini, Collapse, NPK)..."));
 
-            exportBtn.setText(I18n.getOrDefault("stats.btn.export_csv", "📥 Exporter les Données (CSV)"));
-            exportBtn.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.export_csv", "Exporter l'historique complet des métriques sociétales, énergétiques et économiques au format CSV.")));
+            exportBtn.setText(I18n.getOrDefault("stats.btn.export_csv", "📥 Export Dataset (CSV)"));
+            exportBtn.setTooltip(new Tooltip(I18n.getOrDefault("stats.tooltip.export_csv", "Export complete history of societal, energetic, and economic metrics as CSV.")));
+
+            // Update all metric cards with localized texts
+            for (MetricCardMeta meta : METRIC_CARD_METAS) {
+                MetricCard card = metricCards.get(meta.key());
+                if (card != null) {
+                    String title = I18n.getOrDefault("stat.metric." + meta.key() + ".title", meta.defaultTitle());
+                    String cat = I18n.getOrDefault("stat.metric." + meta.key() + ".cat", meta.defaultCategory());
+                    String unit = I18n.getOrDefault("stat.metric." + meta.key() + ".unit", meta.defaultUnit());
+                    String tooltip = I18n.getOrDefault("stat.metric." + meta.key() + ".tooltip", meta.defaultTooltip());
+                    card.updateTexts(title, cat, unit, tooltip);
+                }
+            }
 
             // Refresh Metric Combo: Grouped by category with section headers
             String prevSelected = chartMetricCombo.getValue();
@@ -744,98 +910,14 @@ public class StatsPanel extends VBox {
     }
 
     private void registerMetricCards(Label inspectorTitle, Label inspectorText) {
-        // Category 1: Énergie & Matière
-        addCard("energyCaptured", "Énergie Captée (Puissance Globale)", "⚡ Énergie & Matière", "MW",
-            "P_tot = ∑ (P_solaire + P_biomasse + P_géothermie). Puissance primaire brute extraite du milieu physique par la société (métabolisme, feu, biomasse, traction, hydraulique, fossiles).", inspectorTitle, inspectorText);
-        addCard("resourceDepletion", "Déplétion des Ressources", "⚡ Énergie & Matière", "%",
-            "D = (Stock_initial - Stock_actuel) / Stock_initial. Pourcentage cumulé de consommation des réserves minérales non-renouvelables.", inspectorTitle, inspectorText);
-        addCard("energyPerCapita", "Énergie / Individu (Puissance)", "⚡ Énergie & Matière", "W/hab",
-            "P_cap = P_tot / N_pop. Puissance énergétique continue disponible par habitant selon la loi de Leslie White (Culture = E × T. ~300 W au Paléolithique, ~10 kW en société industrielle).", inspectorTitle, inspectorText);
-        addCard("foodPerCapita", "Stock Alimentaire / Habitant", "⚡ Énergie & Matière", "GJ/hab",
-            "F_cap = Stock_Alimentaire / N_pop en Gigajoules. Stock d'énergie trophique disponible par individu (1 hab = 9 205 kJ/jour = 3,362 GJ/an).", inspectorTitle, inspectorText);
-        addCard("eroiAlim", "EROI Alimentaire (Rendement Net)", "⚡ Énergie & Matière", "Ratio",
-            "EROI = E_sortie / E_entrée. Ratio d'énergie acquise par rapport au coût énergétique de subsistance (3:1 à 15:1 au Paléolithique/Néolithique, < 1.0 en régime thermo-industriel inversé).", inspectorTitle, inspectorText);
-        addCard("netSurplus", "Surplus Énergétique Net", "⚡ Énergie & Matière", "%",
-            "Phi = 1 - 1/EROI. Fraction d'énergie disponible pour les structures non-agricoles, l'artisanat, les cités et les institutions complexes.", inspectorTitle, inspectorText);
-        addCard("trophicMultiplier", "Empreinte Trophique", "⚡ Énergie & Matière", "x",
-            "Multiplicateur de biomasse brute mobilisée par rapport à l'ingestion métabolique (2.25x en chasse-cueillette, 12.5x en pastoralisme, 20x en système mondialisé).", inspectorTitle, inspectorText);
-        addCard("biomassMobilized", "Biomasse Mobilisée / Habitant", "⚡ Énergie & Matière", "kg/an",
-            "Masse brute annuelle de biomasse mobilisée par individu (nourriture directe, alimentation du bétail de trait/pâturage et pertes).", inspectorTitle, inspectorText);
-        addCard("pibMaterialFlow", "Flux Métabolique de Matière", "⚡ Énergie & Matière", "Mt/an", "Volume total de biomasse et de minerais déplacé par le métabolisme industriel.", inspectorTitle, inspectorText);
-        addCard("biomassNatural", "Biomasse Naturelle", "⚡ Énergie & Matière", "GtC", "Stock total de carbone végétal et faunique sauvage préservé.", inspectorTitle, inspectorText);
-        addCard("biomassDomesticated", "Biomasse Domestiquée", "⚡ Énergie & Matière", "GtC", "Biomasse totale des cultures agricoles et du bétail domestique.", inspectorTitle, inspectorText);
-        addCard("potableWater", "Eau Douce & Aquifères", "⚡ Énergie & Matière", "10³ km³", "Réserves globales d'eau potable et nappe phréatique continentale.", inspectorTitle, inspectorText);
-        addCard("remainingResources", "Ressources Restantes", "⚡ Énergie & Matière", "%", "Capital minéral et géologique non-extrait restant au sol.", inspectorTitle, inspectorText);
-        addCard("entropyPollution", "Entropie & Pollution", "⚡ Énergie & Matière", "Idx", "Génération d'entropie thermodynamique et rejets polluants.", inspectorTitle, inspectorText);
-        addCard("energyEroi", "EROI Énergétique Global", "⚡ Énergie & Matière", "Ratio", "Energy Return On Investment : Ratio moyen de rendement énergétique de l'ensemble des sources d'énergie exploitées.", inspectorTitle, inspectorText);
-        addCard("occupiedTerritory", "Territoire de Subsistance & Emprise", "⚡ Énergie & Matière", "km²",
-            "Surface écologique d'exploitation (Home Range de Binford, Kelly, Hassan). Modélise l'emprise diffuse des chasseurs-cueilleurs (10 à 100 km²/hab, soit 250 à 10 000 km² par bande de 25 personnes selon le biome) jusqu'à la concentration sédentaire agricole et urbaine.", inspectorTitle, inspectorText);
-
-        // Category 2: Démographie & Santé
-        addCard("population", "Population Humaine", "👥 Démographie & Santé", "hab", "Population totale d'habitants sur la planète.", inspectorTitle, inspectorText);
-        addCard("fertilityRate", "Taux de Fertilité", "👥 Démographie & Santé", "enf/femme", "Nombre moyen d'enfants par femme en âge de procréer.", inspectorTitle, inspectorText);
-        addCard("offspringPct", "Taux avec Descendance", "👥 Démographie & Santé", "%", "Proportion d'adultes ayant au moins un descendant.", inspectorTitle, inspectorText);
-        addCard("ageFirstChild", "Âge au 1er Enfant", "👥 Démographie & Santé", "ans", "Âge moyen de la mère à la naissance du premier enfant.", inspectorTitle, inspectorText);
-        addCard("immigrationRate", "Taux d'Immigration", "👥 Démographie & Santé", "‰", "Flux migratoires nets inter-régionaux.", inspectorTitle, inspectorText);
-        addCard("lifeExpectancy", "Espérance de Vie", "👥 Démographie & Santé", "ans", "Espérance de vie moyenne à la naissance.", inspectorTitle, inspectorText);
-        addCard("healthIndex", "Niveau de Santé Global", "👥 Démographie & Santé", "%", "Indice global de résistance sanitaire et d'immunité.", inspectorTitle, inspectorText);
-        addCard("educationLevel", "Niveau d'Éducation", "👥 Démographie & Santé", "%", "Taux d'instruction et capital de savoir accumulé.", inspectorTitle, inspectorText);
-
-        // Category 3: Société & Institutions
-        addCard("happinessIndex", "Indice de Bonheur", "🏛️ Société & Institutions", "%", "Niveau de satisfaction globale et de bien-être mesuré.", inspectorTitle, inspectorText);
-        addCard("conflictLevel", "Taux de Conflits", "🏛️ Société & Institutions", "%", "Intensité des frictions sociales, guerres et violence.", inspectorTitle, inspectorText);
-        addCard("cityStates", "Nombre de Cités-États", "🏛️ Société & Institutions", "cités", "Pôles autonomes d'administration et institutions urbaines.", inspectorTitle, inspectorText);
-        addCard("institutionalMaturity", "Naissance des Institutions", "🏛️ Société & Institutions", "Idx", "Maturité juridique, administrative et étatiste.", inspectorTitle, inspectorText);
-        addCard("divisionLabor", "Division du Travail", "🏛️ Société & Institutions", "Idx", "Niveau de spécialisation des métiers et de différenciation sociale.", inspectorTitle, inspectorText);
-        addCard("maxHierarchy", "Niveau Max Hiérarchique", "🏛️ Société & Institutions", "Niv", "Niveau d'empilement institutionnel (Tribu 1 ➔ Empire/Réseau 6).", inspectorTitle, inspectorText);
-        addCard("largestCulture", "Plus Grande Unité Culturelle", "🏛️ Société & Institutions", "hab", "Taille de la plus vaste confédération culturelle/politique.", inspectorTitle, inspectorText);
-        addCard("largestOrgComplexity", "Complexité Max Organisation", "🏛️ Société & Institutions", "Idx", "Complexité sociétale de la plus grande organisation/empire (Population × Tech × Capacités d'État × Hiérarchie).", inspectorTitle, inspectorText);
-        addCard("largestOrgEntropy", "Entropie Max Civilisation", "⚡ Énergie & Matière", "J/K", "Génération d'entropie thermodynamique et rejet de chaleur résiduelle de la plus grande civilisation.", inspectorTitle, inspectorText);
-        addCard("avgTechLevel", "Niveau Technologique Moyen", "🏛️ Société & Institutions", "Niv", "Moyenne globale du niveau d'avancement scientifique et technologique.", inspectorTitle, inspectorText);
-        addCard("kardashevScale", "Échelle de Kardashev", "🏛️ Société & Institutions", "Type K", "K = (log10(P_watts) - 6) / 10. Niveau de maîtrise énergétique globale (Type 0.0 à 1.0+).", inspectorTitle, inspectorText);
-
-        // Category 4: Économie & Richesse
-        addCard("giniIndex", "Indice de Gini (Inégalité)", "💎 Économie & Richesse", "Coeff", "G = A / (A + B). Mesure de concentration des richesses (0 = égalité, 1 = inégalité absolue).", inspectorTitle, inspectorText);
-        addCard("landGini", "Inégalité Foncière (Gini Sol)", "💎 Économie & Richesse", "Coeff", "Coefficient de concentration de la propriété des terres agricoles et des ressources du sol.", inspectorTitle, inspectorText);
-        addCard("gdpTotal", "PIB Global (GDP)", "💎 Économie & Richesse", "G$", "Produit Intérieur Brut total converti en monnaie constante.", inspectorTitle, inspectorText);
-        addCard("builtCapital", "Capital Bâti & Outillage", "💎 Économie & Richesse", "kg/hab", "Stock total d'infrastructures physiques et de machines.", inspectorTitle, inspectorText);
-        addCard("eliteFormation", "Formation d'Élite", "💎 Économie & Richesse", "%", "Proportion de la population détenant les fonctions de commandement.", inspectorTitle, inspectorText);
-        addCard("elderCapitalShare", "Possession Capital (Aînés)", "💎 Économie & Richesse", "%", "Part de la richesse foncière détenue par la tranche d'âge senior.", inspectorTitle, inspectorText);
-        addCard("landRent", "Rente Foncière & Immobilière", "💎 Économie & Richesse", "Idx", "Valorisation de la rente du sol liée à la densité et aux infrastructures.", inspectorTitle, inspectorText);
-        addCard("toolsCount", "Nombre d'Outils en Service", "💎 Économie & Richesse", "unités", "Quantité totale d'outils et équipements de production.", inspectorTitle, inspectorText);
-        addCard("productsCount", "Variété de Produits", "💎 Économie & Richesse", "types", "Diversité des produits manufacturés au catalogue technique.", inspectorTitle, inspectorText);
-
-        // Category 5: Cognition & Information
-        addCard("shannonBandwidth", "Bande Passante Shannon", "🧠 Cognition & Information", "Gbps", "Débit maximal de transmission d'information à travers le réseau civilisationnel.", inspectorTitle, inspectorText);
-        addCard("collectiveMemory", "Stock Mémoire Collective", "🧠 Cognition & Information", "TB", "Volume cumulé des connaissances, données et patrimoines écrits.", inspectorTitle, inspectorText);
-        addCard("innovationDiffusion", "Vitesse de Diffusion Tech", "🧠 Cognition & Information", "km/an", "Vitesse de propagation spatiale des nouvelles technologies.", inspectorTitle, inspectorText);
-        addCard("knowledgeDecay", "Taux d'Amnésie Historique", "🧠 Cognition & Information", "%/décade", "Vitesse de déperdition ou d'oubli du savoir lors des crises.", inspectorTitle, inspectorText);
-
-        // Category 6: Écologie & Frontières Planétaires
-        addCard("soilNPK", "Qualité NPK des Sols", "🌍 Écologie & Frontières Planétaires", "%", "Indice de fertilité et teneur en nutriments organiques des sols cultivés.", inspectorTitle, inspectorText);
-        addCard("carryingCapacitySat", "Saturation Capacité Portante (N/K)", "🌍 Écologie & Frontières Planétaires", "Ratio", "Ratio démographique global rapporté à la biocapacité soutenable (N/K). Seuil critique à 1.0 (Overshoot malthusien).", inspectorTitle, inspectorText);
-        addCard("planetaryOvershoot", "Dépassement Planétaire (Overshoot)", "🌍 Écologie & Frontières Planétaires", "x", "Facteur de dépassement des 9 frontières planétaires du Stockholm Resilience Centre (Rockström et al.).", inspectorTitle, inspectorText);
-        addCard("carbonFootprint", "Empreinte Carbone", "🌍 Écologie & Frontières Planétaires", "GtCO₂", "Émissions annuelles de gaz à effet de serre et carbone fossile.", inspectorTitle, inspectorText);
-        addCard("wildBiodiversity", "Biodiversité Sauvage", "🌍 Écologie & Frontières Planétaires", "%", "Part de la biomasse faunique et florale sauvage préservée.", inspectorTitle, inspectorText);
-        addCard("wetBulbSafety", "Marge Sécurité Bulbe Humide", "🌍 Écologie & Frontières Planétaires", "°C", "Écart de température avec le seuil létal de bulbe humide (35°C).", inspectorTitle, inspectorText);
-
-        // Category 7: Cliodynamique & Risques Systémiques
-        addCard("turchinPsi", "Indice de Stress Politique (PSI)", "⏳ Cliodynamique & Risques Systémiques", "Idx", "PSI = W × E × S. Indice synthétique de Peter Turchin modélisant la détresse populaire (W), la surproduction des élites (E) et la faiblesse de l'État (S).", inspectorTitle, inspectorText);
-        addCard("asabiyyah", "Cohésion Asabiyyah", "⏳ Cliodynamique & Risques Systémiques", "%", "Indice de solidarité de groupe et de capacité d'action collective d'Ibn Khaldoun (1377).", inspectorTitle, inspectorText);
-        addCard("eliteOverproduction", "Surproduction Élitaire (Turchin)", "⏳ Cliodynamique & Risques Systémiques", "Idx", "PSI = (Élites_aspirantes / Postes_disponibles) × Inégalité. Ratio de compétition pour le pouvoir (Indice PSI de Turchin).", inspectorTitle, inspectorText);
-        addCard("fiscalStress", "Pression & Stress Fiscal", "⏳ Cliodynamique & Risques Systémiques", "%", "Stress financier et charge de maintien des institutions publiques.", inspectorTitle, inspectorText);
-        addCard("geopoliticalTension", "Tension Géopolitique", "⏳ Cliodynamique & Risques Systémiques", "%", "Friction diplomatique et risque d'escalade guerrière multipolaire.", inspectorTitle, inspectorText);
-        addCard("collapseVulnerability", "Risque d'Effondrement", "⏳ Cliodynamique & Risques Systémiques", "%", "Probabilité d'effondrement systémique ou de boucle d'entropie.", inspectorTitle, inspectorText);
-
-        // Category 8: Complexité Systémique
-        addCard("systemComplexity", "Complexité Systémique", "⚙️ Complexité Systémique", "Idx", "Indice d'interconnexion des rouages économiques et sociaux.", inspectorTitle, inspectorText);
-        addCard("reconstructionCapability", "Capacité à Reconstruire", "⚙️ Complexité Systémique", "%", "Résilience et capacité à rebâtir la civilisation à partir de zéro.", inspectorTitle, inspectorText);
-        addCard("systemInterdependence", "Interdépendance (Rouages)", "⚙️ Complexité Systémique", "%", "Fragilité systémique liée à l'interdépendance des chaînes logistiques.", inspectorTitle, inspectorText);
-
-        // Category 9: Performances Engine
-        addCard("engineTPS", "Fréquence de Calcul (Pas/s)", "💻 Performances Techniques", "pas/s", "Fréquence réelle de calcul du moteur de simulation (pas par seconde).", inspectorTitle, inspectorText);
-        addCard("ramMemory", "Utilisation Mémoire RAM", "💻 Performances Techniques", "MB", "Consommation mémoire vive du moteur.", inspectorTitle, inspectorText);
-        addCard("cellCount", "Cellules Hexagonales H3", "💻 Performances Techniques", "hex", "Nombre total de mailles hexagonales chargées en mémoire.", inspectorTitle, inspectorText);
+        metricCards.clear();
+        for (MetricCardMeta meta : METRIC_CARD_METAS) {
+            String title = I18n.getOrDefault("stat.metric." + meta.key() + ".title", meta.defaultTitle());
+            String cat = I18n.getOrDefault("stat.metric." + meta.key() + ".cat", meta.defaultCategory());
+            String unit = I18n.getOrDefault("stat.metric." + meta.key() + ".unit", meta.defaultUnit());
+            String tooltip = I18n.getOrDefault("stat.metric." + meta.key() + ".tooltip", meta.defaultTooltip());
+            addCard(meta.key(), title, cat, unit, tooltip, inspectorTitle, inspectorText);
+        }
     }
 
     private void addCard(String key, String title, String category, String unit, String tooltip, Label inspectorTitle, Label inspectorText) {
@@ -1151,17 +1233,17 @@ public class StatsPanel extends VBox {
                     int[] pyramid = engine.getAgePyramid();
                     barSeries.getData().clear();
                     if (pyramid != null && pyramid.length >= 7) {
-                        barSeries.getData().add(new XYChart.Data<>("0-14 ans", pyramid[0]));
-                        barSeries.getData().add(new XYChart.Data<>("15-24 ans", pyramid[1]));
-                        barSeries.getData().add(new XYChart.Data<>("25-39 ans", pyramid[2]));
-                        barSeries.getData().add(new XYChart.Data<>("40-54 ans", pyramid[3]));
-                        barSeries.getData().add(new XYChart.Data<>("55-69 ans", pyramid[4]));
-                        barSeries.getData().add(new XYChart.Data<>("70-84 ans", pyramid[5]));
-                        barSeries.getData().add(new XYChart.Data<>("85+ ans", pyramid[6]));
+                        barSeries.getData().add(new XYChart.Data<>(I18n.getOrDefault("stats.pyramid.cohort.0_14", "0-14 yrs"), pyramid[0]));
+                        barSeries.getData().add(new XYChart.Data<>(I18n.getOrDefault("stats.pyramid.cohort.15_24", "15-24 yrs"), pyramid[1]));
+                        barSeries.getData().add(new XYChart.Data<>(I18n.getOrDefault("stats.pyramid.cohort.25_39", "25-39 yrs"), pyramid[2]));
+                        barSeries.getData().add(new XYChart.Data<>(I18n.getOrDefault("stats.pyramid.cohort.40_54", "40-54 yrs"), pyramid[3]));
+                        barSeries.getData().add(new XYChart.Data<>(I18n.getOrDefault("stats.pyramid.cohort.55_69", "55-69 yrs"), pyramid[4]));
+                        barSeries.getData().add(new XYChart.Data<>(I18n.getOrDefault("stats.pyramid.cohort.70_84", "70-84 yrs"), pyramid[5]));
+                        barSeries.getData().add(new XYChart.Data<>(I18n.getOrDefault("stats.pyramid.cohort.85_plus", "85+ yrs"), pyramid[6]));
                     } else if (pyramid != null && pyramid.length >= 3) {
-                        barSeries.getData().add(new XYChart.Data<>("Jeunes (<15ans)", pyramid[0]));
-                        barSeries.getData().add(new XYChart.Data<>("Adultes (15-60ans)", pyramid[1]));
-                        barSeries.getData().add(new XYChart.Data<>("Aînés (>60ans)", pyramid[2]));
+                        barSeries.getData().add(new XYChart.Data<>(I18n.getOrDefault("stats.pyramid.cohort.young", "Youth (<15 yrs)"), pyramid[0]));
+                        barSeries.getData().add(new XYChart.Data<>(I18n.getOrDefault("stats.pyramid.cohort.adult", "Adults (15-60 yrs)"), pyramid[1]));
+                        barSeries.getData().add(new XYChart.Data<>(I18n.getOrDefault("stats.pyramid.cohort.elder", "Elders (>60 yrs)"), pyramid[2]));
                     }
 
                     // Update Variance & Distribution Panel
@@ -1183,73 +1265,84 @@ public class StatsPanel extends VBox {
             double carbonFp, double wildBio, double wetBulb, double eliteOver, double fiscalStress, double geoTension,
             double collapseVuln, double sysComp, double reconCap, double sysInter, double tps, long usedMem, int totalCells) {
         if (selectedMetric == null) return pop;
-        String m = selectedMetric.toLowerCase();
 
-        if (m.contains("captée") || m.contains("energy captured")) return energyCap;
-        if (m.contains("déplétion") || m.contains("depletion")) return resDep;
-        if (m.contains("énergie /") || m.contains("energy /")) return energyPerCap;
-        if (m.contains("nourriture /") || m.contains("food /")) return foodPerCap;
-        if (m.contains("matière") || m.contains("material")) return resDep * 5.2;
-        if (m.contains("biomasse naturelle") || m.contains("natural biomass")) return bio;
-        if (m.contains("biomasse domestiquée") || m.contains("domesticated")) return bioDom;
-        if (m.contains("eau douce") || m.contains("water")) return water;
-        if (m.contains("ressources restantes") || m.contains("remaining resources")) return remRes;
-        if (m.contains("entropie") || m.contains("pollution") || m.contains("entropy")) return entropy;
-        if (m.contains("territoire") || m.contains("territory")) return territory;
+        String key = null;
+        for (MetricCard card : metricCards.values()) {
+            if (card.getTitle().equalsIgnoreCase(selectedMetric)) {
+                key = card.getKey();
+                break;
+            }
+        }
 
-        if (m.contains("survie") || m.contains("survival")) return engine.getPopulationSurvivalRate();
-        if (m.contains("cohésion") || m.contains("asabiyyah")) return engine.getAverageAsabiyyah();
-        if (m.contains("fertilité") || m.contains("fertility")) return fert;
-        if (m.contains("descendance") || m.contains("offspring")) return offspring;
-        if (m.contains("1er enfant") || m.contains("first child")) return ageFirstChild;
-        if (m.contains("immigration")) return immigration;
-        if (m.contains("espérance de vie") || m.contains("life expectancy")) return life;
-        if (m.contains("santé") || m.contains("health")) return Math.min(100.0, life * 1.1);
-        if (m.contains("éducation") || m.contains("education")) return education;
-
-        if (m.contains("bonheur") || m.contains("happiness")) return happiness;
-        if (m.contains("conflit") || m.contains("conflict")) return conflict;
-        if (m.contains("cités-états") || m.contains("city-states")) return cityStates;
-        if (m.contains("naissance des institutions") || m.contains("maturity")) return instMaturity;
-        if (m.contains("division du travail") || m.contains("division of labor")) return divLabor;
-        if (m.contains("hiérarchique") || m.contains("hierarchy")) return maxHier;
-        if (m.contains("unité culturelle") || m.contains("cultural unit")) return largestCult;
-        if (m.contains("complexité max organisation") || m.contains("organization complexity")) return largestOrgComp;
-        if (m.contains("entropie max civilisation") || m.contains("civilization entropy")) return largestOrgEnt;
-        if (m.contains("technologique") || m.contains("technology")) return tech;
-        if (m.contains("kardashev")) return kardashev;
-
-        if (m.contains("gini")) return gini;
-        if (m.contains("pib") || m.contains("gdp")) return gdp;
-        if (m.contains("capital bâti") || m.contains("built capital")) return builtCap / Math.max(1, pop);
-        if (m.contains("élite") && !m.contains("surproduction")) return eliteForm;
-        if (m.contains("aînés") || m.contains("elder")) return elderCap;
-        if (m.contains("rente") || m.contains("rent")) return landRent;
-        if (m.contains("outils") || m.contains("tools")) return tools;
-        if (m.contains("produits") || m.contains("products")) return products;
-
-        if (m.contains("shannon")) return shannonBw;
-        if (m.contains("mémoire") || m.contains("memory")) return memoryStock;
-        if (m.contains("diffusion")) return innovSpeed;
-        if (m.contains("amnésie") || m.contains("decay")) return knowDecay;
-
-        if (m.contains("npk") || m.contains("sol")) return soilNPK;
-        if (m.contains("carbone") || m.contains("carbon")) return carbonFp;
-        if (m.contains("biodiversité") || m.contains("biodiversity")) return wildBio;
-        if (m.contains("bulbe humide") || m.contains("wet bulb")) return wetBulb;
-
-        if (m.contains("surproduction") || m.contains("turchin")) return eliteOver;
-        if (m.contains("fiscal")) return fiscalStress;
-        if (m.contains("tension") || m.contains("geopolitical")) return geoTension;
-        if (m.contains("effondrement") || m.contains("collapse")) return collapseVuln;
-
-        if (m.contains("complexité systémique") || m.contains("system complexity")) return sysComp;
-        if (m.contains("reconstruire") || m.contains("reconstruction")) return reconCap;
-        if (m.contains("interdépendance") || m.contains("interdependence")) return sysInter;
-
-        if (m.contains("tps") || m.contains("fréquence") || m.contains("pas/s") || m.contains("ticks/s")) return tps;
-        if (m.contains("ram") || m.contains("mémoire")) return usedMem;
-        if (m.contains("cellules") || m.contains("cells") || m.contains("hex")) return totalCells;
+        if (key != null) {
+            return switch (key) {
+                case "energyCaptured" -> energyCap;
+                case "resourceDepletion" -> resDep;
+                case "energyPerCapita" -> energyPerCap;
+                case "foodPerCapita" -> foodPerCap;
+                case "eroiAlim" -> engine != null ? engine.getEroiAlimentaire() : 1.0;
+                case "netSurplus" -> engine != null ? engine.getNetSurplusFraction() * 100.0 : 0.0;
+                case "trophicMultiplier" -> engine != null ? engine.getTrophicMultiplier() : 1.0;
+                case "biomassMobilized" -> engine != null ? engine.getBiomassMobilizedPerCapitaKg() : 0.0;
+                case "pibMaterialFlow" -> resDep * 5.2;
+                case "biomassNatural" -> bio;
+                case "biomassDomesticated" -> bioDom;
+                case "potableWater" -> water;
+                case "remainingResources" -> remRes;
+                case "entropyPollution" -> entropy;
+                case "occupiedTerritory" -> territory;
+                case "population" -> pop;
+                case "fertilityRate" -> fert;
+                case "offspringPct" -> offspring;
+                case "ageFirstChild" -> ageFirstChild;
+                case "immigrationRate" -> immigration;
+                case "lifeExpectancy" -> life;
+                case "healthIndex" -> Math.min(100.0, life * 1.1);
+                case "educationLevel" -> education;
+                case "happinessIndex" -> happiness;
+                case "conflictLevel" -> conflict;
+                case "cityStates" -> cityStates;
+                case "institutionalMaturity" -> instMaturity;
+                case "divisionLabor" -> divLabor;
+                case "maxHierarchy" -> maxHier;
+                case "largestCulture" -> largestCult;
+                case "largestOrgComplexity" -> largestOrgComp;
+                case "largestOrgEntropy" -> largestOrgEnt;
+                case "avgTechLevel" -> tech;
+                case "kardashevScale" -> kardashev;
+                case "giniIndex", "landGini" -> gini;
+                case "gdpTotal" -> gdp;
+                case "builtCapital" -> builtCap / Math.max(1, pop);
+                case "eliteFormation" -> eliteForm;
+                case "elderCapitalShare" -> elderCap;
+                case "landRent" -> landRent;
+                case "toolsCount" -> tools;
+                case "productsCount" -> products;
+                case "shannonBandwidth" -> shannonBw;
+                case "collectiveMemory" -> memoryStock;
+                case "innovationDiffusion" -> innovSpeed;
+                case "knowledgeDecay" -> knowDecay;
+                case "soilNPK" -> soilNPK;
+                case "carryingCapacitySat" -> Math.min(2.0, (double) pop / Math.max(1.0, bio * 1e6));
+                case "planetaryOvershoot" -> Math.max(1.0, (double) pop / 5e9);
+                case "carbonFootprint" -> carbonFp;
+                case "wildBiodiversity" -> wildBio;
+                case "wetBulbSafety" -> wetBulb;
+                case "turchinPsi" -> eliteOver * fiscalStress / 100.0;
+                case "asabiyyah" -> engine != null ? engine.getAverageAsabiyyah() : 50.0;
+                case "eliteOverproduction" -> eliteOver;
+                case "fiscalStress" -> fiscalStress;
+                case "geopoliticalTension" -> geoTension;
+                case "collapseVulnerability" -> collapseVuln;
+                case "systemComplexity" -> sysComp;
+                case "reconstructionCapability" -> reconCap;
+                case "systemInterdependence" -> sysInter;
+                case "engineTPS" -> tps;
+                case "ramMemory" -> usedMem;
+                case "cellCount" -> totalCells;
+                default -> pop;
+            };
+        }
 
         return pop;
     }

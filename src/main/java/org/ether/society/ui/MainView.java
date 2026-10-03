@@ -263,7 +263,7 @@ public class MainView extends StackPane {
         resourcesTab.setText("2. " + org.ether.society.i18n.I18n.get("tab.resources"));
         setupTab.setText("3. " + org.ether.society.i18n.I18n.get("tab.scenario"));
         simulationTab.setText("4. " + org.ether.society.i18n.I18n.get("tab.simulation"));
-        comparativeAnalyticsTab.setText("5. " + org.ether.society.i18n.I18n.getOrDefault("tab.comparative_analytics", "📊 Analyse Comparative"));
+        comparativeAnalyticsTab.setText("5. " + org.ether.society.i18n.I18n.getOrDefault("tab.comparative_analytics", "Comparative Analytics"));
         executionContextTab.setText("6. " + org.ether.society.i18n.I18n.getOrDefault("tab.execution_context", "⚡ Execution Context"));
         preferencesTab.setText("7. " + org.ether.society.i18n.I18n.get("tab.preferences"));
         if (controlTab != null) {
@@ -273,7 +273,7 @@ public class MainView extends StackPane {
             statsTab.setText(org.ether.society.i18n.I18n.getOrDefault("sim.tab.stats", "📊 Stats"));
         }
         if (godModeTab != null) {
-            godModeTab.setText(org.ether.society.i18n.I18n.getOrDefault("sim.tab.godmode", "⚡ Mode Dieu"));
+            godModeTab.setText(org.ether.society.i18n.I18n.getOrDefault("sim.tab.godmode", "⚡ God Mode"));
         }
         updateHeadlessTexts();
     }

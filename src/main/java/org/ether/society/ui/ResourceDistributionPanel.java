@@ -3282,9 +3282,11 @@ public class ResourceDistributionPanel extends BorderPane {
                 }
                 if (geologyProcRadios.containsKey(i) && geologyProcRadios.get(i) != null) {
                     geologyProcRadios.get(i).setText(I18n.getOrDefault("resource.mode.procedural", "▶ Procedural Generation (Hotspots & Physics)"));
+                    geologyProcRadios.get(i).setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.mode_proc", "Analytical and procedural synthesis driven by stochastic seed and physical parameters.")));
                 }
                 if (geologyImportRadios.containsKey(i) && geologyImportRadios.get(i) != null) {
                     geologyImportRadios.get(i).setText(I18n.getOrDefault("resource.mode.import_file", "📂 External Source (PNG / GeoTIFF)"));
+                    geologyImportRadios.get(i).setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.mode_import", "Load an empirical raster dataset or external GeoTIFF/PNG map.")));
                 }
                 if (geologySourceLabels.containsKey(i) && geologySourceLabels.get(i) != null) {
                     geologySourceLabels.get(i).setText(I18n.getOrDefault("resource.label.reference_source", "Reference Source:"));
@@ -3293,10 +3295,12 @@ public class ResourceDistributionPanel extends BorderPane {
                     geologySeedLabels.get(i).setText(I18n.getOrDefault("resource.label.tensor_seed", "Generation Seed:"));
                 }
                 if (geologyGenBtns.containsKey(i) && geologyGenBtns.get(i) != null) {
-                    geologyGenBtns.get(i).setText(I18n.getOrDefault("resource.btn.gen_single_tensor", "🪄 Generate"));
+                    geologyGenBtns.get(i).setText(I18n.getOrDefault("resource.btn.export_single_tensor", "📤 Export"));
+                    geologyGenBtns.get(i).setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_tensor", "Export this tensor layer as a high-resolution PNG or GeoTIFF.")));
                 }
                 if (geologyLoadBtns.containsKey(i) && geologyLoadBtns.get(i) != null) {
                     geologyLoadBtns.get(i).setText(I18n.getOrDefault("resource.btn.load_map", "Load Map"));
+                    geologyLoadBtns.get(i).setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.load_map", "Import a PNG/GeoTIFF image for this layer.")));
                 }
                 if (geologyFormatLabels.containsKey(i) && geologyFormatLabels.get(i) != null) {
                     geologyFormatLabels.get(i).setText(getGeologyFormatHint(i));

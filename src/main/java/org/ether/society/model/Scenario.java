@@ -29,8 +29,9 @@ public class Scenario implements Serializable {
     }
 
     public String getDisplayName() {
-        if (presetKey != null && !presetKey.isBlank()) {
-            String localized = org.ether.society.i18n.I18n.getOrDefault("scenario.preset." + presetKey + ".name", name);
+        String key = resolvePresetKey();
+        if (key != null && !key.isBlank()) {
+            String localized = org.ether.society.i18n.I18n.getOrDefault("scenario.preset." + key + ".name", name);
             if (localized != null && !localized.isBlank()) {
                 return localized;
             }
@@ -39,13 +40,54 @@ public class Scenario implements Serializable {
     }
 
     public String getDisplayDescription() {
-        if (presetKey != null && !presetKey.isBlank()) {
-            String localized = org.ether.society.i18n.I18n.getOrDefault("scenario.preset." + presetKey + ".desc", description);
+        String key = resolvePresetKey();
+        if (key != null && !key.isBlank()) {
+            String localized = org.ether.society.i18n.I18n.getOrDefault("scenario.preset." + key + ".desc", description);
             if (localized != null && !localized.isBlank()) {
                 return localized;
             }
         }
         return description != null ? description : "";
+    }
+
+    private String resolvePresetKey() {
+        if (presetKey != null && !presetKey.isBlank()) return presetKey;
+        if (name == null) return null;
+        String n = name.toLowerCase();
+        if (n.contains("out of africa") || n.contains("sortie d'afrique")) return "out_of_africa";
+        if (n.contains("toba")) return "toba_cataclysm_74k";
+        if (n.contains("sahul")) return "sahul";
+        if (n.contains("beringia") || n.contains("béringie")) return "beringia";
+        if (n.contains("solutrean") || n.contains("solutréen") || n.contains("lgm")) return "lgm_solutrean";
+        if (n.contains("dryas")) return "younger_dryas";
+        if (n.contains("fertile crescent") || n.contains("croissant fertile")) return "fertile_crescent";
+        if (n.contains("vert") || n.contains("green sahara")) return "green_sahara";
+        if (n.contains("egypte") || n.contains("égypte") || n.contains("egypt")) return "ancient_egypt";
+        if (n.contains("assyrian") || n.contains("assyrien")) return "assyrian_empire";
+        if (n.contains("mesoamerica") || n.contains("mésoamérique") || n.contains("olmeques") || n.contains("olmèques")) return "mesoamerica";
+        if (n.contains("bronze age collapse") || (n.contains("effondrement") && n.contains("bronze"))) return "bronze_age_collapse_1200bc";
+        if (n.contains("early iron age") || n.contains("premier age du fer") || n.contains("premier âge du fer")) return "early_iron_age";
+        if (n.contains("alexander") || n.contains("alexandre")) return "alexander_hellenistic_334bc";
+        if (n.contains("maurya")) return "maurya_empire";
+        if (n.contains("roman empire") || n.contains("empire romain")) return "roman_empire";
+        if (n.contains("late antique") || n.contains("glaciaire antique") || n.contains("536")) return "late_antique_ice_age";
+        if (n.contains("islamic") || n.contains("islamique")) return "islamic_expansion_632";
+        if (n.contains("song")) return "song_dynasty";
+        if (n.contains("mongol")) return "mongol_conquest_1206";
+        if (n.contains("mali")) return "mali_empire";
+        if (n.contains("black death") || n.contains("peste noire")) return "black_death_1347";
+        if (n.contains("1491") || n.contains("americas") || n.contains("amériques")) return "americas_1491";
+        if (n.contains("columbian") || n.contains("colombien")) return "columbian_contact";
+        if (n.contains("sakoku") || n.contains("tokugawa")) return "tokugawa_japan";
+        if (n.contains("industrial") || n.contains("industrielle")) return "industrial_1800";
+        if (n.contains("totalitarian") || n.contains("totalitaire") || n.contains("1914")) return "world_wars_totalitarian_1914";
+        if (n.contains("anthropocene") || n.contains("anthropocène") || n.contains("2000")) return "anthropocene_2000";
+        if (n.contains("ssp5") || n.contains("ssp5-8.5")) return "ssp5_85";
+        if (n.contains("hiver nucleaire") || n.contains("hiver nucléaire") || n.contains("nuclear winter")) return "nuclear_winter_2035";
+        if (n.contains("singularity") || n.contains("singularite") || n.contains("singularité")) return "singularity_2045";
+        if (n.contains("phosphate")) return "peak_phosphate_2050";
+        if (n.contains("supervolcan") || n.contains("supervolcano")) return "supervolcano_2060";
+        return null;
     }
 
     @Override
@@ -189,6 +231,76 @@ public class Scenario implements Serializable {
 
     public static Scenario createDefaultScenario() {
         return new Scenario();
+    }
+
+    public Scenario copy() {
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            String json = mapper.writeValueAsString(this);
+            return mapper.readValue(json, Scenario.class);
+        } catch (Exception e) {
+            Scenario copy = new Scenario();
+            copy.name = this.name;
+            copy.presetKey = this.presetKey;
+            copy.description = this.description;
+            copy.planetPreset = this.planetPreset;
+            copy.ecologyPreset = this.ecologyPreset;
+            copy.ecologyPresetName = this.ecologyPresetName;
+            copy.planetRadiusKm = this.planetRadiusKm;
+            copy.rotationPeriodHours = this.rotationPeriodHours;
+            copy.revolutionPeriodDays = this.revolutionPeriodDays;
+            copy.axialTiltDegrees = this.axialTiltDegrees;
+            copy.initialHumanCount = this.initialHumanCount;
+            copy.initialTechLevel = this.initialTechLevel;
+            copy.techPreset = this.techPreset;
+            copy.initialCapitalPerCapita = this.initialCapitalPerCapita;
+            copy.initialEnergyPerCapita = this.initialEnergyPerCapita;
+            copy.initialFoodReserveMonths = this.initialFoodReserveMonths;
+            copy.initialInformationPerCapita = this.initialInformationPerCapita;
+            copy.populationDensityType = this.populationDensityType;
+            copy.cellSizeKm2 = this.cellSizeKm2;
+            copy.targetCohortSize = this.targetCohortSize;
+            copy.temporalResolutionDays = this.temporalResolutionDays;
+            copy.climateHarshness = this.climateHarshness;
+            copy.startDateYear = this.startDateYear;
+            copy.endDateYear = this.endDateYear;
+            copy.seed = this.seed;
+            copy.culturalSeed = this.culturalSeed;
+            copy.randomEventsEnabled = this.randomEventsEnabled;
+            copy.earthHistoricalLeadersEnabled = this.earthHistoricalLeadersEnabled;
+            copy.proceduralLeadersEnabled = this.proceduralLeadersEnabled;
+            copy.customDensityBase64 = this.customDensityBase64;
+            copy.cultureVectorDimensions = this.cultureVectorDimensions;
+            copy.culturalDiffusionRate = this.culturalDiffusionRate;
+            copy.culturalMutationRate = this.culturalMutationRate;
+            copy.customTensorMapsBase64 = new java.util.ArrayList<>(this.customTensorMapsBase64);
+            copy.tensorProceduralModes = new java.util.ArrayList<>(this.tensorProceduralModes);
+            copy.tensorSeeds = new java.util.HashMap<>(this.tensorSeeds);
+            copy.tensorProceduralParameters = new java.util.HashMap<>(this.tensorProceduralParameters);
+            copy.customTensorNames = new java.util.HashMap<>(this.customTensorNames);
+            copy.resourceVectorDimensions = this.resourceVectorDimensions;
+            copy.customGeologyTensorMapsBase64 = new java.util.ArrayList<>(this.customGeologyTensorMapsBase64);
+            copy.geologyTensorProceduralModes = new java.util.ArrayList<>(this.geologyTensorProceduralModes);
+            copy.h3Resolution = this.h3Resolution;
+            copy.strictDeterminism = this.strictDeterminism;
+            copy.sparseCellSkippingEnabled = this.sparseCellSkippingEnabled;
+            copy.oceanMacroAggregationEnabled = this.oceanMacroAggregationEnabled;
+            copy.coastalNavigationOnlyEnabled = this.coastalNavigationOnlyEnabled;
+            copy.oceanMultiRateTickingEnabled = this.oceanMultiRateTickingEnabled;
+            copy.parallelExecutionEnabled = this.parallelExecutionEnabled;
+            copy.spatialRangeTruncationEnabled = this.spatialRangeTruncationEnabled;
+            copy.typeBEngineStates = new java.util.HashMap<>(this.typeBEngineStates);
+            copy.typeBEngineParameters = new java.util.HashMap<>(this.typeBEngineParameters);
+            copy.climateEvents = new java.util.ArrayList<>(this.climateEvents);
+            copy.clippingEnabled = this.clippingEnabled;
+            copy.minLat = this.minLat;
+            copy.maxLat = this.maxLat;
+            copy.minLng = this.minLng;
+            copy.maxLng = this.maxLng;
+            copy.boundaryMode = this.boundaryMode;
+            copy.useRealEarthData = this.useRealEarthData;
+            return copy;
+        }
     }
 
     /**

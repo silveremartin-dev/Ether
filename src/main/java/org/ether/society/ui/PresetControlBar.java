@@ -612,8 +612,16 @@ public class PresetControlBar<T> extends VBox {
         if (deleteBtn != null) deleteBtn.setText("🗑️ " + I18n.getOrDefault("preset.delete", "Supprimer"));
         if (exportBtn != null) exportBtn.setText("📤 " + I18n.getOrDefault("preset.export", "Export"));
         if (importBtn != null) importBtn.setText("📥 " + I18n.getOrDefault("preset.import", "Import"));
-        if (presetCombo != null)
+        if (presetCombo != null) {
             presetCombo.setPromptText(I18n.getOrDefault("preset.combo.placeholder", "— Select a preset —"));
+            presetCombo.setButtonCell(createPresetListCell());
+            T cur = presetCombo.getValue();
+            if (cur != null) {
+                if (nameField != null && !dirty) {
+                    nameField.setText(formatPresetItem(cur));
+                }
+            }
+        }
         if (nameField != null)
             nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Preset name…"));
         updateTooltips();
@@ -639,7 +647,7 @@ public class PresetControlBar<T> extends VBox {
         if (item instanceof org.ether.society.procedural.PlanetPreset p) return I18n.getPlanetPresetDisplayName(p.name());
         if (item instanceof org.ether.society.model.EcologyPreset e) return org.ether.society.i18n.I18n.getPlanetPresetDisplayName(e.name());
         if (item instanceof org.ether.society.model.Scenario s) {
-            return cleanScenarioName(s.getName());
+            return cleanScenarioName(s.getDisplayName());
         }
         try {
             var method = item.getClass().getMethod("name");
@@ -656,16 +664,17 @@ public class PresetControlBar<T> extends VBox {
 
     private String cleanScenarioName(String name) {
         if (name == null) return "";
-        return name.replaceAll("\\s*\\((?:\\-?\\d+|An 0|SSP[0-9\\-\\.]+)\\)\\s*$", "").trim();
+        return name.replaceAll("\\s*\\((?:\\-?\\d+|An 0|Year 0|SSP[0-9\\-\\.]+)\\)\\s*$", "").trim();
     }
 
     private String getPresetDateText(T item) {
         if (item instanceof org.ether.society.model.Scenario s) {
             long year = s.getStartDateYear();
             if (year < 0) {
-                return String.format("%,d av. J.-C.", Math.abs(year)).replace(',', ' ');
+                String bcFmt = I18n.getOrDefault("scenario.date.bc", "%,d BCE");
+                return String.format(bcFmt, Math.abs(year)).replace(',', ' ');
             } else if (year == 0) {
-                return "An 0";
+                return I18n.getOrDefault("scenario.date.year_zero", "Year 0");
             } else {
                 return String.valueOf(year);
             }
@@ -682,9 +691,9 @@ public class PresetControlBar<T> extends VBox {
             return e.getPresetDescription();
         }
         if (item instanceof org.ether.society.model.Scenario s) {
-            String desc = s.getDescription();
+            String desc = s.getDisplayDescription();
             if (desc != null && !desc.isBlank()) return desc;
-            return s.getName();
+            return s.getDisplayName();
         }
         return formatPresetItem(item);
     }

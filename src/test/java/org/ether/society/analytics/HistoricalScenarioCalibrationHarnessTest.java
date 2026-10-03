@@ -75,8 +75,8 @@ public class HistoricalScenarioCalibrationHarnessTest {
                 HistoricalScenarioCalibrationHarness.runMultiScaleSensitivityMatrix(def);
 
         assertNotNull(matrix, "MultiScaleSensitivityMatrix must not be null");
-        assertEquals(4, matrix.spatialEntries.size(), "Should evaluate 4 spatial resolutions (Res 2 to 5)");
-        assertEquals(5, matrix.temporalEntries.size(), "Should evaluate 5 temporal steps (30d to 1825d)");
+        assertEquals(5, matrix.spatialEntries.size(), "Should evaluate 5 spatial resolutions (Res 2 to 6)");
+        assertEquals(7, matrix.temporalEntries.size(), "Should evaluate 7 temporal steps (1d to 1825d)");
         assertEquals(5, matrix.cohortEntries.size(), "Should evaluate 5 cohort granularity sizes");
 
         // Check spatial convergence: finer resolution -> lower spatial RMSE and higher SSIM
@@ -93,5 +93,57 @@ public class HistoricalScenarioCalibrationHarnessTest {
         assertNotNull(mdReport, "Generated markdown report must not be null");
         assertTrue(mdReport.contains("ETHER CLIODYNAMIC ENGINE"), "Report should contain main title");
         assertTrue(mdReport.contains("Multi-Scale Discretization & Numerical Sensitivity Matrix"), "Report should contain sensitivity section");
+    }
+
+    @Test
+    @DisplayName("Should execute Archaeological Detective scenarios and identify anomalous unrecorded bifurcations")
+    void testArchaeologicalDetectiveScenarios() {
+        List<HistoricalScenarioCalibrationHarness.ScenarioCalibrationResult> results =
+                HistoricalScenarioCalibrationHarness.runAllArchaeologicalDetectiveScenarios();
+
+        assertNotNull(results, "Detective results must not be null");
+        assertEquals(3, results.size(), "Should evaluate 3 archaeological detective scenarios (Harappa, Rome 3rd c., Maya)");
+
+        for (HistoricalScenarioCalibrationHarness.ScenarioCalibrationResult res : results) {
+            logger.info("Archaeological Detective evaluated: '{}' (R² = {}, RMSE = {})",
+                    res.scenario.displayName(), res.compositeRSquared, res.compositeRmse);
+            assertTrue(res.compositeRSquared >= 0.0, "Model should compute valid regression fit");
+            assertNotNull(res.scenario.keyEmpires(), "Key archaeological nodes must be present");
+        }
+    }
+
+    @Test
+    @DisplayName("Should execute Master 9-Epoch continuous historical blocks across -100,000 BP to 2026 CE")
+    void testMasterNineEpochBlocks() {
+        List<HistoricalScenarioCalibrationHarness.ScenarioCalibrationResult> results =
+                HistoricalScenarioCalibrationHarness.runAllMasterNineEpochBlocks();
+
+        assertNotNull(results, "Master 9-epoch results must not be null");
+        assertEquals(9, results.size(), "Should evaluate all 9 canonical epoch blocks from -100k to 2026");
+
+        for (HistoricalScenarioCalibrationHarness.ScenarioCalibrationResult res : results) {
+            logger.info("Master Epoch evaluated: '{}' (R² = {}, MAPE = {}%)",
+                    res.scenario.displayName(), res.compositeRSquared, res.meanMape);
+            assertTrue(res.meanMape < 75.0, "Mean MAPE across multi-millennial epoch blocks must be bounded");
+        }
+    }
+
+    @Test
+    @DisplayName("Should execute Pluggable & World3 Hybrid Engine Ablation Audit")
+    void testEngineAblationAudit() {
+        List<HistoricalScenarioCalibrationHarness.EngineAblationAuditEntry> audit =
+                HistoricalScenarioCalibrationHarness.runPluggableEngineAndWorld3AblationAudit();
+
+        assertNotNull(audit, "Ablation audit list must not be null");
+        assertFalse(audit.isEmpty(), "Ablation audit should contain evaluated engines");
+
+        // Verify World3 is recommended post-1900 and disabled pre-1900
+        boolean world3ActivePost1900 = audit.stream()
+                .anyMatch(e -> e.engineName().contains("World3") && e.targetEpoch().contains("1900") && e.isRecommendedActive());
+        boolean world3DisabledPre1900 = audit.stream()
+                .anyMatch(e -> e.engineName().contains("World3") && e.targetEpoch().contains("Paleolithic") && !e.isRecommendedActive());
+
+        assertTrue(world3ActivePost1900, "World3 must be active for modern industrial epoch");
+        assertTrue(world3DisabledPre1900, "World3 must be disabled for pre-industrial epochs to preserve CPU");
     }
 }

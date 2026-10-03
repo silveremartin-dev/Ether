@@ -33,6 +33,7 @@ public class MarkdownViewerPane extends BorderPane {
     private final TextArea rawTextArea;
     private final ToggleButton toggleRawBtn;
     private final Button copyBtn;
+    private final Label formatHint;
     private String currentMarkdown = "";
 
     public MarkdownViewerPane() {
@@ -44,15 +45,15 @@ public class MarkdownViewerPane extends BorderPane {
         toolBar.setPadding(new Insets(4, 8, 4, 8));
         toolBar.setStyle("-fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 4;");
 
-        Label formatHint = new Label(I18n.getOrDefault("markdown.preview_title", "✨ Formatted Report Preview"));
+        formatHint = new Label(I18n.getOrDefault("markdown.preview_title", "✨ Formatted Report Preview"));
         formatHint.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8; -fx-font-weight: bold;");
         HBox.setHgrow(formatHint, Priority.ALWAYS);
 
-        toggleRawBtn = new ToggleButton(I18n.getOrDefault("markdown.btn.toggle_raw", "📝 Code Brut"));
+        toggleRawBtn = new ToggleButton(I18n.getOrDefault("markdown.btn.toggle_raw", "📝 Raw Markdown"));
         toggleRawBtn.setStyle("-fx-font-size: 11px; -fx-cursor: hand; -fx-padding: 3 8;");
         toggleRawBtn.setOnAction(e -> updateViewMode());
 
-        copyBtn = new Button(I18n.getOrDefault("markdown.btn.copy", "📋 Copier"));
+        copyBtn = new Button(I18n.getOrDefault("markdown.btn.copy", "📋 Copy"));
         copyBtn.setStyle("-fx-font-size: 11px; -fx-cursor: hand; -fx-padding: 3 8;");
         copyBtn.setOnAction(e -> copyToClipboard());
 
@@ -75,6 +76,28 @@ public class MarkdownViewerPane extends BorderPane {
         rawTextArea.setStyle("-fx-font-family: 'Consolas', 'Courier New', monospace; -fx-font-size: 12px;");
 
         setCenter(scrollPane);
+
+        updateTexts();
+        I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
+    }
+
+    public void updateTexts() {
+        if (formatHint != null) {
+            formatHint.setText(I18n.getOrDefault("markdown.preview_title", "✨ Formatted Report Preview"));
+        }
+        if (toggleRawBtn != null) {
+            if (toggleRawBtn.isSelected()) {
+                toggleRawBtn.setText(I18n.getOrDefault("markdown.btn.toggle_formatted", "👁️ Formatted View"));
+            } else {
+                toggleRawBtn.setText(I18n.getOrDefault("markdown.btn.toggle_raw", "📝 Raw Markdown"));
+            }
+            toggleRawBtn.setTooltip(new Tooltip(I18n.getOrDefault("markdown.tooltip.toggle", "Toggle between rich formatted document view and raw editable markdown code.")));
+        }
+        if (copyBtn != null) {
+            copyBtn.setText(I18n.getOrDefault("markdown.btn.copy", "📋 Copy Report"));
+            copyBtn.setTooltip(new Tooltip(I18n.getOrDefault("markdown.tooltip.copy", "Copy full markdown report text content to system clipboard.")));
+        }
+        renderMarkdown(currentMarkdown);
     }
 
     public void setMarkdown(String markdown) {
@@ -89,10 +112,10 @@ public class MarkdownViewerPane extends BorderPane {
 
     private void updateViewMode() {
         if (toggleRawBtn.isSelected()) {
-            toggleRawBtn.setText(I18n.getOrDefault("markdown.btn.toggle_formatted", "👁️ Vue Mise en Page"));
+            toggleRawBtn.setText(I18n.getOrDefault("markdown.btn.toggle_formatted", "👁️ Formatted View"));
             setCenter(rawTextArea);
         } else {
-            toggleRawBtn.setText(I18n.getOrDefault("markdown.btn.toggle_raw", "📝 Code Brut"));
+            toggleRawBtn.setText(I18n.getOrDefault("markdown.btn.toggle_raw", "📝 Raw Markdown"));
             setCenter(scrollPane);
         }
     }
@@ -105,7 +128,7 @@ public class MarkdownViewerPane extends BorderPane {
             clipboard.setContent(content);
 
             String oldText = copyBtn.getText();
-            copyBtn.setText(I18n.getOrDefault("markdown.btn.copied", "✅ Copié !"));
+            copyBtn.setText(I18n.getOrDefault("markdown.btn.copied", "✅ Copied!"));
             javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1.5));
             pause.setOnFinished(e -> copyBtn.setText(oldText));
             pause.play();
@@ -116,7 +139,7 @@ public class MarkdownViewerPane extends BorderPane {
         formattedContainer.getChildren().clear();
 
         if (markdown == null || markdown.isBlank()) {
-            Label emptyLbl = new Label(I18n.getOrDefault("markdown.empty", "Aucun rapport à afficher."));
+            Label emptyLbl = new Label(I18n.getOrDefault("markdown.empty", "No report available to display."));
             emptyLbl.setStyle("-fx-text-fill: #94a3b8; -fx-font-style: italic;");
             formattedContainer.getChildren().add(emptyLbl);
             return;

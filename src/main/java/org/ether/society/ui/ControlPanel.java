@@ -105,6 +105,29 @@ public class ControlPanel extends VBox {
     private final CheckBox filterChronicleCheck;
     private final List<ActiveEvent> rawEventsCache = new ArrayList<>();
 
+    // Section 1: Time & Playback UI
+    private Label timeTitle;
+    private final CheckBox pauseOnEventCheck;
+
+    // Section 2: Layers & Presets UI
+    private Label layersTitle;
+    private Label presetsTitle;
+    private final Button presetSynth;
+    private final Button presetEcon;
+    private final Button presetClim;
+    private final Button presetCliodyn;
+    private Label layerComboLabel;
+    private Label dataLayersTitle;
+    private Label uiOverlaysTitle;
+
+    // Section 3: Rendering UI
+    private Label renderTitle;
+    private Label paletteLabel;
+    private final ComboBox<ScientificColorMap> paletteCombo;
+
+    // Section 4: Export UI
+    private Label exportTitle;
+
     // Callbacks
     private Runnable onSave;
     private Runnable onLoad;
@@ -132,7 +155,7 @@ public class ControlPanel extends VBox {
         dateHeaderLabel.getStyleClass().add("sidebar-title");
         dateHeaderLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         dateHeaderLabel.setTooltip(new Tooltip(
-            I18n.getOrDefault("sim.tooltip.date_header", "⏱️ Horloge courante de la simulation selon le pas temporel configuré.")
+            I18n.getOrDefault("sim.tooltip.date_header", "Current simulation clock according to configured time step.")
         ));
 
         dbStatusLabel = new Label(I18n.getOrDefault("sim.status.dbcheck", "DB: Checking..."));
@@ -140,10 +163,10 @@ public class ControlPanel extends VBox {
         dbStatusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-padding: 2 0 0 0;");
 
         // --- 2. TEMPORAL & PLAYBACK CONTROLS CARD ---
-        Label timeTitle = createCardTitle("⏱️ " + I18n.getOrDefault("sim.card.time", "TIME & PLAYBACK CONTROLS"));
+        timeTitle = createCardTitle("⏱️ " + I18n.getOrDefault("sim.card.time", "TIME & PLAYBACK CONTROLS"));
 
         rewindBtn = new Button("⏮");
-        rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Réinitialiser T=0")));
+        rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Reset to T=0")));
         rewindBtn.setOnAction(e -> {
             engine.pause();
             updatePlayPauseVisuals(false);
@@ -154,11 +177,11 @@ public class ControlPanel extends VBox {
         });
 
         fastRewindBtn = new Button("⏪");
-        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Reculer de 1000 pas [Maintenir appuyé]")));
+        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Step backward 1000 steps [Hold down]")));
         setupRepeatAction(fastRewindBtn, () -> engine.stepBackward(1000));
 
         stepBackBtn = new Button("⏴");
-        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Reculer de 10 pas [Maintenir appuyé]")));
+        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Step backward 10 steps [Hold down]")));
         setupRepeatAction(stepBackBtn, () -> engine.stepBackward(10));
 
         // Auto Record Checkbox (initialized early for button handlers)
@@ -168,7 +191,7 @@ public class ControlPanel extends VBox {
         autoRecordCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
 
         playPauseBtn = new Button("▶");
-        playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
+        playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Start / Resume")));
         playPauseBtn.setOnAction(e -> {
             if (engine.isRunning()) {
                 engine.pause();
@@ -186,15 +209,15 @@ public class ControlPanel extends VBox {
         });
 
         stepForwardBtn = new Button("⏵");
-        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer de 10 pas [Maintenir appuyé]")));
+        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Step forward 10 steps [Hold down]")));
         setupRepeatAction(stepForwardBtn, () -> engine.stepForward(10));
 
         fastForwardBtn = new Button("⏩");
-        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Avancer de 1000 pas [Maintenir appuyé]")));
+        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Step forward 1000 steps [Hold down]")));
         setupRepeatAction(fastForwardBtn, () -> engine.stepForward(1000));
 
         endBtn = new Button("⏭");
-        endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Aller à la fin de la simulation (Dernier checkpoint / Fin)")));
+        endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Jump to simulation end (Last checkpoint / End)")));
         endBtn.setOnAction(e -> {
             engine.pause();
             updatePlayPauseVisuals(false);
@@ -217,7 +240,7 @@ public class ControlPanel extends VBox {
 
         updatePlayPauseVisuals(engine.isRunning());
 
-        CheckBox pauseOnEventCheck = new CheckBox(I18n.getOrDefault("sim.option.pause_on_event", "⏸️ Auto-pause on event"));
+        pauseOnEventCheck = new CheckBox(I18n.getOrDefault("sim.option.pause_on_event", "⏸️ Auto-pause on event"));
         pauseOnEventCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause_on_event", "Automatically pauses simulation when a new planetary or regional event occurs")));
         pauseOnEventCheck.getStyleClass().add("opt-sub-checkbox");
         pauseOnEventCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
@@ -233,15 +256,15 @@ public class ControlPanel extends VBox {
         speedSlider.setShowTickMarks(true);
         speedSlider.setShowTickLabels(true);
         speedSlider.setSnapToTicks(false);
-        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "Vitesse de simulation CPU (0.1 à 20 pas/sec ou MAX)")));
+        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "CPU simulation speed (0.1 to 20 steps/sec or MAX)")));
         HBox.setHgrow(speedSlider, Priority.ALWAYS);
 
-        speedValueLabel = new Label("⏱️ " + I18n.getOrDefault("sim.speed.label", "Vitesse : 1 pas/sec"));
+        speedValueLabel = new Label("⏱️ " + I18n.getOrDefault("sim.speed.label", "Speed : 1 step/sec"));
         speedValueLabel.getStyleClass().add("value-label");
         speedValueLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
 
         speedMax = new ToggleButton("MAX 🚀");
-        speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Calcule les itérations à la vitesse maximale du processeur")));
+        speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Runs iterations at maximum processor capacity")));
         updateSpeedMaxStyle(false);
 
         speedSlider.valueProperty().addListener((obs, oldV, newV) -> {
@@ -295,10 +318,10 @@ public class ControlPanel extends VBox {
         VBox timeCard = new VBox(8, scenarioHeaderLabel, dateHeaderLabel, dbStatusLabel, timeTitle, playBar, pauseOnEventCheck, speedValueLabel, sliderRow);
         styleCard(timeCard);
 
-        // --- 3. MEDIA & EXPORT MP4 CARD ---
-        Label mediaTitle = createCardTitle("📸 " + I18n.getOrDefault("sim.card.media", "SCREENSHOTS & VIDEO"));
+        // --- 4. TÉLÉMÉTRIE & EXPORT CARD ---
+        exportTitle = createCardTitle(I18n.getOrDefault("sim.card.telemetry", "📊 4. TELEMETRY, SCREENSHOTS & EXPORTS"));
 
-        hdScreenshotBtn = new Button("📸 " + I18n.getOrDefault("sim.btn.screenshot", "Capture Photo HD"));
+        hdScreenshotBtn = new Button("📸 " + I18n.getOrDefault("sim.btn.screenshot", "HD Screenshot"));
         hdScreenshotBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.screenshot", "Exports HD PNG screenshot to saves/screenshots/")));
         hdScreenshotBtn.setMaxWidth(Double.MAX_VALUE);
         hdScreenshotBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-padding: 6 10; -fx-background-radius: 6;");
@@ -311,17 +334,17 @@ public class ControlPanel extends VBox {
         recordVideoBtn.setOnAction(e -> toggleVideoRecording());
 
         // --- 2. PILE DE COUCHES & PRÉRÉGLAGES SCIENTIFIQUES CARD ---
-        Label layersTitle = createCardTitle(I18n.getOrDefault("sim.card.layers_presets", "🗺️ 2. LAYER STACK & SCIENTIFIC PRESETS"));
+        layersTitle = createCardTitle(I18n.getOrDefault("sim.card.layers_presets", "🗺️ 2. LAYER STACK & SCIENTIFIC PRESETS"));
 
         // 1-Click Scientific Presets
-        Label presetsTitle = new Label(I18n.getOrDefault("sim.presets.1click", "⚡ 1-Click Scientific Presets:"));
+        presetsTitle = new Label(I18n.getOrDefault("sim.presets.1click", "⚡ 1-Click Scientific Presets:"));
         presetsTitle.getStyleClass().add("opt-subheader");
         presetsTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
-        Button presetSynth = createPresetBtn(I18n.getOrDefault("sim.preset.synthesis", "🌍 Synthesis"), I18n.getOrDefault("sim.preset.synthesis.desc", "3D Globe Mode + Biomes + Relief + Contour Lines"), () -> applyPresetSynthesis(pauseOnEventCheck));
-        Button presetEcon = createPresetBtn(I18n.getOrDefault("sim.preset.economy", "📈 Economy"), I18n.getOrDefault("sim.preset.economy.desc", "Flux / GDP Map + Transport Vectors + Ore Deposits"), () -> applyPresetEcon());
-        Button presetClim = createPresetBtn(I18n.getOrDefault("sim.preset.climate", "🌡️ Climate"), I18n.getOrDefault("sim.preset.climate.desc", "Temperature Map + Aquifers + Relief Contour Lines"), () -> applyPresetClimate());
-        Button presetCliodyn = createPresetBtn(I18n.getOrDefault("sim.preset.cliodynamics", "🏛️ Cliodynamics"), I18n.getOrDefault("sim.preset.cliodynamics.desc", "Demographic Map + H3 Mesh + Event Pause"), () -> applyPresetCliodynamics(pauseOnEventCheck));
+        presetSynth = createPresetBtn(I18n.getOrDefault("sim.preset.synthesis", "🌍 Synthesis"), I18n.getOrDefault("sim.preset.synthesis.desc", "3D Globe Mode + Biomes + Relief + Contour Lines"), () -> applyPresetSynthesis(pauseOnEventCheck));
+        presetEcon = createPresetBtn(I18n.getOrDefault("sim.preset.economy", "📈 Economy"), I18n.getOrDefault("sim.preset.economy.desc", "Flux / GDP Map + Transport Vectors + Ore Deposits"), () -> applyPresetEcon());
+        presetClim = createPresetBtn(I18n.getOrDefault("sim.preset.climate", "🌡️ Climate"), I18n.getOrDefault("sim.preset.climate.desc", "Temperature Map + Aquifers + Relief Contour Lines"), () -> applyPresetClimate());
+        presetCliodyn = createPresetBtn(I18n.getOrDefault("sim.preset.cliodynamics", "🏛️ Cliodynamics"), I18n.getOrDefault("sim.preset.cliodynamics.desc", "Demographic Map + H3 Mesh + Event Pause"), () -> applyPresetCliodynamics(pauseOnEventCheck));
 
         GridPane presetGrid = new GridPane();
         presetGrid.setHgap(4);
@@ -337,42 +360,22 @@ public class ControlPanel extends VBox {
         VBox presetBox = new VBox(4, presetsTitle, presetGrid);
         presetBox.getStyleClass().add("subcard-section");
 
-        Label layerComboLabel = new Label(I18n.getOrDefault("sim.layer.datacategory", "Active Data Layers (Multi-Select):"));
+        layerComboLabel = new Label(I18n.getOrDefault("sim.layer.datacategory", "Active Data Layers (Multi-Select):"));
         layerComboLabel.getStyleClass().add("card-description-muted");
         layerComboLabel.setStyle("-fx-font-size: 11px;");
 
         activeLayersMenuBtn = new MenuButton();
         activeLayersMenuBtn.setMaxWidth(Double.MAX_VALUE);
-        activeLayersMenuBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.datacategory", "Cochez une ou plusieurs couches pour les superposer sur la carte")));
+        activeLayersMenuBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.datacategory", "Toggle one or more layers to superimpose on the map")));
         activeLayersMenuBtn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-border-color: #38bdf8; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand;");
 
         activeLayersChipsBox = new FlowPane(4, 4);
         activeLayersChipsBox.setStyle("-fx-padding: 2 0;");
 
-        for (DisplayMode.Category cat : DisplayMode.Category.values()) {
-            Label catHeader = new Label("─── " + cat.getCategoryName() + " ───");
-            catHeader.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 4 8 2 8;");
-            CustomMenuItem catItem = new CustomMenuItem(catHeader, false);
-            activeLayersMenuBtn.getItems().add(catItem);
-
-            for (DisplayMode dm : DisplayMode.values()) {
-                if (dm.getCategory() == cat) {
-                    CheckBox cb = new CheckBox(dm.getDisplayName());
-                    cb.setTooltip(new Tooltip(dm.getDescription()));
-                    cb.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px; -fx-padding: 2 8; -fx-cursor: hand;");
-                    cb.setSelected(dm == DisplayMode.BIOME || dm == DisplayMode.POPULATION);
-                    cb.setOnAction(e -> onLayerToggled(dm, cb.isSelected()));
-                    layerCheckBoxMap.put(dm, cb);
-                    CustomMenuItem mi = new CustomMenuItem(cb, false);
-                    activeLayersMenuBtn.getItems().add(mi);
-                }
-            }
-            activeLayersMenuBtn.getItems().add(new SeparatorMenuItem());
-        }
-
+        rebuildLayerMenuItems();
         updateActiveLayerUI();
 
-        contourCheck = new CheckBox(I18n.getOrDefault("sim.layer.contours", "📈 Courbes de Niveau (Isolines)"));
+        contourCheck = new CheckBox(I18n.getOrDefault("sim.layer.contours", "📈 Elevation Contour Lines"));
         contourCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.contours", "Displays elevation contour lines on H3 cells")));
         contourCheck.getStyleClass().add("opt-sub-checkbox");
         contourCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
@@ -381,7 +384,7 @@ public class ControlPanel extends VBox {
             if (onContourToggle != null) onContourToggle.accept(contourCheck.isSelected());
         });
 
-        fluxVectorCheck = new CheckBox(I18n.getOrDefault("sim.layer.fluxvectors", "🌊 Flux & Transports (Vecteurs)"));
+        fluxVectorCheck = new CheckBox(I18n.getOrDefault("sim.layer.fluxvectors", "🌊 Flux & Transports (Vectors)"));
         fluxVectorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fluxvectors", "Overlays material flux and population transport vectors")));
         fluxVectorCheck.getStyleClass().add("opt-sub-checkbox");
         fluxVectorCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
@@ -397,18 +400,18 @@ public class ControlPanel extends VBox {
             if (mapCanvas != null) mapCanvas.setShowResourceOverlay(resourceOverlayCheck.isSelected());
         });
 
-        floatingLayerCheck = new CheckBox(I18n.getOrDefault("sim.layer.floating", "☁️ Calques Flottants 2.5D (Altitude)"));
+        floatingLayerCheck = new CheckBox(I18n.getOrDefault("sim.layer.floating", "☁️ 2.5D Floating Layers (Altitude)"));
         floatingLayerCheck.setSelected(true);
-        floatingLayerCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.floating", "Projette les couches thématiques en élévation 2.5D flottant au-dessus du relief des biomes")));
+        floatingLayerCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.floating", "Projects thematic layers in 2.5D elevation floating above biome topography")));
         floatingLayerCheck.getStyleClass().add("opt-sub-checkbox");
         floatingLayerCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         floatingLayerCheck.setOnAction(e -> {
             if (mapCanvas != null) mapCanvas.setShowFloatingLayers(floatingLayerCheck.isSelected());
         });
 
-        legendCheck = new CheckBox(I18n.getOrDefault("sim.layer.legend", "🗺️ Légende des Couleurs (Overlay)"));
+        legendCheck = new CheckBox(I18n.getOrDefault("sim.layer.legend", "🗺️ Color Legend (Overlay)"));
         legendCheck.setSelected(true);
-        legendCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.legend", "Affiche ou masque le panneau de légende des couleurs")));
+        legendCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.legend", "Shows or hides the map color legend pane")));
         legendCheck.getStyleClass().add("opt-sub-checkbox");
         legendCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         legendCheck.setOnAction(e -> {
@@ -418,9 +421,9 @@ public class ControlPanel extends VBox {
             }
         });
 
-        dateOverlayCheck = new CheckBox(I18n.getOrDefault("sim.layer.date_overlay", "📅 Incrustation Date & Scénario"));
+        dateOverlayCheck = new CheckBox(I18n.getOrDefault("sim.layer.date_overlay", "📅 Date & Scenario Inset"));
         dateOverlayCheck.setSelected(true);
-        dateOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.date_overlay", "Affiche ou masque les badges d'incrustation temporelle sur la carte")));
+        dateOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.date_overlay", "Shows or hides time and scenario overlay badges on the map")));
         dateOverlayCheck.getStyleClass().add("opt-sub-checkbox");
         dateOverlayCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         dateOverlayCheck.setOnAction(e -> {
@@ -429,9 +432,9 @@ public class ControlPanel extends VBox {
             }
         });
 
-        cellInfoCheck = new CheckBox(I18n.getOrDefault("sim.layer.cell_info", "ℹ️ Infos Cellule au Survol (Infobulle)"));
+        cellInfoCheck = new CheckBox(I18n.getOrDefault("sim.layer.cell_info", "ℹ️ Hover Cell Info (Tooltip)"));
         cellInfoCheck.setSelected(true);
-        cellInfoCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.cell_info", "Active ou désactive l'infobulle d'inspection au survol des hexagones")));
+        cellInfoCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.cell_info", "Enables or disables inspection tooltip when hovering over hexagons")));
         cellInfoCheck.getStyleClass().add("opt-sub-checkbox");
         cellInfoCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         cellInfoCheck.setOnAction(e -> {
@@ -440,13 +443,13 @@ public class ControlPanel extends VBox {
             }
         });
 
-        Label dataLayersTitle = new Label(I18n.getOrDefault("sim.layer.datalayers", "📊 Calques de Données & Vecteurs :"));
+        dataLayersTitle = new Label(I18n.getOrDefault("sim.layer.datalayers", "📊 Data Layers & Vectors:"));
         dataLayersTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8;");
 
         VBox dataLayersBox = new VBox(4, dataLayersTitle, contourCheck, fluxVectorCheck, resourceOverlayCheck, floatingLayerCheck);
         dataLayersBox.getStyleClass().add("subcard-section");
 
-        Label uiOverlaysTitle = new Label(I18n.getOrDefault("sim.layer.uioverlays", "🖥️ Affichage & Surimpressions UI :"));
+        uiOverlaysTitle = new Label(I18n.getOrDefault("sim.layer.uioverlays", "🖥️ UI Overlays & Insets:"));
         uiOverlaysTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8;");
 
         VBox uiOverlaysBox = new VBox(4, uiOverlaysTitle, legendCheck, dateOverlayCheck, cellInfoCheck);
@@ -456,14 +459,14 @@ public class ControlPanel extends VBox {
         styleCard(layersCard);
 
         // --- 3. PROJECTION & PARAMÈTRES DE RENDU CARD ---
-        Label renderTitle = createCardTitle(I18n.getOrDefault("sim.card.rendering", "🌐 3. PROJECTION & RENDERING PARAMETERS"));
+        renderTitle = createCardTitle(I18n.getOrDefault("sim.card.rendering", "🌐 3. PROJECTION & RENDERING PARAMETERS"));
 
-        mode3dCheck = new CheckBox(I18n.getOrDefault("sim.layer.mode3d", "🌐 Globe 3D H3"));
+        mode3dCheck = new CheckBox(I18n.getOrDefault("sim.layer.mode3d", "🌐 3D H3 Globe"));
         mode3dCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.mode3d", "Toggles between 3D spherical globe and 2D flat map")));
         mode3dCheck.getStyleClass().add("opt-sub-checkbox");
         mode3dCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
 
-        reliefLabel = new Label(I18n.getOrDefault("sim.layer.relief3d", "⛰️ Relief 3D") + " : 25x");
+        reliefLabel = new Label(I18n.getOrDefault("sim.layer.relief3d", "⛰️ 3D Relief") + " : 25x");
         reliefLabel.getStyleClass().add("control-label");
         reliefLabel.setDisable(true);
 
@@ -480,10 +483,10 @@ public class ControlPanel extends VBox {
             if (mapCanvas != null) {
                 mapCanvas.setVerticalExaggeration(val);
             }
-            reliefLabel.setText(String.format(java.util.Locale.ROOT, "%s : %.0fx", I18n.getOrDefault("sim.layer.relief3d", "⛰️ Relief 3D"), val));
+            reliefLabel.setText(String.format(java.util.Locale.ROOT, "%s : %.0fx", I18n.getOrDefault("sim.layer.relief3d", "⛰️ 3D Relief"), val));
         });
 
-        autoRotateCheck = new CheckBox(I18n.getOrDefault("sim.layer.autorotate", "🔄 Auto-rotation Globe"));
+        autoRotateCheck = new CheckBox(I18n.getOrDefault("sim.layer.autorotate", "🔄 Auto-rotate Globe"));
         autoRotateCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.autorotate", "Auto-rotates 3D spherical globe")));
         autoRotateCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         autoRotateCheck.setDisable(true);
@@ -493,10 +496,10 @@ public class ControlPanel extends VBox {
             }
         });
 
-        hillshadingCheck = new CheckBox(I18n.getOrDefault("sim.layer.hillshading", "⛰️ Ombrage Relief Topographique"));
+        hillshadingCheck = new CheckBox(I18n.getOrDefault("sim.layer.hillshading", "⛰️ Topographic Hillshading"));
         hillshadingCheck.setSelected(false);
         hillshadingCheck.setDisable(true);
-        hillshadingCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hillshading", "Applique un ombrage topographique lambertien selon la pente du relief")));
+        hillshadingCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hillshading", "Applies Lambertian topographic shading based on relief slope")));
         hillshadingCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
         hillshadingCheck.setOnAction(e -> {
             if (mapCanvas != null) {
@@ -504,7 +507,7 @@ public class ControlPanel extends VBox {
             }
         });
 
-        solarTerminatorCheck = new CheckBox(I18n.getOrDefault("sim.layer.solarterminator", "☀️ Terminateur Solaire Jour/Nuit"));
+        solarTerminatorCheck = new CheckBox(I18n.getOrDefault("sim.layer.solarterminator", "☀️ Solar Day/Night Terminator"));
         solarTerminatorCheck.setSelected(false);
         solarTerminatorCheck.setDisable(true);
         solarTerminatorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.solarterminator", "Displays night and twilight shadow overlay")));
@@ -551,15 +554,15 @@ public class ControlPanel extends VBox {
             }
         });
 
-        Label paletteLabel = new Label(I18n.getOrDefault("sim.render.palette", "🎨 Palette Scientifique :"));
+        paletteLabel = new Label(I18n.getOrDefault("sim.render.palette", "🎨 Scientific Palette:"));
         paletteLabel.getStyleClass().add("control-label");
 
-        ComboBox<ScientificColorMap> paletteCombo = new ComboBox<>();
+        paletteCombo = new ComboBox<>();
         paletteCombo.getItems().addAll(ScientificColorMap.values());
         paletteCombo.setValue(ScientificColorMap.TURBO);
         paletteCombo.setMaxWidth(Double.MAX_VALUE);
         paletteCombo.setStyle("-fx-font-size: 11px;");
-        paletteCombo.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.palette", "Choisit la palette de couleurs perceptuellement uniforme")));
+        paletteCombo.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.palette", "Selects perceptually uniform color palette")));
         paletteCombo.setOnAction(e -> {
             if (mapCanvas != null && paletteCombo.getValue() != null) {
                 mapCanvas.setScientificColorMap(paletteCombo.getValue());
@@ -581,7 +584,7 @@ public class ControlPanel extends VBox {
         styleCard(renderCard);
 
         // --- 4. TÉLÉMÉTRIE, CAPTURES & EXPORT CARD ---
-        Label exportTitle = createCardTitle(I18n.getOrDefault("sim.card.telemetry", "📊 4. TELEMETRY, SCREENSHOTS & EXPORTS"));
+        exportTitle = createCardTitle(I18n.getOrDefault("sim.card.telemetry", "📊 4. TELEMETRY, SCREENSHOTS & EXPORTS"));
         VBox exportCard = new VBox(8, exportTitle, hdScreenshotBtn, recordVideoBtn, autoRecordCheck);
         styleCard(exportCard);
 
@@ -1165,18 +1168,48 @@ public class ControlPanel extends VBox {
         refreshStatusBadge();
     }
 
+    public void rebuildLayerMenuItems() {
+        if (activeLayersMenuBtn == null) return;
+        java.util.Set<DisplayMode> active = mapCanvas != null ? mapCanvas.getActiveDisplayModes() : java.util.Set.of(DisplayMode.BIOME, DisplayMode.POPULATION);
+        activeLayersMenuBtn.getItems().clear();
+        layerCheckBoxMap.clear();
+
+        for (DisplayMode.Category cat : DisplayMode.Category.values()) {
+            Label catHeader = new Label("─── " + cat.getCategoryName() + " ───");
+            catHeader.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 4 8 2 8;");
+            CustomMenuItem catItem = new CustomMenuItem(catHeader, false);
+            activeLayersMenuBtn.getItems().add(catItem);
+
+            for (DisplayMode dm : DisplayMode.values()) {
+                if (dm.getCategory() == cat) {
+                    CheckBox cb = new CheckBox(dm.getDisplayName());
+                    cb.setTooltip(new Tooltip(dm.getDescription()));
+                    cb.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px; -fx-padding: 2 8; -fx-cursor: hand;");
+                    cb.setSelected(active.contains(dm));
+                    cb.setOnAction(e -> onLayerToggled(dm, cb.isSelected()));
+                    layerCheckBoxMap.put(dm, cb);
+                    CustomMenuItem mi = new CustomMenuItem(cb, false);
+                    activeLayersMenuBtn.getItems().add(mi);
+                }
+            }
+            activeLayersMenuBtn.getItems().add(new SeparatorMenuItem());
+        }
+    }
+
     public void updateClusterStatus(String nodeRole, String hostPort, boolean isConnected) {
         if (isConnected) {
             this.clusterNodeState = String.format("🌐 %s (%s)", nodeRole, hostPort);
         } else {
-            this.clusterNodeState = "💻 Nœud Local Standalone";
+            this.clusterNodeState = I18n.getOrDefault("sim.status.local_node", "💻 Standalone Local Node");
         }
         refreshStatusBadge();
     }
 
     private void refreshStatusBadge() {
         if (dbStatusLabel == null) return;
-        String dbStr = isDbOnline ? "🟢 BDD Supabase : En Ligne" : "⚪ BDD : Mode Hors Ligne (Fichiers Locaux)";
+        String dbOnlineStr = I18n.getOrDefault("sim.status.db_online", "🟢 Supabase DB: Online");
+        String dbOfflineStr = I18n.getOrDefault("sim.status.db_offline", "⚪ DB: Offline Mode (Local Files)");
+        String dbStr = isDbOnline ? dbOnlineStr : dbOfflineStr;
         dbStatusLabel.setText(dbStr + " | " + clusterNodeState);
         dbStatusLabel.setStyle(isDbOnline ? "-fx-font-size: 11px; -fx-text-fill: #4ade80; -fx-font-weight: bold;" : "-fx-font-size: 11px; -fx-text-fill: #38bdf8;");
     }
@@ -1186,91 +1219,144 @@ public class ControlPanel extends VBox {
             boolean running = engine != null && engine.isRunning();
             playPauseBtn.setText(running ? "⏸" : "▶");
             playPauseBtn.setTooltip(new Tooltip(running
-                    ? I18n.getOrDefault("sim.tooltip.pause", "Mettre en pause")
-                    : I18n.getOrDefault("sim.tooltip.start", "Lancer / Reprendre")));
+                    ? I18n.getOrDefault("sim.tooltip.pause", "Pause")
+                    : I18n.getOrDefault("sim.tooltip.start", "Start / Resume")));
         }
-        rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Réinitialiser T=0")));
-        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Reculer de 1000 pas [Maintenir appuyé]")));
-        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Reculer de 10 pas [Maintenir appuyé]")));
-        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Avancer de 10 pas [Maintenir appuyé]")));
-        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Avancer de 1000 pas [Maintenir appuyé]")));
-        endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Aller à la fin de la simulation (Dernier checkpoint / Fin)")));
+        if (timeTitle != null) {
+            timeTitle.setText("⏱️ " + I18n.getOrDefault("sim.card.time", "TIME & PLAYBACK CONTROLS"));
+        }
+        if (pauseOnEventCheck != null) {
+            pauseOnEventCheck.setText(I18n.getOrDefault("sim.option.pause_on_event", "⏸️ Auto-pause on event"));
+            pauseOnEventCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause_on_event", "Automatically pauses simulation when a new planetary or regional event occurs")));
+        }
+        if (layersTitle != null) {
+            layersTitle.setText(I18n.getOrDefault("sim.card.layers_presets", "🗺️ 2. LAYER STACK & SCIENTIFIC PRESETS"));
+        }
+        if (presetsTitle != null) {
+            presetsTitle.setText(I18n.getOrDefault("sim.presets.1click", "⚡ 1-Click Scientific Presets:"));
+        }
+        if (presetSynth != null) {
+            presetSynth.setText(I18n.getOrDefault("sim.preset.synthesis", "🌍 Synthesis"));
+            presetSynth.setTooltip(new Tooltip(I18n.getOrDefault("sim.preset.synthesis.desc", "3D Globe Mode + Biomes + Relief + Contour Lines")));
+        }
+        if (presetEcon != null) {
+            presetEcon.setText(I18n.getOrDefault("sim.preset.economy", "📈 Economy"));
+            presetEcon.setTooltip(new Tooltip(I18n.getOrDefault("sim.preset.economy.desc", "Flux / GDP Map + Transport Vectors + Ore Deposits")));
+        }
+        if (presetClim != null) {
+            presetClim.setText(I18n.getOrDefault("sim.preset.climate", "🌡️ Climate"));
+            presetClim.setTooltip(new Tooltip(I18n.getOrDefault("sim.preset.climate.desc", "Temperature Map + Aquifers + Relief Contour Lines")));
+        }
+        if (presetCliodyn != null) {
+            presetCliodyn.setText(I18n.getOrDefault("sim.preset.cliodynamics", "🏛️ Cliodynamics"));
+            presetCliodyn.setTooltip(new Tooltip(I18n.getOrDefault("sim.preset.cliodynamics.desc", "Demographic Map + H3 Mesh + Event Pause")));
+        }
+        if (layerComboLabel != null) {
+            layerComboLabel.setText(I18n.getOrDefault("sim.layer.datacategory", "Active Data Layers (Multi-Select):"));
+        }
+        if (dataLayersTitle != null) {
+            dataLayersTitle.setText(I18n.getOrDefault("sim.layer.datalayers", "📊 Data Layers & Vectors:"));
+        }
+        if (uiOverlaysTitle != null) {
+            uiOverlaysTitle.setText(I18n.getOrDefault("sim.layer.uioverlays", "🖥️ UI Overlays & Insets:"));
+        }
+        if (renderTitle != null) {
+            renderTitle.setText(I18n.getOrDefault("sim.card.rendering", "🌐 3. PROJECTION & RENDERING PARAMETERS"));
+        }
+        if (paletteLabel != null) {
+            paletteLabel.setText(I18n.getOrDefault("sim.render.palette", "🎨 Scientific Palette:"));
+        }
+        if (paletteCombo != null) {
+            paletteCombo.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.palette", "Selects perceptually uniform color palette")));
+        }
+        if (exportTitle != null) {
+            exportTitle.setText(I18n.getOrDefault("sim.card.telemetry", "📊 4. TELEMETRY, SCREENSHOTS & EXPORTS"));
+        }
+
+        rebuildLayerMenuItems();
+
+        rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Reset to T=0")));
+        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Step backward 1000 steps [Hold down]")));
+        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Step backward 10 steps [Hold down]")));
+        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Step forward 10 steps [Hold down]")));
+        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Step forward 1000 steps [Hold down]")));
+        endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Jump to simulation end (Last checkpoint / End)")));
         speedMax.setText("MAX 🚀");
-        speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Calcule les itérations à la vitesse maximale du processeur")));
-        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "Vitesse de simulation CPU (0.1 à 20 pas/sec ou MAX)")));
+        speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Runs iterations at maximum processor capacity")));
+        speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "CPU simulation speed (0.1 to 20 steps/sec or MAX)")));
         updateSpeedLabel(speedMax != null && speedMax.isSelected() ? 999.0 : (speedSlider != null ? speedSlider.getValue() : 1.0));
-        mode3dCheck.setText(I18n.getOrDefault("sim.layer.mode3d", "🌐 Globe 3D H3"));
+        mode3dCheck.setText(I18n.getOrDefault("sim.layer.mode3d", "🌐 3D H3 Globe"));
         mode3dCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.mode3d", "Toggles between 3D spherical globe and 2D flat map")));
-        reliefLabel.setText(String.format(java.util.Locale.ROOT, "%s : %.0fx", I18n.getOrDefault("sim.layer.relief3d", "⛰️ Relief 3D"), reliefSlider != null ? reliefSlider.getValue() : 25.0));
-        reliefSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.relief3d", "Ajuste la hauteur du relief topographique en mode Globe 3D")));
-        autoRotateCheck.setText(I18n.getOrDefault("sim.layer.autorotate", "🔄 Auto-rotation Globe"));
+        reliefLabel.setText(String.format(java.util.Locale.ROOT, "%s : %.0fx", I18n.getOrDefault("sim.layer.relief3d", "⛰️ 3D Relief"), reliefSlider != null ? reliefSlider.getValue() : 25.0));
+        reliefSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.relief3d", "Adjusts topographic elevation height in 3D Globe mode (0.0x to 50x)")));
+        autoRotateCheck.setText(I18n.getOrDefault("sim.layer.autorotate", "🔄 Auto-rotate Globe"));
         autoRotateCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.autorotate", "Auto-rotates 3D spherical globe")));
         if (hillshadingCheck != null) {
-            hillshadingCheck.setText(I18n.getOrDefault("sim.layer.hillshading", "⛰️ Ombrage Relief Topographique"));
-            hillshadingCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hillshading", "Applique un ombrage topographique lambertien selon la pente du relief")));
+            hillshadingCheck.setText(I18n.getOrDefault("sim.layer.hillshading", "⛰️ Topographic Hillshading"));
+            hillshadingCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hillshading", "Applies Lambertian topographic shading based on relief slope")));
         }
         if (solarTerminatorCheck != null) {
-            solarTerminatorCheck.setText(I18n.getOrDefault("sim.layer.solarterminator", "☀️ Terminateur Solaire Jour/Nuit"));
+            solarTerminatorCheck.setText(I18n.getOrDefault("sim.layer.solarterminator", "☀️ Solar Day/Night Terminator"));
             solarTerminatorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.solarterminator", "Displays night and twilight shadow overlay")));
         }
         if (smoothMapCheck != null) {
-            smoothMapCheck.setText(I18n.getOrDefault("sim.layer.smoothmap", "🎨 Smooth Map (Continu / Sans Pavage)"));
-            smoothMapCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.smoothmap", "Affiche une carte continue fondue sans démarcations hexagonales")));
+            smoothMapCheck.setText(I18n.getOrDefault("sim.layer.smoothmap", "🎨 Smooth Map (Continuous Heatmap)"));
+            smoothMapCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.smoothmap", "Displays continuous map with smooth gradients instead of individual hexagons")));
         }
-        contourCheck.setText(I18n.getOrDefault("sim.layer.contours", "📈 Courbes de Niveau (Isolines)"));
+        contourCheck.setText(I18n.getOrDefault("sim.layer.contours", "📈 Elevation Contour Lines"));
         contourCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.contours", "Displays elevation contour lines on H3 cells")));
-        fluxVectorCheck.setText(I18n.getOrDefault("sim.layer.fluxvectors", "🌊 Flux & Transports (Vecteurs)"));
+        fluxVectorCheck.setText(I18n.getOrDefault("sim.layer.fluxvectors", "🌊 Flux & Transports (Vectors)"));
         fluxVectorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fluxvectors", "Overlays material flux and population transport vectors")));
         resourceOverlayCheck.setText(I18n.getOrDefault("sim.layer.resources", "💎 Deposits & Capital (Overlays)"));
         resourceOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.resources", "Displays metal, aquifer, and infrastructure markers")));
         if (floatingLayerCheck != null) {
-            floatingLayerCheck.setText(I18n.getOrDefault("sim.layer.floating", "☁️ Calques Flottants 2.5D (Altitude)"));
-            floatingLayerCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.floating", "Projette les couches thématiques en élévation 2.5D flottant au-dessus du relief naturel des biomes")));
+            floatingLayerCheck.setText(I18n.getOrDefault("sim.layer.floating", "☁️ 2.5D Floating Layers (Altitude)"));
+            floatingLayerCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.floating", "Projects thematic layers in 2.5D elevation floating above biome topography")));
         }
-        legendCheck.setText(I18n.getOrDefault("sim.layer.legend", "🗺️ Légende des Couleurs (Overlay)"));
-        legendCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.legend", "Affiche ou masque le panneau de légende des couleurs")));
-        dateOverlayCheck.setText(I18n.getOrDefault("sim.layer.date_overlay", "📅 Incrustation Date & Scénario"));
-        dateOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.date_overlay", "Affiche ou masque les badges d'incrustation temporelle sur la carte")));
-        cellInfoCheck.setText(I18n.getOrDefault("sim.layer.cell_info", "ℹ️ Infos Cellule au Survol (Infobulle)"));
-        cellInfoCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.cell_info", "Active ou désactive l'infobulle d'inspection au survol des hexagones")));
+        legendCheck.setText(I18n.getOrDefault("sim.layer.legend", "🗺️ Color Legend (Overlay)"));
+        legendCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.legend", "Shows or hides the map color legend pane")));
+        dateOverlayCheck.setText(I18n.getOrDefault("sim.layer.date_overlay", "📅 Date & Scenario Inset"));
+        dateOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.date_overlay", "Shows or hides time and scenario overlay badges on the map")));
+        cellInfoCheck.setText(I18n.getOrDefault("sim.layer.cell_info", "ℹ️ Hover Cell Info (Tooltip)"));
+        cellInfoCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.cell_info", "Enables or disables inspection tooltip when hovering over hexagons")));
         hexGridCheck.setText(I18n.getOrDefault("sim.layer.hexgrid", "⬡ H3 Hexagon Borders"));
         hexGridCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hexgrid", "Shows or hides H3 hexagon grid (smooth view without borders vs grid view)")));
         if (fullScreenBtn != null) {
-            fullScreenBtn.setText(I18n.getOrDefault("sim.btn.fullscreen", "🖥️ Plein Écran (Carte)"));
-            fullScreenBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fullscreen", "Affiche la carte en plein écran sans aucun autre élément (Touche Échap pour quitter)")));
+            fullScreenBtn.setText(I18n.getOrDefault("sim.btn.fullscreen", "🖥️ Fullscreen (Map)"));
+            fullScreenBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fullscreen", "Displays the map in fullscreen mode without other UI panels (Press Esc to exit)")));
         }
         if (hdScreenshotBtn != null) {
-            hdScreenshotBtn.setText("📸 " + I18n.getOrDefault("sim.btn.screenshot", "Capture Photo HD"));
-            hdScreenshotBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.screenshot", "Exporte un instantané PNG haute définition dans saves/screenshots/")));
+            hdScreenshotBtn.setText("📸 " + I18n.getOrDefault("sim.btn.screenshot", "HD Screenshot"));
+            hdScreenshotBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.screenshot", "Exports HD PNG screenshot to saves/screenshots/")));
         }
         if (recordVideoBtn != null) {
-            recordVideoBtn.setText("🎥 " + I18n.getOrDefault("sim.btn.video", "Enregistrer Vidéo MP4"));
-            recordVideoBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.video", "Démarre l'export vidéo MP4 (1:1 pas) dans saves/timelapse/")));
+            recordVideoBtn.setText("🎥 " + I18n.getOrDefault("sim.btn.video", "Record MP4 Video"));
+            recordVideoBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.video", "Starts MP4 video capture (1:1 step) in saves/timelapse/")));
         }
         if (autoRecordCheck != null) {
-            autoRecordCheck.setText(I18n.getOrDefault("sim.option.auto_record", "🎬 Synchronisation Vidéo Auto (Start & Pause)"));
-            autoRecordCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.auto_record", "Démarre et suspend automatiquement la capture vidéo en synchronisation avec la simulation")));
+            autoRecordCheck.setText(I18n.getOrDefault("sim.option.auto_record", "🎬 Auto Sync Video (Start & Pause)"));
+            autoRecordCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.auto_record", "Automatically starts/stops 1:1 video recording in sync with scenario start/pause")));
         }
         if (eventsTitleLabel != null) {
-            eventsTitleLabel.setText(I18n.getOrDefault("sim.card.recent_events", "📜 5. ÉVÉNEMENTS RÉCENTS (CHRONOLOGIE)"));
+            eventsTitleLabel.setText(I18n.getOrDefault("sim.card.recent_events", "📜 5. RECENT EVENTS (CHRONOLOGY)"));
         }
         if (eventsHintLabel != null) {
-            eventsHintLabel.setText(I18n.getOrDefault("sim.events.double_click_hint", "💡 Double-cliquer sur un événement pour voler vers sa position"));
+            eventsHintLabel.setText(I18n.getOrDefault("sim.events.double_click_hint", "💡 Double-click an event to fly camera to its epicenter location."));
         }
         if (filterGeophysicalCheck != null) {
-            filterGeophysicalCheck.setText(I18n.getOrDefault("sim.filter.geophysical", "🌋 Géophysique & Catastrophes"));
-            filterGeophysicalCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_geophysical", "Afficher ou masquer les séismes, volcans, tsunamis, inondations, sécheresses et désastres naturels.")));
+            filterGeophysicalCheck.setText(I18n.getOrDefault("sim.filter.geophysical", "🌋 Geophysics & Catastrophes"));
+            filterGeophysicalCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_geophysical", "Show or hide earthquakes, volcanoes, tsunamis, floods, droughts, and natural disasters.")));
         }
         if (filterHistoricalCheck != null) {
-            filterHistoricalCheck.setText(I18n.getOrDefault("sim.filter.historical_leaders", "👑 Personnages & Figures"));
-            filterHistoricalCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_historical", "Afficher ou masquer les figures historiques, dirigeants, conquérants et réformateurs.")));
+            filterHistoricalCheck.setText(I18n.getOrDefault("sim.filter.historical_leaders", "👑 Historical Leaders & Figures"));
+            filterHistoricalCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_historical", "Show or hide historical figures, leaders, conquerors, and reformers.")));
         }
         if (filterChronicleCheck != null) {
-            filterChronicleCheck.setText(I18n.getOrDefault("sim.filter.chronicle_emergences", "📜 Chroniques & Émergences"));
-            filterChronicleCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_chronicle", "Afficher ou masquer les émergences procédurales, fondations d'empires, transitions d'ères et chroniques historiques.")));
+            filterChronicleCheck.setText(I18n.getOrDefault("sim.filter.chronicle_emergences", "📜 Chronicles & Emergences"));
+            filterChronicleCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_chronicle", "Show or hide procedural emergences, empire foundations, era transitions, and historical chronicles.")));
         }
         if (noEventsLabel != null) {
-            noEventsLabel.setText(I18n.getOrDefault("sim.events.no_events", "Aucun événement enregistré pour le moment."));
+            noEventsLabel.setText(I18n.getOrDefault("sim.events.no_events", "No events recorded yet."));
         }
         updateViewToggleButton();
         updateDisplayToggleButton();
