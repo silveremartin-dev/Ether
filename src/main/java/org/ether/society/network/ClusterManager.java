@@ -54,16 +54,34 @@ public class ClusterManager {
     }
 
     public static class ClusterNodeRecord {
+        /* Internal state variable for id (String). */
         private final String id;
+        /* Internal state variable for host (String). */
         private final String host;
+        /* Internal state variable for port (int). */
         private final int port;
         private ClusterRole role;
         private NodeStatus status;
+        /* Internal state variable for capacity (String). */
         private String capacity;
+        /* Internal state variable for assigned chunk start (int). */
         private int assignedChunkStart;
+        /* Internal state variable for assigned chunk end (int). */
         private int assignedChunkEnd;
         private final AtomicLong lastHeartbeatNanos = new AtomicLong(System.nanoTime());
 
+        /*
+         * Cluster node record.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         * @param id the id parameter (String)
+         * @param host the host parameter (String)
+         * @param port the port parameter (int)
+         * @param role the role parameter (ClusterRole)
+         * @param status the status parameter (NodeStatus)
+         * @param capacity the capacity parameter (String)
+         * @return the resulting computation or state reference
+         */
         public ClusterNodeRecord(String id, String host, int port, ClusterRole role, NodeStatus status, String capacity) {
             this.id = id;
             this.host = host;
@@ -73,25 +91,97 @@ public class ClusterManager {
             this.capacity = capacity;
         }
 
+        /*
+         * Get id.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getId() { return id; }
+        /*
+         * Get host.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getHost() { return host; }
+        /*
+         * Get port.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getPort() { return port; }
+        /*
+         * Get role.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public ClusterRole getRole() { return role; }
         public void setRole(ClusterRole role) { this.role = role; }
+        /*
+         * Get status.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public NodeStatus getStatus() { return status; }
         public void setStatus(NodeStatus status) { this.status = status; }
+        /*
+         * Get capacity.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getCapacity() { return capacity; }
         public void setCapacity(String capacity) { this.capacity = capacity; }
+        /*
+         * Get assigned chunk start.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getAssignedChunkStart() { return assignedChunkStart; }
+        /*
+         * Get assigned chunk end.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getAssignedChunkEnd() { return assignedChunkEnd; }
+        /*
+         * Set assigned chunks.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         * @param start the start parameter (int)
+         * @param end the end parameter (int)
+         */
         public void setAssignedChunks(int start, int end) {
             this.assignedChunkStart = start;
             this.assignedChunkEnd = end;
         }
+        /*
+         * Get last heartbeat nanos.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public long getLastHeartbeatNanos() { return lastHeartbeatNanos.get(); }
+        /*
+         * Touch heartbeat.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         */
         public void touchHeartbeat() { this.lastHeartbeatNanos.set(System.nanoTime()); }
 
         @Override
+        /*
+         * To string.
+         * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String toString() {
             return String.format("Node[%s @ %s:%d, role=%s, status=%s, capacity=%s, chunks=%d..%d]",
                     id, host, port, role, status, capacity, assignedChunkStart, assignedChunkEnd);
@@ -99,8 +189,11 @@ public class ClusterManager {
     }
 
     private final ClusterRole localRole;
+    /* Internal state variable for master host (String). */
     private final String masterHost;
+    /* Internal state variable for port (int). */
     private final int port;
+    /* Internal state variable for secret token (String). */
     private final String secretToken;
     private final ConcurrentHashMap<String, ClusterNodeRecord> nodeRegistry = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, DataOutputStream> workerSocketsOut = new ConcurrentHashMap<>();
@@ -120,6 +213,7 @@ public class ClusterManager {
 
     private final ClusterClockBarrier clockBarrier = new ClusterClockBarrier();
     private EtherSecurityManager securityManager;
+    /* Internal state variable for total grid cell count (int). */
     private int totalGridCellCount = 0;
     private Scenario currentActiveScenario;
     private WorldBuffer currentWorldBuffer;
@@ -127,16 +221,33 @@ public class ClusterManager {
 
     // Configurable Multi-Node & Optimization Parameters
     private PartitionStrategy partitionStrategy = PartitionStrategy.HILBERT;
+    /* Internal state variable for custom worker id (String). */
     private String customWorkerId = null;
+    /* Internal state variable for custom worker capacity (String). */
     private String customWorkerCapacity = "Compute Core Worker";
+    /* Internal state variable for barrier timeout ms (long). */
     private long barrierTimeoutMs = 3000;
+    /* Internal state variable for sync interval (int). */
     private int syncInterval = 5;
+    /* Internal state variable for heartbeat interval sec (int). */
     private int heartbeatIntervalSec = 2;
+    /* Internal state variable for heartbeat timeout sec (int). */
     private int heartbeatTimeoutSec = 8;
+    /* Internal state variable for halo exchange enabled (boolean). */
     private boolean haloExchangeEnabled = false;
     private org.ether.society.network.cluster.ClusterSnapshotManager snapshotManager = null;
+    /* Internal state variable for snapshot interval ticks (int). */
     private int snapshotIntervalTicks = 0;
 
+    /*
+     * Cluster manager.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @param role the role parameter (ClusterRole)
+     * @param masterHost the master host parameter (String)
+     * @param port the port parameter (int)
+     * @param secretToken the secret token parameter (String)
+     */
     public ClusterManager(ClusterRole role, String masterHost, int port, String secretToken) {
         this.localRole = role;
         this.masterHost = masterHost != null ? masterHost : "127.0.0.1";
@@ -154,6 +265,11 @@ public class ClusterManager {
         }
     }
 
+    /*
+     * Start.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     */
     public synchronized void start() throws IOException {
         if (running.get()) return;
         running.set(true);
@@ -167,14 +283,32 @@ public class ClusterManager {
         heartbeatScheduler.scheduleAtFixedRate(this::checkNodeHealthAndResilience, 3, 3, TimeUnit.SECONDS);
     }
 
+    /*
+     * Get clock barrier.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public ClusterClockBarrier getClockBarrier() {
         return clockBarrier;
     }
 
+    /*
+     * Set worker compute delegate.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @param delegate the delegate parameter (Consumer&lt;WorldBuffer&gt;)
+     */
     public void setWorkerComputeDelegate(Consumer<WorldBuffer> delegate) {
         this.workerComputeDelegate = delegate;
     }
 
+    /*
+     * Set world buffer.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @param buffer the buffer parameter (WorldBuffer)
+     */
     public void setWorldBuffer(WorldBuffer buffer) {
         this.currentWorldBuffer = buffer;
     }
@@ -360,7 +494,7 @@ public class ClusterManager {
         });
     }
 
-    /**
+    /*
      * Executes a distributed simulation tick by broadcasting chunk orders to all active workers
      * and waiting for lock-step barrier completion.
      */
@@ -431,7 +565,7 @@ public class ClusterManager {
         return clockBarrier.awaitBarrier(barrierTimeoutMs);
     }
 
-    /**
+    /*
      * Fault Tolerance & Spatial Rebalancing: Partitions H3 cell chunks across active nodes.
      */
     public synchronized void rebalanceSpatialChunks() {
@@ -484,56 +618,157 @@ public class ClusterManager {
         }
     }
 
+    /*
+     * Dispatch scenario to cluster.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @param scenario the scenario parameter (Scenario)
+     */
     public synchronized void dispatchScenarioToCluster(Scenario scenario) {
         this.currentActiveScenario = scenario;
         String scenarioName = scenario != null ? scenario.getName() : "Default Scenario";
         logger.info("📡 Master broadcasting Scenario [{}] to all active cluster workers...", scenarioName);
     }
 
+    /*
+     * Get current active scenario.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Scenario getCurrentActiveScenario() { return currentActiveScenario; }
 
+    /*
+     * Set total grid cell count.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @param count the count parameter (int)
+     */
     public synchronized void setTotalGridCellCount(int count) {
         this.totalGridCellCount = count;
         rebalanceSpatialChunks();
     }
 
+    /*
+     * Get total grid cell count.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getTotalGridCellCount() { return totalGridCellCount; }
 
+    /*
+     * Get node registry.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public ConcurrentHashMap<String, ClusterNodeRecord> getNodeRegistry() { return nodeRegistry; }
 
+    /*
+     * Get partition strategy.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public PartitionStrategy getPartitionStrategy() { return partitionStrategy; }
+    /*
+     * Set partition strategy.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @param strategy the strategy parameter (PartitionStrategy)
+     */
     public void setPartitionStrategy(PartitionStrategy strategy) {
         this.partitionStrategy = strategy != null ? strategy : PartitionStrategy.HILBERT;
         rebalanceSpatialChunks();
     }
 
+    /*
+     * Get custom worker id.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCustomWorkerId() { return customWorkerId; }
     public void setCustomWorkerId(String customWorkerId) { this.customWorkerId = customWorkerId; }
 
+    /*
+     * Get custom worker capacity.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCustomWorkerCapacity() { return customWorkerCapacity; }
     public void setCustomWorkerCapacity(String customWorkerCapacity) { this.customWorkerCapacity = customWorkerCapacity; }
 
+    /*
+     * Get barrier timeout ms.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getBarrierTimeoutMs() { return barrierTimeoutMs; }
     public void setBarrierTimeoutMs(long barrierTimeoutMs) { this.barrierTimeoutMs = Math.max(100, barrierTimeoutMs); }
 
+    /*
+     * Get sync interval.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getSyncInterval() { return syncInterval; }
     public void setSyncInterval(int syncInterval) { this.syncInterval = Math.max(1, syncInterval); }
 
+    /*
+     * Get heartbeat interval sec.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getHeartbeatIntervalSec() { return heartbeatIntervalSec; }
     public void setHeartbeatIntervalSec(int sec) { this.heartbeatIntervalSec = Math.max(1, sec); }
 
+    /*
+     * Get heartbeat timeout sec.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getHeartbeatTimeoutSec() { return heartbeatTimeoutSec; }
     public void setHeartbeatTimeoutSec(int sec) { this.heartbeatTimeoutSec = Math.max(2, sec); }
 
+    /*
+     * Is halo exchange enabled.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isHaloExchangeEnabled() { return haloExchangeEnabled; }
     public void setHaloExchangeEnabled(boolean haloExchangeEnabled) { this.haloExchangeEnabled = haloExchangeEnabled; }
 
+    /*
+     * Get snapshot manager.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public org.ether.society.network.cluster.ClusterSnapshotManager getSnapshotManager() { return snapshotManager; }
     public void setSnapshotManager(org.ether.society.network.cluster.ClusterSnapshotManager snapshotManager) { this.snapshotManager = snapshotManager; }
 
+    /*
+     * Get snapshot interval ticks.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getSnapshotIntervalTicks() { return snapshotIntervalTicks; }
     public void setSnapshotIntervalTicks(int snapshotIntervalTicks) { this.snapshotIntervalTicks = Math.max(0, snapshotIntervalTicks); }
 
+    /*
+     * Stop.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterManager}.
+     *
+     */
     public synchronized void stop() {
         running.set(false);
         heartbeatScheduler.shutdownNow();

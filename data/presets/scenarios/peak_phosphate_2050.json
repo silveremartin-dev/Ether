@@ -1,6 +1,6 @@
 {
-  "name" : "Falaise du Phosphate Minéral & Crise N-P-K (2050)",
-  "description" : "⛏️ SCÉNARIO FUTUR : Épuisement du Phosphate de Roche (Peak P 2050)\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nÉpuisement géologique complet des gisements de phosphate de roche bon marché sans transition vers un recyclage circulaire intégral.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Chute inexorable des rendements agricoles sous déficit de fertilisation phosphatée minérale (stœchiométrie N-P-K).\n• Flambée des prix alimentaires mondiaux, crises de famine urbaine et tensions géopolitiques autour des derniers gisements.\n• Re-localisation agricole d'urgence, baisse de la population vers la capacité de charge organique et recyclage des flux.\n",
+  "name" : "Falaise du Phosphate MinÃ©ral & Crise N-P-K (2050)",
+  "description" : "â›ï¸ SCÃ‰NARIO FUTUR : Ã‰puisement du Phosphate de Roche (Peak P 2050)\n\n[DESCRIPTION DES TERMES DE FORÃ‡AGE PHYSIQUE (Tâ‚€)]\nÃ‰puisement gÃ©ologique complet des gisements de phosphate de roche bon marchÃ© sans transition vers un recyclage circulaire intÃ©gral.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Chute inexorable des rendements agricoles sous dÃ©ficit de fertilisation phosphatÃ©e minÃ©rale (stÅ“chiomÃ©trie N-P-K).\nâ€¢ FlambÃ©e des prix alimentaires mondiaux, crises de famine urbaine et tensions gÃ©opolitiques autour des derniers gisements.\nâ€¢ Re-localisation agricole d'urgence, baisse de la population vers la capacitÃ© de charge organique et recyclage des flux.\n",
   "id" : null,
   "presetKey" : "peak_phosphate_2050",
   "planetPreset" : {
@@ -38,18 +38,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
     "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -89,18 +89,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+      "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
+      "canonicalPlanet" : "earth",
       "associatedEpochYear" : 2026,
       "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false,
-      "canonicalPlanet" : "earth"
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -118,9 +118,9 @@
     "customRainfallBase64" : null,
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "canonicalPlanet" : "earth"
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

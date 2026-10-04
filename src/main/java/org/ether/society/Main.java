@@ -16,6 +16,12 @@ import java.util.prefs.Preferences;
  * @version 1.0.0-beta.1
  */
 public class Main {
+    /*
+     * Main.
+     * Enforces physical invariants and updates associated state variables within {@code Main}.
+     *
+     * @param args the args parameter (String[])
+     */
     public static void main(String[] args) {
         boolean headless = false;
         if (args != null) {

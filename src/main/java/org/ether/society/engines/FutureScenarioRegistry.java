@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines;
@@ -19,14 +19,14 @@ import java.util.List;
 
 /**
  * Deterministic Future Physical Scenario Registry.
- * Formalizes initial physical forcing terms (desequilibres physiques de dÃƒÂ©part) for future projections:
+ * Formalizes initial physical forcing terms for future projections:
  * <ol>
- *   <li><b>Business As Usual (SSP5-8.5)</b>: High CO2 emissions (+4.5Ã‚Â°C), zero fusion, continuous NPK depletion.</li>
- *   <li><b>Technological Singularity & Fusion</b>: Breakthrough D-T Fusion (EROEI >= 40:1), ASI throughput (>= 10^16 bits/s).</li>
- *   <li><b>Nuclear Winter Catastrophe</b>: Stratospheric soot injection (Ãâ€ž = 1.5), solar attenuation (S_0 * e^-Ãâ€ž).</li>
- *   <li><b>AMOC Collapse & Tipping Point</b>: Freshwater ice melt drops ocean salinity (< 30 PSU), triggering AMOC shutdown.</li>
+ *   <li><b>Business As Usual (SSP5-8.5)</b>: High CO2 emissions (+4.5°C), zero fusion, continuous NPK depletion.</li>
+ *   <li><b>Technological Singularity &amp; Fusion</b>: Breakthrough D-T Fusion (EROEI &gt;= 40:1), ASI throughput (&gt;= 10^16 bits/s).</li>
+ *   <li><b>Nuclear Winter Catastrophe</b>: Stratospheric soot injection (&tau; = 1.5), solar attenuation ($S_0 \cdot e^{-\tau}$).</li>
+ *   <li><b>AMOC Collapse &amp; Tipping Point</b>: Freshwater ice melt drops ocean salinity (&lt; 30 PSU), triggering AMOC shutdown.</li>
  *   <li><b>Peak Phosphorus Agricultural Cliff</b>: Geological exhaustion of rock phosphate (P), triggering Liebig minimum collapse.</li>
- *   <li><b>Space Terraforming & Off-World Colony</b>: Low gravity (g_rel = 0.38), artificial greenhouse P_atmo.</li>
+ *   <li><b>Space Terraforming &amp; Off-World Colony</b>: Low gravity ($g_{rel} = 0.38$), artificial pressurized habitat and greenhouse atmosphere.</li>
  * </ol>
  *
  * @author Silvere Martin-Michiellot
@@ -39,37 +39,37 @@ public class FutureScenarioRegistry {
 
     public static final PhysicalScenarioPreset SCENARIO_BAU = new PhysicalScenarioPreset(
             "BAU_SSP585", "Business As Usual (SSP5-8.5)",
-            "Poursuite des ÃƒÂ©missions de CO2 (+4.5Ã‚Â°C), dÃƒÂ©pendance fossile et ÃƒÂ©puisement lent des sols NPK.", 2026.0);
+            "Continued high CO2 emissions (+4.5°C), fossil fuel dependence, and gradual agricultural NPK soil depletion.", 2026.0);
 
     public static final PhysicalScenarioPreset SCENARIO_SINGULARITY = new PhysicalScenarioPreset(
-            "TECH_SINGULARITY", "SingularitÃƒÂ© Technologique & Fusion D-T",
-            "Ãƒâ€°mergence d'une ASI (10^16 bits/s) et fusion D-T (EROEI >= 40:1) ÃƒÂ©liminant la raretÃƒÂ© ÃƒÂ©nergÃƒÂ©tique.", 2045.0);
+            "TECH_SINGULARITY", "Technological Singularity & D-T Fusion",
+            "Emergence of Artificial Superintelligence (10^16 bits/s) and D-T fusion (EROEI >= 40:1), eliminating energy scarcity.", 2045.0);
 
     public static final PhysicalScenarioPreset SCENARIO_NUCLEAR_WINTER = new PhysicalScenarioPreset(
-            "NUCLEAR_WINTER", "Hiver NuclÃƒÂ©aire & Ombre StratosphÃƒÂ©rique",
-            "Injection massive de suies stratosphÃƒÂ©riques (Ãâ€ž = 1.5) provoquant un gel mondial (-15Ã‚Â°C).", 2035.0);
+            "NUCLEAR_WINTER", "Nuclear Winter & Stratospheric Soot",
+            "Massive stratospheric soot injection (tau = 1.5) causing severe global freeze (-15°C) and crop failures.", 2035.0);
 
     public static final PhysicalScenarioPreset SCENARIO_AMOC_COLLAPSE = new PhysicalScenarioPreset(
-            "AMOC_COLLAPSE", "Effondrement Thermohalin AMOC",
-            "Dessalage des ocÃƒÂ©ans (< 30 PSU) provoquant l'arrÃƒÂªt du Gulf Stream et un refroidissement europÃƒÂ©en.", 2060.0);
+            "AMOC_COLLAPSE", "Thermohaline AMOC Circulation Collapse",
+            "Ocean freshening (< 30 PSU) triggering Atlantic Meridional Overturning Circulation shutdown and European cooling.", 2060.0);
 
     public static final PhysicalScenarioPreset SCENARIO_PEAK_PHOSPHORUS = new PhysicalScenarioPreset(
-            "PEAK_PHOSPHORUS", "Falaise du Phosphate MinÃƒÂ©ral (Peak P)",
-            "Ãƒâ€°puisement des gisements gÃƒÂ©ologiques de Phosphate (P), dÃƒÂ©clenchant la limite de Liebig.", 2050.0);
+            "PEAK_PHOSPHORUS", "Mineral Phosphorus Cliff (Peak P)",
+            "Depletion of global geological phosphate rock reserves, triggering Liebig agricultural yields collapse.", 2050.0);
 
     public static final PhysicalScenarioPreset SCENARIO_SPACE_COLONY = new PhysicalScenarioPreset(
-            "SPACE_TERRAFORM", "Colonie Extraterrestre & Terraformation",
-            "Colonisation de cellules H3 ÃƒÂ  gravitÃƒÂ© rÃƒÂ©duite (0.38g) et atmosphÃƒÂ¨re artificielle sous dÃƒÂ´me.", 2150.0);
+            "SPACE_TERRAFORM", "Extraterrestrial Colony & Terraforming",
+            "Colonization of low-gravity cells (0.38g) with artificial pressurized life support and controlled atmospheres.", 2150.0);
 
     public static final PhysicalScenarioPreset SCENARIO_SOVEREIGN_AI_SINGLE = new PhysicalScenarioPreset(
-            "SOVEREIGN_AI_LEVIATHAN", "Gouvernance Souveraine par Super-IA (Monopole UnifiÃƒÂ©)",
-            "Prise en main de l'allocation globale par une Super-IA (2040+) optimisant l'EROEI, le climat et la paix.", 2040.0);
+            "SOVEREIGN_AI_LEVIATHAN", "Sovereign AI Leviathan Governance",
+            "Global resource and ecological optimization governed by a centralized, benevolent Artificial Superintelligence.", 2040.0);
 
     public static final PhysicalScenarioPreset SCENARIO_SOVEREIGN_AI_MULTIPOLAR = new PhysicalScenarioPreset(
-            "SOVEREIGN_AI_MULTIPOLAR", "Guerre Froide des IA Souveraines (Multi-Agents)",
-            "CompÃƒÂ©tition gÃƒÂ©opolitique entre IA rÃƒÂ©gionales autonomes pour la maÃƒÂ®trise des ressources mondiales.", 2042.0);
+            "SOVEREIGN_AI_MULTIPOLAR", "Multipolar Sovereign AI Cold War",
+            "Geopolitical multi-agent competition among regional autonomous sovereign AI networks for energy and resources.", 2042.0);
 
-    /**
+    /*
      * Applies physical initial forcing parameters to cells for a given future scenario preset.
      */
     public static void applyScenarioForcing(PhysicalScenarioPreset preset, List<H3Cell> cells) {
@@ -79,7 +79,7 @@ public class FutureScenarioRegistry {
 
         for (H3Cell cell : cells) {
             if (preset.id().equals("BAU_SSP585")) {
-                // High CO2 greenhouse forcing (+4.5Ã‚Â°C) & high initial pollution
+                // High CO2 greenhouse forcing (+4.5°C) & high initial pollution
                 cell.setTemperature((cell.getTemperature() != null ? cell.getTemperature() : 15.0) + 4.5);
                 cell.setPollutionLevel(2000.0);
             } else if (preset.id().equals("TECH_SINGULARITY")) {
@@ -89,7 +89,7 @@ public class FutureScenarioRegistry {
                 // Stratospheric soot injection
                 NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(1.5);
             } else if (preset.id().equals("AMOC_COLLAPSE")) {
-                // Ocean thermohaline collapse (-8Ã‚Â°C cooling drop)
+                // Ocean thermohaline collapse (-8°C cooling drop)
                 cell.setTemperature((cell.getTemperature() != null ? cell.getTemperature() : 15.0) - 8.0);
             } else if (preset.id().equals("PEAK_PHOSPHORUS")) {
                 // Phosphate depletion
@@ -106,7 +106,7 @@ public class FutureScenarioRegistry {
         }
     }
 
-    /**
+    /*
      * Finds matching PhysicalScenarioPreset for a given Scenario based on name or description.
      */
     public static PhysicalScenarioPreset findPresetForScenario(Scenario scenario) {
@@ -114,16 +114,16 @@ public class FutureScenarioRegistry {
         String name = scenario.getName().toLowerCase();
         String desc = scenario.getDescription() != null ? scenario.getDescription().toLowerCase() : "";
 
-        if (name.contains("sovereign") || name.contains("maÃƒÂ®tre du monde") || name.contains("leviathan") || desc.contains("gouvernance ia")) {
+        if (name.contains("sovereign") || name.contains("maître du monde") || name.contains("leviathan") || desc.contains("gouvernance ia")) {
             return name.contains("multipolar") || name.contains("guerre froide") ? SCENARIO_SOVEREIGN_AI_MULTIPOLAR : SCENARIO_SOVEREIGN_AI_SINGLE;
         }
-        if (name.contains("nuclÃƒÂ©aire") || name.contains("nuclear") || desc.contains("nuclÃƒÂ©aire") || desc.contains("soot")) {
+        if (name.contains("nucléaire") || name.contains("nuclear") || desc.contains("nucléaire") || desc.contains("soot")) {
             return SCENARIO_NUCLEAR_WINTER;
         }
         if (name.contains("business as usual") || name.contains("ssp5") || name.contains("bau")) {
             return SCENARIO_BAU;
         }
-        if (name.contains("singularitÃƒÂ©") || name.contains("singularity") || name.contains("asi")) {
+        if (name.contains("singularité") || name.contains("singularity") || name.contains("asi")) {
             return SCENARIO_SINGULARITY;
         }
         if (name.contains("amoc") || name.contains("thermohalin")) {
@@ -138,5 +138,3 @@ public class FutureScenarioRegistry {
         return null;
     }
 }
-
-

@@ -30,16 +30,22 @@ import java.util.List;
 public class HydrologicalEngineeringEngine {
     private static final Logger logger = LoggerFactory.getLogger(HydrologicalEngineeringEngine.class);
 
+    /* Internal state variable for default tenochtitlan tech threshold (double). */
     public static final double DEFAULT_TENOCHTITLAN_TECH_THRESHOLD = 3.5;
+    /* Internal state variable for default tenochtitlan capital threshold (double). */
     public static final double DEFAULT_TENOCHTITLAN_CAPITAL_THRESHOLD = 150.0;
 
+    /* Internal state variable for default aral sea rainfall threshold mm (double). */
     public static final double DEFAULT_ARAL_SEA_RAINFALL_THRESHOLD_MM = 300.0;
 
+    /* Internal state variable for default dam tech threshold (double). */
     public static final double DEFAULT_DAM_TECH_THRESHOLD = 4.5;
+    /* Internal state variable for default dam capital threshold (double). */
     public static final double DEFAULT_DAM_CAPITAL_THRESHOLD = 250.0;
+    /* Internal state variable for default dam min elevation meters (double). */
     public static final double DEFAULT_DAM_MIN_ELEVATION_METERS = 300.0;
 
-    /**
+    /*
      * Executes hydrological engineering transformations using default parameters.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
@@ -49,7 +55,7 @@ public class HydrologicalEngineeringEngine {
                 DEFAULT_DAM_TECH_THRESHOLD, DEFAULT_DAM_CAPITAL_THRESHOLD, DEFAULT_DAM_MIN_ELEVATION_METERS);
     }
 
-    /**
+    /*
      * Executes hydrological engineering transformations with parameterizable physical thresholds.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays,

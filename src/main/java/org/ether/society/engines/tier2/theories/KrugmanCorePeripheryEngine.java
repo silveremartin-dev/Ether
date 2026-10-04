@@ -35,19 +35,38 @@ import java.util.List;
 public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(KrugmanCorePeripheryEngine.class);
 
+    /* Internal state variable for sigma elasticity (double). */
     public static final double SIGMA_ELASTICITY = 4.0;
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code KrugmanCorePeripheryEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "Krugman New Economic Geography Core-Periphery";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code KrugmanCorePeripheryEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Models endogenous spatial economic concentration, manufacturing core-periphery bifurcations, and iceberg transport friction.";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code KrugmanCorePeripheryEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [Krugman Core-Periphery NEG Formulation (JPE 1991)]
@@ -60,11 +79,24 @@ public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code KrugmanCorePeripheryEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Spatial Economics";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code KrugmanCorePeripheryEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

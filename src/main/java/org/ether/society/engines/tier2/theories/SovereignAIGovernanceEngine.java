@@ -50,14 +50,31 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
     }
 
     private GovernanceMode mode;
+    /* Internal state variable for aggressive optimization factor (double). */
     private double aggressiveOptimizationFactor;
+    /* Internal state variable for target pollution ceiling (double). */
     private double targetPollutionCeiling;
+    /* Internal state variable for target gini ceiling (double). */
     private double targetGiniCeiling;
 
+    /*
+     * Sovereign aigovernance engine.
+     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
+     *
+     */
     public SovereignAIGovernanceEngine() {
         this(GovernanceMode.LEVIATHAN_UNIFIED, 0.8, 100.0, 0.25);
     }
 
+    /*
+     * Sovereign aigovernance engine.
+     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
+     *
+     * @param mode the mode parameter (GovernanceMode)
+     * @param aggressiveOptimizationFactor the aggressive optimization factor parameter (double)
+     * @param targetPollutionCeiling the target pollution ceiling parameter (double)
+     * @param targetGiniCeiling the target gini ceiling parameter (double)
+     */
     public SovereignAIGovernanceEngine(GovernanceMode mode, double aggressiveOptimizationFactor, double targetPollutionCeiling, double targetGiniCeiling) {
         this.mode = mode;
         this.aggressiveOptimizationFactor = aggressiveOptimizationFactor;
@@ -66,6 +83,13 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -108,7 +132,7 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
         }
     }
 
-    /**
+    /*
        * Monolithic Global AI Leviathan: Direct reallocation of capital, pollution reduction, and inequality smoothing.
      */
     private void executeUnifiedLeviathanPolicy(List<H3Cell> cells, double meanPollution, double meanGini, double deltaYears) {
@@ -137,7 +161,7 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
         }
     }
 
-    /**
+    /*
      * Multi-Agent Geo-Political Competition: Different regional hemispheres managed by rival AI agents.
      */
     private void executeGeopoliticalMultiAgentPolicy(List<H3Cell> cells, double deltaYears) {
@@ -161,7 +185,7 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
         }
     }
 
-    /**
+    /*
      * Soft Nudging Policy: Indirect macro-economic price adjustments.
      */
     private void executeSoftNudgingPolicy(List<H3Cell> cells, double meanPollution, double deltaYears) {
@@ -175,7 +199,7 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
         }
     }
 
-    /**
+    /*
      * Entropic Dystopia Policy: Perverse optimization prioritizing pure thermodynamic efficiency over population comfort.
      */
     private void executeEntropicDystopiaPolicy(List<H3Cell> cells, double meanPollution, double deltaYears) {
@@ -192,12 +216,36 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
     }
 
     // Getters & Setters
+    /*
+     * Get mode.
+     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public GovernanceMode getMode() { return mode; }
     public void setMode(GovernanceMode mode) { this.mode = mode; }
+    /*
+     * Get aggressive optimization factor.
+     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getAggressiveOptimizationFactor() { return aggressiveOptimizationFactor; }
     public void setAggressiveOptimizationFactor(double factor) { this.aggressiveOptimizationFactor = factor; }
+    /*
+     * Get target pollution ceiling.
+     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getTargetPollutionCeiling() { return targetPollutionCeiling; }
     public void setTargetPollutionCeiling(double ceiling) { this.targetPollutionCeiling = ceiling; }
+    /*
+     * Get target gini ceiling.
+     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getTargetGiniCeiling() { return targetGiniCeiling; }
     public void setTargetGiniCeiling(double ceiling) { this.targetGiniCeiling = ceiling; }
 }

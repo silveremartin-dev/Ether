@@ -29,9 +29,10 @@ public class WikidataEventsFetcher {
     private static final Logger logger = LoggerFactory.getLogger(WikidataEventsFetcher.class);
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    /* Internal state variable for catalog file path (String). */
     public static final String CATALOG_FILE_PATH = "data/events/historical_events_catalog.json";
 
-    /**
+    /*
      * Normalizes event type keys to the standard prefixed naming convention.
      */
     public static String normalizeEventType(String rawType) {
@@ -63,7 +64,7 @@ public class WikidataEventsFetcher {
         };
     }
 
-    /**
+    /*
      * Standard SPARQL query targeting historical events, battles, settlements, and civilizational milestones.
      */
     public static final String SPARQL_HISTORICAL_EVENTS_QUERY = """
@@ -79,7 +80,7 @@ public class WikidataEventsFetcher {
         LIMIT 1500
         """;
 
-    /**
+    /*
      * Executes the Wikidata SPARQL query and parses results into a list of ClimateEvent objects.
      */
     public static List<ClimateEvent> fetchFromWikidata(int limit) {
@@ -137,7 +138,7 @@ public class WikidataEventsFetcher {
         return events;
     }
 
-    /**
+    /*
      * Extracts and builds a consolidated catalog from local Seshat datasets.
      */
     public static List<ClimateEvent> loadSeshatMilestones() {
@@ -170,7 +171,7 @@ public class WikidataEventsFetcher {
         return events;
     }
 
-    /**
+    /*
      * Loads the unified catalog from disk, or builds and saves it if not already generated.
      */
     public static List<ClimateEvent> getOrBuildFullCatalog() {
@@ -216,6 +217,13 @@ public class WikidataEventsFetcher {
         return fullList;
     }
 
+    /*
+     * Save catalog to disk.
+     * Enforces physical invariants and updates associated state variables within {@code WikidataEventsFetcher}.
+     *
+     * @param list the list parameter (List&lt;ClimateEvent&gt;)
+     * @param file the file parameter (File)
+     */
     public static void saveCatalogToDisk(List<ClimateEvent> list, File file) {
         try {
             if (file.getParentFile() != null && !file.getParentFile().exists()) {

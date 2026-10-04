@@ -24,16 +24,16 @@ import java.util.List;
 public class RenewableEnergyPhysicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(RenewableEnergyPhysicsEngine.class);
 
-    /** Solar Constant at TOA in W/mÂ² */
+    /* Solar Constant at TOA in W/mÂ² */
     public static final double SOLAR_CONSTANT_W_PER_M2 = 1361.0;
 
-    /** Betz Limit aerodynamic power coefficient */
+    /* Betz Limit aerodynamic power coefficient */
     public static final double BETZ_LIMIT_CP = 0.593;
 
-    /** Air density at sea level in kg/mÂ³ */
+    /* Air density at sea level in kg/mÂ³ */
     public static final double AIR_DENSITY_KG_PER_M3 = 1.225;
 
-    /**
+    /*
      * Calculates kinetic wind power density in W/mÂ² based on Betz Law.
      *
      * @param windSpeedMetersPerSec Wind speed in m/s
@@ -44,7 +44,7 @@ public class RenewableEnergyPhysicsEngine {
         return 0.5 * AIR_DENSITY_KG_PER_M3 * Math.pow(windSpeedMetersPerSec, 3.0) * BETZ_LIMIT_CP;
     }
 
-    /**
+    /*
      * Executes one renewable energy physics tick across cells.
      */
     public static void processRenewableEnergyPhysics(List<H3Cell> cells) {

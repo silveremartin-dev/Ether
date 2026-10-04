@@ -35,16 +35,34 @@ public class DraftAnimalFodderAllocationEngine implements ProceduralEnginePlugin
     private static final Logger logger = LoggerFactory.getLogger(DraftAnimalFodderAllocationEngine.class);
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code DraftAnimalFodderAllocationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "Draft Animal Traction & Fodder Allocation";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code DraftAnimalFodderAllocationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Models the energetic trade-off between draft animal mechanical work multiplier and fodder land competition.";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code DraftAnimalFodderAllocationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [Draft Animal Energetics & Fodder Trade-Off (Smil 2017, Wrigley 2010)]
@@ -58,11 +76,24 @@ public class DraftAnimalFodderAllocationEngine implements ProceduralEnginePlugin
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code DraftAnimalFodderAllocationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Agrarian Energetics";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code DraftAnimalFodderAllocationEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

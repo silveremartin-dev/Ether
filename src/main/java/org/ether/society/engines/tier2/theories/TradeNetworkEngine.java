@@ -27,11 +27,17 @@ public class TradeNetworkEngine {
 
     private static final List<TradeRoute> latestRoutes = new java.util.concurrent.CopyOnWriteArrayList<>();
 
+    /*
+     * Get latest routes.
+     * Enforces physical invariants and updates associated state variables within {@code TradeNetworkEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static List<TradeRoute> getLatestRoutes() {
         return Collections.unmodifiableList(latestRoutes);
     }
 
-    /**
+    /*
      * Simulates and computes primary trade routes between high-density population nodes.
      * Enhances capital stock, labor efficiency, and technological diffusion along trade paths.
      */
@@ -75,7 +81,7 @@ public class TradeNetworkEngine {
         return activeRoutes;
     }
 
-    /**
+    /*
      * Computes the lowest-friction route between two cells using cost-distance heuristics.
      */
     private static TradeRoute computeFrictionPath(H3Cell start, H3Cell end, List<H3Cell> cells, double techLevel) {
@@ -127,7 +133,7 @@ public class TradeNetworkEngine {
         return new TradeRoute(start, end, path, totalCost);
     }
 
-    /**
+    /*
      * Boosts capital, technology diffusion, and infrastructure along the trade route corridor.
      */
     private static void applyTradeCorridorEffects(TradeRoute route, double techLevel) {

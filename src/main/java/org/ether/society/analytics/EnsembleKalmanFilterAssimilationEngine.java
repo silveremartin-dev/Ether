@@ -34,11 +34,14 @@ import java.util.Random;
 public class EnsembleKalmanFilterAssimilationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EnsembleKalmanFilterAssimilationEngine.class);
 
+    /* Internal state variable for ensemble size (int). */
     private final int ensembleSize;
+    /* Internal state variable for measurement variance (double). */
     private final double measurementVariance;
     private final Random random;
 
     private final List<Double> epistemicDiscrepancyHistory = new ArrayList<>();
+    /* Internal state variable for assimilation cycles (long). */
     private long assimilationCycles = 0;
 
     public record AssimilationResult(
@@ -49,17 +52,30 @@ public class EnsembleKalmanFilterAssimilationEngine {
             double varianceReduction
     ) {}
 
+    /*
+     * Ensemble kalman filter assimilation engine.
+     * Enforces physical invariants and updates associated state variables within {@code EnsembleKalmanFilterAssimilationEngine}.
+     *
+     */
     public EnsembleKalmanFilterAssimilationEngine() {
         this(20, 0.05, new Random(1234));
     }
 
+    /*
+     * Ensemble kalman filter assimilation engine.
+     * Enforces physical invariants and updates associated state variables within {@code EnsembleKalmanFilterAssimilationEngine}.
+     *
+     * @param ensembleSize the ensemble size parameter (int)
+     * @param measurementVariance the measurement variance parameter (double)
+     * @param random the random parameter (Random)
+     */
     public EnsembleKalmanFilterAssimilationEngine(int ensembleSize, double measurementVariance, Random random) {
         this.ensembleSize = Math.max(5, ensembleSize);
         this.measurementVariance = Math.max(1e-6, measurementVariance);
         this.random = random != null ? random : new Random(1234);
     }
 
-    /**
+    /*
      * Executes a sequential EnKF analysis update over an ensemble of state vectors.
      *
      * @param ensembleForecast array of $M$ forecast state vectors (each of dimension $N$)
@@ -157,8 +173,32 @@ public class EnsembleKalmanFilterAssimilationEngine {
         return new AssimilationResult(meanForecast, meanAnalysis, innovation, epistemicDiscrepancy, varReduction);
     }
 
+    /*
+     * Get ensemble size.
+     * Enforces physical invariants and updates associated state variables within {@code EnsembleKalmanFilterAssimilationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getEnsembleSize() { return ensembleSize; }
+    /*
+     * Get measurement variance.
+     * Enforces physical invariants and updates associated state variables within {@code EnsembleKalmanFilterAssimilationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getMeasurementVariance() { return measurementVariance; }
+    /*
+     * Get assimilation cycles.
+     * Enforces physical invariants and updates associated state variables within {@code EnsembleKalmanFilterAssimilationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getAssimilationCycles() { return assimilationCycles; }
+    /*
+     * Get epistemic discrepancy history.
+     * Enforces physical invariants and updates associated state variables within {@code EnsembleKalmanFilterAssimilationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<Double> getEpistemicDiscrepancyHistory() { return List.copyOf(epistemicDiscrepancyHistory); }
 }

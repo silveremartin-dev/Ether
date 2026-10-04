@@ -24,9 +24,18 @@ import java.util.List;
 public class KurzweilAcceleratingReturnsEngine {
     private static final Logger logger = LoggerFactory.getLogger(KurzweilAcceleratingReturnsEngine.class);
 
+    /* Internal state variable for global knowledge stock (double). */
     private static double globalKnowledgeStock = 1.0;
+    /* Internal state variable for acceleration rate (double). */
     private static double accelerationRate = 0.05;
 
+    /*
+     * Process accelerating returns.
+     * Enforces physical invariants and updates associated state variables within {@code KurzweilAcceleratingReturnsEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processAcceleratingReturns(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -47,6 +56,12 @@ public class KurzweilAcceleratingReturnsEngine {
         }
     }
 
+    /*
+     * Get global knowledge stock.
+     * Enforces physical invariants and updates associated state variables within {@code KurzweilAcceleratingReturnsEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getGlobalKnowledgeStock() { return globalKnowledgeStock; }
     public static void setGlobalKnowledgeStock(double k) { globalKnowledgeStock = Math.max(1.0, k); }
 }

@@ -1,6 +1,6 @@
 {
-  "name" : "Anthropocène & Grande Accélération Mondiale (2000)",
-  "description" : "\uD83C\uDF10 SCÉNARIO HISTORIQUE : L'Ère Numérique & La Grande Accélération (2000 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nConsolidation du système économique mondial interconnecté, essor des microprocesseurs en silicium, de l'Internet mondial et de l'urbanisation globale.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Grande Accélération : croissance exponentielle des flux de matière, d'énergie fossile et d'information numérique.\n• Franchissement des limites planétaires (Cycle de l'azote/phosphore, forçage radiatif CO₂, érosion de biodiversité).\n• Rendements décroissants de la complexité institutionnelle et fragilité des chaînes logistiques just-in-time.\n",
+  "name" : "AnthropocÃ¨ne & Grande AccÃ©lÃ©ration Mondiale (2000)",
+  "description" : "ðŸŒ SCÃ‰NARIO HISTORIQUE : L'Ãˆre NumÃ©rique & La Grande AccÃ©lÃ©ration (2000 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nConsolidation du systÃ¨me Ã©conomique mondial interconnectÃ©, essor des microprocesseurs en silicium, de l'Internet mondial et de l'urbanisation globale.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Grande AccÃ©lÃ©ration : croissance exponentielle des flux de matiÃ¨re, d'Ã©nergie fossile et d'information numÃ©rique.\nâ€¢ Franchissement des limites planÃ©taires (Cycle de l'azote/phosphore, forÃ§age radiatif COâ‚‚, Ã©rosion de biodiversitÃ©).\nâ€¢ Rendements dÃ©croissants de la complexitÃ© institutionnelle et fragilitÃ© des chaÃ®nes logistiques just-in-time.\n",
   "id" : null,
   "presetKey" : "anthropocene_2000",
   "planetPreset" : {
@@ -38,18 +38,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
     "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -89,18 +89,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+      "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
+      "canonicalPlanet" : "earth",
       "associatedEpochYear" : 2026,
       "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false,
-      "canonicalPlanet" : "earth"
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -118,9 +118,9 @@
     "customRainfallBase64" : null,
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "canonicalPlanet" : "earth"
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

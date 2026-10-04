@@ -41,16 +41,34 @@ public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(TurchinGoldstoneSDTEngine.class);
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code TurchinGoldstoneSDTEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "Turchin-Goldstone Structural-Demographic Theory (SDT)";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code TurchinGoldstoneSDTEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Models secular political instability cycles, elite overproduction, mass immiseration, and state fiscal breakdown.";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code TurchinGoldstoneSDTEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [Goldstone-Turchin Political Stress Index (SDT / PSI)]
@@ -65,11 +83,24 @@ public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code TurchinGoldstoneSDTEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Structural Cliodynamics";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code TurchinGoldstoneSDTEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

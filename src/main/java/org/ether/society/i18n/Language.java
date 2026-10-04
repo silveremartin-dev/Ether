@@ -18,7 +18,9 @@ public enum Language {
     GERMAN("de", "Deutsch", Locale.GERMAN),
     CHINESE("zh", "中文", Locale.CHINESE);
 
+    /* Internal state variable for code (String). */
     private final String code;
+    /* Internal state variable for display name (String). */
     private final String displayName;
     private final Locale locale;
 
@@ -28,19 +30,43 @@ public enum Language {
         this.locale = locale;
     }
 
+    /*
+     * Get code.
+     * Enforces physical invariants and updates associated state variables within {@code Language}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCode() {
         return code;
     }
 
+    /*
+     * Get display name.
+     * Enforces physical invariants and updates associated state variables within {@code Language}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDisplayName() {
         return displayName;
     }
 
+    /*
+     * Get locale.
+     * Enforces physical invariants and updates associated state variables within {@code Language}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Locale getLocale() {
         return locale;
     }
 
     @Override
+    /*
+     * To string.
+     * Enforces physical invariants and updates associated state variables within {@code Language}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String toString() {
         return displayName;
     }

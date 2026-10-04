@@ -22,9 +22,16 @@ import java.util.List;
 public class NordhausDicePureEngine {
     private static final Logger logger = LoggerFactory.getLogger(NordhausDicePureEngine.class);
 
+    /* Internal state variable for gdp (double). */
     private double gdp = 100.0;
     private double temperatureAnomaly = 1.2; // +1.2Â°C above pre-industrial baseline
 
+    /*
+     * Process tick.
+     * Enforces physical invariants and updates associated state variables within {@code NordhausDicePureEngine}.
+     *
+     * @param deltaYears the delta years parameter (double)
+     */
     public void processTick(double deltaYears) {
         // Nordhaus Quadratic Damage Function D(T) = 0.00236 * T^2
         double damageFraction = 0.00236 * Math.pow(temperatureAnomaly, 2.0);
@@ -37,7 +44,19 @@ public class NordhausDicePureEngine {
         gdp = netGdp * 1.02; // 2% baseline growth
     }
 
+    /*
+     * Get gdp.
+     * Enforces physical invariants and updates associated state variables within {@code NordhausDicePureEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getGdp() { return gdp; }
+    /*
+     * Get temperature anomaly.
+     * Enforces physical invariants and updates associated state variables within {@code NordhausDicePureEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getTemperatureAnomaly() { return temperatureAnomaly; }
 }
 

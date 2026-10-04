@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * High-Performance Formula Evaluator & Expression Parser.
+ * High-Performance Formula Evaluator &amp; Expression Parser.
  * Evaluates mathematical expressions over raw variables and statistical aggregations
  * (SUM, AVG, MEAN, MEDIAN, VAR, VARIANCE, STDDEV, STDEV, MIN, MAX, GINI, COUNT).
  *
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class FormulaEvaluator {
     private static final Logger logger = LoggerFactory.getLogger(FormulaEvaluator.class);
 
-    /**
+    /*
      * Interface for resolving raw variable arrays (e.g. "wealth" -> float[]{10.5, 42.0, ...})
      */
     @FunctionalInterface
@@ -33,7 +33,7 @@ public class FormulaEvaluator {
         float[] resolveArray(String varName);
     }
 
-    /**
+    /*
      * Interface for resolving single scalar values (e.g. "population" -> 1000.0)
      */
     @FunctionalInterface
@@ -58,7 +58,7 @@ public class FormulaEvaluator {
         }
     }
 
-    /**
+    /*
      * Evaluates a formula string given array and scalar resolvers with compiled token caching.
      */
     public double evaluate(String expression, VariableResolver arrayResolver, ScalarResolver scalarResolver) {
@@ -140,7 +140,7 @@ public class FormulaEvaluator {
         return expr.trim();
     }
 
-    /**
+    /*
      * Finds and replaces stat function calls like SUM(var), AVG(var), STDDEV(var), GINI(var)
      * with their calculated scalar numerical values.
      */
@@ -332,7 +332,7 @@ public class FormulaEvaluator {
         }
     }
 
-    /**
+    /*
      * Evaluates a scalar mathematical expression containing arithmetic operations and scalar variables.
      */
     private double parseAndEvaluateMath(String expr, ScalarResolver scalarResolver) {

@@ -44,10 +44,10 @@
     "seasonUseImport" : false,
     "seasonSource" : "",
     "seasonSeed" : 46444,
+    "canonicalPlanet" : "none",
     "associatedEpochYear" : 2026,
     "presetDescription" : "\uD83E\uDE90 SUPER-TERRE (Gaia Prime) : Planète tellurique massive (1,5 rayon terrestre, 2,8 masses terrestres), gravité de surface 1,25g, atmosphère dense (2,2 atm) et vigoureux panaches convectifs mantelliques et volcaniques.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "none"
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 950.0,
   "soilOrganicCarbonGtC" : 2800.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
+  "canonicalPlanet" : "none",
   "associatedEpochYear" : 2026,
-  "presetDescription" : "\uD83E\uDE90 SUPER-TERRE (Gaia Prime) : Planète tellurique massive (1,5 rayon terrestre, 2,8 masses terrestres), gravité de surface 1,25g, atmosphère dense (2,2 atm) et vigoureux panaches convectifs mantelliques et volcaniques.",
-  "canonicalPlanet" : "none"
+  "presetDescription" : "\uD83E\uDE90 SUPER-TERRE (Gaia Prime) : Planète tellurique massive (1,5 rayon terrestre, 2,8 masses terrestres), gravité de surface 1,25g, atmosphère dense (2,2 atm) et vigoureux panaches convectifs mantelliques et volcaniques."
 }

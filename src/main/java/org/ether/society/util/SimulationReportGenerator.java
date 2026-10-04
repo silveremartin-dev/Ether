@@ -24,6 +24,14 @@ import java.io.IOException;
  */
 public class SimulationReportGenerator {
 
+    /*
+     * Generate report.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationReportGenerator}.
+     *
+     * @param engine the engine parameter (H3SimulationEngine)
+     * @param outputFile the output file parameter (File)
+     * @return the resulting computation or state reference
+     */
     public static File generateReport(H3SimulationEngine engine, File outputFile) throws IOException {
         if (outputFile == null) {
             outputFile = new File("ether_cliodynamic_report_" + System.currentTimeMillis() + ".md");

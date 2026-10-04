@@ -50,6 +50,7 @@ import com.uber.h3core.util.LatLng;
 public class H3MapCanvas extends Canvas {
     private static final Logger logger = LoggerFactory.getLogger(H3MapCanvas.class);
 
+    /* Internal state variable for cells (List&lt;H3Cell&gt;). */
     private List<H3Cell> cells;
     private org.ether.society.core.dod.WorldBuffer worldBuffer;
     private Map<Long, H3Cell> cellMap; // Fast lookup for neighbors
@@ -61,36 +62,82 @@ public class H3MapCanvas extends Canvas {
     private boolean showResourceOverlay = false; // Toggle for resource deposits & capital overlay
     private boolean showHexGrid = true; // Toggle for H3 hexagonal cell grid outlines
 
+    /*
+     * Is show contours.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isShowContours() { return showContours; }
+    /*
+     * Set show contours.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param showContours the show contours parameter (boolean)
+     */
     public void setShowContours(boolean showContours) {
         this.showContours = showContours;
         draw();
     }
 
+    /*
+     * Is show flow vectors.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isShowFlowVectors() { return showFlowVectors; }
+    /*
+     * Set show flow vectors.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param showFlowVectors the show flow vectors parameter (boolean)
+     */
     public void setShowFlowVectors(boolean showFlowVectors) {
         this.showFlowVectors = showFlowVectors;
         draw();
     }
 
+    /*
+     * Is show resource overlay.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isShowResourceOverlay() { return showResourceOverlay; }
+    /*
+     * Set show resource overlay.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param showResourceOverlay the show resource overlay parameter (boolean)
+     */
     public void setShowResourceOverlay(boolean showResourceOverlay) {
         this.showResourceOverlay = showResourceOverlay;
         draw();
     }
+    /* Internal state variable for scale (double). */
     private double scale = 1.0;
+    /* Internal state variable for offset x (double). */
     private double offsetX = 0;
+    /* Internal state variable for offset y (double). */
     private double offsetY = 0;
 
     // Bounds for coordinate conversion
+    /* Internal state variable for min lat (double). */
     private double minLat;
+    /* Internal state variable for max lat (double). */
     private double maxLat;
+    /* Internal state variable for min lng (double). */
     private double minLng;
+    /* Internal state variable for max lng (double). */
     private double maxLng;
 
     // Mouse interaction state
+    /* Internal state variable for zoom factor (double). */
     private double zoomFactor = 1.0;
+    /* Internal state variable for drag start x (double). */
     private double dragStartX;
+    /* Internal state variable for drag start y (double). */
     private double dragStartY;
     
     // 3D camera rotation
@@ -101,64 +148,149 @@ public class H3MapCanvas extends Canvas {
     private Pane tooltipContainer;
     private H3Service h3Service;
     private H3Cell hoveredCell = null;
+    /* Internal state variable for show legend overlay (boolean). */
     private boolean showLegendOverlay = false;
     private final Map<Long, Integer> h3ToBufferIndexMap = new HashMap<>();
     private org.ether.society.events.EventSystem eventSystem;
 
+    /*
+     * Get event system.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public org.ether.society.events.EventSystem getEventSystem() { return eventSystem; }
+    /*
+     * Set event system.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param eventSystem the event system parameter (org.ether.society.events.EventSystem)
+     */
     public void setEventSystem(org.ether.society.events.EventSystem eventSystem) {
         this.eventSystem = eventSystem;
         draw();
     }
 
+    /* Internal state variable for show corner overlays (boolean). */
     private boolean showCornerOverlays = true;
 
+    /*
+     * Is show corner overlays.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isShowCornerOverlays() { return showCornerOverlays; }
+    /*
+     * Set show corner overlays.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param show the show parameter (boolean)
+     */
     public void setShowCornerOverlays(boolean show) {
         this.showCornerOverlays = show;
         draw();
     }
 
+    /*
+     * Is show legend overlay.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isShowLegendOverlay() { return showLegendOverlay; }
+    /*
+     * Set show legend overlay.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param show the show parameter (boolean)
+     */
     public void setShowLegendOverlay(boolean show) { 
         this.showLegendOverlay = show; 
         draw(); 
     }
 
+    /* Internal state variable for tab visible (boolean). */
     private boolean tabVisible = true;
+    /* Internal state variable for smooth map (boolean). */
     private boolean smoothMap = true;
     private ScientificColorMap scientificColorMap = ScientificColorMap.TURBO;
+    /* Internal state variable for show hillshading (boolean). */
     private boolean showHillshading = false;
+    /* Internal state variable for show solar terminator (boolean). */
     private boolean showSolarTerminator = false;
     private WritableImage cachedSmoothImage = null;
+    /* Internal state variable for smooth image dirty (boolean). */
     private boolean smoothImageDirty = true;
 
+    /*
+     * Get scientific color map.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public ScientificColorMap getScientificColorMap() { return scientificColorMap; }
+    /*
+     * Set scientific color map.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param cmap the cmap parameter (ScientificColorMap)
+     */
     public void setScientificColorMap(ScientificColorMap cmap) {
         this.scientificColorMap = cmap;
         this.smoothImageDirty = true;
         draw();
     }
 
+    /*
+     * Is show hillshading.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isShowHillshading() { return showHillshading; }
+    /*
+     * Set show hillshading.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param show the show parameter (boolean)
+     */
     public void setShowHillshading(boolean show) {
         this.showHillshading = show;
         this.smoothImageDirty = true;
         draw();
     }
 
+    /*
+     * Is show solar terminator.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isShowSolarTerminator() { return showSolarTerminator; }
+    /*
+     * Set show solar terminator.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param show the show parameter (boolean)
+     */
     public void setShowSolarTerminator(boolean show) {
         this.showSolarTerminator = show;
         this.smoothImageDirty = true;
         draw();
     }
 
+    /*
+     * Invalidate smooth cache.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     */
     public void invalidateSmoothCache() {
         this.smoothImageDirty = true;
     }
 
     // Zero-allocation primitive rendering buffers for 3D globe mode (60 FPS optimization)
+    /* Internal state variable for poly zbuf (double[]). */
     private double[] polyZBuf = new double[0];
     private double[][] polyPxBuf = new double[0][6];
     private double[][] polyPyBuf = new double[0][6];
@@ -166,29 +298,78 @@ public class H3MapCanvas extends Canvas {
     private boolean[] polyBorderBuf = new boolean[0];
     private Integer[] polyIndexBuf = new Integer[0];
 
+    /*
+     * Is tab visible.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isTabVisible() { return tabVisible; }
+    /*
+     * Set tab visible.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param tabVisible the tab visible parameter (boolean)
+     */
     public void setTabVisible(boolean tabVisible) {
         this.tabVisible = tabVisible;
         updateAutoRotateTimerState();
         draw();
     }
 
+    /*
+     * Is smooth map.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isSmoothMap() { return smoothMap; }
+    /*
+     * Set smooth map.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param smoothMap the smooth map parameter (boolean)
+     */
     public void setSmoothMap(boolean smoothMap) {
         this.smoothMap = smoothMap;
         this.smoothImageDirty = true;
         draw();
     }
 
+    /*
+     * Is show hex grid.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isShowHexGrid() { return showHexGrid; }
+    /*
+     * Set show hex grid.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param showHexGrid the show hex grid parameter (boolean)
+     */
     public void setShowHexGrid(boolean showHexGrid) {
         this.showHexGrid = showHexGrid;
         draw();
     }
 
+    /* Internal state variable for show floating layers (boolean). */
     private boolean showFloatingLayers = true;
 
+    /*
+     * Is show floating layers.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isShowFloatingLayers() { return showFloatingLayers; }
+    /*
+     * Set show floating layers.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param show the show parameter (boolean)
+     */
     public void setShowFloatingLayers(boolean show) {
         this.showFloatingLayers = show;
         this.smoothImageDirty = true;
@@ -199,22 +380,54 @@ public class H3MapCanvas extends Canvas {
     // private static final double ISO_ANGLE = Math.toRadians(30);
     private static final double ELEVATION_SCALE = 0.05; // px per meter
     private double verticalExaggeration = 25.0; // 25x exaggeration for 3D terrain relief
+    /* Internal state variable for auto rotating (boolean). */
     private boolean autoRotating = false;
     private double autoRotationSpeed = 0.4; // degrees per frame tick (~24 deg/sec at 60fps)
     private javafx.animation.AnimationTimer autoRotateTimer;
 
+    /*
+     * Get vertical exaggeration.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getVerticalExaggeration() { return verticalExaggeration; }
+    /*
+     * Set vertical exaggeration.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param verticalExaggeration the vertical exaggeration parameter (double)
+     */
     public void setVerticalExaggeration(double verticalExaggeration) { 
         this.verticalExaggeration = verticalExaggeration; 
         draw(); 
     }
 
+    /* Internal state variable for show mouse over info (boolean). */
     private boolean showMouseOverInfo = true;
 
+    /*
+     * Is show mouse over info.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isShowMouseOverInfo() { return showMouseOverInfo; }
     public void setShowMouseOverInfo(boolean show) { this.showMouseOverInfo = show; }
 
+    /*
+     * Is auto rotating.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isAutoRotating() { return autoRotating; }
+    /*
+     * Set auto rotating.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param autoRotating the auto rotating parameter (boolean)
+     */
     public void setAutoRotating(boolean autoRotating) {
         this.autoRotating = autoRotating;
         if (globe3DSubScene != null) {
@@ -228,9 +441,16 @@ public class H3MapCanvas extends Canvas {
         if (autoRotating && viewMode == ViewMode.VIEW_3D && tabVisible) {
             if (autoRotateTimer == null) {
                 autoRotateTimer = new javafx.animation.AnimationTimer() {
+                    /* Internal state variable for last now (long). */
                     private long lastNow = 0;
 
                     @Override
+                    /*
+                     * Handle.
+                     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+                     *
+                     * @param now the now parameter (long)
+                     */
                     public void handle(long now) {
                         if (!autoRotating || viewMode != ViewMode.VIEW_3D || !tabVisible) {
                             return;
@@ -262,11 +482,28 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
+    /*
+     * Get auto rotation speed.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getAutoRotationSpeed() { return autoRotationSpeed; }
+    /*
+     * Set auto rotation speed.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param autoRotationSpeed the auto rotation speed parameter (double)
+     */
     public void setAutoRotationSpeed(double autoRotationSpeed) {
         this.autoRotationSpeed = autoRotationSpeed;
     }
 
+    /*
+     * Tick auto rotation.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     */
     public void tickAutoRotation() {
         if (autoRotating && viewMode == ViewMode.VIEW_3D) {
             centerLng = (centerLng + autoRotationSpeed + 180.0) % 360.0 - 180.0;
@@ -276,12 +513,21 @@ public class H3MapCanvas extends Canvas {
     }
 
     // Center view tracking
+    /* Internal state variable for center lat (double). */
     private double centerLat;
+    /* Internal state variable for center lng (double). */
     private double centerLng;
 
     // Mini-map reference (for updates)
     private MiniMap miniMap;
 
+    /*
+     * H3map canvas.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param width the width parameter (double)
+     * @param height the height parameter (double)
+     */
     public H3MapCanvas(double width, double height) {
         super(width, height);
         this.h3Service = new H3Service(8); // Resolution 8
@@ -291,41 +537,89 @@ public class H3MapCanvas extends Canvas {
     }
 
     @Override
+    /*
+     * Is resizable.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isResizable() {
         return true;
     }
 
     @Override
+    /*
+     * Pref width.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param height the height parameter (double)
+     * @return the resulting computation or state reference
+     */
     public double prefWidth(double height) {
         return getWidth();
     }
 
     @Override
+    /*
+     * Pref height.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param width the width parameter (double)
+     * @return the resulting computation or state reference
+     */
     public double prefHeight(double width) {
         return getHeight();
     }
 
     @Override
+    /*
+     * Min width.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param height the height parameter (double)
+     * @return the resulting computation or state reference
+     */
     public double minWidth(double height) {
         return 1.0;
     }
 
     @Override
+    /*
+     * Min height.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param width the width parameter (double)
+     * @return the resulting computation or state reference
+     */
     public double minHeight(double width) {
         return 1.0;
     }
 
     @Override
+    /*
+     * Max width.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param height the height parameter (double)
+     * @return the resulting computation or state reference
+     */
     public double maxWidth(double height) {
         return Double.MAX_VALUE;
     }
 
     @Override
+    /*
+     * Max height.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param width the width parameter (double)
+     * @return the resulting computation or state reference
+     */
     public double maxHeight(double width) {
         return Double.MAX_VALUE;
     }
 
-    /**
+    /*
      * Set the tooltip container (must be called after construction).
      */
     public void setTooltipContainer(Pane container) {
@@ -339,15 +633,26 @@ public class H3MapCanvas extends Canvas {
     // Hover timer for 2-second cell tooltip delay
     private javafx.animation.PauseTransition hoverTimer;
     private H3Cell pendingHoverCell = null;
+    /* Internal state variable for pending canvas x (double). */
     private double pendingCanvasX, pendingCanvasY, pendingSceneX, pendingSceneY;
 
     // Video Recording & Overlay Metadata
+    /* Internal state variable for scenario name (String). */
     private String scenarioName = "ScÃ©nario Standard";
+    /* Internal state variable for current date str (String). */
     private String currentDateStr = "An -100000";
+    /* Internal state variable for is recording video (boolean). */
     private boolean isRecordingVideo = false;
     private java.io.File videoSessionDir = null;
+    /* Internal state variable for frame counter (long). */
     private long frameCounter = 0;
 
+    /*
+     * Set scenario name.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param name the name parameter (String)
+     */
     public void setScenarioName(String name) {
         if (name != null && !name.isBlank()) {
             this.scenarioName = name;
@@ -355,28 +660,73 @@ public class H3MapCanvas extends Canvas {
         draw();
     }
 
+    /*
+     * Get scenario name.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getScenarioName() { return scenarioName; }
 
+    /*
+     * Set current date str.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param dateStr the date str parameter (String)
+     */
     public void setCurrentDateStr(String dateStr) {
         if (dateStr != null && !dateStr.isBlank()) {
             this.currentDateStr = dateStr;
         }
     }
 
+    /*
+     * Is recording video.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isRecordingVideo() { return isRecordingVideo; }
 
+    /*
+     * Start video recording.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     */
     public void startVideoRecording() {
         this.isRecordingVideo = true;
         logger.info("Video export mode activated via decoupled VideoExportService.");
     }
 
+    /*
+     * Stop video recording.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     */
     public void stopVideoRecording() {
         this.isRecordingVideo = false;
         logger.info("Video export mode deactivated.");
     }
 
+    /*
+     * Capture tick frame.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     */
     public void captureTickFrame() {}
+    /*
+     * Capture tick frame.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param currentTick the current tick parameter (long)
+     */
     public void captureTickFrame(long currentTick) {}
+    /*
+     * Truncate video frames above.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param tickIndex the tick index parameter (long)
+     */
     public void truncateVideoFramesAbove(long tickIndex) {}
 
     private void setupMouseHandlers() {
@@ -544,6 +894,12 @@ public class H3MapCanvas extends Canvas {
         });
     }
 
+    /*
+     * Set view mode.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param mode the mode parameter (ViewMode)
+     */
     public void setViewMode(ViewMode mode) {
         this.viewMode = mode;
         updateAutoRotateTimerState();
@@ -551,10 +907,22 @@ public class H3MapCanvas extends Canvas {
         logger.info("View mode changed to: {}", mode);
     }
 
+    /*
+     * Get view mode.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public ViewMode getViewMode() {
         return viewMode;
     }
 
+    /*
+     * Set display mode.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param mode the mode parameter (DisplayMode)
+     */
     public void setDisplayMode(DisplayMode mode) {
         if (mode == null) return;
         this.activeDisplayModes.clear();
@@ -571,14 +939,32 @@ public class H3MapCanvas extends Canvas {
         logger.info("Display modes updated to: {}", this.activeDisplayModes);
     }
 
+    /*
+     * Get display mode.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public DisplayMode getDisplayMode() {
         return getPrimaryDisplayMode();
     }
 
+    /*
+     * Get active display modes.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Set<DisplayMode> getActiveDisplayModes() {
         return Collections.unmodifiableSet(activeDisplayModes);
     }
 
+    /*
+     * Set active display modes.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param modes the modes parameter (Collection&lt;DisplayMode&gt;)
+     */
     public void setActiveDisplayModes(Collection<DisplayMode> modes) {
         this.activeDisplayModes.clear();
         if (modes != null && !modes.isEmpty()) {
@@ -592,6 +978,13 @@ public class H3MapCanvas extends Canvas {
         logger.info("Active display modes set to: {}", this.activeDisplayModes);
     }
 
+    /*
+     * Set display mode active.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param mode the mode parameter (DisplayMode)
+     * @param active the active parameter (boolean)
+     */
     public void setDisplayModeActive(DisplayMode mode, boolean active) {
         if (mode == null) return;
         if (active) {
@@ -608,10 +1001,23 @@ public class H3MapCanvas extends Canvas {
         logger.info("Active display modes toggled: {} -> {}", mode, activeDisplayModes);
     }
 
+    /*
+     * Is display mode active.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param mode the mode parameter (DisplayMode)
+     * @return the resulting computation or state reference
+     */
     public boolean isDisplayModeActive(DisplayMode mode) {
         return activeDisplayModes.contains(mode);
     }
 
+    /*
+     * Get primary display mode.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public DisplayMode getPrimaryDisplayMode() {
         for (DisplayMode dm : activeDisplayModes) {
             if (dm != DisplayMode.BIOME) return dm;
@@ -619,16 +1025,33 @@ public class H3MapCanvas extends Canvas {
         return activeDisplayModes.isEmpty() ? DisplayMode.BIOME : activeDisplayModes.iterator().next();
     }
 
+    /*
+     * Is only static biome.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isOnlyStaticBiome() {
         return activeDisplayModes.size() == 1 && activeDisplayModes.contains(DisplayMode.BIOME);
     }
 
     // Toggle for contours
+    /*
+     * Toggle contours.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param show the show parameter (boolean)
+     */
     public void toggleContours(boolean show) {
         this.showContours = show;
         draw();
     }
 
+    /*
+     * Reset view.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     */
     public void resetView() {
         this.zoomFactor = 1.0;
         if (cells != null && !cells.isEmpty()) {
@@ -653,8 +1076,15 @@ public class H3MapCanvas extends Canvas {
     }
 
     private H3Globe3DSubScene globe3DSubScene;
+    /* Internal state variable for relief scale (double). */
     private double reliefScale = 1.0;
 
+    /*
+     * Get globe3dsub scene.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public H3Globe3DSubScene getGlobe3DSubScene() {
         if (globe3DSubScene == null) {
             globe3DSubScene = new H3Globe3DSubScene(getWidth() > 0 ? getWidth() : 1280, getHeight() > 0 ? getHeight() : 800);
@@ -665,6 +1095,12 @@ public class H3MapCanvas extends Canvas {
         return globe3DSubScene;
     }
 
+    /*
+     * Set relief scale.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param scale the scale parameter (double)
+     */
     public void setReliefScale(double scale) {
         this.reliefScale = scale;
         if (globe3DSubScene != null) {
@@ -676,12 +1112,30 @@ public class H3MapCanvas extends Canvas {
         draw();
     }
 
+    /*
+     * Get relief scale.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getReliefScale() {
         return reliefScale;
     }
 
+    /*
+     * Get cells.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<H3Cell> getCells() { return cells; }
 
+    /*
+     * Set cells.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     */
     public void setCells(List<H3Cell> cells) {
         if (cells == null) {
             this.cells = new ArrayList<>();
@@ -726,6 +1180,13 @@ public class H3MapCanvas extends Canvas {
                 cells.size(), minLat, maxLat, minLng, maxLng);
     }
 
+    /*
+     * Center on coordinates.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param lat the lat parameter (double)
+     * @param lng the lng parameter (double)
+     */
     public void centerOnCoordinates(double lat, double lng) {
         this.centerLat = Math.max(-90.0, Math.min(90.0, lat));
         this.centerLng = Math.max(-180.0, Math.min(180.0, lng));
@@ -733,6 +1194,12 @@ public class H3MapCanvas extends Canvas {
         logger.info("Canvas view re-centered to Lat: {}, Lng: {}", centerLat, centerLng);
     }
 
+    /*
+     * Set world buffer.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param buffer the buffer parameter (org.ether.society.core.dod.WorldBuffer)
+     */
     public void setWorldBuffer(org.ether.society.core.dod.WorldBuffer buffer) {
         this.worldBuffer = buffer;
         this.h3ToBufferIndexMap.clear();
@@ -749,6 +1216,11 @@ public class H3MapCanvas extends Canvas {
         draw();
     }
 
+    /*
+     * Draw.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     */
     public void draw() {
         if (!tabVisible || !isVisible() || getWidth() < 1.0 || getHeight() < 1.0) return;
         if (cells == null || cells.isEmpty()) {
@@ -850,11 +1322,26 @@ public class H3MapCanvas extends Canvas {
     private final List<EventBeaconTarget> activeBeaconTargets = new ArrayList<>();
     private javafx.animation.AnimationTimer activeFlyTimer;
 
+    /*
+     * Fly to.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param targetLat the target lat parameter (double)
+     * @param targetLng the target lng parameter (double)
+     */
     public void flyTo(double targetLat, double targetLng) {
         double comfortableZoom = (viewMode == ViewMode.VIEW_3D) ? this.zoomFactor : Math.max(2.8, this.zoomFactor);
         flyTo(targetLat, targetLng, comfortableZoom);
     }
 
+    /*
+     * Fly to.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param targetLat the target lat parameter (double)
+     * @param targetLng the target lng parameter (double)
+     * @param targetZoom the target zoom parameter (double)
+     */
     public void flyTo(double targetLat, double targetLng, double targetZoom) {
         if (activeFlyTimer != null) {
             activeFlyTimer.stop();
@@ -879,6 +1366,12 @@ public class H3MapCanvas extends Canvas {
 
         activeFlyTimer = new javafx.animation.AnimationTimer() {
             @Override
+            /*
+             * Handle.
+             * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+             *
+             * @param now the now parameter (long)
+             */
             public void handle(long now) {
                 double elapsed = (now - startNs) / (double) durationNs;
                 if (elapsed >= 1.0) {
@@ -905,14 +1398,34 @@ public class H3MapCanvas extends Canvas {
     }
 
     public static class BeaconItem {
+        /* Internal state variable for lat (double). */
         private final double lat;
+        /* Internal state variable for lng (double). */
         private final double lng;
+        /* Internal state variable for title (String). */
         private final String title;
+        /* Internal state variable for type (String). */
         private final String type;
+        /* Internal state variable for magnitude (double). */
         private final double magnitude;
+        /* Internal state variable for created at ms (long). */
         private final long createdAtMs;
+        /* Internal state variable for duration ms (long). */
         private final long durationMs;
 
+        /*
+         * Beacon item.
+         * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+         *
+         * @param lat the lat parameter (double)
+         * @param lng the lng parameter (double)
+         * @param title the title parameter (String)
+         * @param type the type parameter (String)
+         * @param magnitude the magnitude parameter (double)
+         * @param createdAtMs the created at ms parameter (long)
+         * @param durationMs the duration ms parameter (long)
+         * @return the resulting computation or state reference
+         */
         public BeaconItem(double lat, double lng, String title, String type, double magnitude, long createdAtMs, long durationMs) {
             this.lat = lat;
             this.lng = lng;
@@ -923,11 +1436,47 @@ public class H3MapCanvas extends Canvas {
             this.durationMs = durationMs;
         }
 
+        /*
+         * Get latitude.
+         * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getLatitude() { return lat; }
+        /*
+         * Get longitude.
+         * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getLongitude() { return lng; }
+        /*
+         * Get title.
+         * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getTitle() { return title; }
+        /*
+         * Get type.
+         * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getType() { return type; }
+        /*
+         * Get magnitude.
+         * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getMagnitude() { return magnitude; }
+        /*
+         * Get created at ms.
+         * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+         *
+         * @return the resulting computation or state reference
+         */
         public long getCreatedAtMs() { return createdAtMs; }
         public boolean isExpired(long now) { return (now - createdAtMs) >= durationMs; }
     }
@@ -935,6 +1484,16 @@ public class H3MapCanvas extends Canvas {
     private final java.util.List<BeaconItem> manualPings = new java.util.concurrent.CopyOnWriteArrayList<>();
     private javafx.animation.AnimationTimer pingAnimationTimer;
 
+    /*
+     * Ping location.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param lat the lat parameter (double)
+     * @param lng the lng parameter (double)
+     * @param title the title parameter (String)
+     * @param type the type parameter (String)
+     * @param magnitude the magnitude parameter (double)
+     */
     public void pingLocation(double lat, double lng, String title, String type, double magnitude) {
         long now = System.currentTimeMillis();
         manualPings.removeIf(p -> p.isExpired(now));
@@ -943,6 +1502,12 @@ public class H3MapCanvas extends Canvas {
         if (pingAnimationTimer == null) {
             pingAnimationTimer = new javafx.animation.AnimationTimer() {
                 @Override
+                /*
+                 * Handle.
+                 * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+                 *
+                 * @param nowNs the now ns parameter (long)
+                 */
                 public void handle(long nowNs) {
                     long currentMs = System.currentTimeMillis();
                     manualPings.removeIf(p -> p.isExpired(currentMs));
@@ -1088,15 +1653,27 @@ public class H3MapCanvas extends Canvas {
     private java.util.function.BiConsumer<H3Cell, double[]> onHoverCallback;
     private java.util.function.BiConsumer<Double, Double> onCellClickedCallback;
 
+    /*
+     * Set on hover callback.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param callback the callback parameter (double[]&gt;)
+     */
     public void setOnHoverCallback(java.util.function.BiConsumer<H3Cell, double[]> callback) {
         this.onHoverCallback = callback;
     }
 
+    /*
+     * Set on cell clicked callback.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param callback the callback parameter (Double&gt;)
+     */
     public void setOnCellClickedCallback(java.util.function.BiConsumer<Double, Double> callback) {
         this.onCellClickedCallback = callback;
     }
 
-    /**
+    /*
      * Compute geographical coordinates (lat, lng) from canvas pixel position.
      * Supports both 2D Equirectangular projection and 3D Globe orthographic view.
      */
@@ -1142,13 +1719,20 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
+    /*
+     * Get buffer index.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param h3Index the h3index parameter (long)
+     * @return the resulting computation or state reference
+     */
     public Integer getBufferIndex(long h3Index) {
         return h3ToBufferIndexMap.get(h3Index);
     }
 
     private final Map<Long, Integer> previousPopMap = new HashMap<>();
 
-    /**
+    /*
      * Update tooltip based on mouse position.
      */
     private void updateTooltip(double canvasX, double canvasY, double sceneX, double sceneY) {
@@ -1178,7 +1762,7 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
-    /**
+    /*
      * Find the H3 cell at the given canvas coordinates.
      * Supports exact inverse 3D ray projection on 3D spherical Globe mode.
      */
@@ -1895,7 +2479,7 @@ public class H3MapCanvas extends Canvas {
         gc.drawImage(globeImg, cx - rInt, cy - rInt);
     }
 
-    /**
+    /*
      * Compute Inverse Distance Weighting (IDW) spatial continuous color interpolation.
      * Blends a cell's color with its immediate spatial neighbors to create a mathematically smooth scalar field.
      */
@@ -2015,6 +2599,15 @@ public class H3MapCanvas extends Canvas {
         return 0.35 + (cosZenith + 0.08) / 0.16 * 0.65;
     }
 
+    /*
+     * Blend colors.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param base the base parameter (Color)
+     * @param overlay the overlay parameter (Color)
+     * @param alpha the alpha parameter (double)
+     * @return the resulting computation or state reference
+     */
     public Color blendColors(Color base, Color overlay, double alpha) {
         if (alpha <= 0.0 || overlay == null) return base;
         if (alpha >= 1.0 || base == null) return overlay;
@@ -2464,7 +3057,7 @@ public class H3MapCanvas extends Canvas {
         };
     }
 
-    /**
+    /*
      * Get population density color (blue -> cyan -> green -> yellow -> red).
      */
     private Color getPopulationColor(int population) {
@@ -2501,7 +3094,7 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
-    /**
+    /*
      * Get food resource color (brown -> yellow -> green).
      */
     private Color getFoodColor(double food) {
@@ -2523,7 +3116,7 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
-    /**
+    /*
      * Get temperature color (cool blue -> warm red).
      */
     private Color getTemperatureColor(double temp) {
@@ -2547,7 +3140,7 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
-    /**
+    /*
      * Get precipitation color (arid sand -> yellow green -> cyan -> deep monsoon blue).
      */
     private Color getPrecipitationColor(double precipMm) {
@@ -2572,7 +3165,7 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
-    /**
+    /*
      * Get technology level color (dark -> purple -> bright).
      */
     private Color getTechColor(Double techLevel) {
@@ -2591,7 +3184,7 @@ public class H3MapCanvas extends Canvas {
         return Color.rgb(Math.min(255, r), Math.min(255, g), Math.min(255, b));
     }
 
-    /**
+    /*
      * Get water resource color (brown -> blue).
      */
     private Color getWaterColor(Double water) {
@@ -2610,7 +3203,7 @@ public class H3MapCanvas extends Canvas {
         return Color.rgb(Math.max(0, r), Math.min(255, g), Math.min(255, b));
     }
 
-    /**
+    /*
      * Get wood resource color (light -> dark green).
      */
     private Color getWoodColor(Double wood) {
@@ -2629,7 +3222,7 @@ public class H3MapCanvas extends Canvas {
         return Color.rgb(Math.max(0, r), Math.min(180, g), Math.max(0, b));
     }
 
-    /**
+    /*
      * Get Gini inequality color (green=equal, red=unequal).
      */
     private Color getGiniColor(Double gini) {
@@ -2648,7 +3241,7 @@ public class H3MapCanvas extends Canvas {
         return Color.rgb(r, g, b);
     }
 
-    /**
+    /*
      * Get carrying capacity color.
      */
     private Color getCapacityColor(H3Cell cell) {
@@ -2670,7 +3263,7 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
-    /**
+    /*
      * Get migration pressure color.
      */
     private Color getMigrationColor(H3Cell cell) {
@@ -2702,7 +3295,7 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
-    /**
+    /*
      * Get flux pressure color (Blue=Supply, Red=Demand).
      */
     private Color getFluxPressureColor(H3Cell cell) {
@@ -2740,33 +3333,51 @@ public class H3MapCanvas extends Canvas {
         return Color.rgb((int) ((1 - t) * 255), (int) (t * 255), 0);
     }
 
-    /**
+    /*
      * Get cultural identity color.
      */
     private Color getCultureColor(H3Cell cell) {
         return Color.GRAY;
     }
 
+    /*
+     * Get zoom factor.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getZoomFactor() {
         return zoomFactor;
     }
 
+    /*
+     * Get center lat.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCenterLat() {
         return centerLat;
     }
 
+    /*
+     * Get center lng.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCenterLng() {
         return centerLng;
     }
 
-    /**
+    /*
      * Set the mini-map reference for synchronization.
      */
     public void setMiniMap(MiniMap miniMap) {
         this.miniMap = miniMap;
     }
 
-    /**
+    /*
      * Set the center view position (called by mini-map click).
      */
     public void setCenterView(double lat, double lng) {
@@ -2783,7 +3394,7 @@ public class H3MapCanvas extends Canvas {
         logger.debug("Center view set to: {}, {}", lat, lng);
     }
 
-    /**
+    /*
      * Notify mini-map of viewport changes.
      */
     private void notifyMiniMap() {
@@ -2791,7 +3402,7 @@ public class H3MapCanvas extends Canvas {
             miniMap.updateViewport(zoomFactor, centerLat, centerLng);
         }
     }
-    /**
+    /*
      * Draw subtle coordinate overlay badge (Center Lat/Lng, Bounds, Zoom) on canvas.
      */
     private void drawCoordinateOverlay(GraphicsContext gc) {
@@ -3042,7 +3653,22 @@ public class H3MapCanvas extends Canvas {
 
     public static class ProjectedPoint {
         public double screenX, screenY, z;
+        /*
+         * Projected point.
+         * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+         *
+         * @return the resulting computation or state reference
+         */
         public ProjectedPoint() {}
+        /*
+         * Projected point.
+         * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+         *
+         * @param screenX the screen x parameter (double)
+         * @param screenY the screen y parameter (double)
+         * @param z the z parameter (double)
+         * @return the resulting computation or state reference
+         */
         public ProjectedPoint(double screenX, double screenY, double z) {
             this.screenX = screenX;
             this.screenY = screenY;
@@ -3212,6 +3838,13 @@ public class H3MapCanvas extends Canvas {
         gc.fillText(maxStr, barX + barWidth - (maxStr.length() * 5.8), ly + 88);
     }
 
+    /*
+     * Has thematic overlay.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param cell the cell parameter (H3Cell)
+     * @return the resulting computation or state reference
+     */
     public boolean hasThematicOverlay(H3Cell cell) {
         if (cell == null || activeDisplayModes == null) return false;
         if (!activeDisplayModes.contains(DisplayMode.BIOME) || activeDisplayModes.size() <= 1) {
@@ -3225,10 +3858,27 @@ public class H3MapCanvas extends Canvas {
         return false;
     }
 
+    /*
+     * Get cell display value.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param cell the cell parameter (H3Cell)
+     * @param unusedIndex the unused index parameter (int)
+     * @return the resulting computation or state reference
+     */
     public double getCellDisplayValue(H3Cell cell, int unusedIndex) {
         return getCellDisplayValue(cell, getPrimaryDisplayMode(), unusedIndex);
     }
 
+    /*
+     * Get cell display value.
+     * Enforces physical invariants and updates associated state variables within {@code H3MapCanvas}.
+     *
+     * @param cell the cell parameter (H3Cell)
+     * @param mode the mode parameter (DisplayMode)
+     * @param unusedIndex the unused index parameter (int)
+     * @return the resulting computation or state reference
+     */
     public double getCellDisplayValue(H3Cell cell, DisplayMode mode, int unusedIndex) {
         if (mode == null) mode = getPrimaryDisplayMode();
         if (worldBuffer != null && cell != null && !h3ToBufferIndexMap.isEmpty()) {

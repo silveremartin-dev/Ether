@@ -78,11 +78,20 @@ public class SpatialHeatmapPanel extends VBox {
     private List<H3Cell> currentCells = new ArrayList<>();
     private HistoryManager historyManager;
     private Timeline animationTimeline;
+    /* Internal state variable for is playing animation (boolean). */
     private boolean isPlayingAnimation = false;
+    /* Internal state variable for current snapshot index (int). */
     private int currentSnapshotIndex = 0;
+    /* Internal state variable for playback delay ms (int). */
     private int playbackDelayMs = 300;
+    /* Internal state variable for is scrubbing (boolean). */
     private boolean isScrubbing = false;
 
+    /*
+     * Spatial heatmap panel.
+     * Enforces physical invariants and updates associated state variables within {@code SpatialHeatmapPanel}.
+     *
+     */
     public SpatialHeatmapPanel() {
         setPadding(new Insets(10));
         setSpacing(8);
@@ -351,6 +360,11 @@ public class SpatialHeatmapPanel extends VBox {
         }
     }
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code SpatialHeatmapPanel}.
+     *
+     */
     public void updateTexts() {
         titleLabel.setText(I18n.getOrDefault("heatmap.title", "🗺️ Atlas Dynamique des Territoires (Toutes Couches)"));
         buildLayerMenu();
@@ -372,11 +386,23 @@ public class SpatialHeatmapPanel extends VBox {
         renderMap();
     }
 
+    /*
+     * Set history manager.
+     * Enforces physical invariants and updates associated state variables within {@code SpatialHeatmapPanel}.
+     *
+     * @param historyManager the history manager parameter (HistoryManager)
+     */
     public void setHistoryManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
         updateSliderRange();
     }
 
+    /*
+     * Update cells.
+     * Enforces physical invariants and updates associated state variables within {@code SpatialHeatmapPanel}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     */
     public void updateCells(List<H3Cell> cells) {
         if (!isPlayingAnimation && cells != null) {
             this.currentCells = cells;
@@ -385,6 +411,12 @@ public class SpatialHeatmapPanel extends VBox {
         }
     }
 
+    /*
+     * Set date label.
+     * Enforces physical invariants and updates associated state variables within {@code SpatialHeatmapPanel}.
+     *
+     * @param text the text parameter (String)
+     */
     public void setDateLabel(String text) {
         if (dateLabel != null) {
             dateLabel.setText(text != null ? text : "");

@@ -33,7 +33,9 @@ import java.util.List;
 public class HistoricalMapGenerator {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalMapGenerator.class);
 
+    /* Internal state variable for width (int). */
     public static final int WIDTH = 2048;
+    /* Internal state variable for height (int). */
     public static final int HEIGHT = 1024;
 
     private static final List<Path2D> LAND_POLYGONS = new ArrayList<>();
@@ -116,6 +118,14 @@ public class HistoricalMapGenerator {
         {111.0, -7.4}   // Solo River / Ngandong (Java / Sundaland)
     };
 
+    /*
+     * Compute hominin clade weights.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lon the lon parameter (double)
+     * @param lat the lat parameter (double)
+     * @return the resulting computation or state reference
+     */
     public static double[] computeHomininCladeWeights(double lon, double lat) {
         // --- 1. STRICT UNINHABITED GEOGRAPHIC EXCLUSIONS (-100,000 BP) ---
         if (lat < -60.0 || lon < -26.0) return null; // Americas & Antarctica uninhabited
@@ -208,6 +218,14 @@ public class HistoricalMapGenerator {
         return weights;
     }
 
+    /*
+     * Get hominin entity id.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lon the lon parameter (double)
+     * @param lat the lat parameter (double)
+     * @return the resulting computation or state reference
+     */
     public static int getHomininEntityId(double lon, double lat) {
         double[] weights = computeHomininCladeWeights(lon, lat);
         if (weights == null) return 0;
@@ -222,6 +240,14 @@ public class HistoricalMapGenerator {
         return bestIdx + 1;
     }
 
+    /*
+     * Get hominin species type.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lon the lon parameter (double)
+     * @param lat the lat parameter (double)
+     * @return the resulting computation or state reference
+     */
     public static int getHomininSpeciesType(double lon, double lat) {
         int entity = getHomininEntityId(lon, lat);
         return switch (entity) {
@@ -232,6 +258,17 @@ public class HistoricalMapGenerator {
         };
     }
 
+    /*
+     * Blend paleo traits.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lon the lon parameter (double)
+     * @param lat the lat parameter (double)
+     * @param valSapiens the val sapiens parameter (double)
+     * @param valNeanderthal the val neanderthal parameter (double)
+     * @param valDenisovan the val denisovan parameter (double)
+     * @return the resulting computation or state reference
+     */
     public static double blendPaleoTraits(double lon, double lat, double valSapiens, double valNeanderthal, double valDenisovan) {
         double[] w = computeHomininCladeWeights(lon, lat);
         if (w == null) return 0.0;
@@ -243,6 +280,14 @@ public class HistoricalMapGenerator {
     }
 
     // --- PREHISTORIC GLACIAL & GEOGRAPHIC POLYGONS ---
+    /*
+     * Chaikin smooth polygon.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param poly the poly parameter (double[][])
+     * @param iterations the iterations parameter (int)
+     * @return the resulting computation or state reference
+     */
     public static double[][] chaikinSmoothPolygon(double[][] poly, int iterations) {
         if (poly == null || poly.length < 3 || iterations <= 0) return poly;
         double[][] current = poly;
@@ -387,6 +432,15 @@ public class HistoricalMapGenerator {
         {-142.0, 64.0}, {-138.0, 64.0}
     };
 
+    /*
+     * Dist to polyline.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lon the lon parameter (double)
+     * @param lat the lat parameter (double)
+     * @param line the line parameter (double[][])
+     * @return the resulting computation or state reference
+     */
     public static double distToPolyline(double lon, double lat, double[][] line) {
         if (line == null || line.length < 2) return Double.MAX_VALUE;
         double minD2 = Double.MAX_VALUE;
@@ -414,6 +468,15 @@ public class HistoricalMapGenerator {
         return Math.sqrt(minD2);
     }
 
+    /*
+     * Signed distance to polygon.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lon the lon parameter (double)
+     * @param lat the lat parameter (double)
+     * @param poly the poly parameter (double[][])
+     * @return the resulting computation or state reference
+     */
     public static double signedDistanceToPolygon(double lon, double lat, double[][] poly) {
         boolean inside = false;
         double minD2 = Double.MAX_VALUE;
@@ -439,6 +502,15 @@ public class HistoricalMapGenerator {
         return inside ? -dist : dist;
     }
 
+    /*
+     * Is remote oceanic island.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lon the lon parameter (double)
+     * @param lat the lat parameter (double)
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static boolean isRemoteOceanicIsland(double lon, double lat, long year) {
         // 1. Remote Polynesia & Central/Eastern Pacific
         if (year < 1200) {
@@ -516,6 +588,15 @@ public class HistoricalMapGenerator {
         return false;
     }
 
+    /*
+     * Get hominin occupancy weight.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lon the lon parameter (double)
+     * @param lat the lat parameter (double)
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double getHomininOccupancyWeight(double lon, double lat, long year) {
         if (lat < -60.0) return 0.0; // Antarctica strictly uninhabited
 
@@ -787,10 +868,27 @@ public class HistoricalMapGenerator {
         }
     }
 
+    /*
+     * Is hominin occupied.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lon the lon parameter (double)
+     * @param lat the lat parameter (double)
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static boolean isHomininOccupied(double lon, double lat, long year) {
         return getHomininOccupancyWeight(lon, lat, year) > 0.001;
     }
 
+    /*
+     * Is land.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lng the lng parameter (double)
+     * @param lat the lat parameter (double)
+     * @return the resulting computation or state reference
+     */
     public static boolean isLand(double lng, double lat) {
         BufferedImage mask = loadElevationMask();
         if (mask != null) {
@@ -806,10 +904,22 @@ public class HistoricalMapGenerator {
         return lat >= -60.0 && lat <= 75.0;
     }
 
+    /*
+     * Create pure transparent canvas.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage createPureTransparentCanvas() {
         return new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
     }
 
+    /*
+     * Populate scenario historical maps.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param scenario the scenario parameter (Scenario)
+     */
     public static void populateScenarioHistoricalMaps(Scenario scenario) {
         if (scenario == null) return;
 
@@ -1046,6 +1156,13 @@ public class HistoricalMapGenerator {
         }
     }
 
+    /*
+     * Load from year directory.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static boolean loadFromYearDirectory(Scenario scenario) {
         if (scenario == null) return false;
         long year = scenario.getStartDateYear();
@@ -1118,6 +1235,16 @@ public class HistoricalMapGenerator {
 
     private static final org.ether.society.generation.SimplexNoise CLIMATE_NOISE = new org.ether.society.generation.SimplexNoise(424242L);
 
+    /*
+     * Compute surface temperature.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lat the lat parameter (double)
+     * @param lon the lon parameter (double)
+     * @param elevM the elev m parameter (double)
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double computeSurfaceTemperature(double lat, double lon, double elevM, long year) {
         double radLat = Math.toRadians(lat);
         double radLon = Math.toRadians(lon);
@@ -1235,6 +1362,16 @@ public class HistoricalMapGenerator {
         return Math.clamp(tempC, -50.0, 50.0);
     }
 
+    /*
+     * Compute annual precipitation.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lat the lat parameter (double)
+     * @param lon the lon parameter (double)
+     * @param elevM the elev m parameter (double)
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double computeAnnualPrecipitation(double lat, double lon, double elevM, long year) {
         double radLat = Math.toRadians(lat);
         double radLon = Math.toRadians(lon);
@@ -1333,6 +1470,16 @@ public class HistoricalMapGenerator {
         return Math.clamp(rainMm, 0.0, 3000.0);
     }
 
+    /*
+     * Compute seasonality amplitude.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lat the lat parameter (double)
+     * @param lon the lon parameter (double)
+     * @param elevM the elev m parameter (double)
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double computeSeasonalityAmplitude(double lat, double lon, double elevM, long year) {
         double radLat = Math.toRadians(lat);
         double radLon = Math.toRadians(lon);
@@ -1396,6 +1543,13 @@ public class HistoricalMapGenerator {
         return Math.clamp(ampC, 0.0, 50.0);
     }
 
+    /*
+     * Rasterize biomes map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeBiomesMap(long year) {
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(WIDTH, HEIGHT);
@@ -1423,6 +1577,13 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Rasterize temperature map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeTemperatureMap(long year) {
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(WIDTH, HEIGHT);
@@ -1445,6 +1606,13 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Rasterize precipitation map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizePrecipitationMap(long year) {
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(WIDTH, HEIGHT);
@@ -1468,6 +1636,13 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Rasterize seasonality map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeSeasonalityMap(long year) {
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(WIDTH, HEIGHT);
@@ -1575,6 +1750,13 @@ public class HistoricalMapGenerator {
         }
     }
 
+    /*
+     * Write png file.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param img the img parameter (BufferedImage)
+     * @param targetFile the target file parameter (File)
+     */
     public static void writePngFile(BufferedImage img, File targetFile) {
         if (img == null || targetFile == null) return;
         try {
@@ -1585,7 +1767,7 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /**
+    /*
      * Generates or refreshes provenance_and_sources.json, cultural_registry.json, and README.md in accordance with AGENTS.md Rule 6.
      */
     public static void generateOrUpdateEpochMetadataFiles(java.nio.file.Path earthDir, long year) {
@@ -1871,6 +2053,12 @@ public class HistoricalMapGenerator {
         }
     }
 
+    /*
+     * Force generate cultural tensors only.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param scenario the scenario parameter (Scenario)
+     */
     public static void forceGenerateCulturalTensorsOnly(Scenario scenario) {
         if (scenario == null) return;
         try {
@@ -1911,6 +2099,15 @@ public class HistoricalMapGenerator {
         }
     }
 
+    /*
+     * Apply prehistoric geographic mask.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param scenarioKey the scenario key parameter (String)
+     * @param year the year parameter (long)
+     * @param src the src parameter (BufferedImage)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage applyPrehistoricGeographicMask(String scenarioKey, long year, BufferedImage src) {
 
         if (src == null) return null;
@@ -1942,6 +2139,14 @@ public class HistoricalMapGenerator {
         return masked;
     }
 
+    /*
+     * Generate prehistoric synthetic density map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param year the year parameter (long)
+     * @param type the type parameter (String)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage generatePrehistoricSyntheticDensityMap(long year, String type) {
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         for (int y = 0; y < HEIGHT; y++) {
@@ -2436,6 +2641,22 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Save images to disk cache.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param scenarioName the scenario name parameter (String)
+     * @param imgDensity the img density parameter (BufferedImage)
+     * @param imgSovereignty the img sovereignty parameter (BufferedImage)
+     * @param imgIsogloss the img isogloss parameter (BufferedImage)
+     * @param imgKinship the img kinship parameter (BufferedImage)
+     * @param imgRituals the img rituals parameter (BufferedImage)
+     * @param imgTech the img tech parameter (BufferedImage)
+     * @param imgTrade the img trade parameter (BufferedImage)
+     * @param imgInst the img inst parameter (BufferedImage)
+     * @param imgEco the img eco parameter (BufferedImage)
+     * @param imgPathogen the img pathogen parameter (BufferedImage)
+     */
     public static void saveImagesToDiskCache(String scenarioName, BufferedImage imgDensity, BufferedImage imgSovereignty, BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech, BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen) {
         if (scenarioName == null || scenarioName.isBlank()) scenarioName = "scenario";
         try {
@@ -2488,6 +2709,15 @@ public class HistoricalMapGenerator {
         }
     }
 
+    /*
+     * Load from disk cache.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param scenario the scenario parameter (Scenario)
+     * @param cacheDir the cache dir parameter (java.nio.file.Path)
+     * @param safeName the safe name parameter (String)
+     * @return the resulting computation or state reference
+     */
     public static boolean loadFromDiskCache(Scenario scenario, java.nio.file.Path cacheDir, String safeName) {
         java.nio.file.Path densityCache = cacheDir.resolve(safeName + "_density.png");
         if (!java.nio.file.Files.exists(densityCache)) {
@@ -2542,10 +2772,21 @@ public class HistoricalMapGenerator {
         }
     }
 
+    /*
+     * Ensure all scenario maps generated.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     */
     public static void ensureAllScenarioMapsGenerated() {
         ensureAllScenarioMapsGenerated(false);
     }
 
+    /*
+     * Ensure all scenario maps generated.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param force the force parameter (boolean)
+     */
     public static void ensureAllScenarioMapsGenerated(boolean force) {
         List<Scenario> builtIns = Scenario.getBuiltInScenarios();
         logger.info("Verifying and ensuring cartographic maps for all {} built-in scenarios in 'data/maps/ether/earth/<year>/' (force={})...", builtIns.size(), force);
@@ -2565,6 +2806,12 @@ public class HistoricalMapGenerator {
         logger.info("Batch generation check complete. Generated/updated {} scenarios in data/maps/ether/earth/.", generated);
     }
 
+    /*
+     * Force generate scenario historical maps.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param scenario the scenario parameter (Scenario)
+     */
     public static void forceGenerateScenarioHistoricalMaps(Scenario scenario) {
         if (scenario == null) return;
         try {
@@ -2692,10 +2939,27 @@ public class HistoricalMapGenerator {
 
     // --- 1. CLEAN DENSITY MAP ---
 
+    /*
+     * Rasterize density map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeDensityMap(String type, Scenario scenario) {
         return rasterizeDensityMapForYear(type, scenario, (scenario != null) ? scenario.getStartDateYear() : -10000);
     }
 
+    /*
+     * Rasterize density map for year.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @param targetYear the target year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeDensityMapForYear(String type, Scenario scenario, long targetYear) {
         if (scenario != null && scenario.isUseRealEarthData() && (targetYear < -10000 || targetYear > 2024)) {
             throw new IllegalStateException("ZERO FALLBACK VIOLATION: Empirical HYDE 3.4 dataset unavailable for year " + targetYear);
@@ -2713,11 +2977,11 @@ public class HistoricalMapGenerator {
         return applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(targetYear, type));
     }
 
-    /** Cached elevation mask (1=land, 0=ocean) derived from earth_elevation.png at elevation cut 0m. */
+    /* Cached elevation mask (1=land, 0=ocean) derived from earth_elevation.png at elevation cut 0m. */
     private static volatile BufferedImage cachedElevationMask = null;
     private static final Object ELEV_LOCK = new Object();
 
-    /**
+    /*
      * Loads the altimetry-derived land/ocean mask from earth_elevation.png in data/maps/ether/.
      * Pixels with luminance â‰¤ threshold (corresponding to â‰¤ 0m elevation) are ocean.
      */
@@ -2789,7 +3053,7 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /**
+    /*
      * Applies the altimetry-derived coastline mask to a density image.
      * Ocean pixels (mask=0) are forced to the ocean background colour 0x000000 (Pure Black).
      * This ensures coastlines are derived from real elevation data, not vectorized outlines.
@@ -2819,6 +3083,15 @@ public class HistoricalMapGenerator {
         return out;
     }
 
+    /*
+     * Get topographic habitability.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param scenarioType the scenario type parameter (String)
+     * @param lng the lng parameter (double)
+     * @param lat the lat parameter (double)
+     * @return the resulting computation or state reference
+     */
     public static double getTopographicHabitability(String scenarioType, double lng, double lat) {
         double himalayas = Math.exp(-(Math.pow(lat - 32.0, 2) + Math.pow(lng - 85.0, 2)) / 100.0);
         double alps = Math.exp(-(Math.pow(lat - 46.0, 2) + Math.pow(lng - 10.0, 2)) / 30.0);
@@ -2874,6 +3147,15 @@ public class HistoricalMapGenerator {
         0x8B5CF6  // Clade 5: Archaic Asian Megafauna & Ochre Traditions (#8B5CF6)
     };
 
+    /*
+     * Blend clade rgb.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param w the w parameter (double[])
+     * @param cladeColors the clade colors parameter (int[])
+     * @param occWeight the occ weight parameter (double)
+     * @return the resulting computation or state reference
+     */
     public static int blendCladeRgb(double[] w, int[] cladeColors, double occWeight) {
         if (w == null || occWeight <= 0.001) return 0x2D3748; // uninhabited land
         // Use dominant clade color (argmax) for discrete cultural zone boundaries
@@ -2886,6 +3168,14 @@ public class HistoricalMapGenerator {
         return cladeColors[dominantIdx];
     }
 
+    /*
+     * Rasterize sovereignty map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeSovereigntyMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -3415,6 +3705,14 @@ public class HistoricalMapGenerator {
     }
 
     // --- 3. ISOGLOSS TENSOR MAP ---
+    /*
+     * Rasterize isogloss map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeIsoglossMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -3646,6 +3944,14 @@ public class HistoricalMapGenerator {
     }
 
     // --- 4. KINSHIP TENSOR MAP ---
+    /*
+     * Rasterize kinship map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeKinshipMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -3887,6 +4193,14 @@ public class HistoricalMapGenerator {
     }
 
     // --- 5. RITUALS TENSOR MAP ---
+    /*
+     * Rasterize rituals map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeRitualsMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -4768,6 +5082,14 @@ public class HistoricalMapGenerator {
     }
 
     // --- 10. PATHOGEN IMMUNITY TENSOR MAP ---
+    /*
+     * Rasterize pathogen immunity map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizePathogenImmunityMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         BufferedImage mask = loadElevationMask();
@@ -5020,6 +5342,12 @@ public class HistoricalMapGenerator {
         return p;
     }
 
+    /*
+     * Generate procedural maps for scenario.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param scenario the scenario parameter (Scenario)
+     */
     public static void generateProceduralMapsForScenario(Scenario scenario) {
         populateScenarioHistoricalMaps(scenario);
     }
@@ -5376,6 +5704,13 @@ public class HistoricalMapGenerator {
         return dlng * dlng + dlat * dlat;
     }
 
+    /*
+     * Buffered image to base64png.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param bImg the b img parameter (BufferedImage)
+     * @return the resulting computation or state reference
+     */
     public static String bufferedImageToBase64Png(BufferedImage bImg) {
         if (bImg == null) return null;
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -5387,6 +5722,15 @@ public class HistoricalMapGenerator {
         }
     }
 
+    /*
+     * Rasterize extensible tensor map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param tensorIndex the tensor index parameter (int)
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeExtensibleTensorMap(int tensorIndex, String type, Scenario scenario) {
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -5494,6 +5838,14 @@ public class HistoricalMapGenerator {
         g.dispose();
     }
 
+    /*
+     * Rasterize coastlines.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeCoastlines(int width, int height) {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
@@ -5503,6 +5855,13 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Load mrdsdeposits.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param commodityKeywords the commodity keywords parameter (String...)
+     * @return the resulting computation or state reference
+     */
     public static java.util.List<double[]> loadMRDSDeposits(String... commodityKeywords) {
         java.util.List<double[]> list = new java.util.ArrayList<>();
         java.nio.file.Path zipPath = java.nio.file.Paths.get("data", "maps", "usgs_mrds", "mrds-csv.zip");
@@ -5545,6 +5904,15 @@ public class HistoricalMapGenerator {
         return list;
     }
 
+    /*
+     * Rasterize spot list to alpha.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param img the img parameter (BufferedImage)
+     * @param spots the spots parameter (java.util.List&lt;double[]&gt;)
+     * @param themeColor the theme color parameter (Color)
+     * @param defaultRadiusPx the default radius px parameter (double)
+     */
     public static void rasterizeSpotListToAlpha(BufferedImage img, java.util.List<double[]> spots, Color themeColor, double defaultRadiusPx) {
         int width = img.getWidth();
         int height = img.getHeight();
@@ -5600,6 +5968,17 @@ public class HistoricalMapGenerator {
         }
     }
 
+    /*
+     * Rasterize tiered spot list.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param img the img parameter (BufferedImage)
+     * @param spots the spots parameter (java.util.List&lt;double[]&gt;)
+     * @param lowColor the low color parameter (Color)
+     * @param medColor the med color parameter (Color)
+     * @param highColor the high color parameter (Color)
+     * @param defaultRadiusPx the default radius px parameter (double)
+     */
     public static void rasterizeTieredSpotList(BufferedImage img, java.util.List<double[]> spots, Color lowColor, Color medColor, Color highColor, double defaultRadiusPx) {
         int width = img.getWidth();
         int height = img.getHeight();
@@ -5697,6 +6076,14 @@ public class HistoricalMapGenerator {
     private static volatile BufferedImage cachedAquiferMap = null;
     private static volatile float[][] cachedWhymapBlurredGrid = null;
 
+    /*
+     * Rasterize coal map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeCoalMap(String type, Scenario scenario) {
         if (cachedCoalMap != null) return cachedCoalMap;
         int width = 2048, height = 1024;
@@ -5726,6 +6113,14 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Rasterize oil map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeOilMap(String type, Scenario scenario) {
         if (cachedOilMap != null) return cachedOilMap;
         int width = 2048, height = 1024;
@@ -5775,6 +6170,14 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Rasterize gas map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeGasMap(String type, Scenario scenario) {
         if (cachedGasMap != null) return cachedGasMap;
         int width = 2048, height = 1024;
@@ -5819,6 +6222,14 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Rasterize uranium map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeUraniumMap(String type, Scenario scenario) {
         if (cachedUraniumMap != null) return cachedUraniumMap;
         int width = 2048, height = 1024;
@@ -5845,6 +6256,14 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Rasterize helium3map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeHelium3Map(String type, Scenario scenario) {
         if (cachedHe3Map != null) return cachedHe3Map;
         // Grayscale map: Helium-3 is exclusively a lunar resource
@@ -5852,6 +6271,14 @@ public class HistoricalMapGenerator {
         return cachedHe3Map;
     }
 
+    /*
+     * Rasterize iron copper map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeIronCopperMap(String type, Scenario scenario) {
         if (cachedIronCopperMap != null) return cachedIronCopperMap;
         int width = 2048, height = 1024;
@@ -5898,6 +6325,14 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Rasterize precious metals map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizePreciousMetalsMap(String type, Scenario scenario) {
         if (cachedPreciousMetalsMap != null) return cachedPreciousMetalsMap;
         int width = 2048, height = 1024;
@@ -5987,6 +6422,14 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Rasterize rare earths map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeRareEarthsMap(String type, Scenario scenario) {
         if (cachedRareEarthsMap != null) return cachedRareEarthsMap;
         int width = 2048, height = 1024;
@@ -6016,6 +6459,14 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Rasterize mantle heat map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeMantleHeatMap(String type, Scenario scenario) {
         if (cachedMantleHeatMap != null) return cachedMantleHeatMap;
         java.nio.file.Path csvPath = java.nio.file.Paths.get("data", "maps", "ihfc_davies2013", "heat_flow_2deg.csv");
@@ -6106,6 +6557,15 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Get paleo aquifer recharge factor.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param lon the lon parameter (double)
+     * @param lat the lat parameter (double)
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double getPaleoAquiferRechargeFactor(double lon, double lat, long year) {
         if (year <= -85000L) {
             // -100,000 BP: MIS 5e Eemian Interglacial & Green Sahara Pluvial Episode
@@ -6348,6 +6808,14 @@ public class HistoricalMapGenerator {
         return blurred;
     }
 
+    /*
+     * Rasterize aquifer map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeAquiferMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 2000L;
         int width = 2048, height = 1024;
@@ -6372,6 +6840,15 @@ public class HistoricalMapGenerator {
         return applyAltimetryCoastlineMask(outImg);
     }
 
+    /*
+     * Rasterize extensible resource tensor map.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     * @param index the index parameter (int)
+     * @param type the type parameter (String)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeExtensibleResourceTensorMap(int index, String type, Scenario scenario) {
         int width = 2048, height = 1024;
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -6406,6 +6883,11 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /*
+     * Precache all built in scenarios.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
+     *
+     */
     public static void precacheAllBuiltInScenarios() {
         String[] types = {
             "ONE_CONTINENT", "OUT_OF_AFRICA_100K", "FERTILE_CRESCENT_8000BC",

@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class MegafaunaIngestor {
     private static final Logger logger = LoggerFactory.getLogger(MegafaunaIngestor.class);
 
-    /**
+    /*
      * Returns megafauna biomass multiplier for a geographic coordinate and year.
      */
     public static double getMegafaunaBiomassFactor(double lng, double lat, long year) {

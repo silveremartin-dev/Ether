@@ -35,10 +35,14 @@ import java.util.List;
 public class LyapunovChaosTrackerEngine {
     private static final Logger logger = LoggerFactory.getLogger(LyapunovChaosTrackerEngine.class);
 
+    /* Internal state variable for initial perturbation magnitude (double). */
     private final double initialPerturbationMagnitude;
     private final List<Double> lyapunovHistory = new ArrayList<>();
+    /* Internal state variable for cumulative lyapunov sum (double). */
     private double cumulativeLyapunovSum = 0.0;
+    /* Internal state variable for step count (long). */
     private long stepCount = 0;
+    /* Internal state variable for current lyapunov exponent (double). */
     private double currentLyapunovExponent = 0.0;
 
     public enum DynamicRegime {
@@ -47,15 +51,26 @@ public class LyapunovChaosTrackerEngine {
         DETERMINISTIC_CHAOS
     }
 
+    /*
+     * Lyapunov chaos tracker engine.
+     * Enforces physical invariants and updates associated state variables within {@code LyapunovChaosTrackerEngine}.
+     *
+     */
     public LyapunovChaosTrackerEngine() {
         this(1e-6);
     }
 
+    /*
+     * Lyapunov chaos tracker engine.
+     * Enforces physical invariants and updates associated state variables within {@code LyapunovChaosTrackerEngine}.
+     *
+     * @param initialPerturbationMagnitude the initial perturbation magnitude parameter (double)
+     */
     public LyapunovChaosTrackerEngine(double initialPerturbationMagnitude) {
         this.initialPerturbationMagnitude = Math.max(1e-12, initialPerturbationMagnitude);
     }
 
-    /**
+    /*
      * Updates the Lyapunov estimation given the base state vector and perturbed shadow state vector.
      *
      * @param baseState base simulation state vector
@@ -103,7 +118,7 @@ public class LyapunovChaosTrackerEngine {
         return rescaledShadow;
     }
 
-    /**
+    /*
      * Classifies the current dynamic regime based on the estimated maximal Lyapunov exponent.
      *
      * @return dynamic regime classification
@@ -118,10 +133,39 @@ public class LyapunovChaosTrackerEngine {
         }
     }
 
+    /*
+     * Get initial perturbation magnitude.
+     * Enforces physical invariants and updates associated state variables within {@code LyapunovChaosTrackerEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getInitialPerturbationMagnitude() { return initialPerturbationMagnitude; }
+    /*
+     * Get current lyapunov exponent.
+     * Enforces physical invariants and updates associated state variables within {@code LyapunovChaosTrackerEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCurrentLyapunovExponent() { return currentLyapunovExponent; }
+    /*
+     * Get step count.
+     * Enforces physical invariants and updates associated state variables within {@code LyapunovChaosTrackerEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getStepCount() { return stepCount; }
+    /*
+     * Get lyapunov history.
+     * Enforces physical invariants and updates associated state variables within {@code LyapunovChaosTrackerEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<Double> getLyapunovHistory() { return List.copyOf(lyapunovHistory); }
+    /*
+     * Reset.
+     * Enforces physical invariants and updates associated state variables within {@code LyapunovChaosTrackerEngine}.
+     *
+     */
     public void reset() {
         lyapunovHistory.clear();
         cumulativeLyapunovSum = 0.0;

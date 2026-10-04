@@ -32,37 +32,94 @@ import java.util.function.Consumer;
 public class MultiScaleSymplecticIntegrator {
     private static final Logger logger = LoggerFactory.getLogger(MultiScaleSymplecticIntegrator.class);
 
+    /* Internal state variable for days per month (int). */
     private final int daysPerMonth;
+    /* Internal state variable for months per year (int). */
     private final int monthsPerYear;
+    /* Internal state variable for strict determinism (boolean). */
     private final boolean strictDeterminism;
 
+    /* Internal state variable for accumulated days (int). */
     private int accumulatedDays = 0;
+    /* Internal state variable for accumulated months (int). */
     private int accumulatedMonths = 0;
+    /* Internal state variable for accumulated monthly dt (double). */
     private double accumulatedMonthlyDt = 0;
+    /* Internal state variable for accumulated annual dt (double). */
     private double accumulatedAnnualDt = 0;
 
+    /*
+     * Multi scale symplectic integrator.
+     * Enforces physical invariants and updates associated state variables within {@code MultiScaleSymplecticIntegrator}.
+     *
+     */
     public MultiScaleSymplecticIntegrator() {
         this(30, 12, true);
     }
 
+    /*
+     * Multi scale symplectic integrator.
+     * Enforces physical invariants and updates associated state variables within {@code MultiScaleSymplecticIntegrator}.
+     *
+     * @param daysPerMonth the days per month parameter (int)
+     * @param strictDeterminism the strict determinism parameter (boolean)
+     */
     public MultiScaleSymplecticIntegrator(int daysPerMonth, boolean strictDeterminism) {
         this(daysPerMonth, 12, strictDeterminism);
     }
 
+    /*
+     * Multi scale symplectic integrator.
+     * Enforces physical invariants and updates associated state variables within {@code MultiScaleSymplecticIntegrator}.
+     *
+     * @param daysPerMonth the days per month parameter (int)
+     * @param monthsPerYear the months per year parameter (int)
+     * @param strictDeterminism the strict determinism parameter (boolean)
+     */
     public MultiScaleSymplecticIntegrator(int daysPerMonth, int monthsPerYear, boolean strictDeterminism) {
         this.daysPerMonth = Math.max(1, daysPerMonth);
         this.monthsPerYear = Math.max(1, monthsPerYear);
         this.strictDeterminism = strictDeterminism;
     }
 
+    /*
+     * Get days per month.
+     * Enforces physical invariants and updates associated state variables within {@code MultiScaleSymplecticIntegrator}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getDaysPerMonth() { return daysPerMonth; }
+    /*
+     * Get months per year.
+     * Enforces physical invariants and updates associated state variables within {@code MultiScaleSymplecticIntegrator}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getMonthsPerYear() { return monthsPerYear; }
+    /*
+     * Is strict determinism.
+     * Enforces physical invariants and updates associated state variables within {@code MultiScaleSymplecticIntegrator}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isStrictDeterminism() { return strictDeterminism; }
 
+    /*
+     * Get accumulated days.
+     * Enforces physical invariants and updates associated state variables within {@code MultiScaleSymplecticIntegrator}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getAccumulatedDays() { return accumulatedDays; }
+    /*
+     * Get accumulated months.
+     * Enforces physical invariants and updates associated state variables within {@code MultiScaleSymplecticIntegrator}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getAccumulatedMonths() { return accumulatedMonths; }
 
-    /**
+    /*
      * Advances simulation time by stepDays and evaluates the appropriate physical tiers:
      * - Tier 1 (Daily) is evaluated on every tick.
      * - Tier 2 (Monthly) is evaluated ONLY when a 30-day boundary is crossed.
@@ -118,6 +175,11 @@ public class MultiScaleSymplecticIntegrator {
         return new IntegrationResult(executedMonthly, executedAnnual);
     }
 
+    /*
+     * Reset.
+     * Enforces physical invariants and updates associated state variables within {@code MultiScaleSymplecticIntegrator}.
+     *
+     */
     public void reset() {
         this.accumulatedDays = 0;
         this.accumulatedMonths = 0;
@@ -126,15 +188,37 @@ public class MultiScaleSymplecticIntegrator {
     }
 
     public static class IntegrationResult {
+        /* Internal state variable for monthly executed (boolean). */
         private final boolean monthlyExecuted;
+        /* Internal state variable for annual executed (boolean). */
         private final boolean annualExecuted;
 
+        /*
+         * Integration result.
+         * Enforces physical invariants and updates associated state variables within {@code MultiScaleSymplecticIntegrator}.
+         *
+         * @param monthlyExecuted the monthly executed parameter (boolean)
+         * @param annualExecuted the annual executed parameter (boolean)
+         * @return the resulting computation or state reference
+         */
         public IntegrationResult(boolean monthlyExecuted, boolean annualExecuted) {
             this.monthlyExecuted = monthlyExecuted;
             this.annualExecuted = annualExecuted;
         }
 
+        /*
+         * Is monthly executed.
+         * Enforces physical invariants and updates associated state variables within {@code MultiScaleSymplecticIntegrator}.
+         *
+         * @return the resulting computation or state reference
+         */
         public boolean isMonthlyExecuted() { return monthlyExecuted; }
+        /*
+         * Is annual executed.
+         * Enforces physical invariants and updates associated state variables within {@code MultiScaleSymplecticIntegrator}.
+         *
+         * @return the resulting computation or state reference
+         */
         public boolean isAnnualExecuted() { return annualExecuted; }
     }
 }

@@ -24,7 +24,7 @@ import java.util.List;
 public class InfrastructureEnergyEngine {
     private static final Logger logger = LoggerFactory.getLogger(InfrastructureEnergyEngine.class);
 
-    /**
+    /*
      * Executes one infrastructure investment and friction reduction tick across cells.
      */
     public static void processInfrastructureEnergy(List<H3Cell> cells) {

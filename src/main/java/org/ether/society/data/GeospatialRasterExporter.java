@@ -41,7 +41,7 @@ public final class GeospatialRasterExporter {
 
     private GeospatialRasterExporter() {}
 
-    /**
+    /*
      * Interactive export dialog allowing the user to select their preferred format.
      */
     public static void exportRasterWithDialog(Window parentWindow,
@@ -120,7 +120,7 @@ public final class GeospatialRasterExporter {
         }
     }
 
-    /**
+    /*
      * Writes a 100% compliant Float32 GeoTIFF raster in EPSG:4326 (WGS84 / Planetary Equirectangular).
      */
     public static void writeFloat32GeoTiff(float[][] grid, File targetFile,
@@ -281,7 +281,7 @@ public final class GeospatialRasterExporter {
         buf.putInt(valueOrOffset);
     }
 
-    /**
+    /*
      * Writes a high-precision 16-bit Grayscale PNG image + ESRI World File (.tfw).
      */
     public static void write16BitPng(float[][] grid, float minVal, float maxVal, File targetPngFile) throws IOException {
@@ -306,7 +306,7 @@ public final class GeospatialRasterExporter {
         writeWorldFile(targetPngFile, width, height, -180.0, 180.0, -90.0, 90.0);
     }
 
-    /**
+    /*
      * Writes an 8-bit Grayscale PNG image + ESRI World File (.tfw).
      */
     public static void write8BitGrayscalePng(float[][] grid, float minVal, float maxVal, File targetPngFile) throws IOException {
@@ -329,7 +329,7 @@ public final class GeospatialRasterExporter {
         writeWorldFile(targetPngFile, width, height, -180.0, 180.0, -90.0, 90.0);
     }
 
-    /**
+    /*
      * Writes a full-resolution polychrome Color PNG map + ESRI World File (.tfw).
      */
     public static void writeColorPng(float[][] grid, Function<Float, Color> colorMapper,
@@ -357,7 +357,7 @@ public final class GeospatialRasterExporter {
         }
     }
 
-    /**
+    /*
      * Writes a JPEG Color map + ESRI World File (.jgw).
      */
     public static void writeColorJpg(float[][] grid, Function<Float, Color> colorMapper, File targetJpgFile) throws IOException {
@@ -381,7 +381,7 @@ public final class GeospatialRasterExporter {
         writeWorldFile(targetJpgFile, width, height, -180.0, 180.0, -90.0, 90.0);
     }
 
-    /**
+    /*
      * Writes an ESRI ASCII Grid (.asc) matrix with standard header.
      */
     public static void writeEsriAsciiGrid(float[][] grid, File targetAscFile,
@@ -409,7 +409,7 @@ public final class GeospatialRasterExporter {
         }
     }
 
-    /**
+    /*
      * Generates an ESRI World File (.tfw for PNG, .jgw for JPG) for accurate GIS alignment.
      */
     public static void writeWorldFile(File targetImageFile, int width, int height,

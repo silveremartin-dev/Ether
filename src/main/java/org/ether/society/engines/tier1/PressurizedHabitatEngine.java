@@ -27,7 +27,7 @@ import java.util.List;
 public class PressurizedHabitatEngine {
     private static final Logger logger = LoggerFactory.getLogger(PressurizedHabitatEngine.class);
 
-    /**
+    /*
      * Evaluates whether a planet's surface conditions are lethal to unprotected human life.
      */
     public static boolean isHostileEnvironment(PlanetPreset preset) {
@@ -39,7 +39,7 @@ public class PressurizedHabitatEngine {
         return pressure < 0.10 || pressure > 5.0 || o2 < 12.0 || temp < -30.0 || temp > 55.0;
     }
 
-    /**
+    /*
      * Executes one simulation tick of habitat protection, structural aging, maintenance, and mortality.
      */
     public static void processPressurizedHabitats(List<H3Cell> cells, PlanetPreset preset, double deltaYears) {
@@ -186,7 +186,7 @@ public class PressurizedHabitatEngine {
         }
     }
 
-    /**
+    /*
      * Initializes a pioneering outpost habitat on a cell according to local planetary geology.
      */
     public static void initializePioneerOutpost(H3Cell cell, PlanetPreset preset, long initialPopulation) {

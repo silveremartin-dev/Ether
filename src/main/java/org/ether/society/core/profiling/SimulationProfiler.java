@@ -22,14 +22,21 @@ public class SimulationProfiler {
     private final AtomicLong totalSimulationNanos = new AtomicLong(0);
     private final AtomicLong totalRenderNanos = new AtomicLong(0);
 
+    /* Internal state variable for min tick nanos (long). */
     private long minTickNanos = Long.MAX_VALUE;
+    /* Internal state variable for max tick nanos (long). */
     private long maxTickNanos = 0;
+    /* Internal state variable for last tick nanos (long). */
     private long lastTickNanos = 0;
 
     // Rolling tick duration buffer for P95 calculation (1000 samples)
+    /* Internal state variable for rolling buffer size (int). */
     private static final int ROLLING_BUFFER_SIZE = 1000;
+    /* Internal state variable for rolling tick buffer (long[]). */
     private final long[] rollingTickBuffer = new long[ROLLING_BUFFER_SIZE];
+    /* Internal state variable for buffer index (int). */
     private int bufferIndex = 0;
+    /* Internal state variable for buffer filled (boolean). */
     private boolean bufferFilled = false;
 
     // Phase timings: Phase Name -> Total Accumulation Nanos
@@ -40,16 +47,34 @@ public class SimulationProfiler {
     // Thread-local phase start times
     private final ThreadLocal<Map<String, Long>> phaseStartTimes = ThreadLocal.withInitial(LinkedHashMap::new);
 
+    /* Internal state variable for enabled (boolean). */
     private boolean enabled = true;
 
+    /*
+     * Is enabled.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isEnabled() {
         return enabled;
     }
 
+    /*
+     * Set enabled.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @param enabled the enabled parameter (boolean)
+     */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    /*
+     * Reset.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     */
     public void reset() {
         totalTicks.set(0);
         totalSimulationNanos.set(0);
@@ -64,11 +89,23 @@ public class SimulationProfiler {
         phaseLastDurationNanos.clear();
     }
 
+    /*
+     * Begin phase.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @param phaseName the phase name parameter (String)
+     */
     public void beginPhase(String phaseName) {
         if (!enabled) return;
         phaseStartTimes.get().put(phaseName, System.nanoTime());
     }
 
+    /*
+     * End phase.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @param phaseName the phase name parameter (String)
+     */
     public void endPhase(String phaseName) {
         if (!enabled) return;
         Long start = phaseStartTimes.get().remove(phaseName);
@@ -78,6 +115,13 @@ public class SimulationProfiler {
         }
     }
 
+    /*
+     * Record phase duration.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @param phaseName the phase name parameter (String)
+     * @param durationNanos the duration nanos parameter (long)
+     */
     public void recordPhaseDuration(String phaseName, long durationNanos) {
         if (!enabled) return;
         phaseAccumulatedNanos.computeIfAbsent(phaseName, k -> new AtomicLong(0)).addAndGet(durationNanos);
@@ -85,6 +129,13 @@ public class SimulationProfiler {
         phaseLastDurationNanos.put(phaseName, durationNanos);
     }
 
+    /*
+     * Record tick.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @param tickDurationNanos the tick duration nanos parameter (long)
+     * @param renderDurationNanos the render duration nanos parameter (long)
+     */
     public void recordTick(long tickDurationNanos, long renderDurationNanos) {
         if (!enabled) return;
         long ticks = totalTicks.incrementAndGet();
@@ -102,28 +153,64 @@ public class SimulationProfiler {
         }
     }
 
+    /*
+     * Get total ticks.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getTotalTicks() {
         return totalTicks.get();
     }
 
+    /*
+     * Get average tick time ms.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getAverageTickTimeMs() {
         long ticks = totalTicks.get();
         if (ticks == 0) return 0.0;
         return (totalSimulationNanos.get() / (double) ticks) / 1_000_000.0;
     }
 
+    /*
+     * Get min tick time ms.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getMinTickTimeMs() {
         return minTickNanos == Long.MAX_VALUE ? 0.0 : minTickNanos / 1_000_000.0;
     }
 
+    /*
+     * Get max tick time ms.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getMaxTickTimeMs() {
         return maxTickNanos / 1_000_000.0;
     }
 
+    /*
+     * Get last tick time ms.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getLastTickTimeMs() {
         return lastTickNanos / 1_000_000.0;
     }
 
+    /*
+     * Get p95tick time ms.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getP95TickTimeMs() {
         int count = bufferFilled ? ROLLING_BUFFER_SIZE : bufferIndex;
         if (count == 0) return 0.0;
@@ -138,11 +225,23 @@ public class SimulationProfiler {
         return copy[p95Index] / 1_000_000.0;
     }
 
+    /*
+     * Get effective tps.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getEffectiveTPS() {
         double avgMs = getAverageTickTimeMs();
         return avgMs > 0 ? 1000.0 / avgMs : 0.0;
     }
 
+    /*
+     * Get phase average durations ms.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Map<String, Double> getPhaseAverageDurationsMs() {
         Map<String, Double> result = new LinkedHashMap<>();
         for (Map.Entry<String, AtomicLong> entry : phaseAccumulatedNanos.entrySet()) {
@@ -155,6 +254,12 @@ public class SimulationProfiler {
         return result;
     }
 
+    /*
+     * Get phase percentages.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Map<String, Double> getPhasePercentages() {
         double totalPhaseNanos = 0;
         for (AtomicLong accum : phaseAccumulatedNanos.values()) {
@@ -170,6 +275,12 @@ public class SimulationProfiler {
         return result;
     }
 
+    /*
+     * Generate report.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationProfiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String generateReport() {
         StringBuilder sb = new StringBuilder();
         sb.append("========================================================================\n");

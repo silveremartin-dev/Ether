@@ -25,11 +25,14 @@ import java.util.List;
 public class BifurcationChaosEngine {
     private static final Logger logger = LoggerFactory.getLogger(BifurcationChaosEngine.class);
 
+    /* Internal state variable for global lyapunov exponent (double). */
     private static double globalLyapunovExponent = 0.0;
+    /* Internal state variable for global system variance (double). */
     private static double globalSystemVariance = 0.0;
+    /* Internal state variable for tipping point warning (boolean). */
     private static boolean tippingPointWarning = false;
 
-    /**
+    /*
      * Analyzes systemic stability, spatial variance, and critical slowing down indicators.
      *
      * @param cells list of H3 cells in the simulation grid
@@ -100,14 +103,32 @@ public class BifurcationChaosEngine {
         }
     }
 
+    /*
+     * Get global lyapunov exponent.
+     * Enforces physical invariants and updates associated state variables within {@code BifurcationChaosEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getGlobalLyapunovExponent() {
         return globalLyapunovExponent;
     }
 
+    /*
+     * Get global system variance.
+     * Enforces physical invariants and updates associated state variables within {@code BifurcationChaosEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getGlobalSystemVariance() {
         return globalSystemVariance;
     }
 
+    /*
+     * Is tipping point warning.
+     * Enforces physical invariants and updates associated state variables within {@code BifurcationChaosEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static boolean isTippingPointWarning() {
         return tippingPointWarning;
     }

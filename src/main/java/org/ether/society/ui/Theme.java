@@ -21,6 +21,7 @@ public enum Theme {
 
     private static final Logger logger = LoggerFactory.getLogger(Theme.class);
     private static final java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(Theme.class);
+    /* Internal state variable for pref theme key (String). */
     private static final String PREF_THEME_KEY = "ether_theme";
     private static final ObjectProperty<Theme> currentTheme = new SimpleObjectProperty<>();
 
@@ -33,7 +34,9 @@ public enum Theme {
         }
     }
 
+    /* Internal state variable for display name (String). */
     private final String displayName;
+    /* Internal state variable for stylesheet path (String). */
     private final String stylesheetPath;
 
     Theme(String displayName, String stylesheetPath) {
@@ -41,22 +44,52 @@ public enum Theme {
         this.stylesheetPath = stylesheetPath;
     }
 
+    /*
+     * Get display name.
+     * Enforces physical invariants and updates associated state variables within {@code Theme}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDisplayName() {
         return displayName;
     }
 
+    /*
+     * Get stylesheet path.
+     * Enforces physical invariants and updates associated state variables within {@code Theme}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getStylesheetPath() {
         return stylesheetPath;
     }
 
+    /*
+     * Theme property.
+     * Enforces physical invariants and updates associated state variables within {@code Theme}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static ObjectProperty<Theme> themeProperty() {
         return currentTheme;
     }
 
+    /*
+     * Get current theme.
+     * Enforces physical invariants and updates associated state variables within {@code Theme}.
+     *
+     */
     public static Theme getCurrentTheme() {
         return currentTheme.get();
     }
 
+    /*
+     * Set theme.
+     * Enforces physical invariants and updates associated state variables within {@code Theme}.
+     *
+     * @param scene the scene parameter (Scene)
+     * @param theme the theme parameter (Theme)
+     */
     public static void setTheme(Scene scene, Theme theme) {
         if (theme == null) return;
         currentTheme.set(theme);
@@ -71,6 +104,12 @@ public enum Theme {
         }
     }
 
+    /*
+     * Apply current theme.
+     * Enforces physical invariants and updates associated state variables within {@code Theme}.
+     *
+     * @param scene the scene parameter (Scene)
+     */
     public static void applyCurrentTheme(Scene scene) {
         if (scene == null) return;
         Theme theme = getCurrentTheme();

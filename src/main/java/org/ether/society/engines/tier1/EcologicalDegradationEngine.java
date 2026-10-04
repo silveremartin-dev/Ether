@@ -30,9 +30,10 @@ import java.util.List;
 public class EcologicalDegradationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EcologicalDegradationEngine.class);
 
+    /* Internal state variable for caloric requirement per capita (double). */
     private static final double CALORIC_REQUIREMENT_PER_CAPITA = 0.5;
 
-    /**
+    /*
      * Executes one ecological, pollution, overfishing & socio-demographic simulation tick across all cells.
      */
     public static void processEcologicalDegradation(List<H3Cell> cells, double techLevel) {
@@ -183,7 +184,7 @@ public class EcologicalDegradationEngine {
         }
     }
 
-    /**
+    /*
      * Atmospheric and aquatic dispersion of toxic pollution across neighboring cells,
      * diffusing contaminants even into unpopulated, high-altitude or remote wilderness sites.
      */
@@ -298,6 +299,14 @@ public class EcologicalDegradationEngine {
         return totalMigrated;
     }
 
+    /*
+     * Calculate carrying capacity.
+     * Enforces physical invariants and updates associated state variables within {@code EcologicalDegradationEngine}.
+     *
+     * @param cell the cell parameter (H3Cell)
+     * @param techLevel the tech level parameter (double)
+     * @return the resulting computation or state reference
+     */
     public static double calculateCarryingCapacity(H3Cell cell, double techLevel) {
         if (cell == null) return 100.0;
 

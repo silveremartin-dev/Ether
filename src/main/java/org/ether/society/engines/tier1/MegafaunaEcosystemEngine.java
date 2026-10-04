@@ -25,7 +25,7 @@ import java.util.List;
 public class MegafaunaEcosystemEngine {
     private static final Logger logger = LoggerFactory.getLogger(MegafaunaEcosystemEngine.class);
 
-    /**
+    /*
      * Executes one megafauna ecosystem engineering tick across cells.
      */
     public static void processMegafaunaEcosystem(List<H3Cell> cells) {

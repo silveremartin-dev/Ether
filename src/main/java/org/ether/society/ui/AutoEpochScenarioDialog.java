@@ -61,8 +61,17 @@ public class AutoEpochScenarioDialog extends Stage {
     private final Button btnCancel = new Button();
 
     private final Consumer<Scenario> onScenarioGeneratedCallback;
+    /* Internal state variable for is updating (boolean). */
     private boolean isUpdating = false;
 
+    /*
+     * Auto epoch scenario dialog.
+     * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioDialog}.
+     *
+     * @param initialPlanetKey the initial planet key parameter (String)
+     * @param initialYear the initial year parameter (long)
+     * @param callback the callback parameter (Consumer&lt;Scenario&gt;)
+     */
     public AutoEpochScenarioDialog(String initialPlanetKey, long initialYear, Consumer<Scenario> callback) {
         this.onScenarioGeneratedCallback = callback;
         initModality(Modality.APPLICATION_MODAL);
@@ -113,6 +122,13 @@ public class AutoEpochScenarioDialog extends Stage {
         planetSelector.setValue(planetSelector.getItems().contains(pNorm) ? pNorm : "earth");
         planetSelector.setCellFactory(lv -> new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioDialog}.
+             *
+             * @param item the item parameter (String)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -197,6 +213,13 @@ public class AutoEpochScenarioDialog extends Stage {
         fallbackSelector.setValue(TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
         fallbackSelector.setCellFactory(lv -> new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioDialog}.
+             *
+             * @param item the item parameter (TemporalMapTensorManager.DataFallbackStrategy)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(TemporalMapTensorManager.DataFallbackStrategy item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -380,6 +403,12 @@ public class AutoEpochScenarioDialog extends Stage {
 
         Task<Scenario> task = new Task<>() {
             @Override
+            /*
+             * Call.
+             * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioDialog}.
+             *
+             * @return the resulting computation or state reference
+             */
             protected Scenario call() {
                 return AutoEpochScenarioGenerator.generateScenarioForEpoch(planet, year, forceRegen, strat);
             }

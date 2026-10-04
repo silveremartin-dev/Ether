@@ -29,6 +29,13 @@ public class RomanImperialCliodynamicEngine {
     private static double imperialRadiusKm = 1500.0; // 1500 km Roman Empire expansion radius
     private static double eliteOverproductionFactor = 0.15; // 15% elite tax diversion
 
+    /*
+     * Process hybrid.
+     * Enforces physical invariants and updates associated state variables within {@code RomanImperialCliodynamicEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -57,9 +64,21 @@ public class RomanImperialCliodynamicEngine {
         }
     }
 
+    /*
+     * Get imperial radius km.
+     * Enforces physical invariants and updates associated state variables within {@code RomanImperialCliodynamicEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getImperialRadiusKm() { return imperialRadiusKm; }
     public static void setImperialRadiusKm(double radius) { imperialRadiusKm = Math.max(100.0, radius); }
 
+    /*
+     * Get elite overproduction factor.
+     * Enforces physical invariants and updates associated state variables within {@code RomanImperialCliodynamicEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getEliteOverproductionFactor() { return eliteOverproductionFactor; }
     public static void setEliteOverproductionFactor(double v) { eliteOverproductionFactor = Math.max(0.0, Math.min(0.50, v)); }
 }

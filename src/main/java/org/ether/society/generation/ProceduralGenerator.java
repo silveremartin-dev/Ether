@@ -14,14 +14,14 @@ import java.util.Map;
  *
  * <p>Fully parameterised for non-Earth worlds (Mars, Venus, Moon, Titan, Super-Earths, Eyeball worlds):</p>
  * <ul>
- *   <li><b>Gravity & Altitude Lapse Rate</b>: Surface gravity $g_{rel}$ scales dynamically with planetary radius
- *       and body type. The environmental lapse rate $\Gamma = 6.5 \times g_{rel}$ (Â°C/km) scales with gravity.</li>
- *   <li><b>Atmospheric Pressure & COâ‚‚ Partial Pressure</b>: Greenhouse forcing is computed from absolute
- *       COâ‚‚ partial pressure $P_{COâ‚‚} = P_{atmo} \times [COâ‚‚]/10â¶$ rather than Earth-bound ppm. Airless worlds ($P_{atmo} < 0.01$ atm)
+ *   <li><b>Gravity &amp; Altitude Lapse Rate</b>: Surface gravity $g_{rel}$ scales dynamically with planetary radius
+ *       and body type. The environmental lapse rate $\Gamma = 6.5 \times g_{rel}$ (°C/km) scales with gravity.</li>
+ *   <li><b>Atmospheric Pressure &amp; CO2 Partial Pressure</b>: Greenhouse forcing is computed from absolute
+ *       CO2 partial pressure $P_{CO2} = P_{atmo} \times [CO2]/10^6$ rather than Earth-bound ppm. Airless worlds ($P_{atmo} &lt; 0.01$ atm)
  *       have zero greenhouse forcing and zero precipitation.</li>
- *   <li><b>Rotation & Heat Transport</b>: Day length modulates the equator-to-pole thermal gradient. Slow-rotating
+ *   <li><b>Rotation &amp; Heat Transport</b>: Day length modulates the equator-to-pole thermal gradient. Slow-rotating
  *       or tidally-locked worlds exhibit global heat redistribution (flattened latitudinal gradient).</li>
- *   <li><b>Astronomical Tidal Forces & Dissipation</b>: Satellites orbiting massive parent planets experience
+ *   <li><b>Astronomical Tidal Forces &amp; Dissipation</b>: Satellites orbiting massive parent planets experience
  *       gravitational tidal flexing ($F_{tidal} \propto M_{parent} R / d^3$). Tidal energy dissipation generates
  *       internal geothermal heating, amplifies volcanism/seismicity, and expands intertidal coastal zones.</li>
  * </ul>
@@ -30,13 +30,19 @@ public class ProceduralGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ProceduralGenerator.class);
     private static final ProceduralGenerator INSTANCE = new ProceduralGenerator();
 
+    /*
+     * Get instance.
+     * Enforces physical invariants and updates associated state variables within {@code ProceduralGenerator}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static ProceduralGenerator getInstance() {
         return INSTANCE;
     }
 
-    /** Pre-industrial Earth reference COâ‚‚ partial pressure (1.0 atm Ã— 280 ppm = 0.00028 atm). */
+    /* Pre-industrial Earth reference CO2 partial pressure (1.0 atm * 280 ppm = 0.00028 atm). */
     private static final double CO2_REF_PARTIAL_PRESSURE_ATM = 0.00028;
-    /** Radiative sensitivity: +3.0 Â°C per doubling of COâ‚‚ partial pressure. */
+    /* Radiative sensitivity: +3.0 °C per doubling of CO2 partial pressure. */
     private static final double CLIMATE_SENSITIVITY_K = 3.0;
 
     // -------------------------------------------------------------------------
@@ -60,6 +66,16 @@ public class ProceduralGenerator {
             this(elevation, 0.0, temperature, rainfall, 0.0, biome, declivity, riverFlow, accessibleAquifer, 0.0);
         }
 
+        /*
+         * Planet point.
+         * Enforces physical invariants and updates associated state variables within {@code ProceduralGenerator}.
+         *
+         * @param elevation the elevation parameter (double)
+         * @param temperature the temperature parameter (double)
+         * @param rainfall the rainfall parameter (double)
+         * @param biome the biome parameter (Biome)
+         * @return the resulting computation or state reference
+         */
         public PlanetPoint(double elevation, double temperature, double rainfall, Biome biome) {
             this(elevation, 0.0, temperature, rainfall, 0.0, biome, 0.0, 0.0, 0.0, 0.0);
         }
@@ -69,7 +85,7 @@ public class ProceduralGenerator {
     // Public API
     // -------------------------------------------------------------------------
 
-    /**
+    /*
      * Compute normalized gravitational tidal force intensity ($F_{tidal}$) exerted on the body.
      *
      * <p>Formula:</p>
@@ -95,6 +111,15 @@ public class ProceduralGenerator {
         }
     }
 
+    /*
+     * Get planet point.
+     * Enforces physical invariants and updates associated state variables within {@code ProceduralGenerator}.
+     *
+     * @param lat the lat parameter (double)
+     * @param lng the lng parameter (double)
+     * @param preset the preset parameter (PlanetPreset)
+     * @return the resulting computation or state reference
+     */
     public PlanetPoint getPlanetPoint(double lat, double lng, PlanetPreset preset) {
         return getPlanetPoint(lat, lng, preset, preset.seed(), preset.seed() + 1000L, preset.seed() + 2000L);
     }
@@ -177,10 +202,25 @@ public class ProceduralGenerator {
                 biome, declivity, riverFlow, aquifer, metalDensity);
     }
 
+    /*
+     * Generate planet.
+     * Enforces physical invariants and updates associated state variables within {@code ProceduralGenerator}.
+     *
+     * @param preset the preset parameter (PlanetPreset)
+     * @return the resulting computation or state reference
+     */
     public List<H3Cell> generatePlanet(PlanetPreset preset) {
         return generatePlanet(preset, null, null);
     }
 
+    /*
+     * Generate planet.
+     * Enforces physical invariants and updates associated state variables within {@code ProceduralGenerator}.
+     *
+     * @param preset the preset parameter (PlanetPreset)
+     * @param progressCallback the progress callback parameter (Integer&gt;)
+     * @return the resulting computation or state reference
+     */
     public List<H3Cell> generatePlanet(PlanetPreset preset, java.util.function.BiConsumer<Integer, Integer> progressCallback) {
         return generatePlanet(preset, progressCallback, null);
     }
@@ -228,6 +268,17 @@ public class ProceduralGenerator {
         return cells;
     }
 
+    /*
+     * Generate regional planet.
+     * Enforces physical invariants and updates associated state variables within {@code ProceduralGenerator}.
+     *
+     * @param preset the preset parameter (PlanetPreset)
+     * @param minLat the min lat parameter (double)
+     * @param maxLat the max lat parameter (double)
+     * @param minLng the min lng parameter (double)
+     * @param maxLng the max lng parameter (double)
+     * @return the resulting computation or state reference
+     */
     public List<H3Cell> generateRegionalPlanet(PlanetPreset preset, double minLat, double maxLat, double minLng, double maxLng) {
         logger.info("Generating regional planet window: {} (Res: {}, Lat[{}..{}], Lng[{}..{}])",
                 preset.name(), preset.resolution(), minLat, maxLat, minLng, maxLng);

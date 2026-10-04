@@ -23,6 +23,13 @@ import java.util.List;
 public class World3HybridEngine {
     private static final Logger logger = LoggerFactory.getLogger(World3HybridEngine.class);
 
+    /*
+     * Process plugin.
+     * Enforces physical invariants and updates associated state variables within {@code World3HybridEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processPlugin(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

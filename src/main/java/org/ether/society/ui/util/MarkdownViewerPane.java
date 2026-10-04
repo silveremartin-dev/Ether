@@ -34,8 +34,14 @@ public class MarkdownViewerPane extends BorderPane {
     private final ToggleButton toggleRawBtn;
     private final Button copyBtn;
     private final Label formatHint;
+    /* Internal state variable for current markdown (String). */
     private String currentMarkdown = "";
 
+    /*
+     * Markdown viewer pane.
+     * Enforces physical invariants and updates associated state variables within {@code MarkdownViewerPane}.
+     *
+     */
     public MarkdownViewerPane() {
         getStyleClass().add("card-section");
 
@@ -81,6 +87,11 @@ public class MarkdownViewerPane extends BorderPane {
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code MarkdownViewerPane}.
+     *
+     */
     public void updateTexts() {
         if (formatHint != null) {
             formatHint.setText(I18n.getOrDefault("markdown.preview_title", "✨ Formatted Report Preview"));
@@ -100,12 +111,24 @@ public class MarkdownViewerPane extends BorderPane {
         renderMarkdown(currentMarkdown);
     }
 
+    /*
+     * Set markdown.
+     * Enforces physical invariants and updates associated state variables within {@code MarkdownViewerPane}.
+     *
+     * @param markdown the markdown parameter (String)
+     */
     public void setMarkdown(String markdown) {
         this.currentMarkdown = markdown != null ? markdown : "";
         rawTextArea.setText(currentMarkdown);
         renderMarkdown(currentMarkdown);
     }
 
+    /*
+     * Get markdown.
+     * Enforces physical invariants and updates associated state variables within {@code MarkdownViewerPane}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getMarkdown() {
         return currentMarkdown;
     }

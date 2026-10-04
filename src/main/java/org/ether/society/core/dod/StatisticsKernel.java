@@ -7,7 +7,7 @@ import java.util.Arrays;
  */
 public class StatisticsKernel {
 
-    /**
+    /*
      * Calcule le coefficient de Gini pour une ressource donnée (ex: richesse ou population).
      * G = (2 * sum(i * x_i) / (n * sum(x_i))) - (n + 1) / n
      */
@@ -34,14 +34,14 @@ public class StatisticsKernel {
         return Math.clamp(gini, 0.0f, 1.0f);
     }
 
-    /**
+    /*
      * Calcule la distribution de densité (histogramme).
      */
     public int[] calculateDistribution(float[] values, int bins, float maxVal) {
         return calculateDistribution(values, bins, 0.0f, maxVal);
     }
 
-    /**
+    /*
      * Calcule la distribution de densité (histogramme) entre un min et un max.
      */
     public int[] calculateDistribution(float[] values, int bins, float minVal, float maxVal) {
@@ -63,7 +63,7 @@ public class StatisticsKernel {
         return histogram;
     }
 
-    /**
+    /*
      * Calcule la médiane d'un ensemble de valeurs.
      */
     public float calculateMedian(float[] values) {
@@ -78,7 +78,7 @@ public class StatisticsKernel {
         }
     }
 
-    /**
+    /*
      * Calcule la moyenne, le min, le max et l'écart-type.
      */
     public float[] calculateAggregates(float[] values) {
@@ -103,7 +103,7 @@ public class StatisticsKernel {
         return new float[]{avg, min, max, stdDev};
     }
 
-    /**
+    /*
      * Calcule le PIB (Somme du capital ressource).
      */
     public float calculateGDP(float[] capital) {
@@ -112,13 +112,23 @@ public class StatisticsKernel {
         return (float) sum;
     }
 
-    /**
+    /*
      * Calcule l'espérance de vie à la naissance (modèle démographique Gompertz-Makeham et cliodynamique).
      */
     public float calculateLifeExpectancy(float[] ages, int[] hexIds) {
         return calculateLifeExpectancy(ages, hexIds, 0.5f, 1.0f);
     }
 
+    /*
+     * Calculate life expectancy.
+     * Enforces physical invariants and updates associated state variables within {@code StatisticsKernel}.
+     *
+     * @param ages the ages parameter (float[])
+     * @param hexIds the hex ids parameter (int[])
+     * @param avgTech the avg tech parameter (float)
+     * @param foodSatisfaction the food satisfaction parameter (float)
+     * @return the resulting computation or state reference
+     */
     public float calculateLifeExpectancy(float[] ages, int[] hexIds, float avgTech, float foodSatisfaction) {
         // Base Paleolithic life expectancy ~ 28-32 years, scaling with tech and food security
         float base = 28.0f + Math.min(52.0f, Math.max(0.0f, avgTech) * 0.55f);
@@ -126,7 +136,7 @@ public class StatisticsKernel {
         return Math.max(15.0f, Math.min(85.0f, base * foodMod));
     }
 
-    /**
+    /*
      * Calcule le taux de fécondité synthétique TFR (nombre moyen d'enfants par femme).
      */
     public float calculateFertilityRate(float[] births, float[] mass) {

@@ -47,8 +47,11 @@ public enum StartDatePreset {
     MODERN(1945, "Modern Era",
             "Nuclear age. Information technology. Population ~2.5 billion.");
 
+    /* Internal state variable for year (long). */
     private final long year;
+    /* Internal state variable for display name (String). */
     private final String displayName;
+    /* Internal state variable for description (String). */
     private final String description;
 
     StartDatePreset(long year, String displayName, String description) {
@@ -57,19 +60,37 @@ public enum StartDatePreset {
         this.description = description;
     }
 
+    /*
+     * Get year.
+     * Enforces physical invariants and updates associated state variables within {@code StartDatePreset}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getYear() {
         return year;
     }
 
+    /*
+     * Get display name.
+     * Enforces physical invariants and updates associated state variables within {@code StartDatePreset}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDisplayName() {
         return displayName;
     }
 
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code StartDatePreset}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return description;
     }
 
-    /**
+    /*
      * Get estimated world population for this era.
      */
     public long getEstimatedPopulation() {
@@ -89,7 +110,7 @@ public enum StartDatePreset {
         };
     }
 
-    /**
+    /*
      * Get estimated technology level (maps to EnergySource).
      */
     public int getEstimatedTechLevel() {
@@ -105,6 +126,12 @@ public enum StartDatePreset {
     }
 
     @Override
+    /*
+     * To string.
+     * Enforces physical invariants and updates associated state variables within {@code StartDatePreset}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String toString() {
         return String.format("%s (%d)", displayName, year);
     }

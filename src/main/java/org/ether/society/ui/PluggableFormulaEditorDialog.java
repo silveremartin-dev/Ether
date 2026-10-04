@@ -26,6 +26,7 @@ import java.util.List;
 public class PluggableFormulaEditorDialog extends Stage {
 
     private final PluggableStatEngine statEngine;
+    /* Internal state variable for current cells (List&lt;H3Cell&gt;). */
     private final List<H3Cell> currentCells;
 
     private final Label headerLabel;
@@ -59,6 +60,13 @@ public class PluggableFormulaEditorDialog extends Stage {
     private final Button btnSave;
     private final Button btnClose;
 
+    /*
+     * Pluggable formula editor dialog.
+     * Enforces physical invariants and updates associated state variables within {@code PluggableFormulaEditorDialog}.
+     *
+     * @param statEngine the stat engine parameter (PluggableStatEngine)
+     * @param currentCells the current cells parameter (List&lt;H3Cell&gt;)
+     */
     public PluggableFormulaEditorDialog(PluggableStatEngine statEngine, List<H3Cell> currentCells) {
         this.statEngine = statEngine;
         this.currentCells = currentCells;
@@ -193,6 +201,11 @@ public class PluggableFormulaEditorDialog extends Stage {
         updateTexts();
     }
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code PluggableFormulaEditorDialog}.
+     *
+     */
     public void updateTexts() {
         setTitle(I18n.getOrDefault("formula_editor.window_title", "🧮 Custom Statistical Formula Editor & Manager"));
         headerLabel.setText(I18n.getOrDefault("formula_editor.header", "⚙️ FORMULES & STATISTIQUES PLUGGABLES (Custom Formula Engine)"));

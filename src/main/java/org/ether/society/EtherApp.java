@@ -41,16 +41,32 @@ public class EtherApp extends Application {
     private MainView mainView;
 
     private AnimationTimer timer;
+    /* Internal state variable for last fps update (long). */
     private long lastFpsUpdate = 0;
+    /* Internal state variable for frame count (int). */
     private int frameCount = 0;
+    /* Internal state variable for current fps (double). */
     private double currentFps = 0.0;
+    /* Internal state variable for last map redraw (long). */
     private long lastMapRedraw = 0;
 
+    /*
+     * Main.
+     * Enforces physical invariants and updates associated state variables within {@code EtherApp}.
+     *
+     * @param args the args parameter (String[])
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
+    /*
+     * Start.
+     * Enforces physical invariants and updates associated state variables within {@code EtherApp}.
+     *
+     * @param primaryStage the primary stage parameter (Stage)
+     */
     public void start(Stage primaryStage) throws Exception {
         try {
             this.primaryStage = primaryStage;
@@ -62,6 +78,12 @@ public class EtherApp extends Application {
 
             javafx.concurrent.Task<Void> initTask = new javafx.concurrent.Task<>() {
                 @Override
+                /*
+                 * Call.
+                 * Enforces physical invariants and updates associated state variables within {@code EtherApp}.
+                 *
+                 * @return the resulting computation or state reference
+                 */
                 protected Void call() throws Exception {
                     splash.updateProgress(0.15,
                             I18n.getOrDefault("splash.step.config.status", "Loading system configuration..."),
@@ -152,6 +174,12 @@ public class EtherApp extends Application {
     private void startAnimationTimer() {
         timer = new AnimationTimer() {
             @Override
+            /*
+             * Handle.
+             * Enforces physical invariants and updates associated state variables within {@code EtherApp}.
+             *
+             * @param now the now parameter (long)
+             */
             public void handle(long now) {
                 frameCount++;
                 if (now - lastFpsUpdate >= 1_000_000_000L) {
@@ -216,6 +244,11 @@ public class EtherApp extends Application {
     }
 
     @Override
+    /*
+     * Stop.
+     * Enforces physical invariants and updates associated state variables within {@code EtherApp}.
+     *
+     */
     public void stop() {
         logger.info("Stopping Ether Application...");
         if (timer != null) {

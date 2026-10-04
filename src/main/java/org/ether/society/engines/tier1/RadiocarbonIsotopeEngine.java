@@ -37,16 +37,16 @@ import java.util.List;
 public class RadiocarbonIsotopeEngine {
     private static final Logger logger = LoggerFactory.getLogger(RadiocarbonIsotopeEngine.class);
 
-    /** Half-life of Carbon-14 in years */
+    /* Half-life of Carbon-14 in years */
     public static final double C14_HALF_LIFE_YEARS = 5730.0;
 
-    /** Nuclear decay constant Î»_14 in yrâ»Â¹ */
+    /* Nuclear decay constant Î»_14 in yrâ»Â¹ */
     public static final double LAMBDA_14 = Math.log(2.0) / C14_HALF_LIFE_YEARS; // ~1.20968e-4
 
-    /** Mean Libby lifetime in years (8033 yr) */
+    /* Mean Libby lifetime in years (8033 yr) */
     public static final double LIBBY_MEAN_LIFETIME_YEARS = 8033.0;
 
-    /**
+    /*
      * Calculates remaining fraction of Carbon-14 activity after elapsed years.
      *
      * @param elapsedYears Time elapsed in years
@@ -57,7 +57,7 @@ public class RadiocarbonIsotopeEngine {
         return Math.exp(-LAMBDA_14 * elapsedYears);
     }
 
-    /**
+    /*
      * Calculates conventional radiocarbon age before present (BP) from measured activity fraction A / A_0.
      *
      * @param activityFraction Ratio A / A_0 in ]0, 1]
@@ -68,7 +68,7 @@ public class RadiocarbonIsotopeEngine {
         return -LIBBY_MEAN_LIFETIME_YEARS * Math.log(activityFraction);
     }
 
-    /**
+    /*
      * Determines characteristic $\delta^{13}\text{C}$ isotopic signature (in â€° vs VPDB) based on biome and flora.
      */
     public static double determineIsotopicSignatureDelta13C(Biome biome) {
@@ -81,7 +81,7 @@ public class RadiocarbonIsotopeEngine {
         };
     }
 
-    /**
+    /*
      * Processes radiocarbon tracking and soil organic carbon isotopic signatures across cells.
      */
     public static void processIsotopicDecay(List<H3Cell> cells, double deltaYears) {

@@ -36,16 +36,34 @@ public class HotellingResourceDepletionEngine implements ProceduralEnginePlugin 
     public static final double DISCOUNT_RATE_R = 0.03; // Real interest rate (3% per year)
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code HotellingResourceDepletionEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "Hotelling Resource Depletion & Scarcity Rent";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code HotellingResourceDepletionEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Models the depletion economics and escalating scarcity rents of non-renewable mineral/fossil assets.";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code HotellingResourceDepletionEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [Hotelling Exhaustible Resource Valuation Rule (JPE 1931)]
@@ -58,11 +76,24 @@ public class HotellingResourceDepletionEngine implements ProceduralEnginePlugin 
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code HotellingResourceDepletionEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Resource Economics";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code HotellingResourceDepletionEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

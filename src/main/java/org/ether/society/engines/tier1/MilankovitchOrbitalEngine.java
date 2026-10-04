@@ -31,25 +31,29 @@ import java.util.List;
 public class MilankovitchOrbitalEngine {
     private static final Logger logger = LoggerFactory.getLogger(MilankovitchOrbitalEngine.class);
 
-    /** Solar Constant TOA in W/mÂ² */
+    /* Solar Constant TOA in W/mÂ² */
     public static final double SOLAR_CONSTANT_TOA_W_M2 = 1361.0;
 
-    /** Mean orbital eccentricity baseline */
+    /* Mean orbital eccentricity baseline */
     public static final double MEAN_ECCENTRICITY = 0.0167;
+    /* Internal state variable for eccentricity amplitude (double). */
     public static final double ECCENTRICITY_AMPLITUDE = 0.020;
+    /* Internal state variable for eccentricity period years (double). */
     public static final double ECCENTRICITY_PERIOD_YEARS = 100_000.0;
 
-    /** Mean obliquity (axial tilt) in degrees */
+    /* Mean obliquity (axial tilt) in degrees */
     public static final double MEAN_OBLIQUITY_DEG = 23.44;
+    /* Internal state variable for obliquity amplitude deg (double). */
     public static final double OBLIQUITY_AMPLITUDE_DEG = 1.20;
+    /* Internal state variable for obliquity period years (double). */
     public static final double OBLIQUITY_PERIOD_YEARS = 41_000.0;
 
-    /** Precession period in years */
+    /* Precession period in years */
     public static final double PRECESSION_PERIOD_YEARS = 23_000.0;
 
     public record MilankovitchParameters(double eccentricity, double obliquityDeg, double precessionAngleRad) {}
 
-    /**
+    /*
      * Computes Milankovitch orbital parameters for a given year before present (or relative to year 0 CE).
      *
      * @param year Current simulation year (negative for BCE/years before present)
@@ -70,7 +74,7 @@ public class MilankovitchOrbitalEngine {
         return new MilankovitchParameters(e, eps, varpi);
     }
 
-    /**
+    /*
      * Computes daily average TOA insolation (W/mÂ²) for a given latitude and day of year.
      *
      * @param latDeg Latitude in degrees [-90, +90]
@@ -102,7 +106,7 @@ public class MilankovitchOrbitalEngine {
         return (SOLAR_CONSTANT_TOA_W_M2 / Math.PI) * distSq * Math.max(0.0, term);
     }
 
-    /**
+    /*
      * Applies Milankovitch insolation forcing anomaly to surface temperatures across all planetary cells.
      *
      * @param cells Simulation H3 cells

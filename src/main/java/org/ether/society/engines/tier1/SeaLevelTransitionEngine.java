@@ -28,7 +28,7 @@ public class SeaLevelTransitionEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(SeaLevelTransitionEngine.class);
 
-    /**
+    /*
      * Applies a global sea level offset (in meters) across all H3 cells.
      *
      * @param cells List of H3 cells to process

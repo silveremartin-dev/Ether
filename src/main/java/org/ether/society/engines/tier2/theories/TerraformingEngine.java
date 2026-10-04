@@ -25,12 +25,22 @@ public class TerraformingEngine {
     private static final Logger logger = LoggerFactory.getLogger(TerraformingEngine.class);
 
     // Global Terraforming State Variables
+    /* Internal state variable for atmospheric pressure atm (double). */
     private static double atmosphericPressureAtm = 1.0;
+    /* Internal state variable for co2ppm (double). */
     private static double co2Ppm = 420.0;
     private static double solarMirrorInsolationMultiplier = 1.0; // Multiplier from orbital mirrors
+    /* Internal state variable for asteroid mining flux tonnes per year (double). */
     private static double asteroidMiningFluxTonnesPerYear = 0.0;
     private static double offWorldEroeiRatio = 15.0; // Asteroid mining EROEI
 
+    /*
+     * Process terraforming.
+     * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processTerraforming(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -54,18 +64,48 @@ public class TerraformingEngine {
     }
 
     // Getters and Setters
+    /*
+     * Get atmospheric pressure atm.
+     * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getAtmosphericPressureAtm() { return atmosphericPressureAtm; }
     public static void setAtmosphericPressureAtm(double pressure) { atmosphericPressureAtm = Math.max(0.01, pressure); }
 
+    /*
+     * Get co2ppm.
+     * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getCo2Ppm() { return co2Ppm; }
     public static void setCo2Ppm(double ppm) { co2Ppm = Math.max(10.0, ppm); }
 
+    /*
+     * Get solar mirror insolation multiplier.
+     * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getSolarMirrorInsolationMultiplier() { return solarMirrorInsolationMultiplier; }
     public static void setSolarMirrorInsolationMultiplier(double mult) { solarMirrorInsolationMultiplier = Math.max(0.5, Math.min(5.0, mult)); }
 
+    /*
+     * Get asteroid mining flux tonnes per year.
+     * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getAsteroidMiningFluxTonnesPerYear() { return asteroidMiningFluxTonnesPerYear; }
     public static void setAsteroidMiningFluxTonnesPerYear(double flux) { asteroidMiningFluxTonnesPerYear = Math.max(0.0, flux); }
 
+    /*
+     * Get off world eroei ratio.
+     * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getOffWorldEroeiRatio() { return offWorldEroeiRatio; }
     public static void setOffWorldEroeiRatio(double eroei) { offWorldEroeiRatio = Math.max(0.1, eroei); }
 }

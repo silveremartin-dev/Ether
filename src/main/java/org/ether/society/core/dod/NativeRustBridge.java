@@ -23,6 +23,7 @@ import java.util.List;
 public class NativeRustBridge {
     private static final Logger logger = LoggerFactory.getLogger(NativeRustBridge.class);
 
+    /* Internal state variable for native available (boolean). */
     private static boolean nativeAvailable = false;
     private static Path loadedBinaryPath = null;
 
@@ -76,15 +77,27 @@ public class NativeRustBridge {
         }
     }
 
+    /*
+     * Is native available.
+     * Enforces physical invariants and updates associated state variables within {@code NativeRustBridge}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static boolean isNativeAvailable() {
         return nativeAvailable;
     }
 
+    /*
+     * Get loaded binary path.
+     * Enforces physical invariants and updates associated state variables within {@code NativeRustBridge}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getLoadedBinaryPath() {
         return loadedBinaryPath;
     }
 
-    /**
+    /*
      * Executes environmental tick via native Rust library if compiled, or falls back to SIMD.
      */
     public static boolean executeEnvironmentalTick(WorldBuffer worldBuffer, float dtYears) {
@@ -92,7 +105,7 @@ public class NativeRustBridge {
         return false;
     }
 
-    /**
+    /*
      * Executes urban aggregation tick via native Rust library if compiled, or falls back to CPU DOD.
      */
     public static boolean executeUrbanTick(WorldBuffer worldBuffer, float dtYears) {

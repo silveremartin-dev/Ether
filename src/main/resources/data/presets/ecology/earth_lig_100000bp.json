@@ -36,18 +36,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre (-100000 BP) — Dernier Interglaciaire Eémien",
+    "tempSource" : "ðŸŒ Terre (-100000 BP) â€” Dernier Interglaciaire EÃ©mien",
     "tempSeed" : 12450,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre (-100000 BP) — Humidité & Savane Trans-saharienne",
+    "precipSource" : "ðŸŒ Terre (-100000 BP) â€” HumiditÃ© & Savane Trans-saharienne",
     "precipSeed" : 13350,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre (-100000 BP) — Saisonnalité Eémienne",
+    "seasonSource" : "ðŸŒ Terre (-100000 BP) â€” SaisonnalitÃ© EÃ©mienne",
     "seasonSeed" : 14350,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : -100000,
     "presetDescription" : "\uD83C\uDF0D TERRE (-100 000 / Dernier Interglaciaire / Éémien) : Climat interglaciaire chaud (+1 à +2°C au-dessus de l'ère préindustrielle), niveau marin à +6/+9m. Corridors sahéliens verts et premières expansions d'Homo Sapiens hors d'Afrique.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 620.0,
   "soilOrganicCarbonGtC" : 1800.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
+  "canonicalPlanet" : "earth",
   "associatedEpochYear" : -100000,
-  "presetDescription" : "\uD83C\uDF0D TERRE (-100 000 / Dernier Interglaciaire / Éémien) : Climat interglaciaire chaud (+1 à +2°C au-dessus de l'ère préindustrielle), niveau marin à +6/+9m. Corridors sahéliens verts et premières expansions d'Homo Sapiens hors d'Afrique.",
-  "canonicalPlanet" : "earth"
+  "presetDescription" : "\uD83C\uDF0D TERRE (-100 000 / Dernier Interglaciaire / Éémien) : Climat interglaciaire chaud (+1 à +2°C au-dessus de l'ère préindustrielle), niveau marin à +6/+9m. Corridors sahéliens verts et premières expansions d'Homo Sapiens hors d'Afrique."
 }

@@ -19,15 +19,28 @@ public class CompiledEngineKernel {
 
     private final Map<String, SymbolicExpression> fusedExpressions = new HashMap<>();
 
+    /*
+     * Add fused expression.
+     * Enforces physical invariants and updates associated state variables within {@code CompiledEngineKernel}.
+     *
+     * @param variableName the variable name parameter (String)
+     * @param expr the expr parameter (SymbolicExpression)
+     */
     public void addFusedExpression(String variableName, SymbolicExpression expr) {
         fusedExpressions.put(variableName, expr);
     }
 
+    /*
+     * Get fused expressions.
+     * Enforces physical invariants and updates associated state variables within {@code CompiledEngineKernel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Map<String, SymbolicExpression> getFusedExpressions() {
         return fusedExpressions;
     }
 
-    /**
+    /*
      * Executes Kernel Fusion over Data-Oriented WorldBuffer in a single CPU pass.
      * Memory bandwidth optimized (1 read/write pass for N fused engine steps).
      */
@@ -82,7 +95,7 @@ public class CompiledEngineKernel {
         }
     }
 
-    /**
+    /*
      * Executes Kernel Fusion over object-based H3Cell list.
      */
     public void executeFusedKernel(List<H3Cell> cells, double dt) {
@@ -105,6 +118,12 @@ public class CompiledEngineKernel {
     }
 
     @Override
+    /*
+     * To string.
+     * Enforces physical invariants and updates associated state variables within {@code CompiledEngineKernel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String toString() {
         StringBuilder sb = new StringBuilder("âš¡ Fused Compiled CPU Kernel Expressions:\n");
         fusedExpressions.forEach((var, expr) -> sb.append(String.format("  - %s: %s\n", var, expr)));

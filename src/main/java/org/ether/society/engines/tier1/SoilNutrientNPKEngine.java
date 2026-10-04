@@ -25,10 +25,10 @@ import java.util.List;
 public class SoilNutrientNPKEngine {
     private static final Logger logger = LoggerFactory.getLogger(SoilNutrientNPKEngine.class);
 
-    /** Haber-Bosch power requirement in Watts per capita */
+    /* Haber-Bosch power requirement in Watts per capita */
     public static final double HABER_BOSCH_POWER_WATTS = 5000.0;
 
-    /**
+    /*
      * Executes N-P-K stoichiometry, mineral mining extraction, and Haber-Bosch synthesis tick.
      */
     public static void processSoilNutrients(List<H3Cell> cells) {

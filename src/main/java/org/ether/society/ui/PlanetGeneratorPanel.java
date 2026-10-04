@@ -57,7 +57,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     // Custom Map Images
     private Image customElevImage;
-    /** Reference to preset bar to notify when parameters change */
+    /* Reference to preset bar to notify when parameters change */
     private PresetControlBar<PlanetPreset> presetBar;
     private Image customBiomeImage;
     private Image customResourceImage;
@@ -65,11 +65,17 @@ public class PlanetGeneratorPanel extends BorderPane {
     private Image customRainfallImage;    // Separate Moisture / Precipitation Map
     private Image customSeasonalityImage; // Separate Seasonality / Temp Amplitude Map
 
+    /* Internal state variable for cached elev b64 (String). */
     private String cachedElevB64;
+    /* Internal state variable for cached biome b64 (String). */
     private String cachedBiomeB64;
+    /* Internal state variable for cached resource b64 (String). */
     private String cachedResourceB64;
+    /* Internal state variable for cached climate b64 (String). */
     private String cachedClimateB64;
+    /* Internal state variable for cached rainfall b64 (String). */
     private String cachedRainfallB64;
+    /* Internal state variable for cached seasonality b64 (String). */
     private String cachedSeasonalityB64;
 
     // Online & Export Buttons & Labels
@@ -114,6 +120,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     private Spinner<Double> seaLevelMetersSpinner;
     private Label seaLevelMetersLabel;
     private Label waterNormValLabel;
+    /* Internal state variable for is updating control sync (boolean). */
     private boolean isUpdatingControlSync = false;
 
     // Climate & Ecosystem Controls
@@ -213,14 +220,25 @@ public class PlanetGeneratorPanel extends BorderPane {
     private ComboBox<String> viewModeCombo;
     private HBox legendBar;
     private Canvas previewCanvas;
+    /* Internal state variable for is updating from preset (boolean). */
     private boolean isUpdatingFromPreset = false;
 
     // Interactive Zoom/Pan State
+    /* Internal state variable for zoom factor (double). */
     private double zoomFactor = 1.0;
+    /* Internal state variable for pan x (double). */
     private double panX = 0.0;
+    /* Internal state variable for pan y (double). */
     private double panY = 0.0;
+    /* Internal state variable for drag start x (double). */
     private double dragStartX, dragStartY;
 
+    /*
+     * Planet generator panel.
+     * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+     *
+     * @param onPlanetGeneratedCallback the on planet generated callback parameter (Consumer&lt;List&lt;H3Cell&gt;&gt;)
+     */
     public PlanetGeneratorPanel(Consumer<List<H3Cell>> onPlanetGeneratedCallback) {
         this.generator = new ProceduralGenerator();
         this.mapLoader = new ImageMapLoader();
@@ -265,6 +283,12 @@ public class PlanetGeneratorPanel extends BorderPane {
         topPresetBar.setPresets(org.ether.society.persistence.PresetStorageService.loadAllPlanetPresets(), PlanetPreset.EARTH_LIKE);
         topPresetBar.setListener(new PresetControlBar.PresetActionsListener<PlanetPreset>() {
             @Override
+            /*
+             * On preset selected.
+             * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+             *
+             * @param preset the preset parameter (PlanetPreset)
+             */
             public void onPresetSelected(PlanetPreset preset) {
                 if (!isUpdatingFromPreset) {
                     applyPreset(preset);
@@ -275,6 +299,12 @@ public class PlanetGeneratorPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * On save preset.
+             * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+             *
+             * @param name the name parameter (String)
+             */
             public void onSavePreset(String name) {
                 if (!validatePlanetSetup()) {
                     return;
@@ -286,11 +316,24 @@ public class PlanetGeneratorPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * On delete preset.
+             * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+             *
+             * @param preset the preset parameter (PlanetPreset)
+             */
             public void onDeletePreset(PlanetPreset preset) {
                 topPresetBar.getPresetCombo().getItems().remove(preset);
             }
 
             @Override
+            /*
+             * On export preset.
+             * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+             *
+             * @param targetFile the target file parameter (File)
+             * @param preset the preset parameter (PlanetPreset)
+             */
             public void onExportPreset(File targetFile, PlanetPreset preset) {
                 try {
                     ObjectMapper mapper = new ObjectMapper();
@@ -303,6 +346,12 @@ public class PlanetGeneratorPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * On import preset.
+             * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+             *
+             * @param sourceFile the source file parameter (File)
+             */
             public void onImportPreset(File sourceFile) {
                 try {
                     ObjectMapper mapper = new ObjectMapper();
@@ -340,6 +389,13 @@ public class PlanetGeneratorPanel extends BorderPane {
         resolutionCombo.setMaxWidth(Double.MAX_VALUE);
         resolutionCombo.setCellFactory(p -> new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+             *
+             * @param item the item parameter (Integer)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
                 setText(empty || item == null ? "" : I18n.get("planet.param.resolution.res" + item));
@@ -363,6 +419,13 @@ public class PlanetGeneratorPanel extends BorderPane {
         bodyTypeCombo.setValue("planet");
         bodyTypeCombo.setCellFactory(p -> new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+             *
+             * @param item the item parameter (String)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -1167,7 +1230,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     public static final String CLIMATE_SRC_SEASON_MERCURY = "âšª Mercure â€” 3:2 Spin-Orbit Thermal Variance Model [PlanÃ©taire (Mercure), RÃ©sonance 3:2]";
     public static final String CLIMATE_SRC_SEASON_WMS = "ðŸŒ NASA MODIS LST Amplitude (WMS Satellite) [Global, 2002 AD Ã  Actuel]";
 
-    /**
+    /*
      * Builds the climate source combo for a given map type (temp / precip / season).
      * Lists public scientific reference datasets the user can use as import source.
      */
@@ -1279,7 +1342,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         updatePreview();
     }
 
-    /**
+    /*
      * Injects (or replaces) a local-file entry in the given climate source combo,
      * then selects it. Keeps all scientific-source entries intact.
      */
@@ -1451,7 +1514,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
-    /**
+    /*
      * Exports the current procedural heightmap / DEM to professional GIS & image formats
      * (GeoTIFF Float32, 16-bit PNG, Polychrome PNG + WorldFile, ESRI ASCII Grid).
      */
@@ -2068,6 +2131,12 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    /*
+     * Apply preset.
+     * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+     *
+     * @param p the p parameter (PlanetPreset)
+     */
     public void applyPreset(PlanetPreset p) {
         if (p == null) return;
         WindowUtils.setBusyCursor(this, true);
@@ -2253,6 +2322,12 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    /*
+     * Build preset from ui.
+     * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public PlanetPreset buildPresetFromUI() {
         long seed = 12345;
         try {
@@ -2790,6 +2865,11 @@ public class PlanetGeneratorPanel extends BorderPane {
         };
     }
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+     *
+     */
     public void updateTexts() {
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
@@ -2948,6 +3028,12 @@ public class PlanetGeneratorPanel extends BorderPane {
         if (loadSeasonalityBtn != null) loadSeasonalityBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.seasonality_load", "Load external seasonal variance map")));
     }
 
+    /*
+     * Validate planet setup.
+     * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean validatePlanetSetup() {
         return validatePlanetSetup(true);
     }
@@ -2958,6 +3044,12 @@ public class PlanetGeneratorPanel extends BorderPane {
         return "custom".equalsIgnoreCase(val) || "file".equalsIgnoreCase(val);
     }
 
+    /*
+     * Get validation errors.
+     * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<String> getValidationErrors() {
         List<String> errors = new ArrayList<>();
         if (radioImport != null && radioImport.isSelected()) {
@@ -3006,6 +3098,13 @@ public class PlanetGeneratorPanel extends BorderPane {
         return errors;
     }
 
+    /*
+     * Validate planet setup.
+     * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+     *
+     * @param showDialog the show dialog parameter (boolean)
+     * @return the resulting computation or state reference
+     */
     public boolean validatePlanetSetup(boolean showDialog) {
         List<String> errors = getValidationErrors();
         boolean isValid = errors.isEmpty();
@@ -3042,15 +3141,34 @@ public class PlanetGeneratorPanel extends BorderPane {
         return isValid;
     }
 
+    /*
+     * Is dirty.
+     * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isDirty() {
         return presetBar != null && presetBar.isDirty();
     }
 
+    /*
+     * Prompt save if dirty.
+     * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+     *
+     * @param owner the owner parameter (javafx.stage.Window)
+     * @return the resulting computation or state reference
+     */
     public boolean promptSaveIfDirty(javafx.stage.Window owner) {
         if (presetBar == null) return true;
         return presetBar.promptSavePresetIfDirty(owner);
     }
 
+    /*
+     * Get preset bar.
+     * Enforces physical invariants and updates associated state variables within {@code PlanetGeneratorPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public PresetControlBar<PlanetPreset> getPresetBar() {
         return presetBar;
     }

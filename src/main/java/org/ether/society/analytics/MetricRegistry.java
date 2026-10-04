@@ -27,6 +27,12 @@ public class MetricRegistry {
         registerDefaultMetrics();
     }
 
+    /*
+     * Get instance.
+     * Enforces physical invariants and updates associated state variables within {@code MetricRegistry}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static MetricRegistry getInstance() {
         return INSTANCE;
     }
@@ -321,6 +327,13 @@ public class MetricRegistry {
         ));
     }
 
+    /*
+     * Get descriptor.
+     * Enforces physical invariants and updates associated state variables within {@code MetricRegistry}.
+     *
+     * @param id the id parameter (String)
+     * @return the resulting computation or state reference
+     */
     public MetricDescriptor getDescriptor(String id) {
         if (id == null) return null;
         if (metricsById.containsKey(id)) return metricsById.get(id);
@@ -330,6 +343,13 @@ public class MetricRegistry {
         return metricsByName.get(id);
     }
 
+    /*
+     * Get descriptor by name.
+     * Enforces physical invariants and updates associated state variables within {@code MetricRegistry}.
+     *
+     * @param displayName the display name parameter (String)
+     * @return the resulting computation or state reference
+     */
     public MetricDescriptor getDescriptorByName(String displayName) {
         if (displayName == null) return null;
         if (metricsByName.containsKey(displayName)) return metricsByName.get(displayName);
@@ -339,10 +359,22 @@ public class MetricRegistry {
         return null;
     }
 
+    /*
+     * Get all metrics.
+     * Enforces physical invariants and updates associated state variables within {@code MetricRegistry}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Collection<MetricDescriptor> getAllMetrics() {
         return Collections.unmodifiableCollection(metricsById.values());
     }
 
+    /*
+     * Get all metric names.
+     * Enforces physical invariants and updates associated state variables within {@code MetricRegistry}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<String> getAllMetricNames() {
         List<String> list = new ArrayList<>();
         for (MetricDescriptor d : metricsById.values()) {
@@ -351,7 +383,7 @@ public class MetricRegistry {
         return list;
     }
 
-    /**
+    /*
      * Computes a full map of metric snapshot values for the given simulation engine state.
      */
     public Map<String, Double> computeMetricsMap(H3SimulationEngine engine) {

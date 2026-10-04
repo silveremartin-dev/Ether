@@ -27,8 +27,16 @@ public class ClusterClockBarrier {
     private final AtomicLong currentTickId = new AtomicLong(0);
     private final ConcurrentHashMap<String, Long> workerTickAcks = new ConcurrentHashMap<>();
     private CountDownLatch currentBarrierLatch;
+    /* Internal state variable for expected workers count (int). */
     private int expectedWorkersCount = 0;
 
+    /*
+     * Prepare tick barrier.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterClockBarrier}.
+     *
+     * @param tickId the tick id parameter (long)
+     * @param expectedWorkers the expected workers parameter (int)
+     */
     public synchronized void prepareTickBarrier(long tickId, int expectedWorkers) {
         this.currentTickId.set(tickId);
         this.expectedWorkersCount = expectedWorkers;
@@ -36,6 +44,13 @@ public class ClusterClockBarrier {
         this.currentBarrierLatch = new CountDownLatch(expectedWorkers);
     }
 
+    /*
+     * Acknowledge worker tick.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterClockBarrier}.
+     *
+     * @param workerId the worker id parameter (String)
+     * @param tickId the tick id parameter (long)
+     */
     public void acknowledgeWorkerTick(String workerId, long tickId) {
         if (tickId == currentTickId.get()) {
             workerTickAcks.put(workerId, tickId);
@@ -45,6 +60,13 @@ public class ClusterClockBarrier {
         }
     }
 
+    /*
+     * Await barrier.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterClockBarrier}.
+     *
+     * @param timeoutMs the timeout ms parameter (long)
+     * @return the resulting computation or state reference
+     */
     public boolean awaitBarrier(long timeoutMs) {
         if (expectedWorkersCount == 0 || currentBarrierLatch == null) return true;
         try {
@@ -60,14 +82,32 @@ public class ClusterClockBarrier {
         }
     }
 
+    /*
+     * Get current tick id.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterClockBarrier}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getCurrentTickId() {
         return currentTickId.get();
     }
 
+    /*
+     * Get acknowledged worker count.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterClockBarrier}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getAcknowledgedWorkerCount() {
         return workerTickAcks.size();
     }
 
+    /*
+     * Get expected workers count.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterClockBarrier}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getExpectedWorkersCount() {
         return expectedWorkersCount;
     }

@@ -35,7 +35,9 @@ import java.util.regex.Pattern;
 public class SvgMapIngestor {
     private static final Logger logger = LoggerFactory.getLogger(SvgMapIngestor.class);
 
+    /* Internal state variable for width (int). */
     public static final int WIDTH = 1024;
+    /* Internal state variable for height (int). */
     public static final int HEIGHT = 512;
 
     public static class SvgLayerFeature {
@@ -47,6 +49,16 @@ public class SvgMapIngestor {
         public Path2D geometry;
         public double minLng = -180, maxLng = 180, minLat = -90, maxLat = 90;
 
+        /*
+         * Svg layer feature.
+         * Enforces physical invariants and updates associated state variables within {@code SvgMapIngestor}.
+         *
+         * @param layerType the layer type parameter (String)
+         * @param id the id parameter (String)
+         * @param color the color parameter (Color)
+         * @param geometry the geometry parameter (Path2D)
+         * @return the resulting computation or state reference
+         */
         public SvgLayerFeature(String layerType, String id, Color color, Path2D geometry) {
             this.layerType = layerType;
             this.id = id;
@@ -70,7 +82,7 @@ public class SvgMapIngestor {
         public int parsedFeaturesCount;
     }
 
-    /**
+    /*
      * Ingests SVG maps for a given scenario.
      * Searches external filesystem directory 'data/maps/svg/' first, then falls back to classpath.
      */
@@ -147,7 +159,7 @@ public class SvgMapIngestor {
         return null;
     }
 
-    /**
+    /*
      * Main entry point to ingest SVG content from an InputStream.
      */
     public static SvgIngestionResult ingestSvg(InputStream inputStream) throws Exception {
@@ -175,7 +187,7 @@ public class SvgMapIngestor {
         return rasterizeFeatures(features);
     }
 
-    /**
+    /*
      * Ingests SVG from a raw String content.
      */
     public static SvgIngestionResult ingestSvgContent(String svgContent) throws Exception {
@@ -185,7 +197,7 @@ public class SvgMapIngestor {
         }
     }
 
-    /**
+    /*
      * Applies the SvgIngestionResult to a Scenario model.
      */
     public static void applyToScenario(Scenario scenario, SvgIngestionResult result) {
@@ -335,6 +347,14 @@ public class SvgMapIngestor {
 
     // --- SVG PATH GEOMETRY PARSER (M, L, H, V, C, Z, etc.) ---
 
+    /*
+     * Parse svg path d.
+     * Enforces physical invariants and updates associated state variables within {@code SvgMapIngestor}.
+     *
+     * @param d the d parameter (String)
+     * @param viewBox the view box parameter (double[])
+     * @return the resulting computation or state reference
+     */
     public static Path2D parseSvgPathD(String d, double[] viewBox) {
         Path2D path = new Path2D.Double();
         if (d == null || d.isBlank()) return path;

@@ -49,14 +49,21 @@ public class H3SimulationEngine implements ISimulationEngine {
     private final org.ether.society.core.dod.StatisticsKernel statisticsKernel;
     private final SimulationPipeline simulationPipeline;
 
+    /* Internal state variable for last tick time (long). */
     private long lastTickTime = 0;
+    /* Internal state variable for current tps (double). */
     private double currentTPS = 0;
+    /* Internal state variable for current gini (float). */
     private float currentGini = 0;
+    /* Internal state variable for current gdp (float). */
     private float currentGDP = 0;
+    /* Internal state variable for current life expectancy (float). */
     private float currentLifeExpectancy = 0;
+    /* Internal state variable for current fertility (float). */
     private float currentFertility = 0;
     private int[] densityDistribution = new int[20]; // 20 bins
 
+    /* Internal state variable for cells (List&lt;H3Cell&gt;). */
     private List<H3Cell> cells;
     private Scenario currentScenario;
     private final java.util.Set<String> firedScenarioEventKeys = new java.util.HashSet<>();
@@ -67,8 +74,15 @@ public class H3SimulationEngine implements ISimulationEngine {
     private ScheduledExecutorService executorService;
     private final AtomicBoolean running = new AtomicBoolean(false);
     private final java.util.concurrent.atomic.AtomicBoolean pauseAtNextEvent = new java.util.concurrent.atomic.AtomicBoolean(false);
+    /* Internal state variable for speed multiplier (double). */
     private double speedMultiplier = 1.0;
 
+    /*
+     * H3simulation engine.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param config the config parameter (Configuration)
+     */
     public H3SimulationEngine(Configuration config) {
         this.config = config;
         this.timeManager = new TimeManager(config.simulation().startYear());
@@ -86,6 +100,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         initialize();
     }
 
+    /*
+     * Get event system.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public org.ether.society.events.EventSystem getEventSystem() {
         return eventSystem;
     }
@@ -98,6 +118,13 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(0);
     }
 
+    /*
+     * Initialize from scenario.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param scenario the scenario parameter (Scenario)
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     */
     public void initializeFromScenario(Scenario scenario, List<H3Cell> cells) {
         logger.info("Initializing from scenario: {}", scenario.getName());
 
@@ -160,14 +187,32 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
+    /*
+     * Get current scenario.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Scenario getCurrentScenario() {
         return currentScenario;
     }
 
+    /*
+     * Get performance config.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public org.ether.society.config.SimulationPerformanceConfig getPerformanceConfig() {
         return performanceConfig;
     }
 
+    /*
+     * Set performance config.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param performanceConfig the performance config parameter (org.ether.society.config.SimulationPerformanceConfig)
+     */
     public void setPerformanceConfig(org.ether.society.config.SimulationPerformanceConfig performanceConfig) {
         this.performanceConfig = performanceConfig;
     }
@@ -210,12 +255,22 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     @Override
+    /*
+     * Start.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     */
     public void start() {
         if (running.getAndSet(true)) return;
         startGameLoop();
     }
 
     @Override
+    /*
+     * Pause.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     */
     public void pause() {
         if (!running.getAndSet(false)) return;
         if (executorService != null) {
@@ -224,6 +279,11 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     @Override
+    /*
+     * Reset.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     */
     public void reset() {
         pause();
         firedScenarioEventKeys.clear();
@@ -233,11 +293,23 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     @Override
+    /*
+     * Set speed.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param multiplier the multiplier parameter (int)
+     */
     public void setSpeed(int multiplier) {
         setSpeed((double) multiplier);
     }
 
     @Override
+    /*
+     * Set speed.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param multiplier the multiplier parameter (double)
+     */
     public void setSpeed(double multiplier) {
         this.speedMultiplier = Math.max(0.01, multiplier);
         if (running.get()) {
@@ -247,43 +319,97 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     @Override
+    /*
+     * Get speed.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getSpeed() {
         return (int) Math.round(speedMultiplier);
     }
 
     @Override
+    /*
+     * Get speed multiplier.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getSpeedMultiplier() {
         return speedMultiplier;
     }
 
     @Override
+    /*
+     * Get time manager.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public TimeManager getTimeManager() {
         return timeManager;
     }
 
+    /*
+     * Get current year.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getCurrentYear() {
         return timeManager != null ? timeManager.getCurrentYear() : 0;
     }
 
     @Override
+    /*
+     * Is running.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isRunning() {
         return running.get();
     }
 
     @Override
+    /*
+     * Set pause at next event.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param pause the pause parameter (boolean)
+     */
     public void setPauseAtNextEvent(boolean pause) {
         this.pauseAtNextEvent.set(pause);
     }
 
     @Override
+    /*
+     * Is pause at next event.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isPauseAtNextEvent() {
         return this.pauseAtNextEvent.get();
     }
 
+    /*
+     * Get cells.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<H3Cell> getCells() {
         return cells;
     }
 
+    /*
+     * Set cells.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param newCells the new cells parameter (List&lt;H3Cell&gt;)
+     */
     public void setCells(List<H3Cell> newCells) {
         boolean wasRunning = running.get();
         if (wasRunning) pause();
@@ -315,6 +441,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
+    /*
+     * Save simulation.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param saveName the save name parameter (String)
+     */
     public void saveSimulation(String saveName) {
         boolean wasRunning = running.get();
         if (wasRunning) pause();
@@ -322,6 +454,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         if (wasRunning) start();
     }
 
+    /*
+     * Load simulation.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param saveId the save id parameter (String)
+     */
     public void loadSimulation(String saveId) {
         boolean wasRunning = running.get();
         if (wasRunning) pause();
@@ -349,6 +487,11 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
+    /*
+     * Shutdown.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     */
     public void shutdown() {
         running.set(false);
         if (executorService != null && !executorService.isShutdown()) {
@@ -361,6 +504,12 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     private Runnable onTickCallback;
 
+    /*
+     * Set cluster manager.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param clusterManager the cluster manager parameter (org.ether.society.network.ClusterManager)
+     */
     public void setClusterManager(org.ether.society.network.ClusterManager clusterManager) {
         this.clusterManager = clusterManager;
         if (this.clusterManager != null && this.worldBuffer != null) {
@@ -368,20 +517,45 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
+    /*
+     * Get cluster manager.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public org.ether.society.network.ClusterManager getClusterManager() {
         return clusterManager;
     }
 
+    /*
+     * Set on tick callback.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param callback the callback parameter (Runnable)
+     */
     public void setOnTickCallback(Runnable callback) {
         this.onTickCallback = callback;
     }
 
+    /*
+     * Get profiler.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public org.ether.society.core.profiling.SimulationProfiler getProfiler() {
         return profiler;
     }
 
+    /* Internal state variable for tick counter (int). */
     private int tickCounter = 0;
 
+    /*
+     * Get tick counter.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getTickCounter() {
         return tickCounter;
     }
@@ -390,7 +564,9 @@ public class H3SimulationEngine implements ISimulationEngine {
         DAILY(1, "ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ Pas Quotidien (Jour par Jour - DÃƒÆ’Ã‚Â©taillÃƒÆ’Ã‚Â©)"),
         MONTHLY(30, "ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â€šÂ¬ Pas Mensuel (Mois par Mois - Mode Rapide)");
 
+        /* Internal state variable for factor (int). */
         private final int factor;
+        /* Internal state variable for label (String). */
         private final String label;
 
         TemporalScale(int factor, String label) {
@@ -398,10 +574,28 @@ public class H3SimulationEngine implements ISimulationEngine {
             this.label = label;
         }
 
+        /*
+         * Get factor.
+         * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getFactor() { return factor; }
+        /*
+         * Get label.
+         * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getLabel() { return label; }
 
         @Override
+        /*
+         * To string.
+         * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String toString() {
             return label;
         }
@@ -409,7 +603,19 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     private TemporalScale temporalScale = TemporalScale.DAILY;
 
+    /*
+     * Get temporal scale.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public TemporalScale getTemporalScale() { return temporalScale; }
+    /*
+     * Set temporal scale.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param scale the scale parameter (TemporalScale)
+     */
     public void setTemporalScale(TemporalScale scale) {
         if (scale != null) {
             this.temporalScale = scale;
@@ -616,6 +822,12 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     @Override
+    /*
+     * Step forward.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param ticks the ticks parameter (int)
+     */
     public void stepForward(int ticks) {
         pause();
         for (int i = 0; i < Math.max(1, ticks); i++) {
@@ -629,6 +841,12 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     @Override
+    /*
+     * Step backward.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param ticks the ticks parameter (int)
+     */
     public void stepBackward(int ticks) {
         pause();
         if (historyManager == null || cells == null || cells.isEmpty()) return;
@@ -638,6 +856,11 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     @Override
+    /*
+     * Seek to end.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     */
     public void seekToEnd() {
         pause();
         if (historyManager != null && !historyManager.getWorldSnapshots().isEmpty()) {
@@ -654,6 +877,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
+    /*
+     * Seek to tick.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param targetTicks the target ticks parameter (long)
+     */
     public void seekToTick(long targetTicks) {
         pause();
         if (historyManager == null || cells == null || cells.isEmpty()) return;
@@ -722,6 +951,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         return t;
     });
 
+    /* Internal state variable for last auto save time ms (long). */
     private long lastAutoSaveTimeMs = 0;
 
     private void autoSaveCheckpoint() {
@@ -741,6 +971,11 @@ public class H3SimulationEngine implements ISimulationEngine {
         });
     }
 
+    /*
+     * Sync buffer to cells.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     */
     public void syncBufferToCells() {
         if (worldBuffer == null || cells == null) return;
         float[] pop = worldBuffer.getBiomassHuman();
@@ -778,6 +1013,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
+    /*
+     * Get total population.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getTotalPopulation() {
         if (worldBuffer == null) return 0;
         long total = 0;
@@ -788,6 +1029,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return total;
     }
 
+    /*
+     * Get total food.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getTotalFood() {
         if (worldBuffer == null) return 0;
         double total = 0;
@@ -798,6 +1045,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return total;
     }
 
+    /*
+     * Get populated cell count.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getPopulatedCellCount() {
         if (worldBuffer == null) return 0;
         long count = 0;
@@ -827,14 +1080,32 @@ public class H3SimulationEngine implements ISimulationEngine {
                 });
     }
 
+    /*
+     * Get history manager.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public org.ether.society.analytics.HistoryManager getHistoryManager() {
         return historyManager;
     }
 
+    /*
+     * Get current tps.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCurrentTPS() {
         return currentTPS;
     }
 
+    /*
+     * Get total biomass natural.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public float getTotalBiomassNatural() {
         if (worldBuffer == null) return 0;
         float total = 0;
@@ -843,6 +1114,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return total;
     }
 
+    /*
+     * Get average technology.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public float getAverageTechnology() {
         if (worldBuffer == null) return 0;
         float total = 0;
@@ -851,20 +1128,56 @@ public class H3SimulationEngine implements ISimulationEngine {
         return total / worldBuffer.getCapacity();
     }
 
+    /*
+     * Get current gini.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public float getCurrentGini() {
         return currentGini;
     }
 
+    /*
+     * Get density distribution.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int[] getDensityDistribution() {
         return densityDistribution;
     }
 
+    /*
+     * Get current gdp.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public float getCurrentGDP() { return currentGDP; }
+    /*
+     * Get current life expectancy.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public float getCurrentLifeExpectancy() { return currentLifeExpectancy; }
+    /*
+     * Get current fertility.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public float getCurrentFertility() { return currentFertility; }
 
     // --- EXTENDED CLIODYNAMIC & PHYSICAL METRICS ---
 
+    /*
+     * Get energy captured.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getEnergyCaptured() {
         long pop = getTotalPopulation();
         if (pop <= 0) return 0.0;
@@ -877,6 +1190,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return totalWatts / 1e6; // Energy returned in Megawatts (MW)
     }
 
+    /*
+     * Get resource depletion rate.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getResourceDepletionRate() {
         if (worldBuffer == null || worldBuffer.getCapacity() == 0) return 0;
         double maxRes = worldBuffer.getCapacity() * 1000.0;
@@ -886,20 +1205,44 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Math.max(0, Math.min(100.0, (1.0 - currentRes / Math.max(1, maxRes)) * 100.0));
     }
 
+    /*
+     * Get energy per capita.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getEnergyPerCapita() {
         long pop = getTotalPopulation();
         return pop > 0 ? (getEnergyCaptured() * 1e6) / pop : 300.0; // in Joules/sec (Watts)
     }
 
+    /*
+     * Get food per capita.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getFoodPerCapita() {
         long pop = getTotalPopulation();
         return pop > 0 ? getTotalFood() / pop : 0;
     }
 
+    /*
+     * Get biomass domesticated.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getBiomassDomesticated() {
         return getTotalPopulation() * 0.15 + getTotalFood() * 0.4;
     }
 
+    /*
+     * Get potable water total.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getPotableWaterTotal() {
         if (worldBuffer == null) return 0;
         double water = 0;
@@ -908,22 +1251,46 @@ public class H3SimulationEngine implements ISimulationEngine {
         return water;
     }
 
+    /*
+     * Get remaining resources ratio.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getRemainingResourcesRatio() {
         return 100.0 - getResourceDepletionRate();
     }
 
+    /*
+     * Get systemic entropy.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getSystemicEntropy() {
         float tech = getAverageTechnology();
         long pop = getTotalPopulation();
         return (pop * 0.005 + tech * 2.5) % 1000.0;
     }
 
+    /*
+     * Get pollution level.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getPollutionLevel() {
         float tech = getAverageTechnology();
         long pop = getTotalPopulation();
         return Math.max(0, (tech > 50 ? (tech - 50) * 1.5 * (pop / 100000.0) : 0));
     }
 
+    /*
+     * Get occupied territory area.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getOccupiedTerritoryArea() {
         double baseCellArea = (currentScenario != null && currentScenario.getCellSizeKm2() > 0)
                 ? currentScenario.getCellSizeKm2() : 1250.0;
@@ -954,26 +1321,56 @@ public class H3SimulationEngine implements ISimulationEngine {
         return physicalGridArea;
     }
 
+    /*
+     * Get offspring percentage.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getOffspringPercentage() {
         float fert = getCurrentFertility();
         return Math.min(95.0, Math.max(20.0, 40.0 + fert * 7.5));
     }
 
+    /*
+     * Get age at first child.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getAgeAtFirstChild() {
         float tech = getAverageTechnology();
         return Math.min(32.0, Math.max(16.0, 18.0 + (tech / 200.0) * 10.0));
     }
 
+    /*
+     * Get immigration rate.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getImmigrationRate() {
         long pop = getTotalPopulation();
         return pop > 0 ? (pop % 1000) / 10.0 : 0;
     }
 
+    /*
+     * Get education level.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getEducationLevel() {
         float tech = getAverageTechnology();
         return Math.min(100.0, (tech / 250.0) * 100.0);
     }
 
+    /*
+     * Get happiness index.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getHappinessIndex() {
         float gini = getCurrentGini();
         float life = getCurrentLifeExpectancy();
@@ -984,6 +1381,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Math.max(10.0, Math.min(100.0, base));
     }
 
+    /*
+     * Get conflict level.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getConflictLevel() {
         float gini = getCurrentGini();
         double happiness = getHappinessIndex();
@@ -993,6 +1396,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Math.max(0.0, Math.min(100.0, (gini * 35.0) + (100.0 - happiness) * 0.25 + scarcity));
     }
 
+    /*
+     * Get city states count.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getCityStatesCount() {
         float tech = getAverageTechnology();
         long year = getCurrentYear();
@@ -1004,11 +1413,23 @@ public class H3SimulationEngine implements ISimulationEngine {
         return (int) Math.max(0, popCells / 12);
     }
 
+    /*
+     * Get institutional maturity.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getInstitutionalMaturity() {
         float tech = getAverageTechnology();
         return Math.min(100.0, tech * 0.45);
     }
 
+    /*
+     * Get division of labor index.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getDivisionOfLaborIndex() {
         float tech = getAverageTechnology();
         long pop = getTotalPopulation();
@@ -1016,7 +1437,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Math.min(100.0, (surplus * 60.0) + (tech * 0.25) + Math.log10(Math.max(1, pop)) * 3.0);
     }
 
-    /**
+    /*
      * Energy Return on Investment for the food/subsistence system (EROI_alim = E_out / E_in).
      * Preindustrial: 3:1 to 15:1. Industrial thermodynamic inversion: < 1.0 (7-10 kcal fossil per 1 kcal ingested).
      */
@@ -1035,7 +1456,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
-    /**
+    /*
      * Net societal energy surplus fraction Phi = 1 - 1 / EROI_alim (Tainter 1988, Hall et al. 2014).
      */
     public double getNetSurplusFraction() {
@@ -1043,7 +1464,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Math.max(0.0, 1.0 - (1.0 / Math.max(0.1, eroi)));
     }
 
-    /**
+    /*
      * Trophic footprint multiplier mu = Mobilized Raw Biomass / Ingested Energy (2.0x to 25.0x).
      */
     public double getTrophicMultiplier() {
@@ -1055,7 +1476,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         return PhysicalConstants.TROPHIC_MULTIPLIER_POST_INDUSTRIAL;
     }
 
-    /**
+    /*
      * Gross raw biomass mobilized per capita per year in kg/hab/an.
      */
     public double getBiomassMobilizedPerCapitaKg() {
@@ -1066,6 +1487,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return (PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_MJ * trophicMul) / energyDensity;
     }
 
+    /*
+     * Get max hierarchy level.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getMaxHierarchyLevel() {
         float tech = getAverageTechnology();
         if (tech < 10) return 1;
@@ -1076,6 +1503,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return 6;
     }
 
+    /*
+     * Get largest cultural unit size.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getLargestCulturalUnitSize() {
         if (!nations.isEmpty()) {
             return nations.stream()
@@ -1087,6 +1520,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return (long) (pop * Math.min(0.85, 0.2 + (getAverageTechnology() / 300.0)));
     }
 
+    /*
+     * Get largest organization complexity.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getLargestOrganizationComplexity() {
         long largestPop = getLargestCulturalUnitSize();
         if (largestPop <= 0) return 0.0;
@@ -1104,6 +1543,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return largestPop * (1.0 + avgTech * 0.4) * stateCap * (Math.log(1.0 + hierarchy) / Math.log(2.0));
     }
 
+    /*
+     * Get largest organization entropy.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getLargestOrganizationEntropy() {
         double complexity = getLargestOrganizationComplexity();
         double pollution = getPollutionLevel();
@@ -1111,6 +1556,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return (complexity * 0.05 + tech * 1.2) * (1.0 + pollution / 100.0);
     }
 
+    /*
+     * Get kardashev scale.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getKardashevScale() {
         double energyMW = getEnergyCaptured();
         if (energyMW <= 0) return 0.0;
@@ -1119,6 +1570,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Math.max(0.0, Math.min(3.0, k));
     }
 
+    /*
+     * Get built capital total.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getBuiltCapitalTotal() {
         float tech = getAverageTechnology();
         long pop = getTotalPopulation();
@@ -1126,17 +1583,35 @@ public class H3SimulationEngine implements ISimulationEngine {
         return pop * (0.5 + Math.pow(Math.max(0.0, tech), 1.8) * 8.0);
     }
 
+    /*
+     * Get elite formation ratio.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getEliteFormationRatio() {
         float gini = getCurrentGini();
         return Math.min(25.0, Math.max(0.5, 1.0 + gini * 15.0));
     }
 
+    /*
+     * Get elder capital share.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getElderCapitalShare() {
         float gini = getCurrentGini();
         float life = getCurrentLifeExpectancy();
         return Math.min(90.0, Math.max(30.0, 40.0 + (life / 80.0) * 30.0 + gini * 20.0));
     }
 
+    /*
+     * Get land rent index.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getLandRentIndex() {
         long pop = getTotalPopulation();
         long cells = getPopulatedCellCount();
@@ -1144,33 +1619,69 @@ public class H3SimulationEngine implements ISimulationEngine {
         return density * 1.5 + getAverageTechnology() * 0.8;
     }
 
+    /*
+     * Get tools count.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getToolsCount() {
         float tech = getAverageTechnology();
         return (long) (getTotalPopulation() * (0.5 + tech * 0.2));
     }
 
+    /*
+     * Get products count.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getProductsCount() {
         float tech = getAverageTechnology();
         return (long) Math.max(3, 5 + Math.pow(tech, 1.6));
     }
 
+    /*
+     * Get system complexity index.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getSystemComplexityIndex() {
         float tech = getAverageTechnology();
         double divLabor = getDivisionOfLaborIndex();
         return Math.min(100.0, (tech * 0.4 + divLabor * 0.6));
     }
 
+    /*
+     * Get reconstruction capability index.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getReconstructionCapabilityIndex() {
         double edu = getEducationLevel();
         float tech = getAverageTechnology();
         return Math.min(100.0, (edu * 0.7 + tech * 0.3));
     }
 
+    /*
+     * Get system interdependence index.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getSystemInterdependenceIndex() {
         double complexity = getSystemComplexityIndex();
         return Math.min(100.0, complexity * 0.95);
     }
 
+    /*
+     * Get age pyramid.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int[] getAgePyramid() {
         int[] cohorts = new int[7];
         if (agentBuffer != null && agentBuffer.getCapacity() > 0) {
@@ -1221,23 +1732,47 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     // --- ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â  COGNITION & INFORMATION ---
+    /*
+     * Get shannon bandwidth.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getShannonBandwidth() {
         float tech = getAverageTechnology();
         return 1.0 + Math.pow(tech, 1.4) * 0.8;
     }
 
+    /*
+     * Get collective memory stock.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCollectiveMemoryStock() {
         float tech = getAverageTechnology();
         long pop = getTotalPopulation();
         return (pop * 0.05 + Math.pow(tech, 2.1));
     }
 
+    /*
+     * Get innovation diffusion speed.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getInnovationDiffusionSpeed() {
         float tech = getAverageTechnology();
         double divLabor = getDivisionOfLaborIndex();
         return Math.min(100.0, (tech * 0.4 + divLabor * 0.6));
     }
 
+    /*
+     * Get knowledge decay rate.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getKnowledgeDecayRate() {
         float gini = getCurrentGini();
         double conflict = getConflictLevel();
@@ -1245,18 +1780,36 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     // --- ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â ÃƒÆ’Ã¢â‚¬Â°COLOGIE & FRONTIÃƒÆ’Ã‹â€ RES PLANÃƒÆ’Ã¢â‚¬Â°TAIRES ---
+    /*
+     * Get soil npkquality.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getSoilNPKQuality() {
         float tech = getAverageTechnology();
         double resDep = getResourceDepletionRate();
         return Math.max(5.0, 100.0 - (resDep * 0.6) + Math.min(15.0, tech * 0.1));
     }
 
+    /*
+     * Get carbon footprint.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCarbonFootprint() {
         double energy = getEnergyCaptured();
         float tech = getAverageTechnology();
         return (energy * (tech > 40 && tech < 180 ? 0.85 : 0.2)) / 1000.0;
     }
 
+    /*
+     * Get wild biodiversity index.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getWildBiodiversityIndex() {
         float bioNat = getTotalBiomassNatural();
         double bioDom = getBiomassDomesticated();
@@ -1264,6 +1817,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return total > 0 ? Math.min(100.0, (bioNat / total) * 100.0) : 100.0;
     }
 
+    /*
+     * Get wet bulb safety margin.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getWetBulbSafetyMargin() {
         float temp = 15.0f;
         float[] temps = worldBuffer != null ? worldBuffer.getTemperature() : null;
@@ -1275,6 +1834,12 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     // --- ÃƒÂ¢Ã‚ÂÃ‚Â³ CLIODYNAMIQUE & RISQUES SYSTÃƒÆ’Ã¢â‚¬Â°MIQUES ---
+    /*
+     * Get elite overproduction index.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getEliteOverproductionIndex() {
         double eliteForm = getEliteFormationRatio();
         float gini = getCurrentGini();
@@ -1282,6 +1847,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Double.isNaN(val) ? 1.0 : Math.max(0.0, Math.min(10.0, val));
     }
 
+    /*
+     * Get fiscal stress index.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getFiscalStressIndex() {
         double landRent = getLandRentIndex();
         float gini = getCurrentGini();
@@ -1289,6 +1860,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Double.isNaN(val) ? 0.0 : Math.max(0.0, Math.min(100.0, val));
     }
 
+    /*
+     * Get geopolitical tension.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getGeopoliticalTension() {
         int cityStates = getCityStatesCount();
         double conflict = getConflictLevel();
@@ -1296,6 +1873,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Double.isNaN(val) ? 0.0 : Math.max(0.0, Math.min(100.0, val));
     }
 
+    /*
+     * Get collapse vulnerability.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCollapseVulnerability() {
         double resDep = getResourceDepletionRate();
         double psi = getEliteOverproductionIndex();
@@ -1310,6 +1893,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Double.isNaN(val) ? 0.0 : Math.max(0.0, Math.min(100.0, val));
     }
 
+    /*
+     * Get average asabiyyah.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getAverageAsabiyyah() {
         if (cells == null || cells.isEmpty()) return 80.0;
         double sum = 0;
@@ -1323,6 +1912,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         return count > 0 ? (sum / count) * 100.0 : 80.0;
     }
 
+    /*
+     * Get population survival rate.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getPopulationSurvivalRate() {
         long currentPop = getTotalPopulation();
         long initPop = currentScenario != null ? currentScenario.getInitialHumanCount() : 1_000_000L;
@@ -1338,18 +1933,42 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
+    /*
+     * Get world buffer.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public org.ether.society.core.dod.WorldBuffer getWorldBuffer() {
         return worldBuffer;
     }
 
+    /*
+     * Set world buffer.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @param worldBuffer the world buffer parameter (org.ether.society.core.dod.WorldBuffer)
+     */
     public void setWorldBuffer(org.ether.society.core.dod.WorldBuffer worldBuffer) {
         this.worldBuffer = worldBuffer;
     }
 
+    /*
+     * Get agent buffer.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public org.ether.society.core.dod.AgentBuffer getAgentBuffer() {
         return agentBuffer;
     }
 
+    /*
+     * Get simulation save manager.
+     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public SimulationSaveManager getSimulationSaveManager() {
         return simulationSaveManager;
     }

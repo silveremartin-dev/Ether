@@ -22,7 +22,7 @@ import java.util.List;
 public class LenskiPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(LenskiPureEngine.class);
 
-    /**
+    /*
      * Computes theoretical Lenski Gini coefficient based on technology stage (1.0 = Hunter-Gatherer, 3.0 = Agrarian, 5.0 = Informational).
      */
     public static double calculateLenskiGini(double techStage) {
@@ -31,6 +31,13 @@ public class LenskiPureEngine {
         return 0.35; // Redistribution in Industrial / Informational societies
     }
 
+    /*
+     * Process hybrid.
+     * Enforces physical invariants and updates associated state variables within {@code LenskiPureEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

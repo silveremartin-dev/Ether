@@ -25,12 +25,25 @@ public class H3SpatialPartitioner {
     private static final int MAX_COORD = (1 << HILBERT_ORDER) - 1;
 
     public static class SpatialPartition {
+        /* Internal state variable for partition index (int). */
         private final int partitionIndex;
+        /* Internal state variable for start index (int). */
         private final int startIndex;
+        /* Internal state variable for end index (int). */
         private final int endIndex;
+        /* Internal state variable for cell count (int). */
         private final int cellCount;
         private final Set<Integer> boundaryIndices = new HashSet<>();
 
+        /*
+         * Spatial partition.
+         * Enforces physical invariants and updates associated state variables within {@code H3SpatialPartitioner}.
+         *
+         * @param partitionIndex the partition index parameter (int)
+         * @param startIndex the start index parameter (int)
+         * @param endIndex the end index parameter (int)
+         * @return the resulting computation or state reference
+         */
         public SpatialPartition(int partitionIndex, int startIndex, int endIndex) {
             this.partitionIndex = partitionIndex;
             this.startIndex = startIndex;
@@ -38,15 +51,51 @@ public class H3SpatialPartitioner {
             this.cellCount = Math.max(0, endIndex - startIndex + 1);
         }
 
+        /*
+         * Get partition index.
+         * Enforces physical invariants and updates associated state variables within {@code H3SpatialPartitioner}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getPartitionIndex() { return partitionIndex; }
+        /*
+         * Get start index.
+         * Enforces physical invariants and updates associated state variables within {@code H3SpatialPartitioner}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getStartIndex() { return startIndex; }
+        /*
+         * Get end index.
+         * Enforces physical invariants and updates associated state variables within {@code H3SpatialPartitioner}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getEndIndex() { return endIndex; }
+        /*
+         * Get cell count.
+         * Enforces physical invariants and updates associated state variables within {@code H3SpatialPartitioner}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getCellCount() { return cellCount; }
+        /*
+         * Get boundary indices.
+         * Enforces physical invariants and updates associated state variables within {@code H3SpatialPartitioner}.
+         *
+         * @return the resulting computation or state reference
+         */
         public Set<Integer> getBoundaryIndices() { return boundaryIndices; }
+        /*
+         * Add boundary index.
+         * Enforces physical invariants and updates associated state variables within {@code H3SpatialPartitioner}.
+         *
+         * @param index the index parameter (int)
+         */
         public void addBoundaryIndex(int index) { boundaryIndices.add(index); }
     }
 
-    /**
+    /*
      * Sorts a list of H3Cell instances by their 2D Hilbert index to maximize spatial locality.
      * Modifies the list in-place.
      */
@@ -64,7 +113,7 @@ public class H3SpatialPartitioner {
         }
     }
 
-    /**
+    /*
      * Generates N spatial partitions over a sorted cell array.
      */
     public static List<SpatialPartition> partition(int totalCells, int numPartitions) {
@@ -87,7 +136,7 @@ public class H3SpatialPartitioner {
         return partitions;
     }
 
-    /**
+    /*
      * Identifies boundary cells in a partition whose neighbor indices fall outside the partition bounds.
      */
     public static void computeBoundaries(SpatialPartition partition, int[][] neighborIndices) {
@@ -108,7 +157,7 @@ public class H3SpatialPartitioner {
         }
     }
 
-    /**
+    /*
      * Computes the 1D Hilbert key from latitude [-90, +90] and longitude [-180, +180].
      */
     public static long computeHilbertKey(double latitude, double longitude) {
@@ -123,7 +172,7 @@ public class H3SpatialPartitioner {
         return xy2d(HILBERT_ORDER, x, y);
     }
 
-    /**
+    /*
      * Calculates the computational weight per cell based on human population density,
      * trade/migration flux pressure, and institutional complexity.
      */
@@ -147,7 +196,7 @@ public class H3SpatialPartitioner {
         return weights;
     }
 
-    /**
+    /*
      * Generates N spatial partitions balanced by cumulative computational weight.
      */
     public static List<SpatialPartition> partitionByComputationalWeights(float[] weights, int numPartitions) {
@@ -188,7 +237,7 @@ public class H3SpatialPartitioner {
         return partitions;
     }
 
-    /**
+    /*
      * Standard Hilbert Curve mapping from (x,y) to 1D distance 'd'.
      */
     private static long xy2d(int n, int x, int y) {

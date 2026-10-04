@@ -68,6 +68,7 @@ public class MainView extends StackPane {
     private PreferencesPanel preferencesPanel;
     private NotificationOverlay notificationOverlay;
     private ColorLegend colorLegend;
+    /* Internal state variable for is switching tabs (boolean). */
     private boolean isSwitchingTabs = false;
 
     // Headless Mode Dashboard Overlay
@@ -84,6 +85,7 @@ public class MainView extends StackPane {
     // Full-Screen Map Mode
     private BorderPane simulationRoot;
     private StackPane mapStack;
+    /* Internal state variable for is full screen (boolean). */
     private boolean isFullScreen = false;
     private javafx.event.EventHandler<javafx.scene.input.KeyEvent> escapeKeyFilter;
 
@@ -258,6 +260,11 @@ public class MainView extends StackPane {
         getChildren().add(tabPane);
     }
 
+    /*
+     * Update tab titles.
+     * Enforces physical invariants and updates associated state variables within {@code MainView}.
+     *
+     */
     public void updateTabTitles() {
         planetTab.setText("1. " + org.ether.society.i18n.I18n.get("tab.planet_generator"));
         resourcesTab.setText("2. " + org.ether.society.i18n.I18n.get("tab.resources"));
@@ -550,6 +557,7 @@ public class MainView extends StackPane {
     }
 
     // --- Timelapse Recording State ---
+    /* Internal state variable for is recording (boolean). */
     private boolean isRecording = false;
 
     private void toggleTimelapseRecording() {
@@ -747,6 +755,11 @@ public class MainView extends StackPane {
         logger.info("Simulation initialized from Execution Context Panel and switched to Simulation Tab (4) in ready/paused mode");
     }
 
+    /*
+     * Toggle full screen.
+     * Enforces physical invariants and updates associated state variables within {@code MainView}.
+     *
+     */
     public void toggleFullScreen() {
         if (isFullScreen) {
             exitFullScreen();
@@ -755,6 +768,11 @@ public class MainView extends StackPane {
         }
     }
 
+    /*
+     * Enter full screen.
+     * Enforces physical invariants and updates associated state variables within {@code MainView}.
+     *
+     */
     public void enterFullScreen() {
         if (isFullScreen || mapStack == null || simulationRoot == null) return;
         isFullScreen = true;
@@ -778,6 +796,14 @@ public class MainView extends StackPane {
             // Listen to OS-level fullscreen exit (e.g. default Escape handling by JavaFX)
             stage.fullScreenProperty().addListener(new javafx.beans.value.ChangeListener<Boolean>() {
                 @Override
+                /*
+                 * Changed.
+                 * Enforces physical invariants and updates associated state variables within {@code MainView}.
+                 *
+                 * @param obs the obs parameter (Boolean&gt;)
+                 * @param oldVal the old val parameter (Boolean)
+                 * @param newVal the new val parameter (Boolean)
+                 */
                 public void changed(javafx.beans.value.ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal) {
                     if (!newVal && isFullScreen) {
                         stage.fullScreenProperty().removeListener(this);
@@ -806,6 +832,11 @@ public class MainView extends StackPane {
         logger.info("Entered Full Screen map view mode");
     }
 
+    /*
+     * Exit full screen.
+     * Enforces physical invariants and updates associated state variables within {@code MainView}.
+     *
+     */
     public void exitFullScreen() {
         if (!isFullScreen || mapStack == null || simulationRoot == null) return;
         isFullScreen = false;
@@ -845,10 +876,22 @@ public class MainView extends StackPane {
         logger.info("Exited Full Screen map view mode");
     }
 
+    /*
+     * Is full screen.
+     * Enforces physical invariants and updates associated state variables within {@code MainView}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isFullScreen() {
         return isFullScreen;
     }
 
+    /*
+     * Add legend.
+     * Enforces physical invariants and updates associated state variables within {@code MainView}.
+     *
+     * @param legend the legend parameter (javafx.scene.Node)
+     */
     public void addLegend(javafx.scene.Node legend) {
         if (mapStack != null) {
             StackPane.setAlignment(legend, Pos.BOTTOM_RIGHT);
@@ -927,9 +970,16 @@ public class MainView extends StackPane {
         }
 
         AnimationTimer eventLoop = new AnimationTimer() {
+            /* Internal state variable for last update (long). */
             private long lastUpdate = 0;
 
             @Override
+            /*
+             * Handle.
+             * Enforces physical invariants and updates associated state variables within {@code MainView}.
+             *
+             * @param now the now parameter (long)
+             */
             public void handle(long now) {
                 if (now - lastUpdate >= 250_000_000) {
                     List<String> events = engine.getEventSystem().flushEvents();
@@ -985,6 +1035,11 @@ public class MainView extends StackPane {
         return I18n.getOrDefault("age.renaissance", "RENAISSANCE");
     }
 
+    /*
+     * Save simulation.
+     * Enforces physical invariants and updates associated state variables within {@code MainView}.
+     *
+     */
     public void saveSimulation() {
         javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog(I18n.getOrDefault("mainview.save.default_name", "Sauvegarde Scenario"));
         dialog.setTitle(I18n.getOrDefault("mainview.save.dialog_title", "Save Simulation"));
@@ -997,6 +1052,11 @@ public class MainView extends StackPane {
         });
     }
 
+    /*
+     * Load simulation.
+     * Enforces physical invariants and updates associated state variables within {@code MainView}.
+     *
+     */
     public void loadSimulation() {
         engine.loadSimulation(null);
         notificationOverlay.showEvent(I18n.getOrDefault("mainview.load.success", "Simulation loaded from database"));

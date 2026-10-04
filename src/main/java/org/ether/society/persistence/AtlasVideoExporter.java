@@ -36,6 +36,7 @@ import java.util.function.Consumer;
  */
 public class AtlasVideoExporter {
     private static final Logger logger = LoggerFactory.getLogger(AtlasVideoExporter.class);
+    /* Internal state variable for export dir (String). */
     private static final String EXPORT_DIR = "saves/exports";
 
     private static final ExecutorService EXPORT_EXECUTOR = Executors.newSingleThreadExecutor(r -> {
@@ -44,7 +45,7 @@ public class AtlasVideoExporter {
         return t;
     });
 
-    /**
+    /*
      * Asynchronously export the 2D Dynamic Atlas animation into an Animated GIF / Video file.
      *
      * @param historyManager The simulation history manager with recorded snapshots
@@ -140,7 +141,7 @@ public class AtlasVideoExporter {
         return future;
     }
 
-    /**
+    /*
      * Renders a single crisp off-screen BufferedImage frame with all layers and HUD telemetry.
      */
     public static BufferedImage renderFrame(

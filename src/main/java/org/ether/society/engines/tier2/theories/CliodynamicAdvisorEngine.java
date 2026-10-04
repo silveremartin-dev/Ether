@@ -28,6 +28,14 @@ public class CliodynamicAdvisorEngine {
 
     public record CliodynamicAlert(String severity, String title, String description) {}
 
+    /*
+     * Generate advisor alerts.
+     * Enforces physical invariants and updates associated state variables within {@code CliodynamicAdvisorEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param currentYear the current year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static List<CliodynamicAlert> generateAdvisorAlerts(List<H3Cell> cells, long currentYear) {
         List<CliodynamicAlert> alerts = new ArrayList<>();
         if (cells == null || cells.isEmpty()) return alerts;

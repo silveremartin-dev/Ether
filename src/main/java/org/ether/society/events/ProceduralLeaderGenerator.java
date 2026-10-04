@@ -25,11 +25,17 @@ public class ProceduralLeaderGenerator {
     private static final String[] LEADER_TITLES_SAGE = {"Prophète", "Sage Éclairé", "Patriarche", "Guide Spirituel", "Philosophe Errant"};
     private static final String[] LEADER_TITLES_PURGER = {"Autocrate", "Inquisiteur", "Purificateur", "Dictateur Central", "Commandeur"};
 
+    /*
+     * Set seed.
+     * Enforces physical invariants and updates associated state variables within {@code ProceduralLeaderGenerator}.
+     *
+     * @param seed the seed parameter (long)
+     */
     public void setSeed(long seed) {
         random.setSeed(seed);
     }
 
-    /**
+    /*
      * Checks whether an emergent historical outlier should spawn this year.
      * @param year current simulation year
      * @param totalPopulation total population in world

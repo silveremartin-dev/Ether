@@ -44,10 +44,10 @@
     "seasonUseImport" : false,
     "seasonSource" : "",
     "seasonSeed" : 79777,
+    "canonicalPlanet" : "none",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDFDD MONDE ARCHIPEL : Monde océanique parsemé de micro-continents, chaînes d'îles et mers peu profondes. Rendement élevé du transport maritime, surfaces arables terrestres morcelées, forte dépendance commerciale halieutique.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "none"
+    "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale.",
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 550.0,
   "soilOrganicCarbonGtC" : 1800.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
+  "canonicalPlanet" : "none",
   "associatedEpochYear" : 2026,
-  "presetDescription" : "\uD83C\uDFDD MONDE ARCHIPEL : Monde océanique parsemé de micro-continents, chaînes d'îles et mers peu profondes. Rendement élevé du transport maritime, surfaces arables terrestres morcelées, forte dépendance commerciale halieutique.",
-  "canonicalPlanet" : "none"
+  "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale."
 }

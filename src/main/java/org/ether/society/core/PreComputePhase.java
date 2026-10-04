@@ -31,6 +31,12 @@ public class PreComputePhase {
     private final Scenario scenario;
     private final Random random;
 
+    /*
+     * Pre compute phase.
+     * Enforces physical invariants and updates associated state variables within {@code PreComputePhase}.
+     *
+     * @param scenario the scenario parameter (Scenario)
+     */
     public PreComputePhase(Scenario scenario) {
         this.scenario = scenario;
         this.random = new Random(scenario.getPlanetPreset() != null
@@ -38,7 +44,7 @@ public class PreComputePhase {
                 : 12345L);
     }
 
-    /**
+    /*
      * Run all pre-computation steps on the given cells.
      */
     public void execute(List<H3Cell> cells) {
@@ -74,7 +80,7 @@ public class PreComputePhase {
         logger.info("=== PreCompute Phase Complete in {}ms ===", elapsed);
     }
 
-    /**
+    /*
      * Compute climate (temperature, precipitation) and glaciological forcings for each cell.
      * Preserves climate if already initialized via Tab 1 / raster tensors, applying paleoclimate anomalies if requested.
      */
@@ -191,7 +197,7 @@ public class PreComputePhase {
         org.ether.society.engines.tier1.SeaLevelTransitionEngine.applySeaLevelTransition(cells, seaOffset);
     }
 
-    /**
+    /*
      * Initialize resource stockpiles based on biome type and coastal marine abundance.
      * Preserves existing resources if already populated by Tab 2.
      */
@@ -291,7 +297,7 @@ public class PreComputePhase {
         }
     }
 
-    /**
+    /*
      * Distribute initial human population based on scenario settings.
      * Preserves already configured populations (from UI or custom density maps),
      * or delegates to ProceduralPopulationEngine.
@@ -317,7 +323,7 @@ public class PreComputePhase {
         org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.distributePopulation(cells, scenario, totalPop, techLevel, pattern, false, startYear);
     }
 
-    /**
+    /*
      * Seeds initial physical state parameters across cells based on scenario configuration.
      */
     private void seedInitialPhysicalState(List<H3Cell> cells) {

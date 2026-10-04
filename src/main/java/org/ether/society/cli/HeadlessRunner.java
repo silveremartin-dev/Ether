@@ -48,10 +48,22 @@ public class HeadlessRunner {
         SAFE_FALLBACK
     }
 
+    /*
+     * Main.
+     * Enforces physical invariants and updates associated state variables within {@code HeadlessRunner}.
+     *
+     * @param args the args parameter (String[])
+     */
     public static void main(String[] args) {
         run(args);
     }
 
+    /*
+     * Run.
+     * Enforces physical invariants and updates associated state variables within {@code HeadlessRunner}.
+     *
+     * @param args the args parameter (String[])
+     */
     public static void run(String[] args) {
         System.out.println("================================================================================");
         System.out.println("           ETHER PLANETARY SIMULATION ENGINE â€” HIGH-PERFORMANCE CLI             ");

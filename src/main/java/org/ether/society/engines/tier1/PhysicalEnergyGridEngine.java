@@ -25,13 +25,13 @@ import java.util.List;
 public class PhysicalEnergyGridEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicalEnergyGridEngine.class);
 
-    /** Specific energy density of wood biomass in MJ/kg */
+    /* Specific energy density of wood biomass in MJ/kg */
     public static final double WOOD_ENERGY_DENSITY_MJ_PER_KG = 18.5;
 
-    /** Specific energy density of coal in MJ/kg */
+    /* Specific energy density of coal in MJ/kg */
     public static final double COAL_ENERGY_DENSITY_MJ_PER_KG = 24.0;
 
-    /**
+    /*
      * Calculates available per-capita mechanical work output (Watts/person).
      *
      * @param cell H3 terrain cell
@@ -58,7 +58,7 @@ public class PhysicalEnergyGridEngine {
         return Math.max(100.0, usableMechanicalPowerWatts / pop);
     }
 
-    /**
+    /*
      * Executes one physical energy grid tick across cells.
      */
     public static void processPhysicalEnergyGrid(List<H3Cell> cells) {

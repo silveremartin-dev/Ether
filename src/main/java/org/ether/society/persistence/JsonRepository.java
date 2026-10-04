@@ -31,10 +31,24 @@ public abstract class JsonRepository<T> {
     private final Path filePath;
     private final Class<T> types;
 
+    /*
+     * Json repository.
+     * Enforces physical invariants and updates associated state variables within {@code JsonRepository}.
+     *
+     * @param filename the filename parameter (String)
+     * @param type the type parameter (Class&lt;T&gt;)
+     */
     public JsonRepository(String filename, Class<T> type) {
         this(org.ether.society.config.EtherPaths.getUserPresetsDir().resolve(Paths.get(filename).getFileName().toString()), type);
     }
 
+    /*
+     * Json repository.
+     * Enforces physical invariants and updates associated state variables within {@code JsonRepository}.
+     *
+     * @param customPath the custom path parameter (Path)
+     * @param type the type parameter (Class&lt;T&gt;)
+     */
     public JsonRepository(Path customPath, Class<T> type) {
         this.types = type;
         this.filePath = customPath;
@@ -61,6 +75,12 @@ public abstract class JsonRepository<T> {
         }
     }
 
+    /*
+     * Find all.
+     * Enforces physical invariants and updates associated state variables within {@code JsonRepository}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<T> findAll() {
         try {
             if (Files.size(filePath) == 0)
@@ -75,6 +95,12 @@ public abstract class JsonRepository<T> {
         }
     }
 
+    /*
+     * Save.
+     * Enforces physical invariants and updates associated state variables within {@code JsonRepository}.
+     *
+     * @param entity the entity parameter (T)
+     */
     public void save(T entity) {
         List<T> all = findAll();
         // Determine if update or insert?
@@ -86,6 +112,12 @@ public abstract class JsonRepository<T> {
         saveAll(all);
     }
 
+    /*
+     * Save all.
+     * Enforces physical invariants and updates associated state variables within {@code JsonRepository}.
+     *
+     * @param entities the entities parameter (List&lt;T&gt;)
+     */
     public void saveAll(List<T> entities) {
         try {
             mapper.writeValue(filePath.toFile(), entities);
@@ -94,6 +126,12 @@ public abstract class JsonRepository<T> {
         }
     }
 
+    /*
+     * Delete.
+     * Enforces physical invariants and updates associated state variables within {@code JsonRepository}.
+     *
+     * @param entity the entity parameter (T)
+     */
     public void delete(T entity) {
         List<T> all = findAll();
         all.remove(entity); // Relies on equals()

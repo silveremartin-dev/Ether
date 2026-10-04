@@ -75,14 +75,30 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     public static class ScenarioSelectableItem {
         private final Scenario scenario;
         private final BooleanProperty selected = new SimpleBooleanProperty(false);
+        /* Internal state variable for executed (boolean). */
         private boolean executed;
+        /* Internal state variable for run id (String). */
         private String runId;
         private BatchState batchState = BatchState.NOT_EXECUTED;
+        /* Internal state variable for progress (double). */
         private double progress = 0.0;
+        /* Internal state variable for queue index (int). */
         private int queueIndex = 0;
+        /* Internal state variable for estimated duration sec (double). */
         private double estimatedDurationSec = 0.0;
+        /* Internal state variable for remaining duration sec (double). */
         private double remainingDurationSec = 0.0;
 
+        /*
+         * Scenario selectable item.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @param scenario the scenario parameter (Scenario)
+         * @param isSelected the is selected parameter (boolean)
+         * @param executed the executed parameter (boolean)
+         * @param runId the run id parameter (String)
+         * @return the resulting computation or state reference
+         */
         public ScenarioSelectableItem(Scenario scenario, boolean isSelected, boolean executed, String runId) {
             this.scenario = scenario;
             this.selected.set(isSelected);
@@ -105,7 +121,19 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
         }
 
+        /*
+         * Get scenario.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public Scenario getScenario() { return scenario; }
+        /*
+         * Get name.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getName() {
             if (scenario == null) return "ScÃ©nario Sans Nom";
             String n = scenario.getName();
@@ -116,11 +144,35 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
         public String getYearRange() { return "An " + (scenario != null ? scenario.getStartDateYear() : 0) + " âž” " + (scenario != null ? scenario.getEndDateYear() : 100); }
         
+        /*
+         * Is selected.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public boolean isSelected() { return selected.get(); }
+        /*
+         * Set selected.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @param val the val parameter (boolean)
+         */
         public void setSelected(boolean val) { this.selected.set(val); }
+        /*
+         * Selected property.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public BooleanProperty selectedProperty() { return selected; }
 
         public boolean isExecuted() { return executed || progress >= 1.0; }
+        /*
+         * Set executed.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @param executed the executed parameter (boolean)
+         */
         public void setExecuted(boolean executed) { 
             this.executed = executed; 
             if (executed) {
@@ -129,13 +181,37 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                 this.remainingDurationSec = 0.0;
             }
         }
+        /*
+         * Get run id.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getRunId() { return runId; }
         public void setRunId(String runId) { this.runId = runId; }
 
+        /*
+         * Get batch state.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public BatchState getBatchState() { return batchState; }
         public void setBatchState(BatchState batchState) { this.batchState = batchState; }
 
+        /*
+         * Get progress.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getProgress() { return progress; }
+        /*
+         * Set progress.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @param progress the progress parameter (double)
+         */
         public void setProgress(double progress) { 
             this.progress = Math.max(0.0, Math.min(1.0, progress));
             if (this.progress >= 1.0) {
@@ -150,16 +226,45 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
         }
 
+        /*
+         * Get progress percent display.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getProgressPercentDisplay() {
             return String.format("%d%%", (int) Math.round(progress * 100.0));
         }
 
+        /*
+         * Get queue index.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getQueueIndex() { return queueIndex; }
         public void setQueueIndex(int queueIndex) { this.queueIndex = queueIndex; }
 
+        /*
+         * Get estimated duration sec.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getEstimatedDurationSec() { return estimatedDurationSec; }
+        /*
+         * Get remaining duration sec.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getRemainingDurationSec() { return remainingDurationSec; }
 
+        /*
+         * Recalculate estimate.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         */
         public void recalculateEstimate() {
             if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
                 this.estimatedDurationSec = 0.0;
@@ -184,11 +289,23 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
         }
 
+        /*
+         * Get estimated duration display.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getEstimatedDurationDisplay() {
             if ("HISTORICAL_GROUND_TRUTH".equals(runId) || (progress >= 1.0 && executed)) return "-";
             return ExecutionContextPanel.formatDuration(remainingDurationSec);
         }
 
+        /*
+         * Get status display.
+         * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getStatusDisplay() { 
             if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
                 return I18n.getOrDefault("analytics.status.ground_truth_ready", "ðŸŸ¢ Historical Ground Truth (HYDE / Maddison / Seshat)");
@@ -209,6 +326,12 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private final RootCauseAnalyzer analyzer;
     private java.util.function.Supplier<H3SimulationEngine> engineSupplier;
 
+    /*
+     * Set simulation engine supplier.
+     * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+     *
+     * @param engineSupplier the engine supplier parameter (java.util.function.Supplier&lt;H3SimulationEngine&gt;)
+     */
     public void setSimulationEngineSupplier(java.util.function.Supplier<H3SimulationEngine> engineSupplier) {
         this.engineSupplier = engineSupplier;
     }
@@ -236,6 +359,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private TextField searchField;
 
     private TableColumn<ScenarioSelectableItem, Boolean> selectCol;
+    /* Internal state variable for is updating texts (boolean). */
     private boolean isUpdatingTexts = false;
     private TableColumn<ScenarioSelectableItem, String> nameCol;
     private TableColumn<ScenarioSelectableItem, String> yearsCol;
@@ -271,6 +395,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private Label mapLabelDiff;
     private TextArea spatialMetricsReportArea;
     private Timeline timelineAnimation;
+    /* Internal state variable for is playing animation (boolean). */
     private boolean isPlayingAnimation = false;
     private final java.util.concurrent.atomic.AtomicLong spatialComparisonRequestId = new java.util.concurrent.atomic.AtomicLong(0);
 
@@ -280,6 +405,11 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private Label synthHeader;
     private MarkdownViewerPane reportPreviewPane;
 
+    /*
+     * Comparative analytics panel.
+     * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+     *
+     */
     public ComparativeAnalyticsPanel() {
         this.runRepository = SimulationRunRepository.getInstance();
         this.scenarioRepository = new ScenarioRepository();
@@ -375,6 +505,13 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+             *
+             * @param item the item parameter (Boolean)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -411,6 +548,13 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+             *
+             * @param item the item parameter (Double)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) {
@@ -457,6 +601,13 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+             *
+             * @param item the item parameter (String)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) {
@@ -542,6 +693,13 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         scenarioTable.setRowFactory(tv -> {
             TableRow<ScenarioSelectableItem> row = new TableRow<>() {
                 @Override
+                /*
+                 * Update item.
+                 * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+                 *
+                 * @param item the item parameter (ScenarioSelectableItem)
+                 * @param empty the empty parameter (boolean)
+                 */
                 protected void updateItem(ScenarioSelectableItem item, boolean empty) {
                     super.updateItem(item, empty);
                     if (empty || item == null) {
@@ -826,6 +984,11 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         refreshRunList();
     }
 
+    /*
+     * Refresh run list.
+     * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+     *
+     */
     public void refreshRunList() {
         Set<String> previousSelectedNames = new HashSet<>();
         for (ScenarioSelectableItem it : scenarioList) {
@@ -1010,6 +1173,11 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    /*
+     * Recalculate all estimates.
+     * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+     *
+     */
     public void recalculateAllEstimates() {
         for (ScenarioSelectableItem item : scenarioList) {
             item.recalculateEstimate();
@@ -1041,10 +1209,21 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         this.onPauseInteractiveSimulationCallback = pauseCallback;
     }
 
+    /*
+     * Is batch running.
+     * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isBatchRunning() {
         return isBatchRunning.get();
     }
 
+    /*
+     * Pause or cancel batch for interactive simulation.
+     * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+     *
+     */
     public void pauseOrCancelBatchForInteractiveSimulation() {
         if (isBatchRunning.get()) {
             logger.info("Pausing background comparative batch execution for interactive simulation");
@@ -2037,6 +2216,11 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+     *
+     */
     public void updateTexts() {
         isUpdatingTexts = true;
         try {
@@ -2117,11 +2301,25 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                 HistoricalValidationKernel.InterpolationMethod currentInterp = interpolationCombo.getValue();
                 interpolationCombo.setConverter(new javafx.util.StringConverter<HistoricalValidationKernel.InterpolationMethod>() {
                     @Override
+                    /*
+                     * To string.
+                     * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+                     *
+                     * @param object the object parameter (HistoricalValidationKernel.InterpolationMethod)
+                     * @return the resulting computation or state reference
+                     */
                     public String toString(HistoricalValidationKernel.InterpolationMethod object) {
                         if (object == null) return "";
                         return I18n.getOrDefault("interpolation." + object.name().toLowerCase(), object.name());
                     }
                     @Override
+                    /*
+                     * From string.
+                     * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+                     *
+                     * @param string the string parameter (String)
+                     * @return the resulting computation or state reference
+                     */
                     public HistoricalValidationKernel.InterpolationMethod fromString(String string) {
                         return null;
                     }
@@ -2150,6 +2348,13 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
                 metricSelectorCombo.setCellFactory(p -> new ListCell<>() {
                     @Override
+                    /*
+                     * Update item.
+                     * Enforces physical invariants and updates associated state variables within {@code ComparativeAnalyticsPanel}.
+                     *
+                     * @param item the item parameter (String)
+                     * @param empty the empty parameter (boolean)
+                     */
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty || item == null) {

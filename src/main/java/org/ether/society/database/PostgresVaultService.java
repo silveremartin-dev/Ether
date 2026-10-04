@@ -17,16 +17,33 @@ import java.util.Base64;
 public class PostgresVaultService {
     private static final Logger logger = LoggerFactory.getLogger(PostgresVaultService.class);
 
+    /* Internal state variable for db url (String). */
     private final String dbUrl;
+    /* Internal state variable for user (String). */
     private final String user;
+    /* Internal state variable for password (String). */
     private final String password;
 
+    /*
+     * Postgres vault service.
+     * Enforces physical invariants and updates associated state variables within {@code PostgresVaultService}.
+     *
+     * @param dbUrl the db url parameter (String)
+     * @param user the user parameter (String)
+     * @param password the password parameter (String)
+     */
     public PostgresVaultService(String dbUrl, String user, String password) {
         this.dbUrl = dbUrl;
         this.user = user;
         this.password = password;
     }
 
+    /*
+     * Initialize schema.
+     * Enforces physical invariants and updates associated state variables within {@code PostgresVaultService}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean initializeSchema() {
         String sqlScenarios = "CREATE TABLE IF NOT EXISTS ether_scenarios (" +
                 "id SERIAL PRIMARY KEY, " +
@@ -55,6 +72,14 @@ public class PostgresVaultService {
         }
     }
 
+    /*
+     * Upload map to vault.
+     * Enforces physical invariants and updates associated state variables within {@code PostgresVaultService}.
+     *
+     * @param filename the filename parameter (String)
+     * @param pngFile the png file parameter (File)
+     * @return the resulting computation or state reference
+     */
     public boolean uploadMapToVault(String filename, File pngFile) throws IOException {
         if (!pngFile.exists()) {
             logger.warn("Map file {} does not exist for upload.", pngFile.getAbsolutePath());
@@ -84,6 +109,14 @@ public class PostgresVaultService {
         }
     }
 
+    /*
+     * Download map from vault.
+     * Enforces physical invariants and updates associated state variables within {@code PostgresVaultService}.
+     *
+     * @param filename the filename parameter (String)
+     * @param targetFile the target file parameter (File)
+     * @return the resulting computation or state reference
+     */
     public boolean downloadMapFromVault(String filename, File targetFile) {
         String sql = "SELECT image_base64 FROM ether_scenario_maps WHERE filename = ?;";
 

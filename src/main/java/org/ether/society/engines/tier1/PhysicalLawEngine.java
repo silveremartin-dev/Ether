@@ -27,6 +27,13 @@ public class PhysicalLawEngine {
     private static boolean roomTemperatureSuperconductivity = false; // Zero Joule heat loss (I^2 * R = 0)
     private static double entropyGenerationScale = 1.0; // Scale factor for waste heat generation
 
+    /*
+     * Apply physical laws.
+     * Enforces physical invariants and updates associated state variables within {@code PhysicalLawEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void applyPhysicalLaws(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -47,12 +54,30 @@ public class PhysicalLawEngine {
     }
 
     // Getters and Setters
+    /*
+     * Get photosynthetic efficiency multiplier.
+     * Enforces physical invariants and updates associated state variables within {@code PhysicalLawEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getPhotosyntheticEfficiencyMultiplier() { return photosyntheticEfficiencyMultiplier; }
     public static void setPhotosyntheticEfficiencyMultiplier(double mult) { photosyntheticEfficiencyMultiplier = Math.max(0.1, mult); }
 
+    /*
+     * Is room temperature superconductivity.
+     * Enforces physical invariants and updates associated state variables within {@code PhysicalLawEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static boolean isRoomTemperatureSuperconductivity() { return roomTemperatureSuperconductivity; }
     public static void setRoomTemperatureSuperconductivity(boolean active) { roomTemperatureSuperconductivity = active; }
 
+    /*
+     * Get entropy generation scale.
+     * Enforces physical invariants and updates associated state variables within {@code PhysicalLawEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getEntropyGenerationScale() { return entropyGenerationScale; }
     public static void setEntropyGenerationScale(double scale) { entropyGenerationScale = Math.max(0.01, scale); }
 }

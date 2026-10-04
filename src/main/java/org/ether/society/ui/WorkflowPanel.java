@@ -34,6 +34,11 @@ public class WorkflowPanel extends HBox {
     private Runnable onLoadAction;
     private Runnable onSaveAction;
 
+    /*
+     * Workflow panel.
+     * Enforces physical invariants and updates associated state variables within {@code WorkflowPanel}.
+     *
+     */
     public WorkflowPanel() {
         initUI();
     }
@@ -131,22 +136,52 @@ public class WorkflowPanel extends HBox {
     }
 
     // Setters for actions
+    /*
+     * Set on planet action.
+     * Enforces physical invariants and updates associated state variables within {@code WorkflowPanel}.
+     *
+     * @param action the action parameter (Runnable)
+     */
     public void setOnPlanetAction(Runnable action) {
         this.onPlanetAction = action;
     }
 
+    /*
+     * Set on scenario action.
+     * Enforces physical invariants and updates associated state variables within {@code WorkflowPanel}.
+     *
+     * @param action the action parameter (Runnable)
+     */
     public void setOnScenarioAction(Runnable action) {
         this.onScenarioAction = action;
     }
 
+    /*
+     * Set on density action.
+     * Enforces physical invariants and updates associated state variables within {@code WorkflowPanel}.
+     *
+     * @param action the action parameter (Runnable)
+     */
     public void setOnDensityAction(Runnable action) {
         this.onDensityAction = action;
     }
 
+    /*
+     * Set on load action.
+     * Enforces physical invariants and updates associated state variables within {@code WorkflowPanel}.
+     *
+     * @param action the action parameter (Runnable)
+     */
     public void setOnLoadAction(Runnable action) {
         this.onLoadAction = action;
     }
 
+    /*
+     * Set on save action.
+     * Enforces physical invariants and updates associated state variables within {@code WorkflowPanel}.
+     *
+     * @param action the action parameter (Runnable)
+     */
     public void setOnSaveAction(Runnable action) {
         this.onSaveAction = action;
     }

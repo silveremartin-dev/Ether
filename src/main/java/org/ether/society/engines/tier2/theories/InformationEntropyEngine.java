@@ -24,7 +24,7 @@ import java.util.List;
 public class InformationEntropyEngine {
     private static final Logger logger = LoggerFactory.getLogger(InformationEntropyEngine.class);
 
-    /**
+    /*
      * Calculates Shannon Channel Capacity (bits/sec) across terrain friction.
      *
      * @param bandwidthHz Frequency bandwidth in Hz
@@ -36,7 +36,7 @@ public class InformationEntropyEngine {
         return bandwidthHz * (Math.log(1.0 + signalToNoiseRatio) / Math.log(2.0));
     }
 
-    /**
+    /*
      * Executes one information channel capacity update across cells.
      */
     public static void processInformationEntropy(List<H3Cell> cells) {

@@ -25,13 +25,13 @@ import java.util.List;
 public class BiologicalDemographicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(BiologicalDemographicsEngine.class);
 
-    /** Baseline actuarial aging constant Î± */
+    /* Baseline actuarial aging constant Î± */
     public static final double GOMPERTZ_ALPHA = 0.0001;
 
-    /** Cellular senescence rate Î² */
+    /* Cellular senescence rate Î² */
     public static final double GOMPERTZ_BETA = 0.08;
 
-    /**
+    /*
      * Calculates Gompertz-Makeham hazard rate Î¼(x) for age x.
      *
      * @param ageYears Age in years
@@ -42,7 +42,7 @@ public class BiologicalDemographicsEngine {
         return GOMPERTZ_ALPHA * Math.exp(GOMPERTZ_BETA * ageYears) + environmentalHazardGamma;
     }
 
-    /**
+    /*
      * Executes one biological demographic mortality tick across cells with dt.
      */
     public static void processBiologicalDemographics(List<H3Cell> cells, double deltaYears) {
@@ -93,6 +93,12 @@ public class BiologicalDemographicsEngine {
         }
     }
 
+    /*
+     * Process biological demographics.
+     * Enforces physical invariants and updates associated state variables within {@code BiologicalDemographicsEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     */
     public static void processBiologicalDemographics(List<H3Cell> cells) {
         processBiologicalDemographics(cells, 30.0 / 365.25);
     }

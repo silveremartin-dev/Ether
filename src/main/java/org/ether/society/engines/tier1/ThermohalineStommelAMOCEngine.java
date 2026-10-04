@@ -38,24 +38,24 @@ import java.util.List;
 public class ThermohalineStommelAMOCEngine {
     private static final Logger logger = LoggerFactory.getLogger(ThermohalineStommelAMOCEngine.class);
 
-    /** Reference seawater density in kg/mÂ³ */
+    /* Reference seawater density in kg/mÂ³ */
     public static final double SEAWATER_REF_DENSITY_KG_M3 = 1025.0;
 
-    /** Seawater thermal expansion coefficient (1/K) */
+    /* Seawater thermal expansion coefficient (1/K) */
     public static final double ALPHA_THERMAL = 2.0e-4;
 
-    /** Seawater haline contraction coefficient (1/PSU) */
+    /* Seawater haline contraction coefficient (1/PSU) */
     public static final double BETA_HALINE = 7.5e-4;
 
-    /** Baseline North Atlantic Overturning strength in Sverdrups (10^6 mÂ³/s) */
+    /* Baseline North Atlantic Overturning strength in Sverdrups (10^6 mÂ³/s) */
     public static final double BASELINE_AMOC_SV = 18.0;
 
-    /** Stommel coupling constant */
+    /* Stommel coupling constant */
     public static final double STOMMEL_COUPLING_C = 5000.0;
 
     public record StommelState(double amocFlowSv, double northAtlanticCoolingShiftC, boolean isCollapsed) {}
 
-    /**
+    /*
      * Calculates seawater density anomaly (kg/mÂ³) as a function of temperature (Â°C) and practical salinity (PSU).
      */
     public static double calculateSeawaterDensity(double tempC, double salinityPsu) {
@@ -64,7 +64,7 @@ public class ThermohalineStommelAMOCEngine {
         return SEAWATER_REF_DENSITY_KG_M3 * (1.0 - ALPHA_THERMAL * deltaT + BETA_HALINE * deltaS);
     }
 
-    /**
+    /*
      * Calculates Stommel 2-box overturning circulation flux (in Sv) and climatic shift.
      *
      * @param tempEquatorC Equator surface temperature (~28Â°C)
@@ -90,7 +90,7 @@ public class ThermohalineStommelAMOCEngine {
         return new StommelState(amocFlowSv, coolingShift, isCollapsed);
     }
 
-    /**
+    /*
      * Processes thermohaline ocean circulation and applies regional temperature shifts across oceanic/coastal cells.
      */
     public static void processThermohalineCirculation(List<H3Cell> cells, double freshwaterMeltwaterAnomalySv) {

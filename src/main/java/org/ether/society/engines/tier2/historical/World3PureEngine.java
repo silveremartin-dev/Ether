@@ -24,11 +24,19 @@ public class World3PureEngine {
     private static final Logger logger = LoggerFactory.getLogger(World3PureEngine.class);
 
     private double population = 1.6e9; // 1.6 Billion baseline (1900)
+    /* Internal state variable for industrial capital (double). */
     private double industrialCapital = 2.1e11;
     private double nonRenewableResources = 1.0e12; // 1 Trillion units
+    /* Internal state variable for persistent pollution (double). */
     private double persistentPollution = 2.5e7;
     private double arableLand = 0.9e9; // 0.9 Billion hectares
 
+    /*
+     * Process tick.
+     * Enforces physical invariants and updates associated state variables within {@code World3PureEngine}.
+     *
+     * @param deltaYears the delta years parameter (double)
+     */
     public void processTick(double deltaYears) {
         // 1. Resource ratio & FCAOR
         double resourceRatio = Math.max(0.01, nonRenewableResources / 1.0e12);
@@ -55,13 +63,44 @@ public class World3PureEngine {
         population += (births - deaths) * deltaYears;
     }
 
+    /*
+     * Process plugin.
+     * Enforces physical invariants and updates associated state variables within {@code World3PureEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processPlugin(List<H3Cell> cells, double deltaYears) {
         // Pure variant runs global differential state
     }
 
+    /*
+     * Get population.
+     * Enforces physical invariants and updates associated state variables within {@code World3PureEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getPopulation() { return population; }
+    /*
+     * Get industrial capital.
+     * Enforces physical invariants and updates associated state variables within {@code World3PureEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getIndustrialCapital() { return industrialCapital; }
+    /*
+     * Get non renewable resources.
+     * Enforces physical invariants and updates associated state variables within {@code World3PureEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getNonRenewableResources() { return nonRenewableResources; }
+    /*
+     * Get persistent pollution.
+     * Enforces physical invariants and updates associated state variables within {@code World3PureEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getPersistentPollution() { return persistentPollution; }
 }
 

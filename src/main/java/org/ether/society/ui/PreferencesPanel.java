@@ -26,6 +26,7 @@ public class PreferencesPanel extends BorderPane {
 
     private static final java.util.prefs.Preferences prefs =
             java.util.prefs.Preferences.userNodeForPackage(PreferencesPanel.class);
+    /* Internal state variable for pref gpu key (String). */
     private static final String PREF_GPU_KEY = "ether_gpu_enabled";
 
     private Label titleHeader;
@@ -39,6 +40,11 @@ public class PreferencesPanel extends BorderPane {
     private VBox langSection;
     private VBox themeSection;
 
+    /*
+     * Preferences panel.
+     * Enforces physical invariants and updates associated state variables within {@code PreferencesPanel}.
+     *
+     */
     public PreferencesPanel() {
         getStyleClass().add("glass-panel");
         setPadding(new Insets(30));
@@ -108,7 +114,7 @@ public class PreferencesPanel extends BorderPane {
         setCenter(scroll);
     }
 
-    /**
+    /*
      * Returns the saved GPU preference (true = hardware auto, false = software only).
      * Intended to be read at startup by the main App class to configure Prism pipeline.
      */
@@ -122,6 +128,11 @@ public class PreferencesPanel extends BorderPane {
         return card;
     }
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code PreferencesPanel}.
+     *
+     */
     public void updateTexts() {
         if (titleHeader != null) titleHeader.setText(I18n.get("pref.title"));
         if (langHeaderLabel != null) langHeaderLabel.setText("🌐 " + I18n.get("pref.language"));

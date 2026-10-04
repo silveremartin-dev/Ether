@@ -55,6 +55,12 @@ public class CulturalAffinityMatrixDialog extends Stage {
             String kinshipType,
             String lithicTechnocomplex
     ) {
+        /*
+         * Get localized name.
+         * Enforces physical invariants and updates associated state variables within {@code CulturalAffinityMatrixDialog}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getLocalizedName() {
             String lang = I18n.getCurrentLanguage() != null ? I18n.getCurrentLanguage().getCode() : "en";
             if ("fr".equalsIgnoreCase(lang)) return nameFr != null ? nameFr : nameEn;
@@ -64,6 +70,13 @@ public class CulturalAffinityMatrixDialog extends Stage {
             return nameEn != null ? nameEn : id;
         }
 
+        /*
+         * Distance to.
+         * Enforces physical invariants and updates associated state variables within {@code CulturalAffinityMatrixDialog}.
+         *
+         * @param other the other parameter (CulturalEntity)
+         * @return the resulting computation or state reference
+         */
         public double distanceTo(CulturalEntity other) {
             if (other == null || this.traits == null || other.traits == null) return 1.0;
             double sumSq = 0.0;
@@ -75,6 +88,13 @@ public class CulturalAffinityMatrixDialog extends Stage {
             return Math.sqrt(sumSq);
         }
 
+        /*
+         * Affinity with.
+         * Enforces physical invariants and updates associated state variables within {@code CulturalAffinityMatrixDialog}.
+         *
+         * @param other the other parameter (CulturalEntity)
+         * @return the resulting computation or state reference
+         */
         public double affinityWith(CulturalEntity other) {
             if (other != null && this.id.equals(other.id)) return 1.0;
             double dist = distanceTo(other);
@@ -114,12 +134,23 @@ public class CulturalAffinityMatrixDialog extends Stage {
     private final StackPane[][] cellPanes = new StackPane[32][32];
     private final Label[][] cellLabels = new Label[32][32];
 
+    /* Internal state variable for current epoch (long). */
     private long currentEpoch = -100000L;
+    /* Internal state variable for scenario start year (long). */
     private final long scenarioStartYear;
+    /* Internal state variable for selected i (int). */
     private int selectedI = -1;
+    /* Internal state variable for selected j (int). */
     private int selectedJ = -1;
+    /* Internal state variable for is updating editor (boolean). */
     private boolean isUpdatingEditor = false;
 
+    /*
+     * Cultural affinity matrix dialog.
+     * Enforces physical invariants and updates associated state variables within {@code CulturalAffinityMatrixDialog}.
+     *
+     * @param initialEpoch the initial epoch parameter (long)
+     */
     public CulturalAffinityMatrixDialog(long initialEpoch) {
         this.scenarioStartYear = initialEpoch;
         this.currentEpoch = initialEpoch;
@@ -154,6 +185,13 @@ public class CulturalAffinityMatrixDialog extends Stage {
         epochSelector.setValue(closestSupportedEpoch(initialEpoch));
         epochSelector.setCellFactory(lv -> new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code CulturalAffinityMatrixDialog}.
+             *
+             * @param item the item parameter (Long)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(Long item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {

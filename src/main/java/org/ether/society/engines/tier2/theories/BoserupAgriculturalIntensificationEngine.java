@@ -30,16 +30,34 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
     private static final Logger logger = LoggerFactory.getLogger(BoserupAgriculturalIntensificationEngine.class);
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code BoserupAgriculturalIntensificationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "Boserup Agricultural Intensification";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code BoserupAgriculturalIntensificationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Models population pressure forcing technological transitions to higher-yield, higher-labor intensive agricultural systems.";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code BoserupAgriculturalIntensificationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [Boserup Agricultural Intensification Model (1965)]
@@ -53,11 +71,24 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code BoserupAgriculturalIntensificationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Agrarian Cliodynamics";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code BoserupAgriculturalIntensificationEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

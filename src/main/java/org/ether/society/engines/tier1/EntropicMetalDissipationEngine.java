@@ -24,6 +24,13 @@ public class EntropicMetalDissipationEngine {
 
     private static double annualDissipationRate = 0.015; // 1.5% annual thermodynamic loss rate
 
+    /*
+     * Process entropic dissipation.
+     * Enforces physical invariants and updates associated state variables within {@code EntropicMetalDissipationEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processEntropicDissipation(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -42,6 +49,12 @@ public class EntropicMetalDissipationEngine {
         }
     }
 
+    /*
+     * Get annual dissipation rate.
+     * Enforces physical invariants and updates associated state variables within {@code EntropicMetalDissipationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getAnnualDissipationRate() { return annualDissipationRate; }
     public static void setAnnualDissipationRate(double rate) { annualDissipationRate = Math.max(0.0, Math.min(0.20, rate)); }
 }

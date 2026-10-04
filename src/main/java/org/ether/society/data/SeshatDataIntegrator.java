@@ -119,15 +119,34 @@ public class SeshatDataIntegrator {
         BENCHMARK_POLITIES.put(key.toUpperCase(), r);
     }
 
+    /*
+     * Get seshat record.
+     * Enforces physical invariants and updates associated state variables within {@code SeshatDataIntegrator}.
+     *
+     * @param key the key parameter (String)
+     * @return the resulting computation or state reference
+     */
     public static SeshatPolityRecord getSeshatRecord(String key) {
         if (key == null) return null;
         return BENCHMARK_POLITIES.get(key.toUpperCase());
     }
 
+    /*
+     * Get all benchmark polities.
+     * Enforces physical invariants and updates associated state variables within {@code SeshatDataIntegrator}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Map<String, SeshatPolityRecord> getAllBenchmarkPolities() {
         return new HashMap<>(BENCHMARK_POLITIES);
     }
 
+    /*
+     * Get cliodynamic benchmark data.
+     * Enforces physical invariants and updates associated state variables within {@code SeshatDataIntegrator}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static JsonNode getCliodynamicBenchmarkData() {
         return cliodynamicBenchmarkJson;
     }

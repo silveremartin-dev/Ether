@@ -36,22 +36,22 @@ import java.util.List;
 public class DynamicHydrographicSiltationEngine {
     private static final Logger logger = LoggerFactory.getLogger(DynamicHydrographicSiltationEngine.class);
 
-    /** Quartz sediment particle density in kg/mÂ³ */
+    /* Quartz sediment particle density in kg/mÂ³ */
     public static final double SEDIMENT_DENSITY_KG_M3 = 2650.0;
 
-    /** Fluid (water) density in kg/mÂ³ */
+    /* Fluid (water) density in kg/mÂ³ */
     public static final double WATER_DENSITY_KG_M3 = 1000.0;
 
-    /** Gravitational acceleration in m/sÂ² */
+    /* Gravitational acceleration in m/sÂ² */
     public static final double GRAVITY_M_S2 = 9.80665;
 
-    /** Typical fine silt particle radius in meters (20 Î¼m) */
+    /* Typical fine silt particle radius in meters (20 Î¼m) */
     public static final double SILT_GRAIN_RADIUS_M = 20.0e-6;
 
-    /** Water dynamic viscosity at 20Â°C in PaÂ·s (NÂ·s/mÂ²) */
+    /* Water dynamic viscosity at 20Â°C in PaÂ·s (NÂ·s/mÂ²) */
     public static final double WATER_VISCOSITY_PA_S = 1.002e-3;
 
-    /**
+    /*
      * Calculates Stokes settling terminal velocity v_s in m/s.
      *
      * @param grainRadiusMeters Particle radius in meters
@@ -67,7 +67,7 @@ public class DynamicHydrographicSiltationEngine {
         return (2.0 / 9.0) * (deltaRho * GRAVITY_M_S2 * grainRadiusMeters * grainRadiusMeters) / viscosity;
     }
 
-    /**
+    /*
      * Processes river discharge, sediment erosion, and estuarine harbor siltation using Stokes settling velocity.
      *
      * @param cells list of H3 cells in the simulation grid

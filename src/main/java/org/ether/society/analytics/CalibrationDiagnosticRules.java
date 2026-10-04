@@ -14,6 +14,15 @@ import java.util.Map;
  */
 public class CalibrationDiagnosticRules {
 
+    /*
+     * Generate tuning suggestions.
+     * Enforces physical invariants and updates associated state variables within {@code CalibrationDiagnosticRules}.
+     *
+     * @param mapes the mapes parameter (Double&gt;)
+     * @param rSquared the r squared parameter (double)
+     * @param divergenceYear the divergence year parameter (int)
+     * @return the resulting computation or state reference
+     */
     public static String generateTuningSuggestions(Map<String, Double> mapes, double rSquared, int divergenceYear) {
         StringBuilder sb = new StringBuilder();
         sb.append("### 🛠️ 3. Pistes de Calibration des Paramètres Moteur (Analyse Dynamique orientée Données)\n\n");

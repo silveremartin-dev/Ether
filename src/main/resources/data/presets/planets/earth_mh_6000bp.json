@@ -33,16 +33,16 @@
   "elevationUseImport" : true,
   "elevationMapSource" : "earth",
   "tempUseImport" : true,
-  "tempSource" : "\uD83C\uDF0D Terre (-6000 BP) — Optimum Climatique & Sahara Vert",
+  "tempSource" : "ðŸŒ Terre (-6000 BP) â€” Optimum Climatique & Sahara Vert",
   "tempSeed" : 12447,
   "precipUseImport" : true,
-  "precipSource" : "\uD83C\uDF0D Terre (-6000 BP) — Mousson Africaine & Lac Méga-Tchad",
+  "precipSource" : "ðŸŒ Terre (-6000 BP) â€” Mousson Africaine & Lac MÃ©ga-Tchad",
   "precipSeed" : 13347,
   "seasonUseImport" : true,
-  "seasonSource" : "\uD83C\uDF0D Terre (-6000 BP) — Saisonnalité Holocène Moyen",
+  "seasonSource" : "ðŸŒ Terre (-6000 BP) â€” SaisonnalitÃ© HolocÃ¨ne Moyen",
   "seasonSeed" : 14347,
+  "canonicalPlanet" : "earth",
   "associatedEpochYear" : -6000,
   "presetDescription" : "\uD83C\uDF34 TERRE (-6 000 / Holocène Moyen & Sahara Vert) : Maximum thermique holocène et amplification de la mousson africaine. Le Sahara est une savane fertile dotée de mégalacs et de fleuves soutenant des sociétés pastorales prospères.",
-  "tidalLocked" : false,
-  "canonicalPlanet" : "earth"
+  "tidalLocked" : false
 }

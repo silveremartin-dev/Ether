@@ -23,12 +23,28 @@ import java.util.List;
 public class PinkerViolenceDeclinePureEngine {
     private static final Logger logger = LoggerFactory.getLogger(PinkerViolenceDeclinePureEngine.class);
 
+    /*
+     * Calculate violent death rate per capita.
+     * Enforces physical invariants and updates associated state variables within {@code PinkerViolenceDeclinePureEngine}.
+     *
+     * @param literacyRate the literacy rate parameter (double)
+     * @param stateStrength the state strength parameter (double)
+     * @param tradeOpenness the trade openness parameter (double)
+     * @return the resulting computation or state reference
+     */
     public static double calculateViolentDeathRatePerCapita(double literacyRate, double stateStrength, double tradeOpenness) {
         // Pinker decline formula: baseline violence drops exponentially with Leviathan + Trade + Enlightenment
         double pacificationFactor = (stateStrength * 0.40) + (tradeOpenness * 0.30) + (literacyRate * 0.30);
         return Math.max(0.00001, 0.005 * Math.exp(-3.0 * pacificationFactor));
     }
 
+    /*
+     * Process hybrid.
+     * Enforces physical invariants and updates associated state variables within {@code PinkerViolenceDeclinePureEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

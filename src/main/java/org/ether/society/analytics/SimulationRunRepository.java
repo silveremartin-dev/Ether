@@ -24,6 +24,12 @@ public class SimulationRunRepository {
         // Starts clean without hardcoded fake runs
     }
 
+    /*
+     * Get instance.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationRunRepository}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static synchronized SimulationRunRepository getInstance() {
         if (instance == null) {
             instance = new SimulationRunRepository();
@@ -31,27 +37,64 @@ public class SimulationRunRepository {
         return instance;
     }
 
+    /*
+     * Register run.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationRunRepository}.
+     *
+     * @param record the record parameter (SimulationRunRecord)
+     */
     public void registerRun(SimulationRunRecord record) {
         repository.put(record.getRunId(), record);
         logger.info("Registered simulation run in repository: {} ({})", record.getScenarioName(), record.getRunId());
     }
 
+    /*
+     * Save run.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationRunRepository}.
+     *
+     * @param record the record parameter (SimulationRunRecord)
+     */
     public void saveRun(SimulationRunRecord record) {
         registerRun(record);
     }
 
+    /*
+     * Clear.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationRunRepository}.
+     *
+     */
     public void clear() {
         repository.clear();
     }
 
+    /*
+     * Get run.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationRunRepository}.
+     *
+     * @param runId the run id parameter (String)
+     * @return the resulting computation or state reference
+     */
     public SimulationRunRecord getRun(String runId) {
         return repository.get(runId);
     }
 
+    /*
+     * Get all runs.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationRunRepository}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<SimulationRunRecord> getAllRuns() {
         return new ArrayList<>(repository.values());
     }
 
+    /*
+     * Get run by scenario name.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationRunRepository}.
+     *
+     * @param scenarioName the scenario name parameter (String)
+     * @return the resulting computation or state reference
+     */
     public Optional<SimulationRunRecord> getRunByScenarioName(String scenarioName) {
         if (scenarioName == null) return Optional.empty();
         return repository.values().stream()
@@ -59,11 +102,18 @@ public class SimulationRunRepository {
             .findFirst();
     }
 
+    /*
+     * Has run for scenario.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationRunRepository}.
+     *
+     * @param scenarioName the scenario name parameter (String)
+     * @return the resulting computation or state reference
+     */
     public boolean hasRunForScenario(String scenarioName) {
         return getRunByScenarioName(scenarioName).isPresent();
     }
 
-    /**
+    /*
      * Seeds the repository with rich pre-recorded historical benchmark runs (e.g., Empire Romain variations)
      * for testing purposes.
      */

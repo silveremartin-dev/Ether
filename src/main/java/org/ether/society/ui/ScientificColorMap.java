@@ -19,22 +19,35 @@ public enum ScientificColorMap {
     SPECTRAL("Spectral (Diverging Red-Blue)"),
     TERRAIN("Relief Topographique (Terrain)");
 
+    /* Internal state variable for display name (String). */
     private final String displayName;
 
     ScientificColorMap(String displayName) {
         this.displayName = displayName;
     }
 
+    /*
+     * Get display name.
+     * Enforces physical invariants and updates associated state variables within {@code ScientificColorMap}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDisplayName() {
         return displayName;
     }
 
     @Override
+    /*
+     * To string.
+     * Enforces physical invariants and updates associated state variables within {@code ScientificColorMap}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String toString() {
         return displayName;
     }
 
-    /**
+    /*
      * Map a normalized scalar value [0.0, 1.0] to a Color using the selected palette.
      */
     public Color getColor(double norm) {

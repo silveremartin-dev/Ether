@@ -28,7 +28,7 @@ import java.io.FileReader;
 public class ResourceDepositMapReader {
     private static final Logger logger = LoggerFactory.getLogger(ResourceDepositMapReader.class);
 
-    /**
+    /*
      * Reads an ESRI ASCII Grid raster (.asc) file into a 2D double matrix normalized [0.0, 1.0].
      */
     public static double[][] readAsciiGridFile(File ascFile) {
@@ -97,7 +97,7 @@ public class ResourceDepositMapReader {
         }
     }
 
-    /**
+    /*
      * Converts a 2D double grid matrix into a high-contrast grayscale BufferedImage tensor map.
      */
     public static BufferedImage gridToImageTensor(double[][] grid) {
@@ -117,7 +117,7 @@ public class ResourceDepositMapReader {
         return img;
     }
 
-    /**
+    /*
      * Samples normalized density [0.0, 1.0] from a continuous image tensor map given geographic lat/lon.
      */
     public static double sampleDensityFromImageTensor(BufferedImage imageMap, double lat, double lon) {
@@ -139,7 +139,7 @@ public class ResourceDepositMapReader {
         return ((r + g + b) / 3.0) / 255.0;
     }
 
-    /**
+    /*
      * Reads a GeoJSON feature collection file containing deposit hotspots/points and rasterizes it.
      */
     public static BufferedImage readGeoJsonDepositFile(File geoJsonFile, int width, int height, Color primaryColor) {
@@ -187,7 +187,7 @@ public class ResourceDepositMapReader {
         }
     }
 
-    /**
+    /*
      * Reads a GeoTIFF / TIFF raster file into a BufferedImage tensor map.
      */
     public static BufferedImage readGeoTiffFile(File tiffFile) {
@@ -207,7 +207,7 @@ public class ResourceDepositMapReader {
         return null;
     }
 
-    /**
+    /*
      * Unified multi-format spatial data ingestion entry point (ESRI ASCII Grid, GeoJSON, GeoTIFF, PNG, JPG).
      */
     public static BufferedImage readGeologicalDataset(File file, int width, int height, Color fallbackColor) {
@@ -231,7 +231,7 @@ public class ResourceDepositMapReader {
         }
     }
 
-    /**
+    /*
      * Rasterizes deposit point hotspots (lat, lon, intensity, radius) onto a 2D BufferedImage tensor map.
      */
     public static BufferedImage rasterizeDepositHotspots(double[][] hotspots, int width, int height, Color primaryColor) {

@@ -23,12 +23,27 @@ import java.util.List;
 public class PsychohistoryPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(PsychohistoryPureEngine.class);
 
+    /*
+     * Calculate seldon crisis probability.
+     * Enforces physical invariants and updates associated state variables within {@code PsychohistoryPureEngine}.
+     *
+     * @param globalPopulation the global population parameter (double)
+     * @param inequalityGini the inequality gini parameter (double)
+     * @return the resulting computation or state reference
+     */
     public static double calculateSeldonCrisisProbability(double globalPopulation, double inequalityGini) {
         if (globalPopulation < 1e6) return 0.01;
         // Psychohistorical law: probability of structural bifurcation scales with mass N and inequality entropy
         return Math.min(0.99, (Math.log10(globalPopulation) / 10.0) * inequalityGini);
     }
 
+    /*
+     * Process hybrid.
+     * Enforces physical invariants and updates associated state variables within {@code PsychohistoryPureEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

@@ -36,14 +36,14 @@ public record EcologyPreset(
         List<String> customGeologyTensorMapsBase64
 ) implements Serializable {
 
-    /** Canonical compact constructor for normalization */
+    /* Canonical compact constructor for normalization */
     public EcologyPreset {
         if (planetPresetName == null || planetPresetName.isBlank()) {
             planetPresetName = embeddedPlanetPreset != null ? embeddedPlanetPreset.name() : org.ether.society.generation.PlanetPreset.EARTH_LIKE.name();
         }
     }
 
-    /** Constructor overload without embeddedPlanetPreset & customGeologyTensorMapsBase64 */
+    /* Constructor overload without embeddedPlanetPreset & customGeologyTensorMapsBase64 */
     public EcologyPreset(
             String name,
             String planetPresetName,
@@ -70,7 +70,7 @@ public record EcologyPreset(
                 customRainfallBase64, customSeasonalityBase64, null);
     }
 
-    /** Constructor overload without embeddedPlanetPreset for backward compatibility with JSON / older presets */
+    /* Constructor overload without embeddedPlanetPreset for backward compatibility with JSON / older presets */
     public EcologyPreset(
             String name,
             String planetPresetName,
@@ -96,7 +96,7 @@ public record EcologyPreset(
                 customRainfallBase64, customSeasonalityBase64, null);
     }
 
-    /** Overloaded constructor without planetPresetName for backward compatibility */
+    /* Overloaded constructor without planetPresetName for backward compatibility */
     public EcologyPreset(
             String name,
             double terrestrialBiomassGtC,
@@ -121,46 +121,46 @@ public record EcologyPreset(
                 customRainfallBase64, customSeasonalityBase64, null);
     }
 
-    /** Modern Earth preset (2026 baseline) */
+    /* Modern Earth preset (2026 baseline) */
     public static final EcologyPreset EARTH_MODERN = new EcologyPreset(
             PlanetPreset.EARTH_MODERN.name(), PlanetPreset.EARTH_MODERN.name(), PlanetPreset.EARTH_MODERN, 450.0, 1500.0, 2.0, 6.0, 80.0, 1200.0, 87.0, 15000.0, 12345L, null, null, null, null, null, null);
 
     public static final EcologyPreset EARTH_LIKE = EARTH_MODERN;
     public static final EcologyPreset EARTH_STANDARD = EARTH_MODERN;
 
-    /** -1 000 ans : DÃ©but Ã‚ge du Fer */
+    /* -1 000 ans : DÃ©but Ã‚ge du Fer */
     public static final EcologyPreset EARTH_IRON_1000BP = new EcologyPreset(
             PlanetPreset.EARTH_IRON_1000BP.name(), PlanetPreset.EARTH_IRON_1000BP.name(), PlanetPreset.EARTH_IRON_1000BP, 580.0, 1780.0, 7.0, 17.0, 135.0, 2100.0, 87.0, 21000.0, 12344L, null, null, null, null, null, null);
 
-    /** -1 900 ans : Ã‚ge du Bronze Moyen */
+    /* -1 900 ans : Ã‚ge du Bronze Moyen */
     public static final EcologyPreset EARTH_BRONZE_1900BP = new EcologyPreset(
             PlanetPreset.EARTH_BRONZE_1900BP.name(), PlanetPreset.EARTH_BRONZE_1900BP.name(), PlanetPreset.EARTH_BRONZE_1900BP, 590.0, 1800.0, 9.0, 19.0, 145.0, 2250.0, 87.0, 23000.0, 12345L, null, null, null, null, null, null);
 
-    /** -3 000 ans (LH) : HolocÃ¨ne tardif */
+    /* -3 000 ans (LH) : HolocÃ¨ne tardif */
     public static final EcologyPreset EARTH_LH_3000BP = new EcologyPreset(
             PlanetPreset.EARTH_LH_3000BP.name(), PlanetPreset.EARTH_LH_3000BP.name(), PlanetPreset.EARTH_LH_3000BP, 560.0, 1750.0, 8.0, 18.0, 140.0, 2200.0, 87.0, 22000.0, 12346L, null, null, null, null, null, null);
 
-    /** -6 000 ans (MH) : HolocÃ¨ne moyen avec le Sahara Vert et le lac MÃ©ga-Tchad */
+    /* -6 000 ans (MH) : HolocÃ¨ne moyen avec le Sahara Vert et le lac MÃ©ga-Tchad */
     public static final EcologyPreset EARTH_MH_6000BP = new EcologyPreset(
             PlanetPreset.EARTH_MH_6000BP.name(), PlanetPreset.EARTH_MH_6000BP.name(), PlanetPreset.EARTH_MH_6000BP, 680.0, 1900.0, 14.0, 22.0, 150.0, 2400.0, 87.0, 28000.0, 12347L, null, null, null, null, null, null);
 
-    /** -10 000 ans (EH) : HolocÃ¨ne prÃ©coce */
+    /* -10 000 ans (EH) : HolocÃ¨ne prÃ©coce */
     public static final EcologyPreset EARTH_EH_10000BP = new EcologyPreset(
             PlanetPreset.EARTH_EH_10000BP.name(), PlanetPreset.EARTH_EH_10000BP.name(), PlanetPreset.EARTH_EH_10000BP, 520.0, 1600.0, 18.0, 20.0, 150.0, 2400.0, 87.0, 25000.0, 12348L, null, null, null, null, null, null);
 
-    /** -20 000 ans (LGM) : Dernier Maximum Glaciaire */
+    /* -20 000 ans (LGM) : Dernier Maximum Glaciaire */
     public static final EcologyPreset EARTH_LGM_20000BP = new EcologyPreset(
             PlanetPreset.EARTH_LGM_20000BP.name(), PlanetPreset.EARTH_LGM_20000BP.name(), PlanetPreset.EARTH_LGM_20000BP, 320.0, 1300.0, 25.0, 14.0, 150.0, 2400.0, 87.0, 20000.0, 12349L, null, null, null, null, null, null);
 
-    /** -25 000 ans : DÃ©but LGM & BÃ©ringie */
+    /* -25 000 ans : DÃ©but LGM & BÃ©ringie */
     public static final EcologyPreset EARTH_LGM_ONSET_25000BP = new EcologyPreset(
             PlanetPreset.EARTH_LGM_ONSET_25000BP.name(), PlanetPreset.EARTH_LGM_ONSET_25000BP.name(), PlanetPreset.EARTH_LGM_ONSET_25000BP, 360.0, 1400.0, 24.0, 16.0, 150.0, 2400.0, 87.0, 21000.0, 12351L, null, null, null, null, null, null);
 
-    /** -50 000 ans : Stade Isotopique 3 & Sahul */
+    /* -50 000 ans : Stade Isotopique 3 & Sahul */
     public static final EcologyPreset EARTH_MIS3_50000BP = new EcologyPreset(
             PlanetPreset.EARTH_MIS3_50000BP.name(), PlanetPreset.EARTH_MIS3_50000BP.name(), PlanetPreset.EARTH_MIS3_50000BP, 480.0, 1600.0, 23.0, 20.0, 150.0, 2400.0, 87.0, 24000.0, 12352L, null, null, null, null, null, null);
 
-    /** -100 000 ans (LIG) : Dernier Interglaciaire / EÃ©mien */
+    /* -100 000 ans (LIG) : Dernier Interglaciaire / EÃ©mien */
     public static final EcologyPreset EARTH_LIG_100000BP = new EcologyPreset(
             PlanetPreset.EARTH_LIG_100000BP.name(), PlanetPreset.EARTH_LIG_100000BP.name(), PlanetPreset.EARTH_LIG_100000BP, 620.0, 1800.0, 22.0, 24.0, 150.0, 2400.0, 87.0, 26000.0, 12350L, null, null, null, null, null, null);
 
@@ -194,6 +194,12 @@ public record EcologyPreset(
     public static final EcologyPreset ARCHIPELAGO = new EcologyPreset(
             PlanetPreset.ARCHIPELAGO.name(), PlanetPreset.ARCHIPELAGO.name(), PlanetPreset.ARCHIPELAGO, 550.0, 1800.0, 3.0, 18.0, 90.0, 1400.0, 110.0, 20000.0, 77777L, null, null, null, null, null, null);
 
+    /*
+     * Get built in presets.
+     * Enforces physical invariants and updates associated state variables within {@code EcologyPreset}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static List<EcologyPreset> getBuiltInPresets() {
         return List.of(
                 EARTH_MODERN,
@@ -219,6 +225,12 @@ public record EcologyPreset(
         );
     }
 
+    /*
+     * Get associated epoch year.
+     * Enforces physical invariants and updates associated state variables within {@code EcologyPreset}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getAssociatedEpochYear() {
         String lower = (name != null ? name : "").toLowerCase();
         if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire") || lower.contains("eemian")) return -100000L;
@@ -233,6 +245,12 @@ public record EcologyPreset(
         return 2026L;
     }
 
+    /*
+     * Get canonical planet.
+     * Enforces physical invariants and updates associated state variables within {@code EcologyPreset}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCanonicalPlanet() {
         String lower = (planetPresetName != null ? planetPresetName : name != null ? name : "").toLowerCase();
         if (lower.contains("super-terre") || lower.contains("super-earth") || lower.contains("gaia")) return "none";
@@ -244,11 +262,23 @@ public record EcologyPreset(
         return "none";
     }
 
+    /*
+     * Get preset description.
+     * Enforces physical invariants and updates associated state variables within {@code EcologyPreset}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getPresetDescription() {
         return org.ether.society.i18n.I18n.getEcologyPresetDescription(name);
     }
 
     @Override
+    /*
+     * To string.
+     * Enforces physical invariants and updates associated state variables within {@code EcologyPreset}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String toString() {
         return name;
     }

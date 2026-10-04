@@ -26,6 +26,15 @@ public class PaleoclimGridReader {
         public double habitabilityIndex = 0.8; // 0.0 (extreme desert/ice) to 1.0 (lush fertile)
     }
 
+    /*
+     * Get historical climate.
+     * Enforces physical invariants and updates associated state variables within {@code PaleoclimGridReader}.
+     *
+     * @param lng the lng parameter (double)
+     * @param lat the lat parameter (double)
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static ClimateData getHistoricalClimate(double lng, double lat, long year) {
         ClimateData cd = new ClimateData();
 

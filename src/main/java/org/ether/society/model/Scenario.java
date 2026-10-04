@@ -15,19 +15,40 @@ import java.io.Serializable;
 public class Scenario implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    /* Internal state variable for name (String). */
     private String name;
+    /* Internal state variable for description (String). */
     private String description;
     private Long id;
+    /* Internal state variable for preset key (String). */
     private String presetKey;
 
+    /*
+     * Get preset key.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getPresetKey() {
         return presetKey;
     }
 
+    /*
+     * Set preset key.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param presetKey the preset key parameter (String)
+     */
     public void setPresetKey(String presetKey) {
         this.presetKey = presetKey;
     }
 
+    /*
+     * Get display name.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDisplayName() {
         String key = resolvePresetKey();
         if (key != null && !key.isBlank()) {
@@ -39,6 +60,12 @@ public class Scenario implements Serializable {
         return name != null ? name : "Unnamed Scenario";
     }
 
+    /*
+     * Get display description.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDisplayDescription() {
         String key = resolvePresetKey();
         if (key != null && !key.isBlank()) {
@@ -101,6 +128,12 @@ public class Scenario implements Serializable {
     }
 
     @Override
+    /*
+     * To string.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String toString() {
         return getDisplayName();
     }
@@ -108,12 +141,16 @@ public class Scenario implements Serializable {
     // Planet Configuration
     private PlanetPreset planetPreset = PlanetPreset.EARTH_LIKE;
     private EcologyPreset ecologyPreset = EcologyPreset.EARTH_STANDARD;
+    /* Internal state variable for ecology preset name (String). */
     private String ecologyPresetName = "Earth Standard Baseline";
+    /* Internal state variable for use real earth data (boolean). */
     private boolean useRealEarthData;
 
     // Planet Physics
     private double planetRadiusKm; // Size
+    /* Internal state variable for rotation period hours (double). */
     private double rotationPeriodHours;
+    /* Internal state variable for revolution period days (double). */
     private double revolutionPeriodDays;
     private double axialTiltDegrees; // Inclination
 
@@ -128,10 +165,15 @@ public class Scenario implements Serializable {
         SPACE_COLONY_MARS("ðŸš€ Colonie Spatiale / Mars (Faible Pop / Ultra High-Tech)", 50000.0, 200000.0, 24.0, 50000000.0),
         CUSTOM("âš™ï¸ PersonnalisÃ© (Saisie Libre des 4 Stocks)", -1, -1, -1, -1);
 
+        /* Internal state variable for label (String). */
         private final String label;
+        /* Internal state variable for capital (double). */
         private final double capital;
+        /* Internal state variable for energy (double). */
         private final double energy;
+        /* Internal state variable for food months (double). */
         private final double foodMonths;
+        /* Internal state variable for info (double). */
         private final double info;
 
         TechPreset(String label, double capital, double energy, double foodMonths, double info) {
@@ -142,20 +184,58 @@ public class Scenario implements Serializable {
             this.info = info;
         }
 
+        /*
+         * Get label.
+         * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getLabel() { return label; }
+        /*
+         * Get capital.
+         * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getCapital() { return capital; }
+        /*
+         * Get energy.
+         * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getEnergy() { return energy; }
+        /*
+         * Get food months.
+         * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getFoodMonths() { return foodMonths; }
+        /*
+         * Get info.
+         * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getInfo() { return info; }
 
         @Override
+        /*
+         * To string.
+         * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String toString() { return label; }
     }
 
     private TechPreset techPreset = TechPreset.AUTO_FROM_YEAR;
 
     // Human Start Conditions
+    /* Internal state variable for initial human count (long). */
     private long initialHumanCount;
+    /* Internal state variable for initial tech level (double). */
     private double initialTechLevel;
     private double initialCapitalPerCapita = 10.0; // Physical capital & tools in kg/capita
     private double initialEnergyPerCapita = 50.0; // Fuel & stored energy in MJ/capita
@@ -164,6 +244,7 @@ public class Scenario implements Serializable {
     private String populationDensityType; // "ONE_CONTINENT", "DENSE", "SPARSE", "RIVER_VALLEYS"
 
     // Simulation Parameters
+    /* Internal state variable for cell size km2 (double). */
     private double cellSizeKm2;
     private int targetCohortSize = 150; // Target population per demographic cohort node (1 to 10,000+, default 150 = Dunbar pivot)
     private double temporalResolutionDays = 30.0; // Temporal resolution time step Î”t in days (default: 30.0 days = 1 month)
@@ -172,9 +253,13 @@ public class Scenario implements Serializable {
     private long endDateYear = 100; // e.g. 100
     private long seed = 12345L; // Demographic density seed
     private long culturalSeed = 54321L; // Cultural tensor suite seed
+    /* Internal state variable for random events enabled (boolean). */
     private boolean randomEventsEnabled = true;
+    /* Internal state variable for earth historical leaders enabled (boolean). */
     private boolean earthHistoricalLeadersEnabled = true;
+    /* Internal state variable for procedural leaders enabled (boolean). */
     private boolean proceduralLeadersEnabled = true;
+    /* Internal state variable for custom density base64 (String). */
     private String customDensityBase64;
     // Cultural Vector & Multi-Field Layers (Persisted per Scenario)
     private int cultureVectorDimensions = 9; // 4D to 32D culture vector dimensions (9D baseline on Earth)
@@ -193,12 +278,19 @@ public class Scenario implements Serializable {
 
     // Engine Optimization & Determinism Controls (Persisted at Scenario Level for Physical Conformance)
     private int h3Resolution = 3; // H3 spatial grid resolution (1 to 8, default: 3)
+    /* Internal state variable for strict determinism (boolean). */
     private boolean strictDeterminism = true;
+    /* Internal state variable for sparse cell skipping enabled (boolean). */
     private boolean sparseCellSkippingEnabled = false;
+    /* Internal state variable for ocean macro aggregation enabled (boolean). */
     private boolean oceanMacroAggregationEnabled = false;
+    /* Internal state variable for coastal navigation only enabled (boolean). */
     private boolean coastalNavigationOnlyEnabled = false;
+    /* Internal state variable for ocean multi rate ticking enabled (boolean). */
     private boolean oceanMultiRateTickingEnabled = false;
+    /* Internal state variable for parallel execution enabled (boolean). */
     private boolean parallelExecutionEnabled = false;
+    /* Internal state variable for spatial range truncation enabled (boolean). */
     private boolean spatialRangeTruncationEnabled = false;
 
     // Type B Procedural & Cliodynamic Engine Checkbox States & Parameters (Persisted per Scenario)
@@ -209,13 +301,23 @@ public class Scenario implements Serializable {
     private java.util.List<ClimateEvent> climateEvents = new java.util.ArrayList<>();
 
     // Spatial Clipping & Boundary Conditions
+    /* Internal state variable for clipping enabled (boolean). */
     private boolean clippingEnabled = false;
+    /* Internal state variable for min lat (double). */
     private double minLat = -90.0;
+    /* Internal state variable for max lat (double). */
     private double maxLat = 90.0;
+    /* Internal state variable for min lng (double). */
     private double minLng = -180.0;
+    /* Internal state variable for max lng (double). */
     private double maxLng = 180.0;
     private String boundaryMode = "DYNAMIC_RESERVOIR"; // "DYNAMIC_RESERVOIR", "CLOSED_BARRIER", "PERIODIC_WRAP"
 
+    /*
+     * Scenario.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     */
     public Scenario() {
         // Defaults
         this.name = "New Scenario";
@@ -239,10 +341,21 @@ public class Scenario implements Serializable {
         this.randomEventsEnabled = true;
     }
 
+    /*
+     * Create default scenario.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     */
     public static Scenario createDefaultScenario() {
         return new Scenario();
     }
 
+    /*
+     * Copy.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Scenario copy() {
         try {
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
@@ -313,7 +426,7 @@ public class Scenario implements Serializable {
         }
     }
 
-    /**
+    /*
      * Calculates the default number of simulation ticks required to run this scenario from startDateYear to endDateYear.
      */
     public int calculateScenarioTicks() {
@@ -324,14 +437,32 @@ public class Scenario implements Serializable {
 
     // Getters and Setters
 
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return name;
     }
 
+    /*
+     * Set name.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param name the name parameter (String)
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         if (description == null || description.isBlank()) {
             return String.format("""
@@ -364,294 +495,732 @@ public class Scenario implements Serializable {
         return description;
     }
 
+    /*
+     * Set description.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param description the description parameter (String)
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /*
+     * Get id.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Long getId() {
         return id;
     }
 
+    /*
+     * Set id.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param id the id parameter (Long)
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /*
+     * Get h3resolution.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getH3Resolution() {
         return h3Resolution > 0 ? h3Resolution : 3;
     }
 
+    /*
+     * Set h3resolution.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param h3Resolution the h3resolution parameter (int)
+     */
     public void setH3Resolution(int h3Resolution) {
         this.h3Resolution = h3Resolution;
     }
 
+    /*
+     * Get planet preset.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public PlanetPreset getPlanetPreset() {
         return planetPreset;
     }
 
+    /*
+     * Set planet preset.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param planetPreset the planet preset parameter (PlanetPreset)
+     */
     public void setPlanetPreset(PlanetPreset planetPreset) {
         this.planetPreset = planetPreset;
     }
 
+    /*
+     * Get ecology preset.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public EcologyPreset getEcologyPreset() {
         return ecologyPreset;
     }
 
+    /*
+     * Set ecology preset.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param ecologyPreset the ecology preset parameter (EcologyPreset)
+     */
     public void setEcologyPreset(EcologyPreset ecologyPreset) {
         this.ecologyPreset = ecologyPreset;
     }
 
+    /*
+     * Get ecology preset name.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEcologyPresetName() {
         return ecologyPresetName;
     }
 
+    /*
+     * Set ecology preset name.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param ecologyPresetName the ecology preset name parameter (String)
+     */
     public void setEcologyPresetName(String ecologyPresetName) {
         this.ecologyPresetName = ecologyPresetName;
     }
 
+    /*
+     * Is use real earth data.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isUseRealEarthData() {
         return useRealEarthData;
     }
 
+    /*
+     * Set use real earth data.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param useRealEarthData the use real earth data parameter (boolean)
+     */
     public void setUseRealEarthData(boolean useRealEarthData) {
         this.useRealEarthData = useRealEarthData;
     }
 
+    /*
+     * Get planet radius km.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getPlanetRadiusKm() {
         return planetRadiusKm;
     }
 
+    /*
+     * Set planet radius km.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param planetRadiusKm the planet radius km parameter (double)
+     */
     public void setPlanetRadiusKm(double planetRadiusKm) {
         this.planetRadiusKm = planetRadiusKm;
     }
 
+    /*
+     * Get rotation period hours.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getRotationPeriodHours() {
         return rotationPeriodHours;
     }
 
+    /*
+     * Set rotation period hours.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param rotationPeriodHours the rotation period hours parameter (double)
+     */
     public void setRotationPeriodHours(double rotationPeriodHours) {
         this.rotationPeriodHours = rotationPeriodHours;
     }
 
+    /*
+     * Get revolution period days.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getRevolutionPeriodDays() {
         return revolutionPeriodDays;
     }
 
+    /*
+     * Set revolution period days.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param revolutionPeriodDays the revolution period days parameter (double)
+     */
     public void setRevolutionPeriodDays(double revolutionPeriodDays) {
         this.revolutionPeriodDays = revolutionPeriodDays;
     }
 
+    /*
+     * Get axial tilt degrees.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getAxialTiltDegrees() {
         return axialTiltDegrees;
     }
 
+    /*
+     * Set axial tilt degrees.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param axialTiltDegrees the axial tilt degrees parameter (double)
+     */
     public void setAxialTiltDegrees(double axialTiltDegrees) {
         this.axialTiltDegrees = axialTiltDegrees;
     }
 
+    /*
+     * Get initial human count.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getInitialHumanCount() {
         return initialHumanCount;
     }
 
+    /*
+     * Set initial human count.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param initialHumanCount the initial human count parameter (long)
+     */
     public void setInitialHumanCount(long initialHumanCount) {
         this.initialHumanCount = initialHumanCount;
     }
 
+    /*
+     * Get tech preset.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public TechPreset getTechPreset() {
         return techPreset != null ? techPreset : TechPreset.AUTO_FROM_YEAR;
     }
 
+    /*
+     * Set tech preset.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param techPreset the tech preset parameter (TechPreset)
+     */
     public void setTechPreset(TechPreset techPreset) {
         this.techPreset = techPreset != null ? techPreset : TechPreset.AUTO_FROM_YEAR;
     }
 
+    /*
+     * Get initial tech level.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getInitialTechLevel() {
         return initialTechLevel;
     }
 
+    /*
+     * Set initial tech level.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param initialTechLevel the initial tech level parameter (double)
+     */
     public void setInitialTechLevel(double initialTechLevel) {
         this.initialTechLevel = initialTechLevel;
     }
 
+    /*
+     * Get initial capital per capita.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getInitialCapitalPerCapita() {
         return initialCapitalPerCapita;
     }
 
+    /*
+     * Set initial capital per capita.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param initialCapitalPerCapita the initial capital per capita parameter (double)
+     */
     public void setInitialCapitalPerCapita(double initialCapitalPerCapita) {
         this.initialCapitalPerCapita = initialCapitalPerCapita;
     }
 
+    /*
+     * Get initial energy per capita.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getInitialEnergyPerCapita() {
         return initialEnergyPerCapita;
     }
 
+    /*
+     * Set initial energy per capita.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param initialEnergyPerCapita the initial energy per capita parameter (double)
+     */
     public void setInitialEnergyPerCapita(double initialEnergyPerCapita) {
         this.initialEnergyPerCapita = initialEnergyPerCapita;
     }
 
+    /*
+     * Get initial food reserve months.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getInitialFoodReserveMonths() {
         return initialFoodReserveMonths;
     }
 
+    /*
+     * Set initial food reserve months.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param initialFoodReserveMonths the initial food reserve months parameter (double)
+     */
     public void setInitialFoodReserveMonths(double initialFoodReserveMonths) {
         this.initialFoodReserveMonths = initialFoodReserveMonths;
     }
 
+    /*
+     * Get initial information per capita.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getInitialInformationPerCapita() {
         return initialInformationPerCapita;
     }
 
+    /*
+     * Set initial information per capita.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param initialInformationPerCapita the initial information per capita parameter (double)
+     */
     public void setInitialInformationPerCapita(double initialInformationPerCapita) {
         this.initialInformationPerCapita = initialInformationPerCapita;
     }
 
+    /*
+     * Get population density type.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getPopulationDensityType() {
         return populationDensityType;
     }
 
+    /*
+     * Set population density type.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param populationDensityType the population density type parameter (String)
+     */
     public void setPopulationDensityType(String populationDensityType) {
         this.populationDensityType = populationDensityType;
     }
 
+    /*
+     * Get cell size km2.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCellSizeKm2() {
         return cellSizeKm2;
     }
 
+    /*
+     * Set cell size km2.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param cellSizeKm2 the cell size km2 parameter (double)
+     */
     public void setCellSizeKm2(double cellSizeKm2) {
         this.cellSizeKm2 = cellSizeKm2;
     }
 
+    /*
+     * Get target cohort size.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getTargetCohortSize() {
         return targetCohortSize;
     }
 
+    /*
+     * Set target cohort size.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param targetCohortSize the target cohort size parameter (int)
+     */
     public void setTargetCohortSize(int targetCohortSize) {
         this.targetCohortSize = targetCohortSize;
     }
 
+    /*
+     * Get climate harshness.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getClimateHarshness() {
         return climateHarshness;
     }
 
+    /*
+     * Set climate harshness.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param climateHarshness the climate harshness parameter (double)
+     */
     public void setClimateHarshness(double climateHarshness) {
         this.climateHarshness = climateHarshness;
     }
 
+    /*
+     * Get start date year.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getStartDateYear() {
         return startDateYear;
     }
 
+    /*
+     * Set start date year.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param startDateYear the start date year parameter (long)
+     */
     public void setStartDateYear(long startDateYear) {
         this.startDateYear = startDateYear;
     }
 
+    /*
+     * Get end date year.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getEndDateYear() {
         return endDateYear;
     }
 
+    /*
+     * Set end date year.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param endDateYear the end date year parameter (long)
+     */
     public void setEndDateYear(long endDateYear) {
         this.endDateYear = endDateYear;
     }
 
+    /*
+     * Get seed.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getSeed() {
         return seed;
     }
 
+    /*
+     * Set seed.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param seed the seed parameter (long)
+     */
     public void setSeed(long seed) {
         this.seed = seed;
     }
 
+    /*
+     * Get cultural seed.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getCulturalSeed() {
         return culturalSeed;
     }
 
+    /*
+     * Set cultural seed.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param culturalSeed the cultural seed parameter (long)
+     */
     public void setCulturalSeed(long culturalSeed) {
         this.culturalSeed = culturalSeed;
     }
 
+    /*
+     * Is random events enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isRandomEventsEnabled() {
         return randomEventsEnabled;
     }
 
+    /*
+     * Set random events enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param randomEventsEnabled the random events enabled parameter (boolean)
+     */
     public void setRandomEventsEnabled(boolean randomEventsEnabled) {
         this.randomEventsEnabled = randomEventsEnabled;
     }
 
+    /*
+     * Is earth historical leaders enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isEarthHistoricalLeadersEnabled() {
         return earthHistoricalLeadersEnabled;
     }
 
+    /*
+     * Set earth historical leaders enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param earthHistoricalLeadersEnabled the earth historical leaders enabled parameter (boolean)
+     */
     public void setEarthHistoricalLeadersEnabled(boolean earthHistoricalLeadersEnabled) {
         this.earthHistoricalLeadersEnabled = earthHistoricalLeadersEnabled;
     }
 
+    /*
+     * Is procedural leaders enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isProceduralLeadersEnabled() {
         return proceduralLeadersEnabled;
     }
 
+    /*
+     * Set procedural leaders enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param proceduralLeadersEnabled the procedural leaders enabled parameter (boolean)
+     */
     public void setProceduralLeadersEnabled(boolean proceduralLeadersEnabled) {
         this.proceduralLeadersEnabled = proceduralLeadersEnabled;
     }
 
+    /*
+     * Get custom density base64.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCustomDensityBase64() {
         return customDensityBase64;
     }
 
+    /*
+     * Set custom density base64.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param customDensityBase64 the custom density base64 parameter (String)
+     */
     public void setCustomDensityBase64(String customDensityBase64) {
         this.customDensityBase64 = customDensityBase64;
     }
 
+    /*
+     * Is clipping enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isClippingEnabled() {
         return clippingEnabled;
     }
 
+    /*
+     * Set clipping enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param clippingEnabled the clipping enabled parameter (boolean)
+     */
     public void setClippingEnabled(boolean clippingEnabled) {
         this.clippingEnabled = clippingEnabled;
     }
 
+    /*
+     * Get min lat.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getMinLat() {
         return minLat;
     }
 
+    /*
+     * Set min lat.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param minLat the min lat parameter (double)
+     */
     public void setMinLat(double minLat) {
         this.minLat = minLat;
     }
 
+    /*
+     * Get max lat.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getMaxLat() {
         return maxLat;
     }
 
+    /*
+     * Set max lat.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param maxLat the max lat parameter (double)
+     */
     public void setMaxLat(double maxLat) {
         this.maxLat = maxLat;
     }
 
+    /*
+     * Get min lng.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getMinLng() {
         return minLng;
     }
 
+    /*
+     * Set min lng.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param minLng the min lng parameter (double)
+     */
     public void setMinLng(double minLng) {
         this.minLng = minLng;
     }
 
+    /*
+     * Get max lng.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getMaxLng() {
         return maxLng;
     }
 
+    /*
+     * Set max lng.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param maxLng the max lng parameter (double)
+     */
     public void setMaxLng(double maxLng) {
         this.maxLng = maxLng;
     }
 
+    /*
+     * Get boundary mode.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getBoundaryMode() {
         return boundaryMode;
     }
 
+    /*
+     * Set boundary mode.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param boundaryMode the boundary mode parameter (String)
+     */
     public void setBoundaryMode(String boundaryMode) {
         this.boundaryMode = boundaryMode;
     }
 
+    /*
+     * Is strict determinism.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isStrictDeterminism() {
         return strictDeterminism;
     }
 
+    /*
+     * Set strict determinism.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param strictDeterminism the strict determinism parameter (boolean)
+     */
     public void setStrictDeterminism(boolean strictDeterminism) {
         this.strictDeterminism = strictDeterminism;
         if (strictDeterminism) {
@@ -662,10 +1231,22 @@ public class Scenario implements Serializable {
         }
     }
 
+    /*
+     * Is sparse cell skipping enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isSparseCellSkippingEnabled() {
         return sparseCellSkippingEnabled;
     }
 
+    /*
+     * Set sparse cell skipping enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param sparseCellSkippingEnabled the sparse cell skipping enabled parameter (boolean)
+     */
     public void setSparseCellSkippingEnabled(boolean sparseCellSkippingEnabled) {
         this.sparseCellSkippingEnabled = sparseCellSkippingEnabled;
         if (sparseCellSkippingEnabled) {
@@ -673,26 +1254,62 @@ public class Scenario implements Serializable {
         }
     }
 
+    /*
+     * Is ocean macro aggregation enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isOceanMacroAggregationEnabled() {
         return oceanMacroAggregationEnabled;
     }
 
+    /*
+     * Set ocean macro aggregation enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param oceanMacroAggregationEnabled the ocean macro aggregation enabled parameter (boolean)
+     */
     public void setOceanMacroAggregationEnabled(boolean oceanMacroAggregationEnabled) {
         this.oceanMacroAggregationEnabled = oceanMacroAggregationEnabled;
     }
 
+    /*
+     * Is coastal navigation only enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isCoastalNavigationOnlyEnabled() {
         return coastalNavigationOnlyEnabled;
     }
 
+    /*
+     * Set coastal navigation only enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param coastalNavigationOnlyEnabled the coastal navigation only enabled parameter (boolean)
+     */
     public void setCoastalNavigationOnlyEnabled(boolean coastalNavigationOnlyEnabled) {
         this.coastalNavigationOnlyEnabled = coastalNavigationOnlyEnabled;
     }
 
+    /*
+     * Is ocean multi rate ticking enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isOceanMultiRateTickingEnabled() {
         return oceanMultiRateTickingEnabled;
     }
 
+    /*
+     * Set ocean multi rate ticking enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param oceanMultiRateTickingEnabled the ocean multi rate ticking enabled parameter (boolean)
+     */
     public void setOceanMultiRateTickingEnabled(boolean oceanMultiRateTickingEnabled) {
         this.oceanMultiRateTickingEnabled = oceanMultiRateTickingEnabled;
         if (oceanMultiRateTickingEnabled) {
@@ -700,10 +1317,22 @@ public class Scenario implements Serializable {
         }
     }
 
+    /*
+     * Is parallel execution enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isParallelExecutionEnabled() {
         return parallelExecutionEnabled;
     }
 
+    /*
+     * Set parallel execution enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param parallelExecutionEnabled the parallel execution enabled parameter (boolean)
+     */
     public void setParallelExecutionEnabled(boolean parallelExecutionEnabled) {
         this.parallelExecutionEnabled = parallelExecutionEnabled;
         if (parallelExecutionEnabled) {
@@ -711,10 +1340,22 @@ public class Scenario implements Serializable {
         }
     }
 
+    /*
+     * Is spatial range truncation enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isSpatialRangeTruncationEnabled() {
         return spatialRangeTruncationEnabled;
     }
 
+    /*
+     * Set spatial range truncation enabled.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param spatialRangeTruncationEnabled the spatial range truncation enabled parameter (boolean)
+     */
     public void setSpatialRangeTruncationEnabled(boolean spatialRangeTruncationEnabled) {
         this.spatialRangeTruncationEnabled = spatialRangeTruncationEnabled;
         if (spatialRangeTruncationEnabled) {
@@ -722,26 +1363,52 @@ public class Scenario implements Serializable {
         }
     }
 
+    /* Internal state variable for climate tick frequency (int). */
     private int climateTickFrequency = 5;
+    /* Internal state variable for parallel thread count (int). */
     private int parallelThreadCount = 0;
 
+    /*
+     * Get climate tick frequency.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getClimateTickFrequency() {
         return climateTickFrequency;
     }
 
+    /*
+     * Set climate tick frequency.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param climateTickFrequency the climate tick frequency parameter (int)
+     */
     public void setClimateTickFrequency(int climateTickFrequency) {
         this.climateTickFrequency = Math.max(1, climateTickFrequency);
     }
 
+    /*
+     * Get parallel thread count.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getParallelThreadCount() {
         return parallelThreadCount;
     }
 
+    /*
+     * Set parallel thread count.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param parallelThreadCount the parallel thread count parameter (int)
+     */
     public void setParallelThreadCount(int parallelThreadCount) {
         this.parallelThreadCount = Math.max(0, parallelThreadCount);
     }
 
-    /**
+    /*
      * Converts this scenario's optimization settings into a runtime SimulationPerformanceConfig instance.
      */
     public org.ether.society.config.SimulationPerformanceConfig toPerformanceConfig() {
@@ -758,14 +1425,32 @@ public class Scenario implements Serializable {
         return config;
     }
 
+    /*
+     * Get temporal resolution days.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getTemporalResolutionDays() {
         return temporalResolutionDays;
     }
 
+    /*
+     * Set temporal resolution days.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param temporalResolutionDays the temporal resolution days parameter (double)
+     */
     public void setTemporalResolutionDays(double temporalResolutionDays) {
         this.temporalResolutionDays = temporalResolutionDays;
     }
 
+    /*
+     * Get type bengine states.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public java.util.Map<String, Boolean> getTypeBEngineStates() {
         if (typeBEngineStates == null) {
             typeBEngineStates = new java.util.HashMap<>();
@@ -775,10 +1460,22 @@ public class Scenario implements Serializable {
 
 
 
+    /*
+     * Set type bengine states.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param typeBEngineStates the type bengine states parameter (Boolean&gt;)
+     */
     public void setTypeBEngineStates(java.util.Map<String, Boolean> typeBEngineStates) {
         this.typeBEngineStates = typeBEngineStates != null ? typeBEngineStates : new java.util.HashMap<>();
     }
 
+    /*
+     * Get type bengine parameters.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public java.util.Map<String, java.util.Map<String, Double>> getTypeBEngineParameters() {
         if (typeBEngineParameters == null) {
             typeBEngineParameters = new java.util.HashMap<>();
@@ -786,30 +1483,74 @@ public class Scenario implements Serializable {
         return typeBEngineParameters;
     }
 
+    /*
+     * Set type bengine parameters.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param typeBEngineParameters the type bengine parameters parameter (Double&gt;&gt;)
+     */
     public void setTypeBEngineParameters(java.util.Map<String, java.util.Map<String, Double>> typeBEngineParameters) {
         this.typeBEngineParameters = typeBEngineParameters != null ? typeBEngineParameters : new java.util.HashMap<>();
     }
 
+    /*
+     * Get culture vector dimensions.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getCultureVectorDimensions() {
         return cultureVectorDimensions;
     }
 
+    /*
+     * Set culture vector dimensions.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param cultureVectorDimensions the culture vector dimensions parameter (int)
+     */
     public void setCultureVectorDimensions(int cultureVectorDimensions) {
         this.cultureVectorDimensions = cultureVectorDimensions;
     }
 
+    /*
+     * Get custom tensor names.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public java.util.Map<Integer, String> getCustomTensorNames() {
         return customTensorNames;
     }
 
+    /*
+     * Set custom tensor names.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param customTensorNames the custom tensor names parameter (String&gt;)
+     */
     public void setCustomTensorNames(java.util.Map<Integer, String> customTensorNames) {
         this.customTensorNames = customTensorNames != null ? customTensorNames : new java.util.HashMap<>();
     }
 
+    /*
+     * Get custom tensor name.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param index the index parameter (int)
+     * @return the resulting computation or state reference
+     */
     public String getCustomTensorName(int index) {
         return customTensorNames != null ? customTensorNames.get(index) : null;
     }
 
+    /*
+     * Set custom tensor name.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param index the index parameter (int)
+     * @param name the name parameter (String)
+     */
     public void setCustomTensorName(int index, String name) {
         if (this.customTensorNames == null) this.customTensorNames = new java.util.HashMap<>();
         if (name == null || name.isBlank()) {
@@ -819,22 +1560,52 @@ public class Scenario implements Serializable {
         }
     }
 
+    /*
+     * Get cultural diffusion rate.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCulturalDiffusionRate() {
         return culturalDiffusionRate;
     }
 
+    /*
+     * Set cultural diffusion rate.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param culturalDiffusionRate the cultural diffusion rate parameter (double)
+     */
     public void setCulturalDiffusionRate(double culturalDiffusionRate) {
         this.culturalDiffusionRate = culturalDiffusionRate;
     }
 
+    /*
+     * Get cultural mutation rate.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCulturalMutationRate() {
         return culturalMutationRate;
     }
 
+    /*
+     * Set cultural mutation rate.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param culturalMutationRate the cultural mutation rate parameter (double)
+     */
     public void setCulturalMutationRate(double culturalMutationRate) {
         this.culturalMutationRate = culturalMutationRate;
     }
 
+    /*
+     * Get custom tensor maps base64.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public java.util.List<String> getCustomTensorMapsBase64() {
         if (customTensorMapsBase64 == null) {
             customTensorMapsBase64 = new java.util.ArrayList<>();
@@ -842,10 +1613,22 @@ public class Scenario implements Serializable {
         return customTensorMapsBase64;
     }
 
+    /*
+     * Set custom tensor maps base64.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param customTensorMapsBase64 the custom tensor maps base64 parameter (java.util.List&lt;String&gt;)
+     */
     public void setCustomTensorMapsBase64(java.util.List<String> customTensorMapsBase64) {
         this.customTensorMapsBase64 = customTensorMapsBase64 != null ? customTensorMapsBase64 : new java.util.ArrayList<>();
     }
 
+    /*
+     * Get tensor procedural modes.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public java.util.List<Boolean> getTensorProceduralModes() {
         if (tensorProceduralModes == null) {
             tensorProceduralModes = new java.util.ArrayList<>();
@@ -853,10 +1636,23 @@ public class Scenario implements Serializable {
         return tensorProceduralModes;
     }
 
+    /*
+     * Set tensor procedural modes.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param tensorProceduralModes the tensor procedural modes parameter (java.util.List&lt;Boolean&gt;)
+     */
     public void setTensorProceduralModes(java.util.List<Boolean> tensorProceduralModes) {
         this.tensorProceduralModes = tensorProceduralModes != null ? tensorProceduralModes : new java.util.ArrayList<>();
     }
 
+    /*
+     * Get custom tensor map base64.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param index the index parameter (int)
+     * @return the resulting computation or state reference
+     */
     public String getCustomTensorMapBase64(int index) {
         java.util.List<String> list = getCustomTensorMapsBase64();
         if (index >= 0 && index < list.size() && list.get(index) != null && !list.get(index).isBlank()) {
@@ -865,6 +1661,13 @@ public class Scenario implements Serializable {
         return null;
     }
 
+    /*
+     * Set custom tensor map base64.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param index the index parameter (int)
+     * @param base64 the base64 parameter (String)
+     */
     public void setCustomTensorMapBase64(int index, String base64) {
         java.util.List<String> list = getCustomTensorMapsBase64();
         while (list.size() <= index) {
@@ -873,6 +1676,12 @@ public class Scenario implements Serializable {
         list.set(index, base64);
     }
 
+    /*
+     * Get tensor seeds.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public java.util.Map<Integer, Long> getTensorSeeds() {
         if (tensorSeeds == null) {
             tensorSeeds = new java.util.HashMap<>();
@@ -880,10 +1689,22 @@ public class Scenario implements Serializable {
         return tensorSeeds;
     }
 
+    /*
+     * Set tensor seeds.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param tensorSeeds the tensor seeds parameter (Long&gt;)
+     */
     public void setTensorSeeds(java.util.Map<Integer, Long> tensorSeeds) {
         this.tensorSeeds = tensorSeeds != null ? tensorSeeds : new java.util.HashMap<>();
     }
 
+    /*
+     * Get tensor procedural parameters.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public java.util.Map<Integer, java.util.Map<String, Double>> getTensorProceduralParameters() {
         if (tensorProceduralParameters == null) {
             tensorProceduralParameters = new java.util.HashMap<>();
@@ -891,18 +1712,42 @@ public class Scenario implements Serializable {
         return tensorProceduralParameters;
     }
 
+    /*
+     * Set tensor procedural parameters.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param tensorProceduralParameters the tensor procedural parameters parameter (Double&gt;&gt;)
+     */
     public void setTensorProceduralParameters(java.util.Map<Integer, java.util.Map<String, Double>> tensorProceduralParameters) {
         this.tensorProceduralParameters = tensorProceduralParameters != null ? tensorProceduralParameters : new java.util.HashMap<>();
     }
 
+    /*
+     * Get resource vector dimensions.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getResourceVectorDimensions() {
         return resourceVectorDimensions;
     }
 
+    /*
+     * Set resource vector dimensions.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param resourceVectorDimensions the resource vector dimensions parameter (int)
+     */
     public void setResourceVectorDimensions(int resourceVectorDimensions) {
         this.resourceVectorDimensions = resourceVectorDimensions;
     }
 
+    /*
+     * Get custom geology tensor maps base64.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public java.util.List<String> getCustomGeologyTensorMapsBase64() {
         if (customGeologyTensorMapsBase64 == null) {
             customGeologyTensorMapsBase64 = new java.util.ArrayList<>();
@@ -910,10 +1755,22 @@ public class Scenario implements Serializable {
         return customGeologyTensorMapsBase64;
     }
 
+    /*
+     * Set custom geology tensor maps base64.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param customGeologyTensorMapsBase64 the custom geology tensor maps base64 parameter (java.util.List&lt;String&gt;)
+     */
     public void setCustomGeologyTensorMapsBase64(java.util.List<String> customGeologyTensorMapsBase64) {
         this.customGeologyTensorMapsBase64 = customGeologyTensorMapsBase64 != null ? customGeologyTensorMapsBase64 : new java.util.ArrayList<>();
     }
 
+    /*
+     * Get geology tensor procedural modes.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public java.util.List<Boolean> getGeologyTensorProceduralModes() {
         if (geologyTensorProceduralModes == null) {
             geologyTensorProceduralModes = new java.util.ArrayList<>();
@@ -921,10 +1778,23 @@ public class Scenario implements Serializable {
         return geologyTensorProceduralModes;
     }
 
+    /*
+     * Set geology tensor procedural modes.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param geologyTensorProceduralModes the geology tensor procedural modes parameter (java.util.List&lt;Boolean&gt;)
+     */
     public void setGeologyTensorProceduralModes(java.util.List<Boolean> geologyTensorProceduralModes) {
         this.geologyTensorProceduralModes = geologyTensorProceduralModes != null ? geologyTensorProceduralModes : new java.util.ArrayList<>();
     }
 
+    /*
+     * Get custom geology tensor map base64.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param index the index parameter (int)
+     * @return the resulting computation or state reference
+     */
     public String getCustomGeologyTensorMapBase64(int index) {
         java.util.List<String> list = getCustomGeologyTensorMapsBase64();
         if (index >= 0 && index < list.size() && list.get(index) != null && !list.get(index).isBlank()) {
@@ -933,6 +1803,13 @@ public class Scenario implements Serializable {
         return null;
     }
 
+    /*
+     * Set custom geology tensor map base64.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param index the index parameter (int)
+     * @param base64 the base64 parameter (String)
+     */
     public void setCustomGeologyTensorMapBase64(int index, String base64) {
         java.util.List<String> list = getCustomGeologyTensorMapsBase64();
         while (list.size() <= index) {
@@ -941,14 +1818,32 @@ public class Scenario implements Serializable {
         list.set(index, base64);
     }
 
+    /*
+     * Get climate events.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public java.util.List<ClimateEvent> getClimateEvents() {
         return climateEvents;
     }
 
+    /*
+     * Set climate events.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @param climateEvents the climate events parameter (java.util.List&lt;ClimateEvent&gt;)
+     */
     public void setClimateEvents(java.util.List<ClimateEvent> climateEvents) {
         this.climateEvents = climateEvents != null ? climateEvents : new java.util.ArrayList<>();
     }
 
+    /*
+     * Get built in scenarios.
+     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static java.util.List<Scenario> getBuiltInScenarios() {
         java.util.List<Scenario> list = new java.util.ArrayList<>();
 

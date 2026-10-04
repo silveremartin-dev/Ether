@@ -25,7 +25,7 @@ import java.util.List;
 public class BioMolecularEpidemiologyEngine {
     private static final Logger logger = LoggerFactory.getLogger(BioMolecularEpidemiologyEngine.class);
 
-    /**
+    /*
      * Executes one bio-molecular immune response and pathogen tick across cells.
      */
     public static void processBioMolecularImmunity(List<H3Cell> cells) {

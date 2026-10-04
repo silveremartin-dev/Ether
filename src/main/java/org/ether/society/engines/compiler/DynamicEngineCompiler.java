@@ -64,7 +64,7 @@ public class DynamicEngineCompiler {
 
     public record CompilationResult(boolean success, String engineName, String message, ProceduralEnginePlugin plugin) {}
 
-    /**
+    /*
      * Statically inspects the Java source code to ensure it satisfies security sandboxing rules.
      *
      * @param sourceCode The raw Java source string
@@ -85,7 +85,7 @@ public class DynamicEngineCompiler {
         return null;
     }
 
-    /**
+    /*
      * Compiles and loads a custom Java source file (.java) at runtime.
      *
      * @param javaSourceFile The .java source file to compile
@@ -171,7 +171,7 @@ public class DynamicEngineCompiler {
         }
     }
 
-    /**
+    /*
      * Generates a template .java file for user custom simulation engine development.
      */
     public static String generateEngineTemplateCode(String engineName) {
@@ -182,13 +182,20 @@ public class DynamicEngineCompiler {
             import org.ether.society.database.H3Cell;
             import java.util.List;
 
-            /**
+            /*
              * Custom Simulation Engine for Ether Framework.
              * Implements the ProceduralEnginePlugin interface for deterministic cliodynamic simulation.
              */
             public class %s implements ProceduralEnginePlugin {
 
                 @Override
+                /*
+                 * Process.
+                 * Enforces physical invariants and updates associated state variables within {@code DynamicEngineCompiler}.
+                 *
+                 * @param cells the cells parameter (List&lt;H3Cell&gt;)
+                 * @param deltaYears the delta years parameter (double)
+                 */
                 public void process(List<H3Cell> cells, double deltaYears) {
                     if (cells == null || cells.isEmpty()) return;
 

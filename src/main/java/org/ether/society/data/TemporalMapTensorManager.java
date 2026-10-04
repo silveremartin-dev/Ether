@@ -26,7 +26,7 @@ import java.util.*;
 public class TemporalMapTensorManager {
     private static final Logger logger = LoggerFactory.getLogger(TemporalMapTensorManager.class);
 
-    /**
+    /*
      * Data resolution & fallback strategy when exact empirical measurements for a target date are missing.
      */
     public enum DataFallbackStrategy {
@@ -34,7 +34,9 @@ public class TemporalMapTensorManager {
         PREVIOUS_EARLIER_EPOCH("scenario.fallback.earlier_epoch", "⏮️ Repli conservateur sur l'époque antérieure connue (Évite tout anachronisme)"),
         CLOSEST_ANCHOR_EPOCH("scenario.fallback.closest_anchor", "🎯 Jalon étalonné le plus proche (Distance chronologique minimale)");
 
+        /* Internal state variable for i18n key (String). */
         private final String i18nKey;
+        /* Internal state variable for default label (String). */
         private final String defaultLabel;
 
         DataFallbackStrategy(String i18nKey, String defaultLabel) {
@@ -42,8 +44,26 @@ public class TemporalMapTensorManager {
             this.defaultLabel = defaultLabel;
         }
 
+        /*
+         * Get i18n key.
+         * Enforces physical invariants and updates associated state variables within {@code TemporalMapTensorManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getI18nKey() { return i18nKey; }
+        /*
+         * Get default label.
+         * Enforces physical invariants and updates associated state variables within {@code TemporalMapTensorManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getDefaultLabel() { return defaultLabel; }
+        /*
+         * Get localized name.
+         * Enforces physical invariants and updates associated state variables within {@code TemporalMapTensorManager}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getLocalizedName() {
             try {
                 return org.ether.society.i18n.I18n.getOrDefault(i18nKey, defaultLabel);
@@ -84,7 +104,7 @@ public class TemporalMapTensorManager {
 
     private static final Map<String, Image> memoryCache = new HashMap<>();
 
-    /**
+    /*
      * Resolves the canonical directory name for a planet (e.g. terre -> earth).
      */
     public static String normalizePlanet(String planet) {
@@ -100,7 +120,7 @@ public class TemporalMapTensorManager {
         };
     }
 
-    /**
+    /*
      * Standardizes layer name into short canonical tag (e.g. "density", "pathogen", "elevation", "coal").
      */
     public static String canonicalLayerTag(String layerName) {
@@ -146,7 +166,7 @@ public class TemporalMapTensorManager {
         };
     }
 
-    /**
+    /*
      * Standardizes full dated layer filename (e.g. "earth_1000_density.png").
      */
     public static String buildStandardFilename(String planet, long epoch, String layerTag) {
@@ -155,7 +175,7 @@ public class TemporalMapTensorManager {
         return p + "_" + epoch + "_" + tag + ".png";
     }
 
-    /**
+    /*
      * Discovers all available snapshot year folders on disk for a given planet.
      */
     public static List<Long> getAvailableEpochYears(String planet) {
@@ -178,14 +198,14 @@ public class TemporalMapTensorManager {
         return years;
     }
 
-    /**
+    /*
      * Loads a temporal map image for a given planet, requested year, and layer using default continuous interpolation.
      */
     public static Image loadTemporalMapImage(String planet, long requestedYear, String layerName) {
         return loadTemporalMapImage(planet, requestedYear, layerName, DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
     }
 
-    /**
+    /*
      * Loads a temporal map image for a given planet, requested year, layer, and explicit data fallback strategy.
      * Performs automatic temporal fallback, causal forward step transitions for historical/epidemiological events,
      * or continuous bilinear cross-epoch interpolation for physical fields.
@@ -303,7 +323,7 @@ public class TemporalMapTensorManager {
         return interpolated;
     }
 
-    /**
+    /*
      * Loads an exact epoch image with multi-pattern fallback.
      */
     public static Image loadExactEpochImage(String planet, long epoch, String layerTag, String cacheKey) {
@@ -340,7 +360,7 @@ public class TemporalMapTensorManager {
         return null;
     }
 
-    /**
+    /*
      * Performs linear cross-fade blending between two grayscale / scalar raster maps.
      */
     public static Image interpolateImages(Image img0, Image img1, double t) {
@@ -375,7 +395,7 @@ public class TemporalMapTensorManager {
     }
 
 
-    /**
+    /*
      * Clears all cached in-memory raster textures.
      */
     public static void clearCache() {

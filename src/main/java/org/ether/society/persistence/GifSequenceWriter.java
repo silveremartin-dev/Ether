@@ -23,6 +23,15 @@ public class GifSequenceWriter implements AutoCloseable {
     private final ImageWriteParam imageWriteParam;
     private final IIOMetadata imageMetaData;
 
+    /*
+     * Gif sequence writer.
+     * Enforces physical invariants and updates associated state variables within {@code GifSequenceWriter}.
+     *
+     * @param outputStream the output stream parameter (ImageOutputStream)
+     * @param imageType the image type parameter (int)
+     * @param timeBetweenFramesMS the time between frames ms parameter (int)
+     * @param loopContinuously the loop continuously parameter (boolean)
+     */
     public GifSequenceWriter(ImageOutputStream outputStream, int imageType, int timeBetweenFramesMS, boolean loopContinuously) throws IOException {
         gifWriter = getWriter();
         imageWriteParam = gifWriter.getDefaultWriteParam();
@@ -60,11 +69,22 @@ public class GifSequenceWriter implements AutoCloseable {
         gifWriter.prepareWriteSequence(null);
     }
 
+    /*
+     * Write to sequence.
+     * Enforces physical invariants and updates associated state variables within {@code GifSequenceWriter}.
+     *
+     * @param img the img parameter (RenderedImage)
+     */
     public void writeToSequence(RenderedImage img) throws IOException {
         gifWriter.writeToSequence(new IIOImage(img, null, imageMetaData), imageWriteParam);
     }
 
     @Override
+    /*
+     * Close.
+     * Enforces physical invariants and updates associated state variables within {@code GifSequenceWriter}.
+     *
+     */
     public void close() throws IOException {
         try {
             gifWriter.endWriteSequence();

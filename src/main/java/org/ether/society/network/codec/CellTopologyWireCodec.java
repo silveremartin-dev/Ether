@@ -36,7 +36,7 @@ public class CellTopologyWireCodec {
     private static final int MAGIC_HEADER = 0x45544854; // "ETHT" (Ether Topology)
     private static final byte PROTOCOL_VERSION = 1;
 
-    /**
+    /*
      * Serializes cell topology list into compact binary byte array.
      */
     public static byte[] encodeTopology(List<H3Cell> cells) {
@@ -93,7 +93,7 @@ public class CellTopologyWireCodec {
         }
     }
 
-    /**
+    /*
      * Saves compressed cell topology to a .bin.gz file.
      */
     public static void saveToFile(Path targetFile, List<H3Cell> cells) throws IOException {
@@ -111,7 +111,7 @@ public class CellTopologyWireCodec {
                 cells.size(), rawBytes.length / 1024, targetFile.getFileName());
     }
 
-    /**
+    /*
      * Decodes binary topology payload into an instantiated list of H3Cells.
      */
     public static List<H3Cell> decodeTopology(byte[] data) {
@@ -195,7 +195,7 @@ public class CellTopologyWireCodec {
         }
     }
 
-    /**
+    /*
      * Loads compressed cell topology from a .bin.gz file.
      */
     public static List<H3Cell> loadFromFile(Path targetFile) throws IOException {

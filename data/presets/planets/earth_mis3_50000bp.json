@@ -33,16 +33,16 @@
   "elevationUseImport" : true,
   "elevationMapSource" : "earth",
   "tempUseImport" : true,
-  "tempSource" : "\uD83C\uDF0D Terre (-50000 BP) — Stade Isotopique 3 & Sahul",
+  "tempSource" : "ðŸŒ Terre (-50000 BP) â€” Stade Isotopique 3 & Sahul",
   "tempSeed" : 12452,
   "precipUseImport" : true,
-  "precipSource" : "\uD83C\uDF0D Terre (-50000 BP) — Précipitations Intermédiaires",
+  "precipSource" : "ðŸŒ Terre (-50000 BP) â€” PrÃ©cipitations IntermÃ©diaires",
   "precipSeed" : 13352,
   "seasonUseImport" : true,
-  "seasonSource" : "\uD83C\uDF0D Terre (-50000 BP) — Saisonnalité MIS 3",
+  "seasonSource" : "ðŸŒ Terre (-50000 BP) â€” SaisonnalitÃ© MIS 3",
   "seasonSeed" : 14352,
+  "canonicalPlanet" : "earth",
   "associatedEpochYear" : -50000,
   "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie.",
-  "tidalLocked" : false,
-  "canonicalPlanet" : "earth"
+  "tidalLocked" : false
 }

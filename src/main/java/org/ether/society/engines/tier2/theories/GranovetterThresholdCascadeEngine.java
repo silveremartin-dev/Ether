@@ -34,16 +34,34 @@ public class GranovetterThresholdCascadeEngine implements ProceduralEnginePlugin
     private static final Logger logger = LoggerFactory.getLogger(GranovetterThresholdCascadeEngine.class);
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code GranovetterThresholdCascadeEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "Granovetter Threshold Cascade Dynamics";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code GranovetterThresholdCascadeEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Models non-linear collective action tipping points, spontaneous social avalanches, and revolutionary cascades.";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code GranovetterThresholdCascadeEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [Granovetter Collective Action Threshold Model (AJS 1978)]
@@ -57,11 +75,24 @@ public class GranovetterThresholdCascadeEngine implements ProceduralEnginePlugin
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code GranovetterThresholdCascadeEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Behavioral Sociology";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code GranovetterThresholdCascadeEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

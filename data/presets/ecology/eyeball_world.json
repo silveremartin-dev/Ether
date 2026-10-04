@@ -44,10 +44,10 @@
     "seasonUseImport" : false,
     "seasonSource" : "",
     "seasonSeed" : 35333,
+    "canonicalPlanet" : "none",
     "associatedEpochYear" : 2026,
     "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur.",
-    "tidalLocked" : true,
-    "canonicalPlanet" : "none"
+    "tidalLocked" : true
   },
   "terrestrialBiomassGtC" : 180.0,
   "soilOrganicCarbonGtC" : 600.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
+  "canonicalPlanet" : "none",
   "associatedEpochYear" : 2026,
-  "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur.",
-  "canonicalPlanet" : "none"
+  "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur."
 }

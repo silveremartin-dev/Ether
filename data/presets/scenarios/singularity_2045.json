@@ -1,6 +1,6 @@
 {
-  "name" : "Singularité Technologique, ASI & Fusion D-T (2045)",
-  "description" : "\uD83E\uDD16 SCÉNARIO FUTUR : Singularité Technologique & Énergie de Fusion D-T\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nFranchissement du seuil d'émergence d'une Super-Intelligence Artificielle (ASI) et maîtrise industrielle de la fusion nucléaire deutérium-tritium.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Croissance exponentielle des rendements de la recherche et automatisation intégrale du travail physique.\n• Déploiement massif de réacteurs à fusion deutérium-tritium conférant une abondance énergétique quasi-infinie.\n• Élimination des pénuries matérielles, transition vers l'échelle de Kardashev Type I et régulation systémique.\n",
+  "name" : "SingularitÃ© Technologique, ASI & Fusion D-T (2045)",
+  "description" : "ðŸ¤– SCÃ‰NARIO FUTUR : SingularitÃ© Technologique & Ã‰nergie de Fusion D-T\n\n[DESCRIPTION DES TERMES DE FORÃ‡AGE PHYSIQUE (Tâ‚€)]\nFranchissement du seuil d'Ã©mergence d'une Super-Intelligence Artificielle (ASI) et maÃ®trise industrielle de la fusion nuclÃ©aire deutÃ©rium-tritium.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Croissance exponentielle des rendements de la recherche et automatisation intÃ©grale du travail physique.\nâ€¢ DÃ©ploiement massif de rÃ©acteurs Ã  fusion deutÃ©rium-tritium confÃ©rant une abondance Ã©nergÃ©tique quasi-infinie.\nâ€¢ Ã‰limination des pÃ©nuries matÃ©rielles, transition vers l'Ã©chelle de Kardashev Type I et rÃ©gulation systÃ©mique.\n",
   "id" : null,
   "presetKey" : "singularity_2045",
   "planetPreset" : {
@@ -38,18 +38,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
     "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -89,18 +89,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+      "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
+      "canonicalPlanet" : "earth",
       "associatedEpochYear" : 2026,
       "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false,
-      "canonicalPlanet" : "earth"
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -118,9 +118,9 @@
     "customRainfallBase64" : null,
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "canonicalPlanet" : "earth"
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

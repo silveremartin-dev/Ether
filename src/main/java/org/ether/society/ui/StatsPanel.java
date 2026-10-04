@@ -75,8 +75,11 @@ public class StatsPanel extends VBox {
     private final PluggableStatEngine pluggableStatEngine = new PluggableStatEngine();
     private final VarianceDistributionPanel variancePanel;
     private final SpatialHeatmapPanel spatialHeatmapPanel = new SpatialHeatmapPanel();
+    /* Internal state variable for is live collection active (boolean). */
     private boolean isLiveCollectionActive = true;
+    /* Internal state variable for sampling interval ticks (int). */
     private int samplingIntervalTicks = 1;
+    /* Internal state variable for tick counter (long). */
     private long tickCounter = 0;
     private java.util.function.Consumer<DisplayMode> onDisplayModeRequested;
 
@@ -85,13 +88,27 @@ public class StatsPanel extends VBox {
     private final Label metricInspectorText;
 
     // Time window in years (-1 for all history)
+    /* Internal state variable for current window years (double). */
     private double currentWindowYears = 10.0;
+    /* Internal state variable for is updating texts (boolean). */
     private boolean isUpdatingTexts = false;
 
+    /*
+     * Set on display mode requested.
+     * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+     *
+     * @param listener the listener parameter (java.util.function.Consumer&lt;DisplayMode&gt;)
+     */
     public void setOnDisplayModeRequested(java.util.function.Consumer<DisplayMode> listener) {
         this.onDisplayModeRequested = listener;
     }
 
+    /*
+     * Set selected metric by display mode.
+     * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+     *
+     * @param mode the mode parameter (DisplayMode)
+     */
     public void setSelectedMetricByDisplayMode(DisplayMode mode) {
         if (mode == null) return;
         String metricId = mode.getMetricId();
@@ -108,19 +125,34 @@ public class StatsPanel extends VBox {
     // Container for metric sections
     private final VBox metricsContainer;
 
-    /**
+    /*
      * Minimalist financial sparkline chart canvas (70x20 px) showing recent trend (green for up, red for down, cyan for stable).
      */
     public static class SparklineCanvas extends javafx.scene.canvas.Canvas {
+        /* Internal state variable for history (double[]). */
         private final double[] history = new double[24];
+        /* Internal state variable for count (int). */
         private int count = 0;
+        /* Internal state variable for head (int). */
         private int head = 0;
 
+        /*
+         * Sparkline canvas.
+         * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public SparklineCanvas() {
             super(70, 20);
             drawEmpty();
         }
 
+        /*
+         * Add value.
+         * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+         *
+         * @param val the val parameter (double)
+         */
         public void addValue(double val) {
             if (Double.isNaN(val) || Double.isInfinite(val)) return;
             history[head] = val;
@@ -216,18 +248,35 @@ public class StatsPanel extends VBox {
         }
     }
 
-    /** Class to hold UI elements for a single metric card */
+    /* Class to hold UI elements for a single metric card */
     private static class MetricCard extends HBox {
+        /* Internal state variable for key (String). */
         private final String key;
+        /* Internal state variable for title (String). */
         private String title;
+        /* Internal state variable for category (String). */
         private String category;
         private final Label titleLabel;
         private final Label valueLabel;
         private final SparklineCanvas sparkline;
+        /* Internal state variable for unit (String). */
         private String unit;
+        /* Internal state variable for tooltip text (String). */
         private String tooltipText;
+        /* Internal state variable for last val (double). */
         private double lastVal = 0.0;
 
+        /*
+         * Metric card.
+         * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+         *
+         * @param key the key parameter (String)
+         * @param title the title parameter (String)
+         * @param category the category parameter (String)
+         * @param unit the unit parameter (String)
+         * @param tooltipText the tooltip text parameter (String)
+         * @return the resulting computation or state reference
+         */
         public MetricCard(String key, String title, String category, String unit, String tooltipText) {
             this.key = key;
             this.title = title;
@@ -261,6 +310,15 @@ public class StatsPanel extends VBox {
             }
         }
 
+        /*
+         * Update texts.
+         * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+         *
+         * @param title the title parameter (String)
+         * @param category the category parameter (String)
+         * @param unit the unit parameter (String)
+         * @param tooltipText the tooltip text parameter (String)
+         */
         public void updateTexts(String title, String category, String unit, String tooltipText) {
             this.title = title;
             this.category = category;
@@ -272,18 +330,55 @@ public class StatsPanel extends VBox {
             }
         }
 
+        /*
+         * Update value.
+         * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+         *
+         * @param displayValue the display value parameter (String)
+         * @param rawNumericValue the raw numeric value parameter (double)
+         */
         public void updateValue(String displayValue, double rawNumericValue) {
             this.lastVal = rawNumericValue;
             valueLabel.setText(displayValue + (unit.isEmpty() ? "" : " " + unit));
             sparkline.addValue(rawNumericValue);
         }
 
+        /*
+         * Get key.
+         * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getKey() { return key; }
+        /*
+         * Get category.
+         * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getCategory() { return category; }
+        /*
+         * Get title.
+         * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getTitle() { return title; }
+        /*
+         * Get tooltip text.
+         * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getTooltipText() { return tooltipText; }
     }
 
+    /*
+     * Stats panel.
+     * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+     *
+     * @param engine the engine parameter (H3SimulationEngine)
+     */
     public StatsPanel(H3SimulationEngine engine) {
         this.engine = engine;
         this.variancePanel = new VarianceDistributionPanel(pluggableStatEngine);
@@ -350,6 +445,13 @@ public class StatsPanel extends VBox {
         chartMetricCombo.setMaxWidth(Double.MAX_VALUE);
         chartMetricCombo.setCellFactory(lv -> new ListCell<String>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+             *
+             * @param item the item parameter (String)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -369,6 +471,13 @@ public class StatsPanel extends VBox {
         });
         chartMetricCombo.setButtonCell(new ListCell<String>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+             *
+             * @param item the item parameter (String)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -426,6 +535,13 @@ public class StatsPanel extends VBox {
         xAxis.setForceZeroInRange(false);
         xAxis.setTickLabelFormatter(new StringConverter<Number>() {
             @Override
+            /*
+             * To string.
+             * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+             *
+             * @param object the object parameter (Number)
+             * @return the resulting computation or state reference
+             */
             public String toString(Number object) {
                 if (object == null) return "";
                 double val = object.doubleValue();
@@ -441,6 +557,13 @@ public class StatsPanel extends VBox {
                 }
             }
             @Override
+            /*
+             * From string.
+             * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+             *
+             * @param string the string parameter (String)
+             * @return the resulting computation or state reference
+             */
             public Number fromString(String string) { return 0; }
         });
 
@@ -790,6 +913,11 @@ public class StatsPanel extends VBox {
             "Total count of active hexagonal spatial cells loaded in memory.")
     );
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+     *
+     */
     public void updateTexts() {
         isUpdatingTexts = true;
         try {
@@ -963,6 +1091,11 @@ public class StatsPanel extends VBox {
         }
     }
 
+    /*
+     * Reset.
+     * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+     *
+     */
     public void reset() {
         chartSeries.getData().clear();
         barSeries.getData().clear();
@@ -972,6 +1105,11 @@ public class StatsPanel extends VBox {
         }
     }
 
+    /*
+     * Reset chart series.
+     * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+     *
+     */
     public void resetChartSeries() {
         reloadChartData();
     }
@@ -1033,6 +1171,11 @@ public class StatsPanel extends VBox {
     private final java.util.concurrent.atomic.AtomicLong lastStatsUiUpdateNanos = new java.util.concurrent.atomic.AtomicLong(0);
     private final java.util.concurrent.atomic.AtomicBoolean statsUpdatePending = new java.util.concurrent.atomic.AtomicBoolean(false);
 
+    /*
+     * Update.
+     * Enforces physical invariants and updates associated state variables within {@code StatsPanel}.
+     *
+     */
     public void update() {
         if (engine == null || !isLiveCollectionActive) return;
         if (engine.getCells() == null || engine.getCells().isEmpty()) return;

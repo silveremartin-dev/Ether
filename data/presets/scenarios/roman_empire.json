@@ -1,6 +1,6 @@
 {
   "name" : "Empire Romain & Pax Romana (An 0)",
-  "description" : "\uD83C\uDFDB️ SCÉNARIO HISTORIQUE : L'Empire Romain à son Apogée (Pax Romana, An 0)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE - SOURCES BESSES & BENCHMARKS CIA / SESHAT / HYDE]\nModélise le bassin méditerranéen au moment de la Pax Romana sous Auguste. Intègre les données démographiques historiques (55 millions d'habitants), les réseaux d'infrastructures (viae, aqueducs) et les dynamiques cliodynamiques de Turchin.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Déploiement des infrastructures de transport (réseau viaire terrestre et autoroutes maritimes méditerranéennes).\n• Cycles cliodynamiques de Turchin (surproduction des élites, instabilité politique, dévaluation monétaire du denier).\n• Impact conjugué des chocs climatiques (Optimum Romain vers refroidissement) et des épidémies (Peste Antonine).\n",
+  "description" : "ðŸ›ï¸ SCÃ‰NARIO HISTORIQUE : L'Empire Romain Ã  son ApogÃ©e (Pax Romana, An 0)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE - SOURCES BESSES & BENCHMARKS CIA / SESHAT / HYDE]\nModÃ©lise le bassin mÃ©diterranÃ©en au moment de la Pax Romana sous Auguste. IntÃ¨gre les donnÃ©es dÃ©mographiques historiques (55 millions d'habitants), les rÃ©seaux d'infrastructures (viae, aqueducs) et les dynamiques cliodynamiques de Turchin.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ DÃ©ploiement des infrastructures de transport (rÃ©seau viaire terrestre et autoroutes maritimes mÃ©diterranÃ©ennes).\nâ€¢ Cycles cliodynamiques de Turchin (surproduction des Ã©lites, instabilitÃ© politique, dÃ©valuation monÃ©taire du denier).\nâ€¢ Impact conjuguÃ© des chocs climatiques (Optimum Romain vers refroidissement) et des Ã©pidÃ©mies (Peste Antonine).\n",
   "id" : null,
   "presetKey" : "roman_empire",
   "planetPreset" : {
@@ -38,18 +38,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
     "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -89,18 +89,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+      "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
+      "canonicalPlanet" : "earth",
       "associatedEpochYear" : 2026,
       "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false,
-      "canonicalPlanet" : "earth"
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -118,9 +118,9 @@
     "customRainfallBase64" : null,
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "canonicalPlanet" : "earth"
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

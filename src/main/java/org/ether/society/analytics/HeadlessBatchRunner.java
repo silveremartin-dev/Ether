@@ -34,14 +34,40 @@ public class HeadlessBatchRunner {
         void onProgress(Scenario scenario, double progress, int currentYear, int endYear);
     }
 
+    /*
+     * Execute batch.
+     * Enforces physical invariants and updates associated state variables within {@code HeadlessBatchRunner}.
+     *
+     * @param scenarios the scenarios parameter (List&lt;Scenario&gt;)
+     * @return the resulting computation or state reference
+     */
     public static List<SimulationRunRecord> executeBatch(List<Scenario> scenarios) {
         return executeBatch(scenarios, null, null);
     }
 
+    /*
+     * Execute batch.
+     * Enforces physical invariants and updates associated state variables within {@code HeadlessBatchRunner}.
+     *
+     * @param scenarios the scenarios parameter (List&lt;Scenario&gt;)
+     * @param listener the listener parameter (BatchProgressListener)
+     * @param cancelSupplier the cancel supplier parameter (java.util.function.BooleanSupplier)
+     * @return the resulting computation or state reference
+     */
     public static List<SimulationRunRecord> executeBatch(List<Scenario> scenarios, BatchProgressListener listener, java.util.function.BooleanSupplier cancelSupplier) {
         return executeBatchParallel(scenarios, 1, listener, cancelSupplier);
     }
 
+    /*
+     * Execute batch parallel.
+     * Enforces physical invariants and updates associated state variables within {@code HeadlessBatchRunner}.
+     *
+     * @param scenarios the scenarios parameter (List&lt;Scenario&gt;)
+     * @param threadCount the thread count parameter (int)
+     * @param listener the listener parameter (BatchProgressListener)
+     * @param cancelSupplier the cancel supplier parameter (java.util.function.BooleanSupplier)
+     * @return the resulting computation or state reference
+     */
     public static List<SimulationRunRecord> executeBatchParallel(List<Scenario> scenarios, int threadCount, BatchProgressListener listener, java.util.function.BooleanSupplier cancelSupplier) {
         List<SimulationRunRecord> results = new java.util.concurrent.CopyOnWriteArrayList<>();
         if (scenarios == null || scenarios.isEmpty()) return results;
@@ -86,10 +112,26 @@ public class HeadlessBatchRunner {
         return results;
     }
 
+    /*
+     * Execute scenario headless.
+     * Enforces physical invariants and updates associated state variables within {@code HeadlessBatchRunner}.
+     *
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public static SimulationRunRecord executeScenarioHeadless(Scenario scenario) {
         return executeScenarioHeadless(scenario, null, null);
     }
 
+    /*
+     * Execute scenario headless.
+     * Enforces physical invariants and updates associated state variables within {@code HeadlessBatchRunner}.
+     *
+     * @param scenario the scenario parameter (Scenario)
+     * @param listener the listener parameter (BatchProgressListener)
+     * @param cancelSupplier the cancel supplier parameter (java.util.function.BooleanSupplier)
+     * @return the resulting computation or state reference
+     */
     public static SimulationRunRecord executeScenarioHeadless(Scenario scenario, BatchProgressListener listener, java.util.function.BooleanSupplier cancelSupplier) {
         if (scenario == null) return null;
 

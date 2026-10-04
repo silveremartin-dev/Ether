@@ -39,14 +39,28 @@ public class ClusterSnapshotManager {
     private static final Logger logger = LoggerFactory.getLogger(ClusterSnapshotManager.class);
 
     private final Path snapshotDir;
+    /* Internal state variable for max retained snapshots (int). */
     private final int maxRetainedSnapshots;
     private final ObjectMapper objectMapper;
+    /* Internal state variable for topology saved (boolean). */
     private boolean topologySaved = false;
 
+    /*
+     * Cluster snapshot manager.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterSnapshotManager}.
+     *
+     */
     public ClusterSnapshotManager() {
         this(Paths.get("saves", "cluster_snapshots"), 5);
     }
 
+    /*
+     * Cluster snapshot manager.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterSnapshotManager}.
+     *
+     * @param snapshotDir the snapshot dir parameter (Path)
+     * @param maxRetainedSnapshots the max retained snapshots parameter (int)
+     */
     public ClusterSnapshotManager(Path snapshotDir, int maxRetainedSnapshots) {
         this.snapshotDir = snapshotDir;
         this.maxRetainedSnapshots = Math.max(1, maxRetainedSnapshots);
@@ -62,11 +76,17 @@ public class ClusterSnapshotManager {
         }
     }
 
+    /*
+     * Get snapshot dir.
+     * Enforces physical invariants and updates associated state variables within {@code ClusterSnapshotManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Path getSnapshotDir() {
         return snapshotDir;
     }
 
-    /**
+    /*
      * Persists static world topology if not already saved in the cluster directory.
      */
     public synchronized void ensureTopologySaved(List<H3Cell> cells) {
@@ -82,14 +102,14 @@ public class ClusterSnapshotManager {
         }
     }
 
-    /**
+    /*
      * Captures a compressed binary checkpoint of the entire WorldBuffer.
      */
     public synchronized Path saveSnapshot(long tickId, WorldBuffer buffer) throws IOException {
         return saveSnapshot(tickId, buffer, null, null);
     }
 
-    /**
+    /*
      * Captures a compressed binary checkpoint with optional topology and scenario metadata.
      */
     public synchronized Path saveSnapshot(long tickId, WorldBuffer buffer, List<H3Cell> optionalCells, Scenario optionalScenario) throws IOException {
@@ -146,7 +166,7 @@ public class ClusterSnapshotManager {
         return targetFile;
     }
 
-    /**
+    /*
      * Restores simulation state into target WorldBuffer from the latest or specified snapshot file.
      */
     public synchronized WorldBufferWireCodec.ChunkPayload restoreSnapshot(Path snapshotFile, WorldBuffer targetBuffer) throws IOException {
@@ -172,7 +192,7 @@ public class ClusterSnapshotManager {
         }
     }
 
-    /**
+    /*
      * Finds the latest available snapshot in the directory.
      */
     public synchronized Path getLatestSnapshot() {

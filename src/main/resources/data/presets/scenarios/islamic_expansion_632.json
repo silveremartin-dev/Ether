@@ -1,6 +1,6 @@
 {
-  "name" : "Expansion Islamique & Révolution Commerciale Califale (632)",
-  "description" : "\uD83C\uDF19 SCÉNARIO HISTORIQUE : Unification Califale & Révolution Agricole Arabe (632 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'expansion foudroyante des Califats Omeyyade et Abbasside de l'Espagne à l'Indus. Effondrement de l'Empire Sassanide, diffusion massive des techniques d'irrigation (qanats, norias) et des cultures tropicales (canne à sucre, coton, agrumes), essor des réseaux maritimes de l'Océan Indien.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Vitesse d'unification géopolitique portée par la haute Asabiyyah bédouine et la doctrine califale.\n• Révolution agricole arabe : diversification agronomique et maîtrise hydraulique des zones arides.\n• Essor de Bagdad comme métropole mondiale (Maison de la Sagesse) et intégration commerciale transcontinentale.\n",
+  "name" : "Expansion Islamique & RÃ©volution Commerciale Califale (632)",
+  "description" : "ðŸŒ™ SCÃ‰NARIO HISTORIQUE : Unification Califale & RÃ©volution Agricole Arabe (632 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise l'expansion foudroyante des Califats Omeyyade et Abbasside de l'Espagne Ã  l'Indus. Effondrement de l'Empire Sassanide, diffusion massive des techniques d'irrigation (qanats, norias) et des cultures tropicales (canne Ã  sucre, coton, agrumes), essor des rÃ©seaux maritimes de l'OcÃ©an Indien.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Vitesse d'unification gÃ©opolitique portÃ©e par la haute Asabiyyah bÃ©douine et la doctrine califale.\nâ€¢ RÃ©volution agricole arabe : diversification agronomique et maÃ®trise hydraulique des zones arides.\nâ€¢ Essor de Bagdad comme mÃ©tropole mondiale (Maison de la Sagesse) et intÃ©gration commerciale transcontinentale.\n",
   "id" : null,
   "presetKey" : "islamic_expansion_632",
   "planetPreset" : {
@@ -38,18 +38,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
     "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -89,18 +89,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+      "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
+      "canonicalPlanet" : "earth",
       "associatedEpochYear" : 2026,
       "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false,
-      "canonicalPlanet" : "earth"
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -118,9 +118,9 @@
     "customRainfallBase64" : null,
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "canonicalPlanet" : "earth"
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -188,6 +188,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Expansion Islamique & Révolution Commerciale Califale (632)",
-  "displayDescription" : "\uD83C\uDF19 SCÉNARIO HISTORIQUE : Unification Califale & Révolution Agricole Arabe (632 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'expansion foudroyante des Califats Omeyyade et Abbasside de l'Espagne à l'Indus. Effondrement de l'Empire Sassanide, diffusion massive des techniques d'irrigation (qanats, norias) et des cultures tropicales (canne à sucre, coton, agrumes), essor des réseaux maritimes de l'Océan Indien.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Vitesse d'unification géopolitique portée par la haute Asabiyyah bédouine et la doctrine califale.\n• Révolution agricole arabe : diversification agronomique et maîtrise hydraulique des zones arides.\n• Essor de Bagdad comme métropole mondiale (Maison de la Sagesse) et intégration commerciale transcontinentale.\n"
+  "displayName" : "Expansion Islamique & RÃ©volution Commerciale Califale (632)",
+  "displayDescription" : "ðŸŒ™ SCÃ‰NARIO HISTORIQUE : Unification Califale & RÃ©volution Agricole Arabe (632 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise l'expansion foudroyante des Califats Omeyyade et Abbasside de l'Espagne Ã  l'Indus. Effondrement de l'Empire Sassanide, diffusion massive des techniques d'irrigation (qanats, norias) et des cultures tropicales (canne Ã  sucre, coton, agrumes), essor des rÃ©seaux maritimes de l'OcÃ©an Indien.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Vitesse d'unification gÃ©opolitique portÃ©e par la haute Asabiyyah bÃ©douine et la doctrine califale.\nâ€¢ RÃ©volution agricole arabe : diversification agronomique et maÃ®trise hydraulique des zones arides.\nâ€¢ Essor de Bagdad comme mÃ©tropole mondiale (Maison de la Sagesse) et intÃ©gration commerciale transcontinentale.\n"
 }

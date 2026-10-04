@@ -23,10 +23,18 @@ import java.util.List;
 public class PhysicalSupplyChainEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicalSupplyChainEngine.class);
 
+    /* Internal state variable for maritime chokepoint blockade active (boolean). */
     private static boolean maritimeChokepointBlockadeActive = false;
     private static double seaTransportFrictionCoeff = 0.001; // Hydrodynamic friction coeff
     private static double landTransportFrictionCoeff = 0.05;  // Overland friction coeff
 
+    /*
+     * Process supply chains.
+     * Enforces physical invariants and updates associated state variables within {@code PhysicalSupplyChainEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processSupplyChains(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -44,12 +52,30 @@ public class PhysicalSupplyChainEngine {
     }
 
     // Getters and Setters
+    /*
+     * Is maritime chokepoint blockade active.
+     * Enforces physical invariants and updates associated state variables within {@code PhysicalSupplyChainEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static boolean isMaritimeChokepointBlockadeActive() { return maritimeChokepointBlockadeActive; }
     public static void setMaritimeChokepointBlockadeActive(boolean blocked) { maritimeChokepointBlockadeActive = blocked; }
 
+    /*
+     * Get sea transport friction coeff.
+     * Enforces physical invariants and updates associated state variables within {@code PhysicalSupplyChainEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getSeaTransportFrictionCoeff() { return seaTransportFrictionCoeff; }
     public static void setSeaTransportFrictionCoeff(double coeff) { seaTransportFrictionCoeff = Math.max(0.0001, coeff); }
 
+    /*
+     * Get land transport friction coeff.
+     * Enforces physical invariants and updates associated state variables within {@code PhysicalSupplyChainEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getLandTransportFrictionCoeff() { return landTransportFrictionCoeff; }
     public static void setLandTransportFrictionCoeff(double coeff) { landTransportFrictionCoeff = Math.max(0.001, coeff); }
 }

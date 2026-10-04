@@ -27,10 +27,10 @@ import java.util.List;
 public class ThermohalineOceanEngine {
     private static final Logger logger = LoggerFactory.getLogger(ThermohalineOceanEngine.class);
 
-    /** Standard baseline ocean salinity in Practical Salinity Units (PSU) */
+    /* Standard baseline ocean salinity in Practical Salinity Units (PSU) */
     public static final double STANDARD_OCEAN_SALINITY_PSU = 35.0;
 
-    /**
+    /*
      * Executes one thermohaline circulation and ocean salinity tick across cells.
      */
     public static void processThermohalineCirculation(List<H3Cell> cells, double globalTemperatureAnomaly) {

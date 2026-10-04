@@ -1,6 +1,6 @@
 {
-  "name" : "Le Sahara Vert & Période Humide Africaine (-6000)",
-  "description" : "\uD83C\uDF34 SCÉNARIO PALÉOCLIMATIQUE : Le Sahara Vert & Période Humide Africaine (-6000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise la Période Humide Africaine (AHP) où l'insolation printanière amplifiée par l'orbite terrestre a intensifié la mousson africaine. Le désert du Sahara était alors une savane verdoyante parsemée de lac majeurs (Lac Méga-Tchad), peuplée d'éleveurs néolithiques et de chasseurs-cueilleurs.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Densité humaine élevée et corridor trans-saharien autour du Lac Méga-Tchad et des oueds.\n• Économie mixte : pastoralisme bovin néolithique, chasse et pêche pélagique lacustre.\n• Migration et repli massif des populations vers la vallée du Nil lors de la désertification vers -3500.\n",
+  "name" : "Le Sahara Vert & PÃ©riode Humide Africaine (-6000)",
+  "description" : "ðŸŒ´ SCÃ‰NARIO PALÃ‰OCLIMATIQUE : Le Sahara Vert & PÃ©riode Humide Africaine (-6000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise la PÃ©riode Humide Africaine (AHP) oÃ¹ l'insolation printaniÃ¨re amplifiÃ©e par l'orbite terrestre a intensifiÃ© la mousson africaine. Le dÃ©sert du Sahara Ã©tait alors une savane verdoyante parsemÃ©e de lac majeurs (Lac MÃ©ga-Tchad), peuplÃ©e d'Ã©leveurs nÃ©olithiques et de chasseurs-cueilleurs.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ DensitÃ© humaine Ã©levÃ©e et corridor trans-saharien autour du Lac MÃ©ga-Tchad et des oueds.\nâ€¢ Ã‰conomie mixte : pastoralisme bovin nÃ©olithique, chasse et pÃªche pÃ©lagique lacustre.\nâ€¢ Migration et repli massif des populations vers la vallÃ©e du Nil lors de la dÃ©sertification vers -3500.\n",
   "id" : null,
   "presetKey" : "green_sahara",
   "planetPreset" : {
@@ -38,18 +38,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre (-6000 BP) — Optimum Climatique & Sahara Vert",
+    "tempSource" : "ðŸŒ Terre (-6000 BP) â€” Optimum Climatique & Sahara Vert",
     "tempSeed" : 12447,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre (-6000 BP) — Mousson Africaine & Lac Méga-Tchad",
+    "precipSource" : "ðŸŒ Terre (-6000 BP) â€” Mousson Africaine & Lac MÃ©ga-Tchad",
     "precipSeed" : 13347,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre (-6000 BP) — Saisonnalité Holocène Moyen",
+    "seasonSource" : "ðŸŒ Terre (-6000 BP) â€” SaisonnalitÃ© HolocÃ¨ne Moyen",
     "seasonSeed" : 14347,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : -6000,
     "presetDescription" : "\uD83C\uDF34 TERRE (-6 000 / Holocène Moyen & Sahara Vert) : Maximum thermique holocène et amplification de la mousson africaine. Le Sahara est une savane fertile dotée de mégalacs et de fleuves soutenant des sociétés pastorales prospères.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (-6 000 / Sahara Vert)",
@@ -89,18 +89,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre (-6000 BP) — Optimum Climatique & Sahara Vert",
+      "tempSource" : "ðŸŒ Terre (-6000 BP) â€” Optimum Climatique & Sahara Vert",
       "tempSeed" : 12447,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre (-6000 BP) — Mousson Africaine & Lac Méga-Tchad",
+      "precipSource" : "ðŸŒ Terre (-6000 BP) â€” Mousson Africaine & Lac MÃ©ga-Tchad",
       "precipSeed" : 13347,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre (-6000 BP) — Saisonnalité Holocène Moyen",
+      "seasonSource" : "ðŸŒ Terre (-6000 BP) â€” SaisonnalitÃ© HolocÃ¨ne Moyen",
       "seasonSeed" : 14347,
+      "canonicalPlanet" : "earth",
       "associatedEpochYear" : -6000,
       "presetDescription" : "\uD83C\uDF34 TERRE (-6 000 / Holocène Moyen & Sahara Vert) : Maximum thermique holocène et amplification de la mousson africaine. Le Sahara est une savane fertile dotée de mégalacs et de fleuves soutenant des sociétés pastorales prospères.",
-      "tidalLocked" : false,
-      "canonicalPlanet" : "earth"
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 680.0,
     "soilOrganicCarbonGtC" : 1900.0,
@@ -118,9 +118,9 @@
     "customRainfallBase64" : null,
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : -6000,
-    "presetDescription" : "\uD83C\uDF34 TERRE (-6 000 / Holocène Moyen & Sahara Vert) : Maximum thermique holocène et amplification de la mousson africaine. Le Sahara est une savane fertile dotée de mégalacs et de fleuves soutenant des sociétés pastorales prospères.",
-    "canonicalPlanet" : "earth"
+    "presetDescription" : "\uD83C\uDF34 TERRE (-6 000 / Holocène Moyen & Sahara Vert) : Maximum thermique holocène et amplification de la mousson africaine. Le Sahara est une savane fertile dotée de mégalacs et de fleuves soutenant des sociétés pastorales prospères."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

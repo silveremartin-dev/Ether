@@ -30,7 +30,7 @@ public record HistorySnapshot(
         int cityStates,
         double eliteOverproduction) {
 
-    /**
+    /*
      * Backward-compatible 8-parameter constructor.
      */
     public HistorySnapshot(int year, int month, long totalPopulation, double totalFood, double totalWealth,
@@ -40,7 +40,7 @@ public record HistorySnapshot(
              75.0, 5.0, totalWealth * 1.5, 15.0, 20.0, 100.0, 0.5, 5.0, 60.0, 0.0, 5000.0, 20000.0, 3.5, 1, 0.1);
     }
 
-    /**
+    /*
      * Extracts numerical value for the given metric label or key.
      */
     public double getMetricValue(String metric) {

@@ -34,13 +34,13 @@ import java.util.List;
 public class OceanAcidificationEngine {
     private static final Logger logger = LoggerFactory.getLogger(OceanAcidificationEngine.class);
 
-    /** Reference Henry's constant for CO2 in seawater at 298.15 K (mol/(LÂ·atm)) */
+    /* Reference Henry's constant for CO2 in seawater at 298.15 K (mol/(LÂ·atm)) */
     public static final double HENRY_K0_CO2 = 0.034;
 
-    /** Enthalpy of dissolution / R for CO2 in Kelvin */
+    /* Enthalpy of dissolution / R for CO2 in Kelvin */
     public static final double ENTHALPY_DISSOLUTION_OVER_R = 2400.0;
 
-    /**
+    /*
      * Calculates Henry's solubility constant K_H(T) for CO2 in mol/(LÂ·atm).
      * Cold waters absorb significantly more CO2 than warm tropical waters.
      */
@@ -50,7 +50,7 @@ public class OceanAcidificationEngine {
         return HENRY_K0_CO2 * Math.exp(ENTHALPY_DISSOLUTION_OVER_R * deltaInvT);
     }
 
-    /**
+    /*
      * Calculates dissolved CO2 concentration in aqueous phase in mol/L.
      */
     public static double calculateDissolvedCO2(double tempCelsius, double co2Ppm) {
@@ -58,7 +58,7 @@ public class OceanAcidificationEngine {
         return calculateHenrySolubility(tempCelsius) * pCO2Atm;
     }
 
-    /**
+    /*
      * Executes one ocean acidification and Henry solubility pump tick.
      *
      * @param cells   List of H3 cells

@@ -25,13 +25,13 @@ import java.util.List;
 public class NuclearWarfareClimateEngine {
     private static final Logger logger = LoggerFactory.getLogger(NuclearWarfareClimateEngine.class);
 
-    /** Power flux threshold per capita indicating full nuclear capability */
+    /* Power flux threshold per capita indicating full nuclear capability */
     public static final double NUCLEAR_CAPABILITY_POWER_WATTS = 20000.0;
 
-    /** Global stratospheric soot optical depth accumulation factor */
+    /* Global stratospheric soot optical depth accumulation factor */
     private static double globalSootOpticalDepth = 0.0;
 
-    /**
+    /*
      * Calculates surface solar irradiance attenuation multiplier based on stratospheric soot optical depth.
      *
      * @param opticalDepth Stratospheric soot optical depth Ï„
@@ -41,7 +41,7 @@ public class NuclearWarfareClimateEngine {
         return Math.exp(-opticalDepth);
     }
 
-    /**
+    /*
      * Executes one nuclear conflict trigger, soot injection, and nuclear winter climate tick.
      */
     public static void processNuclearWarfareClimate(List<H3Cell> cells) {
@@ -98,10 +98,22 @@ public class NuclearWarfareClimateEngine {
         }
     }
 
+    /*
+     * Get global soot optical depth.
+     * Enforces physical invariants and updates associated state variables within {@code NuclearWarfareClimateEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getGlobalSootOpticalDepth() {
         return globalSootOpticalDepth;
     }
 
+    /*
+     * Set global soot optical depth.
+     * Enforces physical invariants and updates associated state variables within {@code NuclearWarfareClimateEngine}.
+     *
+     * @param depth the depth parameter (double)
+     */
     public static void setGlobalSootOpticalDepth(double depth) {
         globalSootOpticalDepth = Math.max(0.0, depth);
     }

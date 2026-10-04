@@ -24,13 +24,13 @@ import java.util.List;
 public class NuclearSafetyRadiotoxicityEngine {
     private static final Logger logger = LoggerFactory.getLogger(NuclearSafetyRadiotoxicityEngine.class);
 
-    /** Power flux threshold for nuclear fission energy */
+    /* Power flux threshold for nuclear fission energy */
     public static final double FISSION_POWER_THRESHOLD = 15000.0;
 
-    /** Power flux threshold for nuclear D-T fusion energy */
+    /* Power flux threshold for nuclear D-T fusion energy */
     public static final double FUSION_POWER_THRESHOLD = 50000.0;
 
-    /**
+    /*
      * Executes nuclear safety, radiotoxicity contamination, and fusion transition tick.
      */
     public static void processNuclearEnergySafety(List<H3Cell> cells) {

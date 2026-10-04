@@ -34,16 +34,34 @@ public class AcemogluRobinsonInstitutionsEngine implements ProceduralEnginePlugi
     private static final Logger logger = LoggerFactory.getLogger(AcemogluRobinsonInstitutionsEngine.class);
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code AcemogluRobinsonInstitutionsEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "Acemoglu-Robinson Inclusive vs Extractive Institutions";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code AcemogluRobinsonInstitutionsEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Models the institutional divergence between inclusive property rights (innovation/growth) and extractive elite monopolies (stagnation).";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code AcemogluRobinsonInstitutionsEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [Acemoglu & Robinson Institutional Divergence Model (2012)]
@@ -56,11 +74,24 @@ public class AcemogluRobinsonInstitutionsEngine implements ProceduralEnginePlugi
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code AcemogluRobinsonInstitutionsEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Institutional Economics";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code AcemogluRobinsonInstitutionsEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

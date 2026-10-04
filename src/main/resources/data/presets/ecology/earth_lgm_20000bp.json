@@ -1,8 +1,8 @@
 {
-  "name" : "Terre (-25 000 / Début LGM & Béringie)",
-  "planetPresetName" : "Terre (-25 000 / Début LGM & Béringie)",
+  "name" : "Terre (-25 000 / DÃ©but LGM & BÃ©ringie)",
+  "planetPresetName" : "Terre (-25 000 / DÃ©but LGM & BÃ©ringie)",
   "embeddedPlanetPreset" : {
-    "name" : "Terre (-25 000 / Début LGM & Béringie)",
+    "name" : "Terre (-25 000 / DÃ©but LGM & BÃ©ringie)",
     "resolution" : 3,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
@@ -36,18 +36,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre (-25000 BP) — Début LGM & Béringie",
+    "tempSource" : "ðŸŒ Terre (-25000 BP) â€” DÃ©but LGM & BÃ©ringie",
     "tempSeed" : 12451,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre (-25000 BP) — Aridité & Steppe",
+    "precipSource" : "ðŸŒ Terre (-25000 BP) â€” AriditÃ© & Steppe",
     "precipSeed" : 13351,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre (-25000 BP) — Saisonnalité Glaciaire",
+    "seasonSource" : "ðŸŒ Terre (-25000 BP) â€” SaisonnalitÃ© Glaciaire",
     "seasonSeed" : 14351,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : -25000,
     "presetDescription" : "\uD83C\uDFD4 TERRE (-25 000 / Début du Maximum Glaciaire & Béringie) : Avancée glaciaire majeure. La baisse eustatique du niveau marin (-100m) découvre le pont continental de Béringie reliant la Sibérie et l'Alaska, facilitant le peuplement de l'Amérique.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 360.0,
   "soilOrganicCarbonGtC" : 1400.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
+  "canonicalPlanet" : "earth",
   "associatedEpochYear" : -25000,
-  "presetDescription" : "\uD83C\uDFD4 TERRE (-25 000 / Début du Maximum Glaciaire & Béringie) : Avancée glaciaire majeure. La baisse eustatique du niveau marin (-100m) découvre le pont continental de Béringie reliant la Sibérie et l'Alaska, facilitant le peuplement de l'Amérique.",
-  "canonicalPlanet" : "earth"
+  "presetDescription" : "\uD83C\uDFD4 TERRE (-25 000 / Début du Maximum Glaciaire & Béringie) : Avancée glaciaire majeure. La baisse eustatique du niveau marin (-100m) découvre le pont continental de Béringie reliant la Sibérie et l'Alaska, facilitant le peuplement de l'Amérique."
 }

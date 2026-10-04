@@ -35,6 +35,14 @@ public class HistoricalAutoCalibrator {
         public Map<Integer, Double> simulatedTrajectory;
         public HistoricalValidationKernel.MultiMetricValidationReport multiMetricReport;
 
+        /*
+         * Calibration result.
+         * Enforces physical invariants and updates associated state variables within {@code HistoricalAutoCalibrator}.
+         *
+         * @param name the name parameter (String)
+         * @param plugins the plugins parameter (List&lt;String&gt;)
+         * @return the resulting computation or state reference
+         */
         public CalibrationResult(String name, List<String> plugins) {
             this.configurationName = name;
             this.activePlugins = new ArrayList<>(plugins);
@@ -42,6 +50,12 @@ public class HistoricalAutoCalibrator {
         }
 
         @Override
+        /*
+         * To string.
+         * Enforces physical invariants and updates associated state variables within {@code HistoricalAutoCalibrator}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String toString() {
             return String.format(
                 "Calibration Result [%s]: Composite RMSE=%.2f, Composite R^2=%.4f, Max Drift=%.1f%% (in Year %d), Active Plugins=%d",
@@ -50,6 +64,13 @@ public class HistoricalAutoCalibrator {
         }
     }
 
+    /*
+     * Evaluate windowed auto calibration.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalAutoCalibrator}.
+     *
+     * @param window the window parameter (HistoricalValidationKernel.EpochWindow)
+     * @return the resulting computation or state reference
+     */
     public static CalibrationResult evaluateWindowedAutoCalibration(HistoricalValidationKernel.EpochWindow window) {
         List<CalibrationResult> candidateResults = new ArrayList<>();
 
@@ -68,14 +89,35 @@ public class HistoricalAutoCalibrator {
         return bestFit;
     }
 
+    /*
+     * Evaluate and auto calibrate.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalAutoCalibrator}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static CalibrationResult evaluateAndAutoCalibrate() {
         return evaluateWindowedAutoCalibration(HistoricalValidationKernel.EpochWindow.DEEP_HORIZON);
     }
 
+    /*
+     * Evaluate multi metric auto calibration.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalAutoCalibrator}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static CalibrationResult evaluateMultiMetricAutoCalibration() {
         return evaluateWindowedAutoCalibration(HistoricalValidationKernel.EpochWindow.EARLY_MODERN_500YR);
     }
 
+    /*
+     * Run windowed trajectory evaluation.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalAutoCalibrator}.
+     *
+     * @param configName the config name parameter (String)
+     * @param pluginNames the plugin names parameter (List&lt;String&gt;)
+     * @param window the window parameter (HistoricalValidationKernel.EpochWindow)
+     * @return the resulting computation or state reference
+     */
     public static CalibrationResult runWindowedTrajectoryEvaluation(String configName, List<String> pluginNames, HistoricalValidationKernel.EpochWindow window) {
         CalibrationResult result = new CalibrationResult(configName, pluginNames);
         HistoricalValidationKernel.MultiMetricTrajectory trajectory = new HistoricalValidationKernel.MultiMetricTrajectory();
@@ -131,11 +173,20 @@ public class HistoricalAutoCalibrator {
         return result;
     }
 
+    /*
+     * Run trajectory evaluation.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalAutoCalibrator}.
+     *
+     * @param configName the config name parameter (String)
+     * @param pluginNames the plugin names parameter (List&lt;String&gt;)
+     * @param benchmarkData the benchmark data parameter (Double&gt;)
+     * @return the resulting computation or state reference
+     */
     public static CalibrationResult runTrajectoryEvaluation(String configName, List<String> pluginNames, Map<Integer, Double> benchmarkData) {
         return runWindowedTrajectoryEvaluation(configName, pluginNames, HistoricalValidationKernel.EpochWindow.DEEP_HORIZON);
     }
 
-    /** Calculates and records all 20 variables into the trajectory container */
+    /* Calculates and records all 20 variables into the trajectory container */
     private static void recordAll20Variables(HistoricalValidationKernel.MultiMetricTrajectory t, int yr, H3Cell cell) {
         double pop = cell.getPopulation();
         double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;

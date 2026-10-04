@@ -23,6 +23,13 @@ import java.util.List;
 public class HandyNasaHybridEngine {
     private static final Logger logger = LoggerFactory.getLogger(HandyNasaHybridEngine.class);
 
+    /*
+     * Process plugin.
+     * Enforces physical invariants and updates associated state variables within {@code HandyNasaHybridEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processPlugin(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

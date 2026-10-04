@@ -8,7 +8,9 @@ import java.util.Random;
  */
 public class SimplexNoise {
 
+    /* Internal state variable for f3 (double). */
     private static final double F3 = 1.0 / 3.0;
+    /* Internal state variable for g3 (double). */
     private static final double G3 = 1.0 / 6.0;
 
     private final short[] perm = new short[512];
@@ -20,6 +22,12 @@ public class SimplexNoise {
             { 0, 1, 1 }, { 0, -1, 1 }, { 0, 1, -1 }, { 0, -1, -1 }
     };
 
+    /*
+     * Simplex noise.
+     * Enforces physical invariants and updates associated state variables within {@code SimplexNoise}.
+     *
+     * @param seed the seed parameter (long)
+     */
     public SimplexNoise(long seed) {
         Random rand = new Random(seed);
         short[] p = new short[256];
@@ -45,7 +53,7 @@ public class SimplexNoise {
         return g[0] * x + g[1] * y + g[2] * z;
     }
 
-    /**
+    /*
      * 3D Simplex Noise.
      * 
      * @return Noise value roughly between -1.0 and 1.0

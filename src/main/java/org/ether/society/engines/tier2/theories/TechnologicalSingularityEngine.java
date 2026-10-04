@@ -27,10 +27,10 @@ import java.util.List;
 public class TechnologicalSingularityEngine {
     private static final Logger logger = LoggerFactory.getLogger(TechnologicalSingularityEngine.class);
 
-    /** Power flux threshold per capita indicating singularity threshold (50,000 W/capita) */
+    /* Power flux threshold per capita indicating singularity threshold (50,000 W/capita) */
     public static final double SINGULARITY_POWER_THRESHOLD_WATTS = 50000.0;
 
-    /**
+    /*
      * Calculates artificial intelligence algorithmic throughput in bits/sec.
      *
      * @param powerPerCapita Mechanical/electrical power flux in Watts/person
@@ -42,7 +42,7 @@ public class TechnologicalSingularityEngine {
         return (powerPerCapita * 1e12) * Math.log(1.0 + capital);
     }
 
-    /**
+    /*
      * Executes one technological singularity evaluation and Carnot limit optimization tick across cells.
      */
     public static void processTechnologicalSingularity(List<H3Cell> cells) {

@@ -50,7 +50,7 @@ public class SoilWaterRetentionEngine {
     public static final double HEAD_FIELD_CAPACITY_CM = 330.0;       // -33 kPa (pF 2.5)
     public static final double HEAD_WILTING_POINT_CM = 15000.0;     // -1500 kPa (pF 4.2)
 
-    /**
+    /*
      * Calculates volumetric soil water content Î¸(h) for matric suction head h (in cm).
      *
      * @param matricSuctionHeadCm Suction head |h| in cm of water
@@ -65,7 +65,7 @@ public class SoilWaterRetentionEngine {
         return THETA_R + (THETA_S - THETA_R) / denominator;
     }
 
-    /**
+    /*
      * Computes the Plant Available Water Capacity fraction (0.0 = total drought / wilting, 1.0 = optimal field capacity).
      *
      * @param rainfallMm Annual precipitation in mm
@@ -85,7 +85,7 @@ public class SoilWaterRetentionEngine {
         return Math.min(1.0, plantWaterContent / awcMax);
     }
 
-    /**
+    /*
      * Processes soil moisture and updates agricultural water availability across H3 cells.
      */
     public static void processSoilWaterRetention(List<H3Cell> cells) {

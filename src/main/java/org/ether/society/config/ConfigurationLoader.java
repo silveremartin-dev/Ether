@@ -28,7 +28,7 @@ public class ConfigurationLoader {
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationLoader.class);
     private static final ObjectMapper objectMapper = createObjectMapper();
 
-    /**
+    /*
      * Creates and configures the Jackson ObjectMapper.
      *
      * @return Configured ObjectMapper instance
@@ -40,7 +40,7 @@ public class ConfigurationLoader {
         return mapper;
     }
 
-    /**
+    /*
      * Loads configuration from the default resource file.
      *
      * @return Configuration object
@@ -67,7 +67,7 @@ public class ConfigurationLoader {
         }
     }
 
-    /**
+    /*
      * Loads configuration from a file path.
      *
      * @param path Path to the configuration file
@@ -81,7 +81,7 @@ public class ConfigurationLoader {
         return config;
     }
 
-    /**
+    /*
      * Saves configuration to a file path.
      *
      * @param config Configuration to save

@@ -34,6 +34,7 @@ import java.util.zip.ZipInputStream;
 public class DataDownloaderService {
     private static final Logger logger = LoggerFactory.getLogger(DataDownloaderService.class);
 
+    /* Internal state variable for hyde vault zip base (String). */
     public static final String HYDE_VAULT_ZIP_BASE = "https://geo.public.data.uu.nl/vault-hyde/hyde34_c8_base_mrt2024%5B1747133140%5D/original/zip/";
     public static final File LOCAL_HYDE_DIR = new File("data/maps/hyde34/");
     public static final File LOCAL_CACHE_DIR = new File("data/cache/");
@@ -57,7 +58,7 @@ public class DataDownloaderService {
 
     private static final ExecutorService executor = Executors.newFixedThreadPool(4);
 
-    /**
+    /*
      * Converts long historical year to HYDE tag format (e.g. -1000 -> "1000BC", 1000 -> "1000AD").
      */
     public static String getHydeYearTag(long year) {
@@ -70,7 +71,7 @@ public class DataDownloaderService {
         }
     }
 
-    /**
+    /*
      * Downloads and extracts the empirical HYDE 3.4 ASCII raster grid files for a specific year natively.
      */
     public static File downloadHydeDataset(long year) {
@@ -80,7 +81,7 @@ public class DataDownloaderService {
         return downloadHydeGridForYear(year);
     }
 
-    /**
+    /*
      * Downloads and extracts the empirical HYDE 3.4 ASCII raster grid files for a specific year natively.
      */
     public static File downloadHydeGridForYear(long year) {
@@ -160,7 +161,7 @@ public class DataDownloaderService {
         throw new IllegalStateException("ZERO FALLBACK VIOLATION: Unable to acquire empirical HYDE 3.4 dataset for year " + year + " (" + fileName + ").");
     }
 
-    /**
+    /*
      * Executes headless browser download script if WAF/Anubis challenge is active.
      */
     private static void downloadViaPlaywrightScript(String yearTag) {
@@ -180,7 +181,7 @@ public class DataDownloaderService {
         }
     }
 
-    /**
+    /*
      * Pre-downloads and pre-caches the full multi-source dataset tensor suite for all timeline steps in a scenario.
      */
     public static CompletableFuture<Void> preloadScenarioDatasetSuite(long startYear, long endYear, int stepYears) {
@@ -198,7 +199,7 @@ public class DataDownloaderService {
         }, executor);
     }
 
-    /**
+    /*
      * Extracts a ZIP archive to a destination target directory.
      */
     public static void extractZipArchive(File zipFile, File targetDir) {

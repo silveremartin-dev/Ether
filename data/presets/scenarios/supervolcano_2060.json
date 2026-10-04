@@ -1,6 +1,6 @@
 {
-  "name" : "Super-Éruption Volcanique Toba/Yellowstone (2060)",
-  "description" : "\uD83C\uDF0B SCÉNARIO FUTUR : Super-Volcan VEI-8 & Refroidissement Vulcanologique\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nÉruption super-volcanique de degré VEI-8 éjectant plus de 1000 km³ de cendres et de dioxyde de soufre (SO₂) dans la haute atmosphère.\n\n[CONDITIONS INITIALES PHYSIQUES (T₀)]\n• Stock Capital Physique (K₀) : 25 000 kg/habitant (infrastructures avancées et serres automatisées).\n• Énergie Stockée (E₀) : 20 000 MJ/habitant (centrales nucléaires et géothermiques).\n• Réserves Alimentaires (F₀) : 3,0 mois (destructions agricoles par cendres).\n• Savoir Archivé (I₀) : 5 000 000 bits/habitant (savoir automatisé & archives).\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Hiver volcanique pluriannuel (baisse de 8°C à 12°C des températures globales pendant 5 à 10 ans).\n• Dépôts massifs de téphras toxiques détruisant les sols agricoles, les toitures urbaines et les réseaux électriques.\n• Déploiement d'une logistique de crise alimentaire basée sur les stocks stratégiques et les cultures protégées.\n",
+  "name" : "Super-Ã‰ruption Volcanique Toba/Yellowstone (2060)",
+  "description" : "ðŸŒ‹ SCÃ‰NARIO FUTUR : Super-Volcan VEI-8 & Refroidissement Vulcanologique\n\n[DESCRIPTION DES TERMES DE FORÃ‡AGE PHYSIQUE (Tâ‚€)]\nÃ‰ruption super-volcanique de degrÃ© VEI-8 Ã©jectant plus de 1000 kmÂ³ de cendres et de dioxyde de soufre (SOâ‚‚) dans la haute atmosphÃ¨re.\n\n[CONDITIONS INITIALES PHYSIQUES (Tâ‚€)]\nâ€¢ Stock Capital Physique (Kâ‚€) : 25 000 kg/habitant (infrastructures avancÃ©es et serres automatisÃ©es).\nâ€¢ Ã‰nergie StockÃ©e (Eâ‚€) : 20 000 MJ/habitant (centrales nuclÃ©aires et gÃ©othermiques).\nâ€¢ RÃ©serves Alimentaires (Fâ‚€) : 3,0 mois (destructions agricoles par cendres).\nâ€¢ Savoir ArchivÃ© (Iâ‚€) : 5 000 000 bits/habitant (savoir automatisÃ© & archives).\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Hiver volcanique pluriannuel (baisse de 8Â°C Ã  12Â°C des tempÃ©ratures globales pendant 5 Ã  10 ans).\nâ€¢ DÃ©pÃ´ts massifs de tÃ©phras toxiques dÃ©truisant les sols agricoles, les toitures urbaines et les rÃ©seaux Ã©lectriques.\nâ€¢ DÃ©ploiement d'une logistique de crise alimentaire basÃ©e sur les stocks stratÃ©giques et les cultures protÃ©gÃ©es.\n",
   "id" : null,
   "presetKey" : "supervolcano_2060",
   "planetPreset" : {
@@ -38,18 +38,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
     "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -89,18 +89,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+      "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
+      "canonicalPlanet" : "earth",
       "associatedEpochYear" : 2026,
       "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false,
-      "canonicalPlanet" : "earth"
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -118,9 +118,9 @@
     "customRainfallBase64" : null,
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "canonicalPlanet" : "earth"
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

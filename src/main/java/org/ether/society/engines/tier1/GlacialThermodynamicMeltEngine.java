@@ -31,22 +31,22 @@ import java.util.List;
 public class GlacialThermodynamicMeltEngine {
     private static final Logger logger = LoggerFactory.getLogger(GlacialThermodynamicMeltEngine.class);
 
-    /** Latent heat of ice fusion in J/kg */
+    /* Latent heat of ice fusion in J/kg */
     public static final double LATENT_HEAT_OF_FUSION_J_KG = 333550.0;
 
-    /** Density of pure glacial ice in kg/mÂ³ */
+    /* Density of pure glacial ice in kg/mÂ³ */
     public static final double ICE_DENSITY_KG_M3 = 917.0;
 
-    /** Density of liquid water in kg/mÂ³ */
+    /* Density of liquid water in kg/mÂ³ */
     public static final double WATER_DENSITY_KG_M3 = 1000.0;
 
-    /** Total planetary ocean surface area in mÂ² (~3.61 x 10^14 mÂ²) */
+    /* Total planetary ocean surface area in mÂ² (~3.61 x 10^14 mÂ²) */
     public static final double GLOBAL_OCEAN_AREA_M2 = 3.61e14;
 
-    /** PDD thermal exchange factor (W / (mÂ² Â· K)) */
+    /* PDD thermal exchange factor (W / (mÂ² Â· K)) */
     public static final double PDD_HEAT_TRANSFER_COEFF = 9.8;
 
-    /**
+    /*
      * Computes glacial melt depth (in meters of ice) for a given surface temperature and time step.
      *
      * @param surfaceTempC Surface temperature in Â°C
@@ -68,7 +68,7 @@ public class GlacialThermodynamicMeltEngine {
         return massMeltedKgPerM2 / ICE_DENSITY_KG_M3;
     }
 
-    /**
+    /*
      * Processes cryospheric ablation across all glacial and tundra cells and computes global sea level rise.
      *
      * @param cells List of H3 cells

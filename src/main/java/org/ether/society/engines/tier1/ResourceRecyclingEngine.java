@@ -22,7 +22,7 @@ import java.util.List;
 public class ResourceRecyclingEngine {
     private static final Logger logger = LoggerFactory.getLogger(ResourceRecyclingEngine.class);
 
-    /**
+    /*
      * Calculates continuous recycling efficiency multiplier based on capital density and tech.
      *
      * @param capital Accumulated structural capital
@@ -36,7 +36,7 @@ public class ResourceRecyclingEngine {
         return capitalFactor * techFactor;
     }
 
-    /**
+    /*
      * Executes one material recycling tick across cells.
      */
     public static void processResourceRecycling(List<H3Cell> cells) {

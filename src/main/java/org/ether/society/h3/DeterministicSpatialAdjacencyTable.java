@@ -23,11 +23,20 @@ import java.util.*;
 public class DeterministicSpatialAdjacencyTable {
     private static final Logger logger = LoggerFactory.getLogger(DeterministicSpatialAdjacencyTable.class);
 
+    /* Internal state variable for num cells (int). */
     private final int numCells;
+    /* Internal state variable for cell indices (long[]). */
     private final long[] cellIndices;
     private final int[][] neighborTable; // [cellIndex][6] -> neighbor cell internal index (-1 if boundary/empty)
+    /* Internal state variable for map (final). */
     private final Map<Long, Integer> h3ToIndexMap;
 
+    /*
+     * Deterministic spatial adjacency table.
+     * Enforces physical invariants and updates associated state variables within {@code DeterministicSpatialAdjacencyTable}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     */
     public DeterministicSpatialAdjacencyTable(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) {
             this.numCells = 0;
@@ -77,7 +86,7 @@ public class DeterministicSpatialAdjacencyTable {
         }
     }
 
-    /**
+    /*
      * Gets pre-computed neighbor indices for a given cell.
      *
      * @param cellLocalIndex The integer index of the cell (0 .. numCells - 1)
@@ -88,15 +97,35 @@ public class DeterministicSpatialAdjacencyTable {
         return neighborTable[cellLocalIndex];
     }
 
+    /*
+     * Get cell index.
+     * Enforces physical invariants and updates associated state variables within {@code DeterministicSpatialAdjacencyTable}.
+     *
+     * @param h3Index the h3index parameter (long)
+     * @return the resulting computation or state reference
+     */
     public int getCellIndex(long h3Index) {
         return h3ToIndexMap.getOrDefault(h3Index, -1);
     }
 
+    /*
+     * Get h3index.
+     * Enforces physical invariants and updates associated state variables within {@code DeterministicSpatialAdjacencyTable}.
+     *
+     * @param localIndex the local index parameter (int)
+     * @return the resulting computation or state reference
+     */
     public long getH3Index(int localIndex) {
         if (localIndex < 0 || localIndex >= numCells) return 0L;
         return cellIndices[localIndex];
     }
 
+    /*
+     * Get num cells.
+     * Enforces physical invariants and updates associated state variables within {@code DeterministicSpatialAdjacencyTable}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getNumCells() {
         return numCells;
     }

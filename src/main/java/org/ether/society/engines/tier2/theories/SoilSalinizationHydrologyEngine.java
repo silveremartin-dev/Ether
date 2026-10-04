@@ -34,16 +34,34 @@ public class SoilSalinizationHydrologyEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(SoilSalinizationHydrologyEngine.class);
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code SoilSalinizationHydrologyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "Soil Salinization Hydrology Engine";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code SoilSalinizationHydrologyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Models progressive topsoil salt deposition and agricultural yield collapse under intensive irrigation in arid and semi-arid basins.";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code SoilSalinizationHydrologyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [Soil Salinization & Irrigation Mass Balance (Jacobsen & Adams 1958, FAO 1985)]
@@ -56,11 +74,24 @@ public class SoilSalinizationHydrologyEngine implements ProceduralEnginePlugin {
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code SoilSalinizationHydrologyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Agro-Hydrological Degradation";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code SoilSalinizationHydrologyEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

@@ -29,6 +29,14 @@ import java.util.List;
 public class IsruAutarkyAndSpaceColonizationEngine {
     private static final Logger logger = LoggerFactory.getLogger(IsruAutarkyAndSpaceColonizationEngine.class);
 
+    /*
+     * Process space colonization cliodynamics.
+     * Enforces physical invariants and updates associated state variables within {@code IsruAutarkyAndSpaceColonizationEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param preset the preset parameter (PlanetPreset)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processSpaceColonizationCliodynamics(List<H3Cell> cells, PlanetPreset preset, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

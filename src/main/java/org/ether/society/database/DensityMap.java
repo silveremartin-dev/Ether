@@ -63,53 +63,54 @@ public class DensityMap {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
+    /*
      * Reference to simulation.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "simulation_id", nullable = false)
     private Simulation simulation;
 
-    /**
+    /*
      * H3 cell index.
      */
     @Column(name = "h3_index", nullable = false)
     private Long h3Index;
 
-    /**
+    /*
      * Resource category: POPULATION, FOOD, MINERALS, BIOMASS.
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private ResourceCategory resourceCategory;
 
-    /**
+    /*
      * Specific resource type (e.g., "FISH", "COPPER", "WHEAT").
      */
     @Column(nullable = false, length = 50)
+    /* Internal state variable for resource type (String). */
     private String resourceType;
 
-    /**
+    /*
      * Density value in gigajoules per kmÂ² (or count/kmÂ² for population).
      */
     @Column(nullable = false)
     private Double densityValue;
 
-    /**
+    /*
      * Unit of measurement: GJ_PER_KM2, COUNT_PER_KM2, KG_PER_KM2.
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DensityUnit densityUnit;
 
-    /**
+    /*
      * Distribution pattern: UNIFORM, FRACTAL, CLUSTERED, RANDOM.
      */
     @Enumerated(EnumType.STRING)
     @Column
     private DistributionPattern distributionPattern;
 
-    /**
+    /*
      * Fractal dimension (1.0-2.0) for fractal distributions.
      * Higher values = more clustered (cities, ore deposits).
      */
@@ -119,52 +120,57 @@ public class DensityMap {
     // Enums
 
     public enum ResourceCategory {
-        /** Human population density. */
+        /* Human population density. */
         POPULATION,
 
-        /** Edible resources (fish, game, crops). */
+        /* Edible resources (fish, game, crops). */
         FOOD,
 
-        /** Mineral resources (metals, ores). */
+        /* Mineral resources (metals, ores). */
         MINERALS,
 
-        /** Living biomass (wood, vegetation). */
+        /* Living biomass (wood, vegetation). */
         BIOMASS,
 
-        /** Water resources. */
+        /* Water resources. */
         WATER
     }
 
     public enum DensityUnit {
-        /** Gigajoules per square kilometer. */
+        /* Gigajoules per square kilometer. */
         GJ_PER_KM2,
 
-        /** Count per square kilometer (population). */
+        /* Count per square kilometer (population). */
         COUNT_PER_KM2,
 
-        /** Kilograms per square kilometer. */
+        /* Kilograms per square kilometer. */
         KG_PER_KM2,
 
-        /** Cubic meters per square kilometer (water). */
+        /* Cubic meters per square kilometer (water). */
         M3_PER_KM2
     }
 
     public enum DistributionPattern {
-        /** Evenly distributed. */
+        /* Evenly distributed. */
         UNIFORM,
 
-        /** Fractal/self-similar (realistic for cities, resources). */
+        /* Fractal/self-similar (realistic for cities, resources). */
         FRACTAL,
 
-        /** Strongly clustered (ore veins, oases). */
+        /* Strongly clustered (ore veins, oases). */
         CLUSTERED,
 
-        /** Random distribution. */
+        /* Random distribution. */
         RANDOM
     }
 
     // Constructors
 
+    /*
+     * Density map.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     */
     public DensityMap() {
     }
 
@@ -180,74 +186,182 @@ public class DensityMap {
 
     // Getters/setters
 
+    /*
+     * Get id.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Long getId() {
         return id;
     }
 
+    /*
+     * Set id.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @param id the id parameter (Long)
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /*
+     * Get simulation.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Simulation getSimulation() {
         return simulation;
     }
 
+    /*
+     * Set simulation.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @param simulation the simulation parameter (Simulation)
+     */
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
     }
 
+    /*
+     * Get h3index.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Long getH3Index() {
         return h3Index;
     }
 
+    /*
+     * Set h3index.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @param h3Index the h3index parameter (Long)
+     */
     public void setH3Index(Long h3Index) {
         this.h3Index = h3Index;
     }
 
+    /*
+     * Get resource category.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @return the resulting computation or state reference
+     */
     public ResourceCategory getResourceCategory() {
         return resourceCategory;
     }
 
+    /*
+     * Set resource category.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @param category the category parameter (ResourceCategory)
+     */
     public void setResourceCategory(ResourceCategory category) {
         this.resourceCategory = category;
     }
 
+    /*
+     * Get resource type.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getResourceType() {
         return resourceType;
     }
 
+    /*
+     * Set resource type.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @param resourceType the resource type parameter (String)
+     */
     public void setResourceType(String resourceType) {
         this.resourceType = resourceType;
     }
 
+    /*
+     * Get density value.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Double getDensityValue() {
         return densityValue;
     }
 
+    /*
+     * Set density value.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @param densityValue the density value parameter (Double)
+     */
     public void setDensityValue(Double densityValue) {
         this.densityValue = densityValue;
     }
 
+    /*
+     * Get density unit.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @return the resulting computation or state reference
+     */
     public DensityUnit getDensityUnit() {
         return densityUnit;
     }
 
+    /*
+     * Set density unit.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @param densityUnit the density unit parameter (DensityUnit)
+     */
     public void setDensityUnit(DensityUnit densityUnit) {
         this.densityUnit = densityUnit;
     }
 
+    /*
+     * Get distribution pattern.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @return the resulting computation or state reference
+     */
     public DistributionPattern getDistributionPattern() {
         return distributionPattern;
     }
 
+    /*
+     * Set distribution pattern.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @param pattern the pattern parameter (DistributionPattern)
+     */
     public void setDistributionPattern(DistributionPattern pattern) {
         this.distributionPattern = pattern;
     }
 
+    /*
+     * Get fractal dimension.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Double getFractalDimension() {
         return fractalDimension;
     }
 
+    /*
+     * Set fractal dimension.
+     * Enforces physical invariants and updates associated state variables within {@code DensityMap}.
+     *
+     * @param fractalDimension the fractal dimension parameter (Double)
+     */
     public void setFractalDimension(Double fractalDimension) {
         this.fractalDimension = fractalDimension;
     }

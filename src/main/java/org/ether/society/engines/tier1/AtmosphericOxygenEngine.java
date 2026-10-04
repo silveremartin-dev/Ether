@@ -25,10 +25,10 @@ import java.util.List;
 public class AtmosphericOxygenEngine {
     private static final Logger logger = LoggerFactory.getLogger(AtmosphericOxygenEngine.class);
 
-    /** Standard sea-level oxygen partial pressure in atm */
+    /* Standard sea-level oxygen partial pressure in atm */
     public static final double STANDARD_O2_PRESSURE_ATM = 0.21;
 
-    /**
+    /*
      * Calculates aerobic physical labor capacity multiplier based on O2 partial pressure.
      *
      * @param o2PressureAtm Oxygen partial pressure in atm
@@ -39,7 +39,7 @@ public class AtmosphericOxygenEngine {
         return Math.min(1.2, o2PressureAtm / STANDARD_O2_PRESSURE_ATM);
     }
 
-    /**
+    /*
      * Executes one atmospheric oxygen and hyper-combustion tick across cells.
      */
     public static void processAtmosphericOxygen(List<H3Cell> cells, double globalO2Ratio, double globalAtmoPressure) {

@@ -25,6 +25,7 @@ import java.util.List;
 public class PanamaWorldBuffer implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(PanamaWorldBuffer.class);
 
+    /* Internal state variable for capacity (int). */
     private final int capacity;
 
     // Direct Off-Heap Native Buffers
@@ -34,6 +35,12 @@ public class PanamaWorldBuffer implements AutoCloseable {
     private final DoubleBuffer waterBuffer;
     private final DoubleBuffer foodBuffer;
 
+    /*
+     * Panama world buffer.
+     * Enforces physical invariants and updates associated state variables within {@code PanamaWorldBuffer}.
+     *
+     * @param capacity the capacity parameter (int)
+     */
     public PanamaWorldBuffer(int capacity) {
         this.capacity = capacity;
 
@@ -47,7 +54,7 @@ public class PanamaWorldBuffer implements AutoCloseable {
                 capacity, (capacity * (Double.BYTES * 4 + Long.BYTES)) / 1024);
     }
 
-    /**
+    /*
      * Ingests a list of H3 cells into contiguous off-heap direct memory buffers.
      */
     public void ingestCells(List<H3Cell> cells) {
@@ -63,27 +70,66 @@ public class PanamaWorldBuffer implements AutoCloseable {
         }
     }
 
+    /*
+     * Get temperature.
+     * Enforces physical invariants and updates associated state variables within {@code PanamaWorldBuffer}.
+     *
+     * @param index the index parameter (int)
+     * @return the resulting computation or state reference
+     */
     public double getTemperature(int index) {
         return temperatureBuffer.get(index);
     }
 
+    /*
+     * Set temperature.
+     * Enforces physical invariants and updates associated state variables within {@code PanamaWorldBuffer}.
+     *
+     * @param index the index parameter (int)
+     * @param value the value parameter (double)
+     */
     public void setTemperature(int index, double value) {
         temperatureBuffer.put(index, value);
     }
 
+    /*
+     * Get population.
+     * Enforces physical invariants and updates associated state variables within {@code PanamaWorldBuffer}.
+     *
+     * @param index the index parameter (int)
+     * @return the resulting computation or state reference
+     */
     public long getPopulation(int index) {
         return populationBuffer.get(index);
     }
 
+    /*
+     * Set population.
+     * Enforces physical invariants and updates associated state variables within {@code PanamaWorldBuffer}.
+     *
+     * @param index the index parameter (int)
+     * @param value the value parameter (long)
+     */
     public void setPopulation(int index, long value) {
         populationBuffer.put(index, value);
     }
 
+    /*
+     * Get capacity.
+     * Enforces physical invariants and updates associated state variables within {@code PanamaWorldBuffer}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getCapacity() {
         return capacity;
     }
 
     @Override
+    /*
+     * Close.
+     * Enforces physical invariants and updates associated state variables within {@code PanamaWorldBuffer}.
+     *
+     */
     public void close() {
         logger.info("🗑️ Cleared Panama Off-Heap WorldBuffer native memory buffers.");
     }

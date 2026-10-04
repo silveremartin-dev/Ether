@@ -39,16 +39,34 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
     public static final double GAMMA_E = 0.50; // Useful exergy elasticity
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code KummelAyresExergyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "KÃ¼mmel / Ayres-Warr Biophysical Exergy Economics";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code KummelAyresExergyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Thermodynamic macroeconomic production function Y = A Â· K^Î± Â· L^Î² Â· E_useful^Î³ where useful work/exergy is the prime driver of industrial output.";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code KummelAyresExergyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [KÃ¼mmel & Ayres-Warr Useful Exergy Production Function]
@@ -61,11 +79,24 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code KummelAyresExergyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Biophysical Economics";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code KummelAyresExergyEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

@@ -33,16 +33,16 @@ import java.util.List;
 public class GlacialIsostaticAdjustmentEngine {
     private static final Logger logger = LoggerFactory.getLogger(GlacialIsostaticAdjustmentEngine.class);
 
-    /** Mantle asthenosphere density in kg/mÂ³ */
+    /* Mantle asthenosphere density in kg/mÂ³ */
     public static final double MANTLE_DENSITY_KG_M3 = 3300.0;
 
-    /** Glacial ice density in kg/mÂ³ */
+    /* Glacial ice density in kg/mÂ³ */
     public static final double ICE_DENSITY_KG_M3 = 917.0;
 
-    /** Viscoelastic relaxation time constant Ï„ in years (~4,000 yr for upper mantle) */
+    /* Viscoelastic relaxation time constant Ï„ in years (~4,000 yr for upper mantle) */
     public static final double GIA_RELAXATION_TIME_YEARS = 4000.0;
 
-    /**
+    /*
      * Calculates isostatic equilibrium elevation depression (in meters) for an ice sheet thickness h_ice.
      */
     public static double calculateEquilibriumDeflectionMeters(double iceThicknessMeters) {
@@ -50,7 +50,7 @@ public class GlacialIsostaticAdjustmentEngine {
         return -(ICE_DENSITY_KG_M3 / MANTLE_DENSITY_KG_M3) * iceThicknessMeters;
     }
 
-    /**
+    /*
      * Processes viscoelastic crustal rebound and elevation adjustments across all H3 cells.
      *
      * @param cells List of H3 cells

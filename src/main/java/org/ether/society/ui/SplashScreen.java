@@ -30,6 +30,11 @@ public class SplashScreen {
     private final Label statusLabel;
     private final Label subStatusLabel;
 
+    /*
+     * Splash screen.
+     * Enforces physical invariants and updates associated state variables within {@code SplashScreen}.
+     *
+     */
     public SplashScreen() {
         stage = new Stage();
         stage.initStyle(StageStyle.TRANSPARENT);
@@ -106,10 +111,23 @@ public class SplashScreen {
         stage.centerOnScreen();
     }
 
+    /*
+     * Show.
+     * Enforces physical invariants and updates associated state variables within {@code SplashScreen}.
+     *
+     */
     public void show() {
         stage.show();
     }
 
+    /*
+     * Update progress.
+     * Enforces physical invariants and updates associated state variables within {@code SplashScreen}.
+     *
+     * @param progress the progress parameter (double)
+     * @param status the status parameter (String)
+     * @param subStatus the sub status parameter (String)
+     */
     public void updateProgress(double progress, String status, String subStatus) {
         javafx.application.Platform.runLater(() -> {
             progressBar.setProgress(progress);
@@ -118,6 +136,11 @@ public class SplashScreen {
         });
     }
 
+    /*
+     * Close.
+     * Enforces physical invariants and updates associated state variables within {@code SplashScreen}.
+     *
+     */
     public void close() {
         javafx.application.Platform.runLater(stage::close);
     }

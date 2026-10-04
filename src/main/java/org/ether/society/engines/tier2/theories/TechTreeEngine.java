@@ -35,7 +35,7 @@ public class TechTreeEngine {
     public static final PhysicalEra MEDIEVAL = new PhysicalEra("Moyen Ãƒâ€šge", 1500.0, 400.0, "Charrue lourde, moulins ÃƒÂ  eau/vent (400 MPa) et ÃƒÂ©thanol/bois (1500W/hab).");
     public static final PhysicalEra INDUSTRIAL = new PhysicalEra("RÃƒÂ©volution Industrielle", 8000.0, 800.0, "Machine ÃƒÂ  vapeur, acier Bessemer (800 MPa) et charbon (8000W/hab).");
 
-    /**
+    /*
      * Executes physical era progression and spatial power diffusion.
      */
     public static void processTechnologyDiffusion(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes) {

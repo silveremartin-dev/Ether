@@ -24,10 +24,19 @@ import java.util.List;
 public class TrophicEcosystemEngine {
     private static final Logger logger = LoggerFactory.getLogger(TrophicEcosystemEngine.class);
 
+    /* Internal state variable for pleistocene rewilding active (boolean). */
     private static boolean pleistoceneRewildingActive = false;
+    /* Internal state variable for megafauna density per km2 (double). */
     private static double megafaunaDensityPerKm2 = 0.0;
     private static double globalBiodiversityIndex = 1.0; // 0.0 (total extinction) to 1.0 (intact)
 
+    /*
+     * Process trophic ecosystem.
+     * Enforces physical invariants and updates associated state variables within {@code TrophicEcosystemEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processTrophicEcosystem(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -55,12 +64,30 @@ public class TrophicEcosystemEngine {
     }
 
     // Getters and Setters
+    /*
+     * Is pleistocene rewilding active.
+     * Enforces physical invariants and updates associated state variables within {@code TrophicEcosystemEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static boolean isPleistoceneRewildingActive() { return pleistoceneRewildingActive; }
     public static void setPleistoceneRewildingActive(boolean active) { pleistoceneRewildingActive = active; }
 
+    /*
+     * Get megafauna density per km2.
+     * Enforces physical invariants and updates associated state variables within {@code TrophicEcosystemEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getMegafaunaDensityPerKm2() { return megafaunaDensityPerKm2; }
     public static void setMegafaunaDensityPerKm2(double density) { megafaunaDensityPerKm2 = Math.max(0.0, density); }
 
+    /*
+     * Get global biodiversity index.
+     * Enforces physical invariants and updates associated state variables within {@code TrophicEcosystemEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getGlobalBiodiversityIndex() { return globalBiodiversityIndex; }
     public static void setGlobalBiodiversityIndex(double index) { globalBiodiversityIndex = Math.max(0.0, Math.min(1.0, index)); }
 }

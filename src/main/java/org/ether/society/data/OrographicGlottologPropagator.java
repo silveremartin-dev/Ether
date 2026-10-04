@@ -35,7 +35,7 @@ public class OrographicGlottologPropagator {
         String name
     ) {}
 
-    /**
+    /*
      * Propagates cultural seeds over a digital elevation mask to produce an anisotropic isogloss / kinship raster.
      *
      * @param seeds List of initial cultural/linguistic hearths

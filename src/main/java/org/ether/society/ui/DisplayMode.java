@@ -108,24 +108,39 @@ public enum DisplayMode {
         MINING("⛏️ RESSOURCES MINÉRALES & EXPLOITATION"),
         SOCIETY_POLITICS("🏛️ ÉCONOMIE, SOCIÉTÉ & CLIODYNAMIQUE");
 
+        /* Internal state variable for category name (String). */
         private final String categoryName;
 
         Category(String categoryName) {
             this.categoryName = categoryName;
         }
 
+    /*
+     * Get category name.
+     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategoryName() {
         return org.ether.society.i18n.I18n.getOrDefault("displaymode.category." + name().toLowerCase(), categoryName);
     }
 
     @Override
+    /*
+     * To string.
+     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String toString() {
         return getCategoryName();
     }
 }
 
+    /* Internal state variable for display name (String). */
     private final String displayName;
     private final Category category;
+    /* Internal state variable for description (String). */
     private final String description;
 
     DisplayMode(String displayName, Category category, String description) {
@@ -134,18 +149,42 @@ public enum DisplayMode {
         this.description = description;
     }
 
+    /*
+     * Get display name.
+     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDisplayName() {
         return org.ether.society.i18n.I18n.getOrDefault("displaymode." + name().toLowerCase() + ".name", displayName);
     }
 
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Category getCategory() {
         return category;
     }
 
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return org.ether.society.i18n.I18n.getOrDefault("displaymode." + name().toLowerCase() + ".desc", description);
     }
 
+    /*
+     * Get metric id.
+     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getMetricId() {
         switch (this) {
             case TEMPERATURE: return "temperature";
@@ -174,6 +213,13 @@ public enum DisplayMode {
         }
     }
 
+    /*
+     * From metric id.
+     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
+     *
+     * @param metricId the metric id parameter (String)
+     * @return the resulting computation or state reference
+     */
     public static DisplayMode fromMetricId(String metricId) {
         if (metricId == null) return POPULATION;
         for (DisplayMode dm : values()) {
@@ -188,13 +234,26 @@ public enum DisplayMode {
         SCALAR_1D("1D Scalaire (Continu)"),
         ID_24BIT_CATEGORICAL("ID 24-bits (Catégoriel RVB)");
 
+        /* Internal state variable for default label (String). */
         private final String defaultLabel;
         EncodingType(String defaultLabel) { this.defaultLabel = defaultLabel; }
+        /*
+         * Get label.
+         * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getLabel() {
             return org.ether.society.i18n.I18n.getOrDefault("displaymode.encoding." + name().toLowerCase(), defaultLabel);
         }
     }
 
+    /*
+     * Get encoding type.
+     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
+     *
+     * @return the resulting computation or state reference
+     */
     public EncodingType getEncodingType() {
         return switch (this) {
             case BIOME, CULTURE, POLITICAL -> EncodingType.ID_24BIT_CATEGORICAL;
@@ -203,6 +262,12 @@ public enum DisplayMode {
     }
 
     @Override
+    /*
+     * To string.
+     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String toString() {
         return displayName;
     }

@@ -1,6 +1,6 @@
 {
   "name" : "Sahul & Premier Peuplement de l'Australie (-50000)",
-  "description" : "\uD83E\uDD98 SCÉNARIO PALÉOLITHIQUE : Traversée Maritime & Incursion dans le Sahul (-50 000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nPremier franchissement maritime majeur de la ligne de Wallace par les ancêtres des Aborigènes d'Australie. Modélise la colonisation du continent Sahul (Australie, Tasmanie, Nouvelle-Guinée réunies) et l'adaptation aux écosystèmes arides.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Franchissement maritime de la ligne de Wallace et navigation côtière insulaire.\n• Adaptation aux régimes arides intérieurs et gestion des paysages par brûlis (fire-stick farming).\n• Stabilité démographique à long terme et réseaux d'alliances à l'ocre à travers le désert.\n",
+  "description" : "ðŸ¦˜ SCÃ‰NARIO PALÃ‰OLITHIQUE : TraversÃ©e Maritime & Incursion dans le Sahul (-50 000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nPremier franchissement maritime majeur de la ligne de Wallace par les ancÃªtres des AborigÃ¨nes d'Australie. ModÃ©lise la colonisation du continent Sahul (Australie, Tasmanie, Nouvelle-GuinÃ©e rÃ©unies) et l'adaptation aux Ã©cosystÃ¨mes arides.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Franchissement maritime de la ligne de Wallace et navigation cÃ´tiÃ¨re insulaire.\nâ€¢ Adaptation aux rÃ©gimes arides intÃ©rieurs et gestion des paysages par brÃ»lis (fire-stick farming).\nâ€¢ StabilitÃ© dÃ©mographique Ã  long terme et rÃ©seaux d'alliances Ã  l'ocre Ã  travers le dÃ©sert.\n",
   "id" : null,
   "presetKey" : "sahul",
   "planetPreset" : {
@@ -38,18 +38,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre (-50000 BP) — Stade Isotopique 3 & Sahul",
+    "tempSource" : "ðŸŒ Terre (-50000 BP) â€” Stade Isotopique 3 & Sahul",
     "tempSeed" : 12452,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre (-50000 BP) — Précipitations Intermédiaires",
+    "precipSource" : "ðŸŒ Terre (-50000 BP) â€” PrÃ©cipitations IntermÃ©diaires",
     "precipSeed" : 13352,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre (-50000 BP) — Saisonnalité MIS 3",
+    "seasonSource" : "ðŸŒ Terre (-50000 BP) â€” SaisonnalitÃ© MIS 3",
     "seasonSeed" : 14352,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : -50000,
     "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (-50 000 / Stade Isotopique 3 & Sahul)",
@@ -89,18 +89,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre (-50000 BP) — Stade Isotopique 3 & Sahul",
+      "tempSource" : "ðŸŒ Terre (-50000 BP) â€” Stade Isotopique 3 & Sahul",
       "tempSeed" : 12452,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre (-50000 BP) — Précipitations Intermédiaires",
+      "precipSource" : "ðŸŒ Terre (-50000 BP) â€” PrÃ©cipitations IntermÃ©diaires",
       "precipSeed" : 13352,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre (-50000 BP) — Saisonnalité MIS 3",
+      "seasonSource" : "ðŸŒ Terre (-50000 BP) â€” SaisonnalitÃ© MIS 3",
       "seasonSeed" : 14352,
+      "canonicalPlanet" : "earth",
       "associatedEpochYear" : -50000,
       "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie.",
-      "tidalLocked" : false,
-      "canonicalPlanet" : "earth"
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 480.0,
     "soilOrganicCarbonGtC" : 1600.0,
@@ -118,9 +118,9 @@
     "customRainfallBase64" : null,
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : -50000,
-    "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie.",
-    "canonicalPlanet" : "earth"
+    "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

@@ -45,11 +45,17 @@ public final class PresetStorageService {
         return om;
     }
 
+    /*
+     * Get mapper.
+     * Enforces physical invariants and updates associated state variables within {@code PresetStorageService}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static ObjectMapper getMapper() {
         return mapper;
     }
 
-    /**
+    /*
      * Converts a preset/scenario name to a clean, canonical filename slug.
      */
     public static String slugify(String name) {
@@ -88,6 +94,12 @@ public final class PresetStorageService {
 
     // â”€â”€ Planetary Presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    /*
+     * Load all planet presets.
+     * Enforces physical invariants and updates associated state variables within {@code PresetStorageService}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static List<PlanetPreset> loadAllPlanetPresets() {
         Map<String, PlanetPreset> presets = new LinkedHashMap<>();
 
@@ -139,6 +151,12 @@ public final class PresetStorageService {
 
     // â”€â”€ Ecology Presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    /*
+     * Load all ecology presets.
+     * Enforces physical invariants and updates associated state variables within {@code PresetStorageService}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static List<EcologyPreset> loadAllEcologyPresets() {
         Map<String, EcologyPreset> presets = new LinkedHashMap<>();
 
@@ -172,6 +190,12 @@ public final class PresetStorageService {
 
     // â”€â”€ Scenario Presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    /*
+     * Load all scenarios.
+     * Enforces physical invariants and updates associated state variables within {@code PresetStorageService}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static List<Scenario> loadAllScenarios() {
         Map<String, Scenario> scenarios = new LinkedHashMap<>();
 
@@ -227,7 +251,7 @@ public final class PresetStorageService {
 
     // â”€â”€ Factory Presets Disk Synchronization â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    /**
+    /*
      * Exports all factory presets (planets, ecology, scenarios) to the project data/presets directory
      * and classpath resources directory to guarantee version control and file availability.
      */

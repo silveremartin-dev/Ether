@@ -52,16 +52,23 @@ import java.util.List;
  */
 public class H3GridInitializer {
     private static final Logger logger = LoggerFactory.getLogger(H3GridInitializer.class);
+    /* Internal state variable for resolution (int). */
     private static final int RESOLUTION = 8;
+    /* Internal state variable for batch size (int). */
     private static final int BATCH_SIZE = 10000;
 
     private final H3Service h3Service;
 
+    /*
+     * H3grid initializer.
+     * Enforces physical invariants and updates associated state variables within {@code H3GridInitializer}.
+     *
+     */
     public H3GridInitializer() {
         this.h3Service = new H3Service();
     }
 
-    /**
+    /*
      * Generates all H3 Level 8 hexagons for Earth.
      * Uses a systematic lat/lng grid sampling approach.
      *
@@ -121,7 +128,7 @@ public class H3GridInitializer {
         return cells;
     }
 
-    /**
+    /*
      * Command-line entry point for grid initialization.
      */
     public static void main(String[] args) {

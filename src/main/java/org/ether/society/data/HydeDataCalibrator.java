@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public class HydeDataCalibrator {
     private static final Logger logger = LoggerFactory.getLogger(HydeDataCalibrator.class);
 
-    /**
+    /*
      * Calculates the HYDE 3.2 population density factor for a given coordinate (lng, lat) at a specific year.
      * 
      * @param lng Longitude (-180 to 180)

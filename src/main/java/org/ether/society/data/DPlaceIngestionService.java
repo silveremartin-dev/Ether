@@ -21,6 +21,7 @@ import java.util.*;
 public class DPlaceIngestionService {
     private static final Logger logger = LoggerFactory.getLogger(DPlaceIngestionService.class);
 
+    /* Internal state variable for dplace base path (String). */
     public static final String DPLACE_BASE_PATH = "data/maps/dplace";
 
     public record DPlaceSociety(
@@ -34,7 +35,7 @@ public class DPlaceIngestionService {
             String dataset
     ) {}
 
-    /**
+    /*
      * Loads pre-industrial and indigenous societies from D-PLACE datasets as informative milestone events.
      */
     public static List<ClimateEvent> loadDPlaceMilestones() {
@@ -62,7 +63,7 @@ public class DPlaceIngestionService {
         return events;
     }
 
-    /**
+    /*
      * Parses societies from EA (Ethnographic Atlas), SCCS, and Binford datasets.
      */
     public static List<DPlaceSociety> loadAllSocieties() {
@@ -146,6 +147,13 @@ public class DPlaceIngestionService {
         return -1;
     }
 
+    /*
+     * Parse csv line.
+     * Enforces physical invariants and updates associated state variables within {@code DPlaceIngestionService}.
+     *
+     * @param line the line parameter (String)
+     * @return the resulting computation or state reference
+     */
     public static String[] parseCsvLine(String line) {
         List<String> list = new ArrayList<>();
         StringBuilder sb = new StringBuilder();

@@ -26,7 +26,7 @@ import java.util.List;
 public class DeforestationErosionEngine {
     private static final Logger logger = LoggerFactory.getLogger(DeforestationErosionEngine.class);
 
-    /**
+    /*
      * Executes one deforestation soil erosion tick across cells.
      */
     public static void processDeforestationErosion(List<H3Cell> cells) {

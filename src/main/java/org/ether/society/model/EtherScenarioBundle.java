@@ -17,6 +17,16 @@ public record EtherScenarioBundle(
         String author,
         Long createdTimestamp
 ) {
+    /*
+     * Ether scenario bundle.
+     * Enforces physical invariants and updates associated state variables within {@code encapsulating}.
+     *
+     * @param version the version parameter (String)
+     * @param planetPreset the planet preset parameter (PlanetPreset)
+     * @param ecologyPreset the ecology preset parameter (EcologyPreset)
+     * @param scenario the scenario parameter (Scenario)
+     * @return the resulting computation or state reference
+     */
     public EtherScenarioBundle(String version, PlanetPreset planetPreset, EcologyPreset ecologyPreset, Scenario scenario) {
         this(version, planetPreset, ecologyPreset, scenario, null, null, "Ether Creator", System.currentTimeMillis());
     }

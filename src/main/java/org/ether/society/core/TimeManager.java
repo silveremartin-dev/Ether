@@ -40,12 +40,14 @@ import java.util.Locale;
  * @since 1.0.0
  */
 public class TimeManager {
+    /* Internal state variable for current year (int). */
     private int currentYear;
     private int currentMonth; // 0-11 (0 = January)
     private int currentDay;   // 1-30
+    /* Internal state variable for total ticks (long). */
     private long totalTicks;
 
-    /**
+    /*
      * Creates a TimeManager starting at the specified year.
      *
      * @param startYear The starting year (negative for BC)
@@ -57,7 +59,7 @@ public class TimeManager {
         this.totalTicks = 0;
     }
 
-    /**
+    /*
      * Advances time by one day.
      */
     public void advanceDay() {
@@ -70,7 +72,7 @@ public class TimeManager {
         }
     }
 
-    /**
+    /*
      * Advances time by the specified number of days.
      */
     public void advanceDays(int days) {
@@ -80,7 +82,7 @@ public class TimeManager {
         }
     }
 
-    /**
+    /*
      * Advances time by one month.
      */
     public void advanceMonth() {
@@ -93,7 +95,7 @@ public class TimeManager {
         totalTicks++;
     }
 
-    /**
+    /*
      * Advances time by the specified number of years.
      *
      * @param years Number of years to advance
@@ -104,7 +106,7 @@ public class TimeManager {
         }
     }
 
-    /**
+    /*
      * Gets the current year.
      *
      * @return Current year (negative = BC, positive = AD)
@@ -113,7 +115,7 @@ public class TimeManager {
         return currentYear;
     }
 
-    /**
+    /*
      * Gets the current month (0-11).
      *
      * @return Current month index
@@ -122,7 +124,7 @@ public class TimeManager {
         return currentMonth;
     }
 
-    /**
+    /*
      * Gets the current day of the month (1-30).
      *
      * @return Current day
@@ -131,7 +133,7 @@ public class TimeManager {
         return currentDay;
     }
 
-    /**
+    /*
      * Gets total simulation ticks.
      *
      * @return Total ticks
@@ -140,7 +142,7 @@ public class TimeManager {
         return totalTicks;
     }
 
-    /**
+    /*
      * Returns a formatted date string with era (BC/AD) and Day.
      *
      * @param locale Locale for month formatting
@@ -154,7 +156,7 @@ public class TimeManager {
         return String.format("Day %d, %s %d %s", currentDay, monthName, year, era);
     }
 
-    /**
+    /*
      * Returns a formatted date string with default locale (English).
      *
      * @return Formatted date
@@ -163,7 +165,7 @@ public class TimeManager {
         return getFormattedDate(Locale.ENGLISH);
     }
 
-    /**
+    /*
      * Formats simulation date according to the scenario's temporal resolution.
      * For annual resolutions (>= 360 days), returns only the year (e.g. "An -100000" or "-100000 BC").
      * For monthly resolutions (>= 28 days), returns year and month (e.g. "An -2500, Mois 4").
@@ -182,7 +184,7 @@ public class TimeManager {
         }
     }
 
-    /**
+    /*
      * Sets the simulation time and total ticks directly (used during rewind, seek, or snapshot restore).
      *
      * @param year Current year (negative for BC)
@@ -197,7 +199,7 @@ public class TimeManager {
         this.totalTicks = Math.max(0, totalTicks);
     }
 
-    /**
+    /*
      * Sets the total ticks counter directly.
      *
      * @param totalTicks Total ticks counter
@@ -206,7 +208,7 @@ public class TimeManager {
         this.totalTicks = Math.max(0, totalTicks);
     }
 
-    /**
+    /*
      * Resets time to the initial starting year.
      *
      * @param startYear The year to reset to

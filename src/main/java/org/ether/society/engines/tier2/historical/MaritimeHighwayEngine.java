@@ -30,14 +30,14 @@ public class MaritimeHighwayEngine {
     public static final double DEFAULT_CAPITAL_BOOST_RATE = 0.05; // +5% trade & capital return per tick
     public static final double DEFAULT_FRICTION_MULTIPLIER = 0.20; // 80% reduction in transport friction
 
-    /**
+    /*
      * Executes maritime transport & trade acceleration using default physical constants.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
         processHybrid(cells, timeStepDays, DEFAULT_CAPITAL_BOOST_RATE, DEFAULT_FRICTION_MULTIPLIER);
     }
 
-    /**
+    /*
      * Executes maritime transport & trade acceleration with parameterizable constants.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays, double capitalBoostRate, double frictionMultiplier) {

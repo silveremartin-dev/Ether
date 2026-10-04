@@ -16,6 +16,12 @@ import java.util.List;
  */
 public class GenerateShowcaseGif {
 
+    /*
+     * Main.
+     * Enforces physical invariants and updates associated state variables within {@code GenerateShowcaseGif}.
+     *
+     * @param args the args parameter (String[])
+     */
     public static void main(String[] args) {
         try {
             System.out.println("=== Generating Ether Showcase Animated GIF ===");

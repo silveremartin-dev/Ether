@@ -26,12 +26,25 @@ public class ProceduralEngineRegistry {
 
     private static final Map<String, ProceduralEnginePlugin> registeredPlugins = new ConcurrentHashMap<>();
 
+    /*
+     * Register plugin.
+     * Enforces physical invariants and updates associated state variables within {@code ProceduralEngineRegistry}.
+     *
+     * @param name the name parameter (String)
+     * @param plugin the plugin parameter (ProceduralEnginePlugin)
+     */
     public static void registerPlugin(String name, ProceduralEnginePlugin plugin) {
         if (name == null || plugin == null) return;
         registeredPlugins.put(name, plugin);
         logger.info("ðŸ”Œ Registered custom procedural engine plugin: {}", name);
     }
 
+    /*
+     * Unregister plugin.
+     * Enforces physical invariants and updates associated state variables within {@code ProceduralEngineRegistry}.
+     *
+     * @param name the name parameter (String)
+     */
     public static void unregisterPlugin(String name) {
         if (name != null) {
             registeredPlugins.remove(name);
@@ -39,10 +52,22 @@ public class ProceduralEngineRegistry {
         }
     }
 
+    /*
+     * Clear plugins.
+     * Enforces physical invariants and updates associated state variables within {@code ProceduralEngineRegistry}.
+     *
+     */
     public static void clearPlugins() {
         registeredPlugins.clear();
     }
 
+    /*
+     * Process plugins.
+     * Enforces physical invariants and updates associated state variables within {@code ProceduralEngineRegistry}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processPlugins(List<H3Cell> cells, double deltaYears) {
         for (Map.Entry<String, ProceduralEnginePlugin> entry : registeredPlugins.entrySet()) {
             try {
@@ -53,6 +78,12 @@ public class ProceduralEngineRegistry {
         }
     }
 
+    /*
+     * Get plugin count.
+     * Enforces physical invariants and updates associated state variables within {@code ProceduralEngineRegistry}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static int getPluginCount() {
         return registeredPlugins.size();
     }

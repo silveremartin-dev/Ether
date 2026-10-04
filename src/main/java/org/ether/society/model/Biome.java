@@ -36,46 +36,46 @@ package org.ether.society.model;
  * @since 1.0.0
  */
 public enum Biome {
-    /** Deep ocean water */
+    /* Deep ocean water */
     OCEAN,
 
-    /** Very deep ocean water */
+    /* Very deep ocean water */
     DEEP_OCEAN,
 
-    /** Coastal beach/shoreline */
+    /* Coastal beach/shoreline */
     BEACH,
 
-    /** Grassland plains */
+    /* Grassland plains */
     PLAINS,
 
-    /** Temperate forest */
+    /* Temperate forest */
     FOREST,
 
-    /** Tropical jungle */
+    /* Tropical jungle */
     JUNGLE,
 
-    /** Arid desert */
+    /* Arid desert */
     DESERT,
 
-    /** Rolling hills */
+    /* Rolling hills */
     HILLS,
 
-    /** High mountains */
+    /* High mountains */
     MOUNTAINS,
 
-    /** Snow-covered terrain */
+    /* Snow-covered terrain */
     SNOW,
 
-    /** Arctic/Antarctic tundra */
+    /* Arctic/Antarctic tundra */
     TUNDRA,
 
-    /** Permanent glacial ice sheet */
+    /* Permanent glacial ice sheet */
     GLACIER,
 
-    /** Tropical savannah grassland */
+    /* Tropical savannah grassland */
     SAVANNAH,
 
-    /** Inland lake / enclosed water basin */
+    /* Inland lake / enclosed water basin */
     LAKE
 }
 

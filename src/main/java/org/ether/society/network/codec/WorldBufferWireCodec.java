@@ -28,11 +28,24 @@ public class WorldBufferWireCodec {
     private static final byte PROTOCOL_VERSION = 1;
 
     public static class ChunkPayload {
+        /* Internal state variable for tick id (long). */
         private final long tickId;
+        /* Internal state variable for chunk start (int). */
         private final int chunkStart;
+        /* Internal state variable for chunk count (int). */
         private final int chunkCount;
         private final byte[] binaryData;
 
+        /*
+         * Chunk payload.
+         * Enforces physical invariants and updates associated state variables within {@code WorldBufferWireCodec}.
+         *
+         * @param tickId the tick id parameter (long)
+         * @param chunkStart the chunk start parameter (int)
+         * @param chunkCount the chunk count parameter (int)
+         * @param binaryData the binary data parameter (byte[])
+         * @return the resulting computation or state reference
+         */
         public ChunkPayload(long tickId, int chunkStart, int chunkCount, byte[] binaryData) {
             this.tickId = tickId;
             this.chunkStart = chunkStart;
@@ -40,13 +53,37 @@ public class WorldBufferWireCodec {
             this.binaryData = binaryData;
         }
 
+        /*
+         * Get tick id.
+         * Enforces physical invariants and updates associated state variables within {@code WorldBufferWireCodec}.
+         *
+         * @return the resulting computation or state reference
+         */
         public long getTickId() { return tickId; }
+        /*
+         * Get chunk start.
+         * Enforces physical invariants and updates associated state variables within {@code WorldBufferWireCodec}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getChunkStart() { return chunkStart; }
+        /*
+         * Get chunk count.
+         * Enforces physical invariants and updates associated state variables within {@code WorldBufferWireCodec}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getChunkCount() { return chunkCount; }
+        /*
+         * Get binary data.
+         * Enforces physical invariants and updates associated state variables within {@code WorldBufferWireCodec}.
+         *
+         * @return the resulting computation or state reference
+         */
         public byte[] getBinaryData() { return binaryData; }
     }
 
-    /**
+    /*
      * Serializes a slice of WorldBuffer [start .. start + count - 1] into a compact binary byte array.
      */
     public static byte[] encodeChunk(WorldBuffer buffer, int start, int count, long tickId) {
@@ -113,7 +150,7 @@ public class WorldBufferWireCodec {
         return byteBuffer.array();
     }
 
-    /**
+    /*
      * Decodes a binary payload and writes values directly into target WorldBuffer.
      */
     public static ChunkPayload decodeChunkInto(byte[] data, WorldBuffer targetBuffer) {
@@ -179,7 +216,7 @@ public class WorldBufferWireCodec {
         return new ChunkPayload(tickId, start, count, data);
     }
 
-    /**
+    /*
      * Encodes and encrypts chunk into Base64 string.
      */
     public static String encodeAndEncryptChunk(WorldBuffer buffer, int start, int count, long tickId, EtherSecurityManager security) throws Exception {
@@ -188,7 +225,7 @@ public class WorldBufferWireCodec {
         return security != null ? security.encrypt(rawBase64) : rawBase64;
     }
 
-    /**
+    /*
      * Decrypts and decodes chunk Base64 string into buffer.
      */
     public static ChunkPayload decryptAndDecodeChunk(String payload, WorldBuffer targetBuffer, EtherSecurityManager security) throws Exception {

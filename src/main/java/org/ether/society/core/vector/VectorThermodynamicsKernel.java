@@ -24,7 +24,7 @@ public class VectorThermodynamicsKernel {
     private static final Logger logger = LoggerFactory.getLogger(VectorThermodynamicsKernel.class);
     private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
 
-    /**
+    /*
      * Executes SIMD vectorized thermodynamic temperature and radiative forcing update
      * across all simulation cells.
      *

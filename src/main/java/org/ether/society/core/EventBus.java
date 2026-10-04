@@ -43,7 +43,7 @@ import java.util.function.Consumer;
 public class EventBus {
     private final List<Subscriber<?>> subscribers = new CopyOnWriteArrayList<>();
 
-    /**
+    /*
      * Subscribes a listener to events of a specific type.
      *
      * @param eventType The class of events to listen for
@@ -54,7 +54,7 @@ public class EventBus {
         subscribers.add(new Subscriber<>(eventType, listener));
     }
 
-    /**
+    /*
      * Publishes an event to all interested subscribers.
      *
      * @param event The event to publish
@@ -68,7 +68,7 @@ public class EventBus {
         }
     }
 
-    /**
+    /*
      * Internal record to hold subscriber information.
      *
      * @param <T> The event type

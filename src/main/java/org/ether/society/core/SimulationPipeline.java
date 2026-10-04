@@ -47,7 +47,7 @@ public class SimulationPipeline {
         this.statisticsKernel = statisticsKernel != null ? statisticsKernel : new StatisticsKernel();
     }
 
-    /**
+    /*
      * Executes the complete deterministic cliodynamic pipeline for a single monthly simulation tick.
      */
     public void executeTick(H3SimulationEngine engine,

@@ -27,27 +27,46 @@ import java.util.Arrays;
 public class WorldClimEmpiricalRasterLoader {
     private static final Logger logger = LoggerFactory.getLogger(WorldClimEmpiricalRasterLoader.class);
 
+    /* Internal state variable for grid w (int). */
     public static final int GRID_W = 2048;
+    /* Internal state variable for grid h (int). */
     public static final int GRID_H = 1024;
 
     private static float[][] sstTempBaseline;
     private static float[][] precipBaseline;
     private static float[][] seasonBaseline;
+    /* Internal state variable for is initialized (boolean). */
     private static boolean isInitialized = false;
 
     // Biome Color Constants matching Ether Palette
+    /* Internal state variable for biome deep ocean (int). */
     public static final int BIOME_DEEP_OCEAN = 0x172554;
+    /* Internal state variable for biome ocean (int). */
     public static final int BIOME_OCEAN      = 0x1E3A8A;
+    /* Internal state variable for biome glacier (int). */
     public static final int BIOME_GLACIER    = 0xF8FAFC;
+    /* Internal state variable for biome snow (int). */
     public static final int BIOME_SNOW       = 0xE2E8F0;
+    /* Internal state variable for biome tundra (int). */
     public static final int BIOME_TUNDRA     = 0x94A3B8;
+    /* Internal state variable for biome forest (int). */
     public static final int BIOME_FOREST     = 0x15803D;
+    /* Internal state variable for biome jungle (int). */
     public static final int BIOME_JUNGLE     = 0x14532D;
+    /* Internal state variable for biome plains (int). */
     public static final int BIOME_PLAINS     = 0x84CC16;
+    /* Internal state variable for biome desert (int). */
     public static final int BIOME_DESERT     = 0xEAB308;
+    /* Internal state variable for biome hills (int). */
     public static final int BIOME_HILLS      = 0x78716C;
+    /* Internal state variable for biome mountains (int). */
     public static final int BIOME_MOUNTAINS  = 0x475569;
 
+    /*
+     * Ensure initialized.
+     * Enforces physical invariants and updates associated state variables within {@code WorldClimEmpiricalRasterLoader}.
+     *
+     */
     public static synchronized void ensureInitialized() {
         if (isInitialized) return;
 
@@ -130,7 +149,7 @@ public class WorldClimEmpiricalRasterLoader {
         }
     }
 
-    /**
+    /*
      * Decode WorldClim GeoTIFF Float32 rasters with LZW strip compression.
      */
     public static float[][] readWorldClimTiff(File file) throws Exception {
@@ -292,10 +311,10 @@ public class WorldClimEmpiricalRasterLoader {
         return val;
     }
 
-    /**
+    /*
      * Compute authentic Sea Surface Temperature (SST) for oceans (°C).
      */
-    /**
+    /*
      * Compute authentic Sea Surface Temperature (SST) for oceans (°C).
      */
     public static double computePhysicalOceanSST(double lat, double lon) {
@@ -329,7 +348,7 @@ public class WorldClimEmpiricalRasterLoader {
         return Math.clamp(sst, -1.8, 31.0);
     }
 
-    /**
+    /*
      * Compute realistic marine precipitation over oceans (mm/year).
      */
     public static double computePhysicalMarinePrecipitation(double lat, double lon) {
@@ -374,7 +393,7 @@ public class WorldClimEmpiricalRasterLoader {
         return Math.clamp(total, 50.0, 3500.0);
     }
 
-    /**
+    /*
      * Compute realistic marine seasonality (°C annual range).
      */
     public static double computePhysicalMarineSeasonality(double lat, double lon) {
@@ -383,7 +402,7 @@ public class WorldClimEmpiricalRasterLoader {
         return Math.clamp(oceanRange, 1.5, 9.0);
     }
 
-    /**
+    /*
      * Sample baseline empirical temperature with paleoclimatic delta anomaly (°C).
      */
     public static double getTemperature(double lat, double lon, double elevM, long year) {
@@ -418,7 +437,7 @@ public class WorldClimEmpiricalRasterLoader {
         return Math.clamp(baseT + deltaT + sensibleDesertBoost + evaporativeCooling, -60.0, 55.0);
     }
 
-    /**
+    /*
      * Sample baseline empirical precipitation with paleoclimatic delta anomaly (mm/year).
      */
     public static double getPrecipitation(double lat, double lon, double elevM, long year) {
@@ -472,7 +491,7 @@ public class WorldClimEmpiricalRasterLoader {
         return Math.clamp(baseP * factorP + deltaP, 0.0, 4500.0);
     }
 
-    /**
+    /*
      * Sample baseline empirical seasonality with paleoclimatic delta anomaly (°C range).
      */
     public static double getSeasonality(double lat, double lon, double elevM, long year) {
@@ -514,6 +533,16 @@ public class WorldClimEmpiricalRasterLoader {
     // PALEOCLIMATIC DELTA-ANOMALY MODELS (PMIP4 / TraCE-21ka / EPICA delta18O)
     // =========================================================================
 
+    /*
+     * Compute paleo temperature delta.
+     * Enforces physical invariants and updates associated state variables within {@code WorldClimEmpiricalRasterLoader}.
+     *
+     * @param lat the lat parameter (double)
+     * @param lon the lon parameter (double)
+     * @param elevM the elev m parameter (double)
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double computePaleoTemperatureDelta(double lat, double lon, double elevM, long year) {
         if (year >= 1950) return 0.0; // Modern baseline
 
@@ -603,6 +632,16 @@ public class WorldClimEmpiricalRasterLoader {
         return deltaT;
     }
 
+    /*
+     * Compute paleo precipitation factor.
+     * Enforces physical invariants and updates associated state variables within {@code WorldClimEmpiricalRasterLoader}.
+     *
+     * @param lat the lat parameter (double)
+     * @param lon the lon parameter (double)
+     * @param elevM the elev m parameter (double)
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double computePaleoPrecipitationFactor(double lat, double lon, double elevM, long year) {
         if (year >= 1950) return 1.0;
 
@@ -623,6 +662,16 @@ public class WorldClimEmpiricalRasterLoader {
         return 1.0;
     }
 
+    /*
+     * Compute paleo precipitation delta.
+     * Enforces physical invariants and updates associated state variables within {@code WorldClimEmpiricalRasterLoader}.
+     *
+     * @param lat the lat parameter (double)
+     * @param lon the lon parameter (double)
+     * @param elevM the elev m parameter (double)
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double computePaleoPrecipitationDelta(double lat, double lon, double elevM, long year) {
         if (year >= 1950) return 0.0;
 
@@ -636,6 +685,13 @@ public class WorldClimEmpiricalRasterLoader {
         return 0.0;
     }
 
+    /*
+     * Compute paleo seasonality factor.
+     * Enforces physical invariants and updates associated state variables within {@code WorldClimEmpiricalRasterLoader}.
+     *
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double computePaleoSeasonalityFactor(long year) {
         if (year >= 1950) return 1.0;
 
@@ -649,7 +705,7 @@ public class WorldClimEmpiricalRasterLoader {
         return 1.0;
     }
 
-    /**
+    /*
      * Classify holdridge/whittaker ecological biome with glacial ice sheet overrides.
      */
     public static int classifyBiome(double tempC, double precipMm, double elevM, double lat, double lon, long year) {

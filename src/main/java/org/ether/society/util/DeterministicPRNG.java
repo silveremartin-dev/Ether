@@ -15,12 +15,13 @@ package org.ether.society.util;
  */
 public final class DeterministicPRNG {
 
+    /* Internal state variable for gamma (long). */
     private static final long GAMMA = 0x9E3779B97F4A7C15L;
     private static final double DOUBLE_UNIT = 0x1.0p-53; // 1.0 / (1L << 53)
 
     private DeterministicPRNG() {}
 
-    /**
+    /*
      * Computes a 64-bit pseudo-random hash from coordinates (seed, tick, cellIndex, streamId).
      */
     public static long splitMix64(long seed, long tick, long cellIndex, long streamId) {
@@ -30,11 +31,20 @@ public final class DeterministicPRNG {
         return z ^ (z >>> 31);
     }
 
+    /*
+     * Split mix64.
+     * Enforces physical invariants and updates associated state variables within {@code DeterministicPRNG}.
+     *
+     * @param seed the seed parameter (long)
+     * @param tick the tick parameter (long)
+     * @param cellIndex the cell index parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static long splitMix64(long seed, long tick, long cellIndex) {
         return splitMix64(seed, tick, cellIndex, 0L);
     }
 
-    /**
+    /*
      * Generates a uniformly distributed double in [0.0, 1.0) deterministically.
      */
     public static double nextDouble(long seed, long tick, long cellIndex, long streamId) {
@@ -42,11 +52,20 @@ public final class DeterministicPRNG {
         return bits * DOUBLE_UNIT;
     }
 
+    /*
+     * Next double.
+     * Enforces physical invariants and updates associated state variables within {@code DeterministicPRNG}.
+     *
+     * @param seed the seed parameter (long)
+     * @param tick the tick parameter (long)
+     * @param cellIndex the cell index parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double nextDouble(long seed, long tick, long cellIndex) {
         return nextDouble(seed, tick, cellIndex, 0L);
     }
 
-    /**
+    /*
      * Generates a uniformly distributed integer in [0, bound) deterministically.
      */
     public static int nextInt(long seed, long tick, long cellIndex, int bound) {
@@ -55,7 +74,7 @@ public final class DeterministicPRNG {
         return (int) (d * bound);
     }
 
-    /**
+    /*
      * Generates a boolean outcome based on a given probability [0.0, 1.0].
      */
     public static boolean nextBoolean(long seed, long tick, long cellIndex, double probability) {
@@ -64,7 +83,7 @@ public final class DeterministicPRNG {
         return nextDouble(seed, tick, cellIndex) < probability;
     }
 
-    /**
+    /*
      * Generates a normally distributed standard Gaussian value N(0, 1) using Box-Muller transform.
      */
     public static double nextGaussian(long seed, long tick, long cellIndex) {

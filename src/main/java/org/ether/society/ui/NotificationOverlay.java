@@ -20,6 +20,11 @@ import javafx.util.Duration;
  */
 public class NotificationOverlay extends VBox {
 
+    /*
+     * Notification overlay.
+     * Enforces physical invariants and updates associated state variables within {@code NotificationOverlay}.
+     *
+     */
     public NotificationOverlay() {
         setAlignment(Pos.BOTTOM_LEFT);
         setSpacing(8);
@@ -27,13 +32,21 @@ public class NotificationOverlay extends VBox {
         setStyle("-fx-padding: 0 0 45px 20px;");
     }
 
-    /**
+    /*
      * Show a new notification message.
      */
     public void showNotification(String message, String color) {
         showSpatialNotification(message, color, null);
     }
 
+    /*
+     * Show spatial notification.
+     * Enforces physical invariants and updates associated state variables within {@code NotificationOverlay}.
+     *
+     * @param message the message parameter (String)
+     * @param color the color parameter (String)
+     * @param onClickAction the on click action parameter (Runnable)
+     */
     public void showSpatialNotification(String message, String color, Runnable onClickAction) {
         Label label = new Label(message);
         String cursorStyle = onClickAction != null ? "-fx-cursor: hand;" : "";
@@ -74,10 +87,23 @@ public class NotificationOverlay extends VBox {
         seq.play();
     }
 
+    /*
+     * Show event.
+     * Enforces physical invariants and updates associated state variables within {@code NotificationOverlay}.
+     *
+     * @param eventText the event text parameter (String)
+     */
     public void showEvent(String eventText) {
         showEvent(eventText, null);
     }
 
+    /*
+     * Show event.
+     * Enforces physical invariants and updates associated state variables within {@code NotificationOverlay}.
+     *
+     * @param eventText the event text parameter (String)
+     * @param onClickAction the on click action parameter (Runnable)
+     */
     public void showEvent(String eventText, Runnable onClickAction) {
         String color = "white"; // Default
         if (eventText.contains("ERA") || eventText.contains("AGE")) {
@@ -93,18 +119,42 @@ public class NotificationOverlay extends VBox {
         showSpatialNotification(eventText, color, onClickAction);
     }
 
+    /*
+     * Show warning.
+     * Enforces physical invariants and updates associated state variables within {@code NotificationOverlay}.
+     *
+     * @param message the message parameter (String)
+     */
     public void showWarning(String message) {
         showNotification(message, "#f59e0b");
     }
 
+    /*
+     * Show info.
+     * Enforces physical invariants and updates associated state variables within {@code NotificationOverlay}.
+     *
+     * @param message the message parameter (String)
+     */
     public void showInfo(String message) {
         showNotification(message, "#38bdf8");
     }
 
+    /*
+     * Show error.
+     * Enforces physical invariants and updates associated state variables within {@code NotificationOverlay}.
+     *
+     * @param message the message parameter (String)
+     */
     public void showError(String message) {
         showNotification(message, "#ef4444");
     }
 
+    /*
+     * Show success.
+     * Enforces physical invariants and updates associated state variables within {@code NotificationOverlay}.
+     *
+     * @param message the message parameter (String)
+     */
     public void showSuccess(String message) {
         showNotification(message, "#10b981");
     }

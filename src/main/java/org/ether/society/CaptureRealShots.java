@@ -52,6 +52,12 @@ public class CaptureRealShots extends Application {
             "docs/images/screenshots"
     );
 
+    /*
+     * Main.
+     * Enforces physical invariants and updates associated state variables within {@code CaptureRealShots}.
+     *
+     * @param args the args parameter (String[])
+     */
     public static void main(String[] args) {
         System.err.println(">>> CaptureRealShots main() started <<<");
         Locale.setDefault(Locale.ENGLISH);
@@ -60,6 +66,12 @@ public class CaptureRealShots extends Application {
     }
 
     @Override
+    /*
+     * Start.
+     * Enforces physical invariants and updates associated state variables within {@code CaptureRealShots}.
+     *
+     * @param primaryStage the primary stage parameter (Stage)
+     */
     public void start(Stage primaryStage) throws Exception {
         System.err.println(">>> CaptureRealShots start() called <<<");
         Locale.setDefault(Locale.ENGLISH);

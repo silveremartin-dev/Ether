@@ -37,6 +37,17 @@ public class GadmIngestor {
         public Path2D boundary;
         public Color color;
 
+        /*
+         * Admin region.
+         * Enforces physical invariants and updates associated state variables within {@code GadmIngestor}.
+         *
+         * @param countryCode the country code parameter (String)
+         * @param regionName the region name parameter (String)
+         * @param adminLevel the admin level parameter (int)
+         * @param boundary the boundary parameter (Path2D)
+         * @param color the color parameter (Color)
+         * @return the resulting computation or state reference
+         */
         public AdminRegion(String countryCode, String regionName, int adminLevel, Path2D boundary, Color color) {
             this.countryCode = countryCode;
             this.regionName = regionName;
@@ -46,7 +57,7 @@ public class GadmIngestor {
         }
     }
 
-    /**
+    /*
      * Rasterizes GADM administrative boundaries into a high-definition 1024x512 region mask.
      */
     public static BufferedImage renderAdminRegions(List<AdminRegion> regions) {
@@ -69,7 +80,7 @@ public class GadmIngestor {
         return img;
     }
 
-    /**
+    /*
      * Attempts to load GADM data for a country code.
      */
     public static SvgMapIngestor.SvgIngestionResult loadGadmMap(String countryCode) {

@@ -28,7 +28,7 @@ import java.awt.image.BufferedImage;
 public class AnalyticalEpidemiologyModel {
     private static final Logger logger = LoggerFactory.getLogger(AnalyticalEpidemiologyModel.class);
 
-    /**
+    /*
      * Generates an authentic continuous $R_0$ pathogen stress raster for the specified epoch.
      *
      * @param year Historical epoch year
@@ -151,7 +151,7 @@ public class AnalyticalEpidemiologyModel {
         return img;
     }
 
-    /**
+    /*
      * Continuous, smooth elevation barrier (Himalayas/Tibet, Andes, Alps, Ethiopian Highlands).
      * Smooth Gaussian falloff with distance to mountain crests — no sharp rectangular box discontinuities.
      */

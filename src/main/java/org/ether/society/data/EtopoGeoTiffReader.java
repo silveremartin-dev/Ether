@@ -23,7 +23,7 @@ public final class EtopoGeoTiffReader {
 
     private EtopoGeoTiffReader() {}
 
-    /**
+    /*
      * Reads and samples ETOPO 2022 to target grid [height][width] in meters.
      */
     public static float[][] loadEtopoGrid(int targetW, int targetH) {
@@ -219,7 +219,7 @@ public final class EtopoGeoTiffReader {
         }
     }
 
-    /**
+    /*
      * Renders pure grayscale elevation image [0..255] where:
      * - Bathymetry [-11000m .. 0m] -> [0 .. 122]
      * - Topography [0m .. +8848m] -> [122 .. 255]
@@ -243,7 +243,7 @@ public final class EtopoGeoTiffReader {
         return img;
     }
 
-    /**
+    /*
      * Creates a binary land/ocean mask (255=land, 0=ocean) based on elevation relative to sea level.
      * @param seaLevelOffsetMeters Sea level relative to present day (e.g. 0.0 for present, -20.0 to -120.0 for ice ages).
      */

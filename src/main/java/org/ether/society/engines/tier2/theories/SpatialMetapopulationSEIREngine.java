@@ -40,16 +40,34 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
     public static final double VIRULENCE_FATALITY = 0.05;  // Case fatality rate
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code SpatialMetapopulationSEIREngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "Spatial Metapopulation SEIR-V Epidemiology";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code SpatialMetapopulationSEIREngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Compartmental metapopulation epidemiology (Susceptible, Exposed, Infected, Recovered) with mobility diffusion across H3 cells.";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code SpatialMetapopulationSEIREngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [Spatial Metapopulation SEIR-V Differential System]
@@ -64,11 +82,24 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code SpatialMetapopulationSEIREngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Metapopulation Epidemiology";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code SpatialMetapopulationSEIREngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

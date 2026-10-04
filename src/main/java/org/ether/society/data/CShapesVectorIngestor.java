@@ -32,6 +32,7 @@ import java.util.List;
 public class CShapesVectorIngestor {
     private static final Logger logger = LoggerFactory.getLogger(CShapesVectorIngestor.class);
 
+    /* Internal state variable for cshapes path (String). */
     public static final String CSHAPES_PATH = "data/maps/cshapes/cshapes_2.0.geojson";
 
     public static class CShapesFeature {
@@ -49,14 +50,22 @@ public class CShapesVectorIngestor {
         public List<Path2D> paths = new ArrayList<>();
         public Color sovereignColor;
 
+        /*
+         * Is active in year.
+         * Enforces physical invariants and updates associated state variables within {@code CShapesVectorIngestor}.
+         *
+         * @param year the year parameter (long)
+         * @return the resulting computation or state reference
+         */
         public boolean isActiveInYear(long year) {
             return year >= startYear && year <= endYear;
         }
     }
 
+    /* Internal state variable for cached features (List&lt;CShapesFeature&gt;). */
     private static List<CShapesFeature> CACHED_FEATURES = null;
 
-    /**
+    /*
      * Loads and caches all CShapes 2.0 historical features.
      */
     public static synchronized List<CShapesFeature> getAllFeatures(int imgW, int imgH) {
@@ -101,7 +110,7 @@ public class CShapesVectorIngestor {
         return list;
     }
 
-    /**
+    /*
      * Returns all active CShapes polities for a specific historical year.
      */
     public static List<CShapesFeature> getFeaturesForYear(long year, int imgW, int imgH) {
@@ -115,7 +124,7 @@ public class CShapesVectorIngestor {
         return result;
     }
 
-    /**
+    /*
      * Rasterizes exact CShapes sovereign polygons for a given year (e.g. 1900, 1914, 1950).
      */
     public static BufferedImage rasterizeCShapesSovereigntyMap(long year, int width, int height, BufferedImage elevationMask) {

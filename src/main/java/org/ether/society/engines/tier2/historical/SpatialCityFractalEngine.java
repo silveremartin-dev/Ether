@@ -25,6 +25,13 @@ import java.util.stream.Collectors;
 public class SpatialCityFractalEngine {
     private static final Logger logger = LoggerFactory.getLogger(SpatialCityFractalEngine.class);
 
+    /*
+     * Process hybrid.
+     * Enforces physical invariants and updates associated state variables within {@code SpatialCityFractalEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.size() < 2) return;
 

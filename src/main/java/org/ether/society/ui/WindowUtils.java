@@ -20,9 +20,10 @@ import java.util.List;
 public class WindowUtils {
     private static final Logger logger = LoggerFactory.getLogger(WindowUtils.class);
     private static final List<Image> cachedIcons = new ArrayList<>();
+    /* Internal state variable for taskbar icon set (boolean). */
     private static boolean taskbarIconSet = false;
 
-    /**
+    /*
      * Applies icon.png to the JavaFX Stage and Windows OS Taskbar.
      *
      * @param stage target Stage window
@@ -80,7 +81,7 @@ public class WindowUtils {
         }
     }
 
-    /**
+    /*
      * Applies icon.png to a JavaFX Dialog or Alert window and styles its dialog pane with theme CSS.
      *
      * @param dialog target Dialog window
@@ -96,7 +97,7 @@ public class WindowUtils {
         }
     }
 
-    /**
+    /*
      * Styles a DialogPane with application CSS stylesheets so popup modals respect the active UI theme.
      *
      * @param pane target DialogPane
@@ -116,7 +117,7 @@ public class WindowUtils {
         }
     }
 
-    /**
+    /*
      * Sets the Windows AppUserModelID via Win32 Shell32 API if running on Windows OS.
      * This prevents Windows Taskbar from falling back to generic javaw.exe icon or delaying icon rendering.
      */
@@ -138,7 +139,7 @@ public class WindowUtils {
         }
     }
 
-    /**
+    /*
      * Displays a scrollable information dialog with styled scroll pane and pinned OK button.
      * Prevents tall dialogs from overflowing the screen and hiding action buttons.
      */
@@ -165,7 +166,7 @@ public class WindowUtils {
         dialog.showAndWait();
     }
 
-    /**
+    /*
      * Sets or resets the busy / wait cursor on a JavaFX Node or its containing Scene.
      *
      * @param node target node
@@ -185,7 +186,7 @@ public class WindowUtils {
         });
     }
 
-    /**
+    /*
      * Sets or resets the busy / wait cursor on a JavaFX Scene.
      *
      * @param scene target scene
@@ -200,7 +201,7 @@ public class WindowUtils {
         });
     }
 
-    /**
+    /*
      * Prompts the user to save a JavaFX Image to a raster file (PNG or JPEG) and writes it out.
      *
      * @param parentWindow the parent window/stage

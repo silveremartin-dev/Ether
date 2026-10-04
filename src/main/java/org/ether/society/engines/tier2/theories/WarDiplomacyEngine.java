@@ -26,7 +26,7 @@ import java.util.*;
 public class WarDiplomacyEngine {
     private static final Logger logger = LoggerFactory.getLogger(WarDiplomacyEngine.class);
 
-    /**
+    /*
      * Calculates the boundary friction (sigma_friction) between two adjacent cells.
      * Incorporates sovereignty gradient mismatch, terrain movement friction, and elevation declivity.
      */
@@ -52,7 +52,7 @@ public class WarDiplomacyEngine {
         return Math.clamp(sigmaFriction, 1.0, 20.0);
     }
 
-    /**
+    /*
      * Executes geopolitical evaluation and resolves border conflicts across active nations.
      */
     public static void processGeopoliticalConflicts(List<Nation> nations, List<H3Cell> cells) {
@@ -81,7 +81,7 @@ public class WarDiplomacyEngine {
         }
     }
 
-    /**
+    /*
      * Computes average boundary friction across common border cells of two nations.
      * Returns -1 if nations do not share a border.
      */
@@ -101,7 +101,7 @@ public class WarDiplomacyEngine {
         return count > 0 ? (totalFriction / count) : -1.0;
     }
 
-    /**
+    /*
      * Resolves military engagement over a border cell using the 15-24 age military cohort with boundary friction resistance.
      */
     private static void resolveBorderBattle(Nation aggressor, Nation defender, double borderFriction) {

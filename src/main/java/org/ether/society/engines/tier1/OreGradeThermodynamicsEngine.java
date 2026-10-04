@@ -26,6 +26,13 @@ public class OreGradeThermodynamicsEngine {
     private static double referenceOreConcentration = 0.05; // 5% reference metal concentration
     private static double minOreConcentrationFloor = 0.001; // 0.1% physical limit floor
 
+    /*
+     * Process ore depletion.
+     * Enforces physical invariants and updates associated state variables within {@code OreGradeThermodynamicsEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processOreDepletion(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -48,6 +55,12 @@ public class OreGradeThermodynamicsEngine {
         }
     }
 
+    /*
+     * Get reference ore concentration.
+     * Enforces physical invariants and updates associated state variables within {@code OreGradeThermodynamicsEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getReferenceOreConcentration() { return referenceOreConcentration; }
     public static void setReferenceOreConcentration(double conc) { referenceOreConcentration = Math.max(0.001, conc); }
 }

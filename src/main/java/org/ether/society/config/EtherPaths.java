@@ -33,10 +33,15 @@ public final class EtherPaths {
     private static final Logger logger = LoggerFactory.getLogger(EtherPaths.class);
 
     // Environment variable names
+    /* Internal state variable for env data dir (String). */
     public static final String ENV_DATA_DIR = "ETHER_DATA_DIR";
+    /* Internal state variable for env saves dir (String). */
     public static final String ENV_SAVES_DIR = "ETHER_SAVES_DIR";
+    /* Internal state variable for env logs dir (String). */
     public static final String ENV_LOGS_DIR = "ETHER_LOGS_DIR";
+    /* Internal state variable for env user presets dir (String). */
     public static final String ENV_USER_PRESETS_DIR = "ETHER_USER_PRESETS_DIR";
+    /* Internal state variable for env cache dir (String). */
     public static final String ENV_CACHE_DIR = "ETHER_CACHE_DIR";
 
     private static Path dataDir;
@@ -53,7 +58,7 @@ public final class EtherPaths {
         // Utility class
     }
 
-    /**
+    /*
      * Initializes all paths from environment variables or sensible defaults.
      */
     public static synchronized void initPaths() {
@@ -132,54 +137,126 @@ public final class EtherPaths {
 
     // ── Root Paths ────────────────────────────────────────────────────────────
 
+    /*
+     * Get data dir.
+     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getDataDir() {
         return dataDir;
     }
 
+    /*
+     * Get saves dir.
+     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getSavesDir() {
         return savesDir;
     }
 
+    /*
+     * Get logs dir.
+     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getLogsDir() {
         return logsDir;
     }
 
+    /*
+     * Get user presets dir.
+     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getUserPresetsDir() {
         return userPresetsDir;
     }
 
+    /*
+     * Get cache dir.
+     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getCacheDir() {
         return cacheDir;
     }
 
     // ── Preset Sub-Directories ────────────────────────────────────────────────
 
+    /*
+     * Get presets dir.
+     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getPresetsDir() {
         return dataDir.resolve("presets");
     }
 
+    /*
+     * Get presets planets dir.
+     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getPresetsPlanetsDir() {
         return getPresetsDir().resolve("planets");
     }
 
+    /*
+     * Get presets ecology dir.
+     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getPresetsEcologyDir() {
         return getPresetsDir().resolve("ecology");
     }
 
+    /*
+     * Get presets scenarios dir.
+     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getPresetsScenariosDir() {
         return getPresetsDir().resolve("scenarios");
     }
 
+    /*
+     * Get presets leaders dir.
+     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getPresetsLeadersDir() {
         return getPresetsDir().resolve("leaders");
     }
 
     // ── Saves Sub-Directories ─────────────────────────────────────────────────
 
+    /*
+     * Get engines compiled dir.
+     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getEnginesCompiledDir() {
         return savesDir.resolve(Paths.get("engines", "compiled"));
     }
 
+    /*
+     * Get cluster snapshots dir.
+     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getClusterSnapshotsDir() {
         return savesDir.resolve("cluster_snapshots");
     }

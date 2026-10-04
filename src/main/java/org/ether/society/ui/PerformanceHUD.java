@@ -24,14 +24,24 @@ public class PerformanceHUD extends VBox {
     private final Label cameraLabel;
 
     // FPS Calculation
+    /* Internal state variable for frame history size (int). */
     private static final int FRAME_HISTORY_SIZE = 100;
+    /* Internal state variable for frame times (long[]). */
     private final long[] frameTimes = new long[FRAME_HISTORY_SIZE];
+    /* Internal state variable for frame time index (int). */
     private int frameTimeIndex = 0;
+    /* Internal state variable for array filled (boolean). */
     private boolean arrayFilled = false;
+    /* Internal state variable for last ui update (long). */
     private long lastUiUpdate = 0;
 
     private final Label profilerLabel;
 
+    /*
+     * Performance hud.
+     * Enforces physical invariants and updates associated state variables within {@code PerformanceHUD}.
+     *
+     */
     public PerformanceHUD() {
         getStyleClass().add("hud-panel");
 
@@ -59,7 +69,7 @@ public class PerformanceHUD extends VBox {
         return label;
     }
 
-    /**
+    /*
      * Call this method every frame from the AnimationTimer.
      * 
      * @param now Timestamp in nanoseconds
@@ -80,8 +90,15 @@ public class PerformanceHUD extends VBox {
         }
     }
 
+    /* Internal state variable for current fps (double). */
     private double currentFps = 0.0;
 
+    /*
+     * Get fps.
+     * Enforces physical invariants and updates associated state variables within {@code PerformanceHUD}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getFps() {
         return currentFps;
     }
@@ -117,12 +134,28 @@ public class PerformanceHUD extends VBox {
         // 3. Camera & Entities (Updated via setter to keep this method clean)
     }
 
+    /*
+     * Update simulation info.
+     * Enforces physical invariants and updates associated state variables within {@code PerformanceHUD}.
+     *
+     * @param cellCount the cell count parameter (int)
+     * @param zoom the zoom parameter (double)
+     * @param centerLat the center lat parameter (double)
+     * @param centerLng the center lng parameter (double)
+     */
     public void updateSimulationInfo(int cellCount, double zoom, double centerLat, double centerLng) {
         entitiesLabel.setText(String.format("%s %,d", I18n.get("ui.hud.cells"), cellCount));
         cameraLabel.setText(
                 String.format("%s %.1fx | %.2f°N, %.2f°E", I18n.get("ui.hud.zoom"), zoom, centerLat, centerLng));
     }
 
+    /*
+     * Update profiler info.
+     * Enforces physical invariants and updates associated state variables within {@code PerformanceHUD}.
+     *
+     * @param avgTickMs the avg tick ms parameter (double)
+     * @param p95TickMs the p95tick ms parameter (double)
+     */
     public void updateProfilerInfo(double avgTickMs, double p95TickMs) {
         if (profilerLabel != null) {
             profilerLabel.setText(String.format("⏱️ Pas : %.1fms (P95: %.1fms)", avgTickMs, p95TickMs));

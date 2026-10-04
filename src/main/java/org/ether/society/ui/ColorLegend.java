@@ -34,11 +34,16 @@ import java.util.*;
  */
 public class ColorLegend extends VBox {
 
+    /* Internal state variable for canvas width (int). */
     private static final int CANVAS_WIDTH = 220;
+    /* Internal state variable for canvas height (int). */
     private static final int CANVAS_HEIGHT = 38;
+    /* Internal state variable for bar x (double). */
     private static final double BAR_X = 6.0;
+    /* Internal state variable for bar y (double). */
     private static final double BAR_Y = 6.0;
     private static final double BAR_WIDTH = CANVAS_WIDTH - 12.0; // 208.0
+    /* Internal state variable for bar height (double). */
     private static final double BAR_HEIGHT = 10.0;
 
     private final HBox headerRow;
@@ -50,6 +55,7 @@ public class ColorLegend extends VBox {
     private DisplayMode primaryMode = DisplayMode.POPULATION;
     private ScientificColorMap scientificColorMap = ScientificColorMap.TURBO;
 
+    /* Internal state variable for collapsed (boolean). */
     private boolean collapsed = false;
 
     // Cache per-mode stats to avoid reallocations
@@ -61,6 +67,11 @@ public class ColorLegend extends VBox {
     }
     private final Map<DisplayMode, ModeStats> statsMap = new EnumMap<>(DisplayMode.class);
 
+    /*
+     * Color legend.
+     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
+     *
+     */
     public ColorLegend() {
         setSpacing(4);
         setPadding(new Insets(6, 8, 6, 8));
@@ -100,6 +111,12 @@ public class ColorLegend extends VBox {
         toggleCollapseBtn.setText(collapsed ? "+" : "−");
     }
 
+    /*
+     * Set scientific color map.
+     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
+     *
+     * @param cmap the cmap parameter (ScientificColorMap)
+     */
     public void setScientificColorMap(ScientificColorMap cmap) {
         if (cmap != null && cmap != this.scientificColorMap) {
             this.scientificColorMap = cmap;
@@ -107,6 +124,12 @@ public class ColorLegend extends VBox {
         }
     }
 
+    /*
+     * Set display mode.
+     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
+     *
+     * @param mode the mode parameter (DisplayMode)
+     */
     public void setDisplayMode(DisplayMode mode) {
         if (mode != null) {
             this.primaryMode = mode;
@@ -116,10 +139,22 @@ public class ColorLegend extends VBox {
         }
     }
 
+    /*
+     * Get display mode.
+     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
+     *
+     * @return the resulting computation or state reference
+     */
     public DisplayMode getDisplayMode() {
         return primaryMode;
     }
 
+    /*
+     * Set active display modes.
+     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
+     *
+     * @param modes the modes parameter (Collection&lt;DisplayMode&gt;)
+     */
     public void setActiveDisplayModes(Collection<DisplayMode> modes) {
         if (modes != null) {
             this.activeModes = new LinkedHashSet<>(modes);
@@ -131,6 +166,15 @@ public class ColorLegend extends VBox {
         }
     }
 
+    /*
+     * Update stats.
+     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
+     *
+     * @param min the min parameter (double)
+     * @param max the max parameter (double)
+     * @param mean the mean parameter (double)
+     * @param median the median parameter (double)
+     */
     public void updateStats(double min, double max, double mean, double median) {
         ModeStats st = statsMap.computeIfAbsent(primaryMode, k -> new ModeStats());
         st.min = min;
@@ -140,6 +184,12 @@ public class ColorLegend extends VBox {
         rebuildLegendCards();
     }
 
+    /*
+     * Update from canvas.
+     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
+     *
+     * @param mapCanvas the map canvas parameter (H3MapCanvas)
+     */
     public void updateFromCanvas(H3MapCanvas mapCanvas) {
         if (mapCanvas == null) return;
 

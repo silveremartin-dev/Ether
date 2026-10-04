@@ -24,10 +24,10 @@ import java.util.List;
 public class MetallurgyEnthalpyEngine {
     private static final Logger logger = LoggerFactory.getLogger(MetallurgyEnthalpyEngine.class);
 
-    /** Specific smelting enthalpy for Iron Oxide reduction in MJ/kg */
+    /* Specific smelting enthalpy for Iron Oxide reduction in MJ/kg */
     public static final double IRON_SMELTING_ENTHALPY_MJ_PER_KG = 24.7;
 
-    /**
+    /*
      * Executes one chemical ore smelting tick across cells.
      */
     public static void processOreSmelting(List<H3Cell> cells) {

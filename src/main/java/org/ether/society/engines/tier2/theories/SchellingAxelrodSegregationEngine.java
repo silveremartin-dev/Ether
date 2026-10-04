@@ -31,16 +31,34 @@ public class SchellingAxelrodSegregationEngine implements ProceduralEnginePlugin
     public static final double HOMOPHILY_TOLERANCE_THRESHOLD = 0.40; // 40% neighborhood threshold
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code SchellingAxelrodSegregationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "Schelling-Axelrod Cultural Spatial Segregation";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code SchellingAxelrodSegregationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Models micro-motives driving macro-segregation enclaves and cultural polarization across territorial boundaries.";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code SchellingAxelrodSegregationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [Schelling-Axelrod Cultural Homophily Model]
@@ -53,11 +71,24 @@ public class SchellingAxelrodSegregationEngine implements ProceduralEnginePlugin
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code SchellingAxelrodSegregationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Cultural Cliodynamics";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code SchellingAxelrodSegregationEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

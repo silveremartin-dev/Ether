@@ -47,6 +47,12 @@ public class World3VsKurzweilComparator {
         public String dominantDriverSummary = "";
 
         @Override
+        /*
+         * To string.
+         * Enforces physical invariants and updates associated state variables within {@code World3VsKurzweilComparator}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String toString() {
             return String.format(
                 "World3 vs Kurzweil Comparison Report:\n" +
@@ -63,7 +69,7 @@ public class World3VsKurzweilComparator {
         }
     }
 
-    /**
+    /*
      * Executes comparative multi-trajectory analysis over a given time horizon.
      */
     public static ComparisonReport compareTrajectories(H3Cell initialCell, int startYear, int durationYears) {

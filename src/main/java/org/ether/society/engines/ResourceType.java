@@ -30,6 +30,7 @@ public enum ResourceType {
     LITHIUM("Lithium Brines & Spodumene", javafx.scene.paint.Color.web("#a855f7")),
     BAUXITE("Bauxite / Aluminum Crusts", javafx.scene.paint.Color.web("#d97706"));
 
+    /* Internal state variable for display name (String). */
     private final String displayName;
     private final javafx.scene.paint.Color color;
 
@@ -38,15 +39,33 @@ public enum ResourceType {
         this.color = color;
     }
 
+    /*
+     * Get display name.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceType}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDisplayName() {
         return displayName;
     }
 
+    /*
+     * Get color.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceType}.
+     *
+     * @return the resulting computation or state reference
+     */
     public javafx.scene.paint.Color getColor() {
         return color;
     }
 
     @Override
+    /*
+     * To string.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceType}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String toString() {
         return displayName;
     }

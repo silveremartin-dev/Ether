@@ -37,10 +37,10 @@ import java.util.List;
 public class ManningStricklerHydrodynamicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(ManningStricklerHydrodynamicsEngine.class);
 
-    /** Standard natural river channel Manning roughness coefficient (s/m^(1/3)) */
+    /* Standard natural river channel Manning roughness coefficient (s/m^(1/3)) */
     public static final double MANNING_ROUGHNESS_N = 0.035;
 
-    /**
+    /*
      * Calculates open channel flow velocity (m/s) using Manning-Strickler equation.
      *
      * @param hydraulicRadiusM Hydraulic radius R_h in meters (approximated by river depth)
@@ -57,7 +57,7 @@ public class ManningStricklerHydrodynamicsEngine {
         return (1.0 / manningN) * Math.pow(rh, 2.0 / 3.0) * Math.sqrt(s);
     }
 
-    /**
+    /*
      * Calculates river discharge Q (mÂ³/s) for a rectangular channel of given width and depth.
      */
     public static double calculateDischarge(double widthM, double depthM, double bedSlope) {
@@ -69,7 +69,7 @@ public class ManningStricklerHydrodynamicsEngine {
         return v * area;
     }
 
-    /**
+    /*
      * Processes river hydrodynamics and floodplain agricultural fertilization across H3 cells.
      */
     public static void processRiverHydrodynamics(List<H3Cell> cells, double deltaYears) {

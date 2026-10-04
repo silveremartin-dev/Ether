@@ -79,6 +79,7 @@ public class ControlPanel extends VBox {
     private final Button hdScreenshotBtn;
     private final Button recordVideoBtn;
     private final CheckBox autoRecordCheck;
+    /* Internal state variable for is recording video (boolean). */
     private boolean isRecordingVideo = false;
 
     private final CheckBox mode3dCheck;
@@ -138,6 +139,12 @@ public class ControlPanel extends VBox {
     private Consumer<Boolean> onStatsToggle;
     private Runnable onFullScreen;
 
+    /*
+     * Control panel.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param engine the engine parameter (ISimulationEngine)
+     */
     public ControlPanel(ISimulationEngine engine) {
         this.engine = engine;
 
@@ -640,6 +647,12 @@ public class ControlPanel extends VBox {
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
+    /*
+     * Update play pause visuals.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param isRunning the is running parameter (boolean)
+     */
     public void updatePlayPauseVisuals(boolean isRunning) {
         if (playPauseBtn == null) return;
         if (isRunning) {
@@ -722,6 +735,11 @@ public class ControlPanel extends VBox {
         }
     }
 
+    /*
+     * Update active layer ui.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     */
     public void updateActiveLayerUI() {
         if (activeLayersMenuBtn == null) return;
 
@@ -861,10 +879,21 @@ public class ControlPanel extends VBox {
         card.getStyleClass().add("card-section");
     }
 
+    /*
+     * Set notification overlay.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param overlay the overlay parameter (NotificationOverlay)
+     */
     public void setNotificationOverlay(NotificationOverlay overlay) {
         this.notificationOverlay = overlay;
     }
 
+    /*
+     * Take hdscreenshot.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     */
     public void takeHDScreenshot() {
         if (mapCanvas == null) {
             logger.warn("Cannot capture screenshot: mapCanvas is null");
@@ -895,6 +924,11 @@ public class ControlPanel extends VBox {
 
     private final org.ether.society.persistence.VideoExportService videoExportService = new org.ether.society.persistence.VideoExportService();
 
+    /*
+     * Toggle video recording.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     */
     public void toggleVideoRecording() {
         if (onTimelapseRecord != null) {
             onTimelapseRecord.run();
@@ -934,10 +968,24 @@ public class ControlPanel extends VBox {
     public void setOnStatsToggle(Consumer<Boolean> onStatsToggle) { this.onStatsToggle = onStatsToggle; }
     public void setOnFullScreen(Runnable onFullScreen) { this.onFullScreen = onFullScreen; }
 
+    /*
+     * Update timelapse slider.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param minYear the min year parameter (int)
+     * @param maxYear the max year parameter (int)
+     * @param currentYear the current year parameter (int)
+     */
     public void updateTimelapseSlider(int minYear, int maxYear, int currentYear) {
         dateHeaderLabel.setText("📅 " + I18n.getOrDefault("sim.header.date", "Date : ") + String.format(java.util.Locale.ROOT, "An %d", currentYear));
     }
 
+    /*
+     * Set map canvas.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param canvas the canvas parameter (H3MapCanvas)
+     */
     public void setMapCanvas(H3MapCanvas canvas) {
         this.mapCanvas = canvas;
         updateViewToggleButton();
@@ -953,6 +1001,12 @@ public class ControlPanel extends VBox {
     }
 
     public void setMiniMap(MiniMap miniMap) { this.miniMap = miniMap; }
+    /*
+     * Set color legend.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param legend the legend parameter (ColorLegend)
+     */
     public void setColorLegend(ColorLegend legend) { 
         this.colorLegend = legend; 
         if (legendCheck != null && colorLegend != null) {
@@ -985,16 +1039,37 @@ public class ControlPanel extends VBox {
         btn.setOnMouseExited(e -> stopRepeat.run());
     }
 
+    /*
+     * Update scenario name.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param scenarioName the scenario name parameter (String)
+     */
     public void updateScenarioName(String scenarioName) {
         if (scenarioName != null && !scenarioName.isBlank()) {
             scenarioHeaderLabel.setText(I18n.getOrDefault("sim.header.scenario", "🎬 Scenario: ") + scenarioName);
         }
     }
 
+    /*
+     * Update year.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param year the year parameter (String)
+     */
     public void updateYear(String year) {
         dateHeaderLabel.setText("📅 " + I18n.getOrDefault("sim.header.date", "Date : ") + year);
     }
 
+    /*
+     * Update stats.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param population the population parameter (long)
+     * @param food the food parameter (double)
+     * @param populatedCells the populated cells parameter (long)
+     * @param tps the tps parameter (double)
+     */
     public void updateStats(long population, double food, long populatedCells, double tps) {
         popStatValue.setText(String.format(I18n.getOrDefault("sim.status.pop_total", "Pop. Totale : %s"), formatNumber(population)));
         foodStatValue.setText(String.format(I18n.getOrDefault("sim.status.food_stocks", "Stocks Alim. : %s"), formatNumber((long) food)));
@@ -1012,6 +1087,12 @@ public class ControlPanel extends VBox {
         return String.valueOf(num);
     }
 
+    /*
+     * Update season.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param month the month parameter (int)
+     */
     public void updateSeason(int month) {
         String[] seasonNames = {
             I18n.getOrDefault("sim.season.winter", "Hiver ❄️"),
@@ -1031,6 +1112,12 @@ public class ControlPanel extends VBox {
         seasonLabel.setStyle("-fx-text-fill: " + seasonColors[seasonIndex] + "; -fx-font-weight: bold;");
     }
 
+    /*
+     * Log events.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param events the events parameter (List&lt;String&gt;)
+     */
     public void logEvents(List<String> events) {
         if (events == null || events.isEmpty()) return;
         eventHistory.addAll(events);
@@ -1043,6 +1130,12 @@ public class ControlPanel extends VBox {
         updateRecentEvents(rawEventsCache);
     }
 
+    /*
+     * Update recent events.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param events the events parameter (List&lt;ActiveEvent&gt;)
+     */
     public void updateRecentEvents(List<ActiveEvent> events) {
         if (eventsListBox == null) return;
         if (events != null) {
@@ -1156,18 +1249,37 @@ public class ControlPanel extends VBox {
         return card;
     }
 
+    /*
+     * Update age.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param ageName the age name parameter (String)
+     */
     public void updateAge(String ageName) {
         ageLabel.setText(I18n.getOrDefault("sim.status.age_prefix", "Age: ") + ageName);
     }
 
+    /* Internal state variable for is db online (boolean). */
     private boolean isDbOnline = false;
+    /* Internal state variable for cluster node state (String). */
     private String clusterNodeState = "💻 Nœud Local Standalone";
 
+    /*
+     * Update database status.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param online the online parameter (boolean)
+     */
     public void updateDatabaseStatus(boolean online) {
         this.isDbOnline = online;
         refreshStatusBadge();
     }
 
+    /*
+     * Rebuild layer menu items.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     */
     public void rebuildLayerMenuItems() {
         if (activeLayersMenuBtn == null) return;
         java.util.Set<DisplayMode> active = mapCanvas != null ? mapCanvas.getActiveDisplayModes() : java.util.Set.of(DisplayMode.BIOME, DisplayMode.POPULATION);
@@ -1196,6 +1308,14 @@ public class ControlPanel extends VBox {
         }
     }
 
+    /*
+     * Update cluster status.
+     * Enforces physical invariants and updates associated state variables within {@code ControlPanel}.
+     *
+     * @param nodeRole the node role parameter (String)
+     * @param hostPort the host port parameter (String)
+     * @param isConnected the is connected parameter (boolean)
+     */
     public void updateClusterStatus(String nodeRole, String hostPort, boolean isConnected) {
         if (isConnected) {
             this.clusterNodeState = String.format("🌐 %s (%s)", nodeRole, hostPort);

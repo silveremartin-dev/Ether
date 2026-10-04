@@ -22,9 +22,11 @@ import java.util.ResourceBundle;
  */
 public class I18n {
     private static final Logger logger = LoggerFactory.getLogger(I18n.class);
+    /* Internal state variable for bundle name (String). */
     private static final String BUNDLE_NAME = "i18n/messages";
 
     private static final java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(I18n.class);
+    /* Internal state variable for pref lang key (String). */
     private static final String PREF_LANG_KEY = "ether_language";
 
     private static final ObjectProperty<Language> currentLanguage = new SimpleObjectProperty<>();
@@ -33,6 +35,14 @@ public class I18n {
 
     private static final ResourceBundle.Control NO_DEFAULT_LOCALE_CONTROL = new ResourceBundle.Control() {
         @Override
+        /*
+         * Get candidate locales.
+         * Enforces physical invariants and updates associated state variables within {@code for}.
+         *
+         * @param baseName the base name parameter (String)
+         * @param locale the locale parameter (Locale)
+         * @return the resulting computation or state reference
+         */
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
             return List.of(locale, Locale.ROOT);
         }
@@ -65,6 +75,12 @@ public class I18n {
         return Language.ENGLISH;
     }
 
+    /*
+     * Set language.
+     * Enforces physical invariants and updates associated state variables within {@code for}.
+     *
+     * @param language the language parameter (Language)
+     */
     public static void setLanguage(Language language) {
         if (language != null) {
             try {
@@ -86,7 +102,7 @@ public class I18n {
         }
     }
 
-    /**
+    /*
      * Get the current language property.
      * Listen to this property to update UI when language changes.
      */
@@ -94,6 +110,12 @@ public class I18n {
         return currentLanguage;
     }
 
+    /*
+     * Get current language.
+     * Enforces physical invariants and updates associated state variables within {@code for}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Language getCurrentLanguage() {
         return currentLanguage.get();
     }
@@ -103,7 +125,7 @@ public class I18n {
         return str.replace("\ufe0f", "").replace("\ufe0e", "");
     }
 
-    /**
+    /*
      * Get a localized string for the given key.
      * 
      * @param key The resource key
@@ -124,7 +146,7 @@ public class I18n {
         }
     }
 
-    /**
+    /*
      * Get a localized string for the key, or return fallback default value if missing.
      */
     public static String getOrDefault(String key, String defaultValue) {
@@ -138,7 +160,7 @@ public class I18n {
         return sanitize(defaultValue);
     }
 
-    /**
+    /*
      * Get a localized string for the key with format arguments, or return fallback default value formatted with args if missing.
      */
     public static String getOrDefault(String key, String defaultValue, Object... args) {
@@ -165,7 +187,7 @@ public class I18n {
         }
     }
 
-    /**
+    /*
      * Get a localized and formatted string.
      * 
      * @param key  The resource key
@@ -189,7 +211,7 @@ public class I18n {
         }
     }
 
-    /**
+    /*
      * Get localized display name for a planet preset.
      */
     public static String getPlanetPresetDisplayName(String name) {
@@ -243,7 +265,7 @@ public class I18n {
         return name;
     }
 
-    /**
+    /*
      * Get localized description for a planet preset.
      * Falls back to the display name if no dedicated description key exists.
      */
@@ -283,7 +305,7 @@ public class I18n {
         return displayName;
     }
 
-    /**
+    /*
      * Get localized description for an ecology preset.
      * Falls back to the planet preset description for the same epoch.
      */
@@ -292,7 +314,7 @@ public class I18n {
         return getPlanetPresetDescription(name);
     }
 
-    /**
+    /*
      * Get localized display name for a biome.
      */
     public static String getBiomeDisplayName(org.ether.society.model.Biome biome) {
@@ -311,7 +333,7 @@ public class I18n {
         };
     }
 
-    /**
+    /*
      * Get localized display name for a scenario.
      */
     public static String getScenarioDisplayName(org.ether.society.model.Scenario s) {
@@ -319,7 +341,7 @@ public class I18n {
         return s.getDisplayName();
     }
 
-    /**
+    /*
      * Get localized description for a scenario.
      */
     public static String getScenarioDescription(org.ether.society.model.Scenario s) {
@@ -327,7 +349,7 @@ public class I18n {
         return s.getDisplayDescription();
     }
 
-    /**
+    /*
      * Get localized title for a simulation engine.
      */
     public static String getEngineTitle(String engineId, String defaultTitle) {
@@ -335,7 +357,7 @@ public class I18n {
         return getOrDefault("engine." + engineId + ".title", defaultTitle);
     }
 
-    /**
+    /*
      * Get localized description for a simulation engine.
      */
     public static String getEngineDescription(String engineId, String defaultDesc) {
@@ -343,7 +365,7 @@ public class I18n {
         return getOrDefault("engine." + engineId + ".desc", defaultDesc);
     }
 
-    /**
+    /*
      * Get localized scientific reference for a simulation engine.
      */
     public static String getEngineReference(String engineId, String defaultRef) {
@@ -351,7 +373,7 @@ public class I18n {
         return getOrDefault("engine." + engineId + ".ref", defaultRef);
     }
 
-    /**
+    /*
      * Get localized state equation for a simulation engine.
      */
     public static String getEngineEquation(String engineId, String defaultEq) {

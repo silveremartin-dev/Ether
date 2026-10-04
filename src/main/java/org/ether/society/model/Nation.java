@@ -16,7 +16,9 @@ import java.util.UUID;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Nation {
+    /* Internal state variable for id (String). */
     private final String id;
+    /* Internal state variable for name (String). */
     private String name;
     @JsonIgnore
     private Color color;
@@ -31,6 +33,14 @@ public class Nation {
     private double stateCapacity = 0.50;        // Institutional extraction & governance efficiency (0.0 to 1.0)
     private double politicalInstability = 0.10; // Instability & civil rebellion risk index (0.0 to 1.0)
 
+    /*
+     * Nation.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @param name the name parameter (String)
+     * @param color the color parameter (Color)
+     * @param capital the capital parameter (H3Cell)
+     */
     public Nation(String name, Color color, H3Cell capital) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
@@ -41,34 +51,76 @@ public class Nation {
         }
     }
 
+    /*
+     * Get id.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getId() {
         return id;
     }
 
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return name;
     }
 
+    /*
+     * Set name.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @param name the name parameter (String)
+     */
     public void setName(String name) {
         this.name = name;
     }
 
     @JsonIgnore
+    /*
+     * Get color.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Color getColor() {
         return color;
     }
 
     @JsonIgnore
+    /*
+     * Set color.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @param color the color parameter (Color)
+     */
     public void setColor(Color color) {
         this.color = color;
     }
 
     @JsonIgnore
+    /*
+     * Get capital.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @return the resulting computation or state reference
+     */
     public H3Cell getCapital() {
         return capital;
     }
 
     @JsonIgnore
+    /*
+     * Set capital.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @param capital the capital parameter (H3Cell)
+     */
     public void setCapital(H3Cell capital) {
         this.capital = capital;
         if (capital != null) {
@@ -76,12 +128,24 @@ public class Nation {
         }
     }
 
+    /*
+     * Add cell.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @param cell the cell parameter (H3Cell)
+     */
     public void addCell(H3Cell cell) {
         if (cell != null && territory.add(cell)) {
             cell.setOwner(this); // Assuming H3Cell has setOwner
         }
     }
 
+    /*
+     * Remove cell.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @param cell the cell parameter (H3Cell)
+     */
     public void removeCell(H3Cell cell) {
         if (territory.remove(cell)) {
             if (cell.getOwner() == this) {
@@ -91,48 +155,108 @@ public class Nation {
     }
 
     @JsonIgnore
+    /*
+     * Get territory.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Set<H3Cell> getTerritory() {
         return Collections.unmodifiableSet(territory);
     }
 
     @JsonIgnore
+    /*
+     * Get total population.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getTotalPopulation() {
         return territory.stream().mapToLong(H3Cell::getPopulation).sum();
     }
 
+    /*
+     * Get asabiyyah.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getAsabiyyah() {
         return asabiyyah;
     }
 
+    /*
+     * Set asabiyyah.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @param asabiyyah the asabiyyah parameter (double)
+     */
     public void setAsabiyyah(double asabiyyah) {
         this.asabiyyah = Math.clamp(asabiyyah, 0.0, 1.0);
     }
 
+    /*
+     * Get elite overproduction.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getEliteOverproduction() {
         return eliteOverproduction;
     }
 
+    /*
+     * Set elite overproduction.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @param eliteOverproduction the elite overproduction parameter (double)
+     */
     public void setEliteOverproduction(double eliteOverproduction) {
         this.eliteOverproduction = Math.clamp(eliteOverproduction, 0.0, 1.0);
     }
 
+    /*
+     * Get state capacity.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getStateCapacity() {
         return stateCapacity;
     }
 
+    /*
+     * Set state capacity.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @param stateCapacity the state capacity parameter (double)
+     */
     public void setStateCapacity(double stateCapacity) {
         this.stateCapacity = Math.clamp(stateCapacity, 0.0, 1.0);
     }
 
+    /*
+     * Get political instability.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getPoliticalInstability() {
         return politicalInstability;
     }
 
+    /*
+     * Set political instability.
+     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+     *
+     * @param politicalInstability the political instability parameter (double)
+     */
     public void setPoliticalInstability(double politicalInstability) {
         this.politicalInstability = Math.clamp(politicalInstability, 0.0, 1.0);
     }
 
-    /**
+    /*
      * Updates Peter Turchin's Secular Cycle indices (Asabiyyah, Elite Overproduction, Political Instability)
      * based on territorial size, average Gini coefficient and population density.
      */

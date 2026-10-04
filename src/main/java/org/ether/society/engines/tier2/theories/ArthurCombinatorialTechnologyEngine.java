@@ -30,16 +30,34 @@ public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlug
     private static final Logger logger = LoggerFactory.getLogger(ArthurCombinatorialTechnologyEngine.class);
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code ArthurCombinatorialTechnologyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "Arthur Combinatorial Technological Evolution";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code ArthurCombinatorialTechnologyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Models technological evolution through recursive combinatorial recombinant assembly of existing modular primitives.";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code ArthurCombinatorialTechnologyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [W. Brian Arthur Combinatorial Evolution (The Nature of Technology 2009)]
@@ -52,11 +70,24 @@ public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlug
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code ArthurCombinatorialTechnologyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Socio-Technical Evolution";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code ArthurCombinatorialTechnologyEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

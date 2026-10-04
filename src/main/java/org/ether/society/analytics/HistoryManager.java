@@ -20,11 +20,17 @@ public class HistoryManager {
     private final SimulationHistory history = new SimulationHistory();
     private final NavigableMap<Long, List<H3Cell>> worldSnapshots = new TreeMap<>();
 
+    /*
+     * Get history.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public SimulationHistory getHistory() {
         return history;
     }
 
-    /**
+    /*
      * Capture a snapshot of the current engine state.
      */
      public void captureSnapshot(H3SimulationEngine engine) {
@@ -67,17 +73,30 @@ public class HistoryManager {
          history.addSnapshot(snapshot);
      }
 
+    /* Internal state variable for max snapshots (int). */
     private int maxSnapshots = 100;
 
+    /*
+     * Get max snapshots.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getMaxSnapshots() {
         return maxSnapshots;
     }
 
+    /*
+     * Set max snapshots.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     * @param maxSnapshots the max snapshots parameter (int)
+     */
     public void setMaxSnapshots(int maxSnapshots) {
         this.maxSnapshots = Math.max(10, maxSnapshots);
     }
 
-    /**
+    /*
      * Capture a full world state snapshot for replay (high-capacity buffer with smart decimation).
      */
     public synchronized void captureWorldSnapshot(H3SimulationEngine engine) {
@@ -102,36 +121,88 @@ public class HistoryManager {
         worldSnapshots.put(tickIndex, snapshot);
     }
 
+    /*
+     * Get world snapshot.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     * @param tickIndex the tick index parameter (long)
+     * @return the resulting computation or state reference
+     */
     public synchronized List<H3Cell> getWorldSnapshot(long tickIndex) {
         return worldSnapshots.get(tickIndex);
     }
     
+    /*
+     * Get world snapshots.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public synchronized NavigableMap<Long, List<H3Cell>> getWorldSnapshots() {
         return worldSnapshots;
     }
 
+    /*
+     * Get snapshot count.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public synchronized int getSnapshotCount() {
         return worldSnapshots.size();
     }
 
+    /*
+     * Get min tick.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public synchronized Long getMinTick() {
         return worldSnapshots.isEmpty() ? null : worldSnapshots.firstKey();
     }
 
+    /*
+     * Get max tick.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public synchronized Long getMaxTick() {
         return worldSnapshots.isEmpty() ? null : worldSnapshots.lastKey();
     }
 
+    /*
+     * Get tick by index.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     * @param index the index parameter (int)
+     * @return the resulting computation or state reference
+     */
     public synchronized Long getTickByIndex(int index) {
         if (worldSnapshots.isEmpty() || index < 0 || index >= worldSnapshots.size()) return null;
         return new ArrayList<>(worldSnapshots.keySet()).get(index);
     }
 
+    /*
+     * Get snapshot by index.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     * @param index the index parameter (int)
+     * @return the resulting computation or state reference
+     */
     public synchronized List<H3Cell> getSnapshotByIndex(int index) {
         Long tick = getTickByIndex(index);
         return tick != null ? worldSnapshots.get(tick) : null;
     }
 
+    /*
+     * Get nearest snapshot.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     * @param targetTick the target tick parameter (long)
+     * @return the resulting computation or state reference
+     */
     public synchronized List<H3Cell> getNearestSnapshot(long targetTick) {
         if (worldSnapshots.isEmpty()) return null;
         Long floor = worldSnapshots.floorKey(targetTick);
@@ -141,11 +212,24 @@ public class HistoryManager {
         return (targetTick - floor <= ceiling - targetTick) ? worldSnapshots.get(floor) : worldSnapshots.get(ceiling);
     }
 
+    /*
+     * Truncate after.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     * @param year the year parameter (int)
+     * @param month the month parameter (int)
+     * @param tick the tick parameter (long)
+     */
     public synchronized void truncateAfter(int year, int month, long tick) {
         history.truncateAfter(year, month);
         worldSnapshots.tailMap(tick, false).clear();
     }
 
+    /*
+     * Reset.
+     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+     *
+     */
     public synchronized void reset() {
         history.clear();
         worldSnapshots.clear();

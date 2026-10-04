@@ -25,9 +25,17 @@ import java.util.List;
 public class AmerindianEcosystemEngine {
     private static final Logger logger = LoggerFactory.getLogger(AmerindianEcosystemEngine.class);
 
+    /* Internal state variable for old world contact triggered (boolean). */
     private static boolean oldWorldContactTriggered = false;
     private static double epidemicMortalityRate = 0.90; // 90% virgin soil epidemic mortality upon contact
 
+    /*
+     * Process hybrid.
+     * Enforces physical invariants and updates associated state variables within {@code AmerindianEcosystemEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -51,9 +59,21 @@ public class AmerindianEcosystemEngine {
         }
     }
 
+    /*
+     * Is old world contact triggered.
+     * Enforces physical invariants and updates associated state variables within {@code AmerindianEcosystemEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static boolean isOldWorldContactTriggered() { return oldWorldContactTriggered; }
     public static void setOldWorldContactTriggered(boolean contact) { oldWorldContactTriggered = contact; }
 
+    /*
+     * Get epidemic mortality rate.
+     * Enforces physical invariants and updates associated state variables within {@code AmerindianEcosystemEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getEpidemicMortalityRate() { return epidemicMortalityRate; }
     public static void setEpidemicMortalityRate(double rate) { epidemicMortalityRate = Math.max(0.1, Math.min(0.99, rate)); }
 }

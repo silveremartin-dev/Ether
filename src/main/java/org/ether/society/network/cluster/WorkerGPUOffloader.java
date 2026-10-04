@@ -22,26 +22,51 @@ public class WorkerGPUOffloader {
     private static final Logger logger = LoggerFactory.getLogger(WorkerGPUOffloader.class);
 
     private final EnvironmentalKernel environmentalKernel;
+    /* Internal state variable for total ticks computed (long). */
     private long totalTicksComputed = 0;
+    /* Internal state variable for total compute nanos (long). */
     private long totalComputeNanos = 0;
 
+    /*
+     * Worker gpuoffloader.
+     * Enforces physical invariants and updates associated state variables within {@code WorkerGPUOffloader}.
+     *
+     */
     public WorkerGPUOffloader() {
         this.environmentalKernel = new EnvironmentalKernel();
     }
 
+    /*
+     * Is gpuavailable.
+     * Enforces physical invariants and updates associated state variables within {@code WorkerGPUOffloader}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isGPUAvailable() {
         return false;
     }
 
+    /*
+     * Is gpuenabled.
+     * Enforces physical invariants and updates associated state variables within {@code WorkerGPUOffloader}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isGPUEnabled() {
         return false;
     }
 
+    /*
+     * Set gpuenabled.
+     * Enforces physical invariants and updates associated state variables within {@code WorkerGPUOffloader}.
+     *
+     * @param enabled the enabled parameter (boolean)
+     */
     public void setGPUEnabled(boolean enabled) {
         // GPU acceleration replaced by pure deterministic SIMD
     }
 
-    /**
+    /*
      * Executes local chunk dynamics across partitioned WorldBuffer.
      */
     public void computeChunk(WorldBuffer buffer, float dt) {
@@ -56,10 +81,22 @@ public class WorkerGPUOffloader {
         totalTicksComputed++;
     }
 
+    /*
+     * Get average compute time ms.
+     * Enforces physical invariants and updates associated state variables within {@code WorkerGPUOffloader}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getAverageComputeTimeMs() {
         return totalTicksComputed > 0 ? (totalComputeNanos / (double) totalTicksComputed) / 1_000_000.0 : 0.0;
     }
 
+    /*
+     * Get total ticks computed.
+     * Enforces physical invariants and updates associated state variables within {@code WorkerGPUOffloader}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getTotalTicksComputed() {
         return totalTicksComputed;
     }

@@ -33,7 +33,7 @@ public class PhysicalLeontiefInputOutputEngine {
     private static final double A_CAPITAL_METAL = 0.35; // Metals needed for infrastructure capital
     private static final double A_CAPITAL_ENERGY = 0.25; // Energy needed for infrastructure capital
 
-    /**
+    /*
      * Processes physical input-output balances and computes production bottlenecks.
      *
      * @param cells list of H3 cells in the simulation grid

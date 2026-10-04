@@ -25,7 +25,7 @@ import java.util.List;
 public class PhysicsTransportEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicsTransportEngine.class);
 
-    /**
+    /*
      * Calculates the mechanical work (Joules per kg-km) required to transport cargo across a cell.
      *
      * @param cell H3 terrain cell
@@ -54,7 +54,7 @@ public class PhysicsTransportEngine {
         return frictionCoeff * gravity * distanceMeters;
     }
 
-    /**
+    /*
      * Executes one transport work evaluation step across trade networks.
      */
     public static void processPhysicsTransport(List<H3Cell> cells) {

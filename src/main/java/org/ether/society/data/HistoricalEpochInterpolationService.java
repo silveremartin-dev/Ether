@@ -41,7 +41,7 @@ public class HistoricalEpochInterpolationService {
         double alpha
     ) {}
 
-    /**
+    /*
      * Finds the two milestone epochs bounding the target year and computes the interpolation factor alpha in [0, 1].
      */
     public static BoundingEpochs findBoundingEpochs(long targetYear) {
@@ -65,7 +65,7 @@ public class HistoricalEpochInterpolationService {
         return new BoundingEpochs(MILESTONE_EPOCHS[n - 1], MILESTONE_EPOCHS[n - 1], 1.0);
     }
 
-    /**
+    /*
      * Generates an interpolated scenario with all 9 cultural tensors and demographic values
      * for any requested historical year.
      */
@@ -81,7 +81,7 @@ public class HistoricalEpochInterpolationService {
         return sc;
     }
 
-    /**
+    /*
      * Blends two grayscale or RGB raster images using barycentric interpolation weight alpha.
      */
     public static BufferedImage blendRasters(BufferedImage imgA, BufferedImage imgB, double alpha, boolean isCategorical) {
@@ -130,7 +130,7 @@ public class HistoricalEpochInterpolationService {
         return result;
     }
 
-    /**
+    /*
      * Loads a specific tensor raster from disk for a given milestone year.
      */
     public static BufferedImage loadMilestoneTensor(long year, String tensorKey) {

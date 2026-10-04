@@ -25,13 +25,13 @@ import java.util.List;
 public class CrustalGeothermalEngine {
     private static final Logger logger = LoggerFactory.getLogger(CrustalGeothermalEngine.class);
 
-    /** Standard continental crustal geothermal heat flux in mW/mÂ² */
+    /* Standard continental crustal geothermal heat flux in mW/mÂ² */
     public static final double CONTINENTAL_HEAT_FLUX_MW_PER_M2 = 65.0;
 
-    /** Standard geothermal gradient in Â°C per kilometer */
+    /* Standard geothermal gradient in Â°C per kilometer */
     public static final double GEOTHERMAL_GRADIENT_C_PER_KM = 30.0;
 
-    /**
+    /*
      * Calculates max accessible deep mining depth (meters) based on cooling tech.
      *
      * @param techLevel Technology era level
@@ -44,7 +44,7 @@ public class CrustalGeothermalEngine {
         return 4000.0;                       // Ultra-deep air-conditioned mining
     }
 
-    /**
+    /*
      * Executes one crustal geothermal and deep mining check across cells.
      */
     public static void processCrustalGeothermal(List<H3Cell> cells) {

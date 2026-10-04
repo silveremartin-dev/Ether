@@ -27,7 +27,7 @@ public class ScenarioEngineJITCompiler {
     private CompiledEngineKernel compiledKernel;
     private EngineConflictReport conflictReport;
 
-    /**
+    /*
      * Registers a engine transformation step for a specific target state variable.
      */
     public void registerEngineStep(String engineName, String targetVariable, SymbolicExpression expression, double targetEquilibrium) {
@@ -37,7 +37,7 @@ public class ScenarioEngineJITCompiler {
         ));
     }
 
-    /**
+    /*
      * Compiles the registered scenario engine pipeline.
      * Performs static conflict analysis, AST reduction, constant folding, and Kernel Fusion.
      */
@@ -74,15 +74,27 @@ public class ScenarioEngineJITCompiler {
         return compiledKernel;
     }
 
+    /*
+     * Get conflict report.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioEngineJITCompiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public EngineConflictReport getConflictReport() {
         return conflictReport;
     }
 
+    /*
+     * Get compiled kernel.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioEngineJITCompiler}.
+     *
+     * @return the resulting computation or state reference
+     */
     public CompiledEngineKernel getCompiledKernel() {
         return compiledKernel;
     }
 
-    /**
+    /*
      * Executes the compiled fused kernel over a WorldBuffer.
      */
     public void execute(WorldBuffer worldBuffer, float dt) {
@@ -92,7 +104,7 @@ public class ScenarioEngineJITCompiler {
         compiledKernel.executeFusedKernel(worldBuffer, dt);
     }
 
-    /**
+    /*
      * Executes the compiled fused kernel over a list of H3Cells.
      */
     public void execute(List<H3Cell> cells, double dt) {

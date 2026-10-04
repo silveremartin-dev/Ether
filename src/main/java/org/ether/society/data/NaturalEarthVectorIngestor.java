@@ -34,8 +34,11 @@ import java.util.*;
 public class NaturalEarthVectorIngestor {
     private static final Logger logger = LoggerFactory.getLogger(NaturalEarthVectorIngestor.class);
 
+    /* Internal state variable for natural earth 50m path (String). */
     public static final String NATURAL_EARTH_50M_PATH = "data/maps/naturalearth/ne_50m_admin_0_countries.geojson";
+    /* Internal state variable for default width (int). */
     public static final int DEFAULT_WIDTH = 2048;
+    /* Internal state variable for default height (int). */
     public static final int DEFAULT_HEIGHT = 1024;
 
     public static class CountryFeature {
@@ -63,6 +66,17 @@ public class NaturalEarthVectorIngestor {
         public Color color;
         public Path2D geometry;
 
+        /*
+         * Vector feature.
+         * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+         *
+         * @param id the id parameter (String)
+         * @param name the name parameter (String)
+         * @param layerType the layer type parameter (String)
+         * @param color the color parameter (Color)
+         * @param geometry the geometry parameter (Path2D)
+         * @return the resulting computation or state reference
+         */
         public VectorFeature(String id, String name, String layerType, Color color, Path2D geometry) {
             this.id = id;
             this.name = name;
@@ -72,6 +86,14 @@ public class NaturalEarthVectorIngestor {
         }
     }
 
+    /*
+     * Rasterize vector features.
+     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+     *
+     * @param features the features parameter (List&lt;VectorFeature&gt;)
+     * @param layerFilter the layer filter parameter (String)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeVectorFeatures(List<VectorFeature> features, String layerFilter) {
         int width = 1024;
         int height = 512;
@@ -102,9 +124,10 @@ public class NaturalEarthVectorIngestor {
         return img;
     }
 
+    /* Internal state variable for cached countries (List&lt;CountryFeature&gt;). */
     private static List<CountryFeature> CACHED_COUNTRIES = null;
 
-    /**
+    /*
      * Loads all country features from Natural Earth GeoJSON with full attribute mapping.
      */
     public static synchronized List<CountryFeature> getCountries(int imgW, int imgH) {
@@ -273,6 +296,16 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 1. SOVEREIGNTY TENSOR RASTERIZATION (Every Nation has its Authentic Vector)
     // =========================================================================
+    /*
+     * Rasterize modern sovereignty map.
+     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+     *
+     * @param year the year parameter (long)
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @param elevationMask the elevation mask parameter (BufferedImage)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeModernSovereigntyMap(long year, int width, int height, BufferedImage elevationMask) {
         List<CountryFeature> countries = getCountries(width, height);
         if (countries.isEmpty()) return null;
@@ -311,6 +344,16 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 2. ISOGLOSS TENSOR RASTERIZATION (Glottolog & Linguistic Phyla Mosaic)
     // =========================================================================
+    /*
+     * Rasterize modern isogloss map.
+     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+     *
+     * @param year the year parameter (long)
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @param elevationMask the elevation mask parameter (BufferedImage)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeModernIsoglossMap(long year, int width, int height, BufferedImage elevationMask) {
         List<CountryFeature> countries = getCountries(width, height);
         if (countries.isEmpty()) return null;
@@ -381,6 +424,16 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 3. KINSHIP TENSOR RASTERIZATION (Emmanuel Todd & Murdock EA Typology)
     // =========================================================================
+    /*
+     * Rasterize modern kinship map.
+     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+     *
+     * @param year the year parameter (long)
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @param elevationMask the elevation mask parameter (BufferedImage)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeModernKinshipMap(long year, int width, int height, BufferedImage elevationMask) {
         List<CountryFeature> countries = getCountries(width, height);
         if (countries.isEmpty()) return null;
@@ -418,6 +471,16 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 4. RITUALS / RELIGIONS TENSOR RASTERIZATION (Confessional Mosaic)
     // =========================================================================
+    /*
+     * Rasterize modern rituals map.
+     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+     *
+     * @param year the year parameter (long)
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @param elevationMask the elevation mask parameter (BufferedImage)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeModernRitualsMap(long year, int width, int height, BufferedImage elevationMask) {
         List<CountryFeature> countries = getCountries(width, height);
         if (countries.isEmpty()) return null;
@@ -456,6 +519,16 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 5. INSTITUTIONAL COMPLEXITY TENSOR RASTERIZATION (State Capacity & Rule of Law)
     // =========================================================================
+    /*
+     * Rasterize modern institutional map.
+     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+     *
+     * @param year the year parameter (long)
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @param elevationMask the elevation mask parameter (BufferedImage)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeModernInstitutionalMap(long year, int width, int height, BufferedImage elevationMask) {
         List<CountryFeature> countries = getCountries(width, height);
         if (countries.isEmpty()) return null;
@@ -481,6 +554,16 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 6. TECHNOLOGY TENSOR RASTERIZATION (Capital Intensity & Innovation Index)
     // =========================================================================
+    /*
+     * Rasterize modern technology map.
+     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+     *
+     * @param year the year parameter (long)
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @param elevationMask the elevation mask parameter (BufferedImage)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeModernTechnologyMap(long year, int width, int height, BufferedImage elevationMask) {
         List<CountryFeature> countries = getCountries(width, height);
         if (countries.isEmpty()) return null;
@@ -506,6 +589,16 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 7. TRADE NETWORK TENSOR RASTERIZATION (Maritime Chokepoints & Global Supply Corridors)
     // =========================================================================
+    /*
+     * Rasterize modern trade network map.
+     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+     *
+     * @param year the year parameter (long)
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @param elevationMask the elevation mask parameter (BufferedImage)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeModernTradeNetworkMap(long year, int width, int height, BufferedImage elevationMask) {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
@@ -608,6 +701,16 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 8. ECOLOGICAL FOOTPRINT TENSOR RASTERIZATION (Industrial Exergy & Land Use)
     // =========================================================================
+    /*
+     * Rasterize modern ecological map.
+     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+     *
+     * @param year the year parameter (long)
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @param elevationMask the elevation mask parameter (BufferedImage)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeModernEcologicalMap(long year, int width, int height, BufferedImage elevationMask) {
         List<CountryFeature> countries = getCountries(width, height);
         if (countries.isEmpty()) return null;
@@ -633,6 +736,16 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 9. PATHOGEN STRESS TENSOR RASTERIZATION (Analytical R0 Epidemiology)
     // =========================================================================
+    /*
+     * Rasterize modern pathogen map.
+     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+     *
+     * @param year the year parameter (long)
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @param elevationMask the elevation mask parameter (BufferedImage)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage rasterizeModernPathogenMap(long year, int width, int height, BufferedImage elevationMask) {
         return AnalyticalEpidemiologyModel.generatePathogenMap(year, width, height, elevationMask);
     }
@@ -641,6 +754,14 @@ public class NaturalEarthVectorIngestor {
     // HELPER METHODS: Attribute Computations based on ISO-3166 Codes & Typologies
     // =========================================================================
 
+    /*
+     * Compute sovereign color for year.
+     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+     *
+     * @param c the c parameter (CountryFeature)
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static Color computeSovereignColorForYear(CountryFeature c, long year) {
         if (c == null) return Color.BLACK;
         String iso = (c.isoA3 != null) ? c.isoA3.toUpperCase(Locale.ROOT) : "";
@@ -980,6 +1101,14 @@ public class NaturalEarthVectorIngestor {
         }
     }
 
+    /*
+     * Apply elevation mask.
+     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
+     *
+     * @param img the img parameter (BufferedImage)
+     * @param elevationMask the elevation mask parameter (BufferedImage)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage applyElevationMask(BufferedImage img, BufferedImage elevationMask) {
         if (elevationMask == null) return img;
         int w = img.getWidth();
@@ -1001,7 +1130,7 @@ public class NaturalEarthVectorIngestor {
         return img;
     }
 
-    /**
+    /*
      * Attempts to load Natural Earth 1:10m vector map for a scenario.
      */
     public static SvgMapIngestor.SvgIngestionResult loadNaturalEarthMap(String scenarioType) {

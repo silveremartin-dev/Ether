@@ -1,5 +1,5 @@
 {
-  "name" : "Monde Océan (Oceania)",
+  "name" : "Monde OcÃ©an (Oceania)",
   "resolution" : 3,
   "radiusKm" : 7000.0,
   "dayLengthHours" : 21.0,
@@ -41,8 +41,8 @@
   "seasonUseImport" : false,
   "seasonSource" : "",
   "seasonSeed" : 56321,
+  "canonicalPlanet" : "none",
   "associatedEpochYear" : 2026,
   "presetDescription" : "\uD83C\uDF0A MONDE OCÉAN (Oceania) : Planète océanique panthalassique à 98% d'eau, absence de cratons continentaux émergés, écosystèmes pélagiques profonds et subsistance humaine exclusivement maritime.",
-  "tidalLocked" : false,
-  "canonicalPlanet" : "none"
+  "tidalLocked" : false
 }

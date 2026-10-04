@@ -14,7 +14,7 @@ import java.util.List;
 public class DODDataGenerator {
     private static final Logger logger = LoggerFactory.getLogger(DODDataGenerator.class);
 
-    /**
+    /*
      * Populates a WorldBuffer from a list of H3Cells.
      */
     public static void populateWorldBuffer(List<H3Cell> cells, WorldBuffer buffer) {
@@ -77,7 +77,7 @@ public class DODDataGenerator {
         logger.info("WorldBuffer population complete.");
     }
 
-    /**
+    /*
      * Initializes the AgentBuffer based on the population density in the WorldBuffer.
      * This creates "Demographic Nodes" (cohorts) for cells with population.
      */
@@ -85,6 +85,14 @@ public class DODDataGenerator {
         initializeAgentBuffer(world, agents, 500);
     }
 
+    /*
+     * Initialize agent buffer.
+     * Enforces physical invariants and updates associated state variables within {@code DODDataGenerator}.
+     *
+     * @param world the world parameter (WorldBuffer)
+     * @param agents the agents parameter (AgentBuffer)
+     * @param targetCohortSize the target cohort size parameter (int)
+     */
     public static void initializeAgentBuffer(WorldBuffer world, AgentBuffer agents, int targetCohortSize) {
         logger.info("Initializing AgentBuffer from population density (target cohort size: {})...", targetCohortSize);
         int agentIndex = 0;

@@ -28,7 +28,7 @@ public class ArchaeoglobeValidator {
         URBANISM                // Urban centers & industrial land-use
     }
 
-    /**
+    /*
      * Recalibrates a density factor based on Archaeoglobe archaeological consensus data for a given region and year.
      */
     public static double validateDensityWithArchaeology(double rawDensity, double lng, double lat, long year) {

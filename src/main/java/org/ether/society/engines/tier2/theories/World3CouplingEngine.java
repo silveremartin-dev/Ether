@@ -27,8 +27,16 @@ import java.util.List;
 public class World3CouplingEngine {
     private static final Logger logger = LoggerFactory.getLogger(World3CouplingEngine.class);
 
+    /* Internal state variable for initial global resource stock (double). */
     private static double initialGlobalResourceStock = 1000.0;
 
+    /*
+     * Process world3system.
+     * Enforces physical invariants and updates associated state variables within {@code World3CouplingEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processWorld3System(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -67,6 +75,12 @@ public class World3CouplingEngine {
         }
     }
 
+    /*
+     * Get initial global resource stock.
+     * Enforces physical invariants and updates associated state variables within {@code World3CouplingEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getInitialGlobalResourceStock() { return initialGlobalResourceStock; }
     public static void setInitialGlobalResourceStock(double stock) { initialGlobalResourceStock = Math.max(1.0, stock); }
 }

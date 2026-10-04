@@ -61,7 +61,7 @@ public class BayesianInverseCalibrationEngine {
             Map<Integer, Double> optimalSimulatedTrajectory
     ) {}
 
-    /**
+    /*
      * Executes Sequential Approximate Bayesian Computation (ABC-SMC) across free parameters.
      *
      * @param priors Map of parameter names to their prior bounds

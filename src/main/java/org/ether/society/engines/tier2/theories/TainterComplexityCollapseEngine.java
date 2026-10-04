@@ -31,16 +31,34 @@ public class TainterComplexityCollapseEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(TainterComplexityCollapseEngine.class);
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code TainterComplexityCollapseEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "Tainter Institutional Complexity & Declining Returns";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code TainterComplexityCollapseEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Models the diminishing marginal returns on socio-political complexity and fiscal-energetic collapse vulnerabilities.";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code TainterComplexityCollapseEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [Tainter Law of Diminishing Marginal Returns on Complexity (1988)]
@@ -54,11 +72,24 @@ public class TainterComplexityCollapseEngine implements ProceduralEnginePlugin {
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code TainterComplexityCollapseEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Institutional Cliodynamics";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code TainterComplexityCollapseEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

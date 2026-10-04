@@ -20,6 +20,13 @@ import java.util.List;
  */
 public class CliodynamicChronicleEngine {
 
+    /*
+     * Generate chronicles.
+     * Enforces physical invariants and updates associated state variables within {@code CliodynamicChronicleEngine}.
+     *
+     * @param timeline the timeline parameter (ScenarioTimeline)
+     * @return the resulting computation or state reference
+     */
     public static List<String> generateChronicles(ScenarioTimeline timeline) {
         List<String> prose = new ArrayList<>();
         if (timeline == null || timeline.getEntries().isEmpty()) {

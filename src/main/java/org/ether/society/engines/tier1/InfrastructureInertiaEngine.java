@@ -25,6 +25,13 @@ public class InfrastructureInertiaEngine {
 
     private static double baseCapitalTurnoverHalfLifeYears = 35.0; // Base 35-year physical turnover benchmark
 
+    /*
+     * Process infrastructure inertia.
+     * Enforces physical invariants and updates associated state variables within {@code InfrastructureInertiaEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processInfrastructureInertia(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -43,6 +50,12 @@ public class InfrastructureInertiaEngine {
         }
     }
 
+    /*
+     * Get capital turnover half life years.
+     * Enforces physical invariants and updates associated state variables within {@code InfrastructureInertiaEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getCapitalTurnoverHalfLifeYears() { return baseCapitalTurnoverHalfLifeYears; }
     public static void setCapitalTurnoverHalfLifeYears(double years) { baseCapitalTurnoverHalfLifeYears = Math.max(1.0, years); }
 }

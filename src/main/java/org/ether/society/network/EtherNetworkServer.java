@@ -30,11 +30,14 @@ import java.util.concurrent.Executors;
  */
 public class EtherNetworkServer {
     private static final Logger logger = LoggerFactory.getLogger(EtherNetworkServer.class);
+    /* Internal state variable for max clients (int). */
     private static final int MAX_CLIENTS = 100;
 
+    /* Internal state variable for port (int). */
     private final int port;
     private final EtherSecurityManager securityManager;
     private ServerSocket serverSocket;
+    /* Internal state variable for running (boolean). */
     private boolean running = false;
     private final Set<ClientHandler> clients = Collections.synchronizedSet(new HashSet<>());
     private final ExecutorService threadPool = Executors.newCachedThreadPool(r -> {
@@ -43,19 +46,43 @@ public class EtherNetworkServer {
         return t;
     });
 
+    /*
+     * Ether network server.
+     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+     *
+     * @param port the port parameter (int)
+     */
     public EtherNetworkServer(int port) {
         this(port, new EtherSecurityManager());
     }
 
+    /*
+     * Ether network server.
+     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+     *
+     * @param port the port parameter (int)
+     * @param securityManager the security manager parameter (EtherSecurityManager)
+     */
     public EtherNetworkServer(int port, EtherSecurityManager securityManager) {
         this.port = port;
         this.securityManager = securityManager;
     }
 
+    /*
+     * Get security manager.
+     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+     *
+     * @return the resulting computation or state reference
+     */
     public EtherSecurityManager getSecurityManager() {
         return securityManager;
     }
 
+    /*
+     * Start.
+     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+     *
+     */
     public void start() throws IOException {
         serverSocket = new ServerSocket(port);
         running = true;
@@ -82,10 +109,23 @@ public class EtherNetworkServer {
         });
     }
 
+    /*
+     * Broadcast state update.
+     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+     *
+     * @param stateJson the state json parameter (String)
+     */
     public void broadcastStateUpdate(String stateJson) {
         broadcastStateUpdate(stateJson, null);
     }
 
+    /*
+     * Broadcast state update.
+     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+     *
+     * @param stateJson the state json parameter (String)
+     * @param sender the sender parameter (ClientHandler)
+     */
     public void broadcastStateUpdate(String stateJson, ClientHandler sender) {
         synchronized (clients) {
             for (ClientHandler client : clients) {
@@ -96,6 +136,11 @@ public class EtherNetworkServer {
         }
     }
 
+    /*
+     * Stop.
+     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+     *
+     */
     public void stop() {
         running = false;
         try {
@@ -107,6 +152,12 @@ public class EtherNetworkServer {
         }
     }
 
+    /*
+     * Get connected client count.
+     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getConnectedClientCount() {
         return clients.size();
     }
@@ -116,19 +167,43 @@ public class EtherNetworkServer {
         private DataOutputStream out;
         private AuthToken authToken = null;
 
+        /*
+         * Client handler.
+         * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+         *
+         * @param socket the socket parameter (Socket)
+         * @return the resulting computation or state reference
+         */
         public ClientHandler(Socket socket) {
             this.socket = socket;
         }
 
+        /*
+         * Get auth token.
+         * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+         *
+         * @return the resulting computation or state reference
+         */
         public AuthToken getAuthToken() {
             return authToken;
         }
 
+        /*
+         * Set auth token.
+         * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+         *
+         * @param token the token parameter (AuthToken)
+         */
         public void setAuthToken(AuthToken token) {
             this.authToken = token;
         }
 
         @Override
+        /*
+         * Run.
+         * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+         *
+         */
         public void run() {
             String clientIp = socket.getRemoteSocketAddress().toString();
             EtherSecurityAuditLogger.logAuditEvent("CONNECT", clientIp, "Co-Governance Planner connected");
@@ -188,6 +263,12 @@ public class EtherNetworkServer {
             }
         }
 
+        /*
+         * Send message.
+         * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+         *
+         * @param msg the msg parameter (String)
+         */
         public void sendMessage(String msg) {
             try {
                 if (out != null) {

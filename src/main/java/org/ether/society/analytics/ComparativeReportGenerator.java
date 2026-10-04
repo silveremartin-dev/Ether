@@ -13,6 +13,13 @@ import java.util.List;
  */
 public class ComparativeReportGenerator {
 
+    /*
+     * Generate markdown report.
+     * Enforces physical invariants and updates associated state variables within {@code ComparativeReportGenerator}.
+     *
+     * @param result the result parameter (RootCauseAnalyzer.ComparisonResult)
+     * @return the resulting computation or state reference
+     */
     public static String generateMarkdownReport(RootCauseAnalyzer.ComparisonResult result) {
         StringBuilder sb = new StringBuilder();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -74,6 +81,13 @@ public class ComparativeReportGenerator {
         return sb.toString();
     }
 
+    /*
+     * Generate csv export.
+     * Enforces physical invariants and updates associated state variables within {@code ComparativeReportGenerator}.
+     *
+     * @param runs the runs parameter (List&lt;SimulationRunRecord&gt;)
+     * @return the resulting computation or state reference
+     */
     public static String generateCsvExport(List<SimulationRunRecord> runs) {
         StringBuilder sb = new StringBuilder();
         sb.append("RunId,ScenarioName,Year,Population,Food,AvgTech,Stability,PopulatedCells\n");

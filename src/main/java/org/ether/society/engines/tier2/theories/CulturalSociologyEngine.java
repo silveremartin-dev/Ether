@@ -26,6 +26,13 @@ public class CulturalSociologyEngine {
     private static double globalCollectivismIndex = 0.5; // 0.0 Individualist -> 1.0 Collectivist
     private static double globalEnvironmentalStewardship = 0.5; // 0.0 Exploitative -> 1.0 Sustainable
 
+    /*
+     * Process cultural sociology.
+     * Enforces physical invariants and updates associated state variables within {@code CulturalSociologyEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processCulturalSociology(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -47,9 +54,21 @@ public class CulturalSociologyEngine {
     }
 
     // Getters and Setters
+    /*
+     * Get global collectivism index.
+     * Enforces physical invariants and updates associated state variables within {@code CulturalSociologyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getGlobalCollectivismIndex() { return globalCollectivismIndex; }
     public static void setGlobalCollectivismIndex(double idx) { globalCollectivismIndex = Math.max(0.0, Math.min(1.0, idx)); }
 
+    /*
+     * Get global environmental stewardship.
+     * Enforces physical invariants and updates associated state variables within {@code CulturalSociologyEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getGlobalEnvironmentalStewardship() { return globalEnvironmentalStewardship; }
     public static void setGlobalEnvironmentalStewardship(double stw) { globalEnvironmentalStewardship = Math.max(0.0, Math.min(1.0, stw)); }
 }

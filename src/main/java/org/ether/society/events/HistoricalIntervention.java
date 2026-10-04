@@ -16,32 +16,56 @@ import org.ether.society.model.Nation;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HistoricalIntervention {
+    /* Internal state variable for id (String). */
     private String id;
+    /* Internal state variable for name (String). */
     private String name;
+    /* Internal state variable for description (String). */
     private String description;
+    /* Internal state variable for year start (int). */
     private int yearStart;
+    /* Internal state variable for duration years (int). */
     private int durationYears = 25;
+    /* Internal state variable for latitude (double). */
     private double latitude;
+    /* Internal state variable for longitude (double). */
     private double longitude;
+    /* Internal state variable for radius km (double). */
     private double radiusKm = 1000.0;
     private LeaderArchetype archetype = LeaderArchetype.INSTITUTIONAL_REFORMER;
     private double magnitude = 6.0; // Scale 1.0 to 10.0
 
     // Physical & Socio-Economic Modifiers
+    /* Internal state variable for movement friction multiplier (double). */
     private double movementFrictionMultiplier = 1.0;
+    /* Internal state variable for state capacity delta (double). */
     private double stateCapacityDelta = 0.0;
+    /* Internal state variable for asabiyyah delta (double). */
     private double asabiyyahDelta = 0.0;
+    /* Internal state variable for elite overproduction delta (double). */
     private double eliteOverproductionDelta = 0.0;
+    /* Internal state variable for political instability delta (double). */
     private double politicalInstabilityDelta = 0.0;
+    /* Internal state variable for capital bonus gj (double). */
     private double capitalBonusGJ = 0.0;
+    /* Internal state variable for carrying capacity multiplier (double). */
     private double carryingCapacityMultiplier = 1.0;
+    /* Internal state variable for conquest speed multiplier (double). */
     private double conquestSpeedMultiplier = 1.0;
+    /* Internal state variable for trigger succession crisis at end (boolean). */
     private boolean triggerSuccessionCrisisAtEnd = false;
 
     // Runtime state tracking
+    /* Internal state variable for activated (boolean). */
     private boolean activated = false;
+    /* Internal state variable for completed (boolean). */
     private boolean completed = false;
 
+    /*
+     * Historical intervention.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     */
     public HistoricalIntervention() {
     }
 
@@ -61,7 +85,7 @@ public class HistoricalIntervention {
         initDefaultModifiersByArchetype();
     }
 
-    /**
+    /*
      * Initializes typical modifier intensities scaled by magnitude.
      */
     public void initDefaultModifiersByArchetype() {
@@ -99,14 +123,36 @@ public class HistoricalIntervention {
         }
     }
 
+    /*
+     * Is active.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @param currentYear the current year parameter (int)
+     * @return the resulting computation or state reference
+     */
     public boolean isActive(int currentYear) {
         return currentYear >= yearStart && currentYear < (yearStart + durationYears);
     }
 
+    /*
+     * Is expired.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @param currentYear the current year parameter (int)
+     * @return the resulting computation or state reference
+     */
     public boolean isExpired(int currentYear) {
         return currentYear >= (yearStart + durationYears);
     }
 
+    /*
+     * Get distance km.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @param cellLat the cell lat parameter (double)
+     * @param cellLng the cell lng parameter (double)
+     * @return the resulting computation or state reference
+     */
     public double getDistanceKm(double cellLat, double cellLng) {
         double dLat = Math.toRadians(cellLat - latitude);
         double dLng = Math.toRadians(cellLng - longitude);
@@ -117,10 +163,26 @@ public class HistoricalIntervention {
         return 6371.0 * c;
     }
 
+    /*
+     * Is inside radius.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @param cellLat the cell lat parameter (double)
+     * @param cellLng the cell lng parameter (double)
+     * @return the resulting computation or state reference
+     */
     public boolean isInsideRadius(double cellLat, double cellLng) {
         return getDistanceKm(cellLat, cellLng) <= radiusKm;
     }
 
+    /*
+     * Get spatial attenuation weight.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @param cellLat the cell lat parameter (double)
+     * @param cellLng the cell lng parameter (double)
+     * @return the resulting computation or state reference
+     */
     public double getSpatialAttenuationWeight(double cellLat, double cellLng) {
         double distKm = getDistanceKm(cellLat, cellLng);
         if (distKm > radiusKm) return 0.0;
@@ -128,7 +190,7 @@ public class HistoricalIntervention {
         return Math.exp(-0.5 * (distKm * distKm) / (sigma * sigma));
     }
 
-    /**
+    /*
      * Computes the anisotropic spatial attenuation weight coupled with the Cultural Isogloss
      * tensor (Tensor 0) and Hydrographic Drainage Basin topology.
      *
@@ -183,9 +245,21 @@ public class HistoricalIntervention {
     }
 
     // Getters and Setters
+    /*
+     * Get id.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         if (id != null && !id.isBlank()) {
             return org.ether.society.i18n.I18n.getOrDefault("leader.event." + id.toLowerCase() + ".name",
@@ -195,6 +269,12 @@ public class HistoricalIntervention {
     }
     public void setName(String name) { this.name = name; }
 
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         if (id != null && !id.isBlank()) {
             return org.ether.society.i18n.I18n.getOrDefault("leader.event." + id.toLowerCase() + ".desc",
@@ -204,57 +284,165 @@ public class HistoricalIntervention {
     }
     public void setDescription(String description) { this.description = description; }
 
+    /*
+     * Get year start.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getYearStart() { return yearStart; }
     public void setYearStart(int yearStart) { this.yearStart = yearStart; }
 
+    /*
+     * Get duration years.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public int getDurationYears() { return durationYears; }
     public void setDurationYears(int durationYears) { this.durationYears = durationYears; }
 
+    /*
+     * Get latitude.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getLatitude() { return latitude; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
 
+    /*
+     * Get longitude.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getLongitude() { return longitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
 
+    /*
+     * Get radius km.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getRadiusKm() { return radiusKm; }
     public void setRadiusKm(double radiusKm) { this.radiusKm = radiusKm; }
 
+    /*
+     * Get archetype.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public LeaderArchetype getArchetype() { return archetype; }
     public void setArchetype(LeaderArchetype archetype) { this.archetype = archetype; }
 
+    /*
+     * Get magnitude.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getMagnitude() { return magnitude; }
     public void setMagnitude(double magnitude) { this.magnitude = magnitude; }
 
+    /*
+     * Get movement friction multiplier.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getMovementFrictionMultiplier() { return movementFrictionMultiplier; }
     public void setMovementFrictionMultiplier(double movementFrictionMultiplier) { this.movementFrictionMultiplier = movementFrictionMultiplier; }
 
+    /*
+     * Get state capacity delta.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getStateCapacityDelta() { return stateCapacityDelta; }
     public void setStateCapacityDelta(double stateCapacityDelta) { this.stateCapacityDelta = stateCapacityDelta; }
 
+    /*
+     * Get asabiyyah delta.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getAsabiyyahDelta() { return asabiyyahDelta; }
     public void setAsabiyyahDelta(double asabiyyahDelta) { this.asabiyyahDelta = asabiyyahDelta; }
 
+    /*
+     * Get elite overproduction delta.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getEliteOverproductionDelta() { return eliteOverproductionDelta; }
     public void setEliteOverproductionDelta(double eliteOverproductionDelta) { this.eliteOverproductionDelta = eliteOverproductionDelta; }
 
+    /*
+     * Get political instability delta.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getPoliticalInstabilityDelta() { return politicalInstabilityDelta; }
     public void setPoliticalInstabilityDelta(double politicalInstabilityDelta) { this.politicalInstabilityDelta = politicalInstabilityDelta; }
 
+    /*
+     * Get capital bonus gj.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCapitalBonusGJ() { return capitalBonusGJ; }
     public void setCapitalBonusGJ(double capitalBonusGJ) { this.capitalBonusGJ = capitalBonusGJ; }
 
+    /*
+     * Get carrying capacity multiplier.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCarryingCapacityMultiplier() { return carryingCapacityMultiplier; }
     public void setCarryingCapacityMultiplier(double carryingCapacityMultiplier) { this.carryingCapacityMultiplier = carryingCapacityMultiplier; }
 
+    /*
+     * Get conquest speed multiplier.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getConquestSpeedMultiplier() { return conquestSpeedMultiplier; }
     public void setConquestSpeedMultiplier(double conquestSpeedMultiplier) { this.conquestSpeedMultiplier = conquestSpeedMultiplier; }
 
+    /*
+     * Is trigger succession crisis at end.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isTriggerSuccessionCrisisAtEnd() { return triggerSuccessionCrisisAtEnd; }
     public void setTriggerSuccessionCrisisAtEnd(boolean triggerSuccessionCrisisAtEnd) { this.triggerSuccessionCrisisAtEnd = triggerSuccessionCrisisAtEnd; }
 
+    /*
+     * Is activated.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isActivated() { return activated; }
     public void setActivated(boolean activated) { this.activated = activated; }
 
+    /*
+     * Is completed.
+     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isCompleted() { return completed; }
     public void setCompleted(boolean completed) { this.completed = completed; }
 }

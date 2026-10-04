@@ -36,18 +36,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "mars",
     "tempUseImport" : true,
-    "tempSource" : "\uD83D\uDD34 Mars — MGS TES Thermal Radiometry",
+    "tempSource" : "ðŸ”´ Mars â€” MGS TES Thermal Radiometry",
     "tempSeed" : 98865,
     "precipUseImport" : true,
-    "precipSource" : "\uD83D\uDD34 Mars — Frost & Sublimation Model",
+    "precipSource" : "ðŸ”´ Mars â€” Frost & Sublimation Model",
     "precipSeed" : 99765,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83D\uDD34 Mars — Orbital Eccentricity Insolation Model",
+    "seasonSource" : "ðŸ”´ Mars â€” Orbital Eccentricity Insolation Model",
     "seasonSeed" : 100765,
+    "canonicalPlanet" : "mars",
     "associatedEpochYear" : 2026,
     "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "mars"
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 0.0,
   "soilOrganicCarbonGtC" : 0.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
+  "canonicalPlanet" : "mars",
   "associatedEpochYear" : 2026,
-  "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique.",
-  "canonicalPlanet" : "mars"
+  "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique."
 }

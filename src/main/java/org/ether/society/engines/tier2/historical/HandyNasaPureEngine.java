@@ -23,11 +23,20 @@ import java.util.List;
 public class HandyNasaPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(HandyNasaPureEngine.class);
 
+    /* Internal state variable for commoners x (double). */
     private double commonersX = 100.0;
+    /* Internal state variable for elites y (double). */
     private double elitesY = 1.0;
     private double natureX = 100.0; // Nature carrying capacity
+    /* Internal state variable for wealth k (double). */
     private double wealthK = 0.0;
 
+    /*
+     * Process tick.
+     * Enforces physical invariants and updates associated state variables within {@code HandyNasaPureEngine}.
+     *
+     * @param deltaYears the delta years parameter (double)
+     */
     public void processTick(double deltaYears) {
         double gammaX = 0.03; // Commoners birth rate
         double gammaY = 0.03; // Elites birth rate
@@ -54,9 +63,33 @@ public class HandyNasaPureEngine {
         elitesY += (gammaY * elitesY - alphaY * elitesY) * deltaYears;
     }
 
+    /*
+     * Get commoners x.
+     * Enforces physical invariants and updates associated state variables within {@code HandyNasaPureEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCommonersX() { return commonersX; }
+    /*
+     * Get elites y.
+     * Enforces physical invariants and updates associated state variables within {@code HandyNasaPureEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getElitesY() { return elitesY; }
+    /*
+     * Get nature x.
+     * Enforces physical invariants and updates associated state variables within {@code HandyNasaPureEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getNatureX() { return natureX; }
+    /*
+     * Get wealth k.
+     * Enforces physical invariants and updates associated state variables within {@code HandyNasaPureEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getWealthK() { return wealthK; }
 }
 

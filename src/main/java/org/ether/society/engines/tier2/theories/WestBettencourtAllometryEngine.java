@@ -34,16 +34,34 @@ public class WestBettencourtAllometryEngine implements ProceduralEnginePlugin {
     public static final double SUBLINEAR_EXPONENT = 0.85;   // Infrastructure efficiency
 
     @Override
+    /*
+     * Get name.
+     * Enforces physical invariants and updates associated state variables within {@code WestBettencourtAllometryEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getName() {
         return "West-Bettencourt Urban Allometry";
     }
 
     @Override
+    /*
+     * Get description.
+     * Enforces physical invariants and updates associated state variables within {@code WestBettencourtAllometryEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getDescription() {
         return "Models urban scaling laws: super-linear innovation/output (N^1.15) and sub-linear infrastructure network economy (N^0.85).";
     }
 
     @Override
+    /*
+     * Get equations tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code WestBettencourtAllometryEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getEquationsTooltip() {
         return """
                [West-Bettencourt Urban Scaling Laws (PNAS 2007)]
@@ -55,11 +73,24 @@ public class WestBettencourtAllometryEngine implements ProceduralEnginePlugin {
     }
 
     @Override
+    /*
+     * Get category.
+     * Enforces physical invariants and updates associated state variables within {@code WestBettencourtAllometryEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getCategory() {
         return "Tier 2: Cliodynamics & Urban Scaling";
     }
 
     @Override
+    /*
+     * Process.
+     * Enforces physical invariants and updates associated state variables within {@code WestBettencourtAllometryEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

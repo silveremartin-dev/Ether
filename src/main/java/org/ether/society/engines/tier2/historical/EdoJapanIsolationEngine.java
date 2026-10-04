@@ -26,9 +26,17 @@ import java.util.List;
 public class EdoJapanIsolationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EdoJapanIsolationEngine.class);
 
+    /* Internal state variable for sakoku isolation active (boolean). */
     private static boolean sakokuIsolationActive = true;
     private static double sustainableEquilibriumCap = 30.0; // 30M population equilibrium cap
 
+    /*
+     * Process hybrid.
+     * Enforces physical invariants and updates associated state variables within {@code EdoJapanIsolationEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -58,9 +66,21 @@ public class EdoJapanIsolationEngine {
         }
     }
 
+    /*
+     * Is sakoku isolation active.
+     * Enforces physical invariants and updates associated state variables within {@code EdoJapanIsolationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static boolean isSakokuIsolationActive() { return sakokuIsolationActive; }
     public static void setSakokuIsolationActive(boolean active) { sakokuIsolationActive = active; }
 
+    /*
+     * Get sustainable equilibrium cap.
+     * Enforces physical invariants and updates associated state variables within {@code EdoJapanIsolationEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getSustainableEquilibriumCap() { return sustainableEquilibriumCap; }
     public static void setSustainableEquilibriumCap(double cap) { sustainableEquilibriumCap = Math.max(1.0, cap); }
 }

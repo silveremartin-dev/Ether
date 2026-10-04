@@ -44,10 +44,10 @@
     "seasonUseImport" : false,
     "seasonSource" : "",
     "seasonSeed" : 79711,
+    "canonicalPlanet" : "moon",
     "associatedEpochYear" : 2026,
     "presetDescription" : "\uD83D\uDFE0 TITAN (Cryo-Lune) : Lune cryogénique massive avec atmosphère dense d'azote et de méthane (1,5 atm, 94 K), lacs d'hydrocarbures liquides (méthane/éthane) et relief de glace d'eau rocheuse.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "moon"
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 0.0,
   "soilOrganicCarbonGtC" : 200.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
+  "canonicalPlanet" : "moon",
   "associatedEpochYear" : 2026,
-  "presetDescription" : "\uD83D\uDFE0 TITAN (Cryo-Lune) : Lune cryogénique massive avec atmosphère dense d'azote et de méthane (1,5 atm, 94 K), lacs d'hydrocarbures liquides (méthane/éthane) et relief de glace d'eau rocheuse.",
-  "canonicalPlanet" : "moon"
+  "presetDescription" : "\uD83D\uDFE0 TITAN (Cryo-Lune) : Lune cryogénique massive avec atmosphère dense d'azote et de méthane (1,5 atm, 94 K), lacs d'hydrocarbures liquides (méthane/éthane) et relief de glace d'eau rocheuse."
 }

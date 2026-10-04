@@ -24,7 +24,7 @@ import java.util.List;
 public class OzoneLayerDepletionEngine {
     private static final Logger logger = LoggerFactory.getLogger(OzoneLayerDepletionEngine.class);
 
-    /**
+    /*
      * Executes stratospheric ozone depletion and UV-B radiation influx tick.
      */
     public static void processOzoneLayerDepletion(List<H3Cell> cells) {

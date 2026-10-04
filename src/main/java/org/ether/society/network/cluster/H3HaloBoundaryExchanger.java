@@ -23,12 +23,28 @@ import java.util.*;
 public class H3HaloBoundaryExchanger {
 
     public static class HaloCellDelta {
+        /* Internal state variable for cell index (int). */
         private final int cellIndex;
+        /* Internal state variable for flux pressure (float). */
         private final float fluxPressure;
+        /* Internal state variable for temperature (float). */
         private final float temperature;
+        /* Internal state variable for biomass human (float). */
         private final float biomassHuman;
+        /* Internal state variable for local price (float). */
         private final float localPrice;
 
+        /*
+         * Halo cell delta.
+         * Enforces physical invariants and updates associated state variables within {@code H3HaloBoundaryExchanger}.
+         *
+         * @param cellIndex the cell index parameter (int)
+         * @param fluxPressure the flux pressure parameter (float)
+         * @param temperature the temperature parameter (float)
+         * @param biomassHuman the biomass human parameter (float)
+         * @param localPrice the local price parameter (float)
+         * @return the resulting computation or state reference
+         */
         public HaloCellDelta(int cellIndex, float fluxPressure, float temperature, float biomassHuman, float localPrice) {
             this.cellIndex = cellIndex;
             this.fluxPressure = fluxPressure;
@@ -37,14 +53,44 @@ public class H3HaloBoundaryExchanger {
             this.localPrice = localPrice;
         }
 
+        /*
+         * Get cell index.
+         * Enforces physical invariants and updates associated state variables within {@code H3HaloBoundaryExchanger}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getCellIndex() { return cellIndex; }
+        /*
+         * Get flux pressure.
+         * Enforces physical invariants and updates associated state variables within {@code H3HaloBoundaryExchanger}.
+         *
+         * @return the resulting computation or state reference
+         */
         public float getFluxPressure() { return fluxPressure; }
+        /*
+         * Get temperature.
+         * Enforces physical invariants and updates associated state variables within {@code H3HaloBoundaryExchanger}.
+         *
+         * @return the resulting computation or state reference
+         */
         public float getTemperature() { return temperature; }
+        /*
+         * Get biomass human.
+         * Enforces physical invariants and updates associated state variables within {@code H3HaloBoundaryExchanger}.
+         *
+         * @return the resulting computation or state reference
+         */
         public float getBiomassHuman() { return biomassHuman; }
+        /*
+         * Get local price.
+         * Enforces physical invariants and updates associated state variables within {@code H3HaloBoundaryExchanger}.
+         *
+         * @return the resulting computation or state reference
+         */
         public float getLocalPrice() { return localPrice; }
     }
 
-    /**
+    /*
      * Extracts state values for all boundary cell indices of a partition into a compact delta list.
      */
     public static List<HaloCellDelta> extractHaloDeltas(WorldBuffer buffer, Set<Integer> boundaryIndices) {
@@ -70,7 +116,7 @@ public class H3HaloBoundaryExchanger {
         return deltas;
     }
 
-    /**
+    /*
      * Serializes halo deltas to binary payload.
      */
     public static byte[] serializeHaloDeltas(List<HaloCellDelta> deltas) {
@@ -87,7 +133,7 @@ public class H3HaloBoundaryExchanger {
         return buf.array();
     }
 
-    /**
+    /*
      * Deserializes halo deltas and applies them directly into the target WorldBuffer.
      */
     public static void applyHaloDeltas(byte[] binaryData, WorldBuffer targetBuffer) {

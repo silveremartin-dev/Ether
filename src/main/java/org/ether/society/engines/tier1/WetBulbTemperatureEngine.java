@@ -25,7 +25,7 @@ import java.util.List;
 public class WetBulbTemperatureEngine {
     private static final Logger logger = LoggerFactory.getLogger(WetBulbTemperatureEngine.class);
 
-    /**
+    /*
      * Calculates Stull Wet-Bulb Temperature (T_wb in Â°C) from Dry-Bulb Temperature T (Â°C) and Relative Humidity RH (%).
      *
      * @param tempC Dry-bulb temperature in Â°C
@@ -43,7 +43,7 @@ public class WetBulbTemperatureEngine {
                 - 4.686035;
     }
 
-    /**
+    /*
      * Executes one wet-bulb temperature hyperthermia check across cells.
      */
     public static void processWetBulbHyperthermia(List<H3Cell> cells) {

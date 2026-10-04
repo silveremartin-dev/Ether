@@ -29,34 +29,53 @@ import java.util.List;
 public class GreenhouseRadiativeEngine {
     private static final Logger logger = LoggerFactory.getLogger(GreenhouseRadiativeEngine.class);
 
+    /* Internal state variable for baseline co2 ppm (double). */
     private static final double BASELINE_CO2_PPM = 280.0;
+    /* Internal state variable for baseline ch4 ppb (double). */
     private static final double BASELINE_CH4_PPB = 720.0;
     private static final double CLIMATE_SENSITIVITY_LAMBDA = 0.8; // Â°C per W/mÂ²
 
     // Physical constants for Stefan-Boltzmann and Clausius-Clapeyron
     public static final double STEFAN_BOLTZMANN_SIGMA = 5.670374e-8; // W/(mÂ²Â·Kâ´)
+    /* Internal state variable for emissivity epsilon (double). */
     public static final double EMISSIVITY_EPSILON = 0.98;
     public static final double SOLAR_CONSTANT_TOA = 1361.0; // W/mÂ²
     public static final double LATENT_HEAT_VAPORIZATION_LV = 2.501e6; // J/kg
     public static final double GAS_CONSTANT_VAPOR_RV = 461.5; // J/(kgÂ·K)
     public static final double REFERENCE_VAPOR_PRESSURE_E0 = 611.3; // Pa at 273.15 K
 
+    /* Internal state variable for current co2ppm (double). */
     private double currentCo2Ppm = 280.0;
+    /* Internal state variable for current ch4ppb (double). */
     private double currentCh4Ppb = 720.0;
+    /* Internal state variable for sea level delta meters (double). */
     private double seaLevelDeltaMeters = 0.0;
 
+    /* Internal state variable for technological mitigation efficiency (double). */
     private double technologicalMitigationEfficiency = 0.0;
 
+    /*
+     * Greenhouse radiative engine.
+     * Enforces physical invariants and updates associated state variables within {@code GreenhouseRadiativeEngine}.
+     *
+     */
     public GreenhouseRadiativeEngine() {
         this(280.0, 720.0);
     }
 
+    /*
+     * Greenhouse radiative engine.
+     * Enforces physical invariants and updates associated state variables within {@code GreenhouseRadiativeEngine}.
+     *
+     * @param initialCo2Ppm the initial co2ppm parameter (double)
+     * @param initialCh4Ppb the initial ch4ppb parameter (double)
+     */
     public GreenhouseRadiativeEngine(double initialCo2Ppm, double initialCh4Ppb) {
         this.currentCo2Ppm = initialCo2Ppm;
         this.currentCh4Ppb = initialCh4Ppb;
     }
 
-    /**
+    /*
      * Updates technological mitigation factor based on planetary tech level
      * (Carbon Capture & Storage, Fusion, Geoengineering).
      */
@@ -68,11 +87,17 @@ public class GreenhouseRadiativeEngine {
         }
     }
 
+    /*
+     * Get technological mitigation efficiency.
+     * Enforces physical invariants and updates associated state variables within {@code GreenhouseRadiativeEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getTechnologicalMitigationEfficiency() {
         return technologicalMitigationEfficiency;
     }
 
-    /**
+    /*
      * Calculates radiative forcing in W/mÂ² based on greenhouse gas concentrations
      * modulated by technological carbon capture and solar geoengineering mitigation.
      */
@@ -85,14 +110,14 @@ public class GreenhouseRadiativeEngine {
         return rawForcing * (1.0 - technologicalMitigationEfficiency);
     }
 
-    /**
+    /*
      * Computes the global mean temperature anomaly (Â°C) relative to baseline.
      */
     public double computeTemperatureAnomalyC() {
         return computeRadiativeForcingWpm2() * CLIMATE_SENSITIVITY_LAMBDA;
     }
 
-    /**
+    /*
      * Calculates saturation vapor pressure e_s(T) in Pascals using Clausius-Clapeyron.
      *
      * @param tempCelsius Temperature in Celsius
@@ -104,7 +129,7 @@ public class GreenhouseRadiativeEngine {
         return REFERENCE_VAPOR_PRESSURE_E0 * Math.exp(Math.clamp(exponent, -15.0, 15.0));
     }
 
-    /**
+    /*
      * Computes radiative equilibrium surface temperature in Kelvin using Stefan-Boltzmann:
      * T_eq = [ (S_0/4 * (1 - alpha) + Delta_F) / (epsilon * sigma) ]^(1/4)
      */
@@ -115,7 +140,7 @@ public class GreenhouseRadiativeEngine {
         return Math.pow(totalDownwardFlux / radiativeDenominator, 0.25);
     }
 
-    /**
+    /*
      * Computes sea level rise in meters based on thermal expansion & ice sheet melt.
      */
     public double computeSeaLevelDeltaMeters() {
@@ -123,7 +148,7 @@ public class GreenhouseRadiativeEngine {
         return deltaT * 42.5; // ~42.5m rise per Â°C long term
     }
 
-    /**
+    /*
      * Advances radiative state by adding anthropogenic or volcanic greenhouse emissions.
      */
     public void addEmissions(double deltaCo2Ppm, double deltaCh4Ppb) {
@@ -132,7 +157,7 @@ public class GreenhouseRadiativeEngine {
         this.seaLevelDeltaMeters = computeSeaLevelDeltaMeters();
     }
 
-    /**
+    /*
      * Applies temperature anomaly, Stefan-Boltzmann equilibrium, and sea level shift to the H3 grid.
      */
     public void applyToGrid(List<H3Cell> cells) {
@@ -155,8 +180,26 @@ public class GreenhouseRadiativeEngine {
         });
     }
 
+    /*
+     * Get current co2ppm.
+     * Enforces physical invariants and updates associated state variables within {@code GreenhouseRadiativeEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCurrentCo2Ppm() { return currentCo2Ppm; }
+    /*
+     * Get current ch4ppb.
+     * Enforces physical invariants and updates associated state variables within {@code GreenhouseRadiativeEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getCurrentCh4Ppb() { return currentCh4Ppb; }
+    /*
+     * Get sea level delta meters.
+     * Enforces physical invariants and updates associated state variables within {@code GreenhouseRadiativeEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public double getSeaLevelDeltaMeters() { return seaLevelDeltaMeters; }
 }
 

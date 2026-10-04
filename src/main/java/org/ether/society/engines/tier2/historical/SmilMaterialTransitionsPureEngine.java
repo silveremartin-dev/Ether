@@ -25,6 +25,13 @@ public class SmilMaterialTransitionsPureEngine {
 
     private static double transitionInertiaYears = 60.0; // 60-year average physical capital replacement time
 
+    /*
+     * Process hybrid.
+     * Enforces physical invariants and updates associated state variables within {@code SmilMaterialTransitionsPureEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -39,6 +46,12 @@ public class SmilMaterialTransitionsPureEngine {
         }
     }
 
+    /*
+     * Get transition inertia years.
+     * Enforces physical invariants and updates associated state variables within {@code SmilMaterialTransitionsPureEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getTransitionInertiaYears() { return transitionInertiaYears; }
 }
 

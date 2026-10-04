@@ -13,6 +13,7 @@ org.ether.society.database
 org.ether.society.engines
 org.ether.society.engines.compiler
 org.ether.society.engines.tier1
+org.ether.society.engines.tier2
 org.ether.society.engines.tier2.historical
 org.ether.society.engines.tier2.theories
 org.ether.society.events

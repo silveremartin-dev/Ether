@@ -9,7 +9,7 @@ import org.ether.society.model.PhysicalConstants;
  */
 public class UrbanKernel {
 
-    /**
+    /*
      * Met à jour le capital et l'urbanisation du monde sous conservation thermodynamique.
      */
     public void tick(WorldBuffer world, float dt) {

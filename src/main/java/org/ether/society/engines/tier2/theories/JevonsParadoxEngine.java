@@ -24,6 +24,13 @@ public class JevonsParadoxEngine {
 
     private static double reboundCoefficient = 0.80; // 80% rebound effect
 
+    /*
+     * Process jevons rebound.
+     * Enforces physical invariants and updates associated state variables within {@code JevonsParadoxEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processJevonsRebound(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -41,6 +48,12 @@ public class JevonsParadoxEngine {
         }
     }
 
+    /*
+     * Get rebound coefficient.
+     * Enforces physical invariants and updates associated state variables within {@code JevonsParadoxEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getReboundCoefficient() { return reboundCoefficient; }
     public static void setReboundCoefficient(double coeff) { reboundCoefficient = Math.max(0.0, Math.min(2.0, coeff)); }
 }

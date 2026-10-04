@@ -26,7 +26,7 @@ import java.util.List;
 public class NetEnergyEROEIEngine {
     private static final Logger logger = LoggerFactory.getLogger(NetEnergyEROEIEngine.class);
 
-    /**
+    /*
      * Calculates Net Energy Return on Investment (EROEI) for a cell.
      *
      * @param cell H3 terrain cell
@@ -47,7 +47,7 @@ public class NetEnergyEROEIEngine {
         return Math.max(0.5, energyExtracted / energyExpended);
     }
 
-    /**
+    /*
      * Executes one master EROEI cliodynamic tick across cells.
      */
     public static void processNetEnergyEROEI(List<H3Cell> cells) {

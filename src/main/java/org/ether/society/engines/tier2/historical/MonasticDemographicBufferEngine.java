@@ -25,6 +25,13 @@ public class MonasticDemographicBufferEngine {
 
     private static double monasticFraction = 0.04; // 4% default monastic buffer fraction
 
+    /*
+     * Process hybrid.
+     * Enforces physical invariants and updates associated state variables within {@code MonasticDemographicBufferEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -43,6 +50,12 @@ public class MonasticDemographicBufferEngine {
         }
     }
 
+    /*
+     * Get monastic fraction.
+     * Enforces physical invariants and updates associated state variables within {@code MonasticDemographicBufferEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getMonasticFraction() { return monasticFraction; }
     public static void setMonasticFraction(double fraction) { monasticFraction = Math.max(0.0, Math.min(0.20, fraction)); }
 }

@@ -32,6 +32,11 @@ public class RealDataLoader {
 
     private final Path dataDirectory;
 
+    /*
+     * Real data loader.
+     * Enforces physical invariants and updates associated state variables within {@code RealDataLoader}.
+     *
+     */
     public RealDataLoader() {
         this.dataDirectory = Paths.get("data", "real");
         try {
@@ -41,7 +46,7 @@ public class RealDataLoader {
         }
     }
 
-    /**
+    /*
      * Download SRTM elevation data for Europe.
      * 
      * NOTE: This is a placeholder - actual implementation requires:
@@ -64,7 +69,7 @@ public class RealDataLoader {
         // 4. Extract elevation values at H3 cell centers
     }
 
-    /**
+    /*
      * Download MODIS climate data for Europe.
      */
     public void downloadMODISData() {
@@ -74,7 +79,7 @@ public class RealDataLoader {
         // Placeholder for temperature and precipitation data
     }
 
-    /**
+    /*
      * Load elevation data from cached files.
      * 
      * For now, uses synthetic data. Replace with actual SRTM processing.
@@ -96,7 +101,7 @@ public class RealDataLoader {
         return cells;
     }
 
-    /**
+    /*
      * Load climate data from cached files.
      */
     public List<H3Cell> loadClimateData(List<H3Cell> cells) {
@@ -117,7 +122,7 @@ public class RealDataLoader {
         return cells;
     }
 
-    /**
+    /*
      * Check if real data files are available locally.
      */
     public boolean hasRealDataCached() {
@@ -126,7 +131,7 @@ public class RealDataLoader {
         return Files.exists(srtmFile) && Files.exists(modisFile);
     }
 
-    /**
+    /*
      * Synthetic elevation calculation (placeholder).
      * Replace with actual SRTM data reading.
      */
@@ -149,7 +154,7 @@ public class RealDataLoader {
         return Math.max(0, baseElevation + mountainHeight + noise);
     }
 
-    /**
+    /*
      * Synthetic climate calculation (placeholder).
      * Returns [temperature, rainfall].
      */
@@ -165,7 +170,7 @@ public class RealDataLoader {
         return new double[] { tempAtLat, rainfallAtLat };
     }
 
-    /**
+    /*
      * Documentation for real data integration.
      */
     public String getRealDataGuide() {

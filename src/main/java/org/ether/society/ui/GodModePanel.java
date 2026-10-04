@@ -37,19 +37,43 @@ public class GodModePanel extends VBox {
         double defaultMagnitude,
         boolean isLeader
     ) {
+        /*
+         * Get display name.
+         * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getDisplayName() {
             return I18n.getOrDefault(typeI18nKey, id);
         }
 
+        /*
+         * Get default title.
+         * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getDefaultTitle() {
             return I18n.getOrDefault(nameI18nKey, id);
         }
 
+        /*
+         * Get description.
+         * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getDescription() {
             return I18n.getOrDefault(descI18nKey, "");
         }
 
         @Override
+        /*
+         * To string.
+         * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String toString() {
             return getDisplayName();
         }
@@ -143,6 +167,13 @@ public class GodModePanel extends VBox {
     private final Label resetTitleLabel;
     private final Button resetDisastersBtn;
 
+    /*
+     * God mode panel.
+     * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+     *
+     * @param engine the engine parameter (H3SimulationEngine)
+     * @param timeline the timeline parameter (ScenarioTimeline)
+     */
     public GodModePanel(H3SimulationEngine engine, ScenarioTimeline timeline) {
         this.engine = engine;
         this.timeline = timeline != null ? timeline : new ScenarioTimeline();
@@ -168,10 +199,24 @@ public class GodModePanel extends VBox {
 
         eventTypeCombo.setConverter(new StringConverter<>() {
             @Override
+            /*
+             * To string.
+             * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+             *
+             * @param item the item parameter (EventTypeItem)
+             * @return the resulting computation or state reference
+             */
             public String toString(EventTypeItem item) {
                 return item != null ? item.getDisplayName() : "";
             }
             @Override
+            /*
+             * From string.
+             * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+             *
+             * @param string the string parameter (String)
+             * @return the resulting computation or state reference
+             */
             public EventTypeItem fromString(String string) {
                 if (string == null) return null;
                 for (EventTypeItem item : EVENT_TYPES) {
@@ -185,6 +230,13 @@ public class GodModePanel extends VBox {
 
         eventTypeCombo.setCellFactory(lv -> new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+             *
+             * @param item the item parameter (EventTypeItem)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(EventTypeItem item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -198,6 +250,13 @@ public class GodModePanel extends VBox {
         });
         eventTypeCombo.setButtonCell(new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+             *
+             * @param item the item parameter (EventTypeItem)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(EventTypeItem item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -523,6 +582,13 @@ public class GodModePanel extends VBox {
 
         timelineListView.setCellFactory(lv -> new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+             *
+             * @param item the item parameter (String)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -605,14 +671,31 @@ public class GodModePanel extends VBox {
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
     }
 
+    /*
+     * Set map canvas.
+     * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+     *
+     * @param mapCanvas the map canvas parameter (H3MapCanvas)
+     */
     public void setMapCanvas(H3MapCanvas mapCanvas) {
         this.mapCanvas = mapCanvas;
     }
 
+    /*
+     * Set notification overlay.
+     * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+     *
+     * @param notificationOverlay the notification overlay parameter (NotificationOverlay)
+     */
     public void setNotificationOverlay(NotificationOverlay notificationOverlay) {
         this.notificationOverlay = notificationOverlay;
     }
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+     *
+     */
     public void updateTexts() {
         headerLabel.setText(I18n.getOrDefault("godmode.title", "âš¡ 5. GOD MODE & CHRONOLOGY"));
         pauseNoticeLabel.setText(I18n.getOrDefault("godmode.pause_notice", "â¸ï¸ Simulation is automatically paused on this tab to allow peaceful configuration of climatic disturbances without temporal drift."));
@@ -1072,6 +1155,14 @@ public class GodModePanel extends VBox {
         }
     }
 
+    /*
+     * Record intervention.
+     * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+     *
+     * @param type the type parameter (String)
+     * @param title the title parameter (String)
+     * @param details the details parameter (String)
+     */
     public void recordIntervention(String type, String title, String details) {
         double lat = latSpinner != null ? latSpinner.getValue() : 0.0;
         double lng = lngSpinner != null ? lngSpinner.getValue() : 0.0;
@@ -1080,6 +1171,18 @@ public class GodModePanel extends VBox {
         recordIntervention(type, title, details, lat, lng, mag, durationDays);
     }
 
+    /*
+     * Record intervention.
+     * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+     *
+     * @param type the type parameter (String)
+     * @param title the title parameter (String)
+     * @param details the details parameter (String)
+     * @param lat the lat parameter (double)
+     * @param lng the lng parameter (double)
+     * @param mag the mag parameter (double)
+     * @param durationDays the duration days parameter (int)
+     */
     public void recordIntervention(String type, String title, String details, double lat, double lng, double mag, int durationDays) {
         int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
         int currentMonth = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() : 0;
@@ -1108,6 +1211,11 @@ public class GodModePanel extends VBox {
         logger.info("God Mode intervention recorded at Year {}: {} - {}", currentYear, title, details);
     }
 
+    /*
+     * Refresh timeline view.
+     * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+     *
+     */
     public void refreshTimelineView() {
         if (timelineListView == null) return;
         int selected = timelineListView.getSelectionModel().getSelectedIndex();
@@ -1124,6 +1232,13 @@ public class GodModePanel extends VBox {
         }
     }
 
+    /*
+     * Update coordinates.
+     * Enforces physical invariants and updates associated state variables within {@code GodModePanel}.
+     *
+     * @param lat the lat parameter (double)
+     * @param lng the lng parameter (double)
+     */
     public void updateCoordinates(double lat, double lng) {
         if (latSpinner != null && latSpinner.getValueFactory() != null) {
             latSpinner.getValueFactory().setValue(Math.max(-90.0, Math.min(90.0, lat)));

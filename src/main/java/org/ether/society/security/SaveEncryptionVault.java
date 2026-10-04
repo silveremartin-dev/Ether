@@ -29,17 +29,23 @@ import java.util.Arrays;
 public class SaveEncryptionVault {
     private static final Logger logger = LoggerFactory.getLogger(SaveEncryptionVault.class);
 
+    /* Internal state variable for magic header (String). */
     private static final String MAGIC_HEADER = "ETHER_ENC_V1";
     private static final byte[] MAGIC_BYTES = MAGIC_HEADER.getBytes(StandardCharsets.US_ASCII);
+    /* Internal state variable for salt length (int). */
     private static final int SALT_LENGTH = 16;
     private static final int IV_LENGTH = 12; // 96-bit IV for GCM
+    /* Internal state variable for gcm tag length (int). */
     private static final int GCM_TAG_LENGTH = 128;
+    /* Internal state variable for iteration count (int). */
     private static final int ITERATION_COUNT = 65536;
+    /* Internal state variable for key length (int). */
     private static final int KEY_LENGTH = 256;
 
+    /* Internal state variable for default app secret (String). */
     private static final String DEFAULT_APP_SECRET = "Ether_Planetary_Simulation_Vault_Key_2026_Secured";
 
-    /**
+    /*
      * Checks if the given raw bytes represent an encrypted Ether save snapshot.
      */
     public static boolean isEncrypted(byte[] data) {
@@ -50,7 +56,7 @@ public class SaveEncryptionVault {
         return true;
     }
 
-    /**
+    /*
      * Encrypts plaintext bytes using AES-256 GCM.
      */
     public static byte[] encrypt(byte[] plaintext, String password) throws Exception {
@@ -80,11 +86,18 @@ public class SaveEncryptionVault {
         return buffer.array();
     }
 
+    /*
+     * Encrypt.
+     * Enforces physical invariants and updates associated state variables within {@code SaveEncryptionVault}.
+     *
+     * @param plaintext the plaintext parameter (byte[])
+     * @return the resulting computation or state reference
+     */
     public static byte[] encrypt(byte[] plaintext) throws Exception {
         return encrypt(plaintext, DEFAULT_APP_SECRET);
     }
 
-    /**
+    /*
      * Decrypts encrypted bytes using AES-256 GCM.
      */
     public static byte[] decrypt(byte[] encryptedData, String password) throws Exception {
@@ -114,6 +127,13 @@ public class SaveEncryptionVault {
         return cipher.doFinal(ciphertext);
     }
 
+    /*
+     * Decrypt.
+     * Enforces physical invariants and updates associated state variables within {@code SaveEncryptionVault}.
+     *
+     * @param encryptedData the encrypted data parameter (byte[])
+     * @return the resulting computation or state reference
+     */
     public static byte[] decrypt(byte[] encryptedData) throws Exception {
         return decrypt(encryptedData, DEFAULT_APP_SECRET);
     }

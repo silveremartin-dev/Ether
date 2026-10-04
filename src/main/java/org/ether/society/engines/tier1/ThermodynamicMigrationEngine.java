@@ -33,14 +33,14 @@ import java.util.List;
 public class ThermodynamicMigrationEngine {
     private static final Logger logger = LoggerFactory.getLogger(ThermodynamicMigrationEngine.class);
 
-    /**
+    /*
      * Executes one thermodynamic free energy migration tick across cells using spatial neighbor Onsager flux relations.
      */
     public static void processThermodynamicMigration(List<H3Cell> cells) {
         processThermodynamicMigration(cells, null);
     }
 
-    /**
+    /*
      * Executes thermodynamic free energy migration tick using spatial neighbor topology.
      * Evaluates actual Haversine spatial proximity (<= 150 km migration radius) rather than array indices.
      */
@@ -48,6 +48,14 @@ public class ThermodynamicMigrationEngine {
         processThermodynamicMigration(cells, config, 6371.0);
     }
 
+    /*
+     * Process thermodynamic migration.
+     * Enforces physical invariants and updates associated state variables within {@code ThermodynamicMigrationEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param config the config parameter (SimulationPerformanceConfig)
+     * @param planetRadiusKm the planet radius km parameter (double)
+     */
     public static void processThermodynamicMigration(List<H3Cell> cells, SimulationPerformanceConfig config, double planetRadiusKm) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -136,10 +144,31 @@ public class ThermodynamicMigrationEngine {
         }
     }
 
+    /*
+     * Calculate haversine distance.
+     * Enforces physical invariants and updates associated state variables within {@code ThermodynamicMigrationEngine}.
+     *
+     * @param lat1 the lat1 parameter (double)
+     * @param lon1 the lon1 parameter (double)
+     * @param lat2 the lat2 parameter (double)
+     * @param lon2 the lon2 parameter (double)
+     * @return the resulting computation or state reference
+     */
     public static double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) {
         return calculateHaversineDistance(lat1, lon1, lat2, lon2, 6371.0);
     }
 
+    /*
+     * Calculate haversine distance.
+     * Enforces physical invariants and updates associated state variables within {@code ThermodynamicMigrationEngine}.
+     *
+     * @param lat1 the lat1 parameter (double)
+     * @param lon1 the lon1 parameter (double)
+     * @param lat2 the lat2 parameter (double)
+     * @param lon2 the lon2 parameter (double)
+     * @param planetRadiusKm the planet radius km parameter (double)
+     * @return the resulting computation or state reference
+     */
     public static double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2, double planetRadiusKm) {
         double R = (planetRadiusKm > 0) ? planetRadiusKm : 6371.0;
         double dLat = Math.toRadians(lat2 - lat1);

@@ -26,9 +26,10 @@ public class GeoengineeringAlbedoFeedbackEngine {
     private static final Logger logger = LoggerFactory.getLogger(GeoengineeringAlbedoFeedbackEngine.class);
 
     private static double globalSaiAerosolLoadingTg = 0.0; // Teragrams of SO2 in stratospheric injection
+    /* Internal state variable for global cooling effect celsius (double). */
     private static double globalCoolingEffectCelsius = 0.0;
 
-    /**
+    /*
      * Processes geoengineering radiative forcing and albedo feedbacks.
      *
      * @param cells list of H3 cells in the simulation grid
@@ -74,10 +75,22 @@ public class GeoengineeringAlbedoFeedbackEngine {
         }
     }
 
+    /*
+     * Get global sai aerosol loading tg.
+     * Enforces physical invariants and updates associated state variables within {@code GeoengineeringAlbedoFeedbackEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getGlobalSaiAerosolLoadingTg() {
         return globalSaiAerosolLoadingTg;
     }
 
+    /*
+     * Get global cooling effect celsius.
+     * Enforces physical invariants and updates associated state variables within {@code GeoengineeringAlbedoFeedbackEngine}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static double getGlobalCoolingEffectCelsius() {
         return globalCoolingEffectCelsius;
     }

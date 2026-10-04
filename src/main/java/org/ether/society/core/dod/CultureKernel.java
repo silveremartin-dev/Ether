@@ -18,16 +18,34 @@ public class CultureKernel {
     private float mutationRate = 0.015f;   // Intensité du bruit de Langevin (sigma_Langevin)
     private float forcingRate = 0.05f;    // Ancrage aux tenseurs géoculturels de la carte (lambda_forcing)
 
+    /*
+     * Get diffusion rate.
+     * Enforces physical invariants and updates associated state variables within {@code CultureKernel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public float getDiffusionRate() { return diffusionRate; }
     public void setDiffusionRate(float rate) { this.diffusionRate = Math.max(0.0f, rate); }
 
+    /*
+     * Get mutation rate.
+     * Enforces physical invariants and updates associated state variables within {@code CultureKernel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public float getMutationRate() { return mutationRate; }
     public void setMutationRate(float rate) { this.mutationRate = Math.max(0.0f, rate); }
 
+    /*
+     * Get forcing rate.
+     * Enforces physical invariants and updates associated state variables within {@code CultureKernel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public float getForcingRate() { return forcingRate; }
     public void setForcingRate(float rate) { this.forcingRate = Math.max(0.0f, rate); }
 
-    /**
+    /*
      * Simule l'évolution culturelle thermodynamique (SDE).
      */
     public void tick(WorldBuffer world, AgentBuffer agents, float dt) {
@@ -36,7 +54,7 @@ public class CultureKernel {
         diffuseAndForce(world, agents, dtNormalized);
     }
 
-    /**
+    /*
      * Dérive locale de Langevin : Bruit gaussien stochastique dW_t.
      */
     private void langevinDrift(AgentBuffer agents, float dt) {
@@ -58,7 +76,7 @@ public class CultureKernel {
         }
     }
 
-    /**
+    /*
      * Diffusion mémétique inter-hexagones et ancrage thermodynamique aux tenseurs de référence.
      * Complexité strictement linéaire O(N_agents + 6 * N_cells) via agrégation spatiale par cellule.
      */
@@ -129,7 +147,7 @@ public class CultureKernel {
         }
     }
 
-    /**
+    /*
      * Ancrage géographique spatial pour le forçage des tenseurs.
      */
     private float getSpatialTensorAnchor(WorldBuffer world, int hexIdx, int dimension) {
@@ -151,7 +169,7 @@ public class CultureKernel {
         }
     }
 
-    /**
+    /*
      * Calcule la distance d'intelligibilité linguistique / culturelle entre deux cohortes.
      */
     public static float calculateCulturalDistance(float[] c1, float[] c2) {

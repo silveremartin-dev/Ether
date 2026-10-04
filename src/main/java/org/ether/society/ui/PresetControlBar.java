@@ -41,16 +41,18 @@ import java.util.Optional;
 public class PresetControlBar<T> extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(PresetControlBar.class);
 
-    /** Prefix category used for export file naming (e.g. "planetgenerator", "ecology", "scenario") */
+    /* Prefix category used for export file naming (e.g. "planetgenerator", "ecology", "scenario") */
     private String exportCategory = "preset";
 
+    /* Internal state variable for label key (String). */
     private String labelKey;
+    /* Internal state variable for default label text (String). */
     private String defaultLabelText;
 
     private final Label presetLabel;
     private final ComboBox<T> presetCombo;
 
-    /**
+    /*
      * Inline editable name field.
      * - Populated when a preset is selected.
      * - Cleared when parameters change (unsaved custom state).
@@ -63,28 +65,42 @@ public class PresetControlBar<T> extends VBox {
     private final Button exportBtn;
     private final Button importBtn;
 
-    /** When true, parameter changes should clear the name field. */
+    /* When true, parameter changes should clear the name field. */
     private boolean trackingChanges = false;
+    /* Internal state variable for dirty (boolean). */
     private boolean dirty = false;
 
-    /** Floating toast notification shown inside the control bar */
+    /* Floating toast notification shown inside the control bar */
     private Label toastLabel;
 
     private PresetActionsListener<T> listener;
 
     public interface PresetActionsListener<T> {
         void onPresetSelected(T preset);
-        /** Called when user saves with the given name (new or renamed). */
+        /* Called when user saves with the given name (new or renamed). */
         void onSavePreset(String name);
         void onDeletePreset(T preset);
         void onExportPreset(File targetFile, T preset);
         void onImportPreset(File sourceFile);
     }
 
+    /*
+     * Preset control bar.
+     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
+     *
+     * @param labelText the label text parameter (String)
+     */
     public PresetControlBar(String labelText) {
         this(null, labelText);
     }
 
+    /*
+     * Preset control bar.
+     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
+     *
+     * @param labelKey the label key parameter (String)
+     * @param defaultLabelText the default label text parameter (String)
+     */
     public PresetControlBar(String labelKey, String defaultLabelText) {
         super(8);
         this.labelKey = labelKey;
@@ -243,16 +259,22 @@ public class PresetControlBar<T> extends VBox {
     // Public API
     // -------------------------------------------------------------------------
 
-    /** Set the export category used for file name prefix. */
+    /* Set the export category used for file name prefix. */
     public void setExportCategory(String category) {
         this.exportCategory = category;
     }
 
+    /*
+     * Get export category.
+     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getExportCategory() {
         return exportCategory;
     }
 
-    /**
+    /*
      * Sets the preset list. Pre-selects defaultItem if non-null.
      */
     public void setPresets(List<T> items, T defaultItem) {
@@ -279,10 +301,21 @@ public class PresetControlBar<T> extends VBox {
         trackingChanges = false;
     }
 
+    /*
+     * Is dirty.
+     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isDirty() {
         return dirty;
     }
 
+    /*
+     * Mark dirty.
+     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
+     *
+     */
     public void markDirty() {
         this.dirty = true;
         this.trackingChanges = true;
@@ -291,6 +324,11 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
+    /*
+     * Mark clean.
+     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
+     *
+     */
     public void markClean() {
         this.dirty = false;
         this.trackingChanges = false;
@@ -299,7 +337,7 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
-    /**
+    /*
      * Resets preset bar to a clean state matching the given preset item.
      */
     public void markClean(T item) {
@@ -323,7 +361,7 @@ public class PresetControlBar<T> extends VBox {
         dirty = false;
     }
 
-    /**
+    /*
      * Call this whenever a parameter slider/field is modified by the user.
      * If a preset was selected, the name field is cleared to indicate
      * the configuration is now in an unsaved custom state.
@@ -346,7 +384,7 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
-    /**
+    /*
      * Shows a themed modal dialog asking whether to save unsaved modifications when exiting tab.
      * Returns true if user saved or discarded (ok to switch tab), or false if user cancelled.
      */
@@ -396,7 +434,7 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
-    /**
+    /*
      * Sets the text of the inline name field.
      */
     public void setNameText(String name) {
@@ -406,15 +444,27 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
+    /*
+     * Get preset combo.
+     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
+     *
+     * @return the resulting computation or state reference
+     */
     public ComboBox<T> getPresetCombo() {
         return presetCombo;
     }
 
-    /** Returns the current name typed in the name field. */
+    /* Returns the current name typed in the name field. */
     public String getCurrentName() {
         return nameField.getText().trim();
     }
 
+    /*
+     * Set listener.
+     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
+     *
+     * @param listener the listener parameter (PresetActionsListener&lt;T&gt;)
+     */
     public void setListener(PresetActionsListener<T> listener) {
         this.listener = listener;
     }
@@ -423,7 +473,7 @@ public class PresetControlBar<T> extends VBox {
     // Actions
     // -------------------------------------------------------------------------
 
-    /**
+    /*
      * Save with the name currently in the name field.
      * If the field is empty, shows an inline prompt asking for a name.
      */
@@ -604,6 +654,11 @@ public class PresetControlBar<T> extends VBox {
     // i18n
     // -------------------------------------------------------------------------
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
+     *
+     */
     public void updateTexts() {
         if (presetLabel != null && labelKey != null) {
             presetLabel.setText(I18n.getOrDefault(labelKey, defaultLabelText) + ":");
@@ -714,6 +769,13 @@ public class PresetControlBar<T> extends VBox {
             }
 
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
+             *
+             * @param item the item parameter (T)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(T item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {

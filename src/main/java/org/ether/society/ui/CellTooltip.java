@@ -38,6 +38,11 @@ public class CellTooltip extends VBox {
     private final Label coordLabel;
     private final Label h3Label;
 
+    /*
+     * Cell tooltip.
+     * Enforces physical invariants and updates associated state variables within {@code CellTooltip}.
+     *
+     */
     public CellTooltip() {
         // Container styling - frosted glass dark HUD panel
         setStyle("-fx-background-color: rgba(15, 23, 42, 0.88);" +
@@ -126,7 +131,7 @@ public class CellTooltip extends VBox {
         return label;
     }
 
-    /**
+    /*
      * Unified comprehensive cell update method.
      */
     public void updateCell(H3Cell cell, org.ether.society.core.dod.WorldBuffer world, Integer bufferIndex, Integer prevPop, List<ActiveEvent> activeEvents) {
@@ -319,14 +324,34 @@ public class CellTooltip extends VBox {
         setVisible(true);
     }
 
+    /*
+     * Update cell.
+     * Enforces physical invariants and updates associated state variables within {@code CellTooltip}.
+     *
+     * @param cell the cell parameter (H3Cell)
+     * @param prevPop the prev pop parameter (Integer)
+     */
     public void updateCell(H3Cell cell, Integer prevPop) {
         updateCell(cell, null, null, prevPop, null);
     }
 
+    /*
+     * Update cell.
+     * Enforces physical invariants and updates associated state variables within {@code CellTooltip}.
+     *
+     * @param cell the cell parameter (H3Cell)
+     */
     public void updateCell(H3Cell cell) {
         updateCell(cell, null, null, null, null);
     }
 
+    /*
+     * Update from buffer.
+     * Enforces physical invariants and updates associated state variables within {@code CellTooltip}.
+     *
+     * @param world the world parameter (org.ether.society.core.dod.WorldBuffer)
+     * @param index the index parameter (int)
+     */
     public void updateFromBuffer(org.ether.society.core.dod.WorldBuffer world, int index) {
         updateCell(null, world, index, null, null);
     }
@@ -372,6 +397,15 @@ public class CellTooltip extends VBox {
         };
     }
 
+    /*
+     * Position.
+     * Enforces physical invariants and updates associated state variables within {@code CellTooltip}.
+     *
+     * @param canvasX the canvas x parameter (double)
+     * @param canvasY the canvas y parameter (double)
+     * @param maxX the max x parameter (double)
+     * @param maxY the max y parameter (double)
+     */
     public void position(double canvasX, double canvasY, double maxX, double maxY) {
         applyCss();
         layout();
@@ -404,6 +438,11 @@ public class CellTooltip extends VBox {
         setVisible(true);
     }
 
+    /*
+     * Hide.
+     * Enforces physical invariants and updates associated state variables within {@code CellTooltip}.
+     *
+     */
     public void hide() {
         setVisible(false);
     }

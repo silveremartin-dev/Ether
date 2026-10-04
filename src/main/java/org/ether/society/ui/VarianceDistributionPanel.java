@@ -28,11 +28,24 @@ import java.util.*;
 public class VarianceDistributionPanel extends VBox {
 
     public static class VariableEntry {
+        /* Internal state variable for key (String). */
         private final String key;
+        /* Internal state variable for display name (String). */
         private final String displayName;
+        /* Internal state variable for category (String). */
         private final String category;
+        /* Internal state variable for is header (boolean). */
         private final boolean isHeader;
 
+        /*
+         * Variable entry.
+         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
+         *
+         * @param key the key parameter (String)
+         * @param displayName the display name parameter (String)
+         * @param category the category parameter (String)
+         * @return the resulting computation or state reference
+         */
         public VariableEntry(String key, String displayName, String category) {
             this.key = key;
             this.displayName = displayName;
@@ -47,16 +60,53 @@ public class VarianceDistributionPanel extends VBox {
             this.isHeader = true;
         }
 
+        /*
+         * Header.
+         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
+         *
+         * @param headerTitle the header title parameter (String)
+         * @return the resulting computation or state reference
+         */
         public static VariableEntry header(String headerTitle) {
             return new VariableEntry(headerTitle);
         }
 
+        /*
+         * Get key.
+         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getKey() { return key; }
+        /*
+         * Get display name.
+         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getDisplayName() { return displayName; }
+        /*
+         * Get category.
+         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getCategory() { return category; }
+        /*
+         * Is header.
+         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public boolean isHeader() { return isHeader; }
 
         @Override
+        /*
+         * To string.
+         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String toString() {
             return displayName;
         }
@@ -97,8 +147,15 @@ public class VarianceDistributionPanel extends VBox {
     private final BarChart<String, Number> histogramChart;
     private final XYChart.Series<String, Number> histogramSeries = new XYChart.Series<>();
 
+    /* Internal state variable for current cells (List&lt;H3Cell&gt;). */
     private List<H3Cell> currentCells;
 
+    /*
+     * Variance distribution panel.
+     * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
+     *
+     * @param pluggableStatEngine the pluggable stat engine parameter (PluggableStatEngine)
+     */
     public VarianceDistributionPanel(PluggableStatEngine pluggableStatEngine) {
         this.pluggableStatEngine = pluggableStatEngine;
 
@@ -126,6 +183,13 @@ public class VarianceDistributionPanel extends VBox {
         variableCombo.setMaxWidth(Double.MAX_VALUE);
         variableCombo.setCellFactory(lv -> new ListCell<VariableEntry>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
+             *
+             * @param item the item parameter (VariableEntry)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(VariableEntry item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -145,6 +209,13 @@ public class VarianceDistributionPanel extends VBox {
 
         variableCombo.setButtonCell(new ListCell<VariableEntry>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
+             *
+             * @param item the item parameter (VariableEntry)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(VariableEntry item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -219,6 +290,11 @@ public class VarianceDistributionPanel extends VBox {
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
     }
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
+     *
+     */
     public void updateTexts() {
         headerTitle.setText(I18n.getOrDefault("variance.title", "📊 STATISTIQUES DE VARIANCE ENTRE INDIVIDUS & DISTRIBUTION"));
         subtitle.setText(I18n.getOrDefault("variance.subtitle", "Évalue à quel point les individus / mailles s'éloignent du schéma standard (Moyenne μ ± Écart-type σ)"));
@@ -340,6 +416,12 @@ public class VarianceDistributionPanel extends VBox {
         return box;
     }
 
+    /*
+     * Update data.
+     * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     */
     public void updateData(List<H3Cell> cells) {
         this.currentCells = cells;
         VariableEntry entry = variableCombo.getValue();

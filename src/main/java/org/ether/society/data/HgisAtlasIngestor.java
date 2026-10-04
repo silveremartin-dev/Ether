@@ -24,7 +24,7 @@ import java.io.InputStream;
 public class HgisAtlasIngestor {
     private static final Logger logger = LoggerFactory.getLogger(HgisAtlasIngestor.class);
 
-    /**
+    /*
      * Loads historical political borders for a specified year and region from HGIS repository.
      */
     public static SvgMapIngestor.SvgIngestionResult loadHistoricalPolityMap(long year, String region) {

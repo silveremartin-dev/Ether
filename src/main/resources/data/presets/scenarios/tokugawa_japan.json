@@ -1,6 +1,6 @@
 {
   "name" : "Japon Tokugawa & Isolement Sakoku (1639)",
-  "description" : "⛩️ SCÉNARIO HISTORIQUE : L'Ère d'Isolement Autarcique Tokugawa (Sakoku, 1639 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nFermeture des frontières de l'archipel japonais décrétée par le Shogunat Tokugawa. Modélise une économie circulaire hautement autarcique, l'urbanisation géante d'Edo (Tokyo, 1 million d'habitants) et l'absence d'intrants extérieurs jusqu'à l'arrivée des bateaux noirs du Commandant Perry en 1853.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Stabilité démographique et gestion rigoureuse des ressources forestières et agricoles en boucle fermée.\n• Modèle de croissance zéro durable sans dépendance aux importations énergétiques ou minérales extérieures.\n• Urbanisation pacifiée d'Edo et floraison artisanale et culturelle sous autarcie stricte.\n",
+  "description" : "â›©ï¸ SCÃ‰NARIO HISTORIQUE : L'Ãˆre d'Isolement Autarcique Tokugawa (Sakoku, 1639 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nFermeture des frontiÃ¨res de l'archipel japonais dÃ©crÃ©tÃ©e par le Shogunat Tokugawa. ModÃ©lise une Ã©conomie circulaire hautement autarcique, l'urbanisation gÃ©ante d'Edo (Tokyo, 1 million d'habitants) et l'absence d'intrants extÃ©rieurs jusqu'Ã  l'arrivÃ©e des bateaux noirs du Commandant Perry en 1853.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ StabilitÃ© dÃ©mographique et gestion rigoureuse des ressources forestiÃ¨res et agricoles en boucle fermÃ©e.\nâ€¢ ModÃ¨le de croissance zÃ©ro durable sans dÃ©pendance aux importations Ã©nergÃ©tiques ou minÃ©rales extÃ©rieures.\nâ€¢ Urbanisation pacifiÃ©e d'Edo et floraison artisanale et culturelle sous autarcie stricte.\n",
   "id" : null,
   "presetKey" : "tokugawa_japan",
   "planetPreset" : {
@@ -38,18 +38,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
     "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -89,18 +89,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+      "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
+      "canonicalPlanet" : "earth",
       "associatedEpochYear" : 2026,
       "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false,
-      "canonicalPlanet" : "earth"
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -118,9 +118,9 @@
     "customRainfallBase64" : null,
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "canonicalPlanet" : "earth"
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

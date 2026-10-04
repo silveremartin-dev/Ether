@@ -33,16 +33,16 @@
   "elevationUseImport" : true,
   "elevationMapSource" : "earth",
   "tempUseImport" : true,
-  "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+  "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
   "tempSeed" : 12445,
   "precipUseImport" : true,
-  "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+  "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
   "precipSeed" : 13345,
   "seasonUseImport" : true,
-  "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+  "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
   "seasonSeed" : 14345,
+  "canonicalPlanet" : "earth",
   "associatedEpochYear" : 2026,
   "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-  "tidalLocked" : false,
-  "canonicalPlanet" : "earth"
+  "tidalLocked" : false
 }

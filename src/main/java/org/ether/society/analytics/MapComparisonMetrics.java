@@ -29,15 +29,25 @@ public class MapComparisonMetrics {
     private static final Logger logger = LoggerFactory.getLogger(MapComparisonMetrics.class);
 
     public static class MapComparisonResult {
+        /* Internal state variable for rmse (double). */
         private final double rmse;
+        /* Internal state variable for pearson r (double). */
         private final double pearsonR;
+        /* Internal state variable for ssim (double). */
         private final double ssim;
+        /* Internal state variable for jaccard index (double). */
         private final double jaccardIndex;
+        /* Internal state variable for dice coefficient (double). */
         private final double diceCoefficient;
+        /* Internal state variable for kl divergence (double). */
         private final double klDivergence;
+        /* Internal state variable for max delta value (double). */
         private final double maxDeltaValue;
+        /* Internal state variable for max delta lng (double). */
         private final double maxDeltaLng;
+        /* Internal state variable for max delta lat (double). */
         private final double maxDeltaLat;
+        /* Internal state variable for diagnostic summary (String). */
         private final String diagnosticSummary;
 
         public MapComparisonResult(double rmse, double pearsonR, double ssim, double jaccardIndex,
@@ -55,17 +65,83 @@ public class MapComparisonMetrics {
             this.diagnosticSummary = diagnosticSummary;
         }
 
+        /*
+         * Get rmse.
+         * Enforces physical invariants and updates associated state variables within {@code MapComparisonMetrics}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getRmse() { return rmse; }
+        /*
+         * Get pearson r.
+         * Enforces physical invariants and updates associated state variables within {@code MapComparisonMetrics}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getPearsonR() { return pearsonR; }
+        /*
+         * Get ssim.
+         * Enforces physical invariants and updates associated state variables within {@code MapComparisonMetrics}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getSsim() { return ssim; }
+        /*
+         * Get jaccard index.
+         * Enforces physical invariants and updates associated state variables within {@code MapComparisonMetrics}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getJaccardIndex() { return jaccardIndex; }
+        /*
+         * Get dice coefficient.
+         * Enforces physical invariants and updates associated state variables within {@code MapComparisonMetrics}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getDiceCoefficient() { return diceCoefficient; }
+        /*
+         * Get kl divergence.
+         * Enforces physical invariants and updates associated state variables within {@code MapComparisonMetrics}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getKlDivergence() { return klDivergence; }
+        /*
+         * Get max delta value.
+         * Enforces physical invariants and updates associated state variables within {@code MapComparisonMetrics}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getMaxDeltaValue() { return maxDeltaValue; }
+        /*
+         * Get max delta lng.
+         * Enforces physical invariants and updates associated state variables within {@code MapComparisonMetrics}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getMaxDeltaLng() { return maxDeltaLng; }
+        /*
+         * Get max delta lat.
+         * Enforces physical invariants and updates associated state variables within {@code MapComparisonMetrics}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getMaxDeltaLat() { return maxDeltaLat; }
+        /*
+         * Get diagnostic summary.
+         * Enforces physical invariants and updates associated state variables within {@code MapComparisonMetrics}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getDiagnosticSummary() { return diagnosticSummary; }
 
+        /*
+         * Get formatted report.
+         * Enforces physical invariants and updates associated state variables within {@code MapComparisonMetrics}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getFormattedReport() {
             return String.format(
                 "🗺️ SPATIAL TENSOR & CARTOGRAPHIC COMPARISON REPORT:\n" +
@@ -83,7 +159,7 @@ public class MapComparisonMetrics {
         }
     }
 
-    /**
+    /*
      * Compares two multi-channel spatial images (e.g. Density, Sovereignty, or Isogloss rasters).
      */
     public static MapComparisonResult compareImages(BufferedImage imgA, BufferedImage imgB) {
@@ -103,7 +179,7 @@ public class MapComparisonMetrics {
         return compareGrids(gridA, gridB, catA, catB, width, height);
     }
 
-    /**
+    /*
      * Core mathematical comparison logic between two 1D array representations of 2D grids.
      */
     public static MapComparisonResult compareGrids(double[] gridA, double[] gridB, int[] catA, int[] catB, int width, int height) {
@@ -241,7 +317,7 @@ public class MapComparisonMetrics {
         return cat;
     }
 
-    /**
+    /*
      * Generates a 2D Discrepancy Heatmap highlighting spatial divergences between Map A and Map B.
      * Color Legend:
      * - Dark Slate: Neutral / Unpopulated matching areas

@@ -25,7 +25,7 @@ import java.util.List;
 public class PermafrostThawEngine {
     private static final Logger logger = LoggerFactory.getLogger(PermafrostThawEngine.class);
 
-    /**
+    /*
      * Executes one permafrost thaw update step.
      *
      * @param cells List of H3 cells

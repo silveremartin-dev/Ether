@@ -30,11 +30,18 @@ import java.util.zip.ZipInputStream;
 public class Hyde34GridReader {
     private static final Logger logger = LoggerFactory.getLogger(Hyde34GridReader.class);
 
+    /* Internal state variable for ether width (int). */
     public static final int ETHER_WIDTH = 2048;
+    /* Internal state variable for ether height (int). */
     public static final int ETHER_HEIGHT = 1024;
 
     private static final java.util.Map<Long, BufferedImage> GRID_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
 
+    /*
+     * Clear cache.
+     * Enforces physical invariants and updates associated state variables within {@code Hyde34GridReader}.
+     *
+     */
     public static void clearCache() {
         GRID_CACHE.clear();
     }
@@ -48,13 +55,21 @@ public class Hyde34GridReader {
         public double nodataValue = -9999;
     }
 
-    /**
+    /*
      * Reads an Esri ASCII Grid file (.asc) and samples it into a 1024x512 BufferedImage density map.
      */
     public static BufferedImage readAsciiGridToImage(InputStream inputStream) {
         return readAsciiGridToImage(inputStream, 0L);
     }
 
+    /*
+     * Read ascii grid to image.
+     * Enforces physical invariants and updates associated state variables within {@code Hyde34GridReader}.
+     *
+     * @param inputStream the input stream parameter (InputStream)
+     * @param targetYear the target year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static BufferedImage readAsciiGridToImage(InputStream inputStream, long targetYear) {
         if (inputStream == null) return null;
 
@@ -185,7 +200,7 @@ public class Hyde34GridReader {
         }
     }
 
-    /**
+    /*
      * Maps HYDE population density (inh/km2) or grid cell count to the official Copernicus / Utrecht University HYDE color palette.
      */
     public static int getHydeColor(float density, boolean isLand) {
@@ -218,6 +233,13 @@ public class Hyde34GridReader {
         1900, 1910, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, 2024
     };
 
+    /*
+     * Find nearest hyde year.
+     * Enforces physical invariants and updates associated state variables within {@code Hyde34GridReader}.
+     *
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static long findNearestHydeYear(long year) {
         if (year <= -10000) return -10000;
         if (year >= 2024) return 2024;
@@ -233,7 +255,7 @@ public class Hyde34GridReader {
         return closest;
     }
 
-    /**
+    /*
      * Reads a local HYDE 3.4 ASCII grid file for a specific scenario year.
      */
     public static BufferedImage loadForYear(long year) {

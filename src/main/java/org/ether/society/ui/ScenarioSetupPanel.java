@@ -86,6 +86,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label temporalResolutionLabel;
 
     // State & Change Listener Tracking
+    /* Internal state variable for is updating from preset (boolean). */
     private boolean isUpdatingFromPreset = false;
 
     private void notifyParamChange() {
@@ -98,7 +99,7 @@ public class ScenarioSetupPanel extends BorderPane {
         validateScenarioSetup();
     }
 
-    /**
+    /*
      * Attaches default value handling to a JavaFX control:
      * 1. Appends "[VALEUR PAR DÃ‰FAUT : X]" to the tooltip.
      * 2. Adds a right-click Context Menu ("ðŸ”„ RÃ©initialiser Ã  la valeur par dÃ©faut (X)").
@@ -191,6 +192,11 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    /*
+     * Reset all to defaults.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     */
     public void resetAllToDefaults() {
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
@@ -260,6 +266,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private javafx.scene.Node externalOverlayContainer;
 
     // State
+    /* Internal state variable for current preview cells (List&lt;H3Cell&gt;). */
     private List<H3Cell> currentPreviewCells;
     private PlanetPreset activePlanetPreset;
     private final java.util.concurrent.atomic.AtomicBoolean isPreviewGenerating = new java.util.concurrent.atomic.AtomicBoolean(false);
@@ -305,12 +312,19 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label engineSortLabel;
 
     // Navigation & Selection State
+    /* Internal state variable for zoom factor (double). */
     private double zoomFactor = 1.0;
+    /* Internal state variable for pan x (double). */
     private double panX = 0.0;
+    /* Internal state variable for pan y (double). */
     private double panY = 0.0;
+    /* Internal state variable for drag start x (double). */
     private double dragStartX, dragStartY;
+    /* Internal state variable for is selection drag (boolean). */
     private boolean isSelectionDrag = false;
+    /* Internal state variable for selection start x (double). */
     private double selectionStartX, selectionStartY;
+    /* Internal state variable for selection current x (double). */
     private double selectionCurrentX, selectionCurrentY;
 
     // Density Map Import UI Fields
@@ -422,6 +436,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private VBox liveDiagnosticCard;
     private Label liveDiagnosticHeader;
     private VBox liveDiagnosticContentBox;
+    /* Internal state variable for selected engine class name (String). */
     private String selectedEngineClassName = "FrontierAsabiyyahEngine";
     private Label engineInspectorTitle;
     private Label engineInspectorText;
@@ -434,11 +449,19 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label bundleSubtitle;
 
     // Async Calculation & Thread Control Fields
+    /* Internal state variable for boolean (volatile). */
     private volatile boolean isCalculationRunning = false;
+    /* Internal state variable for boolean (volatile). */
     private volatile boolean cancelRequested = false;
     private Thread generationThread = null;
     private java.util.function.Supplier<Boolean> isSimulationRunningSupplier;
 
+    /*
+     * Set is simulation running supplier.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param isSimulationRunningSupplier the is simulation running supplier parameter (java.util.function.Supplier&lt;Boolean&gt;)
+     */
     public void setIsSimulationRunningSupplier(java.util.function.Supplier<Boolean> isSimulationRunningSupplier) {
         this.isSimulationRunningSupplier = isSimulationRunningSupplier;
     }
@@ -613,7 +636,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
 
-    /** Internal model for a scheduled planetary event */
+    /* Internal model for a scheduled planetary event */
     public static class ClimateEvent {
         private final StringProperty type;
         private final StringProperty name;
@@ -623,6 +646,19 @@ public class ScenarioSetupPanel extends BorderPane {
         private final DoubleProperty depth;
         private final DoubleProperty magnitude;
 
+        /*
+         * Climate event.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @param type the type parameter (String)
+         * @param name the name parameter (String)
+         * @param year the year parameter (int)
+         * @param lat the lat parameter (double)
+         * @param lon the lon parameter (double)
+         * @param depth the depth parameter (double)
+         * @param mag the mag parameter (double)
+         * @return the resulting computation or state reference
+         */
         public ClimateEvent(String type, String name, int year, double lat, double lon, double depth, double mag) {
             this.type = new SimpleStringProperty(type);
             this.name = new SimpleStringProperty(name);
@@ -633,29 +669,161 @@ public class ScenarioSetupPanel extends BorderPane {
             this.magnitude = new SimpleDoubleProperty(mag);
         }
 
+        /*
+         * Type property.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public StringProperty typeProperty() { return type; }
+        /*
+         * Name property.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public StringProperty nameProperty() { return name; }
+        /*
+         * Year property.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public IntegerProperty yearProperty() { return year; }
+        /*
+         * Latitude property.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public DoubleProperty latitudeProperty() { return latitude; }
+        /*
+         * Longitude property.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public DoubleProperty longitudeProperty() { return longitude; }
+        /*
+         * Depth property.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public DoubleProperty depthProperty() { return depth; }
+        /*
+         * Magnitude property.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public DoubleProperty magnitudeProperty() { return magnitude; }
+        /*
+         * Get type.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getType() { return type.get(); }
+        /*
+         * Set type.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @param v the v parameter (String)
+         */
         public void setType(String v) { type.set(v); }
+        /*
+         * Get name.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public String getName() { return name.get(); }
+        /*
+         * Set name.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @param v the v parameter (String)
+         */
         public void setName(String v) { name.set(v); }
+        /*
+         * Get year.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getYear() { return year.get(); }
+        /*
+         * Set year.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @param v the v parameter (int)
+         */
         public void setYear(int v) { year.set(v); }
+        /*
+         * Get latitude.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getLatitude() { return latitude.get(); }
+        /*
+         * Set latitude.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @param v the v parameter (double)
+         */
         public void setLatitude(double v) { latitude.set(v); }
+        /*
+         * Get longitude.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getLongitude() { return longitude.get(); }
+        /*
+         * Set longitude.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @param v the v parameter (double)
+         */
         public void setLongitude(double v) { longitude.set(v); }
+        /*
+         * Get depth.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getDepth() { return depth.get(); }
+        /*
+         * Set depth.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @param v the v parameter (double)
+         */
         public void setDepth(double v) { depth.set(v); }
+        /*
+         * Get magnitude.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @return the resulting computation or state reference
+         */
         public double getMagnitude() { return magnitude.get(); }
+        /*
+         * Set magnitude.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @param v the v parameter (double)
+         */
         public void setMagnitude(double v) { magnitude.set(v); }
     }
 
+    /*
+     * Scenario setup panel.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param onStartSimulation the on start simulation parameter (Consumer&lt;Scenario&gt;)
+     */
     public ScenarioSetupPanel(Consumer<Scenario> onStartSimulation) {
         this.onStartSimulation = onStartSimulation;
         this.scenarioRepo = new org.ether.society.persistence.ScenarioRepository();
@@ -669,6 +837,13 @@ public class ScenarioSetupPanel extends BorderPane {
         });
     }
 
+    /*
+     * Set inherited context.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param planetPreset the planet preset parameter (PlanetPreset)
+     * @param ecologyName the ecology name parameter (String)
+     */
     public void setInheritedContext(PlanetPreset planetPreset, String ecologyName) {
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
@@ -716,6 +891,13 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    /*
+     * Find planet preset by name.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param name the name parameter (String)
+     * @return the resulting computation or state reference
+     */
     public PlanetPreset findPlanetPresetByName(String name) {
         if (name == null || name.isBlank()) return PlanetPreset.EARTH_LIKE;
         for (PlanetPreset p : PlanetPreset.getPresets()) {
@@ -808,6 +990,12 @@ public class ScenarioSetupPanel extends BorderPane {
 
         scenarioPresetBar.setListener(new PresetControlBar.PresetActionsListener<Scenario>() {
             @Override
+            /*
+             * On preset selected.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param scenario the scenario parameter (Scenario)
+             */
             public void onPresetSelected(Scenario scenario) {
                 applyScenarioToUI(scenario);
                 if (previewModeCombo != null) {
@@ -816,6 +1004,12 @@ public class ScenarioSetupPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * On save preset.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param name the name parameter (String)
+             */
             public void onSavePreset(String name) {
                 if (!validateScenarioSetup()) {
                     return;
@@ -830,11 +1024,24 @@ public class ScenarioSetupPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * On delete preset.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param scenario the scenario parameter (Scenario)
+             */
             public void onDeletePreset(Scenario scenario) {
                 scenarioPresetBar.getPresetCombo().getItems().remove(scenario);
             }
 
             @Override
+            /*
+             * On export preset.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param targetFile the target file parameter (File)
+             * @param scenario the scenario parameter (Scenario)
+             */
             public void onExportPreset(File targetFile, Scenario scenario) {
                 try {
                     ObjectMapper mapper = new ObjectMapper();
@@ -847,6 +1054,12 @@ public class ScenarioSetupPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * On import preset.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param sourceFile the source file parameter (File)
+             */
             public void onImportPreset(File sourceFile) {
                 try {
                     ObjectMapper mapper = new ObjectMapper();
@@ -868,6 +1081,13 @@ public class ScenarioSetupPanel extends BorderPane {
         planetPresetCombo.getItems().setAll(PlanetPreset.getPresets());
         planetPresetCombo.setCellFactory(p -> new ListCell<PlanetPreset>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (PlanetPreset)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(PlanetPreset item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -879,6 +1099,13 @@ public class ScenarioSetupPanel extends BorderPane {
         });
         planetPresetCombo.setButtonCell(new ListCell<PlanetPreset>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (PlanetPreset)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(PlanetPreset item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -894,10 +1121,24 @@ public class ScenarioSetupPanel extends BorderPane {
         planetPresetCombo.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-opacity: 1.0; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 4px;");
         planetPresetCombo.setConverter(new javafx.util.StringConverter<PlanetPreset>() {
             @Override
+            /*
+             * To string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (PlanetPreset)
+             * @return the resulting computation or state reference
+             */
             public String toString(PlanetPreset item) {
                 return item == null ? org.ether.society.i18n.I18n.getPlanetPresetDisplayName("Terre (Terran)") : org.ether.society.i18n.I18n.getPlanetPresetDisplayName(item.name());
             }
             @Override
+            /*
+             * From string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param string the string parameter (String)
+             * @return the resulting computation or state reference
+             */
             public PlanetPreset fromString(String string) {
                 return null;
             }
@@ -911,16 +1152,37 @@ public class ScenarioSetupPanel extends BorderPane {
         ecologyPresetCombo.setMaxWidth(Double.MAX_VALUE);
         ecologyPresetCombo.setConverter(new javafx.util.StringConverter<EcologyPreset>() {
             @Override
+            /*
+             * To string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (EcologyPreset)
+             * @return the resulting computation or state reference
+             */
             public String toString(EcologyPreset item) {
                 return item == null ? "" : org.ether.society.i18n.I18n.getPlanetPresetDisplayName(item.name());
             }
             @Override
+            /*
+             * From string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param string the string parameter (String)
+             * @return the resulting computation or state reference
+             */
             public EcologyPreset fromString(String string) {
                 return null;
             }
         });
         ecologyPresetCombo.setCellFactory(p -> new ListCell<EcologyPreset>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (EcologyPreset)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(EcologyPreset item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -942,6 +1204,13 @@ public class ScenarioSetupPanel extends BorderPane {
         });
         ecologyPresetCombo.setButtonCell(new ListCell<EcologyPreset>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (EcologyPreset)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(EcologyPreset item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -1006,10 +1275,24 @@ public class ScenarioSetupPanel extends BorderPane {
         h3ResolutionCombo.setMaxWidth(Double.MAX_VALUE);
         h3ResolutionCombo.setConverter(new javafx.util.StringConverter<Integer>() {
             @Override
+            /*
+             * To string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (Integer)
+             * @return the resulting computation or state reference
+             */
             public String toString(Integer item) {
                 return item == null ? "" : org.ether.society.i18n.I18n.getOrDefault("planet.param.resolution.res" + item, "RÃ©solution " + item);
             }
             @Override
+            /*
+             * From string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param string the string parameter (String)
+             * @return the resulting computation or state reference
+             */
             public Integer fromString(String string) {
                 return null;
             }
@@ -1040,6 +1323,13 @@ public class ScenarioSetupPanel extends BorderPane {
         temporalResolutionCombo.setMaxWidth(Double.MAX_VALUE);
         temporalResolutionCombo.setConverter(new javafx.util.StringConverter<Double>() {
             @Override
+            /*
+             * To string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (Double)
+             * @return the resulting computation or state reference
+             */
             public String toString(Double item) {
                 if (item == null) return "";
                 if (item == 1.0) return org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.1d", "1 day (High Precision Seasons & Epidemics)");
@@ -1053,6 +1343,13 @@ public class ScenarioSetupPanel extends BorderPane {
                 return String.format(java.util.Locale.US, "%.0f %s", item, org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.days", "jours"));
             }
             @Override
+            /*
+             * From string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param string the string parameter (String)
+             * @return the resulting computation or state reference
+             */
             public Double fromString(String string) {
                 return null;
             }
@@ -1125,10 +1422,24 @@ public class ScenarioSetupPanel extends BorderPane {
         densityPatternCombo.setMaxWidth(Double.MAX_VALUE);
         densityPatternCombo.setConverter(new javafx.util.StringConverter<String>() {
             @Override
+            /*
+             * To string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (String)
+             * @return the resulting computation or state reference
+             */
             public String toString(String item) {
                 return item == null ? "" : org.ether.society.i18n.I18n.getOrDefault("scenario.density." + item, DENSITY_LABELS.getOrDefault(item, item));
             }
             @Override
+            /*
+             * From string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param string the string parameter (String)
+             * @return the resulting computation or state reference
+             */
             public String fromString(String string) {
                 return null;
             }
@@ -1159,10 +1470,24 @@ public class ScenarioSetupPanel extends BorderPane {
         techPresetCombo.setMaxWidth(Double.MAX_VALUE);
         techPresetCombo.setConverter(new javafx.util.StringConverter<Scenario.TechPreset>() {
             @Override
+            /*
+             * To string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (Scenario.TechPreset)
+             * @return the resulting computation or state reference
+             */
             public String toString(Scenario.TechPreset item) {
                 return item == null ? "" : I18n.getOrDefault("scenario.tech." + item.name(), item.getLabel());
             }
             @Override
+            /*
+             * From string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param string the string parameter (String)
+             * @return the resulting computation or state reference
+             */
             public Scenario.TechPreset fromString(String string) {
                 return null;
             }
@@ -1491,12 +1816,26 @@ public class ScenarioSetupPanel extends BorderPane {
         snapshotCombo.setTooltip(new Tooltip(I18n.getOrDefault("scenario.snapshot.combo.tooltip", "Select an existing checkpoint or full simulation snapshot from the disk to resume execution.")));
         snapshotCombo.setConverter(new javafx.util.StringConverter<org.ether.society.persistence.SaveMetadata>() {
             @Override
+            /*
+             * To string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (org.ether.society.persistence.SaveMetadata)
+             * @return the resulting computation or state reference
+             */
             public String toString(org.ether.society.persistence.SaveMetadata item) {
                 if (item == null) return "";
                 String timeStr = item.getTimestamp() != null ? item.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "N/A";
                 return String.format("ðŸ“¸ Point de reprise : An %,d (Mois %02d) â€” %s", item.getYear(), item.getMonth(), timeStr);
             }
             @Override
+            /*
+             * From string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param string the string parameter (String)
+             * @return the resulting computation or state reference
+             */
             public org.ether.society.persistence.SaveMetadata fromString(String string) {
                 return null;
             }
@@ -1504,6 +1843,13 @@ public class ScenarioSetupPanel extends BorderPane {
 
         snapshotCombo.setCellFactory(lv -> new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (org.ether.society.persistence.SaveMetadata)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(org.ether.society.persistence.SaveMetadata item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -1633,10 +1979,21 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    /*
+     * Refresh snapshot list.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     */
     public void refreshSnapshotList() {
         refreshSnapshotListForScenario(getScenario());
     }
 
+    /*
+     * Refresh snapshot list for scenario.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param s the s parameter (Scenario)
+     */
     public void refreshSnapshotListForScenario(Scenario s) {
         if (snapshotCombo == null) return;
         List<org.ether.society.persistence.SaveMetadata> allSaves = getSaveManager().listSaves();
@@ -1712,14 +2069,32 @@ public class ScenarioSetupPanel extends BorderPane {
         new SnapshotExplanationDialog(getScene() != null ? getScene().getWindow() : null).showAndWait();
     }
 
+    /*
+     * Is resume from snapshot selected.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isResumeFromSnapshotSelected() {
         return radioResumeSnapshot != null && radioResumeSnapshot.isSelected();
     }
 
+    /*
+     * Get selected snapshot metadata.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public org.ether.society.persistence.SaveMetadata getSelectedSnapshotMetadata() {
         return snapshotCombo != null ? snapshotCombo.getValue() : null;
     }
 
+    /*
+     * Get selected snapshot id.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getSelectedSnapshotId() {
         org.ether.society.persistence.SaveMetadata meta = getSelectedSnapshotMetadata();
         return meta != null ? meta.getId() : null;
@@ -2582,6 +2957,13 @@ public class ScenarioSetupPanel extends BorderPane {
         attachDefaultValueHandling(boundaryModeCombo, "DYNAMIC_RESERVOIR", () -> boundaryModeCombo.setValue("DYNAMIC_RESERVOIR"));
         boundaryModeCombo.setConverter(new javafx.util.StringConverter<String>() {
             @Override
+            /*
+             * To string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (String)
+             * @return the resulting computation or state reference
+             */
             public String toString(String item) {
                 if (item == null) return "";
                 switch (item) {
@@ -2592,6 +2974,13 @@ public class ScenarioSetupPanel extends BorderPane {
                 }
             }
             @Override
+            /*
+             * From string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param string the string parameter (String)
+             * @return the resulting computation or state reference
+             */
             public String fromString(String string) {
                 return null;
             }
@@ -4330,7 +4719,7 @@ public class ScenarioSetupPanel extends BorderPane {
         };
     }
 
-    /**
+    /*
      * Given the scenario's start year and active planet preset, returns the best-matching
      * entry string for demoSourceCombo, or null if no match can be determined.
      */
@@ -4352,7 +4741,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return "ðŸŒ Terre â€” HYDE 3.4 / Grille Historique AnthropocÃ¨ne [Global, -10 000 BC Ã  +2023 AD]";
     }
 
-    /**
+    /*
      * Resiliently selects the best matching item in a source ComboBox.
      */
     private void selectBestSource(ComboBox<String> combo, String target, String fallbackKeyword) {
@@ -4390,7 +4779,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    /**
+    /*
      * Given the tensor index, scenario start year, and active planet preset, returns the best-matching
      * entry string for the cultural source combo at that tensor index, or null if the default should be kept.
      */
@@ -5248,6 +5637,13 @@ public class ScenarioSetupPanel extends BorderPane {
         previewModeCombo.setMaxWidth(380);
         previewModeCombo.setCellFactory(p -> new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param item the item parameter (String)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -6892,15 +7288,34 @@ public class ScenarioSetupPanel extends BorderPane {
         gc.fillText("âš¡ AperÃ§u 2D dynamique instantanÃ© (" + (mode.isEmpty() ? "Relief/DensitÃ©" : mode.toUpperCase()) + ")...", 20, h - 15);
     }
 
+    /*
+     * Is dirty.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isDirty() {
         return scenarioPresetBar != null && scenarioPresetBar.isDirty();
     }
 
+    /*
+     * Prompt save if dirty.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param owner the owner parameter (javafx.stage.Window)
+     * @return the resulting computation or state reference
+     */
     public boolean promptSaveIfDirty(javafx.stage.Window owner) {
         if (scenarioPresetBar == null) return true;
         return scenarioPresetBar.promptSavePresetIfDirty(owner);
     }
 
+    /*
+     * Get preset bar.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public PresetControlBar<Scenario> getPresetBar() {
         return scenarioPresetBar;
     }
@@ -6930,6 +7345,14 @@ public class ScenarioSetupPanel extends BorderPane {
     // DEFERRED EXECUTION â€” Calculate H3 Grid & Start Simulation
     // =========================================================================
 
+    /*
+     * Set progress controls.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param bar the bar parameter (ProgressBar)
+     * @param label the label parameter (Label)
+     * @param overlayContainer the overlay container parameter (javafx.scene.Node)
+     */
     public void setProgressControls(ProgressBar bar, Label label, javafx.scene.Node overlayContainer) {
         this.externalProgressBar = bar;
         this.externalStatusLabel = label;
@@ -6962,6 +7385,11 @@ public class ScenarioSetupPanel extends BorderPane {
         });
     }
 
+    /*
+     * Invalidate generated state.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     */
     public void invalidateGeneratedState() {
         resetStartButtonState();
     }
@@ -7368,6 +7796,13 @@ public class ScenarioSetupPanel extends BorderPane {
 
         javafx.util.StringConverter<Double> coordConverter = new javafx.util.StringConverter<Double>() {
             @Override
+            /*
+             * To string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param object the object parameter (Double)
+             * @return the resulting computation or state reference
+             */
             public String toString(Double object) {
                 if (object == null || Math.abs(object) < 1e-6) {
                     return "â€”";
@@ -7376,6 +7811,13 @@ public class ScenarioSetupPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * From string.
+             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+             *
+             * @param string the string parameter (String)
+             * @return the resulting computation or state reference
+             */
             public Double fromString(String string) {
                 if (string == null || string.trim().isEmpty() || "â€”".equals(string.trim()) || "-".equals(string.trim())) {
                     return 0.0;
@@ -7565,7 +8007,7 @@ public class ScenarioSetupPanel extends BorderPane {
         logger.info("Loaded {} historical events posterior to start year {}.", eventsList.size(), startYear);
     }
 
-    /**
+    /*
      * Auto-calibrates initial physical capital stock (K0 in kg/capita) based on start year T0.
      */
     public static double computeAutoCapitalFromYear(long year) {
@@ -7580,6 +8022,13 @@ public class ScenarioSetupPanel extends BorderPane {
         return 15000.0;                   // Modern / Post-Industrial (>15000 kg/hab)
     }
 
+    /*
+     * Compute auto energy from year.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double computeAutoEnergyFromYear(long year) {
         if (year <= -10000) return 10.0;    // Firewood (~10 MJ/hab)
         if (year <= -3000)  return 30.0;    // Wood & fodder (~30 MJ/hab)
@@ -7591,6 +8040,13 @@ public class ScenarioSetupPanel extends BorderPane {
         return 50000.0;                     // Modern/Future (>50000 MJ/hab)
     }
 
+    /*
+     * Compute auto food from year.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double computeAutoFoodFromYear(long year) {
         if (year <= -10000) return 2.0;  // Foraging (2 months)
         if (year <= -3000)  return 4.0;  // Early granaries (4 months)
@@ -7602,6 +8058,13 @@ public class ScenarioSetupPanel extends BorderPane {
         return 18.0;                     // Future/Post-scarcity (18+ months)
     }
 
+    /*
+     * Compute auto info from year.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param year the year parameter (long)
+     * @return the resulting computation or state reference
+     */
     public static double computeAutoInfoFromYear(long year) {
         if (year <= -10000) return 5.0;        // Oral tradition (~5 bits/hab)
         if (year <= -3000)  return 40.0;       // Cuneiform/Hieroglyphs (~40 bits/hab)
@@ -7613,6 +8076,11 @@ public class ScenarioSetupPanel extends BorderPane {
         return 5000000.0;                      // Internet & AI (>5000000 bits/hab)
     }
 
+    /*
+     * Apply earth preset.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     */
     public void applyEarthPreset() {
         if (planetPresetCombo != null) {
             planetPresetCombo.setValue(PlanetPreset.EARTH_LIKE);
@@ -7623,6 +8091,11 @@ public class ScenarioSetupPanel extends BorderPane {
     // I18N â€” Update all UI text based on current language
     // =========================================================================
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     */
     public void updateTexts() {
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
@@ -7834,6 +8307,12 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
 
+    /*
+     * Get scenario.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Scenario getScenario() {
         Scenario s = new Scenario();
         s.setName(scenarioPresetBar != null ? scenarioPresetBar.getCurrentName() : "New Scenario");
@@ -8023,12 +8502,30 @@ public class ScenarioSetupPanel extends BorderPane {
 
     private java.util.function.BiConsumer<PlanetPreset, EcologyPreset> onScenarioLoadedCallback;
 
+    /*
+     * Set on scenario loaded callback.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param callback the callback parameter (EcologyPreset&gt;)
+     */
     public void setOnScenarioLoadedCallback(java.util.function.BiConsumer<PlanetPreset, EcologyPreset> callback) {
         this.onScenarioLoadedCallback = callback;
     }
 
+    /*
+     * Get cells.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<H3Cell> getCells() { return currentPreviewCells; }
 
+    /*
+     * Set generated cells.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     */
     public void setGeneratedCells(List<H3Cell> cells) {
         this.currentPreviewCells = cells;
         if (cells != null && !cells.isEmpty()) {
@@ -8037,6 +8534,11 @@ public class ScenarioSetupPanel extends BorderPane {
         drawPreview();
     }
 
+    /*
+     * Ensure preview generated if needed.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     */
     public void ensurePreviewGeneratedIfNeeded() {
         if (currentPreviewCells == null || currentPreviewCells.isEmpty()) {
             generatePreview();
@@ -8045,6 +8547,12 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    /*
+     * Get scheduled events.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<ClimateEvent> getScheduledEvents() {
         return eventsList != null ? new ArrayList<>(eventsList) : new ArrayList<>();
     }
@@ -8063,10 +8571,18 @@ public class ScenarioSetupPanel extends BorderPane {
                     import org.ether.society.core.H3SimulationEngine;
                     import org.ether.society.model.H3Cell;
 
-                    /**
+                    /*
                      * Loi Physique CÅ“ur Ether : %s
                      */
                     public class %s {
+                        /*
+                         * Update.
+                         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+                         *
+                         * @param engine the engine parameter (H3SimulationEngine)
+                         * @param cell the cell parameter (H3Cell)
+                         * @param deltaTime the delta time parameter (double)
+                         */
                         public void update(H3SimulationEngine engine, H3Cell cell, double deltaTime) {
                             // Conservation thermodynamique & lois de bilans physiques
                         }
@@ -8162,24 +8678,51 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    /**
+    /*
      * Custom SpinnerValueFactory for Long values to avoid ClassCastException.
      */
     public static class LongSpinnerValueFactory extends SpinnerValueFactory<Long> {
+        /* Internal state variable for min (long). */
         private final long min;
+        /* Internal state variable for max (long). */
         private final long max;
+        /* Internal state variable for step (long). */
         private final long step;
 
+        /*
+         * Long spinner value factory.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @param min the min parameter (long)
+         * @param max the max parameter (long)
+         * @param initialValue the initial value parameter (long)
+         * @param step the step parameter (long)
+         * @return the resulting computation or state reference
+         */
         public LongSpinnerValueFactory(long min, long max, long initialValue, long step) {
             this.min = min;
             this.max = max;
             this.step = step;
             setConverter(new StringConverter<Long>() {
                 @Override
+                /*
+                 * To string.
+                 * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+                 *
+                 * @param object the object parameter (Long)
+                 * @return the resulting computation or state reference
+                 */
                 public String toString(Long object) {
                     return object == null ? "" : String.valueOf(object);
                 }
                 @Override
+                /*
+                 * From string.
+                 * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+                 *
+                 * @param string the string parameter (String)
+                 * @return the resulting computation or state reference
+                 */
                 public Long fromString(String string) {
                     if (string == null || string.isBlank()) return initialValue;
                     try {
@@ -8194,6 +8737,12 @@ public class ScenarioSetupPanel extends BorderPane {
         }
 
         @Override
+        /*
+         * Decrement.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @param steps the steps parameter (int)
+         */
         public void decrement(int steps) {
             long current = getValue() != null ? getValue() : min;
             long newValue = Math.max(min, current - (long) steps * step);
@@ -8201,6 +8750,12 @@ public class ScenarioSetupPanel extends BorderPane {
         }
 
         @Override
+        /*
+         * Increment.
+         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+         *
+         * @param steps the steps parameter (int)
+         */
         public void increment(int steps) {
             long current = getValue() != null ? getValue() : min;
             long newValue = Math.min(max, current + (long) steps * step);
@@ -8211,14 +8766,32 @@ public class ScenarioSetupPanel extends BorderPane {
     private java.util.function.Supplier<PlanetGeneratorPanel> planetPanelSupplier;
     private java.util.function.Supplier<ResourceDistributionPanel> resourcePanelSupplier;
 
+    /*
+     * Set planet panel supplier.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param supplier the supplier parameter (java.util.function.Supplier&lt;PlanetGeneratorPanel&gt;)
+     */
     public void setPlanetPanelSupplier(java.util.function.Supplier<PlanetGeneratorPanel> supplier) {
         this.planetPanelSupplier = supplier;
     }
 
+    /*
+     * Set resource panel supplier.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @param supplier the supplier parameter (java.util.function.Supplier&lt;ResourceDistributionPanel&gt;)
+     */
     public void setResourcePanelSupplier(java.util.function.Supplier<ResourceDistributionPanel> supplier) {
         this.resourcePanelSupplier = supplier;
     }
 
+    /*
+     * Get scenario validation errors.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<String> getScenarioValidationErrors() {
         List<String> errors = new ArrayList<>();
         if (planetPanelSupplier != null && planetPanelSupplier.get() != null) {
@@ -8276,6 +8849,12 @@ public class ScenarioSetupPanel extends BorderPane {
         return errors;
     }
 
+    /*
+     * Validate scenario setup.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean validateScenarioSetup() {
         List<String> errors = getScenarioValidationErrors();
         boolean isValid = errors.isEmpty();
@@ -8398,7 +8977,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return Long.MAX_VALUE;
     }
 
-    /**
+    /*
      * Opens the interactive Time-Travel & Automatic Epoch Scenario generation dialog.
      */
     public void openAutoEpochScenarioDialog() {

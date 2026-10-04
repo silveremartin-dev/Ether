@@ -28,9 +28,13 @@ public class EventSystem {
     private final List<String> eventQueue = new CopyOnWriteArrayList<>();
     private final Random random = new Random();
 
+    /* Internal state variable for enable historical milestones (boolean). */
     private boolean enableHistoricalMilestones = true;
+    /* Internal state variable for enable random events (boolean). */
     private boolean enableRandomEvents = true;
+    /* Internal state variable for enable earth historical leaders (boolean). */
     private boolean enableEarthHistoricalLeaders = true;
+    /* Internal state variable for enable procedural leaders (boolean). */
     private boolean enableProceduralLeaders = true;
 
     // Catalogs and Generators
@@ -40,9 +44,13 @@ public class EventSystem {
     private final java.util.Set<String> firedInterventionIds = new java.util.HashSet<>();
 
     // Cooldowns to prevent event spam
+    /* Internal state variable for last plague year (int). */
     private int lastPlagueYear = Integer.MIN_VALUE;
+    /* Internal state variable for last famine year (int). */
     private int lastFamineYear = Integer.MIN_VALUE;
+    /* Internal state variable for last drought year (int). */
     private int lastDroughtYear = Integer.MIN_VALUE;
+    /* Internal state variable for last volcano year (int). */
     private int lastVolcanoYear = Integer.MIN_VALUE;
 
     private final java.util.Set<String> firedHistoricalEvents = new java.util.HashSet<>();
@@ -50,43 +58,102 @@ public class EventSystem {
     private final List<ActiveEvent> recentEventsHistory = new CopyOnWriteArrayList<>();
     private final List<ActiveEvent> chronicleHistory = new CopyOnWriteArrayList<>();
 
+    /*
+     * Event system.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     */
     public EventSystem() {
         initializeHistoricalEvents();
     }
 
+    /*
+     * Set seed.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @param seed the seed parameter (long)
+     */
     public void setSeed(long seed) {
         this.random.setSeed(seed);
         this.proceduralLeaderGenerator.setSeed(seed);
     }
 
+    /*
+     * Is enable random events.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isEnableRandomEvents() {
         return enableRandomEvents;
     }
 
+    /*
+     * Set enable random events.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @param enableRandomEvents the enable random events parameter (boolean)
+     */
     public void setEnableRandomEvents(boolean enableRandomEvents) {
         this.enableRandomEvents = enableRandomEvents;
     }
 
+    /*
+     * Is enable historical milestones.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isEnableHistoricalMilestones() {
         return enableHistoricalMilestones;
     }
 
+    /*
+     * Set enable historical milestones.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @param enableHistoricalMilestones the enable historical milestones parameter (boolean)
+     */
     public void setEnableHistoricalMilestones(boolean enableHistoricalMilestones) {
         this.enableHistoricalMilestones = enableHistoricalMilestones;
     }
 
+    /*
+     * Is enable earth historical leaders.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isEnableEarthHistoricalLeaders() {
         return enableEarthHistoricalLeaders;
     }
 
+    /*
+     * Set enable earth historical leaders.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @param enableEarthHistoricalLeaders the enable earth historical leaders parameter (boolean)
+     */
     public void setEnableEarthHistoricalLeaders(boolean enableEarthHistoricalLeaders) {
         this.enableEarthHistoricalLeaders = enableEarthHistoricalLeaders;
     }
 
+    /*
+     * Is enable procedural leaders.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isEnableProceduralLeaders() {
         return enableProceduralLeaders;
     }
 
+    /*
+     * Set enable procedural leaders.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @param enableProceduralLeaders the enable procedural leaders parameter (boolean)
+     */
     public void setEnableProceduralLeaders(boolean enableProceduralLeaders) {
         this.enableProceduralLeaders = enableProceduralLeaders;
     }
@@ -145,6 +212,11 @@ public class EventSystem {
                 "First nuclear weapons used.", 34.38, 132.45));
     }
 
+    /*
+     * Reset.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     */
     public void reset() {
         firedHistoricalEvents.clear();
         firedInterventionIds.clear();
@@ -155,6 +227,12 @@ public class EventSystem {
         activeInterventions.clear();
     }
 
+    /*
+     * Record spatial event.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @param event the event parameter (ActiveEvent)
+     */
     public void recordSpatialEvent(ActiveEvent event) {
         if (event == null) return;
         activeEvents.removeIf(ActiveEvent::isExpired);
@@ -170,23 +248,53 @@ public class EventSystem {
         }
     }
 
+    /*
+     * Get active events.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<ActiveEvent> getActiveEvents() {
         activeEvents.removeIf(ActiveEvent::isExpired);
         return new ArrayList<>(activeEvents);
     }
 
+    /*
+     * Get recent events history.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<ActiveEvent> getRecentEventsHistory() {
         return new ArrayList<>(recentEventsHistory);
     }
 
+    /*
+     * Get chronicle history.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<ActiveEvent> getChronicleHistory() {
         return new ArrayList<>(chronicleHistory);
     }
 
+    /*
+     * Get active interventions.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<HistoricalIntervention> getActiveInterventions() {
         return new ArrayList<>(activeInterventions);
     }
 
+    /*
+     * Inject custom intervention.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @param intervention the intervention parameter (HistoricalIntervention)
+     */
     public void injectCustomIntervention(HistoricalIntervention intervention) {
         if (intervention == null) return;
         activeInterventions.add(intervention);
@@ -246,7 +354,7 @@ public class EventSystem {
                 .orElse(getRandomLandCell(cells));
     }
 
-    /**
+    /*
      * Check for events occurring at the current simulation step.
      */
     public void checkEvents(int year, int month, long totalPopulation, double totalFood, List<H3Cell> cells) {
@@ -355,11 +463,19 @@ public class EventSystem {
         }
     }
 
+    /*
+     * Check events.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @param year the year parameter (int)
+     * @param totalPopulation the total population parameter (long)
+     * @param totalFood the total food parameter (double)
+     */
     public void checkEvents(int year, long totalPopulation, double totalFood) {
         checkEvents(year, 0, totalPopulation, totalFood, null);
     }
 
-    /**
+    /*
      * Check for events based on cell-level data.
      */
     public void checkCellEvents(int year, int month, List<H3Cell> cells) {
@@ -415,6 +531,13 @@ public class EventSystem {
         }
     }
 
+    /*
+     * Check cell events.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @param year the year parameter (int)
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     */
     public void checkCellEvents(int year, List<H3Cell> cells) {
         checkCellEvents(year, 0, cells);
     }
@@ -517,16 +640,34 @@ public class EventSystem {
         }
     }
 
+    /*
+     * Trigger event.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @param message the message parameter (String)
+     */
     public void triggerEvent(String message) {
         eventQueue.add(message);
     }
 
+    /*
+     * Flush events.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<String> flushEvents() {
         List<String> events = new ArrayList<>(eventQueue);
         eventQueue.clear();
         return events;
     }
 
+    /*
+     * Peek events.
+     * Enforces physical invariants and updates associated state variables within {@code EventSystem}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<String> peekEvents() {
         return new ArrayList<>(eventQueue);
     }

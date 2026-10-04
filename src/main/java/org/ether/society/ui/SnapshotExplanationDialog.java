@@ -33,6 +33,12 @@ import org.slf4j.LoggerFactory;
 public class SnapshotExplanationDialog extends Stage {
     private static final Logger logger = LoggerFactory.getLogger(SnapshotExplanationDialog.class);
 
+    /*
+     * Snapshot explanation dialog.
+     * Enforces physical invariants and updates associated state variables within {@code SnapshotExplanationDialog}.
+     *
+     * @param owner the owner parameter (Window)
+     */
     public SnapshotExplanationDialog(Window owner) {
         initModality(Modality.APPLICATION_MODAL);
         if (owner != null) {

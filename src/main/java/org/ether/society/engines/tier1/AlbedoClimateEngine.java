@@ -35,14 +35,14 @@ import java.util.List;
 public class AlbedoClimateEngine {
     private static final Logger logger = LoggerFactory.getLogger(AlbedoClimateEngine.class);
 
-    /**
+    /*
      * Convenience method for updating albedo feedback with baseline parameters.
      */
     public static void processAlbedoFeedback(List<H3Cell> cells) {
         processAlbedoAndClimateEvents(cells, 0L, 0.0);
     }
 
-    /**
+    /*
      * Updates dynamic albedo, orbital precession (Green Sahara), and climate disaster events.
      *
      * @param cells                 List of H3 simulation cells

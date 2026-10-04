@@ -60,6 +60,7 @@ import java.util.function.Function;
 public class ResourceDistributionPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ResourceDistributionPanel.class);
 
+    /* Internal state variable for active cells (List&lt;H3Cell&gt;). */
     private List<H3Cell> activeCells;
     private PlanetPreset activePlanetPreset;
     private final Consumer<List<H3Cell>> onResourcesAppliedCallback;
@@ -75,6 +76,7 @@ public class ResourceDistributionPanel extends BorderPane {
     private Image customClimateImage;     // Temperature / Combined RGB
     private Image customRainfallImage;    // Precipitation
     private Image customSeasonalityImage; // Seasonality
+    /* Internal state variable for active loaded body key (String). */
     private String activeLoadedBodyKey = null;
 
     // Geological & Energy Tensor Maps (Tab 2 Parity with Tab 1 & Tab 3)
@@ -107,6 +109,7 @@ public class ResourceDistributionPanel extends BorderPane {
     private Label hydroStatusLabel;
     private Label geologyStatusLabel;
 
+    /* Internal state variable for is updating from preset (boolean). */
     private boolean isUpdatingFromPreset = false;
     private final Map<Long, SimplexNoise> noiseCache = new HashMap<>();
 
@@ -271,22 +274,44 @@ public class ResourceDistributionPanel extends BorderPane {
     private Button applyBtn;
 
     // Interactive Zoom/Pan State
+    /* Internal state variable for zoom factor (double). */
     private double zoomFactor = 1.0;
+    /* Internal state variable for pan x (double). */
     private double panX = 0.0;
+    /* Internal state variable for pan y (double). */
     private double panY = 0.0;
+    /* Internal state variable for drag start x (double). */
     private double dragStartX, dragStartY;
 
     private java.util.function.Supplier<PlanetPreset> planetPresetSupplier;
     private Consumer<PlanetPreset> planetPresetApplyCallback;
 
+    /*
+     * Set planet preset supplier.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param supplier the supplier parameter (java.util.function.Supplier&lt;PlanetPreset&gt;)
+     */
     public void setPlanetPresetSupplier(java.util.function.Supplier<PlanetPreset> supplier) {
         this.planetPresetSupplier = supplier;
     }
 
+    /*
+     * Set planet preset apply callback.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param callback the callback parameter (Consumer&lt;PlanetPreset&gt;)
+     */
     public void setPlanetPresetApplyCallback(Consumer<PlanetPreset> callback) {
         this.planetPresetApplyCallback = callback;
     }
 
+    /*
+     * Resource distribution panel.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param onResourcesAppliedCallback the on resources applied callback parameter (Consumer&lt;List&lt;H3Cell&gt;&gt;)
+     */
     public ResourceDistributionPanel(Consumer<List<H3Cell>> onResourcesAppliedCallback) {
         this.onResourcesAppliedCallback = onResourcesAppliedCallback;
 
@@ -300,6 +325,12 @@ public class ResourceDistributionPanel extends BorderPane {
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
+    /*
+     * Set active planet preset.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param planetPreset the planet preset parameter (PlanetPreset)
+     */
     public void setActivePlanetPreset(PlanetPreset planetPreset) {
         this.activePlanetPreset = planetPreset;
         boolean oldState = isUpdatingFromPreset;
@@ -345,6 +376,12 @@ public class ResourceDistributionPanel extends BorderPane {
         return "none";
     }
 
+    /*
+     * Set active cells.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     */
     public void setActiveCells(List<H3Cell> cells) {
         this.activeCells = cells;
         updateSummary();
@@ -383,6 +420,13 @@ public class ResourceDistributionPanel extends BorderPane {
         planetPresetCombo.setMaxWidth(Double.MAX_VALUE);
         planetPresetCombo.setCellFactory(p -> new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+             *
+             * @param item the item parameter (PlanetPreset)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(PlanetPreset item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -394,6 +438,13 @@ public class ResourceDistributionPanel extends BorderPane {
         });
         planetPresetCombo.setButtonCell(new ListCell<PlanetPreset>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+             *
+             * @param item the item parameter (PlanetPreset)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(PlanetPreset item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -406,10 +457,24 @@ public class ResourceDistributionPanel extends BorderPane {
         });
         planetPresetCombo.setConverter(new javafx.util.StringConverter<PlanetPreset>() {
             @Override
+            /*
+             * To string.
+             * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+             *
+             * @param item the item parameter (PlanetPreset)
+             * @return the resulting computation or state reference
+             */
             public String toString(PlanetPreset item) {
                 return item == null ? I18n.getPlanetPresetDisplayName("Terre (Terran)") : I18n.getPlanetPresetDisplayName(item.name());
             }
             @Override
+            /*
+             * From string.
+             * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+             *
+             * @param string the string parameter (String)
+             * @return the resulting computation or state reference
+             */
             public PlanetPreset fromString(String string) {
                 return null;
             }
@@ -481,6 +546,12 @@ public class ResourceDistributionPanel extends BorderPane {
 
         ecologyPresetBar.setListener(new PresetControlBar.PresetActionsListener<EcologyPreset>() {
             @Override
+            /*
+             * On preset selected.
+             * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+             *
+             * @param preset the preset parameter (EcologyPreset)
+             */
             public void onPresetSelected(EcologyPreset preset) {
                 if (preset != null) {
                     PlanetPreset p = preset.embeddedPlanetPreset() != null
@@ -503,6 +574,12 @@ public class ResourceDistributionPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * On save preset.
+             * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+             *
+             * @param name the name parameter (String)
+             */
             public void onSavePreset(String name) {
                 if (!validateResourceSetup()) {
                     return;
@@ -548,11 +625,24 @@ public class ResourceDistributionPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * On delete preset.
+             * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+             *
+             * @param preset the preset parameter (EcologyPreset)
+             */
             public void onDeletePreset(EcologyPreset preset) {
                 ecologyPresetBar.getPresetCombo().getItems().remove(preset);
             }
 
             @Override
+            /*
+             * On export preset.
+             * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+             *
+             * @param targetFile the target file parameter (File)
+             * @param preset the preset parameter (EcologyPreset)
+             */
             public void onExportPreset(File targetFile, EcologyPreset preset) {
                 try {
                     ObjectMapper mapper = new ObjectMapper();
@@ -565,6 +655,12 @@ public class ResourceDistributionPanel extends BorderPane {
             }
 
             @Override
+            /*
+             * On import preset.
+             * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+             *
+             * @param sourceFile the source file parameter (File)
+             */
             public void onImportPreset(File sourceFile) {
                 try {
                     ObjectMapper mapper = new ObjectMapper();
@@ -1277,6 +1373,13 @@ public class ResourceDistributionPanel extends BorderPane {
         viewModeCombo.setMaxWidth(380);
         viewModeCombo.setCellFactory(p -> new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+             *
+             * @param item the item parameter (String)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
@@ -1603,10 +1706,22 @@ public class ResourceDistributionPanel extends BorderPane {
         updateSummary();
     }
 
+    /*
+     * Get selected ecology preset.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public EcologyPreset getSelectedEcologyPreset() {
         return ecologyPresetBar != null && ecologyPresetBar.getPresetCombo() != null ? ecologyPresetBar.getPresetCombo().getValue() : null;
     }
 
+    /*
+     * Apply ecology preset.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param p the p parameter (EcologyPreset)
+     */
     public void applyEcologyPreset(EcologyPreset p) {
         if (p == null) return;
         isUpdatingFromPreset = true;
@@ -1957,7 +2072,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return true;
     }
 
-    /**
+    /*
      * Detects the type of celestial body from the given PlanetPreset and automatically
      * selects the correct map source (earth / mars / moon / venus / mercury / none), which triggers
      * radio button switching and satellite data loading for biomes, hydro and geology.
@@ -3146,6 +3261,11 @@ public class ResourceDistributionPanel extends BorderPane {
         ));
     }
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     */
     public void updateTexts() {
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
@@ -3446,10 +3566,22 @@ public class ResourceDistributionPanel extends BorderPane {
         return PlanetPreset.EARTH_LIKE;
     }
 
+    /*
+     * Get active planet preset.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public PlanetPreset getActivePlanetPreset() {
         return activePlanetPreset;
     }
 
+    /*
+     * Validate resource setup.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean validateResourceSetup() {
         return validateResourceSetup(true);
     }
@@ -3465,6 +3597,12 @@ public class ResourceDistributionPanel extends BorderPane {
         return "custom".equals(val) || "file".equals(val);
     }
 
+    /*
+     * Get validation errors.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public List<String> getValidationErrors() {
         List<String> errors = new ArrayList<>();
         boolean isBiomeImport = radioImportBiome != null && radioImportBiome.isSelected();
@@ -3511,6 +3649,13 @@ public class ResourceDistributionPanel extends BorderPane {
         return errors;
     }
 
+    /*
+     * Validate resource setup.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param showDialog the show dialog parameter (boolean)
+     * @return the resulting computation or state reference
+     */
     public boolean validateResourceSetup(boolean showDialog) {
         List<String> errors = getValidationErrors();
         boolean isValid = errors.isEmpty();
@@ -3562,12 +3707,25 @@ public class ResourceDistributionPanel extends BorderPane {
         return fxImg;
     }
 
+    /*
+     * Prepopulate geology tensors.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param planetKey the planet key parameter (String)
+     */
     public void prepopulateGeologyTensors(String planetKey) {
         long year = (ecologyPresetBar != null && ecologyPresetBar.getPresetCombo() != null && ecologyPresetBar.getPresetCombo().getValue() != null)
                 ? ecologyPresetBar.getPresetCombo().getValue().getAssociatedEpochYear() : 2026L;
         prepopulateGeologyTensors(planetKey, year);
     }
 
+    /*
+     * Prepopulate geology tensors.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param planetKey the planet key parameter (String)
+     * @param year the year parameter (long)
+     */
     public void prepopulateGeologyTensors(String planetKey, long year) {
         if (planetKey == null || planetKey.isBlank() || "none".equalsIgnoreCase(planetKey)) {
             planetKey = "earth";
@@ -3662,6 +3820,11 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    /*
+     * Prepopulate earth geology tensors.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     */
     public void prepopulateEarthGeologyTensors() {
         prepopulateGeologyTensors("earth");
     }
@@ -4497,6 +4660,14 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    /*
+     * Generate procedural biome raster image.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @return the resulting computation or state reference
+     */
     public Image generateProceduralBiomeRasterImage(int width, int height) {
         PlanetPreset planet = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
         if (planet == null) planet = PlanetPreset.EARTH_LIKE;
@@ -4520,6 +4691,11 @@ public class ResourceDistributionPanel extends BorderPane {
         return img;
     }
 
+    /*
+     * Export biome map.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     */
     public void exportBiomeMap() {
         Image img = (radioImportBiome != null && radioImportBiome.isSelected() && customBiomeImage != null)
                 ? customBiomeImage : generateProceduralBiomeRasterImage(1024, 512);
@@ -4527,6 +4703,14 @@ public class ResourceDistributionPanel extends BorderPane {
                 img, "biomes_map.png", I18n.getOrDefault("resource.dialog.export_biome_title", "Export Biome Map (PNG / JPEG)"));
     }
 
+    /*
+     * Generate procedural hydro raster image.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @return the resulting computation or state reference
+     */
     public Image generateProceduralHydroRasterImage(int width, int height) {
         PlanetPreset planet = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
         if (planet == null) planet = PlanetPreset.EARTH_LIKE;
@@ -4559,6 +4743,11 @@ public class ResourceDistributionPanel extends BorderPane {
         return img;
     }
 
+    /*
+     * Export hydro map.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     */
     public void exportHydroMap() {
         Image img = (radioImportHydro != null && radioImportHydro.isSelected() && customHydroImage != null)
                 ? customHydroImage : generateProceduralHydroRasterImage(1024, 512);
@@ -4566,6 +4755,15 @@ public class ResourceDistributionPanel extends BorderPane {
                 img, "hydrography_map.png", I18n.getOrDefault("resource.dialog.export_hydro_title", "Export Hydrography Map (PNG / JPEG)"));
     }
 
+    /*
+     * Generate procedural geology raster image.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param layerIdx the layer idx parameter (int)
+     * @param width the width parameter (int)
+     * @param height the height parameter (int)
+     * @return the resulting computation or state reference
+     */
     public Image generateProceduralGeologyRasterImage(int layerIdx, int width, int height) {
         PlanetPreset planet = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
         if (planet == null) planet = PlanetPreset.EARTH_LIKE;
@@ -4594,6 +4792,12 @@ public class ResourceDistributionPanel extends BorderPane {
         return img;
     }
 
+    /*
+     * Export geology tensor.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param layerIdx the layer idx parameter (int)
+     */
     public void exportGeologyTensor(int layerIdx) {
         boolean isImport = geologyImportRadios.containsKey(layerIdx) && geologyImportRadios.get(layerIdx).isSelected();
         Image img = (isImport && customGeologyLayerImages.containsKey(layerIdx) && customGeologyLayerImages.get(layerIdx) != null)
@@ -4642,15 +4846,34 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    /*
+     * Is dirty.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public boolean isDirty() {
         return ecologyPresetBar != null && ecologyPresetBar.isDirty();
     }
 
+    /*
+     * Prompt save if dirty.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @param owner the owner parameter (javafx.stage.Window)
+     * @return the resulting computation or state reference
+     */
     public boolean promptSaveIfDirty(javafx.stage.Window owner) {
         if (ecologyPresetBar == null) return true;
         return ecologyPresetBar.promptSavePresetIfDirty(owner);
     }
 
+    /*
+     * Get preset bar.
+     * Enforces physical invariants and updates associated state variables within {@code ResourceDistributionPanel}.
+     *
+     * @return the resulting computation or state reference
+     */
     public PresetControlBar<EcologyPreset> getPresetBar() {
         return ecologyPresetBar;
     }

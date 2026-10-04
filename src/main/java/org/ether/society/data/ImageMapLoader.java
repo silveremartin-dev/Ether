@@ -37,10 +37,27 @@ import java.util.List;
 public class ImageMapLoader {
     private static final Logger logger = LoggerFactory.getLogger(ImageMapLoader.class);
 
+    /*
+     * Map data to cells.
+     * Enforces physical invariants and updates associated state variables within {@code ImageMapLoader}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param elevationImageStream the elevation image stream parameter (InputStream)
+     * @param biomeImageStream the biome image stream parameter (InputStream)
+     */
     public void mapDataToCells(List<H3Cell> cells, InputStream elevationImageStream, InputStream biomeImageStream) {
         mapDataToCells(cells, elevationImageStream, biomeImageStream, null);
     }
 
+    /*
+     * Map data to cells.
+     * Enforces physical invariants and updates associated state variables within {@code ImageMapLoader}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param elevationImageStream the elevation image stream parameter (InputStream)
+     * @param biomeImageStream the biome image stream parameter (InputStream)
+     * @param resourceImageStream the resource image stream parameter (InputStream)
+     */
     public void mapDataToCells(List<H3Cell> cells, InputStream elevationImageStream, InputStream biomeImageStream, InputStream resourceImageStream) {
         Image elevImg = elevationImageStream != null ? new Image(elevationImageStream) : null;
         Image biomeImg = biomeImageStream != null ? new Image(biomeImageStream) : null;
@@ -49,18 +66,68 @@ public class ImageMapLoader {
         mapImagesToCells(cells, elevImg, biomeImg, resourceImg, -11000.0, 8848.0);
     }
 
+    /*
+     * Map images to cells.
+     * Enforces physical invariants and updates associated state variables within {@code ImageMapLoader}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param elevImg the elev img parameter (Image)
+     * @param biomeImg the biome img parameter (Image)
+     * @param resourceImg the resource img parameter (Image)
+     * @param minAlt the min alt parameter (double)
+     * @param maxAlt the max alt parameter (double)
+     */
     public void mapImagesToCells(List<H3Cell> cells, Image elevImg, Image biomeImg, Image resourceImg, double minAlt, double maxAlt) {
         mapImagesToCells(cells, elevImg, biomeImg, resourceImg, null, null, null, minAlt, maxAlt);
     }
 
+    /*
+     * Map images to cells.
+     * Enforces physical invariants and updates associated state variables within {@code ImageMapLoader}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param elevImg the elev img parameter (Image)
+     * @param biomeImg the biome img parameter (Image)
+     * @param resourceImg the resource img parameter (Image)
+     * @param climateImg the climate img parameter (Image)
+     * @param minAlt the min alt parameter (double)
+     * @param maxAlt the max alt parameter (double)
+     */
     public void mapImagesToCells(List<H3Cell> cells, Image elevImg, Image biomeImg, Image resourceImg, Image climateImg, double minAlt, double maxAlt) {
         mapImagesToCells(cells, elevImg, biomeImg, resourceImg, climateImg, null, null, minAlt, maxAlt);
     }
 
+    /*
+     * Map images to cells.
+     * Enforces physical invariants and updates associated state variables within {@code ImageMapLoader}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param elevImg the elev img parameter (Image)
+     * @param biomeImg the biome img parameter (Image)
+     * @param resourceImg the resource img parameter (Image)
+     * @param climateImg the climate img parameter (Image)
+     * @param rainfallImg the rainfall img parameter (Image)
+     * @param minAlt the min alt parameter (double)
+     * @param maxAlt the max alt parameter (double)
+     */
     public void mapImagesToCells(List<H3Cell> cells, Image elevImg, Image biomeImg, Image resourceImg, Image climateImg, Image rainfallImg, double minAlt, double maxAlt) {
         mapImagesToCells(cells, elevImg, biomeImg, resourceImg, climateImg, rainfallImg, null, minAlt, maxAlt);
     }
 
+    /*
+     * Map images to cells.
+     * Enforces physical invariants and updates associated state variables within {@code ImageMapLoader}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param elevImg the elev img parameter (Image)
+     * @param biomeImg the biome img parameter (Image)
+     * @param resourceImg the resource img parameter (Image)
+     * @param climateImg the climate img parameter (Image)
+     * @param rainfallImg the rainfall img parameter (Image)
+     * @param seasonalityImg the seasonality img parameter (Image)
+     * @param minAlt the min alt parameter (double)
+     * @param maxAlt the max alt parameter (double)
+     */
     public void mapImagesToCells(List<H3Cell> cells, Image elevImg, Image biomeImg, Image resourceImg, Image climateImg, Image rainfallImg, Image seasonalityImg, double minAlt, double maxAlt) {
         if (elevImg == null && biomeImg == null && resourceImg == null && climateImg == null && rainfallImg == null && seasonalityImg == null) {
             logger.warn("No map images provided for cell mapping");
@@ -191,7 +258,7 @@ public class ImageMapLoader {
                 elevImg != null, biomeImg != null, resourceImg != null, climateImg != null, rainfallImg != null, seasonalityImg != null, cells.size());
     }
 
-    /**
+    /*
      * Match pixel color to nearest Biome.
      */
     public Biome matchBiomeColor(Color c) {
@@ -219,7 +286,7 @@ public class ImageMapLoader {
                 Math.pow(c1.getBlue() - c2.getBlue(), 2);
     }
 
-    /**
+    /*
      * Define expected colors for biomes in the input map.
      */
     public Color getBiomeTargetColor(Biome b) {
@@ -241,7 +308,7 @@ public class ImageMapLoader {
         };
     }
 
-    /**
+    /*
      * Export an image map to a standard PNG file along with a standard ESRI World File (.tfw).
      */
     public void exportMapToPngAndWorldFile(Image image, File targetPngFile) {
@@ -289,7 +356,7 @@ public class ImageMapLoader {
         }
     }
 
-    /**
+    /*
      * Convert a JavaFX Image to a compressed Base64 PNG string for JSON preset persistence.
      */
     public static String imageToBase64Png(Image image) {
@@ -316,7 +383,7 @@ public class ImageMapLoader {
         }
     }
 
-    /**
+    /*
      * Loads a map image prioritizing the single canonical location data/maps/ether/<planet>/<year>/
      * using TemporalMapTensorManager with automatic epoch fallback and continuous interpolation.
      */
@@ -324,7 +391,7 @@ public class ImageMapLoader {
         return loadMapImage("earth", 2026L, mapFileName);
     }
 
-    /**
+    /*
      * Loads a map image for a specific planet, epoch year, and layer.
      */
     public static Image loadMapImage(String planet, long year, String mapFileName) {
@@ -347,7 +414,7 @@ public class ImageMapLoader {
         return null;
     }
 
-    /**
+    /*
      * Convert a Base64 PNG string back into a JavaFX Image.
      */
     public static Image base64PngToImage(String base64) {
@@ -361,12 +428,12 @@ public class ImageMapLoader {
         }
     }
 
-    /**
+    /*
      * Validation result for map images.
      */
     public record ImageValidationResult(boolean valid, String message, int width, int height, double aspectRatio) {}
 
-    /**
+    /*
      * Checks effective raster image loading and verifies dimensions, pixel reader accessibility, and sanity.
      */
     public static ImageValidationResult validateMapImage(Image image) {

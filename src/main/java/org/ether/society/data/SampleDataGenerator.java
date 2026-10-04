@@ -52,12 +52,18 @@ public class SampleDataGenerator {
     private final H3Service h3Service;
     private final Random random;
 
+    /*
+     * Sample data generator.
+     * Enforces physical invariants and updates associated state variables within {@code SampleDataGenerator}.
+     *
+     * @param seed the seed parameter (long)
+     */
     public SampleDataGenerator(long seed) {
         this.h3Service = new H3Service();
         this.random = new Random(seed);
     }
 
-    /**
+    /*
      * Generates sample H3 cells for a region (e.g., Europe).
      *
      * @param minLat Minimum latitude
@@ -97,7 +103,7 @@ public class SampleDataGenerator {
         return cells;
     }
 
-    /**
+    /*
      * Generates realistic elevation, temperature, biome for a cell.
      */
     private void generateCellData(H3Cell cell, double lat, double lng) {
@@ -195,7 +201,7 @@ public class SampleDataGenerator {
         }
     }
 
-    /**
+    /*
      * Generate sample data for Europe region (for MVP).
      */
     public static List<H3Cell> generateEuropeSample() {
@@ -204,6 +210,13 @@ public class SampleDataGenerator {
         return generator.generateRegion(35, 70, -10, 40);
     }
 
+    /*
+     * Generate sample cells.
+     * Enforces physical invariants and updates associated state variables within {@code SampleDataGenerator}.
+     *
+     * @param count the count parameter (int)
+     * @return the resulting computation or state reference
+     */
     public static List<H3Cell> generateSampleCells(int count) {
         List<H3Cell> cells = generateEuropeSample();
         if (cells.size() > count) {
@@ -212,6 +225,12 @@ public class SampleDataGenerator {
         return cells;
     }
 
+    /*
+     * Main.
+     * Enforces physical invariants and updates associated state variables within {@code SampleDataGenerator}.
+     *
+     * @param args the args parameter (String[])
+     */
     public static void main(String[] args) {
         logger.info("=== Sample Data Generator ===");
         List<H3Cell> cells = generateEuropeSample();

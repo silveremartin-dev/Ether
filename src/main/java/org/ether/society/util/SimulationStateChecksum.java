@@ -23,7 +23,7 @@ public final class SimulationStateChecksum {
 
     private SimulationStateChecksum() {}
 
-    /**
+    /*
      * Computes a deterministic SHA-256 hex digest of the world state.
      */
     public static String computeStateChecksum(List<H3Cell> cells, long year, int month, double co2Ppm) {

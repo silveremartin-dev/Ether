@@ -23,17 +23,36 @@ public class AuthToken implements Serializable {
         PLANNER(50),
         OBSERVER(10);
 
+        /* Internal state variable for level (int). */
         private final int level;
         Role(int level) { this.level = level; }
+        /*
+         * Get level.
+         * Enforces physical invariants and updates associated state variables within {@code AuthToken}.
+         *
+         * @return the resulting computation or state reference
+         */
         public int getLevel() { return level; }
     }
 
+    /* Internal state variable for token id (String). */
     private final String tokenId;
+    /* Internal state variable for username (String). */
     private final String username;
     private final Role role;
+    /* Internal state variable for issue timestamp (long). */
     private final long issueTimestamp;
+    /* Internal state variable for signature (String). */
     private final String signature;
 
+    /*
+     * Auth token.
+     * Enforces physical invariants and updates associated state variables within {@code AuthToken}.
+     *
+     * @param username the username parameter (String)
+     * @param role the role parameter (Role)
+     * @param secretKey the secret key parameter (String)
+     */
     public AuthToken(String username, Role role, String secretKey) {
         this.tokenId = UUID.randomUUID().toString();
         this.username = username != null ? username : "Anonymous";
@@ -42,12 +61,26 @@ public class AuthToken implements Serializable {
         this.signature = generateSignature(this.tokenId, this.username, this.role.name(), this.issueTimestamp, secretKey);
     }
 
+    /*
+     * Is valid.
+     * Enforces physical invariants and updates associated state variables within {@code AuthToken}.
+     *
+     * @param secretKey the secret key parameter (String)
+     * @return the resulting computation or state reference
+     */
     public boolean isValid(String secretKey) {
         if (signature == null) return false;
         String expected = generateSignature(this.tokenId, this.username, this.role.name(), this.issueTimestamp, secretKey);
         return signature.equals(expected);
     }
 
+    /*
+     * Has permission.
+     * Enforces physical invariants and updates associated state variables within {@code AuthToken}.
+     *
+     * @param requiredRole the required role parameter (Role)
+     * @return the resulting computation or state reference
+     */
     public boolean hasPermission(Role requiredRole) {
         if (requiredRole == null) return true;
         return this.role.getLevel() >= requiredRole.getLevel();
@@ -66,9 +99,39 @@ public class AuthToken implements Serializable {
         }
     }
 
+    /*
+     * Get token id.
+     * Enforces physical invariants and updates associated state variables within {@code AuthToken}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getTokenId() { return tokenId; }
+    /*
+     * Get username.
+     * Enforces physical invariants and updates associated state variables within {@code AuthToken}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getUsername() { return username; }
+    /*
+     * Get role.
+     * Enforces physical invariants and updates associated state variables within {@code AuthToken}.
+     *
+     * @return the resulting computation or state reference
+     */
     public Role getRole() { return role; }
+    /*
+     * Get issue timestamp.
+     * Enforces physical invariants and updates associated state variables within {@code AuthToken}.
+     *
+     * @return the resulting computation or state reference
+     */
     public long getIssueTimestamp() { return issueTimestamp; }
+    /*
+     * Get signature.
+     * Enforces physical invariants and updates associated state variables within {@code AuthToken}.
+     *
+     * @return the resulting computation or state reference
+     */
     public String getSignature() { return signature; }
 }

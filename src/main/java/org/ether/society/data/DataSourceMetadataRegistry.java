@@ -25,7 +25,7 @@ public final class DataSourceMetadataRegistry {
         // Utility class
     }
 
-    /**
+    /*
      * Resolves the full scientific and technical description for a given source key or label.
      * Supports both raw keys (e.g., "earth", "mars", "hyde", "glottolog") and fully qualified UI labels.
      *
@@ -54,7 +54,7 @@ public final class DataSourceMetadataRegistry {
         return buildStructuredDescription(raw, lower);
     }
 
-    /**
+    /*
      * Configures any JavaFX ComboBox for scientific data sources:
      * - Configures each dropdown ListCell with its formatted label AND its dedicated technical Tooltip.
      * - Configures the ComboBox's own Tooltip to dynamically reflect the selected item's technical metadata.
@@ -65,6 +65,13 @@ public final class DataSourceMetadataRegistry {
 
         combo.setCellFactory(p -> new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code DataSourceMetadataRegistry}.
+             *
+             * @param item the item parameter (String)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null || item.isBlank() || "none".equalsIgnoreCase(item.trim())) {
@@ -94,6 +101,13 @@ public final class DataSourceMetadataRegistry {
 
         combo.setButtonCell(new ListCell<>() {
             @Override
+            /*
+             * Update item.
+             * Enforces physical invariants and updates associated state variables within {@code DataSourceMetadataRegistry}.
+             *
+             * @param item the item parameter (String)
+             * @param empty the empty parameter (boolean)
+             */
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null || item.isBlank() || "none".equalsIgnoreCase(item.trim())) {

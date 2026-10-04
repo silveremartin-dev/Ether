@@ -24,7 +24,7 @@ public class DatabaseConfig {
     private static EntityManagerFactory entityManagerFactory;
     private static HikariDataSource dataSource;
 
-    /**
+    /*
      * Get or create the EntityManagerFactory.
      */
     public static synchronized EntityManagerFactory getEntityManagerFactory() {
@@ -34,7 +34,7 @@ public class DatabaseConfig {
         return entityManagerFactory;
     }
 
-    /**
+    /*
      * Create EntityManagerFactory with Hibernate configuration.
      */
     private static EntityManagerFactory createEntityManagerFactory() {
@@ -88,7 +88,7 @@ public class DatabaseConfig {
         }
     }
 
-    /**
+    /*
      * Close the EntityManagerFactory and datasource.
      */
     public static synchronized void close() {
@@ -102,7 +102,7 @@ public class DatabaseConfig {
         }
     }
 
-    /**
+    /*
      * Check if database is available.
      */
     public static boolean isDatabaseAvailable() {

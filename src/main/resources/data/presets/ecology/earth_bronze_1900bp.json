@@ -1,8 +1,8 @@
 {
-  "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
-  "planetPresetName" : "Terre (-1 900 / Âge du Bronze Moyen)",
+  "name" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+  "planetPresetName" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
   "embeddedPlanetPreset" : {
-    "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
+    "name" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
     "resolution" : 3,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
@@ -36,18 +36,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre (-1900 BP) — Âge du Bronze Moyen",
+    "tempSource" : "ðŸŒ Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre (-1900 BP) — Précipitations",
+    "precipSource" : "ðŸŒ Terre (-1900 BP) â€” PrÃ©cipitations",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre (-1900 BP) — Saisonnalité",
+    "seasonSource" : "ðŸŒ Terre (-1900 BP) â€” SaisonnalitÃ©",
     "seasonSeed" : 14345,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : -1900,
     "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 590.0,
   "soilOrganicCarbonGtC" : 1800.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
+  "canonicalPlanet" : "earth",
   "associatedEpochYear" : -1900,
-  "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-  "canonicalPlanet" : "earth"
+  "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple."
 }

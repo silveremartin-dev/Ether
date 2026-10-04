@@ -26,7 +26,7 @@ public class StructuredDataExporter {
         CSV, TSV, JSON, NDJSON_LINES
     }
 
-    /**
+    /*
      * Exporter for time series to a structured file.
      */
     public static void exportSeriesToFile(

@@ -10,10 +10,10 @@ package org.ether.society.ui;
  * Rendering mode for the H3 map visualization.
  */
 public enum ViewMode {
-    /** Flat 2D view (top-down, no elevation) */
+    /* Flat 2D view (top-down, no elevation) */
     VIEW_2D,
 
-    /** 3D isometric view (with elevation rendering) */
+    /* 3D isometric view (with elevation rendering) */
     VIEW_3D
 }
 

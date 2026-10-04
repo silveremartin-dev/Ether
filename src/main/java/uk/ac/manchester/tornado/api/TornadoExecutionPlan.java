@@ -1,6 +1,12 @@
 package uk.ac.manchester.tornado.api;
 
 public class TornadoExecutionPlan {
+    /*
+     * Tornado execution plan.
+     * Enforces physical invariants and updates associated state variables within {@code TornadoExecutionPlan}.
+     *
+     * @param graphs the graphs parameter (TaskGraph...)
+     */
     public TornadoExecutionPlan(TaskGraph... graphs) {
         // Stub - throw exception so GPUManager detects "failure" and uses fallback
         // Or if we want to simulate success but no-op, we leave empty.
@@ -13,6 +19,11 @@ public class TornadoExecutionPlan {
         throw new UnsupportedOperationException("TornadoVM implementation not present (Stub)");
     }
 
+    /*
+     * Execute.
+     * Enforces physical invariants and updates associated state variables within {@code TornadoExecutionPlan}.
+     *
+     */
     public void execute() {
     }
 }

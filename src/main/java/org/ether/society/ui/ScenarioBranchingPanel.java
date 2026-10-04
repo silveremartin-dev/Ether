@@ -29,6 +29,13 @@ public class ScenarioBranchingPanel extends VBox {
     private final Button createBranchBtn;
     private final Label infoLabel;
 
+    /*
+     * Scenario branching panel.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingPanel}.
+     *
+     * @param engine the engine parameter (H3SimulationEngine)
+     * @param tree the tree parameter (ScenarioBranchingTree)
+     */
     public ScenarioBranchingPanel(H3SimulationEngine engine, ScenarioBranchingTree tree) {
         this.engine = engine;
         this.branchingTree = tree != null ? tree : new ScenarioBranchingTree();
@@ -63,6 +70,11 @@ public class ScenarioBranchingPanel extends VBox {
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
     }
 
+    /*
+     * Update texts.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingPanel}.
+     *
+     */
     public void updateTexts() {
         headerLabel.setText(I18n.getOrDefault("branching.title", "🔀 MULTIVERS & EMBRANCHEMENTS DE TRAJECTOIRES (BRANCHING)"));
         newBranchNameField.setPromptText(I18n.getOrDefault("branching.prompt.name", "Nom du nouveau brin (ex: Branche Fusion 2040)..."));
@@ -89,6 +101,11 @@ public class ScenarioBranchingPanel extends VBox {
         logger.info("Forked trajectory into branch: {} (Year {})", newBranch.getName(), currentYear);
     }
 
+    /*
+     * Refresh branch list.
+     * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingPanel}.
+     *
+     */
     public void refreshBranchList() {
         if (branchListView == null) return;
         branchListView.getItems().clear();

@@ -1,10 +1,10 @@
 {
-  "name" : "Début de l'Âge du Fer & Méditerranée Antique (-1000)",
-  "description" : "⚔️ SCÉNARIO HISTORIQUE : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Démocratisation de l'outillage et des armes grâce à l'abondance géologique du minerai de fer.\n• Essor du commerce maritime thalassocratique en Méditerranée (Phéniciens, Grecs, Étrusques).\n• Rupture de la dépendance stratégique au cuivre/étain et multiplication des centres de pouvoir régionaux.\n",
+  "name" : "DÃ©but de l'Ã‚ge du Fer & MÃ©diterranÃ©e Antique (-1000)",
+  "description" : "âš”ï¸ SCÃ‰NARIO HISTORIQUE : Transition Technologique vers la SidÃ©rurgie & RÃ©seaux PhÃ©niciens (-1000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise la transition de l'Ã‚ge du Bronze vers la mÃ©tallurgie du fer aprÃ¨s l'effondrement du Bronze RÃ©cent. Diffusion de l'alphabet phÃ©nicien, essor des citÃ©s-Ã‰tats grecques, expansion de l'Empire NÃ©o-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ DÃ©mocratisation de l'outillage et des armes grÃ¢ce Ã  l'abondance gÃ©ologique du minerai de fer.\nâ€¢ Essor du commerce maritime thalassocratique en MÃ©diterranÃ©e (PhÃ©niciens, Grecs, Ã‰trusques).\nâ€¢ Rupture de la dÃ©pendance stratÃ©gique au cuivre/Ã©tain et multiplication des centres de pouvoir rÃ©gionaux.\n",
   "id" : null,
   "presetKey" : "early_iron_age",
   "planetPreset" : {
-    "name" : "Terre (-1 000 / Début Âge du Fer)",
+    "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
     "resolution" : 3,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
@@ -38,24 +38,24 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre (-1000 BP) — Âge du Fer Ancien",
+    "tempSource" : "ðŸŒ Terre (-1000 BP) â€” Ã‚ge du Fer Ancien",
     "tempSeed" : 12444,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre (-1000 BP) — Précipitations",
+    "precipSource" : "ðŸŒ Terre (-1000 BP) â€” PrÃ©cipitations",
     "precipSeed" : 13344,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre (-1000 BP) — Saisonnalité",
+    "seasonSource" : "ðŸŒ Terre (-1000 BP) â€” SaisonnalitÃ©",
     "seasonSeed" : 14344,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : -1000,
     "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
-    "name" : "Terre (-1 000 / Début Âge du Fer)",
-    "planetPresetName" : "Terre (-1 000 / Début Âge du Fer)",
+    "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
+    "planetPresetName" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
     "embeddedPlanetPreset" : {
-      "name" : "Terre (-1 000 / Début Âge du Fer)",
+      "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
       "resolution" : 3,
       "radiusKm" : 6371.0,
       "dayLengthHours" : 24.0,
@@ -89,18 +89,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre (-1000 BP) — Âge du Fer Ancien",
+      "tempSource" : "ðŸŒ Terre (-1000 BP) â€” Ã‚ge du Fer Ancien",
       "tempSeed" : 12444,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre (-1000 BP) — Précipitations",
+      "precipSource" : "ðŸŒ Terre (-1000 BP) â€” PrÃ©cipitations",
       "precipSeed" : 13344,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre (-1000 BP) — Saisonnalité",
+      "seasonSource" : "ðŸŒ Terre (-1000 BP) â€” SaisonnalitÃ©",
       "seasonSeed" : 14344,
+      "canonicalPlanet" : "earth",
       "associatedEpochYear" : -1000,
       "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-      "tidalLocked" : false,
-      "canonicalPlanet" : "earth"
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 580.0,
     "soilOrganicCarbonGtC" : 1780.0,
@@ -118,9 +118,9 @@
     "customRainfallBase64" : null,
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : -1000,
-    "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-    "canonicalPlanet" : "earth"
+    "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -188,6 +188,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Début de l'Âge du Fer & Méditerranée Antique (-1000)",
-  "displayDescription" : "⚔ SCÉNARIO HISTORIQUE : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Démocratisation de l'outillage et des armes grâce à l'abondance géologique du minerai de fer.\n• Essor du commerce maritime thalassocratique en Méditerranée (Phéniciens, Grecs, Étrusques).\n• Rupture de la dépendance stratégique au cuivre/étain et multiplication des centres de pouvoir régionaux.\n"
+  "displayName" : "DÃ©but de l'Ã‚ge du Fer & MÃ©diterranÃ©e Antique (-1000)",
+  "displayDescription" : "âš”ï¸ SCÃ‰NARIO HISTORIQUE : Transition Technologique vers la SidÃ©rurgie & RÃ©seaux PhÃ©niciens (-1000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise la transition de l'Ã‚ge du Bronze vers la mÃ©tallurgie du fer aprÃ¨s l'effondrement du Bronze RÃ©cent. Diffusion de l'alphabet phÃ©nicien, essor des citÃ©s-Ã‰tats grecques, expansion de l'Empire NÃ©o-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ DÃ©mocratisation de l'outillage et des armes grÃ¢ce Ã  l'abondance gÃ©ologique du minerai de fer.\nâ€¢ Essor du commerce maritime thalassocratique en MÃ©diterranÃ©e (PhÃ©niciens, Grecs, Ã‰trusques).\nâ€¢ Rupture de la dÃ©pendance stratÃ©gique au cuivre/Ã©tain et multiplication des centres de pouvoir rÃ©gionaux.\n"
 }

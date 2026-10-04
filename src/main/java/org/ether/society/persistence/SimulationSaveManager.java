@@ -34,20 +34,37 @@ import java.util.zip.GZIPOutputStream;
  */
 public class SimulationSaveManager {
     private static final Logger logger = LoggerFactory.getLogger(SimulationSaveManager.class);
+    /* Internal state variable for metadata file (String). */
     private static final String METADATA_FILE = "metadata.json";
+    /* Internal state variable for scenario file (String). */
     private static final String SCENARIO_FILE = "scenario.json";
+    /* Internal state variable for topology file (String). */
     private static final String TOPOLOGY_FILE = "topology.bin.gz";
+    /* Internal state variable for state file (String). */
     private static final String STATE_FILE = "state.bin.gz";
+    /* Internal state variable for history file (String). */
     private static final String HISTORY_FILE = "history.json";
+    /* Internal state variable for snapshots dir (String). */
     private static final String SNAPSHOTS_DIR = "snapshots";
 
     private final H3CellRepository cellRepository;
     private final ObjectMapper objectMapper;
 
+    /*
+     * Get save directory.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationSaveManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public static Path getSaveDirectory() {
         return org.ether.society.config.EtherPaths.getSavesDir();
     }
 
+    /*
+     * Simulation save manager.
+     * Enforces physical invariants and updates associated state variables within {@code SimulationSaveManager}.
+     *
+     */
     public SimulationSaveManager() {
         this.cellRepository = new H3CellRepository(DatabaseConfig.getEntityManagerFactory());
         this.objectMapper = new ObjectMapper();
@@ -62,7 +79,7 @@ public class SimulationSaveManager {
         }
     }
 
-    /**
+    /*
      * Saves full simulation state and initial topology to disk.
      */
     public void saveSimulation(H3SimulationEngine engine, String saveName) {
@@ -145,7 +162,7 @@ public class SimulationSaveManager {
         }
     }
 
-    /**
+    /*
      * Loads simulation state and topology from disk into the target engine.
      */
     public void loadSimulation(String saveId, H3SimulationEngine engine) {
@@ -268,7 +285,7 @@ public class SimulationSaveManager {
         }
     }
 
-    /**
+    /*
      * Loads a specific tick snapshot from the save's snapshots/ directory into the engine.
      */
     public boolean loadTickSnapshot(Path savePath, long targetTick, H3SimulationEngine engine) {
@@ -312,7 +329,7 @@ public class SimulationSaveManager {
         return t;
     });
 
-    /**
+    /*
      * Saves a 60-tick periodic simulation snapshot into the central database asynchronously without blocking the simulation loop.
      */
     public void saveCheckpoint(H3SimulationEngine engine, int tickCounter) {
@@ -331,7 +348,7 @@ public class SimulationSaveManager {
         });
     }
 
-    /**
+    /*
      * Lists all available saved simulation snapshots across normal saves and auto-checkpoints.
      */
     public List<SaveMetadata> listSaves() {

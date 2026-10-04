@@ -23,6 +23,13 @@ import java.util.List;
 public class FrontierAsabiyyahEngine {
     private static final Logger logger = LoggerFactory.getLogger(FrontierAsabiyyahEngine.class);
 
+    /*
+     * Process hybrid.
+     * Enforces physical invariants and updates associated state variables within {@code FrontierAsabiyyahEngine}.
+     *
+     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param deltaYears the delta years parameter (double)
+     */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 

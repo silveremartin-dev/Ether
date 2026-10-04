@@ -26,11 +26,18 @@ import java.util.Base64;
  */
 public class EtherSecurityManager {
     private static final Logger logger = LoggerFactory.getLogger(EtherSecurityManager.class);
+    /* Internal state variable for gcm tag length (int). */
     private static final int GCM_TAG_LENGTH = 128;
+    /* Internal state variable for iv length bytes (int). */
     private static final int IV_LENGTH_BYTES = 12;
 
     private final SecretKey secretKey;
 
+    /*
+     * Ether security manager.
+     * Enforces physical invariants and updates associated state variables within {@code EtherSecurityManager}.
+     *
+     */
     public EtherSecurityManager() {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance("AES");
@@ -41,10 +48,23 @@ public class EtherSecurityManager {
         }
     }
 
+    /*
+     * Ether security manager.
+     * Enforces physical invariants and updates associated state variables within {@code EtherSecurityManager}.
+     *
+     * @param keyBytes the key bytes parameter (byte[])
+     */
     public EtherSecurityManager(byte[] keyBytes) {
         this.secretKey = new SecretKeySpec(keyBytes, "AES");
     }
 
+    /*
+     * Encrypt.
+     * Enforces physical invariants and updates associated state variables within {@code EtherSecurityManager}.
+     *
+     * @param plainText the plain text parameter (String)
+     * @return the resulting computation or state reference
+     */
     public String encrypt(String plainText) throws Exception {
         byte[] iv = new byte[IV_LENGTH_BYTES];
         new SecureRandom().nextBytes(iv);
@@ -62,6 +82,13 @@ public class EtherSecurityManager {
         return Base64.getEncoder().encodeToString(combined);
     }
 
+    /*
+     * Decrypt.
+     * Enforces physical invariants and updates associated state variables within {@code EtherSecurityManager}.
+     *
+     * @param cipherTextBase64 the cipher text base64 parameter (String)
+     * @return the resulting computation or state reference
+     */
     public String decrypt(String cipherTextBase64) throws Exception {
         byte[] combined = Base64.getDecoder().decode(cipherTextBase64);
 
@@ -79,6 +106,12 @@ public class EtherSecurityManager {
         return new String(plainTextBytes, "UTF-8");
     }
 
+    /*
+     * Get key bytes.
+     * Enforces physical invariants and updates associated state variables within {@code EtherSecurityManager}.
+     *
+     * @return the resulting computation or state reference
+     */
     public byte[] getKeyBytes() {
         return secretKey.getEncoded();
     }

@@ -1,6 +1,6 @@
 {
-  "name" : "La Peste Noire & Inversion Économique Post-Féodale (1347)",
-  "description" : "\uD83D\uDC80 SCÉNARIO HISTORIQUE : La Pandémie de Peste Noire & Inversion du Rapport Capital/Travail (1347 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nVague pandémique foudroyante de Yersinia pestis anéantissant 35% à 60% de la population européenne et moyen-orientale en moins de 5 ans. Choc démographique provoquant la rareté soudaine de la main-d'œuvre, la hausse spectaculaire des salaires réels et l'effondrement du servage.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Vitesse de contagion métapopulationnelle le long des routes de commerce génoises et vénitiennes.\n• Inversion institutionnelle : émancipation paysanne en Europe occidentale vs second servage à l'Est.\n• Déprise agricole temporaire, reforestation spontanée et baisse des rentes foncières seigneuriales.\n",
+  "name" : "La Peste Noire & Inversion Ã‰conomique Post-FÃ©odale (1347)",
+  "description" : "ðŸ’€ SCÃ‰NARIO HISTORIQUE : La PandÃ©mie de Peste Noire & Inversion du Rapport Capital/Travail (1347 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nVague pandÃ©mique foudroyante de Yersinia pestis anÃ©antissant 35% Ã  60% de la population europÃ©enne et moyen-orientale en moins de 5 ans. Choc dÃ©mographique provoquant la raretÃ© soudaine de la main-d'Å“uvre, la hausse spectaculaire des salaires rÃ©els et l'effondrement du servage.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Vitesse de contagion mÃ©tapopulationnelle le long des routes de commerce gÃ©noises et vÃ©nitiennes.\nâ€¢ Inversion institutionnelle : Ã©mancipation paysanne en Europe occidentale vs second servage Ã  l'Est.\nâ€¢ DÃ©prise agricole temporaire, reforestation spontanÃ©e et baisse des rentes fonciÃ¨res seigneuriales.\n",
   "id" : null,
   "presetKey" : "black_death_1347",
   "planetPreset" : {
@@ -38,18 +38,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
     "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "earth"
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -89,18 +89,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+      "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
+      "canonicalPlanet" : "earth",
       "associatedEpochYear" : 2026,
       "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false,
-      "canonicalPlanet" : "earth"
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -118,9 +118,9 @@
     "customRainfallBase64" : null,
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
+    "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "canonicalPlanet" : "earth"
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -186,6 +186,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "La Peste Noire & Inversion Économique Post-Féodale (1347)",
-  "displayDescription" : "\uD83D\uDC80 SCÉNARIO HISTORIQUE : La Pandémie de Peste Noire & Inversion du Rapport Capital/Travail (1347 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nVague pandémique foudroyante de Yersinia pestis anéantissant 35% à 60% de la population européenne et moyen-orientale en moins de 5 ans. Choc démographique provoquant la rareté soudaine de la main-d'œuvre, la hausse spectaculaire des salaires réels et l'effondrement du servage.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Vitesse de contagion métapopulationnelle le long des routes de commerce génoises et vénitiennes.\n• Inversion institutionnelle : émancipation paysanne en Europe occidentale vs second servage à l'Est.\n• Déprise agricole temporaire, reforestation spontanée et baisse des rentes foncières seigneuriales.\n"
+  "displayName" : "La Peste Noire & Inversion Ã‰conomique Post-FÃ©odale (1347)",
+  "displayDescription" : "ðŸ’€ SCÃ‰NARIO HISTORIQUE : La PandÃ©mie de Peste Noire & Inversion du Rapport Capital/Travail (1347 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nVague pandÃ©mique foudroyante de Yersinia pestis anÃ©antissant 35% Ã  60% de la population europÃ©enne et moyen-orientale en moins de 5 ans. Choc dÃ©mographique provoquant la raretÃ© soudaine de la main-d'Å“uvre, la hausse spectaculaire des salaires rÃ©els et l'effondrement du servage.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Vitesse de contagion mÃ©tapopulationnelle le long des routes de commerce gÃ©noises et vÃ©nitiennes.\nâ€¢ Inversion institutionnelle : Ã©mancipation paysanne en Europe occidentale vs second servage Ã  l'Est.\nâ€¢ DÃ©prise agricole temporaire, reforestation spontanÃ©e et baisse des rentes fonciÃ¨res seigneuriales.\n"
 }

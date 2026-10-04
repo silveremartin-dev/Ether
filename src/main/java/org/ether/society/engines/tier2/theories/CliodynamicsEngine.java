@@ -28,7 +28,7 @@ import java.util.List;
 public class CliodynamicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(CliodynamicsEngine.class);
 
-    /**
+    /*
      * Executes one tick of Cliodynamics update across all nations and territory cells.
      */
     public static void updateCliodynamics(List<Nation> nations, List<H3Cell> cells) {
@@ -48,7 +48,7 @@ public class CliodynamicsEngine {
         }
     }
 
-    /**
+    /*
      * Handles social unrest, riots, or balkanization when political instability crosses critical thresholds.
      */
     private static void handlePoliticalUnrest(Nation nation) {

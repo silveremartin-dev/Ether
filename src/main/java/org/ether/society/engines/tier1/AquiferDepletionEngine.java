@@ -34,20 +34,20 @@ import java.util.List;
 public class AquiferDepletionEngine {
     private static final Logger logger = LoggerFactory.getLogger(AquiferDepletionEngine.class);
 
-    /** Specific yield of unconfined porous aquifer S_y */
+    /* Specific yield of unconfined porous aquifer S_y */
     public static final double SPECIFIC_YIELD_SY = 0.20;
 
-    /** Baseline hydraulic conductivity K in m/s scaled to annual dt */
+    /* Baseline hydraulic conductivity K in m/s scaled to annual dt */
     public static final double HYDRAULIC_CONDUCTIVITY_K = 1e-4;
 
-    /**
+    /*
      * Executes one aquifer depletion, recharge, and 2D Darcy filtration tick across cells.
      */
     public static void processAquiferDepletion(List<H3Cell> cells) {
         processAquiferDepletion(cells, 30.0 / 365.25);
     }
 
-    /**
+    /*
      * Executes aquifer depletion and 2D Darcy lateral diffusion with explicit time delta in years.
      */
     public static void processAquiferDepletion(List<H3Cell> cells, double deltaYears) {

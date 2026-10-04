@@ -54,17 +54,17 @@ public class HistoricalStateRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(HistoricalStateRegistry.class);
 
-    /** Primary path relative to the working directory (Maven project root). */
+    /* Primary path relative to the working directory (Maven project root). */
     private static final String PRIMARY_PATH = "data/history/treaties_and_transitions.json";
 
-    /** Fallback for classpath resources during unit tests. */
+    /* Fallback for classpath resources during unit tests. */
     private static final String CLASSPATH_RESOURCE = "/treaties_and_transitions.json";
 
     // -------------------------------------------------------------------------
     // Public data structures
     // -------------------------------------------------------------------------
 
-    /**
+    /*
      * Immutable snapshot of a single geopolitical polity as defined in the registry.
      */
     public record PolityState(
@@ -75,7 +75,7 @@ public class HistoricalStateRegistry {
             double radiusDeg
     ) {}
 
-    /**
+    /*
      * Immutable geopolitical epoch covering the half-open interval {@code [tStart, tEnd)}.
      *
      * <p>{@code tStart} and {@code tEnd} are expressed as years CE (negative = BCE).
@@ -94,14 +94,14 @@ public class HistoricalStateRegistry {
     // Singleton registry
     // -------------------------------------------------------------------------
 
-    /**
+    /*
      * Sorted list of all epochs by {@code tStart} ascending.
      * Populated lazily on first access.
      */
     private static volatile List<HistoricalEpoch> REGISTRY = null;
     private static final Object LOCK = new Object();
 
-    /**
+    /*
      * Returns the active geopolitical epoch for the given year (step-constant lookup).
      *
      * <p>The epoch whose interval {@code [t_start, t_end)} brackets {@code year} is returned.
@@ -136,7 +136,7 @@ public class HistoricalStateRegistry {
         return candidate;
     }
 
-    /**
+    /*
      * Returns all loaded epochs in chronological order.
      *
      * @return unmodifiable sorted list of {@link HistoricalEpoch}
@@ -145,7 +145,7 @@ public class HistoricalStateRegistry {
         return Collections.unmodifiableList(getRegistry());
     }
 
-    /**
+    /*
      * Returns all epochs whose interval overlaps the range {@code [yearFrom, yearTo]}.
      *
      * @param yearFrom start of query range (inclusive)
@@ -163,7 +163,7 @@ public class HistoricalStateRegistry {
         return result;
     }
 
-    /**
+    /*
      * Retrieves the polity configuration active at {@code year} as a list of
      * {@link OrographicGlottologPropagator.CulturalSeed} objects, ready for cost-distance
      * propagation.
@@ -294,7 +294,7 @@ public class HistoricalStateRegistry {
         return Collections.unmodifiableList(epochs);
     }
 
-    /**
+    /*
      * Parses a CSS hex color string (e.g. {@code "#D97706"} or {@code "D97706"}) to an int RGB.
      */
     static int parseHexColor(String hex) {
