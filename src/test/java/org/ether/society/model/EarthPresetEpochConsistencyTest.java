@@ -1,6 +1,6 @@
 package org.ether.society.model;
 
-import org.ether.society.procedural.PlanetPreset;
+import org.ether.society.generation.PlanetPreset;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -119,3 +119,4 @@ class EarthPresetEpochConsistencyTest {
         }
     }
 }
+

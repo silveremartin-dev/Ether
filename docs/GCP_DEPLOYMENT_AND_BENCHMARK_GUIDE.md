@@ -48,9 +48,8 @@ This document specifies the deployment architecture, configuration directives, a
 
 ## 3. Automated Cross-Platform Workflows (Windows, Linux, macOS)
 
-All automation scripts are available in 3 formats:
-* **PowerShell** (`.ps1`) for Windows / PowerShell Core (cross-platform)
-* **Bash** (`.sh`) for Linux and macOS (POSIX compatible)
+All automation scripts are available in standard cross-platform shell formats:
+* **Bash** (`.sh`) for Linux and macOS (POSIX compatible, Cloud VMs)
 * **Batch** (`.bat`) for Windows Command Prompt
 
 ---
@@ -58,14 +57,10 @@ All automation scripts are available in 3 formats:
 ### 3.1 Provisioning Cloud Infrastructure
 Provisions the VPC firewall rules, Master VM, and Worker VM:
 
-* **Windows (PowerShell)**:
-  ```powershell
-  .\scripts\gcp\setup-gcp-infra.ps1 -ProjectId "ether-509812" -Zone "europe-west1-b" -MasterMachineType "e2-standard-4" -CreateWorker
-  ```
-* **Linux / macOS (Bash)**:
+* **Linux / macOS / Cloud Shell (Bash)**:
   ```bash
   chmod +x scripts/gcp/*.sh
-  ./scripts/gcp/setup-gcp-infra.sh ether-509812 europe-west1-b europe-west1 e2-standard-4 e2-standard-4 true
+  ./scripts/gcp/setup-gcp-infra.sh ether-509812 europe-west1-b europe-west1 e2-standard-8 e2-standard-4 true
   ```
 
 ---
@@ -74,12 +69,10 @@ Provisions the VPC firewall rules, Master VM, and Worker VM:
 Compiles the JAR, uploads to GCP, starts PostgreSQL, and launches simulation:
 
 * **Single-Node Headless Benchmark**:
-  * Windows: `.\scripts\gcp\deploy-and-run.ps1 -Scenario "OUT_OF_AFRICA" -Ticks 1000 -Cells 5000`
-  * Linux/macOS: `./scripts/gcp/deploy-and-run.sh ether-509812 europe-west1-b OUT_OF_AFRICA 1000 5000 false`
+  * Linux/macOS/GCP: `./scripts/gcp/deploy-and-run.sh ether-509812 europe-west1-b OUT_OF_AFRICA 1000 5000 false`
 
 * **Distributed 2-Node Cluster Run**:
-  * Windows: `.\scripts\gcp\deploy-and-run.ps1 -Scenario "OUT_OF_AFRICA" -Ticks 1000 -Cells 10000 -ClusterMode`
-  * Linux/macOS: `./scripts/gcp/deploy-and-run.sh ether-509812 europe-west1-b OUT_OF_AFRICA 1000 10000 true`
+  * Linux/macOS/GCP: `./scripts/gcp/deploy-and-run.sh ether-509812 europe-west1-b OUT_OF_AFRICA 1000 10000 true`
 
 ---
 
@@ -120,10 +113,10 @@ Compiles the JAR, uploads to GCP, starts PostgreSQL, and launches simulation:
 ### 3.3 Fetching Results for Local Replay
 Pulls generated snapshots from the GCP Master into the local `saves/` folder:
 
-* **Windows**: `.\scripts\gcp\fetch-results.ps1`
-* **Linux / macOS**: `./scripts/gcp/fetch-results.sh ether-509812 europe-west1-b saves`
+* **Fetch command**:
+  `./scripts/gcp/fetch-results.sh ether-509812 europe-west1-b saves`
 
-Open Ether locally (`./scripts/run.sh` or `run.bat`) to inspect analytics and step through historical snapshots.
+Open Ether locally (`scripts\start-no-db.bat` or `./scripts/start-no-db.sh`) to inspect analytics and step through historical snapshots.
 
 ---
 
@@ -132,20 +125,16 @@ Open Ether locally (`./scripts/run.sh` or `run.bat`) to inspect analytics and st
 To stop vCPU/RAM billing immediately while preserving all disks and PostgreSQL data:
 
 * **Direct Stop**:
-  * Windows: `.\scripts\gcp\stop-vms.ps1`
-  * Linux/macOS: `./scripts/gcp/stop-vms.sh`
+  `./scripts/gcp/stop-vms.sh`
 
 * **Direct Start**:
-  * Windows: `.\scripts\gcp\start-vms.ps1`
-  * Linux/macOS: `./scripts/gcp/start-vms.sh`
+  `./scripts/gcp/start-vms.sh`
 
 * **Cluster Status**:
-  * Windows: `.\scripts\gcp\status-vms.ps1`
-  * Linux/macOS: `./scripts/gcp/status-vms.sh`
+  `./scripts/gcp/status-vms.sh`
 
 * **Full Teardown / Deletion**:
-  * Windows: `.\scripts\gcp\teardown-gcp.ps1 -Action delete`
-  * Linux/macOS: `./scripts/gcp/teardown-gcp.sh ether-509812 delete`
+  `./scripts/gcp/teardown-gcp.sh ether-509812 delete`
 
 ---
 
@@ -288,18 +277,14 @@ $$\text{Estimated Total Cost (\$) } = \text{Total Duration} \times \left( C_{\te
 
 To execute the standardized multi-dimensional benchmark suite:
 
-* **Windows (PowerShell)**:
-  ```powershell
-  .\scripts\gcp\benchmark-matrix.ps1 -ProjectId "ether-509812" -Zone "europe-west1-b" -Ticks 24 -Resolutions @(2, 3, 4)
+* **Windows (Batch / CMD)**:
+  ```cmd
+  scripts\gcp\benchmark-matrix.bat
   ```
 * **Linux / macOS (Bash)**:
   ```bash
   chmod +x scripts/gcp/benchmark-matrix.sh
   ./scripts/gcp/benchmark-matrix.sh ether-509812 europe-west1-b 24
-  ```
-* **Windows (Batch)**:
-  ```cmd
-  scripts\gcp\benchmark-matrix.bat
   ```
 
 

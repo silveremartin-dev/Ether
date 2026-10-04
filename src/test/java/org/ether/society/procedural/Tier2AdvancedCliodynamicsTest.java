@@ -6,10 +6,18 @@
  */
 package org.ether.society.procedural;
 
+import org.ether.society.generation.*;
+import org.ether.society.config.SimulationPerformanceConfig;
+import org.ether.society.engines.*;
+import org.ether.society.engines.tier1.*;
+import org.ether.society.engines.tier2.theories.*;
+import org.ether.society.engines.tier2.historical.*;
+import org.ether.society.engines.compiler.*;
+
 import org.ether.society.database.H3Cell;
-import org.ether.society.procedural.tier2.ArthurCombinatorialTechnologyEngine;
-import org.ether.society.procedural.tier2.BoserupAgriculturalIntensificationEngine;
-import org.ether.society.procedural.tier2.PriceMultilevelSelectionEngine;
+import org.ether.society.engines.tier2.theories.ArthurCombinatorialTechnologyEngine;
+import org.ether.society.engines.tier2.theories.BoserupAgriculturalIntensificationEngine;
+import org.ether.society.engines.tier2.theories.PriceMultilevelSelectionEngine;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -93,4 +101,5 @@ public class Tier2AdvancedCliodynamicsTest {
         assertTrue(techAfter > techBefore, "Combinatorial tech space must accelerate technological progress");
     }
 }
+
 

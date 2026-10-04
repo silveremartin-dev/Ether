@@ -130,19 +130,19 @@ public class WorldBuffer {
 
 The engine enforces a strict ontological division between fundamental physical/biophysical laws (Tier 1) and empirical/phenomenological cliodynamic modules (Tier 2):
 
-### 🌟 Core Model Physics (Tier 1 — Non-Negotiable Invariants)
-1. **Conservation Laws & Flux**: `FluxEngine` (finite-volume conservation of mass and momentum over H3 graph).
+### 🌟 Core Model Physics (Tier 1 — Non-Negotiable Invariants — `org.ether.society.engines.tier1.*`)
+1. **Conservation Laws & Transport**: `ThermodynamicMigrationEngine`, `VectorizedPopulationKernel` (SIMD AVX-512 / AVX2 finite-volume conservation of mass and momentum over H3 graph).
 2. **Orbital Astronomical Forcing**: `MilankovitchOrbitalEngine` (Keplerian eccentricity, obliquity, climatic precession).
 3. **Radiative & Thermodynamic Balance**: `GreenhouseRadiativeEngine`, `StefanBoltzmann`, `Clausius-Clapeyron`, `AlbedoClimateEngine`.
 4. **Cryosphere & Glaciology**: `GlacialThermodynamicMeltEngine` (PDD Positive Degree-Day), `GlacialIsostaticAdjustmentEngine` (Viscoelastic GIA Post-Glacial Rebound, $\tau \approx 4000\text{ yr}$).
-5. **Geophysical Fluids & Atmosphere**: `AtmosphericCirculationHadleyEngine` (Hadley/Ferrel/Polar 3-cell circulation, Coriolis $f = 2\Omega\sin\phi$), `WetBulbTemperatureEngine` (Stull lethal hyperthermia limit).
+5. **Geophysical Fluids & Atmosphere**: `AtmosphericCirculationHadleyEngine` (Hadley/Ferrel/Polar 3-cell circulation, Coriolis $f = 2\Omega\sin\phi$), `WetBulbTemperatureEngine` (Stull lethal hyperthermia limit $T_{\text{wb}} > 35^\circ\text{C}$).
 6. **Hydrogeology & Pedology**: `AquiferDepletionEngine` (2D lateral Darcy diffusion on H3), `SoilWaterRetentionEngine` (van Genuchten AWC), `SoilNutrientNPKEngine`, `DynamicHydrographicSiltationEngine` (Stokes settling).
-7. **Biophysics & Demographics**: `BiologicalDemographicsEngine` (Farquhar FvCB photosynthesis, Beer-Lambert LAI canopy attenuation, Kleiber $3/4$ metabolic law, Gompertz-Makeham actuarial senescence).
+7. **Biophysics & Photosynthesis**: `BiologicalPhotosynthesisEngine` (Farquhar FvCB photosynthesis, Beer-Lambert LAI canopy attenuation, Kleiber $3/4$ metabolic law, Gompertz-Makeham actuarial senescence).
 8. **Genetics & Radiocarbon**: `GeneticAdaptationEngine` (Kimura Wright-Fisher stochastic drift SDE), `RadiocarbonIsotopeEngine` ($^{14}\text{C}$ radioactive decay & $\delta^{13}\text{C}$ fractionation).
 9. **Energy & Enthalpy**: `NetEnergyEROEIEngine` (Carnot limits $\eta \le 1 - T_C/T_H$, EROEI net energy surplus), `PhysicalEnergyGridEngine`, `MetallurgyEnthalpyEngine` (reaction smelting enthalpies).
 
-### 🏛️ Optional Cliodynamic & Phenomenological Engines (Tier 2 & Type B Plugins)
-Ether provides pluggable engines operating in dual **Pure** (isolated analytical ODEs) and **Hybrid** (grid-injected spatial forcing) modes:
+### 🏛️ Optional Cliodynamic & Phenomenological Engines (Tier 2 Theories & Scenarios — `org.ether.society.engines.tier2.*`)
+Ether provides pluggable engines organized under `org.ether.society.engines.tier2.theories` and `org.ether.society.engines.tier2.historical`, compiled dynamically without differential redundancy via `org.ether.society.engines.compiler.DynamicEngineCompiler`:
 
 1. **World3 Systems Dynamics** (Meadows et al., 1972): 5-variable industrial-demographic limits to growth.
 2. **HANDY NASA Collapse** (Motesharrei et al., 2014): Elites vs Commoners inequality & ecological overshoot.

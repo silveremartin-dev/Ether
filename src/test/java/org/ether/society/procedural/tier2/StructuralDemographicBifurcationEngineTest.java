@@ -4,7 +4,7 @@
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.procedural.tier2;
+package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
 import org.junit.jupiter.api.DisplayName;
@@ -72,3 +72,4 @@ class StructuralDemographicBifurcationEngineTest {
         assertEquals(0.25f, cell.getGiniIndex(), 1e-4);
     }
 }
+

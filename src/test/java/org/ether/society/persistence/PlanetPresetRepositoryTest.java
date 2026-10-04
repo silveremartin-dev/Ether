@@ -1,6 +1,6 @@
 package org.ether.society.persistence;
 
-import org.ether.society.procedural.PlanetPreset;
+import org.ether.society.generation.PlanetPreset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,3 +44,4 @@ class PlanetPresetRepositoryTest {
         assertTrue(updated.stream().anyMatch(p -> "TestPlanet".equals(p.name())));
     }
 }
+

@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ether.society.procedural.PlanetPreset;
+import org.ether.society.generation.PlanetPreset;
 
 /**
  * Preset model for ecological and resource distributions.
@@ -24,8 +24,8 @@ public record EcologyPreset(
         double aquaticBiomassGtC,        // Global marine & freshwater biomass (GtC)
         double crustalMetalOresGt,       // Industrial base metal reserves in crust (Gigatons, Gt)
         double preciousMetalOresMt,      // Precious & rare earth ores (Megatons, Mt)
-        double mantleHeatFlowMwM2,       // Mantle heat flow & tectonic/geothermal index (mW/m²)
-        double freshwaterReserveKm3,     // Groundwater & aquifer reserves (in 10^3 km³)
+        double mantleHeatFlowMwM2,       // Mantle heat flow & tectonic/geothermal index (mW/mÂ²)
+        double freshwaterReserveKm3,     // Groundwater & aquifer reserves (in 10^3 kmÂ³)
         long seed,
         String customBiomeBase64,
         String customResourceBase64,
@@ -39,7 +39,7 @@ public record EcologyPreset(
     /** Canonical compact constructor for normalization */
     public EcologyPreset {
         if (planetPresetName == null || planetPresetName.isBlank()) {
-            planetPresetName = embeddedPlanetPreset != null ? embeddedPlanetPreset.name() : org.ether.society.procedural.PlanetPreset.EARTH_LIKE.name();
+            planetPresetName = embeddedPlanetPreset != null ? embeddedPlanetPreset.name() : org.ether.society.generation.PlanetPreset.EARTH_LIKE.name();
         }
     }
 
@@ -115,7 +115,7 @@ public record EcologyPreset(
             String customRainfallBase64,
             String customSeasonalityBase64
     ) {
-        this(name, org.ether.society.procedural.PlanetPreset.EARTH_LIKE.name(), null, terrestrialBiomassGtC, soilOrganicCarbonGtC, faunaBiomassGtC,
+        this(name, org.ether.society.generation.PlanetPreset.EARTH_LIKE.name(), null, terrestrialBiomassGtC, soilOrganicCarbonGtC, faunaBiomassGtC,
                 aquaticBiomassGtC, crustalMetalOresGt, preciousMetalOresMt, mantleHeatFlowMwM2, freshwaterReserveKm3,
                 seed, customBiomeBase64, customResourceBase64, customHydroBase64, customClimateBase64,
                 customRainfallBase64, customSeasonalityBase64, null);
@@ -128,23 +128,23 @@ public record EcologyPreset(
     public static final EcologyPreset EARTH_LIKE = EARTH_MODERN;
     public static final EcologyPreset EARTH_STANDARD = EARTH_MODERN;
 
-    /** -1 000 ans : Début Âge du Fer */
+    /** -1 000 ans : DÃ©but Ã‚ge du Fer */
     public static final EcologyPreset EARTH_IRON_1000BP = new EcologyPreset(
             PlanetPreset.EARTH_IRON_1000BP.name(), PlanetPreset.EARTH_IRON_1000BP.name(), PlanetPreset.EARTH_IRON_1000BP, 580.0, 1780.0, 7.0, 17.0, 135.0, 2100.0, 87.0, 21000.0, 12344L, null, null, null, null, null, null);
 
-    /** -1 900 ans : Âge du Bronze Moyen */
+    /** -1 900 ans : Ã‚ge du Bronze Moyen */
     public static final EcologyPreset EARTH_BRONZE_1900BP = new EcologyPreset(
             PlanetPreset.EARTH_BRONZE_1900BP.name(), PlanetPreset.EARTH_BRONZE_1900BP.name(), PlanetPreset.EARTH_BRONZE_1900BP, 590.0, 1800.0, 9.0, 19.0, 145.0, 2250.0, 87.0, 23000.0, 12345L, null, null, null, null, null, null);
 
-    /** -3 000 ans (LH) : Holocène tardif */
+    /** -3 000 ans (LH) : HolocÃ¨ne tardif */
     public static final EcologyPreset EARTH_LH_3000BP = new EcologyPreset(
             PlanetPreset.EARTH_LH_3000BP.name(), PlanetPreset.EARTH_LH_3000BP.name(), PlanetPreset.EARTH_LH_3000BP, 560.0, 1750.0, 8.0, 18.0, 140.0, 2200.0, 87.0, 22000.0, 12346L, null, null, null, null, null, null);
 
-    /** -6 000 ans (MH) : Holocène moyen avec le Sahara Vert et le lac Méga-Tchad */
+    /** -6 000 ans (MH) : HolocÃ¨ne moyen avec le Sahara Vert et le lac MÃ©ga-Tchad */
     public static final EcologyPreset EARTH_MH_6000BP = new EcologyPreset(
             PlanetPreset.EARTH_MH_6000BP.name(), PlanetPreset.EARTH_MH_6000BP.name(), PlanetPreset.EARTH_MH_6000BP, 680.0, 1900.0, 14.0, 22.0, 150.0, 2400.0, 87.0, 28000.0, 12347L, null, null, null, null, null, null);
 
-    /** -10 000 ans (EH) : Holocène précoce */
+    /** -10 000 ans (EH) : HolocÃ¨ne prÃ©coce */
     public static final EcologyPreset EARTH_EH_10000BP = new EcologyPreset(
             PlanetPreset.EARTH_EH_10000BP.name(), PlanetPreset.EARTH_EH_10000BP.name(), PlanetPreset.EARTH_EH_10000BP, 520.0, 1600.0, 18.0, 20.0, 150.0, 2400.0, 87.0, 25000.0, 12348L, null, null, null, null, null, null);
 
@@ -152,7 +152,7 @@ public record EcologyPreset(
     public static final EcologyPreset EARTH_LGM_20000BP = new EcologyPreset(
             PlanetPreset.EARTH_LGM_20000BP.name(), PlanetPreset.EARTH_LGM_20000BP.name(), PlanetPreset.EARTH_LGM_20000BP, 320.0, 1300.0, 25.0, 14.0, 150.0, 2400.0, 87.0, 20000.0, 12349L, null, null, null, null, null, null);
 
-    /** -25 000 ans : Début LGM & Béringie */
+    /** -25 000 ans : DÃ©but LGM & BÃ©ringie */
     public static final EcologyPreset EARTH_LGM_ONSET_25000BP = new EcologyPreset(
             PlanetPreset.EARTH_LGM_ONSET_25000BP.name(), PlanetPreset.EARTH_LGM_ONSET_25000BP.name(), PlanetPreset.EARTH_LGM_ONSET_25000BP, 360.0, 1400.0, 24.0, 16.0, 150.0, 2400.0, 87.0, 21000.0, 12351L, null, null, null, null, null, null);
 
@@ -160,7 +160,7 @@ public record EcologyPreset(
     public static final EcologyPreset EARTH_MIS3_50000BP = new EcologyPreset(
             PlanetPreset.EARTH_MIS3_50000BP.name(), PlanetPreset.EARTH_MIS3_50000BP.name(), PlanetPreset.EARTH_MIS3_50000BP, 480.0, 1600.0, 23.0, 20.0, 150.0, 2400.0, 87.0, 24000.0, 12352L, null, null, null, null, null, null);
 
-    /** -100 000 ans (LIG) : Dernier Interglaciaire / Eémien */
+    /** -100 000 ans (LIG) : Dernier Interglaciaire / EÃ©mien */
     public static final EcologyPreset EARTH_LIG_100000BP = new EcologyPreset(
             PlanetPreset.EARTH_LIG_100000BP.name(), PlanetPreset.EARTH_LIG_100000BP.name(), PlanetPreset.EARTH_LIG_100000BP, 620.0, 1800.0, 22.0, 24.0, 150.0, 2400.0, 87.0, 26000.0, 12350L, null, null, null, null, null, null);
 
@@ -223,9 +223,9 @@ public record EcologyPreset(
         String lower = (name != null ? name : "").toLowerCase();
         if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire") || lower.contains("eemian")) return -100000L;
         if (lower.contains("-50") || lower.contains("sahul") || lower.contains("mis3") || lower.contains("mis 3")) return -50000L;
-        if (lower.contains("-25") || lower.contains("beringia") || lower.contains("béringie")) return -25000L;
+        if (lower.contains("-25") || lower.contains("beringia") || lower.contains("bÃ©ringie")) return -25000L;
         if (lower.contains("-20") || lower.contains("lgm") || lower.contains("glaciaire")) return -20000L;
-        if (lower.contains("-10") || lower.contains("eh") || lower.contains("précoce") || lower.contains("early holocene")) return -10000L;
+        if (lower.contains("-10") || lower.contains("eh") || lower.contains("prÃ©coce") || lower.contains("early holocene")) return -10000L;
         if (lower.contains("-6") || lower.contains("mh") || lower.contains("sahara") || lower.contains("mid holocene")) return -6000L;
         if (lower.contains("-3") || lower.contains("lh") || lower.contains("tardif") || lower.contains("late holocene")) return -3000L;
         if (lower.contains("-1900") || lower.contains("bronze")) return -1900L;
@@ -238,7 +238,7 @@ public record EcologyPreset(
         if (lower.contains("super-terre") || lower.contains("super-earth") || lower.contains("gaia")) return "none";
         if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) return "earth";
         if (lower.contains("mars") || lower.contains("ares")) return "mars";
-        if (lower.contains("vénus") || lower.contains("venus") || lower.contains("hesperos")) return "venus";
+        if (lower.contains("vÃ©nus") || lower.contains("venus") || lower.contains("hesperos")) return "venus";
         if (lower.contains("lune") || lower.contains("moon") || lower.contains("selene")) return "moon";
         if (lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes")) return "mercury";
         return "none";
@@ -253,3 +253,4 @@ public record EcologyPreset(
         return name;
     }
 }
+

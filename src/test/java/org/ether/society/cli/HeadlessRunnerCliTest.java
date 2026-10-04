@@ -5,7 +5,7 @@
 package org.ether.society.cli;
 
 import org.ether.society.network.ClusterManager;
-import org.ether.society.procedural.SimulationPerformanceConfig;
+import org.ether.society.config.SimulationPerformanceConfig;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -130,3 +130,4 @@ public class HeadlessRunnerCliTest {
         assertFalse(config.isEnableSparseCellSkipping());
     }
 }
+

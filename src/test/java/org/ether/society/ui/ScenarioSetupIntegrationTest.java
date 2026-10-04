@@ -8,7 +8,7 @@ import javafx.application.Platform;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.EcologyPreset;
 import org.ether.society.model.Scenario;
-import org.ether.society.procedural.PlanetPreset;
+import org.ether.society.generation.PlanetPreset;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -91,7 +91,7 @@ public class ScenarioSetupIntegrationTest {
 
         Platform.runLater(() -> {
             try {
-                sharedPanel.setInheritedContext(PlanetPreset.EARTH_LIKE, "Holocène Standard (-10 000 BC)");
+                sharedPanel.setInheritedContext(PlanetPreset.EARTH_LIKE, "HolocÃ¨ne Standard (-10 000 BC)");
 
                 Scenario scenario = sharedPanel.getScenario();
                 assertNotNull(scenario.getPlanetPreset());
@@ -190,4 +190,5 @@ public class ScenarioSetupIntegrationTest {
         assertTrue(latch.await(15, TimeUnit.SECONDS));
     }
 }
+
 

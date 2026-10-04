@@ -8,11 +8,11 @@ package org.ether.society.benchmark;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
-import org.ether.society.procedural.PlanetPreset;
-import org.ether.society.procedural.ProceduralGenerator;
-import org.ether.society.procedural.ProceduralPopulationEngine;
-import org.ether.society.procedural.ProceduralEngineRegistry;
-import org.ether.society.procedural.typeb.*;
+import org.ether.society.generation.PlanetPreset;
+import org.ether.society.generation.ProceduralGenerator;
+import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
+import org.ether.society.engines.ProceduralEngineRegistry;
+import org.ether.society.engines.tier2.historical.*;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class EarthFullResolution175kBenchmarkTest {
     @Test
     public void runFullEarth175kCellBenchmark() {
         logger.info("===============================================================================");
-        logger.info("🌍 STARTING FULL EARTH 175,000 H3 CELL & 50M HUMAN BENCHMARK");
+        logger.info("ðŸŒ STARTING FULL EARTH 175,000 H3 CELL & 50M HUMAN BENCHMARK");
         logger.info("===============================================================================");
 
         // 1. Generate 175,000 H3 Earth Grid Cells with Geographic, Climatic, and Seismic Data
@@ -108,7 +108,7 @@ public class EarthFullResolution175kBenchmarkTest {
         long memBeforeMB = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024);
 
         // 4. Run Full Simulation Loop for up to 10 Seconds
-        logger.info("🚀 Executing Full Simulation Engines Loop (Max 10 seconds)...");
+        logger.info("ðŸš€ Executing Full Simulation Engines Loop (Max 10 seconds)...");
         long benchStartTime = System.currentTimeMillis();
         int completedTicks = 0;
 
@@ -117,18 +117,18 @@ public class EarthFullResolution175kBenchmarkTest {
 
             // Monthly Physics / Radiance Sub-loop (12 months per simulated year)
             for (int month = 1; month <= 12; month++) {
-                org.ether.society.procedural.RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(earthGrid);
-                org.ether.society.procedural.WetBulbTemperatureEngine.processWetBulbHyperthermia(earthGrid);
-                org.ether.society.procedural.BiologicalDemographicsEngine.processBiologicalDemographics(earthGrid);
+                org.ether.society.engines.tier1.RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(earthGrid);
+                org.ether.society.engines.tier1.WetBulbTemperatureEngine.processWetBulbHyperthermia(earthGrid);
+                org.ether.society.engines.tier1.BiologicalDemographicsEngine.processBiologicalDemographics(earthGrid);
             }
 
             // Annual Thermodynamic & Cliodynamic Engine Step
-            org.ether.society.procedural.OreGradeThermodynamicsEngine.processOreDepletion(earthGrid, 1.0);
-            org.ether.society.procedural.InfrastructureInertiaEngine.processInfrastructureInertia(earthGrid, 1.0);
-            org.ether.society.procedural.EntropicMetalDissipationEngine.processEntropicDissipation(earthGrid, 1.0);
-            org.ether.society.procedural.JevonsParadoxEngine.processJevonsRebound(earthGrid, 1.0);
-            org.ether.society.procedural.World3CouplingEngine.processWorld3System(earthGrid, 1.0);
-            org.ether.society.procedural.KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(earthGrid, 1.0);
+            org.ether.society.engines.tier1.OreGradeThermodynamicsEngine.processOreDepletion(earthGrid, 1.0);
+            org.ether.society.engines.tier1.InfrastructureInertiaEngine.processInfrastructureInertia(earthGrid, 1.0);
+            org.ether.society.engines.tier1.EntropicMetalDissipationEngine.processEntropicDissipation(earthGrid, 1.0);
+            org.ether.society.engines.tier2.theories.JevonsParadoxEngine.processJevonsRebound(earthGrid, 1.0);
+            org.ether.society.engines.tier2.theories.World3CouplingEngine.processWorld3System(earthGrid, 1.0);
+            org.ether.society.engines.tier2.theories.KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(earthGrid, 1.0);
             ProceduralEngineRegistry.processPlugins(earthGrid, 1.0);
 
             completedTicks++;
@@ -149,7 +149,7 @@ public class EarthFullResolution175kBenchmarkTest {
         double finalCapital = earthGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).sum();
 
         logger.info("===============================================================================");
-        logger.info("📈 FULL EARTH 175k BENCHMARK FINAL RESULTS");
+        logger.info("ðŸ“ˆ FULL EARTH 175k BENCHMARK FINAL RESULTS");
         logger.info("===============================================================================");
         logger.info("Grid Resolution              : {} H3 Cells", earthGrid.size());
         logger.info("Initial / Final Population   : {} / {} Humans", initialTotalPop, finalPop);
@@ -165,4 +165,5 @@ public class EarthFullResolution175kBenchmarkTest {
         assertTrue(completedTicks > 0, "Should complete at least 1 tick within 10 seconds.");
     }
 }
+
 

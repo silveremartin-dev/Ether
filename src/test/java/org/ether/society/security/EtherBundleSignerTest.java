@@ -7,7 +7,7 @@ package org.ether.society.security;
 import org.ether.society.model.EcologyPreset;
 import org.ether.society.model.EtherScenarioBundle;
 import org.ether.society.model.Scenario;
-import org.ether.society.procedural.PlanetPreset;
+import org.ether.society.generation.PlanetPreset;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -69,3 +69,4 @@ public class EtherBundleSignerTest {
         assertTrue(valid, "Legacy unsigned bundle must pass verification with backward compatibility");
     }
 }
+

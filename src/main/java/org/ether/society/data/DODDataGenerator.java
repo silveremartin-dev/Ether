@@ -73,6 +73,7 @@ public class DODDataGenerator {
             }
         });
         
+        buffer.invalidatePartitionIndices();
         logger.info("WorldBuffer population complete.");
     }
 

@@ -4,10 +4,10 @@
  * Copyright (c) 2024 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.procedural.typeb;
+package org.ether.society.engines.tier2.historical;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.procedural.ProceduralEngineRegistry;
+import org.ether.society.engines.ProceduralEngineRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +32,7 @@ public class AdvancedCliodynamicTypeBSuiteTest {
         ProceduralEngineRegistry.clearPlugins();
         testCells = new ArrayList<>();
 
-        H3Cell cell = new H3Cell(613503380827930701L, 35.0, 15.0); // Mediterranean latitude 35°N
+        H3Cell cell = new H3Cell(613503380827930701L, 35.0, 15.0); // Mediterranean latitude 35Â°N
         cell.setIsCoastal(true);
         cell.setPopulation(3000); // Below 5000 Tasmanian threshold
         cell.setTechnologyLevel(3.0);
@@ -183,7 +183,7 @@ public class AdvancedCliodynamicTypeBSuiteTest {
         scenario.setParallelExecutionEnabled(true);
         scenario.setOceanMultiRateTickingEnabled(true);
 
-        org.ether.society.procedural.SimulationPerformanceConfig config = scenario.toPerformanceConfig();
+        org.ether.society.config.SimulationPerformanceConfig config = scenario.toPerformanceConfig();
         assertFalse(config.isStrictDeterminism(), "Strict determinism should be false when optimizations are enabled.");
         assertTrue(config.isEnableParallelExecution(), "Parallel execution should be enabled.");
         assertEquals(8, config.getParallelThreadCount(), "Parallel thread count should be mapped to 8.");
@@ -191,7 +191,7 @@ public class AdvancedCliodynamicTypeBSuiteTest {
         assertEquals(10, config.getClimateTickFrequency(), "Climate tick frequency should be mapped to 10.");
 
         scenario.setStrictDeterminism(true);
-        org.ether.society.procedural.SimulationPerformanceConfig configStrict = scenario.toPerformanceConfig();
+        org.ether.society.config.SimulationPerformanceConfig configStrict = scenario.toPerformanceConfig();
         assertTrue(configStrict.isStrictDeterminism(), "Strict determinism master gate should override sub-optimizations.");
         assertFalse(configStrict.isEnableParallelExecution(), "Parallel execution should be disabled under strict determinism.");
         assertEquals(1, configStrict.getClimateTickFrequency(), "Climate tick frequency should fall back to 1:1 under strict determinism.");
@@ -303,4 +303,5 @@ public class AdvancedCliodynamicTypeBSuiteTest {
         assertTrue(advancedClearance > abyssalStormHs, "Advanced ocean freighters (K=1500, Tech=6.0) should easily exceed deep ocean swell heights.");
     }
 }
+
 

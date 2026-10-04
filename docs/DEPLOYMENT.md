@@ -14,9 +14,9 @@ Ether is engineered to run **immediately out of the box with zero database confi
 * **GPU (Optional)**: Vulkan / OpenGL / OpenCL capable GPU for hardware-accelerated rendering and SIMD acceleration.
 
 ### Launching on Windows
-Double-click `install.bat` or `run.bat`, or execute via PowerShell:
-```powershell
-.\run.ps1
+Double-click `install.bat` or `run.bat`, or execute via CMD:
+```cmd
+run.bat
 ```
 
 ### Launching on Linux / macOS
@@ -54,8 +54,8 @@ scripts\start-no-db.bat
 To generate a fully self-contained distribution archive for end-user distribution:
 
 ### On Windows:
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\package_release.ps1 -Version 1.0.0-beta.1
+```cmd
+scripts\package_release.bat 1.0.0-beta.1
 ```
 
 ### On Linux / macOS:

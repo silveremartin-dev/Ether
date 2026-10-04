@@ -7,8 +7,8 @@
 package org.ether.society.analytics;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.procedural.ProceduralEngineRegistry;
-import org.ether.society.procedural.typeb.*;
+import org.ether.society.engines.ProceduralEngineRegistry;
+import org.ether.society.engines.tier2.historical.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ public class HistoricalAutoCalibrator {
         candidateResults.sort((a, b) -> Double.compare(b.rSquared, a.rSquared));
 
         CalibrationResult bestFit = candidateResults.get(0);
-        logger.info("🏆 Best Windowed Configuration for [{}]: '{}' [Composite R^2 = {}, RMSE = {}]",
+        logger.info("ðŸ† Best Windowed Configuration for [{}]: '{}' [Composite R^2 = {}, RMSE = {}]",
             window.description, bestFit.configurationName, bestFit.rSquared, bestFit.rmse);
 
         return bestFit;
@@ -351,4 +351,5 @@ public class HistoricalAutoCalibrator {
         result.worstDriftEpochYear = worstYear;
     }
 }
+
 

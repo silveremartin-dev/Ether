@@ -33,6 +33,7 @@ public class CellTooltip extends VBox {
     private final Label techLabel;
     private final Label wealthVarianceLabel;
     private final Label malthusLabel;
+    private final Label habitatLabel;
     private final Label eventLabel;
     private final Label coordLabel;
     private final Label h3Label;
@@ -73,6 +74,11 @@ public class CellTooltip extends VBox {
         wealthVarianceLabel.setStyle("-fx-text-fill: #ffd700; -fx-font-size: 11px; -fx-font-family: 'Consolas', 'Monaco', monospace;");
         
         malthusLabel = createLabel();
+
+        habitatLabel = createLabel();
+        habitatLabel.setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 11px; -fx-font-family: 'Consolas', 'Monaco', monospace;");
+        habitatLabel.setVisible(false);
+        habitatLabel.setManaged(false);
         
         eventLabel = createLabel();
         eventLabel.setStyle("-fx-text-fill: #f43f5e; -fx-font-size: 11px; -fx-font-weight: bold; -fx-font-family: 'Consolas', 'Monaco', monospace;");
@@ -98,6 +104,7 @@ public class CellTooltip extends VBox {
                 techLabel,
                 wealthVarianceLabel,
                 malthusLabel,
+                habitatLabel,
                 eventLabel,
                 coordLabel,
                 h3Label);
@@ -235,6 +242,31 @@ public class CellTooltip extends VBox {
         double ratio = capK > 0 ? ((double) currentPop / capK) * 100.0 : 0.0;
         String malthusStatus = ratio > 150.0 ? "🚨 SURPOPULATION" : ratio > 100.0 ? "⚠️ TENSION" : "✅ SOUTENABLE";
         malthusLabel.setText(String.format("%-14s %.0f hab (Charge: %.1f%% %s)", I18n.getOrDefault("tooltip.capacity_k", "Capacité K :"), capK, ratio, malthusStatus));
+
+        // Extraterrestrial Habitat & Pressurization
+        if (cell != null && cell.getHabitatType() != null && cell.getHabitatType() != org.ether.society.model.HabitatType.NONE) {
+            org.ether.society.model.HabitatType hType = cell.getHabitatType();
+            double integrity = cell.getHabitatIntegrity() != null ? cell.getHabitatIntegrity() * 100.0 : 100.0;
+            String intStatus = integrity >= 80.0 ? "✅ Nominal" : integrity >= 40.0 ? "⚠️ Vétuste" : "🚨 Brèche Imminente";
+            String habName = I18n.getOrDefault(hType.getI18nKey(), hType.name());
+            double energyKw = cell.getHabitatEnergyKw() != null ? cell.getHabitatEnergyKw() : 0.0;
+            double habCap = cell.getHabitatCapacity() != null ? cell.getHabitatCapacity() : 0.0;
+
+            habitatLabel.setText(String.format("🪐 Habitat : %s (T%d)\n   Intégrité : %.1f%% (%s) | Cap: %,.0f | ECLSS: %,.0f kW",
+                    habName, cell.getHabitatTier() != null ? cell.getHabitatTier() : 1, integrity, intStatus, habCap, energyKw));
+            if (integrity < 40.0) {
+                habitatLabel.setStyle("-fx-text-fill: #f43f5e; -fx-font-size: 11px; -fx-font-weight: bold; -fx-font-family: 'Consolas', 'Monaco', monospace;");
+            } else if (integrity < 80.0) {
+                habitatLabel.setStyle("-fx-text-fill: #fbbf24; -fx-font-size: 11px; -fx-font-family: 'Consolas', 'Monaco', monospace;");
+            } else {
+                habitatLabel.setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 11px; -fx-font-family: 'Consolas', 'Monaco', monospace;");
+            }
+            habitatLabel.setVisible(true);
+            habitatLabel.setManaged(true);
+        } else {
+            habitatLabel.setVisible(false);
+            habitatLabel.setManaged(false);
+        }
 
         // Coordinates & H3
         double lat = cell != null ? cell.getLatitude() : 0.0;

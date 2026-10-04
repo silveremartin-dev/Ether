@@ -6,7 +6,7 @@
  */
 package org.ether.society.persistence;
 
-import org.ether.society.procedural.PlanetPreset;
+import org.ether.society.generation.PlanetPreset;
 import java.util.List;
 
 
@@ -37,3 +37,4 @@ public class PlanetPresetRepository extends JsonRepository<PlanetPreset> {
         }
     }
 }
+

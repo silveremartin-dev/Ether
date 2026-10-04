@@ -2,7 +2,7 @@
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
-package org.ether.society.procedural.jit;
+package org.ether.society.engines.compiler;
 
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +22,15 @@ public class DynamicEngineCompilerSecurityTest {
     public void testValidateSourceCodeSecurityBlocksRuntimeExec() {
         String maliciousCode = """
             package org.ether.society.procedural.custom;
-            import org.ether.society.procedural.ProceduralEnginePlugin;
+
+import org.ether.society.generation.*;
+import org.ether.society.config.SimulationPerformanceConfig;
+import org.ether.society.engines.*;
+import org.ether.society.engines.tier1.*;
+import org.ether.society.engines.tier2.theories.*;
+import org.ether.society.engines.tier2.historical.*;
+import org.ether.society.engines.compiler.*;
+            import org.ether.society.engines.ProceduralEnginePlugin;
             import org.ether.society.database.H3Cell;
             import java.util.List;
 
@@ -98,6 +106,14 @@ public class DynamicEngineCompilerSecurityTest {
         File badFile = tempDir.resolve("MaliciousEngine.java").toFile();
         Files.writeString(badFile.toPath(), """
             package org.ether.society.procedural.custom;
+
+import org.ether.society.generation.*;
+import org.ether.society.config.SimulationPerformanceConfig;
+import org.ether.society.engines.*;
+import org.ether.society.engines.tier1.*;
+import org.ether.society.engines.tier2.theories.*;
+import org.ether.society.engines.tier2.historical.*;
+import org.ether.society.engines.compiler.*;
             public class MaliciousEngine {
                 public void bad() {
                     System.exit(0);
@@ -114,3 +130,4 @@ public class DynamicEngineCompilerSecurityTest {
         tempDir.toFile().delete();
     }
 }
+

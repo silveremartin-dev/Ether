@@ -40,6 +40,10 @@ public class SimulationRunRepository {
         registerRun(record);
     }
 
+    public void clear() {
+        repository.clear();
+    }
+
     public SimulationRunRecord getRun(String runId) {
         return repository.get(runId);
     }

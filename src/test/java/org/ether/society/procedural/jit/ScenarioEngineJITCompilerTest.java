@@ -2,7 +2,7 @@
  * MIT License
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
-package org.ether.society.procedural.jit;
+package org.ether.society.engines.compiler;
 
 import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.database.H3Cell;
@@ -96,3 +96,4 @@ public class ScenarioEngineJITCompilerTest {
         assertEquals(560, cell.getPopulation());
     }
 }
+

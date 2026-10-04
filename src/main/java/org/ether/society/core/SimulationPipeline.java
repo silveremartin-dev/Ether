@@ -7,9 +7,13 @@ package org.ether.society.core;
 import org.ether.society.core.dod.*;
 import org.ether.society.core.profiling.SimulationProfiler;
 import org.ether.society.database.H3Cell;
-import org.ether.society.density.H3ClimateSystem;
-import org.ether.society.events.EventSystem;
-import org.ether.society.procedural.*;
+import org.ether.society.config.SimulationPerformanceConfig;
+import org.ether.society.generation.*;
+import org.ether.society.engines.*;
+import org.ether.society.engines.tier1.*;
+import org.ether.society.engines.tier2.theories.*;
+import org.ether.society.engines.tier2.historical.*;
+import org.ether.society.engines.compiler.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +54,6 @@ public class SimulationPipeline {
                             List<H3Cell> cells,
                             WorldBuffer worldBuffer,
                             AgentBuffer agentBuffer,
-                            H3ClimateSystem climateSystem,
                             SimulationProfiler profiler,
                             SimulationPerformanceConfig perfConfig,
                             long dtSlow,
@@ -62,9 +65,13 @@ public class SimulationPipeline {
 
         // --- Phase 1: Demographics, Urbanization & Culture DOD Kernels ---
         profiler.beginPhase("3_DemographicsAndCulture");
+        environmentalKernel.tick(worldBuffer, dtSlow);
         demographicKernel.tick(worldBuffer, agentBuffer, dtSlow);
         urbanKernel.tick(worldBuffer, dtSlow);
         cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
+        if (engine != null) {
+            engine.syncBufferToCells();
+        }
         profiler.endPhase("3_DemographicsAndCulture");
 
         // --- Phase 2: Core Physicalist & Cliodynamic Sub-Systems ---
@@ -110,6 +117,9 @@ public class SimulationPipeline {
         InfrastructureEnergyEngine.processInfrastructureEnergy(cells);
         ThermodynamicMigrationEngine.processThermodynamicMigration(cells, perfConfig);
 
+        // Step 5b: Extraterrestrial Pressurized Habitats & ECLSS Protection
+        PressurizedHabitatEngine.processPressurizedHabitats(cells, null, dtYears);
+
         // Step 6: Tech Tree & Information Entropy
         InformationEntropyEngine.processInformationEntropy(cells);
         MegafaunaEcosystemEngine.processMegafaunaEcosystem(cells);
@@ -120,6 +130,7 @@ public class SimulationPipeline {
 
     private void executeAdvancedCliodynamicsPhase(List<H3Cell> cells, double dtMonthly) {
         TerraformingEngine.processTerraforming(cells, dtMonthly);
+        IsruAutarkyAndSpaceColonizationEngine.processSpaceColonizationCliodynamics(cells, null, dtMonthly);
         TrophicEcosystemEngine.processTrophicEcosystem(cells, dtMonthly);
         PhysicalSupplyChainEngine.processSupplyChains(cells, dtMonthly);
         UrbanThermodynamicsEngine.processUrbanThermodynamics(cells, dtMonthly);
@@ -138,4 +149,3 @@ public class SimulationPipeline {
         GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(cells, dtMonthly);
     }
 }
-

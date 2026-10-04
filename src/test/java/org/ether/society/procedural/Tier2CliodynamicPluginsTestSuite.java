@@ -6,8 +6,16 @@
  */
 package org.ether.society.procedural;
 
+import org.ether.society.generation.*;
+import org.ether.society.config.SimulationPerformanceConfig;
+import org.ether.society.engines.*;
+import org.ether.society.engines.tier1.*;
+import org.ether.society.engines.tier2.theories.*;
+import org.ether.society.engines.tier2.historical.*;
+import org.ether.society.engines.compiler.*;
+
 import org.ether.society.database.H3Cell;
-import org.ether.society.procedural.tier2.*;
+import org.ether.society.engines.tier2.theories.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test suite verifying Tier 2 Optional Cliodynamic & Phenomenological Plugins:
  * 1. West-Bettencourt Urban Allometry Engine
- * 2. Kümmel / Ayres-Warr Biophysical Exergy Economics Engine
+ * 2. KÃ¼mmel / Ayres-Warr Biophysical Exergy Economics Engine
  * 3. Spatial Metapopulation SEIR-V Epidemiology Engine
  * 4. Hotelling Resource Depletion Engine
  * 5. Krugman NEG Core-Periphery Agglomeration Engine
@@ -70,7 +78,7 @@ public class Tier2CliodynamicPluginsTestSuite {
     }
 
     @Test
-    @DisplayName("Kümmel / Ayres-Warr Exergy: Thermodynamic production function")
+    @DisplayName("KÃ¼mmel / Ayres-Warr Exergy: Thermodynamic production function")
     public void testKummelAyresExergy() {
         KummelAyresExergyEngine engine = new KummelAyresExergyEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -216,4 +224,5 @@ public class Tier2CliodynamicPluginsTestSuite {
         assertEquals(0, ProceduralEngineRegistry.getPluginCount());
     }
 }
+
 

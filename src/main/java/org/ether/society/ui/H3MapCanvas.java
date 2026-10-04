@@ -8,7 +8,6 @@ package org.ether.society.ui;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.h3.H3Service;
-import org.ether.society.flux.FluxEngine;
 import org.ether.society.model.Biome;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -343,7 +342,7 @@ public class H3MapCanvas extends Canvas {
     private double pendingCanvasX, pendingCanvasY, pendingSceneX, pendingSceneY;
 
     // Video Recording & Overlay Metadata
-    private String scenarioName = "Scénario Standard";
+    private String scenarioName = "ScÃ©nario Standard";
     private String currentDateStr = "An -100000";
     private boolean isRecordingVideo = false;
     private java.io.File videoSessionDir = null;
@@ -817,9 +816,9 @@ public class H3MapCanvas extends Canvas {
         if (h < 60 || w < 220) return;
 
         // Unified Top-Right Badge: Scenario & Date
-        String scen = (scenarioName != null && !scenarioName.isBlank()) ? scenarioName : "Scénario Ether";
+        String scen = (scenarioName != null && !scenarioName.isBlank()) ? scenarioName : "ScÃ©nario Ether";
         String date = (currentDateStr != null && !currentDateStr.isBlank()) ? currentDateStr : "An --";
-        String unifiedText = "🎬 " + scen + "  •  " + date;
+        String unifiedText = "ðŸŽ¬ " + scen + "  â€¢  " + date;
 
         javafx.scene.text.Font font = javafx.scene.text.Font.font("Segoe UI", javafx.scene.text.FontWeight.BOLD, 12);
         gc.setFont(font);
@@ -939,7 +938,7 @@ public class H3MapCanvas extends Canvas {
     public void pingLocation(double lat, double lng, String title, String type, double magnitude) {
         long now = System.currentTimeMillis();
         manualPings.removeIf(p -> p.isExpired(now));
-        manualPings.add(new BeaconItem(lat, lng, title != null ? title : "📍 Événement", type != null ? type : "PING", magnitude > 0 ? magnitude : 6.5, now, 8000L));
+        manualPings.add(new BeaconItem(lat, lng, title != null ? title : "ðŸ“ Ã‰vÃ©nement", type != null ? type : "PING", magnitude > 0 ? magnitude : 6.5, now, 8000L));
 
         if (pingAnimationTimer == null) {
             pingAnimationTimer = new javafx.animation.AnimationTimer() {
@@ -1981,7 +1980,7 @@ public class H3MapCanvas extends Canvas {
             }
         }
 
-        // Standard Cartographic Hillshading: Azimuth 315° (North-West), Altitude 45°
+        // Standard Cartographic Hillshading: Azimuth 315Â° (North-West), Altitude 45Â°
         double sunAzimuthRad = Math.toRadians(315.0);
         double sunAltitudeRad = Math.toRadians(45.0);
 
@@ -2086,7 +2085,23 @@ public class H3MapCanvas extends Canvas {
             case COLLAPSE_RISK -> getCollapseRiskColor(cell);
             case OCEAN_PH -> getOceanPhColor(cell);
             case PERMAFROST -> getPermafrostColor(cell);
+            case HABITAT_INFRASTRUCTURE -> getHabitatInfrastructureColor(cell);
+            default -> getBiomeColor(cell.getBiome());
         };
+    }
+
+    private Color getHabitatInfrastructureColor(H3Cell cell) {
+        if (cell == null || cell.getHabitatType() == null || cell.getHabitatType() == org.ether.society.model.HabitatType.NONE) {
+            return Color.rgb(30, 35, 45); // Uninhabited / no habitat
+        }
+        double integrity = cell.getHabitatIntegrity() != null ? cell.getHabitatIntegrity() : 1.0;
+        if (integrity >= 0.80) {
+            return Color.rgb(16, 185, 129); // Nominal (Emerald green)
+        } else if (integrity >= 0.40) {
+            return Color.rgb(245, 158, 11); // Aging / Vétuste (Amber)
+        } else {
+            return Color.rgb(239, 68, 68);  // Critical Breach (Red)
+        }
     }
 
     private Color getCellColor(H3Cell cell) {
@@ -2096,11 +2111,11 @@ public class H3MapCanvas extends Canvas {
     private Color getOceanPhColor(H3Cell cell) {
         if (cell == null) return Color.rgb(20, 30, 60);
         if (cell.getBiome() != Biome.OCEAN && cell.getBiome() != Biome.DEEP_OCEAN && cell.getBiome() != Biome.BEACH) {
-            return Color.rgb(40, 45, 55); // Terres grisées
+            return Color.rgb(40, 45, 55); // Terres grisÃ©es
         }
         double temp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
-        // pH gradient: 8.2 (bleu océan sain) -> 7.6 (jaune/orange) -> 7.2 (rouge acide critique)
-        double ph = org.ether.society.procedural.OceanAcidificationEngine.calculateHenrySolubility(temp);
+        // pH gradient: 8.2 (bleu ocÃ©an sain) -> 7.6 (jaune/orange) -> 7.2 (rouge acide critique)
+        double ph = org.ether.society.engines.tier1.OceanAcidificationEngine.calculateHenrySolubility(temp);
         double norm = Math.clamp((ph - 0.03) / 0.05, 0.0, 1.0);
         int r = (int) (30 + norm * 200);
         int g = (int) (140 - norm * 60);
@@ -2111,11 +2126,11 @@ public class H3MapCanvas extends Canvas {
     private Color getPermafrostColor(H3Cell cell) {
         if (cell == null) return Color.rgb(30, 40, 50);
         double lat = Math.abs(cell.getLatitude() != null ? cell.getLatitude() : 0.0);
-        if (lat < 50.0) return Color.rgb(50, 60, 70); // Hors zone boréale
+        if (lat < 50.0) return Color.rgb(50, 60, 70); // Hors zone borÃ©ale
         double temp = cell.getTemperature() != null ? cell.getTemperature() : -5.0;
-        if (temp < -2.0) return Color.rgb(180, 220, 255); // Pergélisol stable (cyan glacé)
-        if (temp < 3.0) return Color.rgb(240, 180, 60); // Dégel actif (ambre/orange)
-        return Color.rgb(220, 50, 50); // Effondrement thermique & dégazage méthane (rouge vif)
+        if (temp < -2.0) return Color.rgb(180, 220, 255); // PergÃ©lisol stable (cyan glacÃ©)
+        if (temp < 3.0) return Color.rgb(240, 180, 60); // DÃ©gel actif (ambre/orange)
+        return Color.rgb(220, 50, 50); // Effondrement thermique & dÃ©gazage mÃ©thane (rouge vif)
     }
 
     private Color getMalthusianPressureColor(H3Cell cell) {
@@ -2127,7 +2142,7 @@ public class H3MapCanvas extends Canvas {
         double ratio = capK > 0 ? (double) pop / capK : 2.0;
 
         if (ratio < 0.5) return Color.rgb(16, 185, 129); // Vert / Abondance (< 50%)
-        else if (ratio < 1.0) return Color.rgb(234, 179, 8);  // Jaune / Équilibré (50%-100%)
+        else if (ratio < 1.0) return Color.rgb(234, 179, 8);  // Jaune / Ã‰quilibrÃ© (50%-100%)
         else if (ratio < 1.5) return Color.rgb(249, 115, 22); // Orange / Tension Malthusienne (100%-150%)
         else return Color.rgb(239, 68, 68);  // Rouge / Surpopulation Critique (> 150%)
     }
@@ -2512,7 +2527,7 @@ public class H3MapCanvas extends Canvas {
      * Get temperature color (cool blue -> warm red).
      */
     private Color getTemperatureColor(double temp) {
-        // Normalize -30 to +45°C to 0-1 range
+        // Normalize -30 to +45Â°C to 0-1 range
         double normalized = Math.clamp((temp + 30.0) / 75.0, 0.0, 1.0);
         if (scientificColorMap != null) {
             return scientificColorMap.getColor(normalized);
@@ -2791,7 +2806,7 @@ public class H3MapCanvas extends Canvas {
         double cRightLng = Math.min(180.0, Math.max(-180.0, viewRightLng));
 
         String coordsText = String.format(
-            "📍 Centre: %.2f°N, %.2f°E | Bornes: [%.2f°N, %.2f°E] → [%.2f°N, %.2f°E] | Zoom: %.1fx",
+            "ðŸ“ Centre: %.2fÂ°N, %.2fÂ°E | Bornes: [%.2fÂ°N, %.2fÂ°E] â†’ [%.2fÂ°N, %.2fÂ°E] | Zoom: %.1fx",
             centerLat, centerLng, cTopLat, cLeftLng, cBotLat, cRightLng, zoomFactor
         );
 
@@ -3094,7 +3109,7 @@ public class H3MapCanvas extends Canvas {
         DisplayMode primaryMode = getPrimaryDisplayMode();
         gc.setFill(Color.rgb(56, 189, 248));
         gc.setFont(javafx.scene.text.Font.font("Segoe UI", javafx.scene.text.FontWeight.BOLD, 11));
-        gc.fillText(org.ether.society.i18n.I18n.getOrDefault("sim.legend.title", "LEGEND — ") + primaryMode.getDisplayName().toUpperCase(), lx + 12, ly + 18);
+        gc.fillText(org.ether.society.i18n.I18n.getOrDefault("sim.legend.title", "LEGEND â€” ") + primaryMode.getDisplayName().toUpperCase(), lx + 12, ly + 18);
 
         // Compute stats (Min, Max, Mean, Median)
         double minVal = Double.MAX_VALUE;
@@ -3183,13 +3198,13 @@ public class H3MapCanvas extends Canvas {
         gc.setFill(Color.rgb(148, 163, 184));
         gc.fillText(String.format("Min: %.1f", minVal), barX, ly + 88);
 
-        // Mean Label (Cyan μ)
+        // Mean Label (Cyan Î¼)
         gc.setFill(Color.rgb(56, 189, 248));
-        gc.fillText(String.format("μ: %.1f", meanVal), barX + barWidth * 0.28, ly + 88);
+        gc.fillText(String.format("Î¼: %.1f", meanVal), barX + barWidth * 0.28, ly + 88);
 
-        // Median Label (Amber x̃)
+        // Median Label (Amber xÌƒ)
         gc.setFill(Color.rgb(245, 158, 11));
-        gc.fillText(String.format("x̃: %.1f", medianVal), barX + barWidth * 0.54, ly + 88);
+        gc.fillText(String.format("xÌƒ: %.1f", medianVal), barX + barWidth * 0.54, ly + 88);
 
         // Max Label (Red)
         gc.setFill(Color.rgb(248, 113, 113));
@@ -3253,7 +3268,9 @@ public class H3MapCanvas extends Canvas {
             case EPIDEMIC -> cell.getEpidemicInfected() != null ? cell.getEpidemicInfected().doubleValue() : 0.0;
             case AGE_PYRAMID -> (cell.getPop65to79() != null && cell.getPop80Plus() != null) ? (double)(cell.getPop65to79() + cell.getPop80Plus()) : 0.0;
             case ASABIYYAH -> cell.getOwner() != null ? cell.getOwner().getAsabiyyah() : 0.0;
+            case HABITAT_INFRASTRUCTURE -> cell.getHabitatType() != org.ether.society.model.HabitatType.NONE ? (cell.getHabitatIntegrity() != null ? cell.getHabitatIntegrity() * 100.0 : 100.0) : 0.0;
             default -> cell.getElevation() != null ? cell.getElevation() : 0.0;
         };
     }
 }
+

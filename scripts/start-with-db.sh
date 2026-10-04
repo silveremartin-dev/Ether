@@ -38,8 +38,15 @@ done
 echo "      Database is ready ✓"
 echo ""
 
-echo "[4/4] Launching Ether Simulation..."
-mvn javafx:run
+echo "[4/4] Launching Ether Simulation with Native SIMD Vectorization..."
+JAR_PATH="target/society-simulation-1.0.0-beta.1-executable.jar"
+
+if [ ! -f "$JAR_PATH" ]; then
+    echo "Building optimized executable JAR..."
+    mvn clean package -DskipTests
+fi
+
+java --add-modules jdk.incubator.vector -XX:+UseG1GC -Xms2g -Xmx12g -jar "$JAR_PATH"
 
 echo ""
 echo "========================================"

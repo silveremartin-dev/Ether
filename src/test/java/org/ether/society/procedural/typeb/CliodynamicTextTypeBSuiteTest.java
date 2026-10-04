@@ -4,10 +4,10 @@
  * Copyright (c) 2024 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.procedural.typeb;
+package org.ether.society.engines.tier2.historical;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.procedural.ProceduralEngineRegistry;
+import org.ether.society.engines.ProceduralEngineRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -98,4 +98,5 @@ public class CliodynamicTextTypeBSuiteTest {
         }, "Cumulative execution of all 5 Cliodynamic text plugins should complete without errors.");
     }
 }
+
 

@@ -1,14 +1,14 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 Silvère Martin-Michiellot
+ * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot
  */
 package org.ether.society.persistence;
 
 import org.ether.society.config.EtherPaths;
 import org.ether.society.model.EcologyPreset;
 import org.ether.society.model.Scenario;
-import org.ether.society.procedural.PlanetPreset;
+import org.ether.society.generation.PlanetPreset;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,15 +57,25 @@ class PresetStorageServiceTest {
     }
 
     @Test
-    @DisplayName("Should export and load all scenario presets")
+    @DisplayName("Should export and load all scenario presets including exoplanetary colonies")
     void testScenarioPresetsExportAndLoad() {
         List<Scenario> list = PresetStorageService.loadAllScenarios();
         assertNotNull(list);
         assertFalse(list.isEmpty());
-        assertTrue(list.size() >= 10, "Should contain at least 10 scenario presets");
+        assertTrue(list.size() >= 40, "Should contain at least 40 scenario presets");
 
         Path scDir = EtherPaths.getPresetsScenariosDir();
         assertTrue(Files.exists(scDir.resolve("out_of_africa.json")), "out_of_africa.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("mars_colony_2050.json")), "mars_colony_2050.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("moon_shackleton_2050.json")), "moon_shackleton_2050.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("venus_cloud_cities_2060.json")), "venus_cloud_cities_2060.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("mercury_caloris_forge_2070.json")), "mercury_caloris_forge_2070.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("titan_cryo_methane_2080.json")), "titan_cryo_methane_2080.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("super_earth_gaia_2100.json")), "super_earth_gaia_2100.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("eyeball_world_twilight_2120.json")), "eyeball_world_twilight_2120.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("oceania_aquapolis_2090.json")), "oceania_aquapolis_2090.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("boreas_subglacial_2075.json")), "boreas_subglacial_2075.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("archipelago_seasteading_2055.json")), "archipelago_seasteading_2055.json must exist on disk");
     }
 
     @Test
@@ -75,3 +85,4 @@ class PresetStorageServiceTest {
         assertTrue(Files.exists(leadersFile), "earth_historical_leaders.json must exist under presets/leaders/");
     }
 }
+

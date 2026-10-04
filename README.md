@@ -18,7 +18,7 @@ Ether runs out of the box **without requiring any external database configuratio
 
 ```bash
 # Windows
-install.bat   # or run.bat / .\run.ps1
+install.bat   # or run.bat
 
 # Linux / macOS
 chmod +x install.sh run.sh
@@ -26,9 +26,8 @@ chmod +x install.sh run.sh
 ```
 
 To build a standalone portable `.zip` release distribution:
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\package_release.ps1
-```
+* **Windows**: `scripts\package_release.bat`
+* **Linux / macOS**: `./scripts/package_release.sh`
 
 For complete deployment options (standalone, Docker PostGIS, distributed cluster, and headless batch CLI), see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
@@ -176,7 +175,7 @@ Ether includes high-performance cloud orchestration scripts (`scripts/gcp/`) sup
 
 > 📖 See [docs/GCP_DEPLOYMENT_AND_BENCHMARK_GUIDE.md](docs/GCP_DEPLOYMENT_AND_BENCHMARK_GUIDE.md) for the exhaustive cost-per-tick matrices, sizing formulas, and multi-node cluster scaling curves.
 
-All snapshots, world state matrices (`topology.bin.gz`, `state.bin.gz`, `metadata.json`, `scenario.json`, `history.json`), and PostGIS spatial tables can be synchronized to the local machine in 1-click via `./scripts/gcp/fetch-results.sh` (or `.\scripts\gcp\fetch-results.ps1`) for seamless interactive replay in the Ether GUI.
+All snapshots, world state matrices (`topology.bin.gz`, `state.bin.gz`, `metadata.json`, `scenario.json`, `history.json`), and PostGIS spatial tables can be synchronized to the local machine in 1-click via `./scripts/gcp/fetch-results.sh` for seamless interactive replay in the Ether GUI.
 
 ---
 

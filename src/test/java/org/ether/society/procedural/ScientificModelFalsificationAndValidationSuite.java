@@ -6,10 +6,18 @@
  */
 package org.ether.society.procedural;
 
+import org.ether.society.generation.*;
+import org.ether.society.config.SimulationPerformanceConfig;
+import org.ether.society.engines.*;
+import org.ether.society.engines.tier1.*;
+import org.ether.society.engines.tier2.theories.*;
+import org.ether.society.engines.tier2.historical.*;
+import org.ether.society.engines.compiler.*;
+
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Nation;
-import org.ether.society.procedural.tier2.*;
-import org.ether.society.procedural.typeb.*;
+import org.ether.society.engines.tier2.theories.*;
+import org.ether.society.engines.tier2.historical.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -33,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * <ul>
  *   <li>1. Malthus / World3 Limits vs. Boserup Agricultural Intensification, Labor Involution & Liebig Soil Constraints</li>
  *   <li>2. Steven Pinker Monotonic Pacification vs. Peter Turchin Structural-Demographic Theory (SDT), Granovetter Cascades & Post-Collapse Elite Reset</li>
- *   <li>3. Nordhaus DICE Price Substitutability vs. Kümmel-Ayres / Smil Exergy Inertia, Induced R&D & EROEI Cliff</li>
+ *   <li>3. Nordhaus DICE Price Substitutability vs. KÃ¼mmel-Ayres / Smil Exergy Inertia, Induced R&D & EROEI Cliff</li>
  *   <li>4. Garrett Hardin Commons Tragedy vs. Elinor Ostrom Polycentric CPR Governance, Dunbar Scaling & Climate Shocks</li>
  *   <li>5. Acemoglu-Robinson Institutional Primacy vs. Sachs-Diamond Geographical/Disease Friction & 300-Year Reversal of Fortune</li>
  *   <li>6. James C. Scott Coercive Cereal Cages vs. Mancur Olson Stationary Bandit Defense & Zomia Highland Escape</li>
@@ -61,7 +69,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("1.1 Baseline: High Demographic Density forces Boserupian Technological Innovation")
         public void testBoserupianInnovationUnderDemographicPressure() {
-            logger.info("🧪 [Scenario 1.1] Testing Boserupian Innovation vs Malthusian Trap under High Density...");
+            logger.info("ðŸ§ª [Scenario 1.1] Testing Boserupian Innovation vs Malthusian Trap under High Density...");
 
             List<H3Cell> malthusGrid = createMockAgrarianGrid(10, 8000, 1.2, 12000.0);
             List<H3Cell> boserupGrid = createMockAgrarianGrid(10, 8000, 1.2, 12000.0);
@@ -101,15 +109,15 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("1.2 Parameter Sweep: Density Threshold Bifurcation (Sparse vs Dense Regimes)")
         public void testDensityThresholdBifurcation() {
-            logger.info("🧪 [Scenario 1.2] Testing Boserup Density Threshold Bifurcation (Sparse vs Dense)...");
+            logger.info("ðŸ§ª [Scenario 1.2] Testing Boserup Density Threshold Bifurcation (Sparse vs Dense)...");
 
             H3Cell sparseCell = new H3Cell(0x8828308280fffffL, 45.0, 10.0);
-            sparseCell.setPopulation(1500); // 1.5 hab/km² -> Stage 1: Foraging
+            sparseCell.setPopulation(1500); // 1.5 hab/kmÂ² -> Stage 1: Foraging
             sparseCell.setTechnologyLevel(1.0);
             sparseCell.setBiomassAgriculture(50.0);
 
             H3Cell denseCell = new H3Cell(0x8828308281fffffL, 45.0, 10.0);
-            denseCell.setPopulation(60000); // 60 hab/km² -> Stage 4: Multi-crop Irrigation
+            denseCell.setPopulation(60000); // 60 hab/kmÂ² -> Stage 4: Multi-crop Irrigation
             denseCell.setTechnologyLevel(1.0);
             denseCell.setBiomassAgriculture(50.0);
 
@@ -128,7 +136,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("1.3 Liebig-NPK Soil Depletion Limits Boserupian Intensification without Fertilizer")
         public void testLiebigNutrientDepletionConstraintOnBoserup() {
-            logger.info("🧪 [Scenario 1.3] Testing Liebig-NPK Nutrient Depletion Constraint on Boserupian Growth...");
+            logger.info("ðŸ§ª [Scenario 1.3] Testing Liebig-NPK Nutrient Depletion Constraint on Boserupian Growth...");
 
             double nitrogenStock = 100.0; // Soil available nitrogen (kg N / ha)
             double cropYield = 2000.0; // kg grain / ha
@@ -147,10 +155,10 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("1.4 Gregory Clark / Geertz Involution: Labor Productivity Drop under Boserupian Terracing")
         public void testBoserupLaborInvolutionAndHourlyWagePenalty() {
-            logger.info("🧪 [Scenario 1.4] Testing Boserup-Geertz Labor Involution (Declining Hourly Return)...");
+            logger.info("ðŸ§ª [Scenario 1.4] Testing Boserup-Geertz Labor Involution (Declining Hourly Return)...");
 
             H3Cell intensiveTerraceCell = new H3Cell(0x8828308282fffffL, 45.0, 10.0);
-            intensiveTerraceCell.setPopulation(80000); // 80 hab/km²
+            intensiveTerraceCell.setPopulation(80000); // 80 hab/kmÂ²
             intensiveTerraceCell.setResourceWork(50.0);
             intensiveTerraceCell.setBiomassAgriculture(50.0);
 
@@ -177,7 +185,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("2.1 Baseline: Gini Concentration & Elite Overproduction Triggers Non-Linear PSI Crisis")
         public void testTurchinCrisisSpikeUnderInequality() {
-            logger.info("🧪 [Scenario 2.1] Testing Pinker Linear Pacification vs Turchin Non-Linear SDT PSI Spikes...");
+            logger.info("ðŸ§ª [Scenario 2.1] Testing Pinker Linear Pacification vs Turchin Non-Linear SDT PSI Spikes...");
 
             List<H3Cell> imperialCells = createMockAgrarianGrid(20, 15000, 3.5, 45000.0);
             Nation empire = new Nation("Imperium", javafx.scene.paint.Color.RED, imperialCells.get(0));
@@ -212,7 +220,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("2.2 Granovetter Collective Riot Cascades Triggered by Macro Instability")
         public void testGranovetterRiotCascades() {
-            logger.info("🧪 [Scenario 2.2] Testing Granovetter Threshold Cascades under High Political Stress...");
+            logger.info("ðŸ§ª [Scenario 2.2] Testing Granovetter Threshold Cascades under High Political Stress...");
 
             GranovetterThresholdCascadeEngine riotEngine = new GranovetterThresholdCascadeEngine();
             List<H3Cell> riotCells = createMockAgrarianGrid(10, 20000, 2.0, 10000.0);
@@ -231,7 +239,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("2.3 Post-Crisis Elite Purge & Gini Reset after State Breakdown")
         public void testTurchinPostCrisisElitePurgeAndGiniReset() {
-            logger.info("🧪 [Scenario 2.3] Testing Post-Crisis Structural Reset (Gini Purge)...");
+            logger.info("ðŸ§ª [Scenario 2.3] Testing Post-Crisis Structural Reset (Gini Purge)...");
 
             H3Cell collapsingCapital = new H3Cell(0x8828308284fffffL, 45.0, 10.0);
             collapsingCapital.setPopulation(50000);
@@ -253,7 +261,7 @@ public class ScientificModelFalsificationAndValidationSuite {
     }
 
     // =========================================================================
-    // 3. DEBATE 3: NORDHAUS DICE SUBSTITUTABILITY vs. SMIL / KÜMMEL EXERGY
+    // 3. DEBATE 3: NORDHAUS DICE SUBSTITUTABILITY vs. SMIL / KÃœMMEL EXERGY
     // =========================================================================
     @Nested
     @DisplayName("Debate 3: Neoclassical Substitution vs. Thermodynamic Exergy Inertia")
@@ -262,7 +270,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("3.1 Baseline: Infrastructure Turnover Time Constant (tau = 40 years)")
         public void testSmilExergyInertiaVsNeoclassicalPriceSubstitution() {
-            logger.info("🧪 [Scenario 3.1] Testing 40-year Smil Infrastructure Inertia vs Instant DICE Substitution...");
+            logger.info("ðŸ§ª [Scenario 3.1] Testing 40-year Smil Infrastructure Inertia vs Instant DICE Substitution...");
 
             KummelAyresExergyEngine exergyEngine = new KummelAyresExergyEngine();
             List<H3Cell> smilCells = createMockAgrarianGrid(10, 50000, 80.0, 100000.0);
@@ -286,7 +294,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("3.2 EROEI Thermodynamic Cliff: Net Energy Collapse when EROEI < 5:1")
         public void testEroeiThermodynamicCliff() {
-            logger.info("🧪 [Scenario 3.2] Testing EROEI Thermodynamic Cliff (Net Energy Fraction)...");
+            logger.info("ðŸ§ª [Scenario 3.2] Testing EROEI Thermodynamic Cliff (Net Energy Fraction)...");
 
             double eroeiHigh = 50.0;
             double eroeiMid = 10.0;
@@ -304,7 +312,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("3.3 Induced Technical Change with Incompressible Physical Material Floor (tau_min = 25 yr)")
         public void testInducedTechnicalChangeWithMaterialFloor() {
-            logger.info("🧪 [Scenario 3.3] Testing Induced R&D vs Material Incompressibility Floor...");
+            logger.info("ðŸ§ª [Scenario 3.3] Testing Induced R&D vs Material Incompressibility Floor...");
 
             double carbonTax = 1000.0; // Extreme carbon price ($/t CO2)
             double baseTau = 40.0;
@@ -326,7 +334,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("4.1 Baseline: Ostrom Sustainable CPR Quotas vs Hardin Unmanaged Collapse")
         public void testOstromSustainabilityVsHardinCollapse() {
-            logger.info("🧪 [Scenario 4.1] Testing Ostrom Institutional Design vs Hardin Uncoordinated Commons...");
+            logger.info("ðŸ§ª [Scenario 4.1] Testing Ostrom Institutional Design vs Hardin Uncoordinated Commons...");
 
             double hardinBiomass = 10000.0;
             double ostromBiomass = 10000.0;
@@ -351,7 +359,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("4.2 Sensitivity Analysis: Ostrom Monitoring & Graduated Sanctions Efficiency")
         public void testMonitoringEfficacyGradient() {
-            logger.info("🧪 [Scenario 4.2] Testing Ostrom Monitoring Efficacy Sweep...");
+            logger.info("ðŸ§ª [Scenario 4.2] Testing Ostrom Monitoring Efficacy Sweep...");
 
             double[] monitoringEfficiencies = {0.10, 0.50, 0.95};
             double[] finalBiomasses = new double[3];
@@ -376,7 +384,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("4.3 Dunbar Scale Limit: Ostrom Governance Degenerates when Group Size N > 150 without Polycentric Tiers")
         public void testOstromDunbarScaleBreakdownWithoutNestedFederalism() {
-            logger.info("🧪 [Scenario 4.3] Testing Ostrom CPR Scale Breakdown beyond Dunbar Threshold (N > 150)...");
+            logger.info("ðŸ§ª [Scenario 4.3] Testing Ostrom CPR Scale Breakdown beyond Dunbar Threshold (N > 150)...");
 
             int smallCommunityN = 40;  // Face-to-face trust network (Dunbar compliant)
             int largeCommunityN = 600; // Anonymous mass without nested polycentric federalism
@@ -400,7 +408,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("5.1 Short-Term (50 yr): Institutional Accumulation Constrained by Physical Transport Friction")
         public void testInstitutionalAndGeographicalFrictionInterplay() {
-            logger.info("🧪 [Scenario 5.1] Testing Acemoglu Inclusive Institutions vs Geographic Friction (50 yr)...");
+            logger.info("ðŸ§ª [Scenario 5.1] Testing Acemoglu Inclusive Institutions vs Geographic Friction (50 yr)...");
 
             AcemogluRobinsonInstitutionsEngine instEngine = new AcemogluRobinsonInstitutionsEngine();
 
@@ -434,7 +442,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("5.2 Long-Term (300 yr): Multi-Century Reversal of Fortune (Inclusive Technology Overcomes Friction)")
         public void testMultiCenturyReversalOfFortune() {
-            logger.info("🧪 [Scenario 5.2] Testing Acemoglu 300-Year Reversal of Fortune...");
+            logger.info("ðŸ§ª [Scenario 5.2] Testing Acemoglu 300-Year Reversal of Fortune...");
 
             AcemogluRobinsonInstitutionsEngine instEngine = new AcemogluRobinsonInstitutionsEngine();
 
@@ -479,7 +487,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("6.1 Dense Cereal Monoculture Epidemic Vulnerability vs Wetland Resilience")
         public void testZoonoticEpidemicShockOnEarlyGrainState() {
-            logger.info("🧪 [Scenario 6.1] Testing Early Grain State Epidemic Fragility vs Forager Resilience...");
+            logger.info("ðŸ§ª [Scenario 6.1] Testing Early Grain State Epidemic Fragility vs Forager Resilience...");
 
             H3Cell grainCity = new H3Cell(0x8828308285fffffL, 31.3, 45.6);
             grainCity.setPopulation(25000);
@@ -503,7 +511,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("6.2 Zomia Escape: Peasant Flight to Non-State Highland Frontier under Tax Drag")
         public void testPeasantEscapeToZomiaHighlands() {
-            logger.info("🧪 [Scenario 6.2] Testing Peasant Escape to Non-State Spaces (Zomia)...");
+            logger.info("ðŸ§ª [Scenario 6.2] Testing Peasant Escape to Non-State Spaces (Zomia)...");
 
             int valleyTaxedPop = 10000;
             int highlandZomiaPop = 2000;
@@ -523,7 +531,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("6.3 Mancur Olson Stationary Bandit Security: Walled City Survives Nomadic Raider Attack")
         public void testMancurOlsonStationaryBanditSecurityTradeoff() {
-            logger.info("🧪 [Scenario 6.3] Testing Mancur Olson Stationary Bandit Security Shield...");
+            logger.info("ðŸ§ª [Scenario 6.3] Testing Mancur Olson Stationary Bandit Security Shield...");
 
             int walledCityPop = 20000;
             int openMarshPop = 2000;
@@ -550,7 +558,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("7.1 Population Bottleneck (N < 5000) Induces Stochastic Repertoire Loss")
         public void testHenrichTasmanianCulturalLoss() {
-            logger.info("🧪 [Scenario 7.1] Testing Henrich Cultural Transmission Bottleneck...");
+            logger.info("ðŸ§ª [Scenario 7.1] Testing Henrich Cultural Transmission Bottleneck...");
 
             int isolatedPopulation = 3500;
             double toolComplexity = 100.0;
@@ -569,7 +577,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("7.2 Demographic Reconnection & Cultural Rebound (N > 20000)")
         public void testCulturalRepertoireReboundOnReconnection() {
-            logger.info("🧪 [Scenario 7.2] Testing Cultural Repertoire Resurgence upon Demographic Reconnection...");
+            logger.info("ðŸ§ª [Scenario 7.2] Testing Cultural Repertoire Resurgence upon Demographic Reconnection...");
 
             int reconnectedPopulation = 25000;
             double toolComplexity = 40.0;
@@ -586,7 +594,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         @Test
         @DisplayName("7.3 Vaesen Ecological Adaptation Hypothesis: Functional Tool Substitution under Marine Mammal Abundance")
         public void testVaesenEnvironmentalAdaptationVsDemographicLoss() {
-            logger.info("🧪 [Scenario 7.3] Testing Vaesen Ecological Shift (Seal Hunting vs Bone Fishing)...");
+            logger.info("ðŸ§ª [Scenario 7.3] Testing Vaesen Ecological Shift (Seal Hunting vs Bone Fishing)...");
 
             double boneFishHookUtility = 10.0; // Low calorie per hour
             double sealClubUtility = 85.0;      // High calorie fat per hour in sub-polar climate
@@ -616,3 +624,4 @@ public class ScientificModelFalsificationAndValidationSuite {
         return cells;
     }
 }
+

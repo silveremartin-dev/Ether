@@ -93,7 +93,7 @@ public class DataIngestionFidelityTest {
         java.util.List<org.ether.society.database.H3Cell> testCells = java.util.List.of(shallowShelfCell, coastalLandCell);
 
         // 1. Apply Glacial Maximum regression (-120m)
-        org.ether.society.procedural.SeaLevelTransitionEngine.applySeaLevelTransition(testCells, -120.0);
+        org.ether.society.engines.tier1.SeaLevelTransitionEngine.applySeaLevelTransition(testCells, -120.0);
 
         assertNotEquals(org.ether.society.model.Biome.OCEAN, shallowShelfCell.getBiome(),
                 "Continental shelf at -50m elevation must emerge from ocean when sea level drops by -120m");
@@ -101,7 +101,7 @@ public class DataIngestionFidelityTest {
                 "Coastal land at +5m remains land during sea level drop");
 
         // 2. Apply Super-Greenhouse submersion (+50m)
-        org.ether.society.procedural.SeaLevelTransitionEngine.applySeaLevelTransition(testCells, +50.0);
+        org.ether.society.engines.tier1.SeaLevelTransitionEngine.applySeaLevelTransition(testCells, +50.0);
 
         assertEquals(org.ether.society.model.Biome.OCEAN, shallowShelfCell.getBiome(),
                 "Shelf at -50m must submerge under +50m sea level rise");
@@ -109,3 +109,4 @@ public class DataIngestionFidelityTest {
                 "Coastal land at +5m elevation must submerge into ocean under +50m sea level rise");
     }
 }
+

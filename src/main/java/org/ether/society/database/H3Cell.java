@@ -225,6 +225,21 @@ public class H3Cell {
     @Column(nullable = false)
     private Boolean hasFloatingInfrastructure = false; // True if cell hosts seasteading / floating habitats
 
+    // --- Extraterrestrial Pressurized Habitats & Infrastructure ---
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private org.ether.society.model.HabitatType habitatType = org.ether.society.model.HabitatType.NONE;
+    @Column(nullable = false)
+    private Integer habitatTier = 0; // Tier 0: None, Tier 1: Outpost (50-500), Tier 2: Habitat (5k-50k), Tier 3: Megastructure (500k-5M)
+    @Column(nullable = false)
+    private Double habitatCapacity = 0.0; // Max pressurized human capacity
+    @Column(nullable = false)
+    private Double habitatIntegrity = 1.0; // Structural integrity (1.0 = brand new, 0.0 = total breach)
+    @Column(nullable = false)
+    private Double habitatEnergyKw = 0.0; // Total ECLSS power consumption in kW
+    @Column(nullable = false)
+    private Double habitatAgeYears = 0.0; // Accumulated age in Earth years
+
     // --- Detailed Demographic Age Pyramid (7 Fine-Grained Cohorts) ---
     @Column(nullable = false)
     private Integer pop0to4 = 0;   // 0-4 years (Infant cohort)
@@ -904,8 +919,64 @@ public class H3Cell {
         copy.setEnergyFire(this.energyFire);
         copy.setEnergySlaves(this.energySlaves);
         copy.setEnergyFoodConsumed(this.energyFoodConsumed);
+
+        // Extraterrestrial Pressurized Habitats
+        copy.setHabitatType(this.habitatType);
+        copy.setHabitatTier(this.habitatTier);
+        copy.setHabitatCapacity(this.habitatCapacity);
+        copy.setHabitatIntegrity(this.habitatIntegrity);
+        copy.setHabitatEnergyKw(this.habitatEnergyKw);
+        copy.setHabitatAgeYears(this.habitatAgeYears);
         
         return copy;
+    }
+
+    public org.ether.society.model.HabitatType getHabitatType() {
+        return habitatType != null ? habitatType : org.ether.society.model.HabitatType.NONE;
+    }
+
+    public void setHabitatType(org.ether.society.model.HabitatType habitatType) {
+        this.habitatType = habitatType != null ? habitatType : org.ether.society.model.HabitatType.NONE;
+    }
+
+    public Integer getHabitatTier() {
+        return habitatTier != null ? habitatTier : 0;
+    }
+
+    public void setHabitatTier(Integer habitatTier) {
+        this.habitatTier = habitatTier != null ? habitatTier : 0;
+    }
+
+    public Double getHabitatCapacity() {
+        return habitatCapacity != null ? habitatCapacity : 0.0;
+    }
+
+    public void setHabitatCapacity(Double habitatCapacity) {
+        this.habitatCapacity = habitatCapacity != null ? Math.max(0.0, habitatCapacity) : 0.0;
+    }
+
+    public Double getHabitatIntegrity() {
+        return habitatIntegrity != null ? habitatIntegrity : 1.0;
+    }
+
+    public void setHabitatIntegrity(Double habitatIntegrity) {
+        this.habitatIntegrity = habitatIntegrity != null ? Math.clamp(habitatIntegrity, 0.0, 1.0) : 1.0;
+    }
+
+    public Double getHabitatEnergyKw() {
+        return habitatEnergyKw != null ? habitatEnergyKw : 0.0;
+    }
+
+    public void setHabitatEnergyKw(Double habitatEnergyKw) {
+        this.habitatEnergyKw = habitatEnergyKw != null ? Math.max(0.0, habitatEnergyKw) : 0.0;
+    }
+
+    public Double getHabitatAgeYears() {
+        return habitatAgeYears != null ? habitatAgeYears : 0.0;
+    }
+
+    public void setHabitatAgeYears(Double habitatAgeYears) {
+        this.habitatAgeYears = habitatAgeYears != null ? Math.max(0.0, habitatAgeYears) : 0.0;
     }
 }
 

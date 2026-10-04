@@ -5,12 +5,20 @@
  */
 package org.ether.society.procedural;
 
+import org.ether.society.generation.*;
+import org.ether.society.config.SimulationPerformanceConfig;
+import org.ether.society.engines.*;
+import org.ether.society.engines.tier1.*;
+import org.ether.society.engines.tier2.theories.*;
+import org.ether.society.engines.tier2.historical.*;
+import org.ether.society.engines.compiler.*;
+
 import org.ether.society.core.PreComputePhase;
 import org.ether.society.database.H3Cell;
 import org.ether.society.h3.H3Service;
 import org.ether.society.model.Biome;
 import org.ether.society.model.Scenario;
-import org.ether.society.procedural.typeb.*;
+import org.ether.society.engines.tier2.historical.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -76,7 +84,7 @@ public class OutofAfricaGlobalDispersalSimulationTest {
         PreComputePhase preCompute = new PreComputePhase(scenario);
         preCompute.execute(planetaryGrid);
 
-        // Find East Africa origin cell (Lat: ~0° to 15°N, Lng: ~30° to 45°E)
+        // Find East Africa origin cell (Lat: ~0Â° to 15Â°N, Lng: ~30Â° to 45Â°E)
         H3Cell africaOrigin = planetaryGrid.stream()
                 .filter(c -> c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
                 .filter(c -> c.getLatitude() >= 0.0 && c.getLatitude() <= 15.0)
@@ -272,3 +280,4 @@ public class OutofAfricaGlobalDispersalSimulationTest {
         return R * c;
     }
 }
+

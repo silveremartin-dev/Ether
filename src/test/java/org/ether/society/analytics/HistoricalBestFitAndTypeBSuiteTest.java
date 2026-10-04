@@ -7,7 +7,7 @@
 package org.ether.society.analytics;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.procedural.typeb.*;
+import org.ether.society.engines.tier2.historical.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -66,4 +66,5 @@ public class HistoricalBestFitAndTypeBSuiteTest {
         }, "Isolated Type B hybrid executions should complete cleanly.");
     }
 }
+
 

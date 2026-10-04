@@ -6,10 +6,18 @@
  */
 package org.ether.society.procedural;
 
+import org.ether.society.generation.*;
+import org.ether.society.config.SimulationPerformanceConfig;
+import org.ether.society.engines.*;
+import org.ether.society.engines.tier1.*;
+import org.ether.society.engines.tier2.theories.*;
+import org.ether.society.engines.tier2.historical.*;
+import org.ether.society.engines.compiler.*;
+
 import org.ether.society.database.H3Cell;
-import org.ether.society.procedural.tier2.AcemogluRobinsonInstitutionsEngine;
-import org.ether.society.procedural.tier2.GranovetterThresholdCascadeEngine;
-import org.ether.society.procedural.tier2.TurchinGoldstoneSDTEngine;
+import org.ether.society.engines.tier2.theories.AcemogluRobinsonInstitutionsEngine;
+import org.ether.society.engines.tier2.theories.GranovetterThresholdCascadeEngine;
+import org.ether.society.engines.tier2.theories.TurchinGoldstoneSDTEngine;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -97,4 +105,5 @@ public class Tier2MacroSociologyTest {
         assertTrue(capitalAfter > capitalBefore, "Inclusive institutions must promote capital accumulation");
     }
 }
+
 

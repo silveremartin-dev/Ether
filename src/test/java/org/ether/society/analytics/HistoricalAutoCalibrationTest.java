@@ -6,7 +6,7 @@
  */
 package org.ether.society.analytics;
 
-import org.ether.society.procedural.ProceduralEngineRegistry;
+import org.ether.society.engines.ProceduralEngineRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -136,4 +136,5 @@ public class HistoricalAutoCalibrationTest {
         assertTrue(baseline.rmse >= 0.0, "Baseline should return valid RMSE score.");
     }
 }
+
 

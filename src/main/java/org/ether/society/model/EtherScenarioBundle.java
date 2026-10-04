@@ -1,6 +1,6 @@
 package org.ether.society.model;
 
-import org.ether.society.procedural.PlanetPreset;
+import org.ether.society.generation.PlanetPreset;
 import org.ether.society.model.EcologyPreset;
 
 /**
@@ -25,3 +25,4 @@ public record EtherScenarioBundle(
         if (version == null) version = "1.0.0-beta.1";
     }
 }
+

@@ -13,8 +13,14 @@ import org.ether.society.analytics.HistoricalValidationKernel.MultiMetricValidat
 import org.ether.society.core.PreComputePhase;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Scenario;
-import org.ether.society.procedural.*;
-import org.ether.society.procedural.tier2.*;
+import org.ether.society.generation.*;
+import org.ether.society.config.SimulationPerformanceConfig;
+import org.ether.society.engines.*;
+import org.ether.society.engines.tier1.*;
+import org.ether.society.engines.tier2.theories.*;
+import org.ether.society.engines.tier2.historical.*;
+import org.ether.society.engines.compiler.*;
+import org.ether.society.engines.tier2.theories.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.1
  */
-@DisplayName("🔬 Empirical Engine Counterfactual & Multi-Metric Benchmarking Suite")
+@DisplayName("ðŸ”¬ Empirical Engine Counterfactual & Multi-Metric Benchmarking Suite")
 public class EmpiricalEngineCounterfactualValidationSuite {
     private static final Logger logger = LoggerFactory.getLogger(EmpiricalEngineCounterfactualValidationSuite.class);
 
@@ -280,7 +286,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                 long seed = MONTE_CARLO_SEEDS[s];
                 List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
                 Scenario sc = new Scenario();
-                sc.setName("Révolution Industrielle & Machine à Vapeur (1800)");
+                sc.setName("RÃ©volution Industrielle & Machine Ã  Vapeur (1800)");
                 sc.setInitialHumanCount(50_000_000L);
                 sc.setInitialCapitalPerCapita(150.0 + (s * 10.0));
                 sc.setPopulationDensityType("INDUSTRIAL_1800");
@@ -702,7 +708,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
         void testStommelAMOCCriticalBifurcation() {
             logger.info("=== Executing Stommel AMOC Bifurcation Benchmark ===");
 
-            // Baseline warm Holocene conditions: Equator 28°C / 36.5 PSU, North Atlantic 4°C / 34.8 PSU
+            // Baseline warm Holocene conditions: Equator 28Â°C / 36.5 PSU, North Atlantic 4Â°C / 34.8 PSU
             ThermohalineStommelAMOCEngine.StommelState baselineState =
                     ThermohalineStommelAMOCEngine.calculateStommelAMOC(28.0, 4.0, 36.5, 34.8);
 
@@ -714,7 +720,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                     ThermohalineStommelAMOCEngine.calculateStommelAMOC(28.0, 2.0, 36.5, 31.0);
 
             assertTrue(pulseState.isCollapsed(), "Massive polar freshening must trigger non-linear AMOC collapse");
-            assertTrue(pulseState.northAtlanticCoolingShiftC() <= -5.0, "AMOC collapse must induce severe high-latitude cooling (<= -5°C)");
+            assertTrue(pulseState.northAtlanticCoolingShiftC() <= -5.0, "AMOC collapse must induce severe high-latitude cooling (<= -5Â°C)");
         }
     }
 
@@ -864,3 +870,4 @@ public class EmpiricalEngineCounterfactualValidationSuite {
         }
     }
 }
+

@@ -6,8 +6,6 @@
 package org.ether.society.ui;
 
 import org.ether.society.core.dod.NativeRustBridge;
-import org.ether.society.gpu.GPUComputeShaderPipeline;
-import org.ether.society.gpu.GPUManager;
 import org.ether.society.i18n.I18n;
 import org.ether.society.network.ClusterManager;
 import org.ether.society.database.DatabaseConfig;
@@ -78,8 +76,6 @@ public class ExecutionContextPanel extends BorderPane {
 
     public static HardwareMode getRecommendedHardwareMode() {
         if (isRustAvailable()) return HardwareMode.NATIVE_RUST;
-        GPUManager gpu = new GPUManager();
-        if (gpu.isGpuAvailable()) return HardwareMode.GPU_SHADERS;
         if (isSimdAvailable()) return HardwareMode.JAVA_VECTOR_SIMD;
         return HardwareMode.CPU_JIT;
     }
@@ -101,7 +97,7 @@ public class ExecutionContextPanel extends BorderPane {
         if (mode == null) return false;
         return switch (mode) {
             case NATIVE_RUST -> isRustAvailable();
-            case GPU_SHADERS -> new GPUManager().isGpuAvailable();
+            case GPU_SHADERS -> false;
             case JAVA_VECTOR_SIMD -> isSimdAvailable();
             case CPU_JIT, GPU_OFF -> true;
         };
@@ -210,8 +206,6 @@ public class ExecutionContextPanel extends BorderPane {
         public String getChunks() { return chunks.get(); }
     }
 
-    private final GPUManager gpuManager;
-    private final GPUComputeShaderPipeline gpuPipeline;
     private final Runnable onLaunchSimulationCallback;
     private ClusterManager clusterManager;
     private boolean isMasterRunning = false;
@@ -314,8 +308,6 @@ public class ExecutionContextPanel extends BorderPane {
     }
 
     public ExecutionContextPanel(Runnable onLaunchSimulationCallback) {
-        this.gpuManager = new GPUManager();
-        this.gpuPipeline = new GPUComputeShaderPipeline();
         this.onLaunchSimulationCallback = onLaunchSimulationCallback;
 
         getStyleClass().add("glass-panel");
@@ -375,7 +367,7 @@ public class ExecutionContextPanel extends BorderPane {
 
         // Hardware Availability Check
         boolean rustAvailable = isRustAvailable();
-        boolean gpuAvailable = gpuManager.isGpuAvailable();
+        boolean gpuAvailable = false;
         boolean simdAvailable = isSimdAvailable();
 
         rustNativeRadio.setDisable(!rustAvailable);
@@ -397,8 +389,7 @@ public class ExecutionContextPanel extends BorderPane {
         rustNativeRadio.setOnAction(e -> {
             prefs.put(PREF_HARDWARE_MODE_KEY, HardwareMode.NATIVE_RUST.name());
             prefs.putBoolean(PREF_GPU_KEY, false);
-            gpuManager.setGpuEnabled(false);
-            logger.info("Hardware acceleration mode set to NATIVE RUST (Rayon + AVX-512)");
+                        logger.info("Hardware acceleration mode set to NATIVE RUST (Rayon + AVX-512)");
             updateRightSummary();
             notifyLiveConfigChange(HardwareMode.NATIVE_RUST);
         });
@@ -406,8 +397,7 @@ public class ExecutionContextPanel extends BorderPane {
         gpuShadersRadio.setOnAction(e -> {
             prefs.put(PREF_HARDWARE_MODE_KEY, HardwareMode.GPU_SHADERS.name());
             prefs.putBoolean(PREF_GPU_KEY, true);
-            gpuManager.setGpuEnabled(true);
-            logger.info("Hardware acceleration mode set to GPU COMPUTE SHADERS (OpenCL)");
+                        logger.info("Hardware acceleration mode set to GPU COMPUTE SHADERS (OpenCL)");
             updateRightSummary();
             notifyLiveConfigChange(HardwareMode.GPU_SHADERS);
         });
@@ -415,8 +405,7 @@ public class ExecutionContextPanel extends BorderPane {
         javaVectorSimdRadio.setOnAction(e -> {
             prefs.put(PREF_HARDWARE_MODE_KEY, HardwareMode.JAVA_VECTOR_SIMD.name());
             prefs.putBoolean(PREF_GPU_KEY, false);
-            gpuManager.setGpuEnabled(false);
-            logger.info("Hardware acceleration mode set to JAVA 21 VECTOR SIMD");
+                        logger.info("Hardware acceleration mode set to JAVA 21 VECTOR SIMD");
             updateRightSummary();
             notifyLiveConfigChange(HardwareMode.JAVA_VECTOR_SIMD);
         });
@@ -424,8 +413,7 @@ public class ExecutionContextPanel extends BorderPane {
         cpuJitRadio.setOnAction(e -> {
             prefs.put(PREF_HARDWARE_MODE_KEY, HardwareMode.CPU_JIT.name());
             prefs.putBoolean(PREF_GPU_KEY, false);
-            gpuManager.setGpuEnabled(false);
-            logger.info("Hardware acceleration mode set to CPU JIT");
+                        logger.info("Hardware acceleration mode set to CPU JIT");
             updateRightSummary();
             notifyLiveConfigChange(HardwareMode.CPU_JIT);
         });
@@ -433,8 +421,7 @@ public class ExecutionContextPanel extends BorderPane {
         gpuOffRadio.setOnAction(e -> {
             prefs.put(PREF_HARDWARE_MODE_KEY, HardwareMode.GPU_OFF.name());
             prefs.putBoolean(PREF_GPU_KEY, false);
-            gpuManager.setGpuEnabled(false);
-            logger.info("Hardware acceleration mode set to GPU OFF (Software Prism Safe Fallback)");
+                        logger.info("Hardware acceleration mode set to GPU OFF (Software Prism Safe Fallback)");
             updateRightSummary();
             notifyLiveConfigChange(HardwareMode.GPU_OFF);
         });
@@ -1043,30 +1030,25 @@ public class ExecutionContextPanel extends BorderPane {
             localTopologyRadio.setSelected(true);
             guiRenderingRadio.setSelected(true);
             prefs.put(PREF_HARDWARE_MODE_KEY, HardwareMode.NATIVE_RUST.name());
-            prefs.putBoolean(PREF_GPU_KEY, false);
-            gpuManager.setGpuEnabled(false);
-        } else if (mode == ExecutionMode.GPU && gpuManager.isGpuAvailable()) {
+        } else if (mode == ExecutionMode.GPU && isModeSupported(HardwareMode.GPU_SHADERS)) {
             gpuShadersRadio.setSelected(true);
             localTopologyRadio.setSelected(true);
             guiRenderingRadio.setSelected(true);
             prefs.put(PREF_HARDWARE_MODE_KEY, HardwareMode.GPU_SHADERS.name());
             prefs.putBoolean(PREF_GPU_KEY, true);
-            gpuManager.setGpuEnabled(true);
-        } else if (mode == ExecutionMode.CPU_SIMD && isSimdAvailable()) {
+                    } else if (mode == ExecutionMode.CPU_SIMD && isSimdAvailable()) {
             javaVectorSimdRadio.setSelected(true);
             localTopologyRadio.setSelected(true);
             guiRenderingRadio.setSelected(true);
             prefs.put(PREF_HARDWARE_MODE_KEY, HardwareMode.JAVA_VECTOR_SIMD.name());
             prefs.putBoolean(PREF_GPU_KEY, false);
-            gpuManager.setGpuEnabled(false);
-        } else if (mode == ExecutionMode.CPU) {
+                    } else if (mode == ExecutionMode.CPU) {
             cpuJitRadio.setSelected(true);
             localTopologyRadio.setSelected(true);
             guiRenderingRadio.setSelected(true);
             prefs.put(PREF_HARDWARE_MODE_KEY, HardwareMode.CPU_JIT.name());
             prefs.putBoolean(PREF_GPU_KEY, false);
-            gpuManager.setGpuEnabled(false);
-        } else if (mode == ExecutionMode.CLUSTER) {
+                    } else if (mode == ExecutionMode.CLUSTER) {
             clusterTopologyRadio.setSelected(true);
             guiRenderingRadio.setSelected(true);
             clusterConfigCard.setVisible(true);
@@ -1139,7 +1121,7 @@ public class ExecutionContextPanel extends BorderPane {
 
         // Section 1: Hardware Radios & Badges
         boolean rustAvailable = isRustAvailable();
-        boolean gpuAvailable = gpuManager.isGpuAvailable();
+        boolean gpuAvailable = false;
         boolean simdAvailable = isSimdAvailable();
         HardwareMode recommended = getRecommendedHardwareMode();
         String recTag = " " + I18n.getOrDefault("exec.badge.recommended", "★ [Recommended]");

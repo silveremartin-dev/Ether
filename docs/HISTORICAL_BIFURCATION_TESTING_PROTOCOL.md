@@ -33,31 +33,20 @@ mvn test "-Dtest=MasterHistoricalBifurcationSuite,EmpiricalResidualBifurcationTe
 
 ### 2. Standalone Automation Scripts
 
-* **Windows PowerShell**:
-  ```powershell
-  # Master suite (default)
-  .\scripts\run_historical_bifurcation_benchmarks.ps1 -Mode master
-
-  # All micro-algebraic suites
-  .\scripts\run_historical_bifurcation_benchmarks.ps1 -Mode all
-
-  # Full planetary batch (41,162 cells headless runner)
-  .\scripts\run_historical_bifurcation_benchmarks.ps1 -Mode macro
+* **Windows Command Prompt (CMD / Batch)**:
+  ```cmd
+  scripts\run_historical_bifurcation_benchmarks.bat master
+  scripts\run_historical_bifurcation_benchmarks.bat all
+  scripts\run_historical_bifurcation_benchmarks.bat macro
   ```
 
-* **Linux / macOS Bash**:
+* **Linux / macOS (Bash)**:
   ```bash
   chmod +x ./scripts/run_historical_bifurcation_benchmarks.sh
   ./scripts/run_historical_bifurcation_benchmarks.sh master
   ./scripts/run_historical_bifurcation_benchmarks.sh all
   ./scripts/run_historical_bifurcation_benchmarks.sh macro
   ```
-
-* **Windows Command Prompt (CMD)**:
-  ```cmd
-  scripts\run_historical_bifurcation_benchmarks.bat master
-  scripts\run_historical_bifurcation_benchmarks.bat all
-  scripts\run_historical_bifurcation_benchmarks.bat macro
   ```
 
 ---

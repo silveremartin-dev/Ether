@@ -33,11 +33,8 @@ This is the recommended approach for heavy batch runs because it has **zero idle
 ### Step 0 — One-time infrastructure setup
 
 ```bash
-# Linux / macOS
+# Linux / macOS / Cloud Shell
 ./scripts/gcp/batch/setup-gcp-batch-infra.sh
-
-# Windows PowerShell
-.\scripts\gcp\batch\setup-gcp-batch-infra.ps1
 ```
 
 Creates: Artifact Registry repo, GCS bucket `gs://ether-simulations`, service account `ether-batch-runner`.
@@ -47,11 +44,8 @@ Creates: Artifact Registry repo, GCS bucket `gs://ether-simulations`, service ac
 ### Step 1 — Build & push the Docker image
 
 ```bash
-# Linux / macOS
+# Linux / macOS / Cloud Shell
 ./scripts/gcp/batch/build-and-push.sh ether-509812 europe-west1 latest
-
-# Windows PowerShell
-.\scripts\gcp\batch\build-and-push.ps1 -ProjectId ether-509812 -Region europe-west1 -Tag latest
 ```
 
 Builds the Ether multi-stage Docker image and pushes it to:
@@ -64,11 +58,8 @@ Builds the Ether multi-stage Docker image and pushes it to:
 ### Step 2 — Submit a simulation job
 
 ```bash
-# Linux / macOS
+# Linux / macOS / Cloud Shell
 ./scripts/gcp/batch/submit-batch-job.sh OUT_OF_AFRICA 1000 5000
-
-# Windows PowerShell
-.\scripts\gcp\batch\submit-batch-job.ps1 -Scenario OUT_OF_AFRICA -Ticks 1000 -Cells 5000
 ```
 
 Full parameter reference:

@@ -39,13 +39,13 @@ Ether provides cross-platform execution scripts for Windows, Linux, and macOS:
 
 | Category | Script | Command | Description |
 | :--- | :--- | :--- | :--- |
-| **Standalone GUI (In-Memory)** | `start-no-db` | `.\scripts\start-no-db.ps1`<br>`./scripts/start-no-db.sh` | Launch JavaFX UI directly in memory without Docker or PostgreSQL. |
-| **Docker + PostgreSQL** | `start-with-db` | `.\scripts\start-with-db.bat`<br>`./scripts/start-with-db.sh` | Start PostgreSQL/PostGIS container, apply migrations & launch GUI. |
-| **Headless CLI Mode** | `start-headless` | `.\scripts\start-headless.ps1 -Scenario OUT_OF_AFRICA -Ticks 500 -Profile`<br>`./scripts/start-headless.sh --scenario=OUT_OF_AFRICA --ticks=500` | Run headless simulation without JavaFX for fast automated benchmarks. |
-| **Distributed Master** | `start-master` | `.\scripts\start-master.ps1 -Port 9090 -Scenario OUT_OF_AFRICA`<br>`./scripts/start-master.sh --port=9090` | Launch gRPC Master cluster node to partition H3 mesh across workers. |
-| **Distributed Worker** | `start-worker` | `.\scripts\start-worker.ps1 -MasterHost "192.168.1.50" -Port 9090`<br>`./scripts/start-worker.sh --master=192.168.1.50:9090` | Connect worker node to remote master node for parallel spatial compute. |
-| **Database Control** | `database-status` / `stop-docker` | `.\scripts\database-status.bat` / `.\scripts\stop-docker.bat` | Inspect PostgreSQL health or stop active Docker database containers. |
-| **Javadoc & Build** | `javadoc` | `.\scripts\javadoc.bat` / `.\scripts\javadoc.ps1` | Generate Javadoc HTML API docs. |
+| **Standalone GUI (In-Memory)** | `start-no-db` | `scripts\start-no-db.bat`<br>`./scripts/start-no-db.sh` | Launch JavaFX UI directly in memory without Docker or PostgreSQL. |
+| **Docker + PostgreSQL** | `start-with-db` | `scripts\start-with-db.bat`<br>`./scripts/start-with-db.sh` | Start PostgreSQL/PostGIS container, apply migrations & launch GUI. |
+| **Headless CLI Mode** | `start-headless` | `scripts\start-headless.bat OUT_OF_AFRICA 500 3000`<br>`./scripts/start-headless.sh OUT_OF_AFRICA 500 3000` | Run headless simulation without JavaFX for fast automated benchmarks. |
+| **Distributed Master** | `start-master` | `scripts\start-master.bat OUT_OF_AFRICA 9090 EtherClusterSecret2026`<br>`./scripts/start-master.sh OUT_OF_AFRICA 9090 EtherClusterSecret2026` | Launch gRPC Master cluster node to partition H3 mesh across workers. |
+| **Distributed Worker** | `start-worker` | `scripts\start-worker.bat 192.168.1.50 9090`<br>`./scripts/start-worker.sh 192.168.1.50 9090` | Connect worker node to remote master node for parallel spatial compute. |
+| **Database Control** | `database-status` / `stop-docker` | `scripts\database-status.bat` / `scripts\stop-docker.bat`<br>`./scripts/database-status.sh` / `./scripts/stop-docker.sh` | Inspect PostgreSQL health or stop active Docker database containers. |
+| **Javadoc & Build** | `javadoc` | `scripts\javadoc.bat` / `./scripts/javadoc.sh` | Generate Javadoc HTML API docs. |
 
 ### Database Configuration (PostgreSQL / PostGIS)
 - **Host**: `localhost` | **Port**: `54320`
@@ -61,8 +61,8 @@ Ether supports distributed cluster execution across Master and Worker nodes usin
 
 | Node Role | Script | Environment Variable | Port |
 | :--- | :--- | :--- | :--- |
-| **Master Node** | `scripts/start-master.ps1` / `.sh` | `ETHER_ROLE=MASTER` | `50051` (gRPC) |
-| **Worker Node** | `scripts/start-worker.ps1` / `.sh` | `ETHER_ROLE=WORKER` | Dynamic |
+| **Master Node** | `scripts/start-master.bat` / `.sh` | `ETHER_ROLE=MASTER` | `9090` (TCP/gRPC) |
+| **Worker Node** | `scripts/start-worker.bat` / `.sh` | `ETHER_ROLE=WORKER` | Dynamic |
 
 ### Starting a Multi-Node Cluster
 

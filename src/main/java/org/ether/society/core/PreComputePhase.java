@@ -8,7 +8,7 @@ package org.ether.society.core;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.*;
-import org.ether.society.procedural.FutureScenarioRegistry;
+import org.ether.society.engines.FutureScenarioRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +104,7 @@ public class PreComputePhase {
                     }
                 }
                 if (isGlacialMax) {
-                    org.ether.society.procedural.SeaLevelTransitionEngine.applySeaLevelTransition(cells, -120.0);
+                    org.ether.society.engines.tier1.SeaLevelTransitionEngine.applySeaLevelTransition(cells, -120.0);
                 }
             }
             return;
@@ -122,7 +122,7 @@ public class PreComputePhase {
             double latFactor = Math.abs(lat) / 90.0;
             double baseTemp = 30.0 - (latFactor * 50.0 * (axialTilt / 23.5));
 
-            // Glacial Maximum LGM cooling (-6°C global) & Sea Level Drop (-120m)
+            // Glacial Maximum LGM cooling (-6Â°C global) & Sea Level Drop (-120m)
             if (isGlacialMax) {
                 baseTemp -= 6.0;
                 cell.setSeaLevelOffsetMeters(-120.0);
@@ -147,7 +147,7 @@ public class PreComputePhase {
                 cell.setIceSheetThicknessMeters(0.0);
             }
 
-            // Younger Dryas abrupt cooling (-5.5°C in N. Atlantic)
+            // Younger Dryas abrupt cooling (-5.5Â°C in N. Atlantic)
             if (isYoungerDryas && lat >= 30.0 && lat <= 65.0 && lng >= -30.0 && lng <= 45.0) {
                 baseTemp -= 5.5;
             }
@@ -188,7 +188,7 @@ public class PreComputePhase {
         }
 
         double seaOffset = isGlacialMax ? -120.0 : 0.0;
-        org.ether.society.procedural.SeaLevelTransitionEngine.applySeaLevelTransition(cells, seaOffset);
+        org.ether.society.engines.tier1.SeaLevelTransitionEngine.applySeaLevelTransition(cells, seaOffset);
     }
 
     /**
@@ -314,7 +314,7 @@ public class PreComputePhase {
         String pattern = scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL";
         long startYear = scenario.getStartDateYear();
 
-        org.ether.society.procedural.ProceduralPopulationEngine.distributePopulation(cells, scenario, totalPop, techLevel, pattern, false, startYear);
+        org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.distributePopulation(cells, scenario, totalPop, techLevel, pattern, false, startYear);
     }
 
     /**
@@ -338,3 +338,4 @@ public class PreComputePhase {
         }
     }
 }
+

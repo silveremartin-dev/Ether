@@ -240,7 +240,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <argLine>--add-modules=jdk.incubator.vector</argLine>
+                    <forkCount>1C</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <argLine>@{argLine} -Xmx2g --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
 

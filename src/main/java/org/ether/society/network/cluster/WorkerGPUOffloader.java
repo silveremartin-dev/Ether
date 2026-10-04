@@ -6,16 +6,14 @@
  */
 package org.ether.society.network.cluster;
 
+import org.ether.society.core.dod.EnvironmentalKernel;
 import org.ether.society.core.dod.WorldBuffer;
-import org.ether.society.flux.FluxEngine;
-import org.ether.society.gpu.GPUManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Worker-level GPU Offloader & Compute Accelerator.
- * Auto-detects local GPU hardware / OpenCL acceleration capabilities on worker nodes,
- * dispatching sub-matrix domain calculations to GPU VRAM with fallback to CPU SIMD vector units.
+ * Worker-level Compute Accelerator and Partition Task Offloader.
+ * Dispatches sub-matrix domain calculations to high-performance SIMD vector units.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.1
@@ -23,37 +21,35 @@ import org.slf4j.LoggerFactory;
 public class WorkerGPUOffloader {
     private static final Logger logger = LoggerFactory.getLogger(WorkerGPUOffloader.class);
 
-    private final GPUManager gpuManager;
-    private final FluxEngine fluxEngine;
+    private final EnvironmentalKernel environmentalKernel;
     private long totalTicksComputed = 0;
     private long totalComputeNanos = 0;
 
     public WorkerGPUOffloader() {
-        this.gpuManager = new GPUManager();
-        this.fluxEngine = new FluxEngine();
+        this.environmentalKernel = new EnvironmentalKernel();
     }
 
     public boolean isGPUAvailable() {
-        return gpuManager.isGpuAvailable();
+        return false;
     }
 
     public boolean isGPUEnabled() {
-        return gpuManager.isGpuEnabled();
+        return false;
     }
 
     public void setGPUEnabled(boolean enabled) {
-        gpuManager.setGpuEnabled(enabled);
+        // GPU acceleration replaced by pure deterministic SIMD
     }
 
     /**
-     * Executes local chunk dynamics with GPU acceleration attempt and CPU fallback.
+     * Executes local chunk dynamics across partitioned WorldBuffer.
      */
     public void computeChunk(WorldBuffer buffer, float dt) {
         if (buffer == null) return;
         long start = System.nanoTime();
 
         // Run local physical/socio-economic flux computations
-        fluxEngine.tick(buffer, dt);
+        environmentalKernel.tick(buffer, dt);
 
         long elapsed = System.nanoTime() - start;
         totalComputeNanos += elapsed;
@@ -68,4 +64,3 @@ public class WorkerGPUOffloader {
         return totalTicksComputed;
     }
 }
-

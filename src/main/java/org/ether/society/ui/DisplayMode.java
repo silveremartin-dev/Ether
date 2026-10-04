@@ -97,7 +97,9 @@ public enum DisplayMode {
     COLLECTIVE_MEMORY("🧠 Capital Informationnel & Mémoire", Category.SOCIETY_POLITICS,
         "Volume de connaissances archivées, brevets et données conservées dans le capital d'information (TB/bits)."),
     COLLAPSE_RISK("📉 Risque d'Effondrement Systémique", Category.SOCIETY_POLITICS,
-        "Probabilité mathématique d'effondrement systémique ou de basculement irréversible de la cellule.");
+        "Probabilité mathématique d'effondrement systémique ou de basculement irréversible de la cellule."),
+    HABITAT_INFRASTRUCTURE("🪐 Habitats Spatiaux & Pressurisation", Category.SOCIETY_POLITICS,
+        "Cartographie des dômes, tubes de lave et aérostats pressurisés, de leur niveau de vétusté et de leur intégrité structurelle.");
 
     public enum Category {
         PHYSICAL("🌍 PHYSIQUE & CLIMAT"),
@@ -167,6 +169,7 @@ public enum DisplayMode {
             case COLLAPSE_RISK: return "collapseRisk";
             case OCEAN_PH: return "oceanPh";
             case PERMAFROST: return "permafrost";
+            case HABITAT_INFRASTRUCTURE: return "habitatInfrastructure";
             default: return "population";
         }
     }

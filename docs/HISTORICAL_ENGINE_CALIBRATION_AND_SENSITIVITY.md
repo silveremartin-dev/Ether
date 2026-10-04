@@ -119,9 +119,8 @@ flowchart TD
 
 ## ☁️ 6. Orchestration & Exécution sur VM Google Cloud
 
-Deux scripts d'automatisation permettent d'exécuter cette calibration avec points de contrôle intermédiaires sur cluster GCP :
-- **PowerShell (Windows)** : `scripts/gcp/run-calibration-campaign.ps1`
-- **Bash (Linux GCP)** : `scripts/gcp/run-calibration-campaign.sh`
+Le script d'automatisation permet d'exécuter cette calibration avec points de contrôle intermédiaires sur cluster GCP :
+- **Bash (Linux GCP / Cloud Shell)** : `scripts/gcp/run-calibration-campaign.sh`
 
 ### Commande de Lancement GCP :
 ```bash

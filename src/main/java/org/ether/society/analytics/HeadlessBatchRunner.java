@@ -10,10 +10,9 @@ import org.ether.society.config.ConfigurationLoader;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Scenario;
-import org.ether.society.procedural.PlanetPreset;
-import org.ether.society.procedural.ProceduralGenerator;
-import org.ether.society.procedural.SimulationPerformanceConfig;
-import org.ether.society.ui.ExecutionContextPanel;
+import org.ether.society.generation.PlanetPreset;
+import org.ether.society.generation.ProceduralGenerator;
+import org.ether.society.config.SimulationPerformanceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +93,7 @@ public class HeadlessBatchRunner {
     public static SimulationRunRecord executeScenarioHeadless(Scenario scenario, BatchProgressListener listener, java.util.function.BooleanSupplier cancelSupplier) {
         if (scenario == null) return null;
 
-        logger.info("⚡ Starting Real Physics Headless Batch Execution for scenario: '{}' (Years {} -> {})",
+        logger.info("âš¡ Starting Real Physics Headless Batch Execution for scenario: '{}' (Years {} -> {})",
             scenario.getName(), scenario.getStartDateYear(), scenario.getEndDateYear());
 
         String runId = "RUN-" + scenario.getName().replaceAll("[^a-zA-Z0-9]", "-").toUpperCase() + "-" + (System.currentTimeMillis() % 10000);
@@ -102,18 +101,17 @@ public class HeadlessBatchRunner {
         Map<String, String> parameterMatrix = new LinkedHashMap<>();
         parameterMatrix.put("Population Initiale", String.format("%,d", scenario.getInitialHumanCount()));
         parameterMatrix.put("Capital Physique K0", String.format("%.1f kg/hab", scenario.getInitialCapitalPerCapita()));
-        parameterMatrix.put("Énergie Initiale E0", String.format("%.1f MJ/hab", scenario.getInitialEnergyPerCapita()));
-        parameterMatrix.put("Réserves Food F0", String.format("%.1f mois", scenario.getInitialFoodReserveMonths()));
-        parameterMatrix.put("Préréglage Planétaire", scenario.getPlanetPreset() != null ? scenario.getPlanetPreset().name() : "EARTH_LIKE");
-        parameterMatrix.put("Modèle de Densité", scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL");
+        parameterMatrix.put("Ã‰nergie Initiale E0", String.format("%.1f MJ/hab", scenario.getInitialEnergyPerCapita()));
+        parameterMatrix.put("RÃ©serves Food F0", String.format("%.1f mois", scenario.getInitialFoodReserveMonths()));
+        parameterMatrix.put("PrÃ©rÃ©glage PlanÃ©taire", scenario.getPlanetPreset() != null ? scenario.getPlanetPreset().name() : "EARTH_LIKE");
+        parameterMatrix.put("ModÃ¨le de DensitÃ©", scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL");
 
-        ExecutionContextPanel.HardwareMode activeHw = org.ether.society.ui.ExecutionContextPanel.getActiveHardwareMode();
-        parameterMatrix.put("Contexte Matériel", activeHw != null ? activeHw.name() + " (Headless)" : "CPU_JIT (Headless)");
+        parameterMatrix.put("Contexte MatÃ©riel", "CPU_JIT (Headless)");
 
         if (scenario.getTypeBEngineStates() != null && !scenario.getTypeBEngineStates().isEmpty()) {
             for (var entry : scenario.getTypeBEngineStates().entrySet()) {
                 if (entry.getValue()) {
-                    parameterMatrix.put("Engine: " + entry.getKey(), "✅ Activé");
+                    parameterMatrix.put("Engine: " + entry.getKey(), "âœ… ActivÃ©");
                 }
             }
         }
@@ -138,8 +136,7 @@ public class HeadlessBatchRunner {
             ? scenario.getPlanetPreset().withResolution(h3Res) 
             : PlanetPreset.EARTH_LIKE.withResolution(h3Res);
         
-        List<H3Cell> cells = ProceduralGenerator.getInstance().generatePlanet(preset);
-
+        List<H3Cell> cells;
         if (scenario.isClippingEnabled()) {
             double cMinLat = scenario.getMinLat();
             double cMaxLat = scenario.getMaxLat();
@@ -148,19 +145,63 @@ public class HeadlessBatchRunner {
             double marginLat = Math.max(1.0, (cMaxLat - cMinLat) * 0.08);
             double marginLng = Math.max(1.0, (cMaxLng - cMinLng) * 0.08);
 
-            List<H3Cell> clippedCells = new ArrayList<>();
+            cells = ProceduralGenerator.getInstance().generateRegionalPlanet(preset, cMinLat, cMaxLat, cMinLng, cMaxLng);
             for (H3Cell c : cells) {
-                if (c.getLatitude() >= cMinLat && c.getLatitude() <= cMaxLat &&
-                    c.getLongitude() >= cMinLng && c.getLongitude() <= cMaxLng) {
-                    if (c.getLatitude() <= cMinLat + marginLat || c.getLatitude() >= cMaxLat - marginLat ||
-                        c.getLongitude() <= cMinLng + marginLng || c.getLongitude() >= cMaxLng - marginLng) {
-                        c.setBoundaryCell(true);
-                    }
-                    clippedCells.add(c);
+                if (c.getLatitude() <= cMinLat + marginLat || c.getLatitude() >= cMaxLat - marginLat ||
+                    c.getLongitude() <= cMinLng + marginLng || c.getLongitude() >= cMaxLng - marginLng) {
+                    c.setBoundaryCell(true);
                 }
             }
-            cells = clippedCells;
-            logger.info("HeadlessBatchRunner: Applied spatial clipping with {} cells retained.", cells.size());
+            logger.info("HeadlessBatchRunner: Regional window generation complete with {} cells retained.", cells.size());
+        } else {
+            cells = ProceduralGenerator.getInstance().generatePlanet(preset);
+        }
+
+        // Distribute initial human population across habitable land cells
+        long initialPopTarget = scenario.getInitialHumanCount() > 0 ? scenario.getInitialHumanCount() : 1_000_000L;
+        double totalWeight = 0.0;
+        double[] weights = new double[cells.size()];
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            boolean isWater = (c.getBiome() == org.ether.society.model.Biome.OCEAN || c.getBiome() == org.ether.society.model.Biome.DEEP_OCEAN || (c.getElevation() != null && c.getElevation() < 0.0));
+            if (isWater) {
+                weights[i] = 0.0;
+                continue;
+            }
+            double w = switch (c.getBiome() != null ? c.getBiome() : org.ether.society.model.Biome.PLAINS) {
+                case PLAINS -> 1.0;
+                case FOREST -> 0.8;
+                case JUNGLE -> 0.6;
+                case HILLS -> 0.5;
+                case BEACH -> 0.7;
+                case MOUNTAINS -> 0.2;
+                case TUNDRA -> 0.1;
+                case DESERT -> 0.05;
+                case SNOW -> 0.02;
+                default -> 0.5;
+            };
+            if (c.getRainfall() != null && c.getRainfall() > 500.0) w *= 1.2;
+            if (c.getTemperature() != null && c.getTemperature() >= 10.0 && c.getTemperature() <= 25.0) w *= 1.3;
+            weights[i] = w;
+            totalWeight += w;
+        }
+
+        if (totalWeight > 0.0) {
+            for (int i = 0; i < cells.size(); i++) {
+                H3Cell c = cells.get(i);
+                if (weights[i] > 0.0) {
+                    long cellPop = Math.max(1L, Math.round(initialPopTarget * (weights[i] / totalWeight)));
+                    c.setPopulation((int) Math.min(Integer.MAX_VALUE, cellPop));
+                    c.setBiomassHuman((double) cellPop);
+                    double initialFoodGJ = Math.max(c.getFoodResource() != null ? c.getFoodResource() : 0.0, cellPop * 4.5);
+                    c.setFoodResource(initialFoodGJ);
+                    c.setBiomassNatural(initialFoodGJ);
+                    c.setBiomassAgriculture(cellPop * 3.5);
+                } else {
+                    c.setPopulation(0);
+                    c.setBiomassHuman(0.0);
+                }
+            }
         }
 
         // 2. Initialize real H3SimulationEngine with DOD kernels
@@ -180,14 +221,8 @@ public class HeadlessBatchRunner {
         H3SimulationEngine engine = new H3SimulationEngine(config);
         SimulationPerformanceConfig perfConfig = scenario.toPerformanceConfig();
         int cores = Runtime.getRuntime().availableProcessors();
-        perfConfig.setEnableParallelExecution(activeHw != org.ether.society.ui.ExecutionContextPanel.HardwareMode.GPU_OFF);
-        perfConfig.setParallelThreadCount(switch (activeHw) {
-            case NATIVE_RUST, JAVA_VECTOR_SIMD -> Math.max(1, cores);
-            case GPU_SHADERS -> 2;
-            case CPU_JIT -> Math.max(1, cores);
-            case GPU_OFF -> 1;
-            default -> Math.max(1, cores);
-        });
+        perfConfig.setEnableParallelExecution(true);
+        perfConfig.setParallelThreadCount(Math.max(1, cores));
         engine.setPerformanceConfig(perfConfig);
         engine.setTemporalScale(H3SimulationEngine.TemporalScale.MONTHLY);
 
@@ -233,8 +268,10 @@ public class HeadlessBatchRunner {
             if (currentSimYear > lastSampledYear || ticksExecuted >= totalTicks) {
                 recordCurrentTelemetrySnapshot(record, engine, (int) currentSimYear);
                 
-                // Capture spatial state snapshot at intermediate milestones
-                record.addSpatialSnapshot((int) currentSimYear, engine.getCells());
+                // Capture spatial state snapshot only at key milestones (every 25 years or at completion)
+                if (currentSimYear % 25 == 0 || ticksExecuted >= totalTicks) {
+                    record.addSpatialSnapshot((int) currentSimYear, engine.getCells());
+                }
                 lastSampledYear = currentSimYear;
             }
 
@@ -254,7 +291,7 @@ public class HeadlessBatchRunner {
         engine.shutdown();
 
         SimulationRunRepository.getInstance().registerRun(record);
-        logger.info("✅ Finished Physical Headless execution for scenario: '{}'. Real physics ticks: {}. Generated {} snapshots.", 
+        logger.info("âœ… Finished Physical Headless execution for scenario: '{}'. Real physics ticks: {}. Generated {} snapshots.", 
             scenario.getName(), ticksExecuted, record.getTimeSeriesData().size());
 
         return record;
@@ -303,3 +340,4 @@ public class HeadlessBatchRunner {
         record.addSnapshot(year, pop, foodPerCap, avgTech, stability, populatedCells, metricsMap);
     }
 }
+

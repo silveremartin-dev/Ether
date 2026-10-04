@@ -7,9 +7,9 @@
 package org.ether.society.benchmark;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.procedural.ProceduralEngineRegistry;
-import org.ether.society.procedural.ProceduralPopulationEngine;
-import org.ether.society.procedural.typeb.*;
+import org.ether.society.engines.ProceduralEngineRegistry;
+import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
+import org.ether.society.engines.tier2.historical.*;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ public class EarthScenarioPerformanceBenchmarkTest {
     @Test
     public void runEarthScenarioBenchmark() {
         logger.info("===============================================================================");
-        logger.info("🌍 STARTING EARTH HIGH-FIDELITY PERFORMANCE BENCHMARK");
+        logger.info("ðŸŒ STARTING EARTH HIGH-FIDELITY PERFORMANCE BENCHMARK");
         logger.info("===============================================================================");
 
         // 1. Initialize 500 H3 Earth Grid Cells
@@ -84,18 +84,18 @@ public class EarthScenarioPerformanceBenchmarkTest {
             // Monthly Sub-step Climate & Physics loop
             for (int month = 1; month <= 12; month++) {
                 // Monthly Procedural Extensions
-                org.ether.society.procedural.RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(earthGrid);
-                org.ether.society.procedural.WetBulbTemperatureEngine.processWetBulbHyperthermia(earthGrid);
-                org.ether.society.procedural.BiologicalDemographicsEngine.processBiologicalDemographics(earthGrid);
+                org.ether.society.engines.tier1.RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(earthGrid);
+                org.ether.society.engines.tier1.WetBulbTemperatureEngine.processWetBulbHyperthermia(earthGrid);
+                org.ether.society.engines.tier1.BiologicalDemographicsEngine.processBiologicalDemographics(earthGrid);
             }
 
             // Annual Macro-Cliodynamic & Thermodynamic Execution
-            org.ether.society.procedural.OreGradeThermodynamicsEngine.processOreDepletion(earthGrid, 1.0);
-            org.ether.society.procedural.InfrastructureInertiaEngine.processInfrastructureInertia(earthGrid, 1.0);
-            org.ether.society.procedural.EntropicMetalDissipationEngine.processEntropicDissipation(earthGrid, 1.0);
-            org.ether.society.procedural.JevonsParadoxEngine.processJevonsRebound(earthGrid, 1.0);
-            org.ether.society.procedural.World3CouplingEngine.processWorld3System(earthGrid, 1.0);
-            org.ether.society.procedural.KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(earthGrid, 1.0);
+            org.ether.society.engines.tier1.OreGradeThermodynamicsEngine.processOreDepletion(earthGrid, 1.0);
+            org.ether.society.engines.tier1.InfrastructureInertiaEngine.processInfrastructureInertia(earthGrid, 1.0);
+            org.ether.society.engines.tier1.EntropicMetalDissipationEngine.processEntropicDissipation(earthGrid, 1.0);
+            org.ether.society.engines.tier2.theories.JevonsParadoxEngine.processJevonsRebound(earthGrid, 1.0);
+            org.ether.society.engines.tier2.theories.World3CouplingEngine.processWorld3System(earthGrid, 1.0);
+            org.ether.society.engines.tier2.theories.KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(earthGrid, 1.0);
             ProceduralEngineRegistry.processPlugins(earthGrid, 1.0);
 
             long cycleDuration = System.currentTimeMillis() - cycleStart;
@@ -111,7 +111,7 @@ public class EarthScenarioPerformanceBenchmarkTest {
         double avgLifespan = earthGrid.stream().mapToDouble(c -> c.getLifespan() != null ? c.getLifespan() : 0.0).average().orElse(0.0);
 
         logger.info("===============================================================================");
-        logger.info("📊 BENCHMARK PERFORMANCE RESULTS");
+        logger.info("ðŸ“Š BENCHMARK PERFORMANCE RESULTS");
         logger.info("===============================================================================");
         logger.info("Total Simulated Cycles       : {} Years", cycles);
         logger.info("Grid Resolution              : {} H3 Cells", totalCells);
@@ -127,4 +127,5 @@ public class EarthScenarioPerformanceBenchmarkTest {
         assertTrue(totalDurationMs < 10000, "10 Earth simulation cycles should execute in under 10 seconds.");
     }
 }
+
 

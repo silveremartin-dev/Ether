@@ -6,7 +6,7 @@
  */
 package org.ether.society.data;
 
-import org.ether.society.procedural.ResourceType;
+import org.ether.society.engines.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -268,4 +268,5 @@ public class ResourceDepositMapReader {
         return img;
     }
 }
+
 

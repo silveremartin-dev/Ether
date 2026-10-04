@@ -11,12 +11,11 @@ import org.ether.society.core.dod.NativeRustBridge;
 import org.ether.society.core.profiling.SimulationProfiler;
 import org.ether.society.data.SampleDataGenerator;
 import org.ether.society.database.H3Cell;
-import org.ether.society.gpu.GPUManager;
 import org.ether.society.model.Scenario;
 import org.ether.society.network.ClusterManager;
 import org.ether.society.network.cluster.ClusterSnapshotManager;
 import org.ether.society.network.cluster.WorkerGPUOffloader;
-import org.ether.society.procedural.SimulationPerformanceConfig;
+import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.ui.ExecutionContextPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +54,7 @@ public class HeadlessRunner {
 
     public static void run(String[] args) {
         System.out.println("================================================================================");
-        System.out.println("           ETHER PLANETARY SIMULATION ENGINE — HIGH-PERFORMANCE CLI             ");
+        System.out.println("           ETHER PLANETARY SIMULATION ENGINE â€” HIGH-PERFORMANCE CLI             ");
         System.out.println("================================================================================");
 
         int ticksToRun = 300;
@@ -325,29 +324,19 @@ public class HeadlessRunner {
             System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", String.valueOf(threadCount));
         }
 
-        GPUManager gpuManager = new GPUManager();
-        if (engineMode == CliEngineMode.GPU_SHADERS) {
-            gpuManager.setGpuEnabled(true);
-            execPrefs.putBoolean("ether_gpu_enabled", true);
-            prefPrefs.putBoolean("ether_gpu_enabled", true);
-            execPrefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.GPU_SHADERS.name());
-        } else if (engineMode == CliEngineMode.RUST_NATIVE) {
-            gpuManager.setGpuEnabled(false);
+        if (engineMode == CliEngineMode.RUST_NATIVE) {
             execPrefs.putBoolean("ether_gpu_enabled", false);
             prefPrefs.putBoolean("ether_gpu_enabled", false);
             execPrefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.NATIVE_RUST.name());
         } else if (engineMode == CliEngineMode.JAVA_VECTOR_SIMD) {
-            gpuManager.setGpuEnabled(false);
             execPrefs.putBoolean("ether_gpu_enabled", false);
             prefPrefs.putBoolean("ether_gpu_enabled", false);
             execPrefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.JAVA_VECTOR_SIMD.name());
         } else if (engineMode == CliEngineMode.CPU_JIT) {
-            gpuManager.setGpuEnabled(false);
             execPrefs.putBoolean("ether_gpu_enabled", false);
             prefPrefs.putBoolean("ether_gpu_enabled", false);
             execPrefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.CPU_JIT.name());
         } else {
-            gpuManager.setGpuEnabled(false);
             execPrefs.putBoolean("ether_gpu_enabled", false);
             prefPrefs.putBoolean("ether_gpu_enabled", false);
             execPrefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.GPU_OFF.name());
@@ -384,16 +373,8 @@ public class HeadlessRunner {
             // WORKER NODE EXECUTION LOOP
             if (isClusterMode && clusterRole == ClusterManager.ClusterRole.WORKER) {
                 final WorkerGPUOffloader gpuOffloader = new WorkerGPUOffloader();
-                final boolean effectiveGpu = workerGpuEnabled || engineMode == CliEngineMode.GPU_SHADERS;
-                gpuOffloader.setGPUEnabled(effectiveGpu);
-
-                final org.ether.society.flux.FluxEngine workerFluxEngine = new org.ether.society.flux.FluxEngine();
                 clusterManager.setWorkerComputeDelegate(buf -> {
-                    if (effectiveGpu && gpuOffloader.isGPUAvailable()) {
-                        gpuOffloader.computeChunk(buf, 86400f);
-                    } else {
-                        workerFluxEngine.tick(buf, 86400f);
-                    }
+                    gpuOffloader.computeChunk(buf, 86400f);
                 });
 
                 System.out.println("🟢 Worker node listening for remote compute tasks from Master... (Press Ctrl+C to terminate)");
@@ -534,39 +515,39 @@ public class HeadlessRunner {
                         ticksToRun, scenario.getStartDateYear(), scenario.getEndDateYear());
             }
 
-            System.out.println("🔧 Configuration Summary:");
+            System.out.println("ðŸ”§ Configuration Summary:");
             System.out.printf("   [Tab 4: Execution Context & Infrastructure]\n");
-            System.out.printf("   • Engine Backend      : %s\n", engineMode);
-            System.out.printf("   • Threading Mode      : %s (%d worker threads)\n", isSingleCore ? "Single-Core (Monocœur)" : "Multi-Core (Multicœur)", threadCount);
-            System.out.printf("   • Topology Mode       : %s\n", isClusterMode ? "Distributed Cluster (" + clusterRole + ")" : "Local Standalone");
+            System.out.printf("   â€¢ Engine Backend      : %s\n", engineMode);
+            System.out.printf("   â€¢ Threading Mode      : %s (%d worker threads)\n", isSingleCore ? "Single-Core (MonocÅ“ur)" : "Multi-Core (MulticÅ“ur)", threadCount);
+            System.out.printf("   â€¢ Topology Mode       : %s\n", isClusterMode ? "Distributed Cluster (" + clusterRole + ")" : "Local Standalone");
             if (isClusterMode) {
-                System.out.printf("   • Cluster Connection  : %s:%d (Secret Token: %s)\n", masterHost, port, secretToken.replaceAll(".", "*"));
-                System.out.printf("   • Partition Strategy  : %s (Sync Interval: %d ticks, Barrier Timeout: %d ms)\n", partitionStrategy, syncInterval, barrierTimeoutMs);
+                System.out.printf("   â€¢ Cluster Connection  : %s:%d (Secret Token: %s)\n", masterHost, port, secretToken.replaceAll(".", "*"));
+                System.out.printf("   â€¢ Partition Strategy  : %s (Sync Interval: %d ticks, Barrier Timeout: %d ms)\n", partitionStrategy, syncInterval, barrierTimeoutMs);
                 if (clusterRole == ClusterManager.ClusterRole.WORKER) {
-                    System.out.printf("   • Worker Node ID      : %s (Capacity: %s, GPU Offload: %s)\n",
+                    System.out.printf("   â€¢ Worker Node ID      : %s (Capacity: %s, GPU Offload: %s)\n",
                             workerNodeId != null ? workerNodeId : "Auto-Generated", workerCapacity, workerGpuEnabled ? "ENABLED" : "DISABLED");
                 }
                 if (snapshotsEnabled) {
-                    System.out.printf("   • Snapshot Cadence    : Every %d ticks -> %s (max retained: %d)\n", snapshotIntervalTicks, snapshotDir, maxSnapshots);
+                    System.out.printf("   â€¢ Snapshot Cadence    : Every %d ticks -> %s (max retained: %d)\n", snapshotIntervalTicks, snapshotDir, maxSnapshots);
                 }
             }
             System.out.printf("\n   [Tab 3: Scenario Determinism & Approximations]\n");
-            System.out.printf("   • Strict Determinism  : %s\n", effectivePerfConfig.isStrictDeterminism() ? "ON (Tier 1 Bit-Identical Physics)" : "OFF (Heuristic Shortcuts Allowed)");
-            System.out.printf("   • Sparse Cell Skip    : %s (Deserts & Abyssal Oceans)\n", effectivePerfConfig.isEnableSparseCellSkipping() ? "ENABLED" : "DISABLED");
-            System.out.printf("   • Ocean Macro-Aggreg  : %s (Deep Basins z < -200m)\n", effectivePerfConfig.isEnableOceanMacroAggregation() ? "ENABLED" : "DISABLED");
-            System.out.printf("   • Coastal Nav Only    : %s (Pathfinding Focused on Coasts)\n", effectivePerfConfig.isEnableCoastalNavigationOnly() ? "ENABLED" : "DISABLED");
-            System.out.printf("   • Multi-Rate Climate  : %s (Every %d Ticks)\n", effectivePerfConfig.isEnableMultiFreqClimateTicks() ? "ENABLED" : "DISABLED", effectivePerfConfig.getClimateTickFrequency());
-            System.out.printf("   • Async Parallelism   : %s (%d Threads)\n", effectivePerfConfig.isEnableParallelExecution() ? "ENABLED" : "DISABLED", threadCount);
-            System.out.printf("   • Spatial Truncation  : %s (10^-6 Cutoff)\n", effectivePerfConfig.isEnableSpatialRangeTruncation() ? "ENABLED" : "DISABLED");
-            System.out.printf("   • Scenario Epoch      : %s (Start: %d, End: %d, H3 Res: %s)\n",
+            System.out.printf("   â€¢ Strict Determinism  : %s\n", effectivePerfConfig.isStrictDeterminism() ? "ON (Tier 1 Bit-Identical Physics)" : "OFF (Heuristic Shortcuts Allowed)");
+            System.out.printf("   â€¢ Sparse Cell Skip    : %s (Deserts & Abyssal Oceans)\n", effectivePerfConfig.isEnableSparseCellSkipping() ? "ENABLED" : "DISABLED");
+            System.out.printf("   â€¢ Ocean Macro-Aggreg  : %s (Deep Basins z < -200m)\n", effectivePerfConfig.isEnableOceanMacroAggregation() ? "ENABLED" : "DISABLED");
+            System.out.printf("   â€¢ Coastal Nav Only    : %s (Pathfinding Focused on Coasts)\n", effectivePerfConfig.isEnableCoastalNavigationOnly() ? "ENABLED" : "DISABLED");
+            System.out.printf("   â€¢ Multi-Rate Climate  : %s (Every %d Ticks)\n", effectivePerfConfig.isEnableMultiFreqClimateTicks() ? "ENABLED" : "DISABLED", effectivePerfConfig.getClimateTickFrequency());
+            System.out.printf("   â€¢ Async Parallelism   : %s (%d Threads)\n", effectivePerfConfig.isEnableParallelExecution() ? "ENABLED" : "DISABLED", threadCount);
+            System.out.printf("   â€¢ Spatial Truncation  : %s (10^-6 Cutoff)\n", effectivePerfConfig.isEnableSpatialRangeTruncation() ? "ENABLED" : "DISABLED");
+            System.out.printf("   â€¢ Scenario Epoch      : %s (Start: %d, End: %d, H3 Res: %s)\n",
                     scenarioName, scenario.getStartDateYear(), scenario.getEndDateYear(), h3Resolution >= 0 ? "Res " + h3Resolution : "Default");
             System.out.println("--------------------------------------------------------------------------------");
 
             List<H3Cell> cells;
             if (h3Resolution >= 0) {
                 logger.info("Generating planetary Earth grid at H3 Resolution {}...", h3Resolution);
-                org.ether.society.procedural.PlanetPreset planetPreset = org.ether.society.procedural.PlanetPreset.EARTH_LIKE.withResolution(h3Resolution);
-                List<H3Cell> generated = org.ether.society.procedural.ProceduralGenerator.getInstance().generatePlanet(planetPreset);
+                org.ether.society.generation.PlanetPreset planetPreset = org.ether.society.generation.PlanetPreset.EARTH_LIKE.withResolution(h3Resolution);
+                List<H3Cell> generated = org.ether.society.generation.ProceduralGenerator.getInstance().generatePlanet(planetPreset);
                 cells = (cellCount > 0 && cellCount < generated.size())
                         ? new ArrayList<>(generated.subList(0, cellCount))
                         : generated;
@@ -613,10 +594,10 @@ public class HeadlessRunner {
             if (saveEnabled) {
                 try {
                     String saveTarget = customSaveName != null ? customSaveName : "Headless_" + scenarioName;
-                    System.out.printf("💾 Persisting simulation save '%s'...\n", saveTarget);
+                    System.out.printf("ðŸ’¾ Persisting simulation save '%s'...\n", saveTarget);
                     if (engine.getSimulationSaveManager() != null) {
                         engine.getSimulationSaveManager().saveSimulation(engine, saveTarget);
-                        System.out.println("✅ Simulation state successfully persisted to disk & database.");
+                        System.out.println("âœ… Simulation state successfully persisted to disk & database.");
                     }
                 } catch (Exception e) {
                     logger.warn("Could not persist simulation save: {}", e.getMessage());
@@ -646,7 +627,7 @@ public class HeadlessRunner {
 
     private static void printHelp() {
         System.out.println("Usage: java -jar society-simulation.jar [options]");
-        System.out.println("\n🌐 [Tab 4] Compute Engine & Hardware Acceleration Options:");
+        System.out.println("\nðŸŒ [Tab 4] Compute Engine & Hardware Acceleration Options:");
         System.out.println("  --engine=<rust|gpu|simd|cpu|safe>, -e <type>  Select compute backend (Default: rust/simd)");
         System.out.println("  --rust, --native                              Force Native Rust Multi-Core Engine (Rayon + AVX-512)");
         System.out.println("  --gpu, --opencl, --gpu-on                     Force OpenCL GPU Compute Shaders Pipeline");
@@ -654,11 +635,11 @@ public class HeadlessRunner {
         System.out.println("  --simd, --vector                              Force Java 21 Incubator Vector SIMD Engine");
         System.out.println("  --cpu, --cpu-jit                              Force Pure CPU Java JIT Engine");
         System.out.println("  --safe, --fallback                            Force Software Safe Fallback (Single-Thread SW)");
-        System.out.println("\n⚙️ [Tab 4] Threading & Core Allocation Options:");
+        System.out.println("\nâš™ï¸ [Tab 4] Threading & Core Allocation Options:");
         System.out.println("  --single-core, --monocoeur                    Run in single-threaded / single-core mode");
         System.out.println("  --multi-core, --multicoeur                    Run in parallel multi-core mode (all available CPUs)");
         System.out.println("  --threads=<N>, --cores=<N>                    Explicitly allocate N CPU worker threads");
-        System.out.println("\n🛰️ [Tab 4] Distributed Multi-Node Clustering Options:");
+        System.out.println("\nðŸ›°ï¸ [Tab 4] Distributed Multi-Node Clustering Options:");
         System.out.println("  --mode=<local|cluster>, --cluster             Select local standalone or distributed cluster");
         System.out.println("  --role=<master|worker>, --master, --worker    Node role in cluster mode (Default: master)");
         System.out.println("  --server, --node                              Aliases for --master and --worker roles");
@@ -676,7 +657,7 @@ public class HeadlessRunner {
         System.out.println("  --snapshot-interval=<N>                       Snapshot checkpoint interval in ticks (Default: 50)");
         System.out.println("  --snapshot-dir=<PATH>                         Snapshot directory path (Default: saves/cluster_snapshots)");
         System.out.println("  --worker-gpu, --worker-rust, --worker-simd    Acceleration backend specifically on worker nodes");
-        System.out.println("\n⚡ [Tab 3] Scenario Determinism & Approximation Options:");
+        System.out.println("\nâš¡ [Tab 3] Scenario Determinism & Approximation Options:");
         System.out.println("  --strict-determinism[=true|false]             Enforce strict bit-identical physical conservation (Tier 1)");
         System.out.println("  --no-determinism, --fast                      Disable strict determinism to allow heuristic approximations");
         System.out.println("  --sparse-skipping[=true|false], --sparse-cells Skip compute updates on empty ocean/desert cells");
@@ -686,7 +667,7 @@ public class HeadlessRunner {
         System.out.println("  --climate-freq=<N>                            Multi-rate climate frequency (Default: 5 ticks)");
         System.out.println("  --parallel[=true|false], --async-threads      Enable async multi-thread parallel stream processing");
         System.out.println("  --spatial-truncation[=true|false]             Truncate dispersion plumes at 10^-6 cutoff");
-        System.out.println("\n🗺️ Scenario, Spatial & Chronological Options:");
+        System.out.println("\nðŸ—ºï¸ Scenario, Spatial & Chronological Options:");
         System.out.println("  --scenario=<NAME>, -s <NAME>                  Scenario preset (e.g. OUT_OF_AFRICA, NEOLITHIC, CLASSICAL, INDUSTRIAL, MODERN)");
         System.out.println("  --res=<2..6>, -r <N>, --resolution=<N>        H3 planetary grid resolution level");
         System.out.println("  --cells=<N>, -c <N>                           Number of H3 cells to simulate");
@@ -697,7 +678,7 @@ public class HeadlessRunner {
         System.out.println("  --initial-pop=<N>, --pop=<N>                  Override initial human population count");
         System.out.println("  --initial-tech=<N>, --tech=<N>                Override initial technological level (0..10)");
         System.out.println("  --seed=<LONG>                                 PRNG deterministic random seed");
-        System.out.println("\n💾 Persistence, Profiling & Global Preferences:");
+        System.out.println("\nðŸ’¾ Persistence, Profiling & Global Preferences:");
         System.out.println("  --save=<NAME>                                 Custom save file name for persistence");
         System.out.println("  --no-save                                     Disable simulation saving upon completion");
         System.out.println("  --profile, -p / --no-profile                  Display end-of-run profiling telemetry report");
@@ -706,3 +687,4 @@ public class HeadlessRunner {
         System.out.println("  --help, -h, -?                                Display this help manual");
     }
 }
+

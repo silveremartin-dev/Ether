@@ -104,6 +104,10 @@ public class EnvironmentalKernel {
         return (float) (alphaPT * (delta / (delta + gammaPsy)) * netSolarRadiationMmEquiv);
     }
 
+    public void tick(WorldBuffer world, float dt) {
+        tick(world, 0, dt);
+    }
+
     /**
      * Executes one environmental update tick over all active land cells in WorldBuffer.
      *
@@ -124,31 +128,36 @@ public class EnvironmentalKernel {
             int i = landIndices[idx];
             Biome biome = Biome.values()[biomes[i]];
             
-            // Primary production based on biome, Farquhar bioenergetics, and Priestley-Taylor moisture availability
+            // Primary production based on biome, Farquhar bioenergetics, and irrigation/moisture availability
             float baseProd = getBiomeProductionRate(biome);
             float fvcbFactor = evaluateFarquharYield(temp[i], baselineCO2);
             float pet = calculatePriestleyTaylorPET(temp[i]);
-            float moistureAridityRatio = pet > 0.001f ? Math.clamp(rain[i] / pet, 0.05f, 1.25f) : 1.0f;
+            float waterAvail = world.getWaterResource() != null ? world.getWaterResource()[i] : 0.0f;
+            float effectiveMoisture = Math.max(rain[i], Math.min(1500.0f, rain[i] + waterAvail * 0.8f));
+            float moistureAridityRatio = Math.clamp(effectiveMoisture / Math.max(100.0f, pet), 0.40f, 1.25f);
             
             float dtInYears = (float) Math.max(0.0001, dt > 1000.0f
                     ? (dt / PhysicalConstants.SECONDS_PER_JULIAN_YEAR)
                     : (dt / 365.25));
             
             float tech = world.getTechnologyLevel() != null ? world.getTechnologyLevel()[i] : 0.0f;
-            // In preindustrial agrarian societies (Tech 4 to 50), ~35% of land is allocated to draft animal feed (hay/oats)
             float fodderFactor = (tech >= 4.0f && tech < 50.0f)
                     ? (float) (1.0 - PhysicalConstants.PREINDUSTRIAL_FODDER_LAND_FRACTION)
                     : 1.0f;
-            // In industrial/post-industrial (Tech >= 50), yield boosted by mechanization and Haber-Bosch inputs
             float industrialBoost = (tech >= 50.0f) ? Math.min(3.5f, 1.0f + (tech - 50.0f) * 0.03f) : 1.0f;
             
-            float growth = baseProd * fvcbFactor * moistureAridityRatio * fodderFactor * industrialBoost * dtInYears;
-            float decay = (float) (food[i] * 0.05 * dtInYears);
+            float agroClimaticFactor = Math.clamp(fvcbFactor * moistureAridityRatio * fodderFactor * industrialBoost, 0.40f, 2.0f);
+            float humanPop = world.getBiomassHuman() != null ? world.getBiomassHuman()[i] : 0.0f;
+            float agProd = (humanPop > 0.0f) ? (humanPop * 4.6f * agroClimaticFactor * dtInYears) : 0.0f;
+            float naturalProd = baseProd * agroClimaticFactor * dtInYears;
+
+            float growth = naturalProd + agProd;
+            float decay = (float) (food[i] * 0.03 * dtInYears);
             
-            food[i] = Math.max(0.0f, Math.min(50000.0f, food[i] + growth - decay));
+            food[i] = Math.max(0.0f, Math.min(2000000.0f, food[i] + growth - decay));
             
             // Natural biomass regeneration
-            world.getBiomassNatural()[i] = Math.min(1000.0f, world.getBiomassNatural()[i] + growth * 0.5f);
+            world.getBiomassNatural()[i] = Math.min(10000.0f, world.getBiomassNatural()[i] + naturalProd * 0.5f);
         }
     }
 

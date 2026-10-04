@@ -11,7 +11,7 @@
 
 ### 1. 1-Click Autonomous Standalone Deployment
 * **Zero-Database Requirement**: Run Ether immediately on any machine with Java 21+ using `install.bat` / `run.bat` (Windows) or `install.sh` / `run.sh` (Linux/macOS).
-* **Automated Standalone Packaging**: `scripts/package_release.ps1` and `scripts/package_release.sh` generate ready-to-distribute portable `.zip` archives.
+* **Automated Standalone Packaging**: `scripts/package_release.bat` and `scripts/package_release.sh` generate ready-to-distribute portable `.zip` archives.
 * **Optional Cluster & PostGIS Integration**: Seamlessly switch between zero-config in-memory mode, local PostGIS, and distributed multi-node clusters.
 
 ### 2. Comprehensive 80+ Simulation Engine Suite

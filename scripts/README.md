@@ -29,23 +29,23 @@ This directory contains cross-platform operational, build, benchmarking, contain
 ### `start-no-db` (Standalone In-Memory Mode)
 Runs the JavaFX interactive visualization and planetary dashboard with zero external dependencies (no Docker, no PostgreSQL required).
 
-* **PowerShell**: `.\scripts\start-no-db.ps1`
-* **Batch**: `.\scripts\start-no-db.bat`
-* **Bash**: `./scripts/start-no-db.sh`
+### `start-no-db` (Standalone In-Memory Mode)
+Runs the JavaFX interactive visualization and planetary dashboard with zero external dependencies (no Docker, no PostgreSQL required).
+
+* **Windows (CMD/Batch)**: `scripts\start-no-db.bat`
+* **Linux / macOS (Bash)**: `./scripts/start-no-db.sh`
 
 ### `start-with-db` (Local GUI + Docker PostgreSQL Persistence)
 Spins up PostgreSQL/PostGIS in Docker, waits for database readiness, runs the JavaFX desktop UI on the host system, and gracefully halts the database on exit.
 
-* **PowerShell**: `.\scripts\start-with-db.ps1`
-* **Batch**: `.\scripts\start-with-db.bat`
-* **Bash**: `./scripts/start-with-db.sh`
+* **Windows (CMD/Batch)**: `scripts\start-with-db.bat`
+* **Linux / macOS (Bash)**: `./scripts/start-with-db.sh`
 
 ### `stop-docker` (Docker Container Teardown)
 Stops and tears down the PostgreSQL and Redis containers managed by Docker Compose.
 
-* **PowerShell**: `.\scripts\stop-docker.ps1`
-* **Batch**: `.\scripts\stop-docker.bat`
-* **Bash**: `./scripts/stop-docker.sh`
+* **Windows (CMD/Batch)**: `scripts\stop-docker.bat`
+* **Linux / macOS (Bash)**: `./scripts/stop-docker.sh`
 
 ---
 
@@ -75,50 +75,46 @@ Executes a fast headless simulation run directly on the host machine without gra
 
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `-Scenario` | string | `"OUT_OF_AFRICA"` | Scenario preset (`OUT_OF_AFRICA`, `CLASSICAL`, `INDUSTRIAL`, etc.) |
-| `-Ticks` | int | `300` | Number of simulation ticks to execute |
-| `-Cells` | int | `3000` | Number of H3 grid cells in simulation domain |
-| `-Profile` | switch | `false` | Enables real-time CPU/SIMD profiling and timing reports |
+| `SCENARIO` | string | `"OUT_OF_AFRICA"` | Scenario preset (`OUT_OF_AFRICA`, `CLASSICAL`, `INDUSTRIAL`, etc.) |
+| `TICKS` | int | `300` | Number of simulation ticks to execute |
+| `CELLS` | int | `3000` | Number of H3 grid cells in simulation domain |
+| `PROFILE` | flag | `--profile` | Enables real-time CPU/SIMD profiling and timing reports |
 
 **Examples**:
-```powershell
-.\scripts\start-headless.ps1 -Scenario "CLASSICAL" -Ticks 1000 -Cells 5000 -Profile
-```
+* **Windows**: `scripts\start-headless.bat CLASSICAL 1000 5000`
+* **Linux / macOS**: `./scripts/start-headless.sh CLASSICAL 1000 5000`
 
 ---
 
 ### `start-master` (Cluster Master Node)
 Launches Ether in Cluster Master Orchestrator mode. Listens for incoming worker nodes, partitions the planetary H3 mesh, and coordinates parallel tick cycles.
 
-| Parameter | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `-Scenario` | string | `"OUT_OF_AFRICA"` | Scenario preset to load and simulate |
-| `-Port` | int | `9090` | TCP/gRPC cluster synchronization port |
-| `-Secret` | string | `"EtherClusterSecret2026"` | AES-256 GCM cluster authentication token |
-| `-Ticks` | int | `500` | Total simulation ticks to execute |
-| `-Cells` | int | `10000` | Total H3 cells in the global planetary grid |
-| `-Profile` | switch | `false` | Enables cluster-wide performance telemetry |
+| Parameter | Position | Default | Description |
+| :--- | :---: | :--- | :--- |
+| `SCENARIO` | 1 | `"OUT_OF_AFRICA"` | Scenario preset to load and simulate |
+| `PORT` | 2 | `9090` | TCP/gRPC cluster synchronization port |
+| `SECRET` | 3 | `"EtherClusterSecret2026"` | AES-256 GCM cluster authentication token |
+| `TICKS` | 4 | `500` | Total simulation ticks to execute |
+| `CELLS` | 5 | `10000` | Total H3 cells in the global planetary grid |
 
 **Examples**:
-```powershell
-.\scripts\start-master.ps1 -Port 9090 -Scenario "MESOPOTAMIA_BRONZE_AGE" -Ticks 2000 -Cells 20000
-```
+* **Windows**: `scripts\start-master.bat MESOPOTAMIA_BRONZE_AGE 9090 EtherClusterSecret2026 2000 20000`
+* **Linux / macOS**: `./scripts/start-master.sh MESOPOTAMIA_BRONZE_AGE 9090 EtherClusterSecret2026 2000 20000`
 
 ---
 
 ### `start-worker` (Cluster Compute Worker Node)
 Connects a worker compute node to an active master node, receives assigned spatial cell partitions, and executes parallel domain calculations.
 
-| Parameter | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `-MasterHost` | string | `"127.0.0.1"` | IP address or hostname of the Master Cluster node |
-| `-Port` | int | `9090` | Cluster communication port |
-| `-Secret` | string | `"EtherClusterSecret2026"` | Cluster authentication secret token |
+| Parameter | Position | Default | Description |
+| :--- | :---: | :--- | :--- |
+| `MASTER_HOST` | 1 | `"127.0.0.1"` | IP address or hostname of the Master Cluster node |
+| `PORT` | 2 | `9090` | Cluster communication port |
+| `SECRET` | 3 | `"EtherClusterSecret2026"` | Cluster authentication secret token |
 
 **Examples**:
-```powershell
-.\scripts\start-worker.ps1 -MasterHost "192.168.1.50" -Port 9090
-```
+* **Windows**: `scripts\start-worker.bat 192.168.1.50 9090`
+* **Linux / macOS**: `./scripts/start-worker.sh 192.168.1.50 9090`
 
 ---
 
@@ -127,26 +123,29 @@ Connects a worker compute node to an active master node, receives assigned spati
 Ether features a production-grade multi-stage Docker environment (`Dockerfile` and `docker-compose.yml`) supporting full cluster orchestration, single-command scaling, and isolated batch execution.
 
 ### Usage Syntax
-```powershell
-.\scripts\docker-deploy.ps1 [Mode] [Scenario] [Ticks] [Cells] [Workers]
-```
+* **Windows**: `scripts\docker-deploy.bat [Mode] [Scenario] [Ticks] [Cells] [Workers]`
+* **Linux / macOS**: `./scripts/docker-deploy.sh [Mode] [Scenario] [Ticks] [Cells] [Workers]`
 
 ### Modes & Profiles
 1. **`dev` (Default)**: Starts only `postgres` + `redis` infrastructure services.
-   ```powershell
-   .\scripts\docker-deploy.ps1 dev
+   ```bash
+   # Windows: scripts\docker-deploy.bat dev
+   ./scripts/docker-deploy.sh dev
    ```
 2. **`headless`**: Runs a self-terminating headless simulation container with outputs written to `./saves`.
-   ```powershell
-   .\scripts\docker-deploy.ps1 headless OUT_OF_AFRICA 1000 10000
+   ```bash
+   # Windows: scripts\docker-deploy.bat headless OUT_OF_AFRICA 1000 10000
+   ./scripts/docker-deploy.sh headless OUT_OF_AFRICA 1000 10000
    ```
 3. **`cluster`**: Launches 1 Master node and $N$ auto-connected Worker nodes in isolated containers.
-   ```powershell
-   .\scripts\docker-deploy.ps1 cluster MESOPOTAMIA_BRONZE_AGE 500 5000 4
+   ```bash
+   # Windows: scripts\docker-deploy.bat cluster MESOPOTAMIA_BRONZE_AGE 500 5000 4
+   ./scripts/docker-deploy.sh cluster MESOPOTAMIA_BRONZE_AGE 500 5000 4
    ```
 4. **`down`**: Tears down all active containers across all profiles.
-   ```powershell
-   .\scripts\docker-deploy.ps1 down
+   ```bash
+   # Windows: scripts\stop-docker.bat
+   ./scripts/stop-docker.sh
    ```
 
 ---
@@ -156,18 +155,8 @@ Ether features a production-grade multi-stage Docker environment (`Dockerfile` a
 ### `run_historical_bifurcation_benchmarks`
 Runs the automated Epistemic Falsification & Validation test suites (couplings between Boserup, Malthus, Turchin SDT, and Scott State Formation).
 
-| Mode | Target Test Suite | Execution Scope |
-| :--- | :--- | :--- |
-| `master` | `MasterHistoricalBifurcationSuite` | 7 Canonical historical rupture scenarios (~2s) |
-| `residual` | `EmpiricalResidualBifurcationTest` | Empirical residual inversion and metastability |
-| `leaders` | `HistoricalLeaderBifurcationTest` | Leader archetype bifurcation tests |
-| `all` | All validation suites | Comprehensive test verification run |
-| `macro` | `HeadlessBatchRunner` | 41,162 H3 cell full planetary multi-decadal run |
-
-**Examples**:
-```powershell
-.\scripts\run_historical_bifurcation_benchmarks.ps1 -Mode all
-```
+* **Windows**: `scripts\run_historical_bifurcation_benchmarks.bat`
+* **Linux / macOS**: `./scripts/run_historical_bifurcation_benchmarks.sh`
 
 ### `build-native-all`
 Compiles the high-performance native Rust core library (`ether-core-native`) for multi-platform targets:
@@ -175,23 +164,20 @@ Compiles the high-performance native Rust core library (`ether-core-native`) for
 - Linux `x86_64` & `ARM64` (`.so`)
 - macOS Intel & Apple Silicon `ARM64` (`.dylib`)
 
-```powershell
-.\scripts\build-native-all.ps1
-```
+* **Windows**: `scripts\build-native-all.bat`
+* **Linux / macOS**: `./scripts/build-native-all.sh`
 
 ### `regenerate-all-maps`
 Recomputes and bakes all 25 cartographic tensor rasters ($2048 \times 1024$), cultural registries, provenance JSON files, and layer specifications across historical epochs (-100,000 BP to 2060 CE).
 
-```powershell
-.\scripts\regenerate-all-maps.ps1
-```
+* **Windows**: `scripts\regenerate-all-maps.bat`
+* **Linux / macOS**: `./scripts/regenerate-all-maps.sh`
 
 ### `package_release`
 Automates clean compilation, multi-platform binary gathering, and archive generation (`.zip` / `.tar.gz`) for release distributions.
 
-```powershell
-.\scripts\package_release.ps1 -Version "1.0.0-beta.1"
-```
+* **Windows**: `scripts\package_release.bat`
+* **Linux / macOS**: `./scripts/package_release.sh`
 
 ---
 
@@ -199,11 +185,11 @@ Automates clean compilation, multi-platform binary gathering, and archive genera
 
 For large-scale hyperscale simulation campaigns on Google Cloud Platform:
 
-* **`scripts/gcp/run-batch-spot.ps1`**: Orchestrates high-throughput parameter sweep jobs using GCP Cloud Batch with cost-effective Spot VMs.
-* **`scripts/gcp/deploy-and-run.ps1`**: Provisions Compute Engine instances, copies jars/data, executes distributed cluster runs, and retrieves output artifacts.
-* **`scripts/gcp/run-calibration-campaign.ps1`**: Runs automated parameter calibration sweeps against empirical datasets (HYDE 3.4, Seshat, FAO).
-* **`scripts/gcp/fetch-results.ps1`**: Synchronizes simulation state dumps and replay snapshots from Cloud Storage buckets to local disk.
-* **`scripts/gcp/start-vms.ps1` / `stop-vms.ps1`**: Controls lifecycle of remote cloud simulation instances.
+* **`scripts/gcp/run-batch-spot.sh`**: Orchestrates high-throughput parameter sweep jobs using GCP Cloud Batch with cost-effective Spot VMs.
+* **`scripts/gcp/deploy-and-run.sh`**: Provisions Compute Engine instances, copies jars/data, executes distributed cluster runs, and retrieves output artifacts.
+* **`scripts/gcp/run-calibration-campaign.sh`**: Runs automated parameter calibration sweeps against empirical datasets (HYDE 3.4, Seshat, FAO).
+* **`scripts/gcp/fetch-results.sh`**: Synchronizes simulation state dumps and replay snapshots from Cloud Storage buckets to local disk.
+* **`scripts/gcp/start-vms.sh` / `stop-vms.sh`**: Controls lifecycle of remote cloud simulation instances.
 
 ---
 

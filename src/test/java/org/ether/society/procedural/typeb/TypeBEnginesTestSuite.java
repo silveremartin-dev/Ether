@@ -4,10 +4,10 @@
  * Copyright (c) 2024 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.procedural.typeb;
+package org.ether.society.engines.tier2.historical;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.procedural.ProceduralEngineRegistry;
+import org.ether.society.engines.ProceduralEngineRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,7 @@ public class TypeBEnginesTestSuite {
         cell.setResourceCapital(1000.0);
         cell.setResourceMetal(20.0);
         cell.setPollutionLevel(50.0);
-        cell.setTemperature(20.0); // +5°C anomaly
+        cell.setTemperature(20.0); // +5Â°C anomaly
         cell.setLifespan(70.0);
 
         testCells.add(cell);
@@ -90,4 +90,5 @@ public class TypeBEnginesTestSuite {
         }, "Cumulative execution of multiple Type B plugins should complete without exceptions.");
     }
 }
+
 

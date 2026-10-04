@@ -8,11 +8,10 @@ package org.ether.society.core;
 import org.ether.society.config.Configuration;
 import org.ether.society.data.SampleDataGenerator;
 import org.ether.society.database.H3Cell;
-import org.ether.society.density.H3ClimateSystem;
 import org.ether.society.model.PhysicalConstants;
 import org.ether.society.model.Scenario;
-import org.ether.society.procedural.PlanetPreset;
-import org.ether.society.procedural.NuclearWarfareClimateEngine;
+import org.ether.society.generation.PlanetPreset;
+import org.ether.society.engines.tier1.NuclearWarfareClimateEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,20 +34,14 @@ public class H3SimulationEngine implements ISimulationEngine {
     private final TimeManager timeManager;
     private final org.ether.society.events.EventSystem eventSystem;
 
-    // Density-based simulation systems
-    private final H3ClimateSystem climateSystem;
-    private final org.ether.society.gpu.GPUManager gpuManager;
-
     private final org.ether.society.analytics.HistoryManager historyManager;
-    private final org.ether.society.diplomacy.DiplomacyManager diplomacyManager;
-    private final org.ether.society.diplomacy.PoliticalSimulationEngine politicalEngine;
+    private final List<org.ether.society.model.Nation> nations = new java.util.concurrent.CopyOnWriteArrayList<>();
     private final SimulationSaveManager simulationSaveManager;
 
     // DOD Layer
     private final org.ether.society.core.profiling.SimulationProfiler profiler = new org.ether.society.core.profiling.SimulationProfiler();
     private org.ether.society.core.dod.WorldBuffer worldBuffer;
     private org.ether.society.core.dod.AgentBuffer agentBuffer;
-    private org.ether.society.flux.FluxEngine fluxEngine;
     private org.ether.society.core.dod.DemographicKernel demographicKernel;
     private org.ether.society.core.dod.UrbanKernel urbanKernel;
     private org.ether.society.core.dod.CultureKernel cultureKernel;
@@ -67,7 +60,7 @@ public class H3SimulationEngine implements ISimulationEngine {
     private List<H3Cell> cells;
     private Scenario currentScenario;
     private final java.util.Set<String> firedScenarioEventKeys = new java.util.HashSet<>();
-    private org.ether.society.procedural.SimulationPerformanceConfig performanceConfig = new org.ether.society.procedural.SimulationPerformanceConfig(true);
+    private org.ether.society.config.SimulationPerformanceConfig performanceConfig = new org.ether.society.config.SimulationPerformanceConfig(true);
 
     private org.ether.society.network.ClusterManager clusterManager;
 
@@ -80,21 +73,9 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.config = config;
         this.timeManager = new TimeManager(config.simulation().startYear());
         this.eventSystem = new org.ether.society.events.EventSystem();
-        this.climateSystem = new H3ClimateSystem();
-
-        // Initialize GPU Manager
-        this.gpuManager = new org.ether.society.gpu.GPUManager();
-        this.climateSystem.setGpuManager(this.gpuManager);
-
         // Initialize History Manager
         this.historyManager = new org.ether.society.analytics.HistoryManager();
-
-        // Initialize Diplomacy & Politics
-        this.diplomacyManager = new org.ether.society.diplomacy.DiplomacyManager();
-        this.politicalEngine = new org.ether.society.diplomacy.PoliticalSimulationEngine(this.diplomacyManager);
         this.simulationSaveManager = new SimulationSaveManager();
-
-        this.fluxEngine = new org.ether.society.flux.FluxEngine();
         this.demographicKernel = new org.ether.society.core.dod.DemographicKernel();
         this.urbanKernel = new org.ether.society.core.dod.UrbanKernel();
         this.cultureKernel = new org.ether.society.core.dod.CultureKernel();
@@ -112,9 +93,7 @@ public class H3SimulationEngine implements ISimulationEngine {
     private void initialize() {
         logger.info("Initializing H3 simulation engine (idle state)...");
         this.cells = new java.util.ArrayList<>();
-        if (this.diplomacyManager != null) {
-            this.diplomacyManager.clear();
-        }
+        nations.clear();
         this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(0);
         this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(0);
     }
@@ -128,7 +107,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
 
         this.currentScenario = scenario;
-        this.performanceConfig = scenario != null ? scenario.toPerformanceConfig() : new org.ether.society.procedural.SimulationPerformanceConfig(true);
+        this.performanceConfig = scenario != null ? scenario.toPerformanceConfig() : new org.ether.society.config.SimulationPerformanceConfig(true);
         this.cells = cells;
 
         timeManager.reset((int) scenario.getStartDateYear());
@@ -147,9 +126,7 @@ public class H3SimulationEngine implements ISimulationEngine {
             }
         }
 
-        if (diplomacyManager != null) {
-            diplomacyManager.clear();
-        }
+        nations.clear();
 
         org.ether.society.network.spatial.H3SpatialPartitioner.sortCellsByHilbertCurve(cells);
 
@@ -187,11 +164,11 @@ public class H3SimulationEngine implements ISimulationEngine {
         return currentScenario;
     }
 
-    public org.ether.society.procedural.SimulationPerformanceConfig getPerformanceConfig() {
+    public org.ether.society.config.SimulationPerformanceConfig getPerformanceConfig() {
         return performanceConfig;
     }
 
-    public void setPerformanceConfig(org.ether.society.procedural.SimulationPerformanceConfig performanceConfig) {
+    public void setPerformanceConfig(org.ether.society.config.SimulationPerformanceConfig performanceConfig) {
         this.performanceConfig = performanceConfig;
     }
 
@@ -312,7 +289,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         if (wasRunning) pause();
 
         this.cells = newCells;
-        if (diplomacyManager != null) diplomacyManager.clear();
+        nations.clear();
 
         if (newCells != null && !newCells.isEmpty()) {
             if (currentScenario != null) {
@@ -352,9 +329,7 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
 
-    public H3ClimateSystem getClimateSystem() {
-        return climateSystem;
-    }
+
 
     private void startGameLoop() {
         if (executorService != null && !executorService.isShutdown()) {
@@ -412,8 +387,8 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     public enum TemporalScale {
-        DAILY(1, "📅 Pas Quotidien (Jour par Jour - Détaillé)"),
-        MONTHLY(30, "🚀 Pas Mensuel (Mois par Mois - Mode Rapide)");
+        DAILY(1, "ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ Pas Quotidien (Jour par Jour - DÃƒÆ’Ã‚Â©taillÃƒÆ’Ã‚Â©)"),
+        MONTHLY(30, "ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â€šÂ¬ Pas Mensuel (Mois par Mois - Mode Rapide)");
 
         private final int factor;
         private final String label;
@@ -464,12 +439,6 @@ public class H3SimulationEngine implements ISimulationEngine {
 
             // 1. FAST SCALE DYNAMICS (Scaled to stepDays)
             profiler.beginPhase("1_FastScaleFlux");
-            if (clusterManager != null && clusterManager.getNodeRegistry().size() > 1) {
-                clusterManager.executeDistributedTick(tickCounter, worldBuffer, DT_TICK, buf -> fluxEngine.tick(buf, DT_TICK));
-            } else {
-                fluxEngine.tick(worldBuffer, DT_TICK);
-            }
-            politicalEngine.tick(cells, stepDays);
             timeManager.advanceDays(stepDays);
             profiler.endPhase("1_FastScaleFlux");
 
@@ -480,7 +449,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
             if (runSlowScale) {
                 if (currentScenario != null && timeManager.getCurrentYear() >= currentScenario.getEndDateYear()) {
-                    logger.info("🏁 Simulation reached scenario target end date (Year {}). Auto-pausing.", currentScenario.getEndDateYear());
+                    logger.info("ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â Simulation reached scenario target end date (Year {}). Auto-pausing.", currentScenario.getEndDateYear());
                     pause();
                     return;
                 }
@@ -488,17 +457,11 @@ public class H3SimulationEngine implements ISimulationEngine {
                 float dtSlow = Math.max(DT_TICK, 30.0f * 86400f);
 
                 profiler.beginPhase("2_ClimateAndEnvironment");
-                int climateFreq = (performanceConfig != null && performanceConfig.isEnableMultiFreqClimateTicks()) 
-                        ? performanceConfig.getClimateTickFrequency() : 1;
-                if (climateFreq <= 1 || (tickCounter / slowModulo) % climateFreq == 0) {
-                    climateSystem.updateClimate(cells, month);
-                    syncClimateToBuffer();
-                }
                 environmentalKernel.tick(worldBuffer, month, dtSlow);
                 profiler.endPhase("2_ClimateAndEnvironment");
 
                 simulationPipeline.executeTick(
-                        this, cells, worldBuffer, agentBuffer, climateSystem,
+                        this, cells, worldBuffer, agentBuffer,
                         profiler, performanceConfig, (long) dtSlow, getAverageTechnology()
                 );
 
@@ -525,7 +488,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                 int eventCountAfter = eventSystem.peekEvents().size();
 
                 if (pauseAtNextEvent.get() && eventCountAfter > eventCountBefore) {
-                    logger.info("⏸️ [Pas {}] Pause automatique de la simulation sur événement (pauseAtNextEvent=true)", tickCounter);
+                    logger.info("ÃƒÂ¢Ã‚ÂÃ‚Â¸ÃƒÂ¯Ã‚Â¸Ã‚Â [Pas {}] Pause automatique de la simulation sur ÃƒÆ’Ã‚Â©vÃƒÆ’Ã‚Â©nement (pauseAtNextEvent=true)", tickCounter);
                     pause();
                 }
                 profiler.endPhase("5_StatisticsAndHistory");
@@ -535,7 +498,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                 profiler.endPhase("6_BufferSync");
 
                 if (tickCounter % Math.max(1, 12 / stepDays) == 0) {
-                    logger.info("⚙️ [Pas {}] An {} M.{} | Pop: {} hab | TPS: {} it/s",
+                    logger.info("ÃƒÂ¢Ã…Â¡Ã¢â€žÂ¢ÃƒÂ¯Ã‚Â¸Ã‚Â [Pas {}] An {} M.{} | Pop: {} hab | TPS: {} it/s",
                             tickCounter, timeManager.getCurrentYear(),
                             String.format("%02d", timeManager.getCurrentMonth() + 1),
                             String.format("%,d", getTotalPopulation()),
@@ -578,11 +541,11 @@ public class H3SimulationEngine implements ISimulationEngine {
                     String type = evt.getType() != null ? evt.getType().toLowerCase() : "";
                     String displayTitle;
                     if (type.contains("milestone") || type.contains("hist")) {
-                        displayTitle = "📜 REPÈRE : " + evt.getName();
+                        displayTitle = "ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€œ REPÃƒÆ’Ã‹â€ RE : " + evt.getName();
                     } else if (type.contains("nuclear") || type.contains("strike")) {
-                        displayTitle = "☢️ FRAPPE NUCLÉAIRE : " + evt.getName() + " (Mag: " + evt.getMagnitude() + ")";
+                        displayTitle = "ÃƒÂ¢Ã‹Å“Ã‚Â¢ÃƒÂ¯Ã‚Â¸Ã‚Â FRAPPE NUCLÃƒÆ’Ã¢â‚¬Â°AIRE : " + evt.getName() + " (Mag: " + evt.getMagnitude() + ")";
                     } else {
-                        displayTitle = "🌋 ÉVÉNEMENT : " + evt.getName() + " (" + evt.getType() + " - Mag: " + evt.getMagnitude() + ")";
+                        displayTitle = "ÃƒÂ°Ã…Â¸Ã…â€™Ã¢â‚¬Â¹ ÃƒÆ’Ã¢â‚¬Â°VÃƒÆ’Ã¢â‚¬Â°NEMENT : " + evt.getName() + " (" + evt.getType() + " - Mag: " + evt.getMagnitude() + ")";
                     }
 
                     org.ether.society.events.ActiveEvent ae = new org.ether.society.events.ActiveEvent(
@@ -593,7 +556,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                         currentYear, timeManager.getCurrentMonth(), 1, 25.0, evt.getMagnitude()
                     );
                     eventSystem.recordSpatialEvent(ae);
-                    logger.info("🌋 [Pas {}] Événement scénario : {} (Année {})", tickCounter, evt.getName(), currentYear);
+                    logger.info("ÃƒÂ°Ã…Â¸Ã…â€™Ã¢â‚¬Â¹ [Pas {}] ÃƒÆ’Ã¢â‚¬Â°vÃƒÆ’Ã‚Â©nement scÃƒÆ’Ã‚Â©nario : {} (AnnÃƒÆ’Ã‚Â©e {})", tickCounter, evt.getName(), currentYear);
 
                     applyClimateEventImpact(evt);
                 }
@@ -848,9 +811,7 @@ public class H3SimulationEngine implements ISimulationEngine {
     private void initializePoliticalSeeding(int populatedCount) {
         if (populatedCount < 3 || cells == null || cells.isEmpty()) return;
 
-        if (diplomacyManager != null) {
-            diplomacyManager.clear();
-        }
+        nations.clear();
 
         cells.stream()
                 .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
@@ -861,7 +822,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                         String name = "Realm of Hex " + Long.toHexString(c.getH3Index()).toUpperCase();
                         javafx.scene.paint.Color color = javafx.scene.paint.Color.hsb(Math.random() * 360, 0.8, 0.9);
                         org.ether.society.model.Nation nation = new org.ether.society.model.Nation(name, color, c);
-                        diplomacyManager.registerNation(nation);
+                        nations.add(nation);
                     }
                 });
     }
@@ -974,18 +935,18 @@ public class H3SimulationEngine implements ISimulationEngine {
         double physicalGridArea = populatedCells * baseCellArea;
 
         // Binford (2001), Kelly (1995), Hassan (1981) - Behavioral Ecology & Home Range:
-        // Pre-agricultural Hunter-Gatherers (Tech < 1.5): 10 to 100 km² per capita diffuse subsistence home range
+        // Pre-agricultural Hunter-Gatherers (Tech < 1.5): 10 to 100 kmÃƒâ€šÃ‚Â² per capita diffuse subsistence home range
         if (tech < 1.5f) {
             double temp = 15.0;
             if (worldBuffer != null && worldBuffer.getTemperature().length > 0) {
                 temp = worldBuffer.getTemperature()[0];
             }
-            // Harsh cold/arid biomes require 80-100 km²/hab, rich temperate/river valleys 15-40 km²/hab
+            // Harsh cold/arid biomes require 80-100 kmÃƒâ€šÃ‚Â²/hab, rich temperate/river valleys 15-40 kmÃƒâ€šÃ‚Â²/hab
             double km2PerCapita = (temp < 5.0) ? 85.0 : Math.max(12.0, 45.0 - (temp * 1.2));
             double ecologicalHomeRange = pop * km2PerCapita;
             return Math.max(physicalGridArea, ecologicalHomeRange);
         } else if (tech < 5.0f) {
-            // Neolithic & Agrarian transition (Tech 1.5 to 5.0): 0.05 to 2.0 km²/hab
+            // Neolithic & Agrarian transition (Tech 1.5 to 5.0): 0.05 to 2.0 kmÃƒâ€šÃ‚Â²/hab
             double km2PerCapita = Math.max(0.05, 2.0 - (tech - 1.5) * 0.55);
             return Math.max(physicalGridArea, pop * km2PerCapita);
         }
@@ -1116,8 +1077,8 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
 
     public long getLargestCulturalUnitSize() {
-        if (diplomacyManager != null && !diplomacyManager.getNations().isEmpty()) {
-            return diplomacyManager.getNations().stream()
+        if (!nations.isEmpty()) {
+            return nations.stream()
                     .mapToLong(org.ether.society.model.Nation::getTotalPopulation)
                     .max()
                     .orElse((long) (getTotalPopulation() * Math.min(0.85, 0.2 + (getAverageTechnology() / 300.0))));
@@ -1132,8 +1093,8 @@ public class H3SimulationEngine implements ISimulationEngine {
         float avgTech = getAverageTechnology();
         int hierarchy = getMaxHierarchyLevel();
         double stateCap = 0.5;
-        if (diplomacyManager != null && !diplomacyManager.getNations().isEmpty()) {
-            org.ether.society.model.Nation largest = diplomacyManager.getNations().stream()
+        if (!nations.isEmpty()) {
+            org.ether.society.model.Nation largest = nations.stream()
                     .max(java.util.Comparator.comparingLong(org.ether.society.model.Nation::getTotalPopulation))
                     .orElse(null);
             if (largest != null) {
@@ -1259,7 +1220,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         return cohorts;
     }
 
-    // --- 🧠 COGNITION & INFORMATION ---
+    // --- ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â  COGNITION & INFORMATION ---
     public double getShannonBandwidth() {
         float tech = getAverageTechnology();
         return 1.0 + Math.pow(tech, 1.4) * 0.8;
@@ -1283,7 +1244,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Math.min(100.0, (conflict * 0.7 + gini * 30.0));
     }
 
-    // --- 🌍 ÉCOLOGIE & FRONTIÈRES PLANÉTAIRES ---
+    // --- ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â ÃƒÆ’Ã¢â‚¬Â°COLOGIE & FRONTIÃƒÆ’Ã‹â€ RES PLANÃƒÆ’Ã¢â‚¬Â°TAIRES ---
     public double getSoilNPKQuality() {
         float tech = getAverageTechnology();
         double resDep = getResourceDepletionRate();
@@ -1313,7 +1274,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Math.max(0.0, 35.0 - (temp + 3.5));
     }
 
-    // --- ⏳ CLIODYNAMIQUE & RISQUES SYSTÉMIQUES ---
+    // --- ÃƒÂ¢Ã‚ÂÃ‚Â³ CLIODYNAMIQUE & RISQUES SYSTÃƒÆ’Ã¢â‚¬Â°MIQUES ---
     public double getEliteOverproductionIndex() {
         double eliteForm = getEliteFormationRatio();
         float gini = getCurrentGini();
@@ -1393,3 +1354,4 @@ public class H3SimulationEngine implements ISimulationEngine {
         return simulationSaveManager;
     }
 }
+

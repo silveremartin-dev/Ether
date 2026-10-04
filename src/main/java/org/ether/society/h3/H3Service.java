@@ -141,6 +141,9 @@ public class H3Service {
     /**
      * Generate H3Cell objects for the entire globe at a specific resolution.
      */
+    /**
+     * Generate H3Cell objects for the entire globe at a specific resolution.
+     */
     public List<H3Cell> generateGlobalMetadata(int res) {
         List<H3Cell> result = new ArrayList<>();
         try {
@@ -159,6 +162,36 @@ public class H3Service {
             }
         } catch (Exception e) {
             logger.error("Error generating global metadata", e);
+        }
+        return result;
+    }
+
+    /**
+     * Generate H3Cell objects filtered directly within a geographic bounding box.
+     * Prevents allocating millions of unused global cells on the heap for high resolutions (Res 6-7).
+     */
+    public List<H3Cell> generateRegionalMetadata(int res, double minLat, double maxLat, double minLng, double maxLng) {
+        List<H3Cell> result = new ArrayList<>();
+        try {
+            List<Long> baseCells = new ArrayList<>(h3.getRes0Cells());
+            for (Long base : baseCells) {
+                LatLng baseCoord = h3.cellToLatLng(base);
+                if (res > 2) {
+                    double margin = 35.0;
+                    if (baseCoord.lat < minLat - margin || baseCoord.lat > maxLat + margin) {
+                        continue;
+                    }
+                }
+                List<Long> children = (res == 0) ? List.of(base) : h3.cellToChildren(base, res);
+                for (Long child : children) {
+                    LatLng coord = h3.cellToLatLng(child);
+                    if (coord.lat >= minLat && coord.lat <= maxLat && coord.lng >= minLng && coord.lng <= maxLng) {
+                        result.add(new H3Cell(child, coord.lat, coord.lng));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error generating regional metadata", e);
         }
         return result;
     }

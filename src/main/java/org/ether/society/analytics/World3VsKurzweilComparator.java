@@ -7,8 +7,8 @@
 package org.ether.society.analytics;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.procedural.KurzweilAcceleratingReturnsEngine;
-import org.ether.society.procedural.World3CouplingEngine;
+import org.ether.society.engines.tier2.theories.KurzweilAcceleratingReturnsEngine;
+import org.ether.society.engines.tier2.theories.World3CouplingEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,4 +145,5 @@ public class World3VsKurzweilComparator {
         return clone;
     }
 }
+
 

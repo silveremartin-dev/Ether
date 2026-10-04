@@ -6,8 +6,8 @@
 package org.ether.society.data;
 
 import javafx.scene.paint.Color;
-import org.ether.society.procedural.PlanetPreset;
-import org.ether.society.procedural.ProceduralGenerator;
+import org.ether.society.generation.PlanetPreset;
+import org.ether.society.generation.ProceduralGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -184,3 +184,4 @@ public class GeospatialRasterExporterTest {
         assertTrue(maxFound - minFound > 5000.0f, "Dynamic range must exceed 5000m on Earth, found: " + (maxFound - minFound));
     }
 }
+

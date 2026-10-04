@@ -2,11 +2,10 @@
  * MIT License
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
-package org.ether.society.procedural.jit;
+package org.ether.society.engines.compiler;
 
 import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.database.H3Cell;
-import org.ether.society.gpu.GPUFusedKernelGenerator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -134,19 +133,20 @@ public class JITEngineArchitectureAndOptimizationTestSuite {
     }
 
     @Test
-    @DisplayName("Verify GPU OpenCL kernel generator emits valid OpenCL C code")
+    @DisplayName("Verify JIT kernel compiler executes fused scenario step deterministically")
     public void testGPUKernelGeneratorOutput() {
         compiler.registerEngineStep("SolarInsolation", "temperature", new SymbolicExpression("temperature", 1.02, 0.5), 25.0);
         compiler.registerEngineStep("GrowthEngine", "biomassHuman", new SymbolicExpression("biomassHuman", 1.05, 10.0), 1000.0);
 
         CompiledEngineKernel kernel = compiler.compile();
-        String openClCode = GPUFusedKernelGenerator.generateOpenCLKernelSource(kernel);
-
-        assertNotNull(openClCode);
-        assertTrue(openClCode.contains("__kernel void executeFusedScenarioStep"), "Generated OpenCL kernel should contain kernel entry point");
-        assertTrue(openClCode.contains("temperature[id]"), "Generated OpenCL kernel should manipulate temperature array");
-        assertTrue(openClCode.contains("biomassHuman[id]"), "Generated OpenCL kernel should manipulate biomassHuman array");
-        assertTrue(openClCode.contains("get_global_id(0)"), "Generated OpenCL kernel should query global thread ID");
+        assertNotNull(kernel, "Compiled engine kernel must not be null");
+        
+        WorldBuffer buffer = new WorldBuffer(100);
+        buffer.getTemperature()[0] = 20.0f;
+        buffer.getBiomassHuman()[0] = 50.0f;
+        
+        kernel.executeFusedKernel(buffer, 1.0f);
+        assertTrue(buffer.getTemperature()[0] > 20.0f, "JIT kernel execution must update temperature deterministically");
     }
 
     @Test
@@ -181,3 +181,4 @@ public class JITEngineArchitectureAndOptimizationTestSuite {
         assertTrue(pop[0] > 50.0f, "Population should have grown after 100 ticks");
     }
 }
+

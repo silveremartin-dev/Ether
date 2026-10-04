@@ -758,6 +758,7 @@ public class SpatialHeatmapPanel extends VBox {
                 double food = c.getFoodResource() != null ? c.getFoodResource() : 1.0;
                 yield pop > 0 && food < pop ? Math.min(100.0, ((pop - food) / pop) * 100.0) : 5.0;
             }
+            case HABITAT_INFRASTRUCTURE -> c.getHabitatType() != org.ether.society.model.HabitatType.NONE ? (c.getHabitatIntegrity() != null ? c.getHabitatIntegrity() * 100.0 : 100.0) : 0.0;
         };
     }
 

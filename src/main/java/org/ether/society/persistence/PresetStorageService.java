@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 Silvère Martin-Michiellot
+ * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot
  */
 package org.ether.society.persistence;
 
@@ -11,7 +11,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.ether.society.config.EtherPaths;
 import org.ether.society.model.EcologyPreset;
 import org.ether.society.model.Scenario;
-import org.ether.society.procedural.PlanetPreset;
+import org.ether.society.generation.PlanetPreset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +86,7 @@ public final class PresetStorageService {
         return slug.isBlank() ? "preset_" + Math.abs(name.hashCode()) : slug;
     }
 
-    // ── Planetary Presets ─────────────────────────────────────────────────────
+    // â”€â”€ Planetary Presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     public static List<PlanetPreset> loadAllPlanetPresets() {
         Map<String, PlanetPreset> presets = new LinkedHashMap<>();
@@ -137,7 +137,7 @@ public final class PresetStorageService {
         return new ArrayList<>(presets.values());
     }
 
-    // ── Ecology Presets ───────────────────────────────────────────────────────
+    // â”€â”€ Ecology Presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     public static List<EcologyPreset> loadAllEcologyPresets() {
         Map<String, EcologyPreset> presets = new LinkedHashMap<>();
@@ -170,7 +170,7 @@ public final class PresetStorageService {
         return new ArrayList<>(presets.values());
     }
 
-    // ── Scenario Presets ──────────────────────────────────────────────────────
+    // â”€â”€ Scenario Presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     public static List<Scenario> loadAllScenarios() {
         Map<String, Scenario> scenarios = new LinkedHashMap<>();
@@ -225,7 +225,7 @@ public final class PresetStorageService {
         return result;
     }
 
-    // ── Factory Presets Disk Synchronization ─────────────────────────────────
+    // â”€â”€ Factory Presets Disk Synchronization â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /**
      * Exports all factory presets (planets, ecology, scenarios) to the project data/presets directory
@@ -287,3 +287,4 @@ public final class PresetStorageService {
         }
     }
 }
+
