@@ -91,6 +91,9 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
      * @param deltaYears the delta years parameter (double)
      */
     public void process(List<H3Cell> cells, double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         // 1. Observation Phase: Compute Global Physical & Social State Metrics
@@ -136,6 +139,9 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
        * Monolithic Global AI Leviathan: Direct reallocation of capital, pollution reduction, and inequality smoothing.
      */
     private void executeUnifiedLeviathanPolicy(List<H3Cell> cells, double meanPollution, double meanGini, double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 
@@ -165,6 +171,9 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
      * Multi-Agent Geo-Political Competition: Different regional hemispheres managed by rival AI agents.
      */
     private void executeGeopoliticalMultiAgentPolicy(List<H3Cell> cells, double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         // Northern Hemisphere AI Agent vs Southern Hemisphere AI Agent rival optimization
         for (H3Cell cell : cells) {
             if (cell == null) continue;
@@ -189,6 +198,9 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
      * Soft Nudging Policy: Indirect macro-economic price adjustments.
      */
     private void executeSoftNudgingPolicy(List<H3Cell> cells, double meanPollution, double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 
@@ -203,6 +215,9 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
      * Entropic Dystopia Policy: Perverse optimization prioritizing pure thermodynamic efficiency over population comfort.
      */
     private void executeEntropicDystopiaPolicy(List<H3Cell> cells, double meanPollution, double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 

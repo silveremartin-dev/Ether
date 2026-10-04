@@ -35,6 +35,9 @@ public class AtmosphericOxygenEngine {
      * @return VO2max efficiency factor between 0.1 and 1.2
      */
     public static double calculateAerobicCapacityFactor(double o2PressureAtm) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (o2PressureAtm <= 0.05) return 0.1; // Severe hypoxia
         return Math.min(1.2, o2PressureAtm / STANDARD_O2_PRESSURE_ATM);
     }
@@ -43,6 +46,9 @@ public class AtmosphericOxygenEngine {
      * Executes one atmospheric oxygen and hyper-combustion tick across cells.
      */
     public static void processAtmosphericOxygen(List<H3Cell> cells, double globalO2Ratio, double globalAtmoPressure) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         double o2PressureAtm = globalAtmoPressure * globalO2Ratio;

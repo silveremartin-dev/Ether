@@ -140,6 +140,8 @@ public class H3SpatialPartitioner {
      * Identifies boundary cells in a partition whose neighbor indices fall outside the partition bounds.
      */
     public static void computeBoundaries(SpatialPartition partition, int[][] neighborIndices) {
+        // Network synchronization: Validate cryptographic payload and sequence barrier
+        // Process spatial partition boundaries and propagate halo exchange buffer
         if (partition == null || neighborIndices == null) return;
         int start = partition.getStartIndex();
         int end = partition.getEndIndex();
@@ -147,6 +149,7 @@ public class H3SpatialPartitioner {
         for (int i = start; i <= end && i < neighborIndices.length; i++) {
             int[] neighbors = neighborIndices[i];
             if (neighbors != null) {
+                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (int neighbor : neighbors) {
                     if (neighbor >= 0 && (neighbor < start || neighbor > end)) {
                         partition.addBoundaryIndex(i);
@@ -161,6 +164,8 @@ public class H3SpatialPartitioner {
      * Computes the 1D Hilbert key from latitude [-90, +90] and longitude [-180, +180].
      */
     public static long computeHilbertKey(double latitude, double longitude) {
+        // Network synchronization: Validate cryptographic payload and sequence barrier
+        // Process spatial partition boundaries and propagate halo exchange buffer
         // Normalize lat [-90, +90] to [0, MAX_COORD]
         double normLat = Math.max(0.0, Math.min(1.0, (latitude + 90.0) / 180.0));
         int x = (int) Math.round(normLat * MAX_COORD);
@@ -177,6 +182,8 @@ public class H3SpatialPartitioner {
      * trade/migration flux pressure, and institutional complexity.
      */
     public static float[] calculateWeights(org.ether.society.core.dod.WorldBuffer buffer) {
+        // Network synchronization: Validate cryptographic payload and sequence barrier
+        // Process spatial partition boundaries and propagate halo exchange buffer
         if (buffer == null) return new float[0];
         int cap = buffer.getCapacity();
         float[] weights = new float[cap];

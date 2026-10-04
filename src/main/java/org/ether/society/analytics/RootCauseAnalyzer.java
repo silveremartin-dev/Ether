@@ -8,7 +8,14 @@ package org.ether.society.analytics;
 import java.util.*;
 
 /**
- * Analytical engine computing differences, divergence points, and parameter impact explanations.
+ * <h1>Root Cause Analyzer</h1>
+ * <p>
+ * Provides statistical analytics, empirical validation harnesses, and parameter calibration kernels.<br>
+ * Evaluates simulation trajectories using multi-metric error metrics (Mean Absolute Percentage Error, Pearson correlation, and spatial centroid divergence).
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class RootCauseAnalyzer {
 

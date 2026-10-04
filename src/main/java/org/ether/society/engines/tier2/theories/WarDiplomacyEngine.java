@@ -31,6 +31,9 @@ public class WarDiplomacyEngine {
      * Incorporates sovereignty gradient mismatch, terrain movement friction, and elevation declivity.
      */
     public static double calculateBoundaryFriction(H3Cell c1, H3Cell c2) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (c1 == null || c2 == null) return 1.0;
 
         double baseFriction1 = c1.getMovementFriction() != null ? c1.getMovementFriction() : 1.0;
@@ -56,6 +59,9 @@ public class WarDiplomacyEngine {
      * Executes geopolitical evaluation and resolves border conflicts across active nations.
      */
     public static void processGeopoliticalConflicts(List<Nation> nations, List<H3Cell> cells) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (nations == null || nations.size() < 2) return;
 
         for (int i = 0; i < nations.size() - 1; i++) {
@@ -90,6 +96,7 @@ public class WarDiplomacyEngine {
         int count = 0;
 
         for (H3Cell c1 : n1.getTerritory()) {
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell c2 : n2.getTerritory()) {
                 double dist = Math.hypot(c1.getLatitude() - c2.getLatitude(), c1.getLongitude() - c2.getLongitude());
                 if (dist < 2.5) {

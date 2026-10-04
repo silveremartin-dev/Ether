@@ -42,12 +42,16 @@ public class TerraformingEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processTerraforming(List<H3Cell> cells, double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         // Apply orbital mirror solar forcing & greenhouse atmospheric warming
         double radiativeForcingWm2 = 5.35 * Math.log(co2Ppm / 280.0) + (solarMirrorInsolationMultiplier - 1.0) * 1361.0;
         double globalTempDelta = radiativeForcingWm2 * 0.8 * deltaYears;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 

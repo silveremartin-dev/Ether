@@ -38,6 +38,9 @@ public class TechnologicalSingularityEngine {
      * @return Information capacity in bits per second
      */
     public static double calculateAlgorithmicThroughputBitsPerSec(double powerPerCapita, double capital) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (powerPerCapita <= 0.0 || capital <= 0.0) return 1.0;
         return (powerPerCapita * 1e12) * Math.log(1.0 + capital);
     }
@@ -46,6 +49,9 @@ public class TechnologicalSingularityEngine {
      * Executes one technological singularity evaluation and Carnot limit optimization tick across cells.
      */
     public static void processTechnologicalSingularity(List<H3Cell> cells) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         int singularityActiveCells = 0;

@@ -428,6 +428,7 @@ public class EventSystem {
         for (HistoricalIntervention hi : activeInterventions) {
             if (!hi.isActive(year)) continue;
 
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : cells) {
                 if (cell == null) continue;
                 if (hi.isInsideRadius(cell.getLatitude(), cell.getLongitude())) {

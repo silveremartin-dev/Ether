@@ -38,6 +38,9 @@ public class PhysicalEnergyGridEngine {
      * @return Available mechanical power in Watts/capita
      */
     public static double calculatePerCapitaMechanicalPowerWatts(H3Cell cell) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cell == null) return 100.0;
 
         int pop = cell.getPopulation() != null ? cell.getPopulation() : 1;
@@ -62,6 +65,9 @@ public class PhysicalEnergyGridEngine {
      * Executes one physical energy grid tick across cells.
      */
     public static void processPhysicalEnergyGrid(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

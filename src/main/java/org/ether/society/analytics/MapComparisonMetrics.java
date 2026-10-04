@@ -372,6 +372,8 @@ public class MapComparisonMetrics {
     }
 
     private static double calculateMean(double[] arr, int len) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         double sum = 0.0;
         for (int i = 0; i < len; i++) {
             sum += arr[i];

@@ -22,7 +22,14 @@ import org.ether.society.i18n.I18n;
 
 
 /**
- * Startup Splash Screen with loading progress bar and Earth heatmap background.
+ * <h1>Splash Screen</h1>
+ * <p>
+ * User interface component and visualization panel for the Ether simulation platform.<br>
+ * Provides interactive rendering, real-time spatial heatmaps, parameter controls, and multi-language localized analytics.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class SplashScreen {
     private final Stage stage;
@@ -129,6 +136,7 @@ public class SplashScreen {
      * @param subStatus the sub status parameter (String)
      */
     public void updateProgress(double progress, String status, String subStatus) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         javafx.application.Platform.runLater(() -> {
             progressBar.setProgress(progress);
             if (status != null) statusLabel.setText(status);

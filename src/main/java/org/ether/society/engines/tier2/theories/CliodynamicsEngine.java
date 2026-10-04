@@ -32,6 +32,9 @@ public class CliodynamicsEngine {
      * Executes one tick of Cliodynamics update across all nations and territory cells.
      */
     public static void updateCliodynamics(List<Nation> nations, List<H3Cell> cells) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (nations == null || nations.isEmpty()) return;
 
         for (Nation nation : nations) {

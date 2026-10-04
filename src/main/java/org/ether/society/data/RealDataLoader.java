@@ -136,6 +136,8 @@ public class RealDataLoader {
      * Replace with actual SRTM data reading.
      */
     private double calculateSyntheticElevation(double lat, double lng) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         // Realistic mountain range simulation (Alps at lat 46.5, lng 9.0; Pyrenees at lat 42.6, lng 0.5; Massif Central at lat 45.5, lng 3.0)
         double dAlps = Math.hypot((lat - 46.5) * 1.2, (lng - 9.0) * 0.8);
         double dPyr = Math.hypot((lat - 42.6) * 1.5, (lng - 0.5) * 1.0);
@@ -159,6 +161,8 @@ public class RealDataLoader {
      * Returns [temperature, rainfall].
      */
     private double[] calculateSyntheticClimate(double lat) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         // Temperature decreases with latitude
         double tempBase = 25; // Equator
         double tempAtLat = tempBase - (lat - 35) * 0.6;

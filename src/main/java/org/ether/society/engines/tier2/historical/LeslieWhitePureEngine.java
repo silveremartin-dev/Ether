@@ -31,6 +31,9 @@ public class LeslieWhitePureEngine {
      * @return the resulting computation or state reference
      */
     public static double calculateCulturalComplexity(double energyPerCapita, double techEfficiency) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         return Math.max(1.0, energyPerCapita * techEfficiency);
     }
 
@@ -42,6 +45,9 @@ public class LeslieWhitePureEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

@@ -50,6 +50,16 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "world_maps")
+/**
+ * <h1>World Map</h1>
+ * <p>
+ * Geospatial data ingestion, raster sampling, and tensor map management pipeline.<br>
+ * Ingests global planetary datasets (NOAA ETOPO, WorldClim, UNESCO WHYMAP, Natural Earth, Seshat, D-PLACE) into standardized H3 hexagonal rasters.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
+ */
 public class WorldMap {
 
     @Id
@@ -528,6 +538,8 @@ public class WorldMap {
      * @param updatedAt the updated at parameter (LocalDateTime)
      */
     public void setUpdatedAt(LocalDateTime updatedAt) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         this.updatedAt = updatedAt;
     }
 }

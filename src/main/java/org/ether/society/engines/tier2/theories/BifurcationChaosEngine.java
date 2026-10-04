@@ -39,12 +39,16 @@ public class BifurcationChaosEngine {
      * @param deltaYears step size in years
      */
     public static void processBifurcationAnalysis(List<H3Cell> cells, double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         double sumPop = 0;
         double sumFood = 0;
         int count = 0;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell.getPopulation() != null && cell.getPopulation() > 0) {
                 sumPop += cell.getPopulation();
@@ -58,6 +62,7 @@ public class BifurcationChaosEngine {
         double meanPop = sumPop / count;
         double varianceSum = 0;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell.getPopulation() != null && cell.getPopulation() > 0) {
                 double diff = cell.getPopulation() - meanPop;
@@ -69,6 +74,7 @@ public class BifurcationChaosEngine {
 
         // Lyapunov Exponent Approximation: Rate of divergence between population and food availability
         double divergenceRate = 0.0;
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell.getPopulation() != null && cell.getPopulation() > 0) {
                 double stressRatio = cell.getFoodResource() > 0 ? (cell.getPopulation() / (cell.getFoodResource() + 1.0)) : 10.0;
@@ -90,6 +96,7 @@ public class BifurcationChaosEngine {
 
         // Apply chaos-induced perturbation on vulnerable cells near bifurcation
         if (tippingPointWarning) {
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : cells) {
                 if (cell.getPopulation() != null && cell.getPopulation() > 100) {
                     double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.3;

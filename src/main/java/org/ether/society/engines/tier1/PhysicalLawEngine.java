@@ -37,6 +37,7 @@ public class PhysicalLawEngine {
     public static void applyPhysicalLaws(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 

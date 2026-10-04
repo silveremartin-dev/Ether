@@ -763,6 +763,8 @@ public class NaturalEarthVectorIngestor {
      * @return the resulting computation or state reference
      */
     public static Color computeSovereignColorForYear(CountryFeature c, long year) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         if (c == null) return Color.BLACK;
         String iso = (c.isoA3 != null) ? c.isoA3.toUpperCase(Locale.ROOT) : "";
 
@@ -836,6 +838,8 @@ public class NaturalEarthVectorIngestor {
     }
 
     private static Color computeSovereignColor(String iso, String name) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         String code = iso != null ? iso.toUpperCase(Locale.ROOT) : "";
         return switch (code) {
             case "USA" -> new Color(0x2563EB); // Royal Blue
@@ -893,6 +897,8 @@ public class NaturalEarthVectorIngestor {
     }
 
     private static Color computeIsoglossColor(String iso, String name, String subregion, String continent) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         String code = iso != null ? iso.toUpperCase(Locale.ROOT) : "";
         return switch (code) {
             // Romance Branch (#EC4899 / #E11D48 / #9D174D / #E879F9 / #D946EF)
@@ -956,6 +962,8 @@ public class NaturalEarthVectorIngestor {
     }
 
     private static Color computeKinshipColor(String iso, String name, String subregion, String continent) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         String code = iso != null ? iso.toUpperCase(Locale.ROOT) : "";
         return switch (code) {
             // Absolute Nuclear Family (#3B82F6 - Anglo-Saxon / Dutch)
@@ -990,6 +998,8 @@ public class NaturalEarthVectorIngestor {
     }
 
     private static Color computeRitualColor(String iso, String name, String subregion, String continent) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         String code = iso != null ? iso.toUpperCase(Locale.ROOT) : "";
         return switch (code) {
             // Roman Catholicism (#EC4899 - Magenta/Rose)
@@ -1028,6 +1038,8 @@ public class NaturalEarthVectorIngestor {
     }
 
     private static int computeInstitutionalLevel(String iso, String name) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         String code = iso != null ? iso.toUpperCase(Locale.ROOT) : "";
         return switch (code) {
             case "USA", "CAN", "GBR", "FRA", "DEU", "JPN", "CHE", "SWE", "NOR", "DNK", "FIN", "NLD", "AUS", "NZL", "SGP" -> 220;
@@ -1039,6 +1051,8 @@ public class NaturalEarthVectorIngestor {
     }
 
     private static int computeTechnologyLevel(String iso, String name) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         String code = iso != null ? iso.toUpperCase(Locale.ROOT) : "";
         return switch (code) {
             case "USA", "JPN", "DEU", "KOR", "TWN", "CHE", "GBR", "FRA", "SWE", "NLD", "SGP", "ISR", "CHN" -> 250;
@@ -1050,6 +1064,8 @@ public class NaturalEarthVectorIngestor {
     }
 
     private static int computeEcologicalFootprint(String iso, String name) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         String code = iso != null ? iso.toUpperCase(Locale.ROOT) : "";
         return switch (code) {
             case "USA", "CHN", "IND", "RUS", "DEU", "JPN", "KOR", "SAU", "CAN", "AUS" -> 240;
@@ -1060,6 +1076,8 @@ public class NaturalEarthVectorIngestor {
     }
 
     private static int computePathogenStress(String iso, String name, String continent) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         String code = iso != null ? iso.toUpperCase(Locale.ROOT) : "";
         if ("Africa".equalsIgnoreCase(continent)) return 210;
         if ("South America".equalsIgnoreCase(continent)) return 140;

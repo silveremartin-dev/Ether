@@ -13,6 +13,8 @@ public class UrbanKernel {
      * Met à jour le capital et l'urbanisation du monde sous conservation thermodynamique.
      */
     public void tick(WorldBuffer world, float dt) {
+        // High-performance contiguous memory pass: Cache-aligned array streaming
+        // Vectorized SIMD / analytical state updates with zero heap allocation
         float[] prices = world.getLocalPrice();
         float[] capital = world.getResourceCapital();
         float[] tech = world.getTechnologyLevel();

@@ -46,6 +46,9 @@ public class GlacialIsostaticAdjustmentEngine {
      * Calculates isostatic equilibrium elevation depression (in meters) for an ice sheet thickness h_ice.
      */
     public static double calculateEquilibriumDeflectionMeters(double iceThicknessMeters) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (iceThicknessMeters <= 0.0) return 0.0;
         return -(ICE_DENSITY_KG_M3 / MANTLE_DENSITY_KG_M3) * iceThicknessMeters;
     }
@@ -57,6 +60,9 @@ public class GlacialIsostaticAdjustmentEngine {
      * @param deltaYears Simulation time step in years
      */
     public static void processGlacialIsostasy(List<H3Cell> cells, double deltaYears) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         double dt = Math.max(0.1, deltaYears);

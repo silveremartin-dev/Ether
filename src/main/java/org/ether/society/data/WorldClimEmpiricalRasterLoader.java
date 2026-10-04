@@ -318,6 +318,8 @@ public class WorldClimEmpiricalRasterLoader {
      * Compute authentic Sea Surface Temperature (SST) for oceans (°C).
      */
     public static double computePhysicalOceanSST(double lat, double lon) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         double absLat = Math.abs(lat - 6.0); // Thermal equator at 6°N
         double frac = Math.clamp(absLat / 86.0, 0.0, 1.0);
         // Smooth C-infinity cosine glide from tropical peak (28.5°C) to polar sea-ice freezing point (-1.8°C)
@@ -352,6 +354,8 @@ public class WorldClimEmpiricalRasterLoader {
      * Compute realistic marine precipitation over oceans (mm/year).
      */
     public static double computePhysicalMarinePrecipitation(double lat, double lon) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         double radLon = Math.toRadians(lon);
         double itczLat = 6.0 + 3.0 * Math.sin(radLon * 2.0 + 0.5) + 2.0 * Math.cos(radLon * 3.0);
         double dItcz = Math.abs(lat - itczLat);
@@ -397,6 +401,8 @@ public class WorldClimEmpiricalRasterLoader {
      * Compute realistic marine seasonality (°C annual range).
      */
     public static double computePhysicalMarineSeasonality(double lat, double lon) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         double absLat = Math.abs(lat);
         double oceanRange = 2.2 + (absLat / 90.0) * 5.8;
         return Math.clamp(oceanRange, 1.5, 9.0);
@@ -544,6 +550,8 @@ public class WorldClimEmpiricalRasterLoader {
      * @return the resulting computation or state reference
      */
     public static double computePaleoTemperatureDelta(double lat, double lon, double elevM, long year) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         if (year >= 1950) return 0.0; // Modern baseline
 
         double absLat = Math.abs(lat);
@@ -643,6 +651,8 @@ public class WorldClimEmpiricalRasterLoader {
      * @return the resulting computation or state reference
      */
     public static double computePaleoPrecipitationFactor(double lat, double lon, double elevM, long year) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         if (year >= 1950) return 1.0;
 
         double absLat = Math.abs(lat);
@@ -673,6 +683,8 @@ public class WorldClimEmpiricalRasterLoader {
      * @return the resulting computation or state reference
      */
     public static double computePaleoPrecipitationDelta(double lat, double lon, double elevM, long year) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         if (year >= 1950) return 0.0;
 
         // African Humid Period / Green Sahara & Arabian wet corridor (-100,000 BP & -10,000 to -5,000 BP)
@@ -693,6 +705,8 @@ public class WorldClimEmpiricalRasterLoader {
      * @return the resulting computation or state reference
      */
     public static double computePaleoSeasonalityFactor(long year) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         if (year >= 1950) return 1.0;
 
         if (year <= -85000L || (year <= -6000L && year >= -11000L)) {

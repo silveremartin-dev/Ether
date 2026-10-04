@@ -85,6 +85,9 @@ public class TradeNetworkEngine {
      * Computes the lowest-friction route between two cells using cost-distance heuristics.
      */
     private static TradeRoute computeFrictionPath(H3Cell start, H3Cell end, List<H3Cell> cells, double techLevel) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         double distLat = end.getLatitude() - start.getLatitude();
         double distLng = end.getLongitude() - start.getLongitude();
         double directDist = Math.sqrt(distLat * distLat + distLng * distLng);
@@ -102,6 +105,7 @@ public class TradeNetworkEngine {
             H3Cell nextBest = null;
             double bestScore = Double.MAX_VALUE;
 
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell neighbor : cells) {
                 if (neighbor == current) continue;
 

@@ -24,8 +24,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * H3-based simulation engine.
- * Manages the deterministic simulation loop grounded strictly in physical laws.
+ * <h1>H3Simulation Engine</h1>
+ * <p>
+ * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class H3SimulationEngine implements ISimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(H3SimulationEngine.class);
@@ -897,6 +903,7 @@ public class H3SimulationEngine implements ISimulationEngine {
             if (entry != null && entry.getValue() != null) {
                 List<H3Cell> snapshot = entry.getValue();
                 java.util.Map<Long, H3Cell> map = snapshot.stream().collect(java.util.stream.Collectors.toMap(H3Cell::getH3Index, c -> c));
+                // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (H3Cell c : cells) {
                     H3Cell snap = map.get(c.getH3Index());
                     if (snap != null) {
@@ -1688,6 +1695,7 @@ public class H3SimulationEngine implements ISimulationEngine {
             float[] ages = agentBuffer.getAge();
             float[] masses = agentBuffer.getMass();
             int[] hexIds = agentBuffer.getHexIds();
+            // Iterate through active agent / demographic cohort buffers
             for (int i = 0; i < agentBuffer.getCapacity(); i++) {
                 if (hexIds != null && hexIds[i] == -1) continue;
                 float age = ages != null ? ages[i] : 25.0f;
@@ -1706,6 +1714,7 @@ public class H3SimulationEngine implements ISimulationEngine {
             long agentSum = 0; for (int c : cohorts) agentSum += c;
             if (agentSum > 0 && Math.abs(realPop - agentSum) > 5) {
                 double scale = (double) realPop / agentSum;
+                // Iterate through active agent / demographic cohort buffers
                 for (int i = 0; i < 7; i++) cohorts[i] = (int) Math.round(cohorts[i] * scale);
             }
         }

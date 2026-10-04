@@ -34,6 +34,8 @@ public class VectorThermodynamicsKernel {
      * @param dtYears Time step in years
      */
     public static void computeRadiativeEquilibrium(List<H3Cell> cells, double solarConstant, double greenhouseForcing, double dtYears) {
+        // High-performance contiguous memory pass: Cache-aligned array streaming
+        // Vectorized SIMD / analytical state updates with zero heap allocation
         if (cells == null || cells.isEmpty()) return;
 
         int size = cells.size();

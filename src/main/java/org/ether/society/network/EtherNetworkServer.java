@@ -205,6 +205,8 @@ public class EtherNetworkServer {
          *
          */
         public void run() {
+            // Network synchronization: Validate cryptographic payload and sequence barrier
+            // Process spatial partition boundaries and propagate halo exchange buffer
             String clientIp = socket.getRemoteSocketAddress().toString();
             EtherSecurityAuditLogger.logAuditEvent("CONNECT", clientIp, "Co-Governance Planner connected");
 

@@ -80,6 +80,7 @@ public class ProceduralPopulationEngine {
         // If the planet preset is hostile (Mars, Moon, Venus, etc.), initialize pressurized habitats on all populated cells
         org.ether.society.generation.PlanetPreset preset = scenario != null ? scenario.getPlanetPreset() : null;
         if (org.ether.society.engines.tier1.PressurizedHabitatEngine.isHostileEnvironment(preset)) {
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : landCells) {
                 if (cell.getPopulation() != null && cell.getPopulation() > 0) {
                     org.ether.society.engines.tier1.PressurizedHabitatEngine.initializePioneerOutpost(cell, preset, cell.getPopulation());
@@ -280,6 +281,9 @@ public class ProceduralPopulationEngine {
      * Biome & Elevation suitability adjusted by technological capacity.
      */
     private static double calculateBiomeAndElevSuitability(H3Cell cell, double techLevel) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cell.getIsPolder()) {
             return 1.5; // Reclaimed rich alluvial land
         }
@@ -327,6 +331,9 @@ public class ProceduralPopulationEngine {
      * Low tech has narrow tolerance; High tech broadens thermal adaptation.
      */
     private static double calculateTemperatureSuitability(double temp, double techLevel) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         double optimalTemp = 18.0;
         // Thermal tolerance width sigma increases with technology
         double sigma = 8.0 + (techLevel * 2.0); // Tech 0: sigma 8, Tech 6: sigma 20
@@ -342,6 +349,9 @@ public class ProceduralPopulationEngine {
      * F_solar = (S_0 / aÂ²) * (1 - eÂ²)^(-0.5) * cos(lat - declination).
      */
     public static double calculatePlanetarySolarInsolation(double lat, double obliquityDeg, double eccentricity, double semiMajorAxisAU, long startYearBP, boolean isEarth) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (isEarth) {
             double t = (double) startYearBP;
             double precession = 35.0 * Math.sin(2.0 * Math.PI * t / 23000.0);
@@ -364,6 +374,9 @@ public class ProceduralPopulationEngine {
      * Standard Earth-preset wrapper for Milankovitch summer insolation at 65Â°N.
      */
     public static double calculateMilankovitchSummerInsolation65N(long startYearBP) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         return calculatePlanetarySolarInsolation(65.0, 23.44, 0.0167, 1.0, startYearBP, true);
     }
 
@@ -372,6 +385,9 @@ public class ProceduralPopulationEngine {
      * derived from EPICA Dome C / Vostok ice cores (180 ppm LGM peak to 280 ppm Holocene).
      */
     public static double calculateCO2VegetationMultiplier(long startYearBP) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         double t = (double) Math.abs(startYearBP);
         // CO2 concentration interpolation (180 ppm at LGM peak ~20,000 BP up to 280 ppm Holocene)
         double co2ppm = 280.0 - 100.0 * Math.exp(-Math.pow((t - 20000.0) / 15000.0, 2.0));
@@ -384,6 +400,9 @@ public class ProceduralPopulationEngine {
      * and marine omega-3 (DHA) resource exploitation along coastal margins.
      */
     public static double calculateCoastalForagingMultiplier(H3Cell cell) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cell == null) return 1.0;
         Biome b = cell.getBiome();
         double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
@@ -398,6 +417,9 @@ public class ProceduralPopulationEngine {
      * as a synergistic function of human hunting pressure gamma * rho and climate stress.
      */
     public static double calculateMegafaunaAbundanceIndex(long startYearBP, double humanDensity, double climateStress) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         double t = (double) Math.abs(startYearBP);
         double baseMegafauna = 100.0; // Baseline 100% megafauna index
         if (startYearBP >= -10000) return 5.0; // Post-Holocene remnant megafauna
@@ -420,6 +442,9 @@ public class ProceduralPopulationEngine {
      * - 17th Century / Industrial (Tech >= 5.0): humans can dig deep wells, build aqueducts, transport water.
      */
     private static double calculateWaterAndRiverSuitability(H3Cell cell, double techLevel) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         double water = cell.getWaterResource() != null ? cell.getWaterResource() : 0.0;
         double accessibleAquifer = cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 0.0;
         Biome b = cell.getBiome();
@@ -451,6 +476,9 @@ public class ProceduralPopulationEngine {
      * Resource & carrying capacity bonus (Food, Wood, Metal, Agriculture).
      */
     private static double calculateResourceSuitability(H3Cell cell) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
         double wood = cell.getWoodResource() != null ? cell.getWoodResource() : 0.0;
         double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
@@ -463,6 +491,9 @@ public class ProceduralPopulationEngine {
      * Pattern multiplier based on user selected density pattern.
      */
     private static double calculatePatternMultiplier(H3Cell cell, String pattern) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (pattern == null) return 1.0;
         Biome b = cell.getBiome();
         double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;

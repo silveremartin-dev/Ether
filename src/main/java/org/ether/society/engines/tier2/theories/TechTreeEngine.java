@@ -39,10 +39,14 @@ public class TechTreeEngine {
      * Executes physical era progression and spatial power diffusion.
      */
     public static void processTechnologyDiffusion(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         int eraUpgrades = 0;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 0) continue;

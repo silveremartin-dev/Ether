@@ -48,6 +48,7 @@ public class PlanetaryBoundariesEngine {
         double totalPollution = 0;
         double totalTemp = 0;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             totalPop += cell.getPopulation() != null ? cell.getPopulation() : 0;

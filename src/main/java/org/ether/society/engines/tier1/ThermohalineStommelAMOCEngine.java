@@ -59,6 +59,9 @@ public class ThermohalineStommelAMOCEngine {
      * Calculates seawater density anomaly (kg/mÂ³) as a function of temperature (Â°C) and practical salinity (PSU).
      */
     public static double calculateSeawaterDensity(double tempC, double salinityPsu) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         double deltaT = tempC - 15.0;
         double deltaS = salinityPsu - 35.0;
         return SEAWATER_REF_DENSITY_KG_M3 * (1.0 - ALPHA_THERMAL * deltaT + BETA_HALINE * deltaS);
@@ -94,6 +97,9 @@ public class ThermohalineStommelAMOCEngine {
      * Processes thermohaline ocean circulation and applies regional temperature shifts across oceanic/coastal cells.
      */
     public static void processThermohalineCirculation(List<H3Cell> cells, double freshwaterMeltwaterAnomalySv) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         // Freshwater meltwater pulse reduces polar North Atlantic salinity

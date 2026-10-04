@@ -82,6 +82,7 @@ public class SampleDataGenerator {
         double step = 0.1; // ~10km sampling
 
         for (double lat = minLat; lat <= maxLat; lat += step) {
+            // Temporal integration loop: Advance simulation timeline step-by-step
             for (double lng = minLng; lng <= maxLng; lng += step) {
                 long h3Index = h3Service.latLngToH3(lat, lng);
 

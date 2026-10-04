@@ -238,6 +238,7 @@ public class GodModePanel extends VBox {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(EventTypeItem item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -258,6 +259,7 @@ public class GodModePanel extends VBox {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(EventTypeItem item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -388,6 +390,7 @@ public class GodModePanel extends VBox {
             if (engine != null && engine.getCells() != null) {
                 H3Cell nearest = null;
                 double minDist = Double.MAX_VALUE;
+                // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (H3Cell c : engine.getCells()) {
                     double dist = Math.hypot(c.getLatitude() - targetLat, c.getLongitude() - targetLng);
                     if (dist < minDist) {
@@ -417,6 +420,7 @@ public class GodModePanel extends VBox {
         injectFoodBtn.setMaxWidth(Double.MAX_VALUE);
         injectFoodBtn.setOnAction(e -> {
             if (engine != null && engine.getCells() != null) {
+                // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (H3Cell c : engine.getCells()) {
                     c.setFoodResource((c.getFoodResource() != null ? c.getFoodResource() : 0.0) + 1000.0);
                 }
@@ -443,6 +447,7 @@ public class GodModePanel extends VBox {
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     if (engine != null && engine.getCells() != null) {
+                        // Iterate over spatial cell domains and apply localized cellular state transformations
                         for (H3Cell c : engine.getCells()) {
                             c.setPopulation((int) (c.getPopulation() * 0.5));
                         }
@@ -482,6 +487,7 @@ public class GodModePanel extends VBox {
 
             H3Cell nearest = null;
             double minDist = Double.MAX_VALUE;
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell c : engine.getCells()) {
                 double dist = Math.hypot(c.getLatitude() - targetLat, c.getLongitude() - targetLng);
                 if (dist < minDist) {
@@ -590,6 +596,7 @@ public class GodModePanel extends VBox {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(String item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -697,6 +704,7 @@ public class GodModePanel extends VBox {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         headerLabel.setText(I18n.getOrDefault("godmode.title", "âš¡ 5. GOD MODE & CHRONOLOGY"));
         pauseNoticeLabel.setText(I18n.getOrDefault("godmode.pause_notice", "â¸ï¸ Simulation is automatically paused on this tab to allow peaceful configuration of climatic disturbances without temporal drift."));
 
@@ -958,12 +966,14 @@ public class GodModePanel extends VBox {
     }
 
     private void executePhysicalForcing(String type, double mag, double lat, double lng, double radiusKm) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (type == null) return;
         switch (type) {
             case "VOLCANO" -> NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(mag);
             case "NUCLEAR_STRIKE" -> {
                 NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() + mag * 1.5);
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
                         if (dist < mag * 1.5) {
@@ -978,6 +988,7 @@ public class GodModePanel extends VBox {
             }
             case "HEATWAVE" -> {
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         c.setTemperature((c.getTemperature() != null ? c.getTemperature() : 15.0) + mag * 2.0);
                     }
@@ -988,6 +999,7 @@ public class GodModePanel extends VBox {
             case "GEOENGINEERING" -> NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(Math.max(0, NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() - mag));
             case "FAMINE" -> {
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         c.setFoodResource(Math.max(0.0, (c.getFoodResource() != null ? c.getFoodResource() : 100.0) * (1.0 - mag * 0.08)));
                     }
@@ -995,6 +1007,7 @@ public class GodModePanel extends VBox {
             }
             case "FLOOD" -> {
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
                         if (dist < mag * 1.5) {
@@ -1011,6 +1024,7 @@ public class GodModePanel extends VBox {
             }
             case "DROUGHT" -> {
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
                         if (dist < mag * 2.0) {
@@ -1027,6 +1041,7 @@ public class GodModePanel extends VBox {
             }
             case "TSUNAMI", "EARTHQUAKE" -> {
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
                         if (dist < mag * 2.0) {
@@ -1038,6 +1053,7 @@ public class GodModePanel extends VBox {
             }
             case "PANDEMIC", "BIODIVERSITY_COLLAPSE" -> {
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         int pop = c.getPopulation();
                         c.setPopulation((int) (pop * Math.max(0.2, 1.0 - (mag * 0.05))));
@@ -1046,6 +1062,7 @@ public class GodModePanel extends VBox {
             }
             case "SOLAR_EMP", "CYBER_ATTACK", "ECONOMIC_CRASH" -> {
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         c.setTechnologyLevel(Math.max(0.0, (c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 10.0) * (1.0 - mag * 0.05)));
                     }
@@ -1053,6 +1070,7 @@ public class GodModePanel extends VBox {
             }
             case "RENAISSANCE_BOOM", "TECH_SINGULARITY", "ALIEN_CONTACT" -> {
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         c.setTechnologyLevel((c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 10.0) + mag * 5.0);
                     }
@@ -1060,6 +1078,7 @@ public class GodModePanel extends VBox {
             }
             case "DOME_BREACH" -> {
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
                         if (dist < mag * 1.5) {
@@ -1078,6 +1097,7 @@ public class GodModePanel extends VBox {
             }
             case "ECLSS_FAILURE" -> {
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
                         if (dist < mag * 1.5) {
@@ -1097,6 +1117,7 @@ public class GodModePanel extends VBox {
             }
             case "AEROSTAT_PUNCTURE" -> {
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
                         if (dist < mag * 1.5) {
@@ -1113,6 +1134,7 @@ public class GodModePanel extends VBox {
             }
             case "LAVA_TUBE_COLLAPSE" -> {
                 if (engine != null && engine.getCells() != null) {
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : engine.getCells()) {
                         double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
                         if (dist < mag * 1.5) {
@@ -1240,6 +1262,7 @@ public class GodModePanel extends VBox {
      * @param lng the lng parameter (double)
      */
     public void updateCoordinates(double lat, double lng) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (latSpinner != null && latSpinner.getValueFactory() != null) {
             latSpinner.getValueFactory().setValue(Math.max(-90.0, Math.min(90.0, lat)));
         }

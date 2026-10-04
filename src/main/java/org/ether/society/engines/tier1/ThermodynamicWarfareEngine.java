@@ -29,11 +29,15 @@ public class ThermodynamicWarfareEngine {
      * Executes one kinetic warfare and fortification breaching tick with physical time integration.
      */
     public static void processKineticWarfare(List<H3Cell> cells, double deltaYears) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         double dt = Math.max(0.001, deltaYears);
         int structuralBreaches = 0;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 0) continue;
@@ -70,6 +74,9 @@ public class ThermodynamicWarfareEngine {
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      */
     public static void processKineticWarfare(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         processKineticWarfare(cells, 30.0 / 365.25);
     }
 }

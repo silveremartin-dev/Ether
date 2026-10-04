@@ -53,6 +53,9 @@ public class RadiocarbonIsotopeEngine {
      * @return Remaining activity fraction A / A_0
      */
     public static double calculateRemainingC14Activity(double elapsedYears) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (elapsedYears <= 0.0) return 1.0;
         return Math.exp(-LAMBDA_14 * elapsedYears);
     }
@@ -64,6 +67,9 @@ public class RadiocarbonIsotopeEngine {
      * @return Age in radiocarbon years BP
      */
     public static double calculateRadiocarbonAgeBP(double activityFraction) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (activityFraction <= 0.0) return Double.POSITIVE_INFINITY;
         return -LIBBY_MEAN_LIFETIME_YEARS * Math.log(activityFraction);
     }
@@ -85,6 +91,9 @@ public class RadiocarbonIsotopeEngine {
      * Processes radiocarbon tracking and soil organic carbon isotopic signatures across cells.
      */
     public static void processIsotopicDecay(List<H3Cell> cells, double deltaYears) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

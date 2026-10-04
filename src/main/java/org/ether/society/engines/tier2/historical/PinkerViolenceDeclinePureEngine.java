@@ -33,6 +33,9 @@ public class PinkerViolenceDeclinePureEngine {
      * @return the resulting computation or state reference
      */
     public static double calculateViolentDeathRatePerCapita(double literacyRate, double stateStrength, double tradeOpenness) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         // Pinker decline formula: baseline violence drops exponentially with Leviathan + Trade + Enlightenment
         double pacificationFactor = (stateStrength * 0.40) + (tradeOpenness * 0.30) + (literacyRate * 0.30);
         return Math.max(0.00001, 0.005 * Math.exp(-3.0 * pacificationFactor));
@@ -46,6 +49,9 @@ public class PinkerViolenceDeclinePureEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

@@ -130,6 +130,7 @@ public class AutoEpochScenarioDialog extends Stage {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(String item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText("");
@@ -221,6 +222,7 @@ public class AutoEpochScenarioDialog extends Stage {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(TemporalMapTensorManager.DataFallbackStrategy item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText("");
@@ -436,6 +438,7 @@ public class AutoEpochScenarioDialog extends Stage {
     }
 
     private void updateLivePreview() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         String planet = planetSelector.getValue() != null ? planetSelector.getValue() : "earth";
         int year = yearSpinner.getValue() != null ? yearSpinner.getValue() : -8000;
         boolean isEarth = "earth".equalsIgnoreCase(TemporalMapTensorManager.normalizePlanet(planet));

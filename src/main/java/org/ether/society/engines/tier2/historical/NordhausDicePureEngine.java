@@ -33,6 +33,9 @@ public class NordhausDicePureEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public void processTick(double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         // Nordhaus Quadratic Damage Function D(T) = 0.00236 * T^2
         double damageFraction = 0.00236 * Math.pow(temperatureAnomaly, 2.0);
         double netGdp = gdp * (1.0 - damageFraction);

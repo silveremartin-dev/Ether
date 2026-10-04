@@ -43,6 +43,9 @@ public class PressurizedHabitatEngine {
      * Executes one simulation tick of habitat protection, structural aging, maintenance, and mortality.
      */
     public static void processPressurizedHabitats(List<H3Cell> cells, PlanetPreset preset, double deltaYears) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         boolean hostile = isHostileEnvironment(preset);
@@ -83,6 +86,9 @@ public class PressurizedHabitatEngine {
     }
 
     private static void processShelteredCell(H3Cell cell, HabitatType type, PlanetPreset preset, double dt) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
         double integrity = cell.getHabitatIntegrity() != null ? cell.getHabitatIntegrity() : 1.0;
         double capacity = cell.getHabitatCapacity() != null ? cell.getHabitatCapacity() : 0.0;

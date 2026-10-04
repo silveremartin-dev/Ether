@@ -40,6 +40,7 @@ public class SimulationInvariantGuard {
 
         int anomalyCorrections = 0;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             // 1. Population invariant (N >= 0)
             if (cell.getPopulation() != null && cell.getPopulation() < 0) {

@@ -169,6 +169,7 @@ public class StatisticalReplayEngine {
         logger.info("Reconstructing statistical series '{}' over {} snapshots (ticks {} to {})",
                 statDef.getName(), subMap.size(), startTick, endTick);
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (Map.Entry<Long, List<H3Cell>> entry : subMap.entrySet()) {
             long tick = entry.getKey();
             List<H3Cell> snapshotCells = entry.getValue();

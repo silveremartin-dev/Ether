@@ -6,6 +6,16 @@
  */
 package org.ether.society.core;
 
+/**
+ * <h1>ISimulation Engine</h1>
+ * <p>
+ * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
+ */
 public interface ISimulationEngine {
     void start();
 

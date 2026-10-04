@@ -499,6 +499,8 @@ public class ClusterManager {
      * and waiting for lock-step barrier completion.
      */
     public boolean executeDistributedTick(long tickId, WorldBuffer buffer, float dt, Consumer<WorldBuffer> localMasterCompute) {
+        // Network synchronization: Validate cryptographic payload and sequence barrier
+        // Process spatial partition boundaries and propagate halo exchange buffer
         if (localRole != ClusterRole.MASTER || buffer == null) return false;
         this.currentWorldBuffer = buffer;
 

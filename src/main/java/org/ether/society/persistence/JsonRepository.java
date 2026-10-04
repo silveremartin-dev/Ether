@@ -21,9 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Abstract base repository for JSON file persistence.
- *
- * @param <T> The type of entity to persist.
+ * <h1>Json Repository</h1>
+ * <p>
+ * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public abstract class JsonRepository<T> {
     private final Logger logger = LoggerFactory.getLogger(getClass());

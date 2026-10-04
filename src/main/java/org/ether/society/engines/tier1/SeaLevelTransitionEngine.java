@@ -43,6 +43,7 @@ public class SeaLevelTransitionEngine {
         int submergedCount = 0;
         int emergedCount = 0;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             cell.setSeaLevelOffsetMeters(targetSeaLevelOffsetMeters);
             Double rawElevation = cell.getElevation();

@@ -16,7 +16,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository for H3Cell CRUD operations.
+ * <h1>H3Cell Repository</h1>
+ * <p>
+ * Geospatial data ingestion, raster sampling, and tensor map management pipeline.<br>
+ * Ingests global planetary datasets (NOAA ETOPO, WorldClim, UNESCO WHYMAP, Natural Earth, Seshat, D-PLACE) into standardized H3 hexagonal rasters.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class H3CellRepository {
     private static final Logger logger = LoggerFactory.getLogger(H3CellRepository.class);
@@ -83,6 +90,7 @@ public class H3CellRepository {
             em.getTransaction().begin();
 
             int batchSize = 50;
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (int i = 0; i < cells.size(); i++) {
                 H3Cell cell = cells.get(i);
                 Long existingId = existingIndexMap.get(cell.getH3Index());

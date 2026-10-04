@@ -12,7 +12,14 @@ import java.util.List;
 import org.ether.society.generation.PlanetPreset;
 
 /**
- * Preset model for ecological and resource distributions.
+ * <h1>Ecology Preset</h1>
+ * <p>
+ * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public record EcologyPreset(
         String name,

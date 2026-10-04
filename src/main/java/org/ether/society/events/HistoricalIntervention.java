@@ -15,6 +15,16 @@ import org.ether.society.model.Nation;
  * across an active spatio-temporal radius.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+/**
+ * <h1>Historical Intervention</h1>
+ * <p>
+ * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
+ */
 public class HistoricalIntervention {
     /* Internal state variable for id (String). */
     private String id;

@@ -93,6 +93,7 @@ public class MarkdownViewerPane extends BorderPane {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (formatHint != null) {
             formatHint.setText(I18n.getOrDefault("markdown.preview_title", "✨ Formatted Report Preview"));
         }
@@ -134,6 +135,7 @@ public class MarkdownViewerPane extends BorderPane {
     }
 
     private void updateViewMode() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (toggleRawBtn.isSelected()) {
             toggleRawBtn.setText(I18n.getOrDefault("markdown.btn.toggle_formatted", "👁️ Formatted View"));
             setCenter(rawTextArea);
@@ -248,6 +250,7 @@ public class MarkdownViewerPane extends BorderPane {
 
             String[] rawCells = line.split("\\|");
             List<String> cells = new ArrayList<>();
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (String cell : rawCells) {
                 if (!cell.isBlank() || cells.size() > 0) {
                     cells.add(cell.trim());
@@ -259,6 +262,7 @@ public class MarkdownViewerPane extends BorderPane {
 
             boolean isHeader = (rowIndex == 0);
 
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (int col = 0; col < cells.size(); col++) {
                 String cellText = cells.get(col);
                 StackPane cellBox = new StackPane();

@@ -75,6 +75,7 @@ public class DynamicEngineCompiler {
             return "Empty or null source code.";
         }
 
+        // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
         for (String forbidden : FORBIDDEN_TOKENS) {
             if (sourceCode.contains(forbidden)) {
                 String auditMsg = "Security Violation: Custom engine contains forbidden API token '" + forbidden + "'";
@@ -199,6 +200,7 @@ public class DynamicEngineCompiler {
                 public void process(List<H3Cell> cells, double deltaYears) {
                     if (cells == null || cells.isEmpty()) return;
 
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell cell : cells) {
                         // Example: Apply cliodynamic physical transformation
                         double currentBiomass = cell.getBiomass();

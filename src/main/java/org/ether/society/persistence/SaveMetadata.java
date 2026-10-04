@@ -3,7 +3,14 @@ package org.ether.society.persistence;
 import java.time.LocalDateTime;
 
 /**
- * Metadata for a saved simulation.
+ * <h1>Save Metadata</h1>
+ * <p>
+ * Geospatial data ingestion, raster sampling, and tensor map management pipeline.<br>
+ * Ingests global planetary datasets (NOAA ETOPO, WorldClim, UNESCO WHYMAP, Natural Earth, Seshat, D-PLACE) into standardized H3 hexagonal rasters.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class SaveMetadata {
     /* Internal state variable for id (String). */

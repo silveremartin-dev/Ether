@@ -172,6 +172,8 @@ public class HistoricalValidationKernel {
      * @return the resulting computation or state reference
      */
     public static double calculateRmse(Map<Integer, Double> simulatedData) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         return calculateRmse(simulatedData, getHistoricalWorldPopulation());
     }
 
@@ -183,6 +185,8 @@ public class HistoricalValidationKernel {
      * @return the resulting computation or state reference
      */
     public static double calculateRSquared(Map<Integer, Double> simulatedData) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         return calculateRSquared(simulatedData, getHistoricalWorldPopulation());
     }
 
@@ -195,6 +199,8 @@ public class HistoricalValidationKernel {
      * @return the resulting computation or state reference
      */
     public static double calculateRmse(Map<Integer, Double> simulatedData, Map<Integer, Double> benchmarkData) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         if (simulatedData == null || simulatedData.isEmpty() || benchmarkData == null || benchmarkData.isEmpty()) {
             return Double.MAX_VALUE;
         }
@@ -225,6 +231,8 @@ public class HistoricalValidationKernel {
      * @return the resulting computation or state reference
      */
     public static double calculateRSquared(Map<Integer, Double> simulatedData, Map<Integer, Double> benchmarkData) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         if (simulatedData == null || simulatedData.isEmpty() || benchmarkData == null || benchmarkData.isEmpty()) {
             return 0.0;
         }
@@ -258,6 +266,8 @@ public class HistoricalValidationKernel {
      * @return the resulting computation or state reference
      */
     public static MultiMetricValidationReport evaluateWindowedFit(MultiMetricTrajectory trajectory, EpochWindow window) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         MultiMetricValidationReport report = new MultiMetricValidationReport();
         report.window = window;
         if (trajectory == null) return report;

@@ -158,6 +158,7 @@ public class PhysicalPlanetaryAtmosphereSolver {
 
             // 3.2 2D Multi-step Advection-Diffusion across Wind Vectors
             int advectionSteps = 24;
+            // Temporal integration loop: Advance simulation timeline step-by-step
             for (int step = 0; step < advectionSteps; step++) {
                 float[][] nextVapor = new float[height][width];
                 for (int y = 0; y < height; y++) {

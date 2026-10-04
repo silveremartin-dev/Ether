@@ -266,6 +266,7 @@ public class MainView extends StackPane {
      *
      */
     public void updateTabTitles() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         planetTab.setText("1. " + org.ether.society.i18n.I18n.get("tab.planet_generator"));
         resourcesTab.setText("2. " + org.ether.society.i18n.I18n.get("tab.resources"));
         setupTab.setText("3. " + org.ether.society.i18n.I18n.get("tab.scenario"));
@@ -518,6 +519,7 @@ public class MainView extends StackPane {
     }
 
     private void updateHeadlessTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (lblHeadlessTitle != null) lblHeadlessTitle.setText(I18n.getOrDefault("headless.banner.title", "🚀 MODE HEADLESS ACTIF (ACCÉLÉRATION MAXIMALE)"));
         if (lblHeadlessDesc != null) lblHeadlessDesc.setText(I18n.getOrDefault("headless.banner.desc", "L'affichage cartographique 2D/3D temps réel est désactivé pour allouer 100 % de la puissance de calcul CPU/GPU au moteur physique et démographique."));
         if (btnHeadlessSwitchGui != null) btnHeadlessSwitchGui.setText(I18n.getOrDefault("headless.btn.switch_gui", "🖼️ Réactiver l'affichage visuel (Mode GUI)"));
@@ -542,6 +544,7 @@ public class MainView extends StackPane {
     }
 
     private void updateHeadlessTelemetry(String dateStr, long currentTick) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (lblHeadlessYearVal != null) lblHeadlessYearVal.setText(dateStr);
         if (lblHeadlessTicksVal != null) lblHeadlessTicksVal.setText(String.format("%,d", currentTick));
         if (lblHeadlessPopVal != null && engine instanceof org.ether.society.core.H3SimulationEngine h3) {
@@ -985,6 +988,7 @@ public class MainView extends StackPane {
                     List<String> events = engine.getEventSystem().flushEvents();
                     if (!events.isEmpty()) {
                         long curPas = engine.getTickCounter();
+                        // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                         for (String event : events) {
                             notificationOverlay.showEvent(event);
                             logger.info("📢 [Pas {}] {}", curPas, event);

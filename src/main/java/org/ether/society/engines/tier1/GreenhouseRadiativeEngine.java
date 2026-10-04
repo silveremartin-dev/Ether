@@ -102,6 +102,9 @@ public class GreenhouseRadiativeEngine {
      * modulated by technological carbon capture and solar geoengineering mitigation.
      */
     public double computeRadiativeForcingWpm2() {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         double co2Ratio = Math.max(1.0, currentCo2Ppm) / BASELINE_CO2_PPM;
         double co2Forcing = 5.35 * Math.log(co2Ratio);
 
@@ -114,6 +117,9 @@ public class GreenhouseRadiativeEngine {
      * Computes the global mean temperature anomaly (Â°C) relative to baseline.
      */
     public double computeTemperatureAnomalyC() {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         return computeRadiativeForcingWpm2() * CLIMATE_SENSITIVITY_LAMBDA;
     }
 
@@ -124,6 +130,9 @@ public class GreenhouseRadiativeEngine {
      * @return Saturation vapor pressure in Pascals
      */
     public static double calculateClausiusClapeyronVaporPressurePa(double tempCelsius) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         double tempK = Math.max(150.0, tempCelsius + PhysicalConstants.KELVIN_ZERO_CELSIUS);
         double exponent = (LATENT_HEAT_VAPORIZATION_LV / GAS_CONSTANT_VAPOR_RV) * ( (1.0 / PhysicalConstants.KELVIN_ZERO_CELSIUS) - (1.0 / tempK) );
         return REFERENCE_VAPOR_PRESSURE_E0 * Math.exp(Math.clamp(exponent, -15.0, 15.0));
@@ -134,6 +143,9 @@ public class GreenhouseRadiativeEngine {
      * T_eq = [ (S_0/4 * (1 - alpha) + Delta_F) / (epsilon * sigma) ]^(1/4)
      */
     public static double calculateStefanBoltzmannEquilibriumTempK(double albedo, double greenhouseForcingWpm2) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         double absorbedSolarFlux = (SOLAR_CONSTANT_TOA / 4.0) * (1.0 - Math.clamp(albedo, 0.05, 0.95));
         double totalDownwardFlux = absorbedSolarFlux + Math.max(0.0, greenhouseForcingWpm2);
         double radiativeDenominator = EMISSIVITY_EPSILON * STEFAN_BOLTZMANN_SIGMA;
@@ -144,6 +156,9 @@ public class GreenhouseRadiativeEngine {
      * Computes sea level rise in meters based on thermal expansion & ice sheet melt.
      */
     public double computeSeaLevelDeltaMeters() {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         double deltaT = computeTemperatureAnomalyC();
         return deltaT * 42.5; // ~42.5m rise per Â°C long term
     }

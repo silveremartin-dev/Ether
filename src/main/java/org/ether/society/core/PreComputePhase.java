@@ -95,6 +95,7 @@ public class PreComputePhase {
         if (hasExistingClimate) {
             logger.info("Preserving existing climate & temperature data from configuration/raster maps");
             if (isGreenSahara || isYoungerDryas || isGlacialMax) {
+                // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (H3Cell cell : cells) {
                     double lat = cell.getLatitude();
                     double lng = cell.getLongitude();
@@ -226,6 +227,7 @@ public class PreComputePhase {
 
         if (hasExistingResources) {
             logger.info("Preserving existing resource distributions (Food, Water, Wood, Minerals) from configuration/raster maps");
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : cells) {
                 if (cell.getBiomassNatural() == null && cell.getFoodResource() != null) {
                     cell.setBiomassNatural(cell.getFoodResource());

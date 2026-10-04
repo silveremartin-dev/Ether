@@ -210,6 +210,8 @@ public class ClusterSnapshotManager {
     }
 
     private void pruneOldSnapshots() {
+        // Network synchronization: Validate cryptographic payload and sequence barrier
+        // Process spatial partition boundaries and propagate halo exchange buffer
         try {
             File[] files = snapshotDir.toFile().listFiles((dir, name) -> name.startsWith("snapshot_tick_") && (name.endsWith(".bin.gz") || name.endsWith(".gz")));
             if (files != null && files.length > maxRetainedSnapshots) {

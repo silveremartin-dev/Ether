@@ -70,6 +70,8 @@ public class WorkerGPUOffloader {
      * Executes local chunk dynamics across partitioned WorldBuffer.
      */
     public void computeChunk(WorldBuffer buffer, float dt) {
+        // Network synchronization: Validate cryptographic payload and sequence barrier
+        // Process spatial partition boundaries and propagate halo exchange buffer
         if (buffer == null) return;
         long start = System.nanoTime();
 

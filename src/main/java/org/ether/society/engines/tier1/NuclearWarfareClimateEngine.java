@@ -38,6 +38,9 @@ public class NuclearWarfareClimateEngine {
      * @return Solar transmittance fraction (0.0 to 1.0)
      */
     public static double calculateSolarTransmittance(double opticalDepth) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         return Math.exp(-opticalDepth);
     }
 
@@ -45,6 +48,9 @@ public class NuclearWarfareClimateEngine {
      * Executes one nuclear conflict trigger, soot injection, and nuclear winter climate tick.
      */
     public static void processNuclearWarfareClimate(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         int sootInjectionEvents = 0;
@@ -74,6 +80,7 @@ public class NuclearWarfareClimateEngine {
             double transmittance = calculateSolarTransmittance(globalSootOpticalDepth);
             double tempAnomaly = -15.0 * (1.0 - transmittance); // Up to -15Â°C global temperature drop
 
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : cells) {
                 // Surface temperature drop anomaly
                 double currentTemp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;

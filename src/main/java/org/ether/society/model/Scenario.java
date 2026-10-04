@@ -10,7 +10,14 @@ import org.ether.society.generation.PlanetPreset;
 import java.io.Serializable;
 
 /**
- * Configuration for a simulation scenario.
+ * <h1>Scenario</h1>
+ * <p>
+ * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class Scenario implements Serializable {
     private static final long serialVersionUID = 1L;

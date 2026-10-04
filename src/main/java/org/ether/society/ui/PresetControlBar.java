@@ -660,6 +660,7 @@ public class PresetControlBar<T> extends VBox {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (presetLabel != null && labelKey != null) {
             presetLabel.setText(I18n.getOrDefault(labelKey, defaultLabelText) + ":");
         }
@@ -683,6 +684,7 @@ public class PresetControlBar<T> extends VBox {
     }
 
     private void updateTooltips() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (presetCombo != null) presetCombo.setTooltip(new Tooltip(
                 I18n.getOrDefault("preset.tooltip.combo", "Select an existing preset")));
         if (nameField != null) nameField.setTooltip(new Tooltip(
@@ -777,6 +779,7 @@ public class PresetControlBar<T> extends VBox {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(T item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setGraphic(null);

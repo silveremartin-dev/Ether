@@ -9,7 +9,14 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Utility to migrate existing H3Cell lists into the high-performance DOD buffers.
+ * <h1>DODData Generator</h1>
+ * <p>
+ * Geospatial data ingestion, raster sampling, and tensor map management pipeline.<br>
+ * Ingests global planetary datasets (NOAA ETOPO, WorldClim, UNESCO WHYMAP, Natural Earth, Seshat, D-PLACE) into standardized H3 hexagonal rasters.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class DODDataGenerator {
     private static final Logger logger = LoggerFactory.getLogger(DODDataGenerator.class);
@@ -20,6 +27,7 @@ public class DODDataGenerator {
     public static void populateWorldBuffer(List<H3Cell> cells, WorldBuffer buffer) {
         logger.info("Populating WorldBuffer with {} cells...", cells.size());
         
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (int i = 0; i < cells.size() && i < buffer.getCapacity(); i++) {
             H3Cell cell = cells.get(i);
             
@@ -106,6 +114,7 @@ public class DODDataGenerator {
             int numCohorts = Math.max(1, (int) Math.ceil(totalCellPop / (float) effectiveTarget));
             float cohortMass = totalCellPop / (float) numCohorts;
 
+            // Iterate through active agent / demographic cohort buffers
             for (int c = 0; c < numCohorts && agentIndex < agents.getCapacity(); c++) {
                 agents.getHexIds()[agentIndex] = i;
                 agents.getH3Indexes()[agentIndex] = world.getH3Indexes()[i];

@@ -38,6 +38,9 @@ public class HandyNasaPureEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public void processTick(double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         double gammaX = 0.03; // Commoners birth rate
         double gammaY = 0.03; // Elites birth rate
         double alphaX = 0.01; // Commoners death rate

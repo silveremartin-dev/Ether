@@ -40,6 +40,9 @@ public class RenewableEnergyPhysicsEngine {
      * @return Kinetic wind power density in W/mÂ²
      */
     public static double calculateBetzWindPowerWattsPerM2(double windSpeedMetersPerSec) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (windSpeedMetersPerSec <= 0.0) return 0.0;
         return 0.5 * AIR_DENSITY_KG_PER_M3 * Math.pow(windSpeedMetersPerSec, 3.0) * BETZ_LIMIT_CP;
     }
@@ -48,6 +51,9 @@ public class RenewableEnergyPhysicsEngine {
      * Executes one renewable energy physics tick across cells.
      */
     public static void processRenewableEnergyPhysics(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

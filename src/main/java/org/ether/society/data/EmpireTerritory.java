@@ -10,6 +10,16 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <h1>Empire Territory</h1>
+ * <p>
+ * Geospatial data ingestion, raster sampling, and tensor map management pipeline.<br>
+ * Ingests global planetary datasets (NOAA ETOPO, WorldClim, UNESCO WHYMAP, Natural Earth, Seshat, D-PLACE) into standardized H3 hexagonal rasters.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
+ */
 public class EmpireTerritory {
     public String name;
     public Color color;

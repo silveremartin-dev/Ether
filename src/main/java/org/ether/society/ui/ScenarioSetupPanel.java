@@ -139,6 +139,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updateDefaultValueIndicators() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (isUpdatingFromPreset) return;
 
         highlightControlIfModified(startYearSpinner, false);
@@ -155,6 +156,7 @@ public class ScenarioSetupPanel extends BorderPane {
         highlightControlIfModified(threadCountSlider, threadCountSlider != null && Math.abs(threadCountSlider.getValue() - 4.0) > 0.001);
 
         for (Map.Entry<String, Map<String, Spinner<Double>>> engEntry : typeBParamSpinnersMap.entrySet()) {
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (Map.Entry<String, Spinner<Double>> pEntry : engEntry.getValue().entrySet()) {
                 Spinner<Double> sp = pEntry.getValue();
                 if (sp != null && sp.getValue() != null) {
@@ -467,6 +469,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updateEngineInspector(String className, String title, String description, String reference, String equations) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         this.selectedEngineClassName = className;
         if (engineInspectorTitle != null) engineInspectorTitle.setText("ðŸ”Ž " + className + " â€” " + title);
         if (engineInspectorText != null) engineInspectorText.setText(LaTeXFormatter.formatLaTeX(description));
@@ -1089,6 +1092,7 @@ public class ScenarioSetupPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(PlanetPreset item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText("");
@@ -1107,6 +1111,7 @@ public class ScenarioSetupPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(PlanetPreset item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     PlanetPreset current = planetPresetCombo != null ? planetPresetCombo.getValue() : null;
@@ -1184,6 +1189,7 @@ public class ScenarioSetupPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(EcologyPreset item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -1212,6 +1218,7 @@ public class ScenarioSetupPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(EcologyPreset item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     EcologyPreset current = ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null;
@@ -1851,6 +1858,7 @@ public class ScenarioSetupPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(org.ether.society.persistence.SaveMetadata item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -1935,6 +1943,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updateSnapshotDetailsDisplay(org.ether.society.persistence.SaveMetadata newV) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (newV != null) {
             String timeStr = newV.getTimestamp() != null ? newV.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) : "N/A";
             String dateTxt = I18n.getOrDefault("scenario.snapshot.timestamp", "ðŸ“… Timestamp: ") + timeStr;
@@ -2101,6 +2110,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updateStartButtonLabel() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (startBtn == null) return;
         boolean dirty = isDirty();
         Scenario s = getScenario();
@@ -2252,6 +2262,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
 
     private void runPreFlightSanityCheck() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         updateLiveDiagnosticBlock();
     }
 
@@ -2291,6 +2302,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updateLiveDiagnosticBlock() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (liveDiagnosticContentBox == null) return;
         PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
         if (p == null) p = PlanetPreset.EARTH_LIKE;
@@ -2528,6 +2540,7 @@ public class ScenarioSetupPanel extends BorderPane {
         if (configErrors.isEmpty()) {
             validationItems.add(I18n.getOrDefault("scenario.diagnostic.validation_ok", "âœ… Configuration et couches du scÃ©nario 100% conformes et prÃªtes Ã  l'exÃ©cution"));
         } else {
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (String err : configErrors) {
                 validationItems.add("âŒ " + err);
                 alertCount++;
@@ -2587,6 +2600,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updateInheritedContextDisplay(String ecologyName) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (inheritedContextLabel == null) return;
         EcologyPreset eco = ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null;
         String ecoDisplay = eco != null ? org.ether.society.i18n.I18n.getPlanetPresetDisplayName(eco.name()) : (ecologyName != null ? org.ether.society.i18n.I18n.getPlanetPresetDisplayName(ecologyName) : "Earth Standard Baseline");
@@ -2738,6 +2752,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
             // Restore Type B engine checkbox states
             java.util.Map<String, Boolean> typeBStates = s.getTypeBEngineStates();
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (java.util.Map.Entry<String, CheckBox> entry : typeBCheckBoxMap.entrySet()) {
                 boolean active = typeBStates != null && typeBStates.getOrDefault(entry.getKey(), false);
                 entry.getValue().setSelected(active);
@@ -2746,10 +2761,12 @@ public class ScenarioSetupPanel extends BorderPane {
             // Restore Type B engine fine-grained parameter values
             java.util.Map<String, java.util.Map<String, Double>> typeBParams = s.getTypeBEngineParameters();
             if (typeBParams != null) {
+                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (java.util.Map.Entry<String, java.util.Map<String, Spinner<Double>>> engEntry : typeBParamSpinnersMap.entrySet()) {
                     String engKey = engEntry.getKey();
                     java.util.Map<String, Double> savedEngParams = typeBParams.get(engKey);
                     if (savedEngParams != null) {
+                        // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                         for (java.util.Map.Entry<String, Spinner<Double>> paramEntry : engEntry.getValue().entrySet()) {
                             Double val = savedEngParams.get(paramEntry.getKey());
                             if (val != null && paramEntry.getValue() != null && paramEntry.getValue().getValueFactory() != null) {
@@ -2823,6 +2840,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 }
             }
             if (s.getTensorProceduralParameters() != null) {
+                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (java.util.Map.Entry<Integer, java.util.Map<String, Double>> entry : s.getTensorProceduralParameters().entrySet()) {
                     int tIdx = entry.getKey();
                     java.util.Map<String, Double> pMap = entry.getValue();
@@ -4056,6 +4074,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updateEngineTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (corePane != null) {
             corePane.setText(I18n.getOrDefault("scenario.header.core_engines", "ðŸ”’ ARCHITECTURE CÅ’UR ETHER (24 MOTEURS PERMANENTS)"));
         }
@@ -4752,6 +4771,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
         if (target != null && !target.isBlank()) {
             String cleanTarget = target.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (String it : combo.getItems()) {
                 if (it != null && !it.isEmpty()) {
                     String cleanIt = it.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
@@ -4764,6 +4784,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
         if (fallbackKeyword != null && !fallbackKeyword.isBlank()) {
             String kw = fallbackKeyword.toLowerCase();
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (String it : combo.getItems()) {
                 if (it != null && it.toLowerCase().contains(kw)) {
                     combo.setValue(it);
@@ -5090,6 +5111,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updateTensorFileLabel(int tensorIdx) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         Label fileLbl = tensorFileLabels.get(tensorIdx);
         Button loadBtn = tensorLoadBtns.get(tensorIdx);
         if (fileLbl == null) return;
@@ -5154,6 +5176,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private Color evaluateProceduralTensorColor(int tIndex, double lat, double lon, double elevation, double p1, double p2, double p3, long seed) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         double noiseX = (lon + 180.0) / 360.0;
         double noiseY = (lat + 90.0) / 180.0;
         double pseudoNoise = Math.sin(noiseX * 12.0 + seed % 100) * Math.cos(noiseY * 12.0 + (seed / 100) % 100);
@@ -5645,6 +5668,7 @@ public class ScenarioSetupPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(String item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -5926,6 +5950,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updatePreviewModesCombo() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (previewModeCombo == null) return;
         int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
         int currentSelectionIndex = previewModeCombo.getSelectionModel().getSelectedIndex();
@@ -5974,11 +5999,13 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updatePreviewTitleText() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (previewTitleLabel == null) return;
         previewTitleLabel.setText(I18n.getOrDefault("scenario.title.right_view", "ðŸ—ºï¸ Resource Cartography & Display"));
     }
 
     private void updateBottomLegend() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (legendItemsContainer == null) return;
         legendItemsContainer.getChildren().clear();
 
@@ -6369,6 +6396,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updateDemoCompatibilityDisplay() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (demoCompatibilityLabel == null) return;
         PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
         String planetName = p != null ? p.name() : "Standard";
@@ -6418,6 +6446,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 }
             }
 
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell c : currentPreviewCells) {
                 int px = (int) ((c.getLongitude() - minLng) * scaleX);
                 int py = (int) ((maxLat - c.getLatitude()) * scaleY);
@@ -6526,6 +6555,7 @@ public class ScenarioSetupPanel extends BorderPane {
             if (landCells.isEmpty()) return;
 
             double popPerCell = (double) totalPop / landCells.size();
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell c : landCells) {
                 double normLat = (c.getLatitude() + 90.0) / 180.0;
                 double normLon = (c.getLongitude() + 180.0) / 360.0;
@@ -6613,6 +6643,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private double computeCellCarryingCapacity(H3Cell c) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (c == null || c.getElevation() <= 0) return 0.0;
         double baseCap = 250.0;
         Biome b = c.getBiome();
@@ -6771,6 +6802,7 @@ public class ScenarioSetupPanel extends BorderPane {
             boolean hasOcean = wLvl > -0.4;
             boolean isReliefActive = (btnReliefOverlay != null && btnReliefOverlay.isSelected());
 
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell c : currentPreviewCells) {
                 double x = (c.getLongitude() - minLng) * scale + offX;
                 double y = (maxLat - c.getLatitude()) * scale + offY;
@@ -6914,6 +6946,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updateMapInfoSummary() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (previewStatusLabel == null) return;
         if (currentPreviewCells == null || currentPreviewCells.isEmpty()) {
             previewStatusLabel.setText(I18n.getOrDefault("scenario.label.preview_precalc", "AperÃ§u de la distribution dÃ©mographique prÃ©-calculÃ©e"));
@@ -6929,6 +6962,7 @@ public class ScenarioSetupPanel extends BorderPane {
             int activeCells = 0;
             double maxDensity = 0.0;
             double sumDensity = 0.0;
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell c : currentPreviewCells) {
                 if (c == null) continue;
                 boolean isLand = (c.getElevation() != null && c.getElevation() > 0.0) || (c.getBiome() != null && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN);
@@ -6961,6 +6995,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
             double minVal = 1.0, maxVal = 0.0, sumVal = 0.0, sumSq = 0.0;
             int count = 0;
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell c : currentPreviewCells) {
                 if (c == null) continue;
                 boolean isLand = (c.getElevation() != null && c.getElevation() > 0.0) || (c.getBiome() != null && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN);
@@ -6988,6 +7023,7 @@ public class ScenarioSetupPanel extends BorderPane {
             String layerName = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue() : "";
             double sum = 0.0;
             int count = 0;
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell c : currentPreviewCells) {
                 if (c == null) continue;
                 boolean isLand = (c.getElevation() != null && c.getElevation() > 0.0) || (c.getBiome() != null && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN);
@@ -7360,6 +7396,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updateProgress(double progressVal, String msg) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         javafx.application.Platform.runLater(() -> {
             if (progressBar != null) {
                 progressBar.setProgress(progressVal);
@@ -7591,6 +7628,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     double marginLng = Math.max(1.0, (cMaxLng - cMinLng) * 0.08);
 
                     List<H3Cell> clippedCells = new ArrayList<>();
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : cells) {
                         if (cancelRequested || Thread.currentThread().isInterrupted()) {
                             throw new java.util.concurrent.CancellationException("Generation cancelled by user");
@@ -8011,6 +8049,7 @@ public class ScenarioSetupPanel extends BorderPane {
      * Auto-calibrates initial physical capital stock (K0 in kg/capita) based on start year T0.
      */
     public static double computeAutoCapitalFromYear(long year) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (year <= -50000) return 1.0;   // Early Paleolithic / Out of Africa (~1 kg/hab)
         if (year <= -10000) return 5.0;   // Late Paleolithic / Early Neolithic (~5 kg/hab)
         if (year <= -3000)  return 25.0;  // Bronze Age (~25 kg/hab)
@@ -8030,6 +8069,7 @@ public class ScenarioSetupPanel extends BorderPane {
      * @return the resulting computation or state reference
      */
     public static double computeAutoEnergyFromYear(long year) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (year <= -10000) return 10.0;    // Firewood (~10 MJ/hab)
         if (year <= -3000)  return 30.0;    // Wood & fodder (~30 MJ/hab)
         if (year <= -500)   return 60.0;    // Oil & firewood (~60 MJ/hab)
@@ -8048,6 +8088,7 @@ public class ScenarioSetupPanel extends BorderPane {
      * @return the resulting computation or state reference
      */
     public static double computeAutoFoodFromYear(long year) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (year <= -10000) return 2.0;  // Foraging (2 months)
         if (year <= -3000)  return 4.0;  // Early granaries (4 months)
         if (year <= -500)   return 6.0;  // Roman/Han silos (6 months)
@@ -8066,6 +8107,7 @@ public class ScenarioSetupPanel extends BorderPane {
      * @return the resulting computation or state reference
      */
     public static double computeAutoInfoFromYear(long year) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (year <= -10000) return 5.0;        // Oral tradition (~5 bits/hab)
         if (year <= -3000)  return 40.0;       // Cuneiform/Hieroglyphs (~40 bits/hab)
         if (year <= -500)   return 200.0;      // Classical manuscripts (~200 bits/hab)
@@ -8097,6 +8139,7 @@ public class ScenarioSetupPanel extends BorderPane {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
         try {
@@ -8261,6 +8304,7 @@ public class ScenarioSetupPanel extends BorderPane {
             }
 
             if (tensorSourceCombos != null) {
+                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (ComboBox<String> sc : tensorSourceCombos.values()) {
                     if (sc != null && sc.getCellFactory() != null) {
                         sc.setButtonCell(sc.getCellFactory().call(null));
@@ -8477,6 +8521,7 @@ public class ScenarioSetupPanel extends BorderPane {
         java.util.Map<String, java.util.Map<String, Double>> typeBParams = new java.util.HashMap<>();
         for (java.util.Map.Entry<String, java.util.Map<String, Spinner<Double>>> engEntry : typeBParamSpinnersMap.entrySet()) {
             java.util.Map<String, Double> engParams = new java.util.HashMap<>();
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (java.util.Map.Entry<String, Spinner<Double>> paramEntry : engEntry.getValue().entrySet()) {
                 if (paramEntry.getValue() != null && paramEntry.getValue().getValue() != null) {
                     engParams.put(paramEntry.getKey(), paramEntry.getValue().getValue());
@@ -8584,6 +8629,7 @@ public class ScenarioSetupPanel extends BorderPane {
                          * @param deltaTime the delta time parameter (double)
                          */
                         public void update(H3SimulationEngine engine, H3Cell cell, double deltaTime) {
+                            // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                             // Conservation thermodynamique & lois de bilans physiques
                         }
                     }
@@ -8647,6 +8693,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void updatePerformanceControlsState() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         boolean strict = strictDeterminismCheckBox != null && strictDeterminismCheckBox.isSelected();
         List<CheckBox> subOpts = List.of(
             sparseCellSkippingCheckBox,
@@ -8914,6 +8961,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
         if (!isValid) {
             StringBuilder sb = new StringBuilder();
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (String err : errors) {
                 sb.append("â€¢ ").append(err).append("\n");
             }

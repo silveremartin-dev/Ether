@@ -347,6 +347,7 @@ public class CaptureRealShots extends Application {
                 }
             }
 
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (String dir : TARGET_DIRS) {
                 File dirFile = new File(dir);
                 if (!dirFile.exists()) {

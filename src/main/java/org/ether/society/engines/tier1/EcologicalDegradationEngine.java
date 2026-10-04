@@ -37,6 +37,9 @@ public class EcologicalDegradationEngine {
      * Executes one ecological, pollution, overfishing & socio-demographic simulation tick across all cells.
      */
     public static void processEcologicalDegradation(List<H3Cell> cells, double techLevel) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         int droughtEvents = 0;
@@ -189,6 +192,9 @@ public class EcologicalDegradationEngine {
      * diffusing contaminants even into unpopulated, high-altitude or remote wilderness sites.
      */
     private static void processPollutionDispersion(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         int count = cells.size();
         if (count < 2) return;
 
@@ -226,6 +232,9 @@ public class EcologicalDegradationEngine {
     }
 
     private static int processMigrationFlux(List<H3Cell> cells, double defaultTech) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         int totalMigrated = 0;
         int count = cells.size();
 
@@ -308,6 +317,9 @@ public class EcologicalDegradationEngine {
      * @return the resulting computation or state reference
      */
     public static double calculateCarryingCapacity(H3Cell cell, double techLevel) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cell == null) return 100.0;
 
         double soilFactor = cell.getSoilOrganicCarbon() > 0 ? (cell.getSoilOrganicCarbon() / 50.0) : 1.0;

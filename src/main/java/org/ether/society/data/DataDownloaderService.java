@@ -189,6 +189,7 @@ public class DataDownloaderService {
             logger.info("Starting High-Speed Parallel Pre-Caching for Scenario Range: [{} BC/AD -> {} BC/AD] (Step: {} years)", startYear, endYear, stepYears);
 
             List<CompletableFuture<File>> futures = new ArrayList<>();
+            // Temporal integration loop: Advance simulation timeline step-by-step
             for (long y = startYear; y <= endYear; y += stepYears) {
                 final long year = y;
                 futures.add(CompletableFuture.supplyAsync(() -> downloadHydeGridForYear(year), executor));

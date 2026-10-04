@@ -18,7 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * H3 geospatial service for hexagonal grid operations.
+ * <h1>H3Service</h1>
+ * <p>
+ * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class H3Service {
     private static final Logger logger = LoggerFactory.getLogger(H3Service.class);
@@ -218,7 +225,9 @@ public class H3Service {
             logger.error("Error getting H3 cells in bounds", e);
             // Fallback: grid sampling
             double step = 0.1; // ~11km at equator
+            // Temporal integration loop: Advance simulation timeline step-by-step
             for (double lat = minLat; lat <= maxLat; lat += step) {
+                // Temporal integration loop: Advance simulation timeline step-by-step
                 for (double lng = minLng; lng <= maxLng; lng += step) {
                     long cell = h3.latLngToCell(lat, lng, res);
                     if (!cells.contains(cell)) {

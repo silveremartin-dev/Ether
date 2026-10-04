@@ -15,8 +15,14 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 /**
- * Overlay for displaying temporary "toast" notifications (e.g., Age
- * transitions, disasters).
+ * <h1>Notification Overlay</h1>
+ * <p>
+ * User interface component and visualization panel for the Ether simulation platform.<br>
+ * Provides interactive rendering, real-time spatial heatmaps, parameter controls, and multi-language localized analytics.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class NotificationOverlay extends VBox {
 

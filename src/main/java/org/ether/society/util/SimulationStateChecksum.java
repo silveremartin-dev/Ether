@@ -45,6 +45,7 @@ public final class SimulationStateChecksum {
                     .toList();
 
             ByteBuffer cellBuffer = ByteBuffer.allocate(32);
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell c : sortedCells) {
                 cellBuffer.clear();
                 cellBuffer.putLong(c.getH3Index());

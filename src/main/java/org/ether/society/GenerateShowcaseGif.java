@@ -12,7 +12,14 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Generates the animated showcase GIF (docs/ether_demo.gif) from the high-res tab screenshots.
+ * <h1>Generate Showcase Gif</h1>
+ * <p>
+ * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class GenerateShowcaseGif {
 
@@ -45,6 +52,7 @@ public class GenerateShowcaseGif {
             try (ImageOutputStream output = new FileImageOutputStream(gifOut);
                  GifSequenceWriter writer = new GifSequenceWriter(output, BufferedImage.TYPE_INT_RGB, displayTimeMs, true)) {
 
+                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (String path : imageFiles) {
                     File imgFile = new File(path);
                     if (!imgFile.exists()) {

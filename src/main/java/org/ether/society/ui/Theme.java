@@ -12,7 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * UI Theme manager (Dark Glass vs Light Glass).
+ * <h1>Theme</h1>
+ * <p>
+ * User interface component and visualization panel for the Ether simulation platform.<br>
+ * Provides interactive rendering, real-time spatial heatmaps, parameter controls, and multi-language localized analytics.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public enum Theme {
     DARK("Dark", "/css/index.css"),

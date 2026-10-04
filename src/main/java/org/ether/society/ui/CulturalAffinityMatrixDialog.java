@@ -193,6 +193,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(Long item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText("");
@@ -409,6 +410,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
     }
 
     private void updateCellDisplay(int i, int j) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (i >= cellPanes.length || j >= cellPanes[0].length) return;
         StackPane cell = cellPanes[i][j];
         Label lbl = cellLabels[i][j];
@@ -745,6 +747,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
     }
 
     private void updateQuickEditor() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (selectedI < 0 || selectedJ < 0 || selectedI >= activeEntities.size() || selectedJ >= activeEntities.size()) {
             quickEditorPairLabel.setText("— " + I18n.getOrDefault("cultural.matrix.select_cell_hint", "Sélectionnez une cellule de la matrice ci-dessus pour l'éditer."));
             quickAffinitySlider.setDisable(true);
@@ -825,6 +828,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
     }
 
     private static Color computeHeatmapColor(double val) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         val = Math.clamp(val, 0.0, 1.0);
         if (val < 0.5) {
             double t = val / 0.5;

@@ -52,6 +52,16 @@ import jakarta.persistence.*;
         @Index(name = "idx_lat_lng", columnList = "latitude, longitude"),
         @Index(name = "idx_biome", columnList = "biome")
 })
+/**
+ * <h1>H3Cell</h1>
+ * <p>
+ * Geospatial data ingestion, raster sampling, and tensor map management pipeline.<br>
+ * Ingests global planetary datasets (NOAA ETOPO, WorldClim, UNESCO WHYMAP, Natural Earth, Seshat, D-PLACE) into standardized H3 hexagonal rasters.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
+ */
 public class H3Cell {
 
     @Id
@@ -1195,6 +1205,8 @@ public class H3Cell {
      * @return movement friction multiplier (1.0 = baseline flat plain, >10.0 = extreme mountain/desert/swamp)
      */
     public double calculateMovementFriction(double techLevel) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         double baseFriction = 1.0;
 
         // Elevation / Ruggedness penalty
@@ -1360,6 +1372,8 @@ public class H3Cell {
      * Calculates dynamic surface albedo based on snow cover, biome, and natural vegetation density.
      */
     public double calculateDynamicAlbedo() {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         if (elevation != null && elevation < 0) {
             this.dynamicAlbedo = 0.06; // Water body baseline
             return this.dynamicAlbedo;
@@ -1389,6 +1403,8 @@ public class H3Cell {
      * and technological demographic transition stage.
      */
     public void updateAgePyramidFromTotal(double techLevel) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         if (population == null || population <= 0) {
             pop0to4 = pop5to14 = pop15to24 = pop25to49 = pop50to64 = pop65to79 = pop80Plus = 0;
             popYouth = popAdult = popElderly = 0;

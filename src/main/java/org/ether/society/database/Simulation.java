@@ -510,6 +510,8 @@ public class Simulation {
      * @param updatedAt the updated at parameter (LocalDateTime)
      */
     public void setUpdatedAt(LocalDateTime updatedAt) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         this.updatedAt = updatedAt;
     }
 

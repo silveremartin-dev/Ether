@@ -101,6 +101,9 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
      * @param deltaYears the delta years parameter (double)
      */
     public void process(List<H3Cell> cells, double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         double dt = Math.max(0.01, deltaYears * 365.25); // Step in days
@@ -129,6 +132,7 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
             if (netInfected > 50) {
                 List<Long> neighborIndexes = h3Service.getNeighbors(cell.getH3Index());
                 int outboundSpread = (int) (netInfected * 0.02); // 2% cross-border leak
+                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (Long nIdx : neighborIndexes) {
                     H3Cell neighbor = lookup.get(nIdx);
                     if (neighbor != null && neighbor.getPopulation() != null && neighbor.getPopulation() > 0) {

@@ -306,6 +306,7 @@ public class H3Globe3DSubScene {
      * Builds or updates the hardware 3D mesh representation of the H3 cell terrain.
      */
     public void updateTerrainMesh(List<H3Cell> cells) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (cells == null || cells.isEmpty()) return;
 
         TriangleMesh mesh = new TriangleMesh();
@@ -441,6 +442,7 @@ public class H3Globe3DSubScene {
      * @param height the height parameter (double)
      */
     public void updateDimensions(double width, double height) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         subScene.setWidth(width);
         subScene.setHeight(height);
     }

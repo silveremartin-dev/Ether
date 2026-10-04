@@ -100,6 +100,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
          * @return the resulting computation or state reference
          */
         public ScenarioSelectableItem(Scenario scenario, boolean isSelected, boolean executed, String runId) {
+            // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
             this.scenario = scenario;
             this.selected.set(isSelected);
             this.executed = executed;
@@ -174,6 +175,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
          * @param executed the executed parameter (boolean)
          */
         public void setExecuted(boolean executed) { 
+            // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
             this.executed = executed; 
             if (executed) {
                 this.batchState = BatchState.EXECUTED;
@@ -266,6 +268,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
          *
          */
         public void recalculateEstimate() {
+            // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
             if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
                 this.estimatedDurationSec = 0.0;
                 this.remainingDurationSec = 0.0;
@@ -513,6 +516,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(Boolean item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setGraphic(null);
@@ -556,6 +560,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(Double item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                     setGraphic(null);
@@ -609,6 +614,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(String item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                     setGraphic(null);
@@ -701,6 +707,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                  * @param empty the empty parameter (boolean)
                  */
                 protected void updateItem(ScenarioSelectableItem item, boolean empty) {
+                    // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                     super.updateItem(item, empty);
                     if (empty || item == null) {
                         setStyle("");
@@ -1179,6 +1186,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
      *
      */
     public void recalculateAllEstimates() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         for (ScenarioSelectableItem item : scenarioList) {
             item.recalculateEstimate();
         }
@@ -1190,6 +1198,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     private void updateExecutionContextBadge() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (executionContextBadge == null) return;
         ExecutionContextPanel.HardwareMode mode = ExecutionContextPanel.getActiveHardwareMode();
         int cores = Runtime.getRuntime().availableProcessors();
@@ -1309,6 +1318,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     private void executeMissingScenarios() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (isBatchRunning.get()) return;
 
         List<ScenarioSelectableItem> targetItems = scenarioList.stream()
@@ -1445,6 +1455,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     private void updateLiveBatchProgressAndEta(List<ScenarioSelectableItem> items, long startTimeMs) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (items == null || items.isEmpty()) return;
         double sumProgress = 0.0;
         for (ScenarioSelectableItem it : items) {
@@ -1464,6 +1475,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     private void runAnalysis() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         List<ScenarioSelectableItem> selectedExecuted = scenarioList.stream()
             .filter(i -> i.isSelected() && i.isExecuted())
             .toList();
@@ -1666,6 +1678,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     private void updateChartAndAnalysis() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (isUpdatingTexts) return;
         chart.getData().clear();
 
@@ -1722,6 +1735,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             if ("HISTORICAL_GROUND_TRUTH".equals(item.getRunId())) {
                 String benchKey = mapMetricToBenchmarkKey(metric);
                 int step = Math.max(1, (maxYear - minYear) / 80);
+                // Temporal integration loop: Advance simulation timeline step-by-step
                 for (int yr = minYear; yr <= maxYear; yr += step) {
                     double val = HistoricalValidationKernel.getInterpolatedBenchmarkValue(benchKey, yr, interpMethod);
                     series.getData().add(new XYChart.Data<>(yr, val));
@@ -1761,6 +1775,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     private void update2DSpatialComparison() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (isUpdatingTexts) return;
         List<ScenarioSelectableItem> selectedItems = scenarioList.stream()
             .filter(ScenarioSelectableItem::isSelected)
@@ -2222,6 +2237,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         isUpdatingTexts = true;
         try {
             if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("analytics.header", "ðŸ“Š COMPARATIVE ANALYTICS & SCENARIO BATTLE (DEEP ANALYTICS)"));
@@ -2356,6 +2372,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                      * @param empty the empty parameter (boolean)
                      */
                     protected void updateItem(String item, boolean empty) {
+                        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                         super.updateItem(item, empty);
                         if (empty || item == null) {
                             setText(null);
@@ -2375,6 +2392,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                 if (selected != null && metricSelectorCombo.getItems().contains(selected) && !selected.startsWith("â”€â”€")) {
                     metricSelectorCombo.setValue(selected);
                 } else {
+                    // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                     for (String item : metricSelectorCombo.getItems()) {
                         if (!item.startsWith("â”€â”€")) {
                             metricSelectorCombo.setValue(item);

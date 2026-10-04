@@ -34,6 +34,9 @@ public class MaritimeHighwayEngine {
      * Executes maritime transport & trade acceleration using default physical constants.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         processHybrid(cells, timeStepDays, DEFAULT_CAPITAL_BOOST_RATE, DEFAULT_FRICTION_MULTIPLIER);
     }
 
@@ -41,6 +44,9 @@ public class MaritimeHighwayEngine {
      * Executes maritime transport & trade acceleration with parameterizable constants.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays, double capitalBoostRate, double frictionMultiplier) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

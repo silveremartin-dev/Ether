@@ -32,10 +32,14 @@ public class LanguageLinguisticEngine {
      * Executes one linguistic drift and cultural isolation cycle across cells and trade routes.
      */
     public static void processLinguisticDrift(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         int isolatedCount = 0;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
@@ -83,6 +87,7 @@ public class LanguageLinguisticEngine {
         if (activeRoutes != null) {
             for (TradeNetworkEngine.TradeRoute route : activeRoutes) {
                 String hubLang = route.origin().getLanguageGroup();
+                // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (H3Cell routeCell : route.pathCells()) {
                     boolean isIsolated = routeCell.getBiome() == Biome.BEACH || routeCell.getMovementFriction() > 3.5;
                     double diffusionChance = isIsolated ? 0.05 : 0.25;

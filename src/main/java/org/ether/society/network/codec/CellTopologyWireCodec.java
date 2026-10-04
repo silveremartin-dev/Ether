@@ -54,6 +54,7 @@ public class CellTopologyWireCodec {
 
             Biome[] biomeValues = Biome.values();
 
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : cells) {
                 dos.writeLong(cell.getH3Index() != null ? cell.getH3Index() : 0L);
                 dos.writeDouble(cell.getLatitude() != null ? cell.getLatitude() : 0.0);
@@ -134,6 +135,7 @@ public class CellTopologyWireCodec {
             Biome[] biomeValues = Biome.values();
             List<H3Cell> cells = new ArrayList<>(cellCount);
 
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (int i = 0; i < cellCount; i++) {
                 long h3Index = dis.readLong();
                 double lat = dis.readDouble();

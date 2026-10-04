@@ -270,6 +270,8 @@ public class CShapesVectorIngestor {
     }
 
     private static Color computeHistoricalSovereignColor(int gwcode, String name) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         return switch (gwcode) {
             case 2 -> new Color(0x2563EB);   // United States of America (#2563EB)
             case 20 -> new Color(0xDC2626);  // Canada (#DC2626)

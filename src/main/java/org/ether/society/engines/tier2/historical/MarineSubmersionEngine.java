@@ -41,6 +41,9 @@ public class MarineSubmersionEngine {
      * Executes marine submersion and evacuation using default parameters.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         processHybrid(cells, timeStepDays, DEFAULT_DIKE_MAINTENANCE_BASE_CAPITAL, DEFAULT_EVACUATION_TECH_EFFICIENCY);
     }
 
@@ -52,10 +55,12 @@ public class MarineSubmersionEngine {
         if (cells == null || cells.isEmpty()) return;
 
         Map<Long, H3Cell> cellMap = new HashMap<>();
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell c : cells) {
             cellMap.put(c.getH3Index(), c);
         }
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             double elevation = cell.getElevation() != null ? cell.getElevation() : 0.0;
             double seaLevelOffset = cell.getSeaLevelOffsetMeters();
@@ -88,6 +93,7 @@ public class MarineSubmersionEngine {
 
                 // 2. Locate Safe Neighbor Cells (Elevation > seaLevelOffset)
                 List<H3Cell> safeNeighbors = new ArrayList<>();
+                // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (H3Cell candidate : cells) {
                     if (candidate.getH3Index() != cell.getH3Index() 
                             && (candidate.getElevation() != null && candidate.getElevation() > seaLevelOffset)
@@ -101,6 +107,7 @@ public class MarineSubmersionEngine {
                     int popPerNeighbor = evacuatedPop / safeNeighbors.size();
                     double capitalToTransfer = (cell.getResourceCapital() * 0.50) / safeNeighbors.size();
 
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell target : safeNeighbors) {
                         target.setPopulation(target.getPopulation() + popPerNeighbor);
                         target.setResourceCapital(target.getResourceCapital() + capitalToTransfer);

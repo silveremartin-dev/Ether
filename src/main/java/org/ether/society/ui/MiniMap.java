@@ -79,6 +79,7 @@ public class MiniMap extends Canvas {
      * Update viewport indicator when main canvas changes.
      */
     public void updateViewport(double zoom, double centerLat, double centerLng) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         this.viewportZoom = zoom;
         this.viewportCenterLat = centerLat;
         this.viewportCenterLng = centerLng;
@@ -89,6 +90,7 @@ public class MiniMap extends Canvas {
      * Compute lat/lng bounds from all cells.
      */
     private void computeBounds() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (cells == null || cells.isEmpty()) {
             minLat = maxLat = minLng = maxLng = 0;
             return;

@@ -438,6 +438,7 @@ public class H3MapCanvas extends Canvas {
     }
 
     private void updateAutoRotateTimerState() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (autoRotating && viewMode == ViewMode.VIEW_3D && tabVisible) {
             if (autoRotateTimer == null) {
                 autoRotateTimer = new javafx.animation.AnimationTimer() {
@@ -1736,6 +1737,7 @@ public class H3MapCanvas extends Canvas {
      * Update tooltip based on mouse position.
      */
     private void updateTooltip(double canvasX, double canvasY, double sceneX, double sceneY) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         H3Cell cell = findCellAt(canvasX, canvasY);
 
         if (cell != null) {
@@ -1955,6 +1957,7 @@ public class H3MapCanvas extends Canvas {
             }
 
             if (showHexGrid) {
+                // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (int i = startIndex; i < cells.size(); i++) {
                     H3Cell cell = cells.get(i);
                     if (cell.getLatitude() > cullMaxLat) break;
@@ -2164,6 +2167,7 @@ public class H3MapCanvas extends Canvas {
             drawSmoothGlobeSurface(gc, cx, cy, radius, radRotationY, radTilt, smoothImg);
 
             if (showHexGrid) {
+                // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (int i = 0; i < cellCount; i++) {
                     H3Cell cell = cells.get(i);
                     double lat = cell.getLatitude();
@@ -2525,6 +2529,7 @@ public class H3MapCanvas extends Canvas {
     }
 
     private double computeHillshadeFactor(H3Cell cell) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (cell == null || !showHillshading) return 1.0;
         double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
         if (elev <= 0) return 1.0;
@@ -2540,6 +2545,7 @@ public class H3MapCanvas extends Canvas {
                     double cLng = cell.getLongitude();
                     double cosLat = Math.cos(Math.toRadians(cLat));
                     int validNeighbors = 0;
+                    // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                     for (Long nIdx : neighbors) {
                         H3Cell neighbor = cellMap.get(nIdx);
                         if (neighbor != null) {
@@ -2588,6 +2594,7 @@ public class H3MapCanvas extends Canvas {
     }
 
     private double computeSolarTerminatorFactor(H3Cell cell) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (cell == null || !showSolarTerminator) return 1.0;
         double latRad = Math.toRadians(cell.getLatitude());
         double lngRad = Math.toRadians(cell.getLongitude());
@@ -2741,6 +2748,7 @@ public class H3MapCanvas extends Canvas {
     }
 
     private double computeCarryingCapacity(H3Cell c) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (c == null || c.getElevation() <= 0) return 0.0;
         double baseCap = 250.0;
         Biome b = c.getBiome();
@@ -3463,6 +3471,7 @@ public class H3MapCanvas extends Canvas {
             try {
                 // We need to check all neighbors to find boundaries
                 List<Long> neighbors = h3Service.getNeighbors(cell.getH3Index());
+                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (Long nIdx : neighbors) {
                     H3Cell neighbor = cellMap.get(nIdx);
                     if (neighbor == null) continue; // Ignore map boundary edge cells to prevent parallel lines across latitudes
@@ -3532,6 +3541,7 @@ public class H3MapCanvas extends Canvas {
             double maxNeighborFlux = flux;
             H3Cell targetNeighbor = null;
 
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (Long nIdx : neighbors) {
                 H3Cell neighbor = cellMap.get(nIdx);
                 if (neighbor != null && neighbor.getFluxPressure() > maxNeighborFlux) {

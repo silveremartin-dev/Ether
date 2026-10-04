@@ -72,6 +72,8 @@ public class HistoricalAutoCalibrator {
      * @return the resulting computation or state reference
      */
     public static CalibrationResult evaluateWindowedAutoCalibration(HistoricalValidationKernel.EpochWindow window) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         List<CalibrationResult> candidateResults = new ArrayList<>();
 
         candidateResults.add(runWindowedTrajectoryEvaluation("Ether Baseline", List.of(), window));
@@ -96,6 +98,8 @@ public class HistoricalAutoCalibrator {
      * @return the resulting computation or state reference
      */
     public static CalibrationResult evaluateAndAutoCalibrate() {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         return evaluateWindowedAutoCalibration(HistoricalValidationKernel.EpochWindow.DEEP_HORIZON);
     }
 
@@ -106,6 +110,8 @@ public class HistoricalAutoCalibrator {
      * @return the resulting computation or state reference
      */
     public static CalibrationResult evaluateMultiMetricAutoCalibration() {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         return evaluateWindowedAutoCalibration(HistoricalValidationKernel.EpochWindow.EARLY_MODERN_500YR);
     }
 
@@ -119,6 +125,8 @@ public class HistoricalAutoCalibrator {
      * @return the resulting computation or state reference
      */
     public static CalibrationResult runWindowedTrajectoryEvaluation(String configName, List<String> pluginNames, HistoricalValidationKernel.EpochWindow window) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         CalibrationResult result = new CalibrationResult(configName, pluginNames);
         HistoricalValidationKernel.MultiMetricTrajectory trajectory = new HistoricalValidationKernel.MultiMetricTrajectory();
 
@@ -183,6 +191,8 @@ public class HistoricalAutoCalibrator {
      * @return the resulting computation or state reference
      */
     public static CalibrationResult runTrajectoryEvaluation(String configName, List<String> pluginNames, Map<Integer, Double> benchmarkData) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         return runWindowedTrajectoryEvaluation(configName, pluginNames, HistoricalValidationKernel.EpochWindow.DEEP_HORIZON);
     }
 
@@ -322,6 +332,8 @@ public class HistoricalAutoCalibrator {
     }
 
     private static void simulateEpochStep(List<H3Cell> cells, int startYear, int deltaYears) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         H3Cell cell = cells.get(0);
         int currentYr = startYear;
         int remainingYears = deltaYears;

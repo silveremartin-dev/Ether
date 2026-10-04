@@ -32,11 +32,15 @@ public class PermafrostThawEngine {
      * @return Total methane outgassing amount in abstract units (ppm equivalent)
      */
     public static double processPermafrostThaw(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return 0.0;
 
         double totalMethaneOutgassing = 0.0;
         int thawingCells = 0;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             Biome biome = cell.getBiome();
             double temp = cell.getTemperature() != null ? cell.getTemperature() : -10.0;

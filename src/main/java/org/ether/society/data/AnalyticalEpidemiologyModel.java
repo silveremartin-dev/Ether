@@ -203,6 +203,8 @@ public class AnalyticalEpidemiologyModel {
     }
 
     private static double computeContinuousSanitarySuppression(double lon, double lat, long year) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         // High-income industrialized zones with piped clean water and antibiotics
         double na = Math.exp(-(Math.pow(lat - 40.0, 2) / 120.0 + Math.pow(lon - (-95.0), 2) / 350.0));
         double eu = Math.exp(-(Math.pow(lat - 50.0, 2) / 100.0 + Math.pow(lon - 12.0, 2) / 200.0));

@@ -320,6 +320,7 @@ public class StatsPanel extends VBox {
          * @param tooltipText the tooltip text parameter (String)
          */
         public void updateTexts(String title, String category, String unit, String tooltipText) {
+            // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
             this.title = title;
             this.category = category;
             this.unit = unit;
@@ -338,6 +339,7 @@ public class StatsPanel extends VBox {
          * @param rawNumericValue the raw numeric value parameter (double)
          */
         public void updateValue(String displayValue, double rawNumericValue) {
+            // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
             this.lastVal = rawNumericValue;
             valueLabel.setText(displayValue + (unit.isEmpty() ? "" : " " + unit));
             sparkline.addValue(rawNumericValue);
@@ -453,6 +455,7 @@ public class StatsPanel extends VBox {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(String item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -479,6 +482,7 @@ public class StatsPanel extends VBox {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(String item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -919,6 +923,7 @@ public class StatsPanel extends VBox {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         isUpdatingTexts = true;
         try {
             headerTitle.setText(I18n.getOrDefault("stats.header", "📊 CLIODYNAMIC & PHYSICALIST STATISTICS DASHBOARD"));
@@ -1008,6 +1013,7 @@ public class StatsPanel extends VBox {
                 cardsByCategory.computeIfAbsent(card.getCategory(), k -> new ArrayList<>()).add(card);
             }
 
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (Map.Entry<String, List<MetricCard>> entry : cardsByCategory.entrySet()) {
                 String catName = entry.getKey();
                 List<MetricCard> cardsInCat = entry.getValue();
@@ -1022,6 +1028,7 @@ public class StatsPanel extends VBox {
             if (prevSelected != null && chartMetricCombo.getItems().contains(prevSelected)) {
                 chartMetricCombo.setValue(prevSelected);
             } else {
+                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (String it : chartMetricCombo.getItems()) {
                     if (!it.startsWith("─── ")) {
                         chartMetricCombo.setValue(it);
@@ -1148,6 +1155,7 @@ public class StatsPanel extends VBox {
         if (points.size() > 600) {
             int step = (int) Math.ceil(points.size() / 500.0);
             List<XYChart.Data<Number, Number>> downsampled = new ArrayList<>();
+            // Temporal integration loop: Advance simulation timeline step-by-step
             for (int i = 0; i < points.size(); i += step) {
                 downsampled.add(points.get(i));
             }
@@ -1177,6 +1185,7 @@ public class StatsPanel extends VBox {
      *
      */
     public void update() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (engine == null || !isLiveCollectionActive) return;
         if (engine.getCells() == null || engine.getCells().isEmpty()) return;
 

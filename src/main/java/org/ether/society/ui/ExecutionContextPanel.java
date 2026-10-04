@@ -880,6 +880,7 @@ public class ExecutionContextPanel extends BorderPane {
     }
 
     private void updateSystemSpecs() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         int cpus = Runtime.getRuntime().availableProcessors();
         long maxMemMB = Runtime.getRuntime().maxMemory() / (1024 * 1024);
         String osName = System.getProperty("os.name", "Unknown OS");
@@ -893,6 +894,7 @@ public class ExecutionContextPanel extends BorderPane {
     }
 
     private void updateDatabaseStatus() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (dbStatusLabel == null) return;
         try {
             var emf = DatabaseConfig.getEntityManagerFactory();
@@ -912,6 +914,7 @@ public class ExecutionContextPanel extends BorderPane {
     }
 
     private void updateRightSummary() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (summaryHardwareLabel == null) return;
 
         HardwareMode hw = getHardwareMode();
@@ -1309,6 +1312,7 @@ public class ExecutionContextPanel extends BorderPane {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         titleHeader.setText(I18n.getOrDefault("exec.title", "⚡ Execution Context & Compute Infrastructure"));
         if (liveBannerLabel != null) {
             liveBannerLabel.setText(I18n.getOrDefault("exec.live_notice", "⚡ MODIFICATIONS EN DIRECT : Tout changement de moteur de calcul ou de configuration s'applique instantanément à la simulation en cours sans interruption."));

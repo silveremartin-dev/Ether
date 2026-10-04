@@ -39,6 +39,9 @@ public class AlbedoClimateEngine {
      * Convenience method for updating albedo feedback with baseline parameters.
      */
     public static void processAlbedoFeedback(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         processAlbedoAndClimateEvents(cells, 0L, 0.0);
     }
 
@@ -50,6 +53,9 @@ public class AlbedoClimateEngine {
      * @param volcanicCoolingOffset Active volcanic aerosol cooling in Â°C (0.0 if normal, -2.0 to -6.0 during volcanic winters)
      */
     public static void processAlbedoAndClimateEvents(List<H3Cell> cells, long simulationYear, double volcanicCoolingOffset) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         // 1. Calculate Orbital Precession Phase (21,000-year Milankovitch cycle)

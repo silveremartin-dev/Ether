@@ -6,7 +6,14 @@
 package org.ether.society.events;
 
 /**
- * Represents a predefined historical event.
+ * <h1>Historical Event</h1>
+ * <p>
+ * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public record HistoricalEvent(int year, String title, String message, double latitude, double longitude) {
     /*

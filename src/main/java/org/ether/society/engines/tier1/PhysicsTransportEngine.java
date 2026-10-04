@@ -32,6 +32,9 @@ public class PhysicsTransportEngine {
      * @return Energy expenditure in Joules per kg per kilometer
      */
     public static double calculateTransportWorkJoules(H3Cell cell) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cell == null) return 1000.0;
 
         Biome biome = cell.getBiome();
@@ -58,6 +61,9 @@ public class PhysicsTransportEngine {
      * Executes one transport work evaluation step across trade networks.
      */
     public static void processPhysicsTransport(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         double totalWorkExpendedJoules = 0.0;

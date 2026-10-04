@@ -13,8 +13,14 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 /**
- * Heads-Up Display (HUD) for performance monitoring.
- * Displays FPS, memory usage, and simulation stats.
+ * <h1>Performance HUD</h1>
+ * <p>
+ * User interface component and visualization panel for the Ether simulation platform.<br>
+ * Provides interactive rendering, real-time spatial heatmaps, parameter controls, and multi-language localized analytics.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class PerformanceHUD extends VBox {
 
@@ -104,6 +110,7 @@ public class PerformanceHUD extends VBox {
     }
 
     private void updateStats(long now, long oldTime) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         // 1. Calculate FPS
         if (arrayFilled) {
             long elapsedNanos = now - oldTime;
@@ -144,6 +151,7 @@ public class PerformanceHUD extends VBox {
      * @param centerLng the center lng parameter (double)
      */
     public void updateSimulationInfo(int cellCount, double zoom, double centerLat, double centerLng) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         entitiesLabel.setText(String.format("%s %,d", I18n.get("ui.hud.cells"), cellCount));
         cameraLabel.setText(
                 String.format("%s %.1fx | %.2f°N, %.2f°E", I18n.get("ui.hud.zoom"), zoom, centerLat, centerLng));
@@ -157,6 +165,7 @@ public class PerformanceHUD extends VBox {
      * @param p95TickMs the p95tick ms parameter (double)
      */
     public void updateProfilerInfo(double avgTickMs, double p95TickMs) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (profilerLabel != null) {
             profilerLabel.setText(String.format("⏱️ Pas : %.1fms (P95: %.1fms)", avgTickMs, p95TickMs));
         }

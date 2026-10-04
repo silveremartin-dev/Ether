@@ -191,6 +191,7 @@ public class VarianceDistributionPanel extends VBox {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(VariableEntry item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -217,6 +218,7 @@ public class VarianceDistributionPanel extends VBox {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(VariableEntry item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -296,6 +298,7 @@ public class VarianceDistributionPanel extends VBox {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         headerTitle.setText(I18n.getOrDefault("variance.title", "📊 STATISTIQUES DE VARIANCE ENTRE INDIVIDUS & DISTRIBUTION"));
         subtitle.setText(I18n.getOrDefault("variance.subtitle", "Évalue à quel point les individus / mailles s'éloignent du schéma standard (Moyenne μ ± Écart-type σ)"));
         comboPrompt.setText(I18n.getOrDefault("variance.prompt.variable", "Variable analysée :"));
@@ -423,6 +426,7 @@ public class VarianceDistributionPanel extends VBox {
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      */
     public void updateData(List<H3Cell> cells) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         this.currentCells = cells;
         VariableEntry entry = variableCombo.getValue();
         if (entry == null || entry.isHeader()) return;

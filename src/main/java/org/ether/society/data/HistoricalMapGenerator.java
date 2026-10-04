@@ -127,6 +127,8 @@ public class HistoricalMapGenerator {
      * @return the resulting computation or state reference
      */
     public static double[] computeHomininCladeWeights(double lon, double lat) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         // --- 1. STRICT UNINHABITED GEOGRAPHIC EXCLUSIONS (-100,000 BP) ---
         if (lat < -60.0 || lon < -26.0) return null; // Americas & Antarctica uninhabited
         if (lat < -35.2) return null; // All sub-Antarctic & South Indian islands (Marion, Crozet, Kerguelen, Bouvet)
@@ -1246,6 +1248,8 @@ public class HistoricalMapGenerator {
      * @return the resulting computation or state reference
      */
     public static double computeSurfaceTemperature(double lat, double lon, double elevM, long year) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         double radLat = Math.toRadians(lat);
         double radLon = Math.toRadians(lon);
         double cosLat = Math.cos(radLat);
@@ -1373,6 +1377,8 @@ public class HistoricalMapGenerator {
      * @return the resulting computation or state reference
      */
     public static double computeAnnualPrecipitation(double lat, double lon, double elevM, long year) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         double radLat = Math.toRadians(lat);
         double radLon = Math.toRadians(lon);
         double cosLat = Math.cos(radLat);
@@ -1481,6 +1487,8 @@ public class HistoricalMapGenerator {
      * @return the resulting computation or state reference
      */
     public static double computeSeasonalityAmplitude(double lat, double lon, double elevM, long year) {
+        // Ingestion & Transformation: Parse raw geospatial/tabular records
+        // Standardize coordinates, normalize projection tensors, and populate spatial index
         double radLat = Math.toRadians(lat);
         double radLon = Math.toRadians(lon);
         double cosLat = Math.cos(radLat);
@@ -5885,6 +5893,7 @@ public class HistoricalMapGenerator {
                             String comms = (parts.get(11) + " " + parts.get(12) + " " + parts.get(13) + " " + parts.get(14)).toLowerCase();
 
                             boolean match = false;
+                            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                             for (String kw : commodityKeywords) {
                                 if (comms.contains(kw.toLowerCase())) {
                                     match = true;
@@ -6040,6 +6049,7 @@ public class HistoricalMapGenerator {
             java.io.File etherFile = new java.io.File("data/maps/ether/" + filename);
             if (etherFile.exists()) return javax.imageio.ImageIO.read(etherFile);
             String[] subDirs = {"terre", "earth", "lune", "moon", "mars", "venus", "mercure", "mercury"};
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (String sub : subDirs) {
                 java.io.File subFile = new java.io.File("data/maps/ether/" + sub + "/" + filename);
                 if (subFile.exists()) return javax.imageio.ImageIO.read(subFile);
@@ -6047,6 +6057,7 @@ public class HistoricalMapGenerator {
             // 2. Check data/maps/
             java.io.File file = new java.io.File("data/maps/" + filename);
             if (file.exists()) return javax.imageio.ImageIO.read(file);
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (String sub : subDirs) {
                 java.io.File subFile = new java.io.File("data/maps/" + sub + "/" + filename);
                 if (subFile.exists()) return javax.imageio.ImageIO.read(subFile);

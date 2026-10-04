@@ -30,6 +30,9 @@ public class ResourceRecyclingEngine {
      * @return Enthalpy discount factor (0.0 to 0.85)
      */
     public static double calculateContinuousRecyclingDiscount(double capital, double tech) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (capital <= 0.0 || tech <= 0.0) return 0.0;
         double capitalFactor = Math.min(1.0, capital / 5000.0);
         double techFactor = Math.min(0.85, tech * 0.12);
@@ -40,6 +43,9 @@ public class ResourceRecyclingEngine {
      * Executes one material recycling tick across cells.
      */
     public static void processResourceRecycling(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

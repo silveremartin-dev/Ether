@@ -178,6 +178,7 @@ public class AtlasVideoExporter {
 
             if (cells != null && !cells.isEmpty()) {
                 double minLat = 90, maxLat = -90, minLng = 180, maxLng = -180;
+                // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (H3Cell c : cells) {
                     if (c.getLatitude() != null) {
                         minLat = Math.min(minLat, c.getLatitude());
@@ -223,6 +224,7 @@ public class AtlasVideoExporter {
 
                     double minVal = Double.MAX_VALUE;
                     double maxVal = -Double.MAX_VALUE;
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : cells) {
                         double val = getCellValue(c, mode);
                         minVal = Math.min(minVal, val);
@@ -230,6 +232,7 @@ public class AtlasVideoExporter {
                     }
                     double valRange = Math.max(0.001, maxVal - (minVal < 0 ? minVal : 0.0));
 
+                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : cells) {
                         if (c.getLatitude() == null || c.getLongitude() == null) continue;
                         double val = getCellValue(c, mode);

@@ -9,7 +9,14 @@ package org.ether.society.i18n;
 import java.util.Locale;
 
 /**
- * Supported languages for the application.
+ * <h1>Language</h1>
+ * <p>
+ * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public enum Language {
     ENGLISH("en", "English", Locale.ENGLISH),

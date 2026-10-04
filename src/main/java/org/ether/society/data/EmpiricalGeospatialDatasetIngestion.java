@@ -224,6 +224,7 @@ public class EmpiricalGeospatialDatasetIngestion {
                         cellVal = null;
                     } else if ("row".equals(elem)) {
                         if (curRow <= 3) { // Header detection
+                            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                             for (Map.Entry<Integer, String> e : rowValues.entrySet()) {
                                 String h = e.getValue().toLowerCase().replaceAll("[^a-z0-9]", "");
                                 if (latCol == -1 && (h.contains("latitude") || h.equals("lat") || h.equals("y"))) {
@@ -248,6 +249,7 @@ public class EmpiricalGeospatialDatasetIngestion {
                                         if (filterKeywords != null && filterKeywords.length > 0) {
                                             match = false;
                                             String rowFull = rowValues.values().toString().toLowerCase();
+                                            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                                             for (String kw : filterKeywords) {
                                                 if (rowFull.contains(kw.toLowerCase())) {
                                                     match = true;
@@ -453,6 +455,7 @@ public class EmpiricalGeospatialDatasetIngestion {
 
                             String comms = (parts.get(11) + " " + parts.get(12) + " " + parts.get(13) + " " + parts.get(14)).toLowerCase();
                             boolean match = false;
+                            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                             for (String kw : keywords) {
                                 if (comms.contains(kw.toLowerCase())) {
                                     match = true;

@@ -157,6 +157,8 @@ public class ScenarioTestProtocol {
      * 4. Parameter Corrections: Generates actionable parameter adjustment recommendations.
      */
     public ProtocolReport runProtocol(Scenario scenario, SimulationRunRecord targetRun) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         if (scenario == null || targetRun == null) {
             throw new IllegalArgumentException("Scenario and targetRun must not be null.");
         }
@@ -187,6 +189,8 @@ public class ScenarioTestProtocol {
      * Executes the scenario protocol against a 20-variable historical benchmark window.
      */
     public ProtocolReport runProtocolAgainstBenchmark(Scenario scenario, HistoricalValidationKernel.EpochWindow window) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         Map<Integer, Double> benchmarkPop = HistoricalValidationKernel.filterByWindow(
             HistoricalValidationKernel.getHistoricalWorldPopulation(), window);
 

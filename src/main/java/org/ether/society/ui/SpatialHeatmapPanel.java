@@ -285,6 +285,7 @@ public class SpatialHeatmapPanel extends VBox {
     }
 
     private void updateActiveLayerChips() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         activeLayersChipsBox.getChildren().clear();
         int count = activeLayers.size();
         activeLayersMenuBtn.setText("🗺️ " + I18n.getOrDefault("heatmap.layers_btn", "Couches Actives") + " (" + count + ")");
@@ -366,6 +367,7 @@ public class SpatialHeatmapPanel extends VBox {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         titleLabel.setText(I18n.getOrDefault("heatmap.title", "🗺️ Atlas Dynamique des Territoires (Toutes Couches)"));
         buildLayerMenu();
 
@@ -404,6 +406,7 @@ public class SpatialHeatmapPanel extends VBox {
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      */
     public void updateCells(List<H3Cell> cells) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (!isPlayingAnimation && cells != null) {
             this.currentCells = cells;
             updateSliderRange();
@@ -424,6 +427,7 @@ public class SpatialHeatmapPanel extends VBox {
     }
 
     private void updateSliderRange() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (historyManager == null || historyManager.getWorldSnapshots().isEmpty()) {
             timeSlider.setMin(0);
             timeSlider.setMax(0);
@@ -582,6 +586,7 @@ public class SpatialHeatmapPanel extends VBox {
     }
 
     private void updateRangeLabel() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (rangeStartIndex == null && rangeEndIndex == null) {
             rangeInfoLabel.setText(I18n.getOrDefault("heatmap.range.all", "Plage : Tout l'historique"));
         } else {
@@ -592,6 +597,7 @@ public class SpatialHeatmapPanel extends VBox {
     }
 
     private void updatePlaybackSpeed() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         String val = speedCombo.getValue();
         if ("0.5x".equals(val)) playbackDelayMs = 600;
         else if ("2.0x".equals(val)) playbackDelayMs = 150;
@@ -675,6 +681,7 @@ public class SpatialHeatmapPanel extends VBox {
 
             double minVal = Double.MAX_VALUE;
             double maxVal = -Double.MAX_VALUE;
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell c : currentCells) {
                 double val = getCellValue(c, mode);
                 minVal = Math.min(minVal, val);
@@ -682,6 +689,7 @@ public class SpatialHeatmapPanel extends VBox {
             }
             double valRange = Math.max(0.001, maxVal - (minVal < 0 ? minVal : 0.0));
 
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell c : currentCells) {
                 if (c.getLatitude() == null || c.getLongitude() == null) continue;
                 double val = getCellValue(c, mode);
@@ -834,6 +842,7 @@ public class SpatialHeatmapPanel extends VBox {
     }
 
     private double computeMoranI(DisplayMode mode) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (currentCells.size() < 4) return 0.0;
         double sum = 0;
         for (H3Cell c : currentCells) sum += getCellValue(c, mode);

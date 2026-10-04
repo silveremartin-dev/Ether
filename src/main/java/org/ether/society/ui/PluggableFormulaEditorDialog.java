@@ -207,6 +207,7 @@ public class PluggableFormulaEditorDialog extends Stage {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         setTitle(I18n.getOrDefault("formula_editor.window_title", "🧮 Custom Statistical Formula Editor & Manager"));
         headerLabel.setText(I18n.getOrDefault("formula_editor.header", "⚙️ FORMULES & STATISTIQUES PLUGGABLES (Custom Formula Engine)"));
         lblListTitle.setText(I18n.getOrDefault("formula_editor.list_title", "📋 Saved Formulas:"));

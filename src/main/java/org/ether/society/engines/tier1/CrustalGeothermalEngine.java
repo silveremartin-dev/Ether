@@ -38,6 +38,9 @@ public class CrustalGeothermalEngine {
      * @return Maximum depth in meters
      */
     public static double calculateMaxMiningDepthMeters(double techLevel) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (techLevel < 2.5) return 100.0;   // Surface mining only
         if (techLevel < 5.0) return 500.0;   // Shaft mining
         if (techLevel < 7.5) return 1500.0;  // Deep shaft mining
@@ -48,6 +51,9 @@ public class CrustalGeothermalEngine {
      * Executes one crustal geothermal and deep mining check across cells.
      */
     public static void processCrustalGeothermal(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

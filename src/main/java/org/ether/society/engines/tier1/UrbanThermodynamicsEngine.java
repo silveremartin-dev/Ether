@@ -31,8 +31,12 @@ public class UrbanThermodynamicsEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processUrbanThermodynamics(List<H3Cell> cells, double deltaYears) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() < 5000) continue;
 

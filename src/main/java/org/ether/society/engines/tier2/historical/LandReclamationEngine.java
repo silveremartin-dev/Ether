@@ -44,6 +44,9 @@ public class LandReclamationEngine {
      * @param timeStepDays the time step days parameter (double)
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         processHybrid(cells, timeStepDays,
                 DEFAULT_POLDER_TECH_THRESHOLD, DEFAULT_POLDER_CAPITAL_THRESHOLD,
                 DEFAULT_SEASTEADING_TECH_THRESHOLD, DEFAULT_SEASTEADING_CAPITAL_THRESHOLD);
@@ -54,6 +57,7 @@ public class LandReclamationEngine {
                                     double seasteadingTechThreshold, double seasteadingCapitalThreshold) {
         if (cells == null || cells.isEmpty()) return;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;

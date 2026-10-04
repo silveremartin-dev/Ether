@@ -45,6 +45,9 @@ public class DynamicMaritimeRoutingGraph {
      * Updates and processes trans-oceanic maritime routes across the grid.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         // Check if technological or topological state requires graph recalculation
@@ -60,6 +63,9 @@ public class DynamicMaritimeRoutingGraph {
      * Determines whether the routing graph should be dynamically invalidated and rebuilt.
      */
     private static boolean shouldRecalculateGraph(List<H3Cell> cells) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         double currentAvgTech = cells.stream()
                 .mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 0.0)
                 .average().orElse(0.0);
@@ -99,6 +105,7 @@ public class DynamicMaritimeRoutingGraph {
         for (H3Cell source : maritimeNodes) {
             Map<Long, Double> neighborCosts = new HashMap<>();
 
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell target : maritimeNodes) {
                 if (source.getH3Index() == target.getH3Index()) continue;
 
@@ -149,6 +156,9 @@ public class DynamicMaritimeRoutingGraph {
      * Calculates local ocean swell significant wave height (Hs in meters) based on bathymetry and atmospheric storm turbulence.
      */
     public static double calculateSignificantWaveHeight(double elevationMeters, double latitudeDegrees) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         // Bathymetric wave damping / abyssal swell amplification:
         // Shallow continental shelf (elevation > -200m) dampens ocean swells via bed friction (Hs ~ 0.8m - 1.5m).
         // Abyssal deep ocean (elevation <= -200m) generates large open-ocean swells (Hs ~ 3.5m - 5.5m).
@@ -167,6 +177,9 @@ public class DynamicMaritimeRoutingGraph {
      * Calculates vessel fleet hull wave clearance tolerance (in meters) from capital density and technology.
      */
     public static double calculateFleetWaveClearance(double capitalPerCapita, double techLevel) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         // Physical hull clearance scales with physical capital K (hull displacement, draft, keel stability) and navigation tech:
         // Primitive coastal rafts/canoes (K ~ 10 kg/hab, tech ~ 1.0) -> clearance ~ 1.2m (restricted to shallow coastal waters Hs <= 1.2m)
         // Caravels/Galleons (K ~ 150 kg/hab, tech ~ 4.0) -> clearance ~ 4.0m (crosses Atlantic swells Hs <= 4.0m)
@@ -180,6 +193,9 @@ public class DynamicMaritimeRoutingGraph {
      * Calculates navigation cost between two maritime nodes based on distance, temperature, ice, tech, and wave risk.
      */
     private static double calculateNavigationCost(H3Cell source, H3Cell target, double distKm, double tech, double waveOvertoppingRatio) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         double avgTemp = ((source.getTemperature() != null ? source.getTemperature() : 15.0)
                 + (target.getTemperature() != null ? target.getTemperature() : 15.0)) / 2.0;
 
@@ -234,6 +250,9 @@ public class DynamicMaritimeRoutingGraph {
      * @return the resulting computation or state reference
      */
     public static double calculateGreatCircleDistance(double lat1, double lon1, double lat2, double lon2) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         return calculateGreatCircleDistance(lat1, lon1, lat2, lon2, 6371.0);
     }
 
@@ -249,6 +268,9 @@ public class DynamicMaritimeRoutingGraph {
      * @return the resulting computation or state reference
      */
     public static double calculateGreatCircleDistance(double lat1, double lon1, double lat2, double lon2, double planetRadiusKm) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         double R = (planetRadiusKm > 0) ? planetRadiusKm : 6371.0;
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);

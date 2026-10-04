@@ -17,8 +17,14 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * Utility class for internationalization.
- * Manages the current language and resource bundles.
+ * <h1>I18n</h1>
+ * <p>
+ * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class I18n {
     private static final Logger logger = LoggerFactory.getLogger(I18n.class);

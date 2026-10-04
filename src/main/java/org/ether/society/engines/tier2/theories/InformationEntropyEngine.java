@@ -32,6 +32,9 @@ public class InformationEntropyEngine {
      * @return Channel capacity C in bits/second
      */
     public static double calculateShannonCapacityBitsPerSec(double bandwidthHz, double signalToNoiseRatio) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (signalToNoiseRatio <= 0.0) return 0.0;
         return bandwidthHz * (Math.log(1.0 + signalToNoiseRatio) / Math.log(2.0));
     }
@@ -40,6 +43,9 @@ public class InformationEntropyEngine {
      * Executes one information channel capacity update across cells.
      */
     public static void processInformationEntropy(List<H3Cell> cells) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

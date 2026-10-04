@@ -654,6 +654,7 @@ public class ControlPanel extends VBox {
      * @param isRunning the is running parameter (boolean)
      */
     public void updatePlayPauseVisuals(boolean isRunning) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (playPauseBtn == null) return;
         if (isRunning) {
             playPauseBtn.setText("⏸");
@@ -667,6 +668,7 @@ public class ControlPanel extends VBox {
     }
 
     private void updateSpeedMaxStyle(boolean isMax) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (speedMax == null) return;
         speedMax.setSelected(isMax);
         if (isMax) {
@@ -677,6 +679,7 @@ public class ControlPanel extends VBox {
     }
 
     private void updateSpeedLabel(double spd) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (speedValueLabel == null) return;
         if (speedMax != null && speedMax.isSelected()) {
             speedValueLabel.setText("⏱️ " + I18n.getOrDefault("sim.speed.max_label", "Vitesse Cible : MAX 🚀 (Calcul CPU sans limite de fréquence)"));
@@ -741,6 +744,7 @@ public class ControlPanel extends VBox {
      *
      */
     public void updateActiveLayerUI() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (activeLayersMenuBtn == null) return;
 
         if (mapCanvas == null) {
@@ -977,6 +981,7 @@ public class ControlPanel extends VBox {
      * @param currentYear the current year parameter (int)
      */
     public void updateTimelapseSlider(int minYear, int maxYear, int currentYear) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         dateHeaderLabel.setText("📅 " + I18n.getOrDefault("sim.header.date", "Date : ") + String.format(java.util.Locale.ROOT, "An %d", currentYear));
     }
 
@@ -1046,6 +1051,7 @@ public class ControlPanel extends VBox {
      * @param scenarioName the scenario name parameter (String)
      */
     public void updateScenarioName(String scenarioName) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (scenarioName != null && !scenarioName.isBlank()) {
             scenarioHeaderLabel.setText(I18n.getOrDefault("sim.header.scenario", "🎬 Scenario: ") + scenarioName);
         }
@@ -1058,6 +1064,7 @@ public class ControlPanel extends VBox {
      * @param year the year parameter (String)
      */
     public void updateYear(String year) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         dateHeaderLabel.setText("📅 " + I18n.getOrDefault("sim.header.date", "Date : ") + year);
     }
 
@@ -1071,6 +1078,7 @@ public class ControlPanel extends VBox {
      * @param tps the tps parameter (double)
      */
     public void updateStats(long population, double food, long populatedCells, double tps) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         popStatValue.setText(String.format(I18n.getOrDefault("sim.status.pop_total", "Pop. Totale : %s"), formatNumber(population)));
         foodStatValue.setText(String.format(I18n.getOrDefault("sim.status.food_stocks", "Stocks Alim. : %s"), formatNumber((long) food)));
         cellStatValue.setText(String.format(I18n.getOrDefault("sim.status.populated_cells", "Populated Cells: %,d"), populatedCells));
@@ -1094,6 +1102,7 @@ public class ControlPanel extends VBox {
      * @param month the month parameter (int)
      */
     public void updateSeason(int month) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         String[] seasonNames = {
             I18n.getOrDefault("sim.season.winter", "Hiver ❄️"),
             I18n.getOrDefault("sim.season.spring", "Printemps 🌿"),
@@ -1137,6 +1146,7 @@ public class ControlPanel extends VBox {
      * @param events the events parameter (List&lt;ActiveEvent&gt;)
      */
     public void updateRecentEvents(List<ActiveEvent> events) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (eventsListBox == null) return;
         if (events != null) {
             rawEventsCache.clear();
@@ -1256,6 +1266,7 @@ public class ControlPanel extends VBox {
      * @param ageName the age name parameter (String)
      */
     public void updateAge(String ageName) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         ageLabel.setText(I18n.getOrDefault("sim.status.age_prefix", "Age: ") + ageName);
     }
 
@@ -1271,6 +1282,7 @@ public class ControlPanel extends VBox {
      * @param online the online parameter (boolean)
      */
     public void updateDatabaseStatus(boolean online) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         this.isDbOnline = online;
         refreshStatusBadge();
     }
@@ -1317,6 +1329,7 @@ public class ControlPanel extends VBox {
      * @param isConnected the is connected parameter (boolean)
      */
     public void updateClusterStatus(String nodeRole, String hostPort, boolean isConnected) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (isConnected) {
             this.clusterNodeState = String.format("🌐 %s (%s)", nodeRole, hostPort);
         } else {
@@ -1335,6 +1348,7 @@ public class ControlPanel extends VBox {
     }
 
     private void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (playPauseBtn != null) {
             boolean running = engine != null && engine.isRunning();
             playPauseBtn.setText(running ? "⏸" : "▶");
@@ -1483,6 +1497,7 @@ public class ControlPanel extends VBox {
     }
 
     private void updateViewToggleButton() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (mapCanvas != null && mode3dCheck != null) {
             boolean is3D = mapCanvas.getViewMode() == ViewMode.VIEW_3D;
             mode3dCheck.setSelected(is3D);
@@ -1497,6 +1512,7 @@ public class ControlPanel extends VBox {
     }
 
     private void updateDisplayToggleButton() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         updateActiveLayerUI();
     }
 }

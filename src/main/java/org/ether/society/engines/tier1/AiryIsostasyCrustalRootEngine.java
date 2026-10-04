@@ -53,6 +53,9 @@ public class AiryIsostasyCrustalRootEngine {
      * @return Crustal root depth in meters
      */
     public static double calculateMountainRootDepthMeters(double elevationMeters) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (elevationMeters <= 0.0) return 0.0;
         return elevationMeters * AIRY_ROOT_RATIO;
     }
@@ -61,6 +64,9 @@ public class AiryIsostasyCrustalRootEngine {
      * Calculates total lithospheric crustal thickness (in km) at a given topographic elevation.
      */
     public static double calculateTotalCrustThicknessKm(double elevationMeters) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         double rootMeters = calculateMountainRootDepthMeters(elevationMeters);
         double topoMeters = Math.max(0.0, elevationMeters);
         return (BASELINE_CRUST_THICKNESS_METERS + topoMeters + rootMeters) / 1000.0;
@@ -70,6 +76,9 @@ public class AiryIsostasyCrustalRootEngine {
      * Processes Airy crustal roots and updates geothermal heat flow and metal concentration across cells.
      */
     public static void processAiryIsostasy(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

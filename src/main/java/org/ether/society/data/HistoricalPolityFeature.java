@@ -11,6 +11,16 @@ import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <h1>Historical Polity Feature</h1>
+ * <p>
+ * Geospatial data ingestion, raster sampling, and tensor map management pipeline.<br>
+ * Ingests global planetary datasets (NOAA ETOPO, WorldClim, UNESCO WHYMAP, Natural Earth, Seshat, D-PLACE) into standardized H3 hexagonal rasters.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
+ */
 public class HistoricalPolityFeature {
     public String name;
     public int fromYear;

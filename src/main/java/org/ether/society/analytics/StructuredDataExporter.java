@@ -63,6 +63,7 @@ public class StructuredDataExporter {
 
         List<Long> ticks = series.getTicks();
         List<Double> vals = series.getValues();
+        // Temporal integration loop: Advance simulation timeline step-by-step
         for (int i = 0; i < ticks.size(); i++) {
             sb.append(String.format(Locale.US, "    {\"tick\": %d, \"value\": %.6f}%s\n",
                     ticks.get(i), vals.get(i), (i < ticks.size() - 1 ? "," : "")));

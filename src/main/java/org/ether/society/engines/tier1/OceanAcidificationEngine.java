@@ -45,6 +45,9 @@ public class OceanAcidificationEngine {
      * Cold waters absorb significantly more CO2 than warm tropical waters.
      */
     public static double calculateHenrySolubility(double tempCelsius) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         double tempK = Math.max(271.15, tempCelsius + PhysicalConstants.KELVIN_ZERO_CELSIUS);
         double deltaInvT = (1.0 / tempK) - (1.0 / PhysicalConstants.OPTIMAL_BIOLOGICAL_TEMP_KELVIN);
         return HENRY_K0_CO2 * Math.exp(ENTHALPY_DISSOLUTION_OVER_R * deltaInvT);
@@ -54,6 +57,9 @@ public class OceanAcidificationEngine {
      * Calculates dissolved CO2 concentration in aqueous phase in mol/L.
      */
     public static double calculateDissolvedCO2(double tempCelsius, double co2Ppm) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         double pCO2Atm = Math.max(50.0, co2Ppm) * 1e-6;
         return calculateHenrySolubility(tempCelsius) * pCO2Atm;
     }
@@ -65,6 +71,9 @@ public class OceanAcidificationEngine {
      * @param co2Ppm  Global atmospheric COâ‚‚ concentration in ppm
      */
     public static void processOceanAcidification(List<H3Cell> cells, double co2Ppm) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         // Baseline COâ‚‚ = 280 ppm. Acidification occurs when COâ‚‚ > 350 ppm

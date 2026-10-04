@@ -60,6 +60,9 @@ public class MilankovitchOrbitalEngine {
      * @return MilankovitchParameters instance
      */
     public static MilankovitchParameters computeOrbitalParameters(double year) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         double t = year;
         // Eccentricity e(t)
         double e = MEAN_ECCENTRICITY + ECCENTRICITY_AMPLITUDE * Math.sin(2.0 * Math.PI * t / ECCENTRICITY_PERIOD_YEARS);
@@ -83,6 +86,9 @@ public class MilankovitchOrbitalEngine {
      * @return Daily average insolation in W/mÂ²
      */
     public static double calculateDailyInsolation(double latDeg, int dayOfYear, MilankovitchParameters params) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         double phi = Math.toRadians(latDeg);
         double eps = Math.toRadians(params.obliquityDeg());
 

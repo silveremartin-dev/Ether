@@ -694,6 +694,8 @@ public class HistoricalScenarioCalibrationHarness {
      * Runs comprehensive calibration across canonical steady-regime scenarios.
      */
     public static List<ScenarioCalibrationResult> runAllScenarioCalibrations() {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         List<ScenarioCalibrationResult> results = new ArrayList<>();
         for (CalibrationScenarioDefinition scenarioDef : CALIBRATION_SCENARIOS) {
             logger.info("🎯 Running Calibration Scenario: '{}' (Years {} -> {})",
@@ -708,6 +710,8 @@ public class HistoricalScenarioCalibrationHarness {
      * Runs twin counterfactual falsification scenarios.
      */
     public static List<ScenarioCalibrationResult> runAllFalsificationCounterfactuals() {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         List<ScenarioCalibrationResult> results = new ArrayList<>();
         for (CalibrationScenarioDefinition scenarioDef : FALSIFICATION_COUNTERFACTUAL_SCENARIOS) {
             logger.info("🔬 Running Counterfactual Falsification Twin: '{}' (Years {} -> {})",
@@ -722,6 +726,8 @@ public class HistoricalScenarioCalibrationHarness {
      * Runs full scientific calibration and falsification suite.
      */
     public static List<ScenarioCalibrationResult> runFullScientificValidationSuite() {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         List<ScenarioCalibrationResult> all = new ArrayList<>(runAllScenarioCalibrations());
         all.addAll(runAllFalsificationCounterfactuals());
         all.addAll(runAllArchaeologicalDetectiveScenarios());
@@ -733,6 +739,8 @@ public class HistoricalScenarioCalibrationHarness {
      * Runs Archaeological Detective scenarios to locate unrecorded historical anomalies.
      */
     public static List<ScenarioCalibrationResult> runAllArchaeologicalDetectiveScenarios() {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         List<ScenarioCalibrationResult> results = new ArrayList<>();
         for (CalibrationScenarioDefinition scenarioDef : ARCHAEOLOGICAL_DETECTIVE_SCENARIOS) {
             logger.info("🕵️ Running Archaeological Detective Scenario: '{}' (Years {} -> {})",
@@ -747,6 +755,8 @@ public class HistoricalScenarioCalibrationHarness {
      * Runs master 9-epoch historical blocks across the entire -100,000 BP to 2026 CE timeline.
      */
     public static List<ScenarioCalibrationResult> runAllMasterNineEpochBlocks() {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         List<ScenarioCalibrationResult> results = new ArrayList<>();
         for (CalibrationScenarioDefinition scenarioDef : MASTER_NINE_EPOCH_BLOCKS) {
             logger.info("🌍 Running Master Epoch Slice: '{}' (Years {} -> {})",
@@ -773,6 +783,8 @@ public class HistoricalScenarioCalibrationHarness {
      * Evaluates marginal sensitivity and CPU cost of Tier 2 & World3 hybrid engines.
      */
     public static List<EngineAblationAuditEntry> runPluggableEngineAndWorld3AblationAudit() {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         List<EngineAblationAuditEntry> audit = new ArrayList<>();
         audit.add(new EngineAblationAuditEntry(
                 "NPK Stoichiometry & Nitrogen Fixation",
@@ -852,6 +864,8 @@ public class HistoricalScenarioCalibrationHarness {
      * Executes single-scenario before-after calibration, intermediate checkpoint checks, and drift analysis.
      */
     public static ScenarioCalibrationResult runScenarioCalibration(CalibrationScenarioDefinition def) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         ScenarioCalibrationResult result = new ScenarioCalibrationResult(def);
 
         int startYear = def.startYear();
@@ -993,6 +1007,8 @@ public class HistoricalScenarioCalibrationHarness {
      * Evaluates dense intermediate checkpoints, actual 2D raster maps, and spectral discrepancy derivative dot{Omega}(t).
      */
     private static void evaluateDenseIntermediateCheckpoints(CalibrationScenarioDefinition def, ScenarioCalibrationResult result, List<Integer> epochYears, double growthRate) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         if (epochYears == null || epochYears.isEmpty()) return;
 
         double prevOmega = 0.0;
@@ -1087,6 +1103,8 @@ public class HistoricalScenarioCalibrationHarness {
      * Computes Haversine great-circle distance between two geographic coordinates in km.
      */
     private static double computeHaversineDistanceKm(double lat1, double lon1, double lat2, double lon2) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         final double R = 6371.0; // Earth radius in km
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
@@ -1101,6 +1119,8 @@ public class HistoricalScenarioCalibrationHarness {
      * Evaluates cartographic rasters between t0, t1, and simulated states.
      */
     private static void evaluateSpatialMaps(CalibrationScenarioDefinition def, ScenarioCalibrationResult result) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         String baseMapDir = "data/maps/ether/earth/";
         File t0Dir = new File(baseMapDir + def.startYear());
         File t1Dir = new File(baseMapDir + def.endYear());
@@ -1211,6 +1231,8 @@ public class HistoricalScenarioCalibrationHarness {
      * Executes multi-scale sensitivity sweep across spatial, temporal, and cohort dimensions.
      */
     public static MultiScaleSensitivityMatrix runMultiScaleSensitivityMatrix(CalibrationScenarioDefinition def) {
+        // Benchmark evaluation: Record metric snapshot and calculate residual variance
+        // Compare simulated trajectories against empirical historical ground truth
         MultiScaleSensitivityMatrix matrix = new MultiScaleSensitivityMatrix();
 
         // 1. Spatial Resolution Sweep (H3 Res 2 to 6)
@@ -1442,6 +1464,7 @@ public class HistoricalScenarioCalibrationHarness {
             sb.append("### 9.3. Demographic Cohort Granularity Sweep (`targetCohortSize`)\n\n");
             sb.append("| Cohort Granularity | Active Computational Nodes | Stochastic Variance | RAM Footprint (MB) | Throughput (TPS) |\n");
             sb.append("| :--- | :--- | :--- | :--- | :--- |\n");
+            // Iterate through active agent / demographic cohort buffers
             for (CohortSensitivityEntry c : sensitivity.cohortEntries) {
                 sb.append(String.format("| %,d agents/cohort | %,d nodes | ±%.2f%% | %.1f MB | %,.1f TPS |\n",
                         c.targetCohortSize(), c.activeCohortNodes(), c.stochasticVariancePercent(), c.memoryFootprintMB(), c.throughputTPS()

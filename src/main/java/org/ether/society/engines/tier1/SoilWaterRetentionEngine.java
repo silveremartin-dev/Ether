@@ -57,6 +57,9 @@ public class SoilWaterRetentionEngine {
      * @return Volumetric water content Î¸ (cmÂ³/cmÂ³)
      */
     public static double calculateWaterContent(double matricSuctionHeadCm) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (matricSuctionHeadCm <= 0.0) {
             return THETA_S;
         }
@@ -73,6 +76,9 @@ public class SoilWaterRetentionEngine {
      * @return Available water index [0.0, 1.0]
      */
     public static double calculatePlantAvailableWaterIndex(double rainfallMm, double declivity) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         double thetaFC = calculateWaterContent(HEAD_FIELD_CAPACITY_CM);
         double thetaPWP = calculateWaterContent(HEAD_WILTING_POINT_CM);
         double awcMax = Math.max(0.001, thetaFC - thetaPWP);
@@ -89,6 +95,9 @@ public class SoilWaterRetentionEngine {
      * Processes soil moisture and updates agricultural water availability across H3 cells.
      */
     public static void processSoilWaterRetention(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

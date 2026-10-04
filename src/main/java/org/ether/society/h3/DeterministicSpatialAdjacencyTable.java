@@ -70,6 +70,7 @@ public class DeterministicSpatialAdjacencyTable {
                 long h3Index = cellIndices[i];
                 List<Long> disk = h3.gridDisk(h3Index, 1);
                 int neighborCount = 0;
+                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (Long neighborH3 : disk) {
                     if (neighborH3 == null || neighborH3 == h3Index) continue;
                     Integer neighborLocalIndex = h3ToIndexMap.get(neighborH3);

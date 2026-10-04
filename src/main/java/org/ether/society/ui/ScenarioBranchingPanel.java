@@ -76,6 +76,7 @@ public class ScenarioBranchingPanel extends VBox {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         headerLabel.setText(I18n.getOrDefault("branching.title", "🔀 MULTIVERS & EMBRANCHEMENTS DE TRAJECTOIRES (BRANCHING)"));
         newBranchNameField.setPromptText(I18n.getOrDefault("branching.prompt.name", "Nom du nouveau brin (ex: Branche Fusion 2040)..."));
         newBranchNameField.setTooltip(new Tooltip(I18n.getOrDefault("branching.tooltip.name", "Enter an identifying name for this bifurcated scenario trajectory.")));

@@ -35,6 +35,9 @@ public class EcotoxicologyFertilityEngine {
      * @return Fertility multiplier between 0.35 and 1.0
      */
     public static double calculateEcotoxicFertilityFactor(double pollutionLevel) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (pollutionLevel <= 0.0) return 1.0;
         return Math.max(0.35, Math.exp(-ENDOCRINE_TOXICITY_DECAY_K * pollutionLevel));
     }
@@ -43,6 +46,9 @@ public class EcotoxicologyFertilityEngine {
      * Executes one ecotoxicology fertility stress tick across cells.
      */
     public static void processEcotoxicologyFertility(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         int toxicStressCells = 0;

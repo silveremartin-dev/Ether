@@ -38,6 +38,9 @@ public class World3PureEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public void processTick(double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         // 1. Resource ratio & FCAOR
         double resourceRatio = Math.max(0.01, nonRenewableResources / 1.0e12);
         double fcaor = 0.05 + 0.90 * Math.pow(1.0 - resourceRatio, 2.0);
@@ -71,6 +74,9 @@ public class World3PureEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processPlugin(List<H3Cell> cells, double deltaYears) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         // Pure variant runs global differential state
     }
 

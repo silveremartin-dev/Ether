@@ -134,6 +134,7 @@ public class PreferencesPanel extends BorderPane {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (titleHeader != null) titleHeader.setText(I18n.get("pref.title"));
         if (langHeaderLabel != null) langHeaderLabel.setText("🌐 " + I18n.get("pref.language"));
         if (themeHeaderLabel != null) themeHeaderLabel.setText("🎨 " + I18n.get("pref.theme"));

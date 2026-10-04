@@ -176,6 +176,7 @@ public class ColorLegend extends VBox {
      * @param median the median parameter (double)
      */
     public void updateStats(double min, double max, double mean, double median) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         ModeStats st = statsMap.computeIfAbsent(primaryMode, k -> new ModeStats());
         st.min = min;
         st.max = max;
@@ -191,6 +192,7 @@ public class ColorLegend extends VBox {
      * @param mapCanvas the map canvas parameter (H3MapCanvas)
      */
     public void updateFromCanvas(H3MapCanvas mapCanvas) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (mapCanvas == null) return;
 
         Set<DisplayMode> canvasActiveModes = mapCanvas.getActiveDisplayModes();
@@ -221,6 +223,7 @@ public class ColorLegend extends VBox {
             double sum = 0.0;
             double[] values = new double[cellCount];
 
+            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (int i = 0; i < cellCount; i++) {
                 double v = mapCanvas.getCellDisplayValue(cells.get(i), mode, i);
                 values[i] = v;
@@ -249,6 +252,7 @@ public class ColorLegend extends VBox {
     }
 
     private void updateTitle() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         int count = activeModes != null ? activeModes.size() : 0;
         String titlePrefix = I18n.getOrDefault("sim.legend.title", "LÉGENDE SIG");
         if (count > 1) {

@@ -73,6 +73,8 @@ public final class DataSourceMetadataRegistry {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(String item, boolean empty) {
+                // Ingestion & Transformation: Parse raw geospatial/tabular records
+                // Standardize coordinates, normalize projection tensors, and populate spatial index
                 super.updateItem(item, empty);
                 if (empty || item == null || item.isBlank() || "none".equalsIgnoreCase(item.trim())) {
                     setText(I18n.getOrDefault(promptKey, "— Select Data Source —"));
@@ -109,6 +111,8 @@ public final class DataSourceMetadataRegistry {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(String item, boolean empty) {
+                // Ingestion & Transformation: Parse raw geospatial/tabular records
+                // Standardize coordinates, normalize projection tensors, and populate spatial index
                 super.updateItem(item, empty);
                 if (empty || item == null || item.isBlank() || "none".equalsIgnoreCase(item.trim())) {
                     setText(I18n.getOrDefault(promptKey, "— Select Data Source —"));

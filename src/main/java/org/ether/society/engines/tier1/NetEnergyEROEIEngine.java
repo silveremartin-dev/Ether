@@ -33,6 +33,9 @@ public class NetEnergyEROEIEngine {
      * @return EROEI ratio (e.g. 1.1 to 30.0)
      */
     public static double calculateEROEI(H3Cell cell) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cell == null) return 1.1;
 
         double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
@@ -51,6 +54,9 @@ public class NetEnergyEROEIEngine {
      * Executes one master EROEI cliodynamic tick across cells.
      */
     public static void processNetEnergyEROEI(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         int collapseCells = 0;

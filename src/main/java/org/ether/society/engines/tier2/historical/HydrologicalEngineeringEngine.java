@@ -49,6 +49,9 @@ public class HydrologicalEngineeringEngine {
      * Executes hydrological engineering transformations using default parameters.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
+        // Step 1: Read institutional, demographic, and economic state tensors
+        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
+        // Step 3: Apply state transitions and update local cell attributes
         processHybrid(cells, timeStepDays,
                 DEFAULT_TENOCHTITLAN_TECH_THRESHOLD, DEFAULT_TENOCHTITLAN_CAPITAL_THRESHOLD,
                 DEFAULT_ARAL_SEA_RAINFALL_THRESHOLD_MM,
@@ -64,6 +67,7 @@ public class HydrologicalEngineeringEngine {
                                     double damTech, double damCapital, double damMinElevation) {
         if (cells == null || cells.isEmpty()) return;
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 

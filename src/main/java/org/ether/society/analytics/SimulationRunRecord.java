@@ -13,7 +13,14 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Data structure storing telemetry and checkpoint data for an offline simulation run.
+ * <h1>Simulation Run Record</h1>
+ * <p>
+ * Provides statistical analytics, empirical validation harnesses, and parameter calibration kernels.<br>
+ * Evaluates simulation trajectories using multi-metric error metrics (Mean Absolute Percentage Error, Pearson correlation, and spatial centroid divergence).
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public class SimulationRunRecord {
 

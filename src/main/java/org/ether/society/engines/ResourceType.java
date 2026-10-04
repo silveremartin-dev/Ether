@@ -7,7 +7,14 @@
 package org.ether.society.engines;
 
 /**
- * Resource types for density map painting.
+ * <h1>Resource Type</h1>
+ * <p>
+ * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
  */
 public enum ResourceType {
     FOOD("Food", javafx.scene.paint.Color.YELLOWGREEN),

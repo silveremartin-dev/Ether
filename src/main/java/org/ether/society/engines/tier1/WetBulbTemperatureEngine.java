@@ -33,6 +33,9 @@ public class WetBulbTemperatureEngine {
      * @return Wet-bulb temperature in Â°C
      */
     public static double calculateWetBulbTemperatureStull(double tempC, double relativeHumidityPercent) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         double rh = Math.max(1.0, Math.min(100.0, relativeHumidityPercent));
         double t = tempC;
 
@@ -47,6 +50,9 @@ public class WetBulbTemperatureEngine {
      * Executes one wet-bulb temperature hyperthermia check across cells.
      */
     public static void processWetBulbHyperthermia(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         int hyperthermiaCasualties = 0;

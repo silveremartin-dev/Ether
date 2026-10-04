@@ -77,6 +77,7 @@ public class FutureScenarioRegistry {
 
         logger.info("Applying physical forcing terms for future scenario: {}", preset.name());
 
+        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (preset.id().equals("BAU_SSP585")) {
                 // High CO2 greenhouse forcing (+4.5°C) & high initial pollution

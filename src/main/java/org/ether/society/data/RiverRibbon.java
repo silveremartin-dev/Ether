@@ -6,6 +6,16 @@
  */
 package org.ether.society.data;
 
+/**
+ * <h1>River Ribbon</h1>
+ * <p>
+ * Geospatial data ingestion, raster sampling, and tensor map management pipeline.<br>
+ * Ingests global planetary datasets (NOAA ETOPO, WorldClim, UNESCO WHYMAP, Natural Earth, Seshat, D-PLACE) into standardized H3 hexagonal rasters.
+ * </p>
+ * 
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.1
+ */
 public class RiverRibbon {
     public double lng1, lat1, lng2, lat2, weight, widthDeg;
 

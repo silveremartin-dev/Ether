@@ -397,6 +397,7 @@ public class PlanetGeneratorPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(Integer item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 setText(empty || item == null ? "" : I18n.get("planet.param.resolution.res" + item));
             }
@@ -427,6 +428,7 @@ public class PlanetGeneratorPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(String item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText("");
@@ -1482,6 +1484,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private void updateSeaLevelDisplay(double meters, double normWater) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (waterNormValLabel != null) {
             waterNormValLabel.setText(String.format(
                     I18n.getOrDefault("planet.param.water_norm_info", "Seuil normalisÃ© : %.4f | Niveau marin : %,.0f m"),
@@ -2085,6 +2088,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private void calculateStellarIrradiance() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         double d = distanceSunSlider.getValue();
         double l = solarLumSlider.getValue();
         double irradiance = 1361.0 * (l / (d * d));
@@ -2115,6 +2119,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private void updateAltRangeDisplay() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         double min = minAltSlider.getValue();
         double max = maxAltSlider.getValue();
         altRangeLabel.setText(String.format("%s: %,.0f m", I18n.get("planet.param.alt_range"), max - min));
@@ -2431,6 +2436,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private void updateLegend() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (legendBar == null) return;
         legendBar.getChildren().clear();
 
@@ -2527,6 +2533,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private void updatePreview() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (previewCanvas == null) return;
         WindowUtils.setBusyCursor(this, true);
         try {
@@ -2871,6 +2878,7 @@ public class PlanetGeneratorPanel extends BorderPane {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
         try {
@@ -3000,6 +3008,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private void updateAstroLabelText() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (astroLabel == null) return;
         PlanetPreset preset = buildPresetFromUI();
         if (preset == null) return;
@@ -3019,6 +3028,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     private void updateTooltips() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (fetchOnlineBtn != null) fetchOnlineBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.fetch_online", "Download NASA/USGS WMS satellite maps")));
         if (fetchOnlineClimateBtn != null) fetchOnlineClimateBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.fetch_online_climate", "Download NASA MODIS thermal and GPM rainfall satellite maps (WMS)")));
         if (exportMapsBtn != null) exportMapsBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.export_map", "Export maps as PNG with ESRI World File (.tfw)")));
@@ -3124,6 +3134,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         if (!isValid) {
             if (showDialog && validationWarningLabel != null && validationWarningBanner != null) {
                 StringBuilder errorMsg = new StringBuilder();
+                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (String err : errors) {
                     errorMsg.append("â€¢ ").append(err).append("\n");
                 }

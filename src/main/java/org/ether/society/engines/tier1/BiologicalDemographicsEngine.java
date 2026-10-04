@@ -39,6 +39,9 @@ public class BiologicalDemographicsEngine {
      * @return Mortality hazard rate Î¼(x)
      */
     public static double calculateGompertzHazardRate(double ageYears, double environmentalHazardGamma) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         return GOMPERTZ_ALPHA * Math.exp(GOMPERTZ_BETA * ageYears) + environmentalHazardGamma;
     }
 
@@ -46,6 +49,9 @@ public class BiologicalDemographicsEngine {
      * Executes one biological demographic mortality tick across cells with dt.
      */
     public static void processBiologicalDemographics(List<H3Cell> cells, double deltaYears) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         double dt = Math.max(0.001, deltaYears);
@@ -100,6 +106,9 @@ public class BiologicalDemographicsEngine {
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      */
     public static void processBiologicalDemographics(List<H3Cell> cells) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         processBiologicalDemographics(cells, 30.0 / 365.25);
     }
 }

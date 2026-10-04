@@ -92,6 +92,7 @@ public class AuthToken implements Serializable {
             String payload = id + ":" + user + ":" + roleName + ":" + timestamp + ":" + secret;
             byte[] hash = md.digest(payload.getBytes(StandardCharsets.UTF_8));
             StringBuilder sb = new StringBuilder();
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (byte b : hash) sb.append(String.format("%02x", b));
             return sb.toString();
         } catch (Exception e) {

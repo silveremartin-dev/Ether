@@ -428,6 +428,7 @@ public class ResourceDistributionPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(PlanetPreset item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText("");
@@ -446,6 +447,7 @@ public class ResourceDistributionPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(PlanetPreset item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     PlanetPreset current = planetPresetCombo != null ? planetPresetCombo.getValue() : null;
@@ -1381,6 +1383,7 @@ public class ResourceDistributionPanel extends BorderPane {
              * @param empty the empty parameter (boolean)
              */
             protected void updateItem(String item, boolean empty) {
+                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -1619,6 +1622,7 @@ public class ResourceDistributionPanel extends BorderPane {
     }
 
     private void updatePlanetContextDisplay() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (planetContextLabel == null) return;
         PlanetPreset preset = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
         if (preset == null) preset = PlanetPreset.EARTH_LIKE;
@@ -1638,6 +1642,7 @@ public class ResourceDistributionPanel extends BorderPane {
     }
 
     private void updateThermodynamicSynthesisBadge(PlanetPreset p) {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (thermoSynthesisBadge == null) return;
         if (p == null) p = PlanetPreset.EARTH_LIKE;
 
@@ -2653,6 +2658,7 @@ public class ResourceDistributionPanel extends BorderPane {
     }
 
     private void updateLegend() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (legendBar == null) return;
         legendBar.getChildren().clear();
 
@@ -2741,6 +2747,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
 
     private void updatePreviewCanvas() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (mapPreviewCanvas == null) return;
 
         GraphicsContext gc = mapPreviewCanvas.getGraphicsContext2D();
@@ -3245,6 +3252,7 @@ public class ResourceDistributionPanel extends BorderPane {
     }
 
     private void updateSummary() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (summaryLabel == null) return;
 
         summaryLabel.setText(String.format(
@@ -3267,6 +3275,7 @@ public class ResourceDistributionPanel extends BorderPane {
      *
      */
     public void updateTexts() {
+        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
         try {
@@ -3676,6 +3685,7 @@ public class ResourceDistributionPanel extends BorderPane {
         if (!isValid) {
             if (showDialog && validationWarningLabel != null && validationWarningBanner != null) {
                 StringBuilder errorMsg = new StringBuilder();
+                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (String err : errors) {
                     errorMsg.append("â€¢ ").append(err).append("\n");
                 }
@@ -3786,6 +3796,7 @@ public class ResourceDistributionPanel extends BorderPane {
                     ComboBox<String> cb = geologySourceCombos.get(i);
                     if (cb != null) {
                         boolean matched = false;
+                        // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                         for (String item : cb.getItems()) {
                             if (item == null || item.isEmpty()) continue;
                             String itmLow = item.toLowerCase();

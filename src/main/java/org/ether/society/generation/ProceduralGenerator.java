@@ -562,6 +562,7 @@ public class ProceduralGenerator {
             double minElev = curElev;
 
             List<Long> neighborIndices = h3Service.getNeighbors(c.getH3Index());
+            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (Long nIdx : neighborIndices) {
                 H3Cell n = cellMap.get(nIdx);
                 if (n != null && n.getElevation() != null && n.getElevation() < minElev) {

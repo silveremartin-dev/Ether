@@ -59,6 +59,9 @@ public class DynamicHydrographicSiltationEngine {
      * @return Settling velocity in m/s
      */
     public static double calculateStokesSettlingVelocity(double grainRadiusMeters, double waterTempC) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         // Temperature-dependent dynamic viscosity: Î¼(T) â‰ˆ 2.414e-5 * 10^(247.8 / (T + 133.15))
         double tempK = Math.max(273.15, waterTempC + 273.15);
         double viscosity = 2.414e-5 * Math.pow(10.0, 247.8 / (tempK - 140.0));
@@ -74,6 +77,9 @@ public class DynamicHydrographicSiltationEngine {
      * @param deltaYears step size in years
      */
     public static void processHydrographicSiltation(List<H3Cell> cells, double deltaYears) {
+        // Phase 1: Invariant state validation and environmental boundary initialization
+        // Phase 2: Numerical evaluation of differential conservation equations
+        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
