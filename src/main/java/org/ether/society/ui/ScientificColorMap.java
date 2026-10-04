@@ -138,6 +138,7 @@ public enum ScientificColorMap {
         return interpolateStops(stops, x);
     }
 
+    // Helper subroutine: interpolate stops - internal state computation & bounds checking
     private static Color interpolateStops(Color[] stops, double x) {
         if (x <= 0.0) return stops[0];
         if (x >= 1.0) return stops[stops.length - 1];

@@ -93,6 +93,7 @@ public class GifSequenceWriter implements AutoCloseable {
         }
     }
 
+    // Helper subroutine: get writer - internal state computation & bounds checking
     private static ImageWriter getWriter() throws IIOException {
         Iterator<ImageWriter> iter = ImageIO.getImageWritersBySuffix("gif");
         if (!iter.hasNext()) {
@@ -101,6 +102,7 @@ public class GifSequenceWriter implements AutoCloseable {
         return iter.next();
     }
 
+    // Helper subroutine: get node - internal state computation & bounds checking
     private static IIOMetadataNode getNode(IIOMetadataNode rootNode, String nodeName) {
         int nNodes = rootNode.getLength();
         for (int i = 0; i < nNodes; i++) {

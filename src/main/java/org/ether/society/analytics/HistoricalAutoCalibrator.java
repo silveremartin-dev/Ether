@@ -331,6 +331,7 @@ public class HistoricalAutoCalibrator {
         t.recordValue("informationSpeed", yr, speed);
     }
 
+    // Helper subroutine: simulate epoch step - internal state computation & bounds checking
     private static void simulateEpochStep(List<H3Cell> cells, int startYear, int deltaYears) {
         // Benchmark evaluation: Record metric snapshot and calculate residual variance
         // Compare simulated trajectories against empirical historical ground truth
@@ -376,6 +377,7 @@ public class HistoricalAutoCalibrator {
         }
     }
 
+    // Helper subroutine: register by name - internal state computation & bounds checking
     private static void registerByName(String name) {
         switch (name) {
             case "FrontierAsabiyyah" -> ProceduralEngineRegistry.registerPlugin("FrontierAsabiyyah", FrontierAsabiyyahEngine::processHybrid);
@@ -392,6 +394,7 @@ public class HistoricalAutoCalibrator {
         }
     }
 
+    // Helper subroutine: analyze epoch drift - internal state computation & bounds checking
     private static void analyzeEpochDrift(CalibrationResult result, Map<Integer, Double> benchmarkData) {
         double maxDrift = 0.0;
         int worstYear = 2026;

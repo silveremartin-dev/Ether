@@ -68,6 +68,15 @@ public class FertileCrescentSalinizationEngine {
      * @return the resulting computation or state reference
      */
     public static double getSalinizationRatePerCentury() { return salinizationRatePerCentury; }
+    /*
+     * Set salinization rate per century operation.
+     * <p>
+     * Executes operational logic for {@code FertileCrescentSalinizationEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param rate the rate argument (double)
+     */
     public static void setSalinizationRatePerCentury(double rate) { salinizationRatePerCentury = Math.max(0.0, rate); }
 }
 

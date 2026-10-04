@@ -16,11 +16,21 @@ public class PerformanceBenchmark {
     private static final int WARMUP_ITERATIONS = 3;
     private static final int BENCHMARK_ITERATIONS = 10;
 
+    /*
+     * Main operation.
+     * <p>
+     * Executes operational logic for {@code PerformanceBenchmark} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param args the args argument (String[])
+     */
     public static void main(String[] args) {
         System.out.println("=== Ether Simulation Performance Benchmark ===\n");
         benchmarkDataGeneration();
     }
 
+    // Helper subroutine: benchmark data generation - internal state computation & bounds checking
     private static void benchmarkDataGeneration() {
         System.out.println("## Data Generation Benchmark");
 

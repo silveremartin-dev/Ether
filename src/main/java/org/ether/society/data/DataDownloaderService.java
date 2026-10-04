@@ -47,6 +47,7 @@ public class DataDownloaderService {
         ensureDirectoriesExist();
     }
 
+    // Helper subroutine: ensure directories exist - internal state computation & bounds checking
     private static void ensureDirectoriesExist() {
         File[] dirs = {LOCAL_HYDE_DIR, LOCAL_CACHE_DIR, LOCAL_PALEOCLIM_DIR, LOCAL_WORLDCLIM_DIR, LOCAL_PALEOMAP_DIR, LOCAL_PANGEA_DIR};
         for (File dir : dirs) {

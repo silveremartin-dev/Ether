@@ -36,6 +36,14 @@ public class AdvancedSociologyAndLawsTest {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedSociologyAndLawsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         testCells = new ArrayList<>();
         H3Cell cell = new H3Cell(613503380827930701L, 45.0, 10.0);
@@ -47,6 +55,14 @@ public class AdvancedSociologyAndLawsTest {
     }
 
     @Test
+    /*
+     * Test physical law engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedSociologyAndLawsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPhysicalLawEngine() {
         PhysicalLawEngine.setPhotosyntheticEfficiencyMultiplier(2.0);
         double initialBiomass = testCells.get(0).getBiomassNatural();
@@ -56,6 +72,14 @@ public class AdvancedSociologyAndLawsTest {
     }
 
     @Test
+    /*
+     * Test cultural sociology engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedSociologyAndLawsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCulturalSociologyEngine() {
         CulturalSociologyEngine.setGlobalEnvironmentalStewardship(0.9);
         double initialSoc = testCells.get(0).getSoilOrganicCarbon();
@@ -65,6 +89,14 @@ public class AdvancedSociologyAndLawsTest {
     }
 
     @Test
+    /*
+     * Test co governance trade engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedSociologyAndLawsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCoGovernanceTradeEngine() {
         CoGovernanceTradeEngine.setGlobalCarbonQuotaTreatyActive(true);
         double initialPollution = testCells.get(0).getPollutionLevel();
@@ -74,6 +106,14 @@ public class AdvancedSociologyAndLawsTest {
     }
 
     @Test
+    /*
+     * Test cliodynamic chronicle engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedSociologyAndLawsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCliodynamicChronicleEngine() {
         ScenarioTimeline timeline = new ScenarioTimeline();
         timeline.addEntry(1080, "SONG", "Époque Song", "Pré-industrialisation et charbon de bois", false);

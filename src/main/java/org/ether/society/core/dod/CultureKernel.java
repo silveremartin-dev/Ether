@@ -25,6 +25,15 @@ public class CultureKernel {
      * @return the resulting computation or state reference
      */
     public float getDiffusionRate() { return diffusionRate; }
+    /*
+     * Set diffusion rate operation.
+     * <p>
+     * Executes operational logic for {@code CultureKernel} within the Data-Oriented Design memory buffer subsystem.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param rate the rate argument (float)
+     */
     public void setDiffusionRate(float rate) { this.diffusionRate = Math.max(0.0f, rate); }
 
     /*
@@ -34,6 +43,15 @@ public class CultureKernel {
      * @return the resulting computation or state reference
      */
     public float getMutationRate() { return mutationRate; }
+    /*
+     * Set mutation rate operation.
+     * <p>
+     * Executes operational logic for {@code CultureKernel} within the Data-Oriented Design memory buffer subsystem.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param rate the rate argument (float)
+     */
     public void setMutationRate(float rate) { this.mutationRate = Math.max(0.0f, rate); }
 
     /*
@@ -43,6 +61,15 @@ public class CultureKernel {
      * @return the resulting computation or state reference
      */
     public float getForcingRate() { return forcingRate; }
+    /*
+     * Set forcing rate operation.
+     * <p>
+     * Executes operational logic for {@code CultureKernel} within the Data-Oriented Design memory buffer subsystem.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param rate the rate argument (float)
+     */
     public void setForcingRate(float rate) { this.forcingRate = Math.max(0.0f, rate); }
 
     /*

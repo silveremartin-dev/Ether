@@ -29,6 +29,14 @@ public class H3GlobeIntegrationTest {
     private static boolean jfxInitialized = false;
 
     @BeforeAll
+    /*
+     * Init jfx operation.
+     * <p>
+     * Executes operational logic for {@code H3GlobeIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public static void initJFX() throws InterruptedException {
         if (!jfxInitialized) {
             CountDownLatch latch = new CountDownLatch(1);
@@ -49,6 +57,14 @@ public class H3GlobeIntegrationTest {
 
     @Test
     @DisplayName("Verify H3MapCanvas ViewMode switching between 2D and 3D Globe")
+    /*
+     * Test view mode switching operation.
+     * <p>
+     * Executes operational logic for {@code H3GlobeIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testViewModeSwitching() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
@@ -71,6 +87,14 @@ public class H3GlobeIntegrationTest {
 
     @Test
     @DisplayName("Verify Vertical Exaggeration parameters and limits in 3D Globe mode")
+    /*
+     * Test vertical exaggeration operation.
+     * <p>
+     * Executes operational logic for {@code H3GlobeIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testVerticalExaggeration() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
@@ -93,6 +117,14 @@ public class H3GlobeIntegrationTest {
 
     @Test
     @DisplayName("Verify 3D Globe Auto-Rotation state and tick increment")
+    /*
+     * Test globe auto rotation operation.
+     * <p>
+     * Executes operational logic for {@code H3GlobeIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testGlobeAutoRotation() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
@@ -120,6 +152,14 @@ public class H3GlobeIntegrationTest {
 
     @Test
     @DisplayName("Verify H3 Globe Cell population and O(1) map indexing")
+    /*
+     * Test cell indexing operation.
+     * <p>
+     * Executes operational logic for {@code H3GlobeIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCellIndexing() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {

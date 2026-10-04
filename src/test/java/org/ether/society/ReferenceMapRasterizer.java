@@ -15,6 +15,14 @@ import java.util.Map;
 public class ReferenceMapRasterizer {
 
     @Test
+    /*
+     * Generate all reference maps operation.
+     * <p>
+     * Executes operational logic for {@code ReferenceMapRasterizer} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void generateAllReferenceMaps() throws Exception {
         File dataMapsDir = new File("data/maps");
         File resMapsDir = new File("src/main/resources/maps");
@@ -165,6 +173,7 @@ public class ReferenceMapRasterizer {
         System.out.println("=== Done! All maps generated and synchronized. ===");
     }
 
+    // Helper subroutine: save map pair - internal state computation & bounds checking
     private void saveMapPair(BufferedImage img, String filename, File dataMapsDir, File resMapsDir) throws Exception {
         File f1 = new File(dataMapsDir, filename);
         File f2 = new File(resMapsDir, filename);

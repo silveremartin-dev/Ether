@@ -139,6 +139,7 @@ public class World3VsKurzweilComparator {
         return report;
     }
 
+    // Helper subroutine: clone cell - internal state computation & bounds checking
     private static H3Cell cloneCell(H3Cell source) {
         H3Cell clone = new H3Cell(source.getH3Index(), source.getLatitude(), source.getLongitude());
         clone.setPopulation(source.getPopulation());

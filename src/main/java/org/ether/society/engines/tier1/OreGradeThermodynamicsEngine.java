@@ -66,6 +66,15 @@ public class OreGradeThermodynamicsEngine {
      * @return the resulting computation or state reference
      */
     public static double getReferenceOreConcentration() { return referenceOreConcentration; }
+    /*
+     * Set reference ore concentration operation.
+     * <p>
+     * Executes operational logic for {@code OreGradeThermodynamicsEngine} within the Tier 1 physical conservation solver.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param conc the conc argument (double)
+     */
     public static void setReferenceOreConcentration(double conc) { referenceOreConcentration = Math.max(0.001, conc); }
 }
 

@@ -75,6 +75,15 @@ public class TrophicEcosystemEngine {
      * @return the resulting computation or state reference
      */
     public static boolean isPleistoceneRewildingActive() { return pleistoceneRewildingActive; }
+    /*
+     * Set pleistocene rewilding active operation.
+     * <p>
+     * Executes operational logic for {@code TrophicEcosystemEngine} within the Tier 1 physical conservation solver.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param active the active argument (boolean)
+     */
     public static void setPleistoceneRewildingActive(boolean active) { pleistoceneRewildingActive = active; }
 
     /*
@@ -84,6 +93,15 @@ public class TrophicEcosystemEngine {
      * @return the resulting computation or state reference
      */
     public static double getMegafaunaDensityPerKm2() { return megafaunaDensityPerKm2; }
+    /*
+     * Set megafauna density per km2 operation.
+     * <p>
+     * Executes operational logic for {@code TrophicEcosystemEngine} within the Tier 1 physical conservation solver.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param density the density argument (double)
+     */
     public static void setMegafaunaDensityPerKm2(double density) { megafaunaDensityPerKm2 = Math.max(0.0, density); }
 
     /*
@@ -93,6 +111,15 @@ public class TrophicEcosystemEngine {
      * @return the resulting computation or state reference
      */
     public static double getGlobalBiodiversityIndex() { return globalBiodiversityIndex; }
+    /*
+     * Set global biodiversity index operation.
+     * <p>
+     * Executes operational logic for {@code TrophicEcosystemEngine} within the Tier 1 physical conservation solver.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param index the index argument (double)
+     */
     public static void setGlobalBiodiversityIndex(double index) { globalBiodiversityIndex = Math.max(0.0, Math.min(1.0, index)); }
 }
 

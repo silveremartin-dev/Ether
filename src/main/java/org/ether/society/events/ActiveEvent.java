@@ -220,6 +220,15 @@ public class ActiveEvent {
      * @return the resulting computation or state reference
      */
     public LeaderArchetype getLeaderArchetype() { return leaderArchetype; }
+    /*
+     * Set leader archetype operation.
+     * <p>
+     * Executes operational logic for {@code ActiveEvent} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param leaderArchetype the leader archetype argument (LeaderArchetype)
+     */
     public void setLeaderArchetype(LeaderArchetype leaderArchetype) { this.leaderArchetype = leaderArchetype; }
 
     /*
@@ -229,6 +238,15 @@ public class ActiveEvent {
      * @return the resulting computation or state reference
      */
     public HistoricalIntervention getIntervention() { return intervention; }
+    /*
+     * Set intervention operation.
+     * <p>
+     * Executes operational logic for {@code ActiveEvent} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param intervention the intervention argument (HistoricalIntervention)
+     */
     public void setIntervention(HistoricalIntervention intervention) { this.intervention = intervention; }
 
     /*

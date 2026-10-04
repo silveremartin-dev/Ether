@@ -87,6 +87,7 @@ public class ScenarioBranchingPanel extends VBox {
         refreshBranchList();
     }
 
+    // Helper subroutine: fork current trajectory - internal state computation & bounds checking
     private void forkCurrentTrajectory() {
         String name = newBranchNameField.getText();
         if (name == null || name.trim().isEmpty()) {

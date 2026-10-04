@@ -89,6 +89,7 @@ public class ScenarioSetupPanel extends BorderPane {
     /* Internal state variable for is updating from preset (boolean). */
     private boolean isUpdatingFromPreset = false;
 
+    // Helper subroutine: notify param change - internal state computation & bounds checking
     private void notifyParamChange() {
         if (!isUpdatingFromPreset && scenarioPresetBar != null) {
             scenarioPresetBar.notifyParametersChanged();
@@ -138,6 +139,7 @@ public class ScenarioSetupPanel extends BorderPane {
         control.setContextMenu(contextMenu);
     }
 
+    // Helper subroutine: update default value indicators - internal state computation & bounds checking
     private void updateDefaultValueIndicators() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (isUpdatingFromPreset) return;
@@ -167,6 +169,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: get type bparam default - internal state computation & bounds checking
     private double getTypeBParamDefault(String engineKey, String paramKey) {
         if ("MaritimeHighwayEngine".equals(engineKey)) {
             if ("capitalBoostRate".equals(paramKey)) return 0.05;
@@ -185,6 +188,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return 0.0;
     }
 
+    // Helper subroutine: highlight control if modified - internal state computation & bounds checking
     private void highlightControlIfModified(Control control, boolean isModified) {
         if (control == null) return;
         if (isModified) {
@@ -468,6 +472,7 @@ public class ScenarioSetupPanel extends BorderPane {
         this.isSimulationRunningSupplier = isSimulationRunningSupplier;
     }
 
+    // Helper subroutine: update engine inspector - internal state computation & bounds checking
     private void updateEngineInspector(String className, String title, String description, String reference, String equations) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         this.selectedEngineClassName = className;
@@ -478,6 +483,7 @@ public class ScenarioSetupPanel extends BorderPane {
         if (exportSelectedEngineBtn != null) exportSelectedEngineBtn.setText(I18n.getOrDefault("scenario.btn.export_prefix", "ðŸ“¤ Export ") + className + ".java");
     }
 
+    // Helper subroutine: create engine parameter box - internal state computation & bounds checking
     private javafx.scene.Node createEngineParameterBox(String engineKey) {
         GridPane grid = new GridPane();
         grid.setHgap(8);
@@ -631,6 +637,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label validationErrorLabel;
     private org.ether.society.persistence.SimulationSaveManager saveManagerForUI = new org.ether.society.persistence.SimulationSaveManager();
 
+    // Helper subroutine: get save manager - internal state computation & bounds checking
     private org.ether.society.persistence.SimulationSaveManager getSaveManager() {
         if (saveManagerForUI == null) {
             saveManagerForUI = new org.ether.society.persistence.SimulationSaveManager();
@@ -927,6 +934,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return PlanetPreset.EARTH_LIKE;
     }
 
+    // Helper subroutine: init ui - internal state computation & bounds checking
     private void initUI() {
         setPadding(new Insets(20));
         getStyleClass().add("glass-panel");
@@ -961,6 +969,7 @@ public class ScenarioSetupPanel extends BorderPane {
         setCenter(previewPane);
     }
 
+    // Helper subroutine: create config pane - internal state computation & bounds checking
     private VBox createConfigPane() {
         VBox root = new VBox(15);
         root.setPadding(new Insets(0, 20, 0, 0));
@@ -1762,6 +1771,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return root;
     }
 
+    // Helper subroutine: create bundle section - internal state computation & bounds checking
     private VBox createBundleSection() {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
@@ -1794,6 +1804,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
+    // Helper subroutine: create snapshot section - internal state computation & bounds checking
     private VBox createSnapshotSection() {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
@@ -1942,6 +1953,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
+    // Helper subroutine: update snapshot details display - internal state computation & bounds checking
     private void updateSnapshotDetailsDisplay(org.ether.society.persistence.SaveMetadata newV) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (newV != null) {
@@ -2074,6 +2086,7 @@ public class ScenarioSetupPanel extends BorderPane {
         logger.info("Refreshed snapshots list for scenario '{}': {} matching checkpoint(s) found on disk.", s != null ? s.getName() : "N/A", filteredSaves.size());
     }
 
+    // Helper subroutine: show snapshot explanation dialog - internal state computation & bounds checking
     private void showSnapshotExplanationDialog() {
         new SnapshotExplanationDialog(getScene() != null ? getScene().getWindow() : null).showAndWait();
     }
@@ -2109,6 +2122,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return meta != null ? meta.getId() : null;
     }
 
+    // Helper subroutine: update start button label - internal state computation & bounds checking
     private void updateStartButtonLabel() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (startBtn == null) return;
@@ -2160,6 +2174,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
 
+    // Helper subroutine: export unified bundle - internal state computation & bounds checking
     private void exportUnifiedBundle() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("scenario.title.export_bundle_dialog", "Export Unified Scenario Bundle (.ether)"));
@@ -2198,6 +2213,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: import unified bundle - internal state computation & bounds checking
     private void importUnifiedBundle() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("scenario.title.import_bundle_dialog", "Import Unified Scenario Bundle (.ether)"));
@@ -2261,12 +2277,14 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
 
+    // Helper subroutine: run pre flight sanity check - internal state computation & bounds checking
     private void runPreFlightSanityCheck() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         updateLiveDiagnosticBlock();
     }
 
     private static org.ether.society.engines.compiler.EngineConflictReport cachedJitReport = null;
+    // Helper subroutine: get or create jit report - internal state computation & bounds checking
     private static synchronized org.ether.society.engines.compiler.EngineConflictReport getOrCreateJitReport() {
         if (cachedJitReport == null) {
             org.ether.society.engines.compiler.ScenarioEngineJITCompiler jit = new org.ether.society.engines.compiler.ScenarioEngineJITCompiler();
@@ -2279,6 +2297,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return cachedJitReport;
     }
 
+    // Helper subroutine: render diagnostic category - internal state computation & bounds checking
     private void renderDiagnosticCategory(VBox container, String title, List<String> items) {
         if (items == null || items.isEmpty()) return;
         Label catLabel = new Label(title);
@@ -2301,6 +2320,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: update live diagnostic block - internal state computation & bounds checking
     private void updateLiveDiagnosticBlock() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (liveDiagnosticContentBox == null) return;
@@ -2569,10 +2589,12 @@ public class ScenarioSetupPanel extends BorderPane {
         renderDiagnosticCategory(liveDiagnosticContentBox, I18n.getOrDefault("scenario.diagnostic.cat.validation", "ðŸ›‘ Scenario Setup & Configuration Validation"), validationItems);
     }
 
+    // Helper subroutine: create section - internal state computation & bounds checking
     private VBox createSection(Label header, javafx.scene.Node content) {
         return createSection(header, content, null);
     }
 
+    // Helper subroutine: create section - internal state computation & bounds checking
     private VBox createSection(Label header, javafx.scene.Node content, Runnable sectionResetAction) {
         header.getStyleClass().add("label-section-header");
         HBox headerRow = new HBox(8, header);
@@ -2595,10 +2617,12 @@ public class ScenarioSetupPanel extends BorderPane {
         return box;
     }
 
+    // Helper subroutine: get built in scenarios - internal state computation & bounds checking
     private List<Scenario> getBuiltInScenarios() {
         return scenarioRepo != null ? scenarioRepo.getAllScenarios() : org.ether.society.persistence.PresetStorageService.loadAllScenarios();
     }
 
+    // Helper subroutine: update inherited context display - internal state computation & bounds checking
     private void updateInheritedContextDisplay(String ecologyName) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (inheritedContextLabel == null) return;
@@ -2615,6 +2639,7 @@ public class ScenarioSetupPanel extends BorderPane {
         inheritedContextLabel.setText(String.format(fmt, ecoDisplay, planetDisplay, p.radiusKm()));
     }
 
+    // Helper subroutine: apply scenario to ui - internal state computation & bounds checking
     private void applyScenarioToUI(Scenario s) {
         if (s == null) return;
         isUpdatingFromPreset = true;
@@ -2906,6 +2931,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: create clipping section - internal state computation & bounds checking
     private VBox createClippingSection() {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
@@ -3050,6 +3076,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
+    // Helper subroutine: create ocean optimization section - internal state computation & bounds checking
     private VBox createOceanOptimizationSection() {
         VBox section = new VBox(12);
         section.getStyleClass().add("card-section");
@@ -4073,6 +4100,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
+    // Helper subroutine: update engine texts - internal state computation & bounds checking
     private void updateEngineTexts() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (corePane != null) {
@@ -4199,6 +4227,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: auto select engines for year - internal state computation & bounds checking
     private void autoSelectEnginesForYear(long year) {
         for (Map.Entry<String, CheckBox> entry : typeBCheckBoxMap.entrySet()) {
             long appYear = getEngineApparitionYear(entry.getKey());
@@ -4207,6 +4236,7 @@ public class ScenarioSetupPanel extends BorderPane {
         notifyParamChange();
     }
 
+    // Helper subroutine: sort optional engines - internal state computation & bounds checking
     private void sortOptionalEngines(int sortIdx, List<String[]> optionalEngines, Map<String, VBox> engineContainers) {
         if (typeBBoxContainer == null) return;
         List<javafx.scene.Node> headers = new ArrayList<>();
@@ -4234,6 +4264,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: get engine apparition year - internal state computation & bounds checking
     private static long getEngineApparitionYear(String key) {
         return switch (key) {
             case "OldowanMarrowPercussionEngine" -> -2600000L;
@@ -4344,6 +4375,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private final java.util.Map<Integer, Label> tensorParam3ValueLabels = new java.util.HashMap<>();
     private final java.util.Map<Integer, Button> tensorGenSingleBtns = new java.util.HashMap<>();
 
+    // Helper subroutine: create cultural vector and layers section - internal state computation & bounds checking
     private VBox createCulturalVectorAndLayersSection() {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
@@ -4497,6 +4529,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
+    // Helper subroutine: export gis multi format - internal state computation & bounds checking
     private void exportGisMultiFormat() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(I18n.getOrDefault("scenario.title.export_gis_dialog", "Export Scenario Data under GIS Format (GeoJSON / GeoTIFF / NetCDF)"));
@@ -4531,6 +4564,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: export provenance manifest - internal state computation & bounds checking
     private void exportProvenanceManifest() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(I18n.getOrDefault("scenario.title.export_provenance_dialog", "Generate & Export SHA-256 Provenance Manifest"));
@@ -4568,6 +4602,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: show cultural import format help - internal state computation & bounds checking
     private void showCulturalImportFormatHelp() {
         javafx.stage.Stage dialog = new javafx.stage.Stage();
         dialog.setTitle(I18n.getOrDefault("scenario.title.layer_formats_modal", "SpÃ©cifications Techniques des Tenseurs Cartographiques & Datasets"));
@@ -4675,6 +4710,7 @@ public class ScenarioSetupPanel extends BorderPane {
         dialog.show();
     }
 
+    // Helper subroutine: get cultural tensor title - internal state computation & bounds checking
     private String getCulturalTensorTitle(int index) {
         if (customTensorNames.containsKey(index) && !customTensorNames.get(index).isBlank()) {
             return "ðŸ§¬ 3.2." + (index + 1) + " " + I18n.getOrDefault("scenario.tensor.label_prefix", "Tenseur ") + (index + 1) + " : " + customTensorNames.get(index);
@@ -4693,6 +4729,7 @@ public class ScenarioSetupPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get cultural tensor tooltip - internal state computation & bounds checking
     private String getCulturalTensorTooltip(int index) {
         return switch (index) {
             case 0 -> I18n.getOrDefault("scenario.tensor.tooltip.0", "Linguistic component: Dialect continua, mutual intelligibility, and phonetic barriers.");
@@ -4708,6 +4745,7 @@ public class ScenarioSetupPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get cultural baseline name - internal state computation & bounds checking
     private String getCulturalBaselineName(int index) {
         return switch (index) {
             case 0 -> I18n.getOrDefault("scenario.tensor.0.source.baseline", "Glottolog 4.8 / WALS Language Families (Earth Baseline)");
@@ -4723,6 +4761,7 @@ public class ScenarioSetupPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get cultural format hint - internal state computation & bounds checking
     private String getCulturalFormatHint(int index) {
         return switch (index) {
             case 0 -> I18n.getOrDefault("scenario.tensor.0.format", "RGB 24-bit CatÃ©goriel + Dithering Spatial (2:1 Ã©quirectangulaire) :\n  Valeurs RGB = Familles linguistiques pures & continuums dialectaux (Glottolog 5.0 / WALS)");
@@ -4892,6 +4931,7 @@ public class ScenarioSetupPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: build population source combo - internal state computation & bounds checking
     private ComboBox<String> buildPopulationSourceCombo() {
         ComboBox<String> combo = new ComboBox<>();
         combo.setMaxWidth(Double.MAX_VALUE);
@@ -4924,6 +4964,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return combo;
     }
 
+    // Helper subroutine: build cultural source combo - internal state computation & bounds checking
     private ComboBox<String> buildCulturalSourceCombo(int tensorIdx) {
         ComboBox<String> combo = new ComboBox<>();
         combo.setMaxWidth(Double.MAX_VALUE);
@@ -5061,6 +5102,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: get tensor param1descriptor - internal state computation & bounds checking
     private TensorParamDescriptor getTensorParam1Descriptor(int tensorIdx) {
         return switch (tensorIdx) {
             case 0 -> new TensorParamDescriptor("scenario.tensor.0.p1.label", "Dispersion dialectale (Î±) :", "scenario.tensor.0.p1.tooltip", "Ã‰chelle spatiale de diffusion des variantes phonÃ©tiques et lexicales.", 0.01, 0.25, 0.05, 0.01, "%.2f");
@@ -5076,6 +5118,7 @@ public class ScenarioSetupPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get tensor param2descriptor - internal state computation & bounds checking
     private TensorParamDescriptor getTensorParam2Descriptor(int tensorIdx) {
         return switch (tensorIdx) {
             case 0 -> new TensorParamDescriptor("scenario.tensor.0.p2.label", "Foyers linguistiques :", "scenario.tensor.0.p2.tooltip", "Nombre de foyers indÃ©pendants et familles linguistiques initiales.", 1.0, 16.0, 4.0, 1.0, "%.0f");
@@ -5091,6 +5134,7 @@ public class ScenarioSetupPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get tensor param3descriptor - internal state computation & bounds checking
     private TensorParamDescriptor getTensorParam3Descriptor(int tensorIdx) {
         return switch (tensorIdx) {
             case 0 -> new TensorParamDescriptor("scenario.tensor.0.p3.label", "BarriÃ¨re de relief :", "scenario.tensor.0.p3.tooltip", "Impact du relief et des chaÃ®nes de montagnes sur l'isolation linguistique.", 0.0, 1.00, 0.60, 0.05, "%.2f");
@@ -5106,10 +5150,12 @@ public class ScenarioSetupPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get default tensor seed - internal state computation & bounds checking
     private String getDefaultTensorSeed(int tensorIdx) {
         return String.valueOf(11235L + tensorIdx * 11111L);
     }
 
+    // Helper subroutine: update tensor file label - internal state computation & bounds checking
     private void updateTensorFileLabel(int tensorIdx) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         Label fileLbl = tensorFileLabels.get(tensorIdx);
@@ -5144,6 +5190,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: export cultural tensor - internal state computation & bounds checking
     private void exportCulturalTensor(int tensorIdx) {
         Image img = customTensorImages.get(tensorIdx);
         if (img == null) {
@@ -5154,6 +5201,7 @@ public class ScenarioSetupPanel extends BorderPane {
         WindowUtils.exportImageWithChooser(getScene() != null ? getScene().getWindow() : null, img, defaultName, title);
     }
 
+    // Helper subroutine: generate procedural tensor raster image - internal state computation & bounds checking
     private Image generateProceduralTensorRasterImage(int tensorIdx, int w, int h) {
         WritableImage img = new WritableImage(w, h);
         PixelWriter pw = img.getPixelWriter();
@@ -5175,6 +5223,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return img;
     }
 
+    // Helper subroutine: evaluate procedural tensor color - internal state computation & bounds checking
     private Color evaluateProceduralTensorColor(int tIndex, double lat, double lon, double elevation, double p1, double p2, double p3, long seed) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         double noiseX = (lon + 180.0) / 360.0;
@@ -5229,6 +5278,7 @@ public class ScenarioSetupPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: create tensor param row - internal state computation & bounds checking
     private HBox createTensorParamRow(TensorParamDescriptor desc, Slider slider, Label valueLabel, Runnable onChange) {
         Label label = new Label(I18n.getOrDefault(desc.labelKey, desc.defaultLabel));
         label.getStyleClass().add("control-label");
@@ -5270,6 +5320,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return row;
     }
 
+    // Helper subroutine: delete cultural tensor - internal state computation & bounds checking
     private void deleteCulturalTensor(int indexToDelete) {
         int curDims = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
         if (indexToDelete < 0 || indexToDelete >= curDims) return;
@@ -5344,6 +5395,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: rebuild cultural tensor sub blocks - internal state computation & bounds checking
     private void rebuildCulturalTensorSubBlocks(int dimCount) {
         if (btnGenerateProceduralTensorsSection != null) {
             btnGenerateProceduralTensorsSection.setText(I18n.getOrDefault("scenario.btn.regen_tensors", "ðŸª„ RÃ©gÃ©nÃ©rer les Tenseurs"));
@@ -5580,11 +5632,13 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: load custom culture layer for tensor - internal state computation & bounds checking
     private void loadCustomCultureLayerForTensor(int tensorIdx, Consumer<Image> onLoaded) {
         String name = getCulturalTensorTitle(tensorIdx);
         loadCustomCultureLayer(name, onLoaded);
     }
 
+    // Helper subroutine: load custom culture layer - internal state computation & bounds checking
     private void loadCustomCultureLayer(String layerName, Consumer<Image> onLoaded) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("scenario.dialog.import_layer_title", "Import layer ") + layerName + " (PNG/GeoJSON/JPG)");
@@ -5613,6 +5667,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: add custom engine check box to ui - internal state computation & bounds checking
     private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, String tooltipText, boolean defaultSelected) {
         if (typeBCheckBoxMap.containsKey(engineKey)) {
             typeBCheckBoxMap.get(engineKey).setSelected(defaultSelected);
@@ -5638,6 +5693,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: create preview pane - internal state computation & bounds checking
     private VBox createPreviewPane() {
         VBox root = new VBox(15);
         root.setAlignment(Pos.CENTER);
@@ -5842,6 +5898,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
     private HBox legendItemsContainer;
 
+    // Helper subroutine: create legend - internal state computation & bounds checking
     private HBox createLegend() {
         HBox legend = new HBox(12);
         legend.setAlignment(Pos.CENTER);
@@ -5856,6 +5913,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return legend;
     }
 
+    // Helper subroutine: generate procedural population density - internal state computation & bounds checking
     private void generateProceduralPopulationDensity() {
         customDensityImage = null;
         if (radioProcDemo != null) radioProcDemo.setSelected(true);
@@ -5888,6 +5946,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: generate procedural cultural tensors - internal state computation & bounds checking
     private void generateProceduralCulturalTensors() {
         if (tensorProcRadios != null) {
             for (var entry : tensorProcRadios.entrySet()) {
@@ -5949,6 +6008,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }));
     }
 
+    // Helper subroutine: update preview modes combo - internal state computation & bounds checking
     private void updatePreviewModesCombo() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (previewModeCombo == null) return;
@@ -5980,6 +6040,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: get cultural tensor preview name - internal state computation & bounds checking
     private String getCulturalTensorPreviewName(int index) {
         if (customTensorNames.containsKey(index) && !customTensorNames.get(index).isBlank()) {
             return "ðŸ§¬ " + I18n.getOrDefault("scenario.tensor.custom.preview_prefix", "Tensor ") + (index + 1) + " : " + customTensorNames.get(index);
@@ -5998,12 +6059,14 @@ public class ScenarioSetupPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: update preview title text - internal state computation & bounds checking
     private void updatePreviewTitleText() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (previewTitleLabel == null) return;
         previewTitleLabel.setText(I18n.getOrDefault("scenario.title.right_view", "ðŸ—ºï¸ Resource Cartography & Display"));
     }
 
+    // Helper subroutine: update bottom legend - internal state computation & bounds checking
     private void updateBottomLegend() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (legendItemsContainer == null) return;
@@ -6362,6 +6425,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: load custom density map - internal state computation & bounds checking
     private void loadCustomDensityMap() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("scenario.title.load_density_dialog", "Load Population Density Map (PNG/JPEG)"));
@@ -6395,6 +6459,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: update demo compatibility display - internal state computation & bounds checking
     private void updateDemoCompatibilityDisplay() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (demoCompatibilityLabel == null) return;
@@ -6416,6 +6481,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: export density map - internal state computation & bounds checking
     private void exportDensityMap() {
         if (previewCanvas == null) return;
         int w = 2048;
@@ -6466,6 +6532,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 I18n.getOrDefault("scenario.title.export_density_dialog", "Export Population Density Map (PNG / JPEG)"));
     }
 
+    // Helper subroutine: show density import format help - internal state computation & bounds checking
     private void showDensityImportFormatHelp() {
         WindowUtils.showScrollableInfoDialog(
                 I18n.getOrDefault("scenario.dialog.density_help_title", "SpÃ©cifications de la Carte de DensitÃ©"),
@@ -6480,6 +6547,7 @@ public class ScenarioSetupPanel extends BorderPane {
         );
     }
 
+    // Helper subroutine: generate preview - internal state computation & bounds checking
     private void generatePreview() {
         if (previewStatusLabel != null) {
             previewStatusLabel.setText(I18n.getOrDefault("scenario.status.calc_preview", "âš¡ Calculating demographic preview in background..."));
@@ -6537,6 +6605,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }, "H3-Preview-Async-Thread").start();
     }
 
+    // Helper subroutine: distribute initial population - internal state computation & bounds checking
     private void distributeInitialPopulation(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -6572,6 +6641,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: get relief and density color - internal state computation & bounds checking
     private Color getReliefAndDensityColor(H3Cell c) {
         if (c == null) return Color.rgb(15, 23, 42);
 
@@ -6642,6 +6712,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return heatCol;
     }
 
+    // Helper subroutine: compute cell carrying capacity - internal state computation & bounds checking
     private double computeCellCarryingCapacity(H3Cell c) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (c == null || c.getElevation() <= 0) return 0.0;
@@ -6663,6 +6734,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return Math.max(10.0, baseCap);
     }
 
+    // Helper subroutine: get preview color for cell - internal state computation & bounds checking
     private Color getPreviewColorForCell(H3Cell c) {
         if (c == null) return Color.BLACK;
 
@@ -6759,6 +6831,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return getReliefAndDensityColor(c);
     }
 
+    // Helper subroutine: sample image color at lat lon - internal state computation & bounds checking
     private Color sampleImageColorAtLatLon(Image img, double lat, double lon) {
         if (img == null || img.getWidth() <= 1 || img.getHeight() <= 1) return null;
         PixelReader reader = img.getPixelReader();
@@ -6769,6 +6842,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return reader.getColor(px, py);
     }
 
+    // Helper subroutine: draw preview - internal state computation & bounds checking
     private void drawPreview() {
         if (isUpdatingFromPreset || previewCanvas == null) return;
         double w = previewCanvas.getWidth();
@@ -6923,6 +6997,7 @@ public class ScenarioSetupPanel extends BorderPane {
         updateMapInfoSummary();
     }
 
+    // Helper subroutine: sample cultural tensor value - internal state computation & bounds checking
     private double sampleCulturalTensorValue(int tIdx, H3Cell cell) {
         if (cell == null) return 0.5;
         Image img = customTensorImages.get(tIdx);
@@ -6945,6 +7020,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return col.getBrightness();
     }
 
+    // Helper subroutine: update map info summary - internal state computation & bounds checking
     private void updateMapInfoSummary() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (previewStatusLabel == null) return;
@@ -7047,6 +7123,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: blend colors - internal state computation & bounds checking
     private Color blendColors(Color base, Color overlay, double opacity) {
         if (base == null) return overlay;
         if (overlay == null) return base;
@@ -7056,6 +7133,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return Color.color(Math.clamp(r, 0.0, 1.0), Math.clamp(g, 0.0, 1.0), Math.clamp(b, 0.0, 1.0));
     }
 
+    // Helper subroutine: get relief shade color - internal state computation & bounds checking
     private Color getReliefShadeColor(double elevation, double waterLevel, double declivity) {
         if (elevation < waterLevel) {
             double depthNorm = Math.clamp((waterLevel - elevation) / 2000.0, 0.0, 1.0);
@@ -7068,6 +7146,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: draw legend dot - internal state computation & bounds checking
     private void drawLegendDot(GraphicsContext gc, double x, double y, Color c, String label) {
         gc.setFill(c);
         gc.fillOval(x, y - 7, 8, 8);
@@ -7075,6 +7154,7 @@ public class ScenarioSetupPanel extends BorderPane {
         gc.fillText(label, x + 12, y);
     }
 
+    // Helper subroutine: draw instant2ddensity preview - internal state computation & bounds checking
     private void drawInstant2DDensityPreview(GraphicsContext gc, double w, double h, double scale, double offX, double offY) {
         int pwWidth = 320;
         int pwHeight = 160;
@@ -7356,6 +7436,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return scenarioPresetBar;
     }
 
+    // Helper subroutine: get elevation image for preset - internal state computation & bounds checking
     private Image getElevationImageForPreset(PlanetPreset planet) {
         if (planet == null) planet = activePlanetPreset != null ? activePlanetPreset : PlanetPreset.EARTH_LIKE;
         if (planet.customElevBase64() != null && !planet.customElevBase64().isBlank()) {
@@ -7373,6 +7454,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return img;
     }
 
+    // Helper subroutine: get cached earth elevation image - internal state computation & bounds checking
     private Image getCachedEarthElevationImage() {
         return getElevationImageForPreset(activePlanetPreset);
     }
@@ -7395,6 +7477,7 @@ public class ScenarioSetupPanel extends BorderPane {
         this.externalOverlayContainer = overlayContainer;
     }
 
+    // Helper subroutine: update progress - internal state computation & bounds checking
     private void updateProgress(double progressVal, String msg) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         javafx.application.Platform.runLater(() -> {
@@ -7431,6 +7514,7 @@ public class ScenarioSetupPanel extends BorderPane {
         resetStartButtonState();
     }
 
+    // Helper subroutine: reset start button state - internal state computation & bounds checking
     private void resetStartButtonState() {
         isCalculationRunning = false;
         WindowUtils.setBusyCursor(this, false);
@@ -7443,6 +7527,7 @@ public class ScenarioSetupPanel extends BorderPane {
         });
     }
 
+    // Helper subroutine: set start button completed state - internal state computation & bounds checking
     private void setStartButtonCompletedState() {
         isCalculationRunning = false;
         WindowUtils.setBusyCursor(this, false);
@@ -7455,6 +7540,7 @@ public class ScenarioSetupPanel extends BorderPane {
         });
     }
 
+    // Helper subroutine: set start button cancel state - internal state computation & bounds checking
     private void setStartButtonCancelState() {
         isCalculationRunning = true;
         javafx.application.Platform.runLater(() -> {
@@ -7466,6 +7552,7 @@ public class ScenarioSetupPanel extends BorderPane {
         });
     }
 
+    // Helper subroutine: handle start or cancel - internal state computation & bounds checking
     private void handleStartOrCancel() {
         if (isCalculationRunning) {
             cancelCalculation();
@@ -7490,6 +7577,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: cancel calculation - internal state computation & bounds checking
     private void cancelCalculation() {
         cancelRequested = true;
         updateProgress(0.0, I18n.getOrDefault("scenario.progress.cancelling", "ðŸ›‘ Cancelling computation at user request..."));
@@ -7500,6 +7588,7 @@ public class ScenarioSetupPanel extends BorderPane {
         resetStartButtonState();
     }
 
+    // Helper subroutine: start simulation deferred - internal state computation & bounds checking
     private void startSimulationDeferred() {
         if (!validateScenarioSetup()) {
             resetStartButtonState();
@@ -7702,6 +7791,7 @@ public class ScenarioSetupPanel extends BorderPane {
         generationThread.start();
     }
 
+    // Helper subroutine: apply preset map to cells - internal state computation & bounds checking
     private void applyPresetMapToCells(List<H3Cell> cells, PlanetPreset cfg) {
         if (cfg == null || cells == null || cells.isEmpty()) return;
         
@@ -7986,15 +8076,18 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
+    // Helper subroutine: load earth historical events - internal state computation & bounds checking
     private void loadEarthHistoricalEvents() {
         int startYear = startYearSpinner != null ? startYearSpinner.getValue() : -8000;
         loadEarthHistoricalEvents(startYear, false);
     }
 
+    // Helper subroutine: load earth historical events - internal state computation & bounds checking
     private void loadEarthHistoricalEvents(int startYear) {
         loadEarthHistoricalEvents(startYear, false);
     }
 
+    // Helper subroutine: load earth historical events - internal state computation & bounds checking
     private void loadEarthHistoricalEvents(int startYear, boolean promptConfirmation) {
         if (eventsList == null) return;
 
@@ -8602,6 +8695,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return eventsList != null ? new ArrayList<>(eventsList) : new ArrayList<>();
     }
 
+    // Helper subroutine: export physical law engine template - internal state computation & bounds checking
     private void exportPhysicalLawEngineTemplate(String className) {
         try {
             javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
@@ -8643,6 +8737,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: export custom engine template - internal state computation & bounds checking
     private void exportCustomEngineTemplate() {
         try {
             javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
@@ -8662,6 +8757,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: import custom engine file - internal state computation & bounds checking
     private void importCustomEngineFile() {
         try {
             javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
@@ -8692,6 +8788,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: update performance controls state - internal state computation & bounds checking
     private void updatePerformanceControlsState() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         boolean strict = strictDeterminismCheckBox != null && strictDeterminismCheckBox.isSelected();
@@ -9006,6 +9103,7 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: parse year bpfrom title - internal state computation & bounds checking
     private static long parseYearBPFromTitle(String title) {
         if (title == null) return Long.MAX_VALUE;
         java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("\\((-?\\d+[\\d\\s]*)\\s*(BP|CE|BC|av\\. J\\.-C\\.)?\\)").matcher(title);

@@ -7,6 +7,15 @@ import java.awt.image.Raster;
 import java.io.File;
 
 public class ExtractWorldClimTif {
+    /*
+     * Main operation.
+     * <p>
+     * Executes operational logic for {@code ExtractWorldClimTif} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param args the args argument (String[])
+     */
     public static void main(String[] args) {
         try {
             File tempFile = new File("data/maps/worldclim/bio_10m/wc2.1_10m_bio_1.tif");

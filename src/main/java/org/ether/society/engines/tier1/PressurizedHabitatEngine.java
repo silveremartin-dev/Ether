@@ -85,6 +85,7 @@ public class PressurizedHabitatEngine {
         }
     }
 
+    // Helper subroutine: process sheltered cell - internal state computation & bounds checking
     private static void processShelteredCell(H3Cell cell, HabitatType type, PlanetPreset preset, double dt) {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations

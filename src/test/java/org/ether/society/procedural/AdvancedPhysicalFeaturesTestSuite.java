@@ -36,6 +36,14 @@ public class AdvancedPhysicalFeaturesTestSuite {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedPhysicalFeaturesTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         testCells = new ArrayList<>();
         H3Cell cell1 = new H3Cell(613503380827930701L, 65.0, 10.0);
@@ -52,6 +60,14 @@ public class AdvancedPhysicalFeaturesTestSuite {
     }
 
     @Test
+    /*
+     * Test terraforming engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedPhysicalFeaturesTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTerraformingEngine() {
         TerraformingEngine.setCo2Ppm(800.0);
         TerraformingEngine.setSolarMirrorInsolationMultiplier(1.05);
@@ -65,6 +81,14 @@ public class AdvancedPhysicalFeaturesTestSuite {
     }
 
     @Test
+    /*
+     * Test trophic ecosystem engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedPhysicalFeaturesTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTrophicEcosystemEngine() {
         TrophicEcosystemEngine.setPleistoceneRewildingActive(true);
         TrophicEcosystemEngine.setMegafaunaDensityPerKm2(2.0);
@@ -76,6 +100,14 @@ public class AdvancedPhysicalFeaturesTestSuite {
     }
 
     @Test
+    /*
+     * Test physical supply chain engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedPhysicalFeaturesTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPhysicalSupplyChainEngine() {
         PhysicalSupplyChainEngine.setMaritimeChokepointBlockadeActive(true);
         double initialWork = testCells.get(0).getResourceWork();
@@ -86,6 +118,14 @@ public class AdvancedPhysicalFeaturesTestSuite {
     }
 
     @Test
+    /*
+     * Test urban thermodynamics engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedPhysicalFeaturesTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testUrbanThermodynamicsEngine() {
         double initialTemp = testCells.get(0).getTemperature();
 
@@ -95,6 +135,14 @@ public class AdvancedPhysicalFeaturesTestSuite {
     }
 
     @Test
+    /*
+     * Test scenario branching tree operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedPhysicalFeaturesTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testScenarioBranchingTree() {
         ScenarioBranchingTree tree = new ScenarioBranchingTree();
         assertEquals(1, tree.getBranches().size());

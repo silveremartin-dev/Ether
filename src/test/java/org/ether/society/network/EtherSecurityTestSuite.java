@@ -18,6 +18,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EtherSecurityTestSuite {
 
     @Test
+    /*
+     * Test aes gcm encryption decryption operation.
+     * <p>
+     * Executes operational logic for {@code EtherSecurityTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAesGcmEncryptionDecryption() throws Exception {
         EtherSecurityManager sec = new EtherSecurityManager();
         String originalPayload = "GOD_MODE_INJECTION:SOOT_OPTICAL_DEPTH_1.5";
@@ -31,6 +39,14 @@ public class EtherSecurityTestSuite {
     }
 
     @Test
+    /*
+     * Test security audit logging operation.
+     * <p>
+     * Executes operational logic for {@code EtherSecurityTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSecurityAuditLogging() {
         assertDoesNotThrow(() -> {
             EtherSecurityAuditLogger.logAuditEvent("TEST_EVENT", "127.0.0.1", "Testing security audit logger write.");

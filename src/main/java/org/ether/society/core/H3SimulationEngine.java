@@ -116,6 +116,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         return eventSystem;
     }
 
+    // Helper subroutine: initialize - internal state computation & bounds checking
     private void initialize() {
         logger.info("Initializing H3 simulation engine (idle state)...");
         this.cells = new java.util.ArrayList<>();
@@ -223,6 +224,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.performanceConfig = performanceConfig;
     }
 
+    // Helper subroutine: initialize population - internal state computation & bounds checking
     private void initializePopulation() {
         boolean hasExistingPop = cells.stream().anyMatch(c -> c.getPopulation() > 0);
         if (hasExistingPop) {
@@ -475,6 +477,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
+    // Helper subroutine: start game loop - internal state computation & bounds checking
     private void startGameLoop() {
         if (executorService != null && !executorService.isShutdown()) {
             executorService.shutdownNow();
@@ -629,6 +632,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
+    // Helper subroutine: tick - internal state computation & bounds checking
     private void tick() {
         if (!running.get()) return;
 
@@ -740,6 +744,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
+    // Helper subroutine: check scenario climate events - internal state computation & bounds checking
     private void checkScenarioClimateEvents() {
         if (currentScenario == null || currentScenario.getClimateEvents() == null || currentScenario.getClimateEvents().isEmpty()) return;
         int currentYear = timeManager.getCurrentYear();
@@ -776,6 +781,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
+    // Helper subroutine: apply climate event impact - internal state computation & bounds checking
     private void applyClimateEventImpact(org.ether.society.model.ClimateEvent evt) {
         if (cells == null || cells.isEmpty()) return;
         double evtLat = evt.getLatitude();
@@ -961,6 +967,7 @@ public class H3SimulationEngine implements ISimulationEngine {
     /* Internal state variable for last auto save time ms (long). */
     private long lastAutoSaveTimeMs = 0;
 
+    // Helper subroutine: auto save checkpoint - internal state computation & bounds checking
     private void autoSaveCheckpoint() {
         if (cells == null || cells.isEmpty()) return;
         long now = System.currentTimeMillis();
@@ -1068,6 +1075,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         return count;
     }
 
+    // Helper subroutine: initialize political seeding - internal state computation & bounds checking
     private void initializePoliticalSeeding(int populatedCount) {
         if (populatedCount < 3 || cells == null || cells.isEmpty()) return;
 
@@ -1934,6 +1942,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         return Math.min(100.0, Math.max(0.0, ((double) currentPop / initPop) * 100.0));
     }
 
+    // Helper subroutine: sync climate to buffer - internal state computation & bounds checking
     private void syncClimateToBuffer() {
         if (worldBuffer == null || cells == null) return;
         float[] temps = worldBuffer.getTemperature();

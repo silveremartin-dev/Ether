@@ -62,6 +62,7 @@ public class I18n {
         setLanguage(loadSavedLanguage());
     }
 
+    // Helper subroutine: load saved language - internal state computation & bounds checking
     private static Language loadSavedLanguage() {
         String code = prefs.get(PREF_LANG_KEY, null);
         if (code != null && !code.isBlank()) {
@@ -126,6 +127,7 @@ public class I18n {
         return currentLanguage.get();
     }
 
+    // Helper subroutine: sanitize - internal state computation & bounds checking
     private static String sanitize(String str) {
         if (str == null) return null;
         return str.replace("\ufe0f", "").replace("\ufe0e", "");

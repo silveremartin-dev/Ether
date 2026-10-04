@@ -202,6 +202,7 @@ public class OrographicGlottologPropagator {
         return img;
     }
 
+    // Helper subroutine: is river corridor - internal state computation & bounds checking
     private static boolean isRiverCorridor(double lon, double lat) {
         // Nile
         if (lon >= 29.0 && lon <= 33.0 && lat >= 0.0 && lat <= 31.5) return true;

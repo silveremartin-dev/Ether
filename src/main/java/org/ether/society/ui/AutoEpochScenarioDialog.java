@@ -358,6 +358,7 @@ public class AutoEpochScenarioDialog extends Stage {
         updateLivePreview();
     }
 
+    // Helper subroutine: rebuild milestone chips - internal state computation & bounds checking
     private void rebuildMilestoneChips() {
         chipsPane.getChildren().clear();
         String planet = planetSelector.getValue() != null ? planetSelector.getValue() : "earth";
@@ -389,6 +390,7 @@ public class AutoEpochScenarioDialog extends Stage {
         }
     }
 
+    // Helper subroutine: launch scenario generation - internal state computation & bounds checking
     private void launchScenarioGeneration() {
         String planet = planetSelector.getValue() != null ? planetSelector.getValue() : "earth";
         int year = yearSpinner.getValue() != null ? yearSpinner.getValue() : -8000;
@@ -437,6 +439,7 @@ public class AutoEpochScenarioDialog extends Stage {
         thread.start();
     }
 
+    // Helper subroutine: update live preview - internal state computation & bounds checking
     private void updateLivePreview() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         String planet = planetSelector.getValue() != null ? planetSelector.getValue() : "earth";
@@ -494,6 +497,7 @@ public class AutoEpochScenarioDialog extends Stage {
                 year >= 1800 ? activeLabel : disabledLabel));
     }
 
+    // Helper subroutine: get strategy explanation - internal state computation & bounds checking
     private String getStrategyExplanation(TemporalMapTensorManager.DataFallbackStrategy strategy) {
         if (strategy == null) strategy = TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION;
         return switch (strategy) {
@@ -506,6 +510,7 @@ public class AutoEpochScenarioDialog extends Stage {
         };
     }
 
+    // Helper subroutine: get localized planet name - internal state computation & bounds checking
     private String getLocalizedPlanetName(String p) {
         if (p == null) return I18n.getOrDefault("planet.map.earth", "🌍 Terre");
         return switch (p.toLowerCase()) {

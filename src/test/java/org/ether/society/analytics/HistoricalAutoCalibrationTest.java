@@ -28,11 +28,27 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HistoricalAutoCalibrationTest {
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalAutoCalibrationTest} within the epistemic validation and empirical benchmarking harness.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
     }
 
     @Test
+    /*
+     * Test json20variable benchmark loading operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalAutoCalibrationTest} within the epistemic validation and empirical benchmarking harness.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testJson20VariableBenchmarkLoading() {
         Map<Integer, Double> popBenchmark = HistoricalValidationKernel.getHistoricalWorldPopulation();
         Map<Integer, Double> gdpBenchmark = HistoricalValidationKernel.getHistoricalWorldGdp();
@@ -50,6 +66,14 @@ public class HistoricalAutoCalibrationTest {
     }
 
     @Test
+    /*
+     * Test interpolated benchmark value operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalAutoCalibrationTest} within the epistemic validation and empirical benchmarking harness.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testInterpolatedBenchmarkValue() {
         double exactVal1900 = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", 1900);
         double exactVal2000 = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", 2000);
@@ -73,6 +97,14 @@ public class HistoricalAutoCalibrationTest {
     }
 
     @Test
+    /*
+     * Test auto calibration execution operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalAutoCalibrationTest} within the epistemic validation and empirical benchmarking harness.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAutoCalibrationExecution() {
         HistoricalAutoCalibrator.CalibrationResult bestFit = HistoricalAutoCalibrator.evaluateAndAutoCalibrate();
 
@@ -84,6 +116,14 @@ public class HistoricalAutoCalibrationTest {
     }
 
     @Test
+    /*
+     * Test early modern500year window scenario operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalAutoCalibrationTest} within the epistemic validation and empirical benchmarking harness.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEarlyModern500YearWindowScenario() {
         HistoricalAutoCalibrator.CalibrationResult result =
             HistoricalAutoCalibrator.evaluateWindowedAutoCalibration(HistoricalValidationKernel.EpochWindow.EARLY_MODERN_500YR);
@@ -98,6 +138,14 @@ public class HistoricalAutoCalibrationTest {
     }
 
     @Test
+    /*
+     * Test classical medieval window scenario operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalAutoCalibrationTest} within the epistemic validation and empirical benchmarking harness.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testClassicalMedievalWindowScenario() {
         HistoricalAutoCalibrator.CalibrationResult result =
             HistoricalAutoCalibrator.evaluateWindowedAutoCalibration(HistoricalValidationKernel.EpochWindow.CLASSICAL_MEDIEVAL);
@@ -111,6 +159,14 @@ public class HistoricalAutoCalibrationTest {
     }
 
     @Test
+    /*
+     * Test modern industrial125year window scenario operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalAutoCalibrationTest} within the epistemic validation and empirical benchmarking harness.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testModernIndustrial125YearWindowScenario() {
         HistoricalAutoCalibrator.CalibrationResult result =
             HistoricalAutoCalibrator.evaluateWindowedAutoCalibration(HistoricalValidationKernel.EpochWindow.MODERN_INDUSTRIAL);
@@ -122,6 +178,14 @@ public class HistoricalAutoCalibrationTest {
     }
 
     @Test
+    /*
+     * Test baseline vs empirical suite comparison operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalAutoCalibrationTest} within the epistemic validation and empirical benchmarking harness.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBaselineVsEmpiricalSuiteComparison() {
         Map<Integer, Double> benchmark = HistoricalValidationKernel.getHistoricalWorldPopulation();
 

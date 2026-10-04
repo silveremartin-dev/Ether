@@ -20,6 +20,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CliodynamicsEngineTest {
 
     @Test
+    /*
+     * Test cliodynamics secular cycle update operation.
+     * <p>
+     * Executes operational logic for {@code CliodynamicsEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCliodynamicsSecularCycleUpdate() {
         H3Cell cell1 = new H3Cell(613503380827930623L, 45.0, 5.0);
         cell1.setPopulation(5000);
@@ -42,6 +50,14 @@ public class CliodynamicsEngineTest {
     }
 
     @Test
+    /*
+     * Test trade network generation operation.
+     * <p>
+     * Executes operational logic for {@code CliodynamicsEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTradeNetworkGeneration() {
         H3Cell origin = new H3Cell(613503380827930625L, 40.0, 10.0);
         origin.setPopulation(1000);
@@ -56,6 +72,14 @@ public class CliodynamicsEngineTest {
     }
 
     @Test
+    /*
+     * Test ecological degradation and malthusian limits operation.
+     * <p>
+     * Executes operational logic for {@code CliodynamicsEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEcologicalDegradationAndMalthusianLimits() {
         H3Cell cell = new H3Cell(613503380827930627L, 35.0, 15.0);
         cell.setElevation(300.0); // Sloped terrain

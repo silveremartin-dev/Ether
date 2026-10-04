@@ -161,6 +161,7 @@ public class StatsPanel extends VBox {
             redraw();
         }
 
+        // Helper subroutine: draw empty - internal state computation & bounds checking
         private void drawEmpty() {
             var gc = getGraphicsContext2D();
             gc.clearRect(0, 0, getWidth(), getHeight());
@@ -169,6 +170,7 @@ public class StatsPanel extends VBox {
             gc.strokeLine(2, getHeight() / 2, getWidth() - 2, getHeight() / 2);
         }
 
+        // Helper subroutine: redraw - internal state computation & bounds checking
         private void redraw() {
             var gc = getGraphicsContext2D();
             double w = getWidth();
@@ -736,6 +738,7 @@ public class StatsPanel extends VBox {
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
     }
 
+    // Helper subroutine: get min allowed year - internal state computation & bounds checking
     private long getMinAllowedYear() {
         if (engine != null && engine.getCurrentScenario() != null) {
             return engine.getCurrentScenario().getStartDateYear();
@@ -746,6 +749,7 @@ public class StatsPanel extends VBox {
         return 0L;
     }
 
+    // Helper subroutine: get max allowed year - internal state computation & bounds checking
     private long getMaxAllowedYear() {
         if (engine != null && engine.getCurrentScenario() != null) {
             long endYr = engine.getCurrentScenario().getEndDateYear();
@@ -758,6 +762,7 @@ public class StatsPanel extends VBox {
         return 2100L;
     }
 
+    // Helper subroutine: set time window - internal state computation & bounds checking
     private void setTimeWindow(double windowYears) {
         this.currentWindowYears = windowYears;
         reloadChartData();
@@ -1044,6 +1049,7 @@ public class StatsPanel extends VBox {
         }
     }
 
+    // Helper subroutine: register metric cards - internal state computation & bounds checking
     private void registerMetricCards(Label inspectorTitle, Label inspectorText) {
         metricCards.clear();
         for (MetricCardMeta meta : METRIC_CARD_METAS) {
@@ -1055,6 +1061,7 @@ public class StatsPanel extends VBox {
         }
     }
 
+    // Helper subroutine: add card - internal state computation & bounds checking
     private void addCard(String key, String title, String category, String unit, String tooltip, Label inspectorTitle, Label inspectorText) {
         MetricCard card = new MetricCard(key, title, category, unit, tooltip);
         card.setOnMouseEntered(e -> {
@@ -1075,6 +1082,7 @@ public class StatsPanel extends VBox {
         metricCards.put(key, card);
     }
 
+    // Helper subroutine: filter metrics - internal state computation & bounds checking
     private void filterMetrics() {
         String catFilter = categoryFilterCombo.getValue();
         String searchText = searchField.getText() != null ? searchField.getText().toLowerCase().trim() : "";
@@ -1121,6 +1129,7 @@ public class StatsPanel extends VBox {
         reloadChartData();
     }
 
+    // Helper subroutine: reload chart data - internal state computation & bounds checking
     private void reloadChartData() {
         chartSeries.getData().clear();
         if (engine == null || engine.getCells() == null || engine.getCells().isEmpty()) {
@@ -1499,6 +1508,7 @@ public class StatsPanel extends VBox {
         return pop;
     }
 
+    // Helper subroutine: set card val - internal state computation & bounds checking
     private void setCardVal(String key, String val, double ratio) {
         MetricCard card = metricCards.get(key);
         if (card != null) {
@@ -1506,6 +1516,7 @@ public class StatsPanel extends VBox {
         }
     }
 
+    // Helper subroutine: export csv - internal state computation & bounds checking
     private void exportCsv() {
         if (engine == null) return;
 

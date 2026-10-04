@@ -6,6 +6,15 @@ import javax.imageio.ImageIO;
 import java.io.File;
 
 public class GenerateYearZeroRasters {
+    /*
+     * Main operation.
+     * <p>
+     * Executes operational logic for {@code GenerateYearZeroRasters} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param args the args argument (String[])
+     */
     public static void main(String[] args) {
         try {
             System.out.println("Ingesting Roman Empire (Year 0) cartography...");

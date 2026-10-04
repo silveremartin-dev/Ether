@@ -22,12 +22,28 @@ public class JITEngineArchitectureAndOptimizationTestSuite {
     private ScenarioEngineJITCompiler compiler;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code JITEngineArchitectureAndOptimizationTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         compiler = new ScenarioEngineJITCompiler();
     }
 
     @Test
     @DisplayName("Verify multi-level chained expression composition h(g(f(x)))")
+    /*
+     * Test multi level expression composition operation.
+     * <p>
+     * Executes operational logic for {@code JITEngineArchitectureAndOptimizationTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testMultiLevelExpressionComposition() {
         // f(x) = 1.05 * x + 2.0
         SymbolicExpression f = new SymbolicExpression("biomassHuman", 1.05, 2.0);
@@ -52,6 +68,14 @@ public class JITEngineArchitectureAndOptimizationTestSuite {
 
     @Test
     @DisplayName("Verify numerical equivalence between sequential uncompiled execution and JIT fused kernel")
+    /*
+     * Test sequential vs fused equivalence operation.
+     * <p>
+     * Executes operational logic for {@code JITEngineArchitectureAndOptimizationTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSequentialVsFusedEquivalence() {
         int cellCount = 1000;
         WorldBuffer bufferUncompiled = new WorldBuffer(cellCount);
@@ -92,6 +116,14 @@ public class JITEngineArchitectureAndOptimizationTestSuite {
 
     @Test
     @DisplayName("Verify zero population clamp and boundary safety")
+    /*
+     * Test boundary safety and zero clamping operation.
+     * <p>
+     * Executes operational logic for {@code JITEngineArchitectureAndOptimizationTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBoundarySafetyAndZeroClamping() {
         WorldBuffer buffer = new WorldBuffer(5);
         float[] pop = buffer.getBiomassHuman();
@@ -112,6 +144,14 @@ public class JITEngineArchitectureAndOptimizationTestSuite {
 
     @Test
     @DisplayName("Verify static conflict analyzer correctly flags divergent target equilibriums")
+    /*
+     * Test conflict analyzer rules operation.
+     * <p>
+     * Executes operational logic for {@code JITEngineArchitectureAndOptimizationTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testConflictAnalyzerRules() {
         // Redundant engines (INFO)
         compiler.registerEngineStep("Engine1", "resourceCapital", new SymbolicExpression("resourceCapital", 1.05, 0.0), 50.0);
@@ -134,6 +174,14 @@ public class JITEngineArchitectureAndOptimizationTestSuite {
 
     @Test
     @DisplayName("Verify JIT kernel compiler executes fused scenario step deterministically")
+    /*
+     * Test gpukernel generator output operation.
+     * <p>
+     * Executes operational logic for {@code JITEngineArchitectureAndOptimizationTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testGPUKernelGeneratorOutput() {
         compiler.registerEngineStep("SolarInsolation", "temperature", new SymbolicExpression("temperature", 1.02, 0.5), 25.0);
         compiler.registerEngineStep("GrowthEngine", "biomassHuman", new SymbolicExpression("biomassHuman", 1.05, 10.0), 1000.0);
@@ -151,6 +199,14 @@ public class JITEngineArchitectureAndOptimizationTestSuite {
 
     @Test
     @DisplayName("Verify DOD array memory sweep performance over 100,000 cells")
+    /*
+     * Test high capacity dodarray performance operation.
+     * <p>
+     * Executes operational logic for {@code JITEngineArchitectureAndOptimizationTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHighCapacityDODArrayPerformance() {
         int capacity = 100_000;
         WorldBuffer buffer = new WorldBuffer(capacity);

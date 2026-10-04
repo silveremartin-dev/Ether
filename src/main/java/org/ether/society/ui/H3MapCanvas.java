@@ -413,6 +413,15 @@ public class H3MapCanvas extends Canvas {
      * @return the resulting computation or state reference
      */
     public boolean isShowMouseOverInfo() { return showMouseOverInfo; }
+    /*
+     * Set show mouse over info operation.
+     * <p>
+     * Executes operational logic for {@code H3MapCanvas} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param show the show argument (boolean)
+     */
     public void setShowMouseOverInfo(boolean show) { this.showMouseOverInfo = show; }
 
     /*
@@ -437,6 +446,7 @@ public class H3MapCanvas extends Canvas {
         draw();
     }
 
+    // Helper subroutine: update auto rotate timer state - internal state computation & bounds checking
     private void updateAutoRotateTimerState() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (autoRotating && viewMode == ViewMode.VIEW_3D && tabVisible) {
@@ -730,6 +740,7 @@ public class H3MapCanvas extends Canvas {
      */
     public void truncateVideoFramesAbove(long tickIndex) {}
 
+    // Helper subroutine: setup mouse handlers - internal state computation & bounds checking
     private void setupMouseHandlers() {
         hoverTimer = new javafx.animation.PauseTransition(javafx.util.Duration.millis(150));
         hoverTimer.setOnFinished(e -> {
@@ -1282,6 +1293,7 @@ public class H3MapCanvas extends Canvas {
         logger.debug("Drew {} cells in {} mode", cells.size(), viewMode);
     }
 
+    // Helper subroutine: draw corner overlays - internal state computation & bounds checking
     private void drawCornerOverlays(GraphicsContext gc) {
         if (!showCornerOverlays) return;
         double h = getHeight();
@@ -1527,6 +1539,7 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
+    // Helper subroutine: draw event beacons - internal state computation & bounds checking
     private void drawEventBeacons(GraphicsContext gc) {
         List<BeaconItem> allBeacons = new ArrayList<>();
         long now = System.currentTimeMillis();
@@ -1844,6 +1857,7 @@ public class H3MapCanvas extends Canvas {
         return null;
     }
 
+    // Helper subroutine: get or update smooth map image - internal state computation & bounds checking
     private WritableImage getOrUpdateSmoothMapImage(double minLat, double maxLat, double minLng, double maxLng) {
         if (cells == null || cells.isEmpty()) return null;
         if (cachedSmoothImage != null && !smoothImageDirty) {
@@ -1932,6 +1946,7 @@ public class H3MapCanvas extends Canvas {
         return img;
     }
 
+    // Helper subroutine: draw2d - internal state computation & bounds checking
     private void draw2D(GraphicsContext gc, double minLat, double maxLat, double minLng, double maxLng) {
         double viewTopLat = maxLat - (0 - offsetY) / scale;
         double viewBottomLat = maxLat - (getHeight() - offsetY) / scale;
@@ -2053,10 +2068,12 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
+    // Helper subroutine: draw hex cell2d - internal state computation & bounds checking
     private void drawHexCell2D(GraphicsContext gc, double cx, double cy, double radius) {
         drawHexCell2D(gc, cx, cy, radius, radius);
     }
 
+    // Helper subroutine: draw hex cell2d - internal state computation & bounds checking
     private void drawHexCell2D(GraphicsContext gc, double cx, double cy, double radiusX, double radiusY) {
         double[] xs = new double[6];
         double[] ys = new double[6];
@@ -2068,10 +2085,12 @@ public class H3MapCanvas extends Canvas {
         gc.fillPolygon(xs, ys, 6);
     }
 
+    // Helper subroutine: stroke hex cell2d - internal state computation & bounds checking
     private void strokeHexCell2D(GraphicsContext gc, double cx, double cy, double radius) {
         strokeHexCell2D(gc, cx, cy, radius, radius);
     }
 
+    // Helper subroutine: stroke hex cell2d - internal state computation & bounds checking
     private void strokeHexCell2D(GraphicsContext gc, double cx, double cy, double radiusX, double radiusY) {
         double[] xs = new double[6];
         double[] ys = new double[6];
@@ -2083,6 +2102,7 @@ public class H3MapCanvas extends Canvas {
         gc.strokePolygon(xs, ys, 6);
     }
 
+    // Helper subroutine: find lat index - internal state computation & bounds checking
     private int findLatIndex(double targetLat) {
         int low = 0;
         int high = cells.size() - 1;
@@ -2101,6 +2121,7 @@ public class H3MapCanvas extends Canvas {
         return low;
     }
 
+    // Helper subroutine: draw3d - internal state computation & bounds checking
     private void draw3D(GraphicsContext gc, double minLat, double maxLat, double minLng, double maxLng) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -2399,6 +2420,7 @@ public class H3MapCanvas extends Canvas {
         gc.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
     }
 
+    // Helper subroutine: draw smooth globe surface - internal state computation & bounds checking
     private void drawSmoothGlobeSurface(GraphicsContext gc, double cx, double cy, double radius, double radRotationY, double radTilt, WritableImage smoothImg) {
         if (smoothImg == null || radius < 5) return;
 
@@ -2528,6 +2550,7 @@ public class H3MapCanvas extends Canvas {
         );
     }
 
+    // Helper subroutine: compute hillshade factor - internal state computation & bounds checking
     private double computeHillshadeFactor(H3Cell cell) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (cell == null || !showHillshading) return 1.0;
@@ -2593,6 +2616,7 @@ public class H3MapCanvas extends Canvas {
         return Math.clamp(0.55 + hillshade * 0.80, 0.45, 1.50);
     }
 
+    // Helper subroutine: compute solar terminator factor - internal state computation & bounds checking
     private double computeSolarTerminatorFactor(H3Cell cell) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (cell == null || !showSolarTerminator) return 1.0;
@@ -2625,6 +2649,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(Math.clamp(r, 0.0, 1.0), Math.clamp(g, 0.0, 1.0), Math.clamp(b, 0.0, 1.0));
     }
 
+    // Helper subroutine: get single mode color - internal state computation & bounds checking
     private Color getSingleModeColor(DisplayMode mode, H3Cell cell, Integer bufferIndex, Biome cellBiome, boolean isWater) {
         if (bufferIndex != null && worldBuffer != null && bufferIndex >= 0 && bufferIndex < worldBuffer.getCapacity()) {
             int index = bufferIndex;
@@ -2645,6 +2670,7 @@ public class H3MapCanvas extends Canvas {
         return getCellColorForMode(mode, cell, isWater);
     }
 
+    // Helper subroutine: get cell color for mode - internal state computation & bounds checking
     private Color getCellColorForMode(DisplayMode mode, H3Cell cell, boolean isWater) {
         if (cell == null) return Color.BLACK;
         return switch (mode) {
@@ -2690,6 +2716,7 @@ public class H3MapCanvas extends Canvas {
         };
     }
 
+    // Helper subroutine: get habitat infrastructure color - internal state computation & bounds checking
     private Color getHabitatInfrastructureColor(H3Cell cell) {
         if (cell == null || cell.getHabitatType() == null || cell.getHabitatType() == org.ether.society.model.HabitatType.NONE) {
             return Color.rgb(30, 35, 45); // Uninhabited / no habitat
@@ -2704,10 +2731,12 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
+    // Helper subroutine: get cell color - internal state computation & bounds checking
     private Color getCellColor(H3Cell cell) {
         return getBufferOrCellColor(cell);
     }
 
+    // Helper subroutine: get ocean ph color - internal state computation & bounds checking
     private Color getOceanPhColor(H3Cell cell) {
         if (cell == null) return Color.rgb(20, 30, 60);
         if (cell.getBiome() != Biome.OCEAN && cell.getBiome() != Biome.DEEP_OCEAN && cell.getBiome() != Biome.BEACH) {
@@ -2723,6 +2752,7 @@ public class H3MapCanvas extends Canvas {
         return Color.rgb(Math.clamp(r, 0, 255), Math.clamp(g, 0, 255), Math.clamp(b, 0, 255));
     }
 
+    // Helper subroutine: get permafrost color - internal state computation & bounds checking
     private Color getPermafrostColor(H3Cell cell) {
         if (cell == null) return Color.rgb(30, 40, 50);
         double lat = Math.abs(cell.getLatitude() != null ? cell.getLatitude() : 0.0);
@@ -2733,6 +2763,7 @@ public class H3MapCanvas extends Canvas {
         return Color.rgb(220, 50, 50); // Effondrement thermique & dÃ©gazage mÃ©thane (rouge vif)
     }
 
+    // Helper subroutine: get malthusian pressure color - internal state computation & bounds checking
     private Color getMalthusianPressureColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(20, 40, 90);
         int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
@@ -2747,6 +2778,7 @@ public class H3MapCanvas extends Canvas {
         else return Color.rgb(239, 68, 68);  // Rouge / Surpopulation Critique (> 150%)
     }
 
+    // Helper subroutine: compute carrying capacity - internal state computation & bounds checking
     private double computeCarryingCapacity(H3Cell c) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (c == null || c.getElevation() <= 0) return 0.0;
@@ -2767,6 +2799,7 @@ public class H3MapCanvas extends Canvas {
         return Math.max(10.0, baseCap);
     }
 
+    // Helper subroutine: get mineral resources color - internal state computation & bounds checking
     private Color getMineralResourcesColor(H3Cell cell) {
         if (cell == null || cell.getElevation() <= 0) return Color.rgb(15, 30, 70);
         double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
@@ -2788,6 +2821,7 @@ public class H3MapCanvas extends Canvas {
         return Color.rgb(Math.clamp(r, 0, 255), Math.clamp(g, 0, 255), Math.clamp(b, 0, 255));
     }
 
+    // Helper subroutine: get mining exploitation color - internal state computation & bounds checking
     private Color getMiningExploitationColor(H3Cell cell) {
         if (cell == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
         double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
@@ -2805,12 +2839,14 @@ public class H3MapCanvas extends Canvas {
         return Color.rgb(Math.clamp(r, 0, 255), Math.clamp(g, 0, 255), Math.clamp(b, 0, 255));
     }
 
+    // Helper subroutine: get asabiyyah color - internal state computation & bounds checking
     private Color getAsabiyyahColor(H3Cell cell) {
         if (cell.getOwner() == null) return Color.rgb(40, 40, 50);
         double asabiyyah = cell.getOwner().getAsabiyyah();
         return Color.color(1.0 - asabiyyah, asabiyyah, 0.2); // Green (high cohesion) to Red (instability)
     }
 
+    // Helper subroutine: get age pyramid color - internal state computation & bounds checking
     private Color getAgePyramidColor(H3Cell cell) {
         int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
         if (pop == 0) return Color.rgb(30, 30, 40);
@@ -2818,11 +2854,13 @@ public class H3MapCanvas extends Canvas {
         return Color.color(seniorRatio, 0.4, 1.0 - seniorRatio); // Blue (young) to Magenta/Purple (aging)
     }
 
+    // Helper subroutine: get albedo color - internal state computation & bounds checking
     private Color getAlbedoColor(H3Cell cell) {
         double albedo = cell.getDynamicAlbedo() != null ? cell.getDynamicAlbedo() : 0.30;
         return Color.gray(Math.clamp(albedo, 0.05, 0.95)); // Grayscale reflectance
     }
 
+    // Helper subroutine: get epidemic color - internal state computation & bounds checking
     private Color getEpidemicColor(H3Cell cell) {
         int infected = cell.getEpidemicInfected() != null ? cell.getEpidemicInfected() : 0;
         if (infected == 0) return getBiomeColor(cell.getBiome()).desaturate();
@@ -2830,12 +2868,14 @@ public class H3MapCanvas extends Canvas {
         return Color.rgb(255, (int) ((1 - norm) * 100), (int) ((1 - norm) * 100)); // Vivid red outbreak
     }
 
+    // Helper subroutine: get friction color - internal state computation & bounds checking
     private Color getFrictionColor(H3Cell cell) {
         double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
         double norm = Math.min(1.0, (friction - 0.5) / 8.0);
         return Color.color(norm, 1.0 - norm, 0.1); // Green (easy plain) to Red (impassable mountain)
     }
 
+    // Helper subroutine: get energy capacity color - internal state computation & bounds checking
     private Color getEnergyCapacityColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 55);
         double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
@@ -2843,6 +2883,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(0.1 + norm * 0.9, 0.4 + norm * 0.5, 0.2); // Solar Yellow/Green gradient
     }
 
+    // Helper subroutine: get entropy pollution color - internal state computation & bounds checking
     private Color getEntropyPollutionColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(10, 20, 40);
         int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
@@ -2852,6 +2893,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(norm, 0.2, 0.8 * (1.0 - norm)); // Purple to Toxic Lime Green
     }
 
+    // Helper subroutine: get soil quality color - internal state computation & bounds checking
     private Color getSoilQualityColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 30, 60);
         double wood = cell.getWoodResource() != null ? cell.getWoodResource() : 100.0;
@@ -2860,6 +2902,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(0.4 * (1.0 - npk), 0.2 + npk * 0.7, 0.1); // Arid Brown to Rich Soil Green
     }
 
+    // Helper subroutine: get biodiversity color - internal state computation & bounds checking
     private Color getBiodiversityColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(20, 45, 80);
         int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
@@ -2868,6 +2911,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(0.1, 0.3 + pristine * 0.6, 0.2 + pristine * 0.3); // Pristine Deep Forest Green
     }
 
+    // Helper subroutine: get health life expectancy color - internal state computation & bounds checking
     private Color getHealthLifeExpectancyColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
         int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
@@ -2877,6 +2921,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(1.0 - life, life * 0.8 + 0.2, 0.4); // Red (famine/short life) to Vivid Cyan/Green
     }
 
+    // Helper subroutine: get education level color - internal state computation & bounds checking
     private Color getEducationLevelColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 20, 40);
         double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
@@ -2884,6 +2929,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(0.2 + edu * 0.6, 0.3, 0.5 + edu * 0.5); // Indigo to Bright Violet
     }
 
+    // Helper subroutine: get happiness color - internal state computation & bounds checking
     private Color getHappinessColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(20, 30, 50);
         double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.3;
@@ -2891,6 +2937,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(1.0 - happy, happy, 0.2); // Red (unhappy) to Gold/Green (happy)
     }
 
+    // Helper subroutine: get conflict color - internal state computation & bounds checking
     private Color getConflictColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
         double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.3;
@@ -2898,6 +2945,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(conflict, 0.8 * (1.0 - conflict), 0.1); // Green (peace) to Crimson Red (war)
     }
 
+    // Helper subroutine: get institutional maturity color - internal state computation & bounds checking
     private Color getInstitutionalMaturityColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 20, 40);
         double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
@@ -2905,6 +2953,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(0.4 + mat * 0.5, 0.2, 0.6 + mat * 0.4); // Dark Blue to Royal Purple
     }
 
+    // Helper subroutine: get gdp wealth color - internal state computation & bounds checking
     private Color getGdpWealthColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
         int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
@@ -2913,6 +2962,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(gdp, gdp * 0.8, 0.2 * (1.0 - gdp)); // Slate to Glowing Gold
     }
 
+    // Helper subroutine: get elite density color - internal state computation & bounds checking
     private Color getEliteDensityColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
         double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.2;
@@ -2920,6 +2970,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(0.2 + elite * 0.8, 0.2, 0.5 + elite * 0.5); // Slate to Imperial Purple/Gold
     }
 
+    // Helper subroutine: get collective memory color - internal state computation & bounds checking
     private Color getCollectiveMemoryColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
         double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
@@ -2927,6 +2978,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(0.1, 0.5 + mem * 0.5, 0.8 + mem * 0.2); // Slate to Vivid Cyan/White
     }
 
+    // Helper subroutine: get collapse risk color - internal state computation & bounds checking
     private Color getCollapseRiskColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
         int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
@@ -2937,6 +2989,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(risk, 1.0 - risk, 0.1); // Green (safe) to Crimson (collapse risk)
     }
 
+    // Helper subroutine: get buffer or cell color - internal state computation & bounds checking
     private Color getBufferOrCellColor(H3Cell cell) {
         if (cell == null) return Color.BLACK;
         Integer idx = (worldBuffer != null && !h3ToBufferIndexMap.isEmpty()) ? h3ToBufferIndexMap.get(cell.getH3Index()) : null;
@@ -3023,6 +3076,7 @@ public class H3MapCanvas extends Canvas {
         return composite;
     }
 
+    // Helper subroutine: get price color - internal state computation & bounds checking
     private Color getPriceColor(float price) {
         float normalized = Math.clamp(price / 10.0f, 0.0f, 1.0f);
         if (scientificColorMap != null) {
@@ -3031,6 +3085,7 @@ public class H3MapCanvas extends Canvas {
         return Color.color(normalized, 1.0f - normalized, 0);
     }
 
+    // Helper subroutine: get political color - internal state computation & bounds checking
     private Color getPoliticalColor(H3Cell cell) {
         if (cell.getOwner() == null) {
             return getBiomeColor(cell.getBiome()).desaturate().darker();
@@ -3038,6 +3093,7 @@ public class H3MapCanvas extends Canvas {
         return cell.getOwner().getColor();
     }
 
+    // Helper subroutine: get biome color - internal state computation & bounds checking
     private Color getBiomeColor(Biome biome) {
         if (biome == null)
             return Color.GRAY;
@@ -3072,6 +3128,7 @@ public class H3MapCanvas extends Canvas {
         return getPopulationColor(population, false);
     }
 
+    // Helper subroutine: get population color - internal state computation & bounds checking
     private Color getPopulationColor(int population, boolean isWater) {
         if (isWater) {
             return Color.rgb(12, 24, 50); // Dark ocean blue for ocean/water cells
@@ -3440,6 +3497,7 @@ public class H3MapCanvas extends Canvas {
         gc.fillText(coordsText, 20, 28);
     }
 
+    // Helper subroutine: draw contours - internal state computation & bounds checking
     private void drawContours(GraphicsContext gc) {
         if (!showContours || cells == null || cellMap == null) return;
         
@@ -3521,6 +3579,7 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
+    // Helper subroutine: draw flow vectors - internal state computation & bounds checking
     private void drawFlowVectors(GraphicsContext gc) {
         if (!showFlowVectors || cells == null || cellMap == null || zoomFactor < 0.3) return;
 
@@ -3594,6 +3653,7 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
+    // Helper subroutine: draw resource overlay - internal state computation & bounds checking
     private void drawResourceOverlay(GraphicsContext gc) {
         if (!showResourceOverlay || cells == null) return;
 
@@ -3686,6 +3746,7 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
+    // Helper subroutine: project3d - internal state computation & bounds checking
     private ProjectedPoint project3D(double lat, double lng, double elevation, double radRotationY, double radTilt, double radius, double cx, double cy) {
         double latRad = Math.toRadians(lat);
         double lngRad = Math.toRadians(lng);
@@ -3721,6 +3782,7 @@ public class H3MapCanvas extends Canvas {
         return p;
     }
 
+    // Helper subroutine: draw legend overlay - internal state computation & bounds checking
     private void drawLegendOverlay(GraphicsContext gc) {
         if (cells == null || cells.isEmpty()) return;
 

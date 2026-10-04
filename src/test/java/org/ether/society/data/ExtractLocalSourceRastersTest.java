@@ -30,6 +30,14 @@ public class ExtractLocalSourceRastersTest {
 
     @Test
     @DisplayName("Extract & Render Major Historical Raster Timelines from Local Source Archives")
+    /*
+     * Test extract major timelines from local source operation.
+     * <p>
+     * Executes operational logic for {@code ExtractLocalSourceRastersTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testExtractMajorTimelinesFromLocalSource() throws Exception {
         long[] years = new long[] { -10000, -5000, -3000, -1000, 0, 1000, 1500, 1800, 1900, 1950, 2000, 2024 };
 

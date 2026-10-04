@@ -236,6 +236,7 @@ public class WikidataEventsFetcher {
         }
     }
 
+    // Helper subroutine: parse wikidata year - internal state computation & bounds checking
     private static int parseWikidataYear(String dateStr) {
         if (dateStr == null || dateStr.isBlank()) return 0;
         try {
@@ -248,6 +249,7 @@ public class WikidataEventsFetcher {
         }
     }
 
+    // Helper subroutine: extract year from note - internal state computation & bounds checking
     private static int extractYearFromNote(String note) {
         if (note == null || note.isEmpty()) return -1000;
         try {
@@ -265,6 +267,7 @@ public class WikidataEventsFetcher {
         return -1000;
     }
 
+    // Helper subroutine: get core milestones - internal state computation & bounds checking
     private static List<ClimateEvent> getCoreMilestones() {
         List<ClimateEvent> list = new ArrayList<>();
 

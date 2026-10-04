@@ -21,6 +21,7 @@ import java.util.Map;
  */
 public final class DataSourceMetadataRegistry {
 
+    // Helper subroutine: data source metadata registry - internal state computation & bounds checking
     private DataSourceMetadataRegistry() {
         // Utility class
     }
@@ -150,6 +151,7 @@ public final class DataSourceMetadataRegistry {
         updateComboTooltip.run();
     }
 
+    // Helper subroutine: get i18n key for source - internal state computation & bounds checking
     private static String getI18nKeyForSource(String lower) {
         // --- TOPOGRAPHY ---
         if (lower.equals("earth") || lower.contains("etopo") || lower.contains("gmted")) return "source.topo.earth";
@@ -216,6 +218,7 @@ public final class DataSourceMetadataRegistry {
         return null;
     }
 
+    // Helper subroutine: build structured description - internal state computation & bounds checking
     private static String buildStructuredDescription(String raw, String lower) {
         StringBuilder sb = new StringBuilder();
 

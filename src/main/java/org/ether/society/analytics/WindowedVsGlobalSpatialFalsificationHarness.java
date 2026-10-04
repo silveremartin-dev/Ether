@@ -986,6 +986,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         return copy;
     }
 
+    // Helper subroutine: generate academic markdown report - internal state computation & bounds checking
     private static String generateAcademicMarkdownReport(List<BenchmarkResult> results) {
         StringBuilder sb = new StringBuilder();
         sb.append("# Academic Falsification Report: Windowed Sub-Grids vs. Full Planetary Sphere\n\n");

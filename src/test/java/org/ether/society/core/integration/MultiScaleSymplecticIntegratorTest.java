@@ -17,6 +17,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MultiScaleSymplecticIntegratorTest {
 
     @Test
+    /*
+     * Test three tier time decoupling operation.
+     * <p>
+     * Executes operational logic for {@code MultiScaleSymplecticIntegratorTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testThreeTierTimeDecoupling() {
         MultiScaleSymplecticIntegrator integrator = new MultiScaleSymplecticIntegrator(30, 12, true);
         WorldBuffer buffer = new WorldBuffer(10);
@@ -73,6 +81,14 @@ public class MultiScaleSymplecticIntegratorTest {
     }
 
     @Test
+    /*
+     * Test strict determinism does not collapse timescales operation.
+     * <p>
+     * Executes operational logic for {@code MultiScaleSymplecticIntegratorTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testStrictDeterminismDoesNotCollapseTimescales() {
         // Strict determinism true
         MultiScaleSymplecticIntegrator integrator = new MultiScaleSymplecticIntegrator(30, 12, true);

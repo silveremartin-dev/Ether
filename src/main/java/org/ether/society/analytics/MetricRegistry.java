@@ -23,6 +23,7 @@ public class MetricRegistry {
     private final Map<String, MetricDescriptor> metricsById = new LinkedHashMap<>();
     private final Map<String, MetricDescriptor> metricsByName = new LinkedHashMap<>();
 
+    // Helper subroutine: metric registry - internal state computation & bounds checking
     private MetricRegistry() {
         registerDefaultMetrics();
     }
@@ -37,11 +38,13 @@ public class MetricRegistry {
         return INSTANCE;
     }
 
+    // Helper subroutine: register - internal state computation & bounds checking
     private void register(MetricDescriptor descriptor) {
         metricsById.put(descriptor.getId(), descriptor);
         metricsByName.put(descriptor.getDisplayName(), descriptor);
     }
 
+    // Helper subroutine: register default metrics - internal state computation & bounds checking
     private void registerDefaultMetrics() {
         // --- âš¡ 1. Ã‰NERGIE & MATIÃˆRE ---
         register(new MetricDescriptor(

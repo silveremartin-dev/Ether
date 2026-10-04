@@ -84,6 +84,7 @@ public class SimulationPipeline {
         profiler.endPhase("4_ProceduralEngines");
     }
 
+    // Helper subroutine: execute core physics phase - internal state computation & bounds checking
     private void executeCorePhysicsPhase(List<H3Cell> cells, double dtYears, double avgTech, SimulationPerformanceConfig perfConfig) {
         // Step 1: Atmosphere, Radiation & Climate Feedbacks
         RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(cells);
@@ -128,6 +129,7 @@ public class SimulationPipeline {
         TechTreeEngine.processTechnologyDiffusion(cells, null);
     }
 
+    // Helper subroutine: execute advanced cliodynamics phase - internal state computation & bounds checking
     private void executeAdvancedCliodynamicsPhase(List<H3Cell> cells, double dtMonthly) {
         TerraformingEngine.processTerraforming(cells, dtMonthly);
         IsruAutarkyAndSpaceColonizationEngine.processSpaceColonizationCliodynamics(cells, null, dtMonthly);

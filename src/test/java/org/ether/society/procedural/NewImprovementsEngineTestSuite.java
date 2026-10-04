@@ -29,6 +29,14 @@ public class NewImprovementsEngineTestSuite {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code NewImprovementsEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         testCells = new ArrayList<>();
         H3Cell cell1 = new H3Cell(0x8828308281fffffL, 48.8566, 2.3522);
@@ -64,12 +72,28 @@ public class NewImprovementsEngineTestSuite {
     }
 
     @Test
+    /*
+     * Test bifurcation chaos engine operation.
+     * <p>
+     * Executes operational logic for {@code NewImprovementsEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBifurcationChaosEngine() {
         assertDoesNotThrow(() -> BifurcationChaosEngine.processBifurcationAnalysis(testCells, 1.0));
         assertTrue(BifurcationChaosEngine.getGlobalSystemVariance() >= 0.0);
     }
 
     @Test
+    /*
+     * Test dynamic hydrographic siltation engine operation.
+     * <p>
+     * Executes operational logic for {@code NewImprovementsEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testDynamicHydrographicSiltationEngine() {
         double initialElevation = testCells.get(0).getElevation();
         DynamicHydrographicSiltationEngine.processHydrographicSiltation(testCells, 1.0);
@@ -77,6 +101,14 @@ public class NewImprovementsEngineTestSuite {
     }
 
     @Test
+    /*
+     * Test physical leontief input output engine operation.
+     * <p>
+     * Executes operational logic for {@code NewImprovementsEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPhysicalLeontiefInputOutputEngine() {
         double initialCapital = testCells.get(0).getResourceCapital();
         double initialMetal = testCells.get(0).getResourceMetal();
@@ -86,6 +118,14 @@ public class NewImprovementsEngineTestSuite {
     }
 
     @Test
+    /*
+     * Test geoengineering albedo feedback engine operation.
+     * <p>
+     * Executes operational logic for {@code NewImprovementsEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testGeoengineeringAlbedoFeedbackEngine() {
         GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(testCells, 1.0);
         assertTrue(GeoengineeringAlbedoFeedbackEngine.getGlobalCoolingEffectCelsius() >= 0.0);

@@ -51,6 +51,14 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
     private List<H3Cell> globalCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalEmergenceAndLongTermStabilityTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
         globalCells = new ArrayList<>();
@@ -122,6 +130,14 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
 
     @Test
     @DisplayName("Verify Out-of-Africa Migration Wave and Dispersal (-100,000 BC)")
+    /*
+     * Test outof africa migration wave and global dispersal operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalEmergenceAndLongTermStabilityTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testOutofAfricaMigrationWaveAndGlobalDispersal() {
         Scenario scenario = new Scenario();
         scenario.setName("Sortie d'Afrique & Expansion Homo Sapiens (-100000)");
@@ -163,6 +179,14 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
 
     @Test
     @DisplayName("Verify Neolithic Agricultural Revolution Emergence in River Valleys")
+    /*
+     * Test neolithic agricultural revolution and demographic surplus operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalEmergenceAndLongTermStabilityTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testNeolithicAgriculturalRevolutionAndDemographicSurplus() {
         Scenario scenario = new Scenario();
         scenario.setName("Croissant Fertile & NÃ©olithique (-8000)");
@@ -202,6 +226,14 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
 
     @Test
     @DisplayName("Verify Nile and Mesopotamia State Formation & Capital Accumulation")
+    /*
+     * Test nile and mesopotamia state formation and empire emergence operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalEmergenceAndLongTermStabilityTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testNileAndMesopotamiaStateFormationAndEmpireEmergence() {
         List<Nation> nations = new java.util.ArrayList<>();
 
@@ -233,6 +265,14 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
 
     @Test
     @DisplayName("Verify 100+ Tick Multi-Generational Long-Term Stability & Invariants")
+    /*
+     * Test long term model stability and zero crash invariant operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalEmergenceAndLongTermStabilityTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testLongTermModelStabilityAndZeroCrashInvariant() {
         // Register empirical Type B engines
         ProceduralEngineRegistry.registerPlugin("World3", World3HybridEngine::processPlugin);
@@ -284,6 +324,14 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
 
     @Test
     @DisplayName("Generate Statistical Telemetry and Macro-Evolutionary Trajectory Report")
+    /*
+     * Test statistical telemetry and historical chronicle report operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalEmergenceAndLongTermStabilityTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testStatisticalTelemetryAndHistoricalChronicleReport() {
         Scenario scenario = new Scenario();
         scenario.setName("Historical Macro-Chronicle");

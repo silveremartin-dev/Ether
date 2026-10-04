@@ -61,6 +61,15 @@ public class CoGovernanceTradeEngine {
      * @return the resulting computation or state reference
      */
     public static boolean isGlobalCarbonQuotaTreatyActive() { return globalCarbonQuotaTreatyActive; }
+    /*
+     * Set global carbon quota treaty active operation.
+     * <p>
+     * Executes operational logic for {@code CoGovernanceTradeEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param active the active argument (boolean)
+     */
     public static void setGlobalCarbonQuotaTreatyActive(boolean active) { globalCarbonQuotaTreatyActive = active; }
 
     /*
@@ -70,6 +79,15 @@ public class CoGovernanceTradeEngine {
      * @return the resulting computation or state reference
      */
     public static double getInternationalResourceTradeVolume() { return internationalResourceTradeVolume; }
+    /*
+     * Set international resource trade volume operation.
+     * <p>
+     * Executes operational logic for {@code CoGovernanceTradeEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param vol the vol argument (double)
+     */
     public static void setInternationalResourceTradeVolume(double vol) { internationalResourceTradeVolume = Math.max(0.0, vol); }
 }
 

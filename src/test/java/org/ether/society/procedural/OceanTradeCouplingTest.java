@@ -24,6 +24,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class OceanTradeCouplingTest {
 
     @Test
+    /*
+     * Test ocean acidification diminishes trade corridors operation.
+     * <p>
+     * Executes operational logic for {@code OceanTradeCouplingTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testOceanAcidificationDiminishesTradeCorridors() {
         List<H3Cell> cells = new ArrayList<>();
 

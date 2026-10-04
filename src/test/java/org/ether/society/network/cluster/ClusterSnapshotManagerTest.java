@@ -26,12 +26,28 @@ public class ClusterSnapshotManagerTest {
     private ClusterSnapshotManager snapshotManager;
 
     @BeforeEach
+    /*
+     * Setup operation.
+     * <p>
+     * Executes operational logic for {@code ClusterSnapshotManagerTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setup() throws IOException {
         tempDir = Files.createTempDirectory("ether_snapshots_test");
         snapshotManager = new ClusterSnapshotManager(tempDir, 3);
     }
 
     @AfterEach
+    /*
+     * Tear down operation.
+     * <p>
+     * Executes operational logic for {@code ClusterSnapshotManagerTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void tearDown() throws IOException {
         if (tempDir != null && Files.exists(tempDir)) {
             Files.walk(tempDir)
@@ -42,6 +58,14 @@ public class ClusterSnapshotManagerTest {
     }
 
     @Test
+    /*
+     * Test save and restore snapshot operation.
+     * <p>
+     * Executes operational logic for {@code ClusterSnapshotManagerTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSaveAndRestoreSnapshot() throws IOException {
         WorldBuffer buffer = new WorldBuffer(50);
         buffer.getElevation()[12] = 2500.0f;
@@ -62,6 +86,14 @@ public class ClusterSnapshotManagerTest {
     }
 
     @Test
+    /*
+     * Test pruning old snapshots operation.
+     * <p>
+     * Executes operational logic for {@code ClusterSnapshotManagerTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPruningOldSnapshots() throws IOException {
         WorldBuffer buffer = new WorldBuffer(10);
 

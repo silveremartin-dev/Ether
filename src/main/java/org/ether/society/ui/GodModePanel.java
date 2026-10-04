@@ -783,6 +783,7 @@ public class GodModePanel extends VBox {
         refreshTimelineView();
     }
 
+    // Helper subroutine: create injector section - internal state computation & bounds checking
     private VBox createInjectorSection() {
         VBox box = new VBox(8);
         GridPane grid = new GridPane();
@@ -822,6 +823,7 @@ public class GodModePanel extends VBox {
         return box;
     }
 
+    // Helper subroutine: create spawner section - internal state computation & bounds checking
     private VBox createSpawnerSection() {
         VBox box = new VBox(8);
         HBox btnGrid = new HBox(8, injectPopBtn, injectFoodBtn);
@@ -832,18 +834,21 @@ public class GodModePanel extends VBox {
         return box;
     }
 
+    // Helper subroutine: create terraform section - internal state computation & bounds checking
     private VBox createTerraformSection() {
         VBox box = new VBox(8);
         box.getChildren().addAll(terraformTitleLabel, brushModeCombo, applyBrushBtn);
         return box;
     }
 
+    // Helper subroutine: create reset section - internal state computation & bounds checking
     private VBox createResetSection() {
         VBox box = new VBox(8);
         box.getChildren().addAll(resetTitleLabel, resetDisastersBtn);
         return box;
     }
 
+    // Helper subroutine: create label - internal state computation & bounds checking
     private Label createLabel() {
         Label l = new Label();
         l.getStyleClass().add("control-label");
@@ -852,6 +857,7 @@ public class GodModePanel extends VBox {
         return l;
     }
 
+    // Helper subroutine: find nearest cell - internal state computation & bounds checking
     private H3Cell findNearestCell(double lat, double lng) {
         if (engine == null || engine.getCells() == null || engine.getCells().isEmpty()) return null;
         H3Cell nearest = null;
@@ -866,6 +872,7 @@ public class GodModePanel extends VBox {
         return nearest;
     }
 
+    // Helper subroutine: is terrestrial event type - internal state computation & bounds checking
     private boolean isTerrestrialEventType(String type) {
         if (type == null) return false;
         return switch (type.toUpperCase()) {
@@ -876,6 +883,7 @@ public class GodModePanel extends VBox {
         };
     }
 
+    // Helper subroutine: is oceanic event type - internal state computation & bounds checking
     private boolean isOceanicEventType(String type) {
         if (type == null) return false;
         return switch (type.toUpperCase()) {
@@ -884,6 +892,7 @@ public class GodModePanel extends VBox {
         };
     }
 
+    // Helper subroutine: schedule event - internal state computation & bounds checking
     private void scheduleEvent(boolean immediate) {
         EventTypeItem item = eventTypeCombo.getValue();
         String type = item != null ? item.id() : "VOLCANO";
@@ -965,6 +974,7 @@ public class GodModePanel extends VBox {
         }
     }
 
+    // Helper subroutine: execute physical forcing - internal state computation & bounds checking
     private void executePhysicalForcing(String type, double mag, double lat, double lng, double radiusKm) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (type == null) return;

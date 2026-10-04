@@ -24,6 +24,14 @@ public class JavaRustParityAndFalsificationSuiteTest {
     private UrbanKernel javaUrbanKernel;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code JavaRustParityAndFalsificationSuiteTest} within the Data-Oriented Design memory buffer subsystem.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         int capacity = 50;
         javaWorld = new WorldBuffer(capacity);
@@ -59,6 +67,14 @@ public class JavaRustParityAndFalsificationSuiteTest {
 
     @Test
     @DisplayName("1. Environmental Farquhar FvCB: Bit-exact numerical convergence and bounded yield")
+    /*
+     * Test environmental kernel convergence operation.
+     * <p>
+     * Executes operational logic for {@code JavaRustParityAndFalsificationSuiteTest} within the Data-Oriented Design memory buffer subsystem.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEnvironmentalKernelConvergence() {
         float dt = 30.0f * 86400.0f; // 1 month
         float initialFood = javaWorld.getFoodResource()[5];
@@ -72,6 +88,14 @@ public class JavaRustParityAndFalsificationSuiteTest {
 
     @Test
     @DisplayName("2. Urban Accumulation & Tainter Entropy: Dynamic complexity and capital dissipation")
+    /*
+     * Test urban tainter entropy operation.
+     * <p>
+     * Executes operational logic for {@code JavaRustParityAndFalsificationSuiteTest} within the Data-Oriented Design memory buffer subsystem.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testUrbanTainterEntropy() {
         float dt = 30.0f * 86400.0f;
         // Hex 5 has active population
@@ -89,6 +113,14 @@ public class JavaRustParityAndFalsificationSuiteTest {
 
     @Test
     @DisplayName("3. Native Rust Bridge availability check")
+    /*
+     * Test native rust bridge detection operation.
+     * <p>
+     * Executes operational logic for {@code JavaRustParityAndFalsificationSuiteTest} within the Data-Oriented Design memory buffer subsystem.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testNativeRustBridgeDetection() {
         // Must report detection status smoothly without throwing exceptions
         boolean available = NativeRustBridge.isNativeAvailable();

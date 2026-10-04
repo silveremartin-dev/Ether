@@ -63,6 +63,15 @@ public class PhysicalSupplyChainEngine {
      * @return the resulting computation or state reference
      */
     public static boolean isMaritimeChokepointBlockadeActive() { return maritimeChokepointBlockadeActive; }
+    /*
+     * Set maritime chokepoint blockade active operation.
+     * <p>
+     * Executes operational logic for {@code PhysicalSupplyChainEngine} within the Tier 1 physical conservation solver.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param blocked the blocked argument (boolean)
+     */
     public static void setMaritimeChokepointBlockadeActive(boolean blocked) { maritimeChokepointBlockadeActive = blocked; }
 
     /*
@@ -72,6 +81,15 @@ public class PhysicalSupplyChainEngine {
      * @return the resulting computation or state reference
      */
     public static double getSeaTransportFrictionCoeff() { return seaTransportFrictionCoeff; }
+    /*
+     * Set sea transport friction coeff operation.
+     * <p>
+     * Executes operational logic for {@code PhysicalSupplyChainEngine} within the Tier 1 physical conservation solver.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param coeff the coeff argument (double)
+     */
     public static void setSeaTransportFrictionCoeff(double coeff) { seaTransportFrictionCoeff = Math.max(0.0001, coeff); }
 
     /*
@@ -81,6 +99,15 @@ public class PhysicalSupplyChainEngine {
      * @return the resulting computation or state reference
      */
     public static double getLandTransportFrictionCoeff() { return landTransportFrictionCoeff; }
+    /*
+     * Set land transport friction coeff operation.
+     * <p>
+     * Executes operational logic for {@code PhysicalSupplyChainEngine} within the Tier 1 physical conservation solver.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param coeff the coeff argument (double)
+     */
     public static void setLandTransportFrictionCoeff(double coeff) { landTransportFrictionCoeff = Math.max(0.001, coeff); }
 }
 

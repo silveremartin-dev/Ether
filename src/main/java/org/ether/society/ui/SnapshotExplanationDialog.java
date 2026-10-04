@@ -136,6 +136,7 @@ public class SnapshotExplanationDialog extends Stage {
         WindowUtils.applyWindowIcon(this);
     }
 
+    // Helper subroutine: create card - internal state computation & bounds checking
     private VBox createCard(String title, String body, String titleStyle) {
         VBox card = new VBox(6);
         card.getStyleClass().add("card-section");

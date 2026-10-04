@@ -59,6 +59,15 @@ public class JevonsParadoxEngine {
      * @return the resulting computation or state reference
      */
     public static double getReboundCoefficient() { return reboundCoefficient; }
+    /*
+     * Set rebound coefficient operation.
+     * <p>
+     * Executes operational logic for {@code JevonsParadoxEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param coeff the coeff argument (double)
+     */
     public static void setReboundCoefficient(double coeff) { reboundCoefficient = Math.max(0.0, Math.min(2.0, coeff)); }
 }
 

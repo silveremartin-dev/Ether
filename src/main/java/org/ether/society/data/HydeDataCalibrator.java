@@ -93,6 +93,7 @@ public class HydeDataCalibrator {
         return factor;
     }
 
+    // Helper subroutine: gaussian - internal state computation & bounds checking
     private static double gaussian(double lng, double lat, double centerLng, double centerLat, double sigmaLng, double sigmaLat) {
         double dLng = (lng - centerLng) / sigmaLng;
         double dLat = (lat - centerLat) / sigmaLat;

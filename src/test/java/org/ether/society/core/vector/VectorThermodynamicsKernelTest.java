@@ -16,6 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class VectorThermodynamicsKernelTest {
 
     @Test
+    /*
+     * Test vectorized radiative equilibrium determinism operation.
+     * <p>
+     * Executes operational logic for {@code VectorThermodynamicsKernelTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testVectorizedRadiativeEquilibriumDeterminism() {
         List<H3Cell> run1Cells = createSampleCells(100);
         List<H3Cell> run2Cells = createSampleCells(100);
@@ -33,6 +41,7 @@ public class VectorThermodynamicsKernelTest {
         }
     }
 
+    // Helper subroutine: create sample cells - internal state computation & bounds checking
     private List<H3Cell> createSampleCells(int count) {
         List<H3Cell> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {

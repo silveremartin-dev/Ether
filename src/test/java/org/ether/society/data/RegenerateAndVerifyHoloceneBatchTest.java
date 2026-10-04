@@ -17,6 +17,14 @@ public class RegenerateAndVerifyHoloceneBatchTest {
 
     @Test
     @DisplayName("Regenerate and verify 2048x1024 cartographic maps for -10900, -10000, -8000, -6000")
+    /*
+     * Test regenerate holocene maps operation.
+     * <p>
+     * Executes operational logic for {@code RegenerateAndVerifyHoloceneBatchTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testRegenerateHoloceneMaps() throws Exception {
         List<Scenario> scenarios = Scenario.getBuiltInScenarios();
 

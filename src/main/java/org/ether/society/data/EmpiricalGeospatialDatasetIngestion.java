@@ -173,6 +173,7 @@ public class EmpiricalGeospatialDatasetIngestion {
         return list;
     }
 
+    // Helper subroutine: parse worksheet - internal state computation & bounds checking
     private static void parseWorksheet(InputStream is, List<String> sst, List<double[]> out, String... filterKeywords) {
         try {
             XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -272,6 +273,7 @@ public class EmpiricalGeospatialDatasetIngestion {
         }
     }
 
+    // Helper subroutine: get column index - internal state computation & bounds checking
     private static int getColumnIndex(String cellRef) {
         if (cellRef == null || cellRef.isEmpty()) return 0;
         int col = 0;

@@ -7,6 +7,14 @@ import java.io.File;
 
 public class DiagnoseLgmClimateTest {
     @Test
+    /*
+     * Test compare elev and climate operation.
+     * <p>
+     * Executes operational logic for {@code DiagnoseLgmClimateTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCompareElevAndClimate() throws Exception {
         File fElev = new File("data/maps/ether/earth/-20000/earth_-20000_elevation.png");
         File fTemp = new File("data/maps/ether/earth/-20000/earth_-20000_temperature.png");

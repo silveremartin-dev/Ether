@@ -34,6 +34,14 @@ public class JancoviciBihouixPhysicalSuiteTest {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code JancoviciBihouixPhysicalSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         testCells = new ArrayList<>();
         H3Cell cell = new H3Cell(613503380827930701L, 45.0, 10.0);
@@ -49,6 +57,14 @@ public class JancoviciBihouixPhysicalSuiteTest {
     }
 
     @Test
+    /*
+     * Test ore grade thermodynamics engine operation.
+     * <p>
+     * Executes operational logic for {@code JancoviciBihouixPhysicalSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testOreGradeThermodynamicsEngine() {
         double initialWork = testCells.get(0).getResourceWork();
         OreGradeThermodynamicsEngine.processOreDepletion(testCells, 1.0);
@@ -57,6 +73,14 @@ public class JancoviciBihouixPhysicalSuiteTest {
     }
 
     @Test
+    /*
+     * Test infrastructure inertia engine operation.
+     * <p>
+     * Executes operational logic for {@code JancoviciBihouixPhysicalSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testInfrastructureInertiaEngine() {
         double initialCapital = testCells.get(0).getResourceCapital();
         InfrastructureInertiaEngine.processInfrastructureInertia(testCells, 1.0);
@@ -65,6 +89,14 @@ public class JancoviciBihouixPhysicalSuiteTest {
     }
 
     @Test
+    /*
+     * Test entropic metal dissipation engine operation.
+     * <p>
+     * Executes operational logic for {@code JancoviciBihouixPhysicalSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEntropicMetalDissipationEngine() {
         double initialMetal = testCells.get(0).getResourceMetal();
         EntropicMetalDissipationEngine.processEntropicDissipation(testCells, 1.0);
@@ -73,6 +105,14 @@ public class JancoviciBihouixPhysicalSuiteTest {
     }
 
     @Test
+    /*
+     * Test jevons paradox engine operation.
+     * <p>
+     * Executes operational logic for {@code JancoviciBihouixPhysicalSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testJevonsParadoxEngine() {
         double initialEnergy = testCells.get(0).getEnergyFoodConsumed();
         JevonsParadoxEngine.processJevonsRebound(testCells, 1.0);

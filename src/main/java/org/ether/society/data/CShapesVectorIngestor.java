@@ -148,6 +148,7 @@ public class CShapesVectorIngestor {
         return NaturalEarthVectorIngestor.applyElevationMask(img, elevationMask);
     }
 
+    // Helper subroutine: parse feature - internal state computation & bounds checking
     private static CShapesFeature parseFeature(JsonParser parser, int imgW, int imgH) throws Exception {
         String cntryName = null;
         int gwcode = 0;
@@ -219,6 +220,7 @@ public class CShapesVectorIngestor {
         return cf;
     }
 
+    // Helper subroutine: parse coordinates to paths - internal state computation & bounds checking
     private static void parseCoordinatesToPaths(JsonParser parser, String geomType, int imgW, int imgH, List<Path2D> paths) throws Exception {
         if ("Polygon".equalsIgnoreCase(geomType)) {
             while (parser.nextToken() != JsonToken.END_ARRAY) {
@@ -237,6 +239,7 @@ public class CShapesVectorIngestor {
         }
     }
 
+    // Helper subroutine: parse linear ring - internal state computation & bounds checking
     private static Path2D parseLinearRing(JsonParser parser, int imgW, int imgH) throws Exception {
         if (parser.currentToken() != JsonToken.START_ARRAY) return null;
 
@@ -269,6 +272,7 @@ public class CShapesVectorIngestor {
         return null;
     }
 
+    // Helper subroutine: compute historical sovereign color - internal state computation & bounds checking
     private static Color computeHistoricalSovereignColor(int gwcode, String name) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index

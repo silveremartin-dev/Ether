@@ -38,6 +38,14 @@ public class Tier1AdvancedPhysicsTest {
 
     @Test
     @DisplayName("Milankovitch Orbital Engine: Insolation cycles and orbital eccentricity")
+    /*
+     * Test milankovitch orbital forcing operation.
+     * <p>
+     * Executes operational logic for {@code Tier1AdvancedPhysicsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testMilankovitchOrbitalForcing() {
         MilankovitchOrbitalEngine.MilankovitchParameters modern = MilankovitchOrbitalEngine.computeOrbitalParameters(0.0);
         assertTrue(modern.eccentricity() >= 0.005 && modern.eccentricity() <= 0.060);
@@ -64,6 +72,14 @@ public class Tier1AdvancedPhysicsTest {
 
     @Test
     @DisplayName("Atmospheric Circulation Hadley Engine: Coriolis parameter and wind regimes")
+    /*
+     * Test atmospheric circulation hadley operation.
+     * <p>
+     * Executes operational logic for {@code Tier1AdvancedPhysicsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAtmosphericCirculationHadley() {
         // Coriolis at Equator must be 0, at North Pole must be 2*Omega
         assertEquals(0.0, AtmosphericCirculationHadleyEngine.calculateCoriolisParameter(0.0), 1e-9);
@@ -92,6 +108,14 @@ public class Tier1AdvancedPhysicsTest {
 
     @Test
     @DisplayName("Glacial Isostatic Adjustment: Viscoelastic crustal rebound")
+    /*
+     * Test glacial isostasy operation.
+     * <p>
+     * Executes operational logic for {@code Tier1AdvancedPhysicsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testGlacialIsostasy() {
         // 1000m of ice sheet should cause ~-278m of isostatic crustal depression
         double deflection = GlacialIsostaticAdjustmentEngine.calculateEquilibriumDeflectionMeters(1000.0);
@@ -110,6 +134,14 @@ public class Tier1AdvancedPhysicsTest {
 
     @Test
     @DisplayName("Radiocarbon Isotope Engine: C14 nuclear decay and delta13C fractionation")
+    /*
+     * Test radiocarbon isotope decay operation.
+     * <p>
+     * Executes operational logic for {@code Tier1AdvancedPhysicsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testRadiocarbonIsotopeDecay() {
         // After 5730 years, exactly 50% activity must remain
         double halfLifeRemaining = RadiocarbonIsotopeEngine.calculateRemainingC14Activity(5730.0);

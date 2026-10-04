@@ -151,6 +151,15 @@ public class ScenarioBranchingTree implements Serializable {
      * @return the resulting computation or state reference
      */
     public String getActiveBranchId() { return activeBranchId; }
+    /*
+     * Set active branch id operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioBranchingTree} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param id the id argument (String)
+     */
     public void setActiveBranchId(String id) { if (branches.containsKey(id)) this.activeBranchId = id; }
 }
 

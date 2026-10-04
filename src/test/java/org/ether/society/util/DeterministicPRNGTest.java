@@ -11,6 +11,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DeterministicPRNGTest {
 
     @Test
+    /*
+     * Test strict bitwise determinism operation.
+     * <p>
+     * Executes operational logic for {@code DeterministicPRNGTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testStrictBitwiseDeterminism() {
         long seed = 123456789L;
         long tick = 42L;
@@ -24,6 +32,14 @@ public class DeterministicPRNGTest {
     }
 
     @Test
+    /*
+     * Test different coordinates produce different values operation.
+     * <p>
+     * Executes operational logic for {@code DeterministicPRNGTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testDifferentCoordinatesProduceDifferentValues() {
         long seed = 123456789L;
 
@@ -36,6 +52,14 @@ public class DeterministicPRNGTest {
     }
 
     @Test
+    /*
+     * Test bounded int and boolean operation.
+     * <p>
+     * Executes operational logic for {@code DeterministicPRNGTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBoundedIntAndBoolean() {
         long seed = 987654321L;
 

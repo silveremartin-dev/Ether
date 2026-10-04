@@ -39,6 +39,14 @@ public class Tier2MacroSociologyTest {
 
     @Test
     @DisplayName("Turchin-Goldstone SDT: Political Stress Index and state breakdown")
+    /*
+     * Test turchin goldstone sdt operation.
+     * <p>
+     * Executes operational logic for {@code Tier2MacroSociologyTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTurchinGoldstoneSDT() {
         TurchinGoldstoneSDTEngine engine = new TurchinGoldstoneSDTEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -63,6 +71,14 @@ public class Tier2MacroSociologyTest {
 
     @Test
     @DisplayName("Granovetter Threshold Cascade: Non-linear collective action tipping points")
+    /*
+     * Test granovetter threshold cascade operation.
+     * <p>
+     * Executes operational logic for {@code Tier2MacroSociologyTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testGranovetterThresholdCascade() {
         GranovetterThresholdCascadeEngine engine = new GranovetterThresholdCascadeEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -85,6 +101,14 @@ public class Tier2MacroSociologyTest {
 
     @Test
     @DisplayName("Acemoglu-Robinson Institutions: Inclusive institutions promoting growth")
+    /*
+     * Test acemoglu robinson institutions operation.
+     * <p>
+     * Executes operational logic for {@code Tier2MacroSociologyTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAcemogluRobinsonInstitutions() {
         AcemogluRobinsonInstitutionsEngine engine = new AcemogluRobinsonInstitutionsEngine();
         assertNotNull(engine.getEquationsTooltip());

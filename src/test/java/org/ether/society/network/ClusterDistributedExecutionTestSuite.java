@@ -26,6 +26,14 @@ public class ClusterDistributedExecutionTestSuite {
     private ClusterManager worker;
 
     @BeforeEach
+    /*
+     * Setup operation.
+     * <p>
+     * Executes operational logic for {@code ClusterDistributedExecutionTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setup() throws IOException, InterruptedException {
         master = new ClusterManager(ClusterManager.ClusterRole.MASTER, "127.0.0.1", TEST_PORT, SECRET);
         master.setTotalGridCellCount(200);
@@ -42,12 +50,28 @@ public class ClusterDistributedExecutionTestSuite {
     }
 
     @AfterEach
+    /*
+     * Tear down operation.
+     * <p>
+     * Executes operational logic for {@code ClusterDistributedExecutionTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void tearDown() {
         if (worker != null) worker.stop();
         if (master != null) master.stop();
     }
 
     @Test
+    /*
+     * Test worker registration and spatial chunk rebalancing operation.
+     * <p>
+     * Executes operational logic for {@code ClusterDistributedExecutionTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testWorkerRegistrationAndSpatialChunkRebalancing() {
         assertEquals(2, master.getNodeRegistry().size(), "Master should have 2 nodes (master-local + worker)");
 
@@ -62,6 +86,14 @@ public class ClusterDistributedExecutionTestSuite {
     }
 
     @Test
+    /*
+     * Test clock barrier synchronization operation.
+     * <p>
+     * Executes operational logic for {@code ClusterDistributedExecutionTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testClockBarrierSynchronization() {
         ClusterClockBarrier barrier = new ClusterClockBarrier();
         barrier.prepareTickBarrier(1L, 2);
@@ -77,6 +109,14 @@ public class ClusterDistributedExecutionTestSuite {
     }
 
     @Test
+    /*
+     * Test distributed tick execution pipeline operation.
+     * <p>
+     * Executes operational logic for {@code ClusterDistributedExecutionTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testDistributedTickExecutionPipeline() throws InterruptedException {
         WorldBuffer buffer = new WorldBuffer(200);
         buffer.getElevation()[5] = 100f;

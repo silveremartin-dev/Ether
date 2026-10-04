@@ -65,6 +65,15 @@ public class CulturalSociologyEngine {
      * @return the resulting computation or state reference
      */
     public static double getGlobalCollectivismIndex() { return globalCollectivismIndex; }
+    /*
+     * Set global collectivism index operation.
+     * <p>
+     * Executes operational logic for {@code CulturalSociologyEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param idx the idx argument (double)
+     */
     public static void setGlobalCollectivismIndex(double idx) { globalCollectivismIndex = Math.max(0.0, Math.min(1.0, idx)); }
 
     /*
@@ -74,6 +83,15 @@ public class CulturalSociologyEngine {
      * @return the resulting computation or state reference
      */
     public static double getGlobalEnvironmentalStewardship() { return globalEnvironmentalStewardship; }
+    /*
+     * Set global environmental stewardship operation.
+     * <p>
+     * Executes operational logic for {@code CulturalSociologyEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param stw the stw argument (double)
+     */
     public static void setGlobalEnvironmentalStewardship(double stw) { globalEnvironmentalStewardship = Math.max(0.0, Math.min(1.0, stw)); }
 }
 

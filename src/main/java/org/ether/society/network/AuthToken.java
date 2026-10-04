@@ -86,6 +86,7 @@ public class AuthToken implements Serializable {
         return this.role.getLevel() >= requiredRole.getLevel();
     }
 
+    // Helper subroutine: generate signature - internal state computation & bounds checking
     private static String generateSignature(String id, String user, String roleName, long timestamp, String secret) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

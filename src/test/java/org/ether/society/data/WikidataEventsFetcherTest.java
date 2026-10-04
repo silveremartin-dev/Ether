@@ -15,6 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class WikidataEventsFetcherTest {
 
     @Test
+    /*
+     * Test get or build full catalog operation.
+     * <p>
+     * Executes operational logic for {@code WikidataEventsFetcherTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testGetOrBuildFullCatalog() {
         List<ClimateEvent> catalog = WikidataEventsFetcher.getOrBuildFullCatalog();
         assertNotNull(catalog);

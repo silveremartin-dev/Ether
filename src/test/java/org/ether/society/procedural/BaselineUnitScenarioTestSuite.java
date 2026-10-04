@@ -38,6 +38,14 @@ public class BaselineUnitScenarioTestSuite {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code BaselineUnitScenarioTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
         testCells = new ArrayList<>();
@@ -52,6 +60,14 @@ public class BaselineUnitScenarioTestSuite {
     }
 
     @Test
+    /*
+     * Test population persistence operation.
+     * <p>
+     * Executes operational logic for {@code BaselineUnitScenarioTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPopulationPersistence() {
         H3Cell cell = testCells.get(0);
         double initialPop = cell.getPopulation();
@@ -67,6 +83,14 @@ public class BaselineUnitScenarioTestSuite {
     }
 
     @Test
+    /*
+     * Test carrying capacity equilibrium operation.
+     * <p>
+     * Executes operational logic for {@code BaselineUnitScenarioTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCarryingCapacityEquilibrium() {
         H3Cell cell = testCells.get(0);
         cell.setPopulation(50000); // High population
@@ -77,6 +101,14 @@ public class BaselineUnitScenarioTestSuite {
     }
 
     @Test
+    /*
+     * Test clean registry state operation.
+     * <p>
+     * Executes operational logic for {@code BaselineUnitScenarioTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCleanRegistryState() {
         assertEquals(0, ProceduralEngineRegistry.getPluginCount(), "Registry should be clean at baseline start.");
     }

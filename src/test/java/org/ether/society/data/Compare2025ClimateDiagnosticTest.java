@@ -9,6 +9,14 @@ import java.io.File;
 public class Compare2025ClimateDiagnosticTest {
 
     @Test
+    /*
+     * Compare2025with empirical operation.
+     * <p>
+     * Executes operational logic for {@code Compare2025ClimateDiagnosticTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void compare2025WithEmpirical() throws Exception {
         // 1. Generate procedural 2025 Biomes & Temperature
         BufferedImage procBiomes = HistoricalMapGenerator.rasterizeBiomesMap(2025);

@@ -43,6 +43,14 @@ public class Tier2CliodynamicPluginsTestSuite {
     private List<H3Cell> sampleCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
         sampleCells = new ArrayList<>();
@@ -65,6 +73,14 @@ public class Tier2CliodynamicPluginsTestSuite {
 
     @Test
     @DisplayName("West-Bettencourt Allometry: Superlinear returns and sublinear network efficiency")
+    /*
+     * Test west bettencourt allometry operation.
+     * <p>
+     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testWestBettencourtAllometry() {
         WestBettencourtAllometryEngine engine = new WestBettencourtAllometryEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -79,6 +95,14 @@ public class Tier2CliodynamicPluginsTestSuite {
 
     @Test
     @DisplayName("KÃ¼mmel / Ayres-Warr Exergy: Thermodynamic production function")
+    /*
+     * Test kummel ayres exergy operation.
+     * <p>
+     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testKummelAyresExergy() {
         KummelAyresExergyEngine engine = new KummelAyresExergyEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -93,6 +117,14 @@ public class Tier2CliodynamicPluginsTestSuite {
 
     @Test
     @DisplayName("Spatial SEIR-V Epidemiology: Disease transmission and recovery")
+    /*
+     * Test spatial seirepidemiology operation.
+     * <p>
+     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSpatialSEIREpidemiology() {
         SpatialMetapopulationSEIREngine engine = new SpatialMetapopulationSEIREngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -106,6 +138,14 @@ public class Tier2CliodynamicPluginsTestSuite {
 
     @Test
     @DisplayName("Hotelling Resource Depletion: Scarcity rent and extraction dynamics")
+    /*
+     * Test hotelling resource depletion operation.
+     * <p>
+     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHotellingResourceDepletion() {
         HotellingResourceDepletionEngine engine = new HotellingResourceDepletionEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -120,6 +160,14 @@ public class Tier2CliodynamicPluginsTestSuite {
 
     @Test
     @DisplayName("Krugman NEG: Core-Periphery Agglomeration")
+    /*
+     * Test krugman core periphery operation.
+     * <p>
+     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testKrugmanCorePeriphery() {
         KrugmanCorePeripheryEngine engine = new KrugmanCorePeripheryEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -132,6 +180,14 @@ public class Tier2CliodynamicPluginsTestSuite {
 
     @Test
     @DisplayName("Schelling-Axelrod: Cultural Homophily and Spatial Friction")
+    /*
+     * Test schelling segregation operation.
+     * <p>
+     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSchellingSegregation() {
         SchellingAxelrodSegregationEngine engine = new SchellingAxelrodSegregationEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -147,6 +203,14 @@ public class Tier2CliodynamicPluginsTestSuite {
 
     @Test
     @DisplayName("Tainter Complexity Collapse: Diminishing returns on bureaucratic complexity")
+    /*
+     * Test tainter complexity operation.
+     * <p>
+     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTainterComplexity() {
         TainterComplexityCollapseEngine engine = new TainterComplexityCollapseEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -164,6 +228,14 @@ public class Tier2CliodynamicPluginsTestSuite {
 
     @Test
     @DisplayName("Soil Salinization Hydrology: Salt accumulation degrades crop yield in arid basins")
+    /*
+     * Test soil salinization operation.
+     * <p>
+     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSoilSalinization() {
         SoilSalinizationHydrologyEngine engine = new SoilSalinizationHydrologyEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -183,6 +255,14 @@ public class Tier2CliodynamicPluginsTestSuite {
 
     @Test
     @DisplayName("Draft Animal Fodder Allocation: Work amplification balanced by fodder land competition")
+    /*
+     * Test draft animal fodder allocation operation.
+     * <p>
+     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testDraftAnimalFodderAllocation() {
         DraftAnimalFodderAllocationEngine engine = new DraftAnimalFodderAllocationEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -201,6 +281,14 @@ public class Tier2CliodynamicPluginsTestSuite {
 
     @Test
     @DisplayName("SPI ServiceLoader: Discover and register all classpath procedural plugins")
+    /*
+     * Test spi discovery operation.
+     * <p>
+     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSpiDiscovery() {
         ProceduralEngineRegistry.clearPlugins();
         int loaded = ProceduralEngineSpiLoader.loadClasspathPlugins();
@@ -211,6 +299,14 @@ public class Tier2CliodynamicPluginsTestSuite {
 
     @Test
     @DisplayName("ProceduralEngineRegistry integration with Tier 2 plugins")
+    /*
+     * Test registry integration operation.
+     * <p>
+     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testRegistryIntegration() {
         ProceduralEngineRegistry.clearPlugins();
         ProceduralEngineRegistry.registerPlugin("WestBettencourt", new WestBettencourtAllometryEngine());

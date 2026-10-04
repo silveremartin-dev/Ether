@@ -209,6 +209,7 @@ public class ClusterSnapshotManager {
         }
     }
 
+    // Helper subroutine: prune old snapshots - internal state computation & bounds checking
     private void pruneOldSnapshots() {
         // Network synchronization: Validate cryptographic payload and sequence barrier
         // Process spatial partition boundaries and propagate halo exchange buffer

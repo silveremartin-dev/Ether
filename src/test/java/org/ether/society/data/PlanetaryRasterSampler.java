@@ -30,6 +30,16 @@ public class PlanetaryRasterSampler {
     private static final int WIDTH = 2048;
     private static final int HEIGHT = 1024;
 
+    /*
+     * Fast parse csv operation.
+     * <p>
+     * Executes operational logic for {@code PlanetaryRasterSampler} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param line the line argument (String)
+     * @return the resulting computation or updated state reference
+     */
     public static List<String> fastParseCsv(String line) {
         List<String> list = new ArrayList<>(30);
         StringBuilder sb = new StringBuilder(64);
@@ -113,6 +123,22 @@ public class PlanetaryRasterSampler {
         public final double intensity;
         public final String name;
 
+        /*
+         * Geological basin operation.
+         * <p>
+         * Executes operational logic for {@code PlanetaryRasterSampler} within the geospatial raster and tensor ingestion pipeline.
+         * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+         * </p>
+         *
+         * @param centerLon the center lon argument (double)
+         * @param centerLat the center lat argument (double)
+         * @param majorDeg the major deg argument (double)
+         * @param minorDeg the minor deg argument (double)
+         * @param strikeDeg the strike deg argument (double)
+         * @param intensity the intensity argument (double)
+         * @param name the name argument (String)
+         * @return the resulting computation or updated state reference
+         */
         public GeologicalBasin(double centerLon, double centerLat, double majorDeg, double minorDeg, double strikeDeg, double intensity, String name) {
             this.centerLon = centerLon;
             this.centerLat = centerLat;
@@ -364,6 +390,13 @@ public class PlanetaryRasterSampler {
         return img.getRaster().getSampleFloat(sx, sy, 0);
     }
 
+    /**
+     * Generate earth maps epoch minus100k operation.
+     * <p>
+     * Executes operational logic for {@code PlanetaryRasterSampler} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     */
     @Test
     public void generateEarthMapsEpochMinus100k() {
         logger.info(">>> Generating Targeted Earth Cartographic Tensors for Epoch -100000 (Out of Africa Baseline) <<<");
@@ -371,6 +404,13 @@ public class PlanetaryRasterSampler {
         generateEarthResourcesForEpoch(-100000L);
     }
 
+    /**
+     * Generate all preset maps operation.
+     * <p>
+     * Executes operational logic for {@code PlanetaryRasterSampler} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     */
     @Test
     public void generateAllPresetMaps() throws Exception {
         logger.info("--- GENERATING AUTHENTIC PLANETARY MAPS FOR ALL DATED EPOCHS IN GRAYSCALE [0..255] ---");

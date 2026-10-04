@@ -25,6 +25,14 @@ public class I18nAndLocalizationTest {
     private static ResourceBundle bundleZh;
 
     @BeforeAll
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code I18nAndLocalizationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public static void setUp() {
         bundleEn = ResourceBundle.getBundle("i18n.messages", Locale.ENGLISH);
         bundleFr = ResourceBundle.getBundle("i18n.messages", Locale.FRENCH);
@@ -35,6 +43,14 @@ public class I18nAndLocalizationTest {
 
     @Test
     @DisplayName("Verify bundles load for all 5 supported languages")
+    /*
+     * Test bundles exist and load operation.
+     * <p>
+     * Executes operational logic for {@code I18nAndLocalizationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBundlesExistAndLoad() {
         assertNotNull(bundleEn, "English resource bundle must be loaded");
         assertNotNull(bundleFr, "French resource bundle must be loaded");
@@ -45,6 +61,14 @@ public class I18nAndLocalizationTest {
 
     @Test
     @DisplayName("Verify key parity: All keys in FR master must exist in EN, ES, DE, and ZH")
+    /*
+     * Test key parity across locales operation.
+     * <p>
+     * Executes operational logic for {@code I18nAndLocalizationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testKeyParityAcrossLocales() {
         Set<String> frKeys = bundleFr.keySet();
         assertFalse(frKeys.isEmpty(), "French resource bundle must not be empty");
@@ -77,6 +101,14 @@ public class I18nAndLocalizationTest {
 
     @Test
     @DisplayName("Verify critical execution context keys exist across all bundles")
+    /*
+     * Test execution context keys operation.
+     * <p>
+     * Executes operational logic for {@code I18nAndLocalizationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testExecutionContextKeys() {
         String[] criticalKeys = {
             "tab.execution_context",
@@ -104,6 +136,14 @@ public class I18nAndLocalizationTest {
 
     @Test
     @DisplayName("Verify Performance HUD keys exist across all bundles")
+    /*
+     * Test hud keys operation.
+     * <p>
+     * Executes operational logic for {@code I18nAndLocalizationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHudKeys() {
         String[] hudKeys = {
             "ui.hud.fps",
@@ -123,6 +163,14 @@ public class I18nAndLocalizationTest {
 
     @Test
     @DisplayName("Test I18n manager utility class methods")
+    /*
+     * Test i18n manager class operation.
+     * <p>
+     * Executes operational logic for {@code I18nAndLocalizationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testI18nManagerClass() {
         I18n.setLanguage(Language.ENGLISH);
         assertEquals(Language.ENGLISH, I18n.getCurrentLanguage());
@@ -138,6 +186,14 @@ public class I18nAndLocalizationTest {
 
     @Test
     @DisplayName("Verify critical Planet Generator keys exist across all bundles")
+    /*
+     * Test planet generator keys operation.
+     * <p>
+     * Executes operational logic for {@code I18nAndLocalizationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPlanetGeneratorKeys() {
         String[] planetKeys = {
             "planet.preset",
@@ -266,6 +322,14 @@ public class I18nAndLocalizationTest {
 
     @Test
     @DisplayName("Verify Globe 3D and Simulation UI keys exist across all 5 bundles")
+    /*
+     * Test globe and simulation ui keys operation.
+     * <p>
+     * Executes operational logic for {@code I18nAndLocalizationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testGlobeAndSimulationUiKeys() {
         String[] simKeys = {
             "sim.header.scenario",

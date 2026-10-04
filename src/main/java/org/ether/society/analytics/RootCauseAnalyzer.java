@@ -383,6 +383,7 @@ public class RootCauseAnalyzer {
         return corrections;
     }
 
+    // Helper subroutine: parse double with fallback - internal state computation & bounds checking
     private double parseDoubleWithFallback(String str, double fallback) {
         if (str == null) return fallback;
         try {
@@ -393,6 +394,7 @@ public class RootCauseAnalyzer {
         }
     }
 
+    // Helper subroutine: parse long with fallback - internal state computation & bounds checking
     private long parseLongWithFallback(String str, long fallback) {
         if (str == null) return fallback;
         try {

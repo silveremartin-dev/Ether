@@ -487,6 +487,7 @@ public class ProceduralGenerator {
         return Biome.PLAINS;
     }
 
+    // Helper subroutine: populate resources - internal state computation & bounds checking
     private void populateResources(H3Cell cell, PlanetPoint p, PlanetPreset preset) {
         Biome b = cell.getBiome();
         if (b == null) return;
@@ -527,6 +528,7 @@ public class ProceduralGenerator {
         }
     }
 
+    // Helper subroutine: accumulate hydrography flow - internal state computation & bounds checking
     private void accumulateHydrographyFlow(List<H3Cell> cells, PlanetPreset preset, java.util.function.BooleanSupplier cancelSupplier) {
         if (cells == null || cells.isEmpty() || preset.atmospherePressureAtm() < 0.01) return;
 

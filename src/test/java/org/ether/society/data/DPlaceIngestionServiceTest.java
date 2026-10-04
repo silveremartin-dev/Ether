@@ -14,6 +14,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DPlaceIngestionServiceTest {
 
     @Test
+    /*
+     * Test load all societies operation.
+     * <p>
+     * Executes operational logic for {@code DPlaceIngestionServiceTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testLoadAllSocieties() {
         List<DPlaceIngestionService.DPlaceSociety> societies = DPlaceIngestionService.loadAllSocieties();
         assertNotNull(societies, "Societies list should not be null");
@@ -26,6 +34,14 @@ public class DPlaceIngestionServiceTest {
     }
 
     @Test
+    /*
+     * Test load dplace milestones operation.
+     * <p>
+     * Executes operational logic for {@code DPlaceIngestionServiceTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testLoadDPlaceMilestones() {
         List<ClimateEvent> events = DPlaceIngestionService.loadDPlaceMilestones();
         assertNotNull(events);

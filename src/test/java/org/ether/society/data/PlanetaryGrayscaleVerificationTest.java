@@ -18,6 +18,14 @@ public class PlanetaryGrayscaleVerificationTest {
     };
 
     @Test
+    /*
+     * Test all planetary maps are grayscale on black background operation.
+     * <p>
+     * Executes operational logic for {@code PlanetaryGrayscaleVerificationTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAllPlanetaryMapsAreGrayscaleOnBlackBackground() throws IOException {
         File baseDir = new File("data/maps/ether");
         assertTrue(baseDir.exists() && baseDir.isDirectory(), "Maps base folder must exist: " + baseDir.getPath());
@@ -46,6 +54,7 @@ public class PlanetaryGrayscaleVerificationTest {
         }
     }
 
+    // Helper subroutine: verify grayscale and black background - internal state computation & bounds checking
     private void verifyGrayscaleAndBlackBackground(File file) throws IOException {
         BufferedImage img = ImageIO.read(file);
         assertNotNull(img, "Image must load: " + file.getName());
@@ -69,6 +78,7 @@ public class PlanetaryGrayscaleVerificationTest {
         assertTrue(zeroCount > 0, "Resource map " + file.getName() + " must have a black (0) background");
     }
 
+    // Helper subroutine: verify grayscale - internal state computation & bounds checking
     private void verifyGrayscale(File file) throws IOException {
         BufferedImage img = ImageIO.read(file);
         assertNotNull(img, "Image must load: " + file.getName());
@@ -89,6 +99,14 @@ public class PlanetaryGrayscaleVerificationTest {
     }
 
     @Test
+    /*
+     * Test mars precipitation background is black operation.
+     * <p>
+     * Executes operational logic for {@code PlanetaryGrayscaleVerificationTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testMarsPrecipitationBackgroundIsBlack() throws IOException {
         File file = new File("data/maps/ether/mars/2026/mars_2026_precipitation.png");
         if (!file.exists()) return;
@@ -106,6 +124,14 @@ public class PlanetaryGrayscaleVerificationTest {
     }
 
     @Test
+    /*
+     * Test mars seasonality equator continuity operation.
+     * <p>
+     * Executes operational logic for {@code PlanetaryGrayscaleVerificationTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testMarsSeasonalityEquatorContinuity() throws IOException {
         File file = new File("data/maps/ether/mars/2026/mars_2026_seasonality.png");
         if (!file.exists()) return;

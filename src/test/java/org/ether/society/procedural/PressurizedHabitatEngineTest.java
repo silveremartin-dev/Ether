@@ -23,6 +23,14 @@ public class PressurizedHabitatEngineTest {
 
     @Test
     @DisplayName("Hostile planet detection correctly classifies Mars, Moon, and Venus as lethal without habitats")
+    /*
+     * Test hostile planet detection operation.
+     * <p>
+     * Executes operational logic for {@code PressurizedHabitatEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHostilePlanetDetection() {
         assertTrue(PressurizedHabitatEngine.isHostileEnvironment(PlanetPreset.MARS_LIKE), "Mars should be classified as hostile");
         assertTrue(PressurizedHabitatEngine.isHostileEnvironment(PlanetPreset.MOON_LIKE), "Moon should be classified as hostile");
@@ -32,6 +40,14 @@ public class PressurizedHabitatEngineTest {
 
     @Test
     @DisplayName("Pioneer outpost initialization adapts habitat type to planetary geology")
+    /*
+     * Test pioneer outpost initialization operation.
+     * <p>
+     * Executes operational logic for {@code PressurizedHabitatEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPioneerOutpostInitialization() {
         H3Cell marsCell = new H3Cell(0x881f1d4887fffffL, 18.0, 77.0);
         marsCell.setElevation(2500.0); // High mountain/volcanic
@@ -48,6 +64,14 @@ public class PressurizedHabitatEngineTest {
 
     @Test
     @DisplayName("Populations without pressurized habitats suffer catastrophic exposure mortality on hostile worlds")
+    /*
+     * Test unprotected exposure mortality operation.
+     * <p>
+     * Executes operational logic for {@code PressurizedHabitatEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testUnprotectedExposureMortality() {
         H3Cell unprotected = new H3Cell(0x881f1d4887fffffL, 0.0, 0.0);
         unprotected.setPopulation(1000);
@@ -60,6 +84,14 @@ public class PressurizedHabitatEngineTest {
 
     @Test
     @DisplayName("Sheltered habitats undergo structural wear, but well-funded maintenance preserves integrity")
+    /*
+     * Test habitat wear and maintenance operation.
+     * <p>
+     * Executes operational logic for {@code PressurizedHabitatEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHabitatWearAndMaintenance() {
         H3Cell cellWellMaintained = new H3Cell(0x881f1d4887fffffL, 0.0, 0.0);
         cellWellMaintained.setPopulation(1000);
@@ -89,6 +121,14 @@ public class PressurizedHabitatEngineTest {
 
     @Test
     @DisplayName("Severe vétusté (integrity < 0.30) triggers acute mortality from atmospheric failure")
+    /*
+     * Test severe vetuste mortality operation.
+     * <p>
+     * Executes operational logic for {@code PressurizedHabitatEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSevereVetusteMortality() {
         H3Cell criticallyDegraded = new H3Cell(0x881f1d4887fffffL, 0.0, 0.0);
         criticallyDegraded.setPopulation(1000);

@@ -44,6 +44,14 @@ public class ScenarioAutomatedTestSuite {
     private List<H3Cell> mockCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioAutomatedTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
         mockCells = new ArrayList<>();
@@ -92,6 +100,14 @@ public class ScenarioAutomatedTestSuite {
 
     @Test
     @DisplayName("Test Homo Sapiens Out-of-Africa Paleolithic Scenario (-100,000 BC)")
+    /*
+     * Test out of africa sapiens scenario operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioAutomatedTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testOutOfAfricaSapiensScenario() {
         Scenario scenario = new Scenario();
         scenario.setName("Sortie d'Afrique & Expansion Homo Sapiens (-100000)");
@@ -132,6 +148,14 @@ public class ScenarioAutomatedTestSuite {
 
     @Test
     @DisplayName("Test Simple Population Stability (10,000 and 100,000 Individuals)")
+    /*
+     * Test simple population stability no collapse operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioAutomatedTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSimplePopulationStabilityNoCollapse() {
         long[] testPopulations = {10_000L, 100_000L};
 
@@ -172,6 +196,14 @@ public class ScenarioAutomatedTestSuite {
 
     @Test
     @DisplayName("Test Physicalist Model Engines & Type B Plugins Invariants")
+    /*
+     * Test model engine invariants and type bplugins operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioAutomatedTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testModelEngineInvariantsAndTypeBPlugins() {
         // Register representative Type B plugins
         ProceduralEngineRegistry.registerPlugin("FrontierAsabiyyah", FrontierAsabiyyahEngine::processHybrid);
@@ -218,6 +250,14 @@ public class ScenarioAutomatedTestSuite {
 
     @Test
     @DisplayName("Test Full Battery Execution of All Scenario Configurations")
+    /*
+     * Test full built in scenario battery operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioAutomatedTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testFullBuiltInScenarioBattery() {
         List<Scenario> builtInScenarios = List.of(
                 createScenario("Out of Africa", -100000, 50_000L, "ONE_CONTINENT"),
@@ -258,6 +298,7 @@ public class ScenarioAutomatedTestSuite {
         }
     }
 
+    // Helper subroutine: create scenario - internal state computation & bounds checking
     private Scenario createScenario(String name, long startYear, long initialPop, String densityType) {
         Scenario s = new Scenario();
         s.setName(name);

@@ -29,6 +29,14 @@ public class ProceduralPopulationEngineTest {
     private List<H3Cell> mockCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code ProceduralPopulationEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         mockCells = new ArrayList<>();
 
@@ -69,6 +77,14 @@ public class ProceduralPopulationEngineTest {
     }
 
     @Test
+    /*
+     * Test procedural distribution neolithic operation.
+     * <p>
+     * Executes operational logic for {@code ProceduralPopulationEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testProceduralDistributionNeolithic() {
         Scenario s = new Scenario();
         long totalPop = 10000;
@@ -85,6 +101,14 @@ public class ProceduralPopulationEngineTest {
     }
 
     @Test
+    /*
+     * Test procedural distribution modern tech adaptation operation.
+     * <p>
+     * Executes operational logic for {@code ProceduralPopulationEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testProceduralDistributionModernTechAdaptation() {
         Scenario s = new Scenario();
         long totalPop = 100000;
@@ -101,6 +125,14 @@ public class ProceduralPopulationEngineTest {
     }
 
     @Test
+    /*
+     * Test earth historical distribution operation.
+     * <p>
+     * Executes operational logic for {@code ProceduralPopulationEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEarthHistoricalDistribution() {
         Scenario s = new Scenario();
         long totalPop = 50000000;

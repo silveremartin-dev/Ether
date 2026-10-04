@@ -61,6 +61,15 @@ public class MonasticDemographicBufferEngine {
      * @return the resulting computation or state reference
      */
     public static double getMonasticFraction() { return monasticFraction; }
+    /*
+     * Set monastic fraction operation.
+     * <p>
+     * Executes operational logic for {@code MonasticDemographicBufferEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param fraction the fraction argument (double)
+     */
     public static void setMonasticFraction(double fraction) { monasticFraction = Math.max(0.0, Math.min(0.20, fraction)); }
 }
 

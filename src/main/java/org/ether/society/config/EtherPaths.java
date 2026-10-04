@@ -54,6 +54,7 @@ public final class EtherPaths {
         initPaths();
     }
 
+    // Helper subroutine: ether paths - internal state computation & bounds checking
     private EtherPaths() {
         // Utility class
     }
@@ -110,6 +111,7 @@ public final class EtherPaths {
         ensureDirectories();
     }
 
+    // Helper subroutine: ensure directories - internal state computation & bounds checking
     private static void ensureDirectories() {
         createDirSafely(dataDir, "Data");
         createDirSafely(savesDir, "Saves");
@@ -124,6 +126,7 @@ public final class EtherPaths {
         createDirSafely(getPresetsLeadersDir(), "Presets - Leaders");
     }
 
+    // Helper subroutine: create dir safely - internal state computation & bounds checking
     private static void createDirSafely(Path path, String name) {
         if (path == null) return;
         try {

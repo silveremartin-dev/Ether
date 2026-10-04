@@ -75,6 +75,15 @@ public class TerraformingEngine {
      * @return the resulting computation or state reference
      */
     public static double getAtmosphericPressureAtm() { return atmosphericPressureAtm; }
+    /*
+     * Set atmospheric pressure atm operation.
+     * <p>
+     * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param pressure the pressure argument (double)
+     */
     public static void setAtmosphericPressureAtm(double pressure) { atmosphericPressureAtm = Math.max(0.01, pressure); }
 
     /*
@@ -84,6 +93,15 @@ public class TerraformingEngine {
      * @return the resulting computation or state reference
      */
     public static double getCo2Ppm() { return co2Ppm; }
+    /*
+     * Set co2ppm operation.
+     * <p>
+     * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param ppm the ppm argument (double)
+     */
     public static void setCo2Ppm(double ppm) { co2Ppm = Math.max(10.0, ppm); }
 
     /*
@@ -93,6 +111,15 @@ public class TerraformingEngine {
      * @return the resulting computation or state reference
      */
     public static double getSolarMirrorInsolationMultiplier() { return solarMirrorInsolationMultiplier; }
+    /*
+     * Set solar mirror insolation multiplier operation.
+     * <p>
+     * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param mult the mult argument (double)
+     */
     public static void setSolarMirrorInsolationMultiplier(double mult) { solarMirrorInsolationMultiplier = Math.max(0.5, Math.min(5.0, mult)); }
 
     /*
@@ -102,6 +129,15 @@ public class TerraformingEngine {
      * @return the resulting computation or state reference
      */
     public static double getAsteroidMiningFluxTonnesPerYear() { return asteroidMiningFluxTonnesPerYear; }
+    /*
+     * Set asteroid mining flux tonnes per year operation.
+     * <p>
+     * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param flux the flux argument (double)
+     */
     public static void setAsteroidMiningFluxTonnesPerYear(double flux) { asteroidMiningFluxTonnesPerYear = Math.max(0.0, flux); }
 
     /*
@@ -111,6 +147,15 @@ public class TerraformingEngine {
      * @return the resulting computation or state reference
      */
     public static double getOffWorldEroeiRatio() { return offWorldEroeiRatio; }
+    /*
+     * Set off world eroei ratio operation.
+     * <p>
+     * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param eroei the eroei argument (double)
+     */
     public static void setOffWorldEroeiRatio(double eroei) { offWorldEroeiRatio = Math.max(0.1, eroei); }
 }
 

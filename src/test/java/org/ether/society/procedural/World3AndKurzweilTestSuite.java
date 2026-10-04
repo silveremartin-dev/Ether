@@ -34,6 +34,14 @@ public class World3AndKurzweilTestSuite {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code World3AndKurzweilTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         testCells = new ArrayList<>();
         H3Cell cell = new H3Cell(613503380827930701L, 45.0, 10.0);
@@ -49,6 +57,14 @@ public class World3AndKurzweilTestSuite {
     }
 
     @Test
+    /*
+     * Test world3coupling engine operation.
+     * <p>
+     * Executes operational logic for {@code World3AndKurzweilTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testWorld3CouplingEngine() {
         double initialLifespan = testCells.get(0).getLifespan();
         World3CouplingEngine.processWorld3System(testCells, 1.0);
@@ -57,6 +73,14 @@ public class World3AndKurzweilTestSuite {
     }
 
     @Test
+    /*
+     * Test kurzweil accelerating returns engine operation.
+     * <p>
+     * Executes operational logic for {@code World3AndKurzweilTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testKurzweilAcceleratingReturnsEngine() {
         double initialTech = testCells.get(0).getTechnologyLevel();
         KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(testCells, 1.0);

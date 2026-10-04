@@ -262,6 +262,7 @@ public class ScenarioTestProtocol {
         return currentReport;
     }
 
+    // Helper subroutine: extract population map - internal state computation & bounds checking
     private Map<Integer, Double> extractPopulationMap(SimulationRunRecord record) {
         Map<Integer, Double> map = new java.util.TreeMap<>();
         if (record != null && record.getTimeSeriesData() != null) {
@@ -272,6 +273,7 @@ public class ScenarioTestProtocol {
         return map;
     }
 
+    // Helper subroutine: create synthetic benchmark record - internal state computation & bounds checking
     private SimulationRunRecord createSyntheticBenchmarkRecord(Scenario scenario, Map<Integer, Double> benchmarkPop) {
         String runId = "BENCHMARK-" + scenario.getName().replaceAll("[^a-zA-Z0-9]", "-").toUpperCase();
         SimulationRunRecord record = new SimulationRunRecord(runId, "Benchmark " + scenario.getName(), "Historical Benchmark Reference Data", Map.of());
@@ -284,6 +286,7 @@ public class ScenarioTestProtocol {
         return record;
     }
 
+    // Helper subroutine: parse double - internal state computation & bounds checking
     private double parseDouble(String str, double fallback) {
         try {
             String cleaned = str.replaceAll("[^0-9,.-]", "").replace(',', '.');
@@ -293,6 +296,7 @@ public class ScenarioTestProtocol {
         }
     }
 
+    // Helper subroutine: parse long - internal state computation & bounds checking
     private long parseLong(String str, long fallback) {
         try {
             String cleaned = str.replaceAll("[^0-9-]", "");

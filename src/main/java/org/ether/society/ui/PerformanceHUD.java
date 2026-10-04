@@ -69,6 +69,7 @@ public class PerformanceHUD extends VBox {
         setMouseTransparent(true);
     }
 
+    // Helper subroutine: create label - internal state computation & bounds checking
     private Label createLabel(String text) {
         Label label = new Label(text);
         label.getStyleClass().add("hud-label");
@@ -109,6 +110,7 @@ public class PerformanceHUD extends VBox {
         return currentFps;
     }
 
+    // Helper subroutine: update stats - internal state computation & bounds checking
     private void updateStats(long now, long oldTime) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         // 1. Calculate FPS

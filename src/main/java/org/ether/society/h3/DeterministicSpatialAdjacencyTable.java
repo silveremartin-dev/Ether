@@ -61,6 +61,7 @@ public class DeterministicSpatialAdjacencyTable {
         buildAdjacencyMatrix();
     }
 
+    // Helper subroutine: build adjacency matrix - internal state computation & bounds checking
     private void buildAdjacencyMatrix() {
         try {
             H3Core h3 = H3Core.newInstance();

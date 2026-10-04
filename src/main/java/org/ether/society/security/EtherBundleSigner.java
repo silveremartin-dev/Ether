@@ -111,6 +111,7 @@ public class EtherBundleSigner {
         return true;
     }
 
+    // Helper subroutine: generate signature - internal state computation & bounds checking
     private static String generateSignature(String checksum, String author) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

@@ -113,6 +113,7 @@ public class ResourceDistributionPanel extends BorderPane {
     private boolean isUpdatingFromPreset = false;
     private final Map<Long, SimplexNoise> noiseCache = new HashMap<>();
 
+    // Helper subroutine: get or create noise - internal state computation & bounds checking
     private SimplexNoise getOrCreateNoise(long seed) {
         return noiseCache.computeIfAbsent(seed, SimplexNoise::new);
     }
@@ -359,6 +360,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: detect body key - internal state computation & bounds checking
     private String detectBodyKey(PlanetPreset p) {
         if (p == null) return "none";
         boolean isImportMode = p.elevationUseImport() || (p.customElevBase64() != null && !p.customElevBase64().isBlank()) || (p.elevationMapSource() != null && !p.elevationMapSource().isBlank() && !p.elevationMapSource().equalsIgnoreCase("none"));
@@ -388,6 +390,7 @@ public class ResourceDistributionPanel extends BorderPane {
         updatePreviewCanvas();
     }
 
+    // Helper subroutine: init ui - internal state computation & bounds checking
     private void initUI() {
         VBox controlsBox = new VBox(15);
         controlsBox.setPadding(new Insets(10));
@@ -1525,6 +1528,7 @@ public class ResourceDistributionPanel extends BorderPane {
         updatePreviewCanvas();
     }
 
+    // Helper subroutine: auto derive ecology from planet - internal state computation & bounds checking
     private void autoDeriveEcologyFromPlanet() {
         PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
         if (p == null) p = PlanetPreset.EARTH_LIKE;
@@ -1558,6 +1562,7 @@ public class ResourceDistributionPanel extends BorderPane {
         logger.info("Auto-derived ecological parameters for planet {}", p.name());
     }
 
+    // Helper subroutine: auto derive hydro from planet - internal state computation & bounds checking
     private void autoDeriveHydroFromPlanet() {
         PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
         if (p == null) p = PlanetPreset.EARTH_LIKE;
@@ -1582,6 +1587,7 @@ public class ResourceDistributionPanel extends BorderPane {
         logger.info("Auto-derived hydrographical parameters for planet {}", p.name());
     }
 
+    // Helper subroutine: auto derive geology from planet - internal state computation & bounds checking
     private void autoDeriveGeologyFromPlanet() {
         PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
         if (p == null) p = PlanetPreset.EARTH_LIKE;
@@ -1621,6 +1627,7 @@ public class ResourceDistributionPanel extends BorderPane {
         logger.info("Auto-derived geological parameters for planet {}", p.name());
     }
 
+    // Helper subroutine: update planet context display - internal state computation & bounds checking
     private void updatePlanetContextDisplay() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (planetContextLabel == null) return;
@@ -1641,6 +1648,7 @@ public class ResourceDistributionPanel extends BorderPane {
         updateThermodynamicSynthesisBadge(preset);
     }
 
+    // Helper subroutine: update thermodynamic synthesis badge - internal state computation & bounds checking
     private void updateThermodynamicSynthesisBadge(PlanetPreset p) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (thermoSynthesisBadge == null) return;
@@ -1668,6 +1676,7 @@ public class ResourceDistributionPanel extends BorderPane {
         thermoSynthesisBadge.setText(sb.toString());
     }
 
+    // Helper subroutine: adapt resource sliders to planet - internal state computation & bounds checking
     private void adaptResourceSlidersToPlanet(PlanetPreset p) {
         if (p == null) return;
         boolean oldState = isUpdatingFromPreset;
@@ -1884,6 +1893,7 @@ public class ResourceDistributionPanel extends BorderPane {
         updatePreviewCanvas();
     }
 
+    // Helper subroutine: load custom biome map - internal state computation & bounds checking
     private void loadCustomBiomeMap() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("resource.chooser.biome", "Load Biome Map (PNG/JPEG)"));
@@ -1904,6 +1914,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: load custom resource map - internal state computation & bounds checking
     private void loadCustomResourceMap() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("resource.chooser.geology", "Load Geological & Ore Map (PNG/JPEG)"));
@@ -1921,6 +1932,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: choose climate map file - internal state computation & bounds checking
     private void chooseClimateMapFile() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("planet.dialog.climate_load", "Load Climate / Thermal Map (PNG/JPEG)"));
@@ -1937,6 +1949,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: choose rainfall map file - internal state computation & bounds checking
     private void chooseRainfallMapFile() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("planet.dialog.rainfall_load", "Load Precipitation Map (PNG/JPEG)"));
@@ -1953,6 +1966,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: choose seasonality map file - internal state computation & bounds checking
     private void chooseSeasonalityMapFile() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("planet.dialog.seasonality_load", "Load Seasonality Map (PNG/JPEG)"));
@@ -1969,6 +1983,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: fetch online climate data - internal state computation & bounds checking
     private void fetchOnlineClimateData() {
         String sourceKey = mapSourceCombo.getValue();
         OnlineMapService.CelestialBody body = switch (sourceKey) {
@@ -1996,6 +2011,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }));
     }
 
+    // Helper subroutine: show climate import format help - internal state computation & bounds checking
     private void showClimateImportFormatHelp() {
         WindowUtils.showScrollableInfoDialog(
                 I18n.getOrDefault("planet.dialog.climate_help_title", "SpÃ©cifications des Cartes Climatiques"),
@@ -2014,6 +2030,7 @@ public class ResourceDistributionPanel extends BorderPane {
         );
     }
 
+    // Helper subroutine: validate terrain map compatibility - internal state computation & bounds checking
     private boolean validateTerrainMapCompatibility(String sourceKey) {
         if ("none".equals(sourceKey) || sourceKey == null) return true;
 
@@ -2122,6 +2139,7 @@ public class ResourceDistributionPanel extends BorderPane {
         applyPresetMapSource(sourceKey);
     }
 
+    // Helper subroutine: apply preset map source - internal state computation & bounds checking
     private void applyPresetMapSource(String sourceKey) {
         if ("none".equals(sourceKey)) {
             customBiomeImage = null;
@@ -2192,6 +2210,7 @@ public class ResourceDistributionPanel extends BorderPane {
         updateSummary();
     }
 
+    // Helper subroutine: load custom hydro map - internal state computation & bounds checking
     private void loadCustomHydroMap() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("resource.chooser.hydro", "Load Hydrographic Map (PNG/JPEG)"));
@@ -2212,6 +2231,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: fetch online hydro data - internal state computation & bounds checking
     private void fetchOnlineHydroData() {
         String sourceKey = mapSourceCombo != null ? mapSourceCombo.getValue() : "earth";
         OnlineMapService.CelestialBody body = switch (sourceKey) {
@@ -2245,6 +2265,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }));
     }
 
+    // Helper subroutine: generate procedural hydrography - internal state computation & bounds checking
     private void generateProceduralHydrography() {
         customHydroImage = null;
         if (radioProcHydro != null) radioProcHydro.setSelected(true);
@@ -2259,6 +2280,7 @@ public class ResourceDistributionPanel extends BorderPane {
         updateSummary();
     }
 
+    // Helper subroutine: fetch online satellite data - internal state computation & bounds checking
     private void fetchOnlineSatelliteData() {
         String sourceKey = mapSourceCombo.getValue();
         OnlineMapService.CelestialBody body = switch (sourceKey) {
@@ -2289,6 +2311,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: export maps with world files - internal state computation & bounds checking
     private void exportMapsWithWorldFiles() {
         int mode = getViewModeIndex();
         PlanetPreset planet = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
@@ -2385,6 +2408,7 @@ public class ResourceDistributionPanel extends BorderPane {
         );
     }
 
+    // Helper subroutine: show ecology import format help - internal state computation & bounds checking
     private void showEcologyImportFormatHelp() {
         WindowUtils.showScrollableInfoDialog(
                 I18n.getOrDefault("resource.dialog.specs_title", "SpÃ©cifications des Biomes & Ressources GÃ©ologiques"),
@@ -2560,6 +2584,7 @@ public class ResourceDistributionPanel extends BorderPane {
         {70.0, 30.0, 65, 1.3}    // Indus Basin Aquifer
     };
 
+    // Helper subroutine: get geology resource color - internal state computation & bounds checking
     private Color getGeologyResourceColor(int layerIdx, double val) {
         val = Math.clamp(val, 0.0, 1.0);
         return switch (layerIdx) {
@@ -2576,6 +2601,7 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: lerp color fx - internal state computation & bounds checking
     private static Color lerpColorFx(Color c1, Color c2, double t) {
         double r = Math.clamp(c1.getRed() + t * (c2.getRed() - c1.getRed()), 0.0, 1.0);
         double g = Math.clamp(c1.getGreen() + t * (c2.getGreen() - c1.getGreen()), 0.0, 1.0);
@@ -2583,6 +2609,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return Color.color(r, g, b);
     }
 
+    // Helper subroutine: sample hotspot val - internal state computation & bounds checking
     private static double sampleHotspotVal(double lng, double lat, double[][] spots) {
         double val = 0.0;
         for (double[] spot : spots) {
@@ -2598,6 +2625,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return Math.clamp(val, 0.0, 1.0);
     }
 
+    // Helper subroutine: blend colors - internal state computation & bounds checking
     private Color blendColors(Color base, Color overlay, double opacity) {
         if (base == null) return overlay;
         double r = base.getRed() * (1.0 - opacity) + overlay.getRed() * opacity;
@@ -2606,6 +2634,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return Color.color(Math.clamp(r, 0.0, 1.0), Math.clamp(g, 0.0, 1.0), Math.clamp(b, 0.0, 1.0));
     }
 
+    // Helper subroutine: get relief shade color - internal state computation & bounds checking
     private Color getReliefShadeColor(double elevation, double waterLevel, double declivity) {
         if (elevation < waterLevel) {
             double depthNorm = Math.clamp((waterLevel - elevation) / 2000.0, 0.0, 1.0);
@@ -2618,6 +2647,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: get geology view combo index - internal state computation & bounds checking
     private int getGeologyViewComboIndex(int layerIdx) {
         return switch (layerIdx) {
             case 0 -> 3;  // COAL
@@ -2634,6 +2664,7 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get view mode index - internal state computation & bounds checking
     private int getViewModeIndex() {
         if (viewModeCombo == null) return 0;
         int selected = viewModeCombo.getSelectionModel().getSelectedIndex();
@@ -2657,6 +2688,7 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: update legend - internal state computation & bounds checking
     private void updateLegend() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (legendBar == null) return;
@@ -2733,6 +2765,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: add legend item - internal state computation & bounds checking
     private void addLegendItem(String id, Color col, String text) {
         Pane colorSwatch = new Pane();
         colorSwatch.setPrefSize(14, 14);
@@ -2746,6 +2779,7 @@ public class ResourceDistributionPanel extends BorderPane {
     }
 
 
+    // Helper subroutine: update preview canvas - internal state computation & bounds checking
     private void updatePreviewCanvas() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (mapPreviewCanvas == null) return;
@@ -3076,6 +3110,7 @@ public class ResourceDistributionPanel extends BorderPane {
         gc.drawImage(buffer, 0, 0, canvasW, canvasH);
     }
 
+    // Helper subroutine: sample procedural geology tensor - internal state computation & bounds checking
     private double sampleProceduralGeologyTensor(int layerIdx, double lon, double lat, PlanetPreset planet) {
         double p1 = geologyAbundanceSliders.containsKey(layerIdx) ? geologyAbundanceSliders.get(layerIdx).getValue() : GEOLOGY_SLIDER_SPECS[layerIdx][0].defaultValue;
         double p2 = geologyThresholdSliders.containsKey(layerIdx) ? geologyThresholdSliders.get(layerIdx).getValue() : GEOLOGY_SLIDER_SPECS[layerIdx][1].defaultValue;
@@ -3190,6 +3225,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return Math.clamp(combined, 0.0, 1.0);
     }
 
+    // Helper subroutine: create section - internal state computation & bounds checking
     private VBox createSection(Label header, VBox content) {
         header.getStyleClass().add("label-section-header");
         VBox box = new VBox(8, header, content);
@@ -3197,6 +3233,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return box;
     }
 
+    // Helper subroutine: create slider - internal state computation & bounds checking
     private Slider createSlider(double min, double max, double value) {
         Slider slider = new Slider(min, max, value);
         slider.setShowTickMarks(false);
@@ -3218,6 +3255,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return slider;
     }
 
+    // Helper subroutine: create control row - internal state computation & bounds checking
     private VBox createControlRow(Label label, javafx.scene.Node control, String tooltipText) {
         label.getStyleClass().add("control-label");
         if (tooltipText != null && !tooltipText.isBlank()) {
@@ -3230,6 +3268,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return new VBox(4, label, control);
     }
 
+    // Helper subroutine: create control row - internal state computation & bounds checking
     private VBox createControlRow(Label label, Slider slider, String formatPattern, String tooltipText) {
         label.getStyleClass().add("control-label");
         Label valLabel = new Label(String.format(formatPattern, slider.getValue()));
@@ -3251,6 +3290,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return new VBox(3, header, slider);
     }
 
+    // Helper subroutine: update summary - internal state computation & bounds checking
     private void updateSummary() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (summaryLabel == null) return;
@@ -3485,6 +3525,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: apply resource distribution - internal state computation & bounds checking
     private void applyResourceDistribution() {
         if (activeCells == null || activeCells.isEmpty()) return;
 
@@ -3549,6 +3590,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: find planet preset by name - internal state computation & bounds checking
     private PlanetPreset findPlanetPresetByName(String name) {
         if (name == null || name.isBlank()) return PlanetPreset.EARTH_LIKE;
         for (PlanetPreset p : PlanetPreset.getPresets()) {
@@ -3595,6 +3637,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return validateResourceSetup(true);
     }
 
+    // Helper subroutine: is custom file required - internal state computation & bounds checking
     private boolean isCustomFileRequired(ComboBox<String> domainCombo, ComboBox<String> masterCombo) {
         String val = null;
         if (domainCombo != null && domainCombo.getValue() != null && !"none".equalsIgnoreCase(domainCombo.getValue())) {
@@ -3703,6 +3746,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return isValid;
     }
 
+    // Helper subroutine: buffered image to fximage - internal state computation & bounds checking
     private static Image bufferedImageToFXImage(java.awt.image.BufferedImage bImg) {
         if (bImg == null) return null;
         int w = bImg.getWidth();
@@ -3840,6 +3884,7 @@ public class ResourceDistributionPanel extends BorderPane {
         prepopulateGeologyTensors("earth");
     }
 
+    // Helper subroutine: get biome source display name - internal state computation & bounds checking
     private String getBiomeSourceDisplayName(String planetKey) {
         if (planetKey == null) planetKey = "earth";
         return switch (planetKey.toLowerCase()) {
@@ -3851,6 +3896,7 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get hydro source display name - internal state computation & bounds checking
     private String getHydroSourceDisplayName(String planetKey) {
         if (planetKey == null) planetKey = "earth";
         return switch (planetKey.toLowerCase()) {
@@ -3862,6 +3908,7 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get geology source display name - internal state computation & bounds checking
     private String getGeologySourceDisplayName(String planetKey) {
         if (planetKey == null) planetKey = "earth";
         return switch (planetKey.toLowerCase()) {
@@ -3873,6 +3920,7 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get climate source display name - internal state computation & bounds checking
     private String getClimateSourceDisplayName(String planetKey) {
         if (planetKey == null) planetKey = "earth";
         return switch (planetKey.toLowerCase()) {
@@ -3884,6 +3932,7 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get rainfall source display name - internal state computation & bounds checking
     private String getRainfallSourceDisplayName(String planetKey) {
         if (planetKey == null) planetKey = "earth";
         return switch (planetKey.toLowerCase()) {
@@ -3895,6 +3944,7 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get seasonality source display name - internal state computation & bounds checking
     private String getSeasonalitySourceDisplayName(String planetKey) {
         if (planetKey == null) planetKey = "earth";
         return switch (planetKey.toLowerCase()) {
@@ -3906,6 +3956,7 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get geology tensor title - internal state computation & bounds checking
     private String getGeologyTensorTitle(int index) {
         return switch (index) {
             case 0 -> I18n.getOrDefault("resource.tensor.1.title", "â›ï¸ 4.2.1 Gisements de Charbon (COAL â€” USGS / BGR)");
@@ -3922,6 +3973,7 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get geology tensor tooltip - internal state computation & bounds checking
     private String getGeologyTensorTooltip(int index) {
         return switch (index) {
             case 0 -> I18n.getOrDefault("resource.tensor.1.desc", "Coal basins and anthracite deposits. Source: USGS MRDS / BGR Germany.");
@@ -3938,10 +3990,12 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get geology baseline name - internal state computation & bounds checking
     private String getGeologyBaselineName(int index) {
         return getGeologyBaselineName(index, "earth");
     }
 
+    // Helper subroutine: get geology baseline name - internal state computation & bounds checking
     private String getGeologyBaselineName(int index, String planetKey) {
         if (planetKey == null) planetKey = "earth";
         String body = planetKey.toLowerCase();
@@ -4020,6 +4074,7 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: get geology format hint - internal state computation & bounds checking
     private String getGeologyFormatHint(int index) {
         return switch (index) {
             case 0 -> I18n.getOrDefault("resource.tensor.1.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 Gt | White (255) = 5.0 Gt (USGS MRDS / BGR Germany)");
@@ -4036,6 +4091,7 @@ public class ResourceDistributionPanel extends BorderPane {
         };
     }
 
+    // Helper subroutine: build geology source combo - internal state computation & bounds checking
     private ComboBox<String> buildGeologySourceCombo(int index) {
         ComboBox<String> combo = new ComboBox<>();
         combo.setMaxWidth(Double.MAX_VALUE);
@@ -4151,6 +4207,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return combo;
     }
 
+    // Helper subroutine: create geology vector and layers section - internal state computation & bounds checking
     private VBox createGeologyVectorAndLayersSection() {
         geologyDomainSecHeader = new Label(I18n.getOrDefault("resource.domain.geology", "4. DOMAINE GÃ‰OLOGIE, TECTONIQUE & MINERAIS"));
 
@@ -4231,6 +4288,7 @@ public class ResourceDistributionPanel extends BorderPane {
         return createSection(geologyDomainSecHeader, content);
     }
 
+    // Helper subroutine: show geology import format help - internal state computation & bounds checking
     private void showGeologyImportFormatHelp() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(I18n.getOrDefault("resource.title.geology_help", "Geological Layer Specifications & Formats"));
@@ -4262,6 +4320,7 @@ public class ResourceDistributionPanel extends BorderPane {
         alert.showAndWait();
     }
 
+    // Helper subroutine: export gis multi format - internal state computation & bounds checking
     private void exportGisMultiFormat() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(I18n.getOrDefault("resource.title.export_gis_dialog", "Export Geological Layers in GIS Format"));
@@ -4296,6 +4355,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: export provenance manifest - internal state computation & bounds checking
     private void exportProvenanceManifest() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(I18n.getOrDefault("resource.title.export_provenance_dialog", "Generate & Export SHA-256 Provenance Manifest"));
@@ -4333,6 +4393,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: generate procedural geology tensors - internal state computation & bounds checking
     private void generateProceduralGeologyTensors() {
         if (geologyProcRadios != null) {
             for (var entry : geologyProcRadios.entrySet()) {
@@ -4472,6 +4533,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     };
 
+    // Helper subroutine: rebuild geology tensor sub blocks - internal state computation & bounds checking
     private void rebuildGeologyTensorSubBlocks() {
         if (geologyLayersDynamicContainer == null) return;
         geologyLayersDynamicContainer.getChildren().clear();
@@ -4819,6 +4881,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 img, defaultName, I18n.getOrDefault("resource.dialog.export_geology_tensor_title", "Export Geology Tensor Map (PNG / JPEG)"));
     }
 
+    // Helper subroutine: load custom geology layer - internal state computation & bounds checking
     private void loadCustomGeologyLayer(int layerIdx, Consumer<Image> onLoaded) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("resource.dialog.import_geology_title", "Import geological map ") + getGeologyTensorTitle(layerIdx));
@@ -4842,6 +4905,7 @@ public class ResourceDistributionPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: get geology tensor awt color - internal state computation & bounds checking
     private java.awt.Color getGeologyTensorAwtColor(int layerIdx) {
         return switch (layerIdx) {
             case 0 -> new java.awt.Color(245, 158, 11);  // Coal

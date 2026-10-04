@@ -47,6 +47,7 @@ public class StructuredDataExporter {
         logger.info("Exported series '{}' to {} in format {}", series.getFormulaName(), file.getAbsolutePath(), format);
     }
 
+    // Helper subroutine: export as json - internal state computation & bounds checking
     private static void exportAsJson(StatisticalReplayEngine.ReconstitutedSeries series, Writer writer) throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
@@ -74,6 +75,7 @@ public class StructuredDataExporter {
         writer.write(sb.toString());
     }
 
+    // Helper subroutine: export as nd json - internal state computation & bounds checking
     private static void exportAsNdJson(StatisticalReplayEngine.ReconstitutedSeries series, Writer writer) throws IOException {
         List<Long> ticks = series.getTicks();
         List<Double> vals = series.getValues();
@@ -85,6 +87,7 @@ public class StructuredDataExporter {
         }
     }
 
+    // Helper subroutine: export as delimiter - internal state computation & bounds checking
     private static void exportAsDelimiter(StatisticalReplayEngine.ReconstitutedSeries series, Writer writer, String sep) throws IOException {
         writer.write("# Formula: " + series.getFormulaName() + " (" + series.getExpression() + ")\n");
         writer.write("# Unit: " + series.getUnit() + "\n");
@@ -97,6 +100,7 @@ public class StructuredDataExporter {
         }
     }
 
+    // Helper subroutine: escape json - internal state computation & bounds checking
     private static String escapeJson(String input) {
         if (input == null) return "";
         return input.replace("\\", "\\\\")

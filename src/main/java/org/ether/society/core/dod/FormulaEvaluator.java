@@ -83,6 +83,7 @@ public class FormulaEvaluator {
         }
     }
 
+    // Helper subroutine: compile expression - internal state computation & bounds checking
     private List<Token> compileExpression(String expr) {
         List<Token> tokens = new ArrayList<>();
         int len = expr.length();
@@ -138,6 +139,7 @@ public class FormulaEvaluator {
         return tokens;
     }
 
+    // Helper subroutine: sanitize - internal state computation & bounds checking
     private String sanitize(String expr) {
         return expr.trim();
     }
@@ -197,6 +199,7 @@ public class FormulaEvaluator {
         return sb.toString();
     }
 
+    // Helper subroutine: is stat function - internal state computation & bounds checking
     private boolean isStatFunction(String name) {
         String u = name.toUpperCase(Locale.ROOT);
         return u.equals("SUM") || u.equals("AVG") || u.equals("MEAN") || u.equals("MEDIAN")
@@ -206,6 +209,7 @@ public class FormulaEvaluator {
                 || u.equals("SKEWNESS") || u.equals("KURTOSIS");
     }
 
+    // Helper subroutine: compute stat function - internal state computation & bounds checking
     private double computeStatFunction(String funcName, String varName, VariableResolver arrayResolver) {
         // High-performance contiguous memory pass: Cache-aligned array streaming
         // Vectorized SIMD / analytical state updates with zero heap allocation

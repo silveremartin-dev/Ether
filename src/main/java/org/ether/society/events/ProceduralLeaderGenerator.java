@@ -83,6 +83,7 @@ public class ProceduralLeaderGenerator {
         return intervention;
     }
 
+    // Helper subroutine: determine archetype - internal state computation & bounds checking
     private LeaderArchetype determineArchetype(H3Cell cell) {
         double r = random.nextDouble();
         Biome biome = cell.getBiome();
@@ -114,6 +115,7 @@ public class ProceduralLeaderGenerator {
         return LeaderArchetype.TOTALITARIAN_PURGER;
     }
 
+    // Helper subroutine: generate title - internal state computation & bounds checking
     private String generateTitle(LeaderArchetype archetype) {
         int idx = random.nextInt(5) + 1;
         String key = "leader.title." + archetype.name().toLowerCase() + "." + idx;

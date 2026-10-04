@@ -51,6 +51,14 @@ public class HistoricalPlanetaryScenarioValidationSuite {
             false, "none", false, "", 12445L, false, "", 13345L, false, "", 14345L);
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalPlanetaryScenarioValidationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
         h3Service = H3Service.getInstance();
@@ -59,6 +67,14 @@ public class HistoricalPlanetaryScenarioValidationSuite {
 
     @Test
     @DisplayName("Scenario 1: Out-of-Africa & Maritime Wallace Line Crossing into Sahul (Australia)")
+    /*
+     * Test outof africa and maritime sahul crossing operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalPlanetaryScenarioValidationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testOutofAfricaAndMaritimeSahulCrossing() {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
         Map<Long, H3Cell> cellMap = new HashMap<>();
@@ -116,6 +132,14 @@ public class HistoricalPlanetaryScenarioValidationSuite {
 
     @Test
     @DisplayName("Scenario 2: Beringia Crossing & Americas Glacial Ice-Free Corridor Dispersal")
+    /*
+     * Test beringia crossing and americas dispersal operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalPlanetaryScenarioValidationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBeringiaCrossingAndAmericasDispersal() {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
         Map<Long, H3Cell> cellMap = new HashMap<>();
@@ -168,6 +192,14 @@ public class HistoricalPlanetaryScenarioValidationSuite {
 
     @Test
     @DisplayName("Scenario 3: Neolithic Agricultural Revolution & River Valley Sedentary State Emergence")
+    /*
+     * Test neolithic revolution and river valley emergence operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalPlanetaryScenarioValidationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testNeolithicRevolutionAndRiverValleyEmergence() {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
         Map<Long, H3Cell> cellMap = new HashMap<>();
@@ -221,6 +253,14 @@ public class HistoricalPlanetaryScenarioValidationSuite {
 
     @Test
     @DisplayName("Scenario 4: Green Sahara African Humid Period (-6000 BC)")
+    /*
+     * Test green sahara african humid period operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalPlanetaryScenarioValidationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testGreenSaharaAfricanHumidPeriod() {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
 
@@ -249,6 +289,14 @@ public class HistoricalPlanetaryScenarioValidationSuite {
 
     @Test
     @DisplayName("Scenario 5: Younger Dryas Abrupt Cooling & Coastal Habitat Preference (-10900 BC)")
+    /*
+     * Test younger dryas abrupt cooling and coastal preference operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalPlanetaryScenarioValidationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testYoungerDryasAbruptCoolingAndCoastalPreference() {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
 
@@ -272,6 +320,14 @@ public class HistoricalPlanetaryScenarioValidationSuite {
 
     @Test
     @DisplayName("Scenario 6: Roman Empire Pax Romana (0 AD) Mediterranean Density & Administrative Friction")
+    /*
+     * Test roman empire pax romana and cliodynamics operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalPlanetaryScenarioValidationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testRomanEmpirePaxRomanaAndCliodynamics() {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
 
@@ -313,6 +369,14 @@ public class HistoricalPlanetaryScenarioValidationSuite {
 
     @Test
     @DisplayName("Scenario 7: Sahul & Australian Dispersal (-50,000 BCE)")
+    /*
+     * Test sahul dispersal scenario operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalPlanetaryScenarioValidationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSahulDispersalScenario() {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
         Scenario scenario = new Scenario();
@@ -336,6 +400,14 @@ public class HistoricalPlanetaryScenarioValidationSuite {
 
     @Test
     @DisplayName("Scenario 8: Ancient Egypt & Nile Valley (-3000 BCE)")
+    /*
+     * Test egypt nile scenario operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalPlanetaryScenarioValidationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEgyptNileScenario() {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
         Scenario scenario = new Scenario();
@@ -359,6 +431,14 @@ public class HistoricalPlanetaryScenarioValidationSuite {
 
     @Test
     @DisplayName("Scenario 9: Mesoamerica Olmec & Maya (-1500 BCE)")
+    /*
+     * Test mesoamerica scenario operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalPlanetaryScenarioValidationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testMesoamericaScenario() {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
         Scenario scenario = new Scenario();
@@ -380,6 +460,7 @@ public class HistoricalPlanetaryScenarioValidationSuite {
         assertTrue(mesoCells.size() > 0, "Mesoamerican basin must be populated during -1500 BCE setup");
     }
 
+    // Helper subroutine: process maritime and terrestrial dispersal - internal state computation & bounds checking
     private void processMaritimeAndTerrestrialDispersal(List<H3Cell> cells, Map<Long, H3Cell> lookup, H3Service service, boolean allowSeafaring) {
         List<H3Cell> sourceCells = cells.stream()
                 .filter(c -> c.getPopulation() != null && c.getPopulation() > 50)
@@ -420,6 +501,7 @@ public class HistoricalPlanetaryScenarioValidationSuite {
         outboundMap.forEach((src, m) -> src.setPopulation(Math.max(0, src.getPopulation() - m)));
     }
 
+    // Helper subroutine: calculate haversine distance km - internal state computation & bounds checking
     private double calculateHaversineDistanceKm(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371;
         double dLat = Math.toRadians(lat2 - lat1);

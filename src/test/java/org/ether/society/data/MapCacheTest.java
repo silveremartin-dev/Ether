@@ -7,6 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MapCacheTest {
 
     @Test
+    /*
+     * Test precache all built in scenarios operation.
+     * <p>
+     * Executes operational logic for {@code MapCacheTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPrecacheAllBuiltInScenarios() {
         HistoricalMapGenerator.precacheAllBuiltInScenarios();
         File cacheDir = new File("data/cache");

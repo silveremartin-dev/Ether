@@ -87,6 +87,7 @@ public class HistoricalInterventionCatalog {
         }
     }
 
+    // Helper subroutine: init fallback catalog - internal state computation & bounds checking
     private void initFallbackCatalog() {
         interventions.add(new HistoricalIntervention("ALEXANDER_FALLBACK", "Alexandre le Grand", "Conquête fulgurante et hellénisation.", -334, 11, 40.64, 22.94, 3500.0, LeaderArchetype.MILITARY_CONQUEROR, 9.5));
         interventions.add(new HistoricalIntervention("AUGUSTUS_FALLBACK", "Auguste & Pax Romana", "Réseau routier et centralisation impériale.", -27, 41, 41.90, 12.49, 2200.0, LeaderArchetype.INFRASTRUCTURE_BUILDER, 9.0));

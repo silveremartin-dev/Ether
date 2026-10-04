@@ -26,12 +26,28 @@ public class EtherNetworkTestSuite {
     private static final int TEST_PORT = 19876;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code EtherNetworkTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() throws IOException {
         server = new EtherNetworkServer(TEST_PORT);
         server.start();
     }
 
     @AfterEach
+    /*
+     * Tear down operation.
+     * <p>
+     * Executes operational logic for {@code EtherNetworkTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void tearDown() {
         if (server != null) {
             server.stop();
@@ -39,6 +55,14 @@ public class EtherNetworkTestSuite {
     }
 
     @Test
+    /*
+     * Test server client connection operation.
+     * <p>
+     * Executes operational logic for {@code EtherNetworkTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testServerClientConnection() throws IOException, InterruptedException {
         EtherNetworkClient client = new EtherNetworkClient("localhost", TEST_PORT, server.getSecurityManager());
         client.connect();

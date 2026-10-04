@@ -144,7 +144,7 @@ class DatabaseIntegrationTest {
         assertTrue(maps.size() >= threadCount, "Should have saved all maps");
     }
 
-    /**
+    /*
      * Helper: Create sample H3 cells for testing.
      */
     private List<H3Cell> createSampleCells(int count) {

@@ -28,6 +28,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
         testCells = new ArrayList<>();
@@ -44,6 +52,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test tasmanian cultural regression engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTasmanianCulturalRegressionEngine() {
         double initialTech = testCells.get(0).getTechnologyLevel();
         TasmanianCulturalRegressionEngine.processHybrid(testCells, 1.0);
@@ -51,6 +67,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test maritime highway engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testMaritimeHighwayEngine() {
         double initialCapital = testCells.get(0).getResourceCapital();
         MaritimeHighwayEngine.processHybrid(testCells, 1.0);
@@ -58,6 +82,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test land reclamation engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testLandReclamationEngine() {
         testCells.get(0).setTechnologyLevel(5.0);
         testCells.get(0).setResourceCapital(500.0);
@@ -66,6 +98,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test kin selection hamilton engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testKinSelectionHamiltonEngine() {
         assertTrue(KinSelectionHamiltonEngine.checkHamiltonRule(0.50, 10.0, 4.0), "Hamilton rule r * B > C should return true for r=0.5, B=10, C=4.");
         double initialWork = testCells.get(0).getResourceWork();
@@ -74,6 +114,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test frontier asabiyyah engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testFrontierAsabiyyahEngine() {
         double initialWork = testCells.get(0).getResourceWork();
         FrontierAsabiyyahEngine.processHybrid(testCells, 1.0);
@@ -81,6 +129,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test sexual selection mating engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSexualSelectionMatingEngine() {
         double initialWork = testCells.get(0).getResourceWork();
         SexualSelectionMatingEngine.processHybrid(testCells, 1.0);
@@ -88,6 +144,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test dynamic maritime routing graph operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testDynamicMaritimeRoutingGraph() {
         DynamicMaritimeRoutingGraph.clearCache();
         H3Cell coastal1 = new H3Cell(613503380827930702L, 36.0, 15.0);
@@ -112,6 +176,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test marine submersion engine evacuation operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testMarineSubmersionEngineEvacuation() {
         H3Cell floodedCell = new H3Cell(613503380827930704L, 35.0, 15.0);
         floodedCell.setElevation(-2.0);
@@ -133,6 +205,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test hydrological engineering engine operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHydrologicalEngineeringEngine() {
         // 1. Tenochtitlan Texcoco Lake Draining
         H3Cell texcocoCell = new H3Cell(613503380827930706L, 19.4, -99.1);
@@ -157,6 +237,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test advanced cliodynamic plugins cumulative execution operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAdvancedCliodynamicPluginsCumulativeExecution() {
         ProceduralEngineRegistry.registerPlugin("B26_TasmanianLoss", TasmanianCulturalRegressionEngine::processHybrid);
         ProceduralEngineRegistry.registerPlugin("B27_MaritimeHighway", MaritimeHighwayEngine::processHybrid);
@@ -175,6 +263,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test performance config mapping operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPerformanceConfigMapping() {
         org.ether.society.model.Scenario scenario = new org.ether.society.model.Scenario();
         scenario.setStrictDeterminism(false);
@@ -198,6 +294,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test bit identical simulation determinism operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBitIdenticalSimulationDeterminism() throws Exception {
         org.ether.society.model.Scenario scenario = new org.ether.society.model.Scenario();
         scenario.setName("Audit Bit-Identical Scenario");
@@ -248,6 +352,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test type bengine parameters persistence and execution operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTypeBEngineParametersPersistenceAndExecution() {
         org.ether.society.model.Scenario scenario = new org.ether.society.model.Scenario();
         java.util.Map<String, java.util.Map<String, Double>> params = new java.util.HashMap<>();
@@ -287,6 +399,14 @@ public class AdvancedCliodynamicTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test ocean wave physics and cabotage operation.
+     * <p>
+     * Executes operational logic for {@code AdvancedCliodynamicTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testOceanWavePhysicsAndCabotage() {
         // 1. Continental Shelf vs Abyssal Wave Height (Hs)
         double coastalHs = DynamicMaritimeRoutingGraph.calculateSignificantWaveHeight(-50.0, 0.0);

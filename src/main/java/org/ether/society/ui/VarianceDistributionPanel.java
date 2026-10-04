@@ -53,6 +53,7 @@ public class VarianceDistributionPanel extends VBox {
             this.isHeader = false;
         }
 
+        // Helper subroutine: variable entry - internal state computation & bounds checking
         private VariableEntry(String headerTitle) {
             this.key = null;
             this.displayName = headerTitle;
@@ -400,6 +401,7 @@ public class VarianceDistributionPanel extends VBox {
         }
     }
 
+    // Helper subroutine: create mini kpi - internal state computation & bounds checking
     private HBox createMiniKpi(Label titleLabel, Label valLabel) {
         HBox box = new HBox(4);
         box.setAlignment(Pos.CENTER_LEFT);
@@ -495,6 +497,7 @@ public class VarianceDistributionPanel extends VBox {
         }
     }
 
+    // Helper subroutine: format adaptive - internal state computation & bounds checking
     private String formatAdaptive(double val) {
         if (Double.isNaN(val) || Double.isInfinite(val)) return "--";
         double abs = Math.abs(val);

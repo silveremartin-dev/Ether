@@ -138,6 +138,7 @@ public class SaveEncryptionVault {
         return decrypt(encryptedData, DEFAULT_APP_SECRET);
     }
 
+    // Helper subroutine: derive key - internal state computation & bounds checking
     private static SecretKey deriveKey(String password, byte[] salt) throws Exception {
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATION_COUNT, KEY_LENGTH);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");

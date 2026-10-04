@@ -61,6 +61,15 @@ public class InfrastructureInertiaEngine {
      * @return the resulting computation or state reference
      */
     public static double getCapitalTurnoverHalfLifeYears() { return baseCapitalTurnoverHalfLifeYears; }
+    /*
+     * Set capital turnover half life years operation.
+     * <p>
+     * Executes operational logic for {@code InfrastructureInertiaEngine} within the Tier 1 physical conservation solver.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param years the years argument (double)
+     */
     public static void setCapitalTurnoverHalfLifeYears(double years) { baseCapitalTurnoverHalfLifeYears = Math.max(1.0, years); }
 }
 

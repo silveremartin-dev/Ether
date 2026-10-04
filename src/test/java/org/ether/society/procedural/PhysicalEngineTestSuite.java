@@ -33,6 +33,14 @@ public class PhysicalEngineTestSuite {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         testCells = new ArrayList<>();
         H3Cell cell = new H3Cell(0x8828308281fffffL, 48.8566, 2.3522);
@@ -50,6 +58,14 @@ public class PhysicalEngineTestSuite {
 
     @Test
     @DisplayName("Soil N-P-K Liebig's Law & Mineral Mining Execution Test")
+    /*
+     * Test soil nutrient npkengine operation.
+     * <p>
+     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSoilNutrientNPKEngine() {
         SoilNutrientNPKEngine.processSoilNutrients(testCells);
         assertNotNull(testCells.get(0).getBiomassAgriculture());
@@ -58,6 +74,14 @@ public class PhysicalEngineTestSuite {
 
     @Test
     @DisplayName("Net Energy EROEI Master Cliodynamic Engine Test")
+    /*
+     * Test net energy eroeiengine operation.
+     * <p>
+     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testNetEnergyEROEIEngine() {
         double eroei = NetEnergyEROEIEngine.calculateEROEI(testCells.get(0));
         assertTrue(eroei > 0.0, "EROEI must be strictly positive");
@@ -66,6 +90,14 @@ public class PhysicalEngineTestSuite {
 
     @Test
     @DisplayName("Nuclear Safety & Radiotoxicity Engine Test")
+    /*
+     * Test nuclear safety radiotoxicity engine operation.
+     * <p>
+     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testNuclearSafetyRadiotoxicityEngine() {
         NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(testCells);
         assertTrue(testCells.get(0).getPopulation() >= 0);
@@ -73,6 +105,14 @@ public class PhysicalEngineTestSuite {
 
     @Test
     @DisplayName("Ozone Layer Depletion Engine Test")
+    /*
+     * Test ozone layer depletion engine operation.
+     * <p>
+     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testOzoneLayerDepletionEngine() {
         OzoneLayerDepletionEngine.processOzoneLayerDepletion(testCells);
         assertTrue(testCells.get(0).getBiomassAgriculture() >= 0.0);
@@ -80,6 +120,14 @@ public class PhysicalEngineTestSuite {
 
     @Test
     @DisplayName("Nuclear Warfare & Climate Soot Engine Test")
+    /*
+     * Test nuclear warfare climate engine operation.
+     * <p>
+     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testNuclearWarfareClimateEngine() {
         NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(1.2);
         NuclearWarfareClimateEngine.processNuclearWarfareClimate(testCells);
@@ -88,6 +136,14 @@ public class PhysicalEngineTestSuite {
 
     @Test
     @DisplayName("Technological Singularity & Trans-Human Engine Test")
+    /*
+     * Test technological singularity engine operation.
+     * <p>
+     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTechnologicalSingularityEngine() {
         TechnologicalSingularityEngine.processTechnologicalSingularity(testCells);
         assertNotNull(testCells.get(0).getResourceCapital());

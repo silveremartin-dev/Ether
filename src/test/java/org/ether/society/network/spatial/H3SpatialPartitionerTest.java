@@ -18,6 +18,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class H3SpatialPartitionerTest {
 
     @Test
+    /*
+     * Test hilbert key monotonicity and determinism operation.
+     * <p>
+     * Executes operational logic for {@code H3SpatialPartitionerTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHilbertKeyMonotonicityAndDeterminism() {
         long key1 = H3SpatialPartitioner.computeHilbertKey(48.8566, 2.3522); // Paris
         long key2 = H3SpatialPartitioner.computeHilbertKey(48.8566, 2.3522); // Paris (identical)
@@ -28,6 +36,14 @@ public class H3SpatialPartitionerTest {
     }
 
     @Test
+    /*
+     * Test cell sorting by hilbert curve operation.
+     * <p>
+     * Executes operational logic for {@code H3SpatialPartitionerTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCellSortingByHilbertCurve() {
         List<H3Cell> cells = new ArrayList<>();
 
@@ -57,6 +73,14 @@ public class H3SpatialPartitionerTest {
     }
 
     @Test
+    /*
+     * Test partition division operation.
+     * <p>
+     * Executes operational logic for {@code H3SpatialPartitionerTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPartitionDivision() {
         int totalCells = 1000;
         int numPartitions = 4;
@@ -76,6 +100,14 @@ public class H3SpatialPartitionerTest {
     }
 
     @Test
+    /*
+     * Test boundary detection operation.
+     * <p>
+     * Executes operational logic for {@code H3SpatialPartitionerTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBoundaryDetection() {
         SpatialPartition partition = new SpatialPartition(0, 0, 10);
         int[][] neighborIndices = new int[20][6];
@@ -93,6 +125,14 @@ public class H3SpatialPartitionerTest {
     }
 
     @Test
+    /*
+     * Test computational weight partitioning operation.
+     * <p>
+     * Executes operational logic for {@code H3SpatialPartitionerTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testComputationalWeightPartitioning() {
         float[] weights = new float[100];
         // Cells 0..9 are high density mega-city (weight 10.0 each -> 100 total)

@@ -31,6 +31,14 @@ public class EarthScenarioPerformanceBenchmarkTest {
     private static final Logger logger = LoggerFactory.getLogger(EarthScenarioPerformanceBenchmarkTest.class);
 
     @Test
+    /*
+     * Run earth scenario benchmark operation.
+     * <p>
+     * Executes operational logic for {@code EarthScenarioPerformanceBenchmarkTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void runEarthScenarioBenchmark() {
         logger.info("===============================================================================");
         logger.info("ðŸŒ STARTING EARTH HIGH-FIDELITY PERFORMANCE BENCHMARK");

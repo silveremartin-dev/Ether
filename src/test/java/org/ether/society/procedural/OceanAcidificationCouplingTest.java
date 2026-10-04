@@ -24,6 +24,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class OceanAcidificationCouplingTest {
 
     @Test
+    /*
+     * Test acidification reduces marine yields operation.
+     * <p>
+     * Executes operational logic for {@code OceanAcidificationCouplingTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAcidificationReducesMarineYields() {
         List<H3Cell> cells = new ArrayList<>();
         H3Cell oceanCell = new H3Cell();

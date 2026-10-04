@@ -46,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EmpiricalEngineCounterfactualValidationSuite {
     private static final Logger logger = LoggerFactory.getLogger(EmpiricalEngineCounterfactualValidationSuite.class);
 
+    // Helper subroutine: create earth preset - internal state computation & bounds checking
     private static PlanetPreset createEarthPreset(long seed) {
         return new PlanetPreset(
                 "Terre Planetary Res2", 2, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, seed, 1.0, 1.0, 0.35, 40.0, 21.0, 0.30, 1.0,
@@ -55,7 +56,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
 
     private static final long[] MONTE_CARLO_SEEDS = { 101L, 202L, 303L, 404L, 505L };
 
-    /**
+    /*
      * Helper to clone an H3 cell state for bit-identical initial conditions in paired runs.
      */
     private static List<H3Cell> cloneCellGrid(List<H3Cell> source) {
@@ -82,7 +83,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
         return cloned;
     }
 
-    /**
+    /*
      * Computes Cohen's d effect size between control and treatment sample distributions.
      */
     private static double calculateCohensD(double[] control, double[] treatment) {
@@ -105,7 +106,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
         return (mean2 - mean1) / pooledStd;
     }
 
-    /**
+    /*
      * Computes Kolmogorov-Smirnov D statistic between two sample empirical CDFs.
      */
     private static double calculateKolmogorovSmirnovD(double[] sample1, double[] sample2) {
@@ -385,6 +386,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             assertTrue(meanGiniTreatment >= meanGiniControl, "Krugman core-periphery forces must increase spatial wealth concentration (Gini)");
         }
 
+        // Helper subroutine: calculate gini - internal state computation & bounds checking
         private double calculateGini(List<H3Cell> cells) {
             List<Double> capitals = new ArrayList<>();
             for (H3Cell c : cells) {

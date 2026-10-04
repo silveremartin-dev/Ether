@@ -19,6 +19,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SimulationPipelineTest {
 
     @Test
+    /*
+     * Test simulation pipeline execution operation.
+     * <p>
+     * Executes operational logic for {@code SimulationPipelineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSimulationPipelineExecution() throws Exception {
         Configuration config = ConfigurationLoader.loadDefault();
         H3SimulationEngine engine = new H3SimulationEngine(config);

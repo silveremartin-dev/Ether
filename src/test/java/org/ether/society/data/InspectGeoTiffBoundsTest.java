@@ -7,6 +7,14 @@ import java.io.File;
 
 public class InspectGeoTiffBoundsTest {
     @Test
+    /*
+     * Inspect paleo clim geo tiff bounds operation.
+     * <p>
+     * Executes operational logic for {@code InspectGeoTiffBoundsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void inspectPaleoClimGeoTiffBounds() throws Exception {
         String[] files = {
             "data/maps/paleoclim/LIG_v1_2_5m/bio_1.tif",
@@ -59,6 +67,14 @@ public class InspectGeoTiffBoundsTest {
     }
 
     @Test
+    /*
+     * Test direct tiff reader operation.
+     * <p>
+     * Executes operational logic for {@code InspectGeoTiffBoundsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testDirectTiffReader() throws Exception {
         File f = new File("data/maps/usgs/ETOPO_2022_v1_60s_N90W180_bed.tif");
         if (!f.exists()) return;
@@ -272,6 +288,14 @@ public class InspectGeoTiffBoundsTest {
     }
 
     @Test
+    /*
+     * Test recover reference pngs operation.
+     * <p>
+     * Executes operational logic for {@code InspectGeoTiffBoundsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testRecoverReferencePngs() throws Exception {
         String[] pngs = {"data/maps/reference_earth_elevation.png", "data/maps/reference_earth_biomes.png"};
         for (String p : pngs) {
@@ -310,6 +334,14 @@ public class InspectGeoTiffBoundsTest {
     }
 
     @Test
+    /*
+     * Inspect all elevation files operation.
+     * <p>
+     * Executes operational logic for {@code InspectGeoTiffBoundsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void inspectAllElevationFiles() throws Exception {
         String[] paths = {
             "data/maps/reference_earth_elevation.png",

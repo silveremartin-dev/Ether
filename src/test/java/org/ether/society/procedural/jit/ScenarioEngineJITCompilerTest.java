@@ -20,11 +20,27 @@ public class ScenarioEngineJITCompilerTest {
     private ScenarioEngineJITCompiler compiler;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioEngineJITCompilerTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         compiler = new ScenarioEngineJITCompiler();
     }
 
     @Test
+    /*
+     * Test symbolic expression composition operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioEngineJITCompilerTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSymbolicExpressionComposition() {
         // f(x) = 2.0 * x + 3.0
         SymbolicExpression f = new SymbolicExpression("biomassHuman", 2.0, 3.0);
@@ -42,6 +58,14 @@ public class ScenarioEngineJITCompilerTest {
     }
 
     @Test
+    /*
+     * Test conflict analyzer detection operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioEngineJITCompilerTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testConflictAnalyzerDetection() {
         // Engine A: Growth (+0.05) with target 1000
         compiler.registerEngineStep("EngineA_Growth", "temperature", new SymbolicExpression("temperature", 1.05, 0.0), 1000.0);
@@ -57,6 +81,14 @@ public class ScenarioEngineJITCompilerTest {
     }
 
     @Test
+    /*
+     * Test fused kernel execution over world buffer operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioEngineJITCompilerTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testFusedKernelExecutionOverWorldBuffer() {
         WorldBuffer buffer = new WorldBuffer(10);
         float[] temp = buffer.getTemperature();
@@ -82,6 +114,14 @@ public class ScenarioEngineJITCompilerTest {
     }
 
     @Test
+    /*
+     * Test fused kernel execution over h3cells operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioEngineJITCompilerTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testFusedKernelExecutionOverH3Cells() {
         List<H3Cell> cells = new ArrayList<>();
         H3Cell cell = new H3Cell(0x8828308281fffffL, 0.0, 0.0);

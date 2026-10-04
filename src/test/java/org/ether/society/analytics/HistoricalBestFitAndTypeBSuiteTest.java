@@ -27,6 +27,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HistoricalBestFitAndTypeBSuiteTest {
 
     @Test
+    /*
+     * Test historical best fit calculations operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalBestFitAndTypeBSuiteTest} within the epistemic validation and empirical benchmarking harness.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHistoricalBestFitCalculations() {
         Map<Integer, Double> simulatedData = new HashMap<>();
         simulatedData.put(1900, 1650.0);
@@ -41,6 +49,14 @@ public class HistoricalBestFitAndTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test isolated macro engines operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalBestFitAndTypeBSuiteTest} within the epistemic validation and empirical benchmarking harness.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testIsolatedMacroEngines() {
         assertEquals(0.65, LenskiPureEngine.calculateLenskiGini(3.0), 0.001, "Agrarian stage should yield peak Gini in Lenski model.");
         assertTrue(LeslieWhitePureEngine.calculateCulturalComplexity(100.0, 2.5) > 200.0, "White's law C = E * T should scale complexity.");
@@ -49,6 +65,14 @@ public class HistoricalBestFitAndTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test engine hybrids execution operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalBestFitAndTypeBSuiteTest} within the epistemic validation and empirical benchmarking harness.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEngineHybridsExecution() {
         List<H3Cell> cells = new ArrayList<>();
         H3Cell cell = new H3Cell(613503380827930701L, 45.0, 10.0);

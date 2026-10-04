@@ -34,6 +34,14 @@ public class PluggableEngineTestSuite {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code PluggableEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
         testCells = new ArrayList<>();
@@ -44,6 +52,14 @@ public class PluggableEngineTestSuite {
     }
 
     @Test
+    /*
+     * Test custom plugin registration and execution operation.
+     * <p>
+     * Executes operational logic for {@code PluggableEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCustomPluginRegistrationAndExecution() {
         // Register a custom user plugin that increases temperature by 1.0 degree per tick
         ProceduralEngineRegistry.registerPlugin("CustomGeothermalBooster", (cells, deltaYears) -> {

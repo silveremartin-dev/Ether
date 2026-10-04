@@ -27,6 +27,14 @@ public class MultiLayerRenderingTest {
     private static boolean jfxInitialized = false;
 
     @BeforeAll
+    /*
+     * Init jfx operation.
+     * <p>
+     * Executes operational logic for {@code MultiLayerRenderingTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public static void initJFX() throws InterruptedException {
         if (!jfxInitialized) {
             CountDownLatch latch = new CountDownLatch(1);
@@ -46,6 +54,14 @@ public class MultiLayerRenderingTest {
 
     @Test
     @DisplayName("Verify default active layers include Biome and Population")
+    /*
+     * Test default active layers operation.
+     * <p>
+     * Executes operational logic for {@code MultiLayerRenderingTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testDefaultActiveLayers() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
@@ -65,6 +81,14 @@ public class MultiLayerRenderingTest {
 
     @Test
     @DisplayName("Verify toggling active display modes")
+    /*
+     * Test toggle display modes operation.
+     * <p>
+     * Executes operational logic for {@code MultiLayerRenderingTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testToggleDisplayModes() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
@@ -92,6 +116,14 @@ public class MultiLayerRenderingTest {
 
     @Test
     @DisplayName("Verify blended color overlay: terrain remains visible under population")
+    /*
+     * Test blended biome population rendering operation.
+     * <p>
+     * Executes operational logic for {@code MultiLayerRenderingTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBlendedBiomePopulationRendering() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {

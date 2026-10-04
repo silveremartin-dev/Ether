@@ -120,6 +120,7 @@ public class CellTooltip extends VBox {
         setMouseTransparent(true);
     }
 
+    // Helper subroutine: create label - internal state computation & bounds checking
     private Label createLabel() {
         Label label = new Label();
         label.setMinWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
@@ -360,6 +361,7 @@ public class CellTooltip extends VBox {
         updateCell(null, world, index, null, null);
     }
 
+    // Helper subroutine: compute carrying capacity - internal state computation & bounds checking
     private double computeCarryingCapacity(Biome biome, int elevation, double water, double aquifer, double tech) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (elevation <= 0 && biome == Biome.OCEAN) return 0.0;
@@ -383,11 +385,13 @@ public class CellTooltip extends VBox {
         return Math.max(10.0, baseCap);
     }
 
+    // Helper subroutine: get biome name - internal state computation & bounds checking
     private String getBiomeName(String biomeEnumName) {
         String key = "biome." + biomeEnumName.toLowerCase();
         return I18n.getOrDefault(key, biomeEnumName);
     }
 
+    // Helper subroutine: get biome icon - internal state computation & bounds checking
     private String getBiomeIcon(Biome biome) {
         if (biome == null) return "🌍";
         return switch (biome) {

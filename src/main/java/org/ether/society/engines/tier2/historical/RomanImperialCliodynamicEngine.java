@@ -75,6 +75,15 @@ public class RomanImperialCliodynamicEngine {
      * @return the resulting computation or state reference
      */
     public static double getImperialRadiusKm() { return imperialRadiusKm; }
+    /*
+     * Set imperial radius km operation.
+     * <p>
+     * Executes operational logic for {@code RomanImperialCliodynamicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param radius the radius argument (double)
+     */
     public static void setImperialRadiusKm(double radius) { imperialRadiusKm = Math.max(100.0, radius); }
 
     /*
@@ -84,6 +93,15 @@ public class RomanImperialCliodynamicEngine {
      * @return the resulting computation or state reference
      */
     public static double getEliteOverproductionFactor() { return eliteOverproductionFactor; }
+    /*
+     * Set elite overproduction factor operation.
+     * <p>
+     * Executes operational logic for {@code RomanImperialCliodynamicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param v the v argument (double)
+     */
     public static void setEliteOverproductionFactor(double v) { eliteOverproductionFactor = Math.max(0.0, Math.min(0.50, v)); }
 }
 

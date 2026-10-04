@@ -22,8 +22,11 @@ public class GenerateEarthMaps {
             for (int i = 0; i < 512; i++) p[i] = perm[i & 255];
         }
 
+        // Helper subroutine: fade - internal state computation & bounds checking
         private double fade(double t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+        // Helper subroutine: lerp - internal state computation & bounds checking
         private double lerp(double t, double a, double b) { return a + t * (b - a); }
+        // Helper subroutine: grad - internal state computation & bounds checking
         private double grad(int hash, double x, double y) {
             int h = hash & 7;
             double u = h < 4 ? x : y;
@@ -44,6 +47,15 @@ public class GenerateEarthMaps {
         }
     }
 
+    /*
+     * Main operation.
+     * <p>
+     * Executes operational logic for {@code GenerateEarthMaps} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param args the args argument (String[])
+     */
     public static void main(String[] args) throws IOException {
         int width = 1024;
         int height = 512;
@@ -152,6 +164,7 @@ public class GenerateEarthMaps {
         System.out.println("Generated Earth maps at " + elevFile.getAbsolutePath() + " and " + biomeFile.getAbsolutePath());
     }
 
+    // Helper subroutine: get earth land distance - internal state computation & bounds checking
     private static double getEarthLandDistance(double lat, double lon) {
         // Smooth distance field to continents
         double dist = -0.6; // Default deep ocean
@@ -198,6 +211,7 @@ public class GenerateEarthMaps {
         return dist;
     }
 
+    // Helper subroutine: circle field - internal state computation & bounds checking
     private static double circleField(double lat, double lon, double clat, double clon, double rLat, double rLon) {
         double dLat = (lat - clat) / rLat;
         double dLon = (lon - clon) / rLon;

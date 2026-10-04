@@ -32,6 +32,7 @@ public class MicroCalibrationSuite {
         config = ConfigurationLoader.loadDefault();
     }
 
+    // Helper subroutine: create cell patch - internal state computation & bounds checking
     private List<H3Cell> createCellPatch(int count, Biome biome, int popPerCell, double foodPerCell, double waterPerCell, double temp) {
         List<H3Cell> cells = new ArrayList<>();
         for (int i = 0; i < count; i++) {

@@ -15,6 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HeadlessRunnerCliTest {
 
     @Test
+    /*
+     * Test cli help manual operation.
+     * <p>
+     * Executes operational logic for {@code HeadlessRunnerCliTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCliHelpManual() {
         assertDoesNotThrow(() -> HeadlessRunner.run(new String[]{"--help"}));
         assertDoesNotThrow(() -> HeadlessRunner.run(new String[]{"-h"}));
@@ -22,6 +30,14 @@ public class HeadlessRunnerCliTest {
     }
 
     @Test
+    /*
+     * Test headless simulation with performance flags operation.
+     * <p>
+     * Executes operational logic for {@code HeadlessRunnerCliTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHeadlessSimulationWithPerformanceFlags() {
         String[] args = new String[]{
                 "--ticks=3",
@@ -44,6 +60,14 @@ public class HeadlessRunnerCliTest {
     }
 
     @Test
+    /*
+     * Test headless simulation default scenario baseline operation.
+     * <p>
+     * Executes operational logic for {@code HeadlessRunnerCliTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHeadlessSimulationDefaultScenarioBaseline() {
         String[] args = new String[]{
                 "--ticks=2",
@@ -56,6 +80,14 @@ public class HeadlessRunnerCliTest {
     }
 
     @Test
+    /*
+     * Test multi node clustering configuration and registration operation.
+     * <p>
+     * Executes operational logic for {@code HeadlessRunnerCliTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testMultiNodeClusteringConfigurationAndRegistration() throws IOException, InterruptedException {
         int testPort = 9977;
         String secret = "MultiNodeTestSecret2026";
@@ -112,6 +144,14 @@ public class HeadlessRunnerCliTest {
     }
 
     @Test
+    /*
+     * Test simulation performance config properties operation.
+     * <p>
+     * Executes operational logic for {@code HeadlessRunnerCliTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSimulationPerformanceConfigProperties() {
         SimulationPerformanceConfig config = new SimulationPerformanceConfig(true);
         assertTrue(config.isStrictDeterminism());

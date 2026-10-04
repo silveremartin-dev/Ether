@@ -351,6 +351,7 @@ public class HeadlessBatchRunner {
         return record;
     }
 
+    // Helper subroutine: record current telemetry snapshot - internal state computation & bounds checking
     private static void recordCurrentTelemetrySnapshot(SimulationRunRecord record, H3SimulationEngine engine, int year) {
         long pop = engine.getTotalPopulation();
         double foodPerCap = engine.getFoodPerCapita();

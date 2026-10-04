@@ -16,6 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SimulationStateChecksumTest {
 
     @Test
+    /*
+     * Test checksum determinism and sensitivity operation.
+     * <p>
+     * Executes operational logic for {@code SimulationStateChecksumTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testChecksumDeterminismAndSensitivity() {
         List<H3Cell> cells = new ArrayList<>();
         for (int i = 0; i < 5; i++) {

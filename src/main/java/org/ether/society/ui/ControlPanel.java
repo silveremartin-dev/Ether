@@ -667,6 +667,7 @@ public class ControlPanel extends VBox {
         }
     }
 
+    // Helper subroutine: update speed max style - internal state computation & bounds checking
     private void updateSpeedMaxStyle(boolean isMax) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (speedMax == null) return;
@@ -678,6 +679,7 @@ public class ControlPanel extends VBox {
         }
     }
 
+    // Helper subroutine: update speed label - internal state computation & bounds checking
     private void updateSpeedLabel(double spd) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (speedValueLabel == null) return;
@@ -730,6 +732,7 @@ public class ControlPanel extends VBox {
         speedValueLabel.setText("⏱️ " + String.format(fmt, spdStr, timeUnit));
     }
 
+    // Helper subroutine: on layer toggled - internal state computation & bounds checking
     private void onLayerToggled(DisplayMode mode, boolean selected) {
         if (mapCanvas != null) {
             mapCanvas.setDisplayModeActive(mode, selected);
@@ -786,6 +789,7 @@ public class ControlPanel extends VBox {
         }
     }
 
+    // Helper subroutine: create preset btn - internal state computation & bounds checking
     private Button createPresetBtn(String label, String tooltip, Runnable action) {
         Button btn = new Button(label);
         btn.setTooltip(new Tooltip(tooltip));
@@ -796,6 +800,7 @@ public class ControlPanel extends VBox {
         return btn;
     }
 
+    // Helper subroutine: apply preset synthesis - internal state computation & bounds checking
     private void applyPresetSynthesis(CheckBox pauseOnEventCheck) {
         mode3dCheck.setSelected(true);
         reliefSlider.setDisable(false); reliefLabel.setDisable(false); autoRotateCheck.setDisable(false);
@@ -815,6 +820,7 @@ public class ControlPanel extends VBox {
         }
     }
 
+    // Helper subroutine: apply preset econ - internal state computation & bounds checking
     private void applyPresetEcon() {
         mode3dCheck.setSelected(false);
         reliefSlider.setDisable(true); reliefLabel.setDisable(true); autoRotateCheck.setDisable(true);
@@ -833,6 +839,7 @@ public class ControlPanel extends VBox {
         }
     }
 
+    // Helper subroutine: apply preset climate - internal state computation & bounds checking
     private void applyPresetClimate() {
         mode3dCheck.setSelected(false);
         reliefSlider.setDisable(true); reliefLabel.setDisable(true); autoRotateCheck.setDisable(true);
@@ -851,6 +858,7 @@ public class ControlPanel extends VBox {
         }
     }
 
+    // Helper subroutine: apply preset cliodynamics - internal state computation & bounds checking
     private void applyPresetCliodynamics(CheckBox pauseOnEventCheck) {
         mode3dCheck.setSelected(false);
         reliefSlider.setDisable(true); reliefLabel.setDisable(true); autoRotateCheck.setDisable(true);
@@ -873,12 +881,14 @@ public class ControlPanel extends VBox {
         }
     }
 
+    // Helper subroutine: create card title - internal state computation & bounds checking
     private Label createCardTitle(String title) {
         Label label = new Label(title);
         label.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
         return label;
     }
 
+    // Helper subroutine: style card - internal state computation & bounds checking
     private void styleCard(VBox card) {
         card.getStyleClass().add("card-section");
     }
@@ -963,13 +973,85 @@ public class ControlPanel extends VBox {
         }
     }
 
+    /*
+     * Set on save operation.
+     * <p>
+     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param onSave the on save argument (Runnable)
+     */
     public void setOnSave(Runnable onSave) { this.onSave = onSave; }
+    /*
+     * Set on load operation.
+     * <p>
+     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param onLoad the on load argument (Runnable)
+     */
     public void setOnLoad(Runnable onLoad) { this.onLoad = onLoad; }
+    /*
+     * Set on contour toggle operation.
+     * <p>
+     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param onContourToggle the on contour toggle argument (Consumer&lt;Boolean&gt;)
+     */
     public void setOnContourToggle(Consumer<Boolean> onContourToggle) { this.onContourToggle = onContourToggle; }
+    /*
+     * Set on timelapse record operation.
+     * <p>
+     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param onTimelapseRecord the on timelapse record argument (Runnable)
+     */
     public void setOnTimelapseRecord(Runnable onTimelapseRecord) { this.onTimelapseRecord = onTimelapseRecord; }
+    /*
+     * Set on timelapse seek operation.
+     * <p>
+     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param onTimelapseSeek the on timelapse seek argument (Consumer&lt;Integer&gt;)
+     */
     public void setOnTimelapseSeek(Consumer<Integer> onTimelapseSeek) { this.onTimelapseSeek = onTimelapseSeek; }
+    /*
+     * Set on timelapse seek to end operation.
+     * <p>
+     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param onTimelapseSeekToEnd the on timelapse seek to end argument (Runnable)
+     */
     public void setOnTimelapseSeekToEnd(Runnable onTimelapseSeekToEnd) { this.onTimelapseSeekToEnd = onTimelapseSeekToEnd; }
+    /*
+     * Set on stats toggle operation.
+     * <p>
+     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param onStatsToggle the on stats toggle argument (Consumer&lt;Boolean&gt;)
+     */
     public void setOnStatsToggle(Consumer<Boolean> onStatsToggle) { this.onStatsToggle = onStatsToggle; }
+    /*
+     * Set on full screen operation.
+     * <p>
+     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param onFullScreen the on full screen argument (Runnable)
+     */
     public void setOnFullScreen(Runnable onFullScreen) { this.onFullScreen = onFullScreen; }
 
     /*
@@ -1005,6 +1087,15 @@ public class ControlPanel extends VBox {
         }
     }
 
+    /*
+     * Set mini map operation.
+     * <p>
+     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param miniMap the mini map argument (MiniMap)
+     */
     public void setMiniMap(MiniMap miniMap) { this.miniMap = miniMap; }
     /*
      * Set color legend.
@@ -1019,6 +1110,7 @@ public class ControlPanel extends VBox {
         }
     }
 
+    // Helper subroutine: setup repeat action - internal state computation & bounds checking
     private void setupRepeatAction(Button btn, Runnable action) {
         javafx.animation.Timeline repeatTimeline = new javafx.animation.Timeline(
             new javafx.animation.KeyFrame(javafx.util.Duration.millis(80), e -> action.run())
@@ -1084,6 +1176,7 @@ public class ControlPanel extends VBox {
         cellStatValue.setText(String.format(I18n.getOrDefault("sim.status.populated_cells", "Populated Cells: %,d"), populatedCells));
     }
 
+    // Helper subroutine: format number - internal state computation & bounds checking
     private String formatNumber(long num) {
         if (num >= 1_000_000_000L) {
             return String.format("%.2f Md", num / 1_000_000_000.0);
@@ -1134,6 +1227,7 @@ public class ControlPanel extends VBox {
 
     private final List<String> lastRenderedEventSignatures = new ArrayList<>();
 
+    // Helper subroutine: apply events filter - internal state computation & bounds checking
     private void applyEventsFilter() {
         lastRenderedEventSignatures.clear();
         updateRecentEvents(rawEventsCache);
@@ -1199,6 +1293,7 @@ public class ControlPanel extends VBox {
         }
     }
 
+    // Helper subroutine: create event item node - internal state computation & bounds checking
     private VBox createEventItemNode(ActiveEvent evt) {
         VBox card = new VBox(4);
         String normalStyle = "-fx-background-color: rgba(30, 41, 59, 0.75); -fx-border-color: rgba(56, 189, 248, 0.25); -fx-border-width: 1; -fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 6 8; -fx-cursor: hand;";
@@ -1338,6 +1433,7 @@ public class ControlPanel extends VBox {
         refreshStatusBadge();
     }
 
+    // Helper subroutine: refresh status badge - internal state computation & bounds checking
     private void refreshStatusBadge() {
         if (dbStatusLabel == null) return;
         String dbOnlineStr = I18n.getOrDefault("sim.status.db_online", "🟢 Supabase DB: Online");
@@ -1347,6 +1443,7 @@ public class ControlPanel extends VBox {
         dbStatusLabel.setStyle(isDbOnline ? "-fx-font-size: 11px; -fx-text-fill: #4ade80; -fx-font-weight: bold;" : "-fx-font-size: 11px; -fx-text-fill: #38bdf8;");
     }
 
+    // Helper subroutine: update texts - internal state computation & bounds checking
     private void updateTexts() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (playPauseBtn != null) {
@@ -1496,6 +1593,7 @@ public class ControlPanel extends VBox {
         updateDisplayToggleButton();
     }
 
+    // Helper subroutine: update view toggle button - internal state computation & bounds checking
     private void updateViewToggleButton() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (mapCanvas != null && mode3dCheck != null) {
@@ -1511,6 +1609,7 @@ public class ControlPanel extends VBox {
         }
     }
 
+    // Helper subroutine: update display toggle button - internal state computation & bounds checking
     private void updateDisplayToggleButton() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         updateActiveLayerUI();

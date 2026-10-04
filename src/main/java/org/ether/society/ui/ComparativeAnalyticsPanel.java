@@ -427,6 +427,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
+    // Helper subroutine: init ui - internal state computation & bounds checking
     private void initUI() {
         VBox topBox = new VBox(10);
         topBox.setPadding(new Insets(0, 0, 10, 0));
@@ -1138,6 +1139,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         updateChartAndAnalysis();
     }
 
+    // Helper subroutine: ensure history loaded for save - internal state computation & bounds checking
     private void ensureHistoryLoadedForSave(String saveId, String scenarioName) {
         if (saveId == null || saveId.isBlank() || "N/A".equals(saveId) || "HISTORICAL_GROUND_TRUTH".equals(saveId)) return;
         if (runRepository.getRun(saveId) != null) return;
@@ -1197,6 +1199,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         checkExecutionStatus();
     }
 
+    // Helper subroutine: update execution context badge - internal state computation & bounds checking
     private void updateExecutionContextBadge() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (executionContextBadge == null) return;
@@ -1250,6 +1253,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: cancel batch execution - internal state computation & bounds checking
     private void cancelBatchExecution() {
         if (isBatchRunning.get()) {
             logger.info("User requested cancellation of batch execution queue");
@@ -1259,6 +1263,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: check execution status - internal state computation & bounds checking
     private void checkExecutionStatus() {
         List<ScenarioSelectableItem> selected = scenarioList.stream()
             .filter(ScenarioSelectableItem::isSelected)
@@ -1317,6 +1322,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: execute missing scenarios - internal state computation & bounds checking
     private void executeMissingScenarios() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (isBatchRunning.get()) return;
@@ -1454,6 +1460,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         batchWorkerThread.start();
     }
 
+    // Helper subroutine: update live batch progress and eta - internal state computation & bounds checking
     private void updateLiveBatchProgressAndEta(List<ScenarioSelectableItem> items, long startTimeMs) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (items == null || items.isEmpty()) return;
@@ -1474,6 +1481,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: run analysis - internal state computation & bounds checking
     private void runAnalysis() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         List<ScenarioSelectableItem> selectedExecuted = scenarioList.stream()
@@ -1565,6 +1573,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         update2DSpatialComparison();
     }
 
+    // Helper subroutine: generate historical audit report - internal state computation & bounds checking
     private void generateHistoricalAuditReport(String targetName, SimulationRunRecord targetRun) {
         Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries = targetRun.getTimeSeriesData();
         if (timeSeries == null || timeSeries.isEmpty()) {
@@ -1667,6 +1676,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         reportPreviewPane.setMarkdown(sb.toString());
     }
 
+    // Helper subroutine: get engine module for variable - internal state computation & bounds checking
     private String getEngineModuleForVariable(String varName) {
         if (varName.contains("Population")) return "DemographicEngine";
         if (varName.contains("Product") || varName.contains("GWP")) return "SociologyEngine (Capital)";
@@ -1677,6 +1687,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         return "H3SimulationEngine";
     }
 
+    // Helper subroutine: update chart and analysis - internal state computation & bounds checking
     private void updateChartAndAnalysis() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (isUpdatingTexts) return;
@@ -1762,6 +1773,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: map metric to benchmark key - internal state computation & bounds checking
     private String mapMetricToBenchmarkKey(String metric) {
         if (metric == null) return "worldPopulation";
         if (metric.contains("Population")) return "worldPopulation";
@@ -1774,6 +1786,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         return "worldPopulation";
     }
 
+    // Helper subroutine: update2dspatial comparison - internal state computation & bounds checking
     private void update2DSpatialComparison() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (isUpdatingTexts) return;
@@ -1936,6 +1949,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         });
     }
 
+    // Helper subroutine: rasterize cells to image - internal state computation & bounds checking
     private java.awt.image.BufferedImage rasterizeCellsToImage(List<org.ether.society.database.H3Cell> cells, String channel, int width, int height) {
         if (cells == null || cells.isEmpty()) return null;
         java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_ARGB);
@@ -1993,6 +2007,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         return img;
     }
 
+    // Helper subroutine: get temperature color - internal state computation & bounds checking
     private java.awt.Color getTemperatureColor(double norm) {
         int r = (int) (norm * 255);
         int g = (int) ((1.0 - Math.abs(norm - 0.5) * 2.0) * 200);
@@ -2000,6 +2015,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         return new java.awt.Color(Math.max(0, Math.min(255, r)), Math.max(0, Math.min(255, g)), Math.max(0, Math.min(255, b)));
     }
 
+    // Helper subroutine: get aquifer color - internal state computation & bounds checking
     private java.awt.Color getAquiferColor(double norm) {
         int r = (int) (20 + norm * 30);
         int g = (int) (100 + norm * 140);
@@ -2007,6 +2023,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         return new java.awt.Color(Math.min(255, r), Math.min(255, g), Math.min(255, b));
     }
 
+    // Helper subroutine: get agriculture color - internal state computation & bounds checking
     private java.awt.Color getAgricultureColor(double norm) {
         int r = (int) (120 - norm * 80);
         int g = (int) (140 + norm * 100);
@@ -2014,6 +2031,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         return new java.awt.Color(Math.max(0, Math.min(255, r)), Math.max(0, Math.min(255, g)), Math.max(0, Math.min(255, b)));
     }
 
+    // Helper subroutine: get density color - internal state computation & bounds checking
     private java.awt.Color getDensityColor(double norm) {
         if (norm < 0.33) {
             return new java.awt.Color(16, 185, 129);
@@ -2024,6 +2042,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: get tech color - internal state computation & bounds checking
     private java.awt.Color getTechColor(double norm) {
         int r = (int) (56 + norm * (245 - 56));
         int g = (int) (189 - norm * 80);
@@ -2031,11 +2050,13 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         return new java.awt.Color(Math.max(0, Math.min(255, r)), Math.max(0, Math.min(255, g)), Math.max(0, Math.min(255, b)));
     }
 
+    // Helper subroutine: get polity color - internal state computation & bounds checking
     private java.awt.Color getPolityColor(long id) {
         if (id <= 0) return new java.awt.Color(100, 116, 139);
         return java.awt.Color.getHSBColor((float) ((id * 0.618033988749895) % 1.0), 0.75f, 0.85f);
     }
 
+    // Helper subroutine: get disk raster for channel - internal state computation & bounds checking
     private File getDiskRasterForChannel(int year, String channel) {
         String baseMapDir = "data/maps/ether/earth/" + year + "/";
         String channelKey = "density";
@@ -2081,6 +2102,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         return null;
     }
 
+    // Helper subroutine: extract channel base64 - internal state computation & bounds checking
     private String extractChannelBase64(Scenario sc, String channel) {
         if (sc == null || channel == null) return null;
         if (channel.contains("SouverainetÃ©") || channel.contains("Sovereignty")) return sc.getCustomTensorMapBase64(3);
@@ -2095,6 +2117,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         return sc.getCustomDensityBase64();
     }
 
+    // Helper subroutine: buffered image to fx image - internal state computation & bounds checking
     private Image bufferedImageToFxImage(java.awt.image.BufferedImage buf) {
         if (buf == null) return null;
         try {
@@ -2106,6 +2129,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: base64to fx image - internal state computation & bounds checking
     private Image base64ToFxImage(String base64) {
         if (base64 == null || base64.isBlank()) return null;
         try {
@@ -2116,6 +2140,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: base64to buffered image - internal state computation & bounds checking
     private java.awt.image.BufferedImage base64ToBufferedImage(String base64) {
         if (base64 == null || base64.isBlank()) return null;
         try {
@@ -2126,6 +2151,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: toggle date animation - internal state computation & bounds checking
     private void toggleDateAnimation() {
         if (isPlayingAnimation) {
             if (timelineAnimation != null) timelineAnimation.stop();
@@ -2150,6 +2176,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: extract value - internal state computation & bounds checking
     private double extractValue(SimulationRunRecord.MetricSnapshot snap, String metric, int year) {
         if (metric == null || snap == null) return 0.0;
         MetricDescriptor desc = MetricRegistry.getInstance().getDescriptorByName(metric);
@@ -2169,6 +2196,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         return snap.getValue(metric);
     }
 
+    // Helper subroutine: export markdown report - internal state computation & bounds checking
     private void exportMarkdownReport() {
         String currentReport = (reportPreviewPane != null) ? reportPreviewPane.getMarkdown() : "";
 
@@ -2212,6 +2240,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: export csv data - internal state computation & bounds checking
     private void exportCsvData() {
         String csv = ComparativeReportGenerator.generateCsvExport(runRepository.getAllRuns());
 

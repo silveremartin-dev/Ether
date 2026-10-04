@@ -18,6 +18,14 @@ public class GenerateAllScenarioMapsTest {
 
     @Test
     @DisplayName("Quick Step Benchmark")
+    /*
+     * Test quick benchmark operation.
+     * <p>
+     * Executes operational logic for {@code GenerateAllScenarioMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testQuickBenchmark() {
         long t0 = System.currentTimeMillis();
         logger.info("--- Starting Quick Ingestion Benchmark ---");
@@ -43,6 +51,14 @@ public class GenerateAllScenarioMapsTest {
 
     @Test
     @DisplayName("Regenerate & Verify Precalculated Maps for Scenario -100000 (Out of Africa Baseline)")
+    /*
+     * Test generate scenario minus100k operation.
+     * <p>
+     * Executes operational logic for {@code GenerateAllScenarioMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testGenerateScenarioMinus100k() throws IOException {
         List<Scenario> scenarios = Scenario.getBuiltInScenarios();
         Scenario sc100k = scenarios.stream()
@@ -80,6 +96,14 @@ public class GenerateAllScenarioMapsTest {
 
     @Test
     @DisplayName("Batch Generate & Verify Precalculated Maps for All Built-in Scenarios in data/maps/Earth/<year>/")
+    /*
+     * Test generate all scenario maps operation.
+     * <p>
+     * Executes operational logic for {@code GenerateAllScenarioMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testGenerateAllScenarioMaps() throws IOException {
         List<Scenario> scenarios = Scenario.getBuiltInScenarios();
         assertTrue(scenarios.size() >= 20, "Must have all canonical scenarios defined");

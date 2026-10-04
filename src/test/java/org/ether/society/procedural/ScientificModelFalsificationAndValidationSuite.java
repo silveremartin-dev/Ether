@@ -55,6 +55,14 @@ public class ScientificModelFalsificationAndValidationSuite {
     private static final Logger logger = LoggerFactory.getLogger(ScientificModelFalsificationAndValidationSuite.class);
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code ScientificModelFalsificationAndValidationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
     }

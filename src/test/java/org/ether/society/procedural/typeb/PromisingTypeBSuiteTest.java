@@ -27,6 +27,14 @@ public class PromisingTypeBSuiteTest {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code PromisingTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
         testCells = new ArrayList<>();
@@ -43,6 +51,14 @@ public class PromisingTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test pinker violence decline engine operation.
+     * <p>
+     * Executes operational logic for {@code PromisingTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPinkerViolenceDeclineEngine() {
         double rateHigh = PinkerViolenceDeclinePureEngine.calculateViolentDeathRatePerCapita(0.1, 0.1, 0.1);
         double rateLow = PinkerViolenceDeclinePureEngine.calculateViolentDeathRatePerCapita(0.9, 0.9, 0.9);
@@ -51,6 +67,14 @@ public class PromisingTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test scott against the grain engine operation.
+     * <p>
+     * Executes operational logic for {@code PromisingTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testScottAgainstTheGrainEngine() {
         double initialLifespan = testCells.get(0).getLifespan();
         ScottAgainstTheGrainPureEngine.processHybrid(testCells, 1.0);
@@ -59,6 +83,14 @@ public class PromisingTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test ai autonomous regulation engine operation.
+     * <p>
+     * Executes operational logic for {@code PromisingTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAiAutonomousRegulationEngine() {
         testCells.get(0).setTechnologyLevel(7.0); // High AI technology
         double initialWork = testCells.get(0).getResourceWork();
@@ -68,6 +100,14 @@ public class PromisingTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test ostrom commons engine operation.
+     * <p>
+     * Executes operational logic for {@code PromisingTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testOstromCommonsEngine() {
         double initialAquifer = testCells.get(0).getAccessibleAquifer();
         OstromCommonsPureEngine.processHybrid(testCells, 1.0);
@@ -76,6 +116,14 @@ public class PromisingTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test smil material transitions engine operation.
+     * <p>
+     * Executes operational logic for {@code PromisingTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSmilMaterialTransitionsEngine() {
         double initialCapital = testCells.get(0).getResourceCapital();
         SmilMaterialTransitionsPureEngine.processHybrid(testCells, 1.0);
@@ -84,6 +132,14 @@ public class PromisingTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test all promising type bplugins cumulative execution operation.
+     * <p>
+     * Executes operational logic for {@code PromisingTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAllPromisingTypeBPluginsCumulativeExecution() {
         ProceduralEngineRegistry.registerPlugin("B16_Pinker", PinkerViolenceDeclinePureEngine::processHybrid);
         ProceduralEngineRegistry.registerPlugin("B17_Scott", ScottAgainstTheGrainPureEngine::processHybrid);

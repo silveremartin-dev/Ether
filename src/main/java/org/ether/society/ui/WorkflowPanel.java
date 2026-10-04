@@ -43,6 +43,7 @@ public class WorkflowPanel extends HBox {
         initUI();
     }
 
+    // Helper subroutine: init ui - internal state computation & bounds checking
     private void initUI() {
         setAlignment(Pos.CENTER_LEFT);
         setPadding(new Insets(10));
@@ -116,6 +117,7 @@ public class WorkflowPanel extends HBox {
         HBox.setHgrow(simSection, Priority.ALWAYS);
     }
 
+    // Helper subroutine: create section - internal state computation & bounds checking
     private VBox createSection(String title, String subtitle) {
         VBox box = new VBox(2);
         Label titleLabel = new Label(title);
@@ -128,6 +130,7 @@ public class WorkflowPanel extends HBox {
         return box;
     }
 
+    // Helper subroutine: create action button - internal state computation & bounds checking
     private Button createActionButton(String text, String tooltip) {
         Button btn = new Button(text);
         btn.setTooltip(new javafx.scene.control.Tooltip(tooltip));

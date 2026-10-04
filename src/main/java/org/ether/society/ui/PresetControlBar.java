@@ -501,6 +501,7 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
+    // Helper subroutine: perform save - internal state computation & bounds checking
     private boolean performSave(String name) {
         boolean exists = presetCombo.getItems().stream()
                 .anyMatch(item -> item != null && formatPresetItem(item).equalsIgnoreCase(name));
@@ -529,6 +530,7 @@ public class PresetControlBar<T> extends VBox {
         return true;
     }
 
+    // Helper subroutine: prompt delete - internal state computation & bounds checking
     private void promptDelete() {
         T selected = presetCombo.getValue();
         if (selected == null) {
@@ -577,6 +579,7 @@ public class PresetControlBar<T> extends VBox {
         });
     }
 
+    // Helper subroutine: prompt export - internal state computation & bounds checking
     private void promptExport() {
         T selected = presetCombo.getValue();
         if (selected == null) {
@@ -610,6 +613,7 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
+    // Helper subroutine: prompt import - internal state computation & bounds checking
     private void promptImport() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("preset.dialog.import_title", "Import Preset (JSON)"));
@@ -644,6 +648,7 @@ public class PresetControlBar<T> extends VBox {
         pause.play();
     }
 
+    // Helper subroutine: hide toast - internal state computation & bounds checking
     private void hideToast() {
         toastLabel.setVisible(false);
         toastLabel.setManaged(false);
@@ -683,6 +688,7 @@ public class PresetControlBar<T> extends VBox {
         updateTooltips();
     }
 
+    // Helper subroutine: update tooltips - internal state computation & bounds checking
     private void updateTooltips() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (presetCombo != null) presetCombo.setTooltip(new Tooltip(
@@ -699,6 +705,7 @@ public class PresetControlBar<T> extends VBox {
                 I18n.getOrDefault("planet.tooltip.preset_import", "Import JSON preset file")));
     }
 
+    // Helper subroutine: format preset item - internal state computation & bounds checking
     private String formatPresetItem(T item) {
         if (item == null) return "";
         if (item instanceof org.ether.society.generation.PlanetPreset p) return I18n.getPlanetPresetDisplayName(p.name());
@@ -719,11 +726,13 @@ public class PresetControlBar<T> extends VBox {
         return item.toString();
     }
 
+    // Helper subroutine: clean scenario name - internal state computation & bounds checking
     private String cleanScenarioName(String name) {
         if (name == null) return "";
         return name.replaceAll("\\s*\\((?:\\-?\\d+|An 0|Year 0|SSP[0-9\\-\\.]+)\\)\\s*$", "").trim();
     }
 
+    // Helper subroutine: get preset date text - internal state computation & bounds checking
     private String getPresetDateText(T item) {
         if (item instanceof org.ether.society.model.Scenario s) {
             long year = s.getStartDateYear();
@@ -739,6 +748,7 @@ public class PresetControlBar<T> extends VBox {
         return null;
     }
 
+    // Helper subroutine: get preset detailed description - internal state computation & bounds checking
     private String getPresetDetailedDescription(T item) {
         if (item == null) return null;
         if (item instanceof org.ether.society.generation.PlanetPreset p) {
@@ -755,6 +765,7 @@ public class PresetControlBar<T> extends VBox {
         return formatPresetItem(item);
     }
 
+    // Helper subroutine: create preset list cell - internal state computation & bounds checking
     private ListCell<T> createPresetListCell() {
         return new ListCell<>() {
             private final Label nameLabel = new Label();

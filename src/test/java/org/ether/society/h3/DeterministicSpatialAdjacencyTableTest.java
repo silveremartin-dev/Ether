@@ -17,6 +17,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DeterministicSpatialAdjacencyTableTest {
 
     @Test
+    /*
+     * Test adjacency table creation and lookup operation.
+     * <p>
+     * Executes operational logic for {@code DeterministicSpatialAdjacencyTableTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAdjacencyTableCreationAndLookup() throws Exception {
         H3Core h3 = H3Core.newInstance();
         long centerH3 = h3.latLngToCell(48.8566, 2.3522, 6); // Paris at res 6

@@ -86,6 +86,15 @@ public class World3CouplingEngine {
      * @return the resulting computation or state reference
      */
     public static double getInitialGlobalResourceStock() { return initialGlobalResourceStock; }
+    /*
+     * Set initial global resource stock operation.
+     * <p>
+     * Executes operational logic for {@code World3CouplingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param stock the stock argument (double)
+     */
     public static void setInitialGlobalResourceStock(double stock) { initialGlobalResourceStock = Math.max(1.0, stock); }
 }
 

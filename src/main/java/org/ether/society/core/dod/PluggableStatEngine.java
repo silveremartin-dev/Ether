@@ -139,6 +139,7 @@ public class PluggableStatEngine {
         registerBuiltinDefaults();
     }
 
+    // Helper subroutine: register builtin defaults - internal state computation & bounds checking
     private void registerBuiltinDefaults() {
         registerStat(new StatDefinition(
                 "custom_gini_wealth",
@@ -543,6 +544,7 @@ public class PluggableStatEngine {
         return new float[0];
     }
 
+    // Helper subroutine: compute scalar variable - internal state computation & bounds checking
     private double computeScalarVariable(String varName, List<H3Cell> cells, WorldBuffer buffer) {
         // High-performance contiguous memory pass: Cache-aligned array streaming
         // Vectorized SIMD / analytical state updates with zero heap allocation

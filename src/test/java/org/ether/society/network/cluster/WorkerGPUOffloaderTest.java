@@ -14,6 +14,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class WorkerGPUOffloaderTest {
 
     @Test
+    /*
+     * Test worker gpuoffloader execution operation.
+     * <p>
+     * Executes operational logic for {@code WorkerGPUOffloaderTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testWorkerGPUOffloaderExecution() {
         WorkerGPUOffloader offloader = new WorkerGPUOffloader();
 

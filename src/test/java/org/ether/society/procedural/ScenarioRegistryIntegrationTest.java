@@ -31,6 +31,14 @@ public class ScenarioRegistryIntegrationTest {
     private List<H3Cell> mockCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioRegistryIntegrationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         mockCells = new ArrayList<>();
 
@@ -72,6 +80,14 @@ public class ScenarioRegistryIntegrationTest {
     }
 
     @Test
+    /*
+     * Test nuclear winter scenario detection and forcing operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioRegistryIntegrationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testNuclearWinterScenarioDetectionAndForcing() {
         Scenario scenario = new Scenario();
         scenario.setName("Hiver Nucléaire & Ombre Stratosphérique (2035)");
@@ -101,6 +117,14 @@ public class ScenarioRegistryIntegrationTest {
     }
 
     @Test
+    /*
+     * Test long spinner value factory no overflow or cast exception operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioRegistryIntegrationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testLongSpinnerValueFactoryNoOverflowOrCastException() {
         ScenarioSetupPanel.LongSpinnerValueFactory factory =
                 new ScenarioSetupPanel.LongSpinnerValueFactory(1_000L, 10_000_000_000L, 1_000_000L, 100_000L);
@@ -116,6 +140,14 @@ public class ScenarioRegistryIntegrationTest {
     }
 
     @Test
+    /*
+     * Test business as usual scenario forcing operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioRegistryIntegrationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBusinessAsUsualScenarioForcing() {
         Scenario scenario = new Scenario();
         scenario.setName("Business As Usual : Fossil Fuel Reliance & Warming (SSP5-8.5)");

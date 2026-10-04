@@ -72,6 +72,15 @@ public class ProtestantWorkEthicEngine {
      * @return the resulting computation or state reference
      */
     public static double getCapitalSavingsMultiplier() { return capitalSavingsMultiplier; }
+    /*
+     * Set capital savings multiplier operation.
+     * <p>
+     * Executes operational logic for {@code ProtestantWorkEthicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param v the v argument (double)
+     */
     public static void setCapitalSavingsMultiplier(double v) { capitalSavingsMultiplier = Math.max(1.0, v); }
 
     /*
@@ -81,6 +90,15 @@ public class ProtestantWorkEthicEngine {
      * @return the resulting computation or state reference
      */
     public static double getTechAccelerationMultiplier() { return techAccelerationMultiplier; }
+    /*
+     * Set tech acceleration multiplier operation.
+     * <p>
+     * Executes operational logic for {@code ProtestantWorkEthicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param v the v argument (double)
+     */
     public static void setTechAccelerationMultiplier(double v) { techAccelerationMultiplier = Math.max(1.0, v); }
 
     /*
@@ -90,6 +108,15 @@ public class ProtestantWorkEthicEngine {
      * @return the resulting computation or state reference
      */
     public static double getLiteracyRateMultiplier() { return literacyRateMultiplier; }
+    /*
+     * Set literacy rate multiplier operation.
+     * <p>
+     * Executes operational logic for {@code ProtestantWorkEthicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param v the v argument (double)
+     */
     public static void setLiteracyRateMultiplier(double v) { literacyRateMultiplier = Math.max(1.0, v); }
 }
 

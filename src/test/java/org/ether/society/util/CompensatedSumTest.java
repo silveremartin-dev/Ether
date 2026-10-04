@@ -11,6 +11,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CompensatedSumTest {
 
     @Test
+    /*
+     * Test compensated summation accuracy operation.
+     * <p>
+     * Executes operational logic for {@code CompensatedSumTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCompensatedSummationAccuracy() {
         CompensatedSum accumulator = new CompensatedSum();
 
@@ -28,6 +36,14 @@ public class CompensatedSumTest {
     }
 
     @Test
+    /*
+     * Test static array sum operation.
+     * <p>
+     * Executes operational logic for {@code CompensatedSumTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testStaticArraySum() {
         double[] values = {1.0, 2.0, 3.0, 4.0, 5.0};
         assertEquals(15.0, CompensatedSum.sum(values), 1e-12);

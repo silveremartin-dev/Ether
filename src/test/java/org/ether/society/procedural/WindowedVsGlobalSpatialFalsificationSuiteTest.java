@@ -43,6 +43,14 @@ public class WindowedVsGlobalSpatialFalsificationSuiteTest {
 
     @Test
     @DisplayName("Ch1.1 - Boundary Mode Triad: Dynamic Reservoir vs Closed Barrier vs Periodic Toroidal")
+    /*
+     * Test boundary mode triad sweep operation.
+     * <p>
+     * Executes operational logic for {@code WindowedVsGlobalSpatialFalsificationSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBoundaryModeTriadSweep() {
         logger.info("=== Starting Test: Boundary Mode Triad Sweep (Dynamic Reservoir vs Closed vs Toroidal) ===");
 
@@ -67,6 +75,14 @@ public class WindowedVsGlobalSpatialFalsificationSuiteTest {
 
     @Test
     @DisplayName("Ch1.2 - Spatial Resolution Convergence: H3 Res 3 to Res 7 Multi-Scale Sweeps")
+    /*
+     * Test spatial resolution convergence operation.
+     * <p>
+     * Executes operational logic for {@code WindowedVsGlobalSpatialFalsificationSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSpatialResolutionConvergence() {
         logger.info("=== Starting Test: Spatial Resolution Convergence (Res 3 to Res 7) ===");
 
@@ -85,6 +101,14 @@ public class WindowedVsGlobalSpatialFalsificationSuiteTest {
 
     @Test
     @DisplayName("Ch1.3 - Temporal Step Discretization: Daily (1d), Weekly (7d), Monthly (30d), Quarterly (90d), Annual (365d)")
+    /*
+     * Test temporal step sweep operation.
+     * <p>
+     * Executes operational logic for {@code WindowedVsGlobalSpatialFalsificationSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTemporalStepSweep() {
         logger.info("=== Starting Test: Temporal Step Discretization Sweep ===");
 
@@ -103,6 +127,14 @@ public class WindowedVsGlobalSpatialFalsificationSuiteTest {
 
     @Test
     @DisplayName("Ch2.1 - Pre-Columbian Americas (1000-1491 AD): Continental Isolation vs Global Sphere")
+    /*
+     * Test pre columbian americas1000to1491continental isolation operation.
+     * <p>
+     * Executes operational logic for {@code WindowedVsGlobalSpatialFalsificationSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPreColumbianAmericas1000To1491ContinentalIsolation() {
         logger.info("=== Starting Test: Pre-Columbian Americas (1000-1491 AD) Continental Isolation ===");
 
@@ -121,6 +153,14 @@ public class WindowedVsGlobalSpatialFalsificationSuiteTest {
 
     @Test
     @DisplayName("Ch2.2 - Madagascar Island (500-1000 AD): Maritime Colonization & Insular Network")
+    /*
+     * Test madagascar island colonization operation.
+     * <p>
+     * Executes operational logic for {@code WindowedVsGlobalSpatialFalsificationSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testMadagascarIslandColonization() {
         logger.info("=== Starting Test: Madagascar Island Colonization (500-1000 AD) ===");
 
@@ -138,6 +178,14 @@ public class WindowedVsGlobalSpatialFalsificationSuiteTest {
 
     @Test
     @DisplayName("Ch2.3 - Tasmania Island (-10,000 BP - 1800 AD): Extreme Isolation & Technological Loss")
+    /*
+     * Test tasmania isolation operation.
+     * <p>
+     * Executes operational logic for {@code WindowedVsGlobalSpatialFalsificationSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTasmaniaIsolation() {
         logger.info("=== Starting Test: Tasmania Island Isolation ===");
 
@@ -149,6 +197,14 @@ public class WindowedVsGlobalSpatialFalsificationSuiteTest {
 
     @Test
     @DisplayName("Ch2.4 - Easter Island / Rapa Nui (1200-1722 AD): Ecological Overshoot")
+    /*
+     * Test easter island overshoot operation.
+     * <p>
+     * Executes operational logic for {@code WindowedVsGlobalSpatialFalsificationSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEasterIslandOvershoot() {
         logger.info("=== Starting Test: Easter Island Overshoot ===");
 
@@ -160,6 +216,14 @@ public class WindowedVsGlobalSpatialFalsificationSuiteTest {
 
     @Test
     @DisplayName("Ch2.5 - Medieval Iceland (874-1400 AD): Subarctic Agricultural Margin")
+    /*
+     * Test iceland agricultural margin operation.
+     * <p>
+     * Executes operational logic for {@code WindowedVsGlobalSpatialFalsificationSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testIcelandAgriculturalMargin() {
         logger.info("=== Starting Test: Medieval Iceland Agricultural Margin ===");
 

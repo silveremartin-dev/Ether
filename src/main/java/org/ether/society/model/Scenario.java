@@ -84,6 +84,7 @@ public class Scenario implements Serializable {
         return description != null ? description : "";
     }
 
+    // Helper subroutine: resolve preset key - internal state computation & bounds checking
     private String resolvePresetKey() {
         if (presetKey != null && !presetKey.isBlank()) return presetKey;
         if (name == null) return null;

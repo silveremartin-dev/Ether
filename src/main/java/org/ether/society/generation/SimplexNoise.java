@@ -49,6 +49,7 @@ public class SimplexNoise {
         }
     }
 
+    // Helper subroutine: dot - internal state computation & bounds checking
     private static double dot(int[] g, double x, double y, double z) {
         return g[0] * x + g[1] * y + g[2] * z;
     }
@@ -191,6 +192,7 @@ public class SimplexNoise {
         return 32.0 * (n0 + n1 + n2 + n3);
     }
 
+    // Helper subroutine: fast floor - internal state computation & bounds checking
     private static int fastFloor(double x) {
         int xi = (int) x;
         return x < xi ? xi - 1 : xi;

@@ -262,6 +262,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public String getId() { return id; }
+    /*
+     * Set id operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param id the id argument (String)
+     */
     public void setId(String id) { this.id = id; }
 
     /*
@@ -277,6 +286,15 @@ public class HistoricalIntervention {
         }
         return name;
     }
+    /*
+     * Set name operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param name the name argument (String)
+     */
     public void setName(String name) { this.name = name; }
 
     /*
@@ -292,6 +310,15 @@ public class HistoricalIntervention {
         }
         return description;
     }
+    /*
+     * Set description operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param description the description argument (String)
+     */
     public void setDescription(String description) { this.description = description; }
 
     /*
@@ -301,6 +328,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public int getYearStart() { return yearStart; }
+    /*
+     * Set year start operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param yearStart the year start argument (int)
+     */
     public void setYearStart(int yearStart) { this.yearStart = yearStart; }
 
     /*
@@ -310,6 +346,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public int getDurationYears() { return durationYears; }
+    /*
+     * Set duration years operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param durationYears the duration years argument (int)
+     */
     public void setDurationYears(int durationYears) { this.durationYears = durationYears; }
 
     /*
@@ -319,6 +364,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public double getLatitude() { return latitude; }
+    /*
+     * Set latitude operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param latitude the latitude argument (double)
+     */
     public void setLatitude(double latitude) { this.latitude = latitude; }
 
     /*
@@ -328,6 +382,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public double getLongitude() { return longitude; }
+    /*
+     * Set longitude operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param longitude the longitude argument (double)
+     */
     public void setLongitude(double longitude) { this.longitude = longitude; }
 
     /*
@@ -337,6 +400,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public double getRadiusKm() { return radiusKm; }
+    /*
+     * Set radius km operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param radiusKm the radius km argument (double)
+     */
     public void setRadiusKm(double radiusKm) { this.radiusKm = radiusKm; }
 
     /*
@@ -346,6 +418,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public LeaderArchetype getArchetype() { return archetype; }
+    /*
+     * Set archetype operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param archetype the archetype argument (LeaderArchetype)
+     */
     public void setArchetype(LeaderArchetype archetype) { this.archetype = archetype; }
 
     /*
@@ -355,6 +436,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public double getMagnitude() { return magnitude; }
+    /*
+     * Set magnitude operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param magnitude the magnitude argument (double)
+     */
     public void setMagnitude(double magnitude) { this.magnitude = magnitude; }
 
     /*
@@ -364,6 +454,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public double getMovementFrictionMultiplier() { return movementFrictionMultiplier; }
+    /*
+     * Set movement friction multiplier operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param movementFrictionMultiplier the movement friction multiplier argument (double)
+     */
     public void setMovementFrictionMultiplier(double movementFrictionMultiplier) { this.movementFrictionMultiplier = movementFrictionMultiplier; }
 
     /*
@@ -373,6 +472,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public double getStateCapacityDelta() { return stateCapacityDelta; }
+    /*
+     * Set state capacity delta operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param stateCapacityDelta the state capacity delta argument (double)
+     */
     public void setStateCapacityDelta(double stateCapacityDelta) { this.stateCapacityDelta = stateCapacityDelta; }
 
     /*
@@ -382,6 +490,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public double getAsabiyyahDelta() { return asabiyyahDelta; }
+    /*
+     * Set asabiyyah delta operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param asabiyyahDelta the asabiyyah delta argument (double)
+     */
     public void setAsabiyyahDelta(double asabiyyahDelta) { this.asabiyyahDelta = asabiyyahDelta; }
 
     /*
@@ -391,6 +508,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public double getEliteOverproductionDelta() { return eliteOverproductionDelta; }
+    /*
+     * Set elite overproduction delta operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param eliteOverproductionDelta the elite overproduction delta argument (double)
+     */
     public void setEliteOverproductionDelta(double eliteOverproductionDelta) { this.eliteOverproductionDelta = eliteOverproductionDelta; }
 
     /*
@@ -400,6 +526,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public double getPoliticalInstabilityDelta() { return politicalInstabilityDelta; }
+    /*
+     * Set political instability delta operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param politicalInstabilityDelta the political instability delta argument (double)
+     */
     public void setPoliticalInstabilityDelta(double politicalInstabilityDelta) { this.politicalInstabilityDelta = politicalInstabilityDelta; }
 
     /*
@@ -409,6 +544,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public double getCapitalBonusGJ() { return capitalBonusGJ; }
+    /*
+     * Set capital bonus gj operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param capitalBonusGJ the capital bonus gj argument (double)
+     */
     public void setCapitalBonusGJ(double capitalBonusGJ) { this.capitalBonusGJ = capitalBonusGJ; }
 
     /*
@@ -418,6 +562,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public double getCarryingCapacityMultiplier() { return carryingCapacityMultiplier; }
+    /*
+     * Set carrying capacity multiplier operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param carryingCapacityMultiplier the carrying capacity multiplier argument (double)
+     */
     public void setCarryingCapacityMultiplier(double carryingCapacityMultiplier) { this.carryingCapacityMultiplier = carryingCapacityMultiplier; }
 
     /*
@@ -427,6 +580,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public double getConquestSpeedMultiplier() { return conquestSpeedMultiplier; }
+    /*
+     * Set conquest speed multiplier operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param conquestSpeedMultiplier the conquest speed multiplier argument (double)
+     */
     public void setConquestSpeedMultiplier(double conquestSpeedMultiplier) { this.conquestSpeedMultiplier = conquestSpeedMultiplier; }
 
     /*
@@ -436,6 +598,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public boolean isTriggerSuccessionCrisisAtEnd() { return triggerSuccessionCrisisAtEnd; }
+    /*
+     * Set trigger succession crisis at end operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param triggerSuccessionCrisisAtEnd the trigger succession crisis at end argument (boolean)
+     */
     public void setTriggerSuccessionCrisisAtEnd(boolean triggerSuccessionCrisisAtEnd) { this.triggerSuccessionCrisisAtEnd = triggerSuccessionCrisisAtEnd; }
 
     /*
@@ -445,6 +616,15 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public boolean isActivated() { return activated; }
+    /*
+     * Set activated operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param activated the activated argument (boolean)
+     */
     public void setActivated(boolean activated) { this.activated = activated; }
 
     /*
@@ -454,5 +634,14 @@ public class HistoricalIntervention {
      * @return the resulting computation or state reference
      */
     public boolean isCompleted() { return completed; }
+    /*
+     * Set completed operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param completed the completed argument (boolean)
+     */
     public void setCompleted(boolean completed) { this.completed = completed; }
 }

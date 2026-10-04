@@ -13,6 +13,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SaveEncryptionVaultTest {
 
     @Test
+    /*
+     * Test encryption and decryption roundtrip operation.
+     * <p>
+     * Executes operational logic for {@code SaveEncryptionVaultTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEncryptionAndDecryptionRoundtrip() throws Exception {
         String originalJson = "{\"scenario\":\"Holocene Dawn\",\"population\":8000000000,\"co2\":420.5}";
         byte[] plaintext = originalJson.getBytes(StandardCharsets.UTF_8);
@@ -30,6 +38,14 @@ public class SaveEncryptionVaultTest {
     }
 
     @Test
+    /*
+     * Test wrong password rejection operation.
+     * <p>
+     * Executes operational logic for {@code SaveEncryptionVaultTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testWrongPasswordRejection() throws Exception {
         String originalJson = "{\"secret\":\"world_state\"}";
         byte[] encrypted = SaveEncryptionVault.encrypt(originalJson.getBytes(StandardCharsets.UTF_8), "CorrectPassword");

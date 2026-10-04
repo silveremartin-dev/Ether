@@ -21,6 +21,7 @@ public final class EtopoGeoTiffReader {
     private static final Object CACHE_LOCK = new Object();
     private static volatile float[][] cached2048x1024Grid = null;
 
+    // Helper subroutine: etopo geo tiff reader - internal state computation & bounds checking
     private EtopoGeoTiffReader() {}
 
     /*

@@ -41,6 +41,14 @@ public class BatchRegenerateAllScenarioMapsTest {
 
     @Test
     @DisplayName("Regenerate and Validate All 25 Maps, Registries, Provenance and Readme for All Epochs")
+    /*
+     * Test regenerate all epochs operation.
+     * <p>
+     * Executes operational logic for {@code BatchRegenerateAllScenarioMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testRegenerateAllEpochs() throws Exception {
         List<Scenario> builtIns = Scenario.getBuiltInScenarios();
 
@@ -113,6 +121,7 @@ public class BatchRegenerateAllScenarioMapsTest {
         }
     }
 
+    // Helper subroutine: write provenance json - internal state computation & bounds checking
     private void writeProvenanceJson(File target, long yr, String name) throws Exception {
         String json = """
         {
@@ -235,6 +244,7 @@ public class BatchRegenerateAllScenarioMapsTest {
         }
     }
 
+    // Helper subroutine: write cultural registry json - internal state computation & bounds checking
     private void writeCulturalRegistryJson(File target, long yr, String name) throws Exception {
         String json = """
         {
@@ -322,6 +332,7 @@ public class BatchRegenerateAllScenarioMapsTest {
         }
     }
 
+    // Helper subroutine: write readme md - internal state computation & bounds checking
     private void writeReadmeMd(File target, long yr, String name) throws Exception {
         String md = """
         # Earth Epoch %d: %s

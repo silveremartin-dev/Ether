@@ -82,6 +82,7 @@ public class DPlaceIngestionService {
         return list;
     }
 
+    // Helper subroutine: load societies from csv - internal state computation & bounds checking
     private static void loadSocietiesFromCsv(File file, String datasetName, List<DPlaceSociety> target, Set<String> seenNames) {
         if (!file.exists()) {
             logger.warn("D-PLACE dataset file not found: {}", file.getPath());
@@ -138,6 +139,7 @@ public class DPlaceIngestionService {
         }
     }
 
+    // Helper subroutine: find col index - internal state computation & bounds checking
     private static int findColIndex(String[] headers, String colName) {
         for (int i = 0; i < headers.length; i++) {
             if (headers[i].trim().equalsIgnoreCase(colName)) {

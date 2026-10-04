@@ -202,6 +202,7 @@ public class HistoricalStateRegistry {
         return REGISTRY;
     }
 
+    // Helper subroutine: load registry - internal state computation & bounds checking
     private static List<HistoricalEpoch> loadRegistry() {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = null;

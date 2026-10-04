@@ -170,6 +170,7 @@ public class NaturalEarthVectorIngestor {
         return list;
     }
 
+    // Helper subroutine: parse country feature - internal state computation & bounds checking
     private static CountryFeature parseCountryFeature(JsonParser parser, int imgW, int imgH) throws Exception {
         String name = null;
         String admin = null;
@@ -243,6 +244,7 @@ public class NaturalEarthVectorIngestor {
         return cf;
     }
 
+    // Helper subroutine: parse coordinates to paths - internal state computation & bounds checking
     private static void parseCoordinatesToPaths(JsonParser parser, String geomType, int imgW, int imgH, List<Path2D> paths) throws Exception {
         if ("Polygon".equalsIgnoreCase(geomType)) {
             while (parser.nextToken() != JsonToken.END_ARRAY) {
@@ -261,6 +263,7 @@ public class NaturalEarthVectorIngestor {
         }
     }
 
+    // Helper subroutine: parse linear ring - internal state computation & bounds checking
     private static Path2D parseLinearRing(JsonParser parser, int imgW, int imgH) throws Exception {
         if (parser.currentToken() != JsonToken.START_ARRAY) return null;
 
@@ -837,6 +840,7 @@ public class NaturalEarthVectorIngestor {
         return c.sovereignColor != null ? c.sovereignColor : computeSovereignColor(c.isoA3, c.name);
     }
 
+    // Helper subroutine: compute sovereign color - internal state computation & bounds checking
     private static Color computeSovereignColor(String iso, String name) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -896,6 +900,7 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
+    // Helper subroutine: compute isogloss color - internal state computation & bounds checking
     private static Color computeIsoglossColor(String iso, String name, String subregion, String continent) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -961,6 +966,7 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
+    // Helper subroutine: compute kinship color - internal state computation & bounds checking
     private static Color computeKinshipColor(String iso, String name, String subregion, String continent) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -997,6 +1003,7 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
+    // Helper subroutine: compute ritual color - internal state computation & bounds checking
     private static Color computeRitualColor(String iso, String name, String subregion, String continent) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -1037,6 +1044,7 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
+    // Helper subroutine: compute institutional level - internal state computation & bounds checking
     private static int computeInstitutionalLevel(String iso, String name) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -1050,6 +1058,7 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
+    // Helper subroutine: compute technology level - internal state computation & bounds checking
     private static int computeTechnologyLevel(String iso, String name) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -1063,6 +1072,7 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
+    // Helper subroutine: compute ecological footprint - internal state computation & bounds checking
     private static int computeEcologicalFootprint(String iso, String name) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -1075,6 +1085,7 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
+    // Helper subroutine: compute pathogen stress - internal state computation & bounds checking
     private static int computePathogenStress(String iso, String name, String continent) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -1089,6 +1100,7 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
+    // Helper subroutine: apply subnational centers - internal state computation & bounds checking
     private static void applySubnationalCenters(BufferedImage img, double[][] centers, int width, int height, BufferedImage elevationMask) {
         for (int y = 0; y < height; y++) {
             double lat = 90.0 - (y + 0.5) / height * 180.0;

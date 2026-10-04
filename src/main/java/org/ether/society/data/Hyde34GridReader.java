@@ -284,6 +284,7 @@ public class Hyde34GridReader {
         throw new IllegalStateException("ZERO FALLBACK VIOLATION: Failed to stream empirical HYDE 3.4 raster grid for year " + requestedYear);
     }
 
+    // Helper subroutine: try load grid for year - internal state computation & bounds checking
     private static BufferedImage tryLoadGridForYear(long year, long requestedYear) {
         BufferedImage img = null;
         String yearTag = DataDownloaderService.getHydeYearTag(year);

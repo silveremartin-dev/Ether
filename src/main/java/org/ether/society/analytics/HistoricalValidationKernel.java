@@ -61,6 +61,7 @@ public class HistoricalValidationKernel {
         loadJsonBenchmarksResource();
     }
 
+    // Helper subroutine: load json benchmarks resource - internal state computation & bounds checking
     private static void loadJsonBenchmarksResource() {
         try (InputStream is = HistoricalValidationKernel.class.getClassLoader().getResourceAsStream("historical_cliodynamic_benchmarks.json")) {
             if (is != null) {
@@ -361,6 +362,7 @@ public class HistoricalValidationKernel {
         }
     }
 
+    // Helper subroutine: linear interpolate - internal state computation & bounds checking
     private static double linearInterpolate(Map<Integer, Double> dataset, List<Integer> x, double targetX) {
         int intYear = (int) Math.round(targetX);
         if (dataset.containsKey(intYear)) return dataset.get(intYear);
@@ -391,6 +393,7 @@ public class HistoricalValidationKernel {
         return valLower + fraction * (valUpper - valLower);
     }
 
+    // Helper subroutine: pchip interpolate - internal state computation & bounds checking
     private static double pchipInterpolate(Map<Integer, Double> dataset, List<Integer> x, double targetX) {
         int n = x.size();
         double[] h = new double[n - 1];
@@ -447,6 +450,7 @@ public class HistoricalValidationKernel {
         return h00 * y[k] + h10 * hk * d[k] + h01 * y[k + 1] + h11 * hk * d[k + 1];
     }
 
+    // Helper subroutine: pchip end derivative - internal state computation & bounds checking
     private static double pchipEndDerivative(double h1, double h2, double delta1, double delta2) {
         double d = ((2.0 * h1 + h2) * delta1 - h1 * delta2) / (h1 + h2);
         if (d * delta1 < 0.0) {
@@ -457,6 +461,7 @@ public class HistoricalValidationKernel {
         return d;
     }
 
+    // Helper subroutine: catmull rom interpolate - internal state computation & bounds checking
     private static double catmullRomInterpolate(Map<Integer, Double> dataset, List<Integer> x, double targetX) {
         int n = x.size();
         int k = 0;

@@ -256,6 +256,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
+    // Helper subroutine: init ui - internal state computation & bounds checking
     private void initUI() {
         VBox controlsBox = new VBox(15);
         controlsBox.setPadding(new Insets(10));
@@ -1204,6 +1205,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         applyPreset(PlanetPreset.EARTH_LIKE);
     }
 
+    // Helper subroutine: toggle satellite controls - internal state computation & bounds checking
     private void toggleSatelliteControls() {
         boolean isSat = "satellite".equals(bodyTypeCombo.getValue());
         satelliteRowBox.setVisible(isSat);
@@ -1283,6 +1285,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         return combo;
     }
 
+    // Helper subroutine: apply climate source selection - internal state computation & bounds checking
     private void applyClimateSourceSelection(String mapType, String selectedSource) {
         if (selectedSource == null || selectedSource.isBlank() || isUpdatingFromPreset) return;
         String key = selectedSource.toLowerCase();
@@ -1356,6 +1359,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         combo.setValue(entry);
     }
 
+    // Helper subroutine: create section - internal state computation & bounds checking
     private VBox createSection(Label header, javafx.scene.Node content) {
         header.getStyleClass().add("label-section-header");
         VBox box = new VBox(8, header, content);
@@ -1363,6 +1367,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         return box;
     }
 
+    // Helper subroutine: create slider - internal state computation & bounds checking
     private Slider createSlider(double min, double max, double value) {
         Slider slider = new Slider(min, max, value);
         slider.setShowTickMarks(false);
@@ -1384,6 +1389,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         return slider;
     }
 
+    // Helper subroutine: create control row - internal state computation & bounds checking
     private VBox createControlRow(Label label, javafx.scene.Node control, String tooltipText) {
         label.getStyleClass().add("control-label");
         if (tooltipText != null && !tooltipText.isBlank()) {
@@ -1396,6 +1402,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         return new VBox(4, label, control);
     }
 
+    // Helper subroutine: create control row - internal state computation & bounds checking
     private VBox createControlRow(Label label, Slider slider, String formatPattern, String tooltipText) {
         label.getStyleClass().add("control-label");
         Label valLabel = new Label(String.format(formatPattern, slider.getValue()));
@@ -1417,6 +1424,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         return new VBox(3, header, slider);
     }
 
+    // Helper subroutine: commit editor double text - internal state computation & bounds checking
     private void commitEditorDoubleText(Spinner<Double> spinner) {
         if (spinner == null || !spinner.isEditable()) return;
         String text = spinner.getEditor().getText();
@@ -1431,6 +1439,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         } catch (NumberFormatException ignored) {}
     }
 
+    // Helper subroutine: create control row with spinner - internal state computation & bounds checking
     private VBox createControlRowWithSpinner(Label label, Slider slider, Spinner<Double> spinner, String formatPattern, String tooltipText) {
         label.getStyleClass().add("control-label");
         spinner.setEditable(true);
@@ -1483,6 +1492,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         return new VBox(3, header, slider);
     }
 
+    // Helper subroutine: update sea level display - internal state computation & bounds checking
     private void updateSeaLevelDisplay(double meters, double normWater) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (waterNormValLabel != null) {
@@ -1493,6 +1503,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: choose elev map file - internal state computation & bounds checking
     private void chooseElevMapFile() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("planet.chooser.elevation", "Load elevation heightmap image"));
@@ -1569,6 +1580,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         );
     }
 
+    // Helper subroutine: export procedural climate map - internal state computation & bounds checking
     private void exportProceduralClimateMap(String type) {
         PlanetPreset preset = buildPresetFromUI();
         double circumference = 2 * Math.PI * preset.radiusKm();
@@ -1648,6 +1660,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         );
     }
 
+    // Helper subroutine: choose biome map file - internal state computation & bounds checking
     private void chooseBiomeMapFile() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("planet.chooser.biome", "Load biome / ecology map image"));
@@ -1664,6 +1677,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: choose resource map file - internal state computation & bounds checking
     private void chooseResourceMapFile() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("planet.chooser.geology", "Load geological / ore map image"));
@@ -1680,6 +1694,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: choose climate map file - internal state computation & bounds checking
     private void chooseClimateMapFile() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("planet.chooser.climate", "Load climate / temperature map image"));
@@ -1698,6 +1713,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: choose rainfall map file - internal state computation & bounds checking
     private void chooseRainfallMapFile() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("planet.chooser.rainfall", "Load rainfall map image"));
@@ -1716,6 +1732,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: choose seasonality map file - internal state computation & bounds checking
     private void chooseSeasonalityMapFile() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("planet.chooser.seasonality", "Load seasonality map image"));
@@ -1734,6 +1751,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: show climate import format help - internal state computation & bounds checking
     private void showClimateImportFormatHelp() {
         WindowUtils.showScrollableInfoDialog(
                 I18n.getOrDefault("planet.dialog.climate_title", "SpÃ©cifications des Cartes de Relief & Climat"),
@@ -1759,12 +1777,14 @@ public class PlanetGeneratorPanel extends BorderPane {
         );
     }
 
+    // Helper subroutine: load earth preset maps - internal state computation & bounds checking
     private void loadEarthPresetMaps() {
         long year = (presetBar != null && presetBar.getPresetCombo() != null && presetBar.getPresetCombo().getValue() != null)
                 ? presetBar.getPresetCombo().getValue().getAssociatedEpochYear() : 2026L;
         loadEarthPresetMaps(year);
     }
 
+    // Helper subroutine: load earth preset maps - internal state computation & bounds checking
     private void loadEarthPresetMaps(long epochYear) {
         try {
             customElevImage        = ImageMapLoader.loadMapImage("earth", epochYear, "elevation");
@@ -1785,6 +1805,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: clear custom maps - internal state computation & bounds checking
     private void clearCustomMaps() {
         customElevImage = null;
         customBiomeImage = null;
@@ -1807,6 +1828,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         if (seasonalityFileLabel != null) seasonalityFileLabel.setText(procDefault);
     }
 
+    // Helper subroutine: apply map source preset - internal state computation & bounds checking
     private void applyMapSourcePreset(String sourceKey) {
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
@@ -2004,6 +2026,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         updatePreview();
     }
 
+    // Helper subroutine: fetch online satellite data - internal state computation & bounds checking
     private void fetchOnlineSatelliteData() {
         String sourceKey = mapSourceCombo.getValue();
         OnlineMapService.CelestialBody body = switch (sourceKey) {
@@ -2041,6 +2064,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: fetch online climate data - internal state computation & bounds checking
     private void fetchOnlineClimateData() {
         String sourceKey = mapSourceCombo.getValue();
         OnlineMapService.CelestialBody body = switch (sourceKey) {
@@ -2074,6 +2098,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         });
     }
 
+    // Helper subroutine: export maps with world files - internal state computation & bounds checking
     private void exportMapsWithWorldFiles() {
         int selectedIdx = viewModeCombo != null ? viewModeCombo.getSelectionModel().getSelectedIndex() : 0;
         if (selectedIdx == 0) {
@@ -2087,6 +2112,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: calculate stellar irradiance - internal state computation & bounds checking
     private void calculateStellarIrradiance() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         double d = distanceSunSlider.getValue();
@@ -2118,6 +2144,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: update alt range display - internal state computation & bounds checking
     private void updateAltRangeDisplay() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         double min = minAltSlider.getValue();
@@ -2435,6 +2462,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         );
     }
 
+    // Helper subroutine: update legend - internal state computation & bounds checking
     private void updateLegend() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (legendBar == null) return;
@@ -2520,6 +2548,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: add legend item - internal state computation & bounds checking
     private void addLegendItem(String id, Color col, String text) {
         Pane colorSwatch = new Pane();
         colorSwatch.setPrefSize(14, 14);
@@ -2532,6 +2561,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         legendBar.getChildren().add(itemBox);
     }
 
+    // Helper subroutine: update preview - internal state computation & bounds checking
     private void updatePreview() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (previewCanvas == null) return;
@@ -2777,6 +2807,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: blend colors - internal state computation & bounds checking
     private Color blendColors(Color base, Color overlay, double opacity) {
         if (base == null) return overlay;
         double r = base.getRed() * (1.0 - opacity) + overlay.getRed() * opacity;
@@ -2785,6 +2816,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         return Color.color(Math.max(0.0, Math.min(1.0, r)), Math.max(0.0, Math.min(1.0, g)), Math.max(0.0, Math.min(1.0, b)));
     }
 
+    // Helper subroutine: get temperature color - internal state computation & bounds checking
     private Color getTemperatureColor(double tempC, double minT, double maxT) {
         double norm = Math.max(0.0, Math.min(1.0, (tempC - minT) / (maxT - minT + 0.001)));
         if (norm < 0.25) {
@@ -2802,6 +2834,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: get precipitation color - internal state computation & bounds checking
     private Color getPrecipitationColor(double norm) {
         norm = Math.max(0.0, Math.min(1.0, norm));
         if (norm < 0.25) {
@@ -2819,6 +2852,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: get seasonality color - internal state computation & bounds checking
     private Color getSeasonalityColor(double norm) {
         norm = Math.max(0.0, Math.min(1.0, norm));
         if (norm < 0.33) {
@@ -2833,6 +2867,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: get hypsometric color - internal state computation & bounds checking
     private Color getHypsometricColor(double norm) {
         norm = Math.max(0.0, Math.min(1.0, norm));
         if (norm < 0.20) {
@@ -2853,6 +2888,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: get biome color - internal state computation & bounds checking
     private Color getBiomeColor(Biome biome) {
         return switch (biome) {
             case OCEAN -> Color.rgb(25, 60, 160);
@@ -3007,6 +3043,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         }
     }
 
+    // Helper subroutine: update astro label text - internal state computation & bounds checking
     private void updateAstroLabelText() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (astroLabel == null) return;
@@ -3027,6 +3064,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                 preset.averageTempC()));
     }
 
+    // Helper subroutine: update tooltips - internal state computation & bounds checking
     private void updateTooltips() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (fetchOnlineBtn != null) fetchOnlineBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.fetch_online", "Download NASA/USGS WMS satellite maps")));
@@ -3048,6 +3086,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         return validatePlanetSetup(true);
     }
 
+    // Helper subroutine: is custom file required - internal state computation & bounds checking
     private boolean isCustomFileRequired(ComboBox<String> combo) {
         if (combo == null || combo.getValue() == null) return false;
         String val = combo.getValue().trim().toLowerCase();

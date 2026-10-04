@@ -40,6 +40,14 @@ public class MasterHistoricalBifurcationSuite {
     private static final List<String> BENCHMARK_REPORT = new ArrayList<>();
 
     @BeforeAll
+    /*
+     * Setup suite operation.
+     * <p>
+     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public static void setupSuite() {
         BENCHMARK_REPORT.clear();
         BENCHMARK_REPORT.add("=========================================================================================");
@@ -51,6 +59,14 @@ public class MasterHistoricalBifurcationSuite {
     }
 
     @AfterAll
+    /*
+     * Print suite report operation.
+     * <p>
+     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public static void printSuiteReport() {
         BENCHMARK_REPORT.add("=========================================================================================");
         BENCHMARK_REPORT.add("SUMMARY: All 7 canonical historical ruptures & invariance proofs validated successfully.");
@@ -95,6 +111,14 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(2)
     @DisplayName("Scenario 2: Late Bronze Age Collapse (-1200 BC) - Class III Systemic Supply Chain Rupture")
+    /*
+     * Test scenario2 bronze age collapse1200bc operation.
+     * <p>
+     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testScenario2_BronzeAgeCollapse1200BC() {
         // Ground truth: 80% destruction of major palace centers, Tin trade severance (Cassiterite flow -> 0)
         double initialPalaceUrbanDensity = 100.0; // Index
@@ -120,6 +144,14 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(3)
     @DisplayName("Scenario 3: Alexander Hellenistic Surge (-334 BC) - Class III Catalytic Activation Energy")
+    /*
+     * Test scenario3 alexander hellenistic334bc operation.
+     * <p>
+     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testScenario3_AlexanderHellenistic334BC() {
         // Potential barrier to Persian Empire conquest E_barrier = 100,000 GJ
         double eBarrier = 100000.0;
@@ -140,6 +172,14 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(4)
     @DisplayName("Scenario 4: Early Islamic Expansion (632 CE) - Class III Transcontinental Trade & Network Reorganization")
+    /*
+     * Test scenario4 islamic expansion632ce operation.
+     * <p>
+     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testScenario4_IslamicExpansion632CE() {
         // Ground truth: Unification of Arabian peninsula and conquest of Sasanian empire within 20 years
         double groundTruthTradeConnectivity = 0.85;
@@ -161,6 +201,14 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(5)
     @DisplayName("Scenario 5: Mongol Eurasian Rupture (1206 CE) - Class III Nomadic Velocity & Steppe Teleconnection")
+    /*
+     * Test scenario5 mongol conquest1206ce operation.
+     * <p>
+     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testScenario5_MongolConquest1206CE() {
         // Ground truth: Eurasian land trade network integration across 24M km²
         double groundTruthTerritoryMillionKm2 = 24.0;
@@ -182,6 +230,14 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(6)
     @DisplayName("Scenario 6: Black Death (1347 CE) - Class II Pathological Shock & Real Wage Inversion")
+    /*
+     * Test scenario6 black death1347ce operation.
+     * <p>
+     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testScenario6_BlackDeath1347CE() {
         // Ground truth (Postan/Maddison/Pamuk): 40% European mortality, Real wage index doubles from 100 to 195
         double initialLabor = 1000.0;
@@ -210,6 +266,14 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(7)
     @DisplayName("Scenario 7: Totalitarian Crisis (1914-1945 CE) - Class III Socio-Political Rupture & Capital Destruction")
+    /*
+     * Test scenario7 world wars totalitarian1914ce operation.
+     * <p>
+     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testScenario7_WorldWarsTotalitarian1914CE() {
         // Ground truth (Piketty/Maddison): European capital/income ratio collapses by 40%, ~80M war casualties
         double groundTruth1945Capital = 1300000.0;
@@ -267,6 +331,14 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(9)
     @DisplayName("Theorem 2: Minimal Necessary Forcing Inversion (mu* Optimization)")
+    /*
+     * Test theorem2 minimal necessary forcing optimization operation.
+     * <p>
+     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTheorem2_MinimalNecessaryForcingOptimization() {
         double groundTruthTarget = 1500000.0;
         double unforced = 2000000.0;

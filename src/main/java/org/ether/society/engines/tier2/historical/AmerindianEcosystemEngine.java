@@ -70,6 +70,15 @@ public class AmerindianEcosystemEngine {
      * @return the resulting computation or state reference
      */
     public static boolean isOldWorldContactTriggered() { return oldWorldContactTriggered; }
+    /*
+     * Set old world contact triggered operation.
+     * <p>
+     * Executes operational logic for {@code AmerindianEcosystemEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param contact the contact argument (boolean)
+     */
     public static void setOldWorldContactTriggered(boolean contact) { oldWorldContactTriggered = contact; }
 
     /*
@@ -79,6 +88,15 @@ public class AmerindianEcosystemEngine {
      * @return the resulting computation or state reference
      */
     public static double getEpidemicMortalityRate() { return epidemicMortalityRate; }
+    /*
+     * Set epidemic mortality rate operation.
+     * <p>
+     * Executes operational logic for {@code AmerindianEcosystemEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param rate the rate argument (double)
+     */
     public static void setEpidemicMortalityRate(double rate) { epidemicMortalityRate = Math.max(0.1, Math.min(0.99, rate)); }
 }
 

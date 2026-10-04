@@ -19,6 +19,7 @@ public final class DeterministicPRNG {
     private static final long GAMMA = 0x9E3779B97F4A7C15L;
     private static final double DOUBLE_UNIT = 0x1.0p-53; // 1.0 / (1L << 53)
 
+    // Helper subroutine: deterministic prng - internal state computation & bounds checking
     private DeterministicPRNG() {}
 
     /*

@@ -77,6 +77,15 @@ public class EdoJapanIsolationEngine {
      * @return the resulting computation or state reference
      */
     public static boolean isSakokuIsolationActive() { return sakokuIsolationActive; }
+    /*
+     * Set sakoku isolation active operation.
+     * <p>
+     * Executes operational logic for {@code EdoJapanIsolationEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param active the active argument (boolean)
+     */
     public static void setSakokuIsolationActive(boolean active) { sakokuIsolationActive = active; }
 
     /*
@@ -86,6 +95,15 @@ public class EdoJapanIsolationEngine {
      * @return the resulting computation or state reference
      */
     public static double getSustainableEquilibriumCap() { return sustainableEquilibriumCap; }
+    /*
+     * Set sustainable equilibrium cap operation.
+     * <p>
+     * Executes operational logic for {@code EdoJapanIsolationEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param cap the cap argument (double)
+     */
     public static void setSustainableEquilibriumCap(double cap) { sustainableEquilibriumCap = Math.max(1.0, cap); }
 }
 

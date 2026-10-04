@@ -28,6 +28,14 @@ public class TypeBEnginesTestSuite {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code TypeBEnginesTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
         testCells = new ArrayList<>();
@@ -43,6 +51,14 @@ public class TypeBEnginesTestSuite {
     }
 
     @Test
+    /*
+     * Test world3pure and hybrid engines operation.
+     * <p>
+     * Executes operational logic for {@code TypeBEnginesTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testWorld3PureAndHybridEngines() {
         World3PureEngine pureWorld3 = new World3PureEngine();
         pureWorld3.processTick(1.0);
@@ -54,6 +70,14 @@ public class TypeBEnginesTestSuite {
     }
 
     @Test
+    /*
+     * Test handy nasa pure and hybrid engines operation.
+     * <p>
+     * Executes operational logic for {@code TypeBEnginesTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHandyNasaPureAndHybridEngines() {
         HandyNasaPureEngine pureHandy = new HandyNasaPureEngine();
         pureHandy.processTick(1.0);
@@ -66,6 +90,14 @@ public class TypeBEnginesTestSuite {
     }
 
     @Test
+    /*
+     * Test nordhaus dice pure and hybrid engines operation.
+     * <p>
+     * Executes operational logic for {@code TypeBEnginesTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testNordhausDicePureAndHybridEngines() {
         NordhausDicePureEngine pureDice = new NordhausDicePureEngine();
         pureDice.processTick(1.0);
@@ -77,6 +109,14 @@ public class TypeBEnginesTestSuite {
     }
 
     @Test
+    /*
+     * Test cumulative plugins execution operation.
+     * <p>
+     * Executes operational logic for {@code TypeBEnginesTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCumulativePluginsExecution() {
         // Register 3 Type B hybrid plugins simultaneously
         ProceduralEngineRegistry.registerPlugin("B1_2_World3Hybrid", World3HybridEngine::processPlugin);

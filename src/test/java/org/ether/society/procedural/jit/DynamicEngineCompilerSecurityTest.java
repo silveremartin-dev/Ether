@@ -19,6 +19,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DynamicEngineCompilerSecurityTest {
 
     @Test
+    /*
+     * Test validate source code security blocks runtime exec operation.
+     * <p>
+     * Executes operational logic for {@code DynamicEngineCompilerSecurityTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testValidateSourceCodeSecurityBlocksRuntimeExec() {
         String maliciousCode = """
             package org.ether.society.procedural.custom;
@@ -50,6 +58,14 @@ import org.ether.society.engines.compiler.*;
     }
 
     @Test
+    /*
+     * Test validate source code security blocks process builder operation.
+     * <p>
+     * Executes operational logic for {@code DynamicEngineCompilerSecurityTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testValidateSourceCodeSecurityBlocksProcessBuilder() {
         String maliciousCode = """
             public class BadEngine {
@@ -65,6 +81,14 @@ import org.ether.society.engines.compiler.*;
     }
 
     @Test
+    /*
+     * Test validate source code security blocks system exit operation.
+     * <p>
+     * Executes operational logic for {@code DynamicEngineCompilerSecurityTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testValidateSourceCodeSecurityBlocksSystemExit() {
         String maliciousCode = """
             public class ExitEngine {
@@ -80,6 +104,14 @@ import org.ether.society.engines.compiler.*;
     }
 
     @Test
+    /*
+     * Test validate source code security blocks reflection operation.
+     * <p>
+     * Executes operational logic for {@code DynamicEngineCompilerSecurityTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testValidateSourceCodeSecurityBlocksReflection() {
         String maliciousCode = """
             import java.lang.reflect.Method;
@@ -94,6 +126,14 @@ import org.ether.society.engines.compiler.*;
     }
 
     @Test
+    /*
+     * Test validate source code security allows clean template operation.
+     * <p>
+     * Executes operational logic for {@code DynamicEngineCompilerSecurityTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testValidateSourceCodeSecurityAllowsCleanTemplate() {
         String cleanCode = DynamicEngineCompiler.generateEngineTemplateCode("SafeCustomEngine");
         String violation = DynamicEngineCompiler.validateSourceCodeSecurity(cleanCode);
@@ -101,6 +141,14 @@ import org.ether.society.engines.compiler.*;
     }
 
     @Test
+    /*
+     * Test compile and load engine rejects malicious file operation.
+     * <p>
+     * Executes operational logic for {@code DynamicEngineCompilerSecurityTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCompileAndLoadEngineRejectsMaliciousFile() throws IOException {
         Path tempDir = Files.createTempDirectory("ether_sec_test");
         File badFile = tempDir.resolve("MaliciousEngine.java").toFile();

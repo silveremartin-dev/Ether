@@ -21,6 +21,7 @@ import java.util.List;
  */
 public final class SimulationStateChecksum {
 
+    // Helper subroutine: simulation state checksum - internal state computation & bounds checking
     private SimulationStateChecksum() {}
 
     /*

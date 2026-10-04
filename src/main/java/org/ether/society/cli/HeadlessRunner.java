@@ -629,6 +629,7 @@ public class HeadlessRunner {
         }
     }
 
+    // Helper subroutine: parse engine mode - internal state computation & bounds checking
     private static CliEngineMode parseEngineMode(String str) {
         if (str.contains("rust") || str.contains("native")) return CliEngineMode.RUST_NATIVE;
         if (str.contains("gpu") || str.contains("shader") || str.contains("opencl")) return CliEngineMode.GPU_SHADERS;
@@ -637,6 +638,7 @@ public class HeadlessRunner {
         return CliEngineMode.CPU_JIT;
     }
 
+    // Helper subroutine: print help - internal state computation & bounds checking
     private static void printHelp() {
         System.out.println("Usage: java -jar society-simulation.jar [options]");
         System.out.println("\nðŸŒ [Tab 4] Compute Engine & Hardware Acceleration Options:");

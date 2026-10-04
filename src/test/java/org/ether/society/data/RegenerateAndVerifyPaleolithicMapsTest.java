@@ -17,6 +17,14 @@ public class RegenerateAndVerifyPaleolithicMapsTest {
 
     @Test
     @DisplayName("Regenerate and verify 2048x1024 cartographic maps for -100k, -50k, -25k, -20k")
+    /*
+     * Test regenerate paleolithic maps operation.
+     * <p>
+     * Executes operational logic for {@code RegenerateAndVerifyPaleolithicMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testRegeneratePaleolithicMaps() throws Exception {
         List<Scenario> scenarios = Scenario.getBuiltInScenarios();
 

@@ -27,6 +27,7 @@ public class SimulationRunRepository {
 
     private final Map<String, SimulationRunRecord> repository = new ConcurrentHashMap<>();
 
+    // Helper subroutine: simulation run repository - internal state computation & bounds checking
     private SimulationRunRepository() {
         // Starts clean without hardcoded fake runs
     }

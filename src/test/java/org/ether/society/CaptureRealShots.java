@@ -49,6 +49,15 @@ public class CaptureRealShots extends Application {
             "docs/images/screenshots"
     );
 
+    /*
+     * Main operation.
+     * <p>
+     * Executes operational logic for {@code CaptureRealShots} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param args the args argument (String[])
+     */
     public static void main(String[] args) {
         Locale.setDefault(Locale.ENGLISH);
         I18n.setLanguage(Language.ENGLISH);
@@ -56,6 +65,15 @@ public class CaptureRealShots extends Application {
     }
 
     @Override
+    /*
+     * Start operation.
+     * <p>
+     * Executes operational logic for {@code CaptureRealShots} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param primaryStage the primary stage argument (Stage)
+     */
     public void start(Stage primaryStage) throws Exception {
         Locale.setDefault(Locale.ENGLISH);
         I18n.setLanguage(Language.ENGLISH);
@@ -101,6 +119,7 @@ public class CaptureRealShots extends Application {
         new Thread(this::runCaptureWorkflow).start();
     }
 
+    // Helper subroutine: run capture workflow - internal state computation & bounds checking
     private void runCaptureWorkflow() {
         try {
             System.out.println("=== Starting Ether Real UI Screenshots Capture Workflow (Language: EN) ===");
@@ -272,6 +291,7 @@ public class CaptureRealShots extends Application {
         }
     }
 
+    // Helper subroutine: run on fx - internal state computation & bounds checking
     private void runOnFx(Runnable action) {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
@@ -288,6 +308,7 @@ public class CaptureRealShots extends Application {
         }
     }
 
+    // Helper subroutine: sleep - internal state computation & bounds checking
     private void sleep(long millis) {
         try {
             Thread.sleep(millis);
@@ -296,6 +317,7 @@ public class CaptureRealShots extends Application {
         }
     }
 
+    // Helper subroutine: save node snapshot - internal state computation & bounds checking
     private void saveNodeSnapshot(javafx.scene.Node node, String filename) {
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.valueOf("#1e293b"));

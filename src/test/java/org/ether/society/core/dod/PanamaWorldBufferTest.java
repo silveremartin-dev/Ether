@@ -16,6 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PanamaWorldBufferTest {
 
     @Test
+    /*
+     * Test panama off heap buffer allocation and access operation.
+     * <p>
+     * Executes operational logic for {@code PanamaWorldBufferTest} within the Data-Oriented Design memory buffer subsystem.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPanamaOffHeapBufferAllocationAndAccess() {
         int capacity = 50;
         try (PanamaWorldBuffer buffer = new PanamaWorldBuffer(capacity)) {

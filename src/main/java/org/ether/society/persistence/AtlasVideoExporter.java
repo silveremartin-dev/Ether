@@ -294,6 +294,7 @@ public class AtlasVideoExporter {
         return img;
     }
 
+    // Helper subroutine: is sparse zero skipped - internal state computation & bounds checking
     private static boolean isSparseZeroSkipped(DisplayMode mode) {
         return switch (mode) {
             case POPULATION, FLUX, MIGRATION, CONFLICT, EPIDEMIC -> true;
@@ -301,6 +302,7 @@ public class AtlasVideoExporter {
         };
     }
 
+    // Helper subroutine: get biome awt color - internal state computation & bounds checking
     private static Color getBiomeAwtColor(Biome biome) {
         if (biome == null) return new Color(30, 41, 59, 180);
         return switch (biome) {
@@ -320,6 +322,7 @@ public class AtlasVideoExporter {
         };
     }
 
+    // Helper subroutine: get layer awt color - internal state computation & bounds checking
     private static Color getLayerAwtColor(double ratio, DisplayMode mode) {
         int alpha = 200;
         return switch (mode.getCategory()) {
@@ -357,6 +360,7 @@ public class AtlasVideoExporter {
         };
     }
 
+    // Helper subroutine: get cell value - internal state computation & bounds checking
     private static double getCellValue(H3Cell c, DisplayMode mode) {
         if (c == null || mode == null) return 0.0;
         return switch (mode) {
@@ -414,6 +418,7 @@ public class AtlasVideoExporter {
         };
     }
 
+    // Helper subroutine: compute moran i - internal state computation & bounds checking
     private static double computeMoranI(List<H3Cell> cells, Set<DisplayMode> activeLayers) {
         DisplayMode scalarMode = null;
         for (DisplayMode dm : activeLayers) {

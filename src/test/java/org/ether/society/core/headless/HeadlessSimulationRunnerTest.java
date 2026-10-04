@@ -17,6 +17,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HeadlessSimulationRunnerTest {
 
     @Test
+    /*
+     * Test headless execution without gui operation.
+     * <p>
+     * Executes operational logic for {@code HeadlessSimulationRunnerTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHeadlessExecutionWithoutGUI() throws Exception {
         HeadlessSimulationRunner runner = new HeadlessSimulationRunner();
 

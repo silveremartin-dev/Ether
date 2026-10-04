@@ -32,6 +32,14 @@ public class World3VsKurzweilTestSuite {
     private H3Cell initialCell;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code World3VsKurzweilTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         initialCell = new H3Cell(613503380827930701L, 45.0, 10.0);
         initialCell.setPopulation(1000000000); // 1 Billion
@@ -44,6 +52,14 @@ public class World3VsKurzweilTestSuite {
     }
 
     @Test
+    /*
+     * Test world3vs kurzweil comparison execution operation.
+     * <p>
+     * Executes operational logic for {@code World3VsKurzweilTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testWorld3VsKurzweilComparisonExecution() {
         World3VsKurzweilComparator.ComparisonReport report =
             World3VsKurzweilComparator.compareTrajectories(initialCell, 2026, 30);

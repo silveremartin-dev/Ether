@@ -93,6 +93,7 @@ class AtlasVideoExporterTest {
         }
     }
 
+    // Helper subroutine: create sample cells - internal state computation & bounds checking
     private List<H3Cell> createSampleCells() {
         List<H3Cell> list = new ArrayList<>();
         for (int i = 0; i < 20; i++) {

@@ -51,6 +51,14 @@ public class HistoricalFidelityEvaluationTest {
     ) {}
 
     @Test
+    /*
+     * Evaluate multi resolution historical fidelity operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalFidelityEvaluationTest} within the epistemic validation and empirical benchmarking harness.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void evaluateMultiResolutionHistoricalFidelity() throws Exception {
         File sovFile = new File(SOVEREIGNTY_PATH);
         File denFile = new File(DENSITY_PATH);
@@ -187,6 +195,7 @@ public class HistoricalFidelityEvaluationTest {
         }
     }
 
+    // Helper subroutine: get approx edge length km - internal state computation & bounds checking
     private static double getApproxEdgeLengthKm(int res) {
         return switch (res) {
             case 0 -> 1107.7;

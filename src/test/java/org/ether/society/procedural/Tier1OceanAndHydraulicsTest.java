@@ -37,6 +37,14 @@ public class Tier1OceanAndHydraulicsTest {
 
     @Test
     @DisplayName("Thermohaline Stommel AMOC Engine: Seawater density, overturning flux, and tipping point")
+    /*
+     * Test thermohaline stommel amoc operation.
+     * <p>
+     * Executes operational logic for {@code Tier1OceanAndHydraulicsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testThermohalineStommelAMOC() {
         // Cold salty water must be denser than warm fresh water
         double densityColdSalty = ThermohalineStommelAMOCEngine.calculateSeawaterDensity(2.0, 35.0);
@@ -58,6 +66,14 @@ public class Tier1OceanAndHydraulicsTest {
 
     @Test
     @DisplayName("Manning-Strickler Hydrodynamics Engine: Flow velocity, discharge, and floodplain fertilization")
+    /*
+     * Test manning strickler hydrodynamics operation.
+     * <p>
+     * Executes operational logic for {@code Tier1OceanAndHydraulicsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testManningStricklerHydrodynamics() {
         // Flow velocity in natural river (Rh = 2m, slope = 0.001)
         double v = ManningStricklerHydrodynamicsEngine.calculateFlowVelocity(2.0, 0.001, 0.035);
@@ -81,6 +97,14 @@ public class Tier1OceanAndHydraulicsTest {
 
     @Test
     @DisplayName("Airy Isostasy Engine: Mountain crustal roots and crustal thickness")
+    /*
+     * Test airy isostasy crustal root operation.
+     * <p>
+     * Executes operational logic for {@code Tier1OceanAndHydraulicsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAiryIsostasyCrustalRoot() {
         // 4000m peak must have 18000m root
         double root = AiryIsostasyCrustalRootEngine.calculateMountainRootDepthMeters(4000.0);

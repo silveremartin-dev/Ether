@@ -32,10 +32,12 @@ public final class PresetStorageService {
     private static final Logger logger = LoggerFactory.getLogger(PresetStorageService.class);
     private static final ObjectMapper mapper = createObjectMapper();
 
+    // Helper subroutine: preset storage service - internal state computation & bounds checking
     private PresetStorageService() {
         // Utility
     }
 
+    // Helper subroutine: create object mapper - internal state computation & bounds checking
     private static ObjectMapper createObjectMapper() {
         ObjectMapper om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
@@ -261,6 +263,7 @@ public final class PresetStorageService {
         exportScenarioPresets();
     }
 
+    // Helper subroutine: export planet presets - internal state computation & bounds checking
     private static void exportPlanetPresets() {
         Path targetDir = EtherPaths.getPresetsPlanetsDir();
         Path resDir = Path.of("src", "main", "resources", "data", "presets", "planets");
@@ -273,6 +276,7 @@ public final class PresetStorageService {
         }
     }
 
+    // Helper subroutine: export ecology presets - internal state computation & bounds checking
     private static void exportEcologyPresets() {
         Path targetDir = EtherPaths.getPresetsEcologyDir();
         Path resDir = Path.of("src", "main", "resources", "data", "presets", "ecology");
@@ -285,6 +289,7 @@ public final class PresetStorageService {
         }
     }
 
+    // Helper subroutine: export scenario presets - internal state computation & bounds checking
     private static void exportScenarioPresets() {
         Path targetDir = EtherPaths.getPresetsScenariosDir();
         Path resDir = Path.of("src", "main", "resources", "data", "presets", "scenarios");
@@ -300,6 +305,7 @@ public final class PresetStorageService {
         }
     }
 
+    // Helper subroutine: write json safely - internal state computation & bounds checking
     private static void writeJsonSafely(Path targetFile, Object data) {
         try {
             if (targetFile.getParent() != null && !Files.exists(targetFile.getParent())) {

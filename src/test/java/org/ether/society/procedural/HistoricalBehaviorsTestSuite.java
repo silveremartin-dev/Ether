@@ -43,6 +43,14 @@ public class HistoricalBehaviorsTestSuite {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalBehaviorsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
         testCells = new ArrayList<>();
@@ -61,6 +69,14 @@ public class HistoricalBehaviorsTestSuite {
     }
 
     @Test
+    /*
+     * Test rome imperial cliodynamics operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalBehaviorsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testRomeImperialCliodynamics() {
         H3Cell cell = testCells.get(0);
         double initialCapital = cell.getResourceCapital();
@@ -73,8 +89,18 @@ public class HistoricalBehaviorsTestSuite {
     }
 
     @Test
+    /*
+     * Test edo japan isolation equilibrium operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalBehaviorsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEdoJapanIsolationEquilibrium() {
         H3Cell cell = testCells.get(0);
+        cell.setLatitude(36.0);
+        cell.setLongitude(138.0);
         cell.setPopulation(50000); // Exceeds 30k cell target cap
         cell.setPollutionLevel(20.0);
 
@@ -88,8 +114,18 @@ public class HistoricalBehaviorsTestSuite {
     }
 
     @Test
+    /*
+     * Test amerindian epidemics and draft constraint operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalBehaviorsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAmerindianEpidemicsAndDraftConstraint() {
         H3Cell cell = testCells.get(0);
+        cell.setLatitude(19.4);
+        cell.setLongitude(-99.1);
         double initialPop = cell.getPopulation();
 
         // Trigger European/Old World contact epidemic shock
@@ -105,6 +141,14 @@ public class HistoricalBehaviorsTestSuite {
     }
 
     @Test
+    /*
+     * Test fertile crescent salinization operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalBehaviorsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testFertileCrescentSalinization() {
         H3Cell cell = testCells.get(0);
         double initialFood = cell.getFoodResource();
@@ -116,6 +160,14 @@ public class HistoricalBehaviorsTestSuite {
     }
 
     @Test
+    /*
+     * Test pleistocene megafauna overkill operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalBehaviorsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPleistoceneMegafaunaOverkill() {
         H3Cell cell = testCells.get(0);
         cell.setPopulation(200); // 200 humans vs 500 wild biomass
@@ -128,6 +180,14 @@ public class HistoricalBehaviorsTestSuite {
     }
 
     @Test
+    /*
+     * Test protestant work ethic operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalBehaviorsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testProtestantWorkEthic() {
         H3Cell cell = testCells.get(0);
         double initialCapital = cell.getResourceCapital();
@@ -142,6 +202,14 @@ public class HistoricalBehaviorsTestSuite {
     }
 
     @Test
+    /*
+     * Test celibate monastic demographic buffer operation.
+     * <p>
+     * Executes operational logic for {@code HistoricalBehaviorsTestSuite} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCelibateMonasticDemographicBuffer() {
         H3Cell cell = testCells.get(0);
         cell.setFoodResource(500.0);

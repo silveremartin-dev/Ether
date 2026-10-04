@@ -134,6 +134,7 @@ public class MarkdownViewerPane extends BorderPane {
         return currentMarkdown;
     }
 
+    // Helper subroutine: update view mode - internal state computation & bounds checking
     private void updateViewMode() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (toggleRawBtn.isSelected()) {
@@ -145,6 +146,7 @@ public class MarkdownViewerPane extends BorderPane {
         }
     }
 
+    // Helper subroutine: copy to clipboard - internal state computation & bounds checking
     private void copyToClipboard() {
         if (currentMarkdown != null && !currentMarkdown.isBlank()) {
             Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -160,6 +162,7 @@ public class MarkdownViewerPane extends BorderPane {
         }
     }
 
+    // Helper subroutine: render markdown - internal state computation & bounds checking
     private void renderMarkdown(String markdown) {
         formattedContainer.getChildren().clear();
 
@@ -233,6 +236,7 @@ public class MarkdownViewerPane extends BorderPane {
         }
     }
 
+    // Helper subroutine: build table node - internal state computation & bounds checking
     private Node buildTableNode(List<String> tableLines) {
         if (tableLines == null || tableLines.isEmpty()) return new VBox();
 
@@ -294,6 +298,7 @@ public class MarkdownViewerPane extends BorderPane {
         return grid;
     }
 
+    // Helper subroutine: parse formatted text flow - internal state computation & bounds checking
     private TextFlow parseFormattedTextFlow(String text) {
         TextFlow flow = new TextFlow();
         if (text == null || text.isBlank()) return flow;

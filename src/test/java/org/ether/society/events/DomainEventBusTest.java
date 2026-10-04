@@ -20,12 +20,28 @@ public class DomainEventBusTest {
     private DomainEventBus bus;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code DomainEventBusTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         bus = DomainEventBus.getInstance();
         bus.clear();
     }
 
     @Test
+    /*
+     * Test deterministic priority order operation.
+     * <p>
+     * Executes operational logic for {@code DomainEventBusTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testDeterministicPriorityOrder() {
         List<String> executionOrder = new ArrayList<>();
 
@@ -40,6 +56,14 @@ public class DomainEventBusTest {
     }
 
     @Test
+    /*
+     * Test deferred phase flushing operation.
+     * <p>
+     * Executes operational logic for {@code DomainEventBusTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testDeferredPhaseFlushing() {
         List<String> results = new ArrayList<>();
 

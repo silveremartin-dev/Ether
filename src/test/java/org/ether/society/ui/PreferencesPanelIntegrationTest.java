@@ -22,6 +22,14 @@ public class PreferencesPanelIntegrationTest {
     private static boolean jfxInitialized = false;
 
     @BeforeAll
+    /*
+     * Init jfx operation.
+     * <p>
+     * Executes operational logic for {@code PreferencesPanelIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public static void initJFX() throws InterruptedException {
         if (!jfxInitialized) {
             CountDownLatch latch = new CountDownLatch(1);
@@ -41,6 +49,14 @@ public class PreferencesPanelIntegrationTest {
 
     @Test
     @DisplayName("Verify PreferencesPanel construction and updateTexts lifecycle without NPE")
+    /*
+     * Test preferences panel instantiation operation.
+     * <p>
+     * Executes operational logic for {@code PreferencesPanelIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPreferencesPanelInstantiation() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 

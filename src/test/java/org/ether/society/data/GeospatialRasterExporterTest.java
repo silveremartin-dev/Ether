@@ -33,6 +33,14 @@ public class GeospatialRasterExporterTest {
     Path tempDir;
 
     @Test
+    /*
+     * Test float32geo tiff export and structure operation.
+     * <p>
+     * Executes operational logic for {@code GeospatialRasterExporterTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testFloat32GeoTiffExportAndStructure() throws Exception {
         int w = 64;
         int h = 32;
@@ -72,6 +80,14 @@ public class GeospatialRasterExporterTest {
     }
 
     @Test
+    /*
+     * Test16bit png export and world file operation.
+     * <p>
+     * Executes operational logic for {@code GeospatialRasterExporterTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void test16BitPngExportAndWorldFile() throws Exception {
         int w = 64;
         int h = 32;
@@ -103,6 +119,14 @@ public class GeospatialRasterExporterTest {
     }
 
     @Test
+    /*
+     * Test color png export with world file operation.
+     * <p>
+     * Executes operational logic for {@code GeospatialRasterExporterTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testColorPngExportWithWorldFile() throws Exception {
         int w = 64;
         int h = 32;
@@ -130,6 +154,14 @@ public class GeospatialRasterExporterTest {
     }
 
     @Test
+    /*
+     * Test esri ascii grid export operation.
+     * <p>
+     * Executes operational logic for {@code GeospatialRasterExporterTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEsriAsciiGridExport() throws Exception {
         int w = 16;
         int h = 8;
@@ -155,6 +187,14 @@ public class GeospatialRasterExporterTest {
     }
 
     @Test
+    /*
+     * Test procedural elevation non uniformity operation.
+     * <p>
+     * Executes operational logic for {@code GeospatialRasterExporterTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testProceduralElevationNonUniformity() {
         ProceduralGenerator generator = ProceduralGenerator.getInstance();
         PlanetPreset preset = PlanetPreset.EARTH_LIKE;

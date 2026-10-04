@@ -34,6 +34,14 @@ public class PlanetaryBoundariesAndAdvisorTest {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code PlanetaryBoundariesAndAdvisorTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         testCells = new ArrayList<>();
         H3Cell cell = new H3Cell(613503380827930701L, 45.0, 10.0);
@@ -45,6 +53,14 @@ public class PlanetaryBoundariesAndAdvisorTest {
     }
 
     @Test
+    /*
+     * Test planetary boundaries assessment operation.
+     * <p>
+     * Executes operational logic for {@code PlanetaryBoundariesAndAdvisorTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPlanetaryBoundariesAssessment() {
         var status = PlanetaryBoundariesEngine.assessBoundaries(testCells);
         assertNotNull(status);
@@ -52,6 +68,14 @@ public class PlanetaryBoundariesAndAdvisorTest {
     }
 
     @Test
+    /*
+     * Test cliodynamic advisor alerts operation.
+     * <p>
+     * Executes operational logic for {@code PlanetaryBoundariesAndAdvisorTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCliodynamicAdvisorAlerts() {
         var alerts = CliodynamicAdvisorEngine.generateAdvisorAlerts(testCells, 2026);
         assertNotNull(alerts);

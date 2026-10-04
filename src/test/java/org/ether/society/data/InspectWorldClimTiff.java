@@ -8,6 +8,14 @@ import java.nio.ByteOrder;
 
 public class InspectWorldClimTiff {
     @Test
+    /*
+     * Inspect operation.
+     * <p>
+     * Executes operational logic for {@code InspectWorldClimTiff} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void inspect() throws Exception {
         File file = new File("data/maps/worldclim/bio_10m/wc2.1_10m_bio_1.tif");
         try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {

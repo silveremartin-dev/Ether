@@ -11,6 +11,15 @@ import org.ether.society.model.Biome;
  */
 public class EngineBenchmarkHarness {
 
+    /*
+     * Main operation.
+     * <p>
+     * Executes operational logic for {@code EngineBenchmarkHarness} within the Data-Oriented Design memory buffer subsystem.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param args the args argument (String[])
+     */
     public static void main(String[] args) {
         System.out.println("==========================================================");
         System.out.println("    ETHER SIMULATION — ENGINE BENCHMARK HARNESS (v1.0)    ");
@@ -25,6 +34,7 @@ public class EngineBenchmarkHarness {
         }
     }
 
+    // Helper subroutine: run benchmark for grid size - internal state computation & bounds checking
     private static void runBenchmarkForGridSize(int capacity, int ticks) {
         WorldBuffer world = new WorldBuffer(capacity);
         AgentBuffer agents = new AgentBuffer(capacity);

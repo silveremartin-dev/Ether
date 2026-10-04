@@ -313,6 +313,7 @@ public class ClusterManager {
         this.currentWorldBuffer = buffer;
     }
 
+    // Helper subroutine: start master server - internal state computation & bounds checking
     private void startMasterServer() throws IOException {
         masterServerSocket = new ServerSocket(port);
         logger.info("🟢 Ether Cluster Master Server started on port {} (Security Active)", port);
@@ -334,6 +335,7 @@ public class ClusterManager {
         });
     }
 
+    // Helper subroutine: handle worker handshake - internal state computation & bounds checking
     private void handleWorkerHandshake(Socket socket) {
         String clientAddress = socket.getRemoteSocketAddress().toString();
         DataInputStream in = null;
@@ -405,6 +407,7 @@ public class ClusterManager {
         }
     }
 
+    // Helper subroutine: connect worker to master - internal state computation & bounds checking
     private void connectWorkerToMaster() {
         networkPool.execute(() -> {
             int retries = 0;
@@ -599,6 +602,7 @@ public class ClusterManager {
         }
     }
 
+    // Helper subroutine: check node health and resilience - internal state computation & bounds checking
     private void checkNodeHealthAndResilience() {
         long now = System.nanoTime();
         long timeoutNanos = TimeUnit.SECONDS.toNanos(heartbeatTimeoutSec);
@@ -692,6 +696,15 @@ public class ClusterManager {
      * @return the resulting computation or state reference
      */
     public String getCustomWorkerId() { return customWorkerId; }
+    /*
+     * Set custom worker id operation.
+     * <p>
+     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param customWorkerId the custom worker id argument (String)
+     */
     public void setCustomWorkerId(String customWorkerId) { this.customWorkerId = customWorkerId; }
 
     /*
@@ -701,6 +714,15 @@ public class ClusterManager {
      * @return the resulting computation or state reference
      */
     public String getCustomWorkerCapacity() { return customWorkerCapacity; }
+    /*
+     * Set custom worker capacity operation.
+     * <p>
+     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param customWorkerCapacity the custom worker capacity argument (String)
+     */
     public void setCustomWorkerCapacity(String customWorkerCapacity) { this.customWorkerCapacity = customWorkerCapacity; }
 
     /*
@@ -710,6 +732,15 @@ public class ClusterManager {
      * @return the resulting computation or state reference
      */
     public long getBarrierTimeoutMs() { return barrierTimeoutMs; }
+    /*
+     * Set barrier timeout ms operation.
+     * <p>
+     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param barrierTimeoutMs the barrier timeout ms argument (long)
+     */
     public void setBarrierTimeoutMs(long barrierTimeoutMs) { this.barrierTimeoutMs = Math.max(100, barrierTimeoutMs); }
 
     /*
@@ -719,6 +750,15 @@ public class ClusterManager {
      * @return the resulting computation or state reference
      */
     public int getSyncInterval() { return syncInterval; }
+    /*
+     * Set sync interval operation.
+     * <p>
+     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param syncInterval the sync interval argument (int)
+     */
     public void setSyncInterval(int syncInterval) { this.syncInterval = Math.max(1, syncInterval); }
 
     /*
@@ -728,6 +768,15 @@ public class ClusterManager {
      * @return the resulting computation or state reference
      */
     public int getHeartbeatIntervalSec() { return heartbeatIntervalSec; }
+    /*
+     * Set heartbeat interval sec operation.
+     * <p>
+     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param sec the sec argument (int)
+     */
     public void setHeartbeatIntervalSec(int sec) { this.heartbeatIntervalSec = Math.max(1, sec); }
 
     /*
@@ -737,6 +786,15 @@ public class ClusterManager {
      * @return the resulting computation or state reference
      */
     public int getHeartbeatTimeoutSec() { return heartbeatTimeoutSec; }
+    /*
+     * Set heartbeat timeout sec operation.
+     * <p>
+     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param sec the sec argument (int)
+     */
     public void setHeartbeatTimeoutSec(int sec) { this.heartbeatTimeoutSec = Math.max(2, sec); }
 
     /*
@@ -746,6 +804,15 @@ public class ClusterManager {
      * @return the resulting computation or state reference
      */
     public boolean isHaloExchangeEnabled() { return haloExchangeEnabled; }
+    /*
+     * Set halo exchange enabled operation.
+     * <p>
+     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param haloExchangeEnabled the halo exchange enabled argument (boolean)
+     */
     public void setHaloExchangeEnabled(boolean haloExchangeEnabled) { this.haloExchangeEnabled = haloExchangeEnabled; }
 
     /*
@@ -755,6 +822,15 @@ public class ClusterManager {
      * @return the resulting computation or state reference
      */
     public org.ether.society.network.cluster.ClusterSnapshotManager getSnapshotManager() { return snapshotManager; }
+    /*
+     * Set snapshot manager operation.
+     * <p>
+     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param snapshotManager the snapshot manager argument (org.ether.society.network.cluster.ClusterSnapshotManager)
+     */
     public void setSnapshotManager(org.ether.society.network.cluster.ClusterSnapshotManager snapshotManager) { this.snapshotManager = snapshotManager; }
 
     /*
@@ -764,6 +840,15 @@ public class ClusterManager {
      * @return the resulting computation or state reference
      */
     public int getSnapshotIntervalTicks() { return snapshotIntervalTicks; }
+    /*
+     * Set snapshot interval ticks operation.
+     * <p>
+     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param snapshotIntervalTicks the snapshot interval ticks argument (int)
+     */
     public void setSnapshotIntervalTicks(int snapshotIntervalTicks) { this.snapshotIntervalTicks = Math.max(0, snapshotIntervalTicks); }
 
     /*
@@ -782,6 +867,7 @@ public class ClusterManager {
         logger.info("Cluster Manager stopped cleanly.");
     }
 
+    // Helper subroutine: write encrypted frame - internal state computation & bounds checking
     private static void writeEncryptedFrame(DataOutputStream out, String plainText, EtherSecurityManager sec) throws IOException {
         try {
             String encrypted = sec.encrypt(plainText);
@@ -794,6 +880,7 @@ public class ClusterManager {
         }
     }
 
+    // Helper subroutine: read encrypted frame - internal state computation & bounds checking
     private static String readEncryptedFrame(DataInputStream in, EtherSecurityManager sec) throws IOException {
         int length = in.readInt();
         byte[] bytes = new byte[length];

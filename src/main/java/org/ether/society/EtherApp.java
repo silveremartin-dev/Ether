@@ -178,6 +178,7 @@ public class EtherApp extends Application {
         }
     }
 
+    // Helper subroutine: start animation timer - internal state computation & bounds checking
     private void startAnimationTimer() {
         timer = new AnimationTimer() {
             @Override
@@ -274,6 +275,7 @@ public class EtherApp extends Application {
         System.exit(0);
     }
 
+    // Helper subroutine: update texts - internal state computation & bounds checking
     private void updateTexts() {
         primaryStage.setTitle(I18n.get("app.title"));
     }

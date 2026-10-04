@@ -477,6 +477,7 @@ public class AutoEpochScenarioGenerator {
         return EcologyPreset.EARTH_STANDARD;
     }
 
+    // Helper subroutine: find closest built in scenario - internal state computation & bounds checking
     private static Scenario findClosestBuiltInScenario(String planetKey, long targetYear) {
         if (!"earth".equalsIgnoreCase(planetKey)) {
             return null;
@@ -496,6 +497,7 @@ public class AutoEpochScenarioGenerator {
         return closest;
     }
 
+    // Helper subroutine: copy template properties - internal state computation & bounds checking
     private static void copyTemplateProperties(Scenario source, Scenario target) {
         target.setTargetCohortSize(source.getTargetCohortSize());
         target.setTemporalResolutionDays(source.getTemporalResolutionDays());
@@ -529,6 +531,7 @@ public class AutoEpochScenarioGenerator {
         }
     }
 
+    // Helper subroutine: generate epoch description - internal state computation & bounds checking
     private static String generateEpochDescription(String planet, long year, String epochLabel) {
         return String.format(Locale.ROOT, """
             ðŸŒ SCÃ‰NARIO AUTOMATIQUE D'Ã‰POQUE : %s â€” %s
@@ -551,6 +554,7 @@ public class AutoEpochScenarioGenerator {
                 epochLabel);
     }
 
+    // Helper subroutine: capitalize - internal state computation & bounds checking
     private static String capitalize(String str) {
         if (str == null || str.isEmpty()) return "";
         return str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1).toLowerCase(Locale.ROOT);

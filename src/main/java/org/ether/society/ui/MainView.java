@@ -111,6 +111,7 @@ public class MainView extends StackPane {
         I18n.languageProperty().addListener((obs, old, val) -> updateTabTitles());
     }
 
+    // Helper subroutine: init ui - internal state computation & bounds checking
     private void initUI() {
         tabPane = new TabPane();
         tabPane.getStyleClass().add("main-tab-pane");
@@ -286,6 +287,7 @@ public class MainView extends StackPane {
         updateHeadlessTexts();
     }
 
+    // Helper subroutine: on planet generated - internal state computation & bounds checking
     private void onPlanetGenerated(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return;
         logger.info("Planet generated with {} cells", cells.size());
@@ -303,6 +305,7 @@ public class MainView extends StackPane {
         tabPane.getSelectionModel().select(resourcesTab);
     }
 
+    // Helper subroutine: on resources applied - internal state computation & bounds checking
     private void onResourcesApplied(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return;
         logger.info("Resource distribution applied to {} cells", cells.size());
@@ -315,6 +318,7 @@ public class MainView extends StackPane {
         tabPane.getSelectionModel().select(setupTab);
     }
 
+    // Helper subroutine: create simulation view - internal state computation & bounds checking
     private BorderPane createSimulationView() {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("glass-panel"); // Apply glass effect base
@@ -456,6 +460,7 @@ public class MainView extends StackPane {
         return root;
     }
 
+    // Helper subroutine: create headless dashboard - internal state computation & bounds checking
     private VBox createHeadlessDashboard() {
         lblHeadlessTitle = new Label();
         lblHeadlessTitle.setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 20px; -fx-font-weight: bold;");
@@ -503,6 +508,7 @@ public class MainView extends StackPane {
         return dashboard;
     }
 
+    // Helper subroutine: create metric card - internal state computation & bounds checking
     private VBox createMetricCard(String title, Label valLabel) {
         Label lblT = new Label(title);
         lblT.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
@@ -512,12 +518,14 @@ public class MainView extends StackPane {
         return card;
     }
 
+    // Helper subroutine: create metric val label - internal state computation & bounds checking
     private Label createMetricValLabel(String initial) {
         Label lbl = new Label(initial);
         lbl.setStyle("-fx-text-fill: #f8fafc; -fx-font-size: 16px; -fx-font-weight: bold;");
         return lbl;
     }
 
+    // Helper subroutine: update headless texts - internal state computation & bounds checking
     private void updateHeadlessTexts() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (lblHeadlessTitle != null) lblHeadlessTitle.setText(I18n.getOrDefault("headless.banner.title", "🚀 MODE HEADLESS ACTIF (ACCÉLÉRATION MAXIMALE)"));
@@ -525,6 +533,7 @@ public class MainView extends StackPane {
         if (btnHeadlessSwitchGui != null) btnHeadlessSwitchGui.setText(I18n.getOrDefault("headless.btn.switch_gui", "🖼️ Réactiver l'affichage visuel (Mode GUI)"));
     }
 
+    // Helper subroutine: apply rendering mode - internal state computation & bounds checking
     private void applyRenderingMode(ExecutionContextPanel.RenderingMode mode) {
         boolean isHeadless = (mode == ExecutionContextPanel.RenderingMode.HEADLESS);
         if (mapCanvas != null) {
@@ -543,6 +552,7 @@ public class MainView extends StackPane {
         logger.info("Simulation visual rendering mode updated: {}", mode);
     }
 
+    // Helper subroutine: update headless telemetry - internal state computation & bounds checking
     private void updateHeadlessTelemetry(String dateStr, long currentTick) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (lblHeadlessYearVal != null) lblHeadlessYearVal.setText(dateStr);
@@ -563,6 +573,7 @@ public class MainView extends StackPane {
     /* Internal state variable for is recording (boolean). */
     private boolean isRecording = false;
 
+    // Helper subroutine: toggle timelapse recording - internal state computation & bounds checking
     private void toggleTimelapseRecording() {
         isRecording = !isRecording;
         if (isRecording) {
@@ -579,6 +590,7 @@ public class MainView extends StackPane {
         }
     }
 
+    // Helper subroutine: seek timelapse - internal state computation & bounds checking
     private void seekTimelapse(int year) {
         long startYear = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getStartDateYear() : -20000;
         long targetTicks = Math.max(0, (year - startYear) * 12);
@@ -600,6 +612,7 @@ public class MainView extends StackPane {
         logger.info("Timelapse seek to year: {} (tick {})", year, targetTicks);
     }
 
+    // Helper subroutine: seek to end - internal state computation & bounds checking
     private void seekToEnd() {
         var snapshots = engine.getHistoryManager() != null ? engine.getHistoryManager().getWorldSnapshots() : null;
         if (snapshots != null && !snapshots.isEmpty()) {
@@ -627,6 +640,7 @@ public class MainView extends StackPane {
         logger.info("Seek to end completed");
     }
 
+    // Helper subroutine: on start simulation - internal state computation & bounds checking
     private void onStartSimulation(Scenario scenario) {
         if (setupPanel != null && setupPanel.isResumeFromSnapshotSelected()) {
             var meta = setupPanel.getSelectedSnapshotMetadata();
@@ -720,6 +734,7 @@ public class MainView extends StackPane {
         logger.info("Transitioned directly to Simulation Tab (4) with {} cells in ready/paused mode", newCells.size());
     }
 
+    // Helper subroutine: launch simulation from context - internal state computation & bounds checking
     private void launchSimulationFromContext() {
         if (setupPanel != null) {
             org.ether.society.model.Scenario currentScenario = setupPanel.getScenario();
@@ -905,6 +920,7 @@ public class MainView extends StackPane {
         }
     }
 
+    // Helper subroutine: start event polling - internal state computation & bounds checking
     private void startEventPolling() {
         if (mapCanvas != null && engine != null) {
             mapCanvas.setEventSystem(engine.getEventSystem());
@@ -1030,6 +1046,7 @@ public class MainView extends StackPane {
         eventLoop.start();
     }
 
+    // Helper subroutine: get age name - internal state computation & bounds checking
     private String getAgeName(float techLevel) {
         if (techLevel < 10) return I18n.getOrDefault("age.stone", "STONE AGE");
         if (techLevel < 30) return I18n.getOrDefault("age.bronze", "BRONZE AGE");

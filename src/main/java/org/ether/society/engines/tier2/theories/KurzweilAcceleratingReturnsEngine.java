@@ -67,6 +67,15 @@ public class KurzweilAcceleratingReturnsEngine {
      * @return the resulting computation or state reference
      */
     public static double getGlobalKnowledgeStock() { return globalKnowledgeStock; }
+    /*
+     * Set global knowledge stock operation.
+     * <p>
+     * Executes operational logic for {@code KurzweilAcceleratingReturnsEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param k the k argument (double)
+     */
     public static void setGlobalKnowledgeStock(double k) { globalKnowledgeStock = Math.max(1.0, k); }
 }
 

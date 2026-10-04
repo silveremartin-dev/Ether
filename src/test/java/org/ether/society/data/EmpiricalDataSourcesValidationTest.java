@@ -38,6 +38,14 @@ public class EmpiricalDataSourcesValidationTest {
 
     @Test
     @DisplayName("1. Validate HYDE 3.4 5-Arc-Minute Empirical Grid Ingestion (Zero Fallback)")
+    /*
+     * Test hyde34ingestion operation.
+     * <p>
+     * Executes operational logic for {@code EmpiricalDataSourcesValidationTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHyde34Ingestion() throws Exception {
         BufferedImage img1000BC = Hyde34GridReader.loadForYear(-1000);
         Assertions.assertNotNull(img1000BC, "HYDE 3.4 -1000 BC raster image must be loaded");
@@ -57,6 +65,14 @@ public class EmpiricalDataSourcesValidationTest {
 
     @Test
     @DisplayName("2. Validate Natural Earth 1:10m High-Precision Vector Rasterizer")
+    /*
+     * Test natural earth vector ingestion operation.
+     * <p>
+     * Executes operational logic for {@code EmpiricalDataSourcesValidationTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testNaturalEarthVectorIngestion() throws Exception {
         List<NaturalEarthVectorIngestor.VectorFeature> features = new ArrayList<>();
 
@@ -80,6 +96,14 @@ public class EmpiricalDataSourcesValidationTest {
 
     @Test
     @DisplayName("3. Validate Archaeoglobe Archaeological Recalibration Module")
+    /*
+     * Test archaeoglobe validation operation.
+     * <p>
+     * Executes operational logic for {@code EmpiricalDataSourcesValidationTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testArchaeoglobeValidation() {
         double rawDensity = 10.0;
         double validateEuroBC = ArchaeoglobeValidator.validateDensityWithArchaeology(rawDensity, 10.0, 45.0, -1000);
@@ -92,6 +116,14 @@ public class EmpiricalDataSourcesValidationTest {
 
     @Test
     @DisplayName("4. Validate Seshat Global History Databank Cliodynamic Benchmarks")
+    /*
+     * Test seshat datat integrator operation.
+     * <p>
+     * Executes operational logic for {@code EmpiricalDataSourcesValidationTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSeshatDatatIntegrator() {
         SeshatDataIntegrator.SeshatPolityRecord rome = SeshatDataIntegrator.getSeshatRecord("ROMAN_EMPIRE");
         Assertions.assertNotNull(rome, "Roman Empire Seshat record must exist");
@@ -106,6 +138,14 @@ public class EmpiricalDataSourcesValidationTest {
 
     @Test
     @DisplayName("5. Enforce Zero Fallback Policy - Missing Year Exception Check")
+    /*
+     * Test zero fallback exception operation.
+     * <p>
+     * Executes operational logic for {@code EmpiricalDataSourcesValidationTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testZeroFallbackException() {
         org.ether.society.model.Scenario scenario = new org.ether.society.model.Scenario();
         scenario.setUseRealEarthData(true);

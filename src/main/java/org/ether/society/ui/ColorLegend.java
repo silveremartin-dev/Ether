@@ -104,6 +104,7 @@ public class ColorLegend extends VBox {
         rebuildLegendCards();
     }
 
+    // Helper subroutine: toggle collapse - internal state computation & bounds checking
     private void toggleCollapse() {
         collapsed = !collapsed;
         layersContainer.setVisible(!collapsed);
@@ -251,6 +252,7 @@ public class ColorLegend extends VBox {
         rebuildLegendCards();
     }
 
+    // Helper subroutine: update title - internal state computation & bounds checking
     private void updateTitle() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         int count = activeModes != null ? activeModes.size() : 0;
@@ -265,6 +267,7 @@ public class ColorLegend extends VBox {
         }
     }
 
+    // Helper subroutine: rebuild legend cards - internal state computation & bounds checking
     private void rebuildLegendCards() {
         layersContainer.getChildren().clear();
 
@@ -282,6 +285,7 @@ public class ColorLegend extends VBox {
         }
     }
 
+    // Helper subroutine: create card for mode - internal state computation & bounds checking
     private VBox createCardForMode(DisplayMode mode) {
         VBox card = new VBox(2);
         card.setStyle("-fx-background-color: rgba(30, 41, 59, 0.65); -fx-padding: 4 6; -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.20); -fx-border-radius: 6;");
@@ -315,6 +319,7 @@ public class ColorLegend extends VBox {
         return card;
     }
 
+    // Helper subroutine: get unit for mode - internal state computation & bounds checking
     private String getUnitForMode(DisplayMode mode) {
         if (mode == null) return "";
         return switch (mode) {
@@ -328,6 +333,7 @@ public class ColorLegend extends VBox {
         };
     }
 
+    // Helper subroutine: draw gradient bar - internal state computation & bounds checking
     private void drawGradientBar(GraphicsContext gc, ModeStats st, String unit) {
         gc.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -391,6 +397,7 @@ public class ColorLegend extends VBox {
         gc.fillText(maxStr, BAR_X + BAR_WIDTH - maxW, BAR_Y + BAR_HEIGHT + 13);
     }
 
+    // Helper subroutine: draw biome legend - internal state computation & bounds checking
     private void drawBiomeLegend(GraphicsContext gc) {
         String[] biomeNames = {
             I18n.getBiomeDisplayName(org.ether.society.model.Biome.OCEAN),

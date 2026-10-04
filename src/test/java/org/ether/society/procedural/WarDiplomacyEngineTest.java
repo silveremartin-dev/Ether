@@ -20,6 +20,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class WarDiplomacyEngineTest {
 
     @Test
+    /*
+     * Test geopolitical war resolution operation.
+     * <p>
+     * Executes operational logic for {@code WarDiplomacyEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testGeopoliticalWarResolution() {
         H3Cell aggCapital = new H3Cell(613503380827930700L, 50.0, 10.0);
         aggCapital.setPopulation(10000);
@@ -51,6 +59,14 @@ public class WarDiplomacyEngineTest {
     }
 
     @Test
+    /*
+     * Test linguistic drift and lingua franca operation.
+     * <p>
+     * Executes operational logic for {@code WarDiplomacyEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testLinguisticDriftAndLinguaFranca() {
         H3Cell cell1 = new H3Cell(613503380827930703L, 40.0, 5.0);
         cell1.setPopulation(500);
@@ -63,6 +79,14 @@ public class WarDiplomacyEngineTest {
     }
 
     @Test
+    /*
+     * Test tech tree diffusion operation.
+     * <p>
+     * Executes operational logic for {@code WarDiplomacyEngineTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTechTreeDiffusion() {
         H3Cell hub = new H3Cell(613503380827930704L, 48.0, 2.0);
         hub.setPopulation(5000);

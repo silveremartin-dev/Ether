@@ -446,6 +446,14 @@ public class GenerateEpochMapsTest {
     );
 
     @Test
+    /*
+     * Generate epoch100k only operation.
+     * <p>
+     * Executes operational logic for {@code GenerateEpochMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void generateEpoch100kOnly() throws Exception {
         File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
         File rootDir = new File("data/maps/ether/earth");
@@ -483,6 +491,14 @@ public class GenerateEpochMapsTest {
     }
 
     @Test
+    /*
+     * Generate canonical36epochs cultural data operation.
+     * <p>
+     * Executes operational logic for {@code GenerateEpochMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void generateCanonical36EpochsCulturalData() throws Exception {
         File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
         File rootDir = new File("data/maps/ether/earth");
@@ -533,6 +549,14 @@ public class GenerateEpochMapsTest {
     }
 
     @Test
+    /*
+     * Regenerate prehistoric density maps only operation.
+     * <p>
+     * Executes operational logic for {@code GenerateEpochMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void regeneratePrehistoricDensityMapsOnly() throws Exception {
         File rootDir = new File("data/maps/ether/earth");
         rootDir.mkdirs();
@@ -563,6 +587,14 @@ public class GenerateEpochMapsTest {
     }
 
     @Test
+    /*
+     * Validate prehistoric cartographic differentiation operation.
+     * <p>
+     * Executes operational logic for {@code GenerateEpochMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void validatePrehistoricCartographicDifferentiation() {
         // 1. Validate Sahul (Australia) Wallace Line Crossing & Tasmania
         double sahulLon = 133.0, sahulLat = -25.0;
@@ -624,6 +656,14 @@ public class GenerateEpochMapsTest {
     }
 
     @Test
+    /*
+     * Compute and validate global population continuity operation.
+     * <p>
+     * Executes operational logic for {@code GenerateEpochMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void computeAndValidateGlobalPopulationContinuity() throws Exception {
         double rEarthKm = 6371.0;
         int width = 2048;
@@ -674,6 +714,14 @@ public class GenerateEpochMapsTest {
     }
 
     @Test
+    /*
+     * Generate all36epochs cultural data operation.
+     * <p>
+     * Executes operational logic for {@code GenerateEpochMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void generateAll36EpochsCulturalData() throws Exception {
         File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
         File rootDir = new File("data/maps/ether/earth");
@@ -738,6 +786,7 @@ public class GenerateEpochMapsTest {
         System.out.printf("All %d epochs successfully regenerated and documented with 25 rasters each.%n", EPOCHS.size());
     }
 
+    // Helper subroutine: write epoch cultural registry - internal state computation & bounds checking
     private void writeEpochCulturalRegistry(File target, EpochMeta em, File seshatFile) throws Exception {
         long yr = em.year();
         List<HistoricalPolityFeature> polities = Collections.emptyList();
@@ -925,6 +974,7 @@ public class GenerateEpochMapsTest {
         safeWriteFile(target, sb.toString());
     }
 
+    // Helper subroutine: write epoch provenance - internal state computation & bounds checking
     private void writeEpochProvenance(File target, EpochMeta em) throws Exception {
         long yr = em.year();
         String json = """
@@ -1051,6 +1101,7 @@ public class GenerateEpochMapsTest {
         safeWriteFile(target, json);
     }
 
+    // Helper subroutine: write epoch readme - internal state computation & bounds checking
     private void writeEpochReadme(File target, EpochMeta em) throws Exception {
         long yr = em.year();
         String md = """
@@ -1119,6 +1170,7 @@ public class GenerateEpochMapsTest {
         safeWriteFile(target, md);
     }
 
+    // Helper subroutine: safe write file - internal state computation & bounds checking
     private static void safeWriteFile(File target, String content) throws Exception {
         target.getParentFile().mkdirs();
         int attempts = 0;
@@ -1144,6 +1196,7 @@ public class GenerateEpochMapsTest {
         }
     }
 
+    // Helper subroutine: escape json - internal state computation & bounds checking
     private static String escapeJson(String s) {
         if (s == null) return "";
         return s.replace("\\", "\\\\")

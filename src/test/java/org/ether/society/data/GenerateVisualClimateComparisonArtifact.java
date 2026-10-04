@@ -29,6 +29,14 @@ public class GenerateVisualClimateComparisonArtifact {
     private static final String ARTIFACT_DIR = "C:/Users/silve/.gemini/antigravity/brain/32078e09-a5c4-4806-a0a7-96efa9ac3c26";
 
     @Test
+    /*
+     * Generate visual artifact operation.
+     * <p>
+     * Executes operational logic for {@code GenerateVisualClimateComparisonArtifact} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void generateVisualArtifact() throws Exception {
         File outDir = new File(ARTIFACT_DIR, "climate_renders");
         outDir.mkdirs();
@@ -111,6 +119,7 @@ public class GenerateVisualClimateComparisonArtifact {
         System.out.println("Enhanced Visual Climate Comparison Dashboard successfully created!");
     }
 
+    // Helper subroutine: create side by side composite - internal state computation & bounds checking
     private static void createSideBySideComposite(BufferedImage left, String leftTitle, BufferedImage right, String rightTitle, File... targets) throws Exception {
         int w = 1024;
         int h = 512;
@@ -149,6 +158,7 @@ public class GenerateVisualClimateComparisonArtifact {
         }
     }
 
+    // Helper subroutine: render grid to image - internal state computation & bounds checking
     private static BufferedImage renderGridToImage(float[][] grid, double minVal, double maxVal) {
         int h = grid.length;
         int w = grid[0].length;
@@ -164,6 +174,7 @@ public class GenerateVisualClimateComparisonArtifact {
         return img;
     }
 
+    // Helper subroutine: render biome grid - internal state computation & bounds checking
     private static BufferedImage renderBiomeGrid(int[][] grid) {
         int h = grid.length;
         int w = grid[0].length;
@@ -176,6 +187,7 @@ public class GenerateVisualClimateComparisonArtifact {
         return img;
     }
 
+    // Helper subroutine: build generative uihtml - internal state computation & bounds checking
     private static void buildGenerativeUIHtml(File renderDir) throws Exception {
         File htmlFile = new File(ARTIFACT_DIR, "climate_visual_comparison.html");
 
@@ -302,6 +314,7 @@ public class GenerateVisualClimateComparisonArtifact {
         }
     }
 
+    // Helper subroutine: encode thumbnail - internal state computation & bounds checking
     private static String encodeThumbnail(File file) {
         if (!file.exists()) return "";
         try {

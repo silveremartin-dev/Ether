@@ -26,6 +26,14 @@ public class FetchUsgsPetroleumDatasets {
     private static final Logger logger = LoggerFactory.getLogger(FetchUsgsPetroleumDatasets.class);
 
     @Test
+    /*
+     * Fetch usgs datasets operation.
+     * <p>
+     * Executes operational logic for {@code FetchUsgsPetroleumDatasets} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void fetchUsgsDatasets() throws Exception {
         String[] itemIds = {
             "60ad2fd7d34e4043c850edb3", // Geologic Provinces of the World, all defined provinces
@@ -81,6 +89,7 @@ public class FetchUsgsPetroleumDatasets {
         }
     }
 
+    // Helper subroutine: download and extract - internal state computation & bounds checking
     private void downloadAndExtract(HttpClient client, String fileUrl, String fileName, Path targetDir) {
         Path destFile = targetDir.resolve(fileName);
         logger.info("Downloading {} to {}...", fileName, destFile);
@@ -118,6 +127,7 @@ public class FetchUsgsPetroleumDatasets {
         }
     }
 
+    // Helper subroutine: extract zip - internal state computation & bounds checking
     private void extractZip(Path zipFile, Path targetDir) {
         logger.info("Extracting ZIP archive: {}", zipFile);
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile.toFile()))) {

@@ -11,6 +11,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NetworkAuthRoleTest {
 
     @Test
+    /*
+     * Test role hierarchy permissions operation.
+     * <p>
+     * Executes operational logic for {@code NetworkAuthRoleTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testRoleHierarchyPermissions() {
         AuthToken adminToken = new AuthToken("Alice", AuthToken.Role.ADMIN, "secret123");
         AuthToken plannerToken = new AuthToken("Bob", AuthToken.Role.PLANNER, "secret123");
@@ -30,6 +38,14 @@ public class NetworkAuthRoleTest {
     }
 
     @Test
+    /*
+     * Test token signature validation operation.
+     * <p>
+     * Executes operational logic for {@code NetworkAuthRoleTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTokenSignatureValidation() {
         AuthToken token = new AuthToken("Silvere", AuthToken.Role.ADMIN, "CorrectKey");
         assertTrue(token.isValid("CorrectKey"), "Signature must be valid with correct key");

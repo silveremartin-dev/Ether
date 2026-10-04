@@ -39,6 +39,14 @@ public class MultiResolutionScenarioBenchmarkHarnessTest {
     ) {}
 
     @Test
+    /*
+     * Run comprehensive multi resolution benchmarks operation.
+     * <p>
+     * Executes operational logic for {@code MultiResolutionScenarioBenchmarkHarnessTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void runComprehensiveMultiResolutionBenchmarks() {
         logger.info("=========================================================================================");
         logger.info("🌍 ETHER MULTI-RESOLUTION & MULTI-SCENARIO COMPREHENSIVE BENCHMARK SUITE");

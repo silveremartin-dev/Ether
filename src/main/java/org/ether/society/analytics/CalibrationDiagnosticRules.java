@@ -101,6 +101,7 @@ public class CalibrationDiagnosticRules {
         return sb.toString();
     }
 
+    // Helper subroutine: get mape for keyword - internal state computation & bounds checking
     private static Double getMapeForKeyword(Map<String, Double> mapes, String keyword) {
         for (var entry : mapes.entrySet()) {
             if (entry.getKey().toLowerCase().contains(keyword.toLowerCase())) {

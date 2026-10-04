@@ -46,6 +46,14 @@ public class DataIngestionFidelityTest {
 
     @Test
     @DisplayName("Verify All Active Maps Provider Metadata JSONs")
+    /*
+     * Test all active providers metadata integrity operation.
+     * <p>
+     * Executes operational logic for {@code DataIngestionFidelityTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAllActiveProvidersMetadataIntegrity() throws Exception {
         File mapsFolder = new File(MAPS_BASE_PATH);
         assertTrue(mapsFolder.exists() && mapsFolder.isDirectory(), "Base maps directory data/maps/ must exist");
@@ -68,6 +76,14 @@ public class DataIngestionFidelityTest {
 
     @Test
     @DisplayName("Verify Redundant Empty Providers Removed")
+    /*
+     * Test redundant empty providers absence operation.
+     * <p>
+     * Executes operational logic for {@code DataIngestionFidelityTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testRedundantEmptyProvidersAbsence() {
         File mapsFolder = new File(MAPS_BASE_PATH);
         String[] obsoleteProviders = {"pmip", "chelsa", "esa_geospatial"};
@@ -81,6 +97,14 @@ public class DataIngestionFidelityTest {
 
     @Test
     @DisplayName("Verify Dynamic Sea Level Transition Engine (Glacial Emergence & Marine Submersion)")
+    /*
+     * Test dynamic sea level transition engine operation.
+     * <p>
+     * Executes operational logic for {@code DataIngestionFidelityTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testDynamicSeaLevelTransitionEngine() {
         org.ether.society.database.H3Cell shallowShelfCell = new org.ether.society.database.H3Cell(2001L, 54.0, 3.0); // Doggerland North Sea (-50m)
         shallowShelfCell.setElevation(-50.0);

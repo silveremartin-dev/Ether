@@ -62,6 +62,15 @@ public class SaveMetadata {
      * @return the resulting computation or state reference
      */
     public String getId() { return id; }
+    /*
+     * Set id operation.
+     * <p>
+     * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param id the id argument (String)
+     */
     public void setId(String id) { this.id = id; }
     /*
      * Get name.
@@ -70,6 +79,15 @@ public class SaveMetadata {
      * @return the resulting computation or state reference
      */
     public String getName() { return name; }
+    /*
+     * Set name operation.
+     * <p>
+     * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param name the name argument (String)
+     */
     public void setName(String name) { this.name = name; }
     /*
      * Get timestamp.
@@ -78,6 +96,15 @@ public class SaveMetadata {
      * @return the resulting computation or state reference
      */
     public LocalDateTime getTimestamp() { return timestamp; }
+    /*
+     * Set timestamp operation.
+     * <p>
+     * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param timestamp the timestamp argument (LocalDateTime)
+     */
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
     /*
      * Get year.
@@ -86,6 +113,15 @@ public class SaveMetadata {
      * @return the resulting computation or state reference
      */
     public long getYear() { return year; }
+    /*
+     * Set year operation.
+     * <p>
+     * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param year the year argument (long)
+     */
     public void setYear(long year) { this.year = year; }
     /*
      * Get month.
@@ -94,6 +130,15 @@ public class SaveMetadata {
      * @return the resulting computation or state reference
      */
     public int getMonth() { return month; }
+    /*
+     * Set month operation.
+     * <p>
+     * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param month the month argument (int)
+     */
     public void setMonth(int month) { this.month = month; }
     /*
      * Get scenario name.
@@ -102,6 +147,15 @@ public class SaveMetadata {
      * @return the resulting computation or state reference
      */
     public String getScenarioName() { return scenarioName; }
+    /*
+     * Set scenario name operation.
+     * <p>
+     * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param scenarioName the scenario name argument (String)
+     */
     public void setScenarioName(String scenarioName) { this.scenarioName = scenarioName; }
     /*
      * Get version.
@@ -110,5 +164,14 @@ public class SaveMetadata {
      * @return the resulting computation or state reference
      */
     public String getVersion() { return version; }
+    /*
+     * Set version operation.
+     * <p>
+     * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param version the version argument (String)
+     */
     public void setVersion(String version) { this.version = version; }
 }

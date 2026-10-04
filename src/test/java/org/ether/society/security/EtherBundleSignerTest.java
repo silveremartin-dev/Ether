@@ -15,6 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EtherBundleSignerTest {
 
     @Test
+    /*
+     * Test sign and verify bundle operation.
+     * <p>
+     * Executes operational logic for {@code EtherBundleSignerTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSignAndVerifyBundle() {
         Scenario scenario = new Scenario();
         scenario.setName("Holocene Dawn");
@@ -33,6 +41,14 @@ public class EtherBundleSignerTest {
     }
 
     @Test
+    /*
+     * Test tampered bundle fails verification operation.
+     * <p>
+     * Executes operational logic for {@code EtherBundleSignerTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testTamperedBundleFailsVerification() {
         Scenario scenario = new Scenario();
         scenario.setName("Holocene Dawn");
@@ -60,6 +76,14 @@ public class EtherBundleSignerTest {
     }
 
     @Test
+    /*
+     * Test legacy bundle passes verification operation.
+     * <p>
+     * Executes operational logic for {@code EtherBundleSignerTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testLegacyBundlePassesVerification() {
         Scenario scenario = new Scenario();
         scenario.setName("Legacy Scenario");

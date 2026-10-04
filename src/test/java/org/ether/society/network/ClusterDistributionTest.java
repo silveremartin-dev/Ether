@@ -23,6 +23,14 @@ public class ClusterDistributionTest {
     private static final String TEST_SECRET = "TestClusterSecret2026";
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code ClusterDistributionTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() throws IOException {
         masterManager = new ClusterManager(ClusterManager.ClusterRole.MASTER, "127.0.0.1", TEST_PORT, TEST_SECRET);
         masterManager.setTotalGridCellCount(10000);
@@ -30,6 +38,14 @@ public class ClusterDistributionTest {
     }
 
     @AfterEach
+    /*
+     * Tear down operation.
+     * <p>
+     * Executes operational logic for {@code ClusterDistributionTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void tearDown() {
         if (masterManager != null) {
             masterManager.stop();
@@ -38,6 +54,14 @@ public class ClusterDistributionTest {
 
     @Test
     @DisplayName("Test Master initialization & spatial chunk assignment")
+    /*
+     * Test master initialization operation.
+     * <p>
+     * Executes operational logic for {@code ClusterDistributionTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testMasterInitialization() {
         ConcurrentHashMap<String, ClusterManager.ClusterNodeRecord> registry = masterManager.getNodeRegistry();
         assertFalse(registry.isEmpty(), "Node registry should contain local master node");
@@ -51,6 +75,14 @@ public class ClusterDistributionTest {
 
     @Test
     @DisplayName("Test Worker Registration & Spatial Chunk Rebalancing")
+    /*
+     * Test worker registration and chunk rebalancing operation.
+     * <p>
+     * Executes operational logic for {@code ClusterDistributionTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testWorkerRegistrationAndChunkRebalancing() throws Exception {
         ClusterManager workerManager = new ClusterManager(ClusterManager.ClusterRole.WORKER, "127.0.0.1", TEST_PORT, TEST_SECRET);
         workerManager.start();
@@ -77,6 +109,14 @@ public class ClusterDistributionTest {
 
     @Test
     @DisplayName("Test Fault Tolerance: Node Disconnection & Rebalancing")
+    /*
+     * Test resilience on node disconnect operation.
+     * <p>
+     * Executes operational logic for {@code ClusterDistributionTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testResilienceOnNodeDisconnect() throws Exception {
         ClusterManager workerManager = new ClusterManager(ClusterManager.ClusterRole.WORKER, "127.0.0.1", TEST_PORT, TEST_SECRET);
         workerManager.start();
@@ -101,6 +141,14 @@ public class ClusterDistributionTest {
 
     @Test
     @DisplayName("Test Late-Joining Node Synchronization")
+    /*
+     * Test late joining node sync operation.
+     * <p>
+     * Executes operational logic for {@code ClusterDistributionTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testLateJoiningNodeSync() throws Exception {
         // Late-join 2 workers sequentially
         ClusterManager worker1 = new ClusterManager(ClusterManager.ClusterRole.WORKER, "127.0.0.1", TEST_PORT, TEST_SECRET);

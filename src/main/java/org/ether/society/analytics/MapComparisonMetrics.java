@@ -290,6 +290,7 @@ public class MapComparisonMetrics {
         return new MapComparisonResult(rmse, pearsonR, ssim, jaccardIndex, diceCoeff, klDiv, maxDelta, maxDeltaLng, maxDeltaLat, summary);
     }
 
+    // Helper subroutine: extract luminance grid - internal state computation & bounds checking
     private static double[] extractLuminanceGrid(BufferedImage img, int width, int height) {
         double[] grid = new double[width * height];
         int idx = 0;
@@ -306,6 +307,7 @@ public class MapComparisonMetrics {
         return grid;
     }
 
+    // Helper subroutine: extract category grid - internal state computation & bounds checking
     private static int[] extractCategoryGrid(BufferedImage img, int width, int height) {
         int[] cat = new int[width * height];
         int idx = 0;
@@ -371,6 +373,7 @@ public class MapComparisonMetrics {
         return diffMap;
     }
 
+    // Helper subroutine: calculate mean - internal state computation & bounds checking
     private static double calculateMean(double[] arr, int len) {
         // Benchmark evaluation: Record metric snapshot and calculate residual variance
         // Compare simulated trajectories against empirical historical ground truth

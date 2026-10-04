@@ -53,6 +53,14 @@ public class OutofAfricaGlobalDispersalSimulationTest {
             false, "none", false, "", 12445L, false, "", 13345L, false, "", 14345L);
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code OutofAfricaGlobalDispersalSimulationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
         h3Service = H3Service.getInstance();
@@ -71,6 +79,14 @@ public class OutofAfricaGlobalDispersalSimulationTest {
 
     @Test
     @DisplayName("Simulate Out-of-Africa Planetary Wave Front Dispersal Across Thousands of H3 Cells")
+    /*
+     * Test full planetary outof africa dispersal operation.
+     * <p>
+     * Executes operational logic for {@code OutofAfricaGlobalDispersalSimulationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testFullPlanetaryOutofAfricaDispersal() {
         Scenario scenario = new Scenario();
         scenario.setName("Sortie d'Afrique & Expansion Homo Sapiens (-100000)");
@@ -166,6 +182,14 @@ public class OutofAfricaGlobalDispersalSimulationTest {
 
     @Test
     @DisplayName("Empirical Comparison: Out-of-Africa Single Origin vs Multi-Regionalism Hypothesis")
+    /*
+     * Test outof africa vs multi regionalism comparison operation.
+     * <p>
+     * Executes operational logic for {@code OutofAfricaGlobalDispersalSimulationTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testOutofAfricaVsMultiRegionalismComparison() {
         // 1. Single Origin Out-of-Africa Configuration
         List<H3Cell> singleOriginGrid = generator.generatePlanet(FAST_EARTH);
@@ -210,7 +234,7 @@ public class OutofAfricaGlobalDispersalSimulationTest {
         assertTrue(multiPopulatedCount > 1, "Multi-regional model must generate parallel local demographic clusters");
     }
 
-    /**
+    /*
      * Executes 2D spatial H3 hexagonal neighbor demographic migration vector push.
      */
     private void processPlanetary2DH3Migration(List<H3Cell> cells, Map<Long, H3Cell> cellLookup, H3Service service) {
@@ -269,6 +293,7 @@ public class OutofAfricaGlobalDispersalSimulationTest {
         });
     }
 
+    // Helper subroutine: calculate haversine distance km - internal state computation & bounds checking
     private double calculateHaversineDistanceKm(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371; // Earth radius in km
         double latDistance = Math.toRadians(lat2 - lat1);

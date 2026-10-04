@@ -31,6 +31,14 @@ public class ScenarioSetupIntegrationTest {
     private static ScenarioSetupPanel sharedPanel;
 
     @BeforeAll
+    /*
+     * Init jfx operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public static void initJFX() throws InterruptedException {
         if (!jfxInitialized) {
             CountDownLatch latch = new CountDownLatch(1);
@@ -66,6 +74,14 @@ public class ScenarioSetupIntegrationTest {
 
     @Test
     @DisplayName("Verify ScenarioSetupPanel construction and default Scenario state generation")
+    /*
+     * Test scenario generation operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testScenarioGeneration() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -86,6 +102,14 @@ public class ScenarioSetupIntegrationTest {
 
     @Test
     @DisplayName("Verify ScenarioSetupPanel setInheritedContext and preset updates")
+    /*
+     * Test inherited context synchronization operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testInheritedContextSynchronization() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -106,6 +130,14 @@ public class ScenarioSetupIntegrationTest {
 
     @Test
     @DisplayName("Verify preview cell generation and dynamic rendering pipeline")
+    /*
+     * Test preview cell dynamic scaling pipeline operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPreviewCellDynamicScalingPipeline() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -131,6 +163,14 @@ public class ScenarioSetupIntegrationTest {
 
     @Test
     @DisplayName("Verify Earth paleoclimate ocean waterLevel datum conforms to physical bathymetry (0.478 datum)")
+    /*
+     * Test earth paleoclimate ocean level datum operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEarthPaleoclimateOceanLevelDatum() {
         assertEquals(0.478, PlanetPreset.EARTH_MODERN.waterLevel(), 0.001);
         assertEquals(0.478, PlanetPreset.EARTH_LIG_100000BP.waterLevel(), 0.001);
@@ -141,6 +181,14 @@ public class ScenarioSetupIntegrationTest {
 
     @Test
     @DisplayName("Verify Sea Level in meters to normalized waterLevel conversion to the single meter precision")
+    /*
+     * Test sea level meters conversion accuracy operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSeaLevelMetersConversionAccuracy() {
         double minAlt = -11000.0;
         double maxAlt = 8848.0;
@@ -172,6 +220,14 @@ public class ScenarioSetupIntegrationTest {
 
     @Test
     @DisplayName("Verify Out of Africa scenario validation with Earth -100 000 preset")
+    /*
+     * Test out of africa compatibility validation operation.
+     * <p>
+     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testOutOfAfricaCompatibilityValidation() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
 

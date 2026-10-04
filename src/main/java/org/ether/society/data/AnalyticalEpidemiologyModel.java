@@ -170,6 +170,7 @@ public class AnalyticalEpidemiologyModel {
         return 1.0 - 0.80 * maxMountain;
     }
 
+    // Helper subroutine: get epidemic outbreaks for year - internal state computation & bounds checking
     private static double[][] getEpidemicOutbreaksForYear(long year) {
         if (year == 536L || (year >= 530L && year <= 560L)) {
             // Justinianic Plague (Pelusium, Constantinople, Rome)
@@ -202,6 +203,7 @@ public class AnalyticalEpidemiologyModel {
         return new double[0][];
     }
 
+    // Helper subroutine: compute continuous sanitary suppression - internal state computation & bounds checking
     private static double computeContinuousSanitarySuppression(double lon, double lat, long year) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index

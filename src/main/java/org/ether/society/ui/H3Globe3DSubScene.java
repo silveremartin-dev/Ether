@@ -229,6 +229,7 @@ public class H3Globe3DSubScene {
         return reliefScale;
     }
 
+    // Helper subroutine: setup interaction handlers - internal state computation & bounds checking
     private void setupInteractionHandlers() {
         subScene.setOnMousePressed(e -> {
             lastMouseX = e.getSceneX();
@@ -413,6 +414,7 @@ public class H3Globe3DSubScene {
         logger.info("Updated JavaFX 3D Hardware Globe texture map ({}x{}) from {} cells", texWidth, texHeight, cellCount);
     }
 
+    // Helper subroutine: get biome color - internal state computation & bounds checking
     private Color getBiomeColor(H3Cell cell) {
         if (cell.getElevation() != null && cell.getElevation() < 0) {
             return Color.rgb(14, 55, 115);

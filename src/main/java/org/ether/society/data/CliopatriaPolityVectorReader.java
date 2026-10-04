@@ -1074,6 +1074,7 @@ public class CliopatriaPolityVectorReader {
         return matched;
     }
 
+    // Helper subroutine: parse feature if matches - internal state computation & bounds checking
     private static void parseFeatureIfMatches(JsonParser parser, int targetYear, int imgW, int imgH, List<HistoricalPolityFeature> matched) throws Exception {
         String name = null;
         int fromYear = -99999;
@@ -1132,6 +1133,7 @@ public class CliopatriaPolityVectorReader {
         }
     }
 
+    // Helper subroutine: parse coordinates to paths - internal state computation & bounds checking
     private static void parseCoordinatesToPaths(JsonParser parser, String geomType, int imgW, int imgH, List<Path2D> paths) throws Exception {
         if ("Polygon".equalsIgnoreCase(geomType)) {
             // Array of linear rings: [ [ [x,y], [x,y]... ], [hole...] ]
@@ -1152,6 +1154,7 @@ public class CliopatriaPolityVectorReader {
         }
     }
 
+    // Helper subroutine: parse linear ring - internal state computation & bounds checking
     private static Path2D parseLinearRing(JsonParser parser, int imgW, int imgH) throws Exception {
         if (parser.currentToken() != JsonToken.START_ARRAY) return null;
 

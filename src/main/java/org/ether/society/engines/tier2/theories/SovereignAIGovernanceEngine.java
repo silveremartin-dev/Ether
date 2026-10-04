@@ -238,6 +238,15 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
      * @return the resulting computation or state reference
      */
     public GovernanceMode getMode() { return mode; }
+    /*
+     * Set mode operation.
+     * <p>
+     * Executes operational logic for {@code SovereignAIGovernanceEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param mode the mode argument (GovernanceMode)
+     */
     public void setMode(GovernanceMode mode) { this.mode = mode; }
     /*
      * Get aggressive optimization factor.
@@ -246,6 +255,15 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
      * @return the resulting computation or state reference
      */
     public double getAggressiveOptimizationFactor() { return aggressiveOptimizationFactor; }
+    /*
+     * Set aggressive optimization factor operation.
+     * <p>
+     * Executes operational logic for {@code SovereignAIGovernanceEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param factor the factor argument (double)
+     */
     public void setAggressiveOptimizationFactor(double factor) { this.aggressiveOptimizationFactor = factor; }
     /*
      * Get target pollution ceiling.
@@ -254,6 +272,15 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
      * @return the resulting computation or state reference
      */
     public double getTargetPollutionCeiling() { return targetPollutionCeiling; }
+    /*
+     * Set target pollution ceiling operation.
+     * <p>
+     * Executes operational logic for {@code SovereignAIGovernanceEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param ceiling the ceiling argument (double)
+     */
     public void setTargetPollutionCeiling(double ceiling) { this.targetPollutionCeiling = ceiling; }
     /*
      * Get target gini ceiling.
@@ -262,6 +289,15 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
      * @return the resulting computation or state reference
      */
     public double getTargetGiniCeiling() { return targetGiniCeiling; }
+    /*
+     * Set target gini ceiling operation.
+     * <p>
+     * Executes operational logic for {@code SovereignAIGovernanceEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param ceiling the ceiling argument (double)
+     */
     public void setTargetGiniCeiling(double ceiling) { this.targetGiniCeiling = ceiling; }
 }
 

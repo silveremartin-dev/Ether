@@ -231,6 +231,7 @@ public class EcologicalDegradationEngine {
         }
     }
 
+    // Helper subroutine: process migration flux - internal state computation & bounds checking
     private static int processMigrationFlux(List<H3Cell> cells, double defaultTech) {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations

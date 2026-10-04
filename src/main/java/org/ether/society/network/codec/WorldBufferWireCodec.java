@@ -234,12 +234,14 @@ public class WorldBufferWireCodec {
         return decodeChunkInto(rawBytes, targetBuffer);
     }
 
+    // Helper subroutine: serialize float slice - internal state computation & bounds checking
     private static void serializeFloatSlice(ByteBuffer buf, float[] arr, int start, int count) {
         for (int i = 0; i < count; i++) {
             buf.putFloat(arr != null && (start + i) < arr.length ? arr[start + i] : 0.0f);
         }
     }
 
+    // Helper subroutine: deserialize float slice - internal state computation & bounds checking
     private static void deserializeFloatSlice(ByteBuffer buf, float[] arr, int start, int count) {
         for (int i = 0; i < count; i++) {
             float val = buf.getFloat();

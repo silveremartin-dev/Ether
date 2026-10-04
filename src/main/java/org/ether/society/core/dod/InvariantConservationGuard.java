@@ -175,6 +175,7 @@ public class InvariantConservationGuard {
         return true;
     }
 
+    // Helper subroutine: record violation - internal state computation & bounds checking
     private void recordViolation(String message) {
         violationCount++;
         logger.warn("[InvariantConservationGuard] VIOLATION #{}: {}", violationCount, message);

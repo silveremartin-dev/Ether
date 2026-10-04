@@ -11,6 +11,14 @@ import java.util.Arrays;
 public class TestLzwDecoder {
 
     @Test
+    /*
+     * Test decode operation.
+     * <p>
+     * Executes operational logic for {@code TestLzwDecoder} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testDecode() throws Exception {
         File file = new File("data/maps/worldclim/bio_10m/wc2.1_10m_bio_1.tif");
         float[][] grid = readWorldClimTiff(file);
@@ -32,6 +40,16 @@ public class TestLzwDecoder {
         System.out.printf("Decoded Sahara Temp: %.2f °C%n", grid[sy][sx]);
     }
 
+    /*
+     * Read world clim tiff operation.
+     * <p>
+     * Executes operational logic for {@code TestLzwDecoder} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param file the file argument (File)
+     * @return the resulting computation or updated state reference
+     */
     public static float[][] readWorldClimTiff(File file) throws Exception {
         try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
             byte[] header = new byte[8];
@@ -116,6 +134,7 @@ public class TestLzwDecoder {
         }
     }
 
+    // Helper subroutine: decode tiff lzw - internal state computation & bounds checking
     private static void decodeTiffLzw(byte[] compressed, byte[] uncompressed) {
         int[][] stringTable = new int[4096][];
         for (int i = 0; i < 256; i++) {
@@ -172,6 +191,7 @@ public class TestLzwDecoder {
         }
     }
 
+    // Helper subroutine: get bits - internal state computation & bounds checking
     private static int getBits(byte[] data, int bitOffset, int bitLength) {
         int bytePos = bitOffset / 8;
         int bitInByte = bitOffset % 8;

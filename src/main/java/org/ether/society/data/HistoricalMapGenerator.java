@@ -4472,6 +4472,7 @@ public class HistoricalMapGenerator {
         return applyAltimetryCoastlineMask(ritImg);
     }
 
+    // Helper subroutine: apply multi confessional dithering - internal state computation & bounds checking
     private static void applyMultiConfessionalDithering(BufferedImage img, long year, BufferedImage mask) {
         List<ConfessionalPocket> pockets = new ArrayList<>();
 
@@ -4876,6 +4877,7 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    // Helper subroutine: draw navigable river corridors - internal state computation & bounds checking
     private static void drawNavigableRiverCorridors(Graphics2D g, long year) {
         if (year <= -6000L) return; // Prior to Neolithic / Early Bronze, large-scale riverine trade arteries were nascent
         Color riverCol = new Color(0, 210, 230); // Turquoise / Cyan navigable river artery
@@ -4910,6 +4912,7 @@ public class HistoricalMapGenerator {
         drawTradeRoute(g, new double[][]{{-73.2, -3.7}, {-60.0, -3.1}, {-54.7, -2.4}, {-50.0, -1.0}}, riverCol, 3.2);
     }
 
+    // Helper subroutine: draw trade route - internal state computation & bounds checking
     private static void drawTradeRoute(Graphics2D g, double[][] coords, Color col, double strokeWidth) {
         if (coords == null || coords.length < 2) return;
         int n = coords.length;
@@ -5105,6 +5108,7 @@ public class HistoricalMapGenerator {
         return applyAltimetryCoastlineMask(img);
     }
 
+    // Helper subroutine: init high precision geographic polygons - internal state computation & bounds checking
     private static void initHighPrecisionGeographicPolygons() {
         // Iberian Peninsula
         LAND_POLYGONS.add(createPolygon(new double[][]{
@@ -5318,6 +5322,7 @@ public class HistoricalMapGenerator {
         }
     }
 
+    // Helper subroutine: create polygon - internal state computation & bounds checking
     private static Path2D createPolygon(double[][] points) {
         Path2D p = new Path2D.Double();
         if (points.length == 0) return p;
@@ -5360,6 +5365,7 @@ public class HistoricalMapGenerator {
         populateScenarioHistoricalMaps(scenario);
     }
 
+    // Helper subroutine: get cities for scenario - internal state computation & bounds checking
     private static List<CityPoint> getCitiesForScenario(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         List<CityPoint> list = new ArrayList<>();
@@ -5452,6 +5458,7 @@ public class HistoricalMapGenerator {
         return list;
     }
 
+    // Helper subroutine: get cities for scenario - internal state computation & bounds checking
     private static List<CityPoint> getCitiesForScenario(String type) {
         List<CityPoint> list = new ArrayList<>();
         switch (type.toUpperCase()) {
@@ -5531,6 +5538,7 @@ public class HistoricalMapGenerator {
         return list;
     }
 
+    // Helper subroutine: get rivers for scenario - internal state computation & bounds checking
     private static List<RiverRibbon> getRiversForScenario(String type) {
         List<RiverRibbon> list = new ArrayList<>();
         switch (type.toUpperCase()) {
@@ -5559,6 +5567,7 @@ public class HistoricalMapGenerator {
         return list;
     }
 
+    // Helper subroutine: get empires for scenario - internal state computation & bounds checking
     private static List<EmpireTerritory> getEmpiresForScenario(String type) {
         List<EmpireTerritory> list = new ArrayList<>();
         switch (type.toUpperCase()) {
@@ -5618,6 +5627,7 @@ public class HistoricalMapGenerator {
         return list;
     }
 
+    // Helper subroutine: get language zones for scenario - internal state computation & bounds checking
     private static List<LanguageZone> getLanguageZonesForScenario(String type) {
         List<LanguageZone> list = new ArrayList<>();
         if (type != null) {
@@ -5654,6 +5664,7 @@ public class HistoricalMapGenerator {
         return list;
     }
 
+    // Helper subroutine: get kinship zones for scenario - internal state computation & bounds checking
     private static List<LanguageZone> getKinshipZonesForScenario(String type) {
         List<LanguageZone> list = new ArrayList<>();
         // Focal scenario kinship overrides
@@ -5673,6 +5684,7 @@ public class HistoricalMapGenerator {
         return list;
     }
 
+    // Helper subroutine: get sacred sites for scenario - internal state computation & bounds checking
     private static List<LanguageZone> getSacredSitesForScenario(String type) {
         List<LanguageZone> list = new ArrayList<>();
         if (type != null) {
@@ -5703,6 +5715,7 @@ public class HistoricalMapGenerator {
         return list;
     }
 
+    // Helper subroutine: dist sq - internal state computation & bounds checking
     private static double distSq(double lng1, double lat1, double lng2, double lat2) {
         double dlat = lat1 - lat2;
         double dlng = lng1 - lng2;
@@ -5792,6 +5805,7 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    // Helper subroutine: draw deposit hotspots - internal state computation & bounds checking
     private static void drawDepositHotspots(BufferedImage img, double[][] hotspots, Color colorBase) {
         int width = img.getWidth();
         int height = img.getHeight();
@@ -6043,6 +6057,7 @@ public class HistoricalMapGenerator {
         }
     }
 
+    // Helper subroutine: load direct buffered image - internal state computation & bounds checking
     private static BufferedImage loadDirectBufferedImage(String filename) {
         try {
             // 1. Check data/maps/ether/
@@ -6606,6 +6621,7 @@ public class HistoricalMapGenerator {
         return 1.0;
     }
 
+    // Helper subroutine: get or compute base whymap grid - internal state computation & bounds checking
     private static synchronized float[][] getOrComputeBaseWhymapGrid() {
         if (cachedWhymapBlurredGrid != null) return cachedWhymapBlurredGrid;
 

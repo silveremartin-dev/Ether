@@ -39,6 +39,7 @@ import java.util.function.Function;
 public final class GeospatialRasterExporter {
     private static final Logger logger = LoggerFactory.getLogger(GeospatialRasterExporter.class);
 
+    // Helper subroutine: geospatial raster exporter - internal state computation & bounds checking
     private GeospatialRasterExporter() {}
 
     /*
@@ -274,6 +275,7 @@ public final class GeospatialRasterExporter {
         }
     }
 
+    // Helper subroutine: write ifd entry - internal state computation & bounds checking
     private static void writeIfdEntry(ByteBuffer buf, int tag, int type, int count, int valueOrOffset) {
         buf.putShort((short) tag);
         buf.putShort((short) type);

@@ -72,6 +72,7 @@ public class SeshatDataIntegrator {
         loadLocalPolitiesCsv();
     }
 
+    // Helper subroutine: load local polities csv - internal state computation & bounds checking
     private static void loadLocalPolitiesCsv() {
         java.io.File csvFile = new java.io.File("data/maps/seshat/seshat_polities_database.csv");
         if (!csvFile.exists()) return;

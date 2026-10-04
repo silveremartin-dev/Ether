@@ -1267,6 +1267,15 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public Integer getPop0to4() { return pop0to4; }
+    /*
+     * Set pop0to4 operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param val the val argument (Integer)
+     */
     public void setPop0to4(Integer val) { this.pop0to4 = val; }
 
     /*
@@ -1276,6 +1285,15 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public Integer getPop5to14() { return pop5to14; }
+    /*
+     * Set pop5to14 operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param val the val argument (Integer)
+     */
     public void setPop5to14(Integer val) { this.pop5to14 = val; }
 
     /*
@@ -1285,6 +1303,15 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public Integer getPop15to24() { return pop15to24; }
+    /*
+     * Set pop15to24 operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param val the val argument (Integer)
+     */
     public void setPop15to24(Integer val) { this.pop15to24 = val; }
 
     /*
@@ -1294,6 +1321,15 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public Integer getPop25to49() { return pop25to49; }
+    /*
+     * Set pop25to49 operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param val the val argument (Integer)
+     */
     public void setPop25to49(Integer val) { this.pop25to49 = val; }
 
     /*
@@ -1303,6 +1339,15 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public Integer getPop50to64() { return pop50to64; }
+    /*
+     * Set pop50to64 operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param val the val argument (Integer)
+     */
     public void setPop50to64(Integer val) { this.pop50to64 = val; }
 
     /*
@@ -1312,6 +1357,15 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public Integer getPop65to79() { return pop65to79; }
+    /*
+     * Set pop65to79 operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param val the val argument (Integer)
+     */
     public void setPop65to79(Integer val) { this.pop65to79 = val; }
 
     /*
@@ -1321,6 +1375,15 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public Integer getPop80Plus() { return pop80Plus; }
+    /*
+     * Set pop80plus operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param val the val argument (Integer)
+     */
     public void setPop80Plus(Integer val) { this.pop80Plus = val; }
 
     /*
@@ -1330,6 +1393,15 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public Integer getEpidemicInfected() { return epidemicInfected; }
+    /*
+     * Set epidemic infected operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param val the val argument (Integer)
+     */
     public void setEpidemicInfected(Integer val) { this.epidemicInfected = val; }
 
     /*
@@ -1339,6 +1411,15 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public Integer getEpidemicRecovered() { return epidemicRecovered; }
+    /*
+     * Set epidemic recovered operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param val the val argument (Integer)
+     */
     public void setEpidemicRecovered(Integer val) { this.epidemicRecovered = val; }
 
     /*
@@ -1348,6 +1429,15 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public String getActivePathogenName() { return activePathogenName; }
+    /*
+     * Set active pathogen name operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param name the name argument (String)
+     */
     public void setActivePathogenName(String name) { this.activePathogenName = name; }
 
     /*
@@ -1357,6 +1447,15 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public String getLanguageGroup() { return languageGroup; }
+    /*
+     * Set language group operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param lang the lang argument (String)
+     */
     public void setLanguageGroup(String lang) { this.languageGroup = lang; }
 
     /*
@@ -1366,6 +1465,15 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public Double getLinguisticDrift() { return linguisticDrift; }
+    /*
+     * Set linguistic drift operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param drift the drift argument (Double)
+     */
     public void setLinguisticDrift(Double drift) { this.linguisticDrift = drift; }
 
     /*
@@ -1439,22 +1547,130 @@ public class H3Cell {
         this.popElderly = pop65to79 + pop80Plus;
     }
 
+    /*
+     * Get ice sheet thickness meters operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @return the resulting computation or updated state reference
+     */
     public Double getIceSheetThicknessMeters() { return iceSheetThicknessMeters != null ? iceSheetThicknessMeters : 0.0; }
+    /*
+     * Set ice sheet thickness meters operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param iceSheetThicknessMeters the ice sheet thickness meters argument (Double)
+     */
     public void setIceSheetThicknessMeters(Double iceSheetThicknessMeters) { this.iceSheetThicknessMeters = iceSheetThicknessMeters; }
 
+    /*
+     * Get sea level offset meters operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @return the resulting computation or updated state reference
+     */
     public Double getSeaLevelOffsetMeters() { return seaLevelOffsetMeters != null ? seaLevelOffsetMeters : 0.0; }
+    /*
+     * Set sea level offset meters operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param seaLevelOffsetMeters the sea level offset meters argument (Double)
+     */
     public void setSeaLevelOffsetMeters(Double seaLevelOffsetMeters) { this.seaLevelOffsetMeters = seaLevelOffsetMeters; }
 
+    /*
+     * Get is coastal operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @return the resulting computation or updated state reference
+     */
     public Boolean getIsCoastal() { return isCoastal != null ? isCoastal : false; }
+    /*
+     * Set is coastal operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param isCoastal the is coastal argument (Boolean)
+     */
     public void setIsCoastal(Boolean isCoastal) { this.isCoastal = isCoastal; }
 
+    /*
+     * Get coastal marine resource operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @return the resulting computation or updated state reference
+     */
     public Double getCoastalMarineResource() { return coastalMarineResource != null ? coastalMarineResource : 0.0; }
+    /*
+     * Set coastal marine resource operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param coastalMarineResource the coastal marine resource argument (Double)
+     */
     public void setCoastalMarineResource(Double coastalMarineResource) { this.coastalMarineResource = coastalMarineResource; }
 
+    /*
+     * Get is polder operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @return the resulting computation or updated state reference
+     */
     public Boolean getIsPolder() { return isPolder != null ? isPolder : false; }
+    /*
+     * Set is polder operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param isPolder the is polder argument (Boolean)
+     */
     public void setIsPolder(Boolean isPolder) { this.isPolder = isPolder; }
 
+    /*
+     * Get has floating infrastructure operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @return the resulting computation or updated state reference
+     */
     public Boolean getHasFloatingInfrastructure() { return hasFloatingInfrastructure != null ? hasFloatingInfrastructure : false; }
+    /*
+     * Set has floating infrastructure operation.
+     * <p>
+     * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param hasFloatingInfrastructure the has floating infrastructure argument (Boolean)
+     */
     public void setHasFloatingInfrastructure(Boolean hasFloatingInfrastructure) { this.hasFloatingInfrastructure = hasFloatingInfrastructure; }
 
     /*

@@ -137,6 +137,7 @@ public class WorldClimEmpiricalRasterLoader {
         isInitialized = true;
     }
 
+    // Helper subroutine: init physical fallbacks - internal state computation & bounds checking
     private static void initPhysicalFallbacks() {
         for (int y = 0; y < GRID_H; y++) {
             double lat = 90.0 - (y + 0.5) * 180.0 / GRID_H;
@@ -235,6 +236,7 @@ public class WorldClimEmpiricalRasterLoader {
         }
     }
 
+    // Helper subroutine: decode tiff lzw - internal state computation & bounds checking
     private static void decodeTiffLzw(byte[] compressed, byte[] uncompressed) {
         int[][] stringTable = new int[4096][];
         for (int i = 0; i < 256; i++) {
@@ -291,6 +293,7 @@ public class WorldClimEmpiricalRasterLoader {
         }
     }
 
+    // Helper subroutine: get bits - internal state computation & bounds checking
     private static int getBits(byte[] data, int bitOffset, int bitLength) {
         int bytePos = bitOffset / 8;
         int bitInByte = bitOffset % 8;
@@ -507,6 +510,7 @@ public class WorldClimEmpiricalRasterLoader {
         return Math.clamp(baseS * factorS, 0.5, 65.0);
     }
 
+    // Helper subroutine: sample bilinear - internal state computation & bounds checking
     private static double sampleBilinear(float[][] grid, double lat, double lon) {
         double normX = (lon + 180.0) / 360.0 * GRID_W - 0.5;
         double normY = (90.0 - lat) / 180.0 * GRID_H - 0.5;

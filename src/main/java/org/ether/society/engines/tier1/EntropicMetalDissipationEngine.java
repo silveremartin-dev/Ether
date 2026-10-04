@@ -60,6 +60,15 @@ public class EntropicMetalDissipationEngine {
      * @return the resulting computation or state reference
      */
     public static double getAnnualDissipationRate() { return annualDissipationRate; }
+    /*
+     * Set annual dissipation rate operation.
+     * <p>
+     * Executes operational logic for {@code EntropicMetalDissipationEngine} within the Tier 1 physical conservation solver.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     * @param rate the rate argument (double)
+     */
     public static void setAnnualDissipationRate(double rate) { annualDissipationRate = Math.max(0.0, Math.min(0.20, rate)); }
 }
 

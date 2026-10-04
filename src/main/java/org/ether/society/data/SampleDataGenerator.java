@@ -151,6 +151,7 @@ public class SampleDataGenerator {
         assignResources(cell, biome);
     }
 
+    // Helper subroutine: determine biome - internal state computation & bounds checking
     private Biome determineBiome(double elevation, double temp, double rainfall) {
         if (elevation < 0)
             return Biome.OCEAN;
@@ -172,6 +173,7 @@ public class SampleDataGenerator {
         return Biome.PLAINS;
     }
 
+    // Helper subroutine: assign resources - internal state computation & bounds checking
     private void assignResources(H3Cell cell, Biome biome) {
         switch (biome) {
             case OCEAN -> {

@@ -39,6 +39,14 @@ public class Tier1NewPhysicalLawsTest {
 
     @Test
     @DisplayName("Glacial Thermodynamic Melt Engine: PDD and Latent Heat of Fusion L_f = 333.55 kJ/kg")
+    /*
+     * Test glacial thermodynamic melt operation.
+     * <p>
+     * Executes operational logic for {@code Tier1NewPhysicalLawsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testGlacialThermodynamicMelt() {
         // At 0°C or below, melt must be exactly 0
         assertEquals(0.0, GlacialThermodynamicMeltEngine.calculateGlacialMeltDepthMeters(-5.0, 1.0));
@@ -64,6 +72,14 @@ public class Tier1NewPhysicalLawsTest {
 
     @Test
     @DisplayName("Soil Water Retention Engine: van Genuchten Soil Hydraulic Characteristic")
+    /*
+     * Test van genuchten water retention operation.
+     * <p>
+     * Executes operational logic for {@code Tier1NewPhysicalLawsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testVanGenuchtenWaterRetention() {
         // At zero suction head, water content should equal saturation θ_s ≈ 0.43
         double thetaSat = SoilWaterRetentionEngine.calculateWaterContent(0.0);
@@ -87,6 +103,14 @@ public class Tier1NewPhysicalLawsTest {
 
     @Test
     @DisplayName("Dynamic Hydrographic Siltation Engine: Stokes Law Settling Velocity")
+    /*
+     * Test stokes settling velocity operation.
+     * <p>
+     * Executes operational logic for {@code Tier1NewPhysicalLawsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testStokesSettlingVelocity() {
         // Silt grain radius r = 20 μm at 20°C:
         // v_s = (2/9) * (2650 - 1000) * 9.80665 * (20e-6)^2 / 1.002e-3 ≈ 0.00143 m/s
@@ -101,6 +125,14 @@ public class Tier1NewPhysicalLawsTest {
 
     @Test
     @DisplayName("Beer-Lambert Canopy Light Attenuation")
+    /*
+     * Test beer lambert canopy transmission operation.
+     * <p>
+     * Executes operational logic for {@code Tier1NewPhysicalLawsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBeerLambertCanopyTransmission() {
         // Zero LAI -> 100% transmission
         assertEquals(1.0f, EnvironmentalKernel.calculateBeerLambertCanopyTransmission(0.0f, 0.6f), 1e-4);

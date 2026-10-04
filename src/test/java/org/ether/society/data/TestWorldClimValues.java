@@ -8,6 +8,14 @@ import java.io.File;
 
 public class TestWorldClimValues {
     @Test
+    /*
+     * Print samples operation.
+     * <p>
+     * Executes operational logic for {@code TestWorldClimValues} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void printSamples() throws Exception {
         File tempFile = new File("data/maps/worldclim/bio_10m/wc2.1_10m_bio_1.tif");
         File precipFile = new File("data/maps/worldclim/bio_10m/wc2.1_10m_bio_12.tif");

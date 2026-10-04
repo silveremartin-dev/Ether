@@ -158,6 +158,7 @@ public class EventSystem {
         this.enableProceduralLeaders = enableProceduralLeaders;
     }
 
+    // Helper subroutine: initialize historical events - internal state computation & bounds checking
     private void initializeHistoricalEvents() {
         // Prehistoric
         historicalEvents.add(new HistoricalEvent(-100000, "Out of Africa",
@@ -302,6 +303,7 @@ public class EventSystem {
         recordSpatialEvent(ae);
     }
 
+    // Helper subroutine: find best land cell - internal state computation & bounds checking
     private H3Cell findBestLandCell(List<H3Cell> cells, double targetLat, double targetLng) {
         if (cells == null || cells.isEmpty()) return null;
         H3Cell closestLand = null;
@@ -323,6 +325,7 @@ public class EventSystem {
         return closestLand != null ? closestLand : getRandomLandCell(cells);
     }
 
+    // Helper subroutine: get random land cell - internal state computation & bounds checking
     private H3Cell getRandomLandCell(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return null;
         List<H3Cell> land = cells.stream()
@@ -334,6 +337,7 @@ public class EventSystem {
         return cells.get(random.nextInt(cells.size()));
     }
 
+    // Helper subroutine: get random populated or land cell - internal state computation & bounds checking
     private H3Cell getRandomPopulatedOrLandCell(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return null;
         List<H3Cell> populated = cells.stream()
@@ -346,6 +350,7 @@ public class EventSystem {
         return getRandomLandCell(cells);
     }
 
+    // Helper subroutine: find highest population cell - internal state computation & bounds checking
     private H3Cell findHighestPopulationCell(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return null;
         return cells.stream()
@@ -413,6 +418,7 @@ public class EventSystem {
         checkAchievements(year, month, totalPopulation, cells);
     }
 
+    // Helper subroutine: apply active interventions - internal state computation & bounds checking
     private void applyActiveInterventions(int year, List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -543,6 +549,7 @@ public class EventSystem {
         checkCellEvents(year, 0, cells);
     }
 
+    // Helper subroutine: check famine - internal state computation & bounds checking
     private void checkFamine(int year, int month, long totalPopulation, double totalFood, List<H3Cell> cells) {
         if (year - lastFamineYear < 10) return;
 
@@ -561,6 +568,7 @@ public class EventSystem {
         }
     }
 
+    // Helper subroutine: check plague - internal state computation & bounds checking
     private void checkPlague(int year, int month, long totalPopulation, List<H3Cell> cells) {
         if (year - lastPlagueYear < 50) return;
 
@@ -577,6 +585,7 @@ public class EventSystem {
         }
     }
 
+    // Helper subroutine: check natural disasters - internal state computation & bounds checking
     private void checkNaturalDisasters(int year, int month, long totalPopulation, List<H3Cell> cells) {
         H3Cell target = getRandomLandCell(cells);
         double lat = target != null ? target.getLatitude() : 0.0;
@@ -625,6 +634,7 @@ public class EventSystem {
         }
     }
 
+    // Helper subroutine: check achievements - internal state computation & bounds checking
     private void checkAchievements(int year, int month, long totalPopulation, List<H3Cell> cells) {
         H3Cell topCell = findHighestPopulationCell(cells);
         double lat = topCell != null ? topCell.getLatitude() : 0.0;

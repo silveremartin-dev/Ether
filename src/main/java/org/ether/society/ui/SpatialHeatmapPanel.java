@@ -216,6 +216,7 @@ public class SpatialHeatmapPanel extends VBox {
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
     }
 
+    // Helper subroutine: create transport btn - internal state computation & bounds checking
     private Button createTransportBtn(String text, String tooltipKey, String fallbackTooltip) {
         Button btn = new Button(text);
         btn.setMinSize(28, 26);
@@ -224,6 +225,7 @@ public class SpatialHeatmapPanel extends VBox {
         return btn;
     }
 
+    // Helper subroutine: create mini range btn - internal state computation & bounds checking
     private Button createMiniRangeBtn(String label, Runnable action) {
         Button btn = new Button(label);
         btn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #38bdf8; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 3 6; -fx-background-radius: 4; -fx-cursor: hand; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 4;");
@@ -231,6 +233,7 @@ public class SpatialHeatmapPanel extends VBox {
         return btn;
     }
 
+    // Helper subroutine: build layer menu - internal state computation & bounds checking
     private void buildLayerMenu() {
         activeLayersMenuBtn.getItems().clear();
         layerCheckBoxMap.clear();
@@ -259,6 +262,7 @@ public class SpatialHeatmapPanel extends VBox {
         updateActiveLayerChips();
     }
 
+    // Helper subroutine: on layer toggled - internal state computation & bounds checking
     private void onLayerToggled(DisplayMode dm, boolean selected) {
         if (selected) {
             activeLayers.add(dm);
@@ -274,6 +278,7 @@ public class SpatialHeatmapPanel extends VBox {
         renderMap();
     }
 
+    // Helper subroutine: apply preset - internal state computation & bounds checking
     private void applyPreset(DisplayMode... modes) {
         activeLayers.clear();
         activeLayers.addAll(List.of(modes));
@@ -284,6 +289,7 @@ public class SpatialHeatmapPanel extends VBox {
         renderMap();
     }
 
+    // Helper subroutine: update active layer chips - internal state computation & bounds checking
     private void updateActiveLayerChips() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         activeLayersChipsBox.getChildren().clear();
@@ -315,6 +321,7 @@ public class SpatialHeatmapPanel extends VBox {
         }
     }
 
+    // Helper subroutine: setup popup - internal state computation & bounds checking
     private void setupPopup() {
         VBox popupBox = new VBox(0, popupCanvas);
         popupBox.setStyle(
@@ -347,6 +354,7 @@ public class SpatialHeatmapPanel extends VBox {
         popupCanvas.setOnMouseExited(e -> scheduleHidePopup());
     }
 
+    // Helper subroutine: schedule hide popup - internal state computation & bounds checking
     private void scheduleHidePopup() {
         cancelHideTimer();
         popupHideTimer = new Timeline(new KeyFrame(Duration.millis(200), ev -> hoverPopup.hide()));
@@ -354,6 +362,7 @@ public class SpatialHeatmapPanel extends VBox {
         popupHideTimer.play();
     }
 
+    // Helper subroutine: cancel hide timer - internal state computation & bounds checking
     private void cancelHideTimer() {
         if (popupHideTimer != null) {
             popupHideTimer.stop();
@@ -426,6 +435,7 @@ public class SpatialHeatmapPanel extends VBox {
         }
     }
 
+    // Helper subroutine: update slider range - internal state computation & bounds checking
     private void updateSliderRange() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (historyManager == null || historyManager.getWorldSnapshots().isEmpty()) {
@@ -445,6 +455,7 @@ public class SpatialHeatmapPanel extends VBox {
         timePositionLabel.setText(String.format(Locale.ROOT, "%d / %d", currentSnapshotIndex + 1, count));
     }
 
+    // Helper subroutine: jump to snapshot index - internal state computation & bounds checking
     private void jumpToSnapshotIndex(int index, boolean render) {
         if (historyManager == null || historyManager.getWorldSnapshots().isEmpty()) return;
         List<Long> keys = new ArrayList<>(historyManager.getWorldSnapshots().keySet());
@@ -468,6 +479,7 @@ public class SpatialHeatmapPanel extends VBox {
         }
     }
 
+    // Helper subroutine: export video - internal state computation & bounds checking
     private void exportVideo() {
         if (historyManager == null || historyManager.getWorldSnapshots().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -544,6 +556,7 @@ public class SpatialHeatmapPanel extends VBox {
         });
     }
 
+    // Helper subroutine: step snapshot - internal state computation & bounds checking
     private void stepSnapshot(int delta) {
         int target = currentSnapshotIndex + delta;
         int minIdx = getEffectiveStartIndex();
@@ -553,16 +566,19 @@ public class SpatialHeatmapPanel extends VBox {
         jumpToSnapshotIndex(target, true);
     }
 
+    // Helper subroutine: get effective start index - internal state computation & bounds checking
     private int getEffectiveStartIndex() {
         return (rangeStartIndex != null) ? Math.max(0, rangeStartIndex) : 0;
     }
 
+    // Helper subroutine: get effective end index - internal state computation & bounds checking
     private int getEffectiveEndIndex() {
         if (historyManager == null || historyManager.getWorldSnapshots().isEmpty()) return 0;
         int max = historyManager.getWorldSnapshots().size() - 1;
         return (rangeEndIndex != null) ? Math.min(max, rangeEndIndex) : max;
     }
 
+    // Helper subroutine: set range start - internal state computation & bounds checking
     private void setRangeStart(int index) {
         this.rangeStartIndex = index;
         if (rangeEndIndex != null && rangeEndIndex < rangeStartIndex) {
@@ -571,6 +587,7 @@ public class SpatialHeatmapPanel extends VBox {
         updateRangeLabel();
     }
 
+    // Helper subroutine: set range end - internal state computation & bounds checking
     private void setRangeEnd(int index) {
         this.rangeEndIndex = index;
         if (rangeStartIndex != null && rangeStartIndex > rangeEndIndex) {
@@ -579,12 +596,14 @@ public class SpatialHeatmapPanel extends VBox {
         updateRangeLabel();
     }
 
+    // Helper subroutine: clear range - internal state computation & bounds checking
     private void clearRange() {
         this.rangeStartIndex = null;
         this.rangeEndIndex = null;
         updateRangeLabel();
     }
 
+    // Helper subroutine: update range label - internal state computation & bounds checking
     private void updateRangeLabel() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (rangeStartIndex == null && rangeEndIndex == null) {
@@ -596,6 +615,7 @@ public class SpatialHeatmapPanel extends VBox {
         }
     }
 
+    // Helper subroutine: update playback speed - internal state computation & bounds checking
     private void updatePlaybackSpeed() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         String val = speedCombo.getValue();
@@ -612,6 +632,7 @@ public class SpatialHeatmapPanel extends VBox {
         }
     }
 
+    // Helper subroutine: render map - internal state computation & bounds checking
     private void renderMap() {
         renderMapOnCanvas(mapCanvas);
         if (hoverPopup.isShowing()) {
@@ -619,6 +640,7 @@ public class SpatialHeatmapPanel extends VBox {
         }
     }
 
+    // Helper subroutine: render map on canvas - internal state computation & bounds checking
     private void renderMapOnCanvas(Canvas canvas) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         double w = canvas.getWidth();
@@ -720,6 +742,7 @@ public class SpatialHeatmapPanel extends VBox {
         }
     }
 
+    // Helper subroutine: is sparse zero skipped - internal state computation & bounds checking
     private boolean isSparseZeroSkipped(DisplayMode mode) {
         return switch (mode) {
             case POPULATION, FLUX, MIGRATION, CONFLICT, EPIDEMIC -> true;
@@ -727,6 +750,7 @@ public class SpatialHeatmapPanel extends VBox {
         };
     }
 
+    // Helper subroutine: get biome base color - internal state computation & bounds checking
     private Color getBiomeBaseColor(Biome biome) {
         if (biome == null) return Color.rgb(30, 41, 59, 0.6);
         return switch (biome) {
@@ -746,6 +770,7 @@ public class SpatialHeatmapPanel extends VBox {
         };
     }
 
+    // Helper subroutine: get cell value - internal state computation & bounds checking
     private double getCellValue(H3Cell c, DisplayMode mode) {
         if (c == null || mode == null) return 0.0;
         return switch (mode) {
@@ -802,6 +827,7 @@ public class SpatialHeatmapPanel extends VBox {
         };
     }
 
+    // Helper subroutine: get color for display mode - internal state computation & bounds checking
     private Color getColorForDisplayMode(double ratio, DisplayMode mode, double rawVal) {
         if (mode.getEncodingType() == DisplayMode.EncodingType.ID_24BIT_CATEGORICAL) {
             return Color.hsb(ratio * 360, 0.85, 0.95, 0.80);
@@ -841,6 +867,7 @@ public class SpatialHeatmapPanel extends VBox {
         };
     }
 
+    // Helper subroutine: compute moran i - internal state computation & bounds checking
     private double computeMoranI(DisplayMode mode) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (currentCells.size() < 4) return 0.0;
@@ -862,6 +889,7 @@ public class SpatialHeatmapPanel extends VBox {
         return denom > 0 ? Math.clamp(num / denom, -1.0, 1.0) : 0.0;
     }
 
+    // Helper subroutine: setup animation - internal state computation & bounds checking
     private void setupAnimation() {
         animationTimeline = new Timeline(new KeyFrame(Duration.millis(playbackDelayMs), e -> {
             if (historyManager == null || historyManager.getWorldSnapshots().isEmpty()) return;
@@ -884,6 +912,7 @@ public class SpatialHeatmapPanel extends VBox {
         animationTimeline.setCycleCount(Timeline.INDEFINITE);
     }
 
+    // Helper subroutine: toggle animation - internal state computation & bounds checking
     private void toggleAnimation() {
         if (isPlayingAnimation) {
             animationTimeline.pause();

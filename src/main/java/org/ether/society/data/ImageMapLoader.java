@@ -280,6 +280,7 @@ public class ImageMapLoader {
         return best;
     }
 
+    // Helper subroutine: color distance - internal state computation & bounds checking
     private double colorDistance(Color c1, Color c2) {
         return Math.pow(c1.getRed() - c2.getRed(), 2) +
                 Math.pow(c1.getGreen() - c2.getGreen(), 2) +
@@ -399,10 +400,12 @@ public class ImageMapLoader {
         return TemporalMapTensorManager.loadTemporalMapImage(planet, year, mapFileName);
     }
 
+    // Helper subroutine: normalize preset dir - internal state computation & bounds checking
     private static String normalizePresetDir(String dir) {
         return TemporalMapTensorManager.normalizePlanet(dir);
     }
 
+    // Helper subroutine: deduce preset from file name - internal state computation & bounds checking
     private static String deducePresetFromFileName(String fileName) {
         if (fileName == null) return null;
         String lower = fileName.toLowerCase();

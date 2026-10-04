@@ -15,6 +15,14 @@ public class SvgMapIngestorTest {
 
     @Test
     @DisplayName("Verify SVG map ingestion for embedded scenario maps")
+    /*
+     * Test embedded svg ingestion operation.
+     * <p>
+     * Executes operational logic for {@code SvgMapIngestorTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEmbeddedSvgIngestion() throws Exception {
         Scenario scenario = new Scenario();
         scenario.setName("Test Roman Empire");
@@ -32,6 +40,14 @@ public class SvgMapIngestorTest {
 
     @Test
     @DisplayName("Verify inline SVG string parsing and rasterization")
+    /*
+     * Test inline svg parsing operation.
+     * <p>
+     * Executes operational logic for {@code SvgMapIngestorTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testInlineSvgParsing() throws Exception {
         String testSvg = """
             <svg viewBox="0 0 1024 512" width="1024" height="512">

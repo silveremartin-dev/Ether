@@ -20,6 +20,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class WorldBufferWireCodecTest {
 
     @Test
+    /*
+     * Test encode decode chunk fidelity operation.
+     * <p>
+     * Executes operational logic for {@code WorldBufferWireCodecTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEncodeDecodeChunkFidelity() {
         int capacity = 50;
         WorldBuffer source = new WorldBuffer(capacity);
@@ -54,6 +62,14 @@ public class WorldBufferWireCodecTest {
     }
 
     @Test
+    /*
+     * Test encrypted chunk serialization operation.
+     * <p>
+     * Executes operational logic for {@code WorldBufferWireCodecTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testEncryptedChunkSerialization() throws Exception {
         EtherSecurityManager sec = new EtherSecurityManager();
         WorldBuffer source = new WorldBuffer(20);
@@ -70,6 +86,14 @@ public class WorldBufferWireCodecTest {
     }
 
     @Test
+    /*
+     * Test halo boundary delta exchange operation.
+     * <p>
+     * Executes operational logic for {@code WorldBufferWireCodecTest} within the distributed cluster synchronization and spatial partitioning system.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testHaloBoundaryDeltaExchange() {
         WorldBuffer source = new WorldBuffer(30);
         source.getFluxPressure()[7] = 12.34f;

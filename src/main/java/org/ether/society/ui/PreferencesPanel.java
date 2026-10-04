@@ -56,6 +56,7 @@ public class PreferencesPanel extends BorderPane {
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
+    // Helper subroutine: init ui - internal state computation & bounds checking
     private void initUI() {
         VBox root = new VBox(25);
         root.setMaxWidth(600);
@@ -122,6 +123,7 @@ public class PreferencesPanel extends BorderPane {
         return prefs.getBoolean(PREF_GPU_KEY, true);
     }
 
+    // Helper subroutine: create card section with header - internal state computation & bounds checking
     private VBox createCardSectionWithHeader(Label header, VBox content) {
         VBox card = new VBox(12, header, content);
         card.getStyleClass().add("card-section");

@@ -39,6 +39,14 @@ public class Tier2AdvancedCliodynamicsTest {
 
     @Test
     @DisplayName("Price Equation Engine: Multilevel cultural selection on civic altruism")
+    /*
+     * Test price multilevel selection operation.
+     * <p>
+     * Executes operational logic for {@code Tier2AdvancedCliodynamicsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testPriceMultilevelSelection() {
         PriceMultilevelSelectionEngine engine = new PriceMultilevelSelectionEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -61,6 +69,14 @@ public class Tier2AdvancedCliodynamicsTest {
 
     @Test
     @DisplayName("Boserup Intensification Engine: Demographic pressure triggering agricultural shifts")
+    /*
+     * Test boserup intensification operation.
+     * <p>
+     * Executes operational logic for {@code Tier2AdvancedCliodynamicsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testBoserupIntensification() {
         BoserupAgriculturalIntensificationEngine engine = new BoserupAgriculturalIntensificationEngine();
         assertNotNull(engine.getEquationsTooltip());
@@ -82,6 +98,14 @@ public class Tier2AdvancedCliodynamicsTest {
 
     @Test
     @DisplayName("Arthur Combinatorial Technology Engine: Recombinant innovation dynamics")
+    /*
+     * Test arthur combinatorial technology operation.
+     * <p>
+     * Executes operational logic for {@code Tier2AdvancedCliodynamicsTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testArthurCombinatorialTechnology() {
         ArthurCombinatorialTechnologyEngine engine = new ArthurCombinatorialTechnologyEngine();
         assertNotNull(engine.getEquationsTooltip());

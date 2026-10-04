@@ -66,6 +66,7 @@ public abstract class JsonRepository<T> {
         initStorage();
     }
 
+    // Helper subroutine: init storage - internal state computation & bounds checking
     private void initStorage() {
         try {
             if (!Files.exists(filePath.getParent())) {

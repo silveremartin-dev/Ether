@@ -28,6 +28,14 @@ public class CliodynamicTextTypeBSuiteTest {
     private List<H3Cell> testCells;
 
     @BeforeEach
+    /*
+     * Set up operation.
+     * <p>
+     * Executes operational logic for {@code CliodynamicTextTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void setUp() {
         ProceduralEngineRegistry.clearPlugins();
         testCells = new ArrayList<>();
@@ -49,12 +57,28 @@ public class CliodynamicTextTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test spatial city fractal engine operation.
+     * <p>
+     * Executes operational logic for {@code CliodynamicTextTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSpatialCityFractalEngine() {
         SpatialCityFractalEngine.processHybrid(testCells, 1.0);
         assertTrue(testCells.get(0).getPopulation() > testCells.get(1).getPopulation(), "Primary city should remain larger than secondary city under Zipf-Mori spatial power law.");
     }
 
     @Test
+    /*
+     * Test self domestication engine operation.
+     * <p>
+     * Executes operational logic for {@code CliodynamicTextTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testSelfDomesticationEngine() {
         double initialTech = testCells.get(0).getTechnologyLevel();
         SelfDomesticationEngine.processHybrid(testCells, 1.0);
@@ -62,6 +86,14 @@ public class CliodynamicTextTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test monastic demographic buffer engine operation.
+     * <p>
+     * Executes operational logic for {@code CliodynamicTextTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testMonasticDemographicBufferEngine() {
         testCells.get(0).setFoodResource(100.0); // Create food scarcity
         int initialPop = testCells.get(0).getPopulation();
@@ -70,6 +102,14 @@ public class CliodynamicTextTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test military tech shock engine operation.
+     * <p>
+     * Executes operational logic for {@code CliodynamicTextTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testMilitaryTechShockEngine() {
         double initialWork = testCells.get(0).getResourceWork();
         MilitaryTechShockEngine.processHybrid(testCells, 1.0);
@@ -77,6 +117,14 @@ public class CliodynamicTextTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test asymmetric colonial trade engine operation.
+     * <p>
+     * Executes operational logic for {@code CliodynamicTextTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testAsymmetricColonialTradeEngine() {
         double initialMetal = testCells.get(0).getResourceMetal();
         AsymmetricColonialTradeEngine.processHybrid(testCells, 1.0);
@@ -84,6 +132,14 @@ public class CliodynamicTextTypeBSuiteTest {
     }
 
     @Test
+    /*
+     * Test cliodynamic text plugins cumulative execution operation.
+     * <p>
+     * Executes operational logic for {@code CliodynamicTextTypeBSuiteTest} within the interactive JavaFX visualization and presentation layer.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testCliodynamicTextPluginsCumulativeExecution() {
         ProceduralEngineRegistry.registerPlugin("B21_SpatialFractal", SpatialCityFractalEngine::processHybrid);
         ProceduralEngineRegistry.registerPlugin("B22_SelfDomestication", SelfDomesticationEngine::processHybrid);

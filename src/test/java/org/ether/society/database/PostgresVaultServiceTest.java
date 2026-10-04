@@ -12,6 +12,14 @@ public class PostgresVaultServiceTest {
 
     @Test
     @DisplayName("Verify PostgresVaultService instantiation & backup script availability")
+    /*
+     * Test vault backup files operation.
+     * <p>
+     * Executes operational logic for {@code PostgresVaultServiceTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void testVaultBackupFiles() {
         File jsonDump = new File("data/vault_backups/ether_full_vault_dump.json");
         File sqlDump = new File("data/vault_backups/ether_postgres_import.sql");

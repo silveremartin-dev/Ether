@@ -38,6 +38,14 @@ public class EarthFullResolution175kBenchmarkTest {
     private static final long MAX_BENCHMARK_TIME_MS = 10_000L;
 
     @Test
+    /*
+     * Run full earth175k cell benchmark operation.
+     * <p>
+     * Executes operational logic for {@code EarthFullResolution175kBenchmarkTest} within the automated verification and regression test suite.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void runFullEarth175kCellBenchmark() {
         logger.info("===============================================================================");
         logger.info("ðŸŒ STARTING FULL EARTH 175,000 H3 CELL & 50M HUMAN BENCHMARK");

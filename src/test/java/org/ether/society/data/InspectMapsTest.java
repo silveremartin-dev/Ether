@@ -9,6 +9,14 @@ import java.util.ArrayList;
 
 public class InspectMapsTest {
     @Test
+    /*
+     * Inspect map dimensions operation.
+     * <p>
+     * Executes operational logic for {@code InspectMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void inspectMapDimensions() {
         String[] years = {"-100000", "-50000", "-25000", "-20000"};
         String[] layers = {
@@ -40,6 +48,14 @@ public class InspectMapsTest {
     }
 
     @Test
+    /*
+     * Inspect year1800colors operation.
+     * <p>
+     * Executes operational logic for {@code InspectMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void inspectYear1800Colors() throws Exception {
         String dir = "data/maps/ether/earth/1800/";
         BufferedImage iso = ImageIO.read(new File(dir + "earth_1800_isogloss.png"));
@@ -81,6 +97,14 @@ public class InspectMapsTest {
     }
 
     @Test
+    /*
+     * Inspect year2026cartographic tensors operation.
+     * <p>
+     * Executes operational logic for {@code InspectMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void inspectYear2026CartographicTensors() throws Exception {
         org.ether.society.model.Scenario sc = new org.ether.society.model.Scenario();
         sc.setName("Anthropocene Present Day (2026 AD)");
@@ -146,6 +170,14 @@ public class InspectMapsTest {
     }
 
     @Test
+    /*
+     * Inspect year1914cshapes operation.
+     * <p>
+     * Executes operational logic for {@code InspectMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void inspectYear1914CShapes() throws Exception {
         org.ether.society.model.Scenario sc = new org.ether.society.model.Scenario();
         sc.setName("Outbreak of World War I (1914 AD)");
@@ -189,6 +221,14 @@ public class InspectMapsTest {
     }
 
     @Test
+    /*
+     * Inspect year minus1000ancient world operation.
+     * <p>
+     * Executes operational logic for {@code InspectMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void inspectYearMinus1000AncientWorld() throws Exception {
         org.ether.society.model.Scenario sc = new org.ether.society.model.Scenario();
         sc.setName("Early Iron Age & Neo-Assyrian / Zhou Dynasty Emergence (-1000 BC)");
@@ -227,6 +267,14 @@ public class InspectMapsTest {
     }
 
     @Test
+    /*
+     * Inspect year0classical world operation.
+     * <p>
+     * Executes operational logic for {@code InspectMapsTest} within the geospatial raster and tensor ingestion pipeline.
+     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * </p>
+     *
+     */
     public void inspectYear0ClassicalWorld() throws Exception {
         org.ether.society.model.Scenario sc = new org.ether.society.model.Scenario();
         sc.setName("Pax Romana, Han Empire & Classical Axial Age (1 AD)");
