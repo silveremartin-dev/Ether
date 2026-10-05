@@ -129,6 +129,32 @@ public class HistoricalScenarioCalibrationHarnessTest {
     }
 
     @Test
+    @DisplayName("Should execute Counterfactual Falsification Twins (Great Men & Acute Bifurcations)")
+    void testRunAllFalsificationCounterfactuals() {
+        List<HistoricalScenarioCalibrationHarness.ScenarioCalibrationResult> results =
+                HistoricalScenarioCalibrationHarness.runAllFalsificationCounterfactuals();
+
+        assertNotNull(results, "Counterfactual results must not be null");
+        assertFalse(results.isEmpty(), "Should evaluate counterfactual twin pairs");
+
+        for (HistoricalScenarioCalibrationHarness.ScenarioCalibrationResult res : results) {
+            logger.info("Counterfactual Twin evaluated: '{}' (R² = {}, MAPE = {}%)",
+                    res.scenario.displayName(), res.compositeRSquared, res.meanMape);
+            assertTrue(res.compositeRSquared >= 0.0, "Model should compute valid regression fit");
+        }
+    }
+
+    @Test
+    @DisplayName("Should execute Full Academic Calibration and Falsification Suite via main()")
+    void testMainMethodExecution() {
+        HistoricalScenarioCalibrationHarness.main(new String[0]);
+
+        java.io.File logDir = new java.io.File("logs/calibration");
+        assertTrue(new java.io.File(logDir, "calibration_and_falsification_academic_report.md").exists(), "Markdown report must exist");
+        assertTrue(new java.io.File(logDir, "master_calibration_and_falsification_results.json").exists(), "JSON master results must exist");
+    }
+
+    @Test
     @DisplayName("Should execute Pluggable & World3 Hybrid Engine Ablation Audit")
     void testEngineAblationAudit() {
         List<HistoricalScenarioCalibrationHarness.EngineAblationAuditEntry> audit =

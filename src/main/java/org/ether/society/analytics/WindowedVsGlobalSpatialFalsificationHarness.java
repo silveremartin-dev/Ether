@@ -304,7 +304,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         double mapeClosed = computeCoreMAPE(gMap, wMapClosed);
         double shiftClosed = computeCentroidShiftKm(gMap, wMapClosed, wCellsClosed);
         double reflClosed = computeBoundaryReflectionIndex(gMap, wMapClosed, wCellsClosed);
-        boolean passClosed = pClosed >= 0.70;
+        boolean passClosed = pClosed >= 0.70 && mapeClosed < 0.25;
         list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "CLOSED_BARRIER", 4, 30.0,
                 pClosed, mapeClosed, shiftClosed, reflClosed, passClosed, "Reflective boundary induces marginal boundary pileup"));
 
@@ -320,7 +320,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         double mapeTor = computeCoreMAPE(gMap, wMapTor);
         double shiftTor = computeCentroidShiftKm(gMap, wMapTor, wCellsTor);
         double reflTor = computeBoundaryReflectionIndex(gMap, wMapTor, wCellsTor);
-        boolean passTor = pTor >= 0.60;
+        boolean passTor = pTor >= 0.60 && mapeTor < 0.25;
         list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "PERIODIC_TOROIDAL", 4, 30.0,
                 pTor, mapeTor, shiftTor, reflTor, passTor, "Toroidal wrap reinjects migrants on opposite edge"));
 
@@ -501,7 +501,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         americas.setStartDateYear(1000);
         americas.setEndDateYear(1030); // Validated sample run (strictly ends before 1492!)
         americas.setInitialHumanCount(10_000_000L);
-        americas.setH3Resolution(3);
+        americas.setH3Resolution(4);
         americas.setTemporalResolutionDays(30.0);
         americas.setSeed(14911491L);
 
@@ -621,7 +621,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         tas.setStartDateYear(-10000);
         tas.setEndDateYear(-9970);
         tas.setInitialHumanCount(15_000L);
-        tas.setH3Resolution(2);
+        tas.setH3Resolution(4);
         tas.setTemporalResolutionDays(30.0);
         tas.setSeed(9991800L);
 
@@ -735,7 +735,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         ice.setStartDateYear(874);
         ice.setEndDateYear(904);
         ice.setInitialHumanCount(50_000L);
-        ice.setH3Resolution(2);
+        ice.setH3Resolution(4);
         ice.setTemporalResolutionDays(30.0);
         ice.setSeed(8741400L);
 

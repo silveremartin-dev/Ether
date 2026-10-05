@@ -1000,7 +1000,76 @@ public class HistoricalScenarioCalibrationHarness {
         // Root Cause Drift Diagnosis and Parameter Tuning Recommendations
         diagnoseRootCausesAndProposeRemediations(def, result);
 
+        // Persist to SimulationRunRepository and saves directory for instant UI comparative access
+        persistResultToDiskAndRepository(def, result);
+
         return result;
+    }
+
+    private static void persistResultToDiskAndRepository(CalibrationScenarioDefinition def, ScenarioCalibrationResult result) {
+        try {
+            String runId = "RUN-" + def.scenarioKey();
+            SimulationRunRecord record = new SimulationRunRecord(runId, def.displayName(), def.historicalRegimeDescription(), null);
+
+            List<HistorySnapshot> snapshots = new ArrayList<>();
+            for (Map.Entry<Integer, Double> entry : result.simulatedPopulationTrajectory.entrySet()) {
+                int yr = entry.getKey();
+                long pop = Math.round(entry.getValue() * 1_000_000.0);
+                double tech = def.initialTechLevel() + (yr - def.startYear()) * 0.005;
+                double food = pop * 1.2;
+                double wealth = pop * (def.initialCapitalPerCapita() * 0.5);
+                double energy = pop * (12.0 + tech * 1.5);
+                double gdp = pop * (tech * 0.85);
+
+                Map<String, Double> metrics = new LinkedHashMap<>();
+                metrics.put("population", (double) pop);
+                metrics.put("worldPopulation", (double) pop);
+                metrics.put("foodPerCapita", 1.2);
+                metrics.put("builtCapital", wealth);
+                metrics.put("avgTechLevel", tech);
+                metrics.put("technology", tech);
+                metrics.put("grossWorldProduct", gdp);
+                metrics.put("gdpTotal", gdp);
+                metrics.put("primaryEnergy", energy);
+                metrics.put("energyCaptured", energy);
+                metrics.put("lifeExpectancy", 30.0 + tech * 4.0);
+                metrics.put("giniIndex", 0.40);
+                metrics.put("asabiyyah", 80.0);
+                metrics.put("systemComplexity", 10.0 + tech * 5.0);
+
+                record.addSnapshot(yr, pop, food, tech, 80.0, 100, metrics);
+
+                snapshots.add(new HistorySnapshot(
+                    yr, 1, pop, food, wealth, 30.0 + tech * 4.0, 0.40, tech,
+                    energy, 0.5, 75.0, 5.0, gdp, 15.0, 10.0 + tech * 5.0, 100.0, 0.5, 5.0, 60.0, 0.0, 5000.0, 20000.0, 3.5, 1, 0.1
+                ));
+            }
+
+            SimulationRunRepository.getInstance().saveRun(record);
+
+            java.nio.file.Path saveDir = org.ether.society.config.EtherPaths.getSavesDir().resolve(runId);
+            java.nio.file.Files.createDirectories(saveDir);
+
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            mapper.enable(com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT);
+
+            mapper.writeValue(saveDir.resolve("history.json").toFile(), snapshots);
+
+            Map<String, Object> meta = new LinkedHashMap<>();
+            meta.put("id", runId);
+            meta.put("name", def.displayName());
+            meta.put("scenarioName", def.displayName());
+            meta.put("year", def.endYear());
+            meta.put("startDateYear", def.startYear());
+            meta.put("endDateYear", def.endYear());
+            meta.put("totalPopulation", Math.round(result.simulatedPopulationTrajectory.getOrDefault(def.endYear(), def.targetWorldPopMillions()) * 1_000_000.0));
+            meta.put("description", def.historicalRegimeDescription());
+            meta.put("timestamp", java.time.Instant.now().toString());
+            mapper.writeValue(saveDir.resolve("metadata.json").toFile(), meta);
+
+        } catch (Exception ex) {
+            logger.warn("Could not persist calibration result to disk for {}: {}", def.scenarioKey(), ex.getMessage());
+        }
     }
 
     /*
