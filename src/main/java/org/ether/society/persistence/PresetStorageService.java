@@ -289,15 +289,37 @@ public final class PresetStorageService {
         }
     }
 
+    /*
+     * Formats scenario preset filename in standard pattern: <planet>_<year>_<location_and_topic>.json
+     */
+    public static String getStandardizedScenarioFilename(Scenario s) {
+        String planetSlug = "earth";
+        if (s.getPlanetPreset() != null && s.getPlanetPreset().name() != null) {
+            String pName = s.getPlanetPreset().name().toLowerCase();
+            if (pName.contains("mars") || pName.contains("ares")) planetSlug = "mars";
+            else if (pName.contains("venus") || pName.contains("vénus") || pName.contains("hesperos")) planetSlug = "venus";
+            else if (pName.contains("moon") || pName.contains("lune") || pName.contains("selene")) planetSlug = "moon";
+            else if (pName.contains("mercury") || pName.contains("mercure") || pName.contains("hermes")) planetSlug = "mercury";
+            else if (pName.contains("titan")) planetSlug = "titan";
+            else if (pName.contains("super-terre") || pName.contains("super_earth") || pName.contains("gaia")) planetSlug = "super_earth";
+            else if (pName.contains("synchrone") || pName.contains("eyeball")) planetSlug = "eyeball_world";
+            else if (pName.contains("ocean") || pName.contains("océan") || pName.contains("oceania")) planetSlug = "oceania";
+            else if (pName.contains("boreas") || pName.contains("glaciaire")) planetSlug = "boreas";
+            else if (pName.contains("archipel") || pName.contains("archipelago")) planetSlug = "archipelago";
+        }
+        long startYear = s.getStartDateYear();
+        String yearPart = (startYear >= 0 ? "+" + startYear : String.valueOf(startYear));
+        String key = s.getPresetKey() != null && !s.getPresetKey().isBlank() ? s.getPresetKey() : slugify(s.getName());
+        String cleanKey = key.replaceAll("^(earth|mars|moon|venus|mercury|titan|super_earth|eyeball_world|oceania|boreas|archipelago)_+", "");
+        return planetSlug + "_" + yearPart + "_" + cleanKey + ".json";
+    }
+
     // Helper subroutine: export scenario presets - internal state computation & bounds checking
     private static void exportScenarioPresets() {
         Path targetDir = EtherPaths.getPresetsScenariosDir();
         Path resDir = Path.of("src", "main", "resources", "data", "presets", "scenarios");
         for (Scenario s : Scenario.getBuiltInScenarios()) {
-            String slug = s.getPresetKey() != null && !s.getPresetKey().isBlank()
-                    ? s.getPresetKey()
-                    : slugify(s.getName());
-            String filename = slug + ".json";
+            String filename = getStandardizedScenarioFilename(s);
             writeJsonSafely(targetDir.resolve(filename), s);
             if (Files.exists(Path.of("src", "main", "resources"))) {
                 writeJsonSafely(resDir.resolve(filename), s);

@@ -73,17 +73,17 @@ class PresetStorageServiceTest {
         assertTrue(list.size() >= 40, "Should contain at least 40 scenario presets");
 
         Path scDir = EtherPaths.getPresetsScenariosDir();
-        assertTrue(Files.exists(scDir.resolve("out_of_africa.json")), "out_of_africa.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("mars_colony_2050.json")), "mars_colony_2050.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("moon_shackleton_2050.json")), "moon_shackleton_2050.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("venus_cloud_cities_2060.json")), "venus_cloud_cities_2060.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("mercury_caloris_forge_2070.json")), "mercury_caloris_forge_2070.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("titan_cryo_methane_2080.json")), "titan_cryo_methane_2080.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("super_earth_gaia_2100.json")), "super_earth_gaia_2100.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("eyeball_world_twilight_2120.json")), "eyeball_world_twilight_2120.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("oceania_aquapolis_2090.json")), "oceania_aquapolis_2090.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("boreas_subglacial_2075.json")), "boreas_subglacial_2075.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("archipelago_seasteading_2055.json")), "archipelago_seasteading_2055.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("earth_+0_roman_empire.json")), "earth_+0_roman_empire.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("earth_+1347_black_death_1347.json")), "earth_+1347_black_death_1347.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("mars_+2050_colony_2050.json")), "mars_+2050_colony_2050.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("moon_+2050_shackleton_2050.json")), "moon_+2050_shackleton_2050.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("venus_+2060_cloud_cities_2060.json")), "venus_+2060_cloud_cities_2060.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("mercury_+2070_caloris_forge_2070.json")), "mercury_+2070_caloris_forge_2070.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("super_earth_+2100_gaia_2100.json")), "super_earth_+2100_gaia_2100.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("eyeball_world_+2120_twilight_2120.json")), "eyeball_world_+2120_twilight_2120.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("oceania_+2090_aquapolis_2090.json")), "oceania_+2090_aquapolis_2090.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("boreas_+2075_subglacial_2075.json")), "boreas_+2075_subglacial_2075.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("archipelago_+2055_seasteading_2055.json")), "archipelago_+2055_seasteading_2055.json must exist on disk");
     }
 
     @Test
