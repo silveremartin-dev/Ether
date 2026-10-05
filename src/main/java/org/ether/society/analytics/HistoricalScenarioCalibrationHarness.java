@@ -11,6 +11,9 @@ import org.ether.society.core.dod.DemographicKernel;
 import org.ether.society.core.dod.EnvironmentalKernel;
 import org.ether.society.core.dod.UrbanKernel;
 import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.database.H3Cell;
+import org.ether.society.generation.PlanetPreset;
+import org.ether.society.generation.ProceduralGenerator;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -878,22 +881,28 @@ public class HistoricalScenarioCalibrationHarness {
         double tech = def.initialTechLevel();
         double agroCoeff = def.agroYieldCoeff();
 
-        // Forward simulation step with DoD kernels
-        int simulatedCells = 1000;
+        // Forward simulation step with DoD kernels on authentic H3 planetary grid
+        int h3Res = 3; // Res 3 macro baseline (4,112 cells)
+        PlanetPreset preset = PlanetPreset.EARTH_LIKE.withResolution(h3Res);
+        List<H3Cell> h3Cells = ProceduralGenerator.getInstance().generatePlanet(preset);
+        int simulatedCells = Math.max(100, h3Cells.size());
+
         WorldBuffer world = new WorldBuffer(simulatedCells);
         AgentBuffer agents = new AgentBuffer(simulatedCells);
 
         for (int i = 0; i < simulatedCells; i++) {
-            world.getElevation()[i] = (i % 8 == 0) ? 1100.0f : 120.0f;
-            world.getTemperature()[i] = 15.0f + (float) Math.sin(i * 0.05) * 12.0f;
-            world.getRainfall()[i] = 700.0f + (float) Math.cos(i * 0.03) * 350.0f;
-            world.getBiomes()[i] = (byte) ((i % 6 == 0) ? Biome.OCEAN.ordinal() : Biome.PLAINS.ordinal());
+            H3Cell c = i < h3Cells.size() ? h3Cells.get(i) : null;
+            world.getElevation()[i] = (c != null && c.getElevation() != null) ? c.getElevation().floatValue() : 120.0f;
+            world.getTemperature()[i] = (c != null && c.getTemperature() != null) ? c.getTemperature().floatValue() : 15.0f;
+            world.getRainfall()[i] = (c != null && c.getRainfall() != null) ? c.getRainfall().floatValue() : 700.0f;
+            world.getBiomes()[i] = (byte) ((c != null && c.getBiome() != null) ? c.getBiome().ordinal() : Biome.PLAINS.ordinal());
             world.getFoodResource()[i] = (float) (4500.0 * agroCoeff);
             world.getBiomassNatural()[i] = 350.0f;
             world.getResourceCapital()[i] = (float) capital;
             world.getTechnologyLevel()[i] = (float) tech;
 
             agents.getHexIds()[i] = i;
+            agents.getH3Indexes()[i] = c != null ? c.getH3Index() : i;
             agents.getMass()[i] = (float) (pop0 * 1000.0 / simulatedCells) * 70.0f;
             agents.getEnergy()[i] = 85.0f;
             agents.getAge()[i] = 28.0f;
