@@ -882,7 +882,7 @@ public class HistoricalScenarioCalibrationHarness {
         double agroCoeff = def.agroYieldCoeff();
 
         // Forward simulation step with DoD kernels on authentic H3 planetary grid
-        int h3Res = 3; // Res 3 macro baseline (4,112 cells)
+        int h3Res = 4; // Res 4 macro baseline (288,122 cells - Min Res 4 Standard)
         PlanetPreset preset = PlanetPreset.EARTH_LIKE.withResolution(h3Res);
         List<H3Cell> h3Cells = ProceduralGenerator.getInstance().generatePlanet(preset);
         int simulatedCells = Math.max(100, h3Cells.size());

@@ -111,7 +111,7 @@ public record PlanetPreset(
 
     /* Modern Earth (2026 baseline) */
     public static final PlanetPreset EARTH_MODERN = new PlanetPreset(
-            "Terre (Terran)", 3, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.478, 40.0, 21.0, 0.30, 1.0,
+            "Terre (Terran)", 4, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.478, 40.0, 21.0, 0.30, 1.0,
             false, 1.0, 0.0, 420.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)", 12445L,
@@ -123,7 +123,7 @@ public record PlanetPreset(
 
     /* -1 000 ans : DÃ©but Ã‚ge du Fer */
     public static final PlanetPreset EARTH_IRON_1000BP = new PlanetPreset(
-            "Terre (-1 000 / DÃ©but Ã‚ge du Fer)", 3, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 14.7, 12344L, 1.0, 1.0, 0.478, 40.0, 20.95, 0.305, 1.0,
+            "Terre (-1 000 / DÃ©but Ã‚ge du Fer)", 4, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 14.7, 12344L, 1.0, 1.0, 0.478, 40.0, 20.95, 0.305, 1.0,
             false, 1.0, 0.0, 278.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "ðŸŒ Terre (-1000 BP) â€” Ã‚ge du Fer Ancien", 12444L,
@@ -132,7 +132,7 @@ public record PlanetPreset(
 
     /* -1 900 ans : Ã‚ge du Bronze Moyen */
     public static final PlanetPreset EARTH_BRONZE_1900BP = new PlanetPreset(
-            "Terre (-1 900 / Ã‚ge du Bronze Moyen)", 3, 6371.0, 24.0, 23.6, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.478, 39.5, 20.95, 0.30, 1.0,
+            "Terre (-1 900 / Ã‚ge du Bronze Moyen)", 4, 6371.0, 24.0, 23.6, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.478, 39.5, 20.95, 0.30, 1.0,
             false, 1.0, 0.0, 275.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "ðŸŒ Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen", 12445L,
@@ -141,7 +141,7 @@ public record PlanetPreset(
 
     /* -3 000 ans (LH) : HolocÃ¨ne tardif */
     public static final PlanetPreset EARTH_LH_3000BP = new PlanetPreset(
-            "Terre (-3 000 / HolocÃ¨ne Tardif)", 3, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 14.8, 12346L, 1.0, 1.0, 0.478, 40.0, 20.95, 0.305, 1.0,
+            "Terre (-3 000 / HolocÃ¨ne Tardif)", 4, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 14.8, 12346L, 1.0, 1.0, 0.478, 40.0, 20.95, 0.305, 1.0,
             false, 1.0, 0.0, 275.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "ðŸŒ Terre (-3000 BP) â€” PalÃ©oclimat Tardif", 12446L,
@@ -150,7 +150,7 @@ public record PlanetPreset(
 
     /* -6 000 ans (MH) : HolocÃ¨ne moyen avec le Sahara Vert et le lac MÃ©ga-Tchad */
     public static final PlanetPreset EARTH_MH_6000BP = new PlanetPreset(
-            "Terre (-6 000 / Sahara Vert)", 3, 6371.0, 24.0, 24.1, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.8, 12347L, 1.0, 1.0, 0.478, 38.0, 20.95, 0.29, 1.0,
+            "Terre (-6 000 / Sahara Vert)", 4, 6371.0, 24.0, 24.1, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.8, 12347L, 1.0, 1.0, 0.478, 38.0, 20.95, 0.29, 1.0,
             false, 1.0, 0.0, 265.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "ðŸŒ Terre (-6000 BP) â€” Optimum Climatique & Sahara Vert", 12447L,
@@ -159,7 +159,7 @@ public record PlanetPreset(
 
     /* -10 000 ans (EH) : HolocÃ¨ne prÃ©coce (-35m niveau de la mer dÃ©glaciation) */
     public static final PlanetPreset EARTH_EH_10000BP = new PlanetPreset(
-            "Terre (-10 000 / HolocÃ¨ne PrÃ©coce)", 3, 6371.0, 24.0, 24.2, 365.25, 1.0, 1.0, -11000.0, 8848.0, 13.5, 12348L, 1.0, 1.0, 0.476479, 42.0, 20.9, 0.32, 1.0,
+            "Terre (-10 000 / HolocÃ¨ne PrÃ©coce)", 4, 6371.0, 24.0, 24.2, 365.25, 1.0, 1.0, -11000.0, 8848.0, 13.5, 12348L, 1.0, 1.0, 0.476479, 42.0, 20.9, 0.32, 1.0,
             false, 1.0, 0.0, 260.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "ðŸŒ Terre (-10000 BP) â€” PalÃ©oclimat DÃ©glaciation", 12448L,
@@ -168,7 +168,7 @@ public record PlanetPreset(
 
     /* -20 000 ans (LGM) : Dernier Maximum Glaciaire (-125m niveau marin eustatique bas) */
     public static final PlanetPreset EARTH_LGM_20000BP = new PlanetPreset(
-            "Terre (-20 000 / Maximum Glaciaire)", 3, 6371.0, 24.0, 23.0, 365.25, 1.0, 1.0, -11000.0, 8848.0, 9.0, 12349L, 1.0, 1.0, 0.472568, 55.0, 20.9, 0.36, 1.0,
+            "Terre (-20 000 / Maximum Glaciaire)", 4, 6371.0, 24.0, 23.0, 365.25, 1.0, 1.0, -11000.0, 8848.0, 9.0, 12349L, 1.0, 1.0, 0.472568, 55.0, 20.9, 0.36, 1.0,
             false, 1.0, 0.0, 190.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "ðŸŒ Terre (-20000 BP) â€” Climat Glaciaire LGM & Inlandsis", 12449L,
@@ -177,7 +177,7 @@ public record PlanetPreset(
 
     /* -25 000 ans : DÃ©but LGM & BÃ©ringie (-100m niveau marin) */
     public static final PlanetPreset EARTH_LGM_ONSET_25000BP = new PlanetPreset(
-            "Terre (-25 000 / DÃ©but LGM & BÃ©ringie)", 3, 6371.0, 24.0, 23.2, 365.25, 1.0, 1.0, -11000.0, 8848.0, 10.5, 12351L, 1.0, 1.0, 0.473655, 52.0, 20.9, 0.35, 1.0,
+            "Terre (-25 000 / DÃ©but LGM & BÃ©ringie)", 4, 6371.0, 24.0, 23.2, 365.25, 1.0, 1.0, -11000.0, 8848.0, 10.5, 12351L, 1.0, 1.0, 0.473655, 52.0, 20.9, 0.35, 1.0,
             false, 1.0, 0.0, 205.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "ðŸŒ Terre (-25000 BP) â€” DÃ©but LGM & BÃ©ringie", 12451L,
@@ -186,7 +186,7 @@ public record PlanetPreset(
 
     /* -50 000 ans : Stade Isotopique 3 & Sahul (-60m niveau marin) */
     public static final PlanetPreset EARTH_MIS3_50000BP = new PlanetPreset(
-            "Terre (-50 000 / Stade Isotopique 3 & Sahul)", 3, 6371.0, 24.0, 23.4, 365.25, 1.0, 1.0, -11000.0, 8848.0, 12.0, 12352L, 1.0, 1.0, 0.475393, 48.0, 20.9, 0.335, 1.0,
+            "Terre (-50 000 / Stade Isotopique 3 & Sahul)", 4, 6371.0, 24.0, 23.4, 365.25, 1.0, 1.0, -11000.0, 8848.0, 12.0, 12352L, 1.0, 1.0, 0.475393, 48.0, 20.9, 0.335, 1.0,
             false, 1.0, 0.0, 220.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "ðŸŒ Terre (-50000 BP) â€” Stade Isotopique 3 & Sahul", 12452L,
@@ -195,7 +195,7 @@ public record PlanetPreset(
 
     /* -100 000 ans (LIG) : Dernier Interglaciaire / EÃ©mien (0m datum datum / +6m stand) */
     public static final PlanetPreset EARTH_LIG_100000BP = new PlanetPreset(
-            "Terre (-100 000 / Dernier Interglaciaire)", 3, 6371.0, 24.0, 23.8, 365.25, 1.0, 1.0, -11000.0, 8848.0, 16.2, 12350L, 1.0, 1.0, 0.478, 36.0, 20.95, 0.295, 1.0,
+            "Terre (-100 000 / Dernier Interglaciaire)", 4, 6371.0, 24.0, 23.8, 365.25, 1.0, 1.0, -11000.0, 8848.0, 16.2, 12350L, 1.0, 1.0, 0.478, 36.0, 20.95, 0.295, 1.0,
             false, 1.0, 0.0, 280.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
             true, "ðŸŒ Terre (-100000 BP) â€” Dernier Interglaciaire EÃ©mien", 12450L,
@@ -204,7 +204,7 @@ public record PlanetPreset(
 
     /* Mars-like settings */
     public static final PlanetPreset MARS_LIKE = new PlanetPreset(
-            "Mars (Ares)", 3, 3389.5, 24.6, 25.2, 687.0, 1.52, 1.0, -8000.0, 21229.0, -60.0, 98765L, 1.2, 1.2, -0.4, 50.0, 0.13, 0.25, 0.006,
+            "Mars (Ares)", 4, 3389.5, 24.6, 25.2, 687.0, 1.52, 1.0, -8000.0, 21229.0, -60.0, 98765L, 1.2, 1.2, -0.4, 50.0, 0.13, 0.25, 0.006,
             false, 1.0, 0.0, 950000.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "mars",
             true, "ðŸ”´ Mars â€” MGS TES Thermal Radiometry", 98865L,
@@ -215,7 +215,7 @@ public record PlanetPreset(
 
     /* Venusian settings */
     public static final PlanetPreset VENUS_LIKE = new PlanetPreset(
-            "VÃ©nus (Hesperos)", 3, 6051.8, 2802.0, 177.3, 224.7, 0.72, 1.0, -3000.0, 11000.0, 464.0, 55555L, 0.6, 0.7, -0.5, 20.0, 0.0, 0.75, 92.0,
+            "VÃ©nus (Hesperos)", 4, 6051.8, 2802.0, 177.3, 224.7, 0.72, 1.0, -3000.0, 11000.0, 464.0, 55555L, 0.6, 0.7, -0.5, 20.0, 0.0, 0.75, 92.0,
             false, 1.0, 0.0, 965000.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "venus",
             true, "ðŸŸ¡ VÃ©nus â€” Magellan SAR & Hypsometric Model", 55655L,
@@ -224,7 +224,7 @@ public record PlanetPreset(
 
     /* Moon-like satellite settings */
     public static final PlanetPreset MOON_LIKE = new PlanetPreset(
-            "Lune (Selene)", 3, 1737.4, 708.0, 1.5, 365.25, 1.0, 1.0, -9000.0, 10700.0, -20.0, 88888L, 0.9, 1.1, -0.5, 60.0, 0.0, 0.12, 0.0,
+            "Lune (Selene)", 4, 1737.4, 708.0, 1.5, 365.25, 1.0, 1.0, -9000.0, 10700.0, -20.0, 88888L, 0.9, 1.1, -0.5, 60.0, 0.0, 0.12, 0.0,
             true, 1.0, 384400.0, 0.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "moon",
             true, "âšª Lune â€” LRO Diviner Thermal Radiometer", 88988L,
@@ -233,7 +233,7 @@ public record PlanetPreset(
 
     /* Mercury settings */
     public static final PlanetPreset MERCURY_LIKE = new PlanetPreset(
-            "Mercure (Hermes)", 3, 2439.7, 4222.6, 0.034, 87.97, 0.387, 1.0, -5000.0, 4480.0, 167.0, 66666L, 0.9, 1.0, -0.5, 90.0, 0.0, 0.14, 0.0,
+            "Mercure (Hermes)", 4, 2439.7, 4222.6, 0.034, 87.97, 0.387, 1.0, -5000.0, 4480.0, 167.0, 66666L, 0.9, 1.0, -0.5, 90.0, 0.0, 0.14, 0.0,
             false, 1.0, 0.0, 0.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "mercury",
             true, "âšª Mercure â€” MESSENGER MLA Extreme Thermal Model", 66766L,
@@ -242,7 +242,7 @@ public record PlanetPreset(
 
     /* Titan-like moon settings */
     public static final PlanetPreset TITAN_LIKE = new PlanetPreset(
-            "Titan (Cryo-Lune)", 3, 2574.0, 382.0, 26.7, 10759.0, 9.5, 1.0, -2000.0, 5000.0, -179.0, 77711L, 0.8, 1.0, 0.2, 25.0, 0.0, 0.22, 1.45,
+            "Titan (Cryo-Lune)", 4, 2574.0, 382.0, 26.7, 10759.0, 9.5, 1.0, -2000.0, 5000.0, -179.0, 77711L, 0.8, 1.0, 0.2, 25.0, 0.0, 0.22, 1.45,
             true, 317.8, 1221870.0, 5000.0, 2.5, 1.5, null, null, null, null, null, null,
             false, "none",
             false, "", 77811L,
@@ -251,7 +251,7 @@ public record PlanetPreset(
 
     /* Super-Earth settings */
     public static final PlanetPreset SUPER_EARTH = new PlanetPreset(
-            "Super-Terre (Gaia Prime)", 3, 11000.0, 16.0, 12.0, 480.0, 1.0, 1.2, -14000.0, 12000.0, 22.0, 44444L, 1.3, 1.2, 0.1, 45.0, 25.0, 0.28, 1.5,
+            "Super-Terre (Gaia Prime)", 4, 11000.0, 16.0, 12.0, 480.0, 1.0, 1.2, -14000.0, 12000.0, 22.0, 44444L, 1.3, 1.2, 0.1, 45.0, 25.0, 0.28, 1.5,
             false, 1.0, 0.0, 600.0, 2.5, 1.5, null, null, null, null, null, null,
             false, "none",
             false, "", 44544L,
@@ -260,7 +260,7 @@ public record PlanetPreset(
 
     /* Tidally locked Eyeball world */
     public static final PlanetPreset EYEBALL_WORLD = new PlanetPreset(
-            "Monde Synchrone (Eyeball)", 3, 5500.0, 720.0, 0.0, 30.0, 0.15, 0.05, -10000.0, 9000.0, 20.0, 33333L, 1.0, 1.0, 0.0, 90.0, 18.0, 0.35, 0.8,
+            "Monde Synchrone (Eyeball)", 4, 5500.0, 720.0, 0.0, 30.0, 0.15, 0.05, -10000.0, 9000.0, 20.0, 33333L, 1.0, 1.0, 0.0, 90.0, 18.0, 0.35, 0.8,
             false, 1.0, 0.0, 1200.0, 2.5, 1.5, null, null, null, null, null, null,
             false, "none",
             false, "", 33433L,
@@ -269,7 +269,7 @@ public record PlanetPreset(
 
     /* Water world settings */
     public static final PlanetPreset WATER_WORLD = new PlanetPreset(
-            "Monde OcÃ©an (Oceania)", 3, 7000.0, 21.0, 18.0, 410.0, 1.0, 1.1, -12000.0, 3000.0, 25.0, 54321L, 0.8, 0.8, 0.35, 30.0, 23.0, 0.25, 1.2,
+            "Monde OcÃ©an (Oceania)", 4, 7000.0, 21.0, 18.0, 410.0, 1.0, 1.1, -12000.0, 3000.0, 25.0, 54321L, 0.8, 0.8, 0.35, 30.0, 23.0, 0.25, 1.2,
             false, 1.0, 0.0, 500.0, 2.5, 1.5, null, null, null, null, null, null,
             false, "none",
             false, "", 54421L,
@@ -278,7 +278,7 @@ public record PlanetPreset(
 
     /* Ice world settings */
     public static final PlanetPreset ICE_WORLD = new PlanetPreset(
-            "Monde Glaciaire (Boreas)", 3, 4800.0, 32.0, 45.0, 520.0, 2.5, 0.9, -6000.0, 7000.0, -45.0, 11111L, 0.5, 1.5, 0.1, 70.0, 15.0, 0.60, 0.7,
+            "Monde Glaciaire (Boreas)", 4, 4800.0, 32.0, 45.0, 520.0, 2.5, 0.9, -6000.0, 7000.0, -45.0, 11111L, 0.5, 1.5, 0.1, 70.0, 15.0, 0.60, 0.7,
             false, 1.0, 0.0, 300.0, 2.5, 1.5, null, null, null, null, null, null,
             false, "none",
             false, "", 11211L,
@@ -286,7 +286,7 @@ public record PlanetPreset(
             false, "", 13111L);
 
     public static final PlanetPreset ARCHIPELAGO = new PlanetPreset(
-            "Archipel", 3, 6371.0, 24.0, 23.5, 365.0, 1.0, 1.0, -11000.0, 8848.0, 18.0, 77777L, 1.5, 1.5, 0.6, 45.0, 21.0, 0.30, 1.0,
+            "Archipel", 4, 6371.0, 24.0, 23.5, 365.0, 1.0, 1.0, -11000.0, 8848.0, 18.0, 77777L, 1.5, 1.5, 0.6, 45.0, 21.0, 0.30, 1.0,
             false, 1.0, 0.0, 420.0, 2.5, 1.5, null, null, null, null, null, null,
             false, "none",
             false, "", 77877L,
@@ -484,6 +484,7 @@ public record PlanetPreset(
      * @return the resulting computation or state reference
      */
     public PlanetPreset withResolution(int newResolution) {
+        newResolution = Math.max(4, newResolution);
         return new PlanetPreset(name, newResolution, radiusKm, dayLengthHours, axialTiltDegrees, yearLengthDays,
                 distanceToSunAU, solarLuminosity, minAltitudeMeters, maxAltitudeMeters, averageTempC, seed,
                 noiseFrequency, noiseScale, waterLevel, temperatureGradient, oxygenPercentage, albedo,
