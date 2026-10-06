@@ -1,0 +1,11 @@
+{
+  "id" : "RUN-NAPOLEON_HEGEMONY_1804CE_FORCED",
+  "name" : "Napoleon I Twin B: Forced Hegemonic Conquest & Rapid Relaxation (1800 -> 1830 CE)",
+  "scenarioName" : "Napoleon I Twin B: Forced Hegemonic Conquest & Rapid Relaxation (1800 -> 1830 CE)",
+  "year" : 1830,
+  "startDateYear" : 1800,
+  "endDateYear" : 1830,
+  "totalPopulation" : 1074356338,
+  "description" : "Forced Grande Armée mobilization and Continental System, relaxing back to the British coal/Westphalian attractor within tau_relax <= 25 yrs.",
+  "timestamp" : "2026-10-05T16:32:03.362224900Z"
+}

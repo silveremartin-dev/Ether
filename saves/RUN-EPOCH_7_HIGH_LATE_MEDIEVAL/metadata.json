@@ -1,0 +1,11 @@
+{
+  "id" : "RUN-EPOCH_7_HIGH_LATE_MEDIEVAL",
+  "name" : "Epoch 7: High Medieval & Eurasian Nomad Dynamics (1000 -> 1500 CE)",
+  "scenarioName" : "Epoch 7: High Medieval & Eurasian Nomad Dynamics (1000 -> 1500 CE)",
+  "year" : 1500,
+  "startDateYear" : 1000,
+  "endDateYear" : 1500,
+  "totalPopulation" : 422285578,
+  "description" : "Song hydraulic mechanization, Gengis Khan Mongol conquests, Qanat destructuring, and 1347 Black Death pandemic.",
+  "timestamp" : "2026-10-05T16:31:22.915767300Z"
+}

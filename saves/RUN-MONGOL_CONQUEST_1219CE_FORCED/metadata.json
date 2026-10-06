@@ -1,0 +1,11 @@
+{
+  "id" : "RUN-MONGOL_CONQUEST_1219CE_FORCED",
+  "name" : "1219 CE Mongol Conquest Twin B: Forced Nomadic Warfare & Hydraulic Destructuring (1200 -> 1270 CE)",
+  "scenarioName" : "1219 CE Mongol Conquest Twin B: Forced Nomadic Warfare & Hydraulic Destructuring (1200 -> 1270 CE)",
+  "year" : 1270,
+  "startDateYear" : 1200,
+  "endDateYear" : 1270,
+  "totalPopulation" : 336734692,
+  "description" : "Forced nomadic cavalry shock vector + Qanat aquifer destruction reproducing historical demographic and agricultural contraction.",
+  "timestamp" : "2026-10-05T16:31:44.066815600Z"
+}

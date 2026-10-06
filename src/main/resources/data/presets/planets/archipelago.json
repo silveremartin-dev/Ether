@@ -1,6 +1,6 @@
 {
   "name" : "Archipel",
-  "resolution" : 3,
+  "resolution" : 4,
   "radiusKm" : 6371.0,
   "dayLengthHours" : 24.0,
   "axialTiltDegrees" : 23.5,
@@ -42,7 +42,7 @@
   "seasonSource" : "",
   "seasonSeed" : 79777,
   "canonicalPlanet" : "none",
-  "associatedEpochYear" : 2026,
+  "tidalLocked" : false,
   "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale.",
-  "tidalLocked" : false
+  "associatedEpochYear" : 2026
 }

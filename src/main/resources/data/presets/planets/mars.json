@@ -1,6 +1,6 @@
 {
   "name" : "Mars (Ares)",
-  "resolution" : 3,
+  "resolution" : 4,
   "radiusKm" : 3389.5,
   "dayLengthHours" : 24.6,
   "axialTiltDegrees" : 25.2,
@@ -42,7 +42,7 @@
   "seasonSource" : "ðŸ”´ Mars â€” Orbital Eccentricity Insolation Model",
   "seasonSeed" : 100765,
   "canonicalPlanet" : "mars",
-  "associatedEpochYear" : 2026,
+  "tidalLocked" : false,
   "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique.",
-  "tidalLocked" : false
+  "associatedEpochYear" : 2026
 }

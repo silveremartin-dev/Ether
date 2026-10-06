@@ -1,0 +1,11 @@
+{
+  "id" : "RUN-CLASSICAL_AGRARIAN_EXPANSION",
+  "name" : "Classical Antiquity Steady Agrarian Consolidation (-500 BCE -> 100 CE)",
+  "scenarioName" : "Classical Antiquity Steady Agrarian Consolidation (-500 BCE -> 100 CE)",
+  "year" : 100,
+  "startDateYear" : -500,
+  "endDateYear" : 100,
+  "totalPopulation" : 181110437,
+  "description" : "Stable agrarian empire expansion across Mediterranean and Han China prior to Antonine plague (165 CE).",
+  "timestamp" : "2026-10-05T16:29:13.982326Z"
+}

@@ -3,7 +3,7 @@
   "planetPresetName" : "Monde OcÃ©an (Oceania)",
   "embeddedPlanetPreset" : {
     "name" : "Monde OcÃ©an (Oceania)",
-    "resolution" : 3,
+    "resolution" : 4,
     "radiusKm" : 7000.0,
     "dayLengthHours" : 21.0,
     "axialTiltDegrees" : 18.0,
@@ -45,9 +45,9 @@
     "seasonSource" : "",
     "seasonSeed" : 56321,
     "canonicalPlanet" : "none",
-    "associatedEpochYear" : 2026,
+    "tidalLocked" : false,
     "presetDescription" : "\uD83C\uDF0A MONDE OCÉAN (Oceania) : Planète océanique panthalassique à 98% d'eau, absence de cratons continentaux émergés, écosystèmes pélagiques profonds et subsistance humaine exclusivement maritime.",
-    "tidalLocked" : false
+    "associatedEpochYear" : 2026
   },
   "terrestrialBiomassGtC" : 80.0,
   "soilOrganicCarbonGtC" : 300.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "none",
-  "associatedEpochYear" : 2026,
-  "presetDescription" : "\uD83C\uDF0A MONDE OCÉAN (Oceania) : Planète océanique panthalassique à 98% d'eau, absence de cratons continentaux émergés, écosystèmes pélagiques profonds et subsistance humaine exclusivement maritime."
+  "presetDescription" : "\uD83C\uDF0A MONDE OCÉAN (Oceania) : Planète océanique panthalassique à 98% d'eau, absence de cratons continentaux émergés, écosystèmes pélagiques profonds et subsistance humaine exclusivement maritime.",
+  "associatedEpochYear" : 2026
 }

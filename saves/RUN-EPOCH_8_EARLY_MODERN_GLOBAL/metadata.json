@@ -1,0 +1,11 @@
+{
+  "id" : "RUN-EPOCH_8_EARLY_MODERN_GLOBAL",
+  "name" : "Epoch 8: Early Modern Columbian Exchange & Commercial Networks (1500 -> 1850 CE)",
+  "scenarioName" : "Epoch 8: Early Modern Columbian Exchange & Commercial Networks (1500 -> 1850 CE)",
+  "year" : 1850,
+  "startDateYear" : 1500,
+  "endDateYear" : 1850,
+  "totalPopulation" : 1265374141,
+  "description" : "Columbian contact, American virgin-soil epidemics, Ming/Qing transition, and pre-industrial coal emergence.",
+  "timestamp" : "2026-10-05T16:31:29.419149700Z"
+}

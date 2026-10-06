@@ -1,0 +1,11 @@
+{
+  "id" : "RUN-JUSTINIAN_PLAGUE_536CE_UNFORCED",
+  "name" : "536 CE Volcanic & Justinian Plague Twin A: Unforced Mediterranean Expansion (530 -> 590 CE)",
+  "scenarioName" : "536 CE Volcanic & Justinian Plague Twin A: Unforced Mediterranean Expansion (530 -> 590 CE)",
+  "year" : 590,
+  "startDateYear" : 530,
+  "endDateYear" : 590,
+  "totalPopulation" : 187386057,
+  "description" : "Unforced Byzantine reconquest under Justinian assuming climatic stability and absence of bubonic pandemic.",
+  "timestamp" : "2026-10-05T16:31:37.681485500Z"
+}

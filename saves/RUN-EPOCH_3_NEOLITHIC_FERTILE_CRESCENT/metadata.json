@@ -1,0 +1,11 @@
+{
+  "id" : "RUN-EPOCH_3_NEOLITHIC_FERTILE_CRESCENT",
+  "name" : "Epoch 3: Neolithic Revolution & Agrarian Sedentism (-10000 -> -3000 BCE)",
+  "scenarioName" : "Epoch 3: Neolithic Revolution & Agrarian Sedentism (-10000 -> -3000 BCE)",
+  "year" : -3000,
+  "startDateYear" : -10000,
+  "endDateYear" : -3000,
+  "totalPopulation" : 47015464,
+  "description" : "Holocene thermal optimum, Natufian grain storage, cereal domestication in Fertile Crescent, and Green Sahara wet phase.",
+  "timestamp" : "2026-10-05T16:30:41.311554400Z"
+}

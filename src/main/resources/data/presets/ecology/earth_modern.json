@@ -3,7 +3,7 @@
   "planetPresetName" : "Terre (Terran)",
   "embeddedPlanetPreset" : {
     "name" : "Terre (Terran)",
-    "resolution" : 3,
+    "resolution" : 4,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
     "axialTiltDegrees" : 23.5,
@@ -45,9 +45,9 @@
     "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
-    "associatedEpochYear" : 2026,
+    "tidalLocked" : false,
     "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false
+    "associatedEpochYear" : 2026
   },
   "terrestrialBiomassGtC" : 450.0,
   "soilOrganicCarbonGtC" : 1500.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "earth",
-  "associatedEpochYear" : 2026,
-  "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
+  "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
+  "associatedEpochYear" : 2026
 }

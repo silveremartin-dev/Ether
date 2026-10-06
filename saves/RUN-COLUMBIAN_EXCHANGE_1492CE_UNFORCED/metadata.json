@@ -1,0 +1,11 @@
+{
+  "id" : "RUN-COLUMBIAN_EXCHANGE_1492CE_UNFORCED",
+  "name" : "1492 Columbian Exchange Twin A: Unforced Pre-Columbian Continuity (1490 -> 1600 CE)",
+  "scenarioName" : "1492 Columbian Exchange Twin A: Unforced Pre-Columbian Continuity (1490 -> 1600 CE)",
+  "year" : 1600,
+  "startDateYear" : 1490,
+  "endDateYear" : 1600,
+  "totalPopulation" : 522092339,
+  "description" : "Unforced demographic expansion of Triple Alliance (Aztec) and Inca Tawantinsuyu assuming no trans-Atlantic contact.",
+  "timestamp" : "2026-10-05T16:31:47.208284600Z"
+}

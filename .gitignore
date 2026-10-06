@@ -46,7 +46,8 @@ logs/
 # Temporary build artifacts & saves
 build_output.txt
 classpath.txt
-saves/
+saves/*
+!saves/RUN-*/
 scratch/
 
 # Generated Javadoc (Tracked for docs)

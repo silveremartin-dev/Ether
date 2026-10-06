@@ -1,0 +1,11 @@
+{
+  "id" : "RUN-EPOCH_2_UPPER_PALEOLITHIC_LGM",
+  "name" : "Epoch 2: Upper Paleolithic & Last Glacial Maximum (-50000 -> -10000 BP)",
+  "scenarioName" : "Epoch 2: Upper Paleolithic & Last Glacial Maximum (-50000 -> -10000 BP)",
+  "year" : -10000,
+  "startDateYear" : -50000,
+  "endDateYear" : -10000,
+  "totalPopulation" : 4632610,
+  "description" : "Eurasian colonization, Sahul maritime settlement, Beringia standstill, and LGM thermal refugia.",
+  "timestamp" : "2026-10-05T16:30:19.384093600Z"
+}

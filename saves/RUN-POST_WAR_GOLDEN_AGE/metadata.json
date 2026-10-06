@@ -1,0 +1,11 @@
+{
+  "id" : "RUN-POST_WAR_GOLDEN_AGE",
+  "name" : "Post-WWII Green Revolution & Exergy Growth (1950 CE -> 1990 CE)",
+  "scenarioName" : "Post-WWII Green Revolution & Exergy Growth (1950 CE -> 1990 CE)",
+  "year" : 1990,
+  "startDateYear" : 1950,
+  "endDateYear" : 1990,
+  "totalPopulation" : 5440552029,
+  "description" : "Continuous demographic expansion, Haber-Bosch synthetic nitrogen, oil scaling (Trente Glorieuses) with ultra-high precision telemetry.",
+  "timestamp" : "2026-10-05T16:29:28.224793700Z"
+}

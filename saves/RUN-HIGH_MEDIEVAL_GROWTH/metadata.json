@@ -1,0 +1,11 @@
+{
+  "id" : "RUN-HIGH_MEDIEVAL_GROWTH",
+  "name" : "High Medieval Expansion & Land Clearance (1000 CE -> 1300 CE)",
+  "scenarioName" : "High Medieval Expansion & Land Clearance (1000 CE -> 1300 CE)",
+  "year" : 1300,
+  "startDateYear" : 1000,
+  "endDateYear" : 1300,
+  "totalPopulation" : 402755750,
+  "description" : "Medieval Warm Optimum, agricultural intensification (heavy plow, three-field rotation) before the 1347 Black Death.",
+  "timestamp" : "2026-10-05T16:29:20.340514500Z"
+}

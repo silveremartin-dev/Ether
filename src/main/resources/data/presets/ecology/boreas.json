@@ -3,7 +3,7 @@
   "planetPresetName" : "Monde Glaciaire (Boreas)",
   "embeddedPlanetPreset" : {
     "name" : "Monde Glaciaire (Boreas)",
-    "resolution" : 3,
+    "resolution" : 4,
     "radiusKm" : 4800.0,
     "dayLengthHours" : 32.0,
     "axialTiltDegrees" : 45.0,
@@ -45,9 +45,9 @@
     "seasonSource" : "",
     "seasonSeed" : 13111,
     "canonicalPlanet" : "none",
-    "associatedEpochYear" : -20000,
+    "tidalLocked" : false,
     "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte.",
-    "tidalLocked" : false
+    "associatedEpochYear" : -20000
   },
   "terrestrialBiomassGtC" : 30.0,
   "soilOrganicCarbonGtC" : 150.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "none",
-  "associatedEpochYear" : -20000,
-  "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte."
+  "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte.",
+  "associatedEpochYear" : -20000
 }

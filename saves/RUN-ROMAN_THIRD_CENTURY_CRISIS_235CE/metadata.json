@@ -1,0 +1,11 @@
+{
+  "id" : "RUN-ROMAN_THIRD_CENTURY_CRISIS_235CE",
+  "name" : "Archaeological Detective: Roman Empire Third-Century Anarchy & Plague of Cyprian (235 -> 284 CE)",
+  "scenarioName" : "Archaeological Detective: Roman Empire Third-Century Anarchy & Plague of Cyprian (235 -> 284 CE)",
+  "year" : 284,
+  "startDateYear" : 235,
+  "endDateYear" : 284,
+  "totalPopulation" : 176442186,
+  "description" : "Investigating multi-stressor convergence (Cyprian epidemic, hyper-inflationary denarius silver debasement, and Germanic incursions) before Diocletian tetrarchy.",
+  "timestamp" : "2026-10-05T16:30:02.193050100Z"
+}
