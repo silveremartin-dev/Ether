@@ -29,9 +29,11 @@ chmod +x run.sh run.command
 ./run.command
 ```
 
-To build a standalone portable `.zip` release distribution:
-* **Windows**: `scripts\package_release.bat`
-* **Linux / macOS**: `./scripts/package_release.sh`
+To build a standalone portable release distribution:
+* **Windows (.zip + SHA256)**: `scripts\build\deploy-release-windows.bat`
+* **Linux (.tar.gz + SHA256)**: `./scripts/build/deploy-release-linux.sh`
+* **macOS (.command + .zip)**: `./scripts/build/deploy-release-macos.sh`
+* **All-in-One Multi-OS**: `scripts\build\deploy-release-all.bat` / `./scripts/build/deploy-release-all.sh`
 
 For complete deployment options (standalone, Docker PostGIS, distributed cluster, and headless batch CLI), see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
