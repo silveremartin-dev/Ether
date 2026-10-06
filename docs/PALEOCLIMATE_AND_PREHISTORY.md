@@ -1,7 +1,7 @@
-# Prehistoric Simulation, Palaeoclimate & Hominin Biogeography (-300,000 BP to Present)
+﻿# Prehistoric Simulation, Palaeoclimate & Hominin Biogeography (-300,000 BP to Present)
 **Ether Simulation Engine — Academic & Technical Reference Specification**
 *Authors: Silvere Martin-Michiellot, Gemini AI Assistant (Google DeepMind)*
-*Version: 1.0.0-beta.1 (v1.0 b1) | Date: September 2026*
+*Version: 1.0.0-beta.2 (v1.0 b1) | Date: September 2026*
 
 ---
 

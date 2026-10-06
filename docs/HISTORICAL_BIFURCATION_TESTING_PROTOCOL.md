@@ -1,6 +1,6 @@
-# 🧪 HISTORICAL BIFURCATION & RUPTURE TESTING PROTOCOL
+﻿# 🧪 HISTORICAL BIFURCATION & RUPTURE TESTING PROTOCOL
 
-**Version**: `1.0.0-beta.1`  
+**Version**: `1.0.0-beta.2`  
 **Standard**: Antigravity Epistemic Falsification Directives (`AGENTS.md`)  
 **Package Target**: `org.ether.society.events.*`  
 

@@ -1,6 +1,6 @@
-# Ether 1.0.0-beta.1 — Official Release Announcement & Changelog
+﻿# Ether 1.0.0-beta.2 — Official Release Announcement & Changelog
 
-> **Release Version**: 1.0.0-beta.1  
+> **Release Version**: 1.0.0-beta.2  
 > **Release Date**: September 2026  
 > **Repository**: [https://github.com/silveremartin-dev/Ether](https://github.com/silveremartin-dev/Ether)  
 > **License**: MIT License  

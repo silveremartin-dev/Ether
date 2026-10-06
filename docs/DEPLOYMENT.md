@@ -1,4 +1,4 @@
-# Ether Deployment & Release Guide
+﻿# Ether Deployment & Release Guide
 
 > **Zero-Configuration Instant Deployment, Standalone Portable Execution, and High-Performance Clustered Computing**
 
@@ -14,16 +14,23 @@ Ether is engineered to run **immediately out of the box with zero database confi
 * **GPU (Optional)**: Vulkan / OpenGL / OpenCL capable GPU for hardware-accelerated rendering and SIMD acceleration.
 
 ### Launching on Windows
-Double-click `install.bat` or `run.bat`, or execute via CMD:
+Double-click `run.bat` or execute via Command Prompt:
 ```cmd
 run.bat
 ```
 
-### Launching on Linux / macOS
+### Launching on Linux
 Make the script executable and run:
 ```bash
 chmod +x run.sh
 ./run.sh
+```
+
+### Launching on macOS
+Double-click `run.command` in Finder, or run via Terminal:
+```bash
+chmod +x run.sh run.command
+./run.command
 ```
 
 ---
@@ -55,17 +62,17 @@ To generate a fully self-contained distribution archive for end-user distributio
 
 ### On Windows:
 ```cmd
-scripts\package_release.bat 1.0.0-beta.1
+scripts\package_release.bat 1.0.0-beta.2
 ```
 
 ### On Linux / macOS:
 ```bash
-bash scripts/package_release.sh 1.0.0-beta.1
+bash scripts/package_release.sh 1.0.0-beta.2
 ```
 
 This generates:
-* `dist/Ether-v1.0.0-beta.1-standalone/` — Unpacked ready-to-run folder
-* `dist/Ether-v1.0.0-beta.1-standalone.zip` (and `.tar.gz`) — Portable compressed archive with executable fat JAR, all documentation, GIS presets, and launcher scripts.
+* `dist/Ether-v1.0.0-beta.2-standalone/` — Unpacked ready-to-run folder
+* `dist/Ether-v1.0.0-beta.2-standalone.zip` (and `.tar.gz`) — Portable compressed archive with executable fat JAR, all documentation, GIS presets, and launcher scripts.
 
 ---
 

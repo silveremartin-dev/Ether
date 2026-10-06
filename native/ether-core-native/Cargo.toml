@@ -1,6 +1,6 @@
 [package]
 name = "ether-core-native"
-version = "1.0.0-beta.1"
+version = "1.0.0-beta.2"
 edition = "2021"
 authors = ["Silvere Martin-Michiellot"]
 description = "High-Performance Cliodynamic Physics & Thermodynamic Simulation Engine for Ether"

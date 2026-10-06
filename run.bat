@@ -1,5 +1,5 @@
 @echo off
-setlocal
+setlocal enabledelayedexpansion
 cd /d "%~dp0"
 title Ether Planetary Simulation
 
@@ -25,17 +25,25 @@ if %ERRORLEVEL% NEQ 0 (
 :: 2. Launch using executable jar if present, else launch via Maven
 if exist "bin\ether.jar" (
     java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar bin\ether.jar %*
-) else if exist "target\society-simulation-1.0.0-beta.1-executable.jar" (
-    java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar target\society-simulation-1.0.0-beta.1-executable.jar %*
+) else if exist "target\society-simulation-1.0.0-beta.2-executable.jar" (
+    java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar target\society-simulation-1.0.0-beta.2-executable.jar %*
 ) else (
-    where mvn >nul 2>&1
-    if %ERRORLEVEL% EQU 0 (
-        echo [INFO] Running via Maven...
-        call mvn javafx:run
+    set "FOUND_JAR="
+    for %%F in (target\*executable.jar) do (
+        set "FOUND_JAR=%%F"
+    )
+    if defined FOUND_JAR (
+        java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "!FOUND_JAR!" %*
     ) else (
-        echo [ERROR] Could not find executable JAR or Maven.
-        echo Please run scripts\package_release.ps1 or build the project.
-        pause
+        where mvn >nul 2>&1
+        if !ERRORLEVEL! EQU 0 (
+            echo [INFO] Running via Maven...
+            call mvn javafx:run
+        ) else (
+            echo [ERROR] Could not find executable JAR or Maven.
+            echo Please build the project first via 'mvn clean package'.
+            pause
+        )
     )
 )
 endlocal

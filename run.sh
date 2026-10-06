@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$DIR"
@@ -17,9 +17,9 @@ fi
 if [ -f "bin/ether.jar" ]; then
     java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar bin/ether.jar "$@" || \
     java -Xmx4g -jar bin/ether.jar "$@"
-elif [ -f "target/society-simulation-1.0.0-beta.1-executable.jar" ]; then
-    java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar target/society-simulation-1.0.0-beta.1-executable.jar "$@" || \
-    java -Xmx4g -jar target/society-simulation-1.0.0-beta.1-executable.jar "$@"
+elif [ -f "target/society-simulation-1.0.0-beta.2-executable.jar" ]; then
+    java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar target/society-simulation-1.0.0-beta.2-executable.jar "$@" || \
+    java -Xmx4g -jar target/society-simulation-1.0.0-beta.2-executable.jar "$@"
 elif ls target/*executable.jar 1> /dev/null 2>&1; then
     EXEC_JAR=$(ls target/*executable.jar | head -n 1)
     java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "$EXEC_JAR" "$@" || \

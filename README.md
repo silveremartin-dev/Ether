@@ -18,11 +18,15 @@ Ether runs out of the box **without requiring any external database configuratio
 
 ```bash
 # Windows
-install.bat   # or run.bat
+run.bat
 
-# Linux / macOS
-chmod +x install.sh run.sh
-./install.sh  # or ./run.sh
+# Linux
+chmod +x run.sh
+./run.sh
+
+# macOS (double-click run.command in Finder, or run via terminal)
+chmod +x run.sh run.command
+./run.command
 ```
 
 To build a standalone portable `.zip` release distribution:
@@ -288,7 +292,7 @@ Ether includes an empirical validation engine computing **Root Mean Square Error
 - 🔒 [Security & System Integrity Audit](docs/SECURITY.md)
 - 📢 [Reddit Launch Post](docs/posts/REDDIT_POST.md)
 - 💼 [LinkedIn Announcement Post](docs/posts/LINKEDIN_POST.md)
-- 📦 [Version 1.0.0-beta.1 Release Notes](docs/posts/RELEASE_ANNOUNCEMENT.md)
+- 📦 [Version 1.0.0-beta.2 Release Notes](docs/posts/RELEASE_ANNOUNCEMENT.md)
 
 ---
 

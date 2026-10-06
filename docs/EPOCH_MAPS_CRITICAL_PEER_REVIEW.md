@@ -1,7 +1,7 @@
-# Epistemic Cartographic Audit & Critical Peer Review: Systematic Defect, Anachronism, and Limitation Register of the 36 Canonical Epoch Rasters
+﻿# Epistemic Cartographic Audit & Critical Peer Review: Systematic Defect, Anachronism, and Limitation Register of the 36 Canonical Epoch Rasters
 
 **Document Classification**: Academic Falsification Report & Geospatial Defect Register  
-**Target Engine**: Ether Physical-Cliodynamic Planetary Engine (1.0.0-beta.1)  
+**Target Engine**: Ether Physical-Cliodynamic Planetary Engine (1.0.0-beta.2)  
 **Authors**: Epistemic Peer Review Board & Computational Cliodynamics Audit Group  
 **Language**: English (Strict `AGENTS.md` Rule 4 Requirement)  
 **Scope**: Critical pathology analysis and methodological defect inventory across the 36 landmark canonical epochs ($-100,000$ BP to $+2060$ AD).
