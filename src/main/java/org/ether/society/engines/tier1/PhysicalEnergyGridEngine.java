@@ -20,7 +20,7 @@ import java.util.List;
  * 3. <b>Mechanical Converter Efficiency (Î·_converter)</b>: Scales with technology era (Muscle 10% -> Steam 15% -> Internal Combustion 35% -> Electric 90%).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PhysicalEnergyGridEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicalEnergyGridEngine.class);

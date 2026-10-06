@@ -11,7 +11,7 @@ package org.ether.society.ui;
  * Includes precise technical descriptions of what each display mode calculates.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public enum DisplayMode {
 

@@ -34,7 +34,7 @@ import java.util.List;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SoilWaterRetentionEngine {
     private static final Logger logger = LoggerFactory.getLogger(SoilWaterRetentionEngine.class);

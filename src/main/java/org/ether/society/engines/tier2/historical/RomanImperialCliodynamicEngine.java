@@ -21,7 +21,7 @@ import java.util.List;
  * 4. Frontier Asabiyyah mismatch along Limes borders triggers barbarian invasions.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class RomanImperialCliodynamicEngine {
     private static final Logger logger = LoggerFactory.getLogger(RomanImperialCliodynamicEngine.class);

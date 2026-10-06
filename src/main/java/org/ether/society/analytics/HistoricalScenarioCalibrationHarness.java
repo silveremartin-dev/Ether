@@ -15,13 +15,20 @@ import org.ether.society.database.H3Cell;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.generation.ProceduralGenerator;
 import org.ether.society.model.Biome;
+import org.ether.society.network.codec.CellTopologyWireCodec;
+import org.ether.society.network.codec.WorldBufferWireCodec;
+import org.ether.society.persistence.SaveMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Historical Steady-Regime Calibration & Multi-Resolution Sensitivity Harness.
@@ -863,6 +870,17 @@ public class HistoricalScenarioCalibrationHarness {
         return epochs;
     }
 
+    private static List<H3Cell> cachedEarthGrid = null;
+
+    private static synchronized List<H3Cell> getOrGenerateEarthGrid() {
+        if (cachedEarthGrid == null) {
+            int h3Res = 4; // Res 4 macro baseline (288,122 cells - Min Res 4 Standard)
+            PlanetPreset preset = PlanetPreset.EARTH_LIKE.withResolution(h3Res);
+            cachedEarthGrid = ProceduralGenerator.getInstance().generatePlanet(preset);
+        }
+        return cachedEarthGrid;
+    }
+
     /*
      * Executes single-scenario before-after calibration, intermediate checkpoint checks, and drift analysis.
      */
@@ -882,9 +900,7 @@ public class HistoricalScenarioCalibrationHarness {
         double agroCoeff = def.agroYieldCoeff();
 
         // Forward simulation step with DoD kernels on authentic H3 planetary grid
-        int h3Res = 4; // Res 4 macro baseline (288,122 cells - Min Res 4 Standard)
-        PlanetPreset preset = PlanetPreset.EARTH_LIKE.withResolution(h3Res);
-        List<H3Cell> h3Cells = ProceduralGenerator.getInstance().generatePlanet(preset);
+        List<H3Cell> h3Cells = getOrGenerateEarthGrid();
         int simulatedCells = Math.max(100, h3Cells.size());
 
         WorldBuffer world = new WorldBuffer(simulatedCells);
@@ -927,6 +943,10 @@ public class HistoricalScenarioCalibrationHarness {
         }
 
         int stepYears = Math.max(1, durationYears / Math.max(10, targetEpochs.size()));
+        Map<Long, byte[]> checkpointSnapshots = new LinkedHashMap<>();
+
+        // Initial snapshot at startYear (Tick 0)
+        checkpointSnapshots.put(0L, WorldBufferWireCodec.encodeChunk(world, 0, world.getCapacity(), 0L));
 
         for (int yr = startYear; yr <= endYear; yr += stepYears) {
             int elapsed = yr - startYear;
@@ -948,6 +968,9 @@ public class HistoricalScenarioCalibrationHarness {
                 simulatedPop = pop0 * Math.exp(logisticGrowthRate * elapsed * 1.02) * (0.98 + rand.nextDouble() * 0.03);
             }
             result.simulatedPopulationTrajectory.put(yr, simulatedPop);
+
+            long tick = Math.max(0, (long) (yr - startYear) * 12L);
+            checkpointSnapshots.put(tick, WorldBufferWireCodec.encodeChunk(world, 0, world.getCapacity(), tick));
         }
 
         // Ensure final endYear is recorded
@@ -955,6 +978,8 @@ public class HistoricalScenarioCalibrationHarness {
             double finalElapsed = endYear - startYear;
             simulatedPop = pop0 * Math.exp(logisticGrowthRate * finalElapsed * 1.02) * (0.98 + rand.nextDouble() * 0.03);
             result.simulatedPopulationTrajectory.put(endYear, simulatedPop);
+            long endTick = Math.max(0, (long) (endYear - startYear) * 12L);
+            checkpointSnapshots.put(endTick, WorldBufferWireCodec.encodeChunk(world, 0, world.getCapacity(), endTick));
         }
 
         // Final simulated telemetry at t1
@@ -1009,13 +1034,17 @@ public class HistoricalScenarioCalibrationHarness {
         // Root Cause Drift Diagnosis and Parameter Tuning Recommendations
         diagnoseRootCausesAndProposeRemediations(def, result);
 
-        // Persist to SimulationRunRepository and saves directory for instant UI comparative access
-        persistResultToDiskAndRepository(def, result);
+        // Persist to SimulationRunRepository and saves directory with complete spatial 3D hex tensors
+        persistResultToDiskAndRepository(def, result, h3Cells, world, checkpointSnapshots);
 
         return result;
     }
 
-    private static void persistResultToDiskAndRepository(CalibrationScenarioDefinition def, ScenarioCalibrationResult result) {
+    private static void persistResultToDiskAndRepository(CalibrationScenarioDefinition def,
+                                                         ScenarioCalibrationResult result,
+                                                         List<H3Cell> h3Cells,
+                                                         WorldBuffer world,
+                                                         Map<Long, byte[]> checkpointSnapshots) {
         try {
             String runId = "RUN-" + def.scenarioKey();
             SimulationRunRecord record = new SimulationRunRecord(runId, def.displayName(), def.historicalRegimeDescription(), null);
@@ -1056,28 +1085,74 @@ public class HistoricalScenarioCalibrationHarness {
 
             SimulationRunRepository.getInstance().saveRun(record);
 
-            java.nio.file.Path saveDir = org.ether.society.config.EtherPaths.getSavesDir().resolve(runId);
-            java.nio.file.Files.createDirectories(saveDir);
+            Path saveDir = org.ether.society.config.EtherPaths.getSavesDir().resolve(runId);
+            Files.createDirectories(saveDir);
+            Path snapshotsDir = saveDir.resolve("snapshots");
+            Files.createDirectories(snapshotsDir);
 
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
             mapper.enable(com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT);
 
+            // 1. Persist Spatial Topology (topology.bin.gz)
+            if (h3Cells != null && !h3Cells.isEmpty()) {
+                Path topologyPath = saveDir.resolve("topology.bin.gz");
+                CellTopologyWireCodec.saveToFile(topologyPath, h3Cells);
+            }
+
+            // 2. Persist Active World State (state.bin.gz)
+            long endTick = Math.max(0, (long) (def.endYear() - def.startYear()) * 12L);
+            if (world != null) {
+                byte[] stateBytes = WorldBufferWireCodec.encodeChunk(world, 0, world.getCapacity(), endTick);
+                Path statePath = saveDir.resolve("state.bin.gz");
+                try (OutputStream fos = Files.newOutputStream(statePath);
+                     GZIPOutputStream gzos = new GZIPOutputStream(fos)) {
+                    gzos.write(stateBytes);
+                    gzos.finish();
+                }
+            }
+
+            // 3. Persist Intermediate Replay Snapshots (snapshots/snapshot_tick_*.bin.gz)
+            if (checkpointSnapshots != null && !checkpointSnapshots.isEmpty()) {
+                for (Map.Entry<Long, byte[]> entry : checkpointSnapshots.entrySet()) {
+                    long snapTick = entry.getKey();
+                    String snapFileName = String.format("snapshot_tick_%010d.bin.gz", snapTick);
+                    Path snapPath = snapshotsDir.resolve(snapFileName);
+                    try (OutputStream fos = Files.newOutputStream(snapPath);
+                         GZIPOutputStream gzos = new GZIPOutputStream(fos)) {
+                        gzos.write(entry.getValue());
+                        gzos.finish();
+                    }
+                }
+            }
+
+            // 4. Persist Scenario Configuration (scenario.json)
+            org.ether.society.model.Scenario scenario = new org.ether.society.model.Scenario();
+            scenario.setName(def.displayName());
+            scenario.setDescription(def.historicalRegimeDescription());
+            scenario.setStartDateYear(def.startYear());
+            scenario.setEndDateYear(def.endYear());
+            scenario.setInitialHumanCount(Math.round(def.initialWorldPopMillions() * 1_000_000.0));
+            scenario.setInitialCapitalPerCapita(def.initialCapitalPerCapita());
+            scenario.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+            mapper.writeValue(saveDir.resolve("scenario.json").toFile(), scenario);
+
+            // 5. Persist Historical Telemetry (history.json)
             mapper.writeValue(saveDir.resolve("history.json").toFile(), snapshots);
 
-            Map<String, Object> meta = new LinkedHashMap<>();
-            meta.put("id", runId);
-            meta.put("name", def.displayName());
-            meta.put("scenarioName", def.displayName());
-            meta.put("year", def.endYear());
-            meta.put("startDateYear", def.startYear());
-            meta.put("endDateYear", def.endYear());
-            meta.put("totalPopulation", Math.round(result.simulatedPopulationTrajectory.getOrDefault(def.endYear(), def.targetWorldPopMillions()) * 1_000_000.0));
-            meta.put("description", def.historicalRegimeDescription());
-            meta.put("timestamp", java.time.Instant.now().toString());
+            // 6. Persist Metadata (metadata.json)
+            SaveMetadata meta = new SaveMetadata(
+                    runId,
+                    def.displayName(),
+                    def.endYear(),
+                    1,
+                    def.displayName()
+            );
             mapper.writeValue(saveDir.resolve("metadata.json").toFile(), meta);
 
+            logger.info("✅ Reference calibration run '{}' fully persisted with topology & snapshots in {}", def.scenarioKey(), saveDir);
+
         } catch (Exception ex) {
-            logger.warn("Could not persist calibration result to disk for {}: {}", def.scenarioKey(), ex.getMessage());
+            logger.warn("Could not persist calibration result to disk for {}: {}", def.scenarioKey(), ex.getMessage(), ex);
         }
     }
 

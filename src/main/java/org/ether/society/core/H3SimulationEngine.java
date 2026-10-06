@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class H3SimulationEngine implements ISimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(H3SimulationEngine.class);

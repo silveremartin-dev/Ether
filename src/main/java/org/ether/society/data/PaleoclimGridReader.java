@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * Mid-Holocene, Younger Dryas, and modern baselines.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PaleoclimGridReader {
     private static final Logger logger = LoggerFactory.getLogger(PaleoclimGridReader.class);

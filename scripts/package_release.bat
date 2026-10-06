@@ -6,7 +6,7 @@ rem ============================================================================
 setlocal enabledelayedexpansion
 
 set VERSION=%~1
-if "%VERSION%"=="" set VERSION=1.0.0-beta.1
+if "%VERSION%"=="" set VERSION=1.0.0-beta.2
 
 set ROOT_DIR=%~dp0..
 set DIST_DIR=%ROOT_DIR%\dist
@@ -26,17 +26,16 @@ if exist "%TARGET_DIR%" rmdir /s /q "%TARGET_DIR%"
 mkdir "%TARGET_DIR%\bin" "%TARGET_DIR%\data" "%TARGET_DIR%\docs" "%TARGET_DIR%\saves" "%TARGET_DIR%\logs"
 
 echo [3/4] Copying artifacts and resources...
-copy "%ROOT_DIR%\target\society-simulation-1.0.0-beta.1-executable.jar" "%TARGET_DIR%\bin\ether.jar" >nul 2>&1
+copy "%ROOT_DIR%\target\society-simulation-1.0.0-beta.2-executable.jar" "%TARGET_DIR%\bin\ether.jar" >nul 2>&1
 if exist "%ROOT_DIR%\data" xcopy /E /I /Y "%ROOT_DIR%\data" "%TARGET_DIR%\data" >nul 2>&1
 copy "%ROOT_DIR%\README.md" "%TARGET_DIR%\" >nul 2>&1
 copy "%ROOT_DIR%\LICENSE" "%TARGET_DIR%\" >nul 2>&1
 copy "%ROOT_DIR%\AGENT.md" "%TARGET_DIR%\" >nul 2>&1
 if exist "%ROOT_DIR%\docs" xcopy /E /I /Y "%ROOT_DIR%\docs" "%TARGET_DIR%\docs" >nul 2>&1
 
-(
-echo @echo off
-echo java --add-modules=jdk.incubator.vector -Xms2g -Xmx8g -jar bin\ether.jar %%*
-) > "%TARGET_DIR%\run.bat"
+copy "%ROOT_DIR%\run.bat" "%TARGET_DIR%\" >nul 2>&1
+copy "%ROOT_DIR%\run.sh" "%TARGET_DIR%\" >nul 2>&1
+copy "%ROOT_DIR%\run.command" "%TARGET_DIR%\" >nul 2>&1
 
 echo [4/4] Release structure ready in: %TARGET_DIR%
 echo ============================================================

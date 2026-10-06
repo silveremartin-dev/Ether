@@ -29,7 +29,7 @@ import java.util.Random;
  * diagnosing the degree of structural resistance between physical model predictions and historical empirical ground truth.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class EnsembleKalmanFilterAssimilationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EnsembleKalmanFilterAssimilationEngine.class);

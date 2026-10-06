@@ -25,7 +25,7 @@ import java.util.List;
  * 4. <b>SÃ©cheresses, Famines & Migrations DÃ©mographiques</b>.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class EcologicalDegradationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EcologicalDegradationEngine.class);

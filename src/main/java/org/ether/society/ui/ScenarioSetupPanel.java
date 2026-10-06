@@ -53,7 +53,7 @@ import java.util.function.Consumer;
  * and civilizational start parameters.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ScenarioSetupPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioSetupPanel.class);
@@ -2189,7 +2189,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 Scenario scenario = getScenario();
 
                 org.ether.society.model.EtherScenarioBundle rawBundle =
-                        new org.ether.society.model.EtherScenarioBundle("1.0.0-beta.1", planet, eco, scenario);
+                        new org.ether.society.model.EtherScenarioBundle("1.0.0-beta.2", planet, eco, scenario);
                 org.ether.society.model.EtherScenarioBundle bundle = 
                         org.ether.society.security.EtherBundleSigner.signBundle(rawBundle, "Ether Lead Planner");
 
@@ -4575,7 +4575,7 @@ public class ScenarioSetupPanel extends BorderPane {
             try {
                 Map<String, Object> manifest = new LinkedHashMap<>();
                 manifest.put("manifestVersion", "1.0.0");
-                manifest.put("engineVersion", "Ether 1.0.0-beta.1");
+                manifest.put("engineVersion", "Ether 1.0.0-beta.2");
                 manifest.put("exportTimestamp", java.time.Instant.now().toString());
                 manifest.put("startYearBP", startYearSpinner != null ? startYearSpinner.getValue() : -100000);
                 manifest.put("prngSeed", cultSeedField != null ? cultSeedField.getText() : "54321");

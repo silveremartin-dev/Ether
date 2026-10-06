@@ -44,7 +44,7 @@ import java.util.Random;
  * real SRTM/MODIS data download.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1-beta.1
+ * @version 1.0.0-beta.2-beta.1
  * @since 1.0.0
  */
 public class SampleDataGenerator {

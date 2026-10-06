@@ -16,7 +16,7 @@ import java.awt.Color;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class LanguageZone {
     public String name;

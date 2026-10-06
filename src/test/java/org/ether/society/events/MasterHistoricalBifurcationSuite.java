@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *   mvn test -Dtest=MasterHistoricalBifurcationSuite
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MasterHistoricalBifurcationSuite {

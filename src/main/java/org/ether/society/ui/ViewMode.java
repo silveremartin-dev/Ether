@@ -14,7 +14,7 @@ package org.ether.society.ui;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public enum ViewMode {
     /* Flat 2D view (top-down, no elevation) */

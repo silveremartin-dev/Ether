@@ -19,7 +19,7 @@ import java.util.List;
  * 2. <b>Photosynthetic Efficiency Gain</b>: Increases crop PAR conversion efficiency Î·_PAR and caloric yield per hectare over historical centuries.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SelectiveBreedingEngine {
     private static final Logger logger = LoggerFactory.getLogger(SelectiveBreedingEngine.class);

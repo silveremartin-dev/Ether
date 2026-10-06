@@ -1,11 +1,4 @@
 {
   "id" : "RUN-NAPOLEON_HEGEMONY_1804CE_UNFORCED",
   "name" : "Napoleon I Twin A: Unforced Westphalian European Equilibrium (1800 -> 1830 CE)",
-  "scenarioName" : "Napoleon I Twin A: Unforced Westphalian European Equilibrium (1800 -> 1830 CE)",
-  "year" : 1830,
-  "startDateYear" : 1800,
-  "endDateYear" : 1830,
-  "totalPopulation" : 1074356338,
-  "description" : "Unforced multicentric European trade and early industrial diffusion without Napoleonic total military mobilization.",
-  "timestamp" : "2026-10-05T16:32:02.092399100Z"
-}
+  "timestamp"

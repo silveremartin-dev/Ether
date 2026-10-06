@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 3. Bounded Epoch Window Scenarios (500-Year, Classical/Medieval, Modern Industrial, Deep Horizon).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class HistoricalAutoCalibrationTest {
 

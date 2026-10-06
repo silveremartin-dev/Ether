@@ -18,7 +18,7 @@ import java.util.List;
  * feudal system accelerates territorial unification velocity (5x) and strengthens resistance/expulsion of foreign influence.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class MilitaryTechShockEngine {
     private static final Logger logger = LoggerFactory.getLogger(MilitaryTechShockEngine.class);

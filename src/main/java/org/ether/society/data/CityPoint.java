@@ -14,7 +14,7 @@ package org.ether.society.data;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class CityPoint {
     public String name;

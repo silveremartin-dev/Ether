@@ -1,6 +1,6 @@
 {
   "name" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
-  "resolution" : 3,
+  "resolution" : 4,
   "radiusKm" : 6371.0,
   "dayLengthHours" : 24.0,
   "axialTiltDegrees" : 23.6,
@@ -42,7 +42,7 @@
   "seasonSource" : "ðŸŒ Terre (-1900 BP) â€” SaisonnalitÃ©",
   "seasonSeed" : 14345,
   "canonicalPlanet" : "earth",
-  "associatedEpochYear" : -1900,
+  "tidalLocked" : false,
   "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-  "tidalLocked" : false
+  "associatedEpochYear" : -1900
 }

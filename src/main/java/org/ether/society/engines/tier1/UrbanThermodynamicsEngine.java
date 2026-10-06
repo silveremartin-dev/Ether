@@ -18,7 +18,7 @@ import java.util.List;
  * and localized aquifer drawdowns in dense population centers.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class UrbanThermodynamicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(UrbanThermodynamicsEngine.class);

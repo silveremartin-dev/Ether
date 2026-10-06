@@ -2,7 +2,7 @@
 # Package Ether into a self-contained standalone distribution archive (.tar.gz / .zip)
 set -e
 
-VERSION="${1:-1.0.0-beta.1}"
+VERSION="${1:-1.0.0-beta.2}"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ROOT_DIR="$( dirname "$SCRIPT_DIR" )"
 DIST_DIR="$ROOT_DIR/dist"
@@ -25,7 +25,7 @@ mkdir -p "$TARGET_DIR/bin" "$TARGET_DIR/data" "$TARGET_DIR/docs" "$TARGET_DIR/sa
 
 # 3. Copy Binaries and Assets
 echo "[3/4] Copying artifacts and resources..."
-cp "$ROOT_DIR/target/society-simulation-1.0.0-beta.1-executable.jar" "$TARGET_DIR/bin/ether.jar" || \
+cp "$ROOT_DIR/target/society-simulation-1.0.0-beta.2-executable.jar" "$TARGET_DIR/bin/ether.jar" || \
 cp "$ROOT_DIR/target/"*executable.jar "$TARGET_DIR/bin/ether.jar"
 
 if [ -d "$ROOT_DIR/data" ]; then
@@ -59,29 +59,15 @@ java -Xmx4g -jar bin/ether.jar "$@"
 EOF
 chmod +x "$TARGET_DIR/run.sh"
 
-# Standalone install.sh
-cat << 'EOF' > "$TARGET_DIR/install.sh"
+# Standalone run.command (macOS)
+cat << 'EOF' > "$TARGET_DIR/run.command"
 #!/usr/bin/env bash
 set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$DIR"
-
-echo "============================================================"
-echo "  Ether Instant Setup & Environment Verification"
-echo "============================================================"
-
-if ! command -v java &> /dev/null; then
-    echo "[!] Java 21+ not found. Please install OpenJDK 21+ (e.g. sudo apt install openjdk-21-jre)."
-    exit 1
-fi
-
-echo "[OK] Java detected:"
-java -version
-echo ""
-echo "[OK] Ready! Launching Ether..."
-./run.sh
+exec ./run.sh "$@"
 EOF
-chmod +x "$TARGET_DIR/install.sh"
+chmod +x "$TARGET_DIR/run.command"
 
 # 4. Create Archive
 echo "[4/4] Creating distribution archive..."

@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class I18n {
     private static final Logger logger = LoggerFactory.getLogger(I18n.class);

@@ -1,11 +1,4 @@
 {
   "id" : "RUN-BRONZE_AGE_COLLAPSE_1200BCE_UNFORCED",
   "name" : "Late Bronze Age Collapse Twin A: Unforced Continuous Eastern Med Baseline (-1250 -> -1150 BCE)",
-  "scenarioName" : "Late Bronze Age Collapse Twin A: Unforced Continuous Eastern Med Baseline (-1250 -> -1150 BCE)",
-  "year" : -1150,
-  "startDateYear" : -1250,
-  "endDateYear" : -1150,
-  "totalPopulation" : 34856438,
-  "description" : "Unforced agrarian expansion of Mycenaean, Hittite, and Ugarit palatial trade networks without mega-drought or Sea Peoples network collapse.",
-  "timestamp" : "2026-10-05T16:31:35.089224900Z"
-}
+  "timestamp"

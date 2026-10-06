@@ -48,8 +48,8 @@
     "seasonSeed" : 100765,
     "canonicalPlanet" : "mars",
     "tidalLocked" : false,
-    "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique."
+    "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique.",
+    "associatedEpochYear" : 2026
   },
   "ecologyPreset" : {
     "name" : "Mars (Ares)",
@@ -99,8 +99,8 @@
       "seasonSeed" : 100765,
       "canonicalPlanet" : "mars",
       "tidalLocked" : false,
-      "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique."
+      "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique.",
+      "associatedEpochYear" : 2026
     },
     "terrestrialBiomassGtC" : 0.0,
     "soilOrganicCarbonGtC" : 0.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "mars",
-    "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique."
+    "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique.",
+    "associatedEpochYear" : 2026
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

@@ -18,7 +18,7 @@ import java.util.List;
  * entropy generation rate) to simulate alternate physical realities.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PhysicalLawEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicalLawEngine.class);

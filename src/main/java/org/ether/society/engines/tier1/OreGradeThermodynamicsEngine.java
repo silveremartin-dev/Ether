@@ -18,7 +18,7 @@ import java.util.List;
  * Formula: E_extract = E_base * (C_ref / C_ore)^1.5
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class OreGradeThermodynamicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(OreGradeThermodynamicsEngine.class);

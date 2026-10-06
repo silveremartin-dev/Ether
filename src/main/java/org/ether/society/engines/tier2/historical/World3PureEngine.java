@@ -18,7 +18,7 @@ import java.util.List;
  * with textbook fidelity.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class World3PureEngine {
     private static final Logger logger = LoggerFactory.getLogger(World3PureEngine.class);

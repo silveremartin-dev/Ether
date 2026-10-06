@@ -20,7 +20,7 @@ import java.util.List;
  * 3. <b>Thermodynamic Hyperthermia Lethality</b>: T_wb â‰¥ 35.0Â°C causes 100% human mortality due to physical impossibility of evaporative cooling.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class WetBulbTemperatureEngine {
     private static final Logger logger = LoggerFactory.getLogger(WetBulbTemperatureEngine.class);

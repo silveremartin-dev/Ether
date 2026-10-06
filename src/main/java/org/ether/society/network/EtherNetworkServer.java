@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
  * and vote on atmospheric carbon quotas in real time over TCP/IP with AES-256 GCM encryption.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class EtherNetworkServer {
     private static final Logger logger = LoggerFactory.getLogger(EtherNetworkServer.class);

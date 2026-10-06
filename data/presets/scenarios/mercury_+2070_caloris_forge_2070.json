@@ -48,8 +48,8 @@
     "seasonSeed" : 68666,
     "canonicalPlanet" : "mercury",
     "tidalLocked" : false,
-    "associatedEpochYear" : 2026,
-    "presetDescription" : "⚪ MERCURE (Hermes) : Monde métallique sans atmosphère proche du Soleil, flux solaire extrême (10 kW/m²), immense noyau ferreux, bassin d'impact Caloris et résonance spin-orbite 3:2."
+    "presetDescription" : "⚪ MERCURE (Hermes) : Monde métallique sans atmosphère proche du Soleil, flux solaire extrême (10 kW/m²), immense noyau ferreux, bassin d'impact Caloris et résonance spin-orbite 3:2.",
+    "associatedEpochYear" : 2026
   },
   "ecologyPreset" : {
     "name" : "Mercure (Hermes)",
@@ -99,8 +99,8 @@
       "seasonSeed" : 68666,
       "canonicalPlanet" : "mercury",
       "tidalLocked" : false,
-      "associatedEpochYear" : 2026,
-      "presetDescription" : "⚪ MERCURE (Hermes) : Monde métallique sans atmosphère proche du Soleil, flux solaire extrême (10 kW/m²), immense noyau ferreux, bassin d'impact Caloris et résonance spin-orbite 3:2."
+      "presetDescription" : "⚪ MERCURE (Hermes) : Monde métallique sans atmosphère proche du Soleil, flux solaire extrême (10 kW/m²), immense noyau ferreux, bassin d'impact Caloris et résonance spin-orbite 3:2.",
+      "associatedEpochYear" : 2026
     },
     "terrestrialBiomassGtC" : 0.0,
     "soilOrganicCarbonGtC" : 0.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "mercury",
-    "associatedEpochYear" : 2026,
-    "presetDescription" : "⚪ MERCURE (Hermes) : Monde métallique sans atmosphère proche du Soleil, flux solaire extrême (10 kW/m²), immense noyau ferreux, bassin d'impact Caloris et résonance spin-orbite 3:2."
+    "presetDescription" : "⚪ MERCURE (Hermes) : Monde métallique sans atmosphère proche du Soleil, flux solaire extrême (10 kW/m²), immense noyau ferreux, bassin d'impact Caloris et résonance spin-orbite 3:2.",
+    "associatedEpochYear" : 2026
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

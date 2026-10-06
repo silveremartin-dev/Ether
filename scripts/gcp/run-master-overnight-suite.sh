@@ -14,7 +14,7 @@ ZONE="${2:-europe-west1-b}"
 INSTANCE_NAME="${3:-ether-master}"
 H3_RESOLUTION="${4:-5}"
 DT_DAYS="${5:-7.0}"
-JAR_PATH="${6:-target/society-simulation-1.0.0-beta.1-executable.jar}"
+JAR_PATH="${6:-target/society-simulation-1.0.0-beta.2-executable.jar}"
 
 echo "================================================================================"
 echo " 🚀 ETHER ENGINE: MASTER OVERNIGHT HIGH-FIDELITY BATCH CAMPAIGN (GCP SPOT)     "

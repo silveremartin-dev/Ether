@@ -12,7 +12,7 @@ package org.ether.society.model;
  * actuarial kinetics, and planetary radiative balance across all kernels.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public final class PhysicalConstants {
 

@@ -18,7 +18,7 @@ import java.util.List;
  * and literacy drive long-term secular decline in interpersonal and inter-state violent mortality per capita.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PinkerViolenceDeclinePureEngine {
     private static final Logger logger = LoggerFactory.getLogger(PinkerViolenceDeclinePureEngine.class);

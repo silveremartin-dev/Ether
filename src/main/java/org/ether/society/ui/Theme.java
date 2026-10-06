@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public enum Theme {
     DARK("Dark", "/css/index.css"),

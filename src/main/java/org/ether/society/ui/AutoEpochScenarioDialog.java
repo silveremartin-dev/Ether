@@ -36,7 +36,7 @@ import java.util.function.Consumer;
  * dynamic explanations for all date resolution strategies, complete tooltips, and 5-language localization.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class AutoEpochScenarioDialog extends Stage {
     private static final Logger logger = LoggerFactory.getLogger(AutoEpochScenarioDialog.class);

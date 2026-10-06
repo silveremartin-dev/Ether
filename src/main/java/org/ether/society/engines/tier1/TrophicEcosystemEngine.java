@@ -19,7 +19,7 @@ import java.util.List;
  * and species hybridization vs extinction dynamics.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class TrophicEcosystemEngine {
     private static final Logger logger = LoggerFactory.getLogger(TrophicEcosystemEngine.class);

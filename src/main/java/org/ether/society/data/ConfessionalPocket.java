@@ -14,6 +14,6 @@ package org.ether.society.data;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public record ConfessionalPocket(double lon, double lat, double radiusDeg, int[] colors, double[] weights) {}

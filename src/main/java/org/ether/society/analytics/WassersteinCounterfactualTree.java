@@ -25,7 +25,7 @@ import java.util.*;
  * (e.g. "Rome Never Fell", "Early Industrial Song Dynasty", "No Black Death 1347").</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class WassersteinCounterfactualTree {
     private static final Logger logger = LoggerFactory.getLogger(WassersteinCounterfactualTree.class);

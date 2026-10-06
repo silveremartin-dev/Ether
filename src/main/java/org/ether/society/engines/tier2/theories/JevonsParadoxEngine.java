@@ -17,7 +17,7 @@ import java.util.List;
  * Models how technological efficiency gains increase total aggregate resource consumption.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class JevonsParadoxEngine {
     private static final Logger logger = LoggerFactory.getLogger(JevonsParadoxEngine.class);

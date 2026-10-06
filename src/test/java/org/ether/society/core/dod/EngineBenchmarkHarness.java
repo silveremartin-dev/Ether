@@ -7,7 +7,7 @@ import org.ether.society.model.Biome;
  * Evaluates execution times across 10,000 to 100,000 hexagonal cells over 1000 simulated ticks.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class EngineBenchmarkHarness {
 

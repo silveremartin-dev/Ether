@@ -1,11 +1,4 @@
 {
   "id" : "RUN-HARAPPA_INDUS_COLLAPSE_1900BCE",
   "name" : "Archaeological Detective: Indus Valley / Harappa Urban De-densification (-1900 -> -1500 BCE)",
-  "scenarioName" : "Archaeological Detective: Indus Valley / Harappa Urban De-densification (-1900 -> -1500 BCE)",
-  "year" : -1500,
-  "startDateYear" : -1900,
-  "endDateYear" : -1500,
-  "totalPopulation" : 31507805,
-  "description" : "Investigating the desiccation of the Ghaggar-Hakra river system and monsoon migration driving urban de-densification without foreign invasion.",
-  "timestamp" : "2026-10-05T16:30:00.546331600Z"
-}
+  "timestamp"

@@ -10,7 +10,7 @@ package org.ether.society.model;
  * thermal extremes, baseline wear rate, and operational ECLSS energy consumption.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public enum HabitatType {
     /* No artificial pressurized habitat (open-air biosphere). */

@@ -28,7 +28,7 @@ import java.util.List;
  * and the modern Aral Sea basin (Jacobsen & Adams, 1958; Gelburd, 1985).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SoilSalinizationHydrologyEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(SoilSalinizationHydrologyEngine.class);

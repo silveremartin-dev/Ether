@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * and across 5 major historical epochs (Out of Africa, Neolithic, Classical Antiquity, Industrial, Modern).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class MultiResolutionScenarioBenchmarkHarnessTest {
     private static final Logger logger = LoggerFactory.getLogger(MultiResolutionScenarioBenchmarkHarnessTest.class);

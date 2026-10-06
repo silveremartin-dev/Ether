@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * with active Type B physicalist & cliodynamic plugins.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class EarthScenarioPerformanceBenchmarkTest {
     private static final Logger logger = LoggerFactory.getLogger(EarthScenarioPerformanceBenchmarkTest.class);

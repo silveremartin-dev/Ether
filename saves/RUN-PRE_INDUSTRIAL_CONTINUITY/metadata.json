@@ -1,11 +1,4 @@
 {
   "id" : "RUN-PRE_INDUSTRIAL_CONTINUITY",
   "name" : "Early Modern Pre-Industrial Commercial Continuity (1500 CE -> 1750 CE)",
-  "scenarioName" : "Early Modern Pre-Industrial Commercial Continuity (1500 CE -> 1750 CE)",
-  "year" : 1750,
-  "startDateYear" : 1500,
-  "endDateYear" : 1750,
-  "totalPopulation" : 717350988,
-  "description" : "Post-plague agrarian recovery, Columbian crop diffusion (maize/potato), proto-industrial trade before coal steam breakout.",
-  "timestamp" : "2026-10-05T16:29:25.069165600Z"
-}
+  "timestamp"

@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  * Thread-safe implementation using CopyOnWriteArrayList.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1-beta.1
+ * @version 1.0.0-beta.2-beta.1
  * @since 1.0.0
  */
 public class EventBus {

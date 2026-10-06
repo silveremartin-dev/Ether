@@ -30,7 +30,7 @@ import java.util.zip.GZIPOutputStream;
  * 4. Telemetry (history.json) — Time series analytics and historical snapshots
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SimulationSaveManager {
     private static final Logger logger = LoggerFactory.getLogger(SimulationSaveManager.class);
@@ -80,10 +80,19 @@ public class SimulationSaveManager {
     }
 
     /*
-     * Saves full simulation state and initial topology to disk.
+     * Saves full simulation state and initial topology to disk with an auto-generated UUID.
      */
     public void saveSimulation(H3SimulationEngine engine, String saveName) {
-        String saveId = UUID.randomUUID().toString();
+        saveSimulation(engine, UUID.randomUUID().toString(), saveName);
+    }
+
+    /*
+     * Saves full simulation state, topology, and all intermediate snapshots to disk with a specified save ID.
+     */
+    public void saveSimulation(H3SimulationEngine engine, String saveId, String saveName) {
+        if (saveId == null || saveId.isBlank()) {
+            saveId = UUID.randomUUID().toString();
+        }
         Path baseSaveDir = getSaveDirectory();
         Path savePath = baseSaveDir.resolve(saveId).normalize();
 
@@ -93,7 +102,8 @@ public class SimulationSaveManager {
 
         try {
             Files.createDirectories(savePath);
-            Files.createDirectories(savePath.resolve(SNAPSHOTS_DIR));
+            Path snapshotsDir = savePath.resolve(SNAPSHOTS_DIR);
+            Files.createDirectories(snapshotsDir);
 
             List<H3Cell> cells = engine.getCells();
             if (cells == null || cells.isEmpty()) {
@@ -122,9 +132,29 @@ public class SimulationSaveManager {
             }
 
             // Also copy initial/current state as a discrete replay snapshot
-            String snapFileName = String.format("snapshot_tick_%010d.bin.gz", currentTick);
-            Path snapPath = savePath.resolve(SNAPSHOTS_DIR).resolve(snapFileName);
-            Files.copy(statePath, snapPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            String currentSnapFileName = String.format("snapshot_tick_%010d.bin.gz", currentTick);
+            Path currentSnapPath = snapshotsDir.resolve(currentSnapFileName);
+            Files.copy(statePath, currentSnapPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            // Persist all recorded world replay snapshots if present
+            if (engine.getHistoryManager() != null && !engine.getHistoryManager().getWorldSnapshots().isEmpty()) {
+                for (Map.Entry<Long, List<H3Cell>> entry : engine.getHistoryManager().getWorldSnapshots().entrySet()) {
+                    long snapTick = entry.getKey();
+                    String snapFileName = String.format("snapshot_tick_%010d.bin.gz", snapTick);
+                    Path snapPath = snapshotsDir.resolve(snapFileName);
+                    if (!Files.exists(snapPath)) {
+                        List<H3Cell> snapCells = entry.getValue();
+                        WorldBuffer snapBuffer = new WorldBuffer(snapCells.size());
+                        org.ether.society.data.DODDataGenerator.populateWorldBuffer(snapCells, snapBuffer);
+                        byte[] snapBytes = WorldBufferWireCodec.encodeChunk(snapBuffer, 0, snapBuffer.getCapacity(), snapTick);
+                        try (OutputStream fos = Files.newOutputStream(snapPath);
+                             GZIPOutputStream gzos = new GZIPOutputStream(fos)) {
+                            gzos.write(snapBytes);
+                            gzos.finish();
+                        }
+                    }
+                }
+            }
 
             // 3. Save Scenario Configuration (scenario.json)
             if (engine.getCurrentScenario() != null) {

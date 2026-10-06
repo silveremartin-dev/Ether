@@ -5,7 +5,7 @@
 
     <groupId>org.ether</groupId>
     <artifactId>society-simulation</artifactId>
-    <version>1.0.0-beta.1</version>
+    <version>1.0.0-beta.2</version>
     <packaging>jar</packaging>
 
     <name>Human Society Simulation - Ether</name>
@@ -242,7 +242,7 @@
                 <configuration>
                     <forkCount>1C</forkCount>
                     <reuseForks>true</reuseForks>
-                    <argLine>@{argLine} -Xmx2g --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED</argLine>
+                    <argLine>@{argLine} -Xmx4g --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
 

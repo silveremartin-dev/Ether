@@ -1,11 +1,4 @@
 {
   "id" : "RUN-CLASSIC_MAYA_COLLAPSE_800CE",
   "name" : "Archaeological Detective: Classic Maya Lowlands Karst Mega-Drought & Palace Abandonment (800 -> 950 CE)",
-  "scenarioName" : "Archaeological Detective: Classic Maya Lowlands Karst Mega-Drought & Palace Abandonment (800 -> 950 CE)",
-  "year" : 950,
-  "startDateYear" : 800,
-  "endDateYear" : 950,
-  "totalPopulation" : 231442596,
-  "description" : "Investigating centennial drought pulses in the Yucatan karst basin coupled with elite warfare and soil erosion causing 80% urban depopulation.",
-  "timestamp" : "2026-10-05T16:30:05.621010300Z"
-}
+  "timestamp"

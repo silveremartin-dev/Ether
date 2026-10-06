@@ -1,11 +1,4 @@
 {
   "id" : "RUN-EPOCH_5_CLASSICAL_ANTIQUITY",
   "name" : "Epoch 5: Classical Axial Antiquity & Continental Empires (-500 BCE -> 500 CE)",
-  "scenarioName" : "Epoch 5: Classical Axial Antiquity & Continental Empires (-500 BCE -> 500 CE)",
-  "year" : 500,
-  "startDateYear" : -500,
-  "endDateYear" : 500,
-  "totalPopulation" : 209783003,
-  "description" : "Pax Romana maritime trade, Han Dynasty silk routes, Maurya India, and Antonine/Cyprian epidemic shocks.",
-  "timestamp" : "2026-10-05T16:31:02.062455Z"
-}
+  "timestamp"

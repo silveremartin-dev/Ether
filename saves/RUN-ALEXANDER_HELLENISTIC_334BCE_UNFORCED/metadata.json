@@ -1,11 +1,4 @@
 {
   "id" : "RUN-ALEXANDER_HELLENISTIC_334BCE_UNFORCED",
   "name" : "Alexander the Great Twin A: Unforced Achaemenid & Greek Poleis Baseline (-334 -> -250 BCE)",
-  "scenarioName" : "Alexander the Great Twin A: Unforced Achaemenid & Greek Poleis Baseline (-334 -> -250 BCE)",
-  "year" : -250,
-  "startDateYear" : -334,
-  "endDateYear" : -250,
-  "totalPopulation" : 138128970,
-  "description" : "Unforced agrarian and commercial continuity of the Achaemenid Empire and Greek poleis without Macedonian military shock impulse.",
-  "timestamp" : "2026-10-05T16:31:59.314348100Z"
-}
+  "timestamp"

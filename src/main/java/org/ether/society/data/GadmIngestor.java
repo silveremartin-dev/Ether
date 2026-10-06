@@ -25,7 +25,7 @@ import java.util.List;
  * for ultra-fine spatial resolution in European and regional historical scenarios.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class GadmIngestor {
     private static final Logger logger = LoggerFactory.getLogger(GadmIngestor.class);

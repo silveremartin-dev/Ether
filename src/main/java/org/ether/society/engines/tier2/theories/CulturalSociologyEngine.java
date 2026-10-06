@@ -18,7 +18,7 @@ import java.util.List;
  * and their physical impact on per-capita energy footprints and soil maintenance labor.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class CulturalSociologyEngine {
     private static final Logger logger = LoggerFactory.getLogger(CulturalSociologyEngine.class);

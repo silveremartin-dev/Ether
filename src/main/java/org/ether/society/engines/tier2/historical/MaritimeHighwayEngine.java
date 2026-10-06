@@ -21,7 +21,7 @@ import java.util.List;
  * Applicable to any global, regional, or alien sea basin.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class MaritimeHighwayEngine {
     private static final Logger logger = LoggerFactory.getLogger(MaritimeHighwayEngine.class);

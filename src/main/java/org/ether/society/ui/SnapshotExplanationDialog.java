@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * - Complete mouseover tooltips on interactive elements
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SnapshotExplanationDialog extends Stage {
     private static final Logger logger = LoggerFactory.getLogger(SnapshotExplanationDialog.class);

@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * under full physical, thermodynamic, and cliodynamic simulation models over max 10 seconds.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class EarthFullResolution175kBenchmarkTest {
     private static final Logger logger = LoggerFactory.getLogger(EarthFullResolution175kBenchmarkTest.class);

@@ -48,8 +48,8 @@
     "seasonSeed" : 79777,
     "canonicalPlanet" : "none",
     "tidalLocked" : false,
-    "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale."
+    "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale.",
+    "associatedEpochYear" : 2026
   },
   "ecologyPreset" : {
     "name" : "Archipel",
@@ -99,8 +99,8 @@
       "seasonSeed" : 79777,
       "canonicalPlanet" : "none",
       "tidalLocked" : false,
-      "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale."
+      "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale.",
+      "associatedEpochYear" : 2026
     },
     "terrestrialBiomassGtC" : 550.0,
     "soilOrganicCarbonGtC" : 1800.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "none",
-    "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale."
+    "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale.",
+    "associatedEpochYear" : 2026
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

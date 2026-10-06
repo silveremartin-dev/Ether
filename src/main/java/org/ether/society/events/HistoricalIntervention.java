@@ -23,7 +23,7 @@ import org.ether.society.model.Nation;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class HistoricalIntervention {
     /* Internal state variable for id (String). */

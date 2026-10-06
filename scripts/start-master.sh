@@ -21,7 +21,7 @@ echo "  H3 Grid Cells   : ${CELLS}"
 echo "  H3 Resolution   : ${RES:-Default}"
 echo "----------------------------------------------------------"
 
-JAR_PATH="target/society-simulation-1.0.0-beta.1-executable.jar"
+JAR_PATH="target/society-simulation-1.0.0-beta.2-executable.jar"
 
 if [ ! -f "$JAR_PATH" ]; then
     echo "🔨 Building executable JAR..."

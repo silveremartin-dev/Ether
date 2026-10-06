@@ -23,7 +23,7 @@ import java.util.Optional;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class H3CellRepository {
     private static final Logger logger = LoggerFactory.getLogger(H3CellRepository.class);

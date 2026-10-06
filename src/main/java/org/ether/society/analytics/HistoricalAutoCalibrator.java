@@ -20,7 +20,7 @@ import java.util.*;
  * cliodynamic, ecological, and technological variables defined in the JSON benchmark suite.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class HistoricalAutoCalibrator {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalAutoCalibrator.class);

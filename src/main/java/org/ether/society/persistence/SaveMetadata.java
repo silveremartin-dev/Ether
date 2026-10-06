@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SaveMetadata {
     /* Internal state variable for id (String). */
@@ -52,7 +52,7 @@ public class SaveMetadata {
         this.year = year;
         this.month = month;
         this.scenarioName = scenarioName;
-        this.version = "1.0.0-beta.1";
+        this.version = "1.0.0-beta.2";
     }
 
     /*

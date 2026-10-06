@@ -22,7 +22,7 @@ import java.util.List;
  * 3. Enforces catastrophic failure thresholds, structural breach lethality, and ECLSS power grid requirements.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PressurizedHabitatEngine {
     private static final Logger logger = LoggerFactory.getLogger(PressurizedHabitatEngine.class);

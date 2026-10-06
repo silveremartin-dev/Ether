@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 4. Beer-Lambert Canopy Light Attenuation
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class Tier1NewPhysicalLawsTest {
 

@@ -48,8 +48,8 @@
     "seasonSeed" : 13111,
     "canonicalPlanet" : "none",
     "tidalLocked" : false,
-    "associatedEpochYear" : -20000,
-    "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte."
+    "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte.",
+    "associatedEpochYear" : -20000
   },
   "ecologyPreset" : {
     "name" : "Monde Glaciaire (Boreas)",
@@ -99,8 +99,8 @@
       "seasonSeed" : 13111,
       "canonicalPlanet" : "none",
       "tidalLocked" : false,
-      "associatedEpochYear" : -20000,
-      "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte."
+      "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte.",
+      "associatedEpochYear" : -20000
     },
     "terrestrialBiomassGtC" : 30.0,
     "soilOrganicCarbonGtC" : 150.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "none",
-    "associatedEpochYear" : -20000,
-    "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte."
+    "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte.",
+    "associatedEpochYear" : -20000
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

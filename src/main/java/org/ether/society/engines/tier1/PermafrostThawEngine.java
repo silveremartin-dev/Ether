@@ -20,7 +20,7 @@ import java.util.List;
  * 2. Methane gas (CHâ‚„) release into atmosphere, accelerating global greenhouse warming.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PermafrostThawEngine {
     private static final Logger logger = LoggerFactory.getLogger(PermafrostThawEngine.class);

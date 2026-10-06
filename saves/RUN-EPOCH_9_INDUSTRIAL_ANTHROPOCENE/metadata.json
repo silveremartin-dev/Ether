@@ -1,11 +1,4 @@
 {
   "id" : "RUN-EPOCH_9_INDUSTRIAL_ANTHROPOCENE",
   "name" : "Epoch 9: Industrial Revolution & The Great Acceleration (1850 -> 2026 CE)",
-  "scenarioName" : "Epoch 9: Industrial Revolution & The Great Acceleration (1850 -> 2026 CE)",
-  "year" : 2026,
-  "startDateYear" : 1850,
-  "endDateYear" : 2026,
-  "totalPopulation" : 8413176008,
-  "description" : "Coal/steam/oil thermodynamic transition, Haber-Bosch nitrogen, total war disruptions, and globalized exergy expansion.",
-  "timestamp" : "2026-10-05T16:31:33.591462900Z"
-}
+  "timestamp"

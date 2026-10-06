@@ -29,7 +29,7 @@ import java.util.*;
  * confessional distributions, state capacity, and global trade corridors for modern and contemporary epochs (1900-2060).
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class NaturalEarthVectorIngestor {
     private static final Logger logger = LoggerFactory.getLogger(NaturalEarthVectorIngestor.class);

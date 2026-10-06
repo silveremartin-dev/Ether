@@ -15,7 +15,7 @@ import java.util.*;
  * and 0D scenario indicators across Map Canvas, Stats Panel, and Comparative Analytics.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class MetricRegistry {
 

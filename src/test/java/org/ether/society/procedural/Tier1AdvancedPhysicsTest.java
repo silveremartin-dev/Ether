@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 4. Radiocarbon (C-14) Radioactive Decay & Delta-13C Isotope Geochemistry
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class Tier1AdvancedPhysicsTest {
 

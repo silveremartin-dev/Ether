@@ -18,7 +18,7 @@ import java.util.List;
  * Under food scarcity, inter-group hostility increases toward culturally distant outgroups.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class KinSelectionHamiltonEngine {
     private static final Logger logger = LoggerFactory.getLogger(KinSelectionHamiltonEngine.class);

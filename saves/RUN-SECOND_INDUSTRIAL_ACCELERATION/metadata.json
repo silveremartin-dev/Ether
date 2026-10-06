@@ -1,11 +1,4 @@
 {
   "id" : "RUN-SECOND_INDUSTRIAL_ACCELERATION",
   "name" : "Late 19th Century Industrial & Thermodynamic Scaling (1850 CE -> 1910 CE)",
-  "scenarioName" : "Late 19th Century Industrial & Thermodynamic Scaling (1850 CE -> 1910 CE)",
-  "year" : 1910,
-  "startDateYear" : 1850,
-  "endDateYear" : 1910,
-  "totalPopulation" : 1775930206,
-  "description" : "Continuous coal, steam, railway, and steel expansion with steady demographic transition prior to World War I (1914).",
-  "timestamp" : "2026-10-05T16:29:26.694811400Z"
-}
+  "timestamp"

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * Dispatches sub-matrix domain calculations to high-performance SIMD vector units.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class WorkerGPUOffloader {
     private static final Logger logger = LoggerFactory.getLogger(WorkerGPUOffloader.class);

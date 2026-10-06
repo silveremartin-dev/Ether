@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class HighPrecisionDiscretizationAndDeterminismTest {
     private static final Logger logger = LoggerFactory.getLogger(HighPrecisionDiscretizationAndDeterminismTest.class);

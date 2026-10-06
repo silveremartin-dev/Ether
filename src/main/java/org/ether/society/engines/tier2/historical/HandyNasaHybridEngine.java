@@ -18,7 +18,7 @@ import java.util.List;
  * directly into Ether H3 cells.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class HandyNasaHybridEngine {
     private static final Logger logger = LoggerFactory.getLogger(HandyNasaHybridEngine.class);

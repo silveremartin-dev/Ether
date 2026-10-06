@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit Test Suite validating Meadows World3 Coupled Equations & Kurzweil LOAR.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class World3AndKurzweilTestSuite {
 

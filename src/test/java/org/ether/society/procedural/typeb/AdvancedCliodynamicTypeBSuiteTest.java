@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Hamilton Kin Selection, Turchin Frontier Asabiyyah, and Buss Sexual Selection Mating models.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class AdvancedCliodynamicTypeBSuiteTest {
 

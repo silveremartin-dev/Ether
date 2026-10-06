@@ -50,12 +50,12 @@ REM Start the JavaFX application
 echo [4/4] Launching Ether Simulation with Native SIMD Vectorization...
 echo.
 
-if not exist "target\society-simulation-1.0.0-beta.1-executable.jar" (
+if not exist "target\society-simulation-1.0.0-beta.2-executable.jar" (
     echo Building optimized executable JAR...
     call mvn clean package -DskipTests
 )
 
-java --add-modules jdk.incubator.vector -XX:+UseG1GC -Xms2g -Xmx12g -jar target\society-simulation-1.0.0-beta.1-executable.jar
+java --add-modules jdk.incubator.vector -XX:+UseG1GC -Xms2g -Xmx12g -jar target\society-simulation-1.0.0-beta.2-executable.jar
 
 REM Cleanup message
 echo.

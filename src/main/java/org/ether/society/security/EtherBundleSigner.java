@@ -18,7 +18,7 @@ import java.util.HexFormat;
  * Computes SHA-256 digests and validates provenance signatures to prevent tampered payloads.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class EtherBundleSigner {
     private static final Logger logger = LoggerFactory.getLogger(EtherBundleSigner.class);

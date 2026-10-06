@@ -25,7 +25,7 @@ import java.util.List;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class H3Service {
     private static final Logger logger = LoggerFactory.getLogger(H3Service.class);

@@ -20,7 +20,7 @@ import java.util.Base64;
  * network transmission across distributed cluster nodes with AES-256 GCM encryption.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class WorldBufferWireCodec {
 

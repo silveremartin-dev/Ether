@@ -48,8 +48,8 @@
     "seasonSeed" : 90888,
     "canonicalPlanet" : "moon",
     "tidalLocked" : false,
-    "associatedEpochYear" : 2026,
-    "presetDescription" : "⚪ LUNE (Selene) : Satellite tellurique sans atmosphère, cratères d'impacts, mers basaltiques riches en titane, hauts plateaux d'anorthosite, variations diurnes extrêmes (-170°C à +120°C) et hélium-3 piégé dans le régolithe."
+    "presetDescription" : "⚪ LUNE (Selene) : Satellite tellurique sans atmosphère, cratères d'impacts, mers basaltiques riches en titane, hauts plateaux d'anorthosite, variations diurnes extrêmes (-170°C à +120°C) et hélium-3 piégé dans le régolithe.",
+    "associatedEpochYear" : 2026
   },
   "ecologyPreset" : {
     "name" : "Lune (Selene)",
@@ -99,8 +99,8 @@
       "seasonSeed" : 90888,
       "canonicalPlanet" : "moon",
       "tidalLocked" : false,
-      "associatedEpochYear" : 2026,
-      "presetDescription" : "⚪ LUNE (Selene) : Satellite tellurique sans atmosphère, cratères d'impacts, mers basaltiques riches en titane, hauts plateaux d'anorthosite, variations diurnes extrêmes (-170°C à +120°C) et hélium-3 piégé dans le régolithe."
+      "presetDescription" : "⚪ LUNE (Selene) : Satellite tellurique sans atmosphère, cratères d'impacts, mers basaltiques riches en titane, hauts plateaux d'anorthosite, variations diurnes extrêmes (-170°C à +120°C) et hélium-3 piégé dans le régolithe.",
+      "associatedEpochYear" : 2026
     },
     "terrestrialBiomassGtC" : 0.0,
     "soilOrganicCarbonGtC" : 0.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "moon",
-    "associatedEpochYear" : 2026,
-    "presetDescription" : "⚪ LUNE (Selene) : Satellite tellurique sans atmosphère, cratères d'impacts, mers basaltiques riches en titane, hauts plateaux d'anorthosite, variations diurnes extrêmes (-170°C à +120°C) et hélium-3 piégé dans le régolithe."
+    "presetDescription" : "⚪ LUNE (Selene) : Satellite tellurique sans atmosphère, cratères d'impacts, mers basaltiques riches en titane, hauts plateaux d'anorthosite, variations diurnes extrêmes (-170°C à +120°C) et hélium-3 piégé dans le régolithe.",
+    "associatedEpochYear" : 2026
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

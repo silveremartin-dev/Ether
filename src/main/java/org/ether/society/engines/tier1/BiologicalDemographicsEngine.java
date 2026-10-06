@@ -20,7 +20,7 @@ import java.util.List;
  * 2. <b>Î³</b>: Environmental baseline hazard rate (famine, disease, trauma).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class BiologicalDemographicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(BiologicalDemographicsEngine.class);

@@ -21,7 +21,7 @@ import java.util.List;
  * 3. <b>Negative EROEI (< 1:1)</b>: Immediate societal collapse, famine, and fragmentation.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class NetEnergyEROEIEngine {
     private static final Logger logger = LoggerFactory.getLogger(NetEnergyEROEIEngine.class);

@@ -20,7 +20,7 @@ import java.util.List;
  * 3. <b>Wildfire Hyper-Combustion</b>: High O2 (> 0.25 atm) accelerates forest fire propagation speed by up to 5x.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class AtmosphericOxygenEngine {
     private static final Logger logger = LoggerFactory.getLogger(AtmosphericOxygenEngine.class);

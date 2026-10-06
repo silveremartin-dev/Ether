@@ -1,11 +1,4 @@
 {
   "id" : "RUN-EPOCH_4_BRONZE_AGE_URBANIZATION",
   "name" : "Epoch 4: Bronze Age Metallurgy & Early Hydraulic States (-3000 -> -500 BCE)",
-  "scenarioName" : "Epoch 4: Bronze Age Metallurgy & Early Hydraulic States (-3000 -> -500 BCE)",
-  "year" : -500,
-  "startDateYear" : -3000,
-  "endDateYear" : -500,
-  "totalPopulation" : 100280439,
-  "description" : "Nile flood basin unification, Sumerian cuneiform, Harappan urbanization, and 1200 BCE palatial collapse.",
-  "timestamp" : "2026-10-05T16:30:50.323037400Z"
-}
+  "timestamp"

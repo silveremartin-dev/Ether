@@ -14,7 +14,7 @@ import java.util.function.Function;
  * for a single physical, demographic, economic, or cliodynamic metric.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class MetricDescriptor {
 

@@ -24,7 +24,7 @@ import java.util.List;
  *    and innovation rates among dome inhabitants.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class IsruAutarkyAndSpaceColonizationEngine {
     private static final Logger logger = LoggerFactory.getLogger(IsruAutarkyAndSpaceColonizationEngine.class);

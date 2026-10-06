@@ -21,7 +21,7 @@ import java.util.List;
  * across H3 cells.</p>
 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PhysicalLeontiefInputOutputEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicalLeontiefInputOutputEngine.class);

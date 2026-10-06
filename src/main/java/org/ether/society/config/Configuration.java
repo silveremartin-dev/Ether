@@ -34,7 +34,7 @@ import java.util.Map;
  * Configuration POJO for simulation parameters, loaded from JSON.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1-beta.1
+ * @version 1.0.0-beta.2-beta.1
  * @since 1.0.0
  */
 public record Configuration(

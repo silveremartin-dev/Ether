@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * Preferences &amp; Settings UI Panel for Language, Theme and GPU configuration.
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PreferencesPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(PreferencesPanel.class);

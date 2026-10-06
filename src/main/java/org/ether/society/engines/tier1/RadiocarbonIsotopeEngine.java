@@ -32,7 +32,7 @@ import java.util.List;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class RadiocarbonIsotopeEngine {
     private static final Logger logger = LoggerFactory.getLogger(RadiocarbonIsotopeEngine.class);

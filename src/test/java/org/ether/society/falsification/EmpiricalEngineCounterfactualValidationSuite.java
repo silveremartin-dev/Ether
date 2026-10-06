@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Maddison Project 2020, Seshat Databank, Vaclav Smil 2017, Allen 2001, EPICA CO2).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 @DisplayName("ðŸ”¬ Empirical Engine Counterfactual & Multi-Metric Benchmarking Suite")
 public class EmpiricalEngineCounterfactualValidationSuite {

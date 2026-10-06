@@ -18,7 +18,7 @@ import java.util.Optional;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ScenarioRepository extends JsonRepository<Scenario> {
 

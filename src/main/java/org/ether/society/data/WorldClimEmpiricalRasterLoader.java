@@ -22,7 +22,7 @@ import java.util.Arrays;
  * baselines, and computes paleoclimatic delta anomalies (EPICA, Milankovitch, ICE-6G, African Humid Period).
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class WorldClimEmpiricalRasterLoader {
     private static final Logger logger = LoggerFactory.getLogger(WorldClimEmpiricalRasterLoader.class);

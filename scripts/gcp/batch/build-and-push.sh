@@ -10,7 +10,7 @@
 #
 # Example:
 #   ./scripts/gcp/batch/build-and-push.sh ether-509812 europe-west1 latest
-#   ./scripts/gcp/batch/build-and-push.sh ether-509812 europe-west1 v1.0.0-beta.1
+#   ./scripts/gcp/batch/build-and-push.sh ether-509812 europe-west1 v1.0.0-beta.2
 # ==============================================================================
 
 set -euo pipefail
@@ -18,7 +18,7 @@ set -euo pipefail
 PROJECT_ID="${1:-ether-509812}"
 REGION="${2:-europe-west1}"
 TAG="${3:-latest}"
-JAR_PATH="target/society-simulation-1.0.0-beta.1-executable.jar"
+JAR_PATH="target/society-simulation-1.0.0-beta.2-executable.jar"
 IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/ether-registry/ether-engine:${TAG}"
 
 # Run from project root

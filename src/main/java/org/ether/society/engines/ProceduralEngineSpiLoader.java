@@ -23,7 +23,7 @@ import java.util.ServiceLoader;
  * and the external 'plugins/' directory.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ProceduralEngineSpiLoader {
     private static final Logger logger = LoggerFactory.getLogger(ProceduralEngineSpiLoader.class);

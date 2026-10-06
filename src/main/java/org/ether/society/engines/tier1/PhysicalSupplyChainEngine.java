@@ -18,7 +18,7 @@ import java.util.List;
  * and supply chain cascade disruptions at maritime chokepoints.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PhysicalSupplyChainEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicalSupplyChainEngine.class);

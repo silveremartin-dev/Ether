@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Chapter 2: Historical Continental & Insular Isolation (Pre-Columbian Americas 1000-1491 & Madagascar 500-1000).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 @Tag("falsification")
 public class WindowedVsGlobalSpatialFalsificationSuiteTest {

@@ -21,7 +21,7 @@ import java.nio.file.Path;
  * Loads configuration from JSON files using Jackson.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1-beta.1
+ * @version 1.0.0-beta.2-beta.1
  * @since 1.0.0
  */
 public class ConfigurationLoader {

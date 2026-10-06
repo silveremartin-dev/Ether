@@ -18,7 +18,7 @@ import java.util.List;
  * based on mass population N and entropy.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PsychohistoryPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(PsychohistoryPureEngine.class);

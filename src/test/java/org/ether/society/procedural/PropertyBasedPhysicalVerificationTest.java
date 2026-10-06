@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * psychrometric bounds, stoichiometry limits, and positivity invariants are unconditionally preserved.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PropertyBasedPhysicalVerificationTest {
     private static final Logger logger = LoggerFactory.getLogger(PropertyBasedPhysicalVerificationTest.class);

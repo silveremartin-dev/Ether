@@ -18,7 +18,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SimulationPerformanceConfig implements Serializable {
     private static final long serialVersionUID = 1L;

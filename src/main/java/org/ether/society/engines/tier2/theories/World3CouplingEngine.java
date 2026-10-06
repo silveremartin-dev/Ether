@@ -22,7 +22,7 @@ import java.util.List;
  * 5. Persistent Pollution Generation (PPG) & Biospheric Assimilation (PPA)
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class World3CouplingEngine {
     private static final Logger logger = LoggerFactory.getLogger(World3CouplingEngine.class);

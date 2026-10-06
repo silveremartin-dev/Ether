@@ -18,7 +18,7 @@ import java.util.List;
  * and transition latency (tau_transition).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class InfrastructureInertiaEngine {
     private static final Logger logger = LoggerFactory.getLogger(InfrastructureInertiaEngine.class);

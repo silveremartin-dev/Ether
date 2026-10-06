@@ -1,11 +1,4 @@
 {
   "id" : "RUN-EPOCH_1_PALEOLITHIC_DISPERSAL",
   "name" : "Epoch 1: Paleolithic Out-of-Africa Dispersal (-100000 -> -50000 BP)",
-  "scenarioName" : "Epoch 1: Paleolithic Out-of-Africa Dispersal (-100000 -> -50000 BP)",
-  "year" : -50000,
-  "startDateYear" : -100000,
-  "endDateYear" : -50000,
-  "totalPopulation" : 304378,
-  "description" : "Early coastal dispersal of Homo sapiens along Indian Ocean rim, Toba cataclysm, and megafauna hunting dynamics.",
-  "timestamp" : "2026-10-05T16:30:10.476649Z"
-}
+  "timestamp"

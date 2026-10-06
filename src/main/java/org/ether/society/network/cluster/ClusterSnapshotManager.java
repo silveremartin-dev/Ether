@@ -33,7 +33,7 @@ import java.util.zip.GZIPOutputStream;
  * 3. Maintains metadata.json & scenario.json so cluster runs can be loaded directly by the UI.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ClusterSnapshotManager {
     private static final Logger logger = LoggerFactory.getLogger(ClusterSnapshotManager.class);

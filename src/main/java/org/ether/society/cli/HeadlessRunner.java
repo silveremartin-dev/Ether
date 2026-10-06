@@ -31,7 +31,7 @@ import java.util.prefs.Preferences;
  * Tab 4 (Execution Context Hardware &amp; Cluster Topology).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class HeadlessRunner {
     private static final Logger logger = LoggerFactory.getLogger(HeadlessRunner.class);

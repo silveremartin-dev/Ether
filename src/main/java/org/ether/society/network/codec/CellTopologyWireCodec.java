@@ -28,7 +28,7 @@ import java.util.zip.GZIPOutputStream;
  * elevation, biomes, aquifers, language groups, friction) in a compact, zero-redundancy binary GZIP stream.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class CellTopologyWireCodec {
     private static final Logger logger = LoggerFactory.getLogger(CellTopologyWireCodec.class);

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * (N_i proportional to Rank^-alpha) across spatial hierarchies.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SpatialCityFractalEngine {
     private static final Logger logger = LoggerFactory.getLogger(SpatialCityFractalEngine.class);

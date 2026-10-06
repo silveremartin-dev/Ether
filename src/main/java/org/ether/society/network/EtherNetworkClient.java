@@ -20,7 +20,7 @@ import java.net.Socket;
  * and send God Mode interventions or policy votes with AES-256 GCM encryption.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class EtherNetworkClient {
     private static final Logger logger = LoggerFactory.getLogger(EtherNetworkClient.class);

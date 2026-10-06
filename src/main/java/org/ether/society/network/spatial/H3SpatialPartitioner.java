@@ -17,7 +17,7 @@ import java.util.*;
  * compact, contiguous geographical domain (minimizing frontier boundary exchanges).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class H3SpatialPartitioner {
 

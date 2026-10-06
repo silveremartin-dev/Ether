@@ -1,11 +1,4 @@
 {
   "id" : "RUN-EPOCH_6_EARLY_MEDIEVAL_ISLAMIC",
   "name" : "Epoch 6: Late Antiquity & Early Islamic Expansion (500 -> 1000 CE)",
-  "scenarioName" : "Epoch 6: Late Antiquity & Early Islamic Expansion (500 -> 1000 CE)",
-  "year" : 1000,
-  "startDateYear" : 500,
-  "endDateYear" : 1000,
-  "totalPopulation" : 262971037,
-  "description" : "536 CE volcanic cooling, Justinian plague, Umayyad/Abbasid caliphate, and Tang Dynasty urban expansion.",
-  "timestamp" : "2026-10-05T16:31:12.024897200Z"
-}
+  "timestamp"

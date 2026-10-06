@@ -20,7 +20,7 @@ import java.util.List;
  * 2. <b>Terrestrial Coulomb Friction (Î¼_land â‰ˆ 0.05 - 0.25)</b>: High caloric expenditure for overland pack animals & foot transport.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PhysicsTransportEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicsTransportEngine.class);

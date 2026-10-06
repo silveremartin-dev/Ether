@@ -20,7 +20,7 @@ import java.util.List;
  *    Penetration succeeds if Kinetic Energy Impact > Material Yield Strength * Thickness * Area.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ThermodynamicWarfareEngine {
     private static final Logger logger = LoggerFactory.getLogger(ThermodynamicWarfareEngine.class);

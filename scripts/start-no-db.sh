@@ -11,7 +11,7 @@ echo "(Running in Database Offline Mode)"
 echo "========================================"
 echo ""
 
-JAR_PATH="target/society-simulation-1.0.0-beta.1-executable.jar"
+JAR_PATH="target/society-simulation-1.0.0-beta.2-executable.jar"
 
 if [ ! -f "$JAR_PATH" ]; then
     echo "Building optimized executable JAR..."

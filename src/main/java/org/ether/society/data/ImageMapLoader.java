@@ -32,7 +32,7 @@ import java.util.List;
  * - Multi-channel Geology & Resource mapping (Red=Metals, Green=Flora, Blue=Water)
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ImageMapLoader {
     private static final Logger logger = LoggerFactory.getLogger(ImageMapLoader.class);

@@ -48,8 +48,8 @@
     "seasonSeed" : 57555,
     "canonicalPlanet" : "venus",
     "tidalLocked" : false,
-    "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface."
+    "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface.",
+    "associatedEpochYear" : 2026
   },
   "ecologyPreset" : {
     "name" : "VÃ©nus (Hesperos)",
@@ -99,8 +99,8 @@
       "seasonSeed" : 57555,
       "canonicalPlanet" : "venus",
       "tidalLocked" : false,
-      "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface."
+      "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface.",
+      "associatedEpochYear" : 2026
     },
     "terrestrialBiomassGtC" : 0.0,
     "soilOrganicCarbonGtC" : 0.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "venus",
-    "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface."
+    "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface.",
+    "associatedEpochYear" : 2026
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

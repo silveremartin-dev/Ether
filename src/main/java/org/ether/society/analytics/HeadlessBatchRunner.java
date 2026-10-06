@@ -342,10 +342,19 @@ public class HeadlessBatchRunner {
             record.addSpatialSnapshot((int) finalSimYear, engine.getCells());
         }
 
+        // Persist full simulation state, spatial topology, and intermediate snapshots to saves/RUN-*
+        if (engine.getSimulationSaveManager() != null) {
+            try {
+                engine.getSimulationSaveManager().saveSimulation(engine, runId, scenario.getName());
+            } catch (Exception ex) {
+                logger.warn("Could not persist full headless run to disk: {}", ex.getMessage());
+            }
+        }
+
         engine.shutdown();
 
         SimulationRunRepository.getInstance().registerRun(record);
-        logger.info("âœ… Finished Physical Headless execution for scenario: '{}'. Real physics ticks: {}. Generated {} snapshots.", 
+        logger.info("✅ Finished Physical Headless execution for scenario: '{}'. Real physics ticks: {}. Generated {} snapshots.", 
             scenario.getName(), ticksExecuted, record.getTimeSeriesData().size());
 
         return record;

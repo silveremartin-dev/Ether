@@ -8,7 +8,7 @@ package org.ether.society;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class CaptureRealShotsLauncher {
     /*

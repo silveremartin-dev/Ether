@@ -14,7 +14,7 @@ package org.ether.society.engines;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public enum ResourceType {
     FOOD("Food", javafx.scene.paint.Color.YELLOWGREEN),

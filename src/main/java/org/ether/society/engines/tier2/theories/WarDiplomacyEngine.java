@@ -21,7 +21,7 @@ import java.util.*;
  * 3. Dynamic territorial conquest and border shifting.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class WarDiplomacyEngine {
     private static final Logger logger = LoggerFactory.getLogger(WarDiplomacyEngine.class);

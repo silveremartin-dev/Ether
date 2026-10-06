@@ -22,7 +22,7 @@ import java.util.List;
  * 3. Updates coastal status, movement friction, and potable water availability across all cells.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SeaLevelTransitionEngine {
 

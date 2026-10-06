@@ -1,11 +1,4 @@
 {
   "id" : "RUN-JUSTINIAN_PLAGUE_536CE_FORCED",
   "name" : "536 CE Volcanic & Justinian Plague Twin B: Forced Ilopango Veil & Yersinia Pestis (530 -> 590 CE)",
-  "scenarioName" : "536 CE Volcanic & Justinian Plague Twin B: Forced Ilopango Veil & Yersinia Pestis (530 -> 590 CE)",
-  "year" : 590,
-  "startDateYear" : 530,
-  "endDateYear" : 590,
-  "totalPopulation" : 187386057,
-  "description" : "Forced stratospheric volcanic cooling (536 CE dust veil) coupled with Yersinia pestis SEIR vector causing demographic and fiscal contraction.",
-  "timestamp" : "2026-10-05T16:31:39.486877300Z"
-}
+  "timestamp"

@@ -23,7 +23,7 @@ import java.util.UUID;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class Nation {
     /* Internal state variable for id (String). */

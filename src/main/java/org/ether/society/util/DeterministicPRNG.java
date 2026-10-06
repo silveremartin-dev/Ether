@@ -11,7 +11,7 @@ package org.ether.society.util;
  * 100% bitwise deterministic reproducibility across concurrent threads.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public final class DeterministicPRNG {
 

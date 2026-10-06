@@ -18,7 +18,7 @@ import java.util.List;
  * directly into Ether's fundamental H3 cell mass/energy grid.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class World3HybridEngine {
     private static final Logger logger = LoggerFactory.getLogger(World3HybridEngine.class);

@@ -17,7 +17,7 @@ import java.util.List;
  * Lenski Law: Gini inequality peaks in Agrarian societies and is modulated by technology stage.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class LenskiPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(LenskiPureEngine.class);

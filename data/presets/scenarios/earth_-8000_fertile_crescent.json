@@ -48,8 +48,8 @@
     "seasonSeed" : 14348,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
-    "associatedEpochYear" : -10000,
-    "presetDescription" : "\uD83C\uDF3E TERRE (-10 000 / Holocène Précoce & Révolution Agricole) : Réchauffement post-glaciaire rapide, fonte des calottes continentales, récolte intensive de céréales sauvages au Croissant Fertile et premières domestications de plantes/animaux."
+    "presetDescription" : "\uD83C\uDF3E TERRE (-10 000 / Holocène Précoce & Révolution Agricole) : Réchauffement post-glaciaire rapide, fonte des calottes continentales, récolte intensive de céréales sauvages au Croissant Fertile et premières domestications de plantes/animaux.",
+    "associatedEpochYear" : -10000
   },
   "ecologyPreset" : {
     "name" : "Terre (-10 000 / HolocÃ¨ne PrÃ©coce)",
@@ -99,8 +99,8 @@
       "seasonSeed" : 14348,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
-      "associatedEpochYear" : -10000,
-      "presetDescription" : "\uD83C\uDF3E TERRE (-10 000 / Holocène Précoce & Révolution Agricole) : Réchauffement post-glaciaire rapide, fonte des calottes continentales, récolte intensive de céréales sauvages au Croissant Fertile et premières domestications de plantes/animaux."
+      "presetDescription" : "\uD83C\uDF3E TERRE (-10 000 / Holocène Précoce & Révolution Agricole) : Réchauffement post-glaciaire rapide, fonte des calottes continentales, récolte intensive de céréales sauvages au Croissant Fertile et premières domestications de plantes/animaux.",
+      "associatedEpochYear" : -10000
     },
     "terrestrialBiomassGtC" : 520.0,
     "soilOrganicCarbonGtC" : 1600.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "associatedEpochYear" : -10000,
-    "presetDescription" : "\uD83C\uDF3E TERRE (-10 000 / Holocène Précoce & Révolution Agricole) : Réchauffement post-glaciaire rapide, fonte des calottes continentales, récolte intensive de céréales sauvages au Croissant Fertile et premières domestications de plantes/animaux."
+    "presetDescription" : "\uD83C\uDF3E TERRE (-10 000 / Holocène Précoce & Révolution Agricole) : Réchauffement post-glaciaire rapide, fonte des calottes continentales, récolte intensive de céréales sauvages au Croissant Fertile et premières domestications de plantes/animaux.",
+    "associatedEpochYear" : -10000
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

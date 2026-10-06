@@ -55,7 +55,7 @@ import java.util.function.Function;
  * custom biome/geology map imports (PNG / WMS / ESRI World Files), and real-time 2D visualization.
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ResourceDistributionPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ResourceDistributionPanel.class);
@@ -4366,7 +4366,7 @@ public class ResourceDistributionPanel extends BorderPane {
             try {
                 Map<String, Object> manifest = new java.util.LinkedHashMap<>();
                 manifest.put("manifestVersion", "1.0.0");
-                manifest.put("engineVersion", "Ether 1.0.0-beta.1");
+                manifest.put("engineVersion", "Ether 1.0.0-beta.2");
                 manifest.put("domain", "Geology & Planetary Resources");
                 manifest.put("exportTimestamp", java.time.Instant.now().toString());
                 manifest.put("prngSeed", geologySeedInput != null ? geologySeedInput.getText() : "45678");

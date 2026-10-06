@@ -1,6 +1,6 @@
 {
   "name" : "Mercure (Hermes)",
-  "resolution" : 3,
+  "resolution" : 4,
   "radiusKm" : 2439.7,
   "dayLengthHours" : 4222.6,
   "axialTiltDegrees" : 0.034,
@@ -42,7 +42,7 @@
   "seasonSource" : "âšª Mercure â€” 3:2 Spin-Orbit Thermal Variance Model",
   "seasonSeed" : 68666,
   "canonicalPlanet" : "mercury",
-  "associatedEpochYear" : 2026,
+  "tidalLocked" : false,
   "presetDescription" : "⚪ MERCURE (Hermes) : Monde métallique sans atmosphère proche du Soleil, flux solaire extrême (10 kW/m²), immense noyau ferreux, bassin d'impact Caloris et résonance spin-orbite 3:2.",
-  "tidalLocked" : false
+  "associatedEpochYear" : 2026
 }

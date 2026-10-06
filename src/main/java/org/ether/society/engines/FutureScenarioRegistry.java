@@ -30,7 +30,7 @@ import java.util.List;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class FutureScenarioRegistry {
     private static final Logger logger = LoggerFactory.getLogger(FutureScenarioRegistry.class);

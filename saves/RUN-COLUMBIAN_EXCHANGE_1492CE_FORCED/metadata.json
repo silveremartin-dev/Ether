@@ -1,11 +1,4 @@
 {
   "id" : "RUN-COLUMBIAN_EXCHANGE_1492CE_FORCED",
   "name" : "1492 Columbian Exchange Twin B: Forced Virgin Soil Epidemics & Demographic Crash (1490 -> 1600 CE)",
-  "scenarioName" : "1492 Columbian Exchange Twin B: Forced Virgin Soil Epidemics & Demographic Crash (1490 -> 1600 CE)",
-  "year" : 1600,
-  "startDateYear" : 1490,
-  "endDateYear" : 1600,
-  "totalPopulation" : 522092339,
-  "description" : "Forced multi-pathogen virgin soil transmission (Smallpox, Measles, Cocoliztli) causing 85-90% New World demographic mortality and forest regrowth carbon dip.",
-  "timestamp" : "2026-10-05T16:31:50.277404700Z"
-}
+  "timestamp"

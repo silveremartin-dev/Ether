@@ -19,7 +19,7 @@ import java.util.List;
  * 2. <b>Fuel Consumption (Charcoal/Coal)</b>: Conversion efficiency depends on furnace temperature and technology era.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class MetallurgyEnthalpyEngine {
     private static final Logger logger = LoggerFactory.getLogger(MetallurgyEnthalpyEngine.class);

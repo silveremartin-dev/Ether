@@ -1,11 +1,4 @@
 {
   "id" : "RUN-BLACK_DEATH_1347_UNFORCED_COUNTERFACTUAL",
   "name" : "1347 Black Death Twin A: Unforced Continuous Agrarian Baseline (1300 -> 1400 CE)",
-  "scenarioName" : "1347 Black Death Twin A: Unforced Continuous Agrarian Baseline (1300 -> 1400 CE)",
-  "year" : 1400,
-  "startDateYear" : 1300,
-  "endDateYear" : 1400,
-  "totalPopulation" : 565559982,
-  "description" : "Counterfactual unforced test without pandemic shock. Expected failure to anticipate demographic collapse (HYDE 360M vs Unforced 475M), confirming model responsiveness to rupture.",
-  "timestamp" : "2026-10-05T16:31:54.176362400Z"
-}
+  "timestamp"

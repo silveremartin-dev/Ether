@@ -1,11 +1,4 @@
 {
   "id" : "RUN-BRONZE_AGE_COLLAPSE_1200BCE_FORCED",
   "name" : "Late Bronze Age Collapse Twin B: Forced Megadrought & Palatial Network Rupture (-1250 -> -1150 BCE)",
-  "scenarioName" : "Late Bronze Age Collapse Twin B: Forced Megadrought & Palatial Network Rupture (-1250 -> -1150 BCE)",
-  "year" : -1150,
-  "startDateYear" : -1250,
-  "endDateYear" : -1150,
-  "totalPopulation" : 34856438,
-  "description" : "Forced 300-year Eastern Mediterranean drought + Tin/Copper trade network severance reproducing palatial collapse and Aegean dark age.",
-  "timestamp" : "2026-10-05T16:31:35.969362Z"
-}
+  "timestamp"

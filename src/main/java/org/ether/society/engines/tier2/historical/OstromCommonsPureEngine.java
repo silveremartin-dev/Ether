@@ -18,7 +18,7 @@ import java.util.List;
  * prevents Tragedy of the Commons without total privatization or top-down state coercion.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class OstromCommonsPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(OstromCommonsPureEngine.class);

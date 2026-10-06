@@ -28,7 +28,7 @@ public class EtherBundleSignerTest {
         scenario.setName("Holocene Dawn");
         scenario.setDescription("Holocene simulation scenario");
 
-        EtherScenarioBundle rawBundle = new EtherScenarioBundle("1.0.0-beta.1", PlanetPreset.EARTH_LIKE, EcologyPreset.EARTH_STANDARD, scenario);
+        EtherScenarioBundle rawBundle = new EtherScenarioBundle("1.0.0-beta.2", PlanetPreset.EARTH_LIKE, EcologyPreset.EARTH_STANDARD, scenario);
         EtherScenarioBundle signedBundle = EtherBundleSigner.signBundle(rawBundle, "Silvere");
 
         assertNotNull(signedBundle);
@@ -53,7 +53,7 @@ public class EtherBundleSignerTest {
         Scenario scenario = new Scenario();
         scenario.setName("Holocene Dawn");
 
-        EtherScenarioBundle rawBundle = new EtherScenarioBundle("1.0.0-beta.1", PlanetPreset.EARTH_LIKE, EcologyPreset.EARTH_STANDARD, scenario);
+        EtherScenarioBundle rawBundle = new EtherScenarioBundle("1.0.0-beta.2", PlanetPreset.EARTH_LIKE, EcologyPreset.EARTH_STANDARD, scenario);
         EtherScenarioBundle signedBundle = EtherBundleSigner.signBundle(rawBundle, "Silvere");
 
         // Tamper scenario name while keeping original checksum/signature

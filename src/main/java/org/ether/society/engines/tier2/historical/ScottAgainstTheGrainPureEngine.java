@@ -18,7 +18,7 @@ import java.util.List;
  * higher epidemic vulnerability, and tax coercion friction compared to mobile foraging populations.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ScottAgainstTheGrainPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(ScottAgainstTheGrainPureEngine.class);

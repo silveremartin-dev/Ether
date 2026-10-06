@@ -17,7 +17,7 @@ import java.util.List;
  * or planetary climate events triggered during execution.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ScenarioTimeline implements Serializable {
     private static final long serialVersionUID = 1L;

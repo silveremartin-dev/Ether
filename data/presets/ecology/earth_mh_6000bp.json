@@ -3,7 +3,7 @@
   "planetPresetName" : "Terre (-6 000 / Sahara Vert)",
   "embeddedPlanetPreset" : {
     "name" : "Terre (-6 000 / Sahara Vert)",
-    "resolution" : 3,
+    "resolution" : 4,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
     "axialTiltDegrees" : 24.1,
@@ -45,9 +45,9 @@
     "seasonSource" : "ðŸŒ Terre (-6000 BP) â€” SaisonnalitÃ© HolocÃ¨ne Moyen",
     "seasonSeed" : 14347,
     "canonicalPlanet" : "earth",
-    "associatedEpochYear" : -6000,
+    "tidalLocked" : false,
     "presetDescription" : "\uD83C\uDF34 TERRE (-6 000 / Holocène Moyen & Sahara Vert) : Maximum thermique holocène et amplification de la mousson africaine. Le Sahara est une savane fertile dotée de mégalacs et de fleuves soutenant des sociétés pastorales prospères.",
-    "tidalLocked" : false
+    "associatedEpochYear" : -6000
   },
   "terrestrialBiomassGtC" : 680.0,
   "soilOrganicCarbonGtC" : 1900.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "earth",
-  "associatedEpochYear" : -6000,
-  "presetDescription" : "\uD83C\uDF34 TERRE (-6 000 / Holocène Moyen & Sahara Vert) : Maximum thermique holocène et amplification de la mousson africaine. Le Sahara est une savane fertile dotée de mégalacs et de fleuves soutenant des sociétés pastorales prospères."
+  "presetDescription" : "\uD83C\uDF34 TERRE (-6 000 / Holocène Moyen & Sahara Vert) : Maximum thermique holocène et amplification de la mousson africaine. Le Sahara est une savane fertile dotée de mégalacs et de fleuves soutenant des sociétés pastorales prospères.",
+  "associatedEpochYear" : -6000
 }

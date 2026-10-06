@@ -18,7 +18,7 @@ import java.util.List;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class EmpireTerritory {
     public String name;

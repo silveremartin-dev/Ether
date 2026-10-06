@@ -18,7 +18,7 @@ import java.util.List;
  * creating a surplus of unmated young males who are mobilized into high-risk military/colonial expansion.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SexualSelectionMatingEngine {
     private static final Logger logger = LoggerFactory.getLogger(SexualSelectionMatingEngine.class);

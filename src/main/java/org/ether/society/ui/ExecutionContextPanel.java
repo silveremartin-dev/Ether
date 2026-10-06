@@ -36,7 +36,7 @@ import java.util.prefs.Preferences;
  * execution topology (Local vs Distributed Cluster, DB Persistence), and rendering mode (GUI vs Headless Batch).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ExecutionContextPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ExecutionContextPanel.class);

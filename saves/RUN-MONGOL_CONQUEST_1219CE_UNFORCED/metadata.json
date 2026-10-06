@@ -1,11 +1,4 @@
 {
   "id" : "RUN-MONGOL_CONQUEST_1219CE_UNFORCED",
   "name" : "1219 CE Mongol Conquest Twin A: Unforced Islamic Golden Age & Song Continuity (1200 -> 1270 CE)",
-  "scenarioName" : "1219 CE Mongol Conquest Twin A: Unforced Islamic Golden Age & Song Continuity (1200 -> 1270 CE)",
-  "year" : 1270,
-  "startDateYear" : 1200,
-  "endDateYear" : 1270,
-  "totalPopulation" : 336734692,
-  "description" : "Unforced steady agricultural, urbanization, and hydraulic irrigation growth across Central Asia, Iran, and China.",
-  "timestamp" : "2026-10-05T16:31:41.902561100Z"
-}
+  "timestamp"

@@ -17,7 +17,7 @@ import java.util.*;
  * for side-by-side comparative telemetry analysis.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ScenarioBranchingTree implements Serializable {
 

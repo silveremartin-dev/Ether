@@ -17,7 +17,7 @@ import java.util.List;
  * and zero-drift determinism assertions.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public final class SimulationStateChecksum {
 

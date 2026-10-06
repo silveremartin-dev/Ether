@@ -45,7 +45,7 @@ import java.util.function.Function;
  * topography & heightmap imports, satellite/moon dynamics, macroclimates, and 3-map climate imports.
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PlanetGeneratorPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(PlanetGeneratorPanel.class);

@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BayesianInverseCalibrationEngineTest {
 
     @Test
-    @DisplayName("Validate ABC parameter estimation on non-linear Malthus-Boserup agricultural intensification")
+    @DisplayName("Validate ABC parameter estimation, covariance matrix, and credible intervals on Boserup trajectory")
     void testBayesianABCCalibrationOnBoserupTrajectory() {
         // True unobservable parameters
         final double trueAlphaBoserup = 0.035;
@@ -72,5 +72,55 @@ public class BayesianInverseCalibrationEngineTest {
                 "95% Bayesian credible interval must enclose the true parameter value");
 
         assertTrue(report.acceptanceRate() > 0.0, "ABC must find valid accepted particles");
+
+        // Verify covariance and correlation matrices
+        Map<String, Map<String, Double>> cov = report.covarianceMatrix();
+        assertNotNull(cov);
+        assertTrue(cov.containsKey("alphaBoserup"));
+        assertTrue(cov.get("alphaBoserup").get("alphaBoserup") > 0.0, "Variance must be positive");
+
+        Map<String, Map<String, Double>> corr = report.correlationMatrix();
+        assertNotNull(corr);
+        assertEquals(1.0, corr.get("alphaBoserup").get("alphaBoserup"), 1e-6, "Diagonal correlation must be 1.0");
+    }
+
+    @Test
+    @DisplayName("Validate Leave-One-Century-Out (LOCO) out-of-sample cross-validation")
+    void testOutOfSampleCrossValidation() {
+        Map<Integer, Double> observedTrajectory = new LinkedHashMap<>();
+        double val = 50.0;
+        for (int year = 1000; year <= 1600; year += 100) {
+            observedTrajectory.put(year, val);
+            val *= 1.15;
+        }
+
+        List<BayesianInverseCalibrationEngine.ParameterPrior> priors = List.of(
+                new BayesianInverseCalibrationEngine.ParameterPrior("growthRate", 0.05, 0.25, 0.10)
+        );
+
+        BayesianInverseCalibrationEngine.CrossValidationReport cvReport =
+                BayesianInverseCalibrationEngine.crossValidateOutOfSample(
+                        priors,
+                        observedTrajectory,
+                        params -> {
+                            double r = params.get("growthRate");
+                            Map<Integer, Double> sim = new LinkedHashMap<>();
+                            double v = 50.0;
+                            for (int year = 1000; year <= 1600; year += 100) {
+                                sim.put(year, v);
+                                v *= (1.0 + r);
+                            }
+                            return sim;
+                        },
+                        50,
+                        2000,
+                        0.30,
+                        3
+                );
+
+        assertNotNull(cvReport);
+        assertTrue(cvReport.inSampleRSquared() > 0.90, "In-sample R^2 must be high");
+        assertTrue(cvReport.outOfSampleRSquared() > 0.85, "Out-of-sample R^2 must remain robust");
+        assertEquals(3, cvReport.foldCount());
     }
 }

@@ -28,7 +28,7 @@ echo "  Cluster Mode   : ${CLUSTER_MODE}"
 echo "----------------------------------------------------------"
 
 unset CLOUDSDK_CORE_PROJECT || true
-JAR_PATH="target/society-simulation-1.0.0-beta.1-executable.jar"
+JAR_PATH="target/society-simulation-1.0.0-beta.2-executable.jar"
 
 if [ "${SKIP_BUILD}" != "true" ] || [ ! -f "${JAR_PATH}" ]; then
     echo "[1/5] Building executable JAR locally..."
@@ -41,7 +41,7 @@ echo "[2/5] Preparing remote directories on ether-master..."
 gcloud compute ssh ether-master --zone="${ZONE}" --project="${PROJECT_ID}" --quiet --command="sudo mkdir -p /opt/ether/target /opt/ether/scripts /opt/ether/saves /opt/ether/logs /opt/ether/data && sudo chmod -R 777 /opt/ether && touch /opt/ether/.env && sudo pkill -9 -f society-simulation || true"
 
 echo "[3/5] Uploading JAR and configuration files to ether-master..."
-gcloud compute scp --zone="${ZONE}" --project="${PROJECT_ID}" --quiet "${JAR_PATH}" ether-master:/opt/ether/target/society-simulation-1.0.0-beta.1-executable.jar
+gcloud compute scp --zone="${ZONE}" --project="${PROJECT_ID}" --quiet "${JAR_PATH}" ether-master:/opt/ether/target/society-simulation-1.0.0-beta.2-executable.jar
 gcloud compute scp --zone="${ZONE}" --project="${PROJECT_ID}" --quiet docker-compose.yml ether-master:/opt/ether/docker-compose.yml
 gcloud compute scp --zone="${ZONE}" --project="${PROJECT_ID}" --quiet --recurse scripts/init-db.sql scripts/start-headless.sh scripts/start-master.sh scripts/start-worker.sh ether-master:/opt/ether/scripts/
 
@@ -54,7 +54,7 @@ if [ "${CLUSTER_MODE}" = "true" ]; then
     echo "Master Internal IP: ${MASTER_INTERNAL_IP}"
 
     gcloud compute ssh ether-worker --zone="${ZONE}" --project="${PROJECT_ID}" --quiet --command="sudo mkdir -p /opt/ether/target /opt/ether/scripts /opt/ether/saves /opt/ether/logs && sudo chmod -R 777 /opt/ether && touch /opt/ether/.env && sudo pkill -9 -f society-simulation || true"
-    gcloud compute scp --zone="${ZONE}" --project="${PROJECT_ID}" --quiet "${JAR_PATH}" ether-worker:/opt/ether/target/society-simulation-1.0.0-beta.1-executable.jar
+    gcloud compute scp --zone="${ZONE}" --project="${PROJECT_ID}" --quiet "${JAR_PATH}" ether-worker:/opt/ether/target/society-simulation-1.0.0-beta.2-executable.jar
     gcloud compute scp --zone="${ZONE}" --project="${PROJECT_ID}" --quiet --recurse scripts/start-worker.sh ether-worker:/opt/ether/scripts/
 
     echo "Launching Worker node in background..."

@@ -59,7 +59,7 @@ import org.ether.society.persistence.SaveMetadata;
  * 2D spatial cartographic tensor comparison with timeline date scrubber, and root cause analysis.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ComparativeAnalyticsPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ComparativeAnalyticsPanel.class);

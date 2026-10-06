@@ -39,7 +39,7 @@ echo "      Database is ready ✓"
 echo ""
 
 echo "[4/4] Launching Ether Simulation with Native SIMD Vectorization..."
-JAR_PATH="target/society-simulation-1.0.0-beta.1-executable.jar"
+JAR_PATH="target/society-simulation-1.0.0-beta.2-executable.jar"
 
 if [ ! -f "$JAR_PATH" ]; then
     echo "Building optimized executable JAR..."

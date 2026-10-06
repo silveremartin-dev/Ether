@@ -24,7 +24,7 @@ import java.util.List;
  * Orchestrates deterministic phase transitions for physical, demographic, and cliodynamic sub-systems.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SimulationPipeline {
     private static final Logger logger = LoggerFactory.getLogger(SimulationPipeline.class);

@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
  * Caches retrieved datasets locally under ~/.ether/cache/maps/ for offline reusability.
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class OnlineMapService {
     private static final Logger logger = LoggerFactory.getLogger(OnlineMapService.class);

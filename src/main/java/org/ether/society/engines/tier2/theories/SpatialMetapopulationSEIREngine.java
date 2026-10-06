@@ -30,7 +30,7 @@ import java.util.Objects;
  * </pre>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(SpatialMetapopulationSEIREngine.class);

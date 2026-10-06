@@ -3,7 +3,7 @@
   "planetPresetName" : "Terre (-50 000 / Stade Isotopique 3 & Sahul)",
   "embeddedPlanetPreset" : {
     "name" : "Terre (-50 000 / Stade Isotopique 3 & Sahul)",
-    "resolution" : 3,
+    "resolution" : 4,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
     "axialTiltDegrees" : 23.4,
@@ -45,9 +45,9 @@
     "seasonSource" : "ðŸŒ Terre (-50000 BP) â€” SaisonnalitÃ© MIS 3",
     "seasonSeed" : 14352,
     "canonicalPlanet" : "earth",
-    "associatedEpochYear" : -50000,
+    "tidalLocked" : false,
     "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie.",
-    "tidalLocked" : false
+    "associatedEpochYear" : -50000
   },
   "terrestrialBiomassGtC" : 480.0,
   "soilOrganicCarbonGtC" : 1600.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "earth",
-  "associatedEpochYear" : -50000,
-  "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie."
+  "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie.",
+  "associatedEpochYear" : -50000
 }

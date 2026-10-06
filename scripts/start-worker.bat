@@ -21,7 +21,7 @@ echo   Master Host : %MASTER_HOST%
 echo   Port        : %PORT%
 echo ----------------------------------------------------------
 
-set JAR_PATH=target\society-simulation-1.0.0-beta.1-executable.jar
+set JAR_PATH=target\society-simulation-1.0.0-beta.2-executable.jar
 
 if not exist "%JAR_PATH%" (
     echo Building executable JAR...

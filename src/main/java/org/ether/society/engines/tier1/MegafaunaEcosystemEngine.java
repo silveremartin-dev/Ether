@@ -20,7 +20,7 @@ import java.util.List;
  * 2. <b>Continuous Biomass & Soil Organic Carbon Depletion</b>.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class MegafaunaEcosystemEngine {
     private static final Logger logger = LoggerFactory.getLogger(MegafaunaEcosystemEngine.class);

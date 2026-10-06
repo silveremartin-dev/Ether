@@ -18,7 +18,7 @@ import java.util.*;
  * based on H3 terrain movement friction and population hubs.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class TradeNetworkEngine {
     private static final Logger logger = LoggerFactory.getLogger(TradeNetworkEngine.class);

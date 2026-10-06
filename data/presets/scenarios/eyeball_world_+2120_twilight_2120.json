@@ -48,8 +48,8 @@
     "seasonSeed" : 35333,
     "canonicalPlanet" : "none",
     "tidalLocked" : true,
-    "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur."
+    "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur.",
+    "associatedEpochYear" : 2026
   },
   "ecologyPreset" : {
     "name" : "Monde Synchrone (Eyeball)",
@@ -99,8 +99,8 @@
       "seasonSeed" : 35333,
       "canonicalPlanet" : "none",
       "tidalLocked" : true,
-      "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur."
+      "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur.",
+      "associatedEpochYear" : 2026
     },
     "terrestrialBiomassGtC" : 180.0,
     "soilOrganicCarbonGtC" : 600.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "none",
-    "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur."
+    "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur.",
+    "associatedEpochYear" : 2026
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

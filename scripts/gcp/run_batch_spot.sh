@@ -13,7 +13,7 @@ for res in 4 5; do
     fi
     
     java -Xms4g -Xmx$HEAP -XX:+UseG1GC --add-modules jdk.incubator.vector \
-         -jar target/society-simulation-1.0.0-beta.1-executable.jar \
+         -jar target/society-simulation-1.0.0-beta.2-executable.jar \
          --headless --mode=cluster --role=master --port=9090 \
          --secret=EtherClusterSecret2026 \
          --scenario=INDUSTRIAL --ticks=24 --cells=0 --res=$res --profile \

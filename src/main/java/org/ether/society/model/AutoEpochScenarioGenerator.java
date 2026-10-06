@@ -23,7 +23,7 @@ import java.util.*;
  * 3. Calibrates demographic baseline N0, capital K0, cultural tensors, and Type B optional engines (Tab 3)
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class AutoEpochScenarioGenerator {
     private static final Logger logger = LoggerFactory.getLogger(AutoEpochScenarioGenerator.class);

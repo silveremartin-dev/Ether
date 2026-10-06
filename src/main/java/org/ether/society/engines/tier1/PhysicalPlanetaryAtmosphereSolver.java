@@ -21,7 +21,7 @@ import org.ether.society.data.WorldClimEmpiricalRasterLoader;
  * 5. Radiative Equilibrium & Thermal Capacity Convolution for Seasonality: Differentiates ocean heat capacity buffer from continental landmass extremes.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PhysicalPlanetaryAtmosphereSolver {
 

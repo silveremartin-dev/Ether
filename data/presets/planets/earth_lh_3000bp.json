@@ -1,6 +1,6 @@
 {
   "name" : "Terre (-3 000 / HolocÃ¨ne Tardif)",
-  "resolution" : 3,
+  "resolution" : 4,
   "radiusKm" : 6371.0,
   "dayLengthHours" : 24.0,
   "axialTiltDegrees" : 23.5,
@@ -42,7 +42,7 @@
   "seasonSource" : "ðŸŒ Terre (-3000 BP) â€” SaisonnalitÃ©",
   "seasonSeed" : 14346,
   "canonicalPlanet" : "earth",
-  "associatedEpochYear" : -3000,
+  "tidalLocked" : false,
   "presetDescription" : "\uD83C\uDFDB TERRE (-3 000 / Holocène Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et émergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l'Indus et du Fleuve Jaune.",
-  "tidalLocked" : false
+  "associatedEpochYear" : -3000
 }

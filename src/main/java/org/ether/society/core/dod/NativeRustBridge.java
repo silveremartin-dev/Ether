@@ -18,7 +18,7 @@ import java.util.List;
  * to Ether Native Rust Engine across Windows (.dll), Linux (.so), and macOS (.dylib).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class NativeRustBridge {
     private static final Logger logger = LoggerFactory.getLogger(NativeRustBridge.class);

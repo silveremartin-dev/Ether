@@ -28,7 +28,7 @@ import java.util.List;
  * </pre>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class ThermodynamicMigrationEngine {
     private static final Logger logger = LoggerFactory.getLogger(ThermodynamicMigrationEngine.class);

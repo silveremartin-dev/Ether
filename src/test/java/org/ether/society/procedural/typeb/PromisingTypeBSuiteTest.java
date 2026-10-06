@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit Test Suite validating Pinker, Scott (Against the Grain), AI Regulation, Ostrom Commons, and Smil Material Transitions.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class PromisingTypeBSuiteTest {
 

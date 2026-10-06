@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 3. Airy-Heiskanen Tectonic Isostasy & Crustal Root Engine
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class Tier1OceanAndHydraulicsTest {
 

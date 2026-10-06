@@ -29,7 +29,7 @@ import org.ether.society.i18n.I18n;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SplashScreen {
     private final Stage stage;

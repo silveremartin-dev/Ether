@@ -48,8 +48,8 @@
     "seasonSeed" : 14350,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
-    "associatedEpochYear" : -100000,
-    "presetDescription" : "\uD83C\uDF0D TERRE (-100 000 / Dernier Interglaciaire / Éémien) : Climat interglaciaire chaud (+1 à +2°C au-dessus de l'ère préindustrielle), niveau marin à +6/+9m. Corridors sahéliens verts et premières expansions d'Homo Sapiens hors d'Afrique."
+    "presetDescription" : "\uD83C\uDF0D TERRE (-100 000 / Dernier Interglaciaire / Éémien) : Climat interglaciaire chaud (+1 à +2°C au-dessus de l'ère préindustrielle), niveau marin à +6/+9m. Corridors sahéliens verts et premières expansions d'Homo Sapiens hors d'Afrique.",
+    "associatedEpochYear" : -100000
   },
   "ecologyPreset" : {
     "name" : "Terre (-100 000 / Dernier Interglaciaire)",
@@ -99,8 +99,8 @@
       "seasonSeed" : 14350,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
-      "associatedEpochYear" : -100000,
-      "presetDescription" : "\uD83C\uDF0D TERRE (-100 000 / Dernier Interglaciaire / Éémien) : Climat interglaciaire chaud (+1 à +2°C au-dessus de l'ère préindustrielle), niveau marin à +6/+9m. Corridors sahéliens verts et premières expansions d'Homo Sapiens hors d'Afrique."
+      "presetDescription" : "\uD83C\uDF0D TERRE (-100 000 / Dernier Interglaciaire / Éémien) : Climat interglaciaire chaud (+1 à +2°C au-dessus de l'ère préindustrielle), niveau marin à +6/+9m. Corridors sahéliens verts et premières expansions d'Homo Sapiens hors d'Afrique.",
+      "associatedEpochYear" : -100000
     },
     "terrestrialBiomassGtC" : 620.0,
     "soilOrganicCarbonGtC" : 1800.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "associatedEpochYear" : -100000,
-    "presetDescription" : "\uD83C\uDF0D TERRE (-100 000 / Dernier Interglaciaire / Éémien) : Climat interglaciaire chaud (+1 à +2°C au-dessus de l'ère préindustrielle), niveau marin à +6/+9m. Corridors sahéliens verts et premières expansions d'Homo Sapiens hors d'Afrique."
+    "presetDescription" : "\uD83C\uDF0D TERRE (-100 000 / Dernier Interglaciaire / Éémien) : Climat interglaciaire chaud (+1 à +2°C au-dessus de l'ère préindustrielle), niveau marin à +6/+9m. Corridors sahéliens verts et premières expansions d'Homo Sapiens hors d'Afrique.",
+    "associatedEpochYear" : -100000
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

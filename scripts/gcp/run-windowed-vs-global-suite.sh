@@ -32,7 +32,7 @@ gcloud compute ssh "${INSTANCE_NAME}" --zone="${ZONE}" --project="${PROJECT_ID}"
 
 # 3. Synchronize shaded JAR
 echo "[3/5] Synchronizing shaded executable JAR..."
-gcloud compute scp "target/society-simulation-1.0.0-beta.1-executable.jar" "${INSTANCE_NAME}:/opt/ether/society-simulation.jar" --zone="${ZONE}" --project="${PROJECT_ID}" --quiet
+gcloud compute scp "target/society-simulation-1.0.0-beta.2-executable.jar" "${INSTANCE_NAME}:/opt/ether/society-simulation.jar" --zone="${ZONE}" --project="${PROJECT_ID}" --quiet
 
 # 4. Launch remote execution
 echo "[4/5] Executing WindowedVsGlobalSpatialFalsificationHarness on ${INSTANCE_NAME}..."

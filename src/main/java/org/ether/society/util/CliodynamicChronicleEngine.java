@@ -16,7 +16,7 @@ import java.util.List;
  * into historiographical prose ("Chroniques Historiques de la Civilisation").
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class CliodynamicChronicleEngine {
 

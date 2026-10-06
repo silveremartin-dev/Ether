@@ -19,7 +19,7 @@ import java.util.List;
  * and off-world asteroid mining EROEI logistics.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class TerraformingEngine {
     private static final Logger logger = LoggerFactory.getLogger(TerraformingEngine.class);

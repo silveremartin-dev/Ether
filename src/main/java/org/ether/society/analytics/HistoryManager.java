@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class HistoryManager {
 

@@ -48,8 +48,8 @@
     "seasonSeed" : 14349,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
-    "associatedEpochYear" : -20000,
-    "presetDescription" : "❄ TERRE (-20 000 / Pic du Dernier Maximum Glaciaire) : Anomalie thermique globale de -5°C à -6°C, calottes glaciaires de 3 km d'épaisseur sur l'Amérique du Nord et la Fennoscandie, niveau marin à -125m, vastes steppes-toundras à mammouths."
+    "presetDescription" : "❄ TERRE (-20 000 / Pic du Dernier Maximum Glaciaire) : Anomalie thermique globale de -5°C à -6°C, calottes glaciaires de 3 km d'épaisseur sur l'Amérique du Nord et la Fennoscandie, niveau marin à -125m, vastes steppes-toundras à mammouths.",
+    "associatedEpochYear" : -20000
   },
   "ecologyPreset" : {
     "name" : "Terre (-20 000 / Maximum Glaciaire)",
@@ -99,8 +99,8 @@
       "seasonSeed" : 14349,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
-      "associatedEpochYear" : -20000,
-      "presetDescription" : "❄ TERRE (-20 000 / Pic du Dernier Maximum Glaciaire) : Anomalie thermique globale de -5°C à -6°C, calottes glaciaires de 3 km d'épaisseur sur l'Amérique du Nord et la Fennoscandie, niveau marin à -125m, vastes steppes-toundras à mammouths."
+      "presetDescription" : "❄ TERRE (-20 000 / Pic du Dernier Maximum Glaciaire) : Anomalie thermique globale de -5°C à -6°C, calottes glaciaires de 3 km d'épaisseur sur l'Amérique du Nord et la Fennoscandie, niveau marin à -125m, vastes steppes-toundras à mammouths.",
+      "associatedEpochYear" : -20000
     },
     "terrestrialBiomassGtC" : 320.0,
     "soilOrganicCarbonGtC" : 1300.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "associatedEpochYear" : -20000,
-    "presetDescription" : "❄ TERRE (-20 000 / Pic du Dernier Maximum Glaciaire) : Anomalie thermique globale de -5°C à -6°C, calottes glaciaires de 3 km d'épaisseur sur l'Amérique du Nord et la Fennoscandie, niveau marin à -125m, vastes steppes-toundras à mammouths."
+    "presetDescription" : "❄ TERRE (-20 000 / Pic du Dernier Maximum Glaciaire) : Anomalie thermique globale de -5°C à -6°C, calottes glaciaires de 3 km d'épaisseur sur l'Amérique du Nord et la Fennoscandie, niveau marin à -125m, vastes steppes-toundras à mammouths.",
+    "associatedEpochYear" : -20000
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,

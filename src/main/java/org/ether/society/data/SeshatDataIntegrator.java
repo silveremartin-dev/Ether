@@ -24,7 +24,7 @@ import java.util.Map;
  * money, infrastructure, rituals, military technology) to Ether's N-dimensional cultural tensors.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 1.0.0-beta.1
+ * @version 1.0.0-beta.2
  */
 public class SeshatDataIntegrator {
     private static final Logger logger = LoggerFactory.getLogger(SeshatDataIntegrator.class);
